@@ -21,7 +21,7 @@
  */
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import UserRoleSelect from './UserRoleSelect';
 
 const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';

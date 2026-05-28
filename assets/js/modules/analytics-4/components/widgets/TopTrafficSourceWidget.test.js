@@ -40,18 +40,13 @@ import {
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '@/js/util/errors';
 import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '@/js/util/zero-reports';
-import {
-	act,
-	fireEvent,
-	render,
-	waitFor,
-} from '../../../../../../tests/js/test-utils';
+import { act, fireEvent, render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideKeyMetrics,
 	provideModuleRegistrations,
 	provideModules,
-} from '../../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import TopTrafficSourceWidget from './TopTrafficSourceWidget';
 
 describe( 'TopTrafficSourceWidget', () => {

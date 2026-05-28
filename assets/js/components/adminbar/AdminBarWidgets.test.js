@@ -42,7 +42,7 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import AdminBarWidgets from './AdminBarWidgets';
 
 jest.mock( 'react-use', () => ( {

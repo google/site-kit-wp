@@ -53,7 +53,7 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
 	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
 } from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';

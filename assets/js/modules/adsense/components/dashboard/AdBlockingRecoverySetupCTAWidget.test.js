@@ -45,15 +45,15 @@ import {
 } from '@/js/modules/adsense/util';
 import { stringToDate } from '@/js/util';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	dismissPromptEndpoint,
 	dismissedPromptsEndpoint,
-} from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
+} from '@tests/js/mock-dismiss-prompt-endpoints';
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
-} from '../../../../../../tests/js/mock-survey-endpoints';
+} from '@tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -64,7 +64,7 @@ import {
 	render,
 	waitFor,
 	waitForDefaultTimeouts,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import AdBlockingRecoverySetupCTAWidget from './AdBlockingRecoverySetupCTAWidget';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

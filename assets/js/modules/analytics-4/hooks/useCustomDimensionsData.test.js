@@ -27,13 +27,13 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
-import { renderHook } from '../../../../../tests/js/test-utils';
+import { renderHook } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
 	provideUserAuthentication,
 	provideUserCapabilities,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import useCustomDimensionsData from './useCustomDimensionsData';
 
 describe( 'useCustomDimensionsData', () => {

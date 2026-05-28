@@ -24,11 +24,7 @@ import { detectAnyAdblocker as mockDetectAnyAdblocker } from 'just-detect-adbloc
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	muteFetch,
-	untilResolved,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, muteFetch, untilResolved } from '@tests/js/utils';
 import { CORE_USER } from './constants';
 
 jest.mock( 'just-detect-adblock' );

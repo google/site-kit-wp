@@ -36,11 +36,8 @@ import {
 	provideAnalytics4MockReport,
 } from '@/js/modules/analytics-4/utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
-import {
-	provideModuleRegistrations,
-	provideModules,
-} from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { provideModuleRegistrations, provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import DashboardTopEarningPagesWidgetGA4 from './DashboardTopEarningPagesWidgetGA4';
 
 const adSenseAccountID = 'pub-1234567890';

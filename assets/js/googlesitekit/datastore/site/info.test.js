@@ -23,7 +23,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { CORE_SITE } from './constants';
 import { initialState } from './index';
 

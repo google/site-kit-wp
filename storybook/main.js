@@ -99,6 +99,7 @@ module.exports = {
 			...config.resolve,
 			alias: {
 				'@': path.resolve( rootDir, 'assets' ),
+				'@tests': path.resolve( rootDir, 'tests' ),
 				...config.resolve.alias,
 				...siteKitPackageAliases,
 			},

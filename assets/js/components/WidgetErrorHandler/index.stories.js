@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import ErrorComponent from '../../../../tests/js/ThrowErrorComponent';
+import ErrorComponent from '@tests/js/ThrowErrorComponent';
 import WidgetErrorHandler from './';
 
 const slug = 'testWidgetSlug';

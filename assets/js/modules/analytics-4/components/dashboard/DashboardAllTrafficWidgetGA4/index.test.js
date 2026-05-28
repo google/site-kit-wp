@@ -27,8 +27,8 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
-import { mockSurveyEndpoints } from '../../../../../../../tests/js/mock-survey-endpoints';
-import { render } from '../../../../../../../tests/js/test-utils';
+import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
+import { render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
@@ -36,7 +36,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserInfo,
-} from '../../../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import DashboardAllTrafficWidgetGA4 from '.';
 
 describe( 'DashboardAllTrafficWidgetGA4', () => {

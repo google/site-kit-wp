@@ -34,8 +34,8 @@ import {
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { WEEK_IN_SECONDS } from '@/js/util';
-import { provideModules } from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import GoogleTagGatewaySetupBanner from './GoogleTagGatewaySetupBanner';
 
 const NotificationWithComponentProps = withNotificationComponentProps(

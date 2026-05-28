@@ -34,11 +34,8 @@ import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/compo
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Story } from '@/js/types/Story';
-import {
-	provideModuleRegistrations,
-	provideModules,
-} from '../../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { provideModuleRegistrations, provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import CitiesGoalDriver from './CitiesGoalDriver';
 import CountriesGoalDriver from './CountriesGoalDriver';
 import DeviceTypeGoalDriver from './DeviceTypeGoalDriver';

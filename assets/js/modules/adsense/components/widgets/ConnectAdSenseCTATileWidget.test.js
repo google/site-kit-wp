@@ -29,7 +29,7 @@ import {
 	provideModules,
 	provideUserCapabilities,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
 describe( 'ConnectAdSenseCTATileWidget', () => {

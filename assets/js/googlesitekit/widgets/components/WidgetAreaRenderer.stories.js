@@ -26,11 +26,8 @@ import {
 } from '@/js/googlesitekit/widgets/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import {
-	provideModules,
-	provideUserCapabilities,
-} from '../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import { provideModules, provideUserCapabilities } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import WidgetAreaRenderer from './WidgetAreaRenderer';
 const { HALF, QUARTER, FULL } = WIDGET_WIDTHS;
 

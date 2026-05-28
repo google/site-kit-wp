@@ -34,7 +34,7 @@ import {
 	provideUserInfo,
 	render,
 	waitForDefaultTimeouts,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import SetupMain from './SetupMain';
 
 describe( 'SetupMain', () => {

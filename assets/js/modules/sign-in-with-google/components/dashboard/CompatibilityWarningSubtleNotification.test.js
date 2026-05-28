@@ -31,7 +31,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import CompatibilityWarningSubtleNotification from './CompatibilityWarningSubtleNotification';
 
 const NOTIFICATION_ID = 'sign-in-with-google-compatibility-warning';

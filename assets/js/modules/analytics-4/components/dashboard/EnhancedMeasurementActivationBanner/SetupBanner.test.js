@@ -21,18 +21,15 @@
  */
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { EDIT_SCOPE } from '@/js/modules/analytics-4/datastore/constants';
-import { mockSurveyEndpoints } from '../../../../../../../tests/js/mock-survey-endpoints';
+import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserAuthentication,
 	render,
 	waitFor,
-} from '../../../../../../../tests/js/test-utils';
-import {
-	getViewportWidth,
-	setViewportWidth,
-} from '../../../../../../../tests/js/viewport-utils';
+} from '@tests/js/test-utils';
+import { getViewportWidth, setViewportWidth } from '@tests/js/viewport-utils';
 import SetupBanner from './SetupBanner';
 
 describe( 'SetupBanner', () => {

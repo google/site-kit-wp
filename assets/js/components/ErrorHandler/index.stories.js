@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import ThrowErrorComponent from '../../../../tests/js/ThrowErrorComponent';
+import ThrowErrorComponent from '@tests/js/ThrowErrorComponent';
 import ErrorHandler from './';
 
 function Template() {

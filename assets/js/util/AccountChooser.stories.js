@@ -27,7 +27,7 @@ import { useState } from '@wordpress/element';
 import { Button, TextField } from 'googlesitekit-components';
 import { useRegistry, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { provideUserInfo } from '../../../tests/js/utils';
+import { provideUserInfo } from '@tests/js/utils';
 
 export function AccountChooser() {
 	const [ destURL, setDestURL ] = useState(

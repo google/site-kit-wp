@@ -29,7 +29,7 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { GTG_SETUP_CTA_BANNER_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4/notifications';
-import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
+import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -37,7 +37,7 @@ import {
 	provideUserAuthentication,
 	untilResolved,
 	waitForDefaultTimeouts,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import * as fixtures from './__fixtures__';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,

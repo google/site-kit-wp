@@ -30,7 +30,7 @@ import {
 	muteFetch,
 	render,
 	waitFor,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import AccountCreate from './AccountCreate';
 
 describe( 'AccountCreate', () => {

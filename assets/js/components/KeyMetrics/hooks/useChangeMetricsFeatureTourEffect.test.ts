@@ -17,17 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { mockLocation } from 'tests/js/mock-browser-utils';
-import { renderHook } from 'tests/js/test-utils';
-import {
-	createTestRegistry,
-	provideSiteInfo,
-	provideUserInfo,
-} from 'tests/js/utils';
-
-/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -36,6 +25,13 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import { renderHook } from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	provideSiteInfo,
+	provideUserInfo,
+} from '@tests/js/utils';
 import { useChangeMetricsFeatureTourEffect } from './useChangeMetricsFeatureTourEffect';
 
 jest.mock( '@/js/feature-tours/shared-key-metrics', () => ( {

@@ -29,7 +29,7 @@ import {
 	provideSiteInfo,
 	subscribeUntil,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { DATE_RANGE_OFFSET, MODULES_SEARCH_CONSOLE } from './constants';
 

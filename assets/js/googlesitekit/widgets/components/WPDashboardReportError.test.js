@@ -23,7 +23,7 @@ import {
 	createTestRegistry,
 	provideModules,
 	render,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import WPDashboardReportError from './WPDashboardReportError';
 
 describe( 'WPDashboardReportError', () => {

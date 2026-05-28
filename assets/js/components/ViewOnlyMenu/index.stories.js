@@ -39,8 +39,8 @@ import {
 	provideModules,
 	provideSiteConnection,
 	provideUserCapabilities,
-} from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import ViewOnlyMenu from './';
 
 function Template() {

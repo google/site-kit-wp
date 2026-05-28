@@ -32,9 +32,9 @@ import {
 	provideUserInfo,
 	render,
 	waitFor,
-} from '../../../../../tests/js/test-utils';
-import DashboardSharingSettings from '.';
+} from '@tests/js/test-utils';
 import { modules, roles, sharingSettings } from './__fixtures__';
+import DashboardSharingSettings from '.';
 
 describe( 'DashboardSharingSettings', () => {
 	let registry;

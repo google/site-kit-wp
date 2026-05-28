@@ -28,11 +28,7 @@ import {
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	act,
-	createTestRegistry,
-	render,
-} from '../../../../../../tests/js/test-utils';
+import { act, createTestRegistry, render } from '@tests/js/test-utils';
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 
 describe( 'SettingsEnhancedMeasurementSwitch', () => {

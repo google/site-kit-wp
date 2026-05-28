@@ -32,8 +32,8 @@ import {
 	provideSiteInfo,
 	render,
 	waitFor,
-} from '../../../tests/js/test-utils';
-import { subscribeUntil } from '../../../tests/js/utils';
+} from '@tests/js/test-utils';
+import { subscribeUntil } from '@tests/js/utils';
 import ResetButton from './ResetButton';
 
 describe( 'ResetButton', () => {

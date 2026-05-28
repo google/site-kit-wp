@@ -24,8 +24,8 @@ import { VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import {
 	provideUserAuthentication,
 	provideUserCapabilities,
-} from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import AdminBarApp from './AdminBarApp';
 import {
 	setupAnalytics4GatheringData,

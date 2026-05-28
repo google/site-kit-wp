@@ -29,7 +29,7 @@ import {
 	provideModules,
 	provideUserInfo,
 	render,
-} from '../../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import AudienceErrorModal from './AudienceErrorModal';
 
 describe( 'AudienceErrorModal', () => {

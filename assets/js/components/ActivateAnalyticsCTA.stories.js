@@ -26,8 +26,8 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserCapabilities,
-} from '../../../tests/js/utils';
-import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
 
 function Template( args ) {

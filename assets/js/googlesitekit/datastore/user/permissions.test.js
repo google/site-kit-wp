@@ -34,7 +34,7 @@ import {
 	provideUserAuthentication,
 	subscribeUntil,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from './constants';
 
 describe( 'core/user authentication', () => {

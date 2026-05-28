@@ -28,8 +28,8 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	provideUserInfo,
-} from '../../../../../../../../tests/js/test-utils';
-import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
+} from '@tests/js/test-utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import AudienceSegmentationErrorWidget from '.';
 
 const WidgetWithComponentProps = withWidgetComponentProps(

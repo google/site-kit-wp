@@ -26,14 +26,14 @@ import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '@/js/util/errors';
-import { act, fireEvent, render } from '../../../tests/js/test-utils';
+import { act, fireEvent, render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserInfo,
 	waitForDefaultTimeouts,
-} from '../../../tests/js/utils';
+} from '@tests/js/utils';
 import ReportError from './ReportError';
 
 describe( 'ReportError', () => {

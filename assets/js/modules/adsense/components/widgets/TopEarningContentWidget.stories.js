@@ -35,11 +35,8 @@ import {
 } from '@/js/modules/analytics-4/utils/data-mock';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
-import {
-	provideKeyMetrics,
-	provideModules,
-} from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { provideKeyMetrics, provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import TopEarningContentWidget from './TopEarningContentWidget';
 
 const adSenseAccountID = 'pub-1234567890';

@@ -57,7 +57,7 @@ class RequireAssertionMessageSniff implements Sniff {
 	/**
 	 * Returns an array of tokens this test wants to listen for.
 	 *
-	 * @return array
+	 * @return array Token types to listen for.
 	 */
 	public function register() {
 		return array( T_STRING );
@@ -80,7 +80,7 @@ class RequireAssertionMessageSniff implements Sniff {
 	 * @param File $phpcs_file The file being scanned.
 	 * @param int  $stack_ptr  The position of the current token in the stack.
 	 *
-	 * @return void
+	 * @return void Errors are emitted on the file directly.
 	 */
 	public function process( File $phpcs_file, $stack_ptr ) {
 		$tokens  = $phpcs_file->getTokens();

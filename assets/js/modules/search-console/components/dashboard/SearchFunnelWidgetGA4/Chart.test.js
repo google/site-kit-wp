@@ -33,13 +33,10 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 	render,
-} from '../../../../../../../tests/js/test-utils';
-import {
-	getViewportWidth,
-	setViewportWidth,
-} from '../../../../../../../tests/js/viewport-utils';
-import SearchFunnelWidgetGA4 from '.';
+} from '@tests/js/test-utils';
+import { getViewportWidth, setViewportWidth } from '@tests/js/viewport-utils';
 import Chart from './Chart';
+import SearchFunnelWidgetGA4 from '.';
 
 jest.mock(
 	'../../../../../components/GoogleChart',

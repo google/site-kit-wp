@@ -25,7 +25,7 @@ import {
 	createTestRegistry,
 	provideModules,
 	subscribeUntil,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { CORE_MODULES } from './constants';
 
 describe( 'core/modules settings', () => {

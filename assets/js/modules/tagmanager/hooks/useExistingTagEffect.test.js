@@ -28,8 +28,8 @@ import {
 	CONTEXT_WEB,
 	MODULES_TAGMANAGER,
 } from '@/js/modules/tagmanager/datastore/constants';
-import { actHook as act, renderHook } from '../../../../../tests/js/test-utils';
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import { actHook as act, renderHook } from '@tests/js/test-utils';
+import { createTestRegistry } from '@tests/js/utils';
 import useExistingTagEffect from './useExistingTagEffect';
 
 describe( 'useExistingTagEffect', () => {

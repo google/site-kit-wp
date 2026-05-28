@@ -31,7 +31,7 @@ import {
 	provideModules,
 	render,
 	waitFor,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import WidgetContextRenderer from './WidgetContextRenderer';
 
 function WidgetComponent() {

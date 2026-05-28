@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import { createTestRegistry } from '@tests/js/utils';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import {
 	INVARIANT_INVALID_CONTENT_POLICY_STATE,

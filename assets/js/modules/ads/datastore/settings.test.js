@@ -24,12 +24,12 @@ import { INVARIANT_SETTINGS_NOT_CHANGED } from '@/js/googlesitekit/data/create-s
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { GTG_SETUP_CTA_BANNER_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
-import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
+import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	provideNotifications,
 	provideUserAuthentication,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { MODULES_ADS } from './constants';
 import { validateCanSubmitChanges } from './settings';
 

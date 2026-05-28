@@ -20,11 +20,7 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import {
-	createTestRegistry,
-	muteFetch,
-	untilResolved,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, muteFetch, untilResolved } from '@tests/js/utils';
 import { CORE_SITE } from './constants';
 
 describe( 'core/site developer plugin state', () => {

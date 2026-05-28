@@ -34,7 +34,7 @@ import {
 	provideUserAuthentication,
 	provideUserInfo,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 
 describe( 'GoogleTagIDMismatchNotification', () => {

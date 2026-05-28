@@ -28,7 +28,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
-import { actHook, renderHook } from '../../../../../../tests/js/test-utils';
+import { actHook, renderHook } from '@tests/js/test-utils';
 import useNavChipHelpers from './useNavChipHelpers';
 
 describe( 'useNavChipHelpers', () => {

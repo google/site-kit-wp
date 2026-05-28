@@ -31,8 +31,8 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { getPreviousDate } from '@/js/util';
-import { provideUserAuthentication } from '../../../../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../../../../tests/js/WithRegistrySetup';
+import { provideUserAuthentication } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import AudienceTile from '.';
 
 const WidgetWithComponentProps =
