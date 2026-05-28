@@ -62,15 +62,6 @@ const AnalyticsAccountCreationErrorNotice: FC<
 		);
 	}, [ errorCode, eventCategory ] );
 
-	const analyticsAccountLimitHelpURL = useSelect(
-		( select: Select ) =>
-			select( CORE_SITE ).getGoogleSupportURL( {
-				path: '/analytics/',
-				hash: 'topic=14090456',
-			} ),
-		[]
-	);
-
 	const additionalAnalyticsSupportURL = useSelect(
 		( select: Select ) =>
 			select( CORE_SITE ).getDocumentationLinkURL(
@@ -99,20 +90,6 @@ const AnalyticsAccountCreationErrorNotice: FC<
 			onClick: () => {
 				global.history.back();
 			},
-		};
-	} else if ( errorCode === 'max_accounts_reached' ) {
-		description = createInterpolateElement(
-			__(
-				'Creating a new Analytics account failed because the Analytics account limit has been reached. You can manage the number of Analytics accounts associated with your Google account and then try again, or <a>get help</a>',
-				'google-site-kit'
-			),
-			{
-				a: <Link href={ analyticsAccountLimitHelpURL } external />,
-			}
-		);
-		ctaButton = {
-			label: __( 'Retry', 'google-site-kit' ),
-			onClick: onRetry,
 		};
 	} else {
 		description = createInterpolateElement(

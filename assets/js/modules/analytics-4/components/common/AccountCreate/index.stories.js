@@ -125,30 +125,6 @@ InitialSetupFlowWithUserCancelError.args = {
 };
 InitialSetupFlowWithUserCancelError.scenario = {};
 
-export const InitialSetupFlowWithMaxAccountsReachedError = Template.bind( {} );
-InitialSetupFlowWithMaxAccountsReachedError.storyName =
-	'Initial setup flow with account limit reached error';
-InitialSetupFlowWithMaxAccountsReachedError.parameters = {
-	features: [ 'setupFlowRefresh' ],
-	query: {
-		showProgress: 'true',
-		accountCreationErrorCode: 'max_accounts_reached',
-	},
-};
-InitialSetupFlowWithMaxAccountsReachedError.args = {
-	className: 'googlesitekit-analytics-setup__form',
-	setupRegistry: ( registry ) => {
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: false,
-			},
-		] );
-	},
-};
-InitialSetupFlowWithMaxAccountsReachedError.scenario = {};
-
 export const InitialSetupFlowWithGenericError = Template.bind( {} );
 InitialSetupFlowWithGenericError.storyName =
 	'Initial setup flow with generic error';
