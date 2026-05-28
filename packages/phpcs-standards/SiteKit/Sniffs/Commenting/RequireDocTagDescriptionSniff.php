@@ -137,7 +137,7 @@ class RequireDocTagDescriptionSniff implements Sniff {
 	 *              and a separate sniff would catch that); false otherwise.
 	 */
 	private function has_param_description( $content ) {
-		// Locate the variable portion (handles plain, by-reference and variadic forms).
+		// Locate the variable portion.
 		if ( ! preg_match( '/\$[a-zA-Z_][a-zA-Z0-9_]*/', $content, $matches, PREG_OFFSET_CAPTURE ) ) {
 			// Malformed tag with no variable — leave it to other sniffs (e.g.
 			// Squiz.Commenting.FunctionComment) to report the malformation.
