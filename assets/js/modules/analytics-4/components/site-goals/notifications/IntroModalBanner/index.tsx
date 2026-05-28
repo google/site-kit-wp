@@ -19,16 +19,16 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
-import { useSiteGoalsTour } from '@/js/feature-tours/hooks/useSiteGoalsTour';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { getSiteGoalsTour } from '../../feature-tours/site-goals';
 import IntroModalEcommerce from './IntroModalEcommerce';
 import IntroModalEcommerceAndLead from './IntroModalEcommerceAndLead';
 import IntroModalLead from './IntroModalLead';
@@ -82,8 +82,6 @@ export default function IntroModal() {
 
 	const { dismissItem, triggerOnDemandTour } = useDispatch( CORE_USER );
 
-	const siteGoalsTour = useSiteGoalsTour();
-
 	const trackEvent = useNotificationEvents(
 		SITE_GOALS_INTRO_MODAL_BANNER
 	) as IntroModalTrackingEvents;
@@ -102,6 +100,14 @@ export default function IntroModal() {
 		[]
 	);
 
+	const hasEcommerceConversionReportingEventsOnly = useSelect(
+		( select: Select ) =>
+			select(
+				MODULES_ANALYTICS_4
+			).hasEcommerceConversionReportingEventsOnly(),
+		[]
+	);
+
 	const isIntroModalDismissed = useSelect(
 		( select: Select ) =>
 			select( CORE_USER ).isItemDismissed(
@@ -110,14 +116,18 @@ export default function IntroModal() {
 		[]
 	);
 
-	const handleClose = useCallback( () => {
+	function handleClose() {
 		setIsOpen( false );
 		dismissItem( SITE_GOALS_INTRO_MODAL_BANNER );
-	}, [ dismissItem ] );
+	}
 
-	const handleShowMe = useCallback( () => {
-		triggerOnDemandTour( siteGoalsTour );
-	}, [ triggerOnDemandTour, siteGoalsTour ] );
+	function handleShowMe() {
+		triggerOnDemandTour(
+			getSiteGoalsTour( {
+				isEcommerceOnly: !! hasEcommerceConversionReportingEventsOnly,
+			} )
+		);
+	}
 
 	if (
 		hasEcommerceConversionReportingEvents === undefined ||

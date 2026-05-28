@@ -1,4 +1,6 @@
 /**
+ * Site Goals feature tour.
+ *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +26,8 @@ import { __ } from '@wordpress/i18n';
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
-import { SITE_GOALS_TOUR } from './constants';
+
+export const SITE_GOALS_TOUR = 'site-goals-feature-tour';
 
 const defaultStepOptions = {
 	offset: -2,
@@ -42,6 +45,19 @@ const defaultStepOptions = {
 	placement: 'top' as const,
 	isResponsive: true,
 };
+
+/**
+ * Returns the Google Analytics event category for the Site Goals tour,
+ * prefixed with the current view context.
+ *
+ * @since n.e.x.t
+ *
+ * @param viewContext The current view context.
+ * @return The event category string.
+ */
+function gaEventCategory( viewContext: string ) {
+	return `${ viewContext }_site-goals-tour`;
+}
 
 /**
  * Returns the Site Goals tour config.
@@ -68,8 +84,7 @@ export function getSiteGoalsTour( {
 		slug: SITE_GOALS_TOUR,
 		isRepeatable: true,
 		contexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		gaEventCategory: ( viewContext: string ) =>
-			`${ viewContext }_site-goals-tour`,
+		gaEventCategory,
 		preloadWidgetAreas: [ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ],
 		steps: [
 			{

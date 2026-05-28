@@ -20,5 +20,3 @@ export const WELCOME_TOUR = {
 	WITH_ANALYTICS: 'welcome-with-analytics',
 	WITHOUT_ANALYTICS: 'welcome-without-analytics',
 };
-
-export const SITE_GOALS_TOUR = 'site-goals-feature-tour';

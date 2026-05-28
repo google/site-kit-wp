@@ -24,8 +24,6 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import { useSiteGoalsTour } from '@/js/feature-tours/hooks/useSiteGoalsTour';
-import { getSiteGoalsTour } from '@/js/feature-tours/site-goals';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import {
@@ -39,15 +37,13 @@ import {
 	render,
 	waitFor,
 } from '../../../../../../../../tests/js/test-utils';
+import { getSiteGoalsTour } from '../../feature-tours/site-goals';
 import IntroModal from './index';
 
 jest.mock( '@/js/googlesitekit/notifications/hooks/useNotificationEvents' );
-jest.mock( '@/js/feature-tours/hooks/useSiteGoalsTour' );
 
 describe( 'IntroModal', () => {
 	let registry;
-
-	const mockSiteGoalsTour = getSiteGoalsTour( { isEcommerceOnly: false } );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -63,8 +59,6 @@ describe( 'IntroModal', () => {
 			clickLearnMore: jest.fn(),
 			dismiss: jest.fn(),
 		} );
-
-		jest.mocked( useSiteGoalsTour ).mockReturnValue( mockSiteGoalsTour );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
@@ -119,7 +113,7 @@ describe( 'IntroModal', () => {
 
 		await waitFor( () => {
 			expect( registry.select( CORE_USER ).getCurrentTour() ).toEqual(
-				mockSiteGoalsTour
+				getSiteGoalsTour( { isEcommerceOnly: true } )
 			);
 		} );
 	} );

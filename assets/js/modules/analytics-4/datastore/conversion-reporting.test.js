@@ -222,6 +222,74 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 			} );
 		} );
 
+		describe( 'hasEcommerceConversionReportingEventsOnly', () => {
+			it( 'returns true when only ecommerce events are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( CONVERSION_REPORTING_ECOMMERCE_EVENTS );
+
+				const selectorValue = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasEcommerceConversionReportingEventsOnly();
+
+				expect( selectorValue ).toBe( true );
+			} );
+
+			it( 'returns false when only lead events are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( CONVERSION_REPORTING_LEAD_EVENTS );
+
+				const selectorValue = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasEcommerceConversionReportingEventsOnly();
+
+				expect( selectorValue ).toBe( false );
+			} );
+
+			it( 'returns false when both ecommerce and lead events are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+					] );
+
+				const selectorValue = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasEcommerceConversionReportingEventsOnly();
+
+				expect( selectorValue ).toBe( false );
+			} );
+
+			it( 'returns false when no events are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [] );
+
+				const selectorValue = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasEcommerceConversionReportingEventsOnly();
+
+				expect( selectorValue ).toBe( false );
+			} );
+
+			it( 'returns undefined when detected events have not loaded yet', () => {
+				// Prevent network request/resolver from running to avoid console errors.
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
+					)
+				);
+
+				const selectorValue = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasEcommerceConversionReportingEventsOnly();
+
+				expect( selectorValue ).toBe( undefined );
+			} );
+		} );
+
 		describe( 'haveConversionEventsForTailoredMetrics', () => {
 			beforeEach( () => {
 				provideKeyMetricsUserInputSettings( registry );
