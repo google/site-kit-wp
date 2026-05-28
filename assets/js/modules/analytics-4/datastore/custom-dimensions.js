@@ -113,7 +113,7 @@ const baseActions = {
 	 *
 	 * @param {Array<string>} customDimensions Optional additional custom dimensions to create.
 	 */
-	*createCustomDimensions( customDimensions ) {
+	*createCustomDimensions( customDimensions = [] ) {
 		const registry = yield commonActions.getRegistry();
 
 		// Wait for the necessary settings to be loaded before checking.
@@ -136,15 +136,10 @@ const baseActions = {
 				return tile?.requiredCustomDimensions || [];
 			}
 		);
-		const requestedCustomDimensions = Array.isArray( customDimensions )
-			? customDimensions
-			: [];
 		const requiredCustomDimensions = [
 			...keyMetricsRequiredCustomDimensions,
-			...( Array.isArray( requestedCustomDimensions )
-				? requestedCustomDimensions
-				: [] ),
-		].filter( ( dimension ) => CUSTOM_DIMENSION_DEFINITIONS[ dimension ] );
+			...( Array.isArray( customDimensions ) ? customDimensions : [] ),
+		];
 
 		// Deduplicate if any custom dimensions are repeated among tiles.
 		const uniqueRequiredCustomDimensions = [

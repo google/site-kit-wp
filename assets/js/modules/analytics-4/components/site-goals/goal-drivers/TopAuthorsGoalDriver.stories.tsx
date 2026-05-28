@@ -26,7 +26,10 @@ import { ReactElement } from 'react';
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import { Story } from '@/js/types/Story';
 import {
 	provideModules,
@@ -34,6 +37,7 @@ import {
 	provideUserCapabilities,
 } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { GOAL_DRIVER_ROW_LIMIT_EXPANDED, GOAL_TYPES } from './constants';
 import TopAuthorsGoalDriver from './TopAuthorsGoalDriver';
 import { GoalDriverComponentProps } from './types';
 
@@ -87,10 +91,128 @@ function setupAnalytics4(
 	] );
 
 	registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( false );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 		propertyID: '12345',
 		availableCustomDimensions,
 	} );
+
+	if ( availableCustomDimensions.includes( 'googlesitekit_post_author' ) ) {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsCustomDimensionGatheringData( {
+				customDimension: 'googlesitekit_post_author',
+				gatheringData: false,
+			} );
+	}
+}
+
+function getTopAuthorsReportOptions(
+	registry: Parameters< typeof provideModules >[ 0 ],
+	goalType = GOAL_TYPES.ECOMMERCE
+) {
+	const dates = registry.select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+	} );
+	const dimensionFilters = {
+		eventName: {
+			filterType: 'inListFilter',
+			value: [ 'purchase' ],
+		},
+	};
+
+	return {
+		authorsReportOptions: {
+			...dates,
+			dimensions: [
+				'customEvent:googlesitekit_post_author',
+				'eventName',
+			],
+			dimensionFilters: {
+				...dimensionFilters,
+				'customEvent:googlesitekit_post_author': {
+					filterType: 'emptyFilter',
+					notExpression: true,
+				},
+			},
+			metrics: [ { name: 'eventCount' } ],
+			orderby: [
+				{
+					metric: { metricName: 'eventCount' },
+					desc: true,
+				},
+			],
+			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+			keepEmptyRows: false,
+			reportID: `analytics-4_site-goals_top-authors_${ goalType }`,
+		},
+		totalReportOptions: {
+			...dates,
+			dimensionFilters,
+			metrics: [ { name: 'eventCount' } ],
+			reportID: `analytics-4_site-goals_top-authors-total_${ goalType }`,
+		},
+	};
+}
+
+function seedTopAuthorsReports(
+	registry: Parameters< typeof provideModules >[ 0 ],
+	{ loading = false } = {}
+) {
+	const { authorsReportOptions, totalReportOptions } =
+		getTopAuthorsReportOptions( registry );
+
+	if ( loading ) {
+		[ authorsReportOptions, totalReportOptions ].forEach( ( options ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.startResolution( 'getReport', [ options ] );
+		} );
+
+		return;
+	}
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: [
+				{
+					dimensionValues: [
+						{ value: 'AuthorName1' },
+						{ value: 'purchase' },
+					],
+					metricValues: [ { value: '305' } ],
+				},
+				{
+					dimensionValues: [
+						{ value: 'AuthorName2' },
+						{ value: 'purchase' },
+					],
+					metricValues: [ { value: '247' } ],
+				},
+				{
+					dimensionValues: [
+						{ value: 'AuthorName3' },
+						{ value: 'purchase' },
+					],
+					metricValues: [ { value: '162' } ],
+				},
+			],
+		},
+		{ options: authorsReportOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ authorsReportOptions ] );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: [ { metricValues: [ { value: '1000' } ] } ],
+		},
+		{ options: totalReportOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ totalReportOptions ] );
 }
 
 function Template( props: TopAuthorsGoalDriverStoryProps ) {
@@ -103,13 +225,12 @@ export const Ready = Template.bind(
 Ready.args = {
 	goalType: 'ecommerce',
 	title: 'Top authors driving sales',
-	rows: [
-		{ label: 'AuthorName1', value: '30.5%' },
-		{ label: 'AuthorName2', value: '24.7%' },
-		{ label: 'AuthorName3', value: '16.2%' },
-	],
-	loading: false,
+	primaryEvent: 'purchase',
 	limit: 3,
+	setupRegistry: ( registry ) => {
+		setupAnalytics4( registry );
+		seedTopAuthorsReports( registry );
+	},
 };
 Ready.scenario = {};
 
@@ -118,8 +239,10 @@ export const Loading = Template.bind(
 ) as Story< TopAuthorsGoalDriverStoryProps >;
 Loading.args = {
 	...Ready.args,
-	rows: [],
-	loading: true,
+	setupRegistry: ( registry ) => {
+		setupAnalytics4( registry );
+		seedTopAuthorsReports( registry, { loading: true } );
+	},
 };
 
 export const MissingCustomDimensions = Template.bind(
@@ -129,8 +252,7 @@ MissingCustomDimensions.storyName = 'Missing custom dimensions';
 MissingCustomDimensions.args = {
 	goalType: 'ecommerce',
 	title: 'Top authors driving sales',
-	rows: [],
-	loading: false,
+	primaryEvent: 'purchase',
 	limit: 3,
 	setupRegistry: ( registry ) => {
 		setupAnalytics4( registry, [] );

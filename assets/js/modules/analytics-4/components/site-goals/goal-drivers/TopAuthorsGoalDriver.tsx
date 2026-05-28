@@ -69,9 +69,6 @@ const TopAuthorsGoalDriver: FC< GoalDriverComponentProps > = ( {
 	title = '',
 	goalType,
 	limit,
-	rows: providedRows,
-	loading: providedLoading,
-	error: providedError,
 	primaryEvent,
 	onExpandableRowsChange,
 } ) => {
@@ -152,6 +149,10 @@ const TopAuthorsGoalDriver: FC< GoalDriverComponentProps > = ( {
 	const enabledTotalReportOptions = canLoadReports
 		? totalReportOptions
 		: undefined;
+	const allReportOptions = [
+		enabledTotalReportOptions,
+		reportOptions,
+	].filter( Boolean );
 	const report = useSelect(
 		( select: Select ) =>
 			reportOptions
@@ -170,22 +171,16 @@ const TopAuthorsGoalDriver: FC< GoalDriverComponentProps > = ( {
 	);
 	const reportError = useSelect(
 		( select: Select ) =>
-			reportOptions && enabledTotalReportOptions
-				? select( MODULES_ANALYTICS_4 ).getFirstReportError(
-						reportOptions,
-						enabledTotalReportOptions
-				  )
-				: undefined,
+			select( MODULES_ANALYTICS_4 ).getFirstReportError(
+				...allReportOptions
+			),
 		[ enabledTotalReportOptions, reportOptions ]
 	);
 	const reportLoading = useSelect(
 		( select: Select ) =>
-			reportOptions && enabledTotalReportOptions
-				? select( MODULES_ANALYTICS_4 ).areReportsLoading(
-						reportOptions,
-						enabledTotalReportOptions
-				  )
-				: false,
+			select( MODULES_ANALYTICS_4 ).areReportsLoading(
+				...allReportOptions
+			),
 		[ enabledTotalReportOptions, reportOptions ]
 	);
 	const {
@@ -285,17 +280,12 @@ const TopAuthorsGoalDriver: FC< GoalDriverComponentProps > = ( {
 			};
 		} );
 	const hasMissingCustomDimensions = hasCustomDimensions === false;
-	const customDimensionsCreationError =
-		customDimensionsCreationErrors?.[ 0 ] ?? undefined;
-	const rows = providedRows ?? mappedRows;
+	const rows = mappedRows;
 	const loading =
-		providedLoading ??
-		[
-			customDimensionsLoading,
-			reportLoading,
-			isGatheringData === undefined,
-		].some( Boolean );
-	const error = providedError ?? customDimensionsCreationError ?? reportError;
+		customDimensionsLoading ||
+		reportLoading ||
+		isGatheringData === undefined;
+	const error = customDimensionsCreationErrors?.[ 0 ] ?? reportError;
 
 	useEffect( () => {
 		onExpandableRowsChange?.(
@@ -306,18 +296,15 @@ const TopAuthorsGoalDriver: FC< GoalDriverComponentProps > = ( {
 
 	const noDataMetricLabel =
 		goalType === GOAL_TYPES.ECOMMERCE ? 'sales' : 'leads';
-	const hasCustomDimensionsZeroState = [
-		hasMissingCustomDimensions,
-		isGatheringData,
-	].some( Boolean );
-	const zeroState = hasCustomDimensionsZeroState ? (
-		<TopAuthorsZeroState
-			hasMissingCustomDimensions={ hasMissingCustomDimensions }
-			isGatheringData={ isGatheringData }
-			customDimensionsLoading={ customDimensionsLoading }
-			onCreateCustomDimensions={ handleCreateCustomDimensions }
-		/>
-	) : undefined;
+	const zeroState =
+		hasMissingCustomDimensions || isGatheringData ? (
+			<TopAuthorsZeroState
+				hasMissingCustomDimensions={ hasMissingCustomDimensions }
+				isGatheringData={ isGatheringData }
+				customDimensionsLoading={ customDimensionsLoading }
+				onCreateCustomDimensions={ handleCreateCustomDimensions }
+			/>
+		) : undefined;
 
 	return (
 		<TableTile
