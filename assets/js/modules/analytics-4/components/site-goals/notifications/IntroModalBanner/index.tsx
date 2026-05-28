@@ -25,6 +25,7 @@ import { useCallback, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { useSiteGoalsTour } from '@/js/feature-tours/hooks/useSiteGoalsTour';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -54,7 +55,8 @@ interface IntroModalTrackingEvents {
 function createModalHandlers(
 	label: IntroModalVariantLabel,
 	onClose: () => void,
-	trackEvent: IntroModalTrackingEvents
+	trackEvent: IntroModalTrackingEvents,
+	onShowMeCTAClicked: () => void
 ): IntroModalVariantProps {
 	return {
 		onView: () => {
@@ -63,6 +65,7 @@ function createModalHandlers(
 		onConfirm: () => {
 			trackEvent.confirm( label );
 			onClose();
+			onShowMeCTAClicked();
 		},
 		onClickLearnMore: () => {
 			trackEvent.clickLearnMore( label );
@@ -77,7 +80,9 @@ function createModalHandlers(
 export default function IntroModal() {
 	const [ isOpen, setIsOpen ] = useState( true );
 
-	const { dismissItem } = useDispatch( CORE_USER );
+	const { dismissItem, triggerOnDemandTour } = useDispatch( CORE_USER );
+
+	const siteGoalsTour = useSiteGoalsTour();
 
 	const trackEvent = useNotificationEvents(
 		SITE_GOALS_INTRO_MODAL_BANNER
@@ -110,6 +115,10 @@ export default function IntroModal() {
 		dismissItem( SITE_GOALS_INTRO_MODAL_BANNER );
 	}, [ dismissItem ] );
 
+	const handleShowMe = useCallback( () => {
+		triggerOnDemandTour( siteGoalsTour );
+	}, [ triggerOnDemandTour, siteGoalsTour ] );
+
 	if (
 		hasEcommerceConversionReportingEvents === undefined ||
 		hasLeadConversionReportingEvents === undefined ||
@@ -122,17 +131,20 @@ export default function IntroModal() {
 	const ecommerceHandlers = createModalHandlers(
 		INTRO_MODAL_VARIANTS.ECOMMERCE,
 		handleClose,
-		trackEvent
+		trackEvent,
+		handleShowMe
 	);
 	const leadHandlers = createModalHandlers(
 		INTRO_MODAL_VARIANTS.LEAD,
 		handleClose,
-		trackEvent
+		trackEvent,
+		handleShowMe
 	);
 	const ecommerceAndLeadHandlers = createModalHandlers(
 		INTRO_MODAL_VARIANTS.ECOMMERCE_AND_LEAD,
 		handleClose,
-		trackEvent
+		trackEvent,
+		handleShowMe
 	);
 
 	if (

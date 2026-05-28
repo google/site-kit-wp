@@ -17,27 +17,45 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
+import { useSiteGoalsTour } from '@/js/feature-tours/hooks/useSiteGoalsTour';
+import { getSiteGoalsTour } from '@/js/feature-tours/site-goals';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { dismissItemEndpoint } from '../../../../../../../../tests/js/mock-dismiss-item-endpoints';
 import {
 	createTestRegistry,
+	fireEvent,
 	render,
+	waitFor,
 } from '../../../../../../../../tests/js/test-utils';
 import IntroModal from './index';
 
 jest.mock( '@/js/googlesitekit/notifications/hooks/useNotificationEvents' );
+jest.mock( '@/js/feature-tours/hooks/useSiteGoalsTour' );
 
 describe( 'IntroModal', () => {
 	let registry;
 
+	const mockSiteGoalsTour = getSiteGoalsTour( { isEcommerceOnly: false } );
+
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		fetchMock.post( dismissItemEndpoint, {
+			body: { success: true },
+			status: 200,
+		} );
 
 		useNotificationEvents.mockReturnValue( {
 			view: jest.fn(),
@@ -46,7 +64,10 @@ describe( 'IntroModal', () => {
 			dismiss: jest.fn(),
 		} );
 
+		jest.mocked( useSiteGoalsTour ).mockReturnValue( mockSiteGoalsTour );
+
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 	} );
 
 	it( 'renders ecommerce-only variant when only ecommerce conversion events exist', () => {
@@ -83,5 +104,23 @@ describe( 'IntroModal', () => {
 			registry,
 		} );
 		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should start the Site Goals tour when the user clicks "Show me"', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const { getByRole } = render( <IntroModal />, {
+			registry,
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: /show me/i } ) );
+
+		await waitFor( () => {
+			expect( registry.select( CORE_USER ).getCurrentTour() ).toEqual(
+				mockSiteGoalsTour
+			);
+		} );
 	} );
 } );
