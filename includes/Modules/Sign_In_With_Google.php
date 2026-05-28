@@ -1010,7 +1010,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	</p>
 	<?php else : ?>
 	<p>
-		<?php esc_html_e( 'Connect your account to sign in with Google.', 'google-site-kit' ); ?>
+		<?php esc_html_e( 'Connect your account to Sign in with Google.', 'google-site-kit' ); ?>
 	</p>
 		<?php
 		/**
