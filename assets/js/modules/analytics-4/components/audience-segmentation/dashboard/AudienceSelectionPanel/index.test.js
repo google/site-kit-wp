@@ -57,7 +57,6 @@ import {
 	provideUserInfo,
 	waitForDefaultTimeouts,
 } from '@tests/js/utils';
-import AudienceSelectionPanel from '.';
 import { availableAudiences } from './../../../../datastore/__fixtures__';
 import {
 	AUDIENCE_ADD_GROUP_NOTICE_SLUG,
@@ -68,6 +67,7 @@ import {
 	AUDIENCE_SELECTION_FORM,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
+import AudienceSelectionPanel from '.';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

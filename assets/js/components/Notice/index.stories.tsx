@@ -31,8 +31,8 @@ import { createInterpolateElement } from '@wordpress/element';
  */
 import Link from '@/js/components/Link';
 import { Cell, Grid, Row } from '@/js/material-components';
-import Notice from '.';
 import { NOTICE_TYPES } from './constants';
+import Notice from '.';
 
 function Template() {
 	return (

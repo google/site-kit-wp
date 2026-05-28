@@ -45,7 +45,6 @@ import {
 	provideUserAuthentication,
 } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
-import AudienceSelectionPanel from '.';
 import { availableAudiences } from './../../../../datastore/__fixtures__';
 import {
 	AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG,
@@ -53,6 +52,7 @@ import {
 	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
+import AudienceSelectionPanel from '.';
 
 const syncAvailableAudiencesEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'

@@ -40,8 +40,8 @@ import {
 	render,
 	waitForDefaultTimeouts,
 } from '@tests/js/test-utils';
-import InfoNoticeWidget from '.';
 import { AUDIENCE_INFO_NOTICES, AUDIENCE_INFO_NOTICE_SLUG } from './constants';
+import InfoNoticeWidget from '.';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),

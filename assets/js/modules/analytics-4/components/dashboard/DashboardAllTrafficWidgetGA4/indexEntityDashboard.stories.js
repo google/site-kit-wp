@@ -38,11 +38,11 @@ import {
 	provideUserAuthentication,
 } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
-import DashboardAllTrafficWidgetGA4 from '.';
 import {
 	limitResponseToSingleDate,
 	provideReportWithIncreasedOtherDimension,
 } from './story-utils';
+import DashboardAllTrafficWidgetGA4 from '.';
 
 const widgetComponentProps = getWidgetComponentProps(
 	'analyticsAllTraffic-widget'
