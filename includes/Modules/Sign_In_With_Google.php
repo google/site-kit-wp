@@ -188,8 +188,10 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		add_action( 'edit_user_profile', $this->get_method_proxy( 'render_sign_in_with_google_profile' ) );
 
 		// Output the Sign in with Google init script so the placeholder above
-		// becomes a real button on the user's own, unlinked profile.
-		add_action( 'admin_footer', $this->get_method_proxy( 'maybe_render_profile_signinwithgoogle' ) );
+		// becomes a real button on the user's own, unlinked profile. Runs on
+		// `in_admin_footer` (which fires just before `admin_footer`) so the
+		// tag's own `admin_footer` render is queued in time. See the method docblock.
+		add_action( 'in_admin_footer', $this->get_method_proxy( 'maybe_render_profile_signinwithgoogle' ) );
 
 		// Show an error when a user tries to link a Google account that's
 		// already linked to a different WordPress user.
@@ -805,8 +807,13 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * Outputs the Sign in with Google init script that turns the placeholder
 	 * `<div>` from `render_sign_in_with_google_profile()` into a real button.
 	 *
-	 * Runs on `admin_footer` so `did_action( 'show_user_profile' )` reliably
-	 * reports whether the section actually rendered.
+	 * Runs on `in_admin_footer`, which fires just before `admin_footer`. This
+	 * matters for two reasons. First, `show_user_profile` has already fired, so
+	 * `did_action( 'show_user_profile' )` reliably reports whether the section
+	 * rendered. Second, the `Web_Tag` schedules its own output on
+	 * `admin_footer`. If this callback itself ran on `admin_footer`, that
+	 * render would be added to a hook already firing at the current priority,
+	 * and WordPress would silently skip it.
 	 *
 	 * @since n.e.x.t
 	 */

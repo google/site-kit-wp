@@ -278,7 +278,9 @@ class Web_TagTest extends TestCase {
 		// the WooCommerce authenticator, which signs in or creates a user by
 		// email instead of linking the current user.
 		if ( ! class_exists( 'WooCommerce' ) ) {
-			class_alias( \stdClass::class, 'WooCommerce' );
+			// `class_alias()` requires a user-defined source class, so alias
+			// this test case rather than an internal class like `stdClass`.
+			class_alias( __CLASS__, 'WooCommerce' );
 		}
 
 		$this->web_tag->set_is_existing_user_flow( true );

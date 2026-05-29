@@ -28,7 +28,7 @@ class Current_Screen {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return WP_Screen|null
+	 * @return WP_Screen|null Current `WP_Screen` instance, or null when called outside the admin.
 	 */
 	public static function get(): ?WP_Screen {
 		if ( ! function_exists( 'get_current_screen' ) ) {

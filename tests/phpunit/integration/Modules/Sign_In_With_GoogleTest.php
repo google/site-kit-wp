@@ -487,9 +487,13 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user_id );
 
-		// The `admin_footer` callback only renders the button after
-		// `show_user_profile` has fired, so fire it first.
+		// Fire the hooks in the same order as a real profile page load:
+		// `show_user_profile` renders the section, `in_admin_footer` schedules
+		// the tag, and `admin_footer` outputs it. The tag schedules its render
+		// on `admin_footer`, so the scheduling step must run on the earlier
+		// `in_admin_footer` hook. Otherwise WordPress drops the render.
 		$this->capture_action( 'show_user_profile', wp_get_current_user() );
+		$this->capture_action( 'in_admin_footer' );
 
 		$output = $this->capture_action( 'admin_footer' );
 
@@ -511,6 +515,11 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user_id );
 
+		// `maybe_render_profile_signinwithgoogle()` runs on `in_admin_footer`.
+		// With `show_user_profile` never fired, the `did_action` check should
+		// keep it from scheduling any render on `admin_footer`.
+		$this->capture_action( 'in_admin_footer' );
+
 		$output = $this->capture_action( 'admin_footer' );
 
 		$this->assertStringNotContainsString( "response.integration='existing_user'", $output, 'admin_footer should not render the connect script outside the profile page.' );
@@ -528,6 +537,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		wp_set_current_user( $user_id );
 
 		$this->capture_action( 'show_user_profile', wp_get_current_user() );
+		$this->capture_action( 'in_admin_footer' );
 
 		$output = $this->capture_action( 'admin_footer' );
 
@@ -547,6 +557,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		wp_set_current_user( $user_id );
 
 		$this->capture_action( 'show_user_profile', wp_get_current_user() );
+		$this->capture_action( 'in_admin_footer' );
 
 		$output = $this->capture_action( 'admin_footer' );
 
@@ -594,7 +605,9 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// authenticator by integration value, so the existing_user flow
 		// should still be picked.
 		if ( ! class_exists( 'WooCommerce' ) ) {
-			class_alias( \stdClass::class, 'WooCommerce' );
+			// `class_alias()` requires a user-defined source class, so alias
+			// this test case rather than an internal class like `stdClass`.
+			class_alias( __CLASS__, 'WooCommerce' );
 		}
 
 		$this->assertSame(
