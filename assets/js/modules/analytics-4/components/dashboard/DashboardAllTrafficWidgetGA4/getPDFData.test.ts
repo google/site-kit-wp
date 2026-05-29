@@ -40,7 +40,7 @@ const reportEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/report'
 );
 
-const dates = {
+const DATES = {
 	startDate: '2025-01-08',
 	endDate: '2025-02-04',
 	compareStartDate: '2024-12-11',
@@ -63,10 +63,10 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			rows: [ { metricValues: [ { value: '10' } ] } ],
 		};
 
-		const totalsArgs = getTotalsReportArgs( dates );
+		const totalsArgs = getTotalsReportArgs( DATES );
 		const graphArgs = getGraphReportArgs( {
-			startDate: dates.startDate,
-			endDate: dates.endDate,
+			startDate: DATES.startDate,
+			endDate: DATES.endDate,
 		} );
 
 		registry
@@ -78,7 +78,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 
 		const result = await getPDFData( {
 			registry,
-			dates,
+			dates: DATES,
 			signal: new AbortController().signal,
 		} );
 
@@ -111,7 +111,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 
 		await getPDFData( {
 			registry,
-			dates,
+			dates: DATES,
 			signal: new AbortController().signal,
 		} );
 
@@ -128,7 +128,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 
 		const result = await getPDFData( {
 			registry,
-			dates,
+			dates: DATES,
 			signal: controller.signal,
 		} );
 
@@ -155,7 +155,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 
 		const pdfPromise = getPDFData( {
 			registry,
-			dates,
+			dates: DATES,
 			signal: controller.signal,
 		} );
 
