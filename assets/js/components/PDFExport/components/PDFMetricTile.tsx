@@ -46,7 +46,7 @@ const tileStyles = StyleSheet.create( {
 		fontWeight: 'bold',
 		color: COLORS.text,
 	},
-	subText: {
+	changeLabel: {
 		fontSize: 9,
 		color: COLORS.secondary,
 		marginTop: 4,
@@ -90,7 +90,7 @@ export interface PDFMetricTileProps {
 	/** Direction the change badge points; controls the arrow and color. */
 	changeDirection?: 'up' | 'down';
 	/** Optional caption rendered below the value, e.g. comparison period text. */
-	subText?: string;
+	changeLabel?: string;
 }
 
 const PDFMetricTile: FC< PDFMetricTileProps > = ( {
@@ -98,7 +98,7 @@ const PDFMetricTile: FC< PDFMetricTileProps > = ( {
 	value,
 	change,
 	changeDirection,
-	subText,
+	changeLabel,
 } ) => {
 	const changeColor =
 		changeDirection === 'up' ? COLORS.success : COLORS.error;
@@ -107,7 +107,9 @@ const PDFMetricTile: FC< PDFMetricTileProps > = ( {
 		<View style={ tileStyles.container }>
 			<Text style={ tileStyles.title }>{ title }</Text>
 			<Text style={ tileStyles.value }>{ value }</Text>
-			{ subText && <Text style={ tileStyles.subText }>{ subText }</Text> }
+			{ changeLabel && (
+				<Text style={ tileStyles.changeLabel }>{ changeLabel }</Text>
+			) }
 			{ change !== undefined && change !== null && changeDirection && (
 				<View style={ tileStyles.changeRow }>
 					<ChangeArrow

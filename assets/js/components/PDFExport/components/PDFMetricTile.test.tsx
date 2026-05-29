@@ -71,11 +71,11 @@ function renderTile(
 }
 
 describe( 'PDFMetricTile', () => {
-	it( 'renders the title, value, and sub-text', () => {
+	it( 'renders the title, value, and change label', () => {
 		const tree = renderTile( {
 			title: 'All Visitors',
 			value: '1,234',
-			subText: 'compared to the previous 28 days',
+			changeLabel: 'compared to the previous 28 days',
 		} );
 
 		const text = findTextStrings( tree ).join( ' ' );
@@ -84,7 +84,7 @@ describe( 'PDFMetricTile', () => {
 		expect( text ).toContain( 'compared to the previous 28 days' );
 	} );
 
-	it( 'omits the sub-text when not provided', () => {
+	it( 'omits the change label when not provided', () => {
 		const tree = renderTile( {
 			title: 'All Visitors',
 			value: '1,234',

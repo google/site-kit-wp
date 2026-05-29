@@ -99,7 +99,7 @@ export default function DashboardAllTrafficWidgetGA4PDF( {
 			<PDFMetricTile
 				title={ __( 'All Visitors', 'google-site-kit' ) }
 				value={ formattedValue }
-				subText={ comparisonLabel }
+				changeLabel={ comparisonLabel }
 				{ ...( changeData || {} ) }
 			/>
 			<View style={ styles.chartPlaceholder } />
