@@ -18,6 +18,17 @@ class FakeConversionEventProvider extends Conversion_Events_Provider {
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'fake-conversion-event-provider';
 
 	/**
+	 * Gets the provider category.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Provider category.
+	 */
+	public function get_category() {
+		return self::CATEGORY_LEAD;
+	}
+
+	/**
 	 * Gets the event names.
 	 *
 	 * @since 1.126.0

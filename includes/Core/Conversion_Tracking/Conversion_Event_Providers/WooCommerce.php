@@ -33,6 +33,17 @@ class WooCommerce extends Conversion_Events_Provider {
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'woocommerce';
 
 	/**
+	 * Gets the provider category.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Provider category.
+	 */
+	public function get_category() {
+		return self::CATEGORY_ECOMMERCE;
+	}
+
+	/**
 	 * Available products on the page.
 	 *
 	 * @var array

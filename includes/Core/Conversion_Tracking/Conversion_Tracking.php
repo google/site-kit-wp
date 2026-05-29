@@ -27,6 +27,7 @@ use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use LogicException;
 
 /**
@@ -39,6 +40,7 @@ use LogicException;
 class Conversion_Tracking implements Provides_Feature_Metrics {
 
 	use Feature_Metrics_Trait;
+	use Method_Proxy_Trait;
 
 	/**
 	 * Context object.
@@ -108,6 +110,8 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 
 		add_action( 'wp_enqueue_scripts', fn () => $this->maybe_enqueue_scripts(), 30 );
 
+		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
+
 		$active_providers = $this->get_active_providers();
 
 		array_walk(
@@ -169,6 +173,29 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 		}
 
 		wp_add_inline_script( GTag::HANDLE, preg_replace( '/\s+/', ' ', $gtag_event ) );
+	}
+
+	/**
+	 * Adds active event provider category flags to the inline base data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $data Inline base data.
+	 * @return array Filtered $data.
+	 */
+	protected function inline_js_base_data( $data ) {
+		$data['hasActiveLeadEventProviders']      = false;
+		$data['hasActiveEcommerceEventProviders'] = false;
+
+		foreach ( $this->get_active_providers() as $provider ) {
+			if ( Conversion_Events_Provider::CATEGORY_LEAD === $provider->get_category() ) {
+				$data['hasActiveLeadEventProviders'] = true;
+			} elseif ( Conversion_Events_Provider::CATEGORY_ECOMMERCE === $provider->get_category() ) {
+				$data['hasActiveEcommerceEventProviders'] = true;
+			}
+		}
+
+		return $data;
 	}
 
 	/**

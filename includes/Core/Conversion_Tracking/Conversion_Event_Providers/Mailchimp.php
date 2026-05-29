@@ -25,6 +25,17 @@ class Mailchimp extends Conversion_Events_Provider {
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'mailchimp';
 
 	/**
+	 * Gets the provider category.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Provider category.
+	 */
+	public function get_category() {
+		return self::CATEGORY_LEAD;
+	}
+
+	/**
 	 * Checks if the Mailchimp plugin is active.
 	 *
 	 * @since 1.127.0
