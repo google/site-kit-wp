@@ -24,7 +24,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -48,12 +48,16 @@ import {
 	GoalDriverSelectionState,
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import CustomDimensionsNotice from '@/js/modules/analytics-4/components/site-goals/selection-panel/CustomDimensionsNotice';
 import Footer from '@/js/modules/analytics-4/components/site-goals/selection-panel/Footer';
 import Header from '@/js/modules/analytics-4/components/site-goals/selection-panel/Header';
 import PanelContent from '@/js/modules/analytics-4/components/site-goals/selection-panel/PanelContent';
 import SaveErrorNotice from '@/js/modules/analytics-4/components/site-goals/selection-panel/SaveErrorNotice';
 import { resolveVisitorEngagementSelectionState } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	FORM_CUSTOM_DIMENSIONS_CREATE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 
 const SiteGoalsSelectionPanel: FC = () => {
 	const isOpen = useSelect(
@@ -83,18 +87,50 @@ const SiteGoalsSelectionPanel: FC = () => {
 		SITE_GOALS_SELECTION_FORM,
 		SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT
 	);
+	const [ isCustomDimensionsAutoSubmit ] = useFormValue(
+		FORM_CUSTOM_DIMENSIONS_CREATE,
+		'autoSubmit'
+	);
+	const [ customDimensionsForAutoSubmit ] = useFormValue(
+		FORM_CUSTOM_DIMENSIONS_CREATE,
+		'customDimensions'
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValue } = useDispatch( CORE_UI );
 
+	const effectiveDriversRef = useRef( effectiveDrivers );
+	const effectiveVisitorEngagementRef = useRef( effectiveVisitorEngagement );
+	const isCustomDimensionsAutoSubmitRef = useRef(
+		isCustomDimensionsAutoSubmit
+	);
+	const customDimensionsForAutoSubmitRef = useRef(
+		customDimensionsForAutoSubmit
+	);
+
+	effectiveDriversRef.current = effectiveDrivers;
+	effectiveVisitorEngagementRef.current = effectiveVisitorEngagement;
+	isCustomDimensionsAutoSubmitRef.current = isCustomDimensionsAutoSubmit;
+	customDimensionsForAutoSubmitRef.current = customDimensionsForAutoSubmit;
+
 	const onSideSheetOpen = useCallback( () => {
+		const isRestoringExplicitCustomDimensionsSetup =
+			isCustomDimensionsAutoSubmitRef.current &&
+			Array.isArray( customDimensionsForAutoSubmitRef.current ) &&
+			customDimensionsForAutoSubmitRef.current.length > 0;
+
+		if ( isRestoringExplicitCustomDimensionsSetup ) {
+			return;
+		}
+
 		const normalizedEffectiveDrivers = resolveGoalDriverSelectionState(
-			( effectiveDrivers as GoalDriverSelectionState | undefined ) ||
-				SITE_GOALS_DEFAULT_SELECTED_DRIVERS
+			( effectiveDriversRef.current as
+				| GoalDriverSelectionState
+				| undefined ) || SITE_GOALS_DEFAULT_SELECTED_DRIVERS
 		);
 		const normalizedEffectiveVisitorEngagement =
 			resolveVisitorEngagementSelectionState(
-				effectiveVisitorEngagement ||
+				effectiveVisitorEngagementRef.current ||
 					SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT
 			);
 
@@ -103,7 +139,7 @@ const SiteGoalsSelectionPanel: FC = () => {
 			[ SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT ]:
 				normalizedEffectiveVisitorEngagement,
 		} );
-	}, [ effectiveDrivers, effectiveVisitorEngagement, setValues ] );
+	}, [ setValues ] );
 
 	const closePanel = useCallback( () => {
 		if ( isOpen ) {
@@ -128,6 +164,7 @@ const SiteGoalsSelectionPanel: FC = () => {
 					hasEcommerceGoalDrivers={ !! hasEcommerceGoalDrivers }
 					hasLeadGoalDrivers={ !! hasLeadGoalDrivers }
 				/>
+				<CustomDimensionsNotice />
 				<Footer
 					isOpen={ !! isOpen }
 					closePanel={ closePanel }

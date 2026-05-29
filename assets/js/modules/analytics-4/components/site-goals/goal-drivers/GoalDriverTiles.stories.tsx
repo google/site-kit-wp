@@ -40,6 +40,7 @@ import CitiesGoalDriver from './CitiesGoalDriver';
 import CountriesGoalDriver from './CountriesGoalDriver';
 import DeviceTypeGoalDriver from './DeviceTypeGoalDriver';
 import GoalDriverTiles from './GoalDriverTiles';
+import { getGoalDriverTitle } from './registry';
 import TopPagesGoalDriver from './TopPagesGoalDriver';
 import TopTrafficChannelsGoalDriver from './TopTrafficChannelsGoalDriver';
 import TopTrafficChannelsRateGoalDriver from './TopTrafficChannelsRateGoalDriver';
@@ -231,6 +232,10 @@ function Template( {
 				rows: [],
 		  } ) )
 		: args.drivers;
+	const driversWithTitles = driversWithError.map( ( driver ) => ( {
+		...driver,
+		title: driver.title || getGoalDriverTitle( args.goalType, driver.id ),
+	} ) );
 
 	return (
 		<TilesGroup
@@ -240,7 +245,7 @@ function Template( {
 				'google-site-kit'
 			) }
 		>
-			<GoalDriverTiles { ...args } drivers={ driversWithError } />
+			<GoalDriverTiles { ...args } drivers={ driversWithTitles } />
 		</TilesGroup>
 	);
 }

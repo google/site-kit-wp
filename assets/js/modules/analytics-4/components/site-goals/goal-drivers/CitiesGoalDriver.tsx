@@ -59,7 +59,7 @@ interface ReportRow {
 }
 
 const CitiesGoalDriver: FC< GoalDriverComponentProps > = ( {
-	title: providedTitle,
+	title = '',
 	goalType,
 	limit,
 	rows: providedRows,
@@ -68,12 +68,6 @@ const CitiesGoalDriver: FC< GoalDriverComponentProps > = ( {
 	primaryEvent,
 	onExpandableRowsChange,
 } ) => {
-	const title =
-		providedTitle ||
-		( goalType === GOAL_TYPES.ECOMMERCE
-			? __( 'Sales by cities', 'google-site-kit' )
-			: __( 'Leads by cities', 'google-site-kit' ) );
-
 	const dates = useSelect(
 		( select: Select ) =>
 			select( CORE_USER ).getDateRangeDates( {

@@ -59,7 +59,7 @@ interface ReportRow {
 }
 
 const DeviceTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
-	title: providedTitle,
+	title = '',
 	goalType,
 	limit,
 	rows: providedRows,
@@ -68,11 +68,6 @@ const DeviceTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 	primaryEvent,
 	onExpandableRowsChange,
 } ) => {
-	const title =
-		providedTitle ||
-		( goalType === GOAL_TYPES.ECOMMERCE
-			? __( 'Sales by device type', 'google-site-kit' )
-			: __( 'Leads by device type', 'google-site-kit' ) );
 	const dates = useSelect(
 		( select: Select ) =>
 			select( CORE_USER ).getDateRangeDates( {

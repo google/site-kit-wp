@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
 /**
  * Internal dependencies
@@ -28,7 +28,7 @@ import Link from '@/js/components/Link';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import ReportError from '@/js/components/ReportError';
 import GoalTile from './GoalTile';
-import ZeroDataMessage, { type MetricLabel } from './ZeroDataMessage';
+import ZeroDataMessage, { MetricLabel } from './ZeroDataMessage';
 
 export interface TableTileRow {
 	label: string;
@@ -45,6 +45,7 @@ export interface TableTileProps {
 	error?: unknown;
 	limit?: number;
 	noDataMetricLabel?: MetricLabel;
+	zeroState?: ReactNode;
 }
 
 const TableTile: FC< TableTileProps > = ( {
@@ -55,6 +56,7 @@ const TableTile: FC< TableTileProps > = ( {
 	error,
 	limit,
 	noDataMetricLabel,
+	zeroState,
 } ) => {
 	const visibleRows = rows.slice( 0, limit || rows.length );
 
@@ -80,9 +82,11 @@ const TableTile: FC< TableTileProps > = ( {
 
 			{ ! loading && ! error && rows.length === 0 && (
 				<div className="googlesitekit-table-tile__zero-state">
-					<ZeroDataMessage
-						metricLabel={ noDataMetricLabel || 'visitors' }
-					/>
+					{ zeroState || (
+						<ZeroDataMessage
+							metricLabel={ noDataMetricLabel || 'visitors' }
+						/>
+					) }
 				</div>
 			) }
 

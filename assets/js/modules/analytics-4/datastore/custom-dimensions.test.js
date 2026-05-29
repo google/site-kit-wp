@@ -301,6 +301,50 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 					).toBe( true );
 				} );
 			} );
+
+			it( 'creates explicitly requested missing custom dimensions', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetUserInputSettings( coreUserInputSettings );
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [],
+					isWidgetHidden: false,
+				} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+					availableCustomDimensions: [],
+				} );
+
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+					),
+					{
+						body: customDimension,
+						status: 200,
+					}
+				);
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					),
+					{
+						body: [ 'googlesitekit_post_author' ],
+						status: 200,
+					}
+				);
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.createCustomDimensions( [ 'googlesitekit_post_author' ] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableCustomDimensions()
+				).toEqual( [ 'googlesitekit_post_author' ] );
+			} );
 		} );
 
 		describe( 'scheduleSyncAvailableCustomDimensions', () => {

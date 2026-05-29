@@ -112,6 +112,7 @@ const RETRYABLE_ERROR = {
 export const Ready = Template.bind( {} ) as Story< CitiesGoalDriverStoryProps >;
 Ready.args = {
 	goalType: 'ecommerce',
+	title: 'Sales by cities',
 	rows: [
 		{ label: 'London', value: '30.5%' },
 		{ label: 'New York', value: '24.7%' },

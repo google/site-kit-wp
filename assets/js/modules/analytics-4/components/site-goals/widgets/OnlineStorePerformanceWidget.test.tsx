@@ -582,7 +582,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			getByText( 'Top traffic channels by sales rate' )
 		).toBeInTheDocument();
-		expect( getByText( 'Sales by cities' ) ).toBeInTheDocument();
+		expect( getByText( 'Sales by visitor type' ) ).toBeInTheDocument();
 		expect( getAllByText( 'Organic Search' ).length ).toBeGreaterThan( 0 );
 		expect(
 			container.querySelectorAll(
@@ -659,7 +659,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			getByText( 'Top traffic channels by sales rate' )
 		).toBeInTheDocument();
-		expect( getByText( 'Sales by cities' ) ).toBeInTheDocument();
+		expect( getByText( 'Sales by visitor type' ) ).toBeInTheDocument();
 	} );
 
 	it( 'uses purchase as primary event when both purchase and add_to_cart are detected', async () => {
@@ -704,7 +704,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			getByText( 'Top traffic channels by sales rate' )
 		).toBeInTheDocument();
-		expect( getByText( 'Sales by cities' ) ).toBeInTheDocument();
+		expect( getByText( 'Sales by visitor type' ) ).toBeInTheDocument();
 	} );
 
 	it( 'computes zero rate when sessions count is zero', async () => {

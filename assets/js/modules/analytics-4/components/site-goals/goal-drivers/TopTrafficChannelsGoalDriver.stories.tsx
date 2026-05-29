@@ -115,7 +115,7 @@ export const Ready = Template.bind(
 ) as Story< TopTrafficChannelsGoalDriverStoryProps >;
 Ready.args = {
 	goalType: 'lead',
-	title: 'Top traffic channels driving leads',
+	title: 'Top traffic channels by total form completions',
 	rows: [
 		{ label: 'Direct', value: '30.5%' },
 		{ label: 'Organic search', value: '24.7%' },

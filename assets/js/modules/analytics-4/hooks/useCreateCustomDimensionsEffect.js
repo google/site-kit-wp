@@ -51,6 +51,10 @@ export default function useCreateCustomDimensionsEffect() {
 		FORM_CUSTOM_DIMENSIONS_CREATE,
 		'autoSubmit'
 	);
+	const [ customDimensions ] = useFormValue(
+		FORM_CUSTOM_DIMENSIONS_CREATE,
+		'customDimensions'
+	);
 	const [ , setIsAutoCreatingCustomDimensions ] = useFormValue(
 		FORM_CUSTOM_DIMENSIONS_CREATE,
 		'isAutoCreatingCustomDimensions'
@@ -59,11 +63,15 @@ export default function useCreateCustomDimensionsEffect() {
 	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
 	useEffect( () => {
 		async function createDimensionsAndUpdateForm() {
-			await createCustomDimensions();
+			await createCustomDimensions( customDimensions );
 			setIsAutoCreatingCustomDimensions( false );
 		}
+
+		const hasExplicitCustomDimensions =
+			Array.isArray( customDimensions ) && customDimensions.length > 0;
+
 		if (
-			isKeyMetricsSetupCompleted &&
+			( isKeyMetricsSetupCompleted || hasExplicitCustomDimensions ) &&
 			isGA4Connected &&
 			hasAnalyticsEditScope &&
 			autoSubmit
@@ -75,6 +83,7 @@ export default function useCreateCustomDimensionsEffect() {
 	}, [
 		autoSubmit,
 		createCustomDimensions,
+		customDimensions,
 		hasAnalyticsEditScope,
 		isKeyMetricsSetupCompleted,
 		isGA4Connected,

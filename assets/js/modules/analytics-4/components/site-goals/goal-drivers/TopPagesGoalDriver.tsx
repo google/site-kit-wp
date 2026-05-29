@@ -60,7 +60,7 @@ interface ReportRow {
 }
 
 const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( {
-	title: providedTitle,
+	title = '',
 	goalType,
 	limit,
 	rows: providedRows,
@@ -69,11 +69,6 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( {
 	primaryEvent,
 	onExpandableRowsChange,
 } ) => {
-	const title =
-		providedTitle ||
-		( goalType === GOAL_TYPES.ECOMMERCE
-			? __( 'Top pages driving sales', 'google-site-kit' )
-			: __( 'Top pages driving leads', 'google-site-kit' ) );
 	const headerLabel = __( 'Events', 'google-site-kit' );
 	const dates = useSelect(
 		( select: Select ) =>
@@ -138,25 +133,11 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( {
 				return false;
 			}
 
-			const hasReportStarted = select(
-				MODULES_ANALYTICS_4
-			).hasStartedResolution( 'getReport', [ reportOptions ] );
-			const hasReportFinished = select(
-				MODULES_ANALYTICS_4
-			).hasFinishedResolution( 'getReport', [ reportOptions ] );
-
-			if ( hasReportStarted && ! hasReportFinished ) {
-				return true;
-			}
-
-			const currentReportError = select(
-				MODULES_ANALYTICS_4
-			).getErrorForSelector( 'getReport', [ reportOptions ] );
-
 			if (
-				hasReportStarted &&
-				report === undefined &&
-				! currentReportError
+				! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getReport',
+					[ reportOptions ]
+				)
 			) {
 				return true;
 			}

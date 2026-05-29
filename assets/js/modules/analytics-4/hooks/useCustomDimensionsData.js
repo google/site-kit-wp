@@ -43,15 +43,39 @@ import {
 import { isInvalidCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 
 /**
+ * Custom dimensions data and state.
+ *
+ * @since n.e.x.t
+ *
+ * @typedef {Object} CustomDimensionsData
+ * @property {Array<string>|null} customDimensions                    Custom dimensions for the wrapped metric.
+ * @property {boolean|undefined}  hasCustomDimensions                 Whether all custom dimensions are available.
+ * @property {boolean|undefined}  isAutoCreatingCustomDimensions      Whether custom dimensions are being auto-created.
+ * @property {boolean}            isCreatingCustomDimensions          Whether custom dimensions are being created.
+ * @property {Array<Object>}      customDimensionsCreationErrors      Custom dimension creation errors.
+ * @property {boolean}            hasAnalyticsEditScope               Whether the user has the Analytics edit scope.
+ * @property {boolean}            isSyncingAvailableCustomDimensions  Whether custom dimensions are being synced.
+ * @property {boolean}            isNavigatingToOAuthURL              Whether the user is navigating to OAuth.
+ * @property {Object|null}        reportOptions                       Report options for the wrapped metric.
+ * @property {Object|null}        reportError                         Report error for the wrapped metric.
+ * @property {boolean}            loading                             Whether custom dimension state is loading.
+ * @property {boolean|null}       isGatheringData                     Whether custom dimensions are gathering data.
+ * @property {Object}             dataAvailabilityReportErrors        Custom dimension data availability errors.
+ * @property {boolean}            hasInvalidCustomDimensionError      Whether an invalid custom dimension error is present.
+ * @property {Array<Object>}      invalidCustomDimensionReportOptions Report options with invalid custom dimension errors.
+ * @property {string}             redirectURL                         OAuth redirect URL.
+ */
+
+/**
  * Gets custom dimensions data and state.
  *
  * @since 1.156.0
  *
- * @param {Object}          options               Hook options.
- * @param {Array}           options.dimensions    Custom dimensions array.
- * @param {string}          options.widgetSlug    Widget slug for getting widget configuration.
- * @param {Object|Function} options.reportOptions Report options for data fetching.
- * @return {Object} Object containing custom dimensions data and state.
+ * @param {Object}                    options               Hook options.
+ * @param {Array}                     options.dimensions    Custom dimensions array.
+ * @param {string=}                   options.widgetSlug    Widget slug for getting widget configuration.
+ * @param {Object|Function|undefined} options.reportOptions Report options for data fetching.
+ * @return {CustomDimensionsData} Object containing custom dimensions data and state.
  */
 export default function useCustomDimensionsData( {
 	dimensions,

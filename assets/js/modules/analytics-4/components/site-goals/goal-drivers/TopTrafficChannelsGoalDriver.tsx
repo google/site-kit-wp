@@ -59,7 +59,7 @@ interface ReportRow {
 }
 
 const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
-	title: providedTitle,
+	title = '',
 	goalType,
 	limit,
 	rows: providedRows,
@@ -68,12 +68,6 @@ const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
 	primaryEvent,
 	onExpandableRowsChange,
 } ) => {
-	const title =
-		providedTitle ||
-		( goalType === GOAL_TYPES.ECOMMERCE
-			? __( 'Top traffic channels by total sales', 'google-site-kit' )
-			: __( 'Top traffic channels by total leads', 'google-site-kit' ) );
-
 	const dates = useSelect(
 		( select: Select ) =>
 			select( CORE_USER ).getDateRangeDates( {
@@ -138,69 +132,24 @@ const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
 		[ totalReportOptions ]
 	);
 	const reportError = useSelect(
-		( select: Select ) => {
-			if ( ! reportOptions || ! totalReportOptions ) {
-				return undefined;
-			}
-
-			const primaryReportError = select(
-				MODULES_ANALYTICS_4
-			).getErrorForSelector( 'getReport', [ reportOptions ] );
-			const totalError = select(
-				MODULES_ANALYTICS_4
-			).getErrorForSelector( 'getReport', [ totalReportOptions ] );
-
-			if ( primaryReportError && totalError ) {
-				return [ primaryReportError, totalError ];
-			}
-
-			return primaryReportError || totalError || undefined;
-		},
+		( select: Select ) =>
+			reportOptions && totalReportOptions
+				? select( MODULES_ANALYTICS_4 ).getFirstReportError(
+						reportOptions,
+						totalReportOptions
+				  )
+				: undefined,
 		[ reportOptions, totalReportOptions ]
 	);
 	const reportLoading = useSelect(
-		( select: Select ) => {
-			if ( ! reportOptions || ! totalReportOptions ) {
-				return false;
-			}
-
-			const hasPrimaryStarted = select(
-				MODULES_ANALYTICS_4
-			).hasStartedResolution( 'getReport', [ reportOptions ] );
-			const hasTotalStarted = select(
-				MODULES_ANALYTICS_4
-			).hasStartedResolution( 'getReport', [ totalReportOptions ] );
-			const hasPrimaryFinished = select(
-				MODULES_ANALYTICS_4
-			).hasFinishedResolution( 'getReport', [ reportOptions ] );
-			const hasTotalFinished = select(
-				MODULES_ANALYTICS_4
-			).hasFinishedResolution( 'getReport', [ totalReportOptions ] );
-
-			if (
-				( hasPrimaryStarted && ! hasPrimaryFinished ) ||
-				( hasTotalStarted && ! hasTotalFinished )
-			) {
-				return true;
-			}
-
-			const primaryReportError = select(
-				MODULES_ANALYTICS_4
-			).getErrorForSelector( 'getReport', [ reportOptions ] );
-			const totalReportError = select(
-				MODULES_ANALYTICS_4
-			).getErrorForSelector( 'getReport', [ totalReportOptions ] );
-
-			return (
-				( hasPrimaryStarted &&
-					report === undefined &&
-					! primaryReportError ) ||
-				( hasTotalStarted &&
-					totalReport === undefined &&
-					! totalReportError )
-			);
-		},
-		[ report, reportOptions, totalReport, totalReportOptions ]
+		( select: Select ) =>
+			reportOptions && totalReportOptions
+				? select( MODULES_ANALYTICS_4 ).areReportsLoading(
+						reportOptions,
+						totalReportOptions
+				  )
+				: false,
+		[ reportOptions, totalReportOptions ]
 	);
 
 	const sourceRows: ReportRow[] = report?.rows || [];

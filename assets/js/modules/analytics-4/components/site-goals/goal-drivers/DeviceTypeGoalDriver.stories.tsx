@@ -114,6 +114,7 @@ export const Ready = Template.bind(
 ) as Story< DeviceTypeGoalDriverStoryProps >;
 Ready.args = {
 	goalType: 'ecommerce',
+	title: 'Sales by device type',
 	rows: [
 		{ label: 'Mobile', value: '56.5%' },
 		{ label: 'Tablet', value: '41.3%' },
