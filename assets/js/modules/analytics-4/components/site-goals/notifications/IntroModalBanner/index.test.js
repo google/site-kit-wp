@@ -17,15 +17,27 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import { getSiteGoalsTour } from '@/js/modules/analytics-4/components/site-goals/feature-tours/site-goals';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { createTestRegistry, render } from '@tests/js/test-utils';
+import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
+import {
+	createTestRegistry,
+	fireEvent,
+	render,
+	waitFor,
+} from '@tests/js/test-utils';
 import IntroModal from './index';
 
 jest.mock( '@/js/googlesitekit/notifications/hooks/useNotificationEvents' );
@@ -36,6 +48,11 @@ describe( 'IntroModal', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
+		fetchMock.post( dismissItemEndpoint, {
+			body: { success: true },
+			status: 200,
+		} );
+
 		useNotificationEvents.mockReturnValue( {
 			view: jest.fn(),
 			confirm: jest.fn(),
@@ -44,6 +61,7 @@ describe( 'IntroModal', () => {
 		} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 	} );
 
 	it( 'renders ecommerce-only variant when only ecommerce conversion events exist', () => {
@@ -80,5 +98,23 @@ describe( 'IntroModal', () => {
 			registry,
 		} );
 		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should start the Site Goals tour when the user clicks "Show me"', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const { getByRole } = render( <IntroModal />, {
+			registry,
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: /show me/i } ) );
+
+		await waitFor( () => {
+			expect( registry.select( CORE_USER ).getCurrentTour() ).toEqual(
+				getSiteGoalsTour( { isEcommerceOnly: true } )
+			);
+		} );
 	} );
 } );
