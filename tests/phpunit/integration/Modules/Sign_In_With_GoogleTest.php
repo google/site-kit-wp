@@ -596,6 +596,13 @@ class Sign_In_With_GoogleTest extends TestCase {
 		);
 	}
 
+	/**
+	 * This test makes the `WooCommerce` class exist. PHP can't remove a class
+	 * once it's added, so it would stay for later tests that expect WooCommerce
+	 * to be inactive. Running in a separate process keeps it to this test only.
+	 *
+	 * @runInSeparateProcess
+	 */
 	public function test_resolve_authenticator_class__returns_existing_user_authenticator_when_woocommerce_is_active() {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );

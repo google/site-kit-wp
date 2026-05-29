@@ -268,6 +268,13 @@ class Web_TagTest extends TestCase {
 		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__frontend-output-button', $output, 'Render loop should target the Sign in with Google placeholder class.' );
 	}
 
+	/**
+	 * This test makes the `WooCommerce` class exist. PHP can't remove a class
+	 * once it's added, so it would stay for later tests that expect WooCommerce
+	 * to be inactive. Running in a separate process keeps it to this test only.
+	 *
+	 * @runInSeparateProcess
+	 */
 	public function test_register__prefers_existing_user_integration_when_woocommerce_active() {
 		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user_id );
