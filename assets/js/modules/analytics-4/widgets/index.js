@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { lazy } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -76,7 +77,6 @@ import {
 	DashboardOverallPageMetricsWidgetGA4,
 } from '@/js/modules/analytics-4/components/dashboard';
 import getAllTrafficPDFData from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/getPDFData';
-import DashboardAllTrafficWidgetGA4PDF from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/indexPDF';
 import { ModulePopularPagesWidgetGA4 } from '@/js/modules/analytics-4/components/module';
 import {
 	LeadGenerationPerformanceWidget,
@@ -113,6 +113,13 @@ import {
 import ConversionReportingNotificationCTAWidget from '@/js/modules/analytics-4/components/widgets/ConversionReportingNotificationCTAWidget';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+
+const DashboardAllTrafficWidgetGA4PDF = lazy( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/indexPDF'
+	)
+);
 
 export function registerWidgets( widgets ) {
 	// Register Analytics 4 Widgets.
