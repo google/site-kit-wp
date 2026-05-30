@@ -487,7 +487,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user_id );
 
-		// Fire the hooks in the same order as a real profile page load:
+		// Run the hooks in the same order as a real profile page load:
 		// `show_user_profile` renders the section, `in_admin_footer` schedules
 		// the tag, and `admin_footer` outputs it. The tag schedules its render
 		// on `admin_footer`, so the scheduling step must run on the earlier

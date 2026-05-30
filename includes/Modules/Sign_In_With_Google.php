@@ -846,7 +846,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 
 	/**
 	 * Shows an error on the profile page when linking the Google account
-	 * fails (e.g. it is already linked to another user).
+	 * fails (eg. it is already linked to another user).
 	 *
 	 * @since n.e.x.t
 	 */
