@@ -142,7 +142,6 @@ const OnlineStorePerformanceWidget: FC<
 		Header?: unknown;
 		headerContents?: ReactNode;
 		collapsible?: boolean;
-		children?: ReactNode;
 	} >;
 	const WidgetNullComponent = WidgetNull as FC;
 	const WidgetReportErrorComponent = WidgetReportError as FC< {

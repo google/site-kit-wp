@@ -20,7 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { FC, ReactNode } from 'react';
+import { FC } from 'react';
 
 /**
  * Internal dependencies
@@ -33,7 +33,6 @@ interface GoalTypeSectionProps {
 	title: string;
 	isExpanded: boolean;
 	onToggleExpand: () => void;
-	children: ReactNode;
 }
 
 const GoalTypeSection: FC< GoalTypeSectionProps > = ( {

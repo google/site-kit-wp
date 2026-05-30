@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC, ReactNode } from 'react';
+import type { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -34,7 +34,6 @@ import { Button as RawButton } from 'googlesitekit-components';
 // The `Button` component from `googlesitekit-components` is not fully typed yet.
 // Cast to an `FC` with the props we use here so this file can be type-checked.
 const Button = RawButton as FC< {
-	children?: ReactNode;
 	className?: string;
 	disabled?: boolean;
 	onClick?: () => void;

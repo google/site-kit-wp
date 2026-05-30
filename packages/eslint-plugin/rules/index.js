@@ -35,6 +35,7 @@ module.exports = {
 	'jsdoc-tag-order': require( './jsdoc-tag-order' ),
 	'jsdoc-third-person': require( './jsdoc-third-person' ),
 	'no-boolean-props-before-values': require( './no-boolean-props-before-values' ),
+	'no-children-prop-type': require( './no-children-prop-type' ),
 	'no-direct-date': require( './no-direct-date' ),
 	'no-storybook-scenario-label': require( './no-storybook-scenario-label' ),
 	'no-yield-dispatch': require( './no-yield-dispatch' ),

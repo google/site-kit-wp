@@ -32,7 +32,6 @@ interface AdaptiveFooterLayoutProps {
 	inlineClassName: string;
 	footerClassName: string;
 	footer: ReactNode;
-	children?: ReactNode;
 }
 
 const AdaptiveFooterLayout: FC< AdaptiveFooterLayoutProps > = ( {

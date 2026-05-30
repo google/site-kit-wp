@@ -34,7 +34,6 @@ export interface LinkProps {
 	arrow?: boolean;
 	back?: boolean;
 	caps?: boolean;
-	children?: ReactNode;
 	className?: string;
 	danger?: boolean;
 	disabled?: boolean;
