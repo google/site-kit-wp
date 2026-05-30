@@ -37,25 +37,11 @@ import {
 	GoalDriverSelectionState,
 	GoalType,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { getSelectedDriverIDs } from '@/js/modules/analytics-4/components/site-goals/utils/selectedDrivers';
 
 interface SaveErrorNoticeProps {
 	hasEcommerceGoalDrivers: boolean;
 	hasLeadGoalDrivers: boolean;
-}
-
-function getSelectedCountForGoalType(
-	selectedDrivers: GoalDriverSelectionState | undefined,
-	goalType: GoalType
-): number {
-	const selectedDriverIDs = selectedDrivers?.[ goalType ];
-
-	if ( ! Array.isArray( selectedDriverIDs ) ) {
-		return 0;
-	}
-
-	return selectedDriverIDs.filter(
-		( selectedDriverID ) => typeof selectedDriverID === 'string'
-	).length;
 }
 
 export default function SaveErrorNotice( {
@@ -81,10 +67,10 @@ export default function SaveErrorNotice( {
 	}
 
 	for ( const goalType of activeGoalTypes ) {
-		const selectedCount = getSelectedCountForGoalType(
+		const selectedCount = getSelectedDriverIDs(
 			selectedDriverState,
 			goalType
-		);
+		).length;
 
 		if ( selectedCount < SITE_GOALS_MIN_SELECTED_DRIVERS ) {
 			return (

@@ -42,10 +42,10 @@ import {
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import {
-	GoalDriverID,
 	GoalDriverSelectionState,
 	GoalType,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { getSelectedDriverIDs } from '@/js/modules/analytics-4/components/site-goals/utils/selectedDrivers';
 import { resolveVisitorEngagementSelectionState } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 
 interface FooterProps {
@@ -55,25 +55,9 @@ interface FooterProps {
 	hasLeadGoalDrivers: boolean;
 }
 
-function getSelectedDriverIDsForGoalType(
-	selectedDrivers: GoalDriverSelectionState | undefined,
-	goalType: GoalType
-): GoalDriverID[] {
-	const selectedDriverIDs = selectedDrivers?.[ goalType ];
-
-	if ( ! Array.isArray( selectedDriverIDs ) ) {
-		return [];
-	}
-
-	return selectedDriverIDs.filter(
-		( selectedDriverID ): selectedDriverID is GoalDriverID =>
-			typeof selectedDriverID === 'string'
-	);
-}
-
 function flattenSelections( selections: GoalDriverSelectionState ): string[] {
 	return [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ].flatMap( ( goalType ) =>
-		getSelectedDriverIDsForGoalType( selections, goalType ).map(
+		getSelectedDriverIDs( selections, goalType ).map(
 			( goalDriverID ) => `${ goalType }:${ goalDriverID }`
 		)
 	);
@@ -95,7 +79,7 @@ function hasInvalidSelection(
 	}
 
 	return goalTypesToValidate.some( ( goalType ) => {
-		const selectedCount = getSelectedDriverIDsForGoalType(
+		const selectedCount = getSelectedDriverIDs(
 			selectedDrivers,
 			goalType
 		).length;
