@@ -57,6 +57,7 @@ import {
 	provideUserCapabilities,
 	waitForDefaultTimeouts,
 } from '@tests/js/utils';
+import { surveyTriggerEndpoint } from '../../../../../../../tests/js/mock-survey-endpoints';
 import SiteGoalsSelectionPanel from '.';
 
 jest.mock( '@/js/googlesitekit/data/create-snapshot-store', () => ( {
@@ -74,6 +75,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
+		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
 		provideSiteInfo( registry );
@@ -236,9 +238,13 @@ describe( 'SiteGoalsSelectionPanel', () => {
 
 		await waitForDefaultTimeouts();
 
+		// "Products added to cart" also appears in the Primary Action row when
+		// `add_to_cart` is primary. Scope the assertion to the visitor-engagement item.
 		expect( queryByText( 'Visitor engagement' ) ).not.toBeInTheDocument();
 		expect(
-			queryByText( 'Products added to cart' )
+			document.querySelector(
+				'#site-goals-selection-visitor-engagement-add_to_cart-ecommerce'
+			)
 		).not.toBeInTheDocument();
 	} );
 
@@ -376,6 +382,86 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		expect(
 			getByRole( 'button', { name: /apply changes|save selection/i } )
 		).toBeDisabled();
+	} );
+
+	it( 'shows "Purchase" as the ecommerce key action', async () => {
+		const { findByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		expect( await findByText( 'Purchase' ) ).toBeInTheDocument();
+	} );
+
+	it( 'shows "Form completion" as the lead key action', async () => {
+		const { findByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		expect( await findByText( 'Form completion' ) ).toBeInTheDocument();
+	} );
+
+	it( 'shows "Products added to cart" for ecommerce add_to_cart', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'add_to_cart', 'contact' ] );
+
+		const { findByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		expect(
+			await findByText( 'Products added to cart' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'dispatches the ecommerce panel vote on thumbs-up click', async () => {
+		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+
+		const { findAllByRole } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		const upButtons = await findAllByRole( 'button', {
+			name: 'Yes, this was helpful',
+		} );
+
+		fireEvent.click( upButtons[ 0 ] );
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: {
+						triggerID:
+							'vote:site_goals_primary_action_panel_online_store:up',
+					},
+				},
+			} )
+		);
+	} );
+
+	it( 'dispatches the lead panel vote on thumbs-down click', async () => {
+		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+
+		const { findAllByRole } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		const downButtons = await findAllByRole( 'button', {
+			name: 'No, this was not helpful',
+		} );
+
+		fireEvent.click( downButtons[ 1 ] );
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: {
+						triggerID:
+							'vote:site_goals_primary_action_panel_lead_generation:down',
+					},
+				},
+			} )
+		);
 	} );
 
 	it( 'shows max selection notice and disables save while allowing selection over six', async () => {

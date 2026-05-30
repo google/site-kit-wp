@@ -47,30 +47,16 @@ import {
 	GoalDriverSelectionState,
 	GoalType,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import GoalTypeList from '@/js/modules/analytics-4/components/site-goals/selection-panel/GoalTypeList';
-import GoalTypeSection from '@/js/modules/analytics-4/components/site-goals/selection-panel/GoalTypeSection';
-import VisitorEngagementEventList from '@/js/modules/analytics-4/components/site-goals/selection-panel/VisitorEngagementEventList';
+import { getSelectedDriverIDs } from '@/js/modules/analytics-4/components/site-goals/utils/selectedDrivers';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import GoalTypeList from './GoalTypeList';
+import GoalTypeSection from './GoalTypeSection';
+import PrimaryActionRow from './PrimaryActionRow';
+import VisitorEngagementEventList from './VisitorEngagementEventList';
 
 interface PanelContentProps {
 	hasEcommerceGoalDrivers: boolean;
 	hasLeadGoalDrivers: boolean;
-}
-
-function getSelectedDriverIDs(
-	selectedDrivers: GoalDriverSelectionState | undefined,
-	goalType: GoalType
-): GoalDriverID[] {
-	const selectedDriverIDs = selectedDrivers?.[ goalType ];
-
-	if ( ! Array.isArray( selectedDriverIDs ) ) {
-		return [];
-	}
-
-	return selectedDriverIDs.filter(
-		( selectedDriverID ): selectedDriverID is GoalDriverID =>
-			typeof selectedDriverID === 'string'
-	);
 }
 
 const PanelContent: FC< PanelContentProps > = ( {
@@ -171,6 +157,7 @@ const PanelContent: FC< PanelContentProps > = ( {
 						goalType={ GOAL_TYPES.ECOMMERCE }
 						listID={ GOAL_TYPES.ECOMMERCE }
 					/>
+					<PrimaryActionRow goalType={ GOAL_TYPES.ECOMMERCE } />
 					<GoalTypeList
 						listID={ GOAL_TYPES.ECOMMERCE }
 						options={ ecommerceOptions }
@@ -203,6 +190,7 @@ const PanelContent: FC< PanelContentProps > = ( {
 						)
 					}
 				>
+					<PrimaryActionRow goalType={ GOAL_TYPES.LEAD } />
 					<GoalTypeList
 						listID={ GOAL_TYPES.LEAD }
 						options={ leadOptions }
