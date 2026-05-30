@@ -42,6 +42,7 @@ import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_EFFECTIVE_DRIVERS,
 	SITE_GOALS_SELECTION_FORM,
+	SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_CATALOG,
@@ -65,6 +66,7 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
+import WidgetFeedbackPrompt from './WidgetFeedbackPrompt';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -79,7 +81,6 @@ const LeadGenerationPerformanceWidget: FC<
 		Header?: unknown;
 		headerContents?: ReactNode;
 		collapsible?: boolean;
-		children?: ReactNode;
 	} >;
 	const WidgetNullComponent = WidgetNull as FC;
 	const WidgetReportErrorComponent = WidgetReportError as FC< {
@@ -332,6 +333,10 @@ const LeadGenerationPerformanceWidget: FC<
 					goalType={ GOAL_TYPES.LEAD }
 				/>
 			</TilesGroup>
+
+			<WidgetFeedbackPrompt
+				voteID={ SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION }
+			/>
 		</WidgetComponent>
 	);
 };
