@@ -325,6 +325,26 @@
 		}
 	}
 
+	.googlesitekit-site-goals-widget__feedback {
+		align-items: center;
+		display: flex;
+		gap: 6px;
+		margin-top: 20px;
+
+		@media (min-width: $bp-tablet) {
+			justify-content: flex-end;
+			margin-top: 14px;
+		}
+
+		@media (min-width: $bp-desktop) {
+			margin-top: 28px;
+		}
+	}
+
+	.googlesitekit-site-goals-widget__feedback-prompt {
+		color: $c-surfaces-on-background-variant;
+	}
+
 	.googlesitekit-table-tile {
 		min-height: auto;
 		padding: 0;
