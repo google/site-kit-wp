@@ -39,12 +39,10 @@ ruleTester.run( 'no-children-prop-type', rule, {
 		// Props without `children` shouldn't error.
 		'interface Props { label: string; }',
 		'type Props = { label: string };',
-
 		// Using `PropsWithChildren` is fine because we aren't explicitly typing
 		// `children`. (Though: don't use this in actual code; use `FC` instead!)
 		'function C( { children }: PropsWithChildren ) { return children; }',
 		'interface Props extends PropsWithChildren { label: string; }',
-
 		// A `children` key in code is okay, just not in an Interface/Type
 		// definition.
 		'const node = { children: [] };',

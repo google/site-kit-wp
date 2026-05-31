@@ -41,9 +41,8 @@ module.exports = {
 			TSPropertySignature( node ) {
 				const key = node.key;
 				const isChildrenKey =
-					key?.type === 'Identifier' &&
-					key?.type === 'Literal' &&
-					key.value === 'children';
+					( key?.type === 'Identifier' && key.name === 'children' ) ||
+					( key?.type === 'Literal' && key.value === 'children' );
 
 				if ( isChildrenKey && node.typeAnnotation ) {
 					context.report( {
