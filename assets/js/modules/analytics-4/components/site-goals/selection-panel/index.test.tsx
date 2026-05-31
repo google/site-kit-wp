@@ -57,7 +57,10 @@ import {
 	provideUserCapabilities,
 	waitForDefaultTimeouts,
 } from '@tests/js/utils';
-import { surveyTriggerEndpoint } from '../../../../../../../tests/js/mock-survey-endpoints';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '../../../../../../../tests/js/mock-survey-endpoints';
 import SiteGoalsSelectionPanel from '.';
 
 jest.mock( '@/js/googlesitekit/data/create-snapshot-store', () => ( {
@@ -415,7 +418,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 	} );
 
 	it( 'dispatches the ecommerce panel vote on thumbs-up click', async () => {
-		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+		mockSurveyEndpoints();
 
 		const { findAllByRole } = render( <SiteGoalsSelectionPanel />, {
 			registry,
@@ -440,7 +443,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 	} );
 
 	it( 'dispatches the lead panel vote on thumbs-down click', async () => {
-		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+		mockSurveyEndpoints();
 
 		const { findAllByRole } = render( <SiteGoalsSelectionPanel />, {
 			registry,
