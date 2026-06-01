@@ -36,6 +36,7 @@ import {
 	combineStores,
 	createStrictSelect,
 	createValidatedAction,
+	getGlobalData,
 } from './utils';
 
 describe( 'data utils', () => {
@@ -972,6 +973,41 @@ describe( 'data utils', () => {
 			expect( () => validatedAction( args ) ).toThrow( 'foo' );
 
 			expect( actionCreator ).toHaveBeenCalledTimes( 0 );
+		} );
+	} );
+
+	describe( 'getGlobalData', () => {
+		const propertyName = '_googlesitekitTestData';
+
+		it( 'should return null when the global data property name is not found', () => {
+			expect( getGlobalData( 'invalidKey' ) ).toBeNull();
+
+			expect( console ).toHaveErroredWith(
+				'Global data property invalidKey not found.'
+			);
+		} );
+
+		it( 'should return the deep cloned global data object when no child property name is provided', () => {
+			const globalData = { foo: 'bar', baz: { qux: 'quux' } };
+			global[ propertyName ] = globalData;
+
+			const data = getGlobalData( propertyName );
+
+			expect( data ).toEqual( globalData );
+			expect( data ).not.toBe( globalData );
+		} );
+
+		it( 'should return the deep cloned child property of the global data object when the child property name is provided', () => {
+			const globalData = {
+				foo: 'bar',
+				baz: { qux: { quuz: 'quuq' } },
+			};
+			global[ propertyName ] = globalData;
+
+			const data = getGlobalData( propertyName, 'baz' );
+
+			expect( data ).toEqual( globalData.baz );
+			expect( data ).not.toBe( globalData.baz );
 		} );
 	} );
 } );

@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { mapValues } from 'lodash';
+import { cloneDeep, mapValues } from 'lodash';
 import memize from 'memize';
 
 /**
@@ -430,4 +430,30 @@ export function createValidatedAction( validate, actionCreator ) {
 
 		return actionCreator( ...args );
 	};
+}
+
+/**
+ * Gets a global data object by property name and optional child property name.
+ *
+ * Returns a deep clone to avoid mutating the original object.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} propertyName        Property of the global data object.
+ * @param {string} [childPropertyName] Optional. Property of the object matched by `propertyName`.
+ * @return {*} The global data object, or the child property value if provided. Returns `null` if the property is not found.
+ */
+export function getGlobalData( propertyName, childPropertyName = undefined ) {
+	if ( ! global[ propertyName ] ) {
+		global.console.error(
+			`Global data property ${ propertyName } not found.`
+		);
+		return null;
+	}
+
+	if ( childPropertyName ) {
+		return cloneDeep( global[ propertyName ][ childPropertyName ] );
+	}
+
+	return cloneDeep( global[ propertyName ] );
 }
