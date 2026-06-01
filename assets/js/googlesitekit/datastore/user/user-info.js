@@ -208,9 +208,10 @@ export const resolvers = {
 			return;
 		}
 
-		const userData = getGlobalData( '_googlesitekitUserData' );
-
-		if ( userData === null ) {
+		let userData;
+		try {
+			userData = getGlobalData( '_googlesitekitUserData' );
+		} catch ( error ) {
 			global.console.error( 'Could not load core/user info.' );
 			return;
 		}

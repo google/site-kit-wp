@@ -441,14 +441,12 @@ export function createValidatedAction( validate, actionCreator ) {
  *
  * @param {string} propertyName        Property of the global data object.
  * @param {string} [childPropertyName] Optional. Property of the object matched by `propertyName`.
- * @return {*} The global data object, or the child property value if provided. Returns `null` if the property is not found.
+ * @return {*} The global data object, or the child property value if provided.
+ * @throws {Error} If the global data property is not found.
  */
 export function getGlobalData( propertyName, childPropertyName = undefined ) {
 	if ( ! global[ propertyName ] ) {
-		global.console.error(
-			`Global data property ${ propertyName } not found.`
-		);
-		return null;
+		throw new Error( `Global data property ${ propertyName } not found.` );
 	}
 
 	if ( childPropertyName ) {

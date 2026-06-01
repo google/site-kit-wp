@@ -979,10 +979,8 @@ describe( 'data utils', () => {
 	describe( 'getGlobalData', () => {
 		const propertyName = '_googlesitekitTestData';
 
-		it( 'should return null when the global data property name is not found', () => {
-			expect( getGlobalData( 'invalidKey' ) ).toBeNull();
-
-			expect( console ).toHaveErroredWith(
+		it( 'should throw an error when the global data property name is not found', () => {
+			expect( () => getGlobalData( 'invalidKey' ) ).toThrow(
 				'Global data property invalidKey not found.'
 			);
 		} );

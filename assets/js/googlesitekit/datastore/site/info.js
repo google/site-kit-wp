@@ -286,10 +286,13 @@ export const resolvers = {
 			return;
 		}
 
-		const baseData = getGlobalData( '_googlesitekitBaseData' );
-		const entityData = getGlobalData( '_googlesitekitEntityData' );
+		let baseData;
+		let entityData;
 
-		if ( baseData === null || entityData === null ) {
+		try {
+			baseData = getGlobalData( '_googlesitekitBaseData' );
+			entityData = getGlobalData( '_googlesitekitEntityData' );
+		} catch ( error ) {
 			global.console.error( 'Could not load core/site info.' );
 			return;
 		}

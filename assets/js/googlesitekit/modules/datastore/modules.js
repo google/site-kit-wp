@@ -834,11 +834,12 @@ const baseResolvers = {
 			return;
 		}
 
-		const dashboardSharingData = getGlobalData(
-			'_googlesitekitDashboardSharingData'
-		);
-
-		if ( dashboardSharingData === null ) {
+		let dashboardSharingData;
+		try {
+			dashboardSharingData = getGlobalData(
+				'_googlesitekitDashboardSharingData'
+			);
+		} catch ( error ) {
 			global.console.error(
 				'Could not load core/modules dashboard sharing.'
 			);
@@ -857,8 +858,10 @@ const baseResolvers = {
 			return;
 		}
 
-		const inlineModulesData = getGlobalData( '_googlesitekitModulesData' );
-		if ( inlineModulesData === null ) {
+		let inlineModulesData;
+		try {
+			inlineModulesData = getGlobalData( '_googlesitekitModulesData' );
+		} catch ( error ) {
 			return;
 		}
 
