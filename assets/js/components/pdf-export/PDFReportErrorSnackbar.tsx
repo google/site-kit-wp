@@ -37,7 +37,7 @@ import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import CloseIcon from '@/svg/icons/close.svg';
 
-interface PDFReportErrorSnackbarProps {
+export interface PDFReportErrorSnackbarProps {
 	onRetry?: () => void;
 	onDismiss?: (
 		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >

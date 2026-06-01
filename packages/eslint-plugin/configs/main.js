@@ -33,6 +33,7 @@ module.exports = {
 		'sitekit/no-direct-date': [ 'error' ],
 		'sitekit/no-yield-dispatch': [ 'error' ],
 		'sitekit/prefer-interface-props': [ 'error' ],
+		'sitekit/require-exported-component-props': [ 'error' ],
 		'sitekit/sort-import-groups': [ 'error' ],
 	},
 	overrides: [

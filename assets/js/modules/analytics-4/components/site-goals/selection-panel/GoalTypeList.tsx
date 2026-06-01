@@ -36,7 +36,7 @@ import {
 	GoalDriverOption,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 
-interface GoalTypeListProps {
+export interface GoalTypeListProps {
 	listID: string;
 	options: GoalDriverOption[];
 	selectedIDs: GoalDriverID[];

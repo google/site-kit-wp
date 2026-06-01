@@ -48,7 +48,7 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { resolveVisitorEngagementSelectionState } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 
-interface FooterProps {
+export interface FooterProps {
 	isOpen: boolean;
 	closePanel: () => void;
 	hasEcommerceGoalDrivers: boolean;

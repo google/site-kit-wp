@@ -28,7 +28,7 @@ import { FC, ReactNode } from 'react';
 import { Tooltip } from 'googlesitekit-components';
 import InfoIcon from '@/svg/icons/info-green.svg';
 
-interface InfoTooltipProps {
+export interface InfoTooltipProps {
 	onOpen?: () => void;
 	title?: ReactNode;
 	tooltipClassName?: string;

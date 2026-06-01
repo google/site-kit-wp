@@ -54,7 +54,7 @@ const {
 	ONBOARDING_ACTION_REQUIRED,
 } = PUBLICATION_ONBOARDING_STATES;
 
-interface RRMSetupSuccessSubtleNotificationProps {
+export interface RRMSetupSuccessSubtleNotificationProps {
 	id: string;
 	Notification: ElementType;
 }

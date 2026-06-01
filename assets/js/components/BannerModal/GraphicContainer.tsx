@@ -26,7 +26,7 @@ import { forwardRef } from 'react';
  */
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 
-interface GraphicContainerProps {
+export interface GraphicContainerProps {
 	className: string;
 }
 

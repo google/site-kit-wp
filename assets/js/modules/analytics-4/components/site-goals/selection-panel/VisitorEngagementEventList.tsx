@@ -44,7 +44,7 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 import { VisitorEngagementEventID } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement/registry';
 
-interface VisitorEngagementEventListProps {
+export interface VisitorEngagementEventListProps {
 	goalType: GoalType;
 	listID: string;
 	eventIDs?: string[];

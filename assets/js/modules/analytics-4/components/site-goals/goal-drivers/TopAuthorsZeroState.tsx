@@ -26,7 +26,7 @@ import { FC } from 'react';
  */
 import { __ } from '@wordpress/i18n';
 
-interface TopAuthorsZeroStateProps {
+export interface TopAuthorsZeroStateProps {
 	hasMissingCustomDimensions: boolean;
 	isGatheringData: boolean | null | undefined;
 	customDimensionsLoading: boolean;

@@ -27,7 +27,7 @@ import { FC } from 'react';
  */
 import { forwardRef } from '@wordpress/element';
 
-interface GridProps {
+export interface GridProps {
 	alignLeft?: boolean;
 	fill?: boolean;
 	className?: string;

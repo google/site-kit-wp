@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
 import { SelectionPanelHeader } from '@/js/components/SelectionPanel';
 import P from '@/js/components/Typography/P';
 
-interface HeaderProps {
+export interface HeaderProps {
 	closePanel: () => void;
 }
 

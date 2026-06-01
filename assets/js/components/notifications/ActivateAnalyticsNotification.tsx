@@ -44,7 +44,7 @@ import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 import { WEEK_IN_SECONDS } from '@/js/util';
 import ActivateAnalyticsSVG from '@/svg/graphics/activate-analytics-graphic.svg?url';
 
-interface ActivateAnalyticsNotificationProps {
+export interface ActivateAnalyticsNotificationProps {
 	id: string;
 	Notification: ElementType;
 }

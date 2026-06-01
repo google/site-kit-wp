@@ -40,5 +40,6 @@ module.exports = {
 	'no-storybook-scenario-label': require( './no-storybook-scenario-label' ),
 	'no-yield-dispatch': require( './no-yield-dispatch' ),
 	'prefer-interface-props': require( './prefer-interface-props' ),
+	'require-exported-component-props': require( './require-exported-component-props' ),
 	'sort-import-groups': require( './sort-import-groups' ).default,
 };

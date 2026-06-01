@@ -33,9 +33,11 @@ import { __ } from '@wordpress/i18n';
 import P from '@/js/components/Typography/P';
 import { SignInWithGoogleCompatibilityErrors } from '@/js/modules/sign-in-with-google/components/types';
 
-const CompatibilityErrors: FC< {
+export interface CompatibilityErrorsProps {
 	errors?: SignInWithGoogleCompatibilityErrors;
-} > = ( { errors } ) => {
+}
+
+const CompatibilityErrors: FC< CompatibilityErrorsProps > = ( { errors } ) => {
 	// This component is used to display compatibility errors for Sign in with Google.
 	if ( errors === undefined || Object.keys( errors ).length === 0 ) {
 		return null;

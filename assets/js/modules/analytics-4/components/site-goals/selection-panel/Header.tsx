@@ -31,11 +31,11 @@ import { __ } from '@wordpress/i18n';
  */
 import { SelectionPanelHeader } from '@/js/components/SelectionPanel';
 
-interface SiteGoalsSelectionPanelHeaderProps {
+export interface HeaderProps {
 	closePanel: () => void;
 }
 
-const Header: FC< SiteGoalsSelectionPanelHeaderProps > = ( { closePanel } ) => {
+const Header: FC< HeaderProps > = ( { closePanel } ) => {
 	return (
 		<SelectionPanelHeader
 			title={ __( 'Select metrics', 'google-site-kit' ) }

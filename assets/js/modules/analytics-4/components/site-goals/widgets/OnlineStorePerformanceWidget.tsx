@@ -73,7 +73,8 @@ import { numFmt } from '@/js/util';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
-interface OnlineStorePerformanceWidgetProps extends WidgetComponentProps {
+export interface OnlineStorePerformanceWidgetProps
+	extends WidgetComponentProps {
 	selectedGoalDriverIDs?: GoalDriverID[];
 }
 

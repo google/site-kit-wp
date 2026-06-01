@@ -43,7 +43,7 @@ import {
 	GoalType,
 } from './types';
 
-interface GoalDriverTilesProps {
+export interface GoalDriverTilesProps {
 	drivers?: GoalDriverTilesDriver[];
 	hasExpandableRows?: boolean;
 	primaryEvent?: string | string[];

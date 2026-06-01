@@ -33,7 +33,7 @@ import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 
-interface PendingVerificationProps {
+export interface PendingVerificationProps {
 	id: string;
 	Notification: ElementType;
 	gaTrackingEventArgs: GATrackingEventArgs;

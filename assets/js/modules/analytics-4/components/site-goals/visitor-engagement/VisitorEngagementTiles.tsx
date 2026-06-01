@@ -40,7 +40,7 @@ interface DateRange {
 	compareEndDate?: string;
 }
 
-interface VisitorEngagementTilesProps {
+export interface VisitorEngagementTilesProps {
 	dates: DateRange;
 	events?: VisitorEngagementEventID[];
 }

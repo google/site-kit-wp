@@ -34,7 +34,7 @@ import { ProgressBar } from 'googlesitekit-components';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
-interface PDFReportProgressSnackbarProps {
+export interface PDFReportProgressSnackbarProps {
 	progress?: number;
 	onCancel: (
 		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >

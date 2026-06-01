@@ -37,7 +37,7 @@ import BannerNotification from '@/js/googlesitekit/notifications/components/layo
 import useViewContext from '@/js/hooks/useViewContext';
 import ConnectMoreServicesSVG from '@/svg/graphics/connect-more-services-graphic.svg?url';
 
-interface ConnectMoreServicesNotificationProps {
+export interface ConnectMoreServicesNotificationProps {
 	id: string;
 	Notification: ElementType;
 }

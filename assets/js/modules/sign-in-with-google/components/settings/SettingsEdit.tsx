@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * Internal dependencies
  */
 import { ProgressBar } from 'googlesitekit-components';
@@ -24,7 +29,7 @@ import { useSelect } from 'googlesitekit-data';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 import SettingsForm from './SettingsForm';
 
-export default function SettingsEdit() {
+const SettingsEdit: FC = () => {
 	const isDoingSubmitChanges: boolean = useSelect(
 		( select: unknown ) =>
 			// Selectors are not typed yet, and `useSelect` calls have no types
@@ -42,4 +47,6 @@ export default function SettingsEdit() {
 			{ isDoingSubmitChanges ? <ProgressBar /> : <SettingsForm /> }
 		</div>
 	);
-}
+};
+
+export default SettingsEdit;

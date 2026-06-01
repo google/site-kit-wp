@@ -68,7 +68,8 @@ import { numFmt } from '@/js/util';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
-interface LeadGenerationPerformanceWidgetProps extends WidgetComponentProps {
+export interface LeadGenerationPerformanceWidgetProps
+	extends WidgetComponentProps {
 	selectedGoalDriverIDs?: GoalDriverID[];
 }
 

@@ -53,7 +53,7 @@ type NotificationContent = {
 	};
 };
 
-interface OnboardingCompleteProps {
+export interface OnboardingCompleteProps {
 	id: string;
 	Notification: ElementType;
 	gaTrackingEventArgs: GATrackingEventArgs;

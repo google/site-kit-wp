@@ -45,7 +45,7 @@ import {
 import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 import { DAY_IN_SECONDS } from '@/js/util';
 
-interface PolicyViolationProps {
+export interface PolicyViolationProps {
 	id: string;
 	Notification: ElementType;
 	gaTrackingEventArgs: GATrackingEventArgs;

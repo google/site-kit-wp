@@ -27,7 +27,7 @@ import { FC } from 'react';
  */
 import { forwardRef } from '@wordpress/element';
 
-interface RowProps {
+export interface RowProps {
 	className?: string;
 }
 

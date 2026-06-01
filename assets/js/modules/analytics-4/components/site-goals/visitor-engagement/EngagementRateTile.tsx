@@ -49,7 +49,7 @@ interface DateRange {
 	compareEndDate?: string;
 }
 
-interface EngagementRateTileProps {
+export interface EngagementRateTileProps {
 	dates: DateRange;
 }
 

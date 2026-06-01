@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 
-interface AnswerQuestionButtonProps {
+export interface AnswerQuestionButtonProps {
 	isDisabled: boolean;
 	onClick: () => void;
 }
