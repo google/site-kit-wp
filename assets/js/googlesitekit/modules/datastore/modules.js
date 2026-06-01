@@ -45,7 +45,10 @@ import {
 import DefaultSettingsSetupIncomplete from '@/js/components/settings/DefaultSettingsSetupIncomplete';
 import DefaultSettingsStatus from '@/js/components/settings/SettingsActiveModule/DefaultSettingsStatus';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import {
+	createValidatedAction,
+	getGlobalData,
+} from '@/js/googlesitekit/data/utils';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { listFormat } from '@/js/util';
@@ -831,17 +834,19 @@ const baseResolvers = {
 			return;
 		}
 
-		if ( ! global._googlesitekitDashboardSharingData ) {
+		const dashboardSharingData = getGlobalData(
+			'_googlesitekitDashboardSharingData'
+		);
+
+		if ( dashboardSharingData === null ) {
 			global.console.error(
 				'Could not load core/modules dashboard sharing.'
 			);
 			return;
 		}
 
-		const { sharedOwnershipModules } =
-			global._googlesitekitDashboardSharingData;
 		yield baseActions.receiveSharedOwnershipModules(
-			sharedOwnershipModules
+			dashboardSharingData.sharedOwnershipModules
 		);
 	},
 
@@ -852,13 +857,12 @@ const baseResolvers = {
 			return;
 		}
 
-		if ( ! global._googlesitekitModulesData ) {
+		const inlineModulesData = getGlobalData( '_googlesitekitModulesData' );
+		if ( inlineModulesData === null ) {
 			return;
 		}
 
-		yield baseActions.receiveInlineModulesData(
-			global._googlesitekitModulesData
-		);
+		yield baseActions.receiveInlineModulesData( inlineModulesData );
 	},
 
 	getModule: waitForModules,

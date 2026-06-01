@@ -36,6 +36,7 @@ import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import {
 	createStrictSelect,
 	createValidationSelector,
+	getGlobalData,
 } from '@/js/googlesitekit/data/utils';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from './constants';
@@ -409,15 +410,20 @@ const baseResolvers = {
 			return;
 		}
 
-		if ( ! global._googlesitekitDashboardSharingData ) {
+		const dashboardSharingData = getGlobalData(
+			'_googlesitekitDashboardSharingData'
+		);
+
+		if ( dashboardSharingData === null ) {
 			global.console.error(
 				'Could not load core/modules dashboard sharing settings.'
 			);
 			return;
 		}
 
-		const { settings } = global._googlesitekitDashboardSharingData;
-		yield actions.receiveGetSharingSettings( settings );
+		yield actions.receiveGetSharingSettings(
+			dashboardSharingData.settings
+		);
 	},
 
 	*getShareableRoles() {
@@ -427,15 +433,18 @@ const baseResolvers = {
 			return;
 		}
 
-		if ( ! global._googlesitekitDashboardSharingData ) {
+		const dashboardSharingData = getGlobalData(
+			'_googlesitekitDashboardSharingData'
+		);
+
+		if ( dashboardSharingData === null ) {
 			global.console.error(
 				'Could not load core/modules dashboard sharing roles.'
 			);
 			return;
 		}
 
-		const { roles } = global._googlesitekitDashboardSharingData;
-		yield actions.receiveShareableRoles( roles );
+		yield actions.receiveShareableRoles( dashboardSharingData.roles );
 	},
 
 	*getDefaultSharedOwnershipModuleSettings() {
@@ -449,17 +458,18 @@ const baseResolvers = {
 			return;
 		}
 
-		if ( ! global._googlesitekitDashboardSharingData ) {
+		const dashboardSharingData = getGlobalData(
+			'_googlesitekitDashboardSharingData'
+		);
+		if ( dashboardSharingData === null ) {
 			global.console.error(
 				'Could not load core/modules dashboard sharing.'
 			);
 			return;
 		}
 
-		const { defaultSharedOwnershipModuleSettings } =
-			global._googlesitekitDashboardSharingData;
 		yield baseActions.receiveDefaultSharedOwnershipModuleSettings(
-			defaultSharedOwnershipModuleSettings
+			dashboardSharingData.defaultSharedOwnershipModuleSettings
 		);
 	},
 };

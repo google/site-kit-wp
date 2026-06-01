@@ -34,6 +34,7 @@ import {
 	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
+import { getGlobalData } from '@/js/googlesitekit/data/utils';
 import { escapeURI } from '@/js/util/escape-uri';
 import { CORE_USER } from './constants';
 
@@ -207,12 +208,14 @@ export const resolvers = {
 			return;
 		}
 
-		if ( ! global._googlesitekitUserData ) {
+		const userData = getGlobalData( '_googlesitekitUserData' );
+
+		if ( userData === null ) {
 			global.console.error( 'Could not load core/user info.' );
 			return;
 		}
-		const { user } = global._googlesitekitUserData;
-		yield actions.receiveUserInfo( user );
+
+		yield actions.receiveUserInfo( userData.user );
 	},
 
 	*getInitialSiteKitVersion() {
