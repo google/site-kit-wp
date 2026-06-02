@@ -37,10 +37,20 @@
 
 	.googlesitekit-activation__auto-updates {
 		margin-bottom: 5px;
+		padding-left: 0;
+
+		.googlesitekit-activation__auto-updates-label {
+			color: $c-surfaces-on-background-variant;
+			font-size: $fs-body-sm;
+		}
 
 		.mdc-form-field {
 			align-items: center;
 			gap: 7px;
+
+			label {
+				padding-left: 0;
+			}
 		}
 	}
 
