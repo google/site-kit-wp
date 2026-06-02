@@ -220,3 +220,8 @@
 				width: auto !important;
 			}
 		}
+
+		/* Base link color for light mode */
+		.link {
+			color: #108080;
+		}
