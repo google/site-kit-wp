@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { cloneDeep } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import {
@@ -29,44 +34,50 @@ import { initialState } from './index';
 
 describe( 'core/site site info', () => {
 	const baseInfoVar = '_googlesitekitBaseData';
-	const baseInfo = {
-		adminURL: 'http://something.test/wp-admin',
-		ampMode: 'reader',
-		homeURL: 'http://something.test/homepage',
-		referenceSiteURL: 'http://example.com',
-		proxyPermissionsURL: '', // not available until site is authenticated
-		proxySetupURL: 'https://sitekit.withgoogle.com/site-management/setup/', // params omitted
-		setupErrorMessage: null,
-		setupErrorRedoURL: null,
-		siteName: 'Something Test',
-		siteLocale: 'en-US',
-		timezone: 'America/Denver',
-		usingProxy: true,
-		widgetsAdminURL: 'http://example.com/wp-admin/widgets.php',
-		postTypes: [
-			{
-				slug: 'post',
-				label: 'Post',
-			},
-		],
-		productPostType: [ 'product' ],
-		isMultisite: false,
-		hasActiveLeadEventProviders: false,
-		hasActiveEcommerceEventProviders: false,
-	};
 	const entityInfoVar = '_googlesitekitEntityData';
-	const entityInfo = {
-		currentEntityURL: 'http://something.test',
-		currentEntityType: 'post',
-		currentEntityTitle: 'Something Witty',
-		currentEntityID: '4',
-	};
+
 	let registry;
 	let store;
+	let baseInfo;
+	let entityInfo;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_SITE ].store;
+
+		baseInfo = {
+			adminURL: 'http://something.test/wp-admin',
+			ampMode: 'reader',
+			homeURL: 'http://something.test/homepage',
+			referenceSiteURL: 'http://example.com',
+			proxyPermissionsURL: '', // not available until site is authenticated
+			proxySetupURL:
+				'https://sitekit.withgoogle.com/site-management/setup/', // params omitted
+			setupErrorMessage: null,
+			setupErrorRedoURL: null,
+			siteName: 'Something Test',
+			siteLocale: 'en-US',
+			timezone: 'America/Denver',
+			usingProxy: true,
+			widgetsAdminURL: 'http://example.com/wp-admin/widgets.php',
+			postTypes: [
+				{
+					slug: 'post',
+					label: 'Post',
+				},
+			],
+			productPostType: [ 'product' ],
+			isMultisite: false,
+			hasActiveLeadEventProviders: false,
+			hasActiveEcommerceEventProviders: false,
+		};
+
+		entityInfo = {
+			currentEntityURL: 'http://something.test',
+			currentEntityType: 'post',
+			currentEntityTitle: 'Something Witty',
+			currentEntityID: '4',
+		};
 	} );
 
 	afterEach( () => {
@@ -437,6 +448,28 @@ describe( 'core/site site info', () => {
 				// Data must not be wiped after retrieving, as it could be used by other dependants.
 				expect( global[ baseInfoVar ] ).not.toEqual( undefined );
 				expect( global[ entityInfoVar ] ).not.toEqual( undefined );
+			} );
+
+			it( 'uses a cloned copy of the global data so modifications to the original object are not reflected in the store', async () => {
+				global[ baseInfoVar ] = baseInfo;
+				global[ entityInfoVar ] = entityInfo;
+
+				registry.select( CORE_SITE ).getSiteInfo();
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
+
+				const info = registry.select( CORE_SITE ).getSiteInfo();
+
+				const expectedInfo = cloneDeep( {
+					...baseInfo,
+					...entityInfo,
+					currentEntityID: 4,
+				} );
+
+				expect( info ).toEqual( expectedInfo );
+
+				baseInfo.productPostType[ 0 ] = 'modified-post';
+
+				expect( info ).toEqual( expectedInfo );
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', async () => {
