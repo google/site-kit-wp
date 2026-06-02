@@ -35,6 +35,7 @@ use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_New_Badge_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
+use Google\Site_Kit\Modules\Analytics_4\Post_List_View_Analytics_Column;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
@@ -70,6 +71,7 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use WP_Query;
 use WP_User;
 use ReflectionMethod;
+use ReflectionProperty;
 
 /**
  * @group Modules
@@ -181,6 +183,73 @@ class Analytics_4Test extends TestCase {
 		$this->assertTrue( has_action( 'wp_head' ), 'Analytics 4 should add tracking opt-out action to wp_head' );
 		$this->assertTrue( has_action( 'web_stories_story_head' ), 'Analytics 4 should add tracking opt-out action to web_stories_story_head' );
 		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
+	}
+
+	public function test_register_does_not_register_post_list_column_when_not_connected() {
+		$analytics = $this->new_analytics_with_fresh_options();
+		$analytics->get_settings()->merge(
+			array(
+				'accountID'       => '',
+				'propertyID'      => '',
+				'webDataStreamID' => '',
+				'measurementID'   => '',
+			)
+		);
+
+		$this->assertFalse( $analytics->is_connected(), 'Expected Analytics to be disconnected with default settings.' );
+
+		$column = $this->get_post_list_view_analytics_column( $analytics );
+
+		$analytics->register();
+
+		$this->assertFalse(
+			has_action( 'init', array( $column, 'maybe_save_post_list_screen_options' ) ),
+			'Post list column should not register when Analytics is not connected.'
+		);
+	}
+
+	public function test_register_registers_post_list_column_when_connected() {
+		$analytics = $this->new_analytics_with_fresh_options();
+
+		$analytics->get_settings()->merge(
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '87654321',
+				'webDataStreamID' => '1234567890',
+				'measurementID'   => 'G-XXXXXXXXXX',
+			)
+		);
+		$this->assertTrue( $analytics->is_connected(), 'Expected Analytics to be connected after merging required settings.' );
+
+		$column = $this->get_post_list_view_analytics_column( $analytics );
+
+		$analytics->register();
+
+		$this->assertNotFalse(
+			has_action( 'init', array( $column, 'maybe_save_post_list_screen_options' ) ),
+			'Post list column should register when Analytics is connected.'
+		);
+	}
+
+	/**
+	 * @return Analytics_4
+	 */
+	private function new_analytics_with_fresh_options() {
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $context );
+		$user_options   = new User_Options( $context, $this->user->ID );
+		$authentication = new Authentication( $context, $options, $user_options );
+
+		return new Analytics_4( $context, $options, $user_options, $authentication );
+	}
+
+	/**
+	 * @param Analytics_4 $analytics Analytics module instance.
+	 */
+	private function get_post_list_view_analytics_column( Analytics_4 $analytics ): Post_List_View_Analytics_Column {
+		$property = new ReflectionProperty( Analytics_4::class, 'post_list_view_analytics_column' );
+		$property->setAccessible( true );
+		return $property->getValue( $analytics );
 	}
 
 	public function test_register__reset_adsense_link_settings() {

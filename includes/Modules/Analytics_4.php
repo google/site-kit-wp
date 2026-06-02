@@ -19,6 +19,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
+use Google\Site_Kit\Core\Assets\Script_Data;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
@@ -95,6 +96,8 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Update_Enhanced_Measurement_S
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
+use Google\Site_Kit\Modules\Analytics_4\Post_List_Column_Preferences;
+use Google\Site_Kit\Modules\Analytics_4\Post_List_View_Analytics_Column;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
@@ -209,6 +212,20 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	protected $audience_utilities;
 
 	/**
+	 * GA4 post list column preferences.
+	 *
+	 * @var Post_List_Column_Preferences
+	 */
+	protected $post_list_column_preferences;
+
+	/**
+	 * GA4 post list column.
+	 *
+	 * @var Post_List_View_Analytics_Column
+	 */
+	protected $post_list_view_analytics_column;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.113.0
@@ -232,6 +249,12 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->audience_settings                = new Audience_Settings( $this->options );
 		$this->audience_utilities               = new Audience_Utilities( $this->audience_settings );
 		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings(), $this->audience_settings );
+
+		$this->post_list_column_preferences    = new Post_List_Column_Preferences( $this->user_options );
+		$this->post_list_view_analytics_column = new Post_List_View_Analytics_Column(
+			$this->context,
+			$this->post_list_column_preferences
+		);
 	}
 
 	/**
@@ -244,6 +267,10 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->register_scopes_hook();
 
 		$this->register_inline_data();
+
+		if ( $this->is_connected() ) {
+			$this->post_list_view_analytics_column->register();
+		}
 
 		$this->register_feature_metrics();
 
@@ -1492,7 +1519,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @return Asset[] List of Asset objects.
 	 */
 	protected function setup_assets() {
-		$base_url = $this->context->url( 'dist/assets/' );
+		$base_url          = $this->context->url( 'dist/assets/' );
+		$post_list_ga4_col = $this->post_list_view_analytics_column;
 
 		return array(
 			new Script(
@@ -1511,6 +1539,30 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 						'googlesitekit-components',
 						'googlesitekit-modules-data',
 					),
+				)
+			),
+			new Script_Data(
+				'googlesitekit-admin-post-list-ga4-data',
+				array(
+					'global'        => '_googlesitekitPostListGA4Data',
+					'data_callback' => function () use ( $post_list_ga4_col ) {
+						if ( ! current_user_can( Permissions::VIEW_POSTS_INSIGHTS ) ) {
+							return array();
+						}
+
+						return $post_list_ga4_col->get_inline_script_data();
+					},
+				)
+			),
+			new Script(
+				'googlesitekit-admin-post-list-ga4',
+				array(
+					'src'           => $base_url . 'js/googlesitekit-admin-post-list-ga4.js',
+					'dependencies'  => array(
+						'googlesitekit-admin-post-list-ga4-data',
+						'googlesitekit-datastore-user',
+					),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POSTS ),
 				)
 			),
 		);
