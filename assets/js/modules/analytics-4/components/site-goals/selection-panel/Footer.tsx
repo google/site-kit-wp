@@ -120,11 +120,11 @@ const Footer: FC< FooterProps > = ( {
 			select( MODULES_ANALYTICS_4 ).isSavingSiteGoalsSettings(),
 		[]
 	);
-	const savedDrivers = useSelect(
+	const savedDrivers: GoalDriverSelectionState | undefined = useSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getSiteGoalsGoalDrivers(),
 		[]
-	) as GoalDriverSelectionState | undefined;
+	);
 
 	const [ selectedDrivers ] = useFormValue(
 		SITE_GOALS_SELECTION_FORM,
