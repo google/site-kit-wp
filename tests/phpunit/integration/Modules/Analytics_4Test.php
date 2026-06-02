@@ -1725,6 +1725,8 @@ class Analytics_4Test extends TestCase {
 				'save-audience-settings',
 				'save-resource-data-availability-date',
 				'sync-audiences',
+				'site-goals-settings',
+				'save-site-goals-settings',
 			),
 			$this->analytics->get_datapoints(),
 			'Analytics 4 module should expose the expected datapoints'
@@ -1763,6 +1765,8 @@ class Analytics_4Test extends TestCase {
 				'save-audience-settings',
 				'save-resource-data-availability-date',
 				'sync-audiences',
+				'site-goals-settings',
+				'save-site-goals-settings',
 			),
 			$this->analytics->get_datapoints(),
 			'Analytics 4 module should expose the expected datapoints with conversion reporting'
