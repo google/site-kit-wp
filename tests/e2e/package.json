@@ -9,13 +9,6 @@
 		"stop": "./bin/local-env/stop.sh",
 		"reset-site": "./bin/local-env/install-wordpress.sh --reset-site"
 	},
-	"config": {
-		"puppeteer": {
-			"skip": {
-				"download": true
-			}
-		}
-	},
 	"dependencies": {
 		"@wordpress/babel-preset-default": "^8.23.0",
 		"@wordpress/e2e-test-utils": "^4.11.0",
