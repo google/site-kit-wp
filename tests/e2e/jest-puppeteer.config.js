@@ -21,6 +21,7 @@ module.exports = {
 		// devtools, headless and slowmo properties inlined from @wordpress/script config/puppeteer.config.js v12.0.0.
 		// https://github.com/WordPress/gutenberg/blob/8e06f0d212f89adba9099106497117819adefc5a/packages/scripts/config/puppeteer.config.js
 		devtools: process.env.PUPPETEER_DEVTOOLS === 'true',
+		executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
 		headless: process.env.PUPPETEER_HEADLESS !== 'false',
 		slowMo: parseInt( process.env.PUPPETEER_SLOWMO, 10 ) || 0,
 		args: [

@@ -138,7 +138,7 @@ jobs:
         run: npm run env:start
 
       - name: Run the tests
-        run: npm run test:e2e
+        run: PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome npm run test:e2e
 
       - name: Upload artifacts
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # ratchet:actions/upload-artifact@v6
