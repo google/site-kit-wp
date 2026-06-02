@@ -38,7 +38,6 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import {
 	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
-	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { WEEK_IN_SECONDS } from '@/js/util';
@@ -101,9 +100,7 @@ export default function AudienceItems( { savedItemSlugs = [] } ) {
 		const isSiteKitAudiencePartialData =
 			hasAudiencePartialData( siteKitAudiences );
 
-		const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
+		const dateRangeDates = select( CORE_USER ).getDateRangeDates();
 
 		// Get the user count for the available Site Kit audiences using the `newVsReturning` dimension
 		// to avoid the partial data state for these audiences.

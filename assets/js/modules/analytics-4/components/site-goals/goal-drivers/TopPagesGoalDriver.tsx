@@ -47,10 +47,7 @@ import {
 	getDimensionFiltersForEvents,
 	normalizePrimaryEvents,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
 import { numFmt } from '@/js/util';
 
@@ -71,10 +68,7 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( {
 } ) => {
 	const headerLabel = __( 'Events', 'google-site-kit' );
 	const dates = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} ),
+		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
 		[]
 	);
 	const reportOptions = useMemo( () => {
@@ -185,9 +179,7 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( {
 				return {};
 			}
 
-			const reportDates = select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} );
+			const reportDates = select( CORE_USER ).getDateRangeDates();
 
 			if ( ! reportDates ) {
 				return {};

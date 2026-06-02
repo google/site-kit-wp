@@ -28,10 +28,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	STRATEGY_ZIP,
 	getAnalytics4MockResponse,
@@ -232,9 +229,7 @@ DefaultWithZeroTile.args = {
 			options: reportOptions,
 		} );
 
-		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
+		const { startDate } = registry.select( CORE_USER ).getDateRangeDates();
 		const audienceDate = Number( startDate.replace( /-/g, '' ) );
 		const dataAvailabilityDate = Number(
 			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
@@ -353,9 +348,7 @@ TwoTilesWithZeroTile.args = {
 			options: reportOptions,
 		} );
 
-		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
+		const { startDate } = registry.select( CORE_USER ).getDateRangeDates();
 		const audienceDate = Number( startDate.replace( /-/g, '' ) );
 		const dataAvailabilityDate = Number(
 			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
@@ -414,9 +407,7 @@ ZeroTileWithPlaceholder.args = {
 			options: reportOptions,
 		} );
 
-		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
+		const { startDate } = registry.select( CORE_USER ).getDateRangeDates();
 		const dataAvailabilityDate = Number(
 			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 		);
@@ -446,9 +437,7 @@ DefaultAudiencesPartialData.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
 
-		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
+		const { startDate } = registry.select( CORE_USER ).getDateRangeDates();
 		const dataAvailabilityDate = Number(
 			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 		);
@@ -485,9 +474,7 @@ SiteKitAudiencesPartialData.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
 
-		const { startDate } = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
+		const { startDate } = registry.select( CORE_USER ).getDateRangeDates();
 
 		const dataAvailabilityDate = Number(
 			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
@@ -609,9 +596,7 @@ SingleTileErrored.args = {
 		'properties/12345/audiences/3', // New visitors
 	],
 	setupRegistry: ( registry ) => {
-		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
+		const dates = registry.select( CORE_USER ).getDateRangeDates();
 
 		const { startDate, endDate } = dates;
 
@@ -862,9 +847,7 @@ export default {
 
 				const { startDate } = registry
 					.select( CORE_USER )
-					.getDateRangeDates( {
-						offsetDays: DATE_RANGE_OFFSET,
-					} );
+					.getDateRangeDates();
 
 				const audienceDate = Number( startDate.replace( /-/g, '' ) );
 
