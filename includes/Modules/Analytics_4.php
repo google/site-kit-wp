@@ -33,7 +33,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Inline_Data;
-use Google\Site_Kit\Core\Modules\Module_With_Inline_Data_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -142,7 +141,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	use Module_With_Settings_Trait;
 	use Module_With_Data_Available_State_Trait;
 	use Module_With_Tag_Trait;
-	use Module_With_Inline_Data_Trait;
 	use Feature_Metrics_Trait;
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
@@ -242,9 +240,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 */
 	public function register() {
 		$this->register_scopes_hook();
-
-		$this->register_inline_data();
-
 		$this->register_feature_metrics();
 
 		$synchronize_property = new Synchronize_Property(
@@ -1990,16 +1985,16 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 *
 	 * @since 1.158.0
 	 * @since 1.160.0 Include $modules_data parameter to match the interface.
+	 * @since n.e.x.t Remove $modules_data parameter as per updated interface.
 	 *
-	 * @param array $modules_data Inline modules data.
 	 * @return array An array of the module's inline data.
 	 */
-	public function get_inline_data( $modules_data ) {
-		if ( ! $this->is_connected() ) {
-			return $modules_data;
-		}
-
+	public function get_inline_data() {
 		$inline_data = array();
+
+		if ( ! $this->is_connected() ) {
+			return $inline_data;
+		}
 
 		// Web data stream availability data.
 		$settings                                  = $this->get_settings()->get();
@@ -2015,7 +2010,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			$this->get_inline_conversion_reporting_events_detection()
 		);
 
-		$modules_data[ self::MODULE_SLUG ] = $inline_data;
-		return $modules_data;
+		return $inline_data;
 	}
 }

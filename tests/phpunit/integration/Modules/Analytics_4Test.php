@@ -3837,9 +3837,9 @@ class Analytics_4Test extends TestCase {
 	public function test_inline_custom_dimension_data_initial_state__module_not_connected() {
 		$this->analytics->register();
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertArrayNotHasKey( 'analytics-4', $inline_modules_data, 'Analytics module should not be present in inline data when not connected.' );
+		$this->assertSame( array(), $inline_module_data, 'Analytics module should not have inline data when not connected.' );
 	}
 
 	public function test_inline_custom_dimension_data_initial_state__module_connected() {
@@ -3857,9 +3857,9 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'], 'Analytics inline module data should contain customDimensionsDataAvailable key when module is connected.' );
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_module_data, 'Analytics inline module data should contain customDimensionsDataAvailable key when module is connected.' );
 
 		$this->assertEquals(
 			array(
@@ -3870,7 +3870,7 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_event_provider'  => false,
 				'googlesitekit_form_id'         => false,
 			),
-			$inline_modules_data['analytics-4']['customDimensionsDataAvailable'],
+			$inline_module_data['customDimensionsDataAvailable'],
 			'Custom dimensions data available should be initialized with all dimensions set to false when module is connected but no data is available.'
 		);
 	}
@@ -3889,10 +3889,9 @@ class Analytics_4Test extends TestCase {
 
 		$this->analytics->register();
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertArrayHasKey( 'analytics-4', $inline_modules_data, 'Inline modules data should contain analytics-4 module data.' );
-		$this->assertArrayHasKey( 'resourceAvailabilityDates', $inline_modules_data['analytics-4'], 'Analytics inline module data should contain resourceAvailabilityDates key.' );
+		$this->assertArrayHasKey( 'resourceAvailabilityDates', $inline_module_data, 'Analytics inline module data should contain resourceAvailabilityDates key.' );
 
 		$this->assertEquals(
 			array(
@@ -3900,7 +3899,7 @@ class Analytics_4Test extends TestCase {
 				'customDimension' => array(),
 				'property'        => array(),
 			),
-			$inline_modules_data['analytics-4']['resourceAvailabilityDates'],
+			$inline_module_data['resourceAvailabilityDates'],
 			'Resource availability dates should be initialized with empty arrays when no resources are available.'
 		);
 
@@ -3910,7 +3909,7 @@ class Analytics_4Test extends TestCase {
 			$test_resource_slug_property,
 		) = $this->set_test_resource_data_availability_dates();
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
 		$this->assertEquals(
 			array(
@@ -3924,7 +3923,7 @@ class Analytics_4Test extends TestCase {
 					$test_resource_slug_property => 20201231,
 				),
 			),
-			$inline_modules_data['analytics-4']['resourceAvailabilityDates'],
+			$inline_module_data['resourceAvailabilityDates'],
 			'Resource availability dates should contain the expected test resource slugs with their availability dates.'
 		);
 	}
@@ -3961,9 +3960,9 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEquals( true, $response, 'Custom dimension data available should be set to true.' );
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'], 'Analytics inline module data should contain customDimensionsDataAvailable key when custom dimension data is available.' );
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_module_data, 'Analytics inline module data should contain customDimensionsDataAvailable key when custom dimension data is available.' );
 
 		$this->assertEquals(
 			array(
@@ -3974,7 +3973,7 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_event_provider'  => false,
 				'googlesitekit_form_id'         => false,
 			),
-			$inline_modules_data['analytics-4']['customDimensionsDataAvailable'],
+			$inline_module_data['customDimensionsDataAvailable'],
 			'Custom dimensions data available should show post_author as true and others as false after setting custom dimension data available.'
 		);
 	}
@@ -4009,9 +4008,9 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'], 'Analytics inline module data should contain customDimensionsDataAvailable key when custom dimension data is available after measurement ID change.' );
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_module_data, 'Analytics inline module data should contain customDimensionsDataAvailable key when custom dimension data is available after measurement ID change.' );
 
 		$this->assertEquals(
 			array(
@@ -4022,7 +4021,7 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_event_provider'  => false,
 				'googlesitekit_form_id'         => false,
 			),
-			$inline_modules_data['analytics-4']['customDimensionsDataAvailable'],
+			$inline_module_data['customDimensionsDataAvailable'],
 			'Custom dimensions data available should remain unchanged after measurement ID change.'
 		);
 
@@ -4032,9 +4031,9 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'], 'Analytics inline module data should contain customDimensionsDataAvailable key when custom dimension data is available after measurement ID change.' );
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_module_data, 'Analytics inline module data should contain customDimensionsDataAvailable key when custom dimension data is available after measurement ID change.' );
 		$this->assertEquals(
 			array(
 				'googlesitekit_post_author'     => false,
@@ -4044,7 +4043,7 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_event_provider'  => false,
 				'googlesitekit_form_id'         => false,
 			),
-			$inline_modules_data['analytics-4']['customDimensionsDataAvailable'],
+			$inline_module_data['customDimensionsDataAvailable'],
 			'Custom dimensions data available should remain unchanged after measurement ID change when module is still connected.'
 		);
 	}
@@ -4127,9 +4126,9 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertEquals( false, $inline_modules_data['analytics-4']['tagIDMismatch'], 'Tag ID mismatch should be false when no mismatch exists.' );
+		$this->assertEquals( false, $inline_module_data['tagIDMismatch'], 'Tag ID mismatch should be false when no mismatch exists.' );
 	}
 
 	public function test_inline_tag_id_mismatch__source_correct_value_from_transient() {
@@ -4147,24 +4146,24 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertEquals( false, $inline_modules_data['analytics-4']['tagIDMismatch'], 'Tag ID mismatch should be false when no transient is set.' );
+		$this->assertEquals( false, $inline_module_data['tagIDMismatch'], 'Tag ID mismatch should be false when no transient is set.' );
 
 		$transients = new Transients( $this->context );
 		$transients->set( 'googlesitekit_inline_tag_id_mismatch', true );
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertEquals( true, $inline_modules_data['analytics-4']['tagIDMismatch'], 'Tag ID mismatch should be true when transient is set.' );
+		$this->assertEquals( true, $inline_module_data['tagIDMismatch'], 'Tag ID mismatch should be true when transient is set.' );
 	}
 
 	public function test_inline_conversion_reporting_events_detection_not_connected() {
 		$this->analytics->register();
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertArrayNotHasKey( 'analytics-4', $inline_modules_data, 'Analytics module should not be present in inline data when not connected for conversion reporting events.' );
+		$this->assertSame( array(), $inline_module_data, 'Analytics module should not have inline data when not connected for conversion reporting events.' );
 	}
 
 	public function test_inline_conversion_reporting_events_detection_connected() {
@@ -4188,11 +4187,11 @@ class Analytics_4Test extends TestCase {
 		$transients->set( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT, array( 'lost_event' ) );
 		$transients->set( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT, array( 'events' => array( 'new_badge_event_1', 'new_badge_event_2', 'new_badge_event_3' ) ) );
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertEquals( array( 'detect_event_1', 'detect_event_2' ), $inline_modules_data['analytics-4']['newEvents'], 'New events should be included in inline module data from detected events transient.' );
-		$this->assertEquals( array( 'lost_event' ), $inline_modules_data['analytics-4']['lostEvents'], 'Lost events should be included in inline module data.' );
-		$this->assertEquals( array( 'new_badge_event_1', 'new_badge_event_2', 'new_badge_event_3' ), $inline_modules_data['analytics-4']['newBadgeEvents'], 'New badge events should be included in inline module data from new badge events transient.' );
+		$this->assertEquals( array( 'detect_event_1', 'detect_event_2' ), $inline_module_data['newEvents'], 'New events should be included in inline module data from detected events transient.' );
+		$this->assertEquals( array( 'lost_event' ), $inline_module_data['lostEvents'], 'Lost events should be included in inline module data.' );
+		$this->assertEquals( array( 'new_badge_event_1', 'new_badge_event_2', 'new_badge_event_3' ), $inline_module_data['newBadgeEvents'], 'New badge events should be included in inline module data from new badge events transient.' );
 	}
 
 	public function test_get_data__adsense_links() {
@@ -5191,9 +5190,8 @@ class Analytics_4Test extends TestCase {
 		$analytics = new Analytics_4( $this->context );
 		$analytics->register();
 
-		remove_all_filters( 'googlesitekit_inline_modules_data' );
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
-		$this->assertSame( array(), $inline_modules_data, 'Inline data should be empty when module is not connected.' );
+		$inline_module_data = $analytics->get_inline_data();
+		$this->assertSame( array(), $inline_module_data, 'Inline data should be empty when module is not connected.' );
 
 		// Test when module is connected.
 		$this->analytics->get_settings()->merge(
@@ -5223,12 +5221,10 @@ class Analytics_4Test extends TestCase {
 		);
 
 		$analytics->register();
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$analytics_data = $analytics->get_inline_data();
 
 		// Verify the structure exists and contains expected keys.
-		$this->assertArrayHasKey( 'analytics-4', $inline_modules_data, 'Inline data should contain analytics-4 key.' );
-		$analytics_data = $inline_modules_data['analytics-4'];
-
 		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $analytics_data, 'Inline data should contain customDimensionsDataAvailable key.' );
 		$this->assertArrayHasKey( 'resourceAvailabilityDates', $analytics_data, 'Inline data should contain resourceAvailabilityDates key.' );
 		$this->assertArrayHasKey( 'tagIDMismatch', $analytics_data, 'Inline data should contain tagIDMismatch key.' );
