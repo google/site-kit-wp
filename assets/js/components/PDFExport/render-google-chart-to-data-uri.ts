@@ -56,7 +56,13 @@ interface GoogleVisualizationEvents {
 	addListener( source: object, eventName: string, handler: () => void ): void;
 }
 
-interface GoogleVisualization {
+export interface GoogleVisualizationDataTable {
+	addColumn( type: string, label?: string ): number;
+	addRows( rows: unknown[][] ): number;
+}
+
+export interface GoogleVisualization {
+	DataTable?: new () => GoogleVisualizationDataTable;
 	LineChart?: GoogleVisualizationChartConstructor;
 	ColumnChart?: GoogleVisualizationChartConstructor;
 	BarChart?: GoogleVisualizationChartConstructor;
@@ -71,7 +77,7 @@ interface GoogleVisualization {
  *
  * @return {Object|undefined} The `google.visualization` namespace, when present.
  */
-function getVisualization(): GoogleVisualization | undefined {
+export function getVisualization(): GoogleVisualization | undefined {
 	return (
 		global as unknown as {
 			google?: { visualization?: GoogleVisualization };
