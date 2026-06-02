@@ -506,7 +506,7 @@ final class Modules implements Provides_Feature_Metrics {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return array Active modules as $slug => $module pairs.
+	 * @return Module[] Active modules as $slug => $module pairs.
 	 */
 	public function get_active_modules() {
 		$modules = $this->get_available_modules();
