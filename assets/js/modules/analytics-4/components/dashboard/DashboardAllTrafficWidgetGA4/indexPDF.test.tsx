@@ -27,6 +27,8 @@ import TestRenderer from 'react-test-renderer';
  */
 import DashboardAllTrafficWidgetGA4PDF from './indexPDF';
 
+const LINE_CHART_DATA_URI = 'data:image/jpeg;base64,TU9DS0NIQVJU';
+
 function buildReports( {
 	currentUsers,
 	previousUsers,
@@ -61,7 +63,29 @@ function renderTree(
 }
 
 describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
-	it( 'renders the All Visitors metric tile and a chart placeholder against shaped data', () => {
+	it( 'should render the All Visitors metric tile and the line chart image when chart images are supplied', () => {
+		const data = buildReports( {
+			currentUsers: '1234',
+			previousUsers: '1000',
+			rowCount: 28,
+		} );
+
+		const tree = renderTree( {
+			data,
+			chartImages: { lineChart: LINE_CHART_DATA_URI },
+		} );
+		const json = JSON.stringify( tree );
+
+		expect( json ).toContain( 'All Visitors' );
+		// `numFmt` abbreviates large totals, matching the dashboard widget.
+		expect( json ).toContain( '1.2K' );
+		expect( json ).toContain( 'compared to the previous 28 days' );
+		// The rasterised chart is embedded as an image with the supplied data URI.
+		expect( json ).toContain( LINE_CHART_DATA_URI );
+		expect( json ).not.toContain( 'No data available' );
+	} );
+
+	it( 'should render the No data available chart fallback when chart images are missing', () => {
 		const data = buildReports( {
 			currentUsers: '1234',
 			previousUsers: '1000',
@@ -71,53 +95,55 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		const tree = renderTree( { data } );
 		const json = JSON.stringify( tree );
 
+		// The metric tile still renders; only the chart area falls back.
 		expect( json ).toContain( 'All Visitors' );
-		// `numFmt` abbreviates large totals, matching the dashboard widget.
-		expect( json ).toContain( '1.2K' );
-		expect( json ).toContain( 'compared to the previous 28 days' );
-		// Chart placeholder block uses our fixed background color.
-		expect( json ).toContain( '#f5f5f5' );
-		expect( json ).not.toContain( 'No data available' );
+		expect( json ).toContain( 'No data available' );
+		expect( json ).not.toContain( 'data:image' );
 	} );
 
-	it( 'shows an up arrow when the period-over-period change is positive', () => {
+	it( 'should show an up arrow when the period-over-period change is positive', () => {
 		const data = buildReports( {
 			currentUsers: '1200',
 			previousUsers: '1000',
 			rowCount: 28,
 		} );
 
-		const tree = renderTree( { data } );
+		const tree = renderTree( {
+			data,
+			chartImages: { lineChart: LINE_CHART_DATA_URI },
+		} );
 		const json = JSON.stringify( tree );
 
 		expect( json ).toContain( '#34a853' );
 		expect( json ).toContain( 'M4,0 L8,8 L0,8 Z' );
 	} );
 
-	it( 'shows a down arrow when the period-over-period change is negative', () => {
+	it( 'should show a down arrow when the period-over-period change is negative', () => {
 		const data = buildReports( {
 			currentUsers: '800',
 			previousUsers: '1000',
 			rowCount: 28,
 		} );
 
-		const tree = renderTree( { data } );
+		const tree = renderTree( {
+			data,
+			chartImages: { lineChart: LINE_CHART_DATA_URI },
+		} );
 		const json = JSON.stringify( tree );
 
 		expect( json ).toContain( '#ea4335' );
 		expect( json ).toContain( 'M0,0 L8,0 L4,8 Z' );
 	} );
 
-	it( 'renders the No data available placeholder when data is null', () => {
+	it( 'should render the No data available placeholder when data is null', () => {
 		const tree = renderTree( { data: null } );
 		const json = JSON.stringify( tree );
 
 		expect( json ).toContain( 'No data available' );
 		expect( json ).not.toContain( 'All Visitors' );
-		expect( json ).not.toContain( '#f5f5f5' );
 	} );
 
-	it( 'renders the No data available placeholder when data is undefined', () => {
+	it( 'should render the No data available placeholder when data is undefined', () => {
 		const tree = renderTree( {} );
 		const json = JSON.stringify( tree );
 
