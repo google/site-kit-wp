@@ -106,7 +106,7 @@ jobs:
       - name: Install Chrome
         uses: browser-actions/setup-chrome@2e1d749697dd1612b833dba4a722266286fbefcd # ratchet:browser-actions/setup-chrome@v2.1.2
         with:
-          chrome-version: '93.0.4577.0'
+          chrome-version: '127.0.6533.88'
 
       - name: npm install
         run: npm ci --workspaces --include-workspace-root
