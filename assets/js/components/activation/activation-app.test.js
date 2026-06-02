@@ -21,7 +21,6 @@
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { PERMISSION_VIEW_DASHBOARD } from '@/js/googlesitekit/datastore/user/constants';
-import * as tracking from '@/js/util/tracking';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
@@ -32,9 +31,6 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 import { ActivationApp } from './activation-app';
-
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
-mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'ActivationApp', () => {
 	mockLocation();
@@ -85,7 +81,7 @@ describe( 'ActivationApp', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'tracks enable and disable events when auto-updates checkbox is toggled', () => {
+	it( 'enables auto-updates checkbox when toggled', () => {
 		const registry = setupRegistry( { siteKitAutoUpdatesEnabled: false } );
 
 		const { getByLabelText } = render( <ActivationApp />, {
@@ -99,19 +95,13 @@ describe( 'ActivationApp', () => {
 		);
 
 		fireEvent.click( checkbox );
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'plugin_activation',
-			'enable_auto_updates'
-		);
+		expect( checkbox ).toBeChecked();
 
 		fireEvent.click( checkbox );
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'plugin_activation',
-			'disable_auto_updates'
-		);
+		expect( checkbox ).not.toBeChecked();
 	} );
 
-	it( 'tracks start_setup_auto_updates_enabled and enables auto-updates before navigation', async () => {
+	it( 'enables auto-updates before navigation when checkbox is checked', async () => {
 		const registry = setupRegistry( { siteKitAutoUpdatesEnabled: false } );
 		const enableAutoUpdateSpy = jest
 			.spyOn( registry.dispatch( CORE_SITE ), 'enableAutoUpdate' )
@@ -131,10 +121,6 @@ describe( 'ActivationApp', () => {
 		fireEvent.click( getByRole( 'button', { name: 'Start setup' } ) );
 
 		await waitFor( () => {
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				'plugin_activation',
-				'start_setup_auto_updates_enabled'
-			);
 			expect( enableAutoUpdateSpy ).toHaveBeenCalledTimes( 1 );
 			expect( global.location.assign ).toHaveBeenCalledWith(
 				'http://example.com/wp-admin/admin.php?page=googlesitekit-splash'

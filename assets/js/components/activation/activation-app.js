@@ -84,10 +84,6 @@ export function ActivationApp() {
 			const checked = !! event.target.checked;
 
 			setAutoUpdatesEnabled( checked );
-			trackEvent(
-				'plugin_activation',
-				checked ? 'enable_auto_updates' : 'disable_auto_updates'
-			);
 		},
 		[ setAutoUpdatesEnabled ]
 	);
@@ -99,10 +95,6 @@ export function ActivationApp() {
 			await trackEvent( viewContext, 'confirm_notification', eventLabel );
 
 			if ( setupFlowRefreshPhase4Enabled && autoUpdatesEnabled ) {
-				await trackEvent(
-					'plugin_activation',
-					'start_setup_auto_updates_enabled'
-				);
 				await enableAutoUpdate();
 			}
 
