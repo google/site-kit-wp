@@ -244,10 +244,10 @@ function DashboardTopEarningPagesWidgetGA4( {
 	}
 
 	const columnClassName =
-		'googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--medium';
+		'googlesitekit-typography googlesitekit-typography--title';
 	const tableColumns = [
 		{
-			columnHeaderClassName: columnClassName,
+			columnHeaderClassName: `${ columnClassName } googlesitekit-typography--medium`,
 			title: __( 'Top Earning Pages', 'google-site-kit' ),
 			tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
 			primary: true,
@@ -289,7 +289,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 			},
 		},
 		{
-			columnHeaderClassName: columnClassName,
+			columnHeaderClassName: `${ columnClassName } googlesitekit-typography--small`,
 			title: __( 'Earnings', 'google-site-kit' ),
 			tooltip: __( 'Earnings', 'google-site-kit' ),
 			field: 'metricValues.0.value',
