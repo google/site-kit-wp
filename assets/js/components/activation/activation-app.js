@@ -38,7 +38,7 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { Cell, Grid, Row } from '@/js/material-components';
-import { trackEvent } from '@/js/util/tracking';
+import { trackEvent } from '@/js/util';
 
 export function ActivationApp() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
