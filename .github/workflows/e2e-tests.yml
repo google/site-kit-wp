@@ -91,7 +91,7 @@ jobs:
       AMP_VERSION: ${{ matrix.amp_version }}
       WP_VERSION: ${{ matrix.wp_version }}
       CA_CERT_REFRESH: ${{ matrix.ca_cert_refresh }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 30
     if: github.event_name == 'push' || github.event.pull_request.draft == false
     steps:
@@ -103,10 +103,10 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      - name: Install Chrome
-        uses: browser-actions/setup-chrome@2e1d749697dd1612b833dba4a722266286fbefcd # ratchet:browser-actions/setup-chrome@v2.1.2
-        with:
-          chrome-version: 'latest'
+      # - name: Install Chrome
+      #   uses: browser-actions/setup-chrome@2e1d749697dd1612b833dba4a722266286fbefcd # ratchet:browser-actions/setup-chrome@v2.1.2
+      #   with:
+      #     chrome-version: 'latest'
 
       - name: npm install
         run: npm ci --workspaces --include-workspace-root
@@ -138,7 +138,7 @@ jobs:
         run: npm run env:start
 
       - name: Run the tests
-        run: PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome npm run test:e2e
+        run: npm run test:e2e
 
       - name: Upload artifacts
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # ratchet:actions/upload-artifact@v6
