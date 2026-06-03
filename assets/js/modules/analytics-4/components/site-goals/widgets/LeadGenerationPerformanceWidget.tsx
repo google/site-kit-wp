@@ -48,6 +48,9 @@ import {
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import BreakdownNotice from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNotice';
+import { getBreakdownNoticeCopy } from '@/js/modules/analytics-4/components/site-goals/notifications/breakdownNoticeCopy';
+import { useBreakdownNoticeTooltip } from '@/js/modules/analytics-4/components/site-goals/notifications/useBreakdownNoticeTooltip';
 import {
 	NUMBER_FORMAT,
 	PERCENT_FORMAT,
@@ -91,6 +94,8 @@ const LeadGenerationPerformanceWidget: FC<
 			} ),
 		[]
 	);
+
+	const showBreakdownTooltip = useBreakdownNoticeTooltip();
 
 	const detectedLeadEvents = useSelect(
 		( select: Select ) =>
@@ -299,6 +304,12 @@ const LeadGenerationPerformanceWidget: FC<
 					/>
 				</TilesGroup>
 			) }
+
+			<BreakdownNotice
+				className="googlesitekit-site-goals-breakdown-notice"
+				onDismissComplete={ showBreakdownTooltip }
+				{ ...getBreakdownNoticeCopy( GOAL_TYPES.LEAD ) }
+			/>
 
 			<TilesGroup
 				className="googlesitekit-site-goals-visitor-engagement"
