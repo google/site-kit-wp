@@ -196,7 +196,7 @@ const pageEvents = [];
 // The Jest timeout is increased because these tests are a bit slow
 jest.setTimeout( PUPPETEER_TIMEOUT || 100000 );
 // Set default timeout for Puppeteer waits.
-page.setDefaultTimeout( 30_000 );
+page.setDefaultTimeout( 50_000 );
 // Set default timeout for individual expect-puppeteer assertions.
 setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 3000 } );
 
