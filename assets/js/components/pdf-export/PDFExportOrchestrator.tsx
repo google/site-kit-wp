@@ -163,8 +163,16 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		( select: Select ) => select( CORE_USER ).getDateRange(),
 		[]
 	);
-	const userName = useSelect(
-		( select: Select ) => select( CORE_USER ).getName(),
+	// Every URL embedded in the PDF is a GoLink so the server-side handlers own
+	// the real destinations. The dashboard GoLink is resolved once here and
+	// threaded into the report, which keeps a single source of truth shared by
+	// the header and footer.
+	const [ dashboardURL, helpCenterURL, privacyPolicyURL ] = useSelect(
+		( select: Select ) => [
+			select( CORE_SITE ).getGoLinkURL( 'dashboard' ),
+			select( CORE_SITE ).getGoLinkURL( 'help-center' ),
+			select( CORE_SITE ).getGoLinkURL( 'privacy-policy' ),
+		],
 		[]
 	);
 
@@ -243,9 +251,6 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 
 				armStageTimeout( BUILDING_TIMEOUT_MS );
 
-				// Footer timestamp uses the real generation time, not the dashboard date range.
-				// eslint-disable-next-line sitekit/no-direct-date
-				const generatedAt = new Date().toLocaleString();
 				const filename = getPDFFilename(
 					referenceName,
 					typeof dateRange === 'string' ? dateRange : undefined
@@ -259,10 +264,9 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 								? dateRange
 								: undefined
 						}
-						userName={
-							typeof userName === 'string' ? userName : undefined
-						}
-						generatedAt={ generatedAt }
+						dashboardURL={ dashboardURL || '' }
+						helpCenterURL={ helpCenterURL || '' }
+						privacyPolicyURL={ privacyPolicyURL || '' }
 					/>
 				);
 
