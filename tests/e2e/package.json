@@ -12,7 +12,7 @@
 	"config": {
 		"puppeteer": {
 			"skip": {
-				"download": false
+				"download": true
 			}
 		}
 	},
