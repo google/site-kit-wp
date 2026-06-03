@@ -101,6 +101,7 @@ const jestConfig = [
 	...getArgsFromCLI( cleanUpPrefixes ),
 ];
 
+// eslint-disable-next-line no-console
 console.log( 'jestConfig', jestConfig );
 
 jest.run( jestConfig );
