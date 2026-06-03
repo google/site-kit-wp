@@ -24,15 +24,22 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, Suspense, lazy } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
-import PDFExportOrchestrator from './PDFExportOrchestrator';
 import PDFReportSnackbarHost from './PDFReportSnackbarHost';
+
+const PDFExportOrchestrator = lazy(
+	() =>
+		import(
+			/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+			'./PDFExportOrchestrator'
+		)
+);
 
 const PDFExportRoot: FC = () => {
 	const isExporting = useSelect(
@@ -46,7 +53,9 @@ const PDFExportRoot: FC = () => {
 		<Fragment>
 			<PDFReportSnackbarHost />
 			{ isExporting && (
-				<PDFExportOrchestrator onComplete={ finishExporting } />
+				<Suspense fallback={ null }>
+					<PDFExportOrchestrator onComplete={ finishExporting } />
+				</Suspense>
 			) }
 		</Fragment>
 	);

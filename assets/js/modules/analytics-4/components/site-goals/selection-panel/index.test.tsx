@@ -29,8 +29,6 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
-	SITE_GOALS_EFFECTIVE_DRIVERS,
-	SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTED_DRIVERS,
 	SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTION_FORM,
@@ -91,6 +89,10 @@ describe( 'SiteGoalsSelectionPanel', () => {
 				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
 				ENUM_CONVERSION_EVENTS.CONTACT,
 			] );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSiteGoalsSettings( {} );
 
 		registry
 			.dispatch( CORE_UI )
@@ -268,7 +270,17 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		expect( selectedVisitorEngagement[ GOAL_TYPES.LEAD ] ).toEqual( [] );
 	} );
 
-	it( 'applies staged selection to effective selection on save', async () => {
+	it( 'persists the saved goal driver selection to the module store on save', async () => {
+		fetchMock.postOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/save-site-goals-settings'
+			),
+			( _url, opts ) => ( {
+				body: JSON.parse( opts.body as string ).data.settings,
+				status: 200,
+			} )
+		);
+
 		const { getByRole } = render( <SiteGoalsSelectionPanel />, {
 			registry,
 		} );
@@ -288,20 +300,27 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		);
 
 		await waitFor( () => {
-			const effectiveDrivers = registry
-				.select( CORE_FORMS )
-				.getValue(
-					SITE_GOALS_SELECTION_FORM,
-					SITE_GOALS_EFFECTIVE_DRIVERS
-				);
+			const goalDrivers = registry
+				.select( MODULES_ANALYTICS_4 )
+				.getSiteGoalsGoalDrivers();
 
-			expect( effectiveDrivers[ GOAL_TYPES.ECOMMERCE ] ).not.toContain(
+			expect( goalDrivers[ GOAL_TYPES.ECOMMERCE ] ).not.toContain(
 				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS
 			);
 		} );
 	} );
 
-	it( 'applies staged visitor engagement selection to effective selection on save', async () => {
+	it( 'persists the saved visitor engagement selection to the module store on save', async () => {
+		fetchMock.postOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/save-site-goals-settings'
+			),
+			( _url, opts ) => ( {
+				body: JSON.parse( opts.body as string ).data.settings,
+				status: 200,
+			} )
+		);
+
 		const { getByRole } = render( <SiteGoalsSelectionPanel />, {
 			registry,
 		} );
@@ -321,16 +340,13 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		);
 
 		await waitFor( () => {
-			const effectiveVisitorEngagement = registry
-				.select( CORE_FORMS )
-				.getValue(
-					SITE_GOALS_SELECTION_FORM,
-					SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT
-				);
+			const visitorEngagement = registry
+				.select( MODULES_ANALYTICS_4 )
+				.getSiteGoalsVisitorEngagement();
 
-			expect(
-				effectiveVisitorEngagement[ GOAL_TYPES.ECOMMERCE ]
-			).not.toContain( 'add_to_cart' );
+			expect( visitorEngagement[ GOAL_TYPES.ECOMMERCE ] ).not.toContain(
+				'add_to_cart'
+			);
 		} );
 	} );
 
@@ -504,12 +520,6 @@ describe( 'SiteGoalsSelectionPanel', () => {
 
 	it( 'preserves staged selection after returning from custom dimensions OAuth', async () => {
 		registry.dispatch( CORE_FORMS ).setValues( SITE_GOALS_SELECTION_FORM, {
-			[ SITE_GOALS_EFFECTIVE_DRIVERS ]: {
-				[ GOAL_TYPES.ECOMMERCE ]: [
-					GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
-				],
-				[ GOAL_TYPES.LEAD ]: [],
-			},
 			[ SITE_GOALS_SELECTED_DRIVERS ]: {
 				[ GOAL_TYPES.ECOMMERCE ]: [
 					GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,

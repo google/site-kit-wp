@@ -22,13 +22,8 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import {
-	SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT,
-	SITE_GOALS_SELECTION_FORM,
-} from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
@@ -507,6 +502,9 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			},
 		] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSiteGoalsSettings( {} );
 	} );
 
 	it( 'renders WidgetNull when no ecommerce events are detected', async () => {
@@ -1132,8 +1130,8 @@ describe( 'OnlineStorePerformanceWidget', () => {
 				ENUM_CONVERSION_EVENTS.PURCHASE,
 				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
 			] );
-		registry.dispatch( CORE_FORMS ).setValues( SITE_GOALS_SELECTION_FORM, {
-			[ SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT ]: {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+			visitorEngagement: {
 				[ GOAL_TYPES.ECOMMERCE ]: [],
 				[ GOAL_TYPES.LEAD ]: [],
 			},

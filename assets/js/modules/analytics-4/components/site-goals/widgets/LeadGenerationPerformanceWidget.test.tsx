@@ -451,6 +451,9 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			},
 		] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSiteGoalsSettings( {} );
 	} );
 
 	it( 'renders WidgetNull when no lead events are detected', async () => {

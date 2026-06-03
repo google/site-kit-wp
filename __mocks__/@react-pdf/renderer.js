@@ -1,5 +1,5 @@
 /**
- * `@react-pdf/renderer` jest mock.
+ * React PDF renderer mock for Jest.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -16,47 +16,63 @@
  * limitations under the License.
  */
 
-// Manual Jest mock for `@react-pdf/renderer`. The real package ships ESM
-// with native deps that fail in jsdom. CommonJS to match `__mocks__/tabbable.js`.
+/*
+ * `@react-pdf/renderer` pulls in `fontkit`/`restructure` which require
+ * `TextEncoder` and other Node streams that JSDOM does not provide. None of
+ * that machinery is meaningful in unit tests: we only need the primitives to
+ * render as identifiable React host components so we can inspect the tree.
+ */
 
 /**
  * External dependencies
  */
-const React = require( 'react' );
+import { createElement } from 'react';
 
-function passthrough( name ) {
-	function Component( props ) {
-		return React.createElement(
-			name.toLowerCase(),
-			{ 'data-react-pdf': name, ...props },
-			props && props.children
-		);
+function makePrimitive( name, tag ) {
+	function PDFPrimitive( props ) {
+		return createElement( tag, props, props.children );
 	}
-	Component.displayName = name;
-	return Component;
+	PDFPrimitive.displayName = name;
+	return PDFPrimitive;
 }
 
-const Document = passthrough( 'Document' );
-const Page = passthrough( 'Page' );
-const View = passthrough( 'View' );
-const Text = passthrough( 'Text' );
-const Image = passthrough( 'Image' );
-const Link = passthrough( 'Link' );
-const Note = passthrough( 'Note' );
-const Canvas = passthrough( 'Canvas' );
-
-const StyleSheet = {
-	create: ( styles ) => styles,
-	flatten: ( style ) => Object.assign( {}, ...[].concat( style || {} ) ),
+export const StyleSheet = {
+	create( styles ) {
+		return styles;
+	},
+	flatten( style ) {
+		if ( Array.isArray( style ) ) {
+			return Object.assign( {}, ...style.filter( Boolean ) );
+		}
+		return style || {};
+	},
 };
 
-const Font = {
+export const Document = makePrimitive( 'Document', 'pdf-document' );
+export const Page = makePrimitive( 'Page', 'pdf-page' );
+export const View = makePrimitive( 'View', 'pdf-view' );
+export const Text = makePrimitive( 'Text', 'pdf-text' );
+export const Image = makePrimitive( 'Image', 'pdf-image' );
+export const Link = makePrimitive( 'Link', 'pdf-link' );
+export const Note = makePrimitive( 'Note', 'pdf-note' );
+export const Canvas = makePrimitive( 'Canvas', 'pdf-canvas' );
+export const Svg = makePrimitive( 'Svg', 'pdf-svg' );
+export const Path = makePrimitive( 'Path', 'pdf-path' );
+export const G = makePrimitive( 'G', 'pdf-g' );
+export const Rect = makePrimitive( 'Rect', 'pdf-rect' );
+export const Circle = makePrimitive( 'Circle', 'pdf-circle' );
+export const Line = makePrimitive( 'Line', 'pdf-line' );
+export const Polygon = makePrimitive( 'Polygon', 'pdf-polygon' );
+export const Polyline = makePrimitive( 'Polyline', 'pdf-polyline' );
+
+export const Font = {
 	register: jest.fn(),
+	registerHyphenationCallback: jest.fn(),
 	getRegisteredFonts: jest.fn( () => [] ),
 	clear: jest.fn(),
 };
 
-const pdf = jest.fn( () => ( {
+export const pdf = jest.fn( () => ( {
 	toBlob: jest.fn( () =>
 		Promise.resolve(
 			new Blob( [ 'mock-pdf' ], { type: 'application/pdf' } )
@@ -68,44 +84,13 @@ const pdf = jest.fn( () => ( {
 	on: jest.fn(),
 } ) );
 
-const PDFViewer = passthrough( 'PDFViewer' );
-const PDFDownloadLink = passthrough( 'PDFDownloadLink' );
-function BlobProvider( { children } ) {
+export const PDFViewer = makePrimitive( 'PDFViewer', 'pdf-viewer' );
+export const PDFDownloadLink = makePrimitive(
+	'PDFDownloadLink',
+	'pdf-download-link'
+);
+export function BlobProvider( { children } ) {
 	return typeof children === 'function'
 		? children( { blob: null, url: null, loading: false, error: null } )
 		: null;
 }
-
-module.exports = {
-	Document,
-	Page,
-	View,
-	Text,
-	Image,
-	Link,
-	Note,
-	Canvas,
-	StyleSheet,
-	Font,
-	pdf,
-	PDFViewer,
-	PDFDownloadLink,
-	BlobProvider,
-	__esModule: true,
-	default: {
-		Document,
-		Page,
-		View,
-		Text,
-		Image,
-		Link,
-		Note,
-		Canvas,
-		StyleSheet,
-		Font,
-		pdf,
-		PDFViewer,
-		PDFDownloadLink,
-		BlobProvider,
-	},
-};

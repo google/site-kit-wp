@@ -37,8 +37,6 @@ import useFormValue from '@/js/hooks/useFormValue';
 import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
-	SITE_GOALS_EFFECTIVE_DRIVERS,
-	SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTED_DRIVERS,
 	SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTION_FORM,
@@ -79,13 +77,15 @@ const SiteGoalsSelectionPanel: FC = () => {
 		[]
 	);
 
-	const [ effectiveDrivers ] = useFormValue(
-		SITE_GOALS_SELECTION_FORM,
-		SITE_GOALS_EFFECTIVE_DRIVERS
+	const effectiveDrivers = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getSiteGoalsGoalDrivers(),
+		[]
 	);
-	const [ effectiveVisitorEngagement ] = useFormValue(
-		SITE_GOALS_SELECTION_FORM,
-		SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT
+	const effectiveVisitorEngagement = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getSiteGoalsVisitorEngagement(),
+		[]
 	);
 	const [ isCustomDimensionsAutoSubmit ] = useFormValue(
 		FORM_CUSTOM_DIMENSIONS_CREATE,
