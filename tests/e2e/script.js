@@ -58,7 +58,7 @@ function hasArgInCLI( arg ) {
 	return getArgFromCLI( arg ) !== undefined;
 }
 
-const result = spawn( [ 'npx', 'puppeteer', 'install' ], {
+const result = spawn( 'npx puppeteer install', {
 	stdio: 'inherit',
 } );
 
