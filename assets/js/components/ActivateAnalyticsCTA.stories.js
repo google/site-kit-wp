@@ -65,21 +65,14 @@ WithSetupFlowRefreshPhase4ActivationError.storyName =
 	'Setup Flow Refresh Phase 4 - Activation Error';
 WithSetupFlowRefreshPhase4ActivationError.args = {
 	dismissedItemSlug: 'analytics-setup-cta-search-funnel',
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_SITE ).setInternalServerError( {
+			id: 'analytics-4-setup-error',
+			description: 'This is an error',
+		} );
+	},
 };
 WithSetupFlowRefreshPhase4ActivationError.parameters = {
-	features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
-};
-
-export const WithSetupFlowRefreshPhase4ActivationErrorDismissed = Template.bind(
-	{}
-);
-WithSetupFlowRefreshPhase4ActivationErrorDismissed.storyName =
-	'Setup Flow Refresh Phase 4 - Activation Error Dismissed';
-WithSetupFlowRefreshPhase4ActivationErrorDismissed.args = {
-	dismissedItemSlug: 'analytics-setup-cta-search-funnel',
-	phase4ActivationErrorDismissed: true,
-};
-WithSetupFlowRefreshPhase4ActivationErrorDismissed.parameters = {
 	features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
 };
 
@@ -89,10 +82,12 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const analyticsActive = args?.isAnalyticsActive || false;
-			const phase4ActivationErrorDismissed =
-				args?.phase4ActivationErrorDismissed || false;
 
 			function setupRegistry( registry ) {
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
@@ -109,20 +104,7 @@ export default {
 				provideSiteInfo( registry );
 				provideUserAuthentication( registry );
 				provideUserCapabilities( registry );
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetDismissedItems(
-						phase4ActivationErrorDismissed
-							? [ 'analytics-setup-cta-search-funnel' ]
-							: []
-					);
-
-				if ( args?.phase4ActivationErrorDismissed !== undefined ) {
-					registry.dispatch( CORE_SITE ).setInternalServerError( {
-						id: 'analytics-4-setup-error',
-						description: 'This is an error',
-					} );
-				}
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 			}
 
 			return (
