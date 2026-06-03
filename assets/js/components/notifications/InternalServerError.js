@@ -31,19 +31,27 @@ import BannerNotification, {
 } from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 import Notification from '@/js/googlesitekit/notifications/components/Notification';
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import { useFeature } from '@/js/hooks/useFeature';
 import { getNavigationalScrollTop } from '@/js/util/scroll';
 
 const NOTIFICATION_ID = 'internal-server-error';
 
 export default function InternalServerError() {
 	const breakpoint = useBreakpoint();
+	const setupFlowRefreshPhase4Enabled = useFeature(
+		'setupFlowRefreshPhase4'
+	);
 	const error = useSelect( ( select ) =>
 		select( CORE_SITE ).getInternalServerError()
 	);
 
+	const isAnalyticsCTAActivationError =
+		setupFlowRefreshPhase4Enabled &&
+		error?.id === 'analytics-4-setup-error';
+
 	// Scroll to the notification when the error is present.
 	useEffect( () => {
-		if ( ! error ) {
+		if ( ! error || isAnalyticsCTAActivationError ) {
 			return;
 		}
 
@@ -54,9 +62,9 @@ export default function InternalServerError() {
 			),
 			behavior: 'smooth',
 		} );
-	}, [ error, breakpoint ] );
+	}, [ error, breakpoint, isAnalyticsCTAActivationError ] );
 
-	if ( ! error ) {
+	if ( ! error || isAnalyticsCTAActivationError ) {
 		return null;
 	}
 

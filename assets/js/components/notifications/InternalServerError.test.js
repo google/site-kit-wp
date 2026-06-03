@@ -98,4 +98,34 @@ describe( 'InternalServerError', () => {
 
 		expect( scrollToSpy ).not.toHaveBeenCalled();
 	} );
+
+	it( 'should not render the banner for the analytics CTA activation error when setupFlowRefreshPhase4 is enabled', () => {
+		registry.dispatch( CORE_SITE ).setInternalServerError( {
+			id: 'analytics-4-setup-error',
+			description: 'Internal server error',
+		} );
+
+		const { container } = render( <InternalServerError />, {
+			registry,
+			features: [ 'setupFlowRefreshPhase4' ],
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+		expect( scrollToSpy ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should render the banner for the analytics CTA activation error when setupFlowRefreshPhase4 is disabled', () => {
+		const error = {
+			id: 'analytics-4-setup-error',
+			title: 'Internal Server Error',
+			description: 'Internal server error',
+		};
+		registry.dispatch( CORE_SITE ).setInternalServerError( error );
+
+		const { getAllByText } = render( <InternalServerError />, {
+			registry,
+		} );
+
+		expect( getAllByText( error.title )[ 0 ] ).not.toBeUndefined();
+	} );
 } );
