@@ -17,11 +17,9 @@
  */
 
 .googlesitekit-plugin {
-
 	.googlesitekit-settings-module--analytics-4 {
-
-		.googlesitekit-settings-module__fields-group-title + .googlesitekit-setup-module__inputs {
-
+		.googlesitekit-settings-module__fields-group-title
+			+ .googlesitekit-setup-module__inputs {
 			.googlesitekit-analytics__select-account,
 			.googlesitekit-analytics-4__select-property,
 			.googlesitekit-analytics-4__select-webdatastream {
@@ -30,7 +28,6 @@
 		}
 
 		.googlesitekit-analytics-enable + .googlesitekit-setup-module__inputs {
-
 			.googlesitekit-analytics__select-property,
 			.googlesitekit-analytics__select-profile {
 				margin-top: $grid-gap-phone / 2;
@@ -97,8 +94,12 @@
 		.googlesitekit-module-settings-group__helper-text {
 			margin-left: 52px;
 		}
+
+		.googlesitekit-google-tag-gateway-toggle {
+			margin-top: 10px;
+		}
 	}
-	
+
 	.googlesitekit-settings-measurement-row {
 		display: flex;
 		gap: 14px;
@@ -166,7 +167,7 @@
 	}
 
 	.googlesitekit-settings-measurement-row__title {
-		font-weight: 400;
+		font-weight: $fw-normal;
 		line-height: 1.43;
 		margin: 0;
 	}
