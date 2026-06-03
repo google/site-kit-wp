@@ -58,7 +58,7 @@ function hasArgInCLI( arg ) {
 	return getArgFromCLI( arg ) !== undefined;
 }
 
-const result = spawn( 'npx puppeteer install', {
+const result = spawn( 'node', [ require.resolve( 'puppeteer/install' ) ], {
 	stdio: 'inherit',
 } );
 
@@ -95,13 +95,4 @@ Object.entries( configsMapping ).forEach( ( [ envKey, argName ] ) => {
 
 const cleanUpPrefixes = [ '--puppeteer-', '--wordpress-' ];
 
-const jestConfig = [
-	...config,
-	...runInBand,
-	...getArgsFromCLI( cleanUpPrefixes ),
-];
-
-// eslint-disable-next-line no-console
-console.log( 'jestConfig', jestConfig );
-
-jest.run( jestConfig );
+jest.run( [ ...config, ...runInBand, ...getArgsFromCLI( cleanUpPrefixes ) ] );
