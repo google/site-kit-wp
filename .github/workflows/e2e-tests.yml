@@ -111,6 +111,8 @@ jobs:
       - name: npm install
         run: npm ci --workspaces --include-workspace-root
 
+      - run: ls -al node_modules/puppeteer/.local-chromium
+
       - name: Remove Puppeteer's bundled Chromium
         run: rm -rf node_modules/puppeteer/.local-chromium
 
