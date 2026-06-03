@@ -34,6 +34,7 @@ import {
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { isFeatureEnabled } from '@/js/features';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import {
 	CORE_USER,
@@ -42,7 +43,11 @@ import {
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { isValidPropertyID } from '@/js/modules/analytics-4/utils/validation';
-import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
+import {
+	CUSTOM_DIMENSION_DEFINITIONS,
+	MODULES_ANALYTICS_4,
+	SITE_GOALS_CUSTOM_DIMENSIONS,
+} from './constants';
 
 const customDimensionFields = [
 	'parameterName',
@@ -89,6 +94,14 @@ const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 	reducerCallback: createReducer( ( state, dimensions ) => {
 		state.settings = state.settings || {};
 		state.settings.availableCustomDimensions = dimensions;
+
+		// These dimensions come from Google Analytics. They are server data, not
+		// a user edit, so they belong in `savedSettings`, not only `settings`.
+		// The form compares the two to find unsaved changes. If only `settings`
+		// had them, Cancel would revert and drop these dimensions, and the
+		// Enable button would return until a reload.
+		state.savedSettings = state.savedSettings || {};
+		state.savedSettings.availableCustomDimensions = dimensions;
 	} ),
 	isAction: true,
 } );
@@ -110,6 +123,7 @@ const baseActions = {
 	 * Creates custom dimensions and syncs them in the settings.
 	 *
 	 * @since 1.113.0
+	 * @since n.e.x.t Added the Site Goals custom dimensions when the `siteGoals` feature flag is on and advanced data breakdowns is enabled.
 	 *
 	 * @param {Array<string>} customDimensions Optional additional custom dimensions to create.
 	 */
@@ -145,6 +159,26 @@ const baseActions = {
 		const uniqueRequiredCustomDimensions = [
 			...new Set( requiredCustomDimensions ),
 		];
+
+		// Add the Site Goals custom dimensions when the Site Goals feature is on
+		// and advanced data breakdowns is enabled. The breakdowns setting is read
+		// inside this check so feature-off flows (eg. key metrics setup) skip it
+		// and never fetch it. The settings row already loaded it, so it is ready.
+		if ( isFeatureEnabled( 'siteGoals' ) ) {
+			const isAdvancedDataBreakdownsEnabled = registry
+				.select( MODULES_ANALYTICS_4 )
+				.isAdvancedDataBreakdownsEnabled();
+
+			if ( isAdvancedDataBreakdownsEnabled ) {
+				SITE_GOALS_CUSTOM_DIMENSIONS.forEach( ( dimension ) => {
+					if (
+						! uniqueRequiredCustomDimensions.includes( dimension )
+					) {
+						uniqueRequiredCustomDimensions.push( dimension );
+					}
+				} );
+			}
+		}
 
 		const availableCustomDimensions = registry
 			.select( MODULES_ANALYTICS_4 )
