@@ -24,10 +24,8 @@ export const colors = {
 	text: '#202124',
 	/** Muted secondary text, e.g. date ranges and captions. */
 	secondary: '#5f6368',
-	/** Link text colour used by the header and footer links. */
-	link: '#1a73e8',
-	/** Hairline divider colour, e.g. the footer's top border. */
-	border: '#dadce0',
+	/** Muted footer link text (Figma: surfaces/on-surface-variant). */
+	onSurfaceVariant: '#6c726e',
 } as const;
 
 /**
@@ -37,7 +35,7 @@ export const colors = {
  */
 export const fontSizes = {
 	/** Small print, e.g. footer links and captions. */
-	small: 9,
+	small: 12,
 	/** Default body copy. */
 	body: 12,
 	/** Section subheadings. */
@@ -52,6 +50,15 @@ export const fontSizes = {
  * @since n.e.x.t
  */
 export const spacing = {
-	/** Vertical padding applied above and below the footer links. */
-	footerPaddingVertical: 12,
+	/** Gap above the footer links (Figma: 44px above the footer). */
+	footerMarginTop: 44,
+	/**
+	 * Horizontal gap between footer links. Centring the links with a fixed gap
+	 * (rather than spreading them edge-to-edge) keeps the group in the middle of
+	 * the page and lets it grow for longer translated labels. Approximates the
+	 * ~49.5px gap implied by the Figma layout.
+	 */
+	footerLinkGap: 48,
+	/** Vertical gap between footer links when they wrap (Figma: gap-y 4px). */
+	footerLinkRowGap: 4,
 } as const;

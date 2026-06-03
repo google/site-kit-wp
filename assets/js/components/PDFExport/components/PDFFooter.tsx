@@ -37,16 +37,20 @@ import {
 const styles = StyleSheet.create( {
 	footer: {
 		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		borderTopWidth: 1,
-		borderTopColor: colors.border,
-		paddingTop: spacing.footerPaddingVertical,
-		paddingBottom: spacing.footerPaddingVertical,
+		flexWrap: 'wrap',
+		justifyContent: 'center',
+		alignItems: 'flex-start',
+		columnGap: spacing.footerLinkGap,
+		rowGap: spacing.footerLinkRowGap,
+		marginTop: spacing.footerMarginTop,
 	},
 	link: {
 		fontSize: fontSizes.small,
-		color: colors.link,
+		// Matches the design's label/small token (12/16): react-pdf lineHeight
+		// is a unitless multiple of the font size, so 16 / 12 yields a 16pt line.
+		lineHeight: 16 / 12,
+		letterSpacing: 0.2,
+		color: colors.onSurfaceVariant,
 		textDecoration: 'none',
 	},
 } );
