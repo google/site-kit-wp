@@ -95,4 +95,12 @@ Object.entries( configsMapping ).forEach( ( [ envKey, argName ] ) => {
 
 const cleanUpPrefixes = [ '--puppeteer-', '--wordpress-' ];
 
-jest.run( [ ...config, ...runInBand, ...getArgsFromCLI( cleanUpPrefixes ) ] );
+const jestConfig = [
+	...config,
+	...runInBand,
+	...getArgsFromCLI( cleanUpPrefixes ),
+];
+
+console.log( 'jestConfig', jestConfig );
+
+jest.run( jestConfig );
