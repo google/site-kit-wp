@@ -30,7 +30,6 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  */
 import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
 import PreviewBlock from '@/js/components/PreviewBlock';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
@@ -38,11 +37,7 @@ import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
-import {
-	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
-	SITE_GOALS_EFFECTIVE_DRIVERS,
-	SITE_GOALS_SELECTION_FORM,
-} from '@/js/modules/analytics-4/components/site-goals/constants';
+import { SITE_GOALS_DEFAULT_SELECTED_DRIVERS } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_CATALOG,
 	GOAL_TYPES,
@@ -104,10 +99,7 @@ const LeadGenerationPerformanceWidget: FC<
 	);
 	const effectiveSelectedDrivers = useSelect(
 		( select: Select ) =>
-			select( CORE_FORMS ).getValue(
-				SITE_GOALS_SELECTION_FORM,
-				SITE_GOALS_EFFECTIVE_DRIVERS
-			),
+			select( MODULES_ANALYTICS_4 ).getSiteGoalsGoalDrivers(),
 		[]
 	) as GoalDriverSelectionState | undefined;
 	const resolvedSelections = resolveGoalDriverSelectionState(
