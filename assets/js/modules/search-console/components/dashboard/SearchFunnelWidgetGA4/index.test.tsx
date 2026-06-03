@@ -32,6 +32,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
@@ -73,6 +74,10 @@ describe( 'SearchFunnelWidgetGA4', () => {
 
 	const dismissItemEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
+	);
+
+	const activateEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/modules/data/activation'
 	);
 
 	beforeEach( () => {
@@ -300,5 +305,73 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			'click_learn_more_link',
 			'search_funnel'
 		);
+	} );
+
+	it( 'should render activation error state and dismiss CTA when "Got it" is clicked', async () => {
+		registry.dispatch( CORE_SITE ).setInternalServerError( {
+			id: 'analytics-4-setup-error',
+			description: 'This is an error',
+		} );
+
+		const { getByText, getByRole, queryByText, waitForRegistry } = render(
+			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
+			{
+				registry,
+				features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( getByText( 'Analytics setup failed' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Something went wrong, please try again' )
+		).toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'button', { name: 'Got it' } ) );
+
+		await waitFor( () => {
+			expect(
+				registry.select( CORE_SITE ).getInternalServerError()
+			).toBeUndefined();
+			expect(
+				registry
+					.select( CORE_USER )
+					.isItemDismissed( 'analytics-setup-cta-search-funnel' )
+			).toBe( true );
+			expect(
+				queryByText( 'Analytics setup failed' )
+			).not.toBeInTheDocument();
+		} );
+	} );
+
+	it( 'should retry activation when "Retry Analytics setup" is clicked', async () => {
+		registry.dispatch( CORE_SITE ).setInternalServerError( {
+			id: 'analytics-4-setup-error',
+			description: 'This is an error',
+		} );
+
+		fetchMock.postOnce( activateEndpoint, {
+			body: { message: 'Retry failed' },
+			status: 500,
+		} );
+
+		const { getByRole, waitForRegistry } = render(
+			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
+			{
+				registry,
+				features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			getByRole( 'button', { name: 'Retry Analytics setup' } )
+		);
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( activateEndpoint );
+		} );
 	} );
 } );

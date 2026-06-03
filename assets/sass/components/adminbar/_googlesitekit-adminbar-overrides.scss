@@ -274,6 +274,11 @@
 
 			@extend .googlesitekit-activate-analytics-cta;
 
+			&.googlesitekit-activate-analytics-cta--error {
+
+				@extend .googlesitekit-activate-analytics-cta--error;
+			}
+
 			.googlesitekit-activate-analytics-cta__top {
 
 				@extend .googlesitekit-activate-analytics-cta__top;
@@ -287,6 +292,11 @@
 			.googlesitekit-activate-analytics-cta__description {
 
 				@extend .googlesitekit-activate-analytics-cta__description;
+			}
+
+			.googlesitekit-activate-analytics-cta__title {
+
+				@extend .googlesitekit-activate-analytics-cta__title;
 			}
 
 			.googlesitekit-activate-analytics-cta__actions {

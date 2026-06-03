@@ -42,8 +42,17 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 	render,
+	waitFor,
 } from '@tests/js/test-utils';
 import AdminBarWidgets from './AdminBarWidgets';
+
+const dismissItemEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/dismiss-item'
+);
+
+const activateEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/modules/data/activation'
+);
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
@@ -77,6 +86,11 @@ describe( 'AdminBarWidgets', () => {
 		} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		fetchMock.post( dismissItemEndpoint, {
+			body: [ 'analytics-setup-cta-admin-bar' ],
+			status: 200,
+		} );
 
 		fetchMock.get(
 			new RegExp(
@@ -274,5 +288,70 @@ describe( 'AdminBarWidgets', () => {
 			'click_learn_more_link',
 			'admin_bar'
 		);
+	} );
+
+	it( 'should render activation error state and dismiss CTA when "Got it" is clicked', async () => {
+		registry.dispatch( CORE_SITE ).setInternalServerError( {
+			id: 'analytics-4-setup-error',
+			description: 'This is an error',
+		} );
+
+		const { getByText, getByRole, queryByText, waitForRegistry } = render(
+			<AdminBarWidgets />,
+			{
+				registry,
+				features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( getByText( 'Analytics setup failed' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Something went wrong, please try again' )
+		).toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'button', { name: 'Got it' } ) );
+
+		await waitFor( () => {
+			expect(
+				registry.select( CORE_SITE ).getInternalServerError()
+			).toBeUndefined();
+			expect(
+				registry
+					.select( CORE_USER )
+					.isItemDismissed( 'analytics-setup-cta-admin-bar' )
+			).toBe( true );
+			expect(
+				queryByText( 'Analytics setup failed' )
+			).not.toBeInTheDocument();
+		} );
+	} );
+
+	it( 'should retry activation when "Retry Analytics setup" is clicked', async () => {
+		registry.dispatch( CORE_SITE ).setInternalServerError( {
+			id: 'analytics-4-setup-error',
+			description: 'This is an error',
+		} );
+
+		fetchMock.postOnce( activateEndpoint, {
+			body: { message: 'Retry failed' },
+			status: 500,
+		} );
+
+		const { getByRole, waitForRegistry } = render( <AdminBarWidgets />, {
+			registry,
+			features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+		} );
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			getByRole( 'button', { name: 'Retry Analytics setup' } )
+		);
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( activateEndpoint );
+		} );
 	} );
 } );
