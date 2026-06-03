@@ -60,10 +60,7 @@ import {
 	VisitorEngagementTiles,
 	resolveVisitorEngagementSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
 
@@ -211,7 +208,6 @@ const OnlineStorePerformanceWidget: FC<
 	const dates = useSelect(
 		( select: Select ) =>
 			select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
 				compare: true,
 			} ),
 		[]
