@@ -150,6 +150,34 @@ describe( 'core/widgets Widget areas', () => {
 				} ).not.toThrow();
 			} );
 
+			it( 'stores the pdfTitle and exposes it via getWidgetArea', () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidgetArea( 'header', {
+						title: 'Analytics Header',
+						pdfTitle: 'Traffic',
+						style: 'composite',
+					} );
+
+				expect(
+					registry.select( CORE_WIDGETS ).getWidgetArea( 'header' )
+						.pdfTitle
+				).toBe( 'Traffic' );
+			} );
+
+			it( 'leaves pdfTitle undefined when not provided', () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidgetArea( 'header', {
+						title: 'Analytics Header',
+					} );
+
+				expect(
+					registry.select( CORE_WIDGETS ).getWidgetArea( 'header' )
+						.pdfTitle
+				).toBeUndefined();
+			} );
+
 			it( 'should register multiple widget areas', () => {
 				const slugOne = 'dashboard-header';
 				const settingsOne = {

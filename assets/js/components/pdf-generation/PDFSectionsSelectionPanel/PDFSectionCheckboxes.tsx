@@ -30,17 +30,21 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Checkbox } from 'googlesitekit-components';
-import { PDF_SECTIONS } from '@/js/components/pdf-generation/constants';
+import { PDFSection } from '@/js/components/pdf-generation/constants';
 import Typography from '@/js/components/Typography';
 
 interface PDFSectionCheckboxesProps {
-	selectedSections: string[];
-	toggleSection: ( slug: string ) => void;
+	sections: PDFSection[];
+	selectedWidgetSlugs: string[];
+	toggleSection: ( section: PDFSection ) => void;
+	toggleWidget: ( widgetSlug: string ) => void;
 }
 
 const PDFSectionCheckboxes: FC< PDFSectionCheckboxesProps > = ( {
-	selectedSections,
+	sections,
+	selectedWidgetSlugs,
 	toggleSection,
+	toggleWidget,
 } ) => {
 	return (
 		<div
@@ -48,25 +52,71 @@ const PDFSectionCheckboxes: FC< PDFSectionCheckboxesProps > = ( {
 			role="group"
 			aria-label={ __( 'PDF report sections', 'google-site-kit' ) }
 		>
-			{ PDF_SECTIONS.map( ( { slug, title } ) => (
-				<div
-					key={ slug }
-					className="googlesitekit-pdf-download-panel__section"
-				>
-					<Checkbox
-						id={ `pdf-download-section-${ slug }` }
-						name={ `pdf-download-section-${ slug }` }
-						value={ slug }
-						checked={ selectedSections.includes( slug ) }
-						onChange={ () => toggleSection( slug ) }
+			{ sections.map( ( section ) => {
+				const selectedCount = section.widgetSlugs.filter( ( slug ) =>
+					selectedWidgetSlugs.includes( slug )
+				).length;
+				const sectionChecked =
+					section.widgetSlugs.length > 0 &&
+					selectedCount === section.widgetSlugs.length;
+				const sectionIndeterminate =
+					selectedCount > 0 &&
+					selectedCount < section.widgetSlugs.length;
+
+				return (
+					<div
+						key={ section.slug }
+						className="googlesitekit-pdf-download-panel__section-group"
 					>
-						{ /* @ts-expect-error - The `Typography` component does not yet expose `className` as optional. */ }
-						<Typography type="title" size="medium" as="span">
-							{ title }
-						</Typography>
-					</Checkbox>
-				</div>
-			) ) }
+						<div className="googlesitekit-pdf-download-panel__section">
+							<Checkbox
+								id={ `pdf-download-section-${ section.slug }` }
+								name={ `pdf-download-section-${ section.slug }` }
+								value={ section.slug }
+								checked={ sectionChecked }
+								indeterminate={ sectionIndeterminate }
+								onChange={ () => toggleSection( section ) }
+							>
+								{ /* @ts-expect-error - The `Typography` component does not yet expose `className` as optional. */ }
+								<Typography
+									type="title"
+									size="medium"
+									as="span"
+								>
+									{ section.label }
+								</Typography>
+							</Checkbox>
+						</div>
+						{ section.widgets.map( ( widget ) => (
+							<div
+								key={ widget.slug }
+								className="googlesitekit-pdf-download-panel__sub-section"
+							>
+								<Checkbox
+									id={ `pdf-download-widget-${ widget.slug }` }
+									name={ `pdf-download-widget-${ widget.slug }` }
+									value={ widget.slug }
+									checked={ selectedWidgetSlugs.includes(
+										widget.slug
+									) }
+									onChange={ () =>
+										toggleWidget( widget.slug )
+									}
+								>
+									{ /* @ts-expect-error - The `Typography` component does not yet expose `className` as optional. */ }
+									<Typography
+										type="body"
+										size="medium"
+										as="span"
+									>
+										{ widget.label }
+									</Typography>
+								</Checkbox>
+							</div>
+						) ) }
+					</div>
+				);
+			} ) }
 		</div>
 	);
 };

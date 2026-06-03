@@ -29,38 +29,35 @@ import { useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import {
-	DEFAULT_SELECTED_SECTIONS,
-	FORM_PDF_DOWNLOAD,
-	FORM_PDF_DOWNLOAD_SELECTED_SECTIONS,
-	PDF_DOWNLOAD_PANEL_OPENED_KEY,
-} from '@/js/components/pdf-generation/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { useDispatch } from 'googlesitekit-data';
+import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-generation/constants';
+import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import useFormValue from '@/js/hooks/useFormValue';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import { CONTEXT_MAIN_DASHBOARD_TRAFFIC } from '@/js/googlesitekit/widgets/default-contexts';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import PDFSectionsSelectionPanel from './index';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
 type Registry = any;
 
+function NullComponent() {
+	return null;
+}
+
 function DefaultTemplate() {
 	return <PDFSectionsSelectionPanel />;
 }
 
 function EmptyTemplate() {
-	const [ , setSelectedSections ] = useFormValue(
-		FORM_PDF_DOWNLOAD,
-		FORM_PDF_DOWNLOAD_SELECTED_SECTIONS
-	);
+	const { setSelection } = useDispatch( CORE_PDF );
 
-	// The panel's `onSideSheetOpen` resets the form to default selection on
-	// every mount. Re-applying the empty selection from this Template's
-	// `useEffect` runs after the panel's reset (effects fire bottom-up),
-	// so the story renders with no sections selected.
+	// The panel seeds all available sections once on mount. Clearing the
+	// selection from this Template's `useEffect` runs after that seed (effects
+	// fire bottom-up), so the story renders with no sections selected.
 	useEffect( () => {
-		setSelectedSections( [] );
-	}, [ setSelectedSections ] );
+		setSelection( { contextSlugs: [], widgetSlugs: [] } );
+	}, [ setSelection ] );
 
 	return <PDFSectionsSelectionPanel />;
 }
@@ -82,10 +79,38 @@ export default {
 				registry
 					.dispatch( CORE_UI )
 					.setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, true );
-				registry.dispatch( CORE_FORMS ).setValues( FORM_PDF_DOWNLOAD, {
-					[ FORM_PDF_DOWNLOAD_SELECTED_SECTIONS ]:
-						DEFAULT_SELECTED_SECTIONS,
+
+				const widgets = registry.dispatch( CORE_WIDGETS );
+				widgets.registerWidgetArea( 'pdfTrafficArea', {
+					title: 'Find out how your audience is growing',
+					pdfTitle: 'Traffic',
+					style: 'boxes',
+					priority: 1,
 				} );
+				widgets.assignWidgetArea(
+					'pdfTrafficArea',
+					CONTEXT_MAIN_DASHBOARD_TRAFFIC
+				);
+				widgets.registerWidget( 'pdfAllTraffic', {
+					Component: NullComponent,
+					priority: 1,
+					pdf: {
+						Component: NullComponent,
+						getData: () => Promise.resolve( { data: null } ),
+						label: 'Site traffic over time',
+					},
+				} );
+				widgets.assignWidget( 'pdfAllTraffic', 'pdfTrafficArea' );
+				widgets.registerWidget( 'pdfSearchTraffic', {
+					Component: NullComponent,
+					priority: 2,
+					pdf: {
+						Component: NullComponent,
+						getData: () => Promise.resolve( { data: null } ),
+						label: 'Search traffic',
+					},
+				} );
+				widgets.assignWidget( 'pdfSearchTraffic', 'pdfTrafficArea' );
 			}
 
 			return (

@@ -19,9 +19,20 @@
 /**
  * Internal dependencies
  */
-import { PDF_SECTIONS } from '@/js/components/pdf-generation/constants';
+import { PDFSection } from '@/js/components/pdf-generation/constants';
 import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
 import PDFSectionCheckboxes from './PDFSectionCheckboxes';
+
+const TRAFFIC_SECTION: PDFSection = {
+	slug: 'mainDashboardTrafficPrimary',
+	label: 'Traffic',
+	contextSlug: 'mainDashboardTraffic',
+	widgets: [
+		{ slug: 'analyticsAllTrafficGA4', label: 'Site traffic over time' },
+		{ slug: 'searchFunnelGA4', label: 'Search traffic' },
+	],
+	widgetSlugs: [ 'analyticsAllTrafficGA4', 'searchFunnelGA4' ],
+};
 
 describe( 'PDFSectionCheckboxes', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
@@ -30,61 +41,131 @@ describe( 'PDFSectionCheckboxes', () => {
 		registry = createTestRegistry();
 	} );
 
-	it( 'renders a checkbox per hard-coded section with checked state from props', () => {
-		const selected = [ 'summary', 'traffic' ];
-
+	it( 'renders a parent section checkbox and a child checkbox per labelled widget', () => {
 		const { getByRole } = render(
 			<PDFSectionCheckboxes
-				selectedSections={ selected }
+				sections={ [ TRAFFIC_SECTION ] }
+				selectedWidgetSlugs={ [] }
 				toggleSection={ () => {} }
+				toggleWidget={ () => {} }
 			/>,
 			{ registry }
 		);
 
-		const checkedStates = PDF_SECTIONS.map( ( { slug, title } ) => {
-			const checkbox = getByRole( 'checkbox', {
-				name: new RegExp( `${ title }$` ),
-			} ) as HTMLInputElement;
-			return { slug, checked: checkbox.checked };
-		} );
-
-		expect( checkedStates ).toEqual(
-			PDF_SECTIONS.map( ( { slug } ) => ( {
-				slug,
-				checked: selected.includes( slug ),
-			} ) )
-		);
+		expect(
+			getByRole( 'checkbox', { name: /^Traffic$/ } )
+		).toBeInTheDocument();
+		expect(
+			getByRole( 'checkbox', { name: /^Site traffic over time$/ } )
+		).toBeInTheDocument();
+		expect(
+			getByRole( 'checkbox', { name: /^Search traffic$/ } )
+		).toBeInTheDocument();
 	} );
 
-	it( 'calls toggleSection with the slug when toggling a checkbox on', () => {
+	it( 'checks the parent when all children are selected', () => {
+		const { getByRole } = render(
+			<PDFSectionCheckboxes
+				sections={ [ TRAFFIC_SECTION ] }
+				selectedWidgetSlugs={ [
+					'analyticsAllTrafficGA4',
+					'searchFunnelGA4',
+				] }
+				toggleSection={ () => {} }
+				toggleWidget={ () => {} }
+			/>,
+			{ registry }
+		);
+
+		const parent = getByRole( 'checkbox', {
+			name: /^Traffic$/,
+		} ) as HTMLInputElement;
+		expect( parent.checked ).toBe( true );
+		expect( parent ).toHaveAttribute( 'aria-checked', 'true' );
+	} );
+
+	it( 'shows the parent as indeterminate when only some children are selected', () => {
+		const { getByRole } = render(
+			<PDFSectionCheckboxes
+				sections={ [ TRAFFIC_SECTION ] }
+				selectedWidgetSlugs={ [ 'analyticsAllTrafficGA4' ] }
+				toggleSection={ () => {} }
+				toggleWidget={ () => {} }
+			/>,
+			{ registry }
+		);
+
+		const parent = getByRole( 'checkbox', {
+			name: /^Traffic$/,
+		} ) as HTMLInputElement;
+		expect( parent ).toHaveAttribute( 'aria-checked', 'mixed' );
+		expect( parent.indeterminate ).toBe( true );
+	} );
+
+	it( 'calls toggleSection when the parent is clicked', () => {
 		const toggleSection = jest.fn();
 
 		const { getByRole } = render(
 			<PDFSectionCheckboxes
-				selectedSections={ [ 'summary' ] }
+				sections={ [ TRAFFIC_SECTION ] }
+				selectedWidgetSlugs={ [] }
 				toggleSection={ toggleSection }
+				toggleWidget={ () => {} }
 			/>,
 			{ registry }
 		);
 
 		fireEvent.click( getByRole( 'checkbox', { name: /^Traffic$/ } ) );
 
-		expect( toggleSection ).toHaveBeenCalledWith( 'traffic' );
+		expect( toggleSection ).toHaveBeenCalledWith( TRAFFIC_SECTION );
 	} );
 
-	it( 'calls toggleSection with the slug when toggling a checkbox off', () => {
-		const toggleSection = jest.fn();
+	it( 'calls toggleWidget with the widget slug when a child is clicked', () => {
+		const toggleWidget = jest.fn();
 
 		const { getByRole } = render(
 			<PDFSectionCheckboxes
-				selectedSections={ [ 'summary', 'traffic' ] }
-				toggleSection={ toggleSection }
+				sections={ [ TRAFFIC_SECTION ] }
+				selectedWidgetSlugs={ [] }
+				toggleSection={ () => {} }
+				toggleWidget={ toggleWidget }
 			/>,
 			{ registry }
 		);
 
-		fireEvent.click( getByRole( 'checkbox', { name: /^Summary$/ } ) );
+		fireEvent.click(
+			getByRole( 'checkbox', { name: /^Site traffic over time$/ } )
+		);
 
-		expect( toggleSection ).toHaveBeenCalledWith( 'summary' );
+		expect( toggleWidget ).toHaveBeenCalledWith( 'analyticsAllTrafficGA4' );
+	} );
+
+	it( 'renders a collapsed section (no children) when no widgets are labelled', () => {
+		const { getByRole, queryByRole } = render(
+			<PDFSectionCheckboxes
+				sections={ [
+					{
+						slug: 'mainDashboardSpeedPrimary',
+						label: 'Speed',
+						contextSlug: 'mainDashboardSpeed',
+						widgets: [],
+						widgetSlugs: [ 'pagespeedInsightsWebVitals' ],
+					},
+				] }
+				selectedWidgetSlugs={ [ 'pagespeedInsightsWebVitals' ] }
+				toggleSection={ () => {} }
+				toggleWidget={ () => {} }
+			/>,
+			{ registry }
+		);
+
+		const parent = getByRole( 'checkbox', {
+			name: /^Speed$/,
+		} ) as HTMLInputElement;
+		expect( parent.checked ).toBe( true );
+		// No child checkboxes for a collapsed section.
+		expect(
+			queryByRole( 'checkbox', { name: /traffic/i } )
+		).not.toBeInTheDocument();
 	} );
 } );

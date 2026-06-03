@@ -16,63 +16,22 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
 export const PDF_DOWNLOAD_PANEL_OPENED_KEY = 'pdfDownloadPanelOpened';
 
-export const FORM_PDF_DOWNLOAD = 'pdfDownloadForm';
-export const FORM_PDF_DOWNLOAD_SELECTED_SECTIONS = 'selectedSections';
-
-export interface PDFSection {
+export interface PDFSectionWidget {
 	slug: string;
-	title: string;
+	label: string;
 }
 
-/**
- * Hard-coded list of PDF report sections rendered in the selection panel.
- *
- * Each section exposes a slug used as both the `CORE_FORMS` selection key and
- * the checkbox input identifier.
- *
- * TODO:
- * Temporary constant to be replaced by the widget registry in #12537.
- * The widget-registry integration will source these dynamically and
- * introduce the section/widget two-level hierarchy.
- */
-export const PDF_SECTIONS: PDFSection[] = [
-	{
-		slug: 'summary',
-		title: __( 'Summary', 'google-site-kit' ),
-	},
-	{
-		slug: 'traffic',
-		title: __( 'Traffic', 'google-site-kit' ),
-	},
-	{
-		slug: 'engagement',
-		title: __( 'Engagement', 'google-site-kit' ),
-	},
-	{
-		slug: 'monetization',
-		title: __( 'Monetization', 'google-site-kit' ),
-	},
-	{
-		slug: 'key-metrics',
-		title: __( 'Key metrics', 'google-site-kit' ),
-	},
-	{
-		slug: 'speed',
-		title: __( 'Speed', 'google-site-kit' ),
-	},
-];
-
-/**
- * Default selection used when the panel is opened for the first time.
- * All sections are selected by default.
- */
-export const DEFAULT_SELECTED_SECTIONS: string[] = PDF_SECTIONS.map(
-	( { slug } ) => slug
-);
+export interface PDFSection {
+	/** Widget area slug; identifies the section. */
+	slug: string;
+	/** Section heading, sourced from the area's `pdfTitle`. */
+	label: string;
+	/** Dashboard context the area belongs to (drives `core/pdf` contextSlugs). */
+	contextSlug: string;
+	/** Labelled PDF widgets rendered as child checkboxes; empty = collapsed section. */
+	widgets: PDFSectionWidget[];
+	/** All PDF widget slugs in the area; the unit of selection and parent state. */
+	widgetSlugs: string[];
+}

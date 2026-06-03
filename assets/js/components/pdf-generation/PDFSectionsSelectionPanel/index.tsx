@@ -31,15 +31,9 @@ import { useCallback } from '@wordpress/element';
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import InViewProvider from '@/js/components/InViewProvider';
-import {
-	DEFAULT_SELECTED_SECTIONS,
-	FORM_PDF_DOWNLOAD,
-	FORM_PDF_DOWNLOAD_SELECTED_SECTIONS,
-	PDF_DOWNLOAD_PANEL_OPENED_KEY,
-} from '@/js/components/pdf-generation/constants';
+import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-generation/constants';
 import SelectionPanel from '@/js/components/SelectionPanel';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import useFormValue from '@/js/hooks/useFormValue';
 import PanelContent from './PanelContent';
 
 const PDFSectionsSelectionPanel: FC = () => {
@@ -50,20 +44,12 @@ const PDFSectionsSelectionPanel: FC = () => {
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
-	const [ , setSelectedSections ] = useFormValue(
-		FORM_PDF_DOWNLOAD,
-		FORM_PDF_DOWNLOAD_SELECTED_SECTIONS
-	);
 
 	const closePanel = useCallback( () => {
 		if ( isOpen ) {
 			setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, false );
 		}
 	}, [ isOpen, setValue ] );
-
-	const onSideSheetOpen = useCallback( () => {
-		setSelectedSections( DEFAULT_SELECTED_SECTIONS );
-	}, [ setSelectedSections ] );
 
 	return (
 		<InViewProvider
@@ -76,7 +62,6 @@ const PDFSectionsSelectionPanel: FC = () => {
 			<SelectionPanel
 				className="googlesitekit-pdf-download-panel"
 				isOpen={ !! isOpen }
-				onOpen={ onSideSheetOpen }
 				closePanel={ closePanel }
 			>
 				<PanelContent closePanel={ closePanel } />

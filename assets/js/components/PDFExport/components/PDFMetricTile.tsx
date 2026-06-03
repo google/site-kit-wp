@@ -19,77 +19,67 @@
 /**
  * External dependencies
  */
-import { Path, StyleSheet, Svg, Text, View } from '@react-pdf/renderer';
+import { StyleSheet, Text, View } from '@react-pdf/renderer';
 import type { FC } from 'react';
 
 const COLORS = {
-	text: '#212121',
-	secondary: '#646464',
-	success: '#34a853',
-	error: '#ea4335',
-	cardBg: '#f8f9fa',
+	text: '#161b18',
+	secondary: '#6c726e',
+	positiveBackground: '#d8ffc0',
+	positiveText: '#1f4c04',
+	negativeBackground: '#ffded3',
+	negativeText: '#7a1e00',
 };
 
 const tileStyles = StyleSheet.create( {
 	container: {
-		backgroundColor: COLORS.cardBg,
-		borderRadius: 4,
-		padding: 12,
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'flex-start',
+	},
+	metric: {
+		flexDirection: 'column',
 	},
 	title: {
-		fontSize: 9,
-		color: COLORS.secondary,
-		marginBottom: 4,
+		fontSize: 12,
+		fontWeight: 'normal',
+		color: COLORS.text,
+		marginBottom: 6,
 	},
 	value: {
-		fontSize: 28,
+		fontSize: 24,
 		fontWeight: 'bold',
 		color: COLORS.text,
 	},
+	aside: {
+		flexDirection: 'column',
+		alignItems: 'flex-end',
+	},
+	chip: {
+		borderRadius: 10,
+		paddingVertical: 4,
+		paddingHorizontal: 8,
+	},
+	chipText: {
+		fontSize: 10,
+	},
 	changeLabel: {
-		fontSize: 9,
+		fontSize: 10,
 		color: COLORS.secondary,
-		marginTop: 4,
-	},
-	changeRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		marginTop: 4,
-		gap: 3,
-	},
-	changeText: {
-		fontSize: 9,
+		marginTop: 8,
 	},
 } );
 
-interface ChangeArrowProps {
-	direction: 'up' | 'down';
-	color: string;
-}
-
-function ChangeArrow( { direction, color }: ChangeArrowProps ) {
-	return (
-		<Svg width={ 8 } height={ 8 } viewBox="0 0 8 8">
-			<Path
-				d={
-					direction === 'up' ? 'M4,0 L8,8 L0,8 Z' : 'M0,0 L8,0 L4,8 Z'
-				}
-				fill={ color }
-			/>
-		</Svg>
-	);
-}
-
 export interface PDFMetricTileProps {
-	/** Heading rendered above the metric value, e.g. "All Visitors". */
+	/** Heading rendered above the metric value, e.g. "All visitors". */
 	title: string;
-	/** Pre-formatted metric value to display prominently, e.g. "1.2K". */
+	/** Pre-formatted metric value to display prominently, e.g. "32.6K". */
 	value: string;
-	/** Pre-formatted change badge text, e.g. "12.5%". Hides the badge when omitted. */
+	/** Pre-formatted, signed change string for the chip, e.g. "+5.1%". Hides the chip when omitted. */
 	change?: string;
-	/** Direction the change badge points; controls the arrow and color. */
-	changeDirection?: 'up' | 'down';
-	/** Optional caption rendered below the value, e.g. comparison period text. */
+	/** Whether the change is negative; controls the chip colour. */
+	isNegative?: boolean;
+	/** Optional caption rendered below the chip, e.g. "Vs. prev. 28 days". */
 	changeLabel?: string;
 }
 
@@ -97,35 +87,44 @@ const PDFMetricTile: FC< PDFMetricTileProps > = ( {
 	title,
 	value,
 	change,
-	changeDirection,
+	isNegative = false,
 	changeLabel,
 } ) => {
-	const changeColor =
-		changeDirection === 'up' ? COLORS.success : COLORS.error;
+	const chipBackground = isNegative
+		? COLORS.negativeBackground
+		: COLORS.positiveBackground;
+	const chipColor = isNegative ? COLORS.negativeText : COLORS.positiveText;
 
 	return (
 		<View style={ tileStyles.container }>
-			<Text style={ tileStyles.title }>{ title }</Text>
-			<Text style={ tileStyles.value }>{ value }</Text>
-			{ changeLabel && (
-				<Text style={ tileStyles.changeLabel }>{ changeLabel }</Text>
-			) }
-			{ change !== undefined && change !== null && changeDirection && (
-				<View style={ tileStyles.changeRow }>
-					<ChangeArrow
-						direction={ changeDirection }
-						color={ changeColor }
-					/>
-					<Text
+			<View style={ tileStyles.metric }>
+				<Text style={ tileStyles.title }>{ title }</Text>
+				<Text style={ tileStyles.value }>{ value }</Text>
+			</View>
+			<View style={ tileStyles.aside }>
+				{ !! change && (
+					<View
 						style={ [
-							tileStyles.changeText,
-							{ color: changeColor },
+							tileStyles.chip,
+							{ backgroundColor: chipBackground },
 						] }
 					>
-						{ change }
+						<Text
+							style={ [
+								tileStyles.chipText,
+								{ color: chipColor },
+							] }
+						>
+							{ change }
+						</Text>
+					</View>
+				) }
+				{ !! changeLabel && (
+					<Text style={ tileStyles.changeLabel }>
+						{ changeLabel }
 					</Text>
-				</View>
-			) }
+				) }
+			</View>
 		</View>
 	);
 };
