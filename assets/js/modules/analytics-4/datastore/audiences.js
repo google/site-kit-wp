@@ -973,9 +973,7 @@ const baseSelectors = {
 	getAudiencesUserCountReportOptions: createRegistrySelector(
 		( select ) =>
 			( state, audiences, { startDate, endDate } = {} ) => {
-				const dateRangeDates = select( CORE_USER ).getDateRangeDates(
-					{}
-				);
+				const dateRangeDates = select( CORE_USER ).getDateRangeDates();
 
 				return {
 					startDate: startDate || dateRangeDates.startDate,
