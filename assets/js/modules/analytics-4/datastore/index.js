@@ -38,7 +38,6 @@ import properties from './properties';
 import report from './report';
 import service from './service';
 import settings from './settings';
-import siteGoalsSettings from './site-goals-settings';
 import tags from './tags';
 import webdatastreams from './webdatastreams';
 
@@ -60,7 +59,6 @@ const store = combineStores(
 	report,
 	settings,
 	service,
-	siteGoalsSettings,
 	tags,
 	webdatastreams
 );
