@@ -424,7 +424,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 	public function test_render_sign_in_with_google_profile__skips_connect_branch_on_other_user_profile() {
 		if ( is_multisite() ) {
-			$this->markTestSkipped( 'edit_user_profile output is empty on multisite per existing TODO.' );
+			$this->markTestSkipped( '`edit_user_profile` output is empty on multisite.' );
 		}
 
 		$this->register_and_connect_module();
