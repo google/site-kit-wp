@@ -51,7 +51,7 @@ import {
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
 
-// Reference date: 2020-09-07, offsetDays: 0, 28-day range with comparison.
+// Reference date: 2020-09-07, 28-day range with comparison.
 const dates = {
 	startDate: '2020-08-11',
 	endDate: '2020-09-07',

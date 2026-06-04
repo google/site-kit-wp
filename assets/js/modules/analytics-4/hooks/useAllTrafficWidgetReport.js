@@ -24,10 +24,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 /**
  * Gets report information for the Dashboard All Traffic GA4 widget.
@@ -53,7 +50,6 @@ export default function useAllTrafficWidgetReport( reportOptions = {} ) {
 	const { startDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
 

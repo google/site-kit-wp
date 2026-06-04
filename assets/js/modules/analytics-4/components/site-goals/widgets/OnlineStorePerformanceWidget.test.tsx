@@ -37,7 +37,6 @@ import {
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	DATE_RANGE_OFFSET,
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
@@ -100,9 +99,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			loading = false,
 		}: { empty?: boolean; loading?: boolean } = {}
 	) {
-		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
+		const dates = registry.select( CORE_USER ).getDateRangeDates();
 
 		const dimensionFilters = {
 			eventName: {
@@ -552,7 +549,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -608,7 +604,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -641,7 +636,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -682,7 +676,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -724,7 +717,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -769,7 +761,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -872,7 +863,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -918,14 +908,11 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 		const goalDriverDates = registry
 			.select( CORE_USER )
-			.getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} );
+			.getDateRangeDates();
 
 		const primaryEventReport = buildPrimaryEventReportOptions(
 			dates,
@@ -1000,7 +987,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -1035,7 +1021,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -1098,7 +1083,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -1146,7 +1130,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -1207,7 +1190,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		} );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -1240,7 +1222,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 

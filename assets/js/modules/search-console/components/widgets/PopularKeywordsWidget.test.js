@@ -26,10 +26,7 @@ import {
 import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_SEARCH_CONSOLE,
-} from '@/js/modules/search-console/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { provideSearchConsoleMockReport } from '@/js/modules/search-console/util/data-mock';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
@@ -66,9 +63,7 @@ describe( 'PopularKeywordsWidget', () => {
 
 	it( 'should render correctly with the expected metrics', async () => {
 		const reportOptions = {
-			...registry.select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} ),
+			...registry.select( CORE_USER ).getDateRangeDates(),
 			dimensions: 'query',
 			limit: 100,
 			reportID:
