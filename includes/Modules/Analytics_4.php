@@ -81,14 +81,12 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Property;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Has_Property_Access;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Key_Events;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Report;
-use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Site_Goals_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams_Batch;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Sync_Audiences;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Custom_Dimension_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Resource_Data_Availability_Date;
-use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Site_Goals_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Set_Google_Tag_ID_Mismatch;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Set_Is_Web_Data_Stream_Unavailable;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Sync_Custom_Dimensions;
@@ -99,7 +97,6 @@ use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioning
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
-use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdsLinked;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Interface;
@@ -201,15 +198,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	protected $audience_settings;
 
 	/**
-	 * Site_Goals_Settings instance.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @var Site_Goals_Settings
-	 */
-	protected $site_goals_settings;
-
-	/**
 	 * Audience_Utilities instance.
 	 *
 	 * @since 1.172.0
@@ -240,7 +228,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
 		$this->reset_audiences                  = new Reset_Audiences( $this->user_options );
 		$this->audience_settings                = new Audience_Settings( $this->options );
-		$this->site_goals_settings              = new Site_Goals_Settings( $this->user_options );
 		$this->audience_utilities               = new Audience_Utilities( $this->audience_settings );
 		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings(), $this->audience_settings );
 	}
@@ -283,7 +270,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$conversion_reporting_provider->register();
 
 		$this->audience_settings->register();
-		$this->site_goals_settings->register();
 
 		( new Advanced_Tracking( $this->context ) )->register();
 
@@ -460,7 +446,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					$routes,
 					array(
 						'/' . REST_Routes::REST_ROOT . '/modules/analytics-4/data/audience-settings',
-						'/' . REST_Routes::REST_ROOT . '/modules/analytics-4/data/site-goals-settings',
 					)
 				);
 			}
@@ -567,7 +552,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->custom_dimensions_data_available->reset_data_available();
 		$this->reset_audiences->reset_audience_data();
 		$this->audience_settings->delete();
-		$this->site_goals_settings->delete();
 	}
 
 	/**
@@ -942,18 +926,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				array(
 					'audience_settings' => $this->audience_settings,
 					'service'           => '',
-				)
-			),
-			'GET:site-goals-settings'                   => new Get_Site_Goals_Settings(
-				array(
-					'site_goals_settings' => $this->site_goals_settings,
-					'service'             => '',
-				)
-			),
-			'POST:save-site-goals-settings'             => new Save_Site_Goals_Settings(
-				array(
-					'site_goals_settings' => $this->site_goals_settings,
-					'service'             => '',
 				)
 			),
 		);
