@@ -132,6 +132,29 @@ jobs:
       - name: Start environment
         run: npm run env:start
 
+      # Temporary diagnostic step
+      - name: Inspect Puppeteer browser (debug)
+        continue-on-error: true
+        run: |
+          CHROME_PATH="$(node -e "console.log(require('puppeteer').executablePath())")"
+          echo "Puppeteer executablePath: $CHROME_PATH"
+          CHROME_DIR="$(dirname "$CHROME_PATH")"
+
+          echo "--- contents of browser dir ---"
+          ls -la "$CHROME_DIR" || true
+
+          echo "--- icudtl.dat next to binary? ---"
+          ls -la "$CHROME_DIR/icudtl.dat" || echo "icudtl.dat NOT found next to binary"
+
+          echo "--- all icudtl.dat on disk ---"
+          find / -name icudtl.dat 2>/dev/null || true
+
+          echo "--- missing shared libs (ldd) ---"
+          ldd "$CHROME_PATH" 2>&1 | grep -i "not found" || echo "no missing shared libs reported"
+
+          echo "--- direct headless launch attempt ---"
+          "$CHROME_PATH" --headless --no-sandbox --disable-gpu --dump-dom about:blank 2>&1 | head -30 || true
+
       - name: Run the tests
         run: npm run test:e2e
 
