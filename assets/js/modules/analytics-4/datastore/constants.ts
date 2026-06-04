@@ -30,6 +30,11 @@ export const FORM_SETUP = 'analyticsSetup';
 
 export const MAX_WEBDATASTREAMS_PER_BATCH = 10;
 
+/**
+ * Date range offset days for Analytics 4 report requests.
+ */
+export const DATE_RANGE_OFFSET = 0;
+
 export const GTM_SCOPE = 'https://www.googleapis.com/auth/tagmanager.readonly';
 
 export const ENHANCED_MEASUREMENT_FORM = 'enhanced-measurement-form';

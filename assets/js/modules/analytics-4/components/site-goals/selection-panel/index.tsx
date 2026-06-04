@@ -46,6 +46,7 @@ import {
 	GoalDriverSelectionState,
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import { useBreakdownNoticeTooltip } from '@/js/modules/analytics-4/components/site-goals/notifications/useBreakdownNoticeTooltip';
 import CustomDimensionsNotice from '@/js/modules/analytics-4/components/site-goals/selection-panel/CustomDimensionsNotice';
 import Footer from '@/js/modules/analytics-4/components/site-goals/selection-panel/Footer';
 import Header from '@/js/modules/analytics-4/components/site-goals/selection-panel/Header';
@@ -95,11 +96,20 @@ const SiteGoalsSelectionPanel: FC = () => {
 		FORM_CUSTOM_DIMENSIONS_CREATE,
 		'customDimensions'
 	);
+	const isBreakdownTooltipPending = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).isSiteGoalsBreakdownTooltipPending(),
+		[]
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValue } = useDispatch( CORE_UI );
+	const { clearSiteGoalsBreakdownTooltipPending } =
+		useDispatch( MODULES_ANALYTICS_4 );
+	const showBreakdownTooltip = useBreakdownNoticeTooltip();
 
 	const effectiveDriversRef = useRef( effectiveDrivers );
+	const isBreakdownTooltipPendingRef = useRef( isBreakdownTooltipPending );
 	const effectiveVisitorEngagementRef = useRef( effectiveVisitorEngagement );
 	const isCustomDimensionsAutoSubmitRef = useRef(
 		isCustomDimensionsAutoSubmit
@@ -112,6 +122,7 @@ const SiteGoalsSelectionPanel: FC = () => {
 	effectiveVisitorEngagementRef.current = effectiveVisitorEngagement;
 	isCustomDimensionsAutoSubmitRef.current = isCustomDimensionsAutoSubmit;
 	customDimensionsForAutoSubmitRef.current = customDimensionsForAutoSubmit;
+	isBreakdownTooltipPendingRef.current = isBreakdownTooltipPending;
 
 	const onSideSheetOpen = useCallback( () => {
 		const isRestoringExplicitCustomDimensionsSetup =
@@ -145,7 +156,19 @@ const SiteGoalsSelectionPanel: FC = () => {
 		if ( isOpen ) {
 			setValue( SITE_GOALS_SELECTION_PANEL_OPENED_KEY, false );
 		}
-	}, [ isOpen, setValue ] );
+
+		// Show the breakdown tooltip only once the panel overlay is closed and
+		// the admin menu is visible again.
+		if ( isBreakdownTooltipPendingRef.current ) {
+			clearSiteGoalsBreakdownTooltipPending();
+			showBreakdownTooltip();
+		}
+	}, [
+		isOpen,
+		setValue,
+		clearSiteGoalsBreakdownTooltipPending,
+		showBreakdownTooltip,
+	] );
 
 	return (
 		<SelectionPanel
