@@ -143,7 +143,7 @@ function commonSetup( registry: WPDataRegistry ) {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {} );
+	registry.dispatch( CORE_USER ).receiveGetSiteGoalsSettings( {} );
 
 	registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
 

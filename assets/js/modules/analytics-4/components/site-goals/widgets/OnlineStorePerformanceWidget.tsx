@@ -160,8 +160,7 @@ const OnlineStorePerformanceWidget: FC<
 	);
 
 	const effectiveSelectedDrivers = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getSiteGoalsGoalDrivers(),
+		( select: Select ) => select( CORE_USER ).getSiteGoalsGoalDrivers(),
 		[]
 	) as GoalDriverSelectionState | undefined;
 	const resolvedSelections = resolveGoalDriverSelectionState(
@@ -170,7 +169,7 @@ const OnlineStorePerformanceWidget: FC<
 
 	const effectiveVisitorEngagement = useSelect(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getSiteGoalsVisitorEngagement(),
+			select( CORE_USER ).getSiteGoalsVisitorEngagement(),
 		[]
 	);
 	const resolvedVisitorEngagement = resolveVisitorEngagementSelectionState(
