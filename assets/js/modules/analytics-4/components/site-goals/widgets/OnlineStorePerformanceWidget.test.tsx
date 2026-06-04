@@ -499,9 +499,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			},
 		] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetSiteGoalsSettings( {} );
+		registry.dispatch( CORE_USER ).receiveGetSiteGoalsSettings( {} );
 	} );
 
 	it( 'renders WidgetNull when no ecommerce events are detected', async () => {
@@ -1113,7 +1111,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 				ENUM_CONVERSION_EVENTS.PURCHASE,
 				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
 			] );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+		registry.dispatch( CORE_USER ).receiveGetSiteGoalsSettings( {
 			visitorEngagement: {
 				[ GOAL_TYPES.ECOMMERCE ]: [],
 				[ GOAL_TYPES.LEAD ]: [],
