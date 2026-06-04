@@ -95,11 +95,11 @@ const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 		state.settings = state.settings || {};
 		state.settings.availableCustomDimensions = dimensions;
 
-		// These dimensions come from Google Analytics. They are server data, not
-		// a user edit, so they belong in `savedSettings`, not only `settings`.
-		// The form compares the two to find unsaved changes. If only `settings`
-		// had them, Cancel would revert and drop these dimensions, and the
-		// Enable button would return until a reload.
+		// The `sync-custom-dimensions` request saves `availableCustomDimensions`
+		// on the server, so set it on `savedSettings` too. The form compares
+		// `settings` and `savedSettings` to know if there are unsaved changes.
+		// Without this, it would see the synced value as unsaved, and Cancel
+		// would drop it until the next page load.
 		state.savedSettings = state.savedSettings || {};
 		state.savedSettings.availableCustomDimensions = dimensions;
 	} ),

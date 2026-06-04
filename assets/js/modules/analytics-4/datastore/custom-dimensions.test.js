@@ -184,16 +184,15 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.fetchSyncAvailableCustomDimensions();
 
-				// The sync writes the dimensions to the saved baseline too, so
-				// the form does not treat them as an unsaved change.
+				// The `sync-custom-dimensions` request writes the dimensions to
+				// `savedSettings` too, so the form sees no unsaved change.
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).haveSettingsChanged()
 				).toBe( false );
 
-				// Cancelling the edit view rolls the settings back to the saved
-				// baseline. The synced dimensions must survive, otherwise an
-				// already enabled row would show its Enable button again until
-				// the next page load.
+				// Cancel rolls `settings` back to `savedSettings`. The synced
+				// dimensions must survive, otherwise an already enabled row would
+				// show its Enable button again until the next page load.
 				registry.dispatch( MODULES_ANALYTICS_4 ).rollbackSettings();
 
 				expect(
