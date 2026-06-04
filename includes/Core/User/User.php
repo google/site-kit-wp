@@ -31,6 +31,14 @@ class User {
 	private $audience_segmentation;
 
 	/**
+	 * Site_Goals instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Site_Goals
+	 */
+	private $site_goals;
+
+	/**
 	 * Conversion_Reporting instance.
 	 *
 	 * @since 1.144.0
@@ -60,11 +68,13 @@ class User {
 	 * @since 1.134.0
 	 * @since 1.162.0 Added Email Reporting.
 	 * @since 1.164.0 Added Initial Setup.
+	 * @since n.e.x.t Added Site Goals.
 	 *
 	 * @param User_Options $user_options User_Options instance.
 	 */
 	public function __construct( User_Options $user_options ) {
 		$this->audience_segmentation = new Audience_Segmentation( $user_options );
+		$this->site_goals            = new Site_Goals( $user_options );
 		$this->conversion_reporting  = new Conversion_Reporting( $user_options );
 
 		if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) ) {
@@ -82,9 +92,11 @@ class User {
 	 * @since 1.134.0
 	 * @since 1.162.0 Added Email Reporting.
 	 * @since 1.164.0 Added Initial Setup.
+	 * @since n.e.x.t Added Site Goals.
 	 */
 	public function register() {
 		$this->audience_segmentation->register();
+		$this->site_goals->register();
 		$this->conversion_reporting->register();
 
 		if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) && $this->email_reporting ) {
