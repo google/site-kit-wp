@@ -31,5 +31,5 @@ Default.storyName = 'AnalyticsActivationErrorNotification';
 Default.scenario = {};
 
 export default {
-	title: 'Setup / Using Proxy With Sign-in/ AnalyticsActivationErrorNotification',
+	title: 'Setup/Using Proxy With Sign-in/Components/AnalyticsActivationErrorNotification',
 };

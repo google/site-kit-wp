@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -27,14 +32,13 @@ import { __ } from '@wordpress/i18n';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
-type Props = {
+interface AnalyticsActivationErrorNotificationProps {
 	onRetry?: () => void;
-	retryURL?: string;
-};
+}
 
-export default function AnalyticsActivationErrorNotification( {
-	onRetry,
-}: Props ) {
+const AnalyticsActivationErrorNotification: FC<
+	AnalyticsActivationErrorNotificationProps
+> = ( { onRetry }: AnalyticsActivationErrorNotificationProps ) => {
 	return (
 		<Notice
 			className="googlesitekit-setup__analytics-activation-error-notification"
@@ -45,9 +49,11 @@ export default function AnalyticsActivationErrorNotification( {
 			) }
 			ctaButton={ {
 				label: __( 'Retry plugin setup', 'google-site-kit' ),
-				onClick: onRetry ?? ( () => null ),
+				onClick: onRetry,
 			} }
 			type={ NOTICE_TYPES.ERROR }
 		/>
 	);
-}
+};
+
+export default AnalyticsActivationErrorNotification;
