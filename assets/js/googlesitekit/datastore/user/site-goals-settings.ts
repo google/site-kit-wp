@@ -1,5 +1,5 @@
 /**
- * `modules/analytics-4` data store: site goals settings.
+ * `core/user` data store: site goals settings.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -41,8 +41,7 @@ import {
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { GoalDriverSelectionState } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { VisitorEngagementSelectionState } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement/registry';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { CORE_USER } from './constants';
 
 const { setErrorForAction, clearActionError } = errorStoreActions;
 
@@ -59,12 +58,8 @@ interface State {
 	isFetchingSaveSiteGoalsSettings?: Record< string, boolean >;
 }
 
-// Result shape returned by the fetch-store save action.
 type SaveResult = { response?: SiteGoalsSettings; error?: unknown };
 
-// Minimal typed view over the registry exposed inside the generator actions and
-// resolvers. The shared redux-routine/registry infrastructure is untyped JS, so
-// only the selectors this store actually reaches are declared here.
 interface SiteGoalsRegistry {
 	select: ( store: string ) => {
 		getSiteGoalsSettings: () => SiteGoalsSettings | undefined;
@@ -132,8 +127,8 @@ const fetchGetSiteGoalsSettingsStore = createFetchStore( {
 	baseName: 'getSiteGoalsSettings',
 	controlCallback() {
 		return get(
-			'modules',
-			MODULE_SLUG_ANALYTICS_4,
+			'core',
+			'user',
 			'site-goals-settings',
 			{},
 			// @ts-expect-error -- `get()` infers its options as fully required from the untyped JS source; only `useCache` is needed here.
@@ -150,9 +145,7 @@ const fetchGetSiteGoalsSettingsStore = createFetchStore( {
 const fetchSaveSiteGoalsSettingsStore = createFetchStore( {
 	baseName: 'saveSiteGoalsSettings',
 	controlCallback: ( settings: SiteGoalsSettings ) =>
-		set( 'modules', MODULE_SLUG_ANALYTICS_4, 'save-site-goals-settings', {
-			settings,
-		} ),
+		set( 'core', 'user', 'site-goals-settings', { settings } ),
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( settings: SiteGoalsSettings ) => settings,
 	validateParams: validateSiteGoalsSettings,
@@ -189,9 +182,7 @@ const baseActions = {
 				( yield commonActions.getRegistry() ) as SiteGoalsRegistry;
 
 			const currentSettings = ( yield commonActions.await(
-				registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getSiteGoalsSettings()
+				registry.resolveSelect( CORE_USER ).getSiteGoalsSettings()
 			) ) as SiteGoalsSettings | undefined;
 
 			const { response, error } =
@@ -217,8 +208,7 @@ const baseResolvers = {
 			( yield commonActions.getRegistry() ) as SiteGoalsRegistry;
 
 		if (
-			registry.select( MODULES_ANALYTICS_4 ).getSiteGoalsSettings() ===
-			undefined
+			registry.select( CORE_USER ).getSiteGoalsSettings() === undefined
 		) {
 			yield fetchGetSiteGoalsSettingsStore.actions.fetchGetSiteGoalsSettings();
 		}
@@ -247,7 +237,7 @@ const baseSelectors = {
 	 */
 	getSiteGoalsGoalDrivers: createRegistrySelector(
 		( select: Select ) => () =>
-			select( MODULES_ANALYTICS_4 ).getSiteGoalsSettings()?.goalDrivers
+			select( CORE_USER ).getSiteGoalsSettings()?.goalDrivers
 	),
 
 	/**
@@ -259,8 +249,7 @@ const baseSelectors = {
 	 */
 	getSiteGoalsVisitorEngagement: createRegistrySelector(
 		( select: Select ) => () =>
-			select( MODULES_ANALYTICS_4 ).getSiteGoalsSettings()
-				?.visitorEngagement
+			select( CORE_USER ).getSiteGoalsSettings()?.visitorEngagement
 	),
 
 	/**
