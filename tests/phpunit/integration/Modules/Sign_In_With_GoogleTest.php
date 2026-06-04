@@ -433,10 +433,13 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$admin_id  = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin_id );
 
-		// Editor has no `Hashed_User_ID` stored, so the disconnect branch
-		// doesn't run. Sign in with Google is connected (`clientID` is set),
-		// so the only thing keeping the section out is the admin viewing
-		// someone else's profile.
+		// Editor has no `Hashed_User_ID` stored, so the disconnect button
+		// should not appear.
+		// In this test, Sign in with Google is connected (`clientID` is set),
+		// but the disconnect button should not appear because the admin
+		// is viewing someone else's profile, and we don't allow other users
+		// to disconnect someone else's Google account from their WordPress
+		// user profile.
 		$output = $this->capture_action( 'edit_user_profile', get_user_by( 'id', $editor_id ) );
 		$this->assertEmpty( $output, "Section should never render on a profile that is not the current user's profile." );
 	}
