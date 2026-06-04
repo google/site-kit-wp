@@ -17,6 +17,12 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { lazy } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import {
@@ -32,8 +38,16 @@ import {
 } from '@/js/googlesitekit/widgets/default-areas';
 import DashboardPopularKeywordsWidget from '@/js/modules/search-console/components/dashboard/DashboardPopularKeywordsWidget';
 import SearchFunnelWidgetGA4 from '@/js/modules/search-console/components/dashboard/SearchFunnelWidgetGA4';
+import getSearchFunnelPDFData from '@/js/modules/search-console/components/dashboard/SearchFunnelWidgetGA4/getPDFData';
 import PopularKeywordsWidget from '@/js/modules/search-console/components/widgets/PopularKeywordsWidget';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+
+const SearchFunnelWidgetGA4PDF = lazy( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/search-console/components/dashboard/SearchFunnelWidgetGA4/indexPDF'
+	)
+);
 
 export function registerWidgets( widgets ) {
 	widgets.registerWidget(
@@ -60,6 +74,11 @@ export function registerWidgets( widgets ) {
 			priority: 3,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
+			pdf: {
+				Component: SearchFunnelWidgetGA4PDF,
+				getData: getSearchFunnelPDFData,
+				label: __( 'Search traffic over time', 'google-site-kit' ),
+			},
 		},
 		[
 			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
