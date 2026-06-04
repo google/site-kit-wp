@@ -1,19 +1,19 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Modules\Analytics_4\Site_Goals_SettingsTest
+ * Class Google\Site_Kit\Tests\Core\User\Site_Goals_SettingsTest
  *
- * @package   Google\Site_Kit\Tests\Modules\Analytics_4
+ * @package   Google\Site_Kit\Tests\Core\User
  * @copyright 2026 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 // phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
 
-namespace Google\Site_Kit\Tests\Modules\Analytics_4;
+namespace Google\Site_Kit\Tests\Core\User;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Settings;
+use Google\Site_Kit\Core\User\Site_Goals_Settings;
 use Google\Site_Kit\Tests\TestCase;
 
 class Site_Goals_SettingsTest extends TestCase {
