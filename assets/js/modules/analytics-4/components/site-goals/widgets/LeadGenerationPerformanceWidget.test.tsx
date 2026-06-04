@@ -55,6 +55,7 @@ type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
 describe( 'LeadGenerationPerformanceWidget', () => {
 	let registry: WPDataRegistry;
+
 	const widgetProps: WidgetComponentProps = getWidgetComponentProps(
 		'analyticsLeadGenerationPerformance'
 	);
