@@ -33,6 +33,13 @@ export const SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT =
 export const SITE_GOALS_MIN_SELECTED_DRIVERS = 1;
 export const SITE_GOALS_MAX_SELECTED_DRIVERS = 6;
 
+export const SITE_GOALS_BREAKDOWN_NOTICE = 'site_goals_breakdown_notice';
+
+export const SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS = [
+	'googlesitekit_event_provider',
+	'googlesitekit_form_id',
+];
+
 export const SITE_GOALS_DEFAULT_SELECTED_DRIVERS = {
 	[ GOAL_TYPES.ECOMMERCE ]: [
 		GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
