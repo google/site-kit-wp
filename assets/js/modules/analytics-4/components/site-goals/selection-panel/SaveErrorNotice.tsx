@@ -26,6 +26,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { Select, useSelect } from 'googlesitekit-data';
 import SelectionPanelError from '@/js/components/SelectionPanel/SelectionPanelError';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useFormValue from '@/js/hooks/useFormValue';
 import {
 	SITE_GOALS_MAX_SELECTED_DRIVERS,
@@ -38,7 +39,6 @@ import {
 	GoalDriverSelectionState,
 	GoalType,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 interface SaveErrorNoticeProps {
 	hasEcommerceGoalDrivers: boolean;
@@ -74,7 +74,7 @@ export default function SaveErrorNotice( {
 
 	const saveError = useSelect(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getErrorForAction(
+			select( CORE_USER ).getErrorForAction(
 				'saveSiteGoalsSettings',
 				[]
 			),
