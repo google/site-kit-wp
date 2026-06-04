@@ -433,7 +433,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'dispatches the ecommerce panel vote on thumbs-up click', async () => {
+	it( 'dispatches an up vote for the ecommerce key action on thumbs-up click', async () => {
 		mockSurveyEndpoints();
 
 		const { findAllByRole } = render( <SiteGoalsSelectionPanel />, {
@@ -458,7 +458,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		);
 	} );
 
-	it( 'dispatches the lead panel vote on thumbs-down click', async () => {
+	it( 'dispatches a down vote for the lead key action on thumbs-down click', async () => {
 		mockSurveyEndpoints();
 
 		const { findAllByRole } = render( <SiteGoalsSelectionPanel />, {

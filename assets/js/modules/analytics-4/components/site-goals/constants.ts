@@ -65,5 +65,6 @@ export const SITE_GOALS_PANEL_VOTE_IDS_BY_GOAL_TYPE = {
 	[ GOAL_TYPES.LEAD ]: SITE_GOALS_VOTE_ID_PANEL_LEAD_GENERATION,
 };
 
-// Placeholder for the downvote "Tell us more" Google Form URL. Replace it once the real URL is ready.
+// Placeholder for the downvote "Tell us more" Google Form URL. Replace it once
+// the real URL is ready. Tracked in #12727.
 export const SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL = '#';

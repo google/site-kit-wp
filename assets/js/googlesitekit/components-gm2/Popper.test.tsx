@@ -24,7 +24,7 @@ import { FC, Fragment } from 'react';
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -32,30 +32,34 @@ import { useState } from '@wordpress/element';
 import { act, fireEvent, render } from '../../../../tests/js/test-utils';
 import Popper from './Popper';
 
-interface HarnessProps {
+interface PopperWrapperProps {
 	autoDismissMs?: number;
 	resetKey?: number | string;
 	className?: string;
 }
 
-// Uses a ref callback so React sets `anchorEl` after mount, which opens the popper right away.
-const PopperHarness: FC< HarnessProps > = ( {
+// Set the anchor element after mount so the popper opens right away.
+const PopperWrapper: FC< PopperWrapperProps > = ( {
 	autoDismissMs,
 	resetKey,
 	className,
 } ) => {
-	// eslint-disable-next-line sitekit/acronym-case
+	const anchorRef = useRef< HTMLButtonElement | null >( null );
 	const [ anchorElement, setAnchorElement ] =
 		useState< HTMLButtonElement | null >( null );
 
+	useEffect( () => {
+		setAnchorElement( anchorRef.current );
+	}, [] );
+
 	return (
 		<Fragment>
-			<button type="button" ref={ setAnchorElement }>
+			<button type="button" ref={ anchorRef }>
 				Anchor
 			</button>
 			<button type="button">Outside</button>
 			<Popper
-				anchorEl={ anchorElement }
+				anchorElement={ anchorElement }
 				onClose={ () => setAnchorElement( null ) }
 				autoDismissMs={ autoDismissMs }
 				resetKey={ resetKey }
@@ -68,9 +72,9 @@ const PopperHarness: FC< HarnessProps > = ( {
 };
 
 describe( 'Popper', () => {
-	it( 'renders nothing when `anchorEl` is null', () => {
+	it( 'renders nothing when `anchorElement` is null', () => {
 		const { queryByText } = render(
-			<Popper anchorEl={ null } onClose={ () => {} }>
+			<Popper anchorElement={ null } onClose={ () => {} }>
 				<span>Inside</span>
 			</Popper>
 		);
@@ -78,41 +82,36 @@ describe( 'Popper', () => {
 		expect( queryByText( 'Inside' ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'renders the content when `anchorEl` is set', async () => {
-		const { findByRole } = render( <PopperHarness /> );
+	it( 'renders the content when `anchorElement` is set', async () => {
+		const { findByRole } = render( <PopperWrapper /> );
 
 		expect(
 			await findByRole( 'button', { name: 'Inside' } )
 		).toBeInTheDocument();
 	} );
 
-	it( 'closes on mousedown outside the anchor and content', async () => {
+	it( 'closes when clicked outside the content, not inside it', async () => {
 		const { findByRole, getByRole, queryByRole } = render(
-			<PopperHarness />
+			<PopperWrapper />
 		);
 
-		await findByRole( 'button', { name: 'Inside' } );
+		const inside = await findByRole( 'button', { name: 'Inside' } );
 
+		// A mousedown inside the content does not close the popper.
+		fireEvent.mouseDown( inside );
+		expect(
+			queryByRole( 'button', { name: 'Inside' } )
+		).toBeInTheDocument();
+
+		// A mousedown outside the content closes the popper.
 		fireEvent.mouseDown( getByRole( 'button', { name: 'Outside' } ) );
-
 		expect(
 			queryByRole( 'button', { name: 'Inside' } )
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'keeps the content open on mousedown inside it', async () => {
-		const { findByRole, queryByRole } = render( <PopperHarness /> );
-
-		const inside = await findByRole( 'button', { name: 'Inside' } );
-		fireEvent.mouseDown( inside );
-
-		expect(
-			queryByRole( 'button', { name: 'Inside' } )
-		).toBeInTheDocument();
-	} );
-
 	it( 'closes when the Escape key is pressed', async () => {
-		const { findByRole, queryByRole } = render( <PopperHarness /> );
+		const { findByRole, queryByRole } = render( <PopperWrapper /> );
 
 		await findByRole( 'button', { name: 'Inside' } );
 
@@ -127,7 +126,7 @@ describe( 'Popper', () => {
 	} );
 
 	it( 'renders content inline so it shares a parent with the anchor', async () => {
-		const { findByRole, getByRole } = render( <PopperHarness /> );
+		const { findByRole, getByRole } = render( <PopperWrapper /> );
 
 		const anchor = getByRole( 'button', { name: 'Anchor' } );
 		const inside = await findByRole( 'button', { name: 'Inside' } );
@@ -137,7 +136,7 @@ describe( 'Popper', () => {
 
 	it( 'places focusable content after the anchor in DOM order', async () => {
 		const { container, findByRole, getByRole } = render(
-			<PopperHarness />
+			<PopperWrapper />
 		);
 
 		const anchor = getByRole( 'button', { name: 'Anchor' } );
@@ -165,7 +164,7 @@ describe( 'Popper', () => {
 
 		it( 'closes after the configured delay', () => {
 			const { queryByRole } = render(
-				<PopperHarness autoDismissMs={ 1500 } />
+				<PopperWrapper autoDismissMs={ 1500 } />
 			);
 
 			expect(
@@ -183,7 +182,7 @@ describe( 'Popper', () => {
 
 		it( 'stays open when `autoDismissMs` is 0', () => {
 			const { queryByRole } = render(
-				<PopperHarness autoDismissMs={ 0 } />
+				<PopperWrapper autoDismissMs={ 0 } />
 			);
 
 			act( () => {
@@ -197,7 +196,7 @@ describe( 'Popper', () => {
 
 		it( 'pauses while the content is hovered', () => {
 			const { container, queryByRole } = render(
-				<PopperHarness autoDismissMs={ 1000 } />
+				<PopperWrapper autoDismissMs={ 1000 } />
 			);
 
 			const content = container.querySelector( '.googlesitekit-popper' );
@@ -215,14 +214,14 @@ describe( 'Popper', () => {
 
 		it( 'restarts the timer when `resetKey` changes', () => {
 			const { rerender, queryByRole } = render(
-				<PopperHarness autoDismissMs={ 1000 } resetKey={ 1 } />
+				<PopperWrapper autoDismissMs={ 1000 } resetKey={ 1 } />
 			);
 
 			act( () => {
 				jest.advanceTimersByTime( 800 );
 			} );
 
-			rerender( <PopperHarness autoDismissMs={ 1000 } resetKey={ 2 } /> );
+			rerender( <PopperWrapper autoDismissMs={ 1000 } resetKey={ 2 } /> );
 
 			act( () => {
 				jest.advanceTimersByTime( 800 );

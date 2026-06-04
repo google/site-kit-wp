@@ -43,7 +43,7 @@ const POPPER_STYLE = { zIndex: 99999 };
 
 interface PopperProps {
 	// eslint-disable-next-line sitekit/acronym-case
-	anchorEl: HTMLElement | null;
+	anchorElement: HTMLElement | null;
 	onClose: () => void;
 	placement?: PopperPlacement;
 	autoDismissMs?: number;
@@ -59,7 +59,7 @@ interface PopperProps {
  * @since n.e.x.t
  *
  * @param props                 Component props.
- * @param props.anchorEl        Anchor element. The popper opens when it is set, and closes when it is null.
+ * @param props.anchorElement   Anchor element. The popper opens when it is set, and closes when it is null.
  * @param props.onClose         Callback run when the popper should close.
  * @param [props.placement]     Placement relative to anchor, defaults to `top-end`.
  * @param [props.autoDismissMs] Auto-dismiss delay in ms, defaults to 4000. Pass 0 to disable.
@@ -67,10 +67,10 @@ interface PopperProps {
  * @param [props.resetKey]      Changing this value resets the auto-dismiss timer.
  * @param props.children        Popper content.
  * @param [props.className]     Additional CSS class for the content wrapper.
- * @return React element, or null when `anchorEl` is null.
+ * @return React element, or null when `anchorElement` is null.
  */
 const Popper: FC< PopperProps > = ( {
-	anchorEl,
+	anchorElement,
 	onClose,
 	placement = 'top-end',
 	autoDismissMs = DEFAULT_AUTO_DISMISS_MS,
@@ -79,7 +79,7 @@ const Popper: FC< PopperProps > = ( {
 	children,
 	className,
 } ) => {
-	const isOpen = Boolean( anchorEl );
+	const hasAnchorElement = Boolean( anchorElement );
 	const contentRef = useRef< HTMLDivElement >( null );
 	const timerRef = useRef< ReturnType< typeof setTimeout > >();
 	const onCloseRef = useRef( onClose );
@@ -103,37 +103,37 @@ const Popper: FC< PopperProps > = ( {
 	}, [ autoDismissMs, clearTimer ] );
 
 	useEffect( () => {
-		if ( isOpen ) {
+		if ( hasAnchorElement ) {
 			startTimer();
 		}
 		return clearTimer;
-	}, [ isOpen, resetKey, startTimer, clearTimer ] );
+	}, [ hasAnchorElement, resetKey, startTimer, clearTimer ] );
 
 	useEffect( () => {
-		const ownerDoc = anchorEl?.ownerDocument ?? document;
+		const ownerDoc = anchorElement?.ownerDocument ?? document;
 
 		function handleMouseDown( event: MouseEvent ) {
 			const target = event.target as Node;
 			if ( contentRef.current?.contains( target ) ) {
 				return;
 			}
-			if ( anchorEl?.contains( target ) ) {
+			if ( anchorElement?.contains( target ) ) {
 				return;
 			}
 			onCloseRef.current();
 		}
 
-		if ( isOpen ) {
+		if ( hasAnchorElement ) {
 			ownerDoc.addEventListener( 'mousedown', handleMouseDown );
 		}
 
 		return () => {
 			ownerDoc.removeEventListener( 'mousedown', handleMouseDown );
 		};
-	}, [ isOpen, anchorEl ] );
+	}, [ hasAnchorElement, anchorElement ] );
 
 	useKey(
-		( event ) => isOpen && event.key === 'Escape',
+		( event ) => hasAnchorElement && event.key === 'Escape',
 		() => onCloseRef.current()
 	);
 
@@ -142,7 +142,7 @@ const Popper: FC< PopperProps > = ( {
 	}
 
 	function handleInteractEnd() {
-		if ( isOpen ) {
+		if ( hasAnchorElement ) {
 			startTimer();
 		}
 	}
@@ -156,8 +156,8 @@ const Popper: FC< PopperProps > = ( {
 
 	return (
 		<MuiPopper
-			open={ isOpen }
-			anchorEl={ anchorEl }
+			open={ hasAnchorElement }
+			anchorEl={ anchorElement }
 			placement={ placement }
 			style={ POPPER_STYLE }
 			// MUI Popper sets `role="tooltip"` by default. Clear it because this is a notification panel, not a tooltip.

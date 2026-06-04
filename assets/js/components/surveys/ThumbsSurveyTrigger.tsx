@@ -20,7 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { FC } from 'react';
+import { FC, MouseEvent } from 'react';
 
 /**
  * WordPress dependencies
@@ -91,8 +91,7 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 	const [ voteCount, setVoteCount ] = useState( 0 );
 
 	function handleVote( direction: VoteDirection ) {
-		// eslint-disable-next-line sitekit/acronym-case
-		return ( event: React.MouseEvent< HTMLButtonElement > ) => {
+		return ( event: MouseEvent< HTMLButtonElement > ) => {
 			triggerSurvey( `vote:${ voteID }:${ direction }` );
 
 			setSelectedDirection( direction );
@@ -163,7 +162,7 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 				/>
 			</div>
 			<Popper
-				anchorEl={ anchorElement }
+				anchorElement={ anchorElement }
 				onClose={ handleClose }
 				placement={ popperPlacement }
 				resetKey={ voteCount }
