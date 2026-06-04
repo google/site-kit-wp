@@ -31,6 +31,7 @@ import {
 } from '@/js/googlesitekit/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
@@ -61,7 +62,7 @@ function setupDefaultRegistry( registry: WPDataRegistry ) {
 			ENUM_CONVERSION_EVENTS.CONTACT,
 		] );
 
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+	registry.dispatch( CORE_USER ).receiveGetSiteGoalsSettings( {
 		goalDrivers: SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 		visitorEngagement: SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
 	} );
