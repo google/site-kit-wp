@@ -57,20 +57,18 @@ export function getBreakdownNoticeCopy(
 	goalType: GoalType
 ): BreakdownNoticeCopy {
 	const ctaLabel = __( 'Get breakdown', 'google-site-kit' );
-	const learnMore = {
-		a: (
-			<Link
-				// TODO: Update with the actual link to the Site Goals documentation.
-				href="#site-goals"
-				aria-label={ __(
-					'Learn more about site goals',
-					'google-site-kit'
-				) }
-				external
-				hideExternalIndicator
-			/>
-		),
-	};
+	const learnMoreLink = (
+		<Link
+			// TODO: Update with the actual link to the Site Goals documentation.
+			href="#TODO"
+			aria-label={ __(
+				'Learn more about site goals',
+				'google-site-kit'
+			) }
+			external
+			hideExternalIndicator
+		/>
+	);
 
 	if ( goalType === GOAL_TYPES.ECOMMERCE ) {
 		return {
@@ -83,7 +81,7 @@ export function getBreakdownNoticeCopy(
 					'If you use both WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
 					'google-site-kit'
 				),
-				learnMore
+				{ a: learnMoreLink }
 			),
 			ctaLabel,
 		};
@@ -96,7 +94,7 @@ export function getBreakdownNoticeCopy(
 				'If you use multiple forms, your events data may be grouped together. Enable this breakdown to see results for each form and track how each one is performing. Because this uses a new, more precise tracking method, data collection will start fresh from the moment you turn it on. <a>Learn more</a>',
 				'google-site-kit'
 			),
-			learnMore
+			{ a: learnMoreLink }
 		),
 		ctaLabel,
 	};
