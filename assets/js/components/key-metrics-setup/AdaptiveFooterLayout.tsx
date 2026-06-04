@@ -27,12 +27,11 @@ import { FC, ReactNode } from 'react';
  */
 import { useLayoutEffect, useRef, useState } from '@wordpress/element';
 
-interface AdaptiveFooterLayoutProps {
+export interface AdaptiveFooterLayoutProps {
 	className: string;
 	inlineClassName: string;
 	footerClassName: string;
 	footer: ReactNode;
-	children?: ReactNode;
 }
 
 const AdaptiveFooterLayout: FC< AdaptiveFooterLayoutProps > = ( {

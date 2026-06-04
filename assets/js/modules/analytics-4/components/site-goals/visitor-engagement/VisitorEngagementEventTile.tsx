@@ -41,7 +41,7 @@ import {
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 
-interface VisitorEngagementEventTileProps {
+export interface VisitorEngagementEventTileProps {
 	dates: {
 		startDate: string;
 		endDate: string;

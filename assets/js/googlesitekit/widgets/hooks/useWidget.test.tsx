@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { ReactNode } from 'react';
+import { FC } from 'react';
 
 /**
  * Internal dependencies
@@ -46,13 +46,13 @@ describe( 'useWidget', () => {
 			priority: 10,
 		};
 
-		function wrapper( { children }: { children: ReactNode } ) {
+		const wrapper: FC = ( { children } ) => {
 			return (
 				<WidgetContextProvider value={ mockWidget }>
 					{ children }
 				</WidgetContextProvider>
 			);
-		}
+		};
 
 		const { result } = renderHook(
 			() => useWidget(),

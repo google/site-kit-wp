@@ -27,7 +27,7 @@ import { type FC } from 'react';
 import UserInputEditModeContent from '@/js/components/user-input/UserInputEditModeContent';
 import UserInputPreviewAnswers from '@/js/components/user-input/UserInputPreviewAnswers';
 
-interface PreviewContentProps {
+export interface PreviewContentProps {
 	isEditing: boolean;
 	shouldUseAnswerQuestionCTA: boolean;
 	hasAnswer: boolean;

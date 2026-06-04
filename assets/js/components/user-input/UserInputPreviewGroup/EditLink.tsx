@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
 import Link from '@/js/components/Link';
 import ChevronDownIcon from '@/svg/icons/chevron-down.svg';
 
-interface EditLinkProps {
+export interface EditLinkProps {
 	isEditing: boolean;
 	isDisabled: boolean;
 	onClick: () => void;

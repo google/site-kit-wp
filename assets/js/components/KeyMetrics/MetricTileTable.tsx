@@ -42,7 +42,7 @@ interface MetricTileTableColumn {
 	className?: string;
 }
 
-interface MetricTileTableProps {
+export interface MetricTileTableProps {
 	rows?: MetricTileRow[];
 	columns?: MetricTileTableColumn[];
 	limit?: number;

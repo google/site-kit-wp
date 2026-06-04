@@ -33,9 +33,9 @@ import { __ } from '@wordpress/i18n';
 import BannerModal from '@/js/components/BannerModal/index';
 import Link from '@/js/components/Link';
 import SiteGoalsIntroModalLeadGraphic from '@/svg/graphics/site-goals-intro-modal-lead.svg';
-import type { IntroModalVariantProps } from './types';
+import { IntroModalVariantEventProps } from './';
 
-const IntroModalLead: FC< IntroModalVariantProps > = ( {
+const IntroModalLead: FC< IntroModalVariantEventProps > = ( {
 	onView,
 	onConfirm,
 	onClickLearnMore,

@@ -19,15 +19,14 @@
 /**
  * External dependencies
  */
-import { ReactNode, forwardRef } from 'react';
+import { forwardRef } from 'react';
 
 /**
  * Internal dependencies
  */
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 
-interface GraphicContainerProps {
-	children: ReactNode;
+export interface GraphicContainerProps {
 	className: string;
 }
 

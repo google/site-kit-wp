@@ -20,7 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { FC, ReactNode } from 'react';
+import { FC } from 'react';
 
 /**
  * Internal dependencies
@@ -28,12 +28,11 @@ import { FC, ReactNode } from 'react';
 import Typography from '@/js/components/Typography';
 import ChevronDownIcon from '@/svg/icons/chevron-down.svg';
 
-interface GoalTypeSectionProps {
+export interface GoalTypeSectionProps {
 	listID: string;
 	title: string;
 	isExpanded: boolean;
 	onToggleExpand: () => void;
-	children: ReactNode;
 }
 
 const GoalTypeSection: FC< GoalTypeSectionProps > = ( {

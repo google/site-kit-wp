@@ -44,7 +44,7 @@ import Footer from './Footer';
 import Header from './Header';
 import PDFSectionCheckboxes from './PDFSectionCheckboxes';
 
-interface PanelContentProps {
+export interface PanelContentProps {
 	closePanel: () => void;
 }
 

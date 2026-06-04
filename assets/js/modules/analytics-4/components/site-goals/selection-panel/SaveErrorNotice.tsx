@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
@@ -40,7 +45,7 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
-interface SaveErrorNoticeProps {
+export interface SaveErrorNoticeProps {
 	hasEcommerceGoalDrivers: boolean;
 	hasLeadGoalDrivers: boolean;
 }
@@ -60,10 +65,10 @@ function getSelectedCountForGoalType(
 	).length;
 }
 
-export default function SaveErrorNotice( {
+const SaveErrorNotice: FC< SaveErrorNoticeProps > = ( {
 	hasEcommerceGoalDrivers,
 	hasLeadGoalDrivers,
-}: SaveErrorNoticeProps ) {
+} ) => {
 	const [ selectedDrivers ] = useFormValue(
 		SITE_GOALS_SELECTION_FORM,
 		SITE_GOALS_SELECTED_DRIVERS
@@ -134,4 +139,6 @@ export default function SaveErrorNotice( {
 	}
 
 	return null;
-}
+};
+
+export default SaveErrorNotice;

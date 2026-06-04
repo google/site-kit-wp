@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { useState } from '@wordpress/element';
@@ -36,7 +41,13 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import IntroModalEcommerce from './IntroModalEcommerce';
 import IntroModalEcommerceAndLead from './IntroModalEcommerceAndLead';
 import IntroModalLead from './IntroModalLead';
-import { IntroModalVariantProps } from './types';
+
+export interface IntroModalVariantEventProps {
+	onView: () => void;
+	onConfirm: () => void;
+	onClickLearnMore: () => void;
+	onDismiss: () => void;
+}
 
 export const SITE_GOALS_INTRO_MODAL_BANNER = 'site_goals_intro_modal_banner';
 
@@ -61,7 +72,7 @@ function createModalHandlers(
 	onClose: () => void,
 	trackEvent: IntroModalTrackingEvents,
 	onShowMeCTAClicked: () => void
-): IntroModalVariantProps {
+): IntroModalVariantEventProps {
 	return {
 		onView: () => {
 			trackEvent.view( label );
@@ -81,7 +92,7 @@ function createModalHandlers(
 	};
 }
 
-export default function IntroModal() {
+const IntroModal: FC = () => {
 	const [ isOpen, setIsOpen ] = useState( true );
 
 	const { dismissItem, triggerOnDemandTour } = useDispatch( CORE_USER );
@@ -195,4 +206,6 @@ export default function IntroModal() {
 	}
 
 	return null;
-}
+};
+
+export default IntroModal;

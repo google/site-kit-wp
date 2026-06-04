@@ -39,7 +39,7 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
-interface SettingsStatusProps {
+export interface SettingsStatusProps {
 	slug: string;
 }
 

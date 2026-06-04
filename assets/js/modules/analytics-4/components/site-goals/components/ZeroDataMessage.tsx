@@ -34,7 +34,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export type MetricLabel = 'sales' | 'leads' | 'visitors';
 
-interface ZeroDataMessageProps {
+export interface ZeroDataMessageProps {
 	metricLabel: MetricLabel;
 }
 

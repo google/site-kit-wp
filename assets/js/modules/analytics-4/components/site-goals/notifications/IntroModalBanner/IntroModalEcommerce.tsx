@@ -32,10 +32,10 @@ import { __ } from '@wordpress/i18n';
  */
 import BannerModal from '@/js/components/BannerModal/index';
 import Link from '@/js/components/Link';
+import { IntroModalVariantEventProps } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import SiteGoalsIntroModalEcommerceGraphic from '@/svg/graphics/site-goals-intro-modal-ecommerce.svg';
-import type { IntroModalVariantProps } from './types';
 
-const IntroModalEcommerce: FC< IntroModalVariantProps > = ( {
+const IntroModalEcommerce: FC< IntroModalVariantEventProps > = ( {
 	onView,
 	onConfirm,
 	onClickLearnMore,

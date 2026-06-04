@@ -20,7 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import type { ChangeEvent, FC, KeyboardEvent, ReactNode } from 'react';
+import { ChangeEvent, FC, KeyboardEvent, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -40,7 +40,6 @@ export interface CheckboxProps {
 	value: string;
 	checked?: boolean;
 	disabled?: boolean;
-	children: ReactNode;
 	tabIndex?: number;
 	loading?: boolean;
 	alignLeft?: boolean;
@@ -55,6 +54,7 @@ const Checkbox: FC< CheckboxProps > = ( {
 	value,
 	checked = false,
 	disabled = false,
+	// Better named as "label", maybe?
 	children,
 	tabIndex,
 	onKeyDown,

@@ -22,7 +22,7 @@
 import classnames from 'classnames';
 import { FC } from 'react';
 
-interface CellProps {
+export interface CellProps {
 	smSize?: number;
 	smStart?: number;
 	smOrder?: number;

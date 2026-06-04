@@ -20,7 +20,7 @@
 import classnames from 'classnames';
 import { ElementType, FC } from 'react';
 
-interface DescriptionProps {
+export interface DescriptionProps {
 	as?: ElementType;
 	className?: string;
 }

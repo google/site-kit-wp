@@ -33,7 +33,6 @@ import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 
 interface NoticeNotificationProps {
 	notificationID: string;
-	children?: ReactNode;
 	title?: ReactNode;
 	description?: ReactNode;
 	dismissButton?: DismissButtonProps;

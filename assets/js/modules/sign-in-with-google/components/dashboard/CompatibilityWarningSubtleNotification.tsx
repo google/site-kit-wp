@@ -37,7 +37,7 @@ import CompatibilityErrors from '@/js/modules/sign-in-with-google/components/com
 import { SignInWithGoogleCompatibilityErrors } from '@/js/modules/sign-in-with-google/components/types';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 
-interface CompatibilityWarningSubtleNotificationProps {
+export interface CompatibilityWarningSubtleNotificationProps {
 	id: string;
 	Notification: ElementType;
 }

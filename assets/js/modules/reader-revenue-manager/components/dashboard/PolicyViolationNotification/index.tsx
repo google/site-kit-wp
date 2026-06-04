@@ -35,7 +35,7 @@ import {
 import { DAY_IN_SECONDS, HOUR_IN_SECONDS } from '@/js/util/dates';
 import { getPolicyViolationNotificationCopy } from './get-policy-violation-notification-copy';
 
-interface PolicyViolationNotificationProps {
+export interface PolicyViolationNotificationProps {
 	id: string;
 	Notification: ElementType;
 }

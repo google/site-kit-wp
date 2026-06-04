@@ -29,8 +29,19 @@ module.exports = {
 		'sitekit/jsdoc-tag-order': [ 'error' ],
 		'sitekit/jsdoc-third-person': [ 'error' ],
 		'sitekit/no-boolean-props-before-values': [ 'error' ],
+		'sitekit/no-children-prop-type': [ 'error' ],
 		'sitekit/no-direct-date': [ 'error' ],
 		'sitekit/no-yield-dispatch': [ 'error' ],
+		'sitekit/prefer-interface-props': [ 'error' ],
+		'sitekit/require-exported-component-props': [ 'error' ],
 		'sitekit/sort-import-groups': [ 'error' ],
 	},
+	overrides: [
+		{
+			files: [ '**/*.stories.tsx', '**/*.test.ts', '**/*.test.tsx' ],
+			rules: {
+				'sitekit/consistent-type-definitions': [ 'off' ],
+			},
+		},
+	],
 };

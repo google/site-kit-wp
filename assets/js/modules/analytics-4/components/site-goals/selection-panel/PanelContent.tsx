@@ -54,7 +54,7 @@ import GoalTypeSection from '@/js/modules/analytics-4/components/site-goals/sele
 import VisitorEngagementEventList from '@/js/modules/analytics-4/components/site-goals/selection-panel/VisitorEngagementEventList';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
-interface PanelContentProps {
+export interface PanelContentProps {
 	hasEcommerceGoalDrivers: boolean;
 	hasLeadGoalDrivers: boolean;
 }

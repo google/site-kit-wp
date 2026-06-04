@@ -63,7 +63,8 @@ import { numFmt } from '@/js/util';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
-interface LeadGenerationPerformanceWidgetProps extends WidgetComponentProps {
+export interface LeadGenerationPerformanceWidgetProps
+	extends WidgetComponentProps {
 	selectedGoalDriverIDs?: GoalDriverID[];
 }
 
@@ -74,7 +75,6 @@ const LeadGenerationPerformanceWidget: FC<
 		Header?: unknown;
 		headerContents?: ReactNode;
 		collapsible?: boolean;
-		children?: ReactNode;
 	} >;
 	const WidgetNullComponent = WidgetNull as FC;
 	const WidgetReportErrorComponent = WidgetReportError as FC< {

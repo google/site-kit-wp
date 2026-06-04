@@ -33,7 +33,7 @@ import { Checkbox } from 'googlesitekit-components';
 import { PDF_SECTIONS } from '@/js/components/pdf-generation/constants';
 import Typography from '@/js/components/Typography';
 
-interface PDFSectionCheckboxesProps {
+export interface PDFSectionCheckboxesProps {
 	selectedSections: string[];
 	toggleSection: ( slug: string ) => void;
 }

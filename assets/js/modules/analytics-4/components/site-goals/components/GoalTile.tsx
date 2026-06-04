@@ -28,7 +28,7 @@ import type { FC, ReactNode } from 'react';
 import InfoTooltip from '@/js/components/InfoTooltip';
 import Typography from '@/js/components/Typography';
 
-interface GoalTileProps {
+export interface GoalTileProps {
 	baseClassName: string;
 	className?: string;
 	title: ReactNode;

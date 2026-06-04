@@ -69,7 +69,8 @@ import { numFmt } from '@/js/util';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
-interface OnlineStorePerformanceWidgetProps extends WidgetComponentProps {
+export interface OnlineStorePerformanceWidgetProps
+	extends WidgetComponentProps {
 	selectedGoalDriverIDs?: GoalDriverID[];
 }
 
@@ -138,7 +139,6 @@ const OnlineStorePerformanceWidget: FC<
 		Header?: unknown;
 		headerContents?: ReactNode;
 		collapsible?: boolean;
-		children?: ReactNode;
 	} >;
 	const WidgetNullComponent = WidgetNull as FC;
 	const WidgetReportErrorComponent = WidgetReportError as FC< {
