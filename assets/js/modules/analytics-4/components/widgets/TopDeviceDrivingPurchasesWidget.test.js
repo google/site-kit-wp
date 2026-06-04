@@ -27,7 +27,6 @@ import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	DATE_RANGE_OFFSET,
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
@@ -66,7 +65,6 @@ describe( 'TopDeviceDrivingPurchasesWidget', () => {
 
 	it( 'should render correctly with the expected metrics', async () => {
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 

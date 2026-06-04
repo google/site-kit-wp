@@ -49,10 +49,7 @@ import {
 	MODULES_ADSENSE,
 } from '@/js/modules/adsense/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { isZeroReport } from '@/js/modules/analytics-4/utils';
 
 export const ADSENSE_NOTIFICATIONS = {
@@ -150,11 +147,8 @@ export const ADSENSE_NOTIFICATIONS = {
 			await resolveSelect( MODULES_ADSENSE ).getSettings();
 			const adSenseAccountID = select( MODULES_ADSENSE ).getAccountID();
 
-			const { startDate, endDate } = select(
-				CORE_USER
-			).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} );
+			const { startDate, endDate } =
+				select( CORE_USER ).getDateRangeDates();
 
 			const reportArgs = {
 				startDate,

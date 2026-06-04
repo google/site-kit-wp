@@ -30,7 +30,6 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	DATE_RANGE_OFFSET,
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
@@ -84,9 +83,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			loading = false,
 		}: { empty?: boolean; loading?: boolean } = {}
 	) {
-		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
+		const dates = registry.select( CORE_USER ).getDateRangeDates();
 
 		const dimensionFilters = {
 			eventName: {
@@ -488,7 +485,6 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -543,7 +539,6 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -578,7 +573,6 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -682,7 +676,6 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -726,7 +719,6 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -772,7 +764,6 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -817,14 +808,11 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 		const goalDriverDates = registry
 			.select( CORE_USER )
-			.getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} );
+			.getDateRangeDates();
 
 		const leadEventsReport = buildLeadEventsReportOptions( dates, [
 			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
@@ -898,7 +886,6 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -933,7 +920,6 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 

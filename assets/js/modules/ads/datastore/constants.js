@@ -22,9 +22,6 @@ export const ADWORDS_SCOPE = 'https://www.googleapis.com/auth/adwords';
 export const SUPPORT_CONTENT_SCOPE =
 	'https://www.googleapis.com/auth/supportcontent';
 
-// Date range offset days for Ads report requests.
-export const DATE_RANGE_OFFSET = 0;
-
 export const ADS_MODULE_SETUP_BANNER_PROMPT_DISMISSED_KEY =
 	'ads_module_setup_banner_prompt_dismissed_key';
 

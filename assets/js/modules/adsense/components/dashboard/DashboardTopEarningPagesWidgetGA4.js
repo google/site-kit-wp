@@ -50,10 +50,7 @@ import {
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { generateDateRangeArgs } from '@/js/modules/analytics-4/utils/report-date-range-args';
 import { numFmt, trackEvent } from '@/js/util';
 import whenActive from '@/js/util/when-active';
@@ -70,9 +67,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 	);
 
 	const { startDate, endDate } = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
+		select( CORE_USER ).getDateRangeDates()
 	);
 
 	const adSenseAccountID = useSelect( ( select ) =>

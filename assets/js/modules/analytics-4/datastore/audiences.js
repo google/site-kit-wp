@@ -36,7 +36,6 @@ import { isInsufficientPermissionsError } from '@/js/util/errors';
 import {
 	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	CUSTOM_DIMENSION_DEFINITIONS,
-	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 	RESOURCE_TYPE_AUDIENCE,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
@@ -188,10 +187,7 @@ async function getInitialConfiguredAudiences( registry, availableAudiences ) {
 
 		const endDate = select( CORE_USER ).getReferenceDate();
 
-		const startDate = getPreviousDate(
-			endDate,
-			90 + DATE_RANGE_OFFSET // Add offset to ensure we have data for the entirety of the last 90 days.
-		);
+		const startDate = getPreviousDate( endDate, 90 );
 
 		const { audienceResourceNames, error } =
 			await getNonZeroDataAudiencesSortedByTotalUsers(
@@ -977,9 +973,7 @@ const baseSelectors = {
 	getAudiencesUserCountReportOptions: createRegistrySelector(
 		( select ) =>
 			( state, audiences, { startDate, endDate } = {} ) => {
-				const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
-					offsetDays: DATE_RANGE_OFFSET,
-				} );
+				const dateRangeDates = select( CORE_USER ).getDateRangeDates();
 
 				return {
 					startDate: startDate || dateRangeDates.startDate,
@@ -1067,9 +1061,7 @@ const baseSelectors = {
 	 */
 	getSiteKitAudiencesUserCountReportOptions: createRegistrySelector(
 		( select ) => () => {
-			const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} );
+			const dateRangeDates = select( CORE_USER ).getDateRangeDates();
 
 			return {
 				startDate: dateRangeDates.startDate,

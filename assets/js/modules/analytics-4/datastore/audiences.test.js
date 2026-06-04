@@ -55,7 +55,6 @@ import {
 	AUDIENCE_FILTER_SCOPE_ENUM,
 	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	CUSTOM_DIMENSION_DEFINITIONS,
-	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
 } from './constants';
@@ -593,10 +592,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			const testPropertyID = propertiesFixture[ 0 ]._id;
 
 			const referenceDate = '2024-05-10';
-			const startDate = getPreviousDate(
-				referenceDate,
-				90 + DATE_RANGE_OFFSET
-			);
+			const startDate = getPreviousDate( referenceDate, 90 );
 
 			const availableNewVisitorsAudienceFixture =
 				availableAudiencesFixture[ 2 ];
@@ -1847,10 +1843,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			const testPropertyID = propertiesFixture[ 0 ]._id;
 
 			const referenceDate = '2024-05-10';
-			const startDate = getPreviousDate(
-				referenceDate,
-				90 + DATE_RANGE_OFFSET
-			);
+			const startDate = getPreviousDate( referenceDate, 90 );
 
 			const availableNewVisitorsAudienceFixture =
 				availableAudiencesFixture[ 2 ];
@@ -2738,9 +2731,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				const { startDate, endDate } = registry
 					.select( CORE_USER )
-					.getDateRangeDates( {
-						offsetDays: DATE_RANGE_OFFSET,
-					} );
+					.getDateRangeDates();
 
 				expect( reportOptions ).toEqual( {
 					...expectedReportOptions,
