@@ -33,7 +33,10 @@ class Existing_User_Authenticator extends Authenticator {
 
 	/**
 	 * Query arg for the existing-user link flow error. Namespaced to avoid
-	 * WordPress core's empty `?error=` notice on `wp-admin/profile.php` and `wp-admin/user-edit.php`.
+	 * using WordPress core's `?error=` query argument on
+	 * `wp-admin/profile.php` and `wp-admin/user-edit.php`, because an empty
+	 * query arg will cause WordPress core to display an error message,
+	 * and we don't want to override their if there was an error.
 	 *
 	 * @since n.e.x.t
 	 */
