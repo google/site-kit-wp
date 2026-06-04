@@ -48,7 +48,7 @@ import {
 	GoalType,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import BreakdownNotice from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNotice';
-import { getBreakdownNoticeCopy } from '@/js/modules/analytics-4/components/site-goals/notifications/breakdownNoticeCopy';
+import { useSiteGoalsBreakdownNoticeCopy } from '@/js/modules/analytics-4/components/site-goals/notifications/useSiteGoalsBreakdownNoticeCopy';
 import GoalTypeList from '@/js/modules/analytics-4/components/site-goals/selection-panel/GoalTypeList';
 import GoalTypeSection from '@/js/modules/analytics-4/components/site-goals/selection-panel/GoalTypeSection';
 import VisitorEngagementEventList from '@/js/modules/analytics-4/components/site-goals/selection-panel/VisitorEngagementEventList';
@@ -86,6 +86,13 @@ const PanelContent: FC< PanelContentProps > = ( {
 	const selectedDriverState = selectedDrivers as
 		| GoalDriverSelectionState
 		| undefined;
+
+	const ecommerceBreakdownNoticeCopy = useSiteGoalsBreakdownNoticeCopy(
+		GOAL_TYPES.ECOMMERCE
+	);
+	const leadBreakdownNoticeCopy = useSiteGoalsBreakdownNoticeCopy(
+		GOAL_TYPES.LEAD
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setSiteGoalsBreakdownTooltipPending } =
@@ -167,7 +174,7 @@ const PanelContent: FC< PanelContentProps > = ( {
 					<BreakdownNotice
 						className="googlesitekit-site-goals-selection-panel__breakdown-notice"
 						onDismissComplete={ deferBreakdownTooltip }
-						{ ...getBreakdownNoticeCopy( GOAL_TYPES.ECOMMERCE ) }
+						{ ...ecommerceBreakdownNoticeCopy }
 					/>
 					<GoalTypeSection
 						listID={ GOAL_TYPES.ECOMMERCE }
@@ -211,7 +218,7 @@ const PanelContent: FC< PanelContentProps > = ( {
 					<BreakdownNotice
 						className="googlesitekit-site-goals-selection-panel__breakdown-notice"
 						onDismissComplete={ deferBreakdownTooltip }
-						{ ...getBreakdownNoticeCopy( GOAL_TYPES.LEAD ) }
+						{ ...leadBreakdownNoticeCopy }
 					/>
 					<GoalTypeSection
 						listID={ GOAL_TYPES.LEAD }

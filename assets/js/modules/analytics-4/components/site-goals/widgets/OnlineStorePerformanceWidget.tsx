@@ -52,8 +52,8 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import BreakdownNotice from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNotice';
-import { getBreakdownNoticeCopy } from '@/js/modules/analytics-4/components/site-goals/notifications/breakdownNoticeCopy';
 import { useBreakdownNoticeTooltip } from '@/js/modules/analytics-4/components/site-goals/notifications/useBreakdownNoticeTooltip';
+import { useSiteGoalsBreakdownNoticeCopy } from '@/js/modules/analytics-4/components/site-goals/notifications/useSiteGoalsBreakdownNoticeCopy';
 import {
 	NUMBER_FORMAT,
 	PERCENT_FORMAT,
@@ -157,6 +157,9 @@ const OnlineStorePerformanceWidget: FC<
 	);
 
 	const showBreakdownTooltip = useBreakdownNoticeTooltip();
+	const breakdownNoticeCopy = useSiteGoalsBreakdownNoticeCopy(
+		GOAL_TYPES.ECOMMERCE
+	);
 
 	const primaryEvent: keyof typeof EVENT_TOTAL_LABELS | undefined = useSelect(
 		( select: Select ) =>
@@ -363,7 +366,7 @@ const OnlineStorePerformanceWidget: FC<
 			<BreakdownNotice
 				className="googlesitekit-site-goals-breakdown-notice"
 				onDismissComplete={ showBreakdownTooltip }
-				{ ...getBreakdownNoticeCopy( GOAL_TYPES.ECOMMERCE ) }
+				{ ...breakdownNoticeCopy }
 			/>
 
 			<TilesGroup

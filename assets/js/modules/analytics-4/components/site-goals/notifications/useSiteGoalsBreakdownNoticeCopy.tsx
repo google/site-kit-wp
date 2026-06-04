@@ -1,5 +1,5 @@
 /**
- * Site Goals breakdown notice copy.
+ * Site Goals breakdown notice copy hook.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -30,7 +30,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 
@@ -44,23 +46,31 @@ export interface BreakdownNoticeCopy {
  * Gets the breakdown notice copy for a goal type.
  *
  * Single source of truth for the notice copy so the widgets and the Side Panel
- * render the same strings without duplicating them at each call site. The
- * description includes the "Learn more" link, mirroring the other Site Goals
- * components.
+ * render the same strings without duplicating them at each call site. This is a
+ * hook (rather than a plain function) so the "Learn more" documentation URL can
+ * be resolved from the data store here, instead of being passed in awkwardly
+ * from every caller.
  *
  * @since n.e.x.t
  *
  * @param {string} goalType The goal type the notice is shown for.
  * @return {BreakdownNoticeCopy} The `title`, `description` and `ctaLabel`.
  */
-export function getBreakdownNoticeCopy(
+export function useSiteGoalsBreakdownNoticeCopy(
 	goalType: GoalType
 ): BreakdownNoticeCopy {
+	const documentationURL = useSelect(
+		( select: Select ) =>
+			// TODO: Replace the `site-goals` slug once the Site Goals
+			// documentation page is available.
+			select( CORE_SITE ).getDocumentationLinkURL( 'site-goals' ),
+		[]
+	);
+
 	const ctaLabel = __( 'Get breakdown', 'google-site-kit' );
 	const learnMoreLink = (
 		<Link
-			// TODO: Update with the actual link to the Site Goals documentation.
-			href="#TODO"
+			href={ documentationURL }
 			aria-label={ __(
 				'Learn more about site goals',
 				'google-site-kit'
