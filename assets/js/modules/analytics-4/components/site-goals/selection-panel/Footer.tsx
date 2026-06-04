@@ -27,6 +27,7 @@ import { FC } from 'react';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { SelectionPanelFooter } from '@/js/components/SelectionPanel';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useFormValue from '@/js/hooks/useFormValue';
 import {
 	SITE_GOALS_MAX_SELECTED_DRIVERS,
@@ -45,7 +46,6 @@ import {
 	GoalType,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { resolveVisitorEngagementSelectionState } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 interface FooterProps {
 	isOpen: boolean;
@@ -113,16 +113,14 @@ const Footer: FC< FooterProps > = ( {
 	hasLeadGoalDrivers,
 } ) => {
 	const { setValues } = useDispatch( CORE_FORMS );
-	const { saveSiteGoalsSettings } = useDispatch( MODULES_ANALYTICS_4 );
+	const { saveSiteGoalsSettings } = useDispatch( CORE_USER );
 
 	const isSavingSiteGoalsSettings = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).isSavingSiteGoalsSettings(),
+		( select: Select ) => select( CORE_USER ).isSavingSiteGoalsSettings(),
 		[]
 	);
 	const savedDrivers: GoalDriverSelectionState | undefined = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getSiteGoalsGoalDrivers(),
+		( select: Select ) => select( CORE_USER ).getSiteGoalsGoalDrivers(),
 		[]
 	);
 
