@@ -220,13 +220,13 @@ class Authenticator implements Authenticator_Interface {
 	protected function find_user( $payload ) {
 		// Check if there are any existing WordPress users connected to this Google account.
 		// The user ID is used as the unique identifier because users can change the email on their Google account.
-		$g_user_hid = $this->get_hashed_google_user_id( $payload );
-		$users      = get_users(
+		$google_user_hashed_id = $this->get_hashed_google_user_id( $payload );
+		$users                 = get_users(
 			array(
 				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				'meta_key'   => $this->user_options->get_meta_key( Hashed_User_ID::OPTION ),
 				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
-				'meta_value' => $g_user_hid,
+				'meta_value' => $google_user_hashed_id,
 				'number'     => 1,
 			)
 		);
@@ -240,7 +240,7 @@ class Authenticator implements Authenticator_Interface {
 		if ( $user ) {
 			$user_options = clone $this->user_options;
 			$user_options->switch_user( $user->ID );
-			$user_options->set( Hashed_User_ID::OPTION, $g_user_hid );
+			$user_options->set( Hashed_User_ID::OPTION, $google_user_hashed_id );
 
 			return $user;
 		}
@@ -257,7 +257,7 @@ class Authenticator implements Authenticator_Interface {
 	 * @return WP_User|WP_Error User object if found or created, WP_Error otherwise.
 	 */
 	protected function create_user( $payload ) {
-		$g_user_hid = $this->get_hashed_google_user_id( $payload );
+		$google_user_hashed_id = $this->get_hashed_google_user_id( $payload );
 
 		// Get the default role for new users.
 		$default_role = $this->get_default_role();
@@ -282,7 +282,7 @@ class Authenticator implements Authenticator_Interface {
 
 		$user_options = clone $this->user_options;
 		$user_options->switch_user( $user_id );
-		$user_options->set( Hashed_User_ID::OPTION, $g_user_hid );
+		$user_options->set( Hashed_User_ID::OPTION, $google_user_hashed_id );
 		$user_options->set( self::CREATED_BY_META_KEY, Sign_In_With_Google::MODULE_SLUG );
 
 		// Add the user to the current site if it is a multisite.

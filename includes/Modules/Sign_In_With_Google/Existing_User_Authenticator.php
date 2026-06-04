@@ -76,7 +76,7 @@ class Existing_User_Authenticator extends Authenticator {
 			return $this->get_error_redirect_url( self::ERROR_INVALID_REQUEST );
 		}
 
-		$g_user_hid = $this->get_hashed_google_user_id( $payload );
+		$google_user_hashed_id = $this->get_hashed_google_user_id( $payload );
 
 		// Check to see if the Google user ID for the Google Account we signed in
 		// with is already in use (eg. registered to another user on the site).
@@ -88,7 +88,7 @@ class Existing_User_Authenticator extends Authenticator {
 				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				'meta_key'   => $this->user_options->get_meta_key( Hashed_User_ID::OPTION ),
 				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
-				'meta_value' => $g_user_hid,
+				'meta_value' => $google_user_hashed_id,
 				'number'     => 1,
 				'exclude'    => array( $current_user->ID ),
 				'fields'     => 'ID',
@@ -100,7 +100,7 @@ class Existing_User_Authenticator extends Authenticator {
 		}
 
 		// Link the Google account by writing the hashed user ID to the current user.
-		$this->user_options->set( Hashed_User_ID::OPTION, $g_user_hid );
+		$this->user_options->set( Hashed_User_ID::OPTION, $google_user_hashed_id );
 
 		return get_edit_user_link( $current_user->ID );
 	}
