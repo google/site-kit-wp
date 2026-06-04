@@ -252,6 +252,66 @@ WithAnalyticsActive.args = {
 };
 WithAnalyticsActive.scenario = {};
 
+export const setupFlowRefreshPhase4AnalyticsNotSetup = Template.bind( {} );
+setupFlowRefreshPhase4AnalyticsNotSetup.storyName =
+	'setupFlowRefreshPhase4 - secondary admin, Analytics not setup';
+setupFlowRefreshPhase4AnalyticsNotSetup.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: true,
+			hasMultipleAdmins: true,
+			resettable: false,
+		} );
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+	},
+};
+setupFlowRefreshPhase4AnalyticsNotSetup.parameters = {
+	features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+};
+setupFlowRefreshPhase4AnalyticsNotSetup.scenario = {};
+
+export const setupFlowRefreshPhase4SecondaryAdminWithSharedServices =
+	Template.bind( {} );
+setupFlowRefreshPhase4SecondaryAdminWithSharedServices.storyName =
+	'setupFlowRefreshPhase4 - secondary admin with shared services';
+setupFlowRefreshPhase4SecondaryAdminWithSharedServices.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: true,
+			hasMultipleAdmins: true,
+			resettable: false,
+		} );
+
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: true,
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				MODULE_SLUG_ANALYTICS_4
+			) ]: true,
+		} );
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+				shareable: true,
+			},
+		] );
+	},
+};
+setupFlowRefreshPhase4SecondaryAdminWithSharedServices.parameters = {
+	features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+};
+setupFlowRefreshPhase4SecondaryAdminWithSharedServices.scenario = {};
+
 export default {
 	title: 'Setup / Using Proxy With Sign-in and setupFlowRefresh enabled',
 	decorators: [
