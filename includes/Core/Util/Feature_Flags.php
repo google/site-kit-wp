@@ -74,8 +74,6 @@ class Feature_Flags {
 			}
 		}
 
-		$enabled_features[] = 'setupFlowRefreshPhase4';
-
 		return $enabled_features;
 	}
 
