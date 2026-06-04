@@ -51,6 +51,12 @@ import Chart from './Chart';
 import Footer from './Footer';
 import Header from './Header';
 import Overview from './Overview';
+import {
+	getGA4KeyEventsOverviewReportOptions,
+	getGA4KeyEventsReportOptions,
+	getGA4VisitorsReportOptions,
+	getSearchConsoleReportOptions,
+} from './reportOptions';
 
 function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
@@ -126,78 +132,30 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 		[ isGA4Connected, canViewSharedAnalytics4, showRecoverableAnalytics ]
 	);
 
-	const searchConsoleReportArgs = {
-		startDate: compareStartDate,
+	// The report option builders are the single source of truth shared with the
+	// PDF export, so the dashboard and PDF report cannot drift.
+	const entityURL = isURL( url ) ? url : undefined;
+
+	const searchConsoleReportArgs = getSearchConsoleReportOptions( {
+		compareStartDate,
 		endDate,
-		dimensions: 'date',
-	};
+		url: entityURL,
+	} );
 
-	const ga4OverviewArgs = {
+	const ga4OverviewArgs = getGA4KeyEventsOverviewReportOptions( {
 		...ga4Dates,
-		metrics: [
-			{
-				name: 'keyEvents',
-			},
-			{
-				name: 'engagementRate',
-			},
-		],
-		dimensionFilters: {
-			sessionDefaultChannelGrouping: [ 'Organic Search' ],
-		},
-		reportID:
-			'search-console_search-funnel-widget-ga4_widget_ga4OverviewArgs',
-	};
+		url: entityURL,
+	} );
 
-	const ga4StatsArgs = {
+	const ga4StatsArgs = getGA4KeyEventsReportOptions( {
 		...ga4Dates,
-		...ga4OverviewArgs,
-		dimensions: [
-			{
-				name: 'date',
-			},
-		],
-		orderby: [
-			{
-				dimension: {
-					dimensionName: 'date',
-				},
-			},
-		],
-		reportID: 'search-console_search-funnel-widget-ga4_widget_ga4StatsArgs',
-	};
-	const ga4VisitorsOverviewAndStatsArgs = {
-		...ga4Dates,
-		metrics: [
-			{
-				name: 'totalUsers',
-			},
-		],
-		dimensions: [
-			{
-				name: 'date',
-			},
-		],
-		dimensionFilters: {
-			sessionDefaultChannelGrouping: [ 'Organic Search' ],
-		},
-		orderby: [
-			{
-				dimension: {
-					dimensionName: 'date',
-				},
-			},
-		],
-		reportID:
-			'search-console_search-funnel-widget-ga4_widget_ga4VisitorsOverviewAndStatsArgs',
-	};
+		url: entityURL,
+	} );
 
-	if ( isURL( url ) ) {
-		searchConsoleReportArgs.url = url;
-		ga4OverviewArgs.url = url;
-		ga4StatsArgs.url = url;
-		ga4VisitorsOverviewAndStatsArgs.url = url;
-	}
+	const ga4VisitorsOverviewAndStatsArgs = getGA4VisitorsReportOptions( {
+		...ga4Dates,
+		url: entityURL,
+	} );
 
 	const searchConsoleData = useInViewSelect(
 		( select ) =>
