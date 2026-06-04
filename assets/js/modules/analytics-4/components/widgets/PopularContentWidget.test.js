@@ -26,10 +26,7 @@ import {
 import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	STRATEGY_ZIP,
 	getAnalytics4MockResponse,
@@ -66,9 +63,7 @@ describe( 'PopularContentWidget', () => {
 
 	it( 'should render correctly with the expected metrics', async () => {
 		const reportOptions = {
-			...registry.select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} ),
+			...registry.select( CORE_USER ).getDateRangeDates(),
 			dimensions: [ 'pagePath' ],
 			metrics: [ { name: 'screenPageViews' } ],
 			orderby: [
@@ -83,9 +78,7 @@ describe( 'PopularContentWidget', () => {
 		};
 
 		const pageTitlesReportOptions = {
-			...registry.select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} ),
+			...registry.select( CORE_USER ).getDateRangeDates(),
 			dimensionFilters: {
 				pagePath: new Array( 3 )
 					.fill( '' )

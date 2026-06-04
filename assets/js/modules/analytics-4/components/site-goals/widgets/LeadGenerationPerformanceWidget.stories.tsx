@@ -50,7 +50,7 @@ import {
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
 
-// Reference date: 2020-09-07, offsetDays: 0, 28-day range with comparison.
+// Reference date: 2020-09-07, 28-day range with comparison.
 const dates = {
 	startDate: '2020-08-11',
 	endDate: '2020-09-07',
@@ -127,6 +127,7 @@ function commonSetup( registry: WPDataRegistry ) {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {} );
 
 	registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
 

@@ -24,6 +24,11 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
@@ -35,12 +40,16 @@ import WelcomeModal from './WelcomeModal';
 
 function Template( {
 	setupRegistry,
+	viewContext = VIEW_CONTEXT_MAIN_DASHBOARD,
 }: {
 	setupRegistry: ( registry: WPDataRegistry ) => void;
+	viewContext?: string;
 } ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
-			<WelcomeModal />
+			<ViewContextProvider value={ viewContext }>
+				<WelcomeModal />
+			</ViewContextProvider>
 		</WithRegistrySetup>
 	);
 }
@@ -83,6 +92,40 @@ DataGatheringComplete.args = {
 	},
 };
 DataGatheringComplete.scenario = {};
+
+export const DataAvailableViewOnly = Template.bind( {} ) as Story & {
+	parameters?: Record< string, unknown >;
+};
+DataAvailableViewOnly.storyName = 'Data Available View Only';
+DataAvailableViewOnly.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsGatheringData( false );
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+DataAvailableViewOnly.parameters = {
+	features: [ 'setupFlowRefreshPhase4' ],
+};
+DataAvailableViewOnly.scenario = {};
+
+export const GatheringDataViewOnly = Template.bind( {} ) as Story & {
+	parameters?: Record< string, unknown >;
+};
+GatheringDataViewOnly.storyName = 'Gathering Data View Only';
+GatheringDataViewOnly.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsGatheringData( true );
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+GatheringDataViewOnly.parameters = {
+	features: [ 'setupFlowRefreshPhase4' ],
+};
+GatheringDataViewOnly.scenario = {};
 
 export default {
 	title: 'Components/WelcomeModal',

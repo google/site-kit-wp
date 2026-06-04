@@ -33,7 +33,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Inline_Data;
-use Google\Site_Kit\Core\Modules\Module_With_Inline_Data_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -82,12 +81,14 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Property;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Has_Property_Access;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Key_Events;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Report;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Site_Goals_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams_Batch;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Sync_Audiences;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Custom_Dimension_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Resource_Data_Availability_Date;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Site_Goals_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Set_Google_Tag_ID_Mismatch;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Set_Is_Web_Data_Stream_Unavailable;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Sync_Custom_Dimensions;
@@ -98,6 +99,7 @@ use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioning
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
+use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdsLinked;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Interface;
@@ -142,7 +144,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	use Module_With_Settings_Trait;
 	use Module_With_Data_Available_State_Trait;
 	use Module_With_Tag_Trait;
-	use Module_With_Inline_Data_Trait;
 	use Feature_Metrics_Trait;
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
@@ -200,6 +201,15 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	protected $audience_settings;
 
 	/**
+	 * Site_Goals_Settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Site_Goals_Settings
+	 */
+	protected $site_goals_settings;
+
+	/**
 	 * Audience_Utilities instance.
 	 *
 	 * @since 1.172.0
@@ -230,6 +240,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
 		$this->reset_audiences                  = new Reset_Audiences( $this->user_options );
 		$this->audience_settings                = new Audience_Settings( $this->options );
+		$this->site_goals_settings              = new Site_Goals_Settings( $this->user_options );
 		$this->audience_utilities               = new Audience_Utilities( $this->audience_settings );
 		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings(), $this->audience_settings );
 	}
@@ -242,9 +253,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 */
 	public function register() {
 		$this->register_scopes_hook();
-
-		$this->register_inline_data();
-
 		$this->register_feature_metrics();
 
 		$synchronize_property = new Synchronize_Property(
@@ -275,6 +283,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$conversion_reporting_provider->register();
 
 		$this->audience_settings->register();
+		$this->site_goals_settings->register();
 
 		( new Advanced_Tracking( $this->context ) )->register();
 
@@ -451,6 +460,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					$routes,
 					array(
 						'/' . REST_Routes::REST_ROOT . '/modules/analytics-4/data/audience-settings',
+						'/' . REST_Routes::REST_ROOT . '/modules/analytics-4/data/site-goals-settings',
 					)
 				);
 			}
@@ -557,6 +567,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->custom_dimensions_data_available->reset_data_available();
 		$this->reset_audiences->reset_audience_data();
 		$this->audience_settings->delete();
+		$this->site_goals_settings->delete();
 	}
 
 	/**
@@ -931,6 +942,18 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				array(
 					'audience_settings' => $this->audience_settings,
 					'service'           => '',
+				)
+			),
+			'GET:site-goals-settings'                   => new Get_Site_Goals_Settings(
+				array(
+					'site_goals_settings' => $this->site_goals_settings,
+					'service'             => '',
+				)
+			),
+			'POST:save-site-goals-settings'             => new Save_Site_Goals_Settings(
+				array(
+					'site_goals_settings' => $this->site_goals_settings,
+					'service'             => '',
 				)
 			),
 		);
@@ -1990,16 +2013,16 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 *
 	 * @since 1.158.0
 	 * @since 1.160.0 Include $modules_data parameter to match the interface.
+	 * @since n.e.x.t Remove $modules_data parameter as per updated interface.
 	 *
-	 * @param array $modules_data Inline modules data.
 	 * @return array An array of the module's inline data.
 	 */
-	public function get_inline_data( $modules_data ) {
-		if ( ! $this->is_connected() ) {
-			return $modules_data;
-		}
-
+	public function get_inline_data() {
 		$inline_data = array();
+
+		if ( ! $this->is_connected() ) {
+			return $inline_data;
+		}
 
 		// Web data stream availability data.
 		$settings                                  = $this->get_settings()->get();
@@ -2015,7 +2038,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			$this->get_inline_conversion_reporting_events_detection()
 		);
 
-		$modules_data[ self::MODULE_SLUG ] = $inline_data;
-		return $modules_data;
+		return $inline_data;
 	}
 }
