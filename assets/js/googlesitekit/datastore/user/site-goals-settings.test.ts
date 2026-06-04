@@ -1,5 +1,5 @@
 /**
- * `modules/analytics-4` data store: site goals settings tests.
+ * `core/user` data store: site goals settings tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -34,17 +34,16 @@ import {
 	subscribeUntil,
 	untilResolved,
 } from '@tests/js/utils';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { CORE_USER } from './constants';
 
-describe( 'modules/analytics-4 site goals settings', () => {
+describe( 'core/user site goals settings', () => {
 	let registry: WPDataRegistry;
 
-	const getSiteGoalsSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/site-goals-settings'
+	const siteGoalsSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/site-goals-settings'
 	);
-	const saveSiteGoalsSettingsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/save-site-goals-settings'
-	);
+	const getSiteGoalsSettingsEndpoint = siteGoalsSettingsEndpoint;
+	const saveSiteGoalsSettingsEndpoint = siteGoalsSettingsEndpoint;
 
 	const goalDrivers = {
 		ecommerce: [ 'topTrafficChannels' ],
@@ -63,7 +62,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 		describe( 'saveSiteGoalsSettings', () => {
 			it( 'should post the merged settings and update the store on success', async () => {
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.receiveGetSiteGoalsSettings( { goalDrivers } );
 
 				fetchMock.postOnce(
@@ -75,7 +74,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				);
 
 				const { response, error } = await registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.saveSiteGoalsSettings( { visitorEngagement } );
 
 				expect( error ).toBeUndefined();
@@ -96,15 +95,13 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				);
 
 				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getSiteGoalsSettings()
+					registry.select( CORE_USER ).getSiteGoalsSettings()
 				).toEqual( { goalDrivers, visitorEngagement } );
 			} );
 
 			it( 'should return an error when the request fails', async () => {
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.receiveGetSiteGoalsSettings( {} );
 
 				const errorResponse = {
@@ -119,7 +116,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				} );
 
 				const { response, error } = await registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.saveSiteGoalsSettings( { goalDrivers } );
 
 				expect( console ).toHaveErrored();
@@ -130,7 +127,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 			it( 'should validate the settings shape', () => {
 				expect( () =>
 					registry
-						.dispatch( MODULES_ANALYTICS_4 )
+						.dispatch( CORE_USER )
 						.saveSiteGoalsSettings( { goalDrivers: 'invalid' } )
 				).toThrow( /goalDrivers should be an object/ );
 			} );
@@ -146,114 +143,42 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				} );
 
 				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getSiteGoalsSettings()
+					registry.select( CORE_USER ).getSiteGoalsSettings()
 				).toBeUndefined();
 
 				await untilResolved(
 					registry,
-					MODULES_ANALYTICS_4
+					CORE_USER
 				).getSiteGoalsSettings();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getSiteGoalsSettings()
+					registry.select( CORE_USER ).getSiteGoalsSettings()
 				).toEqual( { goalDrivers, visitorEngagement } );
-			} );
-
-			it( 'should fetch via the getSiteGoalsGoalDrivers derived selector', async () => {
-				fetchMock.getOnce( getSiteGoalsSettingsEndpoint, {
-					body: { goalDrivers, visitorEngagement },
-					status: 200,
-				} );
-
-				// Components only call the derived selectors, so resolution
-				// must be triggered through them, not getSiteGoalsSettings.
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getSiteGoalsGoalDrivers()
-				).toBeUndefined();
-
-				await untilResolved(
-					registry,
-					MODULES_ANALYTICS_4
-				).getSiteGoalsSettings();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getSiteGoalsGoalDrivers()
-				).toEqual( goalDrivers );
 			} );
 
 			it( 'should not fetch when settings are already loaded', async () => {
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.receiveGetSiteGoalsSettings( { goalDrivers } );
 
 				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getSiteGoalsSettings()
+					registry.select( CORE_USER ).getSiteGoalsSettings()
 				).toEqual( { goalDrivers } );
 
 				await untilResolved(
 					registry,
-					MODULES_ANALYTICS_4
+					CORE_USER
 				).getSiteGoalsSettings();
 
 				expect( fetchMock ).toHaveFetchedTimes( 0 );
 			} );
 		} );
 
-		describe( 'getSiteGoalsGoalDrivers / getSiteGoalsVisitorEngagement', () => {
-			it( 'should return the populated selections after receiving settings', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSiteGoalsSettings( {
-						goalDrivers,
-						visitorEngagement,
-					} );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getSiteGoalsGoalDrivers()
-				).toEqual( goalDrivers );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getSiteGoalsVisitorEngagement()
-				).toEqual( visitorEngagement );
-			} );
-
-			it( 'should return undefined for missing keys', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSiteGoalsSettings( {} );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getSiteGoalsGoalDrivers()
-				).toBeUndefined();
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getSiteGoalsVisitorEngagement()
-				).toBeUndefined();
-			} );
-		} );
-
 		describe( 'isSavingSiteGoalsSettings', () => {
 			it( 'should return true while a save is in flight', async () => {
 				registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.receiveGetSiteGoalsSettings( {} );
 
 				let resolveRequest!: () => void;
@@ -270,29 +195,75 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				);
 
 				const promise = registry
-					.dispatch( MODULES_ANALYTICS_4 )
+					.dispatch( CORE_USER )
 					.saveSiteGoalsSettings( { goalDrivers } );
 
 				await subscribeUntil( registry, () =>
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.isSavingSiteGoalsSettings()
+					registry.select( CORE_USER ).isSavingSiteGoalsSettings()
 				);
 
 				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.isSavingSiteGoalsSettings()
+					registry.select( CORE_USER ).isSavingSiteGoalsSettings()
 				).toBe( true );
 
 				resolveRequest();
 				await promise;
 
 				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.isSavingSiteGoalsSettings()
+					registry.select( CORE_USER ).isSavingSiteGoalsSettings()
 				).toBe( false );
+			} );
+		} );
+
+		describe( 'getSiteGoalsGoalDrivers / getSiteGoalsVisitorEngagement', () => {
+			it( 'should fetch the settings via the derived selector when not yet loaded', async () => {
+				fetchMock.getOnce( getSiteGoalsSettingsEndpoint, {
+					body: { goalDrivers, visitorEngagement },
+					status: 200,
+				} );
+
+				// Components only call the derived selectors, so resolution must
+				// be triggered through them, not getSiteGoalsSettings.
+				expect(
+					registry.select( CORE_USER ).getSiteGoalsGoalDrivers()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getSiteGoalsSettings();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect(
+					registry.select( CORE_USER ).getSiteGoalsGoalDrivers()
+				).toEqual( goalDrivers );
+			} );
+
+			it( 'should return the populated selections after receiving settings', () => {
+				registry.dispatch( CORE_USER ).receiveGetSiteGoalsSettings( {
+					goalDrivers,
+					visitorEngagement,
+				} );
+
+				expect(
+					registry.select( CORE_USER ).getSiteGoalsGoalDrivers()
+				).toEqual( goalDrivers );
+				expect(
+					registry.select( CORE_USER ).getSiteGoalsVisitorEngagement()
+				).toEqual( visitorEngagement );
+			} );
+
+			it( 'should return undefined for missing keys', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetSiteGoalsSettings( {} );
+
+				expect(
+					registry.select( CORE_USER ).getSiteGoalsGoalDrivers()
+				).toBeUndefined();
+				expect(
+					registry.select( CORE_USER ).getSiteGoalsVisitorEngagement()
+				).toBeUndefined();
 			} );
 		} );
 	} );
