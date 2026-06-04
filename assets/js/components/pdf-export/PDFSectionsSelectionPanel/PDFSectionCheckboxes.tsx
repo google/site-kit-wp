@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Checkbox } from 'googlesitekit-components';
-import { PDFSection } from '@/js/components/pdf-generation/constants';
+import { PDFSection } from '@/js/components/pdf-export/constants';
 import Typography from '@/js/components/Typography';
 
 interface PDFSectionCheckboxesProps {

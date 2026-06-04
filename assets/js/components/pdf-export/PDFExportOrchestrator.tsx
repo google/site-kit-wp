@@ -47,8 +47,8 @@ import type {
 	WidgetPDFConfig,
 } from '@/js/googlesitekit/widgets/types';
 import useViewOnly from '@/js/hooks/useViewOnly';
-import DashboardReport from './components/DashboardReport';
 import { getPDFFilename, triggerDownload } from './pdf-utils';
+import DashboardReport from './shared-react-pdf-components/DashboardReport';
 import type { PDFReportArea, PDFReportWidget } from './types';
 
 const STAGE_IDLE = 'IDLE' as const;

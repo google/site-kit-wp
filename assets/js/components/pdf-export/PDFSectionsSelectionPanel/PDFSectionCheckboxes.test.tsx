@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { PDFSection } from '@/js/components/pdf-generation/constants';
+import { PDFSection } from '@/js/components/pdf-export/constants';
 import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
 import PDFSectionCheckboxes from './PDFSectionCheckboxes';
 

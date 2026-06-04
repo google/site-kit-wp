@@ -29,8 +29,8 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import PDFWidgetSection from '@/js/components/pdf-export/components/PDFWidgetSection';
-import PDFMetricTile from '@/js/components/PDFExport/components/PDFMetricTile';
+import PDFMetricTile from '@/js/components/pdf-export/shared-react-pdf-components/PDFMetricTile';
+import PDFWidgetSection from '@/js/components/pdf-export/shared-react-pdf-components/PDFWidgetSection';
 import type { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
 import { calculateChange, numFmt } from '@/js/util';
 import type { AllTrafficPDFData } from './getPDFData';

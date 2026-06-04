@@ -38,7 +38,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
-import { PDFSection } from '@/js/components/pdf-generation/constants';
+import { PDFSection } from '@/js/components/pdf-export/constants';
 import { SelectionPanelContent } from '@/js/components/SelectionPanel';
 import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
 import Typography from '@/js/components/Typography';
