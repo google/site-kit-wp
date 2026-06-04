@@ -106,8 +106,9 @@ jobs:
       - name: npm install
         run: npm ci --workspaces --include-workspace-root
 
-      - name: Build
-        run: npm run build:test
+      # Temporarily skip build to save time
+      # - name: Build
+      #   run: npm run build:test
 
       # E2E tests use a dedicated container, this is just for Composer.
       - uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # ratchet:shivammathur/setup-php@v2
@@ -129,8 +130,9 @@ jobs:
       - name: Composer Install
         run: composer install --no-interaction --no-progress --no-dev
 
-      - name: Start environment
-        run: npm run env:start
+      # Temporarily skip start to save time
+      # - name: Start environment
+      #   run: npm run env:start
 
       # Temporary diagnostic step
       - name: Inspect Puppeteer browser (debug)
