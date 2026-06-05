@@ -35,10 +35,7 @@ import PreviewBlock from '@/js/components/PreviewBlock';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ADSENSE,
-} from '@/js/modules/adsense/datastore/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import {
 	SITE_STATUS_ADDED,
 	legacyAccountStatuses,
@@ -76,7 +73,6 @@ function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 		( select ) =>
 			select( CORE_USER ).getDateRangeDates( {
 				compare: true,
-				offsetDays: DATE_RANGE_OFFSET,
 			} )
 	);
 

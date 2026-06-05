@@ -34,10 +34,7 @@ import DataBlock from '@/js/components/DataBlock';
 import { NOTICE_STYLE } from '@/js/components/GatheringDataNotice';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { calculateChange } from '@/js/util';
 
 function WPDashboardUniqueVisitorsGA4( { WPDashboardReportError } ) {
@@ -47,7 +44,6 @@ function WPDashboardUniqueVisitorsGA4( { WPDashboardReportError } ) {
 	const dateRangeDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
 
