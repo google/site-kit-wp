@@ -221,8 +221,9 @@ class REST_Modules_Controller {
 		// implementing Permission_Aware_Datapoint provides its own check (e.g. to
 		// allow any dashboard-viewing user to persist a per-user setting);
 		// otherwise the method's default check is used.
-		$datapoint_permission_callback = function ( WP_REST_Request $request, $method, callable $default_callback ) {
+		$datapoint_permission_callback = function ( WP_REST_Request $request, callable $default_callback ) {
 			try {
+				$method    = $request->get_method();
 				$module    = $this->modules->get_module( $request['slug'] );
 				$datapoint = $module->get_datapoint_definition( "{$method}:{$request['datapoint']}" );
 			} catch ( Exception $e ) {
@@ -590,7 +591,7 @@ class REST_Modules_Controller {
 							return new WP_REST_Response( $data );
 						},
 						'permission_callback' => function ( WP_REST_Request $request ) use ( $datapoint_permission_callback, $can_view_insights ) {
-							return $datapoint_permission_callback( $request, 'GET', $can_view_insights );
+							return $datapoint_permission_callback( $request, $can_view_insights );
 						},
 					),
 					array(
@@ -615,7 +616,7 @@ class REST_Modules_Controller {
 							return new WP_REST_Response( $data );
 						},
 						'permission_callback' => function ( WP_REST_Request $request ) use ( $datapoint_permission_callback, $can_manage_options ) {
-							return $datapoint_permission_callback( $request, 'POST', $can_manage_options );
+							return $datapoint_permission_callback( $request, $can_manage_options );
 						},
 						'args'                => array(
 							'data' => array(
