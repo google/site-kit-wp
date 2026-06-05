@@ -153,6 +153,36 @@ describe( 'modules/analytics-4 report', () => {
 				expect( report ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );
+
+			it( 'forwards the abort signal from the options object to the report request', async () => {
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: fixtures.report,
+					status: 200,
+				} );
+
+				const { signal } = new AbortController();
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.fetchGetReport( options, { signal } );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBe( signal );
+			} );
+
+			it( 'sends no abort signal to the report request when no options object is given', async () => {
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: fixtures.report,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.fetchGetReport( options );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBeUndefined();
+			} );
 		} );
 
 		describe( 'getPageTitles', () => {

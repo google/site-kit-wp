@@ -51,12 +51,13 @@ import { MODULES_ANALYTICS_4 } from './constants';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
-	controlCallback: ( { options } ) => {
+	controlCallback: ( { options }, { signal } = {} ) => {
 		return get(
 			'modules',
 			MODULE_SLUG_ANALYTICS_4,
 			'report',
-			normalizeReportOptions( options )
+			normalizeReportOptions( options ),
+			{ signal }
 		);
 	},
 	reducerCallback: createReducer( ( state, report, { options } ) => {
