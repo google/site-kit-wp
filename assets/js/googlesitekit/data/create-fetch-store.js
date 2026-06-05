@@ -84,13 +84,16 @@ const {
  * - The resolver for 'getSomeData' should call 'fetchGetSomeData'.
  *
  * @since 1.10.0
+ * @since n.e.x.t Let the generated `fetchX` action take an optional trailing options object, such as `{ signal }`, and pass it to `controlCallback` as a second argument.
  * @private
  *
  * @param {Object}   args                   Arguments for creating the fetch store.
  * @param {string}   args.baseName          The base name to use for all the created infrastructure.
  * @param {Function} args.controlCallback   Callback function to issue the API request. Will be used inside the
  *                                          control. The function receives a params object based on argsToParams,
- *                                          i.e. the respective values passed to the action.
+ *                                          i.e. the respective values passed to the action. It also receives a
+ *                                          second argument: the trailing options object taken from the action
+ *                                          arguments, such as `{ signal }`, or `undefined` when the caller passed none.
  * @param {Function} [args.reducerCallback] Optional. Callback function to modify state based on the API response.
  *                                          Will be used inside the reducer. The function receives the store's state
  *                                          object as first parameter, the API response as second parameter, and the
@@ -161,7 +164,7 @@ export function createFetchStore( {
 		[ isFetching ]: {},
 	};
 
-	function* fetchGenerator( params, args ) {
+	function* fetchGenerator( params, args, fetchOptions ) {
 		let response;
 		let error;
 
@@ -175,7 +178,7 @@ export function createFetchStore( {
 
 		try {
 			response = yield {
-				payload: { params },
+				payload: { params, fetchOptions },
 				type: FETCH,
 			};
 
@@ -202,14 +205,28 @@ export function createFetchStore( {
 
 	const actions = {
 		[ fetchCreator ]( ...args ) {
-			const params = argsToParams( ...args );
+			// Take a trailing options object, such as `{ signal }`, off the end
+			// of the arguments. This lets a caller pass a per-request
+			// `AbortSignal`. The options object is not a request parameter, so
+			// it must not reach `argsToParams` or the error key. It goes only to
+			// the control, which passes it to `controlCallback` as a second
+			// argument.
+			let fetchArgs = args;
+			let fetchOptions;
+			const lastArg = args[ args.length - 1 ];
+			if ( isPlainObject( lastArg ) && 'signal' in lastArg ) {
+				fetchOptions = lastArg;
+				fetchArgs = args.slice( 0, -1 );
+			}
+
+			const params = argsToParams( ...fetchArgs );
 			// In order for params validation to throw an error as expected,
 			// this function cannot be a generator.
 			validateParams( params );
 
 			// The normal fetch action generator is invoked as the return here
 			// to preserve asynchronous behavior without registering another action creator.
-			return fetchGenerator( params, args );
+			return fetchGenerator( params, fetchArgs, fetchOptions );
 		},
 
 		[ receiveCreator ]( response, params ) {
@@ -230,7 +247,7 @@ export function createFetchStore( {
 
 	const controls = {
 		[ FETCH ]: ( { payload } ) => {
-			return controlCallback( payload.params );
+			return controlCallback( payload.params, payload.fetchOptions );
 		},
 	};
 

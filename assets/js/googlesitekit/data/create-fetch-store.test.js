@@ -362,6 +362,120 @@ describe( 'createFetchStore store', () => {
 			} );
 		} );
 
+		describe( 'fetch with a trailing options object', () => {
+			it( 'passes a trailing options object, such as { signal }, to controlCallback as its second argument', () => {
+				const controlCallback = jest.fn();
+				const fetchStoreDefinition = createFetchStore( {
+					baseName: 'getSomeData',
+					argsToParams: STORE_PARAMS.argsToParams,
+					validateParams: STORE_PARAMS.validateParams,
+					controlCallback,
+				} );
+
+				const { signal } = new AbortController();
+				const action = fetchStoreDefinition.actions.fetchGetSomeData(
+					{},
+					'aValue',
+					{ signal }
+				);
+
+				// START_FETCH carries only the params, so the options object does
+				// not reach the reducer key.
+				expect( action.next().value ).toEqual( {
+					payload: { params: { objParam: {}, aParam: 'aValue' } },
+					type: 'START_FETCH_GET_SOME_DATA',
+				} );
+
+				// The error is cleared with the request args and not the options
+				// object, so the error key matches the one the selector uses.
+				expect( action.next().value.payload.args ).toEqual( [
+					{},
+					'aValue',
+				] );
+
+				// The FETCH payload carries the params and the options object
+				// that was taken off the arguments.
+				const fetchStep = action.next();
+				expect( fetchStep.value.type ).toBe( 'FETCH_GET_SOME_DATA' );
+				expect( fetchStep.value.payload ).toEqual( {
+					params: { objParam: {}, aParam: 'aValue' },
+					fetchOptions: { signal },
+				} );
+
+				// The control passes both the params and the options object to
+				// controlCallback.
+				fetchStoreDefinition.controls.FETCH_GET_SOME_DATA(
+					fetchStep.value
+				);
+				expect( controlCallback ).toHaveBeenCalledWith(
+					{ objParam: {}, aParam: 'aValue' },
+					{ signal }
+				);
+			} );
+
+			it( 'passes no options object to controlCallback when the action is called without one', () => {
+				const controlCallback = jest.fn();
+				const fetchStoreDefinition = createFetchStore( {
+					baseName: 'getSomeData',
+					argsToParams: STORE_PARAMS.argsToParams,
+					validateParams: STORE_PARAMS.validateParams,
+					controlCallback,
+				} );
+
+				const action = fetchStoreDefinition.actions.fetchGetSomeData(
+					{},
+					'aValue'
+				);
+				action.next(); // START_FETCH
+				action.next(); // CLEAR_SELECTOR_ERROR
+				const fetchStep = action.next(); // FETCH
+
+				// With no options object, the FETCH payload has no fetch options.
+				expect( fetchStep.value.payload ).toEqual( {
+					params: { objParam: {}, aParam: 'aValue' },
+					fetchOptions: undefined,
+				} );
+
+				fetchStoreDefinition.controls.FETCH_GET_SOME_DATA(
+					fetchStep.value
+				);
+				expect( controlCallback ).toHaveBeenCalledWith(
+					{ objParam: {}, aParam: 'aValue' },
+					undefined
+				);
+			} );
+
+			it( 'keys the fetching flag on the params only, so a { signal } options object does not change it', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/test/data/some-data'
+					),
+					{ body: { someValue: 42 }, status: 200 }
+				);
+
+				const { signal } = new AbortController();
+				const requestArgs = [ {}, 'aValue' ];
+
+				// The flag is keyed by the stringified params. A request made
+				// with a { signal } options object still reads as in progress
+				// when checked without it.
+				dispatch.fetchGetSomeData( ...requestArgs, { signal } );
+				expect( select.isFetchingGetSomeData( ...requestArgs ) ).toBe(
+					true
+				);
+
+				await subscribeUntil(
+					registry,
+					() => store.getState().data !== undefined
+				);
+
+				// Once the response arrives, the same key is cleared.
+				expect( select.isFetchingGetSomeData( ...requestArgs ) ).toBe(
+					false
+				);
+			} );
+		} );
+
 		describe( 'receive', () => {
 			it( 'requires params if validateParams raises an error with no params', () => {
 				const validateParams = jest.fn();
