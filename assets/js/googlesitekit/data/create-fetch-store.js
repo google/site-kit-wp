@@ -240,7 +240,8 @@ export function createFetchStore( {
 			// Separate the fetch options, such as `{ signal }`, from the
 			// arguments that build the params. The control passes the fetch
 			// options to `controlCallback` as a second argument.
-			const { fetchArgs, fetchOptions } = separateFetchOptionsFromArgs( args );
+			const { fetchArgs, fetchOptions } =
+				separateFetchOptionsFromArgs( args );
 
 			const params = argsToParams( ...fetchArgs );
 			// In order for params validation to throw an error as expected,
