@@ -303,10 +303,10 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 					return;
 				}
 
-				// Abort any request that is still running, so it stops instead
-				// of finishing in the background after the user sees the error.
-				// On the stage-timeout path abort() already ran, so this call
-				// does nothing.
+				// Stop any request that is still running, so it ends now
+				// instead of finishing in the background after the user sees
+				// the error. On the stage-timeout path, `abort()` already ran,
+				// so this call does nothing.
 				abortControllerRef.current?.abort();
 
 				dispatch( { type: 'TRANSITION', nextStage: STAGE_ERROR } );

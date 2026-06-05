@@ -72,7 +72,7 @@ describe( 'PDFExportOrchestrator', () => {
 		// Put the real `AbortController` back after a test replaced it.
 		global.AbortController = OriginalAbortController;
 
-		// Put the real URL helpers back after the stubs from beforeEach.
+		// Put the real URL helpers back after the mocks from beforeEach.
 		global.URL.createObjectURL = originalCreateObjectURL;
 		global.URL.revokeObjectURL = originalRevokeObjectURL;
 	} );
@@ -83,12 +83,12 @@ describe( 'PDFExportOrchestrator', () => {
 		} );
 	}
 
-	// The orchestrator creates its own `AbortController` on mount and never
-	// exposes it. To read that controller's signal in a test, replace the
+	// The orchestrator creates its own `AbortController` on mount and keeps
+	// it private. To read that controller's signal in a test, replace the
 	// global constructor with a subclass that records each new instance. The
 	// records cover only the controllers built during the test. A spy on
 	// `AbortController.prototype.abort` would also count the unmount cleanup
-	// from a prior test, which React 17 runs during this test's first render.
+	// from a prior test, which React runs during this test's first render.
 	function recordExportControllers(): AbortController[] {
 		const controllers: AbortController[] = [];
 
@@ -121,8 +121,8 @@ describe( 'PDFExportOrchestrator', () => {
 			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'error' );
 		} );
 
-		// The error transition aborts the export's controller. Its signal then
-		// reports aborted, which cancels any request that is still running.
+		// The error transition aborts the export's controller. The signal
+		// then reports aborted, so any request that is still running stops.
 		expect( controllers[ 0 ].signal.aborted ).toBe( true );
 	} );
 

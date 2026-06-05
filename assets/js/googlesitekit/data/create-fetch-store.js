@@ -122,7 +122,7 @@ const {
  *
  * @param {Object}   args                   Arguments for creating the fetch store.
  * @param {string}   args.baseName          The base name to use for all the created infrastructure.
- * @param {Function} args.controlCallback   Issues the API request inside the control. Receives two arguments. The
+ * @param {Function} args.controlCallback   Callback function to issue the API request. Receives two arguments. The
  *                                          first is the params object that `argsToParams` builds from the action
  *                                          arguments. The second is the fetch options, such as `{ signal }` to cancel
  *                                          the request, or `undefined` when the caller passes none.

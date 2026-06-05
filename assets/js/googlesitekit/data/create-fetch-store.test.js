@@ -362,8 +362,8 @@ describe( 'createFetchStore store', () => {
 			} );
 		} );
 
-		describe( 'fetch with a trailing options object', () => {
-			it( 'passes a trailing options object, such as { signal }, to controlCallback as its second argument', () => {
+		describe( 'forwarding fetch options', () => {
+			it( 'passes the fetch options, such as { signal }, to controlCallback as the second argument', () => {
 				const controlCallback = jest.fn();
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'getSomeData',
@@ -379,22 +379,22 @@ describe( 'createFetchStore store', () => {
 					{ signal }
 				);
 
-				// START_FETCH carries only the params, so the options object does
-				// not reach the reducer key.
+				// START_FETCH carries only the params, so the fetch options stay
+				// out of the reducer key.
 				expect( action.next().value ).toEqual( {
 					payload: { params: { objParam: {}, aParam: 'aValue' } },
 					type: 'START_FETCH_GET_SOME_DATA',
 				} );
 
-				// The error is cleared with the request args and not the options
-				// object, so the error key matches the one the selector uses.
+				// The error key uses the request args only, so it matches the
+				// key the selector uses.
 				expect( action.next().value.payload.args ).toEqual( [
 					{},
 					'aValue',
 				] );
 
-				// The FETCH payload carries the params and the options object
-				// that was taken off the arguments.
+				// The FETCH payload carries the params and the fetch options
+				// that the action separated from the arguments.
 				const fetchStep = action.next();
 				expect( fetchStep.value.type ).toBe( 'FETCH_GET_SOME_DATA' );
 				expect( fetchStep.value.payload ).toEqual( {
@@ -402,7 +402,7 @@ describe( 'createFetchStore store', () => {
 					fetchOptions: { signal },
 				} );
 
-				// The control passes both the params and the options object to
+				// The control passes the params and the fetch options to
 				// controlCallback.
 				fetchStoreDefinition.controls.FETCH_GET_SOME_DATA(
 					fetchStep.value
@@ -413,7 +413,7 @@ describe( 'createFetchStore store', () => {
 				);
 			} );
 
-			it( 'passes no options object to controlCallback when the action is called without one', () => {
+			it( 'passes no fetch options to controlCallback when the action is called without them', () => {
 				const controlCallback = jest.fn();
 				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'getSomeData',
@@ -430,7 +430,7 @@ describe( 'createFetchStore store', () => {
 				action.next(); // CLEAR_SELECTOR_ERROR
 				const fetchStep = action.next(); // FETCH
 
-				// With no options object, the FETCH payload has no fetch options.
+				// Without fetch options, the FETCH payload leaves them undefined.
 				expect( fetchStep.value.payload ).toEqual( {
 					params: { objParam: {}, aParam: 'aValue' },
 					fetchOptions: undefined,
@@ -445,7 +445,7 @@ describe( 'createFetchStore store', () => {
 				);
 			} );
 
-			it( 'keys the fetching flag on the params only, so a { signal } options object does not change it', async () => {
+			it( 'stores the fetching flag by params only, so fetch options leave it unchanged', async () => {
 				fetchMock.getOnce(
 					new RegExp(
 						'^/google-site-kit/v1/core/test/data/some-data'
@@ -456,9 +456,9 @@ describe( 'createFetchStore store', () => {
 				const { signal } = new AbortController();
 				const requestArgs = [ {}, 'aValue' ];
 
-				// The flag is keyed by the stringified params. A request made
-				// with a { signal } options object still reads as in progress
-				// when checked without it.
+				// The fetching flag uses the stringified params. A request made
+				// with fetch options still reads as in progress when you check
+				// it without them.
 				dispatch.fetchGetSomeData( ...requestArgs, { signal } );
 				expect( select.isFetchingGetSomeData( ...requestArgs ) ).toBe(
 					true
@@ -469,7 +469,7 @@ describe( 'createFetchStore store', () => {
 					() => store.getState().data !== undefined
 				);
 
-				// Once the response arrives, the same key is cleared.
+				// Once the response arrives, the flag clears for the same params.
 				expect( select.isFetchingGetSomeData( ...requestArgs ) ).toBe(
 					false
 				);

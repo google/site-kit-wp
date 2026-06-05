@@ -63,7 +63,7 @@ describe( 'modules/pagespeed-insights report', () => {
 				expect( response ).toEqual( fixtures.pagespeedDesktop );
 			} );
 
-			it( 'forwards the abort signal from the options object to the report request', async () => {
+			it( 'forwards the abort signal from the fetch options to the report request', async () => {
 				const strategy = 'desktop';
 				const url = 'http://example.com/';
 
@@ -84,7 +84,7 @@ describe( 'modules/pagespeed-insights report', () => {
 				expect( fetchMock.lastOptions().signal ).toBe( signal );
 			} );
 
-			it( 'sends no abort signal to the report request when no options object is given', async () => {
+			it( 'sends no abort signal to the report request when the call has no fetch options', async () => {
 				const strategy = 'desktop';
 				const url = 'http://example.com/';
 
