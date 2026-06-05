@@ -172,6 +172,43 @@ describe( 'modules/search-console report', () => {
 				).getReport( options );
 				expect( console ).toHaveErrored();
 			} );
+
+			it( 'forwards the abort signal from the options object to the report request', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, {
+					body: fixtures.report,
+				} );
+
+				const options = {
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
+				};
+				const { signal } = new AbortController();
+
+				await registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.fetchGetReport( options, { signal } );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBe( signal );
+			} );
+
+			it( 'sends no abort signal to the report request when no options object is given', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, {
+					body: fixtures.report,
+				} );
+
+				const options = {
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
+				};
+
+				await registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.fetchGetReport( options );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBeUndefined();
+			} );
 		} );
 
 		describe( 'isGatheringData', () => {

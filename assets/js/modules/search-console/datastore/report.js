@@ -48,12 +48,13 @@ import { MODULES_SEARCH_CONSOLE } from './constants';
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	storeName: MODULES_SEARCH_CONSOLE,
-	controlCallback: ( { options } ) => {
+	controlCallback: ( { options }, { signal } = {} ) => {
 		return get(
 			'modules',
 			MODULE_SLUG_SEARCH_CONSOLE,
 			'searchanalytics',
-			options
+			options,
+			{ signal }
 		);
 	},
 	reducerCallback: createReducer( ( state, report, { options } ) => {
