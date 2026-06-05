@@ -34,10 +34,7 @@ import DataBlock from '@/js/components/DataBlock';
 import { NOTICE_STYLE } from '@/js/components/GatheringDataNotice';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_SEARCH_CONSOLE,
-} from '@/js/modules/search-console/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { calculateChange } from '@/js/util';
 import { partitionReport } from '@/js/util/partition-report';
 import sumObjectListValue from '@/js/util/sum-object-list-value';
@@ -49,7 +46,6 @@ function WPDashboardClicks( { WPDashboardReportError } ) {
 	const { compareStartDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
 	const dateRangeLength = useSelect( ( select ) =>

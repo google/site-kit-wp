@@ -28,19 +28,14 @@ import { useSelect } from 'googlesitekit-data';
 import SourceLink from '@/js/components/SourceLink';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ADSENSE,
-} from '@/js/modules/adsense/datastore/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import { generateDateRangeArgs } from '@/js/modules/adsense/util/report-date-range-args';
 
 function Footer() {
 	const viewOnlyDashboard = useViewOnly();
 
 	const dateRangeDates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
+		select( CORE_USER ).getDateRangeDates()
 	);
 
 	const accountSiteURL = useSelect( ( select ) => {

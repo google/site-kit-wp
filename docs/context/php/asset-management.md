@@ -687,26 +687,9 @@ interface Module_With_Inline_Data {
     /**
      * Get inline data for the module.
      *
-     * \@param array $modules_data Existing modules data.
-     * \@return array Updated modules data with module's data added.
+     * \@return array Module's inline data.
      */
-    public function get_inline_data( $modules_data );
-}
-```
-
-### Module_With_Inline_Data_Trait
-
-**Location**: `includes/Core/Modules/Module_With_Inline_Data_Trait.php:1-33`
-
-```php
-trait Module_With_Inline_Data_Trait {
-
-    private function register_inline_data() {
-        add_filter(
-            'googlesitekit_inline_modules_data',
-            array( $this, 'get_inline_data' ),
-        );
-    }
+    public function get_inline_data();
 }
 ```
 
@@ -720,7 +703,6 @@ final class Analytics_4 extends Module implements
     Module_With_Inline_Data {
 
     use Module_With_Assets_Trait;
-    use Module_With_Inline_Data_Trait;
 
     protected function setup_assets() {
         $base_url = $this->context->url( 'dist/assets/' );
@@ -743,17 +725,17 @@ final class Analytics_4 extends Module implements
         );
     }
 
-    public function get_inline_data( $modules_data ) {
+    public function get_inline_data() {
         if ( ! $this->is_connected() ) {
-            return $modules_data;
+            return array();
         }
 
-        $modules_data[ self::MODULE_SLUG ] = array(
+        $inline_data = array(
             'propertyID'      => $this->get_settings()->get()['propertyID'],
             'webDataStreamID' => $this->get_settings()->get()['webDataStreamID'],
         );
 
-        return $modules_data;
+        return $inline_data;
     }
 }
 ```

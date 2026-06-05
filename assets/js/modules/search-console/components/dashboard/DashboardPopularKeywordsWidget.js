@@ -34,10 +34,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { ZeroDataMessage } from '@/js/modules/search-console/components/common';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_SEARCH_CONSOLE,
-} from '@/js/modules/search-console/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { generateDateRangeArgs } from '@/js/modules/search-console/util';
 import { numFmt } from '@/js/util';
 
@@ -51,9 +48,7 @@ export default function DashboardPopularKeywordsWidget( props ) {
 	);
 
 	const dateRangeDates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
+		select( CORE_USER ).getDateRangeDates()
 	);
 
 	const reportArgs = {
@@ -151,9 +146,7 @@ export default function DashboardPopularKeywordsWidget( props ) {
 					if ( viewOnlyDashboard ) {
 						return null;
 					}
-					const dates = select( CORE_USER ).getDateRangeDates( {
-						offsetDays: DATE_RANGE_OFFSET,
-					} );
+					const dates = select( CORE_USER ).getDateRangeDates();
 					const entityURL = select( CORE_SITE ).getCurrentEntityURL();
 					return select( MODULES_SEARCH_CONSOLE ).getServiceReportURL(
 						{

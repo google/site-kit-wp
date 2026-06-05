@@ -35,7 +35,6 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { getDateString } from '@/js/util';
 import {
-	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 	RESOURCE_TYPES,
 	RESOURCE_TYPE_AUDIENCE,
@@ -297,9 +296,7 @@ const baseSelectors = {
 				return true;
 			}
 
-			const { startDate } = select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} );
+			const { startDate } = select( CORE_USER ).getDateRangeDates();
 
 			// TODO: use `replaceAll` instead when we upgrade our Node version.
 			const startDateYYYYMMDD = Number( startDate.replace( /-/g, '' ) );

@@ -41,7 +41,6 @@ import {
 	createPaxServices,
 	formatPaxDate,
 } from '@/js/modules/ads/pax';
-import { DATE_RANGE_OFFSET } from '@/js/modules/analytics-4/datastore/constants';
 
 export default function PAXEmbeddedApp( {
 	displayMode = 'default',
@@ -62,9 +61,7 @@ export default function PAXEmbeddedApp( {
 			return {};
 		}
 
-		return select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
+		return select( CORE_USER ).getDateRangeDates();
 	} );
 
 	const isAdBlockerActive = useSelect( ( select ) =>

@@ -33,10 +33,7 @@ import apiFetch from '@wordpress/api-fetch';
 import { set } from 'googlesitekit-api';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ADS,
-} from '@/js/modules/ads/datastore/constants';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 import { formatPaxDate } from './utils';
 
 async function restFetchWpPages() {
@@ -208,9 +205,7 @@ export function createPaxServices( registry, options = {} ) {
 			get: async () => {
 				const { startDate, endDate } = registry
 					.select( CORE_USER )
-					.getDateRangeDates( {
-						offsetDays: DATE_RANGE_OFFSET,
-					} );
+					.getDateRangeDates();
 
 				return {
 					startDate: formatPaxDate( startDate ),

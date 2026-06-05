@@ -22,26 +22,28 @@
 import { getSiteGoalsTour } from './site-goals';
 
 describe( 'getSiteGoalsTour', () => {
+	const baseParams = { isEcommerceOnly: false, hasBreakdownNotice: true };
+
 	it( 'should return the Site Goals tour with the right slug', () => {
-		const tour = getSiteGoalsTour( { isEcommerceOnly: false } );
+		const tour = getSiteGoalsTour( baseParams );
 
 		expect( tour.slug ).toBe( 'site-goals-feature-tour' );
 	} );
 
 	it( 'should be repeatable so the user can replay it from the Help menu', () => {
-		const tour = getSiteGoalsTour( { isEcommerceOnly: false } );
+		const tour = getSiteGoalsTour( baseParams );
 
 		expect( tour.isRepeatable ).toBe( true );
 	} );
 
 	it( 'should be scoped to the main dashboard', () => {
-		const tour = getSiteGoalsTour( { isEcommerceOnly: false } );
+		const tour = getSiteGoalsTour( baseParams );
 
 		expect( tour.contexts ).toEqual( [ 'mainDashboard' ] );
 	} );
 
 	it( 'should preload the Site Goals widget area so the targets are in view before the first callout opens', () => {
-		const tour = getSiteGoalsTour( { isEcommerceOnly: false } );
+		const tour = getSiteGoalsTour( baseParams );
 
 		expect( tour.preloadWidgetAreas ).toEqual( [
 			'mainDashboardSiteGoalsPrimary',
@@ -49,44 +51,68 @@ describe( 'getSiteGoalsTour', () => {
 	} );
 
 	it( 'should prefix the Google Analytics event category with the current view context', () => {
-		const tour = getSiteGoalsTour( { isEcommerceOnly: false } );
+		const tour = getSiteGoalsTour( baseParams );
 
 		expect( tour.gaEventCategory( 'test-context' ) ).toBe(
 			'test-context_site-goals-tour'
 		);
 	} );
 
-	it( 'should return three steps anchored to the key action, the breakdown notice, and the goal drivers', () => {
-		const tour = getSiteGoalsTour( { isEcommerceOnly: false } );
+	it( 'should anchor all three steps to the key action, the breakdown notice, and the goal drivers when the notice is shown', () => {
+		const tour = getSiteGoalsTour( {
+			...baseParams,
+			hasBreakdownNotice: true,
+		} );
 
 		expect( tour.steps ).toHaveLength( 3 );
 
 		expect( tour.steps[ 0 ].target ).toBe(
 			'.googlesitekit-site-goals-primary-action'
 		);
-		// TODO: Step 2 uses the key action tile as a placeholder. Update
-		// to the breakdown notice target once #12800 ships it.
 		expect( tour.steps[ 1 ].target ).toBe(
-			'.googlesitekit-site-goals-primary-action'
+			'.googlesitekit-site-goals-breakdown-notice'
 		);
 		expect( tour.steps[ 2 ].target ).toBe(
 			'.googlesitekit-site-goals-goal-drivers-group'
 		);
 	} );
 
-	it( 'should use the leads copy in step 2 when isEcommerceOnly is false', () => {
-		const tour = getSiteGoalsTour( { isEcommerceOnly: false } );
+	it( 'should omit the breakdown notice step when the notice is not shown', () => {
+		const tour = getSiteGoalsTour( {
+			...baseParams,
+			hasBreakdownNotice: false,
+		} );
 
-		expect( tour.steps[ 1 ].content ).toBe(
-			'Want to know which specific form is bringing in the most interest? You can break these numbers down to see the performance of each individual form on your site.'
+		expect( tour.steps ).toHaveLength( 2 );
+
+		expect( tour.steps.map( ( step ) => step.target ) ).not.toContain(
+			'.googlesitekit-site-goals-breakdown-notice'
+		);
+		expect( tour.steps[ 0 ].target ).toBe(
+			'.googlesitekit-site-goals-primary-action'
+		);
+		expect( tour.steps[ 1 ].target ).toBe(
+			'.googlesitekit-site-goals-goal-drivers-group'
 		);
 	} );
 
-	it( 'should use the sales copy in step 2 when isEcommerceOnly is true', () => {
-		const tour = getSiteGoalsTour( { isEcommerceOnly: true } );
+	it( 'should use the leads copy in the breakdown step when isEcommerceOnly is false', () => {
+		const tour = getSiteGoalsTour( {
+			isEcommerceOnly: false,
+			hasBreakdownNotice: true,
+		} );
 
-		expect( tour.steps[ 1 ].content ).toBe(
-			'Want to see whether WooCommerce or Easy Digital Downloads is driving more success? You can break these numbers down to see the performance of each plugin.'
+		expect( tour.steps[ 1 ].content ).toMatch( /each individual form/ );
+	} );
+
+	it( 'should use the sales copy in the breakdown step when isEcommerceOnly is true', () => {
+		const tour = getSiteGoalsTour( {
+			isEcommerceOnly: true,
+			hasBreakdownNotice: true,
+		} );
+
+		expect( tour.steps[ 1 ].content ).toMatch(
+			/WooCommerce or Easy Digital Downloads/
 		);
 	} );
 } );

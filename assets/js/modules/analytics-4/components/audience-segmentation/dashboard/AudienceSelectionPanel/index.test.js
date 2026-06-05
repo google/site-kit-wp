@@ -37,7 +37,6 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
-	DATE_RANGE_OFFSET,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
@@ -107,9 +106,7 @@ describe( 'AudienceSelectionPanel', () => {
 		} );
 
 		registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
-		const dateRangeDates = registry
-			.select( CORE_USER )
-			.getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
+		const dateRangeDates = registry.select( CORE_USER ).getDateRangeDates();
 		baseReportOptions = {
 			...dateRangeDates,
 			metrics: [ { name: 'totalUsers' } ],

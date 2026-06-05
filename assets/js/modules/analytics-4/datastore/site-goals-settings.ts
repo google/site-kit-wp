@@ -57,6 +57,15 @@ interface State {
 		savedSettings: SiteGoalsSettings;
 	};
 	isFetchingSaveSiteGoalsSettings?: Record< string, boolean >;
+	breakdownTooltipPending?: boolean;
+}
+
+const SET_SITE_GOALS_BREAKDOWN_TOOLTIP_PENDING =
+	'SET_SITE_GOALS_BREAKDOWN_TOOLTIP_PENDING';
+
+interface SetBreakdownTooltipPendingAction {
+	type: typeof SET_SITE_GOALS_BREAKDOWN_TOOLTIP_PENDING;
+	payload: { isPending: boolean };
 }
 
 // Result shape returned by the fetch-store save action.
@@ -165,9 +174,52 @@ const fetchSaveSiteGoalsSettingsStore = createFetchStore( {
 
 const baseInitialState: State = {
 	siteGoalsSettings: undefined,
+	breakdownTooltipPending: false,
 };
 
+const baseReducer = createReducer(
+	( state: State, action: SetBreakdownTooltipPendingAction ) => {
+		switch ( action.type ) {
+			case SET_SITE_GOALS_BREAKDOWN_TOOLTIP_PENDING:
+				state.breakdownTooltipPending = action.payload.isPending;
+				break;
+
+			default:
+				break;
+		}
+	}
+);
+
 const baseActions = {
+	/**
+	 * Marks the breakdown notice tooltip as pending, so the Side Panel parent
+	 * shows it once the panel overlay closes.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	setSiteGoalsBreakdownTooltipPending(): SetBreakdownTooltipPendingAction {
+		return {
+			type: SET_SITE_GOALS_BREAKDOWN_TOOLTIP_PENDING,
+			payload: { isPending: true },
+		};
+	},
+
+	/**
+	 * Clears the pending breakdown notice tooltip flag.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	clearSiteGoalsBreakdownTooltipPending(): SetBreakdownTooltipPendingAction {
+		return {
+			type: SET_SITE_GOALS_BREAKDOWN_TOOLTIP_PENDING,
+			payload: { isPending: false },
+		};
+	},
+
 	/**
 	 * Saves the site goals settings.
 	 *
@@ -276,6 +328,19 @@ const baseSelectors = {
 			state.isFetchingSaveSiteGoalsSettings || {}
 		).some( Boolean );
 	},
+
+	/**
+	 * Checks whether the breakdown notice tooltip is pending (deferred from the
+	 * Side Panel until it closes).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} `true` if the tooltip is pending, otherwise `false`.
+	 */
+	isSiteGoalsBreakdownTooltipPending( state: State ): boolean {
+		return !! state.breakdownTooltipPending;
+	},
 };
 
 // `combineStores` is untyped JS and returns `Object`, so the combined shape is
@@ -295,6 +360,7 @@ const store = combineStores(
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
+		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}

@@ -32,10 +32,7 @@ import GoogleChart from '@/js/components/GoogleChart';
 import Typography from '@/js/components/Typography';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { extractAnalytics4DashboardData } from '@/js/modules/analytics-4/utils/extract-dashboard-data';
 import { stringToDate } from '@/js/util';
 import { UNIQUE_VISITORS_CHART_OPTIONS } from './chart-options';
@@ -57,7 +54,6 @@ export default function WPDashboardUniqueVisitorsChartGA4( props ) {
 		( select ) =>
 			select( CORE_USER ).getDateRangeDates( {
 				compare: true,
-				offsetDays: DATE_RANGE_OFFSET,
 			} )
 	);
 

@@ -26,10 +26,7 @@ import { ReactElement } from 'react';
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Story } from '@/js/types/Story';
 import {
 	provideModules,
@@ -111,9 +108,7 @@ function getTopAuthorsReportOptions(
 	registry: Parameters< typeof provideModules >[ 0 ],
 	goalType = GOAL_TYPES.ECOMMERCE
 ) {
-	const dates = registry.select( CORE_USER ).getDateRangeDates( {
-		offsetDays: DATE_RANGE_OFFSET,
-	} );
+	const dates = registry.select( CORE_USER ).getDateRangeDates();
 	const dimensionFilters = {
 		eventName: {
 			filterType: 'inListFilter',

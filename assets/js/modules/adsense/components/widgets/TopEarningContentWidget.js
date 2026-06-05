@@ -42,10 +42,7 @@ import {
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { AdSenseLinkCTA } from '@/js/modules/adsense/components/common';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ADSENSE,
-} from '@/js/modules/adsense/datastore/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
 import ConnectGA4CTATileWidget from '@/js/modules/analytics-4/components/widgets/ConnectGA4CTATileWidget';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -58,9 +55,7 @@ function TopEarningContentWidget( { Widget } ) {
 	const viewOnlyDashboard = useViewOnly();
 
 	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
+		select( CORE_USER ).getDateRangeDates()
 	);
 
 	const adSenseAccountID = useSelect( ( select ) =>

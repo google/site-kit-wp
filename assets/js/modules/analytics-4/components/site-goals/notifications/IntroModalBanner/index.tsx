@@ -27,6 +27,10 @@ import { useState } from '@wordpress/element';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import {
+	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
+	SITE_GOALS_BREAKDOWN_NOTICE,
+} from '@/js/modules/analytics-4/components/site-goals/constants';
 import { getSiteGoalsTour } from '@/js/modules/analytics-4/components/site-goals/feature-tours/site-goals';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import IntroModalEcommerce from './IntroModalEcommerce';
@@ -115,6 +119,18 @@ export default function IntroModal() {
 			),
 		[]
 	);
+	const hasBreakdownDimensions = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+				SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS
+			),
+		[]
+	);
+	const isBreakdownNoticeDismissed = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).isItemDismissed( SITE_GOALS_BREAKDOWN_NOTICE ),
+		[]
+	);
 
 	function handleClose() {
 		setIsOpen( false );
@@ -125,6 +141,12 @@ export default function IntroModal() {
 		triggerOnDemandTour(
 			getSiteGoalsTour( {
 				isEcommerceOnly: !! hasEcommerceConversionReportingEventsOnly,
+				// "Show me" dismisses the intro modal, so the breakdown notice
+				// will render if its dimensions are still missing and it has
+				// not been dismissed. Mirrors the BreakdownNotice gating.
+				hasBreakdownNotice:
+					hasBreakdownDimensions === false &&
+					! isBreakdownNoticeDismissed,
 			} )
 		);
 	}

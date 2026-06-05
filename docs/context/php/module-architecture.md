@@ -288,13 +288,11 @@ interface Module_With_Inline_Data {
 
 ```php
 final class Analytics_4 extends Module implements Module_With_Inline_Data {
-    use Module_With_Inline_Data_Trait;
-
-    protected function setup_inline_data() {
+    public function get_inline_data() {
         return array(
-            'propertyID' => $this->get_settings()->get()['propertyID'],
+            'propertyID'      => $this->get_settings()->get()['propertyID'],
             'webDataStreamID' => $this->get_settings()->get()['webDataStreamID'],
-            'isGA4Connected' => true,
+            'isGA4Connected'  => true,
         );
     }
 }

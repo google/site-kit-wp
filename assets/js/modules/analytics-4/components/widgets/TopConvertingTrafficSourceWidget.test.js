@@ -27,10 +27,7 @@ import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as analyticsFixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
@@ -77,7 +74,6 @@ describe( 'TopConvertingTrafficSourceWidget', () => {
 	it( 'should render correctly with the expected metrics', async () => {
 		const reportOptions = {
 			...registry.select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
 				compare: true,
 			} ),
 			dimensions: [ 'sessionDefaultChannelGroup' ],
@@ -106,7 +102,6 @@ describe( 'TopConvertingTrafficSourceWidget', () => {
 	it( 'renders correctly with no data in the comparison date range', async () => {
 		const reportOptions = {
 			...registry.select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
 				compare: true,
 			} ),
 			dimensions: [ 'sessionDefaultChannelGroup' ],

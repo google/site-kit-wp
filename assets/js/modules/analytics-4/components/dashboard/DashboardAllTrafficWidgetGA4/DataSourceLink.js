@@ -32,7 +32,6 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import {
-	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 	UI_DIMENSION_NAME,
 } from '@/js/modules/analytics-4/datastore/constants';
@@ -56,7 +55,6 @@ export default function DataSourceLink() {
 			CORE_USER
 		).getDateRangeDates( {
 			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
 		} );
 
 		const reportArgs = {

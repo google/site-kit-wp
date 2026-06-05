@@ -39,19 +39,14 @@ import TableOverflowContainer from '@/js/components/TableOverflowContainer';
 import Typography from '@/js/components/Typography';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { numFmt } from '@/js/util';
 
 export default function WPDashboardPopularPagesGA4( {
 	WPDashboardReportError,
 } ) {
 	const dateRangeDates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
+		select( CORE_USER ).getDateRangeDates()
 	);
 
 	const isGatheringData = useInViewSelect( ( select ) =>

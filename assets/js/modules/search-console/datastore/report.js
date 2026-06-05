@@ -43,7 +43,7 @@ import {
 	isValidDateRange,
 	isValidStringularItems,
 } from '@/js/util/report-validation';
-import { DATE_RANGE_OFFSET, MODULES_SEARCH_CONSOLE } from './constants';
+import { MODULES_SEARCH_CONSOLE } from './constants';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -219,7 +219,6 @@ const baseSelectors = {
 			CORE_USER
 		).getDateRangeDates( {
 			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
 		} );
 
 		const args = {

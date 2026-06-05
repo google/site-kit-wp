@@ -66,6 +66,21 @@
 		margin-top: 34px;
 	}
 
+	.googlesitekit-notice-container:has(
+			.googlesitekit-site-goals-breakdown-notice
+		) {
+		margin: 34px 0;
+
+		@media (min-width: $bp-tablet) {
+			padding-left: $grid-gap-desktop;
+		}
+	}
+
+	.googlesitekit-site-goals-breakdown-notice .googlesitekit-notice__content {
+		font-size: $fs-label-md;
+		line-height: $lh-label-md;
+	}
+
 	.googlesitekit-site-goals-tiles-group__tiles {
 		align-items: stretch;
 		display: grid;

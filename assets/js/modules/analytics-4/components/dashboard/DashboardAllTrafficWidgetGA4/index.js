@@ -31,7 +31,6 @@ import useViewOnly from '@/js/hooks/useViewOnly';
 import { Cell, Grid, Row } from '@/js/material-components/layout';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 	UI_ALL_TRAFFIC_LOADED,
 	UI_DIMENSION_NAME,
@@ -88,7 +87,6 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	const { compareStartDate, compareEndDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
 
