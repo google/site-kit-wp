@@ -32,11 +32,15 @@ class Existing_User_Authenticator extends Authenticator {
 	const ERROR_ACCOUNT_ALREADY_CONNECTED = 'googlesitekit_auth_account_already_connected';
 
 	/**
-	 * Query arg for the existing-user link flow error. Namespaced to avoid
-	 * using WordPress core's `?error=` query argument on
-	 * `wp-admin/profile.php` and `wp-admin/user-edit.php`, because an empty
-	 * query arg will cause WordPress core to display an error message,
-	 * and we don't want to override their if there was an error.
+	 * Query argument that holds the error code for the existing-user link
+	 * flow.
+	 *
+	 * We use our own namespaced argument instead of WordPress core's
+	 * `?error=` on `wp-admin/profile.php` and `wp-admin/user-edit.php`. Those
+	 * pages show an error notice for any `?error=` value, but only fill in
+	 * the text for codes they know (like `new-email`). Our code isn't one of
+	 * those, so reusing `?error=` would show the user an empty error box next
+	 * to our own error.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -125,9 +129,9 @@ class Existing_User_Authenticator extends Authenticator {
 		$user_id = get_current_user_id();
 		$target  = $user_id ? get_edit_user_link( $user_id ) : admin_url( 'profile.php' );
 
-		// Do not use `error=` as a query arg here, because
-		// `wp-admin/profile.php` and `wp-admin/user-edit.php` will
-		// show an error for any unrecognized `?error=` value.
+		// Do not use `error=` as the query arg here. On
+		// `wp-admin/profile.php` and `wp-admin/user-edit.php`, the user would
+		// see an empty error box for any `?error=` value core doesn't know.
 		return add_query_arg( self::ERROR_QUERY_ARG, $code, $target );
 	}
 }

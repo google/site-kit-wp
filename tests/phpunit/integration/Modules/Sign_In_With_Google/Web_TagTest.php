@@ -241,15 +241,15 @@ class Web_TagTest extends TestCase {
 		// existing-user link flow and includes the matching nonce.
 		$this->web_tag->set_is_existing_user_flow( true );
 		$output = $this->capture_render_output();
-		$this->assertStringContainsString( "response.integration='existing_user'", $output, 'Rendered script should set the existing_user integration when the flag is on.' );
-		$this->assertStringContainsString( 'response.connect_nonce=', $output, 'Rendered script should include the connect nonce assignment when the flag is on.' );
+		$this->assertStringContainsString( "response.integration='existing_user'", $output, 'The connect integration should be set in the existing-user flow.' );
+		$this->assertStringContainsString( 'response.connect_nonce=', $output, 'The connect nonce should be set in the existing-user flow.' );
 		$this->assertStringContainsString( wp_create_nonce( Authenticator::CONNECT_EXISTING_USER_NONCE_ACTION ), $output, 'Rendered nonce should be a valid wp_create_nonce.' );
 
 		// Now with the flag off, the markers should not appear.
 		$this->web_tag->set_is_existing_user_flow( false );
 		$output = $this->capture_render_output();
-		$this->assertStringNotContainsString( "response.integration='existing_user'", $output, 'Rendered script should not include the connect integration when the flag is off.' );
-		$this->assertStringNotContainsString( 'response.connect_nonce=', $output, 'Rendered script should not include the connect nonce when the flag is off.' );
+		$this->assertStringNotContainsString( "response.integration='existing_user'", $output, 'The connect integration should not be set when not in the existing-user flow.' );
+		$this->assertStringNotContainsString( 'response.connect_nonce=', $output, 'The connect nonce should not be set when not in the existing-user flow.' );
 	}
 
 	public function test_register__runs_button_render_loop_on_existing_user_flow_even_when_logged_in() {
@@ -264,8 +264,8 @@ class Web_TagTest extends TestCase {
 		// skips logged-in users. The existing-user flow is one of the
 		// conditions that lets it run anyway, so a logged-in user on their
 		// profile still gets the button.
-		$this->assertStringContainsString( 'google.accounts.id.renderButton', $output, 'Button render loop should run on the existing-user flow even when the user is logged in.' );
-		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__frontend-output-button', $output, 'Render loop should target the Sign in with Google placeholder class.' );
+		$this->assertStringContainsString( 'google.accounts.id.renderButton', $output, 'A logged-in user on their profile should still get the Sign in with Google button.' );
+		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__frontend-output-button', $output, 'The button should attach to the Sign in with Google placeholder.' );
 	}
 
 	/**
@@ -280,13 +280,13 @@ class Web_TagTest extends TestCase {
 		wp_set_current_user( $user_id );
 
 		// Make `class_exists( 'WooCommerce' )` return true so the WooCommerce
-		// branch in `render()` is reachable. The existing-user link flow must
-		// still win, otherwise the profile connect button would route through
-		// the WooCommerce authenticator, which signs in or creates a user by
-		// email instead of linking the current user.
+		// branch in `render()` is reachable. Even with WooCommerce active, the
+		// profile connect button must still link the current user's account.
+		// It must not route through the WooCommerce authenticator, which signs
+		// in or creates a user by email instead.
 		if ( ! class_exists( 'WooCommerce' ) ) {
-			// `class_alias()` requires a user-defined source class, so alias
-			// this test case rather than an internal class like `stdClass`.
+			// Alias this test class to `WooCommerce`, so our check
+			// for the `WooCommerce` class returns true.
 			class_alias( __CLASS__, 'WooCommerce' );
 		}
 
@@ -294,8 +294,8 @@ class Web_TagTest extends TestCase {
 
 		$output = $this->capture_render_output();
 
-		$this->assertStringContainsString( "response.integration='existing_user'", $output, 'Existing-user flow should set the existing_user integration even when WooCommerce is active.' );
-		$this->assertStringNotContainsString( "response.integration='woocommerce'", $output, 'WooCommerce integration must not be emitted on the existing-user link flow when WooCommerce is active.' );
+		$this->assertStringContainsString( "response.integration='existing_user'", $output, 'The profile connect button should use the existing-user link flow even when WooCommerce is active.' );
+		$this->assertStringNotContainsString( "response.integration='woocommerce'", $output, 'The profile connect button must not use the WooCommerce flow even when WooCommerce is active.' );
 	}
 
 	private function capture_render_output() {

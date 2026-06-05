@@ -151,9 +151,10 @@ class Web_Tag extends Module_Web_Tag {
 
 		$is_login_page = $this->is_wp_login || $is_woocommerce_login;
 
-		// The existing-user link flow follows the POST redirect from the
-		// auth callback just like the login pages do, so group it here
-		// rather than on the login flag itself.
+		// On login pages, and when a user connects their account from their
+		// own profile page, the sign-in response says where to send the user
+		// next (eg. back to the profile page). Both cases should follow that
+		// redirect instead of reloading the current page, so group them here.
 		$follows_post_redirect = $is_login_page || $this->is_existing_user_flow;
 
 		// Check to see if we should show the One Tap prompt on this page.

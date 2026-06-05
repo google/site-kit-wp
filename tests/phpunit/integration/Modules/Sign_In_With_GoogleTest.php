@@ -366,63 +366,63 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertEmpty( get_user_option( Hashed_User_ID::OPTION, $editor_id ), 'Editor should be disconnected (user option cleared) by admin.' );
 	}
 
-	public function test_render_sign_in_with_google_profile__disconnect_branch() {
+	public function test_render_sign_in_with_google_profile__disconnect_button() {
 		$this->module->register();
 
 		$user_id       = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		$user_id_admin = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 
-		// Should render the disconnect settings on the users own profile for editors and admins.
+		// On your own profile, both editors and admins should see the disconnect option.
 		update_user_option( $user_id, Hashed_User_ID::OPTION, '111111' );
 		wp_set_current_user( $user_id );
 		$output = $this->capture_action( 'show_user_profile', wp_get_current_user() );
-		$this->assertStringContainsString( 'You can sign in with your Google account.', $output, 'Disconnect settings should render on own profile when user meta set.' );
-		$this->assertStringContainsString( 'id="googlesitekit-sign-in-with-google-profile-settings"', $output, 'Section should render with the profile-settings id.' );
+		$this->assertStringContainsString( 'You can sign in with your Google account.', $output, 'An editor should see the disconnect option on their own profile when their Google account is linked.' );
+		$this->assertStringContainsString( 'id="googlesitekit-sign-in-with-google-profile-settings"', $output, 'The Sign in with Google section should appear on the profile page.' );
 
 		update_user_option( $user_id_admin, Hashed_User_ID::OPTION, '222222' );
 		wp_set_current_user( $user_id_admin );
 		$output = $this->capture_action( 'show_user_profile', wp_get_current_user() );
-		$this->assertStringContainsString( 'You can sign in with your Google account.', $output, 'Disconnect settings should render for admin on own profile.' );
+		$this->assertStringContainsString( 'You can sign in with your Google account.', $output, 'An admin should see the disconnect option on their own profile.' );
 
 		if ( is_multisite() ) {
 			return; // TODO: The below results in an empty output on multisite.
 		}
 
-		// Should render the disconnect settings for other user if user is an admin.
+		// An admin should see the disconnect option on another user's profile.
 		wp_set_current_user( $user_id_admin );
 		$output = $this->capture_action( 'edit_user_profile', get_user_by( 'id', $user_id ) );
-		$this->assertStringContainsString( 'This user can sign in with their Google account.', $output, 'Disconnect settings should render on other user profile for admins.' );
+		$this->assertStringContainsString( 'This user can sign in with their Google account.', $output, "An admin should see the disconnect option on another user's profile." );
 	}
 
-	public function test_render_sign_in_with_google_profile__connect_branch_on_own_profile() {
+	public function test_render_sign_in_with_google_profile__connect_on_own_profile() {
 		$this->register_and_connect_module();
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user_id );
 
-		// On own profile with no stored Google user id, the connect copy and
-		// button placeholder should render.
+		// On the current user's own profile with no stored Google user id,
+		// the connect copy and button placeholder should appear.
 		$output = $this->capture_action( 'show_user_profile', wp_get_current_user() );
-		$this->assertStringContainsString( 'Connect your account to Sign in with Google.', $output, 'Connect copy should render on own profile when no Google user id stored.' );
-		$this->assertStringContainsString( 'id="googlesitekit-sign-in-with-google-profile-settings"', $output, 'Connect branch should reuse the profile-settings id.' );
-		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__frontend-output-button', $output, 'Connect branch should render the Sign in with Google button placeholder.' );
-		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__existing-user-connect-button', $output, 'Connect branch should add the existing-user-connect class to the placeholder.' );
-		$this->assertStringNotContainsString( 'Disconnect Google Account', $output, 'Connect branch should not render the disconnect button.' );
+		$this->assertStringContainsString( 'Connect your account to Sign in with Google.', $output, 'The connect copy should appear on your own profile when no Google account is linked yet.' );
+		$this->assertStringContainsString( 'id="googlesitekit-sign-in-with-google-profile-settings"', $output, 'The connect view should appear in the same Sign in with Google profile section.' );
+		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__frontend-output-button', $output, 'The Sign in with Google button should appear on the connect view.' );
+		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__existing-user-connect-button', $output, 'The connect button should be marked for the existing-user link flow.' );
+		$this->assertStringNotContainsString( 'Disconnect Google Account', $output, 'The disconnect button should not appear while the account is unlinked.' );
 	}
 
-	public function test_render_sign_in_with_google_profile__skips_connect_branch_when_module_not_connected() {
+	public function test_render_sign_in_with_google_profile__does_not_show_connect_when_module_not_connected() {
 		$this->module->register();
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user_id );
 
-		// The section should not render when Sign in with Google isn't
-		// connected.
+		// Nothing should appear on the profile when Sign in with Google
+		// isn't connected.
 		$output = $this->capture_action( 'show_user_profile', wp_get_current_user() );
-		$this->assertEmpty( $output, 'Connect branch should not render when Sign in with Google module is not connected.' );
+		$this->assertEmpty( $output, "Nothing should appear when Sign in with Google isn't connected." );
 	}
 
-	public function test_render_sign_in_with_google_profile__skips_connect_branch_on_other_user_profile() {
+	public function test_render_sign_in_with_google_profile__does_not_render_when_admin_views_another_users_unlinked_profile() {
 		if ( is_multisite() ) {
 			$this->markTestSkipped( '`edit_user_profile` output is empty on multisite.' );
 		}
@@ -433,15 +433,12 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$admin_id  = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin_id );
 
-		// Editor has no `Hashed_User_ID` stored, so the disconnect button
-		// should not appear.
-		// In this test, Sign in with Google is connected (`clientID` is set),
-		// but the disconnect button should not appear because the admin
-		// is viewing someone else's profile, and we don't allow other users
-		// to disconnect someone else's Google account from their WordPress
-		// user profile.
+		// An admin is viewing an editor's profile. The editor is not linked
+		// to Google, so there is no disconnect option. The connect button
+		// only shows on your own profile, not someone else's. So nothing
+		// should appear.
 		$output = $this->capture_action( 'edit_user_profile', get_user_by( 'id', $editor_id ) );
-		$this->assertEmpty( $output, "Section should never render on a profile that is not the current user's profile." );
+		$this->assertEmpty( $output, 'Nothing should appear for an unlinked user, even when an admin views their profile.' );
 	}
 
 	public function test_render_profile_admin_errors__shows_error_on_profile_page_when_profile_has_linked_google_account() {
@@ -451,7 +448,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->module->register();
 
 		$output = $this->capture_action( 'admin_notices' );
-		$this->assertStringContainsString( 'Another user on this site already connected this Google account to their profile.', $output, 'Admin notice should render the already-connected error.' );
+		$this->assertStringContainsString( 'Another user on this site already connected this Google account to their profile.', $output, 'The already-connected error should appear on the profile page.' );
 
 		unset( $_GET[ Existing_User_Authenticator::ERROR_QUERY_ARG ] );
 	}
@@ -463,27 +460,26 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->module->register();
 
 		$output = $this->capture_action( 'admin_notices' );
-		$this->assertStringContainsString( 'Another user on this site already connected this Google account to their profile.', $output, 'Admin notice should render the already-connected error.' );
+		$this->assertStringContainsString( 'Another user on this site already connected this Google account to their profile.', $output, 'The already-connected error should appear on the user-edit page.' );
 
 		unset( $_GET[ Existing_User_Authenticator::ERROR_QUERY_ARG ] );
 	}
 
-	public function test_render_profile_admin_errors__skips_outside_profile_pages() {
+	public function test_render_profile_admin_errors__does_not_render_when_not_on_user_profile_pages() {
 		$_GET[ Existing_User_Authenticator::ERROR_QUERY_ARG ] = Existing_User_Authenticator::ERROR_ACCOUNT_ALREADY_CONNECTED;
 		set_current_screen( 'edit.php' );
 
 		$this->module->register();
 
 		$output = $this->capture_action( 'admin_notices' );
-		$this->assertEmpty( $output, 'Errors related to a Google Account already being connected should not appear outside of profile.php or user-edit.php.' );
+		$this->assertEmpty( $output, 'The already-connected error should not appear outside the profile and user-edit pages.' );
 
 		unset( $_GET[ Existing_User_Authenticator::ERROR_QUERY_ARG ] );
 	}
 
 	public function test_maybe_render_profile_signinwithgoogle__renders_when_profile_eligible() {
-		// `Tag_Guard::can_activate()` rejects `wp_login_url()` when it's not
-		// HTTPS, so `build_registrable_tag()` would return null otherwise and
-		// the callback would return early before rendering anything.
+		// `Tag_Guard::can_activate()` checks for HTTPS, so make sure
+		// HTTPS login appears supported for this test.
 		$this->enable_https_login_env();
 		$this->register_and_connect_module();
 
@@ -500,38 +496,39 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$output = $this->capture_action( 'admin_footer' );
 
-		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'admin_footer should output the Sign in with Google init script after show_user_profile fires for an unlinked user.' );
-		$this->assertStringContainsString( "response.integration='existing_user'", $output, 'Rendered script should mark the request as existing_user.' );
-		$this->assertStringContainsString( 'response.connect_nonce=', $output, 'Rendered script should include the connect nonce.' );
+		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'An unlinked user on their profile should get the Sign in with Google connect button.' );
+		$this->assertStringContainsString( "response.integration='existing_user'", $output, 'The connect button should use the existing-user link flow.' );
+		$this->assertStringContainsString( 'response.connect_nonce=', $output, 'The connect request should include its nonce.' );
 	}
 
-	public function test_maybe_render_profile_signinwithgoogle__skips_when_show_user_profile_did_not_fire() {
-		// Reset `did_action` counter so this test is independent of test order.
+	public function test_maybe_render_profile_signinwithgoogle__does_not_show_connect_button_outside_own_profile() {
+		// Clear any record that `show_user_profile` has run. This makes the
+		// test start clean and act as if the user is not on their own profile.
 		global $wp_actions;
 		unset( $wp_actions['show_user_profile'] );
 
-		// With HTTPS set up, `Tag_Guard::can_activate()` passes. Now only
-		// the `did_action` check can stop the connect script from rendering.
+		// The user is not on their own profile here, so the connect button
+		// should not appear. HTTPS and a connected module clear the other
+		// reasons it might be hidden.
 		$this->enable_https_login_env();
 		$this->register_and_connect_module();
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user_id );
 
-		// `maybe_render_profile_signinwithgoogle()` runs on `in_admin_footer`.
-		// With `show_user_profile` never fired, the `did_action` check should
-		// keep it from scheduling any render on `admin_footer`.
+		// Run the profile's admin-footer hooks. The connect button should
+		// still not be added, because the user is not on their own profile.
 		$this->capture_action( 'in_admin_footer' );
 
 		$output = $this->capture_action( 'admin_footer' );
 
-		$this->assertStringNotContainsString( "response.integration='existing_user'", $output, 'admin_footer should not render the connect script outside the profile page.' );
+		$this->assertStringNotContainsString( "response.integration='existing_user'", $output, 'The connect button should not appear when the user is not on their own profile.' );
 	}
 
-	public function test_maybe_render_profile_signinwithgoogle__skips_when_user_already_linked() {
-		// With HTTPS set up, `Tag_Guard::can_activate()` passes. Now only
-		// the `Hashed_User_ID` check can stop the connect script from
-		// rendering.
+	public function test_maybe_render_profile_signinwithgoogle__does_not_show_connect_button_when_user_already_linked() {
+		// The user already linked their account here, so the connect button
+		// shouldn't appear. HTTPS and a connected module clear the other
+		// reasons it might not show, so this is the only one being tested.
 		$this->enable_https_login_env();
 		$this->register_and_connect_module();
 
@@ -544,13 +541,12 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$output = $this->capture_action( 'admin_footer' );
 
-		$this->assertStringNotContainsString( "response.integration='existing_user'", $output, 'Should not render connect script when user already has a linked Google account.' );
+		$this->assertStringNotContainsString( "response.integration='existing_user'", $output, 'The connect button should not appear when the user already has a linked Google account.' );
 	}
 
 	public function test_maybe_render_profile_signinwithgoogle__skips_when_module_not_connected() {
-		// With HTTPS set up, the `wp_login_url()` half of
-		// `Tag_Guard::can_activate()` passes. Now only the missing
-		// `clientID` can stop the connect script from rendering.
+		// Sign in with Google isn't connected here, so the connect button
+		// shouldn't appear. HTTPS clears the login-URL guard.
 		$this->enable_https_login_env();
 		$this->module->register();
 		// Intentionally skip setting `clientID` so `build_registrable_tag()`
@@ -564,7 +560,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$output = $this->capture_action( 'admin_footer' );
 
-		$this->assertStringNotContainsString( "response.integration='existing_user'", $output, 'Should not render connect script when the Sign in with Google module is not connected.' );
+		$this->assertStringNotContainsString( "response.integration='existing_user'", $output, "The connect button should not appear when Sign in with Google isn't connected." );
 	}
 
 	public function test_resolve_authenticator_class__returns_base_authenticator_when_no_integration() {
