@@ -43,6 +43,39 @@ function defaultArgsToParams() {
 
 function defaultValidateParams() {}
 
+/**
+ * Separates the fetch options from the rest of the `fetchX` action arguments.
+ *
+ * A caller passes the fetch options as the last argument, such as
+ * `fetchGetReport( options, { signal } )`. The fetch options control how the
+ * request runs, such as `{ signal }` to cancel it. The params control what the
+ * request asks for. This helper keeps the fetch options out of `argsToParams`
+ * and the error key, so the params and the fetch options stay separate.
+ *
+ * This helper reads the fetch options from a last argument that is a plain
+ * object with a `signal` key. So give a store's own params other keys, and the
+ * helper tells the params and the fetch options apart.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array} args All arguments passed to the generated `fetchX` action.
+ * @return {Object} An object with `fetchArgs`, the arguments that build the
+ *                  params, and `fetchOptions`, the fetch options, or `undefined`
+ *                  when the caller passes none.
+ */
+function separateFetchOptionsFromArgs( args ) {
+	const lastArg = args[ args.length - 1 ];
+
+	if ( isPlainObject( lastArg ) && 'signal' in lastArg ) {
+		return {
+			fetchArgs: args.slice( 0, -1 ),
+			fetchOptions: lastArg,
+		};
+	}
+
+	return { fetchArgs: args, fetchOptions: undefined };
+}
+
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
 // yielded error actions will be a no-op.
@@ -84,16 +117,15 @@ const {
  * - The resolver for 'getSomeData' should call 'fetchGetSomeData'.
  *
  * @since 1.10.0
- * @since n.e.x.t Let the generated `fetchX` action take an optional trailing options object, such as `{ signal }`, and pass it to `controlCallback` as a second argument.
+ * @since n.e.x.t Accept an optional fetch options object on the generated `fetchX` action, such as `{ signal }` to cancel the request, and pass it to `controlCallback` as a second argument.
  * @private
  *
  * @param {Object}   args                   Arguments for creating the fetch store.
  * @param {string}   args.baseName          The base name to use for all the created infrastructure.
- * @param {Function} args.controlCallback   Callback function to issue the API request. Will be used inside the
- *                                          control. The function receives a params object based on argsToParams,
- *                                          i.e. the respective values passed to the action. It also receives a
- *                                          second argument: the trailing options object taken from the action
- *                                          arguments, such as `{ signal }`, or `undefined` when the caller passed none.
+ * @param {Function} args.controlCallback   Issues the API request inside the control. Receives two arguments. The
+ *                                          first is the params object that `argsToParams` builds from the action
+ *                                          arguments. The second is the fetch options, such as `{ signal }` to cancel
+ *                                          the request, or `undefined` when the caller passes none.
  * @param {Function} [args.reducerCallback] Optional. Callback function to modify state based on the API response.
  *                                          Will be used inside the reducer. The function receives the store's state
  *                                          object as first parameter, the API response as second parameter, and the
@@ -205,19 +237,10 @@ export function createFetchStore( {
 
 	const actions = {
 		[ fetchCreator ]( ...args ) {
-			// Take a trailing options object, such as `{ signal }`, off the end
-			// of the arguments. This lets a caller pass a per-request
-			// `AbortSignal`. The options object is not a request parameter, so
-			// it must not reach `argsToParams` or the error key. It goes only to
-			// the control, which passes it to `controlCallback` as a second
-			// argument.
-			let fetchArgs = args;
-			let fetchOptions;
-			const lastArg = args[ args.length - 1 ];
-			if ( isPlainObject( lastArg ) && 'signal' in lastArg ) {
-				fetchOptions = lastArg;
-				fetchArgs = args.slice( 0, -1 );
-			}
+			// Separate the fetch options, such as `{ signal }`, from the
+			// arguments that build the params. The control passes the fetch
+			// options to `controlCallback` as a second argument.
+			const { fetchArgs, fetchOptions } = separateFetchOptionsFromArgs( args );
 
 			const params = argsToParams( ...fetchArgs );
 			// In order for params validation to throw an error as expected,
