@@ -295,5 +295,35 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				).toBe( false );
 			} );
 		} );
+
+		describe( 'isSiteGoalsBreakdownTooltipPending', () => {
+			it( 'defaults to false and toggles with the set/clear actions', () => {
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalsBreakdownTooltipPending()
+				).toBe( false );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setSiteGoalsBreakdownTooltipPending();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalsBreakdownTooltipPending()
+				).toBe( true );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.clearSiteGoalsBreakdownTooltipPending();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalsBreakdownTooltipPending()
+				).toBe( false );
+			} );
+		} );
 	} );
 } );

@@ -22,6 +22,7 @@
 import { combineStores } from 'googlesitekit-data';
 import { createSnapshotStore } from '@/js/googlesitekit/data/create-snapshot-store';
 import accounts from './accounts';
+import advancedDataBreakdowns from './advanced-data-breakdowns';
 import audienceSettings from './audience-settings';
 import audiences from './audiences';
 import baseModuleStore from './base';
@@ -44,6 +45,7 @@ import webdatastreams from './webdatastreams';
 
 const store = combineStores(
 	accounts,
+	advancedDataBreakdowns,
 	audiences,
 	audienceSettings,
 	baseModuleStore,

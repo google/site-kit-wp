@@ -44,12 +44,14 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { isValidAccountID } from '@/js/modules/analytics-4/utils/validation';
 import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNotice';
+import SettingsAdvancedDataBreakdowns from './SettingsAdvancedDataBreakdowns';
 import SettingsControls from './SettingsControls';
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const gtgEnabled = useFeature( 'googleTagGateway' );
 	const gtagUserDataEnabled = useFeature( 'gtagUserData' );
+	const siteGoalsEnabled = useFeature( 'siteGoals' );
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
@@ -74,11 +76,9 @@ export default function SettingsForm( { hasModuleAccess } ) {
 			) }
 
 			<SettingsGroup
+				className="googlesitekit-module-settings-group--improve-measurement"
 				title={ __( 'Improve your measurement', 'google-site-kit' ) }
 			>
-				<SettingsEnhancedMeasurementSwitch
-					hasModuleAccess={ hasModuleAccess }
-				/>
 				<ConversionTrackingToggle>
 					{ createInterpolateElement(
 						__(
@@ -94,11 +94,20 @@ export default function SettingsForm( { hasModuleAccess } ) {
 										'google-site-kit'
 									) }
 									external
+									hideExternalIndicator
 								/>
 							),
 						}
 					) }
 				</ConversionTrackingToggle>
+				<SettingsEnhancedMeasurementSwitch
+					hasModuleAccess={ hasModuleAccess }
+				/>
+				{ siteGoalsEnabled && (
+					<SettingsAdvancedDataBreakdowns
+						hasModuleAccess={ hasModuleAccess }
+					/>
+				) }
 				{ gtgEnabled && <GoogleTagGatewayToggle /> }
 				{ gtagUserDataEnabled && (
 					<EnhancedConversionsSettingsNotice
