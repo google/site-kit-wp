@@ -197,13 +197,19 @@ const SettingsAdvancedDataBreakdowns: FC<
 	);
 
 	const helperText = isComplete
-		? __(
-				'Detailed performance tracking and access to the most granular data available, enabled by granting Site Kit permission to create custom dimensions in Google Analytics. <a>Learn more</a>',
-				'google-site-kit'
+		? createInterpolateElement(
+				__(
+					'Detailed performance tracking and access to the most granular data available, enabled by granting Site Kit permission to create custom dimensions in Google Analytics. <a>Learn more</a>',
+					'google-site-kit'
+				),
+				{ a: learnMoreLink }
 		  )
-		: __(
-				'Grant Site Kit permission to create custom dimensions in Google Analytics. This enables detailed performance tracking and access to the most granular data available. <a>Learn more</a>',
-				'google-site-kit'
+		: createInterpolateElement(
+				__(
+					'Grant Site Kit permission to create custom dimensions in Google Analytics. This enables detailed performance tracking and access to the most granular data available. <a>Learn more</a>',
+					'google-site-kit'
+				),
+				{ a: learnMoreLink }
 		  );
 
 	return (
@@ -211,9 +217,7 @@ const SettingsAdvancedDataBreakdowns: FC<
 			loading={ ! isSettingsLoaded }
 			isEnabled={ isComplete }
 			title={ __( 'Advanced data breakdowns', 'google-site-kit' ) }
-			description={ createInterpolateElement( helperText, {
-				a: learnMoreLink,
-			} ) }
+			description={ helperText }
 			action={
 				// @ts-expect-error - The `SpinnerButton` component is not typed yet.
 				<SpinnerButton

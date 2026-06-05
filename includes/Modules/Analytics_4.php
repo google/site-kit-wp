@@ -297,6 +297,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 		$this->audience_settings->register();
 		$this->site_goals_settings->register();
+		$this->advanced_data_breakdowns_settings->register();
 
 		( new Advanced_Tracking( $this->context ) )->register();
 
@@ -581,6 +582,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->reset_audiences->reset_audience_data();
 		$this->audience_settings->delete();
 		$this->site_goals_settings->delete();
+		$this->advanced_data_breakdowns_settings->delete();
 	}
 
 	/**
