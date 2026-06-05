@@ -79,6 +79,7 @@ import {
 } from '@/js/modules/analytics-4/components/dashboard';
 import getAllTrafficPDFData from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/getPDFData';
 import { ModulePopularPagesWidgetGA4 } from '@/js/modules/analytics-4/components/module';
+import getPopularPagesPDFData from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/getPDFData';
 import {
 	LeadGenerationPerformanceWidget,
 	OnlineStorePerformanceWidget,
@@ -119,6 +120,13 @@ const DashboardAllTrafficWidgetGA4PDF = lazy( () =>
 	import(
 		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
 		'@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/indexPDF'
+	)
+);
+
+const ModulePopularPagesWidgetGA4PDF = lazy( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/indexPDF'
 	)
 );
 
@@ -328,6 +336,11 @@ export function registerWidgets( widgets ) {
 			priority: 4,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			pdf: {
+				Component: ModulePopularPagesWidgetGA4PDF,
+				getData: getPopularPagesPDFData,
+				label: __( 'Top content over time', 'google-site-kit' ),
+			},
 		},
 		[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
 	);

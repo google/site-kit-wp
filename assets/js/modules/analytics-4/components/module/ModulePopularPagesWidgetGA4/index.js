@@ -50,6 +50,7 @@ import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import Footer from './Footer';
 import Header from './Header';
+import { getPopularPagesReportOptions } from './reportOptions';
 
 function ModulePopularPagesWidgetGA4( props ) {
 	const { Widget, WidgetReportError } = props;
@@ -66,34 +67,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 
 	const viewOnlyDashboard = useViewOnly();
 
-	const args = {
-		...dates,
-		dimensions: [ 'pagePath' ],
-		metrics: [
-			{
-				name: 'screenPageViews',
-			},
-			{
-				name: 'sessions',
-			},
-			{
-				name: 'engagementRate',
-			},
-			{
-				name: 'averageSessionDuration',
-			},
-		],
-		orderby: [
-			{
-				metric: {
-					metricName: 'screenPageViews',
-				},
-				desc: true,
-			},
-		],
-		limit: 10,
-		reportID: 'analytics-4_module-popular-pages-widget-ga4_widget_args',
-	};
+	const args = getPopularPagesReportOptions( dates );
 
 	const error = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
