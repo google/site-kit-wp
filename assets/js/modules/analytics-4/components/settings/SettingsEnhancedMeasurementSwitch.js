@@ -222,6 +222,7 @@ export default function SettingsEnhancedMeasurementSwitch( {
 
 	return (
 		<EnhancedMeasurementSwitch
+			variant="row"
 			disabled={ ! hasModuleAccess }
 			loading={ isLoading }
 			isEnhancedMeasurementAlreadyEnabled={

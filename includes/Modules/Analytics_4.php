@@ -63,6 +63,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Property;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Webdatastream;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Account_Summaries;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Accounts;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Advanced_Data_Breakdowns_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Ads_Links;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Adsense_Links;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Audience_Settings;
@@ -79,6 +80,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Report;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Site_Goals_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams_Batch;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Advanced_Data_Breakdowns_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Sync_Audiences;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Custom_Dimension_Data_Available;
@@ -110,6 +112,7 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Modules\Analytics_4\Advanced_Data_Breakdowns_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
@@ -221,6 +224,15 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	private $datapoints;
 
 	/**
+	 * Advanced_Data_Breakdowns_Settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Advanced_Data_Breakdowns_Settings
+	 */
+	protected Advanced_Data_Breakdowns_Settings $advanced_data_breakdowns_settings;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.113.0
@@ -239,12 +251,13 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		?Assets $assets = null
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
-		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
-		$this->reset_audiences                  = new Reset_Audiences( $this->user_options );
-		$this->audience_settings                = new Audience_Settings( $this->options );
-		$this->site_goals_settings              = new Site_Goals_Settings( $this->user_options );
-		$this->audience_utilities               = new Audience_Utilities( $this->audience_settings );
-		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings(), $this->audience_settings );
+		$this->custom_dimensions_data_available  = new Custom_Dimensions_Data_Available( $this->transients );
+		$this->reset_audiences                   = new Reset_Audiences( $this->user_options );
+		$this->audience_settings                 = new Audience_Settings( $this->options );
+		$this->site_goals_settings               = new Site_Goals_Settings( $this->user_options );
+		$this->audience_utilities                = new Audience_Utilities( $this->audience_settings );
+		$this->resource_data_availability_date   = new Resource_Data_Availability_Date( $this->transients, $this->get_settings(), $this->audience_settings );
+		$this->advanced_data_breakdowns_settings = new Advanced_Data_Breakdowns_Settings( $this->options );
 	}
 
 	/**
@@ -286,6 +299,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 		$this->audience_settings->register();
 		$this->site_goals_settings->register();
+		$this->advanced_data_breakdowns_settings->register();
 
 		( new Advanced_Tracking( $this->context ) )->register();
 
@@ -570,6 +584,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->reset_audiences->reset_audience_data();
 		$this->audience_settings->delete();
 		$this->site_goals_settings->delete();
+		$this->advanced_data_breakdowns_settings->delete();
 	}
 
 	/**
@@ -971,6 +986,21 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				)
 			),
 		);
+
+		if ( Feature_Flags::enabled( 'siteGoals' ) ) {
+			$datapoints['GET:advanced-data-breakdowns-settings']       = new Get_Advanced_Data_Breakdowns_Settings(
+				array(
+					'advanced_data_breakdowns_settings' => $this->advanced_data_breakdowns_settings,
+					'service'                           => '',
+				)
+			);
+			$datapoints['POST:save-advanced-data-breakdowns-settings'] = new Save_Advanced_Data_Breakdowns_Settings(
+				array(
+					'advanced_data_breakdowns_settings' => $this->advanced_data_breakdowns_settings,
+					'service'                           => '',
+				)
+			);
+		}
 
 		return $this->datapoints;
 	}
