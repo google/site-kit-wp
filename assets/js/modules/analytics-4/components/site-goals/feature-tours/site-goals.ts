@@ -62,24 +62,42 @@ function gaEventCategory( viewContext: string ) {
 /**
  * Returns the Site Goals tour config.
  *
- * The tour starts when the user clicks "Show me" on the Site Goals
- * intro modal. It runs three steps on the Site Goals widget. Step 1
- * points at the key action tile group. Step 2 points at the breakdown
- * notice. Step 3 points at the goal drivers. Step 2's copy depends on
- * `isEcommerceOnly`. When it's `true`, step 2 uses the sales copy.
- * When it's `false`, step 2 uses the leads copy.
+ * The tour starts when the user clicks "Show me" on the Site Goals intro modal
+ * and runs on the Site Goals widget. The first step points at the key action
+ * tile group and the last step points at the goal drivers. The breakdown notice
+ * step is included only when `hasBreakdownNotice` is true, because that step
+ * targets the notice and the notice is not always rendered. Its copy depends on
+ * `isEcommerceOnly`: sales copy when `true`, leads copy when `false`.
  *
  * @since n.e.x.t
  *
- * @param params                 Tour params.
- * @param params.isEcommerceOnly True when only ecommerce events are detected. Picks step 2's copy.
+ * @param params                    Tour params.
+ * @param params.isEcommerceOnly    True when only ecommerce events are detected. Picks the breakdown step copy.
+ * @param params.hasBreakdownNotice True when the breakdown notice is rendered, so its tour step has a target.
  * @return The Site Goals tour config.
  */
 export function getSiteGoalsTour( {
 	isEcommerceOnly,
+	hasBreakdownNotice,
 }: {
 	isEcommerceOnly: boolean;
+	hasBreakdownNotice: boolean;
 } ) {
+	const breakdownStep = {
+		...defaultStepOptions,
+		target: '.googlesitekit-site-goals-breakdown-notice',
+		title: __( 'Get into the details', 'google-site-kit' ),
+		content: isEcommerceOnly
+			? __(
+					'Want to see whether WooCommerce or Easy Digital Downloads is driving more success? You can break these numbers down to see the performance of each plugin.',
+					'google-site-kit'
+			  )
+			: __(
+					'Want to know which specific form is bringing in the most interest? You can break these numbers down to see the performance of each individual form on your site.',
+					'google-site-kit'
+			  ),
+	};
+
 	return {
 		slug: SITE_GOALS_TOUR,
 		isRepeatable: true,
@@ -99,22 +117,7 @@ export function getSiteGoalsTour( {
 					'google-site-kit'
 				),
 			},
-			{
-				...defaultStepOptions,
-				// TODO: Step 2 uses the key action tile as a placeholder. Swap
-				// to the breakdown notice target once #12800 ships it.
-				target: '.googlesitekit-site-goals-primary-action',
-				title: __( 'Get into the details', 'google-site-kit' ),
-				content: isEcommerceOnly
-					? __(
-							'Want to see whether WooCommerce or Easy Digital Downloads is driving more success? You can break these numbers down to see the performance of each plugin.',
-							'google-site-kit'
-					  )
-					: __(
-							'Want to know which specific form is bringing in the most interest? You can break these numbers down to see the performance of each individual form on your site.',
-							'google-site-kit'
-					  ),
-			},
+			...( hasBreakdownNotice ? [ breakdownStep ] : [] ),
 			{
 				...defaultStepOptions,
 				target: '.googlesitekit-site-goals-goal-drivers-group',

@@ -35,15 +35,9 @@ import SourceLink from '@/js/components/SourceLink';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
-import {
-	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_SEARCH_CONSOLE,
-} from '@/js/modules/search-console/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { generateDateRangeArgs } from '@/js/modules/search-console/util';
 import { getURLPath, untrailingslashit } from '@/js/util';
 
@@ -59,7 +53,6 @@ function SourceLinkAnalytics4() {
 		const url = select( CORE_SITE ).getCurrentEntityURL();
 		const dates = select( CORE_USER ).getDateRangeDates( {
 			compare: true,
-			offsetDays: DATE_RANGE_OFFSET_ANALYTICS,
 		} );
 
 		const reportArgs = {
@@ -107,9 +100,7 @@ function SourceLinkSearch( { metric } ) {
 				select( CORE_SITE ).getReferenceSiteURL()
 			);
 			const url = select( CORE_SITE ).getCurrentEntityURL();
-			const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} );
+			const dateRangeDates = select( CORE_USER ).getDateRangeDates();
 
 			const serviceURLArgs = {
 				resource_id: getPropertyID(),

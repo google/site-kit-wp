@@ -37,7 +37,6 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import {
-	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 	UI_DIMENSION_COLOR,
 } from '@/js/modules/analytics-4/datastore/constants';
@@ -51,9 +50,7 @@ export default function UserCountGraph( props ) {
 	const isViewOnly = useViewOnly();
 
 	const { startDate, endDate } = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
+		select( CORE_USER ).getDateRangeDates()
 	);
 
 	const graphLineColor = useSelect(

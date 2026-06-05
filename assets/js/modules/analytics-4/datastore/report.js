@@ -47,7 +47,7 @@ import {
 } from '@/js/modules/analytics-4/utils';
 import { validateReport } from '@/js/modules/analytics-4/utils/validation';
 import { DAY_IN_SECONDS, dateSub, stringifyObject } from '@/js/util';
-import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4 } from './constants';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -381,7 +381,6 @@ const baseSelectors = {
 			CORE_USER
 		).getDateRangeDates( {
 			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
 		} );
 
 		const args = {

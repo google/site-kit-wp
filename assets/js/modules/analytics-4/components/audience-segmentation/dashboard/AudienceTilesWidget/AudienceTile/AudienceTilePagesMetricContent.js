@@ -39,10 +39,7 @@ import {
 } from '@/js/hooks/useBreakpoint';
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { numFmt, trackEvent } from '@/js/util';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import AudienceTileNoData from './AudienceTileNoData';
@@ -73,9 +70,7 @@ export default function AudienceTilePagesMetricContent( {
 	const hasDimensionValues = !! validDimensionValues.length;
 
 	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
+		select( CORE_USER ).getDateRangeDates()
 	);
 
 	function handleCreateCustomDimension() {
