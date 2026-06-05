@@ -41,11 +41,14 @@ import { MODULES_PAGESPEED_INSIGHTS } from './constants';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
-	controlCallback: ( { strategy, url } ) => {
-		return get( 'modules', MODULE_SLUG_PAGESPEED_INSIGHTS, 'pagespeed', {
-			strategy,
-			url,
-		} );
+	controlCallback: ( { strategy, url }, { signal } = {} ) => {
+		return get(
+			'modules',
+			MODULE_SLUG_PAGESPEED_INSIGHTS,
+			'pagespeed',
+			{ strategy, url },
+			{ signal }
+		);
 	},
 	reducerCallback: createReducer( ( state, report, { strategy, url } ) => {
 		state.reports = state.reports || {};

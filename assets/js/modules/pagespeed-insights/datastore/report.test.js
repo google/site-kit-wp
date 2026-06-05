@@ -62,6 +62,46 @@ describe( 'modules/pagespeed-insights report', () => {
 
 				expect( response ).toEqual( fixtures.pagespeedDesktop );
 			} );
+
+			it( 'forwards the abort signal from the options object to the report request', async () => {
+				const strategy = 'desktop';
+				const url = 'http://example.com/';
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
+					{ body: fixtures.pagespeedDesktop, status: 200 }
+				);
+
+				const { signal } = new AbortController();
+
+				await registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.fetchGetReport( url, strategy, { signal } );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBe( signal );
+			} );
+
+			it( 'sends no abort signal to the report request when no options object is given', async () => {
+				const strategy = 'desktop';
+				const url = 'http://example.com/';
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
+					{ body: fixtures.pagespeedDesktop, status: 200 }
+				);
+
+				await registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.fetchGetReport( url, strategy );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBeUndefined();
+			} );
 		} );
 	} );
 
