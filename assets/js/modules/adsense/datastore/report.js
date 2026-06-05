@@ -47,8 +47,10 @@ import { MODULES_ADSENSE } from './constants';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
-	controlCallback: ( { options } ) => {
-		return get( 'modules', MODULE_SLUG_ADSENSE, 'report', options );
+	controlCallback: ( { options }, { signal } = {} ) => {
+		return get( 'modules', MODULE_SLUG_ADSENSE, 'report', options, {
+			signal,
+		} );
 	},
 	reducerCallback: createReducer( ( state, report, { options } ) => {
 		state.reports = state.reports || {};

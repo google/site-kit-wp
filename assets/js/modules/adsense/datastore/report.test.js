@@ -137,6 +137,40 @@ describe( 'modules/adsense report', () => {
 				);
 				expect( console ).toHaveErrored();
 			} );
+
+			it( 'forwards the abort signal from the options object to the report request', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/report'
+					),
+					{ body: getAdSenseMockResponse( options ) }
+				);
+
+				const { signal } = new AbortController();
+
+				await registry
+					.dispatch( MODULES_ADSENSE )
+					.fetchGetReport( options, { signal } );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBe( signal );
+			} );
+
+			it( 'sends no abort signal to the report request when no options object is given', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/report'
+					),
+					{ body: getAdSenseMockResponse( options ) }
+				);
+
+				await registry
+					.dispatch( MODULES_ADSENSE )
+					.fetchGetReport( options );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBeUndefined();
+			} );
 		} );
 	} );
 } );
