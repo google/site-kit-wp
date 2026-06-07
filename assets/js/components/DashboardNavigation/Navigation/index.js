@@ -234,27 +234,27 @@ export default function Navigation() {
 	const chips = {
 		[ ANCHOR_ID_KEY_METRICS ]: {
 			label: __( 'Key metrics', 'google-site-kit' ),
-			icon: <NavKeyMetricsIcon width="18" height="16" />,
+			icon: <NavKeyMetricsIcon width="20" height="20" />,
 		},
 		[ ANCHOR_ID_TRAFFIC ]: {
 			label: __( 'Traffic', 'google-site-kit' ),
-			icon: <NavTrafficIcon width="18" height="16" />,
+			icon: <NavTrafficIcon width="20" height="20" />,
 		},
 		[ ANCHOR_ID_SITE_GOALS ]: {
 			label: __( 'Site goals', 'google-site-kit' ),
-			icon: <NavSiteGoalsIcon width="17" height="17" />,
+			icon: <NavSiteGoalsIcon width="20" height="20" />,
 		},
 		[ ANCHOR_ID_CONTENT ]: {
 			label: __( 'Content', 'google-site-kit' ),
-			icon: <NavContentIcon width="18" height="18" />,
+			icon: <NavContentIcon width="20" height="20" />,
 		},
 		[ ANCHOR_ID_SPEED ]: {
 			label: __( 'Speed', 'google-site-kit' ),
-			icon: <NavSpeedIcon width="20" height="16" />,
+			icon: <NavSpeedIcon width="20" height="20" />,
 		},
 		[ ANCHOR_ID_MONETIZATION ]: {
 			label: __( 'Monetization', 'google-site-kit' ),
-			icon: <NavMonetizationIcon width="18" height="16" />,
+			icon: <NavMonetizationIcon width="20" height="20" />,
 		},
 	};
 
