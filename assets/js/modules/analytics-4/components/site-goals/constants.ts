@@ -27,14 +27,18 @@ export const SITE_GOALS_SELECTION_PANEL_OPENED_KEY =
 
 export const SITE_GOALS_SELECTION_FORM = 'site-goals-selection-form';
 export const SITE_GOALS_SELECTED_DRIVERS = 'site-goals-selected-drivers';
-export const SITE_GOALS_EFFECTIVE_DRIVERS = 'site-goals-effective-drivers';
 export const SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT =
 	'site-goals-selected-visitor-engagement';
-export const SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT =
-	'site-goals-effective-visitor-engagement';
 
 export const SITE_GOALS_MIN_SELECTED_DRIVERS = 1;
 export const SITE_GOALS_MAX_SELECTED_DRIVERS = 6;
+
+export const SITE_GOALS_BREAKDOWN_NOTICE = 'site_goals_breakdown_notice';
+
+export const SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS = [
+	'googlesitekit_event_provider',
+	'googlesitekit_form_id',
+];
 
 export const SITE_GOALS_DEFAULT_SELECTED_DRIVERS = {
 	[ GOAL_TYPES.ECOMMERCE ]: [

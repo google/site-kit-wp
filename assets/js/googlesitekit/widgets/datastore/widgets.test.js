@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { lazy } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Null from '@/js/components/Null';
@@ -236,6 +241,34 @@ describe( 'core/widgets Widgets', () => {
 				} );
 
 				expect( store.getState().widgets[ slug ].pdf ).toBe( pdf );
+			} );
+
+			it( 'should preserve a React.lazy() pdf.Component reference unchanged', () => {
+				const LazyPDFComponent = lazy( () =>
+					Promise.resolve( { default: () => null } )
+				);
+				// eslint-disable-next-line require-await
+				async function getData() {
+					return { data: {} };
+				}
+				const pdf = {
+					Component: LazyPDFComponent,
+					getData,
+					label: 'Lazy Widget',
+				};
+
+				registry.dispatch( CORE_WIDGETS ).registerWidget( slug, {
+					Component: WidgetComponent,
+					pdf,
+				} );
+
+				expect( store.getState().widgets[ slug ].pdf ).toBe( pdf );
+				expect( store.getState().widgets[ slug ].pdf.Component ).toBe(
+					LazyPDFComponent
+				);
+				expect(
+					registry.select( CORE_WIDGETS ).getWidget( slug ).pdf
+				).toBe( pdf );
 			} );
 
 			it( 'should not overwrite an existing widget', () => {

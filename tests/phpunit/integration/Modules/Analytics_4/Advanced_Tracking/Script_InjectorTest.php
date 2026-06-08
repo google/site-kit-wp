@@ -33,7 +33,7 @@ class Script_InjectorTest extends TestCase {
 		$context
 			->expects( $this->once() )
 			->method( 'path' )
-			->willReturn( dirname( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '/assets/js/analytics-advanced-tracking.js' );
+			->willReturn( dirname( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '/assets/js/analytics-advanced-tracking.ts' );
 
 		$script_injector = new Script_Injector( $context );
 

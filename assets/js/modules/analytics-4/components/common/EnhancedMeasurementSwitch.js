@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { ProgressBar, Switch } from 'googlesitekit-components';
+import { Button, ProgressBar, Switch } from 'googlesitekit-components';
 import SupportLink from '@/js/components/SupportLink';
 import useFormValue from '@/js/hooks/useFormValue';
 import useQueryArg from '@/js/hooks/useQueryArg';
@@ -44,6 +44,7 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { trackEvent } from '@/js/util';
 import Tick from '@/svg/icons/tick.svg';
+import MeasurementSettingRow from './MeasurementSettingRow';
 
 export default function EnhancedMeasurementSwitch( {
 	className,
@@ -53,6 +54,7 @@ export default function EnhancedMeasurementSwitch( {
 	formName = ENHANCED_MEASUREMENT_FORM,
 	isEnhancedMeasurementAlreadyEnabled = false,
 	showTick = false,
+	variant = 'switch',
 } ) {
 	const [ isEnhancedMeasurementEnabled, setIsEnhancedMeasurementEnabled ] =
 		useFormValue( formName, ENHANCED_MEASUREMENT_ENABLED );
@@ -91,6 +93,59 @@ export default function EnhancedMeasurementSwitch( {
 		// via the switch.
 		setShouldDismissActivationBanner( true );
 	} );
+
+	// Both variants show the same description. Define it once so the
+	// translatable text is not duplicated and both Learn more links send
+	// the same tracking event.
+	const description = createInterpolateElement(
+		__(
+			'This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). <a>Learn more</a>',
+			'google-site-kit'
+		),
+		{
+			a: (
+				<SupportLink
+					path="/analytics/answer/9216061"
+					onClick={ () => {
+						trackEvent(
+							isInitialSetupFlow
+								? `${ viewContext }_setup`
+								: viewContext,
+							'click_learn_more_link',
+							'enhanced_measurement'
+						);
+					} }
+					hideExternalIndicator={ variant === 'row' }
+					external
+				/>
+			),
+		}
+	);
+
+	// The settings screen shows enhanced measurement as a row, to match the
+	// advanced data breakdowns row. The setup screen keeps the switch.
+	if ( variant === 'row' ) {
+		const isEnabled =
+			isEnhancedMeasurementEnabled || isEnhancedMeasurementAlreadyEnabled;
+
+		return (
+			<MeasurementSettingRow
+				loading={ loading }
+				isEnabled={ isEnabled }
+				title={ __( 'Enhanced measurement', 'google-site-kit' ) }
+				description={ description }
+				action={
+					<Button
+						onClick={ handleClick }
+						disabled={ disabled }
+						inverse
+					>
+						{ __( 'Enable', 'google-site-kit' ) }
+					</Button>
+				}
+			/>
+		);
+	}
 
 	return (
 		<div
@@ -135,29 +190,7 @@ export default function EnhancedMeasurementSwitch( {
 				/>
 			) }
 			<p className="googlesitekit-module-settings-group__helper-text">
-				{ createInterpolateElement(
-					__(
-						'This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). <a>Learn more</a>',
-						'google-site-kit'
-					),
-					{
-						a: (
-							<SupportLink
-								path="/analytics/answer/9216061"
-								onClick={ () => {
-									trackEvent(
-										isInitialSetupFlow
-											? `${ viewContext }_setup`
-											: viewContext,
-										'click_learn_more_link',
-										'enhanced_measurement'
-									);
-								} }
-								external
-							/>
-						),
-					}
-				) }
+				{ description }
 			</p>
 		</div>
 	);
@@ -169,4 +202,5 @@ EnhancedMeasurementSwitch.propTypes = {
 	loading: PropTypes.bool,
 	isEnhancedMeasurementAlreadyEnabled: PropTypes.bool,
 	showTick: PropTypes.bool,
+	variant: PropTypes.oneOf( [ 'switch', 'row' ] ),
 };
