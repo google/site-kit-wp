@@ -446,7 +446,7 @@ export const GLOBAL_DATA_VALUE_NOT_FOUND = Symbol(
  * @param {string} propertyName Property of the global data object.
  * @param {string} [path]       Optional. Path to a value of the object matched by `propertyName`.
  * @param {Object} [_global]    Optional. The global object to use. Default is `global`.
- * @return {*} The global data object, or the value at the path if provided.
+ * @return {*} The global data object, or the value at the path if provided. If the path is not found, returns the `GLOBAL_DATA_VALUE_NOT_FOUND` symbol.
  * @throws {Error} If the global data property is not found.
  */
 export function getGlobalData(
