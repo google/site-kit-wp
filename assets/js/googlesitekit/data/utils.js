@@ -432,9 +432,6 @@ export function createValidatedAction( validate, actionCreator ) {
 	};
 }
 
-/**
- * Symbol used to indicate that a global data value was not found.
- */
 export const GLOBAL_DATA_VALUE_NOT_FOUND = Symbol(
 	'GLOBAL_DATA_VALUE_NOT_FOUND'
 );
