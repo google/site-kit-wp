@@ -37,6 +37,7 @@ import { fireEvent, render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserCapabilities,
 } from '@tests/js/utils';
@@ -55,6 +56,10 @@ describe( 'PanelContent', () => {
 		registry = createTestRegistry();
 		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
+		// Both ecommerce plugins active, so the "both plugins" notice copy shows.
+		provideSiteInfo( registry, {
+			hasMultipleActiveEcommerceEventProviders: true,
+		} );
 		provideModules( registry, [
 			{ slug: MODULE_SLUG_ANALYTICS_4, connected: true },
 		] );
