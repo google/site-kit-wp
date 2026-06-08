@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { cloneDeep, mapValues } from 'lodash';
+import { cloneDeep, get, mapValues } from 'lodash';
 import memize from 'memize';
 
 /**
@@ -433,25 +433,39 @@ export function createValidatedAction( validate, actionCreator ) {
 }
 
 /**
+ * Symbol used to indicate that a global data value was not found.
+ */
+export const GLOBAL_DATA_VALUE_NOT_FOUND = Symbol(
+	'GLOBAL_DATA_VALUE_NOT_FOUND'
+);
+
+/**
  * Gets a global data object by property name and optional child property name.
  *
  * Returns a deep clone to avoid mutating the original object.
  *
  * @since n.e.x.t
  *
- * @param {string} propertyName        Property of the global data object.
- * @param {string} [childPropertyName] Optional. Property of the object matched by `propertyName`.
- * @return {*} The global data object, or the child property value if provided.
+ * @param {string} propertyName Property of the global data object.
+ * @param {string} [path]       Optional. Path to a value of the object matched by `propertyName`.
+ * @param {Object} [_global]    Optional. The global object to use. Default is `global`.
+ * @return {*} The global data object, or the value at the path if provided.
  * @throws {Error} If the global data property is not found.
  */
-export function getGlobalData( propertyName, childPropertyName = undefined ) {
-	if ( ! global[ propertyName ] ) {
+export function getGlobalData(
+	propertyName,
+	path = undefined,
+	_global = global
+) {
+	if ( ! _global[ propertyName ] ) {
 		throw new Error( `Global data property ${ propertyName } not found.` );
 	}
 
-	if ( childPropertyName ) {
-		return cloneDeep( global[ propertyName ][ childPropertyName ] );
+	if ( path ) {
+		return cloneDeep(
+			get( _global[ propertyName ], path, GLOBAL_DATA_VALUE_NOT_FOUND )
+		);
 	}
 
-	return cloneDeep( global[ propertyName ] );
+	return cloneDeep( _global[ propertyName ] );
 }
