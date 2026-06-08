@@ -22,12 +22,12 @@ import type { Page } from '@playwright/test';
 /**
  * Internal dependencies
  */
-import { test, expect } from '../../playwright';
+import { expect, test } from '../../playwright';
 import {
 	asUser,
+	withConnectedModules,
 	withFeatureFlags,
 	withPlugins,
-	type WordPress,
 } from '../../wordpress';
 
 type ExtractedUserData = {
@@ -36,14 +36,28 @@ type ExtractedUserData = {
 	sha256LastName?: string;
 };
 
-const admin = asUser( 'admin' );
-const anonymous = asUser( 'does-not-exist' );
 const plugins = withPlugins( 'proxy-auth.php', 'enhanced-conversions.php' );
 const withUserDataFlag = withFeatureFlags( 'gtagUserData' );
+const adsConnected = withConnectedModules( 'ads' );
+const analytics4Connected = withConnectedModules( 'analytics-4' );
+const tagManagerConnected = withConnectedModules( 'tagmanager' );
 
-const adminBaseAnnotation = [ admin, plugins ];
-const adminFlagAnnotation = [ admin, plugins, withUserDataFlag ];
-const anonymousFlagAnnotation = [ anonymous, plugins, withUserDataFlag ];
+const fullUser = asUser( 'admin', {
+	email: 'test.user@example.com',
+	firstName: 'John',
+	lastName: 'Doe',
+} );
+const emailOnlyUser = asUser( 'admin', {
+	email: 'email.only@example.com',
+	firstName: '',
+	lastName: '',
+} );
+const nameOnlyUser = asUser( 'admin', {
+	email: '',
+	firstName: 'Jane',
+	lastName: 'Smith',
+} );
+const anonymousUser = asUser( 'does-not-exist' );
 
 const hashPattern = /^[a-f0-9]{64}$/;
 
@@ -92,240 +106,157 @@ function getUserDataFromDataLayer(
 	} );
 }
 
-async function setModuleConnected(
-	wp: WordPress,
-	module: string,
-	connected: boolean
-): Promise< void > {
-	const response = ( await wp.restRequest(
-		'POST',
-		'google-site-kit/v1/e2e/enhanced-conversions/connect-module',
-		{
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify( {
-				module,
-				connected,
-			} ),
+async function getFrontendUserData(
+	page: Page
+): Promise< ExtractedUserData | null > {
+	return await getUserDataFromDataLayer( page );
+}
+
+function expectHashedUserData( userData: ExtractedUserData | null ): void {
+	expect( userData ).toBeTruthy();
+	expect( userData?.sha256EmailAddress ).toMatch( hashPattern );
+	expect( userData?.sha256FirstName ).toMatch( hashPattern );
+	expect( userData?.sha256LastName ).toMatch( hashPattern );
+}
+
+test.describe( 'Enhanced Conversions', { annotation: [ plugins ] }, () => {
+	test(
+		'should emit hashed user_data when Ads is connected and the feature flag is enabled',
+		{ annotation: [ fullUser, withUserDataFlag, adsConnected ] },
+		async ( { wp } ) => {
+			await wp.visitFrontend( '/' );
+			const userData = await getFrontendUserData( wp.page );
+			expectHashedUserData( userData );
 		}
-	) ) as {
-		success?: boolean;
-		code?: string;
-		message?: string;
-	};
+	);
 
-	if ( ! response?.success ) {
-		throw new Error(
-			`Failed to set module connection for ${ module }: ${
-				response?.code || response?.message || 'unknown_error'
-			}`
-		);
-	}
-}
-
-async function setUserProfile(
-	wp: WordPress,
-	profile: {
-		email?: string;
-		firstName?: string;
-		lastName?: string;
-	}
-): Promise< void > {
-	const response = ( await wp.restRequest(
-		'POST',
-		'google-site-kit/v1/e2e/enhanced-conversions/set-user-profile',
-		{
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify( {
-				email: profile.email,
-				first_name: profile.firstName,
-				last_name: profile.lastName,
-			} ),
+	test(
+		'should emit hashed user_data when Analytics 4 is connected and the feature flag is enabled',
+		{ annotation: [ fullUser, withUserDataFlag, analytics4Connected ] },
+		async ( { wp } ) => {
+			await wp.visitFrontend( '/' );
+			const userData = await getFrontendUserData( wp.page );
+			expectHashedUserData( userData );
 		}
-	) ) as {
-		success?: boolean;
-		code?: string;
-		message?: string;
-	};
+	);
 
-	if ( ! response?.success ) {
-		throw new Error(
-			`Failed to set user profile: ${
-				response?.code || response?.message || 'unknown_error'
-			}`
-		);
-	}
-}
-
-async function resetState( wp: WordPress ): Promise< void > {
-	const response = ( await wp.restRequest(
-		'POST',
-		'google-site-kit/v1/e2e/enhanced-conversions/reset'
-	) ) as {
-		success?: boolean;
-		code?: string;
-		message?: string;
-	};
-
-	if ( ! response?.success ) {
-		throw new Error(
-			`Failed to reset enhanced conversions state: ${
-				response?.code || response?.message || 'unknown_error'
-			}`
-		);
-	}
-}
-
-test.describe(
-	'Enhanced Conversions',
-	{ annotation: adminBaseAnnotation },
-	() => {
-		test.beforeEach( async ( { wp } ) => {
-			// Ensure subsequent REST setup requests are same-origin and include test routing cookies.
+	test(
+		'should emit hashed user_data when Tag Manager is connected and the feature flag is enabled',
+		{ annotation: [ fullUser, withUserDataFlag, tagManagerConnected ] },
+		async ( { wp } ) => {
 			await wp.visitFrontend( '/' );
-			await resetState( wp );
-		} );
+			const userData = await getFrontendUserData( wp.page );
+			expectHashedUserData( userData );
+		}
+	);
 
-		test.describe( 'positive cases', () => {
-			const gtagModules = [ 'ads', 'analytics-4', 'tagmanager' ];
-
-			for ( const module of gtagModules ) {
-				test(
-					`should emit hashed user_data when ${ module } is connected`,
-					{ annotation: adminFlagAnnotation },
-					async ( { wp } ) => {
-						await setModuleConnected( wp, module, true );
-						await setUserProfile( wp, {
-							email: 'test.user@example.com',
-							firstName: 'John',
-							lastName: 'Doe',
-						} );
-
-						await wp.visitFrontend( '/' );
-
-						const userData = await getUserDataFromDataLayer(
-							wp.page
-						);
-
-						expect( userData ).toBeTruthy();
-						expect( userData?.sha256EmailAddress ).toMatch(
-							hashPattern
-						);
-						expect( userData?.sha256FirstName ).toMatch(
-							hashPattern
-						);
-						expect( userData?.sha256LastName ).toMatch(
-							hashPattern
-						);
-					}
-				);
-			}
-		} );
-
-		test.describe( 'negative cases', () => {
-			test( 'should not emit user_data when feature flag is disabled', async ( {
-				wp,
-			} ) => {
-				await setModuleConnected( wp, 'ads', true );
-				await setUserProfile( wp, {
-					email: 'test.user@example.com',
-					firstName: 'John',
-					lastName: 'Doe',
-				} );
-
-				await wp.visitFrontend( '/' );
-
-				const userData = await getUserDataFromDataLayer( wp.page );
-				expect( userData ).toBeNull();
-			} );
-
-			test(
-				'should not emit user_data when no GTag module is connected',
-				{ annotation: adminFlagAnnotation },
-				async ( { wp } ) => {
-					await setUserProfile( wp, {
-						email: 'test.user@example.com',
-						firstName: 'John',
-						lastName: 'Doe',
-					} );
-
-					await wp.visitFrontend( '/' );
-
-					const userData = await getUserDataFromDataLayer( wp.page );
-					expect( userData ).toBeNull();
-				}
-			);
-		} );
-
-		test.describe( 'partial data', () => {
-			test(
-				'should emit only email field when only email is available',
-				{ annotation: adminFlagAnnotation },
-				async ( { wp } ) => {
-					await setModuleConnected( wp, 'ads', true );
-					await setUserProfile( wp, {
-						email: 'email.only@example.com',
-						firstName: '',
-						lastName: '',
-					} );
-
-					await wp.visitFrontend( '/' );
-
-					const userData = await getUserDataFromDataLayer( wp.page );
-
-					expect( userData ).toBeTruthy();
-					expect( userData?.sha256EmailAddress ).toMatch(
-						hashPattern
-					);
-					expect( userData?.sha256FirstName ).toBeUndefined();
-					expect( userData?.sha256LastName ).toBeUndefined();
-				}
-			);
-
-			test(
-				'should emit only name fields when email is overridden as empty',
-				{ annotation: adminFlagAnnotation },
-				async ( { wp } ) => {
-					await setModuleConnected( wp, 'ads', true );
-					await setUserProfile( wp, {
-						email: '',
-						firstName: 'Jane',
-						lastName: 'Smith',
-					} );
-
-					await wp.visitFrontend( '/' );
-
-					const userData = await getUserDataFromDataLayer( wp.page );
-
-					expect( userData ).toBeTruthy();
-					expect( userData?.sha256EmailAddress ).toBeUndefined();
-					expect( userData?.sha256FirstName ).toMatch( hashPattern );
-					expect( userData?.sha256LastName ).toMatch( hashPattern );
-				}
-			);
-		} );
-	}
-);
-
-test.describe(
-	'Enhanced Conversions anonymous user',
-	{
-		annotation: anonymousFlagAnnotation,
-	},
-	() => {
-		test.beforeEach( async ( { wp } ) => {
-			// Ensure subsequent REST setup requests are same-origin and include test routing cookies.
+	test(
+		'should not emit user_data when Ads is connected and the feature flag is disabled',
+		{ annotation: [ fullUser, adsConnected ] },
+		async ( { wp } ) => {
 			await wp.visitFrontend( '/' );
-			await resetState( wp );
-			await setModuleConnected( wp, 'ads', true );
-		} );
-
-		test( 'should not emit user_data for non-logged-in user', async ( {
-			wp,
-		} ) => {
-			await wp.visitFrontend( '/' );
-
-			const userData = await getUserDataFromDataLayer( wp.page );
+			const userData = await getFrontendUserData( wp.page );
 			expect( userData ).toBeNull();
-		} );
-	}
-);
+		}
+	);
+
+	test(
+		'should not emit user_data when Analytics 4 is connected and the feature flag is disabled',
+		{ annotation: [ fullUser, analytics4Connected ] },
+		async ( { wp } ) => {
+			await wp.visitFrontend( '/' );
+			const userData = await getFrontendUserData( wp.page );
+			expect( userData ).toBeNull();
+		}
+	);
+
+	test(
+		'should not emit user_data when Tag Manager is connected and the feature flag is disabled',
+		{ annotation: [ fullUser, tagManagerConnected ] },
+		async ( { wp } ) => {
+			await wp.visitFrontend( '/' );
+			const userData = await getFrontendUserData( wp.page );
+			expect( userData ).toBeNull();
+		}
+	);
+
+	test(
+		'should not emit user_data when the feature flag is enabled and no GTag module is connected',
+		{ annotation: [ fullUser, withUserDataFlag ] },
+		async ( { wp } ) => {
+			await wp.visitFrontend( '/' );
+			const userData = await getFrontendUserData( wp.page );
+			expect( userData ).toBeNull();
+		}
+	);
+
+	test(
+		'should not emit user_data for an anonymous user when Ads is connected and the feature flag is enabled',
+		{ annotation: [ anonymousUser, withUserDataFlag, adsConnected ] },
+		async ( { wp } ) => {
+			await wp.visitFrontend( '/' );
+			const userData = await getFrontendUserData( wp.page );
+			expect( userData ).toBeNull();
+		}
+	);
+
+	test(
+		'should not emit user_data for an anonymous user when Analytics 4 is connected and the feature flag is enabled',
+		{
+			annotation: [
+				anonymousUser,
+				withUserDataFlag,
+				analytics4Connected,
+			],
+		},
+		async ( { wp } ) => {
+			await wp.visitFrontend( '/' );
+			const userData = await getFrontendUserData( wp.page );
+			expect( userData ).toBeNull();
+		}
+	);
+
+	test(
+		'should not emit user_data for an anonymous user when Tag Manager is connected and the feature flag is enabled',
+		{
+			annotation: [
+				anonymousUser,
+				withUserDataFlag,
+				tagManagerConnected,
+			],
+		},
+		async ( { wp } ) => {
+			await wp.visitFrontend( '/' );
+			const userData = await getFrontendUserData( wp.page );
+			expect( userData ).toBeNull();
+		}
+	);
+
+	test(
+		'should emit only the email hash when only email data is available',
+		{ annotation: [ emailOnlyUser, withUserDataFlag, adsConnected ] },
+		async ( { wp } ) => {
+			await wp.visitFrontend( '/' );
+			const userData = await getFrontendUserData( wp.page );
+
+			expect( userData ).toBeTruthy();
+			expect( userData?.sha256EmailAddress ).toMatch( hashPattern );
+			expect( userData?.sha256FirstName ).toBeUndefined();
+			expect( userData?.sha256LastName ).toBeUndefined();
+		}
+	);
+
+	test(
+		'should emit only the name hashes when email data is empty',
+		{ annotation: [ nameOnlyUser, withUserDataFlag, adsConnected ] },
+		async ( { wp } ) => {
+			await wp.visitFrontend( '/' );
+			const userData = await getFrontendUserData( wp.page );
+
+			expect( userData ).toBeTruthy();
+			expect( userData?.sha256EmailAddress ).toBeUndefined();
+			expect( userData?.sha256FirstName ).toMatch( hashPattern );
+			expect( userData?.sha256LastName ).toMatch( hashPattern );
+		}
+	);
+} );

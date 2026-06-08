@@ -26,6 +26,12 @@ import { TestDetailsAnnotation } from '@playwright/test';
  */
 export const ANNOTATION_SEPARATOR = ',';
 
+type TestUserProfile = {
+	email?: string;
+	firstName?: string;
+	lastName?: string;
+};
+
 /**
  * Sets the plugins to activate for the test.
  *
@@ -59,6 +65,23 @@ export function withFeatureFlags( ...flags: string[] ): TestDetailsAnnotation {
 }
 
 /**
+ * Sets the connected modules for the test.
+ *
+ * @since 1.177.0
+ *
+ * @param {string[]} modules Connected module slugs.
+ * @return {TestDetailsAnnotation} The annotation to use for the test.
+ */
+export function withConnectedModules(
+	...modules: string[]
+): TestDetailsAnnotation {
+	return {
+		type: '_wp:connected-modules',
+		description: modules.join( ANNOTATION_SEPARATOR ),
+	};
+}
+
+/**
  * Sets the fixtures to use for the test.
  *
  * @since 1.177.0
@@ -78,12 +101,24 @@ export function withFixtures( fixtures: string ): TestDetailsAnnotation {
  *
  * @since 1.175.0
  *
- * @param {string} user The user to use for the test.
- * @return {TestDetailsAnnotation} The annotation to use for the test.
+ * @param {string}           user    The user to use for the test.
+ * @param {TestUserProfile=} profile Optional profile overrides for the user.
+ * @return {TestDetailsAnnotation}   The annotation to use for the test.
  */
-export function asUser( user: string ): TestDetailsAnnotation {
+
+export function asUser(
+	user: string,
+	profile?: TestUserProfile
+): TestDetailsAnnotation {
+	const description = profile
+		? JSON.stringify( {
+				login: user,
+				...profile,
+		  } )
+		: user;
+
 	return {
 		type: '_wp:as-user',
-		description: user,
+		description,
 	};
 }
