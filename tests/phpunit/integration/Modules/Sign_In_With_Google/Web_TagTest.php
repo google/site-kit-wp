@@ -245,7 +245,7 @@ class Web_TagTest extends TestCase {
 		$this->assertStringContainsString( 'response.connect_nonce=', $output, 'The connect nonce should be set in the existing-user flow.' );
 		$this->assertStringContainsString( wp_create_nonce( Authenticator::CONNECT_EXISTING_USER_NONCE_ACTION ), $output, 'Rendered nonce should be a valid wp_create_nonce.' );
 
-		// Now with the flag off, the markers should not appear.
+		// When the flag is off, the markers should not appear.
 		$this->web_tag->set_is_existing_user_flow( false );
 		$output = $this->capture_render_output();
 		$this->assertStringNotContainsString( "response.integration='existing_user'", $output, 'The connect integration should not be set when not in the existing-user flow.' );
@@ -263,7 +263,7 @@ class Web_TagTest extends TestCase {
 		// The button render loop checks `is_user_logged_in()` and normally
 		// skips logged-in users. The existing-user flow is one of the
 		// conditions that lets it run anyway, so a logged-in user on their
-		// profile still gets the button.
+		// own profile still gets the button.
 		$this->assertStringContainsString( 'google.accounts.id.renderButton', $output, 'A logged-in user on their profile should still get the Sign in with Google button.' );
 		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__frontend-output-button', $output, 'The button should attach to the Sign in with Google placeholder.' );
 	}

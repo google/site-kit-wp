@@ -372,7 +372,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$user_id       = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		$user_id_admin = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 
-		// On your own profile, both editors and admins should see the disconnect option.
+		// On their own profile, both editors and admins should see the disconnect option.
 		update_user_option( $user_id, Hashed_User_ID::OPTION, '111111' );
 		wp_set_current_user( $user_id );
 		$output = $this->capture_action( 'show_user_profile', wp_get_current_user() );
@@ -490,7 +490,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// `show_user_profile` renders the section, `in_admin_footer` schedules
 		// the tag, and `admin_footer` outputs it. The tag schedules its render
 		// on `admin_footer`, so the scheduling step must run on the earlier
-		// `in_admin_footer` hook. Otherwise WordPress drops the render.
+		// `in_admin_footer` hook. Otherwise WordPress will not render the tag.
 		$this->capture_action( 'show_user_profile', wp_get_current_user() );
 		$this->capture_action( 'in_admin_footer' );
 
@@ -502,8 +502,8 @@ class Sign_In_With_GoogleTest extends TestCase {
 	}
 
 	public function test_maybe_render_profile_signinwithgoogle__does_not_show_connect_button_outside_own_profile() {
-		// Clear any record that `show_user_profile` has run. This makes the
-		// test start clean and act as if the user is not on their own profile.
+		// Clear any record that `show_user_profile` has run; act as if the user
+		// is not on their own profile.
 		global $wp_actions;
 		unset( $wp_actions['show_user_profile'] );
 
