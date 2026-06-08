@@ -49,6 +49,10 @@ import {
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
+import {
+	provideUserAuthentication,
+	provideUserCapabilities,
+} from '@tests/js/utils';
 import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
@@ -451,6 +455,8 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_ANALYTICS_4,
