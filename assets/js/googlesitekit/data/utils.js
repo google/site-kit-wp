@@ -28,6 +28,16 @@ import memize from 'memize';
  */
 import { createRegistryControl, createRegistrySelector } from '@wordpress/data';
 
+/**
+ * Symbol used to indicate that a global data value was not found.
+ *
+ * @since n.e.x.t
+ * @private
+ */
+export const GLOBAL_DATA_VALUE_NOT_FOUND = Symbol(
+	'GLOBAL_DATA_VALUE_NOT_FOUND'
+);
+
 const GET_REGISTRY = 'GET_REGISTRY';
 const AWAIT = 'AWAIT';
 
@@ -431,10 +441,6 @@ export function createValidatedAction( validate, actionCreator ) {
 		return actionCreator( ...args );
 	};
 }
-
-export const GLOBAL_DATA_VALUE_NOT_FOUND = Symbol(
-	'GLOBAL_DATA_VALUE_NOT_FOUND'
-);
 
 /**
  * Gets a global data object by property name and optional child property name.
