@@ -310,6 +310,72 @@ WithEnhancedConversionsNotice.parameters = {
 	features: [ 'gtagUserData' ],
 };
 
+export const WithSiteGoalsBreakdownsRow = Template.bind( null );
+WithSiteGoalsBreakdownsRow.storyName = 'With Site Goals custom dimensions row';
+WithSiteGoalsBreakdownsRow.parameters = {
+	features: [ 'siteGoals' ],
+};
+WithSiteGoalsBreakdownsRow.decorators = [
+	( Story ) => {
+		function setupRegistry( registry ) {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAdvancedDataBreakdownsSettings( {
+					enabled: false,
+				} );
+		}
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithSiteGoalsBreakdownsRow.scenario = {};
+
+export const WithSiteGoalsBreakdownsRowEnabled = Template.bind( null );
+WithSiteGoalsBreakdownsRowEnabled.storyName =
+	'With Site Goals custom dimensions row enabled';
+WithSiteGoalsBreakdownsRowEnabled.parameters = {
+	features: [ 'siteGoals' ],
+};
+WithSiteGoalsBreakdownsRowEnabled.decorators = [
+	( Story ) => {
+		function setupRegistry( registry ) {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAdvancedDataBreakdownsSettings( {
+					enabled: true,
+				} );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				accountID,
+				propertyID,
+				webDataStreamID,
+				measurementID,
+				useSnippet: true,
+				anonymizeIP: true,
+				trackingDisabled: [ 'loggedinUsers' ],
+				availableCustomDimensions: [
+					'googlesitekit_post_date',
+					'googlesitekit_post_author',
+					'googlesitekit_post_categories',
+					'googlesitekit_post_type',
+					'googlesitekit_event_provider',
+					'googlesitekit_form_id',
+				],
+			} );
+		}
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithSiteGoalsBreakdownsRowEnabled.scenario = {};
+
 export default {
 	title: 'Modules/Analytics4/Settings/SettingsEdit',
 	decorators: [

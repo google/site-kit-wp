@@ -32,7 +32,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
 import { getWelcomeTour } from '@/js/feature-tours/welcome';
 import { setItem } from '@/js/googlesitekit/api/cache';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	CORE_USER,
@@ -300,6 +303,24 @@ describe( 'WelcomeModal', () => {
 		).toBeInTheDocument();
 		expect(
 			getByRole( 'button', { name: 'Start tour' } )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should show the view-only data available description when setupFlowRefreshPhase4 is enabled', async () => {
+		provideDataAvailableVariantData();
+
+		const { getByText, waitForRegistry } = render( <WelcomeModal />, {
+			features: [ 'setupFlowRefreshPhase4' ],
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		} );
+
+		await waitForRegistry();
+
+		expect(
+			getByText(
+				'Take a quick tour to see the most important parts of your dashboard'
+			)
 		).toBeInTheDocument();
 	} );
 
@@ -614,6 +635,31 @@ describe( 'WelcomeModal', () => {
 		expect(
 			getByRole( 'button', { name: 'Get started' } )
 		).toBeInTheDocument();
+	} );
+
+	it( 'should show the view-only gathering data description when setupFlowRefreshPhase4 is enabled', async () => {
+		provideGatheringDataVariantData();
+
+		const { getByText, queryByText, waitForRegistry } = render(
+			<WelcomeModal />,
+			{
+				features: [ 'setupFlowRefreshPhase4' ],
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByText(
+				'Site Kit is gathering data and soon metrics for your site will show on your dashboard'
+			)
+		).toBeInTheDocument();
+
+		expect(
+			queryByText( /Initial setup complete!/ )
+		).not.toBeInTheDocument();
 	} );
 
 	describe.each( [ 'Get started', 'Close' ] )(

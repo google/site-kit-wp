@@ -31,7 +31,6 @@ import useViewOnly from '@/js/hooks/useViewOnly';
 import { Cell, Grid, Row } from '@/js/material-components/layout';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 	UI_ALL_TRAFFIC_LOADED,
 	UI_DIMENSION_NAME,
@@ -42,6 +41,7 @@ import { isZeroReport } from '@/js/modules/analytics-4/utils';
 import whenActive from '@/js/util/when-active';
 import DataSourceLink from './DataSourceLink';
 import DimensionTabs from './DimensionTabs';
+import { getGraphReportOptions, getTotalsReportOptions } from './reportOptions';
 import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
@@ -87,7 +87,6 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	const { compareStartDate, compareEndDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
 
@@ -108,30 +107,18 @@ function DashboardAllTrafficWidgetGA4( props ) {
 		reportID: 'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
 	};
 
-	const graphArgs = {
-		dimensions: [ 'date' ],
-		orderby: [
-			{
-				dimension: {
-					dimensionName: 'date',
-				},
-			},
-		],
-		reportID:
-			'analytics-4_dashboard-all-traffic-widget-ga4_widget_graphArgs',
-	};
+	const dimensionFilters =
+		dimensionName && dimensionValue
+			? { [ dimensionName ]: dimensionValue }
+			: undefined;
 
-	const totalsArgs = {
+	const graphArgs = getGraphReportOptions( { dimensionFilters } );
+
+	const totalsArgs = getTotalsReportOptions( {
 		compareStartDate,
 		compareEndDate,
-		reportID:
-			'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs',
-	};
-
-	if ( dimensionName && dimensionValue ) {
-		graphArgs.dimensionFilters = { [ dimensionName ]: dimensionValue };
-		totalsArgs.dimensionFilters = { [ dimensionName ]: dimensionValue };
-	}
+		dimensionFilters,
+	} );
 
 	const {
 		loaded: pieChartLoaded,

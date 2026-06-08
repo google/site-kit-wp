@@ -55,6 +55,25 @@
 			padding: 14px $grid-gap-desktop;
 		}
 
+		.googlesitekit-notice-container:has(
+				.googlesitekit-site-goals-selection-panel__breakdown-notice
+			) {
+			margin-bottom: $grid-gap-desktop;
+		}
+
+		.googlesitekit-site-goals-selection-panel__breakdown-notice {
+			gap: 6px;
+
+			.googlesitekit-notice__content {
+				font-size: $fs-label-md;
+				line-height: $lh-label-md;
+			}
+
+			.googlesitekit-notice__action {
+				margin-top: 10px;
+			}
+		}
+
 		.googlesitekit-selection-panel-footer {
 			padding: $grid-gap-desktop;
 		}

@@ -29,8 +29,7 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
-	SITE_GOALS_EFFECTIVE_DRIVERS,
-	SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT,
+	SITE_GOALS_BREAKDOWN_NOTICE,
 	SITE_GOALS_SELECTED_DRIVERS,
 	SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTION_FORM,
@@ -40,6 +39,7 @@ import {
 	GOAL_DRIVER_IDS,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	EDIT_SCOPE,
@@ -91,6 +91,16 @@ describe( 'SiteGoalsSelectionPanel', () => {
 				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
 				ENUM_CONVERSION_EVENTS.CONTACT,
 			] );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSiteGoalsSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( { availableCustomDimensions: [] } );
+		// Default to the breakdown notice being hidden (intro modal not yet
+		// dismissed); individual tests opt in by dismissing the intro modal.
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		registry
 			.dispatch( CORE_UI )
@@ -268,7 +278,17 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		expect( selectedVisitorEngagement[ GOAL_TYPES.LEAD ] ).toEqual( [] );
 	} );
 
-	it( 'applies staged selection to effective selection on save', async () => {
+	it( 'persists the saved goal driver selection to the module store on save', async () => {
+		fetchMock.postOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/save-site-goals-settings'
+			),
+			( _url, opts ) => ( {
+				body: JSON.parse( opts.body as string ).data.settings,
+				status: 200,
+			} )
+		);
+
 		const { getByRole } = render( <SiteGoalsSelectionPanel />, {
 			registry,
 		} );
@@ -288,20 +308,27 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		);
 
 		await waitFor( () => {
-			const effectiveDrivers = registry
-				.select( CORE_FORMS )
-				.getValue(
-					SITE_GOALS_SELECTION_FORM,
-					SITE_GOALS_EFFECTIVE_DRIVERS
-				);
+			const goalDrivers = registry
+				.select( MODULES_ANALYTICS_4 )
+				.getSiteGoalsGoalDrivers();
 
-			expect( effectiveDrivers[ GOAL_TYPES.ECOMMERCE ] ).not.toContain(
+			expect( goalDrivers[ GOAL_TYPES.ECOMMERCE ] ).not.toContain(
 				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS
 			);
 		} );
 	} );
 
-	it( 'applies staged visitor engagement selection to effective selection on save', async () => {
+	it( 'persists the saved visitor engagement selection to the module store on save', async () => {
+		fetchMock.postOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/save-site-goals-settings'
+			),
+			( _url, opts ) => ( {
+				body: JSON.parse( opts.body as string ).data.settings,
+				status: 200,
+			} )
+		);
+
 		const { getByRole } = render( <SiteGoalsSelectionPanel />, {
 			registry,
 		} );
@@ -321,16 +348,13 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		);
 
 		await waitFor( () => {
-			const effectiveVisitorEngagement = registry
-				.select( CORE_FORMS )
-				.getValue(
-					SITE_GOALS_SELECTION_FORM,
-					SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT
-				);
+			const visitorEngagement = registry
+				.select( MODULES_ANALYTICS_4 )
+				.getSiteGoalsVisitorEngagement();
 
-			expect(
-				effectiveVisitorEngagement[ GOAL_TYPES.ECOMMERCE ]
-			).not.toContain( 'add_to_cart' );
+			expect( visitorEngagement[ GOAL_TYPES.ECOMMERCE ] ).not.toContain(
+				'add_to_cart'
+			);
 		} );
 	} );
 
@@ -434,7 +458,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 	} );
 
 	it( 'does not show a custom dimensions warning when the author dimension is available', async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			availableCustomDimensions: [ 'googlesitekit_post_author' ],
 		} );
 
@@ -504,12 +528,6 @@ describe( 'SiteGoalsSelectionPanel', () => {
 
 	it( 'preserves staged selection after returning from custom dimensions OAuth', async () => {
 		registry.dispatch( CORE_FORMS ).setValues( SITE_GOALS_SELECTION_FORM, {
-			[ SITE_GOALS_EFFECTIVE_DRIVERS ]: {
-				[ GOAL_TYPES.ECOMMERCE ]: [
-					GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
-				],
-				[ GOAL_TYPES.LEAD ]: [],
-			},
 			[ SITE_GOALS_SELECTED_DRIVERS ]: {
 				[ GOAL_TYPES.ECOMMERCE ]: [
 					GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
@@ -665,6 +683,52 @@ describe( 'SiteGoalsSelectionPanel', () => {
 			[ GOAL_TYPES.ECOMMERCE ]: expect.arrayContaining( [
 				GOAL_DRIVER_IDS.TOP_AUTHORS,
 			] ),
+		} );
+	} );
+
+	it( 'defers the breakdown tooltip until the panel is closed, sharing dismissal with the widgets', async () => {
+		// Aggregated state so the breakdown notice is rendered in the panel.
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [ SITE_GOALS_INTRO_MODAL_BANNER ] );
+		fetchMock.postOnce(
+			new RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
+			{ body: [ SITE_GOALS_BREAKDOWN_NOTICE ], status: 200 }
+		);
+
+		const { getAllByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		fireEvent.click( getAllByText( 'No thanks' )[ 0 ] );
+
+		// While the panel is open the tooltip must not be shown yet.
+		expect(
+			registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+		).toBeUndefined();
+
+		// Dismissal is shared with the widgets via the single slug.
+		await waitFor( () => {
+			expect(
+				registry
+					.select( CORE_USER )
+					.isItemDismissed( SITE_GOALS_BREAKDOWN_NOTICE )
+			).toBe( true );
+		} );
+
+		fireEvent.click(
+			document.querySelector(
+				'.googlesitekit-selection-panel-header__close'
+			) as Element
+		);
+
+		// Once the panel closes the deferred tooltip is shown.
+		await waitFor( () => {
+			expect(
+				registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+			).toMatchObject( { isTooltipVisible: true } );
 		} );
 	} );
 } );

@@ -37,10 +37,7 @@ import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeade
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { Cell, Grid } from '@/js/material-components/layout';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { calculateOverallPageMetricsData } from '@/js/modules/analytics-4/utils/overall-page-metrics';
 import { getURLPath } from '@/js/util';
 import whenActive from '@/js/util/when-active';
@@ -54,7 +51,6 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} )
 	);
