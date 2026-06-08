@@ -66,6 +66,11 @@ export function useSiteGoalsBreakdownNoticeCopy(
 			select( CORE_SITE ).getDocumentationLinkURL( 'site-goals' ),
 		[]
 	);
+	const hasMultipleEcommerceProviders = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).hasMultipleActiveEcommerceEventProviders(),
+		[]
+	);
 
 	const ctaLabel = __( 'Get breakdown', 'google-site-kit' );
 	const learnMoreLink = (
@@ -81,14 +86,35 @@ export function useSiteGoalsBreakdownNoticeCopy(
 	);
 
 	if ( goalType === GOAL_TYPES.ECOMMERCE ) {
+		// Two ecommerce plugins active (WooCommerce + Easy Digital Downloads):
+		// the breakdown separates the two stores.
+		if ( hasMultipleEcommerceProviders ) {
+			return {
+				title: __(
+					'Using both WooCommerce and Easy Digital Downloads to sell products or services?',
+					'google-site-kit'
+				),
+				description: createInterpolateElement(
+					__(
+						'If you use both WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
+						'google-site-kit'
+					),
+					{ a: learnMoreLink }
+				),
+				ctaLabel,
+			};
+		}
+
+		// A single ecommerce plugin active: the breakdown separates results by
+		// plugin (source) more generally.
 		return {
 			title: __(
-				'Using both WooCommerce and Easy Digital Downloads to sell products or services?',
+				'See exactly which plugins are driving your results',
 				'google-site-kit'
 			),
 			description: createInterpolateElement(
 				__(
-					'If you use both WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
+					'Currently, your sales and leads are combined into one total. Enable this breakdown to separate results by plugin and track specific flows. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
 					'google-site-kit'
 				),
 				{ a: learnMoreLink }
