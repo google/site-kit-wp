@@ -275,7 +275,7 @@ class ModuleTest extends TestCase {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertEqualSets(
-			array( 'test-request' ),
+			array( 'test-request', 'permission-aware-request', 'throwing-permission-aware-request' ),
 			$module->get_datapoints()
 		);
 	}

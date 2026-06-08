@@ -1,5 +1,5 @@
 /**
- * PDFDownloadButton component.
+ * PDF Sections Selection Panel (container around SelectionPanel)
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -25,18 +25,18 @@ import { FC } from 'react';
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
-import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-generation/constants';
+import InViewProvider from '@/js/components/InViewProvider';
+import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
+import SelectionPanel from '@/js/components/SelectionPanel';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import DownloadIcon from '@/svg/icons/download.svg';
+import PanelContent from './PanelContent';
 
-const PDFDownloadButton: FC = () => {
+const PDFSectionsSelectionPanel: FC = () => {
 	const isOpen = useSelect(
 		( select: Select ) =>
 			select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY ),
@@ -45,21 +45,29 @@ const PDFDownloadButton: FC = () => {
 
 	const { setValue } = useDispatch( CORE_UI );
 
-	const togglePanel = useCallback( () => {
-		setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, ! isOpen );
+	const closePanel = useCallback( () => {
+		if ( isOpen ) {
+			setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, false );
+		}
 	}, [ isOpen, setValue ] );
 
 	return (
-		<Button
-			aria-label={ __( 'Download PDF report', 'google-site-kit' ) }
-			// @ts-expect-error - The `Button` component is not typed yet.
-			className="googlesitekit-pdf-download__button googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon"
-			onClick={ togglePanel }
-			icon={ <DownloadIcon width={ 20 } height={ 20 } /> }
-			tooltipEnterDelayInMS={ 500 }
-			tertiary
-		/>
+		<InViewProvider
+			// @ts-expect-error - The `InViewProvider` component value prop is currently typed as `boolean` only.
+			value={ {
+				key: 'PDFSectionsSelectionPanel',
+				value: !! isOpen,
+			} }
+		>
+			<SelectionPanel
+				className="googlesitekit-pdf-download-panel"
+				isOpen={ !! isOpen }
+				closePanel={ closePanel }
+			>
+				<PanelContent closePanel={ closePanel } />
+			</SelectionPanel>
+		</InViewProvider>
 	);
 };
 
-export default PDFDownloadButton;
+export default PDFSectionsSelectionPanel;

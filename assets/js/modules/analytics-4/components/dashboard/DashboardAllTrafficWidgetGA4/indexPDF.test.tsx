@@ -61,7 +61,7 @@ function renderTree(
 }
 
 describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
-	it( 'renders the All Visitors metric tile and a chart placeholder against shaped data', () => {
+	it( 'renders the widget heading, All visitors metric tile, and a chart placeholder against shaped data', () => {
 		const data = buildReports( {
 			currentUsers: '1234',
 			previousUsers: '1000',
@@ -71,16 +71,17 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		const tree = renderTree( { data } );
 		const json = JSON.stringify( tree );
 
-		expect( json ).toContain( 'All Visitors' );
+		expect( json ).toContain( 'Your site traffic over time' );
+		expect( json ).toContain( 'All visitors' );
 		// `numFmt` abbreviates large totals, matching the dashboard widget.
 		expect( json ).toContain( '1.2K' );
-		expect( json ).toContain( 'compared to the previous 28 days' );
-		// Chart placeholder block uses our fixed background color.
-		expect( json ).toContain( '#f5f5f5' );
+		expect( json ).toContain( 'Vs. prev. 28 days' );
+		// Short chart placeholder block uses our fixed background color.
+		expect( json ).toContain( '#ebeef0' );
 		expect( json ).not.toContain( 'No data available' );
 	} );
 
-	it( 'shows an up arrow when the period-over-period change is positive', () => {
+	it( 'renders a green chip with a positive signed change', () => {
 		const data = buildReports( {
 			currentUsers: '1200',
 			previousUsers: '1000',
@@ -90,11 +91,11 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		const tree = renderTree( { data } );
 		const json = JSON.stringify( tree );
 
-		expect( json ).toContain( '#34a853' );
-		expect( json ).toContain( 'M4,0 L8,8 L0,8 Z' );
+		expect( json ).toContain( '#d8ffc0' );
+		expect( json ).toContain( '+20%' );
 	} );
 
-	it( 'shows a down arrow when the period-over-period change is negative', () => {
+	it( 'renders a red chip with a negative signed change', () => {
 		const data = buildReports( {
 			currentUsers: '800',
 			previousUsers: '1000',
@@ -104,8 +105,8 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		const tree = renderTree( { data } );
 		const json = JSON.stringify( tree );
 
-		expect( json ).toContain( '#ea4335' );
-		expect( json ).toContain( 'M0,0 L8,0 L4,8 Z' );
+		expect( json ).toContain( '#ffded3' );
+		expect( json ).toContain( '-20%' );
 	} );
 
 	it( 'renders the No data available placeholder when data is null', () => {
@@ -113,8 +114,8 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		const json = JSON.stringify( tree );
 
 		expect( json ).toContain( 'No data available' );
-		expect( json ).not.toContain( 'All Visitors' );
-		expect( json ).not.toContain( '#f5f5f5' );
+		expect( json ).not.toContain( 'All visitors' );
+		expect( json ).not.toContain( '#ebeef0' );
 	} );
 
 	it( 'renders the No data available placeholder when data is undefined', () => {
