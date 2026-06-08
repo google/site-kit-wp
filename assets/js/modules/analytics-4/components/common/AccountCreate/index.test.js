@@ -32,8 +32,8 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '../../../../../../../tests/js/mock-browser-utils';
-import { mockUseInstanceID } from '../../../../../../../tests/js/mock-use-instance-id';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import { mockUseInstanceID } from '@tests/js/mock-use-instance-id';
 import {
 	cleanup,
 	createTestRegistry,
@@ -44,7 +44,7 @@ import {
 	provideUserAuthentication,
 	provideUserInfo,
 	render,
-} from '../../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import AccountCreate from '.';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

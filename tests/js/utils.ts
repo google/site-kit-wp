@@ -219,6 +219,8 @@ export function provideSiteInfo(
 		keyMetricsSetupNew: false,
 		anyoneCanRegister: false,
 		isMultisite: false,
+		hasActiveLeadEventProviders: undefined,
+		hasActiveEcommerceEventProviders: undefined,
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {

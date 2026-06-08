@@ -24,7 +24,7 @@ import { omit } from 'lodash';
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../tests/js/utils';
+import { createTestRegistry } from '@tests/js/utils';
 
 const registry = createTestRegistry();
 // @ts-expect-error The WPDataRegistry type is missing the stores property.

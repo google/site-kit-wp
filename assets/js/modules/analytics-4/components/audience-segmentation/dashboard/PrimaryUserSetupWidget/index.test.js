@@ -28,18 +28,14 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import {
-	fireEvent,
-	render,
-	waitFor,
-} from '../../../../../../../../tests/js/test-utils';
+import { fireEvent, render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
-} from '../../../../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import PrimaryUserSetupWidget from '.';
 
 const syncAvailableCustomDimensionsEndpoint = new RegExp(

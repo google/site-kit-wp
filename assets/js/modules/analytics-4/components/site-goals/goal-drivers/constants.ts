@@ -29,8 +29,15 @@ export const GOAL_DRIVER_IDS = {
 	TOP_TRAFFIC_CHANNELS: 'topTrafficChannels',
 	TOP_TRAFFIC_CHANNELS_RATE: 'topTrafficChannelsRate',
 	TOP_PAGES: 'topPages',
+	TOP_AUTHORS: 'topAuthors',
 	VISITOR_TYPE: 'visitorType',
 	CITIES: 'cities',
 	COUNTRIES: 'countries',
 	DEVICE_TYPE: 'deviceType',
 } as const;
+
+export const POST_AUTHOR_CUSTOM_DIMENSION = 'googlesitekit_post_author';
+
+export const TOP_AUTHORS_REQUIRED_CUSTOM_DIMENSIONS = [
+	POST_AUTHOR_CUSTOM_DIMENSION,
+];

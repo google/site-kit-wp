@@ -26,8 +26,8 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import {
 	provideModules,
 	provideUserAuthentication,
-} from '../../../../../../tests/js/test-utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+} from '@tests/js/test-utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import ConversionReportingNotificationCTAWidget from './ConversionReportingNotificationCTAWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(

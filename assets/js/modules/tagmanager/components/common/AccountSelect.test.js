@@ -25,11 +25,8 @@ import {
 	ACCOUNT_CREATE,
 	MODULES_TAGMANAGER,
 } from '@/js/modules/tagmanager/datastore/constants';
-import { fireEvent, render } from '../../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	freezeFetch,
-} from '../../../../../../tests/js/utils';
+import { fireEvent, render } from '@tests/js/test-utils';
+import { createTestRegistry, freezeFetch } from '@tests/js/utils';
 import AccountSelect from './AccountSelect';
 
 describe( 'AccountSelect', () => {

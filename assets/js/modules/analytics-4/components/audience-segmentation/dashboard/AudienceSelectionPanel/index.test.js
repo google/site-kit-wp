@@ -23,18 +23,6 @@ import {
 	getByText as domGetByText,
 	queryByText as domQueryByText,
 } from '@testing-library/dom';
-import { mockBrowserScrolling } from 'tests/js/mock-browser-utils';
-import { act, fireEvent, render, waitFor } from 'tests/js/test-utils';
-import {
-	createTestRegistry,
-	muteFetch,
-	provideModuleRegistrations,
-	provideModules,
-	provideSiteInfo,
-	provideUserAuthentication,
-	provideUserInfo,
-	waitForDefaultTimeouts,
-} from 'tests/js/utils';
 
 /**
  * Internal dependencies
@@ -49,7 +37,6 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
-	DATE_RANGE_OFFSET,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
@@ -57,7 +44,18 @@ import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data
 import { WEEK_IN_SECONDS } from '@/js/util';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import * as tracking from '@/js/util/tracking';
-import AudienceSelectionPanel from '.';
+import { mockBrowserScrolling } from '@tests/js/mock-browser-utils';
+import { act, fireEvent, render, waitFor } from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	muteFetch,
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserInfo,
+	waitForDefaultTimeouts,
+} from '@tests/js/utils';
 import { availableAudiences } from './../../../../datastore/__fixtures__';
 import {
 	AUDIENCE_ADD_GROUP_NOTICE_SLUG,
@@ -68,6 +66,7 @@ import {
 	AUDIENCE_SELECTION_FORM,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
+import AudienceSelectionPanel from '.';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -107,9 +106,7 @@ describe( 'AudienceSelectionPanel', () => {
 		} );
 
 		registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
-		const dateRangeDates = registry
-			.select( CORE_USER )
-			.getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
+		const dateRangeDates = registry.select( CORE_USER ).getDateRangeDates();
 		baseReportOptions = {
 			...dateRangeDates,
 			metrics: [ { name: 'totalUsers' } ],

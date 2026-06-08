@@ -6,6 +6,8 @@
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 // phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
 
@@ -18,6 +20,8 @@ use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking_Settings;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeConversionEventProvider;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeConversionEventProvider_Active;
+use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeEcommerceEventProvider_Active;
+use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeLeadEventProvider_Active;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -208,5 +212,67 @@ class Conversion_TrackingTest extends TestCase {
 			$events,
 			'Enhanced conversion events should match the expected values.'
 		);
+	}
+
+	public function test_register__adds_inline_base_data_filter() {
+		$this->conversion_tracking->register();
+
+		$this->assertTrue(
+			has_filter( 'googlesitekit_inline_base_data' ),
+			'The googlesitekit_inline_base_data filter should be registered.'
+		);
+	}
+
+	public function test_inline_js_base_data__no_active_providers() {
+		Conversion_Tracking::$providers = array();
+
+		$this->conversion_tracking->register();
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		$this->assertArrayHasKey( 'hasActiveLeadEventProviders', $data );
+		$this->assertArrayHasKey( 'hasActiveEcommerceEventProviders', $data );
+		$this->assertFalse( $data['hasActiveLeadEventProviders'] );
+		$this->assertFalse( $data['hasActiveEcommerceEventProviders'] );
+	}
+
+	public function test_inline_js_base_data__with_active_lead_provider() {
+		Conversion_Tracking::$providers = array(
+			FakeLeadEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeLeadEventProvider_Active::class,
+		);
+
+		$this->conversion_tracking->register();
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		$this->assertTrue( $data['hasActiveLeadEventProviders'] );
+		$this->assertFalse( $data['hasActiveEcommerceEventProviders'] );
+	}
+
+	public function test_inline_js_base_data__with_active_ecommerce_provider() {
+		Conversion_Tracking::$providers = array(
+			FakeEcommerceEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeEcommerceEventProvider_Active::class,
+		);
+
+		$this->conversion_tracking->register();
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		$this->assertFalse( $data['hasActiveLeadEventProviders'] );
+		$this->assertTrue( $data['hasActiveEcommerceEventProviders'] );
+	}
+
+	public function test_inline_js_base_data__with_both_active_providers() {
+		Conversion_Tracking::$providers = array(
+			FakeLeadEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG      => FakeLeadEventProvider_Active::class,
+			FakeEcommerceEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeEcommerceEventProvider_Active::class,
+		);
+
+		$this->conversion_tracking->register();
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		$this->assertTrue( $data['hasActiveLeadEventProviders'] );
+		$this->assertTrue( $data['hasActiveEcommerceEventProviders'] );
 	}
 }

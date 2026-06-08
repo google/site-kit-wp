@@ -6,6 +6,8 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Core\Modules;
@@ -399,6 +401,7 @@ final class Modules implements Provides_Feature_Metrics {
 	 * Populates modules data to pass to JS.
 	 *
 	 * @since 1.96.0
+	 * @since n.e.x.t Directly register data from modules with inline data.
 	 *
 	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
@@ -409,6 +412,19 @@ final class Modules implements Provides_Feature_Metrics {
 		foreach ( $available_modules as $module ) {
 			if ( $module instanceof Module_With_Data_Available_State ) {
 				$modules_data[ 'data_available_' . $module->slug ] = $this->is_module_active( $module->slug ) && $module->is_connected() && $module->is_data_available();
+			}
+		}
+
+		$active_modules = $this->get_active_modules();
+
+		foreach ( $active_modules as $module ) {
+			if ( $module instanceof Module_With_Inline_Data ) {
+				$module_data = $modules_data[ $module->slug ] ?? array();
+				$inline_data = $module->get_inline_data();
+
+				if ( ! empty( $inline_data ) ) {
+					$modules_data[ $module->slug ] = array_merge( $module_data, $inline_data );
+				}
 			}
 		}
 
@@ -490,7 +506,7 @@ final class Modules implements Provides_Feature_Metrics {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return array Active modules as $slug => $module pairs.
+	 * @return Module[] Active modules as $slug => $module pairs.
 	 */
 	public function get_active_modules() {
 		$modules = $this->get_available_modules();

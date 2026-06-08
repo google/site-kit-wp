@@ -27,7 +27,11 @@
 			display: flex;
 			gap: 12px;
 			justify-content: space-between;
-			margin-bottom: 12px;
+			margin-bottom: 14px;
+
+			@media (min-width: $bp-desktop) {
+				margin-bottom: 18px;
+			}
 		}
 
 		.googlesitekit-site-goals-tiles-group__title {
@@ -60,6 +64,21 @@
 	.googlesitekit-site-goals-tiles-group + .googlesitekit-site-goals-tiles-group,
 	.googlesitekit-preview-block + .googlesitekit-site-goals-tiles-group {
 		margin-top: 34px;
+	}
+
+	.googlesitekit-notice-container:has(
+			.googlesitekit-site-goals-breakdown-notice
+		) {
+		margin: 34px 0;
+
+		@media (min-width: $bp-tablet) {
+			padding-left: $grid-gap-desktop;
+		}
+	}
+
+	.googlesitekit-site-goals-breakdown-notice .googlesitekit-notice__content {
+		font-size: $fs-label-md;
+		line-height: $lh-label-md;
 	}
 
 	.googlesitekit-site-goals-tiles-group__tiles {
@@ -95,7 +114,7 @@
 			margin-bottom: 6px;
 
 			.googlesitekit-info-tooltip {
-				color: $c-teal-t-500;
+				color: $c-neutral-n-500;
 				height: 16px;
 			}
 		}
@@ -249,6 +268,7 @@
 		}
 
 		.googlesitekit-site-goals-goal-drivers-section__tile {
+			min-height: 81px;
 			min-width: 0;
 			padding: 8px 0 8px 19px;
 			position: relative;
@@ -281,7 +301,6 @@
 
 			&.googlesitekit-site-goals-goal-drivers-section__tile--empty {
 				display: none;
-				min-height: 168px;
 				padding: 0;
 
 				@media (min-width: $bp-tablet) {
@@ -344,10 +363,6 @@
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: normal;
-
-			@media (min-width: $bp-tablet) {
-				white-space: nowrap;
-			}
 		}
 
 		.googlesitekit-table-tile__header-label.googlesitekit-typography {
@@ -390,6 +405,40 @@
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-xs;
 			line-height: $lh-body-sm;
+		}
+
+		.googlesitekit-table-tile__custom-dimensions-missing-title {
+			color: $c-surfaces-on-surface;
+			font-size: $fs-title-md;
+			line-height: $lh-title-md;
+			margin: 0 0 8px;
+		}
+
+		.googlesitekit-table-tile__custom-dimensions-missing-description {
+			color: $c-surfaces-on-surface;
+			font-size: $fs-title-sm;
+			line-height: $lh-title-sm;
+			margin: 0 0 16px;
+		}
+
+		.googlesitekit-table-tile__custom-dimensions-missing-button {
+			background-color: $c-utility-error;
+			color: $c-white;
+			font-size: $fs-label-md;
+			font-weight: $fw-medium;
+			line-height: $lh-label-md;
+			padding: 6px 16px;
+
+			&:hover,
+			&:focus {
+				background-color: $c-utility-error;
+				color: $c-white;
+			}
+
+			&:disabled {
+				cursor: default;
+				opacity: 0.6;
+			}
 		}
 
 		.googlesitekit-table-tile__error {

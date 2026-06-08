@@ -24,11 +24,7 @@ import {
 	CORE_UI,
 	FORCED_IN_VIEW_WIDGET_AREAS,
 } from '@/js/googlesitekit/datastore/ui/constants';
-import {
-	createTestRegistry,
-	muteFetch,
-	untilResolved,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, muteFetch, untilResolved } from '@tests/js/utils';
 import { CORE_USER } from './constants';
 import {
 	FEATURE_TOUR_COOLDOWN_SECONDS,

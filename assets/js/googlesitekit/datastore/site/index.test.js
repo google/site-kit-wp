@@ -19,10 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	provideSiteInfo,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, provideSiteInfo } from '@tests/js/utils';
 import { CORE_SITE } from './constants';
 import { initialState } from './index';
 

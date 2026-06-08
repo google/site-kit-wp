@@ -31,7 +31,7 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	renderHook,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import useNewBadgeEvents from './useNewBadgeEvents';
 
 describe( 'useNewBadgeEvents', () => {

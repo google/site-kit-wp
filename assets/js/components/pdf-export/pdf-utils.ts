@@ -1,0 +1,118 @@
+/**
+ * PDF export utilities.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Sanitizes a free-form string into a lowercase, hyphen-separated slug
+ * suitable for use inside a filename.
+ *
+ * @since n.e.x.t
+ *
+ * @param value Input string. Empty and non-string values become an empty slug.
+ * @return The sanitized slug.
+ */
+function slugify( value: unknown ): string {
+	if ( typeof value !== 'string' || value.length === 0 ) {
+		return '';
+	}
+
+	const withoutScheme = value.replace( /^[a-z][a-z0-9+\-.]*:\/\//i, '' );
+
+	return withoutScheme
+		.toLowerCase()
+		.replace( /[^a-z0-9]+/g, '-' )
+		.replace( /^-+|-+$/g, '' );
+}
+
+/**
+ * Returns the current date as `YYYY-MM-DD` using the local timezone.
+ *
+ * @since n.e.x.t
+ *
+ * @param [now] Optional date instance, defaults to `new Date()`.
+ * @return The formatted date.
+ */
+function getISODate(
+	// The filename's date stamp is the actual generation moment, not the
+	// dashboard's analytics reference date.
+	// eslint-disable-next-line sitekit/no-direct-date
+	now: Date = new Date()
+): string {
+	const year = now.getFullYear();
+	const month = String( now.getMonth() + 1 ).padStart( 2, '0' );
+	const day = String( now.getDate() ).padStart( 2, '0' );
+
+	return `${ year }-${ month }-${ day }`;
+}
+
+/**
+ * Builds a sanitized PDF filename for the dashboard export.
+ *
+ * The result is `site-kit-<site>-<dateRange>-<date>.pdf` when a date range
+ * is supplied, or `site-kit-<site>-<date>.pdf` otherwise. The site and date
+ * range are passed through `slugify` so the filename is filesystem-safe on
+ * every supported OS.
+ *
+ * @since n.e.x.t
+ *
+ * @param siteName    Site name or URL.
+ * @param [dateRange] Optional date range slug, e.g. `last-28-days`.
+ * @param [now]       Optional date instance, defaults to `new Date()`.
+ * @return The composed filename.
+ */
+export function getPDFFilename(
+	siteName: string,
+	dateRange?: string,
+	// The filename's date stamp is the actual generation moment, not the
+	// dashboard's analytics reference date.
+	// eslint-disable-next-line sitekit/no-direct-date
+	now: Date = new Date()
+): string {
+	const siteSlug = slugify( siteName ) || 'report';
+	const rangeSlug = slugify( dateRange );
+	const date = getISODate( now );
+
+	const segments = [ 'site-kit', siteSlug ];
+	if ( rangeSlug ) {
+		segments.push( rangeSlug );
+	}
+	segments.push( date );
+
+	return `${ segments.join( '-' ) }.pdf`;
+}
+
+/**
+ * Triggers a browser download for the given blob URL by creating a temporary
+ * anchor element with the `download` attribute, clicking it programmatically,
+ * and removing it from the DOM.
+ *
+ * @since n.e.x.t
+ *
+ * @param  url      Blob URL pointing to the generated file.
+ * @param  filename Suggested filename for the downloaded file.
+ * @return {void}
+ */
+export function triggerDownload( url: string, filename: string ): void {
+	const link = global.document.createElement( 'a' );
+	link.href = url;
+	link.download = filename;
+	link.rel = 'noopener';
+	link.style.display = 'none';
+	global.document.body.appendChild( link );
+	link.click();
+	global.document.body.removeChild( link );
+}

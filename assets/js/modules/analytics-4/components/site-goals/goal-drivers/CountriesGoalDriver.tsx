@@ -47,10 +47,7 @@ import {
 	getDimensionFiltersForEvents,
 	normalizePrimaryEvents,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { numFmt } from '@/js/util';
 
 interface ReportRow {
@@ -59,7 +56,7 @@ interface ReportRow {
 }
 
 const CountriesGoalDriver: FC< GoalDriverComponentProps > = ( {
-	title: providedTitle,
+	title = '',
 	goalType,
 	limit,
 	rows: providedRows,
@@ -68,17 +65,8 @@ const CountriesGoalDriver: FC< GoalDriverComponentProps > = ( {
 	primaryEvent,
 	onExpandableRowsChange,
 } ) => {
-	const title =
-		providedTitle ||
-		( goalType === GOAL_TYPES.ECOMMERCE
-			? __( 'Sales by countries', 'google-site-kit' )
-			: __( 'Leads by countries', 'google-site-kit' ) );
-
 	const dates = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} ),
+		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
 		[]
 	);
 	const reportOptions = useMemo( () => {

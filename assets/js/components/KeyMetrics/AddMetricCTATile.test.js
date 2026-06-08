@@ -21,11 +21,7 @@
  */
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import {
-	createTestRegistry,
-	fireEvent,
-	render,
-} from '../../../../tests/js/test-utils';
+import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
 import AddMetricCTATile from './AddMetricCTATile';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 

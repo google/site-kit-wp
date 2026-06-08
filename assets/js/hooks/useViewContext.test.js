@@ -23,7 +23,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
-import { renderHook } from '../../../tests/js/test-utils';
+import { renderHook } from '@tests/js/test-utils';
 import useViewContext from './useViewContext';
 
 describe( 'useViewContext', () => {

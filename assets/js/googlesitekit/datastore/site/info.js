@@ -194,6 +194,8 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				consentModeRegions,
 				anyoneCanRegister,
 				isMultisite,
+				hasActiveLeadEventProviders,
+				hasActiveEcommerceEventProviders,
 			} = payload.siteInfo;
 
 			state.siteInfo = {
@@ -230,6 +232,8 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				consentModeRegions,
 				anyoneCanRegister,
 				isMultisite,
+				hasActiveLeadEventProviders,
+				hasActiveEcommerceEventProviders,
 			};
 			break;
 
@@ -319,6 +323,8 @@ export const resolvers = {
 			consentModeRegions,
 			anyoneCanRegister,
 			isMultisite,
+			hasActiveLeadEventProviders,
+			hasActiveEcommerceEventProviders,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -362,6 +368,8 @@ export const resolvers = {
 			consentModeRegions,
 			anyoneCanRegister,
 			isMultisite,
+			hasActiveLeadEventProviders,
+			hasActiveEcommerceEventProviders,
 		} );
 	},
 };
@@ -986,6 +994,30 @@ export const selectors = {
 	 * @return {boolean|undefined} `true` if it is multisite; `false` if not. Returns `undefined` if not yet loaded.
 	 */
 	isMultisite: getSiteInfoProperty( 'isMultisite' ),
+
+	/**
+	 * Checks if any lead event provider plugin is active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} `true` if a lead event provider is active; `false` if not. Returns `undefined` if not yet loaded.
+	 */
+	hasActiveLeadEventProviders: getSiteInfoProperty(
+		'hasActiveLeadEventProviders'
+	),
+
+	/**
+	 * Checks if any ecommerce event provider plugin is active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} `true` if an ecommerce event provider is active; `false` if not. Returns `undefined` if not yet loaded.
+	 */
+	hasActiveEcommerceEventProviders: getSiteInfoProperty(
+		'hasActiveEcommerceEventProviders'
+	),
 };
 
 export default {

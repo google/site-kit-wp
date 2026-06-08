@@ -26,8 +26,8 @@ import { withQuery } from '@storybook/addon-queryparams';
  */
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
-import { provideModules } from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import SetupSuccessNotification from './SetupSuccessNotification';
 
 const NotificationWithComponentProps = withNotificationComponentProps(

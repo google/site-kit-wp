@@ -31,9 +31,9 @@ import {
 	provideSiteInfo,
 	subscribeUntil,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import * as fixtures from './__fixtures__';
-import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4 } from './constants';
 
 describe( 'modules/analytics-4 report', () => {
 	let registry;
@@ -541,7 +541,6 @@ describe( 'modules/analytics-4 report', () => {
 								.select( CORE_USER )
 								.getDateRangeDates( {
 									compare: true,
-									offsetDays: DATE_RANGE_OFFSET,
 								} );
 
 							// `getSampleReportArgs` uses `compareStartDate` as `startDate`.
@@ -656,7 +655,6 @@ describe( 'modules/analytics-4 report', () => {
 				// Calculate expected dates using the same method as `getSampleReportArgs`.
 				const dates = registry.select( CORE_USER ).getDateRangeDates( {
 					compare: true,
-					offsetDays: DATE_RANGE_OFFSET,
 				} );
 
 				const args = registry

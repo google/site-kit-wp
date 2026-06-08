@@ -32,11 +32,8 @@ import {
 	singleQuestionSurveyWithNoFollowUp,
 } from '@/js/components/surveys/__fixtures__';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import {
-	provideCurrentSurvey,
-	provideTracking,
-} from '../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import { provideCurrentSurvey, provideTracking } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import CurrentSurvey from '.';
 
 function Template( { setupRegistry = () => {}, ...args } ) {

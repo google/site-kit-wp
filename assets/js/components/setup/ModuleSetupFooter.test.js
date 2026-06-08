@@ -21,13 +21,13 @@
  */
 import Modules from 'googlesitekit-modules';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { mockLocation } from '../../../../tests/js/mock-browser-utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import ModuleSetupFooter from './ModuleSetupFooter';
 
 describe( 'ModuleSetupFooter', () => {

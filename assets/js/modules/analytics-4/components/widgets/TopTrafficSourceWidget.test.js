@@ -27,10 +27,7 @@ import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as analyticsFixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
@@ -40,18 +37,13 @@ import {
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '@/js/util/errors';
 import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '@/js/util/zero-reports';
-import {
-	act,
-	fireEvent,
-	render,
-	waitFor,
-} from '../../../../../../tests/js/test-utils';
+import { act, fireEvent, render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideKeyMetrics,
 	provideModuleRegistrations,
 	provideModules,
-} from '../../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import TopTrafficSourceWidget from './TopTrafficSourceWidget';
 
 describe( 'TopTrafficSourceWidget', () => {
@@ -72,7 +64,6 @@ describe( 'TopTrafficSourceWidget', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		dateRangeDates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 		provideKeyMetrics( registry );

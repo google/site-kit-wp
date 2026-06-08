@@ -11,6 +11,9 @@
       "@/*": [
         "./assets/*"
       ],
+      "@tests/*": [
+        "./tests/*"
+      ],
       "@wordpress-core/*": [
         "@wordpress/*"
       ],

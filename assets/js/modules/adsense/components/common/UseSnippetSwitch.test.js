@@ -25,11 +25,8 @@ import apiFetchMock from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
-import { act, fireEvent, render } from '../../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	subscribeUntil,
-} from '../../../../../../tests/js/utils';
+import { act, fireEvent, render } from '@tests/js/test-utils';
+import { createTestRegistry, subscribeUntil } from '@tests/js/utils';
 import UseSnippetSwitch from './UseSnippetSwitch';
 
 // Mock apiFetch so we know if it's called.

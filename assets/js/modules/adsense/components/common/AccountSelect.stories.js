@@ -21,7 +21,7 @@
  */
 import * as fixtures from '@/js/modules/adsense/datastore/__fixtures__';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import AccountSelect from './AccountSelect';
 
 const accounts = fixtures.accountsMultiple;

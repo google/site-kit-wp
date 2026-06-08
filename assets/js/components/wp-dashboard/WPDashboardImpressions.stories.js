@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { withWPDashboardWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import {
 	setupSearchConsoleAnalytics4ZeroData,
 	setupSearchConsoleGatheringData,

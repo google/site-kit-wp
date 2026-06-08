@@ -37,10 +37,7 @@ import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import { ADSENSE_NOTIFICATIONS } from '@/js/modules/adsense/notifications';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
@@ -53,7 +50,7 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
 	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
 } from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
@@ -126,9 +123,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 			accountID: adSenseAccountID,
 		} );
-		const dateRangeDates = registry
-			.select( CORE_USER )
-			.getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
+		const dateRangeDates = registry.select( CORE_USER ).getDateRangeDates();
 		reportOptions = {
 			...dateRangeDates,
 			dimensions: [ 'pagePath', 'adSourceName' ],

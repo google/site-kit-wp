@@ -6,6 +6,8 @@
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers;
@@ -29,6 +31,17 @@ use WC_Product;
 class WooCommerce extends Conversion_Events_Provider {
 
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'woocommerce';
+
+	/**
+	 * Gets the provider category.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Provider category.
+	 */
+	public function get_category() {
+		return self::CATEGORY_ECOMMERCE;
+	}
 
 	/**
 	 * Available products on the page.

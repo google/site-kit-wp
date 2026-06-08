@@ -23,7 +23,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { CORE_SITE } from './constants';
 import { initialState } from './index';
 
@@ -51,6 +51,8 @@ describe( 'core/site site info', () => {
 		],
 		productPostType: [ 'product' ],
 		isMultisite: false,
+		hasActiveLeadEventProviders: false,
+		hasActiveEcommerceEventProviders: false,
 	};
 	const entityInfoVar = '_googlesitekitEntityData';
 	const entityInfo = {
@@ -483,6 +485,11 @@ describe( 'core/site site info', () => {
 			[ 'isKeyMetricsSetupCompleted', 'keyMetricsSetupCompletedBy' ],
 			[ 'getConsentModeRegions', 'consentModeRegions' ],
 			[ 'isMultisite', 'isMultisite' ],
+			[ 'hasActiveLeadEventProviders', 'hasActiveLeadEventProviders' ],
+			[
+				'hasActiveEcommerceEventProviders',
+				'hasActiveEcommerceEventProviders',
+			],
 		] )( '%s', ( selector, infoKey ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
 				global[ baseInfoVar ] = baseInfo;

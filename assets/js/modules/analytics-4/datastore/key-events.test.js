@@ -20,10 +20,7 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import {
-	createTestRegistry,
-	subscribeUntil,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, subscribeUntil } from '@tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { MODULES_ANALYTICS_4 } from './constants';
 

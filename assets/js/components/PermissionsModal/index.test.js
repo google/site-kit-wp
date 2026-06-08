@@ -24,7 +24,7 @@ import {
 	createTestRegistry,
 	provideUserAuthentication,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import PermissionsModal from './';
 
 describe( 'PermissionsModal', () => {

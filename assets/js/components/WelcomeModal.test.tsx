@@ -20,20 +20,6 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
-import { provideGatheringDataState } from 'tests/js/gathering-data-utils';
-import { mockBrowserScrolling } from 'tests/js/mock-browser-utils';
-import {
-	createTestRegistry,
-	fireEvent,
-	render,
-	waitFor,
-} from 'tests/js/test-utils';
-import {
-	freezeFetch,
-	provideModules,
-	provideUserAuthentication,
-	provideUserCapabilities,
-} from 'tests/js/utils';
 
 /**
  * WordPress dependencies
@@ -46,7 +32,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
 import { getWelcomeTour } from '@/js/feature-tours/welcome';
 import { setItem } from '@/js/googlesitekit/api/cache';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	CORE_USER,
@@ -60,6 +49,20 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import * as tracking from '@/js/util/tracking';
+import { provideGatheringDataState } from '@tests/js/gathering-data-utils';
+import { mockBrowserScrolling } from '@tests/js/mock-browser-utils';
+import {
+	createTestRegistry,
+	fireEvent,
+	render,
+	waitFor,
+} from '@tests/js/test-utils';
+import {
+	freezeFetch,
+	provideModules,
+	provideUserAuthentication,
+	provideUserCapabilities,
+} from '@tests/js/utils';
 import WelcomeModal from './WelcomeModal';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -300,6 +303,24 @@ describe( 'WelcomeModal', () => {
 		).toBeInTheDocument();
 		expect(
 			getByRole( 'button', { name: 'Start tour' } )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should show the view-only data available description when setupFlowRefreshPhase4 is enabled', async () => {
+		provideDataAvailableVariantData();
+
+		const { getByText, waitForRegistry } = render( <WelcomeModal />, {
+			features: [ 'setupFlowRefreshPhase4' ],
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		} );
+
+		await waitForRegistry();
+
+		expect(
+			getByText(
+				'Take a quick tour to see the most important parts of your dashboard'
+			)
 		).toBeInTheDocument();
 	} );
 
@@ -614,6 +635,31 @@ describe( 'WelcomeModal', () => {
 		expect(
 			getByRole( 'button', { name: 'Get started' } )
 		).toBeInTheDocument();
+	} );
+
+	it( 'should show the view-only gathering data description when setupFlowRefreshPhase4 is enabled', async () => {
+		provideGatheringDataVariantData();
+
+		const { getByText, queryByText, waitForRegistry } = render(
+			<WelcomeModal />,
+			{
+				features: [ 'setupFlowRefreshPhase4' ],
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByText(
+				'Site Kit is gathering data and soon metrics for your site will show on your dashboard'
+			)
+		).toBeInTheDocument();
+
+		expect(
+			queryByText( /Initial setup complete!/ )
+		).not.toBeInTheDocument();
 	} );
 
 	describe.each( [ 'Get started', 'Close' ] )(

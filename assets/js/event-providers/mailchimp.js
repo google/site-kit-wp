@@ -33,6 +33,8 @@ import { classifyPII, getUserData } from './utils';
 
 		global._googlesitekit?.gtagEvent?.( 'submit_lead_form', {
 			event_category: 'mailchimp',
+			googlesitekit_event_provider: 'mailchimp',
+			googlesitekit_form_id: String( mc4wpForm.id ),
 			...( userData ? { user_data: userData } : {} ),
 		} );
 	} );

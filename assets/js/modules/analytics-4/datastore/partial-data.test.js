@@ -27,13 +27,9 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { properties } from './__fixtures__';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-	RESOURCE_TYPE_AUDIENCE,
-} from './constants';
+import { MODULES_ANALYTICS_4, RESOURCE_TYPE_AUDIENCE } from './constants';
 
 const testAudience1 = {
 	name: 'properties/12345/audiences/12345',
@@ -382,9 +378,7 @@ describe( 'modules/analytics-4 partial data', () => {
 
 				const { startDate } = registry
 					.select( CORE_USER )
-					.getDateRangeDates( {
-						offsetDays: DATE_RANGE_OFFSET,
-					} );
+					.getDateRangeDates();
 
 				const audience1Date = Number( startDate.replace( /-/g, '' ) );
 				const audience2Date = Number(
@@ -428,9 +422,7 @@ describe( 'modules/analytics-4 partial data', () => {
 
 				const { startDate } = registry
 					.select( CORE_USER )
-					.getDateRangeDates( {
-						offsetDays: DATE_RANGE_OFFSET,
-					} );
+					.getDateRangeDates();
 
 				const dataAvailabilityDate = Number(
 					getPreviousDate( startDate, -1 ).replace( /-/g, '' )
@@ -463,9 +455,7 @@ describe( 'modules/analytics-4 partial data', () => {
 
 				const { startDate } = registry
 					.select( CORE_USER )
-					.getDateRangeDates( {
-						offsetDays: DATE_RANGE_OFFSET,
-					} );
+					.getDateRangeDates();
 
 				const dataAvailabilityDate = Number(
 					getPreviousDate( startDate, -1 ).replace( /-/g, '' )
@@ -511,9 +501,7 @@ describe( 'modules/analytics-4 partial data', () => {
 
 				const { startDate } = registry
 					.select( CORE_USER )
-					.getDateRangeDates( {
-						offsetDays: DATE_RANGE_OFFSET,
-					} );
+					.getDateRangeDates();
 
 				const dataAvailabilityDate = Number(
 					getPreviousDate( startDate, -1 ).replace( /-/g, '' )
@@ -553,9 +541,7 @@ describe( 'modules/analytics-4 partial data', () => {
 
 				const { startDate } = registry
 					.select( CORE_USER )
-					.getDateRangeDates( {
-						offsetDays: DATE_RANGE_OFFSET,
-					} );
+					.getDateRangeDates();
 
 				const dataAvailabilityDate = Number(
 					getPreviousDate( startDate, -1 ).replace( /-/g, '' )
@@ -595,9 +581,7 @@ describe( 'modules/analytics-4 partial data', () => {
 
 				const { startDate } = registry
 					.select( CORE_USER )
-					.getDateRangeDates( {
-						offsetDays: DATE_RANGE_OFFSET,
-					} );
+					.getDateRangeDates();
 
 				const dataAvailabilityDate = Number(
 					getPreviousDate( startDate, -1 ).replace( /-/g, '' )

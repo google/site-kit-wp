@@ -29,9 +29,9 @@ import {
 	provideSiteInfo,
 	subscribeUntil,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import * as fixtures from './__fixtures__';
-import { DATE_RANGE_OFFSET, MODULES_SEARCH_CONSOLE } from './constants';
+import { MODULES_SEARCH_CONSOLE } from './constants';
 
 describe( 'modules/search-console report', () => {
 	const searchAnalyticsRegexp = new RegExp(
@@ -330,7 +330,6 @@ describe( 'modules/search-console report', () => {
 
 				const dates = registry.select( CORE_USER ).getDateRangeDates( {
 					compare: true,
-					offsetDays: DATE_RANGE_OFFSET,
 				} );
 
 				const args = registry

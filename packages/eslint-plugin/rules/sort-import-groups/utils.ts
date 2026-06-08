@@ -61,7 +61,7 @@ export function isValidGroupComment( text: string ): boolean {
  * group heading (e.g. `External dependencies`, `Node dependencies`), regardless
  * of whether the leading word is one of the three sanctioned values.
  *
- * @since n.e.x.t
+ * @since 1.180.0
  *
  * @param text Normalized comment text.
  * @return True if the text matches the group heading shape.
@@ -75,7 +75,7 @@ export function isGroupHeading( text: string ): boolean {
  * header (e.g. `Node dependencies`, `Build dependencies`) but isn't one of the
  * three sanctioned headings recognized by `isValidGroupComment`.
  *
- * @since n.e.x.t
+ * @since 1.180.0
  *
  * @param text Normalized comment text.
  * @return True if `text` is a group-shaped header outside the sanctioned set.
@@ -132,6 +132,7 @@ export function getImportGroup( source: string ): DependencyGroup {
 	if (
 		source.startsWith( 'googlesitekit-' ) ||
 		source.startsWith( '@/' ) ||
+		source.startsWith( '@tests/' ) ||
 		source.startsWith( '../' ) ||
 		source.startsWith( './' ) ||
 		source === '.'
@@ -251,14 +252,17 @@ export function normalizeImportSource( source: string ): string {
 	if ( source.startsWith( '@/' ) ) {
 		return '~1~' + source;
 	}
-	if ( source.startsWith( '../' ) ) {
+	if ( source.startsWith( '@tests/' ) ) {
 		return '~2~' + source;
 	}
-	if ( source.startsWith( './' ) ) {
+	if ( source.startsWith( '../' ) ) {
 		return '~3~' + source;
 	}
+	if ( source.startsWith( './' ) ) {
+		return '~4~' + source;
+	}
 	if ( source === '.' ) {
-		return '~3~.';
+		return '~5~.';
 	}
 	return source;
 }
@@ -311,7 +315,7 @@ export function compareImports(
  * `require( '...' ).default` and `require( '...' ).foo.bar` in addition to the
  * bare `require( '...' )` call.
  *
- * @since n.e.x.t
+ * @since 1.180.0
  *
  * @param node Expression node to inspect.
  * @return The inner require `CallExpression`, or `null` when not a require call.

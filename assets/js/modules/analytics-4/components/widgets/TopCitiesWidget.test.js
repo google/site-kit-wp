@@ -27,20 +27,19 @@ import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as analyticsFixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
-import { DATE_RANGE_OFFSET } from '@/js/modules/analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '@/js/util/errors';
-import { render } from '../../../../../../tests/js/test-utils';
+import { render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideKeyMetrics,
 	provideModuleRegistrations,
 	provideModules,
-} from '../../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import TopCitiesWidget from './TopCitiesWidget';
 
 describe( 'TopCitiesWidget', () => {
@@ -67,9 +66,7 @@ describe( 'TopCitiesWidget', () => {
 
 	it( 'should render correctly with the expected metrics', async () => {
 		const reportOptions = {
-			...registry.select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} ),
+			...registry.select( CORE_USER ).getDateRangeDates(),
 			dimensions: [ 'city' ],
 			metrics: [ { name: 'totalUsers' } ],
 			orderby: [

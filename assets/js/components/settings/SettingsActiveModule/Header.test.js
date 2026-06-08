@@ -41,7 +41,7 @@ import {
 	provideModules,
 	provideUserInfo,
 	render,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import Header from '.';
 
 describe( 'Header', () => {

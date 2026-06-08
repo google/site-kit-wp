@@ -21,11 +21,7 @@
  */
 import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	act,
-	createTestRegistry,
-	render,
-} from '../../../../../../tests/js/test-utils';
+import { act, createTestRegistry, render } from '@tests/js/test-utils';
 import SetupEnhancedMeasurementSwitch from './SetupEnhancedMeasurementSwitch';
 
 describe( 'SetupEnhancedMeasurementSwitch', () => {

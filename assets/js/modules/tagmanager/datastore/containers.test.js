@@ -21,11 +21,7 @@
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import {
-	createTestRegistry,
-	muteFetch,
-	untilResolved,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, muteFetch, untilResolved } from '@tests/js/utils';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
 import { CONTEXT_AMP, CONTEXT_WEB, MODULES_TAGMANAGER } from './constants';

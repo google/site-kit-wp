@@ -22,13 +22,13 @@
 import classnames from 'classnames';
 import { cloneDeep } from 'lodash';
 import PropTypes from 'prop-types';
+import { useEvent, useKey } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
+import { Fragment, useCallback, useRef, useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
-import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -97,8 +97,8 @@ export default function UserDimensionsPieChart( props ) {
 	const chartWrapperRef = useRef();
 	const containerRef = useRef();
 
-	useEffect( () => {
-		function onTooltipClick( event ) {
+	const handleTooltipClick = useCallback(
+		( event ) => {
 			const { target } = event || {};
 			if (
 				! target?.classList?.contains(
@@ -116,24 +116,12 @@ export default function UserDimensionsPieChart( props ) {
 					label
 				);
 			}
-		}
+		},
+		[ viewContext ]
+	);
 
-		const currentContainerRef = containerRef.current;
-
-		// When the user hits the 'escape' key and the tooltip is open, close the tooltip and reset UI vars.
-		function onEscape( event = {} ) {
-			if ( event?.keyCode === ESCAPE && isTooltipOpen ) {
-				setIsTooltipOpen( false );
-				setValues( {
-					[ UI_DIMENSION_VALUE ]: '',
-					[ UI_DIMENSION_COLOR ]: '',
-					[ UI_ACTIVE_ROW_INDEX ]: null,
-				} );
-			}
-		}
-
-		// When the use clicks on anything except the legend while the tooltip is open, close the tooltip.
-		function onExitClick( event ) {
+	const handleExitClick = useCallback(
+		( event ) => {
 			if (
 				isTooltipOpen &&
 				! event?.target?.closest(
@@ -142,32 +130,25 @@ export default function UserDimensionsPieChart( props ) {
 			) {
 				setIsTooltipOpen( false );
 			}
+		},
+		[ isTooltipOpen ]
+	);
+
+	const handleEscapeKey = useCallback( () => {
+		if ( isTooltipOpen ) {
+			setIsTooltipOpen( false );
+			setValues( {
+				[ UI_DIMENSION_VALUE ]: '',
+				[ UI_DIMENSION_COLOR ]: '',
+				[ UI_ACTIVE_ROW_INDEX ]: null,
+			} );
 		}
+	}, [ isTooltipOpen, setValues ] );
 
-		if ( currentContainerRef ) {
-			currentContainerRef.addEventListener( 'click', onTooltipClick );
-
-			global.addEventListener( 'click', onExitClick );
-			global.addEventListener( 'keyup', onEscape );
-		}
-
-		return () => {
-			if ( currentContainerRef ) {
-				currentContainerRef.removeEventListener(
-					'click',
-					onTooltipClick
-				);
-				global.removeEventListener( 'click', onExitClick );
-				global.removeEventListener( 'keyup', onEscape );
-			}
-		};
-	}, [
-		setValues,
-		activeRowIndex,
-		dimensionValue,
-		dimensionColor,
-		viewContext,
-		isTooltipOpen,
+	useEvent( 'click', handleTooltipClick, containerRef.current );
+	useEvent( 'click', handleExitClick );
+	useKey( 'Escape', handleEscapeKey, { event: 'keyup' }, [
+		handleEscapeKey,
 	] );
 
 	const dataMap = extractAnalyticsDataForPieChart( report, {

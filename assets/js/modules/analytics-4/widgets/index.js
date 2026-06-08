@@ -17,9 +17,16 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { lazy } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import { isFeatureEnabled } from '@/js/features';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -70,6 +77,7 @@ import {
 	DashboardAllTrafficWidgetGA4,
 	DashboardOverallPageMetricsWidgetGA4,
 } from '@/js/modules/analytics-4/components/dashboard';
+import getAllTrafficPDFData from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/getPDFData';
 import { ModulePopularPagesWidgetGA4 } from '@/js/modules/analytics-4/components/module';
 import {
 	LeadGenerationPerformanceWidget,
@@ -107,6 +115,13 @@ import ConversionReportingNotificationCTAWidget from '@/js/modules/analytics-4/c
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
+const DashboardAllTrafficWidgetGA4PDF = lazy( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/indexPDF'
+	)
+);
+
 export function registerWidgets( widgets ) {
 	// Register Analytics 4 Widgets.
 	widgets.registerWidget(
@@ -117,6 +132,11 @@ export function registerWidgets( widgets ) {
 			priority: 1,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			pdf: {
+				Component: DashboardAllTrafficWidgetGA4PDF,
+				getData: getAllTrafficPDFData,
+				label: __( 'All Visitors', 'google-site-kit' ),
+			},
 		},
 		[
 			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
@@ -758,6 +778,8 @@ export function registerWidgets( widgets ) {
 				priority: 1,
 				wrapWidget: false,
 				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+				isActive: ( select ) =>
+					!! select( CORE_SITE ).hasActiveEcommerceEventProviders(),
 			},
 			[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
 		);
@@ -770,6 +792,8 @@ export function registerWidgets( widgets ) {
 				priority: 2,
 				wrapWidget: false,
 				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+				isActive: ( select ) =>
+					!! select( CORE_SITE ).hasActiveLeadEventProviders(),
 			},
 			[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
 		);

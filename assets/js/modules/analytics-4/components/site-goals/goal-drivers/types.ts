@@ -70,6 +70,7 @@ export interface GoalDriverCatalogEntry {
 	defaultEnabled: boolean;
 	copyByGoalType: Partial< Record< GoalType, GoalDriverContent > >;
 	Component: ComponentType< GoalDriverComponentProps >;
+	requiredCustomDimensions?: string[];
 }
 
 export type GoalDriverCatalog = Record< GoalDriverID, GoalDriverCatalogEntry >;
@@ -96,4 +97,5 @@ export interface GoalDriverOption {
 	order: number;
 	title: string;
 	description: string;
+	requiredCustomDimensions?: string[];
 }

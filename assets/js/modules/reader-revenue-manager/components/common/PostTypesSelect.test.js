@@ -25,7 +25,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import PostTypesSelect from './PostTypesSelect';
 
 describe( 'PostTypesSelect', () => {

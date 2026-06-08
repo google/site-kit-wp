@@ -36,7 +36,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import SetupErrorMessageNotification from './SetupErrorMessageNotification';
 
 jest.mock( '../../googlesitekit/data/create-snapshot-store', () => ( {

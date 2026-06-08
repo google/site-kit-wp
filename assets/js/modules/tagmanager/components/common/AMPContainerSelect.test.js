@@ -27,12 +27,12 @@ import {
 	CONTEXT_WEB,
 	MODULES_TAGMANAGER,
 } from '@/js/modules/tagmanager/datastore/constants';
-import { fireEvent, render } from '../../../../../../tests/js/test-utils';
+import { fireEvent, render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideSiteInfo,
-} from '../../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import AMPContainerSelect from './AMPContainerSelect';
 
 describe( 'AMPContainerSelect', () => {

@@ -20,10 +20,7 @@
  * Internal dependencies
  */
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
-import {
-	createTestRegistry,
-	untilResolved,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, untilResolved } from '@tests/js/utils';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
 import { initialState } from './index';
 

@@ -24,8 +24,8 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
-} from '../../../../tests/js/mock-survey-endpoints';
-import { render, waitFor } from '../../../../tests/js/test-utils';
+} from '@tests/js/mock-survey-endpoints';
+import { render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -33,7 +33,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-} from '../../../../tests/js/utils';
+} from '@tests/js/utils';
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 
 describe( 'SettingsCardKeyMetrics', () => {

@@ -29,8 +29,8 @@ import { Cell, Grid, Row } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { provideModules } from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import SettingsForm from './SettingsForm';
 
 const {
@@ -309,6 +309,72 @@ WithEnhancedConversionsNotice.storyName = 'With enhanced conversions notice';
 WithEnhancedConversionsNotice.parameters = {
 	features: [ 'gtagUserData' ],
 };
+
+export const WithSiteGoalsBreakdownsRow = Template.bind( null );
+WithSiteGoalsBreakdownsRow.storyName = 'With Site Goals custom dimensions row';
+WithSiteGoalsBreakdownsRow.parameters = {
+	features: [ 'siteGoals' ],
+};
+WithSiteGoalsBreakdownsRow.decorators = [
+	( Story ) => {
+		function setupRegistry( registry ) {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAdvancedDataBreakdownsSettings( {
+					enabled: false,
+				} );
+		}
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithSiteGoalsBreakdownsRow.scenario = {};
+
+export const WithSiteGoalsBreakdownsRowEnabled = Template.bind( null );
+WithSiteGoalsBreakdownsRowEnabled.storyName =
+	'With Site Goals custom dimensions row enabled';
+WithSiteGoalsBreakdownsRowEnabled.parameters = {
+	features: [ 'siteGoals' ],
+};
+WithSiteGoalsBreakdownsRowEnabled.decorators = [
+	( Story ) => {
+		function setupRegistry( registry ) {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAdvancedDataBreakdownsSettings( {
+					enabled: true,
+				} );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				accountID,
+				propertyID,
+				webDataStreamID,
+				measurementID,
+				useSnippet: true,
+				anonymizeIP: true,
+				trackingDisabled: [ 'loggedinUsers' ],
+				availableCustomDimensions: [
+					'googlesitekit_post_date',
+					'googlesitekit_post_author',
+					'googlesitekit_post_categories',
+					'googlesitekit_post_type',
+					'googlesitekit_event_provider',
+					'googlesitekit_form_id',
+				],
+			} );
+		}
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithSiteGoalsBreakdownsRowEnabled.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Settings/SettingsEdit',

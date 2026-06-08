@@ -25,7 +25,7 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	provideUserInfo,
-} from '../../../tests/js/utils';
+} from '@tests/js/utils';
 import { MODULE_SLUG_ADS } from './ads/constants';
 import { MODULE_SLUG_ADSENSE } from './adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from './analytics-4/constants';

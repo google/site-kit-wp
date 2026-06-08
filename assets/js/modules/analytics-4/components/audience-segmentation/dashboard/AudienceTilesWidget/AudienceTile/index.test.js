@@ -36,20 +36,13 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import CustomDimensionErrorModal from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/CustomDimensionErrorModal.tsx';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
 import { getPreviousDate } from '@/js/util';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import * as tracking from '@/js/util/tracking';
-import {
-	act,
-	fireEvent,
-	render,
-} from '../../../../../../../../../tests/js/test-utils';
+import { act, fireEvent, render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
@@ -58,11 +51,8 @@ import {
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
 	waitForTimeouts,
-} from '../../../../../../../../../tests/js/utils';
-import {
-	getViewportWidth,
-	setViewportWidth,
-} from '../../../../../../../../../tests/js/viewport-utils';
+} from '@tests/js/utils';
+import { getViewportWidth, setViewportWidth } from '@tests/js/viewport-utils';
 import AudienceTile from '.';
 
 jest.mock( 'react-use', () => ( {
@@ -195,7 +185,6 @@ describe( 'AudienceTile', () => {
 		} );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 

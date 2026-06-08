@@ -21,7 +21,7 @@
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import { createTestRegistry } from '@tests/js/utils';
 import { MODULES_PAGESPEED_INSIGHTS } from './constants';
 
 describe( 'module/pagespeed-insights service store', () => {

@@ -32,8 +32,8 @@ import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { WEEK_IN_SECONDS } from '@/js/util';
-import { provideModules } from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import ConsentModeSetupCTABanner from './ConsentModeSetupCTABanner';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 

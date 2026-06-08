@@ -89,6 +89,7 @@ import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
 import Notifications from './notifications/Notifications';
 import OfflineNotification from './notifications/OfflineNotification';
+import PDFExportRoot from './pdf-export/PDFExportRoot';
 import PDFDownloadButton from './pdf-generation/PDFDownloadButton';
 import PDFSectionsSelectionPanel from './pdf-generation/PDFSectionsSelectionPanel';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
@@ -124,6 +125,13 @@ function getLastWidgetAnchor( {
 	return null;
 }
 
+// This component has a legitimately high level of complexity; it renders the
+// entire dashboard with a bunch of conditionals to determine what to show.
+//
+// Disabling this rule would obscure the contents of the dashboard and be
+// counterproductive, so we disable the ESLint rule around cyclomatic
+// complexity for this component.
+// eslint-disable-next-line complexity
 export default function DashboardMainApp() {
 	const siteGoalsEnabled = useFeature( 'siteGoals' );
 
@@ -293,8 +301,13 @@ export default function DashboardMainApp() {
 	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
+
+	const hasAccessToFeatureTour = useSelect( ( select ) =>
+		select( CORE_USER ).hasAccessToFeatureTour()
+	);
+
 	const showWelcomeModal = useSelect( ( select ) => {
-		if ( ! setupFlowRefreshEnabled ) {
+		if ( ! setupFlowRefreshEnabled || ! hasAccessToFeatureTour ) {
 			return false;
 		}
 
@@ -364,7 +377,7 @@ export default function DashboardMainApp() {
 				<DateRangeSelector />
 				{ pdfGenerationEnabled && <PDFDownloadButton /> }
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
-				<HelpMenu showFeatureTour />
+				<HelpMenu showFeatureTour={ !! hasAccessToFeatureTour } />
 			</Header>
 
 			<div className="googlesitekit-page-content">
@@ -452,7 +465,12 @@ export default function DashboardMainApp() {
 
 			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
 
-			{ pdfGenerationEnabled && <PDFSectionsSelectionPanel /> }
+			{ pdfGenerationEnabled && (
+				<Fragment>
+					<PDFSectionsSelectionPanel />
+					<PDFExportRoot />
+				</Fragment>
+			) }
 
 			{ emailReportingEnabled && (
 				<Fragment>
@@ -462,7 +480,8 @@ export default function DashboardMainApp() {
 			) }
 
 			{ configuredAudiences && <AudienceSelectionPanel /> }
-			{ siteGoalsEnabled && (
+
+			{ siteGoalsEnabled && hasAnalyticsAccess && (
 				<Fragment>
 					<SiteGoalsSelectionPanel />
 					<SiteGoalsIntroModalBanner />

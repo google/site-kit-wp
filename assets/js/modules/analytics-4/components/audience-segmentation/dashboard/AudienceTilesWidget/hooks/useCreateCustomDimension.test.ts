@@ -47,7 +47,7 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	renderHook,
-} from '../../../../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import useCreateCustomDimension from './useCreateCustomDimension';
 
 describe( 'useCreateCustomDimension', () => {

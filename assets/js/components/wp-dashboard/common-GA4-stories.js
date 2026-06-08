@@ -34,8 +34,8 @@ import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/co
 import { provideSearchConsoleMockReport } from '@/js/modules/search-console/util/data-mock';
 import { DAY_IN_SECONDS } from '@/js/util';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
-import { provideModules, provideSiteInfo } from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { provideModules, provideSiteInfo } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 
 const wpDashboardSearchConsoleOptions = [
 	{

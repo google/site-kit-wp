@@ -110,6 +110,35 @@ export const selectors = {
 	),
 
 	/**
+	 * Checks whether only ecommerce conversion reporting events have been detected.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(boolean|undefined)} True when ecommerce events are detected and no lead events are detected, otherwise false. Undefined if detected events are not loaded yet.
+	 */
+	hasEcommerceConversionReportingEventsOnly: createRegistrySelector(
+		( select ) => () => {
+			const hasEcommerceEvents =
+				select(
+					MODULES_ANALYTICS_4
+				).hasEcommerceConversionReportingEvents();
+			const hasLeadEvents =
+				select(
+					MODULES_ANALYTICS_4
+				).hasLeadConversionReportingEvents();
+
+			if (
+				hasEcommerceEvents === undefined ||
+				hasLeadEvents === undefined
+			) {
+				return undefined;
+			}
+
+			return hasEcommerceEvents && ! hasLeadEvents;
+		}
+	),
+
+	/**
 	 * Gets all conversion reporting inline data from this data store.
 	 *
 	 * Not intended to be used publicly; this is largely here so other selectors can
@@ -403,7 +432,7 @@ export const selectors = {
 	/**
 	 * Returns detected ecommerce events excluding the given primaryEvent, in hierarchy order.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @param {Object} state        Data store's state.
 	 * @param {string} primaryEvent The primary ecommerce event to exclude.

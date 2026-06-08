@@ -3,6 +3,8 @@
  * Class Google\Site_Kit\Tests\Core\Email_Reporting\Email_Reporting_SchedulerTest
  *
  * @package   Google\Site_Kit\Tests\Core\Email_Reporting
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Tests\Core\Email_Reporting;

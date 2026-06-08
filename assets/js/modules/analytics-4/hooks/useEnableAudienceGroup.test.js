@@ -28,8 +28,8 @@ import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { mockSurveyEndpoints } from '../../../../../tests/js/mock-survey-endpoints';
-import { actHook, renderHook } from '../../../../../tests/js/test-utils';
+import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
+import { actHook, renderHook } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -37,7 +37,7 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	provideUserInfo,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import useEnableAudienceGroup from './useEnableAudienceGroup';
 
 describe( 'useEnableAudienceGroup', () => {

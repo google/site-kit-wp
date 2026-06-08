@@ -40,10 +40,7 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import withCustomDimensions from '@/js/modules/analytics-4/utils/withCustomDimensions';
 import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
@@ -58,9 +55,7 @@ import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
  * @return {Object} The report options.
  */
 function getPopularAuthorsWidgetReportOptions( select ) {
-	const dates = select( CORE_USER ).getDateRangeDates( {
-		offsetDays: DATE_RANGE_OFFSET,
-	} );
+	const dates = select( CORE_USER ).getDateRangeDates();
 
 	return {
 		...dates,

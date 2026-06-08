@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -22,17 +27,14 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import {
-	SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT,
-	SITE_GOALS_SELECTION_FORM,
-} from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -40,11 +42,8 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
-import { render } from '../../../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	provideModules,
-} from '../../../../../../../tests/js/utils';
+import { fireEvent, render, waitFor } from '@tests/js/test-utils';
+import { createTestRegistry, provideModules } from '@tests/js/utils';
 import OnlineStorePerformanceWidget from './OnlineStorePerformanceWidget';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
@@ -101,9 +100,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			loading = false,
 		}: { empty?: boolean; loading?: boolean } = {}
 	) {
-		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
+		const dates = registry.select( CORE_USER ).getDateRangeDates();
 
 		const dimensionFilters = {
 			eventName: {
@@ -509,7 +506,16 @@ describe( 'OnlineStorePerformanceWidget', () => {
 				connected: true,
 			},
 		] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( { availableCustomDimensions: [] } );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSiteGoalsSettings( {} );
+		// Default to the breakdown notice being hidden (intro modal not yet
+		// dismissed); individual tests opt in by dismissing the intro modal.
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	it( 'renders WidgetNull when no ecommerce events are detected', async () => {
@@ -544,7 +550,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -585,7 +590,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			getByText( 'Top traffic channels by sales rate' )
 		).toBeInTheDocument();
-		expect( getByText( 'Sales by cities' ) ).toBeInTheDocument();
+		expect( getByText( 'Sales by visitor type' ) ).toBeInTheDocument();
 		expect( getAllByText( 'Organic Search' ).length ).toBeGreaterThan( 0 );
 		expect(
 			container.querySelectorAll(
@@ -600,7 +605,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -633,7 +637,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -662,7 +665,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			getByText( 'Top traffic channels by sales rate' )
 		).toBeInTheDocument();
-		expect( getByText( 'Sales by cities' ) ).toBeInTheDocument();
+		expect( getByText( 'Sales by visitor type' ) ).toBeInTheDocument();
 	} );
 
 	it( 'uses purchase as primary event when both purchase and add_to_cart are detected', async () => {
@@ -674,7 +677,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -707,7 +709,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			getByText( 'Top traffic channels by sales rate' )
 		).toBeInTheDocument();
-		expect( getByText( 'Sales by cities' ) ).toBeInTheDocument();
+		expect( getByText( 'Sales by visitor type' ) ).toBeInTheDocument();
 	} );
 
 	it( 'computes zero rate when sessions count is zero', async () => {
@@ -716,7 +718,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -761,7 +762,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -802,13 +802,68 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		unmount();
 	} );
 
+	it( 'renders the breakdown notice in the aggregated state and shows the tooltip on dismiss', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		// Aggregated state: intro modal dismissed, breakdown dimensions not yet
+		// created (availableCustomDimensions seeded as [] in beforeEach).
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [ SITE_GOALS_INTRO_MODAL_BANNER ] );
+		fetchMock.postOnce(
+			new RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
+			{ body: [], status: 200 }
+		);
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ], {
+			loading: true,
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				buildPrimaryEventReportOptions(
+					dates,
+					ENUM_CONVERSION_EVENTS.PURCHASE
+				),
+			] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				buildEngagementReportOptions( dates ),
+			] );
+
+		const { getByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText(
+				'Using both WooCommerce and Easy Digital Downloads to sell products or services?'
+			)
+		).toBeInTheDocument();
+
+		fireEvent.click( getByText( 'No thanks' ) );
+
+		await waitFor( () => {
+			expect(
+				registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+			).toMatchObject( { isTooltipVisible: true } );
+		} );
+	} );
+
 	it( 'renders goal drivers loading state while primary section stays visible', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -854,14 +909,11 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 		const goalDriverDates = registry
 			.select( CORE_USER )
-			.getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} );
+			.getDateRangeDates();
 
 		const primaryEventReport = buildPrimaryEventReportOptions(
 			dates,
@@ -936,7 +988,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -971,7 +1022,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -1034,7 +1084,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -1082,7 +1131,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -1135,15 +1183,14 @@ describe( 'OnlineStorePerformanceWidget', () => {
 				ENUM_CONVERSION_EVENTS.PURCHASE,
 				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
 			] );
-		registry.dispatch( CORE_FORMS ).setValues( SITE_GOALS_SELECTION_FORM, {
-			[ SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT ]: {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+			visitorEngagement: {
 				[ GOAL_TYPES.ECOMMERCE ]: [],
 				[ GOAL_TYPES.LEAD ]: [],
 			},
 		} );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -1176,7 +1223,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 

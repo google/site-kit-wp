@@ -6,6 +6,8 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Tests\Core\Modules;
@@ -19,13 +21,14 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module_With_Activation;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
+use Google\Site_Kit\Core\Modules\Module_With_Inline_Data;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Tests\Core\Modules\Datapoints\FakeModule_Test_Request;
 use WP_Error;
 use Exception;
 
 #[\AllowDynamicProperties]
-class FakeModule extends Module implements Module_With_Activation, Module_With_Deactivation, Module_With_Owner, Module_With_Settings {
+class FakeModule extends Module implements Module_With_Activation, Module_With_Deactivation, Module_With_Inline_Data, Module_With_Owner, Module_With_Settings {
 
 	use Module_With_Owner_Trait;
 	use Module_With_Settings_Trait;
@@ -155,6 +158,17 @@ class FakeModule extends Module implements Module_With_Activation, Module_With_D
 	 */
 	public function made_shared_data_request() {
 		return $this->made_shared_data_request;
+	}
+
+	/**
+	 * Gets required inline data for the module.
+	 *
+	 * @return array An array of the module's inline data.
+	 */
+	public function get_inline_data() {
+		return array(
+			'testInlineData' => true,
+		);
 	}
 
 	/**

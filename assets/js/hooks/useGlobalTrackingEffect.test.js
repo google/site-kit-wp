@@ -27,7 +27,7 @@ import {
 	provideSiteInfo,
 	renderHook,
 	waitForDefaultTimeouts,
-} from '../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import { useGlobalTrackingEffect } from './useGlobalTrackingEffect';
 
 const mockTrackEvent = jest

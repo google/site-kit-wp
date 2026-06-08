@@ -32,10 +32,13 @@ export {
 	MAX_VISIBLE_GOAL_DRIVERS,
 	GOAL_DRIVER_IDS,
 	GOAL_TYPES,
+	POST_AUTHOR_CUSTOM_DIMENSION,
+	TOP_AUTHORS_REQUIRED_CUSTOM_DIMENSIONS,
 } from './constants';
 export { default as TopTrafficChannelsGoalDriver } from './TopTrafficChannelsGoalDriver';
 export { default as TopTrafficChannelsRateGoalDriver } from './TopTrafficChannelsRateGoalDriver';
 export { default as TopPagesGoalDriver } from './TopPagesGoalDriver';
+export { default as TopAuthorsGoalDriver } from './TopAuthorsGoalDriver';
 export { default as VisitorTypeGoalDriver } from './VisitorTypeGoalDriver';
 export { default as CitiesGoalDriver } from './CitiesGoalDriver';
 export { default as CountriesGoalDriver } from './CountriesGoalDriver';

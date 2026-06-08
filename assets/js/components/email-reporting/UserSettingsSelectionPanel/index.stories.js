@@ -39,8 +39,8 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 	provideUserInfo,
-} from '../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import UserSettingsSelectionPanel from '.';
 
 const mockEligibleSubscribers = [

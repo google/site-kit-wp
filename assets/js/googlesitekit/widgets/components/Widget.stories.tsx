@@ -31,11 +31,8 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { Cell, Grid, Row } from '@/js/material-components';
 import { Story as StoryType } from '@/js/types/Story';
-import {
-	provideModules,
-	provideUserCapabilities,
-} from '../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import { provideModules, provideUserCapabilities } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import Widget, { WidgetProps } from './Widget';
 
 const BoxesWidgets: FC = ( { children } ) => {

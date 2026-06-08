@@ -17,26 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { mockBrowserScrolling } from 'tests/js/mock-browser-utils';
-import {
-	act,
-	fireEvent,
-	render,
-	waitForDefaultTimeouts,
-} from 'tests/js/test-utils';
-import {
-	createTestRegistry,
-	freezeFetch,
-	provideKeyMetrics,
-	provideModules,
-	provideUserAuthentication,
-	provideUserInfo,
-	subscribeUntil,
-} from 'tests/js/utils';
-
-/**
  * Internal dependencies
  */
 import {
@@ -74,6 +54,22 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { mockBrowserScrolling } from '@tests/js/mock-browser-utils';
+import {
+	act,
+	fireEvent,
+	render,
+	waitForDefaultTimeouts,
+} from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	freezeFetch,
+	provideKeyMetrics,
+	provideModules,
+	provideUserAuthentication,
+	provideUserInfo,
+	subscribeUntil,
+} from '@tests/js/utils';
 import MetricsSelectionPanel from '.';
 
 describe( 'MetricsSelectionPanel', () => {

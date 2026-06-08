@@ -38,11 +38,11 @@ import nonces from './nonces';
 import notifications from './notifications';
 import permissions from './permissions';
 import prompts from './prompts';
+import setupFlow from './setup-flow';
 import surveys from './surveys';
 import tracking from './tracking';
 import userInfo from './user-info';
 import userInputSettings from './user-input-settings';
-import welcomeModal from './welcome-modal';
 
 const store = combineStores(
 	commonStore,
@@ -67,7 +67,7 @@ const store = combineStores(
 	conversionReportingSettings,
 	emailReportingSettings,
 	initialSetupSettings,
-	welcomeModal
+	setupFlow
 );
 
 export const {
