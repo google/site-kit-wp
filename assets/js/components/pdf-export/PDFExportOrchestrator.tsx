@@ -47,6 +47,7 @@ import type {
 	WidgetPDFConfig,
 } from '@/js/googlesitekit/widgets/types';
 import useViewOnly from '@/js/hooks/useViewOnly';
+import { getPreviousDate } from '@/js/util';
 import { getPDFFilename, triggerDownload } from './pdf-utils';
 import DashboardReport from './shared-react-pdf-components/DashboardReport';
 import type { PDFReportArea, PDFReportWidget } from './types';
@@ -214,8 +215,13 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 	const dates = useSelect(
 		( select: Select ) =>
 			select( CORE_USER ).getDateRangeDates( {
-				offsetDays: 1,
 				compare: true,
+				// The PDF reporting period excludes the current day, so end the
+				// range on the day before the reference date.
+				referenceDate: getPreviousDate(
+					select( CORE_USER ).getReferenceDate(),
+					1
+				),
 			} ) as PDFReportDates,
 		[]
 	);
