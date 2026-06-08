@@ -252,10 +252,10 @@ WithAnalyticsActive.args = {
 };
 WithAnalyticsActive.scenario = {};
 
-export const setupFlowRefreshPhase4AnalyticsNotSetup = Template.bind( {} );
-setupFlowRefreshPhase4AnalyticsNotSetup.storyName =
-	'setupFlowRefreshPhase4 - secondary admin, Analytics not setup';
-setupFlowRefreshPhase4AnalyticsNotSetup.args = {
+export const SecondaryAdminAnalyticsNotActive = Template.bind( {} );
+SecondaryAdminAnalyticsNotActive.storyName =
+	'Secondary admin, Analytics not setup (setupFlowRefreshPhase4 enabled)';
+SecondaryAdminAnalyticsNotActive.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteConnection( registry, {
 			hasConnectedAdmins: true,
@@ -272,16 +272,15 @@ setupFlowRefreshPhase4AnalyticsNotSetup.args = {
 		] );
 	},
 };
-setupFlowRefreshPhase4AnalyticsNotSetup.parameters = {
+SecondaryAdminAnalyticsNotActive.parameters = {
 	features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
 };
-setupFlowRefreshPhase4AnalyticsNotSetup.scenario = {};
+SecondaryAdminAnalyticsNotActive.scenario = {};
 
-export const setupFlowRefreshPhase4SecondaryAdminWithSharedServices =
-	Template.bind( {} );
-setupFlowRefreshPhase4SecondaryAdminWithSharedServices.storyName =
-	'setupFlowRefreshPhase4 - secondary admin with shared services';
-setupFlowRefreshPhase4SecondaryAdminWithSharedServices.args = {
+export const SecondaryAdminWithSharedServices = Template.bind( {} );
+SecondaryAdminWithSharedServices.storyName =
+	'Secondary admin with shared services (setupFlowRefreshPhase4 enabled)';
+SecondaryAdminWithSharedServices.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteConnection( registry, {
 			hasConnectedAdmins: true,
@@ -307,10 +306,10 @@ setupFlowRefreshPhase4SecondaryAdminWithSharedServices.args = {
 		] );
 	},
 };
-setupFlowRefreshPhase4SecondaryAdminWithSharedServices.parameters = {
+SecondaryAdminWithSharedServices.parameters = {
 	features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
 };
-setupFlowRefreshPhase4SecondaryAdminWithSharedServices.scenario = {};
+SecondaryAdminWithSharedServices.scenario = {};
 
 export default {
 	title: 'Setup / Using Proxy With Sign-in and setupFlowRefresh enabled',

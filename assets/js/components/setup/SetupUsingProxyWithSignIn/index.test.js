@@ -504,7 +504,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			).not.toBeInTheDocument();
 		} );
 
-		it( 'should show the phase4 secondary-admin generic description when Analytics is not active', async () => {
+		it( 'should show the correct title and description for a secondary admin when Analytics is not active with the setupFlowRefreshPhase4 feature flag enabled', async () => {
 			provideSiteConnection( registry, {
 				hasConnectedAdmins: true,
 				hasMultipleAdmins: true,
@@ -549,7 +549,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			).not.toBeInTheDocument();
 		} );
 
-		it( 'should show the phase4 secondary-admin shared-services description when Analytics is active and shared services are viewable', async () => {
+		it( 'should show the correct title and description for a secondary admin when Analytics is active and shared services are viewable with the setupFlowRefreshPhase4 feature flag enabled', async () => {
 			provideSiteConnection( registry, {
 				hasConnectedAdmins: true,
 				hasMultipleAdmins: true,
