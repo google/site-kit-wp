@@ -1,7 +1,7 @@
 /**
- * DashboardSplash component.
+ * Key metrics setup.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,23 +25,21 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import DashboardSplashApp from './components/dashboard-splash/DashboardSplashApp';
+import KeyMetricsSetupApp from './components/key-metrics-setup/KeyMetricsSetupApp';
 import Root from './components/Root';
-import { clearCache } from './googlesitekit/api/cache';
-import { VIEW_CONTEXT_SPLASH } from './googlesitekit/constants';
+import { VIEW_CONTEXT_KEY_METRICS_SETUP } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
-domReady( async () => {
-	if ( global._googlesitekitLegacyData.admin.resetSession ) {
-		await clearCache();
-	}
-
-	const renderTarget = document.getElementById( 'js-googlesitekit-splash' );
+domReady( () => {
+	const renderTarget = document.getElementById(
+		'js-googlesitekit-key-metrics-setup'
+	);
 
 	if ( renderTarget ) {
 		render(
-			<Root viewContext={ VIEW_CONTEXT_SPLASH }>
-				<DashboardSplashApp />
+			// @ts-expect-error Root is not properly typed yet.
+			<Root viewContext={ VIEW_CONTEXT_KEY_METRICS_SETUP }>
+				<KeyMetricsSetupApp />
 			</Root>,
 			renderTarget
 		);

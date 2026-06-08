@@ -1,5 +1,9 @@
 /**
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Activation component.
+ *
+ * This JavaScript loads on every admin page. Reserved for later.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,22 +27,24 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { ActivationApp } from './components/activation/activation-app';
 import Root from './components/Root';
-import { VIEW_CONTEXT_AD_BLOCKING_RECOVERY } from './googlesitekit/constants';
-import { AdBlockingRecoveryApp } from './modules/adsense/components/setup';
+import { VIEW_CONTEXT_ACTIVATION } from './googlesitekit/constants';
 
-// Initialize the app once the DOM is ready.
 domReady( () => {
 	const renderTarget = document.getElementById(
-		'js-googlesitekit-ad-blocking-recovery'
+		'js-googlesitekit-activation'
 	);
 
 	if ( renderTarget ) {
 		render(
-			<Root viewContext={ VIEW_CONTEXT_AD_BLOCKING_RECOVERY }>
-				<AdBlockingRecoveryApp />
+			// @ts-expect-error Root is not properly typed yet.
+			<Root viewContext={ VIEW_CONTEXT_ACTIVATION }>
+				<ActivationApp />
 			</Root>,
 			renderTarget
 		);
+
+		renderTarget.classList.remove( 'googlesitekit-activation--loading' );
 	}
 } );

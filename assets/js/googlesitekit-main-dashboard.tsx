@@ -1,7 +1,7 @@
 /**
- * Key metrics setup.
+ * Dashboard component.
  *
- * Site Kit by Google, Copyright 2025 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,20 +25,39 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import KeyMetricsSetupApp from './components/key-metrics-setup/KeyMetricsSetupApp';
+import DashboardEntryPoint from './components/DashboardEntryPoint';
 import Root from './components/Root';
-import { VIEW_CONTEXT_KEY_METRICS_SETUP } from './googlesitekit/constants';
+import { clearCache } from './googlesitekit/api/cache';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MODULE_SETUP,
+} from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
-domReady( () => {
+domReady( async () => {
+	if ( global._googlesitekitLegacyData.admin.resetSession ) {
+		await clearCache();
+	}
+
 	const renderTarget = document.getElementById(
-		'js-googlesitekit-key-metrics-setup'
+		'js-googlesitekit-main-dashboard'
 	);
 
 	if ( renderTarget ) {
+		const { setupModuleSlug, viewOnly } = renderTarget.dataset;
+
+		let viewContext = VIEW_CONTEXT_MODULE_SETUP;
+		if ( ! setupModuleSlug ) {
+			viewContext = viewOnly
+				? VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+				: VIEW_CONTEXT_MAIN_DASHBOARD;
+		}
+
 		render(
-			<Root viewContext={ VIEW_CONTEXT_KEY_METRICS_SETUP }>
-				<KeyMetricsSetupApp />
+			// @ts-expect-error Root is not properly typed yet.
+			<Root viewContext={ viewContext }>
+				<DashboardEntryPoint setupModuleSlug={ setupModuleSlug } />
 			</Root>,
 			renderTarget
 		);

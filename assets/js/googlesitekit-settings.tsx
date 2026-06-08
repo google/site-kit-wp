@@ -1,7 +1,7 @@
 /**
- * Metric selection.
+ * Settings component.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { HashRouter } from 'react-router-dom';
+
+/**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
@@ -25,20 +30,21 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import FullScreenMetricSelectionApp from './components/KeyMetrics/FullScreenMetricSelectionApp';
 import Root from './components/Root';
-import { VIEW_CONTEXT_METRIC_SELECTION } from './googlesitekit/constants';
+import SettingsApp from './components/settings/SettingsApp';
+import { VIEW_CONTEXT_SETTINGS } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
-	const renderTarget = document.getElementById(
-		'js-googlesitekit-metric-selection'
-	);
+	const renderTarget = document.getElementById( 'js-googlesitekit-settings' );
 
 	if ( renderTarget ) {
 		render(
-			<Root viewContext={ VIEW_CONTEXT_METRIC_SELECTION }>
-				<FullScreenMetricSelectionApp />
+			// @ts-expect-error Root is not properly typed yet.
+			<Root viewContext={ VIEW_CONTEXT_SETTINGS }>
+				<HashRouter>
+					<SettingsApp />
+				</HashRouter>
 			</Root>,
 			renderTarget
 		);

@@ -19,11 +19,12 @@
 /**
  * Internal dependencies.
  */
+import { GATrackingEventArgs } from './types/GATrackingEventArgs';
 import { trackEvent } from './util';
 
 const TRACKING_KEYS = [ 'view', 'click', 'dismiss' ];
 
-function fireTrackingEvent( eventConfig ) {
+function fireTrackingEvent( eventConfig: GATrackingEventArgs ) {
 	if ( ! eventConfig || ! eventConfig.category || ! eventConfig.action ) {
 		return null;
 	}
@@ -36,17 +37,20 @@ function fireTrackingEvent( eventConfig ) {
 	return trackEvent( category, action );
 }
 
-function registerPointerTracking( slug, tracking ) {
+function registerPointerTracking(
+	slug: string,
+	tracking: Record< string, GATrackingEventArgs >
+) {
 	if ( ! tracking || ! Object.keys( tracking ).length ) {
 		return { onDismiss: null };
 	}
 
 	const fired = TRACKING_KEYS.reduce(
 		( acc, key ) => ( { ...acc, [ key ]: false } ),
-		{}
+		{} as Record< string, boolean >
 	);
 
-	function fireOnce( key ) {
+	function fireOnce( key: string ) {
 		if ( fired[ key ] || ! tracking[ key ] ) {
 			return null;
 		}
@@ -64,7 +68,7 @@ function registerPointerTracking( slug, tracking ) {
 		document.documentElement.ownerDocument;
 	const ctaSelector = `.${ slug } .googlesitekit-pointer-cta`;
 
-	function handleClick( event ) {
+	function handleClick( event: Event ) {
 		const target = event.target instanceof Element ? event.target : null;
 		if ( ! target || ! target.closest( ctaSelector ) ) {
 			return;
@@ -82,7 +86,7 @@ function registerPointerTracking( slug, tracking ) {
 
 		if ( shouldDeferNavigation ) {
 			track.finally( () => {
-				ownerDocument.defaultView.location.assign( href );
+				ownerDocument.defaultView?.location.assign( href );
 			} );
 		}
 	}

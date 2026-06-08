@@ -27,6 +27,7 @@ import { omit } from 'lodash';
 import { createTestRegistry } from '@tests/js/utils';
 
 const registry = createTestRegistry();
+// @ts-expect-error The WPDataRegistry type is missing the stores property.
 const firstPartyStores = omit( registry.stores, 'core/data' );
 
 describe( 'all data stores', () => {
@@ -36,6 +37,7 @@ describe( 'all data stores', () => {
 				const listener = jest.fn();
 				registry.subscribe( listener );
 
+				// @ts-expect-error The WPDataRegistry type is missing the stores property.
 				registry.stores[ storeName ].store.dispatch( {
 					type: '@@NON_EXISTENT_ACTION_TYPE@@',
 				} );

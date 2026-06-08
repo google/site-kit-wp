@@ -1,5 +1,5 @@
 /**
- * Settings component.
+ * User input.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { HashRouter } from 'react-router-dom';
-
-/**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
@@ -31,19 +26,20 @@ import { render } from '@wordpress/element';
  * Internal dependencies
  */
 import Root from './components/Root';
-import SettingsApp from './components/settings/SettingsApp';
-import { VIEW_CONTEXT_SETTINGS } from './googlesitekit/constants';
+import UserInputApp from './components/user-input/UserInputApp';
+import { VIEW_CONTEXT_USER_INPUT } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
-	const renderTarget = document.getElementById( 'js-googlesitekit-settings' );
+	const renderTarget = document.getElementById(
+		'js-googlesitekit-user-input'
+	);
 
 	if ( renderTarget ) {
 		render(
-			<Root viewContext={ VIEW_CONTEXT_SETTINGS }>
-				<HashRouter>
-					<SettingsApp />
-				</HashRouter>
+			// @ts-expect-error Root is not properly typed yet.
+			<Root viewContext={ VIEW_CONTEXT_USER_INPUT }>
+				<UserInputApp />
 			</Root>,
 			renderTarget
 		);
