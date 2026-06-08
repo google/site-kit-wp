@@ -135,6 +135,7 @@ export function registerDefaults( widgetsAPI ) {
 				'Find out how your audience is growing',
 				'google-site-kit'
 			),
+			pdfTitle: __( 'Traffic', 'google-site-kit' ),
 			subtitle: __(
 				'Track your site’s traffic over time',
 				'google-site-kit'
@@ -254,6 +255,7 @@ export function registerDefaults( widgetsAPI ) {
 				'Find out how your audience is growing',
 				'google-site-kit'
 			),
+			pdfTitle: __( 'Traffic', 'google-site-kit' ),
 			subtitle: __(
 				'Track traffic to this page over time',
 				'google-site-kit'

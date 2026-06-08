@@ -3,10 +3,8 @@
  */
 import { RenderResult, act, render } from '@testing-library/react';
 import { act as actHook, renderHook } from '@testing-library/react-hooks';
-// @ts-expect-error - No types available.
 import { createMemoryHistory } from 'history';
 import { Dispatch, FC, ReactElement, SetStateAction } from 'react';
-// @ts-expect-error - No types available.
 import { Router } from 'react-router-dom';
 
 /**

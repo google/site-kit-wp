@@ -96,6 +96,13 @@ export function getSiteGoalsTour( {
 					'Want to know which specific form is bringing in the most interest? You can break these numbers down to see the performance of each individual form on your site.',
 					'google-site-kit'
 			  ),
+		styles: {
+			spotlight: {
+				...defaultStepOptions.styles.spotlight,
+				paddingInlineStart: '24px',
+				marginInlineStart: '-24px',
+			},
+		},
 	};
 
 	return {
