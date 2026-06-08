@@ -23,13 +23,13 @@ import { createRegistry } from '@wordpress/data';
  * Internal dependencies
  */
 import { CORE_UI } from '../../assets/js/googlesitekit/datastore/ui/constants';
+import { CORE_WIDGETS } from '../../assets/js/googlesitekit/widgets/datastore/constants';
 import {
 	createTestRegistry,
 	createWaitForRegistry,
 	provideWidgetRegistrations,
 	subscribeUntil,
 } from './utils';
-import { CORE_WIDGETS } from '../../assets/js/googlesitekit/widgets/datastore/constants';
 
 const basicStore = {
 	initialState: {

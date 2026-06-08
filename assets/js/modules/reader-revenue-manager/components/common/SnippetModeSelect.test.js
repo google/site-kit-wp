@@ -19,14 +19,10 @@
 /**
  * Internal dependencies
  */
-import SnippetModeSelect from './SnippetModeSelect';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { SNIPPET_MODES } from '@/js/modules/reader-revenue-manager/constants';
-import {
-	createTestRegistry,
-	fireEvent,
-	render,
-} from '../../../../../../tests/js/test-utils';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
+import SnippetModeSelect from './SnippetModeSelect';
 
 describe( 'SnippetModeSelect', () => {
 	let registry;

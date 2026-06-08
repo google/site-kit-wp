@@ -24,23 +24,23 @@ import { ElementType, ReactNode } from 'react';
 /**
  * Internal dependencies
  */
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import {
+	MODULE_SLUG_READER_REVENUE_MANAGER,
+	RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
+	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
+} from '@/js/modules/reader-revenue-manager/constants';
+import {
+	CONTENT_POLICY_STATES,
+	MODULES_READER_REVENUE_MANAGER,
+	PUBLICATION_ONBOARDING_STATES,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
-} from '../../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	CONTENT_POLICY_STATES,
-	PUBLICATION_ONBOARDING_STATES,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
-import {
-	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
-	RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
-} from '@/js/modules/reader-revenue-manager/constants';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import PolicyViolationNotification from './';
 
 const {

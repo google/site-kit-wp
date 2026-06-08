@@ -16,11 +16,16 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
-} from '../../../../tests/js/mock-survey-endpoints';
-import { render, waitFor } from '../../../../tests/js/test-utils';
+} from '@tests/js/mock-survey-endpoints';
+import { render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -28,9 +33,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-} from '../../../../tests/js/utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+} from '@tests/js/utils';
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 
 describe( 'SettingsCardKeyMetrics', () => {

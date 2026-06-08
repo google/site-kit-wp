@@ -25,17 +25,17 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import AdminBarImpressions from './AdminBarImpressions';
-import AdminBarClicks from './AdminBarClicks';
-import AdminBarUniqueVisitorsGA4 from './AdminBarUniqueVisitorsGA4';
-import AdminBarSessionsGA4 from './AdminBarSessionsGA4';
-import AdminBarActivateAnalyticsCTA from './AdminBarActivateAnalyticsCTA';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { Row, Cell } from '@/js/material-components';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { Cell, Row } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import AdminBarActivateAnalyticsCTA from './AdminBarActivateAnalyticsCTA';
+import AdminBarClicks from './AdminBarClicks';
+import AdminBarImpressions from './AdminBarImpressions';
+import AdminBarSessionsGA4 from './AdminBarSessionsGA4';
+import AdminBarUniqueVisitorsGA4 from './AdminBarUniqueVisitorsGA4';
 
 // Widget slugs.
 const WIDGET_IMPRESSIONS = 'adminBarImpressions';

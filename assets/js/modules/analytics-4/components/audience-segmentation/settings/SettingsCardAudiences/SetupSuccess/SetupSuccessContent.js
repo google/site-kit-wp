@@ -26,15 +26,15 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '@/js/googlesitekit/widgets/default-areas';
+import { Button } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import P from '@/js/components/Typography/P';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { trackEvent } from '@/js/util';
+import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '@/js/googlesitekit/widgets/default-areas';
 import useViewContext from '@/js/hooks/useViewContext';
-import { useDispatch, useSelect } from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
-import P from '@/js/components/Typography/P';
+import { trackEvent } from '@/js/util';
 import CheckFill from '@/svg/icons/check-fill.svg';
 
 export const SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION =

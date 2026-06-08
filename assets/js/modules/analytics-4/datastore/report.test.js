@@ -21,19 +21,19 @@
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4, DATE_RANGE_OFFSET } from './constants';
+import { isZeroReport } from '@/js/modules/analytics-4/utils';
+import { DAY_IN_SECONDS } from '@/js/util';
 import {
 	createTestRegistry,
-	untilResolved,
-	freezeFetch,
-	subscribeUntil,
-	muteFetch,
 	createWaitForRegistry,
+	freezeFetch,
+	muteFetch,
 	provideSiteInfo,
-} from '../../../../../tests/js/utils';
-import { DAY_IN_SECONDS } from '@/js/util';
-import { isZeroReport } from '@/js/modules/analytics-4/utils';
+	subscribeUntil,
+	untilResolved,
+} from '@tests/js/utils';
 import * as fixtures from './__fixtures__';
+import { MODULES_ANALYTICS_4 } from './constants';
 
 describe( 'modules/analytics-4 report', () => {
 	let registry;
@@ -541,7 +541,6 @@ describe( 'modules/analytics-4 report', () => {
 								.select( CORE_USER )
 								.getDateRangeDates( {
 									compare: true,
-									offsetDays: DATE_RANGE_OFFSET,
 								} );
 
 							// `getSampleReportArgs` uses `compareStartDate` as `startDate`.
@@ -656,7 +655,6 @@ describe( 'modules/analytics-4 report', () => {
 				// Calculate expected dates using the same method as `getSampleReportArgs`.
 				const dates = registry.select( CORE_USER ).getDateRangeDates( {
 					compare: true,
-					offsetDays: DATE_RANGE_OFFSET,
 				} );
 
 				const args = registry

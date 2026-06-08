@@ -19,32 +19,31 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	provideKeyMetrics,
-	provideModuleRegistrations,
-	provideModules,
-	freezeFetch,
-} from '../../../../../../tests/js/utils';
-import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 } from '@/js/googlesitekit/datastore/user/constants';
-import TopCitiesDrivingLeadsWidget from './TopCitiesDrivingLeadsWidget';
 import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	DATE_RANGE_OFFSET,
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '@/js/util/errors';
-import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
+import { render } from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	freezeFetch,
+	provideKeyMetrics,
+	provideModuleRegistrations,
+	provideModules,
+} from '@tests/js/utils';
+import TopCitiesDrivingLeadsWidget from './TopCitiesDrivingLeadsWidget';
 
 describe( 'TopCitiesDrivingLeadsWidget', () => {
 	let registry;
@@ -67,9 +66,7 @@ describe( 'TopCitiesDrivingLeadsWidget', () => {
 
 	it( 'should render correctly with the expected metrics', async () => {
 		const reportOptions = {
-			...registry.select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} ),
+			...registry.select( CORE_USER ).getDateRangeDates(),
 			dimensions: [ 'city', 'eventName' ],
 			dimensionFilters: {
 				eventName: {

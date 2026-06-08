@@ -25,8 +25,8 @@ import type { MouseEvent } from 'react';
 /**
  * Internal dependencies
  */
+import { render } from '@tests/js/test-utils';
 import PDFReportProgressSnackbar from './PDFReportProgressSnackbar';
-import { render } from '../../../../tests/js/test-utils';
 
 describe( 'PDFReportProgressSnackbar', () => {
 	it( 'renders default title, description, and Cancel label', () => {

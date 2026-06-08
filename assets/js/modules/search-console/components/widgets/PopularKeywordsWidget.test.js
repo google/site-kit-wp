@@ -19,31 +19,28 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../../../../tests/js/test-utils';
+import {
+	CORE_USER,
+	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { provideSearchConsoleMockReport } from '@/js/modules/search-console/util/data-mock';
+import {
+	ERROR_INTERNAL_SERVER_ERROR,
+	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+} from '@/js/util/errors';
+import { render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideKeyMetrics,
 	provideModuleRegistrations,
 	provideModules,
-} from '../../../../../../tests/js/utils';
-import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import {
-	CORE_USER,
-	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-} from '@/js/googlesitekit/datastore/user/constants';
+} from '@tests/js/utils';
 import PopularKeywordsWidget from './PopularKeywordsWidget';
-import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_SEARCH_CONSOLE,
-} from '@/js/modules/search-console/datastore/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import {
-	ERROR_INTERNAL_SERVER_ERROR,
-	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '@/js/util/errors';
-import { provideSearchConsoleMockReport } from '@/js/modules/search-console/util/data-mock';
 
 describe( 'PopularKeywordsWidget', () => {
 	let registry;
@@ -66,9 +63,7 @@ describe( 'PopularKeywordsWidget', () => {
 
 	it( 'should render correctly with the expected metrics', async () => {
 		const reportOptions = {
-			...registry.select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} ),
+			...registry.select( CORE_USER ).getDateRangeDates(),
 			dimensions: 'query',
 			limit: 100,
 			reportID:

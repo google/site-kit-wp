@@ -1,4 +1,16 @@
 /**
+ * Internal dependencies
+ */
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import {
+	GTM_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4/notifications';
+/**
  * GoogleTagIDMismatchNotification component tests.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
@@ -16,23 +28,14 @@
  * limitations under the License.
  */
 import {
-	render,
 	createTestRegistry,
-	provideUserInfo,
+	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
-	provideModuleRegistrations,
-} from '../../../../../../tests/js/test-utils';
+	provideUserInfo,
+	render,
+} from '@tests/js/test-utils';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
-import {
-	GTM_SCOPE,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4/notifications';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 
 describe( 'GoogleTagIDMismatchNotification', () => {
 	let registry;

@@ -21,28 +21,28 @@
  */
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
+import { Fragment } from 'react';
 
 /**
  * WordPress dependencies
  */
-import { __, _x, sprintf } from '@wordpress/i18n';
 import { useMemo } from '@wordpress/element';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import PreviewBlocks from '@/js/components/PreviewBlocks';
+import Typography from '@/js/components/Typography';
+import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	EMAIL_REPORT_FREQUENCIES,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { Fragment } from 'react';
-import Typography from '@/js/components/Typography';
-import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
-import PreviewBlock from '@/js/components/PreviewBlock';
-import PreviewBlocks from '@/js/components/PreviewBlocks';
 
 export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 	const breakpoint = useBreakpoint();

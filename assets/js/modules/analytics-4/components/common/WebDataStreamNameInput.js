@@ -32,20 +32,20 @@ import { isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { TextField } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
+import AccessibleWarningIcon from '@/js/components/AccessibleWarningIcon';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 import {
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
 } from '@/js/modules/analytics-4/datastore/constants';
-import AccessibleWarningIcon from '@/js/components/AccessibleWarningIcon';
-import { TextField } from 'googlesitekit-components';
 import {
 	isValidPropertyID,
 	isValidWebDataStreamName,
 } from '@/js/modules/analytics-4/utils/validation';
-import useFormValue from '@/js/hooks/useFormValue';
 
 export default function WebDataStreamNameInput() {
 	const propertyID = useSelect( ( select ) =>

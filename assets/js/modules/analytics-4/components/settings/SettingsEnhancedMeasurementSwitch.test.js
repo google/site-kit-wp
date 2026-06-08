@@ -19,13 +19,8 @@
 /**
  * Internal dependencies
  */
-import {
-	act,
-	createTestRegistry,
-	render,
-} from '../../../../../../tests/js/test-utils';
-import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -33,8 +28,12 @@ import {
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 
+// On the settings screen, enhanced measurement is a row. While off it has a
+// star icon and an Enable button. Once on it shows a green check and no
+// button.
 describe( 'SettingsEnhancedMeasurementSwitch', () => {
 	const { webDataStreams, accountSummaries } = fixtures;
 	const accounts = accountSummaries.accountSummaries;
@@ -108,30 +107,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 			] );
 	} );
 
-	it( 'should render with the switch defaulting to the on position when enhanced measurement is enabled for the web data stream', async () => {
-		await registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setEnhancedMeasurementStreamEnabled( {
-				propertyID,
-				webDataStreamID,
-				enabled: true,
-			} );
-
-		const { container, getByLabelText } = render(
-			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
-			{
-				registry,
-			}
-		);
-
-		expect( container ).toMatchSnapshot();
-
-		const switchControl = getByLabelText( 'Enable enhanced measurement' );
-
-		expect( switchControl ).toBeChecked();
-	} );
-
-	it( 'should render with the switch defaulting to the off position when enhanced measurement is disabled for the web data stream', async () => {
+	it( 'shows the Enable button when enhanced measurement is off for the web data stream', async () => {
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setEnhancedMeasurementStreamEnabled( {
@@ -140,21 +116,46 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 				enabled: false,
 			} );
 
-		const { container, getByLabelText } = render(
+		const { container, getByRole } = render(
 			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
-			{
-				registry,
-			}
+			{ registry }
 		);
 
-		expect( container ).toMatchSnapshot();
-
-		const switchControl = getByLabelText( 'Enable enhanced measurement' );
-
-		expect( switchControl ).not.toBeChecked();
+		expect(
+			getByRole( 'button', { name: /enable/i } )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-settings-measurement-row__icon--check'
+			)
+		).not.toBeInTheDocument();
 	} );
 
-	it( 'should not render the switch when enhanced measurement is already enabled for the web data stream', () => {
+	it( 'shows the green check and hides the Enable button when enhanced measurement is enabled for the web data stream', async () => {
+		await registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setEnhancedMeasurementStreamEnabled( {
+				propertyID,
+				webDataStreamID,
+				enabled: true,
+			} );
+
+		const { container, queryByRole } = render(
+			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
+			{ registry }
+		);
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-settings-measurement-row__icon--check'
+			)
+		).toBeInTheDocument();
+		expect(
+			queryByRole( 'button', { name: /enable/i } )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'shows the green check and hides the Enable button when enhanced measurement is already enabled for the web data stream', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetEnhancedMeasurementSettings(
@@ -165,24 +166,19 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 				{ propertyID, webDataStreamID }
 			);
 
-		const { container, queryByLabelText, getByText } = render(
+		const { container, queryByRole } = render(
 			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
-			{
-				registry,
-			}
+			{ registry }
 		);
 
-		expect( container ).toMatchSnapshot();
-
 		expect(
-			queryByLabelText( 'Enable enhanced measurement' )
-		).not.toBeInTheDocument();
-
-		expect(
-			getByText(
-				'Enhanced measurement is enabled for this web data stream'
+			container.querySelector(
+				'.googlesitekit-settings-measurement-row__icon--check'
 			)
 		).toBeInTheDocument();
+		expect(
+			queryByRole( 'button', { name: /enable/i } )
+		).not.toBeInTheDocument();
 	} );
 
 	describe.each( [
@@ -195,48 +191,43 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 				.setSettings( { [ settingName ]: settingCreate } );
 		} );
 
-		it( 'should render correctly, with the switch defaulting to the on position', () => {
-			const { container, getByLabelText } = render(
+		it( 'shows the green check, defaulting enhanced measurement to enabled', () => {
+			const { container, queryByRole } = render(
 				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
-				{
-					registry,
-				}
+				{ registry }
 			);
 
-			expect( container ).toMatchSnapshot();
-
-			const switchControl = getByLabelText(
-				'Enable enhanced measurement'
-			);
-
-			expect( switchControl ).toBeChecked();
+			expect(
+				container.querySelector(
+					'.googlesitekit-settings-measurement-row__icon--check'
+				)
+			).toBeInTheDocument();
+			expect(
+				queryByRole( 'button', { name: /enable/i } )
+			).not.toBeInTheDocument();
 		} );
 
-		it( 'should not default the switch to the on position when `isEnhancedMeasurementEnabled` is already `false`', () => {
+		it( 'shows the Enable button when enhanced measurement is already off', () => {
 			registry
 				.dispatch( CORE_FORMS )
 				.setValues( ENHANCED_MEASUREMENT_FORM, {
 					[ ENHANCED_MEASUREMENT_ENABLED ]: false,
 				} );
 
-			const { getByLabelText } = render(
+			const { getByRole } = render(
 				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
-				{
-					registry,
-				}
+				{ registry }
 			);
 
-			const switchControl = getByLabelText(
-				'Enable enhanced measurement'
-			);
-
-			expect( switchControl ).not.toBeChecked();
+			expect(
+				getByRole( 'button', { name: /enable/i } )
+			).toBeInTheDocument();
 		} );
 	} );
 
 	it.each( [
 		[
-			'enhanced measurement settings is loading',
+			'enhanced measurement settings are loading',
 			() => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -264,27 +255,20 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 					] );
 			},
 		],
-	] )(
-		'should render correctly, with the switch in the loading state when %s',
-		async ( _, setLoadingState ) => {
-			setLoadingState();
+	] )( 'renders a progress bar while %s', async ( _, setLoadingState ) => {
+		setLoadingState();
 
-			const { container, getByRole, waitForRegistry } = render(
-				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
-				{
-					registry,
-				}
-			);
+		const { getByRole, waitForRegistry } = render(
+			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
+			{ registry }
+		);
 
-			expect( container ).toMatchSnapshot();
+		expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
 
-			expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
+		await waitForRegistry();
+	} );
 
-			await waitForRegistry();
-		}
-	);
-
-	it( 'should render correctly, with the switch disabled when hasModuleAccess is false', async () => {
+	it( 'disables the Enable button when the user has no module access', async () => {
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setEnhancedMeasurementStreamEnabled( {
@@ -293,46 +277,19 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 				enabled: false,
 			} );
 
-		const { container, getByLabelText } = render(
+		const { getByRole } = render(
 			<SettingsEnhancedMeasurementSwitch hasModuleAccess={ false } />,
 			{ registry }
 		);
 
-		expect( container ).toMatchSnapshot();
-
-		expect(
-			getByLabelText( 'Enable enhanced measurement' )
-		).toBeDisabled();
+		expect( getByRole( 'button', { name: /enable/i } ) ).toBeDisabled();
 	} );
 
-	it( 'should toggle the switch on click', async () => {
-		const { getByLabelText, waitForRegistry } = render(
+	it( 'enables enhanced measurement when the Enable button is clicked', async () => {
+		const { getByRole, waitForRegistry } = render(
 			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
-			{
-				registry,
-			}
+			{ registry }
 		);
-
-		const switchControl = getByLabelText( 'Enable enhanced measurement' );
-
-		expect( switchControl ).not.toBeChecked();
-
-		switchControl.click();
-
-		await waitForRegistry();
-
-		expect( switchControl ).toBeChecked();
-	} );
-
-	it( 'should toggle the streamEnabled setting on click', async () => {
-		const { getByLabelText, waitForRegistry } = render(
-			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
-			{
-				registry,
-			}
-		);
-
-		const switchControl = getByLabelText( 'Enable enhanced measurement' );
 
 		expect(
 			registry
@@ -343,7 +300,7 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 				)
 		).toBe( false );
 
-		switchControl.click();
+		fireEvent.click( getByRole( 'button', { name: /enable/i } ) );
 
 		await waitForRegistry();
 
@@ -355,163 +312,6 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 					webDataStreamID
 				)
 		).toBe( true );
-	} );
-
-	describe.each( [
-		[ 'propertyID', PROPERTY_CREATE ],
-		[ 'webDataStreamID', WEBDATASTREAM_CREATE ],
-	] )( 'when the %s is changed to %s', ( settingName, settingCreate ) => {
-		beforeEach( async () => {
-			await registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setEnhancedMeasurementStreamEnabled( {
-					propertyID,
-					webDataStreamID,
-					enabled: true,
-				} );
-		} );
-
-		it( 'should revert the switch from off to on', async () => {
-			const { getByLabelText, waitForRegistry } = render(
-				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
-				{
-					registry,
-				}
-			);
-
-			const switchControl = getByLabelText(
-				'Enable enhanced measurement'
-			);
-
-			switchControl.click();
-
-			await waitForRegistry();
-
-			expect( switchControl ).not.toBeChecked();
-
-			act( () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					[ settingName ]: settingCreate,
-				} );
-			} );
-
-			expect( switchControl ).toBeChecked();
-		} );
-
-		it( 'should not toggle the switch from on to off', () => {
-			const { getByLabelText } = render(
-				<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
-				{
-					registry,
-				}
-			);
-
-			const switchControl = getByLabelText(
-				'Enable enhanced measurement'
-			);
-
-			expect( switchControl ).toBeChecked();
-
-			act( () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-					[ settingName ]: settingCreate,
-				} );
-			} );
-
-			expect( switchControl ).toBeChecked();
-		} );
-	} );
-
-	it( "should set the switch according to the web data stream's streamEnabled value when changing propertyID", async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID: PROPERTY_CREATE,
-		} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetEnhancedMeasurementSettings(
-				{
-					...enhancedMeasurementSettingsMock,
-					streamEnabled: true,
-				},
-				{ propertyID, webDataStreamID }
-			);
-
-		const { getByLabelText, getByText, waitForRegistry } = render(
-			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
-			{
-				registry,
-			}
-		);
-
-		const switchControl = getByLabelText( 'Enable enhanced measurement' );
-
-		switchControl.click();
-
-		await waitForRegistry();
-
-		expect( switchControl ).not.toBeChecked();
-
-		act( () => {
-			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-				propertyID,
-			} );
-		} );
-
-		await waitForRegistry();
-
-		expect( switchControl ).not.toBeInTheDocument();
-
-		expect(
-			getByText(
-				'Enhanced measurement is enabled for this web data stream'
-			)
-		).toBeInTheDocument();
-	} );
-
-	it( "should set the switch according to the web data stream's streamEnabled value when changing webDataStreamID", async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			webDataStreamID: WEBDATASTREAM_CREATE,
-		} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetEnhancedMeasurementSettings(
-				{
-					...enhancedMeasurementSettingsMock,
-					streamEnabled: true,
-				},
-				{ propertyID, webDataStreamID }
-			);
-
-		const { getByLabelText, getByText, waitForRegistry } = render(
-			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
-			{
-				registry,
-			}
-		);
-
-		const switchControl = getByLabelText( 'Enable enhanced measurement' );
-
-		switchControl.click();
-
-		await waitForRegistry();
-
-		expect( switchControl ).not.toBeChecked();
-
-		act( () => {
-			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-				webDataStreamID,
-			} );
-		} );
-
-		await waitForRegistry();
-
-		expect( switchControl ).not.toBeInTheDocument();
-
-		expect(
-			getByText(
-				'Enhanced measurement is enabled for this web data stream'
-			)
-		).toBeInTheDocument();
 	} );
 
 	describe( 'synchronization of enhanced measurement settings retrieval with loading states', () => {

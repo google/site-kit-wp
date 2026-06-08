@@ -24,7 +24,6 @@ import { MemoryRouter } from 'react-router-dom';
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
@@ -34,7 +33,8 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	untilResolved,
-} from './../../../../tests/js/utils';
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import SettingsModules from './SettingsModules';
 
 function Template( { setupRegistry, route = '/connected-services' } ) {

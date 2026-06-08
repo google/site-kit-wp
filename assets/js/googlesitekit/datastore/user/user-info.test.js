@@ -23,9 +23,9 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	untilResolved,
-} from '../../../../../tests/js/utils';
-import { initialState } from './index';
+} from '@tests/js/utils';
 import { CORE_USER } from './constants';
+import { initialState } from './index';
 
 describe( 'core/user userInfo', () => {
 	const userDataGlobal = '_googlesitekitUserData';

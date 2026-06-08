@@ -19,11 +19,11 @@
 /**
  * Internal dependencies
  */
-import ChangeGoalDriversLink from './ChangeGoalDriversLink';
-import { fireEvent, render } from '../../../../../../tests/js/test-utils';
-import { createTestRegistry } from '../../../../../../tests/js/utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { SITE_GOALS_SELECTION_PANEL_OPENED_KEY } from '@/js/modules/analytics-4/components/site-goals/constants';
+import { fireEvent, render } from '@tests/js/test-utils';
+import { createTestRegistry } from '@tests/js/utils';
+import ChangeGoalDriversLink from './ChangeGoalDriversLink';
 
 describe( 'ChangeGoalDriversLink', () => {
 	it( 'opens selection panel when clicked', () => {

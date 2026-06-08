@@ -26,22 +26,21 @@ import invariant from 'invariant';
  */
 import { set } from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
+	commonActions,
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { getDateString } from '@/js/util';
 import {
-	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
+	RESOURCE_TYPES,
 	RESOURCE_TYPE_AUDIENCE,
 	RESOURCE_TYPE_CUSTOM_DIMENSION,
 	RESOURCE_TYPE_PROPERTY,
-	RESOURCE_TYPES,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const fetchSaveResourceDataAvailabilityDateStore = createFetchStore( {
 	baseName: 'saveResourceDataAvailabilityDate',
@@ -297,9 +296,7 @@ const baseSelectors = {
 				return true;
 			}
 
-			const { startDate } = select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} );
+			const { startDate } = select( CORE_USER ).getDateRangeDates();
 
 			// TODO: use `replaceAll` instead when we upgrade our Node version.
 			const startDateYYYYMMDD = Number( startDate.replace( /-/g, '' ) );

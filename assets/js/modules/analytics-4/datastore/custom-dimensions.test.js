@@ -25,21 +25,22 @@ import { times } from 'lodash';
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { enabledFeatures } from '@/js/features';
+import {
+	CORE_USER,
+	KM_ANALYTICS_POPULAR_AUTHORS,
+	KM_ANALYTICS_TOP_CATEGORIES,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 import {
 	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 	untilResolved,
-} from '../../../../../tests/js/utils';
-import {
-	CORE_USER,
-	KM_ANALYTICS_POPULAR_AUTHORS,
-	KM_ANALYTICS_TOP_CATEGORIES,
-} from '@/js/googlesitekit/datastore/user/constants';
-import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
+} from '@tests/js/utils';
+import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
 
 describe( 'modules/analytics-4 custom-dimensions', () => {
 	let registry;
@@ -73,6 +74,30 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 	afterAll( () => {
 		setUsingCache( true );
+	} );
+
+	describe( 'CUSTOM_DIMENSION_DEFINITIONS', () => {
+		it( 'should include googlesitekit_event_provider with EVENT scope', () => {
+			expect(
+				CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_event_provider
+			).toEqual(
+				expect.objectContaining( {
+					parameterName: 'googlesitekit_event_provider',
+					scope: 'EVENT',
+				} )
+			);
+		} );
+
+		it( 'should include googlesitekit_form_id with EVENT scope', () => {
+			expect(
+				CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_form_id
+			).toEqual(
+				expect.objectContaining( {
+					parameterName: 'googlesitekit_form_id',
+					scope: 'EVENT',
+				} )
+			);
+		} );
 	} );
 
 	describe( 'actions', () => {
@@ -137,6 +162,46 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 		} );
 
 		describe( 'fetchSyncAvailableCustomDimensions', () => {
+			it( 'keeps the synced dimensions when the settings are rolled back', async () => {
+				// Load the settings so the working copy and the saved baseline
+				// both start with no available custom dimensions.
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					propertyID,
+					availableCustomDimensions: [],
+				} );
+
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					),
+					{
+						body: customDimensionNames,
+						status: 200,
+					}
+				);
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.fetchSyncAvailableCustomDimensions();
+
+				// The `sync-custom-dimensions` request writes the dimensions to
+				// `savedSettings` too, so the form sees no unsaved change.
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).haveSettingsChanged()
+				).toBe( false );
+
+				// Cancel rolls `settings` back to `savedSettings`. The synced
+				// dimensions must survive, otherwise an already enabled row would
+				// show its Enable button again until the next page load.
+				registry.dispatch( MODULES_ANALYTICS_4 ).rollbackSettings();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableCustomDimensions()
+				).toEqual( customDimensionNames );
+			} );
+
 			it( 'fetches and returns custom dimensions', async () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID,
@@ -188,6 +253,25 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 					scope: 'user',
 				},
 			};
+
+			beforeEach( () => {
+				// Turn the Site Goals feature flag on. The fold-in still only
+				// runs when the advanced data breakdowns setting is also on,
+				// which each test sets for itself, so the flag being on here is
+				// safe for the tests that leave the setting off.
+				enabledFeatures.add( 'siteGoals' );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAdvancedDataBreakdownsSettings( {
+						enabled: false,
+					} );
+			} );
+
+			afterEach( () => {
+				enabledFeatures.delete( 'siteGoals' );
+			} );
+
 			it( 'does not make a network request if there are no missing custom dimensions', async () => {
 				provideSiteInfo( registry, {
 					postTypes: [ { slug: 'product', label: 'Product' } ],
@@ -209,6 +293,82 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 					.createCustomDimensions();
 
 				expect( fetchMock ).not.toHaveFetched();
+			} );
+
+			it( 'does not include the Site Goals dimensions when advanced data breakdowns is off', async () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+					availableCustomDimensions: customDimensionNames,
+				} );
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetKeyMetricsSettings( keyMetricsSettings );
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetUserInputSettings( coreUserInputSettings );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.createCustomDimensions();
+
+				// All key metric dimensions are already available, so no network request is made.
+				expect( fetchMock ).not.toHaveFetched();
+			} );
+
+			it( 'includes the Site Goals dimensions when the flag and the setting are both on', async () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAdvancedDataBreakdownsSettings( {
+						enabled: true,
+					} );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+					availableCustomDimensions: customDimensionNames,
+				} );
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetKeyMetricsSettings( keyMetricsSettings );
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetUserInputSettings( coreUserInputSettings );
+
+				const createEndpoint = new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+				);
+				fetchMock.post( createEndpoint, {
+					body: customDimension,
+					status: 200,
+				} );
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					),
+					{
+						body: customDimensionNames,
+						status: 200,
+					}
+				);
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.createCustomDimensions();
+
+				const createCalls = fetchMock
+					.calls( createEndpoint )
+					.map( ( [ , req ] ) => JSON.parse( req.body ) );
+				const dimensionNames = createCalls.map(
+					( payload ) => payload?.data?.customDimension?.parameterName
+				);
+
+				// The fold-in adds the Site Goals dimensions that have a
+				// definition (post_date and post_type here) to the required
+				// set, so they get created. googlesitekit_event_provider and
+				// googlesitekit_form_id have no entry in
+				// CUSTOM_DIMENSION_DEFINITIONS yet (that arrives with #12775),
+				// so they cannot be created and are not asserted here.
+				expect( dimensionNames ).toContain( 'googlesitekit_post_date' );
+				expect( dimensionNames ).toContain( 'googlesitekit_post_type' );
 			} );
 
 			it( 'creates missing custom dimensions and syncs them in the Analytics 4 module settings', async () => {
@@ -276,6 +436,50 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 							)
 					).toBe( true );
 				} );
+			} );
+
+			it( 'creates explicitly requested missing custom dimensions', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetUserInputSettings( coreUserInputSettings );
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					widgetSlugs: [],
+					isWidgetHidden: false,
+				} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+					availableCustomDimensions: [],
+				} );
+
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+					),
+					{
+						body: customDimension,
+						status: 200,
+					}
+				);
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					),
+					{
+						body: [ 'googlesitekit_post_author' ],
+						status: 200,
+					}
+				);
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.createCustomDimensions( [ 'googlesitekit_post_author' ] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableCustomDimensions()
+				).toEqual( [ 'googlesitekit_post_author' ] );
 			} );
 		} );
 

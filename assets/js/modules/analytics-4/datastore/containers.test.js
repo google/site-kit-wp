@@ -19,12 +19,9 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	untilResolved,
-} from '../../../../../tests/js/utils';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { createTestRegistry, untilResolved } from '@tests/js/utils';
 import * as fixtures from './__fixtures__';
+import { MODULES_ANALYTICS_4 } from './constants';
 
 describe( 'modules/analytics-4 containers', () => {
 	let registry;

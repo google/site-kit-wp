@@ -30,14 +30,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, Select } from 'googlesitekit-data';
-import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
+import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { numFmt } from '@/js/util';
+import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
 import {
 	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
@@ -45,13 +40,15 @@ import {
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	getDimensionFiltersForEvents,
-	normalizePrimaryEvents,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
-import {
 	GoalDriverComponentProps,
 	GoalDriverRow,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import {
+	getDimensionFiltersForEvents,
+	normalizePrimaryEvents,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { numFmt } from '@/js/util';
 
 interface ReportRow {
 	dimensionValues?: Array< { value?: string } >;
@@ -59,7 +56,7 @@ interface ReportRow {
 }
 
 const TopTrafficChannelsRateGoalDriver: FC< GoalDriverComponentProps > = ( {
-	title: providedTitle,
+	title = '',
 	goalType,
 	limit,
 	rows: providedRows,
@@ -68,17 +65,8 @@ const TopTrafficChannelsRateGoalDriver: FC< GoalDriverComponentProps > = ( {
 	primaryEvent,
 	onExpandableRowsChange,
 } ) => {
-	const title =
-		providedTitle ||
-		( goalType === GOAL_TYPES.ECOMMERCE
-			? __( 'Top traffic channels by sales rate', 'google-site-kit' )
-			: __( 'Top traffic channels by leads rate', 'google-site-kit' ) );
-
 	const dates = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} ),
+		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
 		[]
 	);
 	const reportOptions = useMemo( () => {

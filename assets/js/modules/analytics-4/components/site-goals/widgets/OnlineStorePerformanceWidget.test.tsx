@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -22,24 +27,23 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { render } from '../../../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	provideModules,
-} from '../../../../../../../tests/js/utils';
-import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import {
+	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+	GOAL_TYPES,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	DATE_RANGE_OFFSET,
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
-import {
-	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-	GOAL_TYPES,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { fireEvent, render, waitFor } from '@tests/js/test-utils';
+import { createTestRegistry, provideModules } from '@tests/js/utils';
 import OnlineStorePerformanceWidget from './OnlineStorePerformanceWidget';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
@@ -74,22 +78,18 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		};
 	}
 
-	function buildSecondaryEventsReportOptions(
+	function buildVisitorEngagementEventReportOptions(
 		dates: Record< string, unknown >,
-		secondaryEvents: string[]
+		eventName: string
 	) {
 		return {
 			...dates,
 			metrics: [ { name: 'eventCount' } ],
 			dimensions: [ { name: 'eventName' } ],
 			dimensionFilters: {
-				eventName: {
-					filterType: 'inListFilter',
-					value: secondaryEvents,
-				},
+				eventName,
 			},
-			reportID:
-				'analytics-4_online-store-performance-widget_secondaryEventsReportOptions',
+			reportID: `analytics-4_site-goals_visitor-engagement_${ eventName }`,
 		};
 	}
 
@@ -100,9 +100,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			loading = false,
 		}: { empty?: boolean; loading?: boolean } = {}
 	) {
-		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
+		const dates = registry.select( CORE_USER ).getDateRangeDates();
 
 		const dimensionFilters = {
 			eventName: {
@@ -508,7 +506,16 @@ describe( 'OnlineStorePerformanceWidget', () => {
 				connected: true,
 			},
 		] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( { availableCustomDimensions: [] } );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSiteGoalsSettings( {} );
+		// Default to the breakdown notice being hidden (intro modal not yet
+		// dismissed); individual tests opt in by dismissing the intro modal.
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	it( 'renders WidgetNull when no ecommerce events are detected', async () => {
@@ -543,7 +550,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -584,7 +590,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			getByText( 'Top traffic channels by sales rate' )
 		).toBeInTheDocument();
-		expect( getByText( 'Sales by cities' ) ).toBeInTheDocument();
+		expect( getByText( 'Sales by visitor type' ) ).toBeInTheDocument();
 		expect( getAllByText( 'Organic Search' ).length ).toBeGreaterThan( 0 );
 		expect(
 			container.querySelectorAll(
@@ -599,7 +605,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -632,7 +637,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -653,9 +657,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		await waitForRegistry();
 
 		expect( getByText( 'Add to Cart Rate' ) ).toBeInTheDocument();
-		expect(
-			getByText( 'Total products added to cart' )
-		).toBeInTheDocument();
+		expect( getByText( 'Products added to cart' ) ).toBeInTheDocument();
 		expect( getByText( '“add_to_cart” events' ) ).toBeInTheDocument();
 		expect(
 			getByText( 'Top traffic channels by total sales' )
@@ -663,7 +665,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			getByText( 'Top traffic channels by sales rate' )
 		).toBeInTheDocument();
-		expect( getByText( 'Sales by cities' ) ).toBeInTheDocument();
+		expect( getByText( 'Sales by visitor type' ) ).toBeInTheDocument();
 	} );
 
 	it( 'uses purchase as primary event when both purchase and add_to_cart are detected', async () => {
@@ -675,7 +677,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -684,9 +685,9 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			ENUM_CONVERSION_EVENTS.PURCHASE
 		);
 		const engagementReport = buildEngagementReportOptions( dates );
-		const secondaryEventsReport = buildSecondaryEventsReportOptions(
+		const secondaryEventsReport = buildVisitorEngagementEventReportOptions(
 			dates,
-			[ ENUM_CONVERSION_EVENTS.ADD_TO_CART ]
+			ENUM_CONVERSION_EVENTS.ADD_TO_CART
 		);
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
@@ -708,7 +709,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			getByText( 'Top traffic channels by sales rate' )
 		).toBeInTheDocument();
-		expect( getByText( 'Sales by cities' ) ).toBeInTheDocument();
+		expect( getByText( 'Sales by visitor type' ) ).toBeInTheDocument();
 	} );
 
 	it( 'computes zero rate when sessions count is zero', async () => {
@@ -717,7 +718,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -762,7 +762,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -803,13 +802,68 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		unmount();
 	} );
 
+	it( 'renders the breakdown notice in the aggregated state and shows the tooltip on dismiss', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		// Aggregated state: intro modal dismissed, breakdown dimensions not yet
+		// created (availableCustomDimensions seeded as [] in beforeEach).
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [ SITE_GOALS_INTRO_MODAL_BANNER ] );
+		fetchMock.postOnce(
+			new RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
+			{ body: [], status: 200 }
+		);
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ], {
+			loading: true,
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				buildPrimaryEventReportOptions(
+					dates,
+					ENUM_CONVERSION_EVENTS.PURCHASE
+				),
+			] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				buildEngagementReportOptions( dates ),
+			] );
+
+		const { getByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText(
+				'Using both WooCommerce and Easy Digital Downloads to sell products or services?'
+			)
+		).toBeInTheDocument();
+
+		fireEvent.click( getByText( 'No thanks' ) );
+
+		await waitFor( () => {
+			expect(
+				registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+			).toMatchObject( { isTooltipVisible: true } );
+		} );
+	} );
+
 	it( 'renders goal drivers loading state while primary section stays visible', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -855,14 +909,11 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 		const goalDriverDates = registry
 			.select( CORE_USER )
-			.getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} );
+			.getDateRangeDates();
 
 		const primaryEventReport = buildPrimaryEventReportOptions(
 			dates,
@@ -937,7 +988,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -972,7 +1022,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -981,9 +1030,9 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			ENUM_CONVERSION_EVENTS.PURCHASE
 		);
 		const engagementReport = buildEngagementReportOptions( dates );
-		const secondaryEventsReport = buildSecondaryEventsReportOptions(
+		const secondaryEventsReport = buildVisitorEngagementEventReportOptions(
 			dates,
-			[ ENUM_CONVERSION_EVENTS.ADD_TO_CART ]
+			ENUM_CONVERSION_EVENTS.ADD_TO_CART
 		);
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ] );
@@ -1022,10 +1071,150 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 		await waitForRegistry();
 
-		expect(
-			getByText( 'Total products added to cart' )
-		).toBeInTheDocument();
+		expect( getByText( 'Products added to cart' ) ).toBeInTheDocument();
 		expect( getByText( '“add_to_cart” events' ) ).toBeInTheDocument();
+	} );
+
+	it( 'renders secondary visitor engagement loading state without replacing primary tiles', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [
+				ENUM_CONVERSION_EVENTS.PURCHASE,
+				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+			] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+
+		const primaryEventReport = buildPrimaryEventReportOptions(
+			dates,
+			ENUM_CONVERSION_EVENTS.PURCHASE
+		);
+		const engagementReport = buildEngagementReportOptions( dates );
+		const visitorEngagementReport =
+			buildVisitorEngagementEventReportOptions(
+				dates,
+				ENUM_CONVERSION_EVENTS.ADD_TO_CART
+			);
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		provideAnalytics4MockReport( registry, primaryEventReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ visitorEngagementReport ] );
+
+		const { container, getByText, unmount, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Sales Rate' ) ).toBeInTheDocument();
+		expect( getByText( 'Total Sales' ) ).toBeInTheDocument();
+		expect( getByText( 'Products added to cart' ) ).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-visitor-engagement .googlesitekit-preview-block'
+			)
+		).toBeInTheDocument();
+		unmount();
+	} );
+
+	it( 'renders secondary visitor engagement error state without replacing primary tiles', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [
+				ENUM_CONVERSION_EVENTS.PURCHASE,
+				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+			] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+
+		const primaryEventReport = buildPrimaryEventReportOptions(
+			dates,
+			ENUM_CONVERSION_EVENTS.PURCHASE
+		);
+		const engagementReport = buildEngagementReportOptions( dates );
+		const visitorEngagementReport =
+			buildVisitorEngagementEventReportOptions(
+				dates,
+				ENUM_CONVERSION_EVENTS.ADD_TO_CART
+			);
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		provideAnalytics4MockReport( registry, primaryEventReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 400,
+				message: 'Data loading failed',
+				data: {
+					status: 400,
+					reason: 'badRequest',
+				},
+			},
+			'getReport',
+			[ visitorEngagementReport ]
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ visitorEngagementReport ] );
+
+		const { getByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Sales Rate' ) ).toBeInTheDocument();
+		expect( getByText( 'Total Sales' ) ).toBeInTheDocument();
+		expect( getByText( 'Products added to cart' ) ).toBeInTheDocument();
+		expect( getByText( 'Data loading failed' ) ).toBeInTheDocument();
+	} );
+
+	it( 'does not render add_to_cart secondary tile when deselected', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [
+				ENUM_CONVERSION_EVENTS.PURCHASE,
+				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+			] );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+			visitorEngagement: {
+				[ GOAL_TYPES.ECOMMERCE ]: [],
+				[ GOAL_TYPES.LEAD ]: [],
+			},
+		} );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+
+		const primaryEventReport = buildPrimaryEventReportOptions(
+			dates,
+			ENUM_CONVERSION_EVENTS.PURCHASE
+		);
+		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		provideAnalytics4MockReport( registry, primaryEventReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { getByText, queryByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Engagement rate' ) ).toBeInTheDocument();
+		expect(
+			queryByText( 'Products added to cart' )
+		).not.toBeInTheDocument();
+		expect( queryByText( '“add_to_cart” events' ) ).not.toBeInTheDocument();
 	} );
 
 	it( 'does not render secondary add_to_cart tile when primary is add_to_cart', async () => {
@@ -1034,7 +1223,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ] );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -1054,11 +1242,9 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 		await waitForRegistry();
 
-		// "Total products added to cart" appears exactly once — in the primary action section only.
+		// "Products added to cart" appears exactly once — in the primary action section only.
 		// No secondary ecommerce tile should appear in the visitor engagement section.
-		expect( getAllByText( 'Total products added to cart' ) ).toHaveLength(
-			1
-		);
+		expect( getAllByText( 'Products added to cart' ) ).toHaveLength( 1 );
 		// Primary add_to_cart tile in primary action should still render.
 		expect( queryByText( '“add_to_cart” events' ) ).toBeInTheDocument();
 		// No additional secondary add_to_cart subtitle in visitor engagement section.

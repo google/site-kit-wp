@@ -25,24 +25,24 @@ import adblocker from './adblocker';
 import audienceSettings from './audience-settings';
 import authentication from './authentication';
 import { CORE_USER } from './constants';
+import conversionReportingSettings from './conversion-reporting-settings';
 import dateRange from './date-range';
 import disconnect from './disconnect';
 import dismissedItems from './dismissed-items';
+import emailReportingSettings from './email-reporting-settings';
 import expirableItems from './expirable-items';
 import featureTours from './feature-tours';
+import initialSetupSettings from './initial-setup-settings';
 import keyMetrics from './key-metrics';
-import notifications from './notifications';
 import nonces from './nonces';
+import notifications from './notifications';
 import permissions from './permissions';
 import prompts from './prompts';
+import setupFlow from './setup-flow';
 import surveys from './surveys';
 import tracking from './tracking';
 import userInfo from './user-info';
 import userInputSettings from './user-input-settings';
-import conversionReportingSettings from './conversion-reporting-settings';
-import emailReportingSettings from './email-reporting-settings';
-import initialSetupSettings from './initial-setup-settings';
-import welcomeModal from './welcome-modal';
 
 const store = combineStores(
 	commonStore,
@@ -67,7 +67,7 @@ const store = combineStores(
 	conversionReportingSettings,
 	emailReportingSettings,
 	initialSetupSettings,
-	welcomeModal
+	setupFlow
 );
 
 export const {

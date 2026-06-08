@@ -23,6 +23,7 @@ import '@/js/util/initialize-google-global';
 /**
  * External dependencies
  */
+// eslint-disable-next-line sitekit/sort-import-groups -- prevent the `initialize-google-global` import from being moved to the "Internal dependencies" group.
 import classnames from 'classnames';
 import invariant from 'invariant';
 import PropTypes from 'prop-types';
@@ -97,7 +98,7 @@ export default function GoogleChart( props ) {
 	const breakpoint = useBreakpoint();
 
 	const { startDate, endDate } = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( { offsetDays: 0 } )
+		select( CORE_USER ).getDateRangeDates()
 	);
 
 	const viewContext = useViewContext();

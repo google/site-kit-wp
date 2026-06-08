@@ -21,14 +21,14 @@
 // do any type-checking for now in stories.
 // @ts-nocheck
 
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
-import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
+/**
+ * Internal dependencies
+ */
 import { Cell, Grid, Row } from '@/js/material-components';
-import {
-	provideModules,
-	provideSiteInfo,
-} from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
+import { provideModules, provideSiteInfo } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import SettingsForm from './SettingsForm';
 
 function Template() {

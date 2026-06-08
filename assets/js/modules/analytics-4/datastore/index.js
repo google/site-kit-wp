@@ -20,29 +20,32 @@
  * Internal dependencies
  */
 import { combineStores } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { createSnapshotStore } from '@/js/googlesitekit/data/create-snapshot-store';
 import accounts from './accounts';
-import audiences from './audiences';
+import advancedDataBreakdowns from './advanced-data-breakdowns';
 import audienceSettings from './audience-settings';
+import audiences from './audiences';
 import baseModuleStore from './base';
+import { MODULES_ANALYTICS_4 } from './constants';
 import containers from './containers';
-import keyEvents from './key-events';
 import conversionReporting from './conversion-reporting';
 import customDimensions from './custom-dimensions';
 import customDimensionsGatheringData from './custom-dimensions-gathering-data';
 import enhancedMeasurement from './enhanced-measurement';
+import keyEvents from './key-events';
+import moduleData from './module-data';
 import partialData from './partial-data';
 import properties from './properties';
 import report from './report';
 import service from './service';
 import settings from './settings';
+import siteGoalsSettings from './site-goals-settings';
 import tags from './tags';
 import webdatastreams from './webdatastreams';
-import moduleData from './module-data';
-import { createSnapshotStore } from '@/js/googlesitekit/data/create-snapshot-store';
 
 const store = combineStores(
 	accounts,
+	advancedDataBreakdowns,
 	audiences,
 	audienceSettings,
 	baseModuleStore,
@@ -59,6 +62,7 @@ const store = combineStores(
 	report,
 	settings,
 	service,
+	siteGoalsSettings,
 	tags,
 	webdatastreams
 );

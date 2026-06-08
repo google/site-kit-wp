@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { act, render } from '../../../../../tests/js/test-utils';
+import { act, render } from '@tests/js/test-utils';
 import WidgetDismissTransition, {
 	DISMISS_TRANSITION_MS,
 } from './WidgetDismissTransition';

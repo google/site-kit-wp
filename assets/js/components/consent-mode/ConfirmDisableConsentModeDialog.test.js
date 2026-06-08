@@ -19,12 +19,12 @@
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
 	provideModules,
 	render,
-} from '../../../../tests/js/test-utils';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+} from '@tests/js/test-utils';
 import ConfirmDisableConsentModeDialog from './ConfirmDisableConsentModeDialog';
 
 describe( 'ConfirmDisableConsentModeDialog', () => {

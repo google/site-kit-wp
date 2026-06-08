@@ -19,12 +19,9 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	provideSiteInfo,
-} from '../../../../../tests/js/utils';
-import { initialState } from './index';
+import { createTestRegistry, provideSiteInfo } from '@tests/js/utils';
 import { CORE_SITE } from './constants';
+import { initialState } from './index';
 
 describe( 'core/site store', () => {
 	let registry;

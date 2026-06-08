@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../tests/js/utils';
-import { CORE_WIDGETS } from './constants';
 import Null from '@/js/components/Null';
+import { createTestRegistry } from '@tests/js/utils';
+import { CORE_WIDGETS } from './constants';
 
 describe( 'core/widgets Widget contexts', () => {
 	let registry;

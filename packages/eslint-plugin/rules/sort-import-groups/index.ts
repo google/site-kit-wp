@@ -48,6 +48,7 @@ import {
 	groupImports,
 	groupImportsByType,
 	importedName,
+	isOrphanGroupShapedComment,
 	isValidGroupComment,
 	leadingComments,
 	needsImportReorganization,
@@ -460,6 +461,40 @@ const rule: Rule.RuleModule = {
 			}
 		}
 
+		function checkOrphanGroupShapedComments( importNodes: ImportNode[] ) {
+			for ( let index = 0; index < importNodes.length; index++ ) {
+				const currentImport = importNodes[ index ];
+				const prevImport = index > 0 ? importNodes[ index - 1 ] : null;
+				const commentsBefore = leadingComments(
+					sourceCode,
+					currentImport
+				);
+
+				for ( const comment of commentsBefore ) {
+					if (
+						prevImport &&
+						comment.range[ 0 ] <= prevImport.range[ 1 ]
+					) {
+						continue;
+					}
+					if ( comment.type !== 'Block' ) {
+						continue;
+					}
+
+					const commentText = normalizeCommentText( comment.value );
+					if ( ! isOrphanGroupShapedComment( commentText ) ) {
+						continue;
+					}
+
+					context.report( {
+						node: currentImport,
+						message: `Dependency-style comment block "${ commentText }" is not a recognized group header and should be removed.`,
+						fix: createOrphanedCommentFix( comment ),
+					} );
+				}
+			}
+		}
+
 		function checkMemberSortOrder( node: ImportNode ) {
 			if ( node.type !== 'ImportDeclaration' ) {
 				return;
@@ -570,6 +605,7 @@ const rule: Rule.RuleModule = {
 
 			checkOrphanedCommentsBeforeFirstImport( importNodes );
 			checkOrphanedCommentsBetweenImports( importNodes );
+			checkOrphanGroupShapedComments( importNodes );
 
 			let currentGroup: DependencyGroup | null = null;
 			let lastNode: ImportNode | null = null;

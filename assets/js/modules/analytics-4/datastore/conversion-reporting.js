@@ -25,6 +25,7 @@ import { isEqual } from 'lodash';
  * Internal dependencies
  */
 import { createRegistrySelector } from 'googlesitekit-data';
+import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '@/js/components/user-input/util/constants';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
@@ -37,15 +38,14 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { safelySort } from '@/js/util';
 import {
 	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
 	CONVERSION_REPORTING_LEAD_EVENTS,
-	MODULES_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '@/js/components/user-input/util/constants';
-import { safelySort } from '@/js/util';
 
 export const selectors = {
 	/**
@@ -106,6 +106,35 @@ export const selectors = {
 			return select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
 				CONVERSION_REPORTING_LEAD_EVENTS
 			);
+		}
+	),
+
+	/**
+	 * Checks whether only ecommerce conversion reporting events have been detected.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(boolean|undefined)} True when ecommerce events are detected and no lead events are detected, otherwise false. Undefined if detected events are not loaded yet.
+	 */
+	hasEcommerceConversionReportingEventsOnly: createRegistrySelector(
+		( select ) => () => {
+			const hasEcommerceEvents =
+				select(
+					MODULES_ANALYTICS_4
+				).hasEcommerceConversionReportingEvents();
+			const hasLeadEvents =
+				select(
+					MODULES_ANALYTICS_4
+				).hasLeadConversionReportingEvents();
+
+			if (
+				hasEcommerceEvents === undefined ||
+				hasLeadEvents === undefined
+			) {
+				return undefined;
+			}
+
+			return hasEcommerceEvents && ! hasLeadEvents;
 		}
 	),
 
@@ -403,7 +432,7 @@ export const selectors = {
 	/**
 	 * Returns detected ecommerce events excluding the given primaryEvent, in hierarchy order.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @param {Object} state        Data store's state.
 	 * @param {string} primaryEvent The primary ecommerce event to exclude.

@@ -118,6 +118,7 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createTestRegistry } from '@tests/js/utils';
 import Component from '../components/Component';
 import LocalComponent from './LocalComponent';
 `,
@@ -171,6 +172,18 @@ import Banner from './Banner';
 // We need to add types for imported SVGs.
 import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
 import BannerModal from './index';
+`,
+		},
+
+		// Legacy group comment with a trailing dot is recognized as
+		// equivalent to the canonical heading and is left alone when no
+		// duplicate canonical block sits next to it.
+		{
+			code: `
+/**
+ * Internal dependencies.
+ */
+import { useSelect } from 'googlesitekit-data';
 `,
 		},
 	],
@@ -466,6 +479,30 @@ import LocalComponent from './LocalComponent';
 `,
 		},
 
+		// Unsorted internal aliases: `@/` should sort before `@tests/`.
+		{
+			code: `
+/**
+ * Internal dependencies
+ */
+import { createTestRegistry } from '@tests/js/utils';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+`,
+			errors: [
+				{
+					message:
+						"Import from '@/js/googlesitekit/datastore/user/constants' should be sorted alphabetically (before '@tests/js/utils').",
+				},
+			],
+			output: `
+/**
+ * Internal dependencies
+ */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createTestRegistry } from '@tests/js/utils';
+`,
+		},
+
 		// Mixed require and import - will need two passes to fully fix.
 		{
 			code: `
@@ -754,7 +791,7 @@ import React from 'react';
 			errors: [
 				{
 					message:
-						'Import from \'react\' should be preceded by a "External dependencies" comment block, found "Some other comment.".',
+						'Import from \'react\' should be preceded by a "External dependencies" comment block, found "Some other comment".',
 				},
 			],
 			output: `
@@ -818,6 +855,92 @@ const { sync: spawn } = require( 'cross-spawn' );
 const { sync: spawn } = require( 'cross-spawn' );
 /* eslint-disable-next-line */
 const jest = require( 'jest' );
+`,
+		},
+
+		// Trailing-dot legacy block normalizes to the canonical heading.
+		// When both sit above an import, the legacy one becomes an
+		// orphan and is cleared, leaving the canonical in place.
+		{
+			code: `
+/**
+ * Internal dependencies.
+ */
+
+/**
+ * Internal dependencies
+ */
+import { useSelect } from 'googlesitekit-data';
+`,
+			errors: [
+				{
+					message:
+						'Orphaned dependency comment block should be removed.',
+				},
+			],
+			output: `
+
+/**
+ * Internal dependencies
+ */
+import { useSelect } from 'googlesitekit-data';
+`,
+		},
+
+		// Orphan group-shaped header block (e.g. "Node dependencies")
+		// outside the three sanctioned groups should be removed.
+		{
+			code: `
+/**
+ * External dependencies
+ */
+const fs = require( 'fs' );
+/**
+ * Node dependencies
+ */
+const path = require( 'path' );
+`,
+			errors: [
+				{
+					message:
+						'Dependency-style comment block "Node dependencies" is not a recognized group header and should be removed.',
+				},
+				{
+					message:
+						"Import from 'path' should not have blank lines before it within the same group.",
+				},
+			],
+			output: `
+/**
+ * External dependencies
+ */
+const fs = require( 'fs' );
+const path = require( 'path' );
+`,
+		},
+
+		// require( '...' ).default is recognized as a require import, so
+		// the binding sorts into the correct group by its source.
+		{
+			code: `
+/**
+ * External dependencies
+ */
+const traverse = require( '@babel/traverse' ).default;
+const parser = require( '@babel/parser' );
+`,
+			errors: [
+				{
+					message:
+						"Import from '@babel/parser' should be sorted alphabetically (before '@babel/traverse').",
+				},
+			],
+			output: `
+/**
+ * External dependencies
+ */
+const parser = require( '@babel/parser' );
+const traverse = require( '@babel/traverse' ).default;
 `,
 		},
 	],

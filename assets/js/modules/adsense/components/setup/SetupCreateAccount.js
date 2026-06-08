@@ -20,8 +20,8 @@
  * WordPress dependencies
  */
 import {
-	createInterpolateElement,
 	Fragment,
+	createInterpolateElement,
 	useCallback,
 } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
@@ -29,20 +29,20 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
+import { useSelect } from 'googlesitekit-data';
 import SupportLink from '@/js/components/SupportLink';
-import { trackEvent } from '@/js/util';
-import { parseAccountID } from '@/js/modules/adsense/util/parsing';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
 	ErrorNotices,
 	UserProfile,
 } from '@/js/modules/adsense/components/common';
-import useViewContext from '@/js/hooks/useViewContext';
-import Typography from '@/js/components/Typography';
-import P from '@/js/components/Typography/P';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { parseAccountID } from '@/js/modules/adsense/util/parsing';
+import { trackEvent } from '@/js/util';
 
 export default function SetupCreateAccount() {
 	const viewContext = useViewContext();

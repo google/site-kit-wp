@@ -26,13 +26,13 @@ import invariant from 'invariant';
  */
 import { get } from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
 } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from './constants';
 
 const fetchGetGoogleTagContainerStore = createFetchStore( {
 	baseName: 'getGoogleTagContainer',

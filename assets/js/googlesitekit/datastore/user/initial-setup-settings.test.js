@@ -20,14 +20,14 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { CORE_USER } from './constants';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideModules,
 	untilResolved,
 	waitForDefaultTimeouts,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
+import { CORE_USER } from './constants';
 
 describe( 'core/user initial setup settings', () => {
 	let registry;

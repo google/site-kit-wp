@@ -23,34 +23,35 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	MODULES_ANALYTICS_4,
-	ENUM_CONVERSION_EVENTS,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	provideKeyMetrics,
-	provideModuleRegistrations,
-	provideModules,
-} from '../../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 } from '@/js/modules/analytics-4/utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import OnlineStorePerformanceWidget from './OnlineStorePerformanceWidget';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import { Story } from '@/js/types/Story';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
+import {
+	provideKeyMetrics,
+	provideModuleRegistrations,
+	provideModules,
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
+import OnlineStorePerformanceWidget from './OnlineStorePerformanceWidget';
 
-// Reference date: 2020-09-07, offsetDays: 0, 28-day range with comparison.
+// Reference date: 2020-09-07, 28-day range with comparison.
 const dates = {
 	startDate: '2020-08-11',
 	endDate: '2020-09-07',
@@ -71,6 +72,18 @@ function buildPrimaryEventReportOptions( primaryEvent: string ) {
 	};
 }
 
+function buildVisitorEngagementEventReportOptions( eventName: string ) {
+	return {
+		...dates,
+		metrics: [ { name: 'eventCount' } ],
+		dimensions: [ { name: 'eventName' } ],
+		dimensionFilters: {
+			eventName,
+		},
+		reportID: `analytics-4_site-goals_visitor-engagement_${ eventName }`,
+	};
+}
+
 function maybeEmptyRows< T >( empty: boolean, rows: T[] ) {
 	return empty ? [] : rows;
 }
@@ -88,6 +101,10 @@ const purchaseReportOptions = buildPrimaryEventReportOptions(
 const addToCartReportOptions = buildPrimaryEventReportOptions(
 	ENUM_CONVERSION_EVENTS.ADD_TO_CART
 );
+const addToCartVisitorEngagementReportOptions =
+	buildVisitorEngagementEventReportOptions(
+		ENUM_CONVERSION_EVENTS.ADD_TO_CART
+	);
 
 const THREE_VISIBLE_GOAL_DRIVERS: GoalDriverID[] = [
 	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
@@ -121,14 +138,21 @@ function commonSetup( registry: WPDataRegistry ) {
 
 	provideModuleRegistrations( registry );
 
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetSettings( { availableCustomDimensions: [] } );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '34567' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID( '56789' );
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {} );
 
 	registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
+	registry
+		.dispatch( CORE_USER )
+		.receiveGetDismissedItems( [ SITE_GOALS_INTRO_MODAL_BANNER ] );
 
 	provideKeyMetrics( registry );
 }
@@ -594,7 +618,21 @@ Loading.args = {
 		commonSetup( registry );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [
+				ENUM_CONVERSION_EVENTS.PURCHASE,
+				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+			] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ purchaseReportOptions ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ engagementReportOptions ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				addToCartVisitorEngagementReportOptions,
+			] );
 		seedGoalDriverReports( registry, [ ENUM_CONVERSION_EVENTS.PURCHASE ], {
 			loading: true,
 		} );

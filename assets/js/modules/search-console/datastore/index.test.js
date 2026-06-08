@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
+import { createTestRegistry } from '@tests/js/utils';
 import { MODULES_SEARCH_CONSOLE } from './constants';
-import { createTestRegistry } from '../../../../../tests/js/utils';
 
 describe( 'modules/search-console properties', () => {
 	let registry;

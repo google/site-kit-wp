@@ -1,13 +1,11 @@
 /**
  * External dependencies
  */
-import { Dispatch, FC, ReactElement, SetStateAction } from 'react';
-import { render, act, RenderResult } from '@testing-library/react';
-import { renderHook, act as actHook } from '@testing-library/react-hooks';
-// @ts-expect-error - No types available.
-import { Router } from 'react-router-dom';
-// @ts-expect-error - No types available.
+import { RenderResult, act, render } from '@testing-library/react';
+import { act as actHook, renderHook } from '@testing-library/react-hooks';
 import { createMemoryHistory } from 'history';
+import { Dispatch, FC, ReactElement, SetStateAction } from 'react';
+import { Router } from 'react-router-dom';
 
 /**
  * WordPress dependencies
@@ -21,8 +19,8 @@ import { useEffect, useState } from '@wordpress/element';
 import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import InViewProvider from '../../assets/js/components/InViewProvider';
 import { Provider as ViewContextProvider } from '../../assets/js/components/Root/ViewContextContext';
-import { createTestRegistry, createWaitForRegistry } from './utils';
 import { enabledFeatures } from '../../assets/js/features';
+import { createTestRegistry, createWaitForRegistry } from './utils';
 
 /**
  * Sets the complete list of current enabled features.

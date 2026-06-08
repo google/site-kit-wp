@@ -19,9 +19,9 @@
 /**
  * External dependencies
  */
-import { useMount } from 'react-use';
-import Joyride, { ACTIONS, EVENTS, LIFECYCLE, STATUS } from 'react-joyride';
 import PropTypes from 'prop-types';
+import Joyride, { ACTIONS, EVENTS, LIFECYCLE, STATUS } from 'react-joyride';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -31,14 +31,14 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
+import { useDispatch, useRegistry, useSelect } from 'googlesitekit-data';
+import { isFeatureEnabled } from '@/js/features';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
+import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util/tracking';
 import TourTooltip from './TourTooltip';
-import useViewContext from '@/js/hooks/useViewContext';
-import { isFeatureEnabled } from '@/js/features';
-import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 
 const setupFlowRefreshEnabled = isFeatureEnabled( 'setupFlowRefresh' );
 

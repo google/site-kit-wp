@@ -24,15 +24,15 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import * as tracking from '@/js/util/tracking';
 import {
 	createTestRegistry,
 	fireEvent,
 	provideSiteInfo,
 	render,
-} from 'tests/js/test-utils';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+} from '@tests/js/test-utils';
 import AnalyticsAccountCreationErrorNotice from './AnalyticsAccountCreationErrorNotice';
-import * as tracking from '@/js/util/tracking';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -96,58 +96,6 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 			expect( backSpy ).toHaveBeenCalled();
 
 			backSpy.mockRestore();
-		} );
-	} );
-
-	describe( 'max_accounts_reached', () => {
-		it( 'should render with a get help link', () => {
-			const expectedHelpURL = registry
-				.select( CORE_SITE )
-				.getGoogleSupportURL( {
-					path: '/analytics/',
-					hash: 'topic=14090456',
-				} );
-
-			const { getByRole, getByText } = render(
-				<AnalyticsAccountCreationErrorNotice
-					errorCode="max_accounts_reached"
-					onRetry={ () => {} }
-				/>,
-				{ registry }
-			);
-
-			expect(
-				getByText( 'Analytics account creation failed' )
-			).toBeInTheDocument();
-
-			expect(
-				getByText(
-					'Creating a new Analytics account failed because the Analytics account limit has been reached. You can manage the number of Analytics accounts associated with your Google account and then try again, or'
-				)
-			).toBeInTheDocument();
-
-			const getHelpLink = getByRole( 'link', { name: /get help/i } );
-			expect( getHelpLink ).toHaveAttribute( 'href', expectedHelpURL );
-
-			expect(
-				getByRole( 'button', { name: /^retry$/i } )
-			).toBeInTheDocument();
-		} );
-
-		it( 'should call onRetry when the Retry button is clicked', () => {
-			const onRetry = jest.fn();
-
-			const { getByRole } = render(
-				<AnalyticsAccountCreationErrorNotice
-					errorCode="max_accounts_reached"
-					onRetry={ onRetry }
-				/>,
-				{ registry }
-			);
-
-			fireEvent.click( getByRole( 'button', { name: /^retry$/i } ) );
-
-			expect( onRetry ).toHaveBeenCalled();
 		} );
 	} );
 

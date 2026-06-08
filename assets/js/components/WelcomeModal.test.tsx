@@ -22,41 +22,48 @@
 import fetchMock from 'fetch-mock';
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
+import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
+import { getWelcomeTour } from '@/js/feature-tours/welcome';
+import { setItem } from '@/js/googlesitekit/api/cache';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import {
+	CORE_USER,
+	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
+	PERMISSION_AUTHENTICATE,
+	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import * as tracking from '@/js/util/tracking';
+import { provideGatheringDataState } from '@tests/js/gathering-data-utils';
+import { mockBrowserScrolling } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
 	render,
 	waitFor,
-} from 'tests/js/test-utils';
+} from '@tests/js/test-utils';
 import {
 	freezeFetch,
 	provideModules,
 	provideUserAuthentication,
 	provideUserCapabilities,
-} from 'tests/js/utils';
-import { mockBrowserScrolling } from 'tests/js/mock-browser-utils';
-import { provideGatheringDataState } from 'tests/js/gathering-data-utils';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import {
-	CORE_USER,
-	PERMISSION_AUTHENTICATE,
-	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
-	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
-	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
-} from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { getWelcomeTour } from '@/js/feature-tours/welcome';
-import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
+} from '@tests/js/utils';
 import WelcomeModal from './WelcomeModal';
-import * as tracking from '@/js/util/tracking';
-import { setItem } from '@/js/googlesitekit/api/cache';
-import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -299,6 +306,24 @@ describe( 'WelcomeModal', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should show the view-only data available description when setupFlowRefreshPhase4 is enabled', async () => {
+		provideDataAvailableVariantData();
+
+		const { getByText, waitForRegistry } = render( <WelcomeModal />, {
+			features: [ 'setupFlowRefreshPhase4' ],
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		} );
+
+		await waitForRegistry();
+
+		expect(
+			getByText(
+				'Take a quick tour to see the most important parts of your dashboard'
+			)
+		).toBeInTheDocument();
+	} );
+
 	describe.each( [ 'Start tour', 'Maybe later', 'Close' ] )(
 		'when the "%s" button is clicked for the data available variant',
 		( buttonText ) => {
@@ -428,6 +453,7 @@ describe( 'WelcomeModal', () => {
 						},
 					},
 				},
+				isCenteredOnMobile: false,
 			} );
 
 			await waitFor( () => {
@@ -609,6 +635,31 @@ describe( 'WelcomeModal', () => {
 		expect(
 			getByRole( 'button', { name: 'Get started' } )
 		).toBeInTheDocument();
+	} );
+
+	it( 'should show the view-only gathering data description when setupFlowRefreshPhase4 is enabled', async () => {
+		provideGatheringDataVariantData();
+
+		const { getByText, queryByText, waitForRegistry } = render(
+			<WelcomeModal />,
+			{
+				features: [ 'setupFlowRefreshPhase4' ],
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByText(
+				'Site Kit is gathering data and soon metrics for your site will show on your dashboard'
+			)
+		).toBeInTheDocument();
+
+		expect(
+			queryByText( /Initial setup complete!/ )
+		).not.toBeInTheDocument();
 	} );
 
 	describe.each( [ 'Get started', 'Close' ] )(
@@ -913,6 +964,7 @@ describe( 'WelcomeModal', () => {
 						},
 					},
 				},
+				isCenteredOnMobile: false,
 			} );
 
 			await waitFor( () => {

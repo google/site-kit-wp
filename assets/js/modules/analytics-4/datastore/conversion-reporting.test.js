@@ -20,15 +20,6 @@
  * Internal dependencies
  */
 import {
-	createTestRegistry,
-	freezeFetch,
-	provideKeyMetrics,
-	provideKeyMetricsUserInputSettings,
-	provideModules,
-	provideUserAuthentication,
-	untilResolved,
-} from '../../../../../tests/js/utils';
-import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_NEW_VISITORS,
@@ -36,13 +27,22 @@ import {
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	MODULES_ANALYTICS_4,
-	ENUM_CONVERSION_EVENTS,
+	createTestRegistry,
+	freezeFetch,
+	provideKeyMetrics,
+	provideKeyMetricsUserInputSettings,
+	provideModules,
+	provideUserAuthentication,
+	untilResolved,
+} from '@tests/js/utils';
+import {
 	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
 	CONVERSION_REPORTING_LEAD_EVENTS,
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 describe( 'modules/analytics-4 conversion-reporting', () => {
 	let registry;
@@ -219,6 +219,74 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					[ selector ]();
 
 				expect( selectorValue ).toEqual( undefined );
+			} );
+		} );
+
+		describe( 'hasEcommerceConversionReportingEventsOnly', () => {
+			it( 'returns true when only ecommerce events are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( CONVERSION_REPORTING_ECOMMERCE_EVENTS );
+
+				const selectorValue = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasEcommerceConversionReportingEventsOnly();
+
+				expect( selectorValue ).toBe( true );
+			} );
+
+			it( 'returns false when only lead events are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( CONVERSION_REPORTING_LEAD_EVENTS );
+
+				const selectorValue = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasEcommerceConversionReportingEventsOnly();
+
+				expect( selectorValue ).toBe( false );
+			} );
+
+			it( 'returns false when both ecommerce and lead events are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+					] );
+
+				const selectorValue = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasEcommerceConversionReportingEventsOnly();
+
+				expect( selectorValue ).toBe( false );
+			} );
+
+			it( 'returns false when no events are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [] );
+
+				const selectorValue = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasEcommerceConversionReportingEventsOnly();
+
+				expect( selectorValue ).toBe( false );
+			} );
+
+			it( 'returns undefined when detected events have not loaded yet', () => {
+				// Prevent network request/resolver from running to avoid console errors.
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
+					)
+				);
+
+				const selectorValue = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasEcommerceConversionReportingEventsOnly();
+
+				expect( selectorValue ).toBe( undefined );
 			} );
 		} );
 

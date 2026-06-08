@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { trackAPIError, excludedErrorCodes } from './api';
+import { excludedErrorCodes, trackAPIError } from './api';
 import { enableTracking } from './tracking';
 import { DATA_LAYER } from './tracking/constants';
 

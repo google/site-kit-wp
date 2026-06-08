@@ -21,13 +21,9 @@
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { combineStores, commonStore } from 'googlesitekit-data';
-import {
-	createTestRegistry,
-	muteFetch,
-	untilResolved,
-} from '../../../../tests/js/utils';
-import { createExistingTagStore } from './create-existing-tag-store';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { createTestRegistry, muteFetch, untilResolved } from '@tests/js/utils';
+import { createExistingTagStore } from './create-existing-tag-store';
 
 const TEST_STORE = 'test/store';
 const tagMatchers = [ new RegExp( '<test-store-tag value="([^"]+)" />' ) ];

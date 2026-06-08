@@ -19,15 +19,11 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	fireEvent,
-	render,
-} from '../../../../tests/js/test-utils';
-import { provideSiteInfo } from '../../../../tests/js/utils';
-import FrequencySelector from './FrequencySelector';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
+import { provideSiteInfo } from '@tests/js/utils';
+import FrequencySelector from './FrequencySelector';
 
 function setupRegistry(
 	registry,

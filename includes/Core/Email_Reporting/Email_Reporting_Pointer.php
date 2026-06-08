@@ -6,6 +6,8 @@
  * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Core\Email_Reporting;
@@ -138,11 +140,11 @@ final class Email_Reporting_Pointer {
 					// Do not show if this pointer was already dismissed via core 'dismiss-wp-pointer'.
 					$user_id               = get_current_user_id();
 					$dismissed_wp_pointers = get_user_meta( $user_id, 'dismissed_wp_pointers', true );
-					if ( $dismissed_wp_pointers ) {
-						$dismissed_wp_pointers = explode( ',', $dismissed_wp_pointers );
-						if ( in_array( self::SLUG, $dismissed_wp_pointers, true ) ) {
-							return false;
-						}
+					if ( ! is_array( $dismissed_wp_pointers ) ) {
+						$dismissed_wp_pointers = explode( ',', (string) $dismissed_wp_pointers );
+					}
+					if ( in_array( self::SLUG, $dismissed_wp_pointers, true ) ) {
+						return false;
 					}
 
 					// If user is already subscribed to email reporting, bail early.

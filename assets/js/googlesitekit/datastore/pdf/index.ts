@@ -15,7 +15,7 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 
@@ -23,8 +23,8 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { combineStores, commonStore } from 'googlesitekit-data';
-import pdf from './pdf';
 import { CORE_PDF } from './constants';
+import pdf from './pdf';
 
 interface Store {
 	initialState: typeof pdf.initialState;

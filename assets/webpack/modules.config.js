@@ -17,16 +17,12 @@
  */
 
 /**
- * Node dependencies
- */
-const path = require( 'path' );
-
-/**
  * External dependencies
  */
-const ESLintPlugin = require( 'eslint-webpack-plugin' );
-const { DefinePlugin, ProvidePlugin, ProgressPlugin } = require( 'webpack' );
 const CreateFileWebpack = require( 'create-file-webpack' );
+const ESLintPlugin = require( 'eslint-webpack-plugin' );
+const path = require( 'path' );
+const { DefinePlugin, ProvidePlugin, ProgressPlugin } = require( 'webpack' );
 const { WebpackManifestPlugin } = require( 'webpack-manifest-plugin' );
 
 /**
@@ -50,61 +46,61 @@ module.exports = function ( mode, rules ) {
 		name: 'Module Entry Points',
 		entry: {
 			// New Modules (Post-JSR).
-			'googlesitekit-api': './js/googlesitekit-api.js',
-			'googlesitekit-data': './js/googlesitekit-data.js',
+			'googlesitekit-api': './js/googlesitekit-api.ts',
+			'googlesitekit-data': './js/googlesitekit-data.ts',
 			'googlesitekit-datastore-site':
-				'./js/googlesitekit-datastore-site.js',
+				'./js/googlesitekit-datastore-site.ts',
 			'googlesitekit-datastore-user':
-				'./js/googlesitekit-datastore-user.js',
+				'./js/googlesitekit-datastore-user.ts',
 			'googlesitekit-datastore-forms':
-				'./js/googlesitekit-datastore-forms.js',
+				'./js/googlesitekit-datastore-forms.ts',
 			'googlesitekit-datastore-location':
-				'./js/googlesitekit-datastore-location.js',
-			'googlesitekit-datastore-ui': './js/googlesitekit-datastore-ui.js',
+				'./js/googlesitekit-datastore-location.ts',
+			'googlesitekit-datastore-ui': './js/googlesitekit-datastore-ui.ts',
 			'googlesitekit-datastore-pdf':
 				'./js/googlesitekit-datastore-pdf.ts',
-			'googlesitekit-modules': './js/googlesitekit-modules.js',
+			'googlesitekit-modules': './js/googlesitekit-modules.ts',
 			'googlesitekit-notifications':
-				'./js/googlesitekit-notifications.js',
-			'googlesitekit-widgets': './js/googlesitekit-widgets.js',
-			'googlesitekit-modules-ads': './js/googlesitekit-modules-ads.js',
+				'./js/googlesitekit-notifications.ts',
+			'googlesitekit-widgets': './js/googlesitekit-widgets.ts',
+			'googlesitekit-modules-ads': './js/googlesitekit-modules-ads.ts',
 			'googlesitekit-modules-adsense':
-				'./js/googlesitekit-modules-adsense.js',
+				'./js/googlesitekit-modules-adsense.ts',
 			'googlesitekit-modules-analytics-4':
-				'./js/googlesitekit-modules-analytics-4.js',
+				'./js/googlesitekit-modules-analytics-4.ts',
 			'googlesitekit-modules-pagespeed-insights':
-				'js/googlesitekit-modules-pagespeed-insights.js',
+				'js/googlesitekit-modules-pagespeed-insights.ts',
 			'googlesitekit-modules-reader-revenue-manager':
-				'./js/googlesitekit-modules-reader-revenue-manager.js',
+				'./js/googlesitekit-modules-reader-revenue-manager.ts',
 			'googlesitekit-modules-search-console':
-				'./js/googlesitekit-modules-search-console.js',
+				'./js/googlesitekit-modules-search-console.ts',
 			'googlesitekit-modules-sign-in-with-google':
-				'./js/googlesitekit-modules-sign-in-with-google.js',
+				'./js/googlesitekit-modules-sign-in-with-google.ts',
 			'googlesitekit-modules-tagmanager':
-				'./js/googlesitekit-modules-tagmanager.js',
-			'googlesitekit-user-input': './js/googlesitekit-user-input.js',
+				'./js/googlesitekit-modules-tagmanager.ts',
+			'googlesitekit-user-input': './js/googlesitekit-user-input.tsx',
 			'googlesitekit-ad-blocking-recovery':
-				'./js/googlesitekit-ad-blocking-recovery.js',
+				'./js/googlesitekit-ad-blocking-recovery.tsx',
 			'googlesitekit-block-tracking':
-				'./js/googlesitekit-block-tracking.js',
-			'googlesitekit-polyfills': './js/googlesitekit-polyfills.js',
-			'googlesitekit-components': './js/googlesitekit-components.js',
+				'./js/googlesitekit-block-tracking.ts',
+			'googlesitekit-polyfills': './js/googlesitekit-polyfills.ts',
+			'googlesitekit-components': './js/googlesitekit-components.ts',
 			'googlesitekit-metric-selection':
-				'./js/googlesitekit-metric-selection.js',
+				'./js/googlesitekit-metric-selection.tsx',
 			'googlesitekit-key-metrics-setup':
-				'./js/googlesitekit-key-metrics-setup.js',
+				'./js/googlesitekit-key-metrics-setup.tsx',
 			// Old Modules
-			'googlesitekit-activation': './js/googlesitekit-activation.js',
-			'googlesitekit-adminbar': './js/googlesitekit-adminbar.js',
+			'googlesitekit-activation': './js/googlesitekit-activation.tsx',
+			'googlesitekit-adminbar': './js/googlesitekit-adminbar.tsx',
 			'googlesitekit-admin-pointers-tracking':
-				'./js/googlesitekit-admin-pointers-tracking.js',
-			'googlesitekit-settings': './js/googlesitekit-settings.js',
+				'./js/googlesitekit-admin-pointers-tracking.ts',
+			'googlesitekit-settings': './js/googlesitekit-settings.tsx',
 			'googlesitekit-main-dashboard':
-				'./js/googlesitekit-main-dashboard.js',
+				'./js/googlesitekit-main-dashboard.tsx',
 			'googlesitekit-entity-dashboard':
-				'./js/googlesitekit-entity-dashboard.js',
-			'googlesitekit-splash': './js/googlesitekit-splash.js',
-			'googlesitekit-wp-dashboard': './js/googlesitekit-wp-dashboard.js',
+				'./js/googlesitekit-entity-dashboard.tsx',
+			'googlesitekit-splash': './js/googlesitekit-splash.tsx',
+			'googlesitekit-wp-dashboard': './js/googlesitekit-wp-dashboard.tsx',
 		},
 		externals,
 		output: {
@@ -181,6 +177,18 @@ module.exports = function ( mode, rules ) {
 				},
 			},
 		},
-		resolve,
+		resolve: {
+			...resolve,
+			alias: {
+				...resolve.alias,
+				// Webpack 5 requires file extensions in ESM imports.
+				// `@react-pdf/renderer` omits them, so we alias the
+				// two paths it needs.
+				'react/jsx-runtime': require.resolve( 'react/jsx-runtime' ),
+				'react/jsx-dev-runtime': require.resolve(
+					'react/jsx-dev-runtime'
+				),
+			},
+		},
 	};
 };

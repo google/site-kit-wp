@@ -29,10 +29,10 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import useModuleGatheringZeroData from '@/js/hooks/useModuleGatheringZeroData';
 import BannerNotification, {
 	TYPES,
 } from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import useModuleGatheringZeroData from '@/js/hooks/useModuleGatheringZeroData';
 import SVGGraphic from '@/svg/graphics/banner-gathering-data.svg?url';
 
 export default function GatheringDataNotification( { id, Notification } ) {

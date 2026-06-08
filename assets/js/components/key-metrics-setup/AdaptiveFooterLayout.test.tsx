@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-import { render, waitFor, act } from '../../../../tests/js/test-utils';
-import {
-	getViewportHeight,
-	setViewportHeight,
-} from '../../../../tests/js/viewport-utils';
+/**
+ * Internal dependencies
+ */
+import { act, render, waitFor } from '@tests/js/test-utils';
+import { getViewportHeight, setViewportHeight } from '@tests/js/viewport-utils';
 import AdaptiveFooterLayout from './AdaptiveFooterLayout';
 
 describe( 'AdaptiveFooterLayout', () => {

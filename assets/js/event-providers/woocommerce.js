@@ -146,6 +146,7 @@
 			value: formatPrice( value ),
 			currency,
 			items: [],
+			googlesitekit_event_provider: 'woocommerce',
 		};
 
 		if ( transactionID ) {

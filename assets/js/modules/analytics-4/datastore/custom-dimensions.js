@@ -27,22 +27,27 @@ import { isPlainObject } from 'lodash';
  */
 import { set } from 'googlesitekit-api';
 import {
-	createRegistrySelector,
-	createRegistryControl,
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
+	createRegistryControl,
+	createRegistrySelector,
 } from 'googlesitekit-data';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { isFeatureEnabled } from '@/js/features';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { isValidPropertyID } from '@/js/modules/analytics-4/utils/validation';
-import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { isValidPropertyID } from '@/js/modules/analytics-4/utils/validation';
+import {
+	CUSTOM_DIMENSION_DEFINITIONS,
+	MODULES_ANALYTICS_4,
+	SITE_GOALS_CUSTOM_DIMENSIONS,
+} from './constants';
 
 const customDimensionFields = [
 	'parameterName',
@@ -89,6 +94,14 @@ const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 	reducerCallback: createReducer( ( state, dimensions ) => {
 		state.settings = state.settings || {};
 		state.settings.availableCustomDimensions = dimensions;
+
+		// The `sync-custom-dimensions` request saves `availableCustomDimensions`
+		// on the server, so set it on `savedSettings` too. The form compares
+		// `settings` and `savedSettings` to know if there are unsaved changes.
+		// Without this, it would see the synced value as unsaved, and Cancel
+		// would drop it until the next page load.
+		state.savedSettings = state.savedSettings || {};
+		state.savedSettings.availableCustomDimensions = dimensions;
 	} ),
 	isAction: true,
 } );
@@ -110,8 +123,11 @@ const baseActions = {
 	 * Creates custom dimensions and syncs them in the settings.
 	 *
 	 * @since 1.113.0
+	 * @since n.e.x.t Added the Site Goals custom dimensions when the `siteGoals` feature flag is on and advanced data breakdowns is enabled.
+	 *
+	 * @param {Array<string>} customDimensions Optional additional custom dimensions to create.
 	 */
-	*createCustomDimensions() {
+	*createCustomDimensions( customDimensions = [] ) {
 		const registry = yield commonActions.getRegistry();
 
 		// Wait for the necessary settings to be loaded before checking.
@@ -128,17 +144,41 @@ const baseActions = {
 			.getKeyMetrics();
 
 		// Extract required custom dimensions from selected metric tiles.
-		const requiredCustomDimensions = selectedMetricTiles.flatMap(
+		const keyMetricsRequiredCustomDimensions = selectedMetricTiles.flatMap(
 			( tileName ) => {
 				const tile = KEY_METRICS_WIDGETS[ tileName ];
 				return tile?.requiredCustomDimensions || [];
 			}
 		);
+		const requiredCustomDimensions = [
+			...keyMetricsRequiredCustomDimensions,
+			...( Array.isArray( customDimensions ) ? customDimensions : [] ),
+		];
 
 		// Deduplicate if any custom dimensions are repeated among tiles.
 		const uniqueRequiredCustomDimensions = [
 			...new Set( requiredCustomDimensions ),
 		];
+
+		// Add the Site Goals custom dimensions when the Site Goals feature is on
+		// and advanced data breakdowns is enabled. The breakdowns setting is read
+		// inside this check so feature-off flows (eg. key metrics setup) skip it
+		// and never fetch it. The settings row already loaded it, so it is ready.
+		if ( isFeatureEnabled( 'siteGoals' ) ) {
+			const isAdvancedDataBreakdownsEnabled = registry
+				.select( MODULES_ANALYTICS_4 )
+				.isAdvancedDataBreakdownsEnabled();
+
+			if ( isAdvancedDataBreakdownsEnabled ) {
+				SITE_GOALS_CUSTOM_DIMENSIONS.forEach( ( dimension ) => {
+					if (
+						! uniqueRequiredCustomDimensions.includes( dimension )
+					) {
+						uniqueRequiredCustomDimensions.push( dimension );
+					}
+				} );
+			}
+		}
 
 		const availableCustomDimensions = registry
 			.select( MODULES_ANALYTICS_4 )

@@ -21,17 +21,17 @@
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from './constants';
 import {
 	createTestRegistry,
+	createWaitForRegistry,
 	freezeFetch,
 	muteFetch,
 	provideSiteInfo,
 	subscribeUntil,
 	untilResolved,
-	createWaitForRegistry,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import * as fixtures from './__fixtures__';
+import { MODULES_SEARCH_CONSOLE } from './constants';
 
 describe( 'modules/search-console report', () => {
 	const searchAnalyticsRegexp = new RegExp(
@@ -330,7 +330,6 @@ describe( 'modules/search-console report', () => {
 
 				const dates = registry.select( CORE_USER ).getDateRangeDates( {
 					compare: true,
-					offsetDays: DATE_RANGE_OFFSET,
 				} );
 
 				const args = registry

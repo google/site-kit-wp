@@ -24,21 +24,22 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import TopTrafficChannelsGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/TopTrafficChannelsGoalDriver';
-import TopTrafficChannelsRateGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/TopTrafficChannelsRateGoalDriver';
-import TopPagesGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/TopPagesGoalDriver';
-import VisitorTypeGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/VisitorTypeGoalDriver';
-import CitiesGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/CitiesGoalDriver';
-import CountriesGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/CountriesGoalDriver';
-import DeviceTypeGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/DeviceTypeGoalDriver';
-import {
-	GOAL_DRIVER_IDS,
-	GOAL_TYPES,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_MAX_SELECTED_DRIVERS,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
+import CitiesGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/CitiesGoalDriver';
+import {
+	GOAL_DRIVER_IDS,
+	GOAL_TYPES,
+	TOP_AUTHORS_REQUIRED_CUSTOM_DIMENSIONS,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import CountriesGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/CountriesGoalDriver';
+import DeviceTypeGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/DeviceTypeGoalDriver';
+import TopAuthorsGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/TopAuthorsGoalDriver';
+import TopPagesGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/TopPagesGoalDriver';
+import TopTrafficChannelsGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/TopTrafficChannelsGoalDriver';
+import TopTrafficChannelsRateGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/TopTrafficChannelsRateGoalDriver';
 import {
 	GoalDriverCatalog,
 	GoalDriverContent,
@@ -47,6 +48,7 @@ import {
 	GoalDriverSelectionState,
 	GoalType,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import VisitorTypeGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/VisitorTypeGoalDriver';
 
 export const GOAL_DRIVER_CATALOG: GoalDriverCatalog = {
 	[ GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS ]: {
@@ -127,10 +129,33 @@ export const GOAL_DRIVER_CATALOG: GoalDriverCatalog = {
 		},
 		Component: TopPagesGoalDriver,
 	},
+	[ GOAL_DRIVER_IDS.TOP_AUTHORS ]: {
+		id: GOAL_DRIVER_IDS.TOP_AUTHORS,
+		order: 10,
+		defaultEnabled: false,
+		copyByGoalType: {
+			[ GOAL_TYPES.ECOMMERCE ]: {
+				title: __( 'Top authors driving sales', 'google-site-kit' ),
+				description: __(
+					'Whose content is best at converting buyers?',
+					'google-site-kit'
+				),
+			},
+			[ GOAL_TYPES.LEAD ]: {
+				title: __( 'Top authors driving leads', 'google-site-kit' ),
+				description: __(
+					'Whose content is best at converting readers?',
+					'google-site-kit'
+				),
+			},
+		},
+		Component: TopAuthorsGoalDriver,
+		requiredCustomDimensions: TOP_AUTHORS_REQUIRED_CUSTOM_DIMENSIONS,
+	},
 	[ GOAL_DRIVER_IDS.VISITOR_TYPE ]: {
 		id: GOAL_DRIVER_IDS.VISITOR_TYPE,
 		order: 10,
-		defaultEnabled: false,
+		defaultEnabled: true,
 		copyByGoalType: {
 			[ GOAL_TYPES.ECOMMERCE ]: {
 				title: __( 'Sales by visitor type', 'google-site-kit' ),
@@ -152,7 +177,7 @@ export const GOAL_DRIVER_CATALOG: GoalDriverCatalog = {
 	[ GOAL_DRIVER_IDS.CITIES ]: {
 		id: GOAL_DRIVER_IDS.CITIES,
 		order: 10,
-		defaultEnabled: true,
+		defaultEnabled: false,
 		copyByGoalType: {
 			[ GOAL_TYPES.ECOMMERCE ]: {
 				title: __( 'Sales by cities', 'google-site-kit' ),
@@ -217,8 +242,10 @@ export const GOAL_DRIVER_CATALOG: GoalDriverCatalog = {
 	},
 };
 
+const GOAL_DRIVER_ID_SET = new Set( Object.keys( GOAL_DRIVER_CATALOG ) );
+
 function isGoalDriverID( id: string ): id is GoalDriverID {
-	return GOAL_DRIVER_CATALOG[ id as GoalDriverID ] !== undefined;
+	return GOAL_DRIVER_ID_SET.has( id );
 }
 
 export function getGoalDriverContent(
@@ -280,12 +307,19 @@ export function getGoalDriverOptions( goalType: GoalType ): GoalDriverOption[] {
 				return null;
 			}
 
-			return {
+			const option: GoalDriverOption = {
 				id: goalDriver.id,
 				order: goalDriver.order,
 				title: content.title,
 				description: content.description,
 			};
+
+			if ( goalDriver.requiredCustomDimensions ) {
+				option.requiredCustomDimensions =
+					goalDriver.requiredCustomDimensions;
+			}
+
+			return option;
 		} )
 		.filter( ( goalDriverOption ): goalDriverOption is GoalDriverOption =>
 			Boolean( goalDriverOption )

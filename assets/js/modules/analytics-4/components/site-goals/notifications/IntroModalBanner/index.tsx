@@ -19,19 +19,24 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect, type Select } from 'googlesitekit-data';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import {
+	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
+	SITE_GOALS_BREAKDOWN_NOTICE,
+} from '@/js/modules/analytics-4/components/site-goals/constants';
+import { getSiteGoalsTour } from '@/js/modules/analytics-4/components/site-goals/feature-tours/site-goals';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import IntroModalEcommerceAndLead from './IntroModalEcommerceAndLead';
 import IntroModalEcommerce from './IntroModalEcommerce';
+import IntroModalEcommerceAndLead from './IntroModalEcommerceAndLead';
 import IntroModalLead from './IntroModalLead';
 import { IntroModalVariantProps } from './types';
-import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 
 export const SITE_GOALS_INTRO_MODAL_BANNER = 'site_goals_intro_modal_banner';
 
@@ -54,7 +59,8 @@ interface IntroModalTrackingEvents {
 function createModalHandlers(
 	label: IntroModalVariantLabel,
 	onClose: () => void,
-	trackEvent: IntroModalTrackingEvents
+	trackEvent: IntroModalTrackingEvents,
+	onShowMeCTAClicked: () => void
 ): IntroModalVariantProps {
 	return {
 		onView: () => {
@@ -63,6 +69,7 @@ function createModalHandlers(
 		onConfirm: () => {
 			trackEvent.confirm( label );
 			onClose();
+			onShowMeCTAClicked();
 		},
 		onClickLearnMore: () => {
 			trackEvent.clickLearnMore( label );
@@ -77,7 +84,7 @@ function createModalHandlers(
 export default function IntroModal() {
 	const [ isOpen, setIsOpen ] = useState( true );
 
-	const { dismissItem } = useDispatch( CORE_USER );
+	const { dismissItem, triggerOnDemandTour } = useDispatch( CORE_USER );
 
 	const trackEvent = useNotificationEvents(
 		SITE_GOALS_INTRO_MODAL_BANNER
@@ -97,6 +104,14 @@ export default function IntroModal() {
 		[]
 	);
 
+	const hasEcommerceConversionReportingEventsOnly = useSelect(
+		( select: Select ) =>
+			select(
+				MODULES_ANALYTICS_4
+			).hasEcommerceConversionReportingEventsOnly(),
+		[]
+	);
+
 	const isIntroModalDismissed = useSelect(
 		( select: Select ) =>
 			select( CORE_USER ).isItemDismissed(
@@ -104,11 +119,37 @@ export default function IntroModal() {
 			),
 		[]
 	);
+	const hasBreakdownDimensions = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+				SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS
+			),
+		[]
+	);
+	const isBreakdownNoticeDismissed = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).isItemDismissed( SITE_GOALS_BREAKDOWN_NOTICE ),
+		[]
+	);
 
-	const handleClose = useCallback( () => {
+	function handleClose() {
 		setIsOpen( false );
 		dismissItem( SITE_GOALS_INTRO_MODAL_BANNER );
-	}, [ dismissItem ] );
+	}
+
+	function handleShowMe() {
+		triggerOnDemandTour(
+			getSiteGoalsTour( {
+				isEcommerceOnly: !! hasEcommerceConversionReportingEventsOnly,
+				// "Show me" dismisses the intro modal, so the breakdown notice
+				// will render if its dimensions are still missing and it has
+				// not been dismissed. Mirrors the BreakdownNotice gating.
+				hasBreakdownNotice:
+					hasBreakdownDimensions === false &&
+					! isBreakdownNoticeDismissed,
+			} )
+		);
+	}
 
 	if (
 		hasEcommerceConversionReportingEvents === undefined ||
@@ -122,17 +163,20 @@ export default function IntroModal() {
 	const ecommerceHandlers = createModalHandlers(
 		INTRO_MODAL_VARIANTS.ECOMMERCE,
 		handleClose,
-		trackEvent
+		trackEvent,
+		handleShowMe
 	);
 	const leadHandlers = createModalHandlers(
 		INTRO_MODAL_VARIANTS.LEAD,
 		handleClose,
-		trackEvent
+		trackEvent,
+		handleShowMe
 	);
 	const ecommerceAndLeadHandlers = createModalHandlers(
 		INTRO_MODAL_VARIANTS.ECOMMERCE_AND_LEAD,
 		handleClose,
-		trackEvent
+		trackEvent,
+		handleShowMe
 	);
 
 	if (

@@ -19,37 +19,34 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	provideKeyMetrics,
-	provideModuleRegistrations,
-	provideModules,
-	freezeFetch,
-} from '../../../../../../tests/js/utils';
-import {
-	getAnalytics4MockResponse,
-	provideAnalytics4MockReport,
-	STRATEGY_ZIP,
-} from '@/js/modules/analytics-4/utils/data-mock';
-import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 } from '@/js/googlesitekit/datastore/user/constants';
-import TopEarningContentWidget from './TopEarningContentWidget';
 import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ADSENSE,
-} from '@/js/modules/adsense/datastore/constants';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	STRATEGY_ZIP,
+	getAnalytics4MockResponse,
+	provideAnalytics4MockReport,
+} from '@/js/modules/analytics-4/utils/data-mock';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '@/js/util/errors';
+import { render } from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	freezeFetch,
+	provideKeyMetrics,
+	provideModuleRegistrations,
+	provideModules,
+} from '@tests/js/utils';
+import TopEarningContentWidget from './TopEarningContentWidget';
 
 describe( 'TopEarningContentWidget', () => {
 	const adSenseAccountID = 'pub-1234567890';
@@ -76,9 +73,7 @@ describe( 'TopEarningContentWidget', () => {
 
 	it( 'should render correctly with the expected metrics', async () => {
 		const pageTitlesReportOptions = {
-			...registry
-				.select( CORE_USER )
-				.getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ),
+			...registry.select( CORE_USER ).getDateRangeDates(),
 			dimensionFilters: {
 				pagePath: new Array( 3 )
 					.fill( '' )
@@ -109,9 +104,7 @@ describe( 'TopEarningContentWidget', () => {
 			} );
 
 		provideAnalytics4MockReport( registry, {
-			...registry
-				.select( CORE_USER )
-				.getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ),
+			...registry.select( CORE_USER ).getDateRangeDates(),
 			dimensions: [ 'pagePath', 'adSourceName' ],
 			metrics: [ { name: 'totalAdRevenue' } ],
 			dimensionFilters: {

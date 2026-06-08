@@ -19,15 +19,15 @@
 /**
  * Internal dependencies
  */
+import * as tracking from '@/js/util/tracking';
 import {
-	render,
+	act,
 	createTestRegistry,
-	provideTracking,
 	fireEvent,
 	muteFetch,
-	act,
-} from '../../../../tests/js/test-utils';
-import * as tracking from '@/js/util/tracking';
+	provideTracking,
+	render,
+} from '@tests/js/test-utils';
 import OptIn from './';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

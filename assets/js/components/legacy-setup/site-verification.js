@@ -24,17 +24,17 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { get, set } from 'googlesitekit-api';
 import { Button, ProgressBar, TextField } from 'googlesitekit-components';
-import { validateJSON, trackEvent } from '@/js/util';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import { trackEvent, validateJSON } from '@/js/util';
 
 class SiteVerification extends Component {
 	constructor( props ) {

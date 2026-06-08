@@ -17,15 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
+import { createTestRegistry, muteFetch, untilResolved } from '@tests/js/utils';
 import { CORE_USER } from './constants';
-import {
-	createTestRegistry,
-	muteFetch,
-	untilResolved,
-} from '../../../../../tests/js/utils';
-import fetchMock from 'fetch-mock';
 
 describe( 'core/user expirable-items', () => {
 	const fetchGetExpiredItems = new RegExp(

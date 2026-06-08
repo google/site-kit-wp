@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -27,8 +28,7 @@ import {
 	provideModules,
 	untilResolved,
 	waitForDefaultTimeouts,
-} from '../../../../../tests/js/utils';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+} from '@tests/js/utils';
 import { CORE_USER } from './constants';
 
 describe( 'modules/analytics-4 audience settings', () => {

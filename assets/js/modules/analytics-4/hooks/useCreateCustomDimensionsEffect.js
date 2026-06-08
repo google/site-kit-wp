@@ -22,17 +22,17 @@ import { useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import useFormValue from '@/js/hooks/useFormValue';
 
 export default function useCreateCustomDimensionsEffect() {
 	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
@@ -51,6 +51,10 @@ export default function useCreateCustomDimensionsEffect() {
 		FORM_CUSTOM_DIMENSIONS_CREATE,
 		'autoSubmit'
 	);
+	const [ customDimensions ] = useFormValue(
+		FORM_CUSTOM_DIMENSIONS_CREATE,
+		'customDimensions'
+	);
 	const [ , setIsAutoCreatingCustomDimensions ] = useFormValue(
 		FORM_CUSTOM_DIMENSIONS_CREATE,
 		'isAutoCreatingCustomDimensions'
@@ -59,11 +63,15 @@ export default function useCreateCustomDimensionsEffect() {
 	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
 	useEffect( () => {
 		async function createDimensionsAndUpdateForm() {
-			await createCustomDimensions();
+			await createCustomDimensions( customDimensions );
 			setIsAutoCreatingCustomDimensions( false );
 		}
+
+		const hasExplicitCustomDimensions =
+			Array.isArray( customDimensions ) && customDimensions.length > 0;
+
 		if (
-			isKeyMetricsSetupCompleted &&
+			( isKeyMetricsSetupCompleted || hasExplicitCustomDimensions ) &&
 			isGA4Connected &&
 			hasAnalyticsEditScope &&
 			autoSubmit
@@ -75,6 +83,7 @@ export default function useCreateCustomDimensionsEffect() {
 	}, [
 		autoSubmit,
 		createCustomDimensions,
+		customDimensions,
 		hasAnalyticsEditScope,
 		isKeyMetricsSetupCompleted,
 		isGA4Connected,

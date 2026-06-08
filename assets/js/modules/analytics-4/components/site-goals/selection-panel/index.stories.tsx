@@ -24,26 +24,29 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { Story } from '@/js/types/Story';
-import {
-	ENUM_CONVERSION_EVENTS,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
-	SITE_GOALS_EFFECTIVE_DRIVERS,
+	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTED_DRIVERS,
+	SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTION_FORM,
 	SITE_GOALS_SELECTION_PANEL_OPENED_KEY,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
+import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { Story } from '@/js/types/Story';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import SiteGoalsSelectionPanel from './index';
 
 interface TemplateProps {
@@ -56,12 +59,27 @@ function setupDefaultRegistry( registry: WPDataRegistry ) {
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setDetectedEvents( [
 			ENUM_CONVERSION_EVENTS.PURCHASE,
+			ENUM_CONVERSION_EVENTS.ADD_TO_CART,
 			ENUM_CONVERSION_EVENTS.CONTACT,
 		] );
 
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+		goalDrivers: SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
+		visitorEngagement: SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
+	} );
+
+	// Aggregated state so the breakdown notice renders above each section.
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetSettings( { availableCustomDimensions: [] } );
+	registry
+		.dispatch( CORE_USER )
+		.receiveGetDismissedItems( [ SITE_GOALS_INTRO_MODAL_BANNER ] );
+
 	registry.dispatch( CORE_FORMS ).setValues( SITE_GOALS_SELECTION_FORM, {
-		[ SITE_GOALS_EFFECTIVE_DRIVERS ]: SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 		[ SITE_GOALS_SELECTED_DRIVERS ]: SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
+		[ SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT ]:
+			SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
 	} );
 
 	registry

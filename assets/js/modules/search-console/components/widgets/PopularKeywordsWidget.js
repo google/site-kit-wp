@@ -29,32 +29,27 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import {
-	CORE_USER,
-	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-} from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_SEARCH_CONSOLE,
-} from '@/js/modules/search-console/datastore/constants';
-import { generateDateRangeArgs } from '@/js/modules/search-console/util';
-import { numFmt } from '@/js/util';
-import Link from '@/js/components/Link';
-import useViewOnly from '@/js/hooks/useViewOnly';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
 } from '@/js/components/KeyMetrics';
+import Link from '@/js/components/Link';
+import {
+	CORE_USER,
+	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+} from '@/js/googlesitekit/datastore/user/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import { ZeroDataMessage } from '@/js/modules/search-console/components/common';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { generateDateRangeArgs } from '@/js/modules/search-console/util';
+import { numFmt } from '@/js/util';
 
 export default function PopularKeywordsWidget( { Widget } ) {
 	const viewOnlyDashboard = useViewOnly();
 
 	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
+		select( CORE_USER ).getDateRangeDates()
 	);
 
 	const reportOptions = {

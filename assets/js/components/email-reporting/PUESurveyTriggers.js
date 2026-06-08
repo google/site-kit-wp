@@ -25,10 +25,10 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { DAY_IN_SECONDS } from '@/js/util';
-import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
 import {
 	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
 	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION_SETUP_CTA,

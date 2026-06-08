@@ -20,11 +20,10 @@
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { ERROR_INTERNAL_SERVER_ERROR } from '@/js/util/errors';
-import { actHook, renderHook } from '../../../../../tests/js/test-utils';
-import { createTestRegistry, freezeFetch } from '../../../../../tests/js/utils';
 import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
-import { DATE_RANGE_OFFSET } from '@/js/modules/analytics-4/datastore/constants';
+import { ERROR_INTERNAL_SERVER_ERROR } from '@/js/util/errors';
+import { actHook, renderHook } from '@tests/js/test-utils';
+import { createTestRegistry, freezeFetch } from '@tests/js/utils';
 import useAllTrafficWidgetReport from './useAllTrafficWidgetReport';
 
 describe( 'useAllTrafficWidgetReport', () => {
@@ -86,7 +85,6 @@ describe( 'useAllTrafficWidgetReport', () => {
 		const reportArgs = {
 			...registry.select( CORE_USER ).getDateRangeDates( {
 				compare: true,
-				offsetDays: DATE_RANGE_OFFSET,
 			} ),
 			metrics: [ { name: 'totalUsers' } ],
 		};

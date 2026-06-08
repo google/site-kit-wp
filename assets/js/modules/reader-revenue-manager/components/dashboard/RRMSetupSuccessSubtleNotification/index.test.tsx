@@ -25,6 +25,32 @@ import { mocked } from 'jest-mock';
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import {
+	MODULE_SLUG_READER_REVENUE_MANAGER,
+	RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
+	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
+} from '@/js/modules/reader-revenue-manager/constants';
+import * as fixtures from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
+import {
+	ACTIVE_POLICY_VIOLATION_STATES,
+	CONTENT_POLICY_STATES,
+	MODULES_READER_REVENUE_MANAGER,
+	PENDING_POLICY_VIOLATION_STATES,
+	PUBLICATION_ONBOARDING_STATES,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
+import * as tracking from '@/js/util/tracking';
+import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -34,34 +60,8 @@ import {
 	provideUserInfo,
 	render,
 	waitFor,
-} from '../../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import RRMSetupSuccessSubtleNotification from '.';
-import * as fixtures from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import {
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-} from '@/js/googlesitekit/notifications/constants';
-import {
-	ACTIVE_POLICY_VIOLATION_STATES,
-	CONTENT_POLICY_STATES,
-	MODULES_READER_REVENUE_MANAGER,
-	PENDING_POLICY_VIOLATION_STATES,
-	PUBLICATION_ONBOARDING_STATES,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
-import {
-	MODULE_SLUG_READER_REVENUE_MANAGER,
-	RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
-	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
-} from '@/js/modules/reader-revenue-manager/constants';
-import { DAY_IN_SECONDS } from '@/js/util';
-import * as tracking from '@/js/util/tracking';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import useQueryArg from '@/js/hooks/useQueryArg';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { dismissItemEndpoint } from 'tests/js/mock-dismiss-item-endpoints';
 
 jest.mock( '../../../../../hooks/useQueryArg' );
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

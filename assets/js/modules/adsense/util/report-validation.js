@@ -19,12 +19,8 @@
 /**
  * External dependencies
  */
-import { castArray } from 'lodash';
-
-/**
- * Internal dependencies
- */
 import invariant from 'invariant';
+import { castArray } from 'lodash';
 
 /* eslint-disable-next-line */
 /** @see (@link https://developers.google.com/adsense/management/reference/rest/v2/Metric) */

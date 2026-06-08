@@ -19,12 +19,22 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
 import Typography from '@/js/components/Typography';
 
-export default function SettingsGroup( { title, children } ) {
+export default function SettingsGroup( { title, children, className } ) {
 	return (
-		<div className="googlesitekit-module-settings-group">
+		<div
+			className={ classnames(
+				'googlesitekit-module-settings-group',
+				className
+			) }
+		>
 			<Typography as="h4" size="medium" type="title">
 				{ title }
 			</Typography>
@@ -36,4 +46,5 @@ export default function SettingsGroup( { title, children } ) {
 SettingsGroup.propTypes = {
 	title: PropTypes.string.isRequired,
 	children: PropTypes.node.isRequired,
+	className: PropTypes.string,
 };

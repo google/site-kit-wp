@@ -17,36 +17,57 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
-import SiteGoalsSelectionPanel from './index';
-import {
-	fireEvent,
-	render,
-	waitFor,
-} from '../../../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	provideUserAuthentication,
-	waitForDefaultTimeouts,
-} from '../../../../../../../tests/js/utils';
-import { mockBrowserScrolling } from '../../../../../../../tests/js/mock-browser-utils';
+import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	SITE_GOALS_BREAKDOWN_NOTICE,
+	SITE_GOALS_SELECTED_DRIVERS,
+	SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT,
+	SITE_GOALS_SELECTION_FORM,
+	SITE_GOALS_SELECTION_PANEL_OPENED_KEY,
+} from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_IDS,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	SITE_GOALS_EFFECTIVE_DRIVERS,
-	SITE_GOALS_SELECTED_DRIVERS,
-	SITE_GOALS_SELECTION_FORM,
-	SITE_GOALS_SELECTION_PANEL_OPENED_KEY,
-} from '@/js/modules/analytics-4/components/site-goals/constants';
+	EDIT_SCOPE,
+	ENUM_CONVERSION_EVENTS,
+	FORM_CUSTOM_DIMENSIONS_CREATE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { mockBrowserScrolling } from '@tests/js/mock-browser-utils';
+import { fireEvent, render, waitFor } from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserCapabilities,
+	waitForDefaultTimeouts,
+} from '@tests/js/utils';
+import SiteGoalsSelectionPanel from '.';
+
+jest.mock( '@/js/googlesitekit/data/create-snapshot-store', () => ( {
+	...jest.requireActual( '@/js/googlesitekit/data/create-snapshot-store' ),
+	snapshotAllStores: jest.fn( () => Promise.resolve() ),
+} ) );
 
 describe( 'SiteGoalsSelectionPanel', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
+	const ecommerceGoalDriverCheckboxSelector =
+		'input[id^="site-goals-selection-"]:not([id^="site-goals-selection-visitor-engagement-"])[id$="-ecommerce"]';
 
 	mockBrowserScrolling();
 
@@ -54,10 +75,32 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		registry = createTestRegistry();
 
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		provideSiteInfo( registry );
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				connected: true,
+			},
+		] );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ 'purchase', 'contact' ] );
+			.setDetectedEvents( [
+				ENUM_CONVERSION_EVENTS.PURCHASE,
+				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+				ENUM_CONVERSION_EVENTS.CONTACT,
+			] );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSiteGoalsSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( { availableCustomDimensions: [] } );
+		// Default to the breakdown notice being hidden (intro modal not yet
+		// dismissed); individual tests opt in by dismissing the intro modal.
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		registry
 			.dispatch( CORE_UI )
@@ -153,7 +196,99 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		);
 	} );
 
-	it( 'applies staged selection to effective selection on save', async () => {
+	it( 'renders visitor engagement items for ecommerce', async () => {
+		const { getByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		expect( getByText( 'Visitor engagement' ) ).toBeInTheDocument();
+		expect( getByText( 'Products added to cart' ) ).toBeInTheDocument();
+		expect(
+			document.querySelector(
+				'#site-goals-selection-visitor-engagement-add_to_cart-ecommerce'
+			)
+		).toBeChecked();
+	} );
+
+	it( 'does not render visitor engagement items when ecommerce secondary events are not detected', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [
+				ENUM_CONVERSION_EVENTS.PURCHASE,
+				ENUM_CONVERSION_EVENTS.CONTACT,
+			] );
+
+		const { queryByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		expect( queryByText( 'Visitor engagement' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Products added to cart' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'does not render visitor engagement items when add_to_cart is the primary ecommerce event', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [
+				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+				ENUM_CONVERSION_EVENTS.CONTACT,
+			] );
+
+		const { queryByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		expect( queryByText( 'Visitor engagement' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Products added to cart' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'updates staged visitor engagement selection for ecommerce', async () => {
+		render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		fireEvent.click(
+			document.querySelector(
+				'#site-goals-selection-visitor-engagement-add_to_cart-ecommerce'
+			) as Element
+		);
+
+		const selectedVisitorEngagement = registry
+			.select( CORE_FORMS )
+			.getValue(
+				SITE_GOALS_SELECTION_FORM,
+				SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT
+			);
+
+		expect(
+			selectedVisitorEngagement[ GOAL_TYPES.ECOMMERCE ]
+		).not.toContain( 'add_to_cart' );
+		expect( selectedVisitorEngagement[ GOAL_TYPES.LEAD ] ).toEqual( [] );
+	} );
+
+	it( 'persists the saved goal driver selection to the module store on save', async () => {
+		fetchMock.postOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/save-site-goals-settings'
+			),
+			( _url, opts ) => ( {
+				body: JSON.parse( opts.body as string ).data.settings,
+				status: 200,
+			} )
+		);
+
 		const { getByRole } = render( <SiteGoalsSelectionPanel />, {
 			registry,
 		} );
@@ -173,15 +308,52 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		);
 
 		await waitFor( () => {
-			const effectiveDrivers = registry
-				.select( CORE_FORMS )
-				.getValue(
-					SITE_GOALS_SELECTION_FORM,
-					SITE_GOALS_EFFECTIVE_DRIVERS
-				);
+			const goalDrivers = registry
+				.select( MODULES_ANALYTICS_4 )
+				.getSiteGoalsGoalDrivers();
 
-			expect( effectiveDrivers[ GOAL_TYPES.ECOMMERCE ] ).not.toContain(
+			expect( goalDrivers[ GOAL_TYPES.ECOMMERCE ] ).not.toContain(
 				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS
+			);
+		} );
+	} );
+
+	it( 'persists the saved visitor engagement selection to the module store on save', async () => {
+		fetchMock.postOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/save-site-goals-settings'
+			),
+			( _url, opts ) => ( {
+				body: JSON.parse( opts.body as string ).data.settings,
+				status: 200,
+			} )
+		);
+
+		const { getByRole } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		fireEvent.click(
+			document.querySelector(
+				'#site-goals-selection-visitor-engagement-add_to_cart-ecommerce'
+			) as Element
+		);
+
+		fireEvent.click(
+			getByRole( 'button', {
+				name: /apply changes|save selection/i,
+			} )
+		);
+
+		await waitFor( () => {
+			const visitorEngagement = registry
+				.select( MODULES_ANALYTICS_4 )
+				.getSiteGoalsVisitorEngagement();
+
+			expect( visitorEngagement[ GOAL_TYPES.ECOMMERCE ] ).not.toContain(
+				'add_to_cart'
 			);
 		} );
 	} );
@@ -189,7 +361,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 	it( 'does not render ineligible goal-type lists', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ 'purchase' ] );
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const { getByRole, queryByRole } = render(
 			<SiteGoalsSelectionPanel />,
@@ -216,7 +388,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		await waitForDefaultTimeouts();
 
 		document
-			.querySelectorAll( 'input[id$="-ecommerce"]' )
+			.querySelectorAll( ecommerceGoalDriverCheckboxSelector )
 			.forEach( ( checkboxElement ) => {
 				const checkbox = checkboxElement as HTMLInputElement;
 				if ( checkbox.checked ) {
@@ -238,7 +410,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		await waitForDefaultTimeouts();
 
 		document
-			.querySelectorAll( 'input[id$="-ecommerce"]' )
+			.querySelectorAll( ecommerceGoalDriverCheckboxSelector )
 			.forEach( ( checkboxElement ) => {
 				const checkbox = checkboxElement as HTMLInputElement;
 				if ( ! checkbox.checked ) {
@@ -251,8 +423,312 @@ describe( 'SiteGoalsSelectionPanel', () => {
 			getByRole( 'button', { name: /apply changes|save selection/i } )
 		).toBeDisabled();
 		expect(
-			document.querySelectorAll( 'input[id$="-ecommerce"]:checked' )
+			document.querySelectorAll(
+				`${ ecommerceGoalDriverCheckboxSelector }:checked`
+			).length
+		).toBe(
+			document.querySelectorAll( ecommerceGoalDriverCheckboxSelector )
 				.length
-		).toBe( 7 );
+		);
+	} );
+
+	it( 'shows a custom dimensions warning when Top Authors is selected and the author dimension is missing', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			availableCustomDimensions: [],
+		} );
+
+		const { getByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		fireEvent.click(
+			document.querySelector(
+				'#site-goals-selection-topAuthors-ecommerce'
+			) as Element
+		);
+
+		expect(
+			getByText(
+				'The "Top authors driving sales" metric you\'ve selected requires more data tracking. To enable it, you will be directed to update your Analytics property. Complete the setup and save your selection.'
+			)
+		).toBeInTheDocument();
+		expect( getByText( 'Set up' ) ).toBeInTheDocument();
+	} );
+
+	it( 'does not show a custom dimensions warning when the author dimension is available', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			availableCustomDimensions: [ 'googlesitekit_post_author' ],
+		} );
+
+		const { queryByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		fireEvent.click(
+			document.querySelector(
+				'#site-goals-selection-topAuthors-ecommerce'
+			) as Element
+		);
+
+		expect(
+			queryByText(
+				'The "Top authors driving sales" metric you\'ve selected requires more data tracking. To enable it, you will be directed to update your Analytics property. Complete the setup and save your selection.'
+			)
+		).not.toBeInTheDocument();
+		expect( queryByText( 'Set up' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'starts the custom dimensions setup flow when setup is clicked without edit scope', async () => {
+		( snapshotAllStores as jest.Mock ).mockClear();
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			availableCustomDimensions: [],
+		} );
+
+		const { getByRole } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		fireEvent.click(
+			document.querySelector(
+				'#site-goals-selection-topAuthors-ecommerce'
+			) as Element
+		);
+
+		fireEvent.click( getByRole( 'button', { name: 'Set up' } ) );
+
+		expect( snapshotAllStores ).toHaveBeenCalledWith( registry );
+		expect(
+			registry
+				.select( CORE_FORMS )
+				.getValue( FORM_CUSTOM_DIMENSIONS_CREATE, 'customDimensions' )
+		).toEqual( [ 'googlesitekit_post_author' ] );
+		expect(
+			registry
+				.select( CORE_FORMS )
+				.getValue( FORM_CUSTOM_DIMENSIONS_CREATE, 'autoSubmit' )
+		).toBe( true );
+		await waitFor( () => {
+			expect(
+				registry.select( CORE_USER ).getPermissionScopeError()
+			).toMatchObject( {
+				data: {
+					scopes: [ EDIT_SCOPE ],
+					skipModal: true,
+				},
+			} );
+		} );
+	} );
+
+	it( 'preserves staged selection after returning from custom dimensions OAuth', async () => {
+		registry.dispatch( CORE_FORMS ).setValues( SITE_GOALS_SELECTION_FORM, {
+			[ SITE_GOALS_SELECTED_DRIVERS ]: {
+				[ GOAL_TYPES.ECOMMERCE ]: [
+					GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+					GOAL_DRIVER_IDS.TOP_AUTHORS,
+				],
+				[ GOAL_TYPES.LEAD ]: [],
+			},
+		} );
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+				autoSubmit: true,
+				customDimensions: [ 'googlesitekit_post_author' ],
+			} );
+
+		render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		expect(
+			registry
+				.select( CORE_FORMS )
+				.getValue(
+					SITE_GOALS_SELECTION_FORM,
+					SITE_GOALS_SELECTED_DRIVERS
+				)
+		).toEqual( {
+			[ GOAL_TYPES.ECOMMERCE ]: [
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+				GOAL_DRIVER_IDS.TOP_AUTHORS,
+			],
+			[ GOAL_TYPES.LEAD ]: [],
+		} );
+	} );
+
+	it( 'shows the custom dimensions warning after syncing stale dimensions with edit scope', async () => {
+		provideUserAuthentication( registry, {
+			grantedScopes: [ EDIT_SCOPE ],
+		} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [ 'googlesitekit_post_author' ],
+		} );
+		fetchMock.postOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+			),
+			{
+				body: [],
+				status: 200,
+			}
+		);
+
+		const { getByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		fireEvent.click(
+			document.querySelector(
+				'#site-goals-selection-topAuthors-ecommerce'
+			) as Element
+		);
+
+		await waitFor( () => {
+			expect(
+				getByText(
+					'The "Top authors driving sales" metric you\'ve selected requires more data tracking. To enable it, you will be directed to update your Analytics property. Complete the setup and save your selection.'
+				)
+			).toBeInTheDocument();
+		} );
+	} );
+
+	it( 'creates the author custom dimension when setup is clicked with edit scope', async () => {
+		provideUserAuthentication( registry, {
+			grantedScopes: [ EDIT_SCOPE ],
+		} );
+		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+			widgetSlugs: [],
+			isWidgetHidden: false,
+		} );
+		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+			purpose: { values: [], scope: 'site' },
+			postFrequency: { values: [], scope: 'user' },
+			goals: { values: [], scope: 'user' },
+		} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [],
+		} );
+		fetchMock.postOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+			),
+			{
+				body: {
+					parameterName: 'googlesitekit_post_author',
+					displayName: 'WordPress Post Author',
+					description:
+						'Created by Site Kit: WordPress name of the post author',
+					scope: 'EVENT',
+				},
+				status: 200,
+			}
+		);
+		fetchMock.postOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+			),
+			{
+				body: [ 'googlesitekit_post_author' ],
+				status: 200,
+			}
+		);
+
+		const { getByRole } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		fireEvent.click(
+			document.querySelector(
+				'#site-goals-selection-topAuthors-ecommerce'
+			) as Element
+		);
+
+		fireEvent.click( getByRole( 'button', { name: 'Set up' } ) );
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
+		} );
+
+		expect(
+			registry.select( CORE_USER ).getPermissionScopeError()
+		).toBeNull();
+		expect(
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getAvailableCustomDimensions()
+		).toEqual( [ 'googlesitekit_post_author' ] );
+		expect(
+			registry
+				.select( CORE_FORMS )
+				.getValue(
+					SITE_GOALS_SELECTION_FORM,
+					SITE_GOALS_SELECTED_DRIVERS
+				)
+		).toMatchObject( {
+			[ GOAL_TYPES.ECOMMERCE ]: expect.arrayContaining( [
+				GOAL_DRIVER_IDS.TOP_AUTHORS,
+			] ),
+		} );
+	} );
+
+	it( 'defers the breakdown tooltip until the panel is closed, sharing dismissal with the widgets', async () => {
+		// Aggregated state so the breakdown notice is rendered in the panel.
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [ SITE_GOALS_INTRO_MODAL_BANNER ] );
+		fetchMock.postOnce(
+			new RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
+			{ body: [ SITE_GOALS_BREAKDOWN_NOTICE ], status: 200 }
+		);
+
+		const { getAllByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		fireEvent.click( getAllByText( 'No thanks' )[ 0 ] );
+
+		// While the panel is open the tooltip must not be shown yet.
+		expect(
+			registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+		).toBeUndefined();
+
+		// Dismissal is shared with the widgets via the single slug.
+		await waitFor( () => {
+			expect(
+				registry
+					.select( CORE_USER )
+					.isItemDismissed( SITE_GOALS_BREAKDOWN_NOTICE )
+			).toBe( true );
+		} );
+
+		fireEvent.click(
+			document.querySelector(
+				'.googlesitekit-selection-panel-header__close'
+			) as Element
+		);
+
+		// Once the panel closes the deferred tooltip is shown.
+		await waitFor( () => {
+			expect(
+				registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+			).toMatchObject( { isTooltipVisible: true } );
+		} );
 	} );
 } );

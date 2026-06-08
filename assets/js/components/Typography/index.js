@@ -17,13 +17,13 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
  */
-import { VALID_TYPES, VALID_SIZES } from './constants';
+import { VALID_SIZES, VALID_TYPES } from './constants';
 
 export default function Typography( {
 	className,

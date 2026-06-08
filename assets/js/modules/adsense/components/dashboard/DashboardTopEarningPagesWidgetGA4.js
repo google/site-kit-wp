@@ -26,37 +26,34 @@ import { useIntersection } from 'react-use';
  * WordPress dependencies
  */
 import { compose } from '@wordpress/compose';
-import { __, _x } from '@wordpress/i18n';
 import { useEffect, useRef, useState } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
+import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
+import PreviewTable from '@/js/components/PreviewTable';
+import ReportTable from '@/js/components/ReportTable';
+import SourceLink from '@/js/components/SourceLink';
+import TableOverflowContainer from '@/js/components/TableOverflowContainer';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { AdSenseLinkCTA } from '@/js/modules/adsense/components/common';
 import {
 	ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY as DISMISSED_KEY,
 	MODULE_SLUG_ADSENSE,
 } from '@/js/modules/adsense/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { generateDateRangeArgs } from '@/js/modules/analytics-4/utils/report-date-range-args';
 import { numFmt, trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
-import useViewOnly from '@/js/hooks/useViewOnly';
 import whenActive from '@/js/util/when-active';
-import SourceLink from '@/js/components/SourceLink';
-import Link from '@/js/components/Link';
-import PreviewTable from '@/js/components/PreviewTable';
-import ReportTable from '@/js/components/ReportTable';
-import TableOverflowContainer from '@/js/components/TableOverflowContainer';
-import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
-import { AdSenseLinkCTA } from '@/js/modules/adsense/components/common';
-import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
 
 function DashboardTopEarningPagesWidgetGA4( {
 	WidgetNull,
@@ -70,9 +67,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 	);
 
 	const { startDate, endDate } = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
+		select( CORE_USER ).getDateRangeDates()
 	);
 
 	const adSenseAccountID = useSelect( ( select ) =>
@@ -244,10 +239,10 @@ function DashboardTopEarningPagesWidgetGA4( {
 	}
 
 	const columnClassName =
-		'googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--medium';
+		'googlesitekit-typography googlesitekit-typography--title';
 	const tableColumns = [
 		{
-			columnHeaderClassName: columnClassName,
+			columnHeaderClassName: `${ columnClassName } googlesitekit-typography--medium`,
 			title: __( 'Top Earning Pages', 'google-site-kit' ),
 			tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
 			primary: true,
@@ -289,7 +284,7 @@ function DashboardTopEarningPagesWidgetGA4( {
 			},
 		},
 		{
-			columnHeaderClassName: columnClassName,
+			columnHeaderClassName: `${ columnClassName } googlesitekit-typography--small`,
 			title: __( 'Earnings', 'google-site-kit' ),
 			tooltip: __( 'Earnings', 'google-site-kit' ),
 			field: 'metricValues.0.value',

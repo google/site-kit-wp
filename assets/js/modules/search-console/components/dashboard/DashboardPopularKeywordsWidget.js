@@ -24,22 +24,19 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_SEARCH_CONSOLE,
-} from '@/js/modules/search-console/datastore/constants';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
+import PreviewTable from '@/js/components/PreviewTable';
+import ReportTable from '@/js/components/ReportTable';
+import SourceLink from '@/js/components/SourceLink';
+import TableOverflowContainer from '@/js/components/TableOverflowContainer';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import PreviewTable from '@/js/components/PreviewTable';
-import SourceLink from '@/js/components/SourceLink';
-import { generateDateRangeArgs } from '@/js/modules/search-console/util';
-import TableOverflowContainer from '@/js/components/TableOverflowContainer';
-import ReportTable from '@/js/components/ReportTable';
-import Link from '@/js/components/Link';
-import { numFmt } from '@/js/util';
-import { ZeroDataMessage } from '@/js/modules/search-console/components/common';
 import useViewOnly from '@/js/hooks/useViewOnly';
+import { ZeroDataMessage } from '@/js/modules/search-console/components/common';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { generateDateRangeArgs } from '@/js/modules/search-console/util';
+import { numFmt } from '@/js/util';
 
 export default function DashboardPopularKeywordsWidget( props ) {
 	const { Widget, WidgetReportError } = props;
@@ -51,9 +48,7 @@ export default function DashboardPopularKeywordsWidget( props ) {
 	);
 
 	const dateRangeDates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
+		select( CORE_USER ).getDateRangeDates()
 	);
 
 	const reportArgs = {
@@ -151,9 +146,7 @@ export default function DashboardPopularKeywordsWidget( props ) {
 					if ( viewOnlyDashboard ) {
 						return null;
 					}
-					const dates = select( CORE_USER ).getDateRangeDates( {
-						offsetDays: DATE_RANGE_OFFSET,
-					} );
+					const dates = select( CORE_USER ).getDateRangeDates();
 					const entityURL = select( CORE_SITE ).getCurrentEntityURL();
 					return select( MODULES_SEARCH_CONSOLE ).getServiceReportURL(
 						{

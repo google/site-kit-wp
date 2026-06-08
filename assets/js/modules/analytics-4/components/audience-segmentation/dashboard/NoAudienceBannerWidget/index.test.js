@@ -24,8 +24,20 @@ import { useIntersection as mockUseIntersection } from 'react-use';
 /**
  * Internal dependencies
  */
-import NoAudienceBannerWidget from '.';
-import { fireEvent, render } from '../../../../../../../../tests/js/test-utils';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSelectionPanel/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import * as tracking from '@/js/util/tracking';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import { fireEvent, render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -33,20 +45,8 @@ import {
 	provideModules,
 	provideSiteInfo,
 	waitForDefaultTimeouts,
-} from '../../../../../../../../tests/js/utils';
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '@/js/googlesitekit/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
-import * as tracking from '@/js/util/tracking';
-import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSelectionPanel/constants';
-import { mockLocation } from '../../../../../../../../tests/js/mock-browser-utils';
+} from '@tests/js/utils';
+import NoAudienceBannerWidget from '.';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),

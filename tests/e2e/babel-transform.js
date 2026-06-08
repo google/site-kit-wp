@@ -15,14 +15,10 @@
  */
 
 /**
- * Node dependencies
- */
-const path = require( 'path' );
-
-/**
  * External dependencies
  */
 const babelJest = require( 'babel-jest' );
+const path = require( 'path' );
 
 module.exports = babelJest.createTransformer( {
 	presets: [ '@wordpress/babel-preset-default' ],

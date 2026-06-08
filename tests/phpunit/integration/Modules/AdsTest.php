@@ -6,6 +6,8 @@
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Tests\Modules;
@@ -58,16 +60,22 @@ class AdsTest extends TestCase {
 
 	public function test_register() {
 		remove_all_actions( 'template_redirect' );
-		remove_all_filters( 'googlesitekit_inline_modules_data' );
 		remove_all_filters( 'googlesitekit_ads_measurement_connection_checks' );
 		remove_all_filters( 'googlesitekit_feature_metrics' );
 
 		$this->ads->register();
 
 		$this->assertTrue( has_action( 'template_redirect' ), 'template_redirect action should be registered.' );
-		$this->assertTrue( has_filter( 'googlesitekit_inline_modules_data' ), 'inline_modules_data filter should be registered.' );
 		$this->assertTrue( has_filter( 'googlesitekit_ads_measurement_connection_checks' ), 'ads_measurement_connection_checks filter should be registered.' );
 		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'googlesitekit_feature_metrics filter should be registered.' );
+	}
+
+	public function test_register_persistent() {
+		remove_all_filters( 'googlesitekit_inline_modules_data' );
+
+		$this->ads->register_persistent();
+
+		$this->assertTrue( has_filter( 'googlesitekit_inline_modules_data' ), 'inline_modules_data filter should be registered.' );
 	}
 
 	public function test_register__googlesitekit_ads_measurement_connection_checks() {
@@ -115,24 +123,20 @@ class AdsTest extends TestCase {
 	}
 
 	public function test_inline_modules_data__module_not_connected() {
-		remove_all_filters( 'googlesitekit_inline_modules_data' );
-
 		$this->ads->register();
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->ads->get_inline_data();
 
 		$this->assertArrayIntersection(
 			array(
 				'supportedConversionEvents' => array(),
 			),
-			$inline_modules_data['ads'],
+			$inline_module_data,
 			'Inline modules data for Ads should include supportedConversionEvents when module not connected.'
 		);
 	}
 
 	public function test_inline_modules_data__module_connected() {
-		remove_all_filters( 'googlesitekit_inline_modules_data' );
-
 		$this->ads->register();
 
 		// Ensure the module is connected.
@@ -142,13 +146,13 @@ class AdsTest extends TestCase {
 
 		$this->assertTrue( $this->ads->is_connected(), 'Ads module should be connected after setting conversionID.' );
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->ads->get_inline_data();
 
 		$this->assertArrayIntersection(
 			array(
 				'supportedConversionEvents' => array(),
 			),
-			$inline_modules_data['ads'],
+			$inline_module_data,
 			'Inline modules data for Ads should include supportedConversionEvents when module connected.'
 		);
 	}

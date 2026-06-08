@@ -7,6 +7,8 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Tests\Modules;
@@ -445,8 +447,8 @@ class Analytics_4Test extends TestCase {
 				$redirect->get_location(),
 				'Should redirect to dashboard with user cancel error.'
 			);
-			// Ensure transient was deleted by the method despite error.
-			$this->assertFalse( get_transient( $account_ticked_id_transient ), 'Account ticket transient should be deleted when user cancels.' );
+			// Ensure transient is not deleted by the method when there is an error.
+			$this->assertEquals( $_GET['accountTicketId'], get_transient( $account_ticked_id_transient ), 'Account ticket transient should not be deleted when user cancels.' );
 		}
 		unset( $_GET['error'] );
 	}
@@ -634,8 +636,8 @@ class Analytics_4Test extends TestCase {
 				$redirect->get_location(),
 				'Should redirect to Analytics setup screen with the account creation error code.'
 			);
-			// Ensure transient was deleted by the method despite error.
-			$this->assertFalse( get_transient( $account_ticked_id_transient ), 'Account ticket transient should be deleted when user cancels.' );
+			// Ensure transient was not deleted by the method when there is an error.
+			$this->assertEquals( $_GET['accountTicketId'], get_transient( $account_ticked_id_transient ), 'Account ticket transient should not be deleted when user cancels.' );
 		}
 		unset( $_GET['error'] );
 	}
@@ -1723,6 +1725,8 @@ class Analytics_4Test extends TestCase {
 				'save-audience-settings',
 				'save-resource-data-availability-date',
 				'sync-audiences',
+				'site-goals-settings',
+				'save-site-goals-settings',
 			),
 			$this->analytics->get_datapoints(),
 			'Analytics 4 module should expose the expected datapoints'
@@ -1761,6 +1765,8 @@ class Analytics_4Test extends TestCase {
 				'save-audience-settings',
 				'save-resource-data-availability-date',
 				'sync-audiences',
+				'site-goals-settings',
+				'save-site-goals-settings',
 			),
 			$this->analytics->get_datapoints(),
 			'Analytics 4 module should expose the expected datapoints with conversion reporting'
@@ -2540,223 +2546,6 @@ class Analytics_4Test extends TestCase {
 	 *
 	 * @param string $access_token Access token, or empty string if none.
 	 */
-	public function test_get_batch_report( $access_token ) {
-		$this->setup_user_authentication( $access_token );
-
-		$property_id = '123456789';
-
-		$this->analytics->get_settings()->merge(
-			array(
-				'propertyID' => $property_id,
-			)
-		);
-
-		// Grant scopes so request doesn't fail.
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->analytics->get_scopes()
-		);
-
-		$this->fake_handler_and_invoke_register_method( $property_id );
-
-		$data = $this->analytics->get_data(
-			'batch-report',
-			array(
-				'requests' => array(
-					array(
-						'metrics'    => array( 'sessions' ),
-						'dimensions' => array( 'sessionDefaultChannelGrouping' ),
-						'url'        => 'https://example.org/batch-1/',
-					),
-					array(
-						'metrics'          => array(
-							array(
-								'name'       => 'total',
-								'expression' => 'totalUsers',
-							),
-						),
-						'dimensionFilters' => array(
-							'sessionDefaultChannelGrouping' => 'Organic Search',
-						),
-						'limit'            => 50,
-					),
-				),
-			)
-		);
-
-		$this->assertNotWPError( $data, 'Batch report request should succeed when parameters are valid.' );
-
-		$this->assertEquals( 'batch-value-1', $data['reports'][0]['rows'][0]['metricValues'][0]['value'], 'First batch report should include expected metric value.' );
-		$this->assertEquals( 'sessionDefaultChannelGrouping', $data['reports'][0]['dimensionHeaders'][0]['name'], 'First batch report should expose expected dimension header.' );
-		$this->assertEquals( 'batch-value-2', $data['reports'][1]['rows'][0]['metricValues'][0]['value'], 'Second batch report should include expected metric value.' );
-		$this->assertEquals( 'newVsReturning', $data['reports'][1]['dimensionHeaders'][1]['name'], 'Second batch report should expose expected secondary dimension header.' );
-
-		$this->assertCount( 1, $this->request_handler_calls, 'Batch report request should result in a single HTTP request.' );
-
-		$request_url    = $this->request_handler_calls[0]['url'];
-		$request_params = $this->request_handler_calls[0]['params'];
-
-		$this->assertEquals( 'analyticsdata.googleapis.com', $request_url['host'], 'Batch report request host should be analyticsdata.googleapis.com.' );
-		$this->assertEquals( "/v1beta/properties/$property_id:batchRunReports", $request_url['path'], 'Batch report request path should match the batchRunReports endpoint.' );
-
-		$this->assertArrayHasKey( 'requests', $request_params, 'Batch report payload should include requests key.' );
-		$this->assertCount( 2, $request_params['requests'], 'Batch report payload should include two requests.' );
-
-		$first_request  = $request_params['requests'][0];
-		$second_request = $request_params['requests'][1];
-
-		$this->assertEquals(
-			array(
-				array(
-					'name' => 'sessions',
-				),
-			),
-			$first_request['metrics'],
-			'First batch request should include expected metrics.'
-		);
-
-		$this->assertEquals(
-			array(
-				array(
-					'name' => 'sessionDefaultChannelGrouping',
-				),
-			),
-			$first_request['dimensions'],
-			'First batch request should include expected dimensions.'
-		);
-
-		$this->assertEquals(
-			1,
-			$first_request['keepEmptyRows'],
-			'First batch request should default keepEmptyRows to 1.'
-		);
-
-		$page_path_filters = array_filter(
-			$first_request['dimensionFilter']['andGroup']['expressions'],
-			function ( $expression ) {
-				return isset( $expression['filter']['fieldName'] ) && 'pagePath' === $expression['filter']['fieldName'];
-			}
-		);
-		$this->assertNotEmpty( $page_path_filters, 'First batch request should include a pagePath filter when URL is provided.' );
-
-		$page_path_filters = array_values( $page_path_filters );
-		$page_path_filter  = $page_path_filters[0];
-		$this->assertEquals( 'https://example.org/batch-1/', $page_path_filter['filter']['stringFilter']['value'], 'First batch request should retain provided URL in pagePath filter.' );
-
-		$this->assertEquals(
-			50,
-			$second_request['limit'],
-			'Second batch request should pass through the provided limit.'
-		);
-
-		$this->assertEquals(
-			array(
-				array(
-					'name'       => 'total',
-					'expression' => 'totalUsers',
-				),
-			),
-			$second_request['metrics'],
-			'Second batch request should include expected metrics.'
-		);
-
-		$this->assertArrayHasKey(
-			'dimensionFilter',
-			$second_request,
-			'Second batch request should include dimension filters by default.'
-		);
-
-		$channel_filters = array_filter(
-			$second_request['dimensionFilter']['andGroup']['expressions'],
-			function ( $expression ) {
-				return isset( $expression['filter']['fieldName'] ) && 'sessionDefaultChannelGrouping' === $expression['filter']['fieldName'];
-			}
-		);
-		$this->assertNotEmpty( $channel_filters, 'Second batch request should include provided dimension filter.' );
-
-		$channel_filters = array_values( $channel_filters );
-		$channel_filter  = $channel_filters[0];
-		$this->assertEquals(
-			'Organic Search',
-			$channel_filter['filter']['stringFilter']['value'],
-			'Second batch request should retain provided dimension filter value.'
-		);
-	}
-
-	public function test_get_batch_report__requires_requests_parameter() {
-		$this->setup_user_authentication( 'valid-auth-token' );
-
-		$this->analytics->get_settings()->merge(
-			array(
-				'propertyID' => '123456789',
-			)
-		);
-
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->analytics->get_scopes()
-		);
-
-		$this->analytics->register();
-
-		$data = $this->analytics->get_data( 'batch-report', array() );
-
-		$this->assertWPErrorWithMessage( 'Request parameter is empty: requests.', $data, 'Batch report should require a requests parameter.' );
-		$this->assertEquals( 'missing_required_param', $data->get_error_code(), 'Error code should be missing_required_param when requests parameter is empty.' );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'missing_required_param' ), 'Error data should include status 400 for missing requests parameter.' );
-	}
-
-	/**
-	 * @dataProvider data_invalid_batch_report_requests
-	 *
-	 * @param mixed  $invalid_requests Invalid requests value.
-	 * @param string $message          Assertion message for the scenario.
-	 */
-	public function test_get_batch_report__invalid_requests_parameter( $invalid_requests, $message ) {
-		$this->setup_user_authentication( 'valid-auth-token' );
-
-		$this->analytics->get_settings()->merge(
-			array(
-				'propertyID' => '123456789',
-			)
-		);
-
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->analytics->get_scopes()
-		);
-
-		$this->analytics->register();
-
-		$data = $this->analytics->get_data(
-			'batch-report',
-			array(
-				'requests' => $invalid_requests,
-			)
-		);
-
-		$this->assertWPErrorWithMessage( 'Batch report requests must be an array with 1-5 requests.', $data, $message );
-		$this->assertEquals( 'invalid_batch_size', $data->get_error_code(), $message );
-		$this->assertEquals( array( 'status' => 400 ), $data->get_error_data( 'invalid_batch_size' ), 'Error data should include status 400 for invalid batch size.' );
-	}
-
-	public function data_invalid_batch_report_requests() {
-		return array(
-			'requests not array' => array(
-				'not-an-array',
-				'Batch report should reject non-array requests parameter.',
-			),
-			'too many requests'  => array(
-				array_fill( 0, 6, array( 'metrics' => array( 'sessions' ) ) ),
-				'Batch report should reject request arrays longer than five entries.',
-			),
-		);
-	}
-
-	/**
-	 * @dataProvider data_access_token
-	 *
-	 * When an access token is provided, the user will be authenticated for the test.
-	 *
-	 * @param string $access_token Access token, or empty string if none.
-	 */
 	public function test_report__insufficient_permissions( $access_token ) {
 		$this->setup_user_authentication( $access_token );
 
@@ -2971,6 +2760,28 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertWPErrorWithMessage( 'Unsupported metrics requested: invalidMetric, anotherInvalidMetric', $data, 'Should return error when metric name contains invalid characters.' );
 		$this->assertEquals( 'invalid_analytics_4_report_metrics', $data->get_error_code(), 'Error code should be invalid_analytics_4_report_metrics for invalid metric names.' );
+	}
+
+	public function test_validate_shared_dimensions__accepts_new_custom_event_dimensions() {
+		$request_helpers = new \Google\Site_Kit\Modules\Analytics_4\Report\RequestHelpers( $this->context );
+
+		$dimensions = array_map(
+			function ( $name ) {
+				$dimension = new \Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension();
+				$dimension->setName( $name );
+				return $dimension;
+			},
+			array(
+				'customEvent:googlesitekit_event_provider',
+				'customEvent:googlesitekit_form_id',
+			)
+		);
+
+		// Calling validate_shared_dimensions should not throw an exception when these
+		// dimensions are part of the default shareable dimensions list.
+		$request_helpers->validate_shared_dimensions( $dimensions );
+
+		$this->addToAssertionCount( 1 );
 	}
 
 	public function test_report__shared_dimension_validation() {
@@ -3278,77 +3089,6 @@ class Analytics_4Test extends TestCase {
 													),
 												),
 											),
-										),
-									),
-								)
-							)
-						)
-					);
-
-				case "/v1beta/properties/$property_id:batchRunReports":
-					return new FulfilledPromise(
-						new Response(
-							200,
-							array(),
-							json_encode(
-								array(
-									'kind'    => 'analyticsData#batchRunReports',
-									'reports' => array(
-										array(
-											'kind'     => 'analyticsData#runReport',
-											'dimensionHeaders' => array(
-												array( 'name' => 'sessionDefaultChannelGrouping' ),
-												array( 'name' => 'date' ),
-											),
-											'metricHeaders' => array(
-												array(
-													'name' => 'sessions',
-													'type' => 'TYPE_INTEGER',
-												),
-											),
-											'rows'     => array(
-												array(
-													'dimensionValues' => array(
-														array( 'value' => 'Organic Search' ),
-														array( 'value' => '2024-07-10' ),
-													),
-													'metricValues'    => array(
-														array( 'value' => 'batch-value-1' ),
-													),
-												),
-											),
-											'totals'   => array(),
-											'maximums' => array(),
-											'minimums' => array(),
-											'metadata' => array( 'timeZone' => 'UTC' ),
-										),
-										array(
-											'kind'     => 'analyticsData#runReport',
-											'dimensionHeaders' => array(
-												array( 'name' => 'date' ),
-												array( 'name' => 'newVsReturning' ),
-											),
-											'metricHeaders' => array(
-												array(
-													'name' => 'activeUsers',
-													'type' => 'TYPE_INTEGER',
-												),
-											),
-											'rows'     => array(
-												array(
-													'dimensionValues' => array(
-														array( 'value' => '2024-07-10' ),
-														array( 'value' => 'returning' ),
-													),
-													'metricValues'    => array(
-														array( 'value' => 'batch-value-2' ),
-													),
-												),
-											),
-											'totals'   => array(),
-											'maximums' => array(),
-											'minimums' => array(),
-											'metadata' => array( 'timeZone' => 'UTC' ),
 										),
 									),
 								)
@@ -3813,9 +3553,9 @@ class Analytics_4Test extends TestCase {
 	public function test_inline_custom_dimension_data_initial_state__module_not_connected() {
 		$this->analytics->register();
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertArrayNotHasKey( 'analytics-4', $inline_modules_data, 'Analytics module should not be present in inline data when not connected.' );
+		$this->assertSame( array(), $inline_module_data, 'Analytics module should not have inline data when not connected.' );
 	}
 
 	public function test_inline_custom_dimension_data_initial_state__module_connected() {
@@ -3833,9 +3573,9 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'], 'Analytics inline module data should contain customDimensionsDataAvailable key when module is connected.' );
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_module_data, 'Analytics inline module data should contain customDimensionsDataAvailable key when module is connected.' );
 
 		$this->assertEquals(
 			array(
@@ -3843,8 +3583,10 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_post_type'       => false,
 				'googlesitekit_post_date'       => false,
 				'googlesitekit_post_categories' => false,
+				'googlesitekit_event_provider'  => false,
+				'googlesitekit_form_id'         => false,
 			),
-			$inline_modules_data['analytics-4']['customDimensionsDataAvailable'],
+			$inline_module_data['customDimensionsDataAvailable'],
 			'Custom dimensions data available should be initialized with all dimensions set to false when module is connected but no data is available.'
 		);
 	}
@@ -3863,10 +3605,9 @@ class Analytics_4Test extends TestCase {
 
 		$this->analytics->register();
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertArrayHasKey( 'analytics-4', $inline_modules_data, 'Inline modules data should contain analytics-4 module data.' );
-		$this->assertArrayHasKey( 'resourceAvailabilityDates', $inline_modules_data['analytics-4'], 'Analytics inline module data should contain resourceAvailabilityDates key.' );
+		$this->assertArrayHasKey( 'resourceAvailabilityDates', $inline_module_data, 'Analytics inline module data should contain resourceAvailabilityDates key.' );
 
 		$this->assertEquals(
 			array(
@@ -3874,7 +3615,7 @@ class Analytics_4Test extends TestCase {
 				'customDimension' => array(),
 				'property'        => array(),
 			),
-			$inline_modules_data['analytics-4']['resourceAvailabilityDates'],
+			$inline_module_data['resourceAvailabilityDates'],
 			'Resource availability dates should be initialized with empty arrays when no resources are available.'
 		);
 
@@ -3884,7 +3625,7 @@ class Analytics_4Test extends TestCase {
 			$test_resource_slug_property,
 		) = $this->set_test_resource_data_availability_dates();
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
 		$this->assertEquals(
 			array(
@@ -3898,7 +3639,7 @@ class Analytics_4Test extends TestCase {
 					$test_resource_slug_property => 20201231,
 				),
 			),
-			$inline_modules_data['analytics-4']['resourceAvailabilityDates'],
+			$inline_module_data['resourceAvailabilityDates'],
 			'Resource availability dates should contain the expected test resource slugs with their availability dates.'
 		);
 	}
@@ -3935,9 +3676,9 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEquals( true, $response, 'Custom dimension data available should be set to true.' );
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'], 'Analytics inline module data should contain customDimensionsDataAvailable key when custom dimension data is available.' );
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_module_data, 'Analytics inline module data should contain customDimensionsDataAvailable key when custom dimension data is available.' );
 
 		$this->assertEquals(
 			array(
@@ -3945,8 +3686,10 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_post_type'       => false,
 				'googlesitekit_post_date'       => false,
 				'googlesitekit_post_categories' => false,
+				'googlesitekit_event_provider'  => false,
+				'googlesitekit_form_id'         => false,
 			),
-			$inline_modules_data['analytics-4']['customDimensionsDataAvailable'],
+			$inline_module_data['customDimensionsDataAvailable'],
 			'Custom dimensions data available should show post_author as true and others as false after setting custom dimension data available.'
 		);
 	}
@@ -3981,9 +3724,9 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'], 'Analytics inline module data should contain customDimensionsDataAvailable key when custom dimension data is available after measurement ID change.' );
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_module_data, 'Analytics inline module data should contain customDimensionsDataAvailable key when custom dimension data is available after measurement ID change.' );
 
 		$this->assertEquals(
 			array(
@@ -3991,8 +3734,10 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_post_type'       => false,
 				'googlesitekit_post_date'       => false,
 				'googlesitekit_post_categories' => false,
+				'googlesitekit_event_provider'  => false,
+				'googlesitekit_form_id'         => false,
 			),
-			$inline_modules_data['analytics-4']['customDimensionsDataAvailable'],
+			$inline_module_data['customDimensionsDataAvailable'],
 			'Custom dimensions data available should remain unchanged after measurement ID change.'
 		);
 
@@ -4002,17 +3747,19 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_modules_data['analytics-4'], 'Analytics inline module data should contain customDimensionsDataAvailable key when custom dimension data is available after measurement ID change.' );
+		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $inline_module_data, 'Analytics inline module data should contain customDimensionsDataAvailable key when custom dimension data is available after measurement ID change.' );
 		$this->assertEquals(
 			array(
 				'googlesitekit_post_author'     => false,
 				'googlesitekit_post_type'       => false,
 				'googlesitekit_post_date'       => false,
 				'googlesitekit_post_categories' => false,
+				'googlesitekit_event_provider'  => false,
+				'googlesitekit_form_id'         => false,
 			),
-			$inline_modules_data['analytics-4']['customDimensionsDataAvailable'],
+			$inline_module_data['customDimensionsDataAvailable'],
 			'Custom dimensions data available should remain unchanged after measurement ID change when module is still connected.'
 		);
 	}
@@ -4057,6 +3804,8 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_post_type'       => false,
 				'googlesitekit_post_date'       => false,
 				'googlesitekit_post_categories' => false,
+				'googlesitekit_event_provider'  => false,
+				'googlesitekit_form_id'         => false,
 			),
 			$custom_dimensions_data_available->get_data_availability(),
 			'Custom dimensions data available should show post_author as true and others as false before module deactivation.'
@@ -4070,6 +3819,8 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_post_type'       => false,
 				'googlesitekit_post_date'       => false,
 				'googlesitekit_post_categories' => false,
+				'googlesitekit_event_provider'  => false,
+				'googlesitekit_form_id'         => false,
 			),
 			$custom_dimensions_data_available->get_data_availability(),
 			'Custom dimensions data available should be reset to all false after module deactivation.'
@@ -4091,9 +3842,9 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertEquals( false, $inline_modules_data['analytics-4']['tagIDMismatch'], 'Tag ID mismatch should be false when no mismatch exists.' );
+		$this->assertEquals( false, $inline_module_data['tagIDMismatch'], 'Tag ID mismatch should be false when no mismatch exists.' );
 	}
 
 	public function test_inline_tag_id_mismatch__source_correct_value_from_transient() {
@@ -4111,24 +3862,24 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertEquals( false, $inline_modules_data['analytics-4']['tagIDMismatch'], 'Tag ID mismatch should be false when no transient is set.' );
+		$this->assertEquals( false, $inline_module_data['tagIDMismatch'], 'Tag ID mismatch should be false when no transient is set.' );
 
 		$transients = new Transients( $this->context );
 		$transients->set( 'googlesitekit_inline_tag_id_mismatch', true );
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertEquals( true, $inline_modules_data['analytics-4']['tagIDMismatch'], 'Tag ID mismatch should be true when transient is set.' );
+		$this->assertEquals( true, $inline_module_data['tagIDMismatch'], 'Tag ID mismatch should be true when transient is set.' );
 	}
 
 	public function test_inline_conversion_reporting_events_detection_not_connected() {
 		$this->analytics->register();
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertArrayNotHasKey( 'analytics-4', $inline_modules_data, 'Analytics module should not be present in inline data when not connected for conversion reporting events.' );
+		$this->assertSame( array(), $inline_module_data, 'Analytics module should not have inline data when not connected for conversion reporting events.' );
 	}
 
 	public function test_inline_conversion_reporting_events_detection_connected() {
@@ -4152,11 +3903,11 @@ class Analytics_4Test extends TestCase {
 		$transients->set( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT, array( 'lost_event' ) );
 		$transients->set( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT, array( 'events' => array( 'new_badge_event_1', 'new_badge_event_2', 'new_badge_event_3' ) ) );
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->analytics->get_inline_data();
 
-		$this->assertEquals( array( 'detect_event_1', 'detect_event_2' ), $inline_modules_data['analytics-4']['newEvents'], 'New events should be included in inline module data from detected events transient.' );
-		$this->assertEquals( array( 'lost_event' ), $inline_modules_data['analytics-4']['lostEvents'], 'Lost events should be included in inline module data.' );
-		$this->assertEquals( array( 'new_badge_event_1', 'new_badge_event_2', 'new_badge_event_3' ), $inline_modules_data['analytics-4']['newBadgeEvents'], 'New badge events should be included in inline module data from new badge events transient.' );
+		$this->assertEquals( array( 'detect_event_1', 'detect_event_2' ), $inline_module_data['newEvents'], 'New events should be included in inline module data from detected events transient.' );
+		$this->assertEquals( array( 'lost_event' ), $inline_module_data['lostEvents'], 'Lost events should be included in inline module data.' );
+		$this->assertEquals( array( 'new_badge_event_1', 'new_badge_event_2', 'new_badge_event_3' ), $inline_module_data['newBadgeEvents'], 'New badge events should be included in inline module data from new badge events transient.' );
 	}
 
 	public function test_get_data__adsense_links() {
@@ -5155,9 +4906,8 @@ class Analytics_4Test extends TestCase {
 		$analytics = new Analytics_4( $this->context );
 		$analytics->register();
 
-		remove_all_filters( 'googlesitekit_inline_modules_data' );
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
-		$this->assertSame( array(), $inline_modules_data, 'Inline data should be empty when module is not connected.' );
+		$inline_module_data = $analytics->get_inline_data();
+		$this->assertSame( array(), $inline_module_data, 'Inline data should be empty when module is not connected.' );
 
 		// Test when module is connected.
 		$this->analytics->get_settings()->merge(
@@ -5187,12 +4937,10 @@ class Analytics_4Test extends TestCase {
 		);
 
 		$analytics->register();
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$analytics_data = $analytics->get_inline_data();
 
 		// Verify the structure exists and contains expected keys.
-		$this->assertArrayHasKey( 'analytics-4', $inline_modules_data, 'Inline data should contain analytics-4 key.' );
-		$analytics_data = $inline_modules_data['analytics-4'];
-
 		$this->assertArrayHasKey( 'customDimensionsDataAvailable', $analytics_data, 'Inline data should contain customDimensionsDataAvailable key.' );
 		$this->assertArrayHasKey( 'resourceAvailabilityDates', $analytics_data, 'Inline data should contain resourceAvailabilityDates key.' );
 		$this->assertArrayHasKey( 'tagIDMismatch', $analytics_data, 'Inline data should contain tagIDMismatch key.' );

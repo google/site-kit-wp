@@ -24,23 +24,23 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies.
  */
-import PrimaryUserSetupWidget from '.';
-import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import {
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import {
 	freezeFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
-} from '../../../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import {
-	EDIT_SCOPE,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
+import PrimaryUserSetupWidget from '.';
 
 const userAuthenticationEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/user/data/authentication'

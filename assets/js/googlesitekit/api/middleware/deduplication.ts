@@ -22,7 +22,7 @@ import EquivalentKeyMap from 'equivalent-key-map';
 /**
  * WordPress dependencies
  */
-import type { APIFetchOptions, APIFetchMiddleware } from '@wordpress/api-fetch';
+import type { APIFetchMiddleware, APIFetchOptions } from '@wordpress/api-fetch';
 
 /**
  * Logs a console warning for the given request options.

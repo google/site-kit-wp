@@ -19,18 +19,18 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import WidgetAreaRenderer from './WidgetAreaRenderer';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
-import { Grid, Row, Cell } from '@/js/material-components';
 import useViewOnly from '@/js/hooks/useViewOnly';
+import { Cell, Grid, Row } from '@/js/material-components';
+import WidgetAreaRenderer from './WidgetAreaRenderer';
 
 function WidgetContextRenderer( props ) {
 	const { id, slug, className, Header, Footer } = props;

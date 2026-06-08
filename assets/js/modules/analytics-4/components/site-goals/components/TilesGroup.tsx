@@ -17,8 +17,12 @@
 /**
  * External dependencies
  */
-import { FC, ReactNode } from 'react';
 import classnames from 'classnames';
+import { FC, ReactNode } from 'react';
+
+/**
+ * Internal dependencies
+ */
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 
 export interface TilesGroupProps {

@@ -25,40 +25,37 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { compose } from '@wordpress/compose';
-import { __ } from '@wordpress/i18n';
 import {
 	createInterpolateElement,
 	useCallback,
 	useState,
 } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
-import {
-	CORE_USER,
-	KM_ANALYTICS_POPULAR_PRODUCTS,
-} from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/KeyMetrics/constants';
+import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
 } from '@/js/components/KeyMetrics';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/KeyMetrics/constants';
 import Link from '@/js/components/Link';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_POPULAR_PRODUCTS,
+} from '@/js/googlesitekit/datastore/user/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
+import withCustomDimensions from '@/js/modules/analytics-4/utils/withCustomDimensions';
 import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import useViewOnly from '@/js/hooks/useViewOnly';
-import withCustomDimensions from '@/js/modules/analytics-4/utils/withCustomDimensions';
-import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
 
 /**
  * Gets the report options for the Popular Products widget.
@@ -69,9 +66,7 @@ import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
  * @return {Object} The report options.
  */
 function getPopularProductsWidgetReportOptions( select ) {
-	const dates = select( CORE_USER ).getDateRangeDates( {
-		offsetDays: DATE_RANGE_OFFSET,
-	} );
+	const dates = select( CORE_USER ).getDateRangeDates();
 
 	const productPostType = select( CORE_SITE ).getProductPostType();
 
@@ -108,9 +103,7 @@ function PopularProductsWidget( props ) {
 	);
 
 	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
+		select( CORE_USER ).getDateRangeDates()
 	);
 
 	const { setValue } = useDispatch( CORE_UI );

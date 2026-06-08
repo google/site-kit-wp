@@ -17,7 +17,7 @@
 /**
  * Internal dependencies
  */
-import { test, expect } from '../playwright';
+import { expect, test } from '../playwright';
 import { asUser, withFeatureFlags, withPlugins } from '../wordpress';
 
 const user = asUser( 'admin' );
@@ -38,8 +38,6 @@ test.describe( 'Golinks', { annotation: [ user, plugins ] }, () => {
 		const searchParams = new URLSearchParams( {
 			action: 'googlesitekit_go',
 			to: 'dashboard',
-			slug: 'analytics-4',
-			reAuth: 'true',
 			permaLink: 'http://localhost:9002/hello-world/',
 			otherParam: 'value',
 		} );
@@ -51,12 +49,22 @@ test.describe( 'Golinks', { annotation: [ user, plugins ] }, () => {
 			} )
 		).toBeVisible();
 
-		await expect( wp.page ).toHaveURL( /slug=analytics-4/ );
-		await expect( wp.page ).toHaveURL( /reAuth=true/ );
 		await expect( wp.page ).toHaveURL(
 			/permaLink=http%3A%2F%2Flocalhost%3A9002%2Fhello-world%2F/
 		);
+		await expect( wp.page ).not.toHaveURL( /slug=analytics-4/ );
+		await expect( wp.page ).not.toHaveURL( /reAuth=true/ );
 		await expect( wp.page ).not.toHaveURL( /otherParam=value/ );
+	} );
+
+	test( 'should redirect to Analytics setup via connect-analytics-4 golink', async ( {
+		wp,
+	} ) => {
+		await wp.visitAdmin(
+			'index.php?action=googlesitekit_go&to=connect-analytics-4'
+		);
+		await expect( wp.page ).toHaveURL( /slug=analytics-4/ );
+		await expect( wp.page ).toHaveURL( /reAuth=true/ );
 	} );
 
 	test( 'should fail if the link is invalid', async ( { wp } ) => {

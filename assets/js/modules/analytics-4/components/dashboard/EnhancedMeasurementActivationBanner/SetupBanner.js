@@ -31,22 +31,22 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
+import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import {
 	EDIT_SCOPE,
 	FORM_SETUP,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 import { DAY_IN_SECONDS } from '@/js/util';
-import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
-import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
-import BannerSVG from '@/svg/graphics/banner-enhanced-measurement-setup-cta.svg?url';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 import BannerMobileSVG from '@/svg/graphics/banner-enhanced-measurement-setup-cta-mobile.svg?url';
+import BannerSVG from '@/svg/graphics/banner-enhanced-measurement-setup-cta.svg?url';
 
 export default function SetupBanner( props ) {
 	const { id, Notification, errorNotice, isSaving, onDismiss, onSubmit } =

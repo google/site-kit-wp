@@ -29,25 +29,22 @@ import { compose } from '@wordpress/compose';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import {
-	CORE_USER,
-	KM_ANALYTICS_POPULAR_AUTHORS,
-} from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
 } from '@/js/components/KeyMetrics';
+import {
+	CORE_USER,
+	KM_ANALYTICS_POPULAR_AUTHORS,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import withCustomDimensions from '@/js/modules/analytics-4/utils/withCustomDimensions';
+import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import { numFmt } from '@/js/util';
 
 /**
  * Gets the report options for the Popular Authors widget.
@@ -58,9 +55,7 @@ import { numFmt } from '@/js/util';
  * @return {Object} The report options.
  */
 function getPopularAuthorsWidgetReportOptions( select ) {
-	const dates = select( CORE_USER ).getDateRangeDates( {
-		offsetDays: DATE_RANGE_OFFSET,
-	} );
+	const dates = select( CORE_USER ).getDateRangeDates();
 
 	return {
 		...dates,

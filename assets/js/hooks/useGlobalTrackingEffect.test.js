@@ -19,16 +19,16 @@
 /**
  * Internal dependencies
  */
+import { getStorage, setItem } from '@/js/googlesitekit/api/cache';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import * as tracking from '@/js/util/tracking';
 import {
 	createTestRegistry,
 	provideSiteInfo,
 	renderHook,
 	waitForDefaultTimeouts,
-} from '../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import { useGlobalTrackingEffect } from './useGlobalTrackingEffect';
-import * as tracking from '@/js/util/tracking';
-import { getStorage, setItem } from '@/js/googlesitekit/api/cache';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 
 const mockTrackEvent = jest
 	.spyOn( tracking, 'trackEvent' )

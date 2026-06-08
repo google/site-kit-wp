@@ -24,11 +24,11 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
+import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
 import SetupSuccessNotification from '@/js/modules/pagespeed-insights/components/notifications/SetupSuccessNotification';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
-import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
 
 export const NOTIFICATIONS = {
 	'setup-success-notification-psi': {

@@ -24,32 +24,32 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withActive } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { DISMISS_TRANSITION_MS } from '@/js/googlesitekit/widgets/components/WidgetDismissTransition';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import {
+	ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY,
+	MODULE_SLUG_ADSENSE,
+} from '@/js/modules/adsense/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import {
+	act,
+	createTestRegistry,
+	fireEvent,
+	provideSiteInfo,
+	provideUserAuthentication,
+	render,
+} from '@tests/js/test-utils';
+import AdSenseConnectCTAWidget from './AdSenseConnectCTAWidget';
+
 const mockShowTooltip = jest.fn();
 jest.mock( '../../../../components/AdminScreenTooltip', () => ( {
 	__esModule: true,
 	default: jest.fn(),
 	useShowTooltip: jest.fn( () => mockShowTooltip ),
 } ) );
-
-import AdSenseConnectCTAWidget from './AdSenseConnectCTAWidget';
-import {
-	act,
-	fireEvent,
-	render,
-	createTestRegistry,
-	provideSiteInfo,
-	provideUserAuthentication,
-} from '../../../../../../tests/js/test-utils';
-import {
-	ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY,
-	MODULE_SLUG_ADSENSE,
-} from '@/js/modules/adsense/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
-import { withActive } from '@/js/googlesitekit/modules/datastore/__fixtures__';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { DISMISS_TRANSITION_MS } from '@/js/googlesitekit/widgets/components/WidgetDismissTransition';
 
 describe( 'AdSenseConnectCTAWidget', () => {
 	let registry: ReturnType< typeof createTestRegistry >;

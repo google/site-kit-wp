@@ -19,15 +19,15 @@
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserCapabilities,
-} from '../../../tests/js/utils';
-import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
 
 function Template( args ) {

@@ -19,13 +19,13 @@
 /**
  * Internal dependencies.
  */
-import FrequencySelector from './FrequencySelector';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { provideSiteInfo } from '../../../../tests/js/utils';
 import {
 	CORE_USER,
 	EMAIL_REPORT_FREQUENCIES,
 } from '@/js/googlesitekit/datastore/user/constants';
+import { provideSiteInfo } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
+import FrequencySelector from './FrequencySelector';
 
 export default {
 	title: 'Components/EmailReporting/FrequencySelector',

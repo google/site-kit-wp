@@ -19,12 +19,12 @@
 /**
  * Internal dependencies
  */
+import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
 import {
 	createTestRegistry,
 	provideModules,
 	render,
-} from '../../../../../../tests/js/test-utils';
-import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
+} from '@tests/js/test-utils';
 import SetupForm from './SetupForm';
 
 // Store-level notices are unrelated to duplicate Conversion ID behavior

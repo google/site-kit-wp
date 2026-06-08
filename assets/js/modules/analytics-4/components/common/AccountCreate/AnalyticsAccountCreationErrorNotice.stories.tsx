@@ -25,9 +25,9 @@ import type { ElementType, ReactNode } from 'react';
  * Internal dependencies
  */
 import { type WPDataRegistry } from '@/js/googlesitekit-data';
+import { provideSiteInfo } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import AnalyticsAccountCreationErrorNotice from './AnalyticsAccountCreationErrorNotice';
-import { provideSiteInfo } from 'tests/js/utils';
-import WithRegistrySetup from 'tests/js/WithRegistrySetup';
 
 function Template( args: { errorCode: string; onRetry: () => void } ) {
 	return (
@@ -42,13 +42,6 @@ export const TermsOfServiceNotAccepted = Template.bind( {} );
 TermsOfServiceNotAccepted.storyName = 'Terms of service not accepted';
 TermsOfServiceNotAccepted.args = {
 	errorCode: 'user_cancel',
-	onRetry: () => {},
-};
-
-export const AccountLimitReached = Template.bind( {} );
-AccountLimitReached.storyName = 'Account limit reached';
-AccountLimitReached.args = {
-	errorCode: 'max_accounts_reached',
 	onRetry: () => {},
 };
 

@@ -19,23 +19,8 @@
 /**
  * Internal dependencies
  */
-import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
-import {
-	mockSurveyEndpoints,
-	surveyTriggerEndpoint,
-} from '../../../../../../tests/js/mock-survey-endpoints';
-import {
-	act,
-	createTestRegistry,
-	fireEvent,
-	provideSiteInfo,
-	provideUserAuthentication,
-	render,
-	waitFor,
-} from '../../../../../../tests/js/test-utils';
 import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import * as tracking from '@/js/util/tracking';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
@@ -46,6 +31,21 @@ import {
 	SITE_STATUS_ADDED,
 	SITE_STATUS_READY,
 } from '@/js/modules/adsense/util';
+import * as tracking from '@/js/util/tracking';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '@tests/js/mock-survey-endpoints';
+import {
+	act,
+	createTestRegistry,
+	fireEvent,
+	provideSiteInfo,
+	provideUserAuthentication,
+	render,
+	waitFor,
+} from '@tests/js/test-utils';
 import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

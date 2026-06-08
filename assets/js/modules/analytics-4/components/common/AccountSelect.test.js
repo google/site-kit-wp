@@ -19,23 +19,15 @@
 /**
  * Internal dependencies
  */
-import AccountSelect from './AccountSelect';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
-	fireEvent,
-	freezeFetch,
-	render,
-	waitFor,
-} from '../../../../../../tests/js/test-utils';
-import {
-	MODULES_ANALYTICS_4,
 	ACCOUNT_CREATE,
+	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
-import {
-	createTestRegistry,
-	provideSiteInfo,
-} from '../../../../../../tests/js/utils';
-import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { fireEvent, freezeFetch, render, waitFor } from '@tests/js/test-utils';
+import { createTestRegistry, provideSiteInfo } from '@tests/js/utils';
+import AccountSelect from './AccountSelect';
 
 describe( 'AccountSelect', () => {
 	let registry;

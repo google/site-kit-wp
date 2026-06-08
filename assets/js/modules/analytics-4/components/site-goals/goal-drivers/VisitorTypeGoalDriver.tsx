@@ -30,14 +30,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, Select } from 'googlesitekit-data';
-import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
+import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { numFmt } from '@/js/util';
+import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
 import {
 	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
@@ -45,13 +40,15 @@ import {
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	getDimensionFiltersForEvents,
-	normalizePrimaryEvents,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
-import {
 	GoalDriverComponentProps,
 	GoalDriverRow,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import {
+	getDimensionFiltersForEvents,
+	normalizePrimaryEvents,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { numFmt } from '@/js/util';
 
 interface ReportRow {
 	dimensionValues?: Array< { value?: string } >;
@@ -64,7 +61,7 @@ const VISITOR_TYPE_LABELS = {
 };
 
 const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
-	title: providedTitle,
+	title = '',
 	goalType,
 	limit,
 	rows: providedRows,
@@ -73,17 +70,8 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 	primaryEvent,
 	onExpandableRowsChange,
 } ) => {
-	const title =
-		providedTitle ||
-		( goalType === GOAL_TYPES.ECOMMERCE
-			? __( 'Sales by visitor type', 'google-site-kit' )
-			: __( 'Leads by visitor type', 'google-site-kit' ) );
-
 	const dates = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} ),
+		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
 		[]
 	);
 	const eventNames = useMemo(
@@ -138,26 +126,12 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 				return false;
 			}
 
-			const hasReportStarted = select(
-				MODULES_ANALYTICS_4
-			).hasStartedResolution( 'getReport', [ reportOptions ] );
-			const hasReportFinished = select(
-				MODULES_ANALYTICS_4
-			).hasFinishedResolution( 'getReport', [ reportOptions ] );
-
-			if ( hasReportStarted && ! hasReportFinished ) {
-				return true;
-			}
-
-			const currentReportError = select(
-				MODULES_ANALYTICS_4
-			).getErrorForSelector( 'getReport', [ reportOptions ] );
-
-			return (
-				hasReportStarted && report === undefined && ! currentReportError
+			return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ reportOptions ]
 			);
 		},
-		[ report, reportOptions ]
+		[ reportOptions ]
 	);
 	const sourceRows: ReportRow[] = report?.rows || [];
 	const totalCount = sourceRows.reduce( ( total: number, row: ReportRow ) => {

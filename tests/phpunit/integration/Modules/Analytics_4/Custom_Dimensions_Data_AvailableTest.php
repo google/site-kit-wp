@@ -62,6 +62,8 @@ class Custom_Dimensions_Data_AvailableTest extends TestCase {
 				'googlesitekit_post_author'     => false,
 				'googlesitekit_post_categories' => true,
 				'googlesitekit_post_type'       => true,
+				'googlesitekit_event_provider'  => true,
+				'googlesitekit_form_id'         => true,
 			)
 		);
 
@@ -76,7 +78,54 @@ class Custom_Dimensions_Data_AvailableTest extends TestCase {
 				'googlesitekit_post_author'     => false,
 				'googlesitekit_post_categories' => false,
 				'googlesitekit_post_type'       => false,
+				'googlesitekit_event_provider'  => false,
+				'googlesitekit_form_id'         => false,
 			)
 		);
+	}
+
+	public function test_is_valid_custom_dimension() {
+		$this->assertTrue(
+			$this->custom_dimensions_data_available->is_valid_custom_dimension(
+				'googlesitekit_post_date'
+			)
+		);
+		$this->assertTrue(
+			$this->custom_dimensions_data_available->is_valid_custom_dimension(
+				'googlesitekit_post_author'
+			)
+		);
+		$this->assertTrue(
+			$this->custom_dimensions_data_available->is_valid_custom_dimension(
+				'googlesitekit_post_categories'
+			)
+		);
+		$this->assertTrue(
+			$this->custom_dimensions_data_available->is_valid_custom_dimension(
+				'googlesitekit_post_type'
+			)
+		);
+		$this->assertTrue(
+			$this->custom_dimensions_data_available->is_valid_custom_dimension(
+				'googlesitekit_event_provider'
+			)
+		);
+		$this->assertTrue(
+			$this->custom_dimensions_data_available->is_valid_custom_dimension(
+				'googlesitekit_form_id'
+			)
+		);
+		$this->assertFalse(
+			$this->custom_dimensions_data_available->is_valid_custom_dimension(
+				'invalid_custom_dimension'
+			)
+		);
+	}
+
+	public function test_get_data_availability_includes_all_slugs() {
+		$availability = $this->custom_dimensions_data_available->get_data_availability();
+
+		$this->assertArrayHasKey( 'googlesitekit_event_provider', $availability );
+		$this->assertArrayHasKey( 'googlesitekit_form_id', $availability );
 	}
 }

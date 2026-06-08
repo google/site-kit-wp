@@ -19,6 +19,17 @@
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	MODULE_SLUG_READER_REVENUE_MANAGER,
+	RRM_PRODUCT_ID_INFO_NOTICE_SLUG,
+	RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG,
+} from '@/js/modules/reader-revenue-manager/constants';
+import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import * as tracking from '@/js/util/tracking';
 import {
 	act,
 	createTestRegistry,
@@ -27,19 +38,8 @@ import {
 	provideSiteInfo,
 	provideUserInfo,
 	render,
-} from '../../../../../../tests/js/test-utils';
-import * as tracking from '@/js/util/tracking';
-import {
-	RRM_PRODUCT_ID_INFO_NOTICE_SLUG,
-	RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
-} from '@/js/modules/reader-revenue-manager/constants';
+} from '@tests/js/test-utils';
 import SettingsEdit from './SettingsEdit';
-import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

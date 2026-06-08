@@ -19,22 +19,22 @@
 /**
  * Internal dependencies
  */
-import {
-	render,
-	fireEvent,
-	createTestRegistry,
-	provideModules,
-	provideModuleRegistrations,
-	provideSiteConnection,
-	provideUserInfo,
-	waitFor,
-} from '../../../../../tests/js/test-utils';
-import DashboardSharingSettings from '.';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { sharingSettings, modules, roles } from './__fixtures__';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import {
+	createTestRegistry,
+	fireEvent,
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteConnection,
+	provideUserInfo,
+	render,
+	waitFor,
+} from '@tests/js/test-utils';
+import { modules, roles, sharingSettings } from './__fixtures__';
+import DashboardSharingSettings from '.';
 
 describe( 'DashboardSharingSettings', () => {
 	let registry;

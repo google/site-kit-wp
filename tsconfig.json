@@ -11,6 +11,9 @@
       "@/*": [
         "./assets/*"
       ],
+      "@tests/*": [
+        "./tests/*"
+      ],
       "@wordpress-core/*": [
         "@wordpress/*"
       ],
@@ -32,6 +35,8 @@
       "googlesitekit-widgets": [
         "./assets/js/googlesitekit-widgets"
       ],
+      "@wordpress/api-fetch__non-shim": ["./node_modules/@wordpress/api-fetch"],
+      "@wordpress/i18n__non-shim": ["./node_modules/@wordpress/i18n"]
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,

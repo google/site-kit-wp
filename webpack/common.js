@@ -17,13 +17,13 @@
  */
 
 /**
- * Node dependencies
+ * External dependencies
  */
 const fs = require( 'fs' );
 const path = require( 'path' );
 
 /**
- * External dependencies
+ * Internal dependencies
  */
 const features = require( '../feature-flags.json' );
 
@@ -49,9 +49,15 @@ exports.resolve = {
 		),
 		'@wordpress/api-fetch$': path.resolve(
 			rootDir,
-			'assets/js/api-fetch-shim.js'
+			'assets/js/api-fetch-shim.ts'
 		),
 		'@wordpress/i18n__non-shim': require.resolve( '@wordpress/i18n' ),
+		// React 17 ships `jsx-runtime` as a file but does not expose it via an
+		// `exports` field, so ESM packages (e.g. `@react-pdf/renderer`) that
+		// import `react/jsx-runtime` fail webpack's strict resolution. Pin the
+		// extension explicitly until React 18 is adopted.
+		'react/jsx-runtime$': require.resolve( 'react/jsx-runtime.js' ),
+		'react/jsx-dev-runtime$': require.resolve( 'react/jsx-dev-runtime.js' ),
 	},
 	extensions: [ '.tsx', '.ts', '.js', '.jsx', '.mjs' ],
 	modules: [ projectPath( '.' ), 'node_modules' ],

@@ -26,7 +26,7 @@ import { createRegistry } from '@wordpress/data';
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { combineStores, commonStore } from 'googlesitekit-data';
-import { muteFetch, subscribeUntil } from '../../../../tests/js/utils';
+import { muteFetch, subscribeUntil } from '@tests/js/utils';
 import { createNotificationsStore } from './create-notifications-store';
 
 const STORE_ARGS = [ 'core', 'site', 'notifications' ];

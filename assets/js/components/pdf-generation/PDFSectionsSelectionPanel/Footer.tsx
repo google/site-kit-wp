@@ -25,15 +25,15 @@ import { FC } from 'react';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-generation/constants';
+import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { PDF_GENERATING_KEY } from '@/js/components/pdf-generation/constants';
 
 interface FooterProps {
 	closePanel: () => void;
@@ -41,18 +41,24 @@ interface FooterProps {
 }
 
 const Footer: FC< FooterProps > = ( { closePanel, hasSelection } ) => {
-	const isGenerating = useSelect(
-		( select: Select ) => select( CORE_UI ).getValue( PDF_GENERATING_KEY ),
+	const isExporting = useSelect(
+		( select: Select ) => select( CORE_PDF ).isExporting(),
+		[]
+	);
+	const exportStatus = useSelect(
+		( select: Select ) => select( CORE_PDF ).getStatus(),
 		[]
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
+	const { startExporting } = useDispatch( CORE_PDF );
 
-	const onDownloadClick = useCallback( () => {
-		// Temporary stub: toggle the "generating" flag so the notice renders.
-		// To be replaced by the real orchestrator handoff in #12537.
-		setValue( PDF_GENERATING_KEY, true );
-	}, [ setValue ] );
+	function handleDownloadClick() {
+		setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, false );
+		startExporting();
+	}
+
+	const inFlight = !! isExporting || exportStatus === 'progress';
 
 	return (
 		<footer className="googlesitekit-selection-panel-footer googlesitekit-pdf-download-panel__footer">
@@ -64,8 +70,8 @@ const Footer: FC< FooterProps > = ( { closePanel, hasSelection } ) => {
 					</Button>
 					{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
 					<Button
-						onClick={ onDownloadClick }
-						disabled={ ! hasSelection || !! isGenerating }
+						onClick={ handleDownloadClick }
+						disabled={ ! hasSelection || inFlight }
 					>
 						{ __( 'Download report', 'google-site-kit' ) }
 					</Button>

@@ -1,8 +1,8 @@
 /**
  * External dependencies
  */
-import intlLocalesSupported from 'intl-locales-supported';
 import intl from 'intl';
+import intlLocalesSupported from 'intl-locales-supported';
 
 /**
  * WordPress dependencies
