@@ -35,6 +35,7 @@ import { SelectionPanelContent } from '@/js/components/SelectionPanel';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import useFormValue from '@/js/hooks/useFormValue';
 import {
+	BREAKDOWN_ORIGIN_PANEL,
 	SITE_GOALS_SELECTED_DRIVERS,
 	SITE_GOALS_SELECTION_FORM,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
@@ -47,8 +48,7 @@ import {
 	GoalDriverSelectionState,
 	GoalType,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import BreakdownNotice from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNotice';
-import { useSiteGoalsBreakdownNoticeCopy } from '@/js/modules/analytics-4/components/site-goals/notifications/useSiteGoalsBreakdownNoticeCopy';
+import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
 import GoalTypeList from '@/js/modules/analytics-4/components/site-goals/selection-panel/GoalTypeList';
 import GoalTypeSection from '@/js/modules/analytics-4/components/site-goals/selection-panel/GoalTypeSection';
 import VisitorEngagementEventList from '@/js/modules/analytics-4/components/site-goals/selection-panel/VisitorEngagementEventList';
@@ -87,22 +87,7 @@ const PanelContent: FC< PanelContentProps > = ( {
 		| GoalDriverSelectionState
 		| undefined;
 
-	const ecommerceBreakdownNoticeCopy = useSiteGoalsBreakdownNoticeCopy(
-		GOAL_TYPES.ECOMMERCE
-	);
-	const leadBreakdownNoticeCopy = useSiteGoalsBreakdownNoticeCopy(
-		GOAL_TYPES.LEAD
-	);
-
 	const { setValues } = useDispatch( CORE_FORMS );
-	const { setSiteGoalsBreakdownTooltipPending } =
-		useDispatch( MODULES_ANALYTICS_4 );
-
-	// In the panel the tooltip is deferred until the overlay closes, so dismissal
-	// just flags it for the panel parent to read on close.
-	function deferBreakdownTooltip() {
-		setSiteGoalsBreakdownTooltipPending( true );
-	}
 
 	const ecommerceOptions = getGoalDriverOptions( GOAL_TYPES.ECOMMERCE );
 	const leadOptions = getGoalDriverOptions( GOAL_TYPES.LEAD );
@@ -171,10 +156,9 @@ const PanelContent: FC< PanelContentProps > = ( {
 		<SelectionPanelContent className="googlesitekit-site-goals-selection-panel__content">
 			{ hasEcommerceGoalDrivers && (
 				<Fragment>
-					<BreakdownNotice
-						className="googlesitekit-site-goals-selection-panel__breakdown-notice"
-						onDismissComplete={ deferBreakdownTooltip }
-						{ ...ecommerceBreakdownNoticeCopy }
+					<BreakdownNoticeArea
+						origin={ BREAKDOWN_ORIGIN_PANEL }
+						goalType={ GOAL_TYPES.ECOMMERCE }
 					/>
 					<GoalTypeSection
 						listID={ GOAL_TYPES.ECOMMERCE }
@@ -215,10 +199,9 @@ const PanelContent: FC< PanelContentProps > = ( {
 
 			{ hasLeadGoalDrivers && (
 				<Fragment>
-					<BreakdownNotice
-						className="googlesitekit-site-goals-selection-panel__breakdown-notice"
-						onDismissComplete={ deferBreakdownTooltip }
-						{ ...leadBreakdownNoticeCopy }
+					<BreakdownNoticeArea
+						origin={ BREAKDOWN_ORIGIN_PANEL }
+						goalType={ GOAL_TYPES.LEAD }
 					/>
 					<GoalTypeSection
 						listID={ GOAL_TYPES.LEAD }
