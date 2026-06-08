@@ -807,13 +807,12 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * Outputs the Sign in with Google init script that turns the placeholder
 	 * `<div>` from `render_sign_in_with_google_profile()` into a real button.
 	 *
-	 * Runs on `in_admin_footer`, which fires just before `admin_footer`. This
-	 * matters for two reasons:
+	 * Runs on `in_admin_footer`, which fires just before `admin_footer`
+	 * because:
 	 *
 	 * 1. `show_user_profile` has already fired, so
 	 *    `did_action( 'show_user_profile' )` returns whether the section
 	 *    rendered.
-	 *
 	 * 2. The `Web_Tag` schedules its own output on `admin_footer`. If
 	 *    this callback itself ran on `admin_footer`, that render would be
 	 *    added to a hook already firing at the current priority, and
