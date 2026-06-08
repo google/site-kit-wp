@@ -29,23 +29,20 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { useDispatch } from 'googlesitekit-data';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import useViewOnly from '@/js/hooks/useViewOnly';
-import {
-	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
-	SITE_GOALS_BREAKDOWN_NOTICE,
-} from '@/js/modules/analytics-4/components/site-goals/constants';
-import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { SITE_GOALS_BREAKDOWN_NOTICE } from '@/js/modules/analytics-4/components/site-goals/constants';
 
 interface BreakdownNoticeProps {
 	title: ReactNode;
 	description: ReactNode;
 	ctaLabel: string;
+	onCTAClick: () => void;
 	className?: string;
+	ctaInProgress?: boolean;
+	ctaDisabled?: boolean;
 	onDismissComplete?: () => void;
 }
 
@@ -53,53 +50,13 @@ const BreakdownNotice: FC< BreakdownNoticeProps > = ( {
 	title,
 	description,
 	ctaLabel,
+	onCTAClick,
 	className,
+	ctaInProgress,
+	ctaDisabled,
 	onDismissComplete,
 } ) => {
-	const isIntroModalDismissed = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).isItemDismissed(
-				SITE_GOALS_INTRO_MODAL_BANNER
-			),
-		[]
-	);
-	const hasBreakdownDimensions = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
-				SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS
-			),
-		[]
-	);
-	const isNoticeDismissed = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).isItemDismissed( SITE_GOALS_BREAKDOWN_NOTICE ),
-		[]
-	);
-
 	const { dismissItem } = useDispatch( CORE_USER );
-
-	const isViewOnly = useViewOnly();
-
-	if ( isViewOnly ) {
-		return null;
-	}
-
-	// Avoid a flash while any of the gating selectors are still resolving.
-	if (
-		isIntroModalDismissed === undefined ||
-		hasBreakdownDimensions === undefined ||
-		isNoticeDismissed === undefined
-	) {
-		return null;
-	}
-
-	if (
-		! isIntroModalDismissed ||
-		hasBreakdownDimensions ||
-		isNoticeDismissed
-	) {
-		return null;
-	}
 
 	async function handleDismiss() {
 		// Wait for the dismissal to persist (which hides the notice) before
@@ -116,9 +73,9 @@ const BreakdownNotice: FC< BreakdownNoticeProps > = ( {
 			description={ description }
 			ctaButton={ {
 				label: ctaLabel,
-				// TODO: Trigger the breakdown setup flow (OAuth + custom
-				// dimension creation) in #12801.
-				onClick: () => {},
+				onClick: onCTAClick,
+				inProgress: ctaInProgress,
+				disabled: ctaDisabled,
 			} }
 			dismissButton={ {
 				label: __( 'No thanks', 'google-site-kit' ),
