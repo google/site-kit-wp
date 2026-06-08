@@ -163,16 +163,8 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		( select: Select ) => select( CORE_USER ).getDateRange(),
 		[]
 	);
-	// Every URL embedded in the PDF is a GoLink so the server-side handlers own
-	// the real destinations. The dashboard GoLink is resolved once here and
-	// threaded into the report, which keeps a single source of truth shared by
-	// the header and footer.
-	const [ dashboardURL, helpCenterURL, privacyPolicyURL ] = useSelect(
-		( select: Select ) => [
-			select( CORE_SITE ).getGoLinkURL( 'dashboard' ),
-			select( CORE_SITE ).getGoLinkURL( 'help-center' ),
-			select( CORE_SITE ).getGoLinkURL( 'privacy-policy' ),
-		],
+	const dashboardURL = useSelect(
+		( select: Select ) => select( CORE_SITE ).getGoLinkURL( 'dashboard' ),
 		[]
 	);
 
@@ -265,8 +257,8 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 								: undefined
 						}
 						dashboardURL={ dashboardURL || '' }
-						helpCenterURL={ helpCenterURL || '' }
-						privacyPolicyURL={ privacyPolicyURL || '' }
+						helpCenterURL="https://sitekit.withgoogle.com/support/"
+						privacyPolicyURL="https://policies.google.com/privacy"
 					/>
 				);
 
