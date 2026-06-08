@@ -231,30 +231,62 @@ export default function Navigation() {
 	// Handle scroll events to update sticky state and selected chip.
 	useEvent( 'scroll', throttledOnScroll );
 
+	const navigationChipIconSize = 20;
+
 	const chips = {
 		[ ANCHOR_ID_KEY_METRICS ]: {
 			label: __( 'Key metrics', 'google-site-kit' ),
-			icon: <NavKeyMetricsIcon width="20" height="20" />,
+			icon: (
+				<NavKeyMetricsIcon
+					width={ navigationChipIconSize }
+					height={ navigationChipIconSize }
+				/>
+			),
 		},
 		[ ANCHOR_ID_TRAFFIC ]: {
 			label: __( 'Traffic', 'google-site-kit' ),
-			icon: <NavTrafficIcon width="20" height="20" />,
+			icon: (
+				<NavTrafficIcon
+					width={ navigationChipIconSize }
+					height={ navigationChipIconSize }
+				/>
+			),
 		},
 		[ ANCHOR_ID_SITE_GOALS ]: {
 			label: __( 'Site goals', 'google-site-kit' ),
-			icon: <NavSiteGoalsIcon width="20" height="20" />,
+			icon: (
+				<NavSiteGoalsIcon
+					width={ navigationChipIconSize }
+					height={ navigationChipIconSize }
+				/>
+			),
 		},
 		[ ANCHOR_ID_CONTENT ]: {
 			label: __( 'Content', 'google-site-kit' ),
-			icon: <NavContentIcon width="20" height="20" />,
+			icon: (
+				<NavContentIcon
+					width={ navigationChipIconSize }
+					height={ navigationChipIconSize }
+				/>
+			),
 		},
 		[ ANCHOR_ID_SPEED ]: {
 			label: __( 'Speed', 'google-site-kit' ),
-			icon: <NavSpeedIcon width="20" height="20" />,
+			icon: (
+				<NavSpeedIcon
+					width={ navigationChipIconSize }
+					height={ navigationChipIconSize }
+				/>
+			),
 		},
 		[ ANCHOR_ID_MONETIZATION ]: {
 			label: __( 'Monetization', 'google-site-kit' ),
-			icon: <NavMonetizationIcon width="20" height="20" />,
+			icon: (
+				<NavMonetizationIcon
+					width={ navigationChipIconSize }
+					height={ navigationChipIconSize }
+				/>
+			),
 		},
 	};
 
