@@ -37,13 +37,18 @@ import {
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	DATE_RANGE_OFFSET,
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { fireEvent, render, waitFor } from '@tests/js/test-utils';
-import { createTestRegistry, provideModules } from '@tests/js/utils';
+import {
+	createTestRegistry,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserCapabilities,
+} from '@tests/js/utils';
 import OnlineStorePerformanceWidget from './OnlineStorePerformanceWidget';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
@@ -499,6 +504,8 @@ describe( 'OnlineStorePerformanceWidget', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_ANALYTICS_4,
@@ -806,6 +813,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		// Both ecommerce plugins active, so the "both plugins" notice copy shows.
+		provideSiteInfo( registry, {
+			hasMultipleActiveEcommerceEventProviders: true,
+		} );
 		// Aggregated state: intro modal dismissed, breakdown dimensions not yet
 		// created (availableCustomDimensions seeded as [] in beforeEach).
 		registry
@@ -817,25 +828,23 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
-		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ], {
-			loading: true,
-		} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.startResolution( 'getReport', [
-				buildPrimaryEventReportOptions(
-					dates,
-					ENUM_CONVERSION_EVENTS.PURCHASE
-				),
-			] );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.startResolution( 'getReport', [
-				buildEngagementReportOptions( dates ),
-			] );
+		// The breakdown notice in the widget only renders once the primary
+		// section has loaded (it shows a skeleton while loading), so seed the
+		// reports as loaded.
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		provideAnalytics4MockReport(
+			registry,
+			buildPrimaryEventReportOptions(
+				dates,
+				ENUM_CONVERSION_EVENTS.PURCHASE
+			)
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
 
 		const { getByText, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
