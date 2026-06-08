@@ -37,7 +37,10 @@ import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
-import { SITE_GOALS_DEFAULT_SELECTED_DRIVERS } from '@/js/modules/analytics-4/components/site-goals/constants';
+import {
+	BREAKDOWN_ORIGIN_WIDGET,
+	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
+} from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_CATALOG,
 	GOAL_TYPES,
@@ -48,9 +51,7 @@ import {
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import BreakdownNotice from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNotice';
-import { useBreakdownNoticeTooltip } from '@/js/modules/analytics-4/components/site-goals/notifications/useBreakdownNoticeTooltip';
-import { useSiteGoalsBreakdownNoticeCopy } from '@/js/modules/analytics-4/components/site-goals/notifications/useSiteGoalsBreakdownNoticeCopy';
+import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
 import {
 	NUMBER_FORMAT,
 	PERCENT_FORMAT,
@@ -90,11 +91,6 @@ const LeadGenerationPerformanceWidget: FC<
 				path: '/TODO-SUPPORT-PATH',
 			} ),
 		[]
-	);
-
-	const showBreakdownTooltip = useBreakdownNoticeTooltip();
-	const breakdownNoticeCopy = useSiteGoalsBreakdownNoticeCopy(
-		GOAL_TYPES.LEAD
 	);
 
 	const detectedLeadEvents = useSelect(
@@ -304,10 +300,9 @@ const LeadGenerationPerformanceWidget: FC<
 				</TilesGroup>
 			) }
 
-			<BreakdownNotice
-				className="googlesitekit-site-goals-breakdown-notice"
-				onDismissComplete={ showBreakdownTooltip }
-				{ ...breakdownNoticeCopy }
+			<BreakdownNoticeArea
+				origin={ BREAKDOWN_ORIGIN_WIDGET }
+				goalType={ GOAL_TYPES.LEAD }
 			/>
 
 			<TilesGroup
