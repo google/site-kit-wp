@@ -27,6 +27,7 @@ import fetchMock from 'fetch-mock';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { getSiteGoalsTour } from '@/js/modules/analytics-4/components/site-goals/feature-tours/site-goals';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
@@ -35,6 +36,7 @@ import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
 import {
 	createTestRegistry,
 	fireEvent,
+	provideModules,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -59,6 +61,15 @@ describe( 'IntroModal', () => {
 			clickLearnMore: jest.fn(),
 			dismiss: jest.fn(),
 		} );
+
+		provideModules( registry, [
+			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
+		] );
+		// Breakdown notice gating: dimensions not yet created so the tour
+		// includes the breakdown step.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( { availableCustomDimensions: [] } );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
@@ -113,7 +124,10 @@ describe( 'IntroModal', () => {
 
 		await waitFor( () => {
 			expect( registry.select( CORE_USER ).getCurrentTour() ).toEqual(
-				getSiteGoalsTour( { isEcommerceOnly: true } )
+				getSiteGoalsTour( {
+					isEcommerceOnly: true,
+					hasBreakdownNotice: true,
+				} )
 			);
 		} );
 	} );

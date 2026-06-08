@@ -47,8 +47,10 @@ import {
 	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { useFeature } from '@/js/hooks/useFeature';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
@@ -109,7 +111,60 @@ function shouldRenderModalVariant( {
 	return true;
 }
 
+function getModalDescription( {
+	modalVariant,
+	isViewOnly,
+	setupFlowRefreshPhase4Enabled,
+}: {
+	modalVariant: MODAL_VARIANT;
+	isViewOnly: boolean;
+	setupFlowRefreshPhase4Enabled: boolean;
+} ): string | ReactElement {
+	if ( isViewOnly && setupFlowRefreshPhase4Enabled ) {
+		switch ( modalVariant ) {
+			case MODAL_VARIANT.DATA_AVAILABLE:
+				return __(
+					'Take a quick tour to see the most important parts of your dashboard',
+					'google-site-kit'
+				);
+			case MODAL_VARIANT.GATHERING_DATA:
+				return __(
+					'Site Kit is gathering data and soon metrics for your site will show on your dashboard',
+					'google-site-kit'
+				);
+		}
+	}
+
+	switch ( modalVariant ) {
+		case MODAL_VARIANT.DATA_AVAILABLE:
+			return __(
+				'Initial setup complete! Take a look at the special features Site Kit added to your dashboard based on your site goals',
+				'google-site-kit'
+			);
+		case MODAL_VARIANT.GATHERING_DATA:
+			return createInterpolateElement(
+				__(
+					'Initial setup complete!<br />Site Kit is gathering data and soon metrics for your site will show on your dashboard',
+					'google-site-kit'
+				),
+				{
+					br: <br />,
+				}
+			);
+		case MODAL_VARIANT.DATA_GATHERING_COMPLETE:
+		default:
+			return __(
+				'Take this quick tour to see the most important parts of your dashboard. It will show you where to look to track your site’s success as you get more visitors.',
+				'google-site-kit'
+			);
+	}
+}
+
 export default function WelcomeModal() {
+	const setupFlowRefreshPhase4Enabled = useFeature(
+		'setupFlowRefreshPhase4'
+	);
+	const isViewOnly = useViewOnly();
 	const viewContext = useViewContext();
 
 	const [ isOpen, setIsOpen ] = useState( true );
@@ -306,33 +361,11 @@ export default function WelcomeModal() {
 			? __( 'Data gathering complete!', 'google-site-kit' )
 			: __( 'Welcome to Site Kit', 'google-site-kit' );
 
-	let description: string | ReactElement;
-
-	switch ( modalVariant ) {
-		case MODAL_VARIANT.DATA_AVAILABLE:
-			description = __(
-				'Initial setup complete! Take a look at the special features Site Kit added to your dashboard based on your site goals',
-				'google-site-kit'
-			);
-			break;
-		case MODAL_VARIANT.GATHERING_DATA:
-			description = createInterpolateElement(
-				__(
-					'Initial setup complete!<br />Site Kit is gathering data and soon metrics for your site will show on your dashboard',
-					'google-site-kit'
-				),
-				{
-					br: <br />,
-				}
-			);
-			break;
-		case MODAL_VARIANT.DATA_GATHERING_COMPLETE:
-			description = __(
-				'Take this quick tour to see the most important parts of your dashboard. It will show you where to look to track your site’s success as you get more visitors.',
-				'google-site-kit'
-			);
-			break;
-	}
+	const description = getModalDescription( {
+		modalVariant,
+		isViewOnly,
+		setupFlowRefreshPhase4Enabled,
+	} );
 
 	const Graphic =
 		modalVariant === MODAL_VARIANT.DATA_GATHERING_COMPLETE

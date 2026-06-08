@@ -1271,4 +1271,45 @@ class ModulesTest extends TestCase {
 		// Only adsense and pagespeed-insights are connected and shared.
 		$this->assertEquals( array( 'adsense', 'pagespeed-insights' ), $shared );
 	}
+
+	public function test_inline_modules_data() {
+		remove_all_filters( 'googlesitekit_inline_modules_data' );
+
+		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$fake_module->set_force_active( true );
+
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
+
+		$modules->register();
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertArrayHasKey( 'fake-module', $inline_modules_data );
+		$this->assertEquals(
+			array(
+				'testInlineData' => true,
+			),
+			$inline_modules_data['fake-module']
+		);
+
+		$inline_modules_data = apply_filters(
+			'googlesitekit_inline_modules_data',
+			array(
+				'fake-module' => array(
+					'existingData' => true,
+				),
+			)
+		);
+
+		$this->assertArrayHasKey( 'fake-module', $inline_modules_data );
+		$this->assertEquals(
+			array(
+				'testInlineData' => true,
+				'existingData'   => true,
+			),
+			$inline_modules_data['fake-module']
+		);
+	}
 }

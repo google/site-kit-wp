@@ -17,11 +17,9 @@
  */
 
 .googlesitekit-plugin {
-
 	.googlesitekit-settings-module--analytics-4 {
-
-		.googlesitekit-settings-module__fields-group-title + .googlesitekit-setup-module__inputs {
-
+		.googlesitekit-settings-module__fields-group-title
+			+ .googlesitekit-setup-module__inputs {
 			.googlesitekit-analytics__select-account,
 			.googlesitekit-analytics-4__select-property,
 			.googlesitekit-analytics-4__select-webdatastream {
@@ -30,7 +28,6 @@
 		}
 
 		.googlesitekit-analytics-enable + .googlesitekit-setup-module__inputs {
-
 			.googlesitekit-analytics__select-property,
 			.googlesitekit-analytics__select-profile {
 				margin-top: $grid-gap-phone / 2;
@@ -75,6 +72,113 @@
 		svg {
 			height: 10px;
 			width: 10px;
+		}
+	}
+
+	.googlesitekit-module-settings-group--improve-measurement {
+		gap: 10px;
+
+		.googlesitekit-typography {
+			margin-bottom: 10px;
+		}
+
+		.googlesitekit-cta-link {
+			color: $c-surfaces-on-surface-variant;
+			text-decoration: underline;
+		}
+
+		.googlesitekit-module-settings-group__switch .mdc-switch + label {
+			margin-left: 20px;
+		}
+
+		.googlesitekit-module-settings-group__helper-text {
+			margin-left: 52px;
+		}
+
+		.googlesitekit-google-tag-gateway-toggle {
+			margin-top: 10px;
+		}
+	}
+
+	.googlesitekit-settings-measurement-row {
+		display: flex;
+		gap: 14px;
+		padding-left: 14px;
+	}
+
+	.googlesitekit-settings-measurement-row--loading {
+		// Center the progress bar and hold a height close to a loaded row, so
+		// the row does not jump when it loads.
+		align-items: center;
+		border-top: 1px solid $c-utility-divider;
+		margin-left: 52px;
+		min-height: 52px;
+
+		.mdc-linear-progress {
+			margin-top: 10px;
+		}
+	}
+
+	.googlesitekit-settings-measurement-row__icon {
+		align-items: center;
+		background-color: $c-violet-v-50;
+		border-radius: 50%;
+		color: $c-violet-v-600;
+		display: flex;
+		flex-shrink: 0;
+		height: 24px;
+		justify-content: center;
+		margin-top: 8px;
+		width: 24px;
+
+		svg {
+			height: 14px;
+			width: 14px;
+		}
+	}
+
+	.googlesitekit-settings-measurement-row__icon--check {
+		background-color: $c-content-primary;
+		color: $c-content-on-primary;
+	}
+
+	.googlesitekit-settings-measurement-row__content {
+		border-top: 1px solid $c-utility-divider;
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: 20px;
+		padding-top: 10px;
+
+		@media (min-width: $bp-tablet) {
+			align-items: center;
+			flex-flow: row wrap;
+		}
+	}
+
+	.googlesitekit-settings-measurement-row__details {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+
+		.googlesitekit-module-settings-group__helper-text {
+			margin-left: 0;
+		}
+	}
+
+	.googlesitekit-settings-measurement-row__title {
+		font-weight: $fw-normal;
+		line-height: 1.43;
+		margin: 0;
+	}
+
+	.googlesitekit-settings-measurement-row__action {
+		flex-shrink: 0;
+
+		.mdc-button {
+			min-height: 32px;
+			padding-bottom: 6px;
+			padding-top: 6px;
 		}
 	}
 }

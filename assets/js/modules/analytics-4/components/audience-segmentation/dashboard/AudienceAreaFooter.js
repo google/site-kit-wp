@@ -30,18 +30,13 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 export default function AudienceAreaFooter() {
 	const viewOnlyDashboard = useViewOnly();
 
 	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
+		select( CORE_USER ).getDateRangeDates()
 	);
 
 	const sourceLinkURL = useSelect( ( select ) => {

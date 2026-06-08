@@ -20,6 +20,7 @@ export { default as AnalyticsSettingsNotice } from './AnalyticsSettingsNotice';
 export { default as EnhancedConversionsSettingsNotice } from './EnhancedConversionsSettingsNotice';
 export { default as OptionalSettingsView } from './OptionalSettingsView';
 export { default as PropertyOrWebDataStreamNotAvailableError } from './PropertyOrWebDataStreamNotAvailableError';
+export { default as SettingsAdvancedDataBreakdowns } from './SettingsAdvancedDataBreakdowns';
 export { default as SettingsControls } from './SettingsControls';
 export { default as SettingsEdit } from './SettingsEdit';
 export { default as SettingsEnhancedMeasurementSwitch } from './SettingsEnhancedMeasurementSwitch';

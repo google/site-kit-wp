@@ -125,6 +125,13 @@ function getLastWidgetAnchor( {
 	return null;
 }
 
+// This component has a legitimately high level of complexity; it renders the
+// entire dashboard with a bunch of conditionals to determine what to show.
+//
+// Disabling this rule would obscure the contents of the dashboard and be
+// counterproductive, so we disable the ESLint rule around cyclomatic
+// complexity for this component.
+// eslint-disable-next-line complexity
 export default function DashboardMainApp() {
 	const siteGoalsEnabled = useFeature( 'siteGoals' );
 
@@ -473,7 +480,8 @@ export default function DashboardMainApp() {
 			) }
 
 			{ configuredAudiences && <AudienceSelectionPanel /> }
-			{ siteGoalsEnabled && (
+
+			{ siteGoalsEnabled && hasAnalyticsAccess && (
 				<Fragment>
 					<SiteGoalsSelectionPanel />
 					<SiteGoalsIntroModalBanner />
