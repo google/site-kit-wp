@@ -49,7 +49,7 @@ exports.resolve = {
 		),
 		'@wordpress/api-fetch$': path.resolve(
 			rootDir,
-			'assets/js/api-fetch-shim.js'
+			'assets/js/api-fetch-shim.ts'
 		),
 		'@wordpress/i18n__non-shim': require.resolve( '@wordpress/i18n' ),
 		// React 17 ships `jsx-runtime` as a file but does not expose it via an
