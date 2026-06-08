@@ -24,13 +24,15 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { Fragment, Suspense, lazy } from '@wordpress/element';
+import { Fragment, Suspense, lazy, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-generation/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import PDFReportSnackbarHost from './PDFReportSnackbarHost';
 
 const PDFExportOrchestrator = lazy(
@@ -48,10 +50,18 @@ const PDFExportRoot: FC = () => {
 	);
 
 	const { finishExporting } = useDispatch( CORE_PDF );
+	const { setValue } = useDispatch( CORE_UI );
+
+	// Re-opens the side sheet panel (the same panel toggled by the dashboard
+	// header's download icon button) so the user can retry the export with
+	// their previous selection preserved.
+	const openPanel = useCallback( () => {
+		setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, true );
+	}, [ setValue ] );
 
 	return (
 		<Fragment>
-			<PDFReportSnackbarHost />
+			<PDFReportSnackbarHost onRetry={ openPanel } />
 			{ isExporting && (
 				<Suspense fallback={ null }>
 					<PDFExportOrchestrator onComplete={ finishExporting } />

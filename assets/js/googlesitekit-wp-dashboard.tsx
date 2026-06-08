@@ -1,5 +1,5 @@
 /**
- * User input.
+ * WPDashboard component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* eslint camelcase:[0] */
 
 /**
  * WordPress dependencies
@@ -26,19 +27,28 @@ import { render } from '@wordpress/element';
  * Internal dependencies
  */
 import Root from './components/Root';
-import UserInputApp from './components/user-input/UserInputApp';
-import { VIEW_CONTEXT_USER_INPUT } from './googlesitekit/constants';
+import WPDashboardApp from './components/wp-dashboard/WPDashboardApp';
+import {
+	VIEW_CONTEXT_WP_DASHBOARD,
+	VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY,
+} from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
 	const renderTarget = document.getElementById(
-		'js-googlesitekit-user-input'
+		'js-googlesitekit-wp-dashboard'
 	);
 
 	if ( renderTarget ) {
+		const { viewOnly } = renderTarget.dataset;
+		const viewContext = viewOnly
+			? VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY
+			: VIEW_CONTEXT_WP_DASHBOARD;
+
 		render(
-			<Root viewContext={ VIEW_CONTEXT_USER_INPUT }>
-				<UserInputApp />
+			// @ts-expect-error Root is not properly typed yet.
+			<Root viewContext={ viewContext }>
+				<WPDashboardApp />
 			</Root>,
 			renderTarget
 		);

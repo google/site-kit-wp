@@ -1,5 +1,5 @@
 /**
- * WPDashboard component.
+ * DashboardSplash component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* eslint camelcase:[0] */
 
 /**
  * WordPress dependencies
@@ -26,28 +25,24 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import DashboardSplashApp from './components/dashboard-splash/DashboardSplashApp';
 import Root from './components/Root';
-import WPDashboardApp from './components/wp-dashboard/WPDashboardApp';
-import {
-	VIEW_CONTEXT_WP_DASHBOARD,
-	VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY,
-} from './googlesitekit/constants';
+import { clearCache } from './googlesitekit/api/cache';
+import { VIEW_CONTEXT_SPLASH } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
-domReady( () => {
-	const renderTarget = document.getElementById(
-		'js-googlesitekit-wp-dashboard'
-	);
+domReady( async () => {
+	if ( global._googlesitekitLegacyData.admin.resetSession ) {
+		await clearCache();
+	}
+
+	const renderTarget = document.getElementById( 'js-googlesitekit-splash' );
 
 	if ( renderTarget ) {
-		const { viewOnly } = renderTarget.dataset;
-		const viewContext = viewOnly
-			? VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY
-			: VIEW_CONTEXT_WP_DASHBOARD;
-
 		render(
-			<Root viewContext={ viewContext }>
-				<WPDashboardApp />
+			// @ts-expect-error Root is not properly typed yet.
+			<Root viewContext={ VIEW_CONTEXT_SPLASH }>
+				<DashboardSplashApp />
 			</Root>,
 			renderTarget
 		);

@@ -1,7 +1,5 @@
 /**
- * Activation component.
- *
- * This JavaScript loads on every admin page. Reserved for later.
+ * DashboardDetails component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -25,25 +23,36 @@ import domReady from '@wordpress/dom-ready';
 import { render } from '@wordpress/element';
 
 /**
- * Internal dependencies
+ * Internal dependencies.
  */
-import { ActivationApp } from './components/activation/activation-app';
+import DashboardEntityApp from './components/DashboardEntityApp';
 import Root from './components/Root';
-import { VIEW_CONTEXT_ACTIVATION } from './googlesitekit/constants';
+import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+} from './googlesitekit/constants';
 
+// Initialize the app once the DOM is ready.
 domReady( () => {
 	const renderTarget = document.getElementById(
-		'js-googlesitekit-activation'
+		'js-googlesitekit-entity-dashboard'
 	);
 
 	if ( renderTarget ) {
+		const { viewOnly } = renderTarget.dataset;
+
 		render(
-			<Root viewContext={ VIEW_CONTEXT_ACTIVATION }>
-				<ActivationApp />
+			<Root
+				// @ts-expect-error Root is not properly typed yet.
+				viewContext={
+					viewOnly
+						? VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY
+						: VIEW_CONTEXT_ENTITY_DASHBOARD
+				}
+			>
+				<DashboardEntityApp />
 			</Root>,
 			renderTarget
 		);
-
-		renderTarget.classList.remove( 'googlesitekit-activation--loading' );
 	}
 } );

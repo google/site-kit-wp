@@ -19,6 +19,8 @@
 // eslint-disable-next-line camelcase, no-undef
 __webpack_public_path__ = `${ global._googlesitekitBaseData.assetsURL }js/`;
 
+declare module 'intersection-observer';
+
 async function loadPolyfills() {
 	if ( typeof global.IntersectionObserver === 'undefined' ) {
 		await import( 'intersection-observer' );
