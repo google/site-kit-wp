@@ -76,6 +76,14 @@
 		}
 	}
 
+	.googlesitekit-site-goals-breakdown-notice {
+			padding: $grid-gap-phone $grid-gap-desktop;
+
+			@media (min-width: $bp-tablet) {
+				padding: 14px $grid-gap-desktop;
+			}
+	}
+
 	.googlesitekit-site-goals-breakdown-notice .googlesitekit-notice__content {
 		font-size: $fs-label-md;
 		line-height: $lh-label-md;
