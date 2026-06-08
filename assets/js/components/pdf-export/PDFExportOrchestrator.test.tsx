@@ -84,10 +84,10 @@ describe( 'PDFExportOrchestrator', () => {
 			registry.select( CORE_SITE ).getGoLinkURL( 'dashboard' )
 		);
 		expect( reportElement.props.helpCenterURL ).toBe(
-			registry.select( CORE_SITE ).getGoLinkURL( 'help-center' )
+			'https://sitekit.withgoogle.com/support/'
 		);
 		expect( reportElement.props.privacyPolicyURL ).toBe(
-			registry.select( CORE_SITE ).getGoLinkURL( 'privacy-policy' )
+			'https://policies.google.com/privacy'
 		);
 	} );
 
@@ -98,10 +98,10 @@ describe( 'PDFExportOrchestrator', () => {
 			`${ ADMIN_URL }index.php?action=googlesitekit_go&to=dashboard`
 		);
 		expect( reportElement.props.helpCenterURL ).toBe(
-			`${ ADMIN_URL }index.php?action=googlesitekit_go&to=help-center`
+			'https://sitekit.withgoogle.com/support/'
 		);
 		expect( reportElement.props.privacyPolicyURL ).toBe(
-			`${ ADMIN_URL }index.php?action=googlesitekit_go&to=privacy-policy`
+			'https://policies.google.com/privacy'
 		);
 	} );
 } );
