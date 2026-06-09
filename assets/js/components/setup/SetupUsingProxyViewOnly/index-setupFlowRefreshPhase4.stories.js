@@ -1,7 +1,7 @@
 /**
  * SetupUsingProxyViewOnly Component Stories.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { provideSiteConnection } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
-import SetupUsingProxyViewOnly from './SetupUsingProxyViewOnly';
+import SetupUsingProxyViewOnly from './index';
 
 function Template() {
 	return (
@@ -38,7 +38,7 @@ export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 
 export default {
-	title: 'Setup / Using Proxy View-Only',
+	title: 'Setup/Using Proxy View-Only and setupFlowRefreshPhase4 enabled',
 	decorators: [
 		( Story, { args } ) => {
 			function setupRegistry( registry ) {
@@ -63,5 +63,8 @@ export default {
 			);
 		},
 	],
-	parameters: { padding: 0 },
+	parameters: {
+		padding: 0,
+		features: [ 'setupFlowRefreshPhase4' ],
+	},
 };
