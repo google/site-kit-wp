@@ -84,6 +84,7 @@ export default function SplashViewOnlyContent( {
 									) }
 									href={ documentationURL }
 									external
+									hideExternalIndicator
 								/>
 							),
 							br: <br />,
