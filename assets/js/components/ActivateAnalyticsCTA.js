@@ -199,7 +199,7 @@ export default function ActivateAnalyticsCTA( {
 
 	function handleActivationRetry() {
 		clearInternalServerError();
-		onClickCallback();
+		activateModuleCallback();
 		trackEvents.confirm( analyticsEventLabel );
 	}
 
@@ -335,7 +335,7 @@ export default function ActivateAnalyticsCTA( {
 				<SpinnerButton
 					className="googlesitekit-activate-analytics-cta__button--primary"
 					onClick={ () => {
-						activateModuleCallback();
+						onClickCallback();
 						trackEvents.confirm( analyticsEventLabel );
 					} }
 					isSaving={ inProgress }
