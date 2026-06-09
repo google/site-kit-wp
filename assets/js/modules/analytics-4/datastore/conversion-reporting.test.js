@@ -871,5 +871,114 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				).toEqual( [] );
 			} );
 		} );
+
+		describe( 'getPrimaryActionPanelLabel', () => {
+			it( 'should return undefined for ecommerce when detected events are not yet loaded', () => {
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
+					)
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionPanelLabel( 'ecommerce' )
+				).toBeUndefined();
+			} );
+
+			it( 'should return "Purchase" when ecommerce primary event is purchase', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionPanelLabel( 'ecommerce' )
+				).toBe( 'Purchase' );
+			} );
+
+			it( 'should return "Products added to cart" when ecommerce primary event is add_to_cart', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionPanelLabel( 'ecommerce' )
+				).toBe( 'Products added to cart' );
+			} );
+
+			it( 'should return undefined for ecommerce when no ecommerce events are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionPanelLabel( 'ecommerce' )
+				).toBeUndefined();
+			} );
+
+			it( 'should return undefined for lead when detected events are not yet loaded', () => {
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
+					)
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionPanelLabel( 'lead' )
+				).toBeUndefined();
+			} );
+
+			it( 'should return "Form completion" when any lead event is detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+					] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionPanelLabel( 'lead' )
+				).toBe( 'Form completion' );
+			} );
+
+			it( 'should return undefined for lead when no lead events are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionPanelLabel( 'lead' )
+				).toBeUndefined();
+			} );
+
+			it( 'should return undefined for an unknown goal type', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionPanelLabel( 'unknown' )
+				).toBeUndefined();
+			} );
+		} );
 	} );
 } );

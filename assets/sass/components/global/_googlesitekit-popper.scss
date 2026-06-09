@@ -1,7 +1,7 @@
 /**
- * User Feedback styles.
+ * Popper styles.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,30 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-surveys-modal";
-@import "googlesitekit-survey-header";
-@import "googlesitekit-surveys";
-@import "googlesitekit-survey-completion";
-@import "googlesitekit-survey-open-text";
-@import "googlesitekit-survey-single-select";
-@import "googlesitekit-thumbs-survey-trigger";
+.googlesitekit-popper {
+	background-color: $c-surfaces-on-surface;
+	border-radius: 4px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	font-weight: $fw-normal;
+	letter-spacing: $ls-xs;
+	padding: 12px 16px;
+
+	&,
+	a {
+		color: $c-white;
+	}
+
+	a {
+		margin-inline-start: 4px;
+		text-decoration: underline;
+
+		&:hover {
+			color: $c-white;
+		}
+
+		&:focus {
+			color: $c-white;
+			outline: 1px dotted $c-interactive-inverse-focus;
+		}
+	}
+}
