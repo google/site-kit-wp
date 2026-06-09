@@ -39,11 +39,11 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
 import {
 	BREAKDOWN_DISMISSED_FORM_KEY,
-	BREAKDOWN_GOAL_TYPE_FORM_KEY,
 	BREAKDOWN_ORIGIN_FORM_KEY,
+	BREAKDOWN_SCOPE_FORM_KEY,
 	SITE_GOALS_BREAKDOWN_NOTIFICATION,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
-import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { BreakdownScope } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import {
 	CUSTOM_DIMENSION_DEFINITIONS,
 	EDIT_SCOPE,
@@ -66,7 +66,7 @@ export interface BreakdownEnableHandler {
 
 export function useBreakdownEnableHandler(
 	origin: string,
-	goalType: GoalType
+	scope: BreakdownScope
 ): BreakdownEnableHandler {
 	const registry = useRegistry();
 
@@ -112,13 +112,14 @@ export function useBreakdownEnableHandler(
 	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
 
 	const onEnable = useCallback( async () => {
-		// Record where creation was triggered and the clicked goal type, so the
-		// notices know where to render. A fresh attempt (including retry) clears
-		// any prior dismissal so the new result can surface.
+		// Record where creation was triggered and the enabled scope, so the
+		// notices know where to render and which result copy to show. A fresh
+		// attempt (including retry) clears any prior dismissal so the new result
+		// can surface.
 		const breakdownValues = {
 			customDimensions: ALL_CUSTOM_DIMENSIONS,
 			[ BREAKDOWN_ORIGIN_FORM_KEY ]: origin,
-			[ BREAKDOWN_GOAL_TYPE_FORM_KEY ]: goalType,
+			[ BREAKDOWN_SCOPE_FORM_KEY ]: scope,
 			[ BREAKDOWN_DISMISSED_FORM_KEY ]: false,
 		};
 
@@ -152,7 +153,7 @@ export function useBreakdownEnableHandler(
 		createCustomDimensions( ALL_CUSTOM_DIMENSIONS );
 	}, [
 		createCustomDimensions,
-		goalType,
+		scope,
 		hasAnalytics4EditScope,
 		origin,
 		redirectURL,
