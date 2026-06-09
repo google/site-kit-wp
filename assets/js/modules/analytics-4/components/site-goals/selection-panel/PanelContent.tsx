@@ -169,12 +169,12 @@ const PanelContent: FC< PanelContentProps > = ( {
 						)
 					}
 				>
+					<PrimaryActionRow goalType={ GOAL_TYPES.ECOMMERCE } />
 					<VisitorEngagementEventList
 						eventIDs={ secondaryEcommerceEvents }
 						goalType={ GOAL_TYPES.ECOMMERCE }
 						listID={ GOAL_TYPES.ECOMMERCE }
 					/>
-					<PrimaryActionRow goalType={ GOAL_TYPES.ECOMMERCE } />
 					<GoalTypeList
 						listID={ GOAL_TYPES.ECOMMERCE }
 						options={ ecommerceOptions }
