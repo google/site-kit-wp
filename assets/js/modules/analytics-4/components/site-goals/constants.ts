@@ -53,8 +53,10 @@ export const BREAKDOWN_ORIGIN_WIDGET = 'widget';
 export const BREAKDOWN_ORIGIN_PANEL = 'panel';
 
 export const BREAKDOWN_ORIGIN_FORM_KEY = 'breakdownOrigin';
-export const BREAKDOWN_GOAL_TYPE_FORM_KEY = 'breakdownGoalType';
+export const BREAKDOWN_SCOPE_FORM_KEY = 'breakdownScope';
 export const BREAKDOWN_DISMISSED_FORM_KEY = 'breakdownDismissed';
+
+export const BREAKDOWN_SCOPE_BOTH = 'both';
 
 export const SITE_GOALS_DEFAULT_SELECTED_DRIVERS = {
 	[ GOAL_TYPES.ECOMMERCE ]: [
