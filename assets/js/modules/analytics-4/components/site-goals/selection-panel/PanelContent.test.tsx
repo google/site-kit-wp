@@ -24,8 +24,10 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
+import { setItem } from '@/js/googlesitekit/api/cache';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { SITE_GOALS_BREAKDOWN_NOTICE } from '@/js/modules/analytics-4/components/site-goals/constants';
+import { AVAILABILITY_SYNC_CACHE_KEY } from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
@@ -52,8 +54,11 @@ describe( 'PanelContent', () => {
 
 	mockBrowserScrolling();
 
-	beforeEach( () => {
+	beforeEach( async () => {
 		registry = createTestRegistry();
+		// Mark the breakdown notice's throttled availability sync as already done,
+		// so it doesn't schedule a background sync during these tests.
+		await setItem( AVAILABILITY_SYNC_CACHE_KEY, true );
 		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
 		// Both ecommerce plugins active, so the "both plugins" notice copy shows.
