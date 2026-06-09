@@ -42,6 +42,11 @@ const DEFAULT_OFFSET = 9;
 const POPPER_STYLE = { zIndex: 99999 };
 
 interface PopperProps {
+	/**
+	 * Element that this popper is anchored to in the UI. Required to
+	 * open the popper and to allow it to have a reference point in
+	 * the DOM/visually.
+	 */
 	// eslint-disable-next-line sitekit/acronym-case
 	anchorElement: HTMLElement | null;
 	onClose: () => void;
