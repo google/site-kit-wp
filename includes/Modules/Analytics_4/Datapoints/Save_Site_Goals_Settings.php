@@ -10,10 +10,7 @@
 
 namespace Google\Site_Kit\Modules\Analytics_4\Datapoints;
 
-use Google\Site_Kit\Core\Modules\Datapoint;
-use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Settings;
 
 /**
  * Class for the Site Goals settings save datapoint.
@@ -22,27 +19,7 @@ use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Settings;
  * @access private
  * @ignore
  */
-class Save_Site_Goals_Settings extends Datapoint implements Executable_Datapoint {
-
-	/**
-	 * Site Goals settings instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Site_Goals_Settings
-	 */
-	private $site_goals_settings;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $definition Definition fields.
-	 */
-	public function __construct( array $definition ) {
-		parent::__construct( $definition );
-		$this->site_goals_settings = $definition['site_goals_settings'];
-	}
+class Save_Site_Goals_Settings extends Site_Goals_Settings_Datapoint {
 
 	/**
 	 * Creates a request object.
@@ -61,18 +38,5 @@ class Save_Site_Goals_Settings extends Datapoint implements Executable_Datapoint
 
 			return $site_goals_settings->get();
 		};
-	}
-
-	/**
-	 * Parses a response.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param mixed        $response Request response.
-	 * @param Data_Request $data     Data request object.
-	 * @return mixed The response without any modifications.
-	 */
-	public function parse_response( $response, Data_Request $data ) {
-		return $response;
 	}
 }

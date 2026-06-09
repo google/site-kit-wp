@@ -24,7 +24,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { Fragment, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -47,6 +47,8 @@ import {
 	GoalDriverSelectionState,
 	GoalType,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import BreakdownNotice from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNotice';
+import { useSiteGoalsBreakdownNoticeCopy } from '@/js/modules/analytics-4/components/site-goals/notifications/useSiteGoalsBreakdownNoticeCopy';
 import GoalTypeList from '@/js/modules/analytics-4/components/site-goals/selection-panel/GoalTypeList';
 import GoalTypeSection from '@/js/modules/analytics-4/components/site-goals/selection-panel/GoalTypeSection';
 import VisitorEngagementEventList from '@/js/modules/analytics-4/components/site-goals/selection-panel/VisitorEngagementEventList';
@@ -85,7 +87,22 @@ const PanelContent: FC< PanelContentProps > = ( {
 		| GoalDriverSelectionState
 		| undefined;
 
+	const ecommerceBreakdownNoticeCopy = useSiteGoalsBreakdownNoticeCopy(
+		GOAL_TYPES.ECOMMERCE
+	);
+	const leadBreakdownNoticeCopy = useSiteGoalsBreakdownNoticeCopy(
+		GOAL_TYPES.LEAD
+	);
+
 	const { setValues } = useDispatch( CORE_FORMS );
+	const { setSiteGoalsBreakdownTooltipPending } =
+		useDispatch( MODULES_ANALYTICS_4 );
+
+	// In the panel the tooltip is deferred until the overlay closes, so dismissal
+	// just flags it for the panel parent to read on close.
+	function deferBreakdownTooltip() {
+		setSiteGoalsBreakdownTooltipPending( true );
+	}
 
 	const ecommerceOptions = getGoalDriverOptions( GOAL_TYPES.ECOMMERCE );
 	const leadOptions = getGoalDriverOptions( GOAL_TYPES.LEAD );
@@ -153,72 +170,86 @@ const PanelContent: FC< PanelContentProps > = ( {
 	return (
 		<SelectionPanelContent className="googlesitekit-site-goals-selection-panel__content">
 			{ hasEcommerceGoalDrivers && (
-				<GoalTypeSection
-					listID={ GOAL_TYPES.ECOMMERCE }
-					title={ __(
-						'Online store performance',
-						'google-site-kit'
-					) }
-					isExpanded={ isEcommerceExpanded }
-					onToggleExpand={ () =>
-						setIsEcommerceExpanded(
-							( previousState ) => ! previousState
-						)
-					}
-				>
-					<VisitorEngagementEventList
-						eventIDs={ secondaryEcommerceEvents }
-						goalType={ GOAL_TYPES.ECOMMERCE }
-						listID={ GOAL_TYPES.ECOMMERCE }
+				<Fragment>
+					<BreakdownNotice
+						className="googlesitekit-site-goals-selection-panel__breakdown-notice"
+						onDismissComplete={ deferBreakdownTooltip }
+						{ ...ecommerceBreakdownNoticeCopy }
 					/>
-					<GoalTypeList
+					<GoalTypeSection
 						listID={ GOAL_TYPES.ECOMMERCE }
-						options={ ecommerceOptions }
-						selectedIDs={ getSelectedDriverIDs(
-							selectedDriverState,
-							GOAL_TYPES.ECOMMERCE
+						title={ __(
+							'Online store performance',
+							'google-site-kit'
 						) }
-						onToggleDriver={ ( driverID, isChecked ) =>
-							onToggleDriver(
-								GOAL_TYPES.ECOMMERCE,
-								driverID,
-								isChecked
+						isExpanded={ isEcommerceExpanded }
+						onToggleExpand={ () =>
+							setIsEcommerceExpanded(
+								( previousState ) => ! previousState
 							)
 						}
-					/>
-				</GoalTypeSection>
+					>
+						<VisitorEngagementEventList
+							eventIDs={ secondaryEcommerceEvents }
+							goalType={ GOAL_TYPES.ECOMMERCE }
+							listID={ GOAL_TYPES.ECOMMERCE }
+						/>
+						<GoalTypeList
+							listID={ GOAL_TYPES.ECOMMERCE }
+							options={ ecommerceOptions }
+							selectedIDs={ getSelectedDriverIDs(
+								selectedDriverState,
+								GOAL_TYPES.ECOMMERCE
+							) }
+							onToggleDriver={ ( driverID, isChecked ) =>
+								onToggleDriver(
+									GOAL_TYPES.ECOMMERCE,
+									driverID,
+									isChecked
+								)
+							}
+						/>
+					</GoalTypeSection>
+				</Fragment>
 			) }
 
 			{ hasLeadGoalDrivers && (
-				<GoalTypeSection
-					listID={ GOAL_TYPES.LEAD }
-					title={ __(
-						'Lead generation performance',
-						'google-site-kit'
-					) }
-					isExpanded={ isLeadExpanded }
-					onToggleExpand={ () =>
-						setIsLeadExpanded(
-							( previousState ) => ! previousState
-						)
-					}
-				>
-					<GoalTypeList
+				<Fragment>
+					<BreakdownNotice
+						className="googlesitekit-site-goals-selection-panel__breakdown-notice"
+						onDismissComplete={ deferBreakdownTooltip }
+						{ ...leadBreakdownNoticeCopy }
+					/>
+					<GoalTypeSection
 						listID={ GOAL_TYPES.LEAD }
-						options={ leadOptions }
-						selectedIDs={ getSelectedDriverIDs(
-							selectedDriverState,
-							GOAL_TYPES.LEAD
+						title={ __(
+							'Lead generation performance',
+							'google-site-kit'
 						) }
-						onToggleDriver={ ( driverID, isChecked ) =>
-							onToggleDriver(
-								GOAL_TYPES.LEAD,
-								driverID,
-								isChecked
+						isExpanded={ isLeadExpanded }
+						onToggleExpand={ () =>
+							setIsLeadExpanded(
+								( previousState ) => ! previousState
 							)
 						}
-					/>
-				</GoalTypeSection>
+					>
+						<GoalTypeList
+							listID={ GOAL_TYPES.LEAD }
+							options={ leadOptions }
+							selectedIDs={ getSelectedDriverIDs(
+								selectedDriverState,
+								GOAL_TYPES.LEAD
+							) }
+							onToggleDriver={ ( driverID, isChecked ) =>
+								onToggleDriver(
+									GOAL_TYPES.LEAD,
+									driverID,
+									isChecked
+								)
+							}
+						/>
+					</GoalTypeSection>
+				</Fragment>
 			) }
 		</SelectionPanelContent>
 	);

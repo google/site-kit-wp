@@ -25,7 +25,7 @@ import type { ChangeEvent, FC, KeyboardEvent, ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -39,6 +39,7 @@ export interface CheckboxProps {
 	name: string;
 	value: string;
 	checked?: boolean;
+	indeterminate?: boolean;
 	disabled?: boolean;
 	children: ReactNode;
 	tabIndex?: number;
@@ -54,6 +55,7 @@ const Checkbox: FC< CheckboxProps > = ( {
 	name,
 	value,
 	checked = false,
+	indeterminate = false,
 	disabled = false,
 	children,
 	tabIndex,
@@ -63,6 +65,16 @@ const Checkbox: FC< CheckboxProps > = ( {
 	description,
 	badge,
 } ) => {
+	const inputRef = useRef< HTMLInputElement >( null );
+
+	// `indeterminate` is a DOM-only property with no React attribute, so it must
+	// be set imperatively on the native input.
+	useEffect( () => {
+		if ( inputRef.current ) {
+			inputRef.current.indeterminate = indeterminate;
+		}
+	}, [ indeterminate, loading ] );
+
 	const label = !! badge ? (
 		<div className="mdc-checkbox__label-wrapper">
 			<label htmlFor={ id }>{ children }</label>
@@ -85,7 +97,12 @@ const Checkbox: FC< CheckboxProps > = ( {
 				) : (
 					<Fragment>
 						<input
-							aria-checked={ checked ? 'true' : 'false' }
+							ref={ inputRef }
+							aria-checked={
+								indeterminate
+									? 'mixed'
+									: `${ checked ? 'true' : 'false' }`
+							}
 							className="mdc-checkbox__native-control"
 							type="checkbox"
 							id={ id }

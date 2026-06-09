@@ -66,4 +66,28 @@ describe( 'Checkbox', () => {
 			'false'
 		);
 	} );
+
+	it( 'sets the native `indeterminate` property and `aria-checked="mixed"` when `indeterminate` is true', () => {
+		const { getByRole } = render(
+			<Checkbox { ...defaultProps } checked indeterminate>
+				Label
+			</Checkbox>
+		);
+
+		const input = getByRole( 'checkbox' ) as HTMLInputElement;
+		expect( input.indeterminate ).toBe( true );
+		expect( input ).toHaveAttribute( 'aria-checked', 'mixed' );
+	} );
+
+	it( 'leaves the native `indeterminate` property false by default', () => {
+		const { getByRole } = render(
+			<Checkbox { ...defaultProps } checked>
+				Label
+			</Checkbox>
+		);
+
+		expect(
+			( getByRole( 'checkbox' ) as HTMLInputElement ).indeterminate
+		).toBe( false );
+	} );
 } );

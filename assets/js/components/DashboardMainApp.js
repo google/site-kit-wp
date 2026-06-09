@@ -89,9 +89,9 @@ import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
 import Notifications from './notifications/Notifications';
 import OfflineNotification from './notifications/OfflineNotification';
+import PDFDownloadButton from './pdf-export/PDFDownloadButton';
 import PDFExportRoot from './pdf-export/PDFExportRoot';
-import PDFDownloadButton from './pdf-generation/PDFDownloadButton';
-import PDFSectionsSelectionPanel from './pdf-generation/PDFSectionsSelectionPanel';
+import PDFSectionsSelectionPanel from './pdf-export/PDFSectionsSelectionPanel';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import WelcomeModal from './WelcomeModal';
@@ -125,6 +125,13 @@ function getLastWidgetAnchor( {
 	return null;
 }
 
+// This component has a legitimately high level of complexity; it renders the
+// entire dashboard with a bunch of conditionals to determine what to show.
+//
+// Disabling this rule would obscure the contents of the dashboard and be
+// counterproductive, so we disable the ESLint rule around cyclomatic
+// complexity for this component.
+// eslint-disable-next-line complexity
 export default function DashboardMainApp() {
 	const siteGoalsEnabled = useFeature( 'siteGoals' );
 
@@ -473,7 +480,8 @@ export default function DashboardMainApp() {
 			) }
 
 			{ configuredAudiences && <AudienceSelectionPanel /> }
-			{ siteGoalsEnabled && (
+
+			{ siteGoalsEnabled && hasAnalyticsAccess && (
 				<Fragment>
 					<SiteGoalsSelectionPanel />
 					<SiteGoalsIntroModalBanner />
