@@ -37,13 +37,18 @@ import useFormValue from '@/js/hooks/useFormValue';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import {
 	BREAKDOWN_DISMISSED_FORM_KEY,
-	BREAKDOWN_GOAL_TYPE_FORM_KEY,
 	BREAKDOWN_ORIGIN_FORM_KEY,
 	BREAKDOWN_ORIGIN_WIDGET,
+	BREAKDOWN_SCOPE_BOTH,
+	BREAKDOWN_SCOPE_FORM_KEY,
 	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE,
 	SITE_GOALS_BREAKDOWN_NOTICE,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
-import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import {
+	BreakdownScope,
+	GoalType,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import BreakdownErrorNotice from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownErrorNotice';
 import BreakdownNotice from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNotice';
 import BreakdownSuccessNotice from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownSuccessNotice';
@@ -66,10 +71,79 @@ export const AVAILABILITY_SYNC_CACHE_KEY =
 
 interface BreakdownNoticeAreaProps {
 	origin: string;
-	goalType: GoalType;
+	goalTypes: GoalType[];
 }
 
 type BreakdownNoticeState = 'error' | 'loading' | 'success' | 'new' | null;
+
+function deriveBreakdownScope( goalTypes: GoalType[] ): BreakdownScope {
+	const hasEcommerce = goalTypes.includes( GOAL_TYPES.ECOMMERCE );
+	const hasLead = goalTypes.includes( GOAL_TYPES.LEAD );
+
+	if ( hasEcommerce && hasLead ) {
+		return BREAKDOWN_SCOPE_BOTH;
+	}
+
+	return hasEcommerce ? GOAL_TYPES.ECOMMERCE : GOAL_TYPES.LEAD;
+}
+
+interface BreakdownDimensionStateArgs {
+	goalTypes: GoalType[];
+	presenceByGoalType: Record< GoalType, boolean | undefined >;
+}
+
+interface BreakdownDimensionState {
+	hasBreakdownDimensions: boolean | undefined;
+	// Scope derived from the goal types whose dimension is still missing — drives
+	// the "New"/loading copy and the scope passed to the enable handler.
+	missingScope: BreakdownScope;
+}
+
+function getBreakdownDimensionState(
+	args: BreakdownDimensionStateArgs
+): BreakdownDimensionState {
+	const { goalTypes, presenceByGoalType } = args;
+
+	const dimensionsResolving = goalTypes.some(
+		( goalType ) => presenceByGoalType[ goalType ] === undefined
+	);
+	const missingGoalTypes = goalTypes.filter(
+		( goalType ) => presenceByGoalType[ goalType ] === false
+	);
+
+	return {
+		hasBreakdownDimensions: dimensionsResolving
+			? undefined
+			: missingGoalTypes.length === 0,
+		// Derived from what is still missing; once nothing is missing it falls
+		// back to the full set (then only used for the handler, never rendered).
+		missingScope: deriveBreakdownScope(
+			missingGoalTypes.length ? missingGoalTypes : goalTypes
+		),
+	};
+}
+
+interface BreakdownClickedInstanceArgs {
+	breakdownOrigin: unknown;
+	origin: string;
+	breakdownScope: unknown;
+	goalTypes: GoalType[];
+}
+
+function isBreakdownClickedInstance(
+	args: BreakdownClickedInstanceArgs
+): boolean {
+	const { breakdownOrigin, origin, breakdownScope, goalTypes } = args;
+
+	if ( breakdownOrigin !== origin ) {
+		return false;
+	}
+
+	// The Side Panel renders a single combined notice, so an origin match alone
+	// identifies it. The widgets render one notice per goal type, so they also
+	// match on scope to keep the two apart.
+	return goalTypes.length > 1 || breakdownScope === goalTypes[ 0 ];
+}
 
 interface ResolveBreakdownNoticeStateArgs {
 	hasBreakdownDimensions: boolean;
@@ -138,11 +212,47 @@ function resolveBreakdownNoticeState(
 
 const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 	origin,
-	goalType,
+	goalTypes,
 } ) => {
+	// Trigger the resolver so the dimension checks run against synced data.
+	useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions(),
+		[]
+	);
+
+	const hasEcommerceDimension = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+				SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE[
+					GOAL_TYPES.ECOMMERCE
+				]
+			),
+		[]
+	);
+	const hasLeadDimension = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+				SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE[
+					GOAL_TYPES.LEAD
+				]
+			),
+		[]
+	);
+
+	const { hasBreakdownDimensions, missingScope } = getBreakdownDimensionState(
+		{
+			goalTypes,
+			presenceByGoalType: {
+				[ GOAL_TYPES.ECOMMERCE ]: hasEcommerceDimension,
+				[ GOAL_TYPES.LEAD ]: hasLeadDimension,
+			},
+		}
+	);
+
 	const { onEnable, inProgress, disabled } = useBreakdownEnableHandler(
 		origin,
-		goalType
+		missingScope
 	);
 
 	// Keep the notice in its loading state from the moment the CTA is clicked,
@@ -207,25 +317,6 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 
 	const isViewOnly = useViewOnly();
 
-	// Trigger the resolver so hasCustomDimensions checks against synced data.
-	useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions(),
-		[]
-	);
-
-	// Each section gates on its own breakdown dimension: the ecommerce sections
-	// on the plugin-source dimension, the lead generation sections on the form
-	// dimension. The CTA still creates every missing dimension.
-	const requiredDimension =
-		SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE[ goalType ];
-	const hasBreakdownDimensions = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
-				requiredDimension
-			),
-		[ requiredDimension ]
-	);
 	const creationError = useSelect( ( select: Select ) => {
 		for ( const customDimension of ALL_CUSTOM_DIMENSIONS ) {
 			const error =
@@ -257,26 +348,36 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 		FORM_CUSTOM_DIMENSIONS_CREATE,
 		BREAKDOWN_ORIGIN_FORM_KEY
 	);
-	const [ breakdownGoalType ] = useFormValue(
+	const [ breakdownScope ] = useFormValue(
 		FORM_CUSTOM_DIMENSIONS_CREATE,
-		BREAKDOWN_GOAL_TYPE_FORM_KEY
+		BREAKDOWN_SCOPE_FORM_KEY
 	);
 	const [ isDismissed ] = useFormValue(
 		FORM_CUSTOM_DIMENSIONS_CREATE,
 		BREAKDOWN_DISMISSED_FORM_KEY
 	);
 
-	const noticeCopy = useSiteGoalsBreakdownNoticeCopy( goalType );
+	const isClickedInstance = isBreakdownClickedInstance( {
+		breakdownOrigin,
+		origin,
+		breakdownScope,
+		goalTypes,
+	} );
+
+	// "New"/loading copy follows what is still missing (`missingScope`); the
+	// success/error copy follows the scope that was enabled at this instance.
+	const noticeCopy = useSiteGoalsBreakdownNoticeCopy( missingScope );
+	const { successTitle, successDescription, permissionsErrorTitle } =
+		useSiteGoalsBreakdownResultCopy(
+			isClickedInstance && breakdownScope
+				? ( breakdownScope as BreakdownScope )
+				: missingScope
+		);
 
 	const className =
 		origin === BREAKDOWN_ORIGIN_WIDGET
 			? 'googlesitekit-site-goals-breakdown-notice'
 			: 'googlesitekit-site-goals-selection-panel__breakdown-notice';
-
-	// Result copy depends on the goal type only; the success and error notices
-	// are identical in the widget and the Side Panel.
-	const { successTitle, successDescription, permissionsErrorTitle } =
-		useSiteGoalsBreakdownResultCopy( goalType );
 
 	// Dismiss the in-session success/error notice and drop the shared
 	// `customDimensions` list so unrelated auto-create flows don't inherit it.
@@ -300,6 +401,9 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 		return null;
 	}
 
+	// Suppresses "New" once an enable was attempted this session (any scope set).
+	const attempted = Boolean( breakdownScope );
+
 	const noticeState = resolveBreakdownNoticeState( {
 		hasBreakdownDimensions,
 		isIntroModalDismissed,
@@ -307,9 +411,8 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 		creationError,
 		isBusy,
 		isDismissed: Boolean( isDismissed ),
-		isClickedInstance:
-			breakdownOrigin === origin && breakdownGoalType === goalType,
-		attempted: Boolean( breakdownGoalType ),
+		isClickedInstance,
+		attempted,
 	} );
 
 	if ( noticeState === 'error' ) {
