@@ -163,10 +163,17 @@ export default function ActivateAnalyticsCTA( {
 	useEffect( () => {
 		if ( isActivating || isNavigatingToReauthURL ) {
 			setInProgress( true );
+		} else if ( hasActivationError ) {
+			setInProgress( false );
 		} else {
 			debouncedSetInProgress( false );
 		}
-	}, [ isActivating, isNavigatingToReauthURL, debouncedSetInProgress ] );
+	}, [
+		isActivating,
+		isNavigatingToReauthURL,
+		debouncedSetInProgress,
+		hasActivationError,
+	] );
 
 	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
