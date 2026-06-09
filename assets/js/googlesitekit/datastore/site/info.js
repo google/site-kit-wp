@@ -35,6 +35,7 @@ import {
 	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
+import { getGlobalData } from '@/js/googlesitekit/data/utils';
 import { normalizeURL, untrailingslashit } from '@/js/util';
 import { negateDefined } from '@/js/util/negate';
 import { AMP_MODE_PRIMARY, AMP_MODE_SECONDARY, CORE_SITE } from './constants';
@@ -285,10 +286,13 @@ export const resolvers = {
 			return;
 		}
 
-		if (
-			! global._googlesitekitBaseData ||
-			! global._googlesitekitEntityData
-		) {
+		let baseData;
+		let entityData;
+
+		try {
+			baseData = getGlobalData( '_googlesitekitBaseData' );
+			entityData = getGlobalData( '_googlesitekitEntityData' );
+		} catch ( error ) {
 			global.console.error( 'Could not load core/site info.' );
 			return;
 		}
@@ -325,14 +329,14 @@ export const resolvers = {
 			isMultisite,
 			hasActiveLeadEventProviders,
 			hasActiveEcommerceEventProviders,
-		} = global._googlesitekitBaseData;
+		} = baseData;
 
 		const {
 			currentEntityID,
 			currentEntityTitle,
 			currentEntityType,
 			currentEntityURL,
-		} = global._googlesitekitEntityData;
+		} = entityData;
 
 		yield actions.receiveSiteInfo( {
 			adminURL,

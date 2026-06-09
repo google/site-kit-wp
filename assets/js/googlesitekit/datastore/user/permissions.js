@@ -32,6 +32,7 @@ import {
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { getGlobalData } from '@/js/googlesitekit/data/utils';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_USER, PERMISSION_READ_SHARED_MODULE_DATA } from './constants';
@@ -163,10 +164,17 @@ const baseResolvers = {
 		// has already expired.
 		// We'll still fetch it in case something has changed,
 		// but receive the preloaded right away.
-		const preloadedPermissions =
-			global._googlesitekitAPIFetchData?.preloadedData?.[
-				'/google-site-kit/v1/core/user/data/permissions'
-			]?.body;
+		let preloadedPermissions;
+
+		try {
+			preloadedPermissions = getGlobalData(
+				'_googlesitekitAPIFetchData',
+				'preloadedData'
+			)?.[ '/google-site-kit/v1/core/user/data/permissions' ]?.body;
+		} catch ( error ) {
+			global.console.error( 'Could not load core/user permissions.' );
+			return;
+		}
 
 		if ( preloadedPermissions ) {
 			yield fetchGetCapabilitiesStore.actions.receiveGetCapabilities( {

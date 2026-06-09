@@ -20,13 +20,23 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { mapValues } from 'lodash';
+import { cloneDeep, get, mapValues } from 'lodash';
 import memize from 'memize';
 
 /**
  * WordPress dependencies
  */
 import { createRegistryControl, createRegistrySelector } from '@wordpress/data';
+
+/**
+ * Symbol used to indicate that a global data value was not found.
+ *
+ * @since n.e.x.t
+ * @private
+ */
+export const GLOBAL_DATA_VALUE_NOT_FOUND = Symbol(
+	'GLOBAL_DATA_VALUE_NOT_FOUND'
+);
 
 const GET_REGISTRY = 'GET_REGISTRY';
 const AWAIT = 'AWAIT';
@@ -430,4 +440,35 @@ export function createValidatedAction( validate, actionCreator ) {
 
 		return actionCreator( ...args );
 	};
+}
+
+/**
+ * Gets a global data object by property name and optional child property name.
+ *
+ * Returns a deep clone to avoid mutating the original object.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} propertyName Property of the global data object.
+ * @param {string} [path]       Optional. Path to a value of the object matched by `propertyName`.
+ * @param {Object} [_global]    Optional. The global object to use. Default is `global`.
+ * @return {*} The global data object, or the value at the path if provided. If the path is not found, returns the `GLOBAL_DATA_VALUE_NOT_FOUND` symbol.
+ * @throws {Error} If the global data property is not found.
+ */
+export function getGlobalData(
+	propertyName,
+	path = undefined,
+	_global = global
+) {
+	if ( ! _global[ propertyName ] ) {
+		throw new Error( `Global data property ${ propertyName } not found.` );
+	}
+
+	if ( path ) {
+		return cloneDeep(
+			get( _global[ propertyName ], path, GLOBAL_DATA_VALUE_NOT_FOUND )
+		);
+	}
+
+	return cloneDeep( _global[ propertyName ] );
 }
