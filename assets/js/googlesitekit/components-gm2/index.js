@@ -36,6 +36,7 @@ import Checkbox from './Checkbox';
 import Chip from './Chip';
 import CircularProgress from './CircularProgress';
 import Menu from './Menu';
+import Popper from './Popper';
 import ProgressBar from './ProgressBar';
 import Radio from './Radio';
 import Select from './Select';
@@ -56,6 +57,7 @@ const Components = {
 	HelperText,
 	Menu,
 	Option,
+	Popper,
 	ProgressBar,
 	Radio,
 	Select,

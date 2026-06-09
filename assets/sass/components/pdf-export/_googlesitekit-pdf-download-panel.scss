@@ -49,15 +49,25 @@
 	flex-direction: column;
 }
 
-.googlesitekit-plugin .googlesitekit-pdf-download-panel__section {
-	align-items: center;
+.googlesitekit-plugin .googlesitekit-pdf-download-panel__section-group {
 	border-bottom: 1px solid $c-utility-divider;
-	display: flex;
-	height: 60px;
-	padding: 10px 0;
+	padding: 6px 0;
 }
 
-.googlesitekit-plugin .googlesitekit-pdf-download-panel__section label {
+.googlesitekit-plugin .googlesitekit-pdf-download-panel__section {
+	align-items: center;
+	display: flex;
+	padding: 4px 0 0;
+}
+
+.googlesitekit-plugin .googlesitekit-pdf-download-panel__sub-section {
+	align-items: center;
+	display: flex;
+	padding: 0 0 0 36px;
+}
+
+.googlesitekit-plugin .googlesitekit-pdf-download-panel__section label,
+.googlesitekit-plugin .googlesitekit-pdf-download-panel__sub-section label {
 	color: $c-surfaces-on-surface;
 	vertical-align: bottom;
 }

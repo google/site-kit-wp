@@ -30,38 +30,55 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import PDFFooter from '@/js/components/PDFExport/components/PDFFooter';
+import {
+	PDF_FONT_FAMILY_DISPLAY,
+	PDF_FONT_FAMILY_TEXT,
+} from '@/js/components/pdf-export/pdf-theme';
+import PDFFooter from '@/js/components/pdf-export/shared-react-pdf-components/PDFFooter';
+import type { PDFReportArea } from '@/js/components/pdf-export/types';
 
 const DEFAULT_PAGE_HEIGHT = 792;
 
 const styles = StyleSheet.create( {
 	page: {
-		paddingTop: 48,
-		paddingBottom: 48,
-		paddingHorizontal: 48,
+		paddingTop: 24,
+		paddingBottom: 24,
+		paddingHorizontal: 24,
+		fontFamily: PDF_FONT_FAMILY_TEXT,
 		fontSize: 12,
+		backgroundColor: '#f3f5f7',
 	},
 	header: {
 		marginBottom: 32,
 	},
 	headerSiteName: {
+		fontFamily: PDF_FONT_FAMILY_DISPLAY,
 		fontSize: 20,
-		fontWeight: 700,
+		fontWeight: 400,
 		marginBottom: 4,
 	},
 	headerDateRange: {
+		fontFamily: PDF_FONT_FAMILY_TEXT,
 		fontSize: 11,
 		color: '#5f6368',
 	},
 	body: {
 		flexGrow: 1,
 	},
-	bodyHeading: {
-		fontSize: 16,
-		marginBottom: 8,
+	section: {
+		marginBottom: 24,
 	},
-	bodyText: {
-		lineHeight: 1.5,
+	sectionTitle: {
+		fontFamily: PDF_FONT_FAMILY_DISPLAY,
+		fontSize: 24,
+		fontWeight: 'normal',
+		color: '#161b18',
+		marginBottom: 12,
+	},
+	emptyText: {
+		fontFamily: PDF_FONT_FAMILY_TEXT,
+		fontSize: 11,
+		color: '#5f6368',
 	},
 } );
 
@@ -72,6 +89,7 @@ export interface DashboardReportProps {
 	helpCenterURL: string;
 	privacyPolicyURL: string;
 	pageHeight?: number;
+	areas?: PDFReportArea[];
 }
 
 const DashboardReport: FC< DashboardReportProps > = ( {
@@ -81,6 +99,7 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 	helpCenterURL,
 	privacyPolicyURL,
 	pageHeight = DEFAULT_PAGE_HEIGHT,
+	areas = [],
 } ) => {
 	return (
 		<Document
@@ -100,17 +119,50 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 						</Text>
 					) : null }
 				</View>
-				{ /* TODO: Replace placeholder body with real section content in #12631. */ }
 				<View style={ styles.body }>
-					<Text style={ styles.bodyHeading }>
-						{ __( 'Site Kit Dashboard Report', 'google-site-kit' ) }
-					</Text>
-					<Text style={ styles.bodyText }>
-						{ __(
-							'This is an MVP placeholder for the upcoming Site Kit PDF report. The full layout, charts, and metrics land in follow-up tickets.',
-							'google-site-kit'
-						) }
-					</Text>
+					{ areas.length === 0 && (
+						<Text style={ styles.emptyText }>
+							{ __(
+								'No report data available.',
+								'google-site-kit'
+							) }
+						</Text>
+					) }
+					{ areas.map( ( { areaSlug, areaTitle, widgets } ) => (
+						<View
+							key={ `section-${ areaSlug }` }
+							style={ styles.section }
+						>
+							<Text style={ styles.sectionTitle }>
+								{ areaTitle }
+							</Text>
+							{ widgets.map(
+								( { slug, Component, data, chartImages } ) => {
+									if ( ! Component ) {
+										return (
+											<Text
+												key={ slug }
+												style={ styles.emptyText }
+											>
+												{ __(
+													'Data unavailable.',
+													'google-site-kit'
+												) }
+											</Text>
+										);
+									}
+
+									return (
+										<Component
+											key={ slug }
+											data={ data }
+											chartImages={ chartImages }
+										/>
+									);
+								}
+							) }
+						</View>
+					) ) }
 				</View>
 				<PDFFooter
 					dashboardURL={ dashboardURL }

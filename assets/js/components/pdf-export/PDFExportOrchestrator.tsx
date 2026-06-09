@@ -30,12 +30,28 @@ import { useCallback, useEffect, useReducer, useRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import {
+	Select,
+	useDispatch,
+	useRegistry,
+	useSelect,
+} from 'googlesitekit-data';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import DashboardReport from './components/DashboardReport';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import type {
+	PDFReportDates,
+	Widget,
+	WidgetArea,
+	WidgetPDFConfig,
+} from '@/js/googlesitekit/widgets/types';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { getPreviousDate } from '@/js/util';
+import { registerPDFFonts } from './pdf-fonts-react';
 import { getPDFFilename, triggerDownload } from './pdf-utils';
+import DashboardReport from './shared-react-pdf-components/DashboardReport';
+import type { PDFReportArea, PDFReportWidget } from './types';
 
 const STAGE_IDLE = 'IDLE' as const;
 const STAGE_LOADING = 'LOADING' as const;
@@ -62,8 +78,22 @@ const LOADING_TIMEOUT_MS = 45 * 1000;
 const BUILDING_TIMEOUT_MS = 15 * 1000;
 const COMPLETE_UNMOUNT_DELAY_MS = 2 * 1000;
 const BLOB_REVOKE_DELAY_MS = 30 * 1000;
-// TODO: Replace with real data-loading progress in #12631.
-const LOADING_MOCK_PROGRESS = 35;
+// Progress budget reserved for the data-loading stage; BUILDING fills the rest.
+const LOADING_PROGRESS_MAX = 90;
+
+type WidgetWithPDF = Widget & { pdf: WidgetPDFConfig };
+
+/**
+ * Determines whether a registry widget declares a PDF export configuration.
+ *
+ * @since n.e.x.t
+ *
+ * @param widget Registry widget.
+ * @return `true` when the widget has a `pdf` config.
+ */
+function hasPDFConfig( widget: Widget ): widget is WidgetWithPDF {
+	return !! widget.pdf;
+}
 
 interface State {
 	stage: Stage;
@@ -106,6 +136,15 @@ function isAbortError( error: unknown ): boolean {
 	return error instanceof DOMException && error.name === 'AbortError';
 }
 
+// Throws an `AbortError` when the signal has been aborted. `getData` swallows
+// abort and resolves normally, so the orchestrator cannot rely on its return
+// value to detect cancellation: it must check the signal after every await.
+function throwIfAborted( signal: AbortSignal ): void {
+	if ( signal.aborted ) {
+		throw new DOMException( 'Aborted', 'AbortError' );
+	}
+}
+
 /**
  * Returns a promise that resolves on the next animation frame, or rejects
  * if the signal is aborted before the frame fires.
@@ -144,8 +183,11 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 	onComplete,
 } ) => {
 	const [ , dispatch ] = useReducer( reducer, initialState );
+	const registry = useRegistry();
 	const { setStatus, setProgress, setBlob, clearExport, clearCancelRequest } =
 		useDispatch( CORE_PDF );
+
+	const viewOnly = useViewOnly();
 
 	const cancelRequested = useSelect(
 		( select: Select ) => select( CORE_PDF ).isCancelRequested(),
@@ -167,12 +209,37 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		( select: Select ) => select( CORE_SITE ).getGoLinkURL( 'dashboard' ),
 		[]
 	);
+	const selectedContextSlugs = useSelect(
+		( select: Select ) => select( CORE_PDF ).getSelectedContextSlugs(),
+		[]
+	);
+	const dates = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).getDateRangeDates( {
+				compare: true,
+				// The PDF reporting period excludes the current day, so end the
+				// range on the day before the reference date.
+				referenceDate: getPreviousDate(
+					select( CORE_USER ).getReferenceDate(),
+					1
+				),
+			} ) as PDFReportDates,
+		[]
+	);
+	const viewableModules = useSelect(
+		( select: Select ) =>
+			viewOnly ? select( CORE_USER ).getViewableModules() : undefined,
+		[ viewOnly ]
+	);
 
 	const abortControllerRef = useRef< AbortController | null >( null );
 	const stageTimeoutRef = useRef< ReturnType< typeof setTimeout > | null >(
 		null
 	);
 	const completeTimeoutRef = useRef< ReturnType< typeof setTimeout > | null >(
+		null
+	);
+	const revokeTimeoutRef = useRef< ReturnType< typeof setTimeout > | null >(
 		null
 	);
 	const timeoutAbortRef = useRef( false );
@@ -232,17 +299,150 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				setProgress( 0 );
 
 				armStageTimeout( LOADING_TIMEOUT_MS );
+				// Yield a frame so the progress snackbar paints before loading.
 				await nextFrame( signal );
-				setProgress( LOADING_MOCK_PROGRESS );
 
-				if ( signal.aborted ) {
-					throw new DOMException( 'Aborted', 'AbortError' );
+				// Discovery: walk the registry inline (the orchestrator owns the
+				// contexts → areas → widgets walk; there is no centralised
+				// PDF-aware selector). `selectedContextSlugs`, `dates` and
+				// `viewableModules` are snapshotted once above; nothing below
+				// re-reads reactive state.
+				const widgetsSelect = (
+					registry as unknown as {
+						select: ( storeName: string ) => {
+							getWidgetAreas: (
+								contextSlug: string
+							) => WidgetArea[];
+							getWidgets: (
+								areaSlug: string,
+								options?: { modules?: string[] }
+							) => Widget[];
+						};
+					}
+				 ).select( CORE_WIDGETS );
+				const discoveredAreas: Array< {
+					areaSlug: string;
+					areaTitle: string;
+					widgets: WidgetWithPDF[];
+				} > = [];
+
+				selectedContextSlugs.forEach( ( contextSlug: string ) => {
+					const contextAreas: WidgetArea[] =
+						widgetsSelect.getWidgetAreas( contextSlug );
+
+					contextAreas.forEach( ( area ) => {
+						const pdfWidgets: WidgetWithPDF[] = widgetsSelect
+							.getWidgets( area.slug, {
+								modules: viewableModules || undefined,
+							} )
+							.filter( hasPDFConfig );
+
+						if ( pdfWidgets.length === 0 ) {
+							return;
+						}
+
+						discoveredAreas.push( {
+							areaSlug: area.slug,
+							areaTitle: area.pdfTitle || area.title || '',
+							widgets: pdfWidgets,
+						} );
+					} );
+				} );
+
+				const flatWidgets = discoveredAreas.flatMap(
+					( area ) => area.widgets
+				);
+
+				if ( flatWidgets.length === 0 ) {
+					throw new Error( 'No PDF-capable widgets to export.' );
 				}
 
-				dispatch( { type: 'TRANSITION', nextStage: STAGE_BUILDING } );
+				// Loading: resolve each widget's data sequentially. A failing
+				// widget is isolated and renders a placeholder; the export only
+				// errors when every widget fails.
+				const loaded = new Map<
+					string,
+					Pick<
+						PDFReportWidget,
+						'Component' | 'data' | 'chartImages'
+					>
+				>();
+				let failureCount = 0;
 
+				for ( let index = 0; index < flatWidgets.length; index++ ) {
+					const widget = flatWidgets[ index ];
+
+					try {
+						// Resolve the lazy component chunk up front: @react-pdf
+						// does not honour Suspense, so the document tree must
+						// hold a concrete component.
+						let Component = widget.pdf.Component;
+						if ( typeof Component.preload === 'function' ) {
+							const loadedModule = await Component.preload();
+							throwIfAborted( signal );
+							Component = loadedModule.default;
+						}
+
+						const result = await widget.pdf.getData( {
+							registry,
+							dates,
+							signal,
+						} );
+						throwIfAborted( signal );
+
+						loaded.set( widget.slug, {
+							Component,
+							data: result?.data ?? null,
+							chartImages: result?.chartImages,
+						} );
+					} catch ( error ) {
+						if ( isAbortError( error ) ) {
+							throw error;
+						}
+
+						failureCount++;
+						loaded.set( widget.slug, {
+							Component: null,
+							data: null,
+							chartImages: undefined,
+						} );
+					}
+
+					setProgress(
+						Math.round(
+							( ( index + 1 ) / flatWidgets.length ) *
+								LOADING_PROGRESS_MAX
+						)
+					);
+				}
+
+				if ( failureCount === flatWidgets.length ) {
+					throw new Error( 'All PDF widgets failed to load.' );
+				}
+
+				throwIfAborted( signal );
+				dispatch( { type: 'TRANSITION', nextStage: STAGE_BUILDING } );
 				armStageTimeout( BUILDING_TIMEOUT_MS );
 
+				registerPDFFonts();
+				throwIfAborted( signal );
+
+				const areas: PDFReportArea[] = discoveredAreas.map(
+					( area ) => ( {
+						areaSlug: area.areaSlug,
+						areaTitle: area.areaTitle,
+						widgets: area.widgets.map( ( widget ) => {
+							const entry = loaded.get( widget.slug );
+							return {
+								slug: widget.slug,
+								label: widget.pdf.label,
+								Component: entry?.Component ?? null,
+								data: entry?.data ?? null,
+								chartImages: entry?.chartImages,
+							};
+						} ),
+					} )
+				);
 				const filename = getPDFFilename(
 					referenceName,
 					typeof dateRange === 'string' ? dateRange : undefined
@@ -259,6 +459,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 						dashboardURL={ dashboardURL || '' }
 						helpCenterURL="https://sitekit.withgoogle.com/support/"
 						privacyPolicyURL="https://policies.google.com/privacy"
+						areas={ areas }
 					/>
 				);
 
@@ -272,7 +473,8 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				setBlob( { url: blobURL, filename } );
 
 				triggerDownload( blobURL, filename );
-				setTimeout( () => {
+				revokeTimeoutRef.current = setTimeout( () => {
+					revokeTimeoutRef.current = null;
 					URL.revokeObjectURL( blobURL );
 				}, BLOB_REVOKE_DELAY_MS );
 
@@ -313,6 +515,10 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 			if ( completeTimeoutRef.current !== null ) {
 				clearTimeout( completeTimeoutRef.current );
 				completeTimeoutRef.current = null;
+			}
+			if ( revokeTimeoutRef.current !== null ) {
+				clearTimeout( revokeTimeoutRef.current );
+				revokeTimeoutRef.current = null;
 			}
 			controller.abort();
 		};

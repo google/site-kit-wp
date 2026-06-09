@@ -73,64 +73,66 @@ function renderTile(
 describe( 'PDFMetricTile', () => {
 	it( 'renders the title, value, and change label', () => {
 		const tree = renderTile( {
-			title: 'All Visitors',
-			value: '1,234',
-			changeLabel: 'compared to the previous 28 days',
+			title: 'All visitors',
+			value: '32.6K',
+			changeLabel: 'Vs. prev. 28 days',
 		} );
 
 		const text = findTextStrings( tree ).join( ' ' );
-		expect( text ).toContain( 'All Visitors' );
-		expect( text ).toContain( '1,234' );
-		expect( text ).toContain( 'compared to the previous 28 days' );
+		expect( text ).toContain( 'All visitors' );
+		expect( text ).toContain( '32.6K' );
+		expect( text ).toContain( 'Vs. prev. 28 days' );
 	} );
 
 	it( 'omits the change label when not provided', () => {
 		const tree = renderTile( {
-			title: 'All Visitors',
-			value: '1,234',
+			title: 'All visitors',
+			value: '32.6K',
 		} );
 
 		expect( findTextStrings( tree ).join( ' ' ) ).not.toContain(
-			'compared to the previous'
+			'Vs. prev.'
 		);
 	} );
 
-	it( 'renders the up percentage change badge with the success color', () => {
+	it( 'renders a positive change as a green chip with the signed string and no arrow', () => {
 		const tree = renderTile( {
-			title: 'All Visitors',
-			value: '1,234',
-			change: '12.5%',
-			changeDirection: 'up',
+			title: 'All visitors',
+			value: '32.6K',
+			change: '+5.1%',
 		} );
 
 		const json = JSON.stringify( tree );
-		expect( json ).toContain( '12.5%' );
-		expect( json ).toContain( 'M4,0 L8,8 L0,8 Z' );
-		expect( json ).toContain( '#34a853' );
+		expect( json ).toContain( '+5.1%' );
+		// Green chip background + text.
+		expect( json ).toContain( '#d8ffc0' );
+		expect( json ).toContain( '#1f4c04' );
+		// No arrow SVG path.
+		expect( json ).not.toContain( ' L8,8 L0,8 Z' );
 	} );
 
-	it( 'renders the down percentage change badge with the error color', () => {
+	it( 'renders a negative change as a red chip', () => {
 		const tree = renderTile( {
-			title: 'All Visitors',
-			value: '1,234',
-			change: '5.0%',
-			changeDirection: 'down',
+			title: 'All visitors',
+			value: '32.6K',
+			change: '-5.0%',
+			isNegative: true,
 		} );
 
 		const json = JSON.stringify( tree );
-		expect( json ).toContain( '5.0%' );
-		expect( json ).toContain( 'M0,0 L8,0 L4,8 Z' );
-		expect( json ).toContain( '#ea4335' );
+		expect( json ).toContain( '-5.0%' );
+		expect( json ).toContain( '#ffded3' );
+		expect( json ).toContain( '#7a1e00' );
 	} );
 
-	it( 'omits the change badge when change is not provided', () => {
+	it( 'omits the change chip when change is not provided', () => {
 		const tree = renderTile( {
-			title: 'All Visitors',
-			value: '1,234',
+			title: 'All visitors',
+			value: '32.6K',
 		} );
 
 		const json = JSON.stringify( tree );
-		expect( json ).not.toContain( '#34a853' );
-		expect( json ).not.toContain( '#ea4335' );
+		expect( json ).not.toContain( '#d8ffc0' );
+		expect( json ).not.toContain( '#ffded3' );
 	} );
 } );
