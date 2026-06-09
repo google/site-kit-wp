@@ -19,12 +19,12 @@
 /**
  * WordPress dependencies
  */
-import { lazy } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import lazyWithPreload from '@/js/components/pdf-export/lazy-with-preload';
 import {
 	CORE_USER,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
@@ -42,7 +42,7 @@ import getSearchFunnelPDFData from '@/js/modules/search-console/components/dashb
 import PopularKeywordsWidget from '@/js/modules/search-console/components/widgets/PopularKeywordsWidget';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
-const SearchFunnelWidgetGA4PDF = lazy( () =>
+const SearchFunnelWidgetGA4PDF = lazyWithPreload( () =>
 	import(
 		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
 		'@/js/modules/search-console/components/dashboard/SearchFunnelWidgetGA4/indexPDF'
