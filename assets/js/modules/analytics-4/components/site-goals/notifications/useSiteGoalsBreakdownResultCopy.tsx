@@ -33,8 +33,9 @@ import { __ } from '@wordpress/i18n';
 import { Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { BREAKDOWN_SCOPE_BOTH } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
-import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { BreakdownScope } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 
 export interface BreakdownResultCopy {
 	successTitle: string;
@@ -43,7 +44,7 @@ export interface BreakdownResultCopy {
 }
 
 export function useSiteGoalsBreakdownResultCopy(
-	goalType: GoalType
+	scope: BreakdownScope
 ): BreakdownResultCopy {
 	const documentationURL = useSelect(
 		( select: Select ) =>
@@ -57,10 +58,10 @@ export function useSiteGoalsBreakdownResultCopy(
 		<Link href={ documentationURL } external hideExternalIndicator />
 	);
 
-	if ( goalType === GOAL_TYPES.ECOMMERCE ) {
+	if ( scope === GOAL_TYPES.ECOMMERCE ) {
 		return {
 			successTitle: __(
-				'Success! Your goal breakdown is active',
+				'Success! Event breakdown is now active',
 				'google-site-kit'
 			),
 			successDescription: createInterpolateElement(
@@ -71,7 +72,28 @@ export function useSiteGoalsBreakdownResultCopy(
 				{ a: learnMoreLink }
 			),
 			permissionsErrorTitle: __(
-				'Goal breakdown setup failed',
+				'Event breakdown setup failed',
+				'google-site-kit'
+			),
+		};
+	}
+
+	// Both goal types were enabled together (the Side Panel's combined notice).
+	if ( scope === BREAKDOWN_SCOPE_BOTH ) {
+		return {
+			successTitle: __(
+				'Success! Breakdown is now active',
+				'google-site-kit'
+			),
+			successDescription: createInterpolateElement(
+				__(
+					'Site Kit is now tracking specific data for your sales and leads. Because this more precise tracking just started from scratch, your dashboard will show fresh data building up from this moment forward. Individual results will appear soon, with long-term trends following as more data is gathered. <a>Learn more</a>',
+					'google-site-kit'
+				),
+				{ a: learnMoreLink }
+			),
+			permissionsErrorTitle: __(
+				'Event breakdown setup failed',
 				'google-site-kit'
 			),
 		};
