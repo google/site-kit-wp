@@ -988,13 +988,13 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		);
 
 		if ( Feature_Flags::enabled( 'siteGoals' ) ) {
-			$datapoints['GET:advanced-data-breakdowns-settings']       = new Get_Advanced_Data_Breakdowns_Settings(
+			$this->datapoints['GET:advanced-data-breakdowns-settings']       = new Get_Advanced_Data_Breakdowns_Settings(
 				array(
 					'advanced_data_breakdowns_settings' => $this->advanced_data_breakdowns_settings,
 					'service'                           => '',
 				)
 			);
-			$datapoints['POST:save-advanced-data-breakdowns-settings'] = new Save_Advanced_Data_Breakdowns_Settings(
+			$this->datapoints['POST:save-advanced-data-breakdowns-settings'] = new Save_Advanced_Data_Breakdowns_Settings(
 				array(
 					'advanced_data_breakdowns_settings' => $this->advanced_data_breakdowns_settings,
 					'service'                           => '',
