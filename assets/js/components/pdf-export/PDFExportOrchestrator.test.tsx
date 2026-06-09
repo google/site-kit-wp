@@ -36,6 +36,7 @@ import {
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
+import { registerPDFFonts } from './pdf-fonts-react';
 import PDFExportOrchestrator from './PDFExportOrchestrator';
 
 // Stub the download trigger so the anchor click does not attempt a JSDOM
@@ -43,6 +44,10 @@ import PDFExportOrchestrator from './PDFExportOrchestrator';
 jest.mock( './pdf-utils', () => ( {
 	...jest.requireActual( './pdf-utils' ),
 	triggerDownload: jest.fn(),
+} ) );
+
+jest.mock( './pdf-fonts-react', () => ( {
+	registerPDFFonts: jest.fn(),
 } ) );
 
 function NullComponent() {
@@ -60,6 +65,7 @@ describe( 'PDFExportOrchestrator', () => {
 		registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
 
 		( pdf as jest.Mock ).mockClear();
+		jest.mocked( registerPDFFonts ).mockClear();
 
 		global.URL.createObjectURL = jest.fn( () => 'blob:mock-url' );
 		global.URL.revokeObjectURL = jest.fn();
@@ -161,5 +167,49 @@ describe( 'PDFExportOrchestrator', () => {
 		expect( failing ).toHaveBeenCalledTimes( 1 );
 		expect( succeeding ).toHaveBeenCalledTimes( 1 );
 		expect( pdf ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	it( 'registers the PDF fonts before rendering the document', async () => {
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		expect( registerPDFFonts ).toHaveBeenCalledTimes( 1 );
+		expect(
+			jest.mocked( registerPDFFonts ).mock.invocationCallOrder[ 0 ]
+		).toBeLessThan( ( pdf as jest.Mock ).mock.invocationCallOrder[ 0 ] );
+	} );
+
+	it( 'transitions to error and does not build a PDF when font registration fails', async () => {
+		jest.mocked( registerPDFFonts ).mockImplementationOnce( () => {
+			throw new Error( 'font registration failed' );
+		} );
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'error' );
+		} );
+
+		expect( pdf ).not.toHaveBeenCalled();
 	} );
 } );

@@ -22,6 +22,14 @@
 import { StyleSheet, Text, View } from '@react-pdf/renderer';
 import type { FC } from 'react';
 
+/**
+ * Internal dependencies
+ */
+import {
+	PDF_FONT_FAMILY_DISPLAY,
+	PDF_FONT_FAMILY_TEXT,
+} from '@/js/components/pdf-export/pdf-theme';
+
 const COLORS = {
 	text: '#161b18',
 	secondary: '#6c726e',
@@ -41,14 +49,16 @@ const tileStyles = StyleSheet.create( {
 		flexDirection: 'column',
 	},
 	title: {
+		fontFamily: PDF_FONT_FAMILY_TEXT,
 		fontSize: 12,
 		fontWeight: 'normal',
 		color: COLORS.text,
 		marginBottom: 6,
 	},
 	value: {
+		fontFamily: PDF_FONT_FAMILY_DISPLAY,
 		fontSize: 24,
-		fontWeight: 'bold',
+		fontWeight: 400,
 		color: COLORS.text,
 	},
 	aside: {
@@ -61,9 +71,11 @@ const tileStyles = StyleSheet.create( {
 		paddingHorizontal: 8,
 	},
 	chipText: {
+		fontFamily: PDF_FONT_FAMILY_TEXT,
 		fontSize: 10,
 	},
 	changeLabel: {
+		fontFamily: PDF_FONT_FAMILY_TEXT,
 		fontSize: 10,
 		color: COLORS.secondary,
 		marginTop: 8,

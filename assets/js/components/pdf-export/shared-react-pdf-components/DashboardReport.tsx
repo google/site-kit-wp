@@ -30,6 +30,10 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import {
+	PDF_FONT_FAMILY_DISPLAY,
+	PDF_FONT_FAMILY_TEXT,
+} from '@/js/components/pdf-export/pdf-theme';
 import type { PDFReportArea } from '@/js/components/pdf-export/types';
 
 const DEFAULT_PAGE_HEIGHT = 792;
@@ -39,6 +43,7 @@ const styles = StyleSheet.create( {
 		paddingTop: 24,
 		paddingBottom: 24,
 		paddingHorizontal: 24,
+		fontFamily: PDF_FONT_FAMILY_TEXT,
 		fontSize: 12,
 		backgroundColor: '#f3f5f7',
 	},
@@ -46,11 +51,13 @@ const styles = StyleSheet.create( {
 		marginBottom: 32,
 	},
 	headerSiteName: {
+		fontFamily: PDF_FONT_FAMILY_DISPLAY,
 		fontSize: 20,
-		fontWeight: 700,
+		fontWeight: 400,
 		marginBottom: 4,
 	},
 	headerDateRange: {
+		fontFamily: PDF_FONT_FAMILY_TEXT,
 		fontSize: 11,
 		color: '#5f6368',
 	},
@@ -61,12 +68,14 @@ const styles = StyleSheet.create( {
 		marginBottom: 24,
 	},
 	sectionTitle: {
+		fontFamily: PDF_FONT_FAMILY_DISPLAY,
 		fontSize: 24,
 		fontWeight: 'normal',
 		color: '#161b18',
 		marginBottom: 12,
 	},
 	emptyText: {
+		fontFamily: PDF_FONT_FAMILY_TEXT,
 		fontSize: 11,
 		color: '#5f6368',
 	},
@@ -74,6 +83,7 @@ const styles = StyleSheet.create( {
 		borderTopWidth: 1,
 		borderTopColor: '#dadce0',
 		paddingTop: 12,
+		fontFamily: PDF_FONT_FAMILY_TEXT,
 		fontSize: 9,
 		color: '#5f6368',
 	},

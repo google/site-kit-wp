@@ -193,8 +193,19 @@ const svgRule = {
 
 exports.svgRule = svgRule;
 
+const ttfRule = {
+	test: /\.ttf$/,
+	type: 'asset/resource',
+	generator: {
+		filename: 'fonts/[name]-[contenthash][ext]',
+	},
+};
+
+exports.ttfRule = ttfRule;
+
 exports.createRules = ( mode ) => [
 	svgRule,
+	ttfRule,
 	{
 		test: /\.tsx?$/,
 		exclude: /node_modules/,
