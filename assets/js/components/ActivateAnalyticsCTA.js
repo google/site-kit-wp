@@ -274,7 +274,7 @@ export default function ActivateAnalyticsCTA( {
 				</div>
 				<div className="googlesitekit-activate-analytics-cta__actions">
 					<Button
-						className="googlesitekit-activate-analytics-cta__button--secondary"
+						className="googlesitekit-activate-analytics-cta__button--secondary googlesitekit-activate-analytics-cta__dismiss-button--error"
 						onClick={ handleActivationErrorDismiss }
 						tertiary
 					>

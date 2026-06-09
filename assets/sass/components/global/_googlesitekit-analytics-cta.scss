@@ -176,7 +176,7 @@
 			}
 
 			.googlesitekit-activate-analytics-cta__button--secondary {
-				color: $c-utility-on-error-container;
+				color: $c-surfaces-on-surface;
 
 				&:not(:disabled) {
 					background-color: transparent;
@@ -211,6 +211,10 @@
 
 			.googlesitekit-activate-analytics-cta__actions {
 				.googlesitekit-activate-analytics-cta__button--secondary {
+					&.googlesitekit-activate-analytics-cta__dismiss-button--error {
+						color: $c-utility-on-error-container;
+					}
+
 					&:hover:not(:disabled) {
 						background-color: rgba(
 							$c-utility-on-error-container,
