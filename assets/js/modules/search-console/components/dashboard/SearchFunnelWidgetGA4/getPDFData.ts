@@ -304,18 +304,20 @@ function rasterizeChart( {
  *
  * @since n.e.x.t
  *
- * @param {Object} registry  WordPress data registry.
- * @param {string} storeName Datastore name to query.
- * @param {Object} args      `getReport` args.
+ * @param {Object}      registry  WordPress data registry.
+ * @param {string}      storeName Datastore name to query.
+ * @param {Object}      args      Report args.
+ * @param {AbortSignal} signal    Cancellation signal.
  * @return {Promise<Object>} The resolved report and any error.
  */
 async function resolveReport(
 	registry: Registry,
 	storeName: string,
-	args: object
+	args: object,
+	signal: AbortSignal
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Reports are loosely typed in this codebase.
 ): Promise< { report: any; error: any } > {
-	await registry.resolveSelect( storeName ).getReport( args );
+	await registry.resolveSelect( storeName ).getReport( args, { signal } );
 
 	return {
 		report: registry.select( storeName ).getReport( args ),
@@ -569,15 +571,27 @@ export default async function getPDFData( {
 			resolveReport(
 				registry,
 				MODULES_SEARCH_CONSOLE,
-				searchConsoleArgs
+				searchConsoleArgs,
+				signal
 			),
 			resolveReport(
 				registry,
 				MODULES_ANALYTICS_4,
-				keyEventsOverviewArgs
+				keyEventsOverviewArgs,
+				signal
 			),
-			resolveReport( registry, MODULES_ANALYTICS_4, keyEventsStatsArgs ),
-			resolveReport( registry, MODULES_ANALYTICS_4, visitorsArgs ),
+			resolveReport(
+				registry,
+				MODULES_ANALYTICS_4,
+				keyEventsStatsArgs,
+				signal
+			),
+			resolveReport(
+				registry,
+				MODULES_ANALYTICS_4,
+				visitorsArgs,
+				signal
+			),
 		] );
 
 	if ( signal.aborted ) {
