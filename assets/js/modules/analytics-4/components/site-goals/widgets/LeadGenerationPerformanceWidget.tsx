@@ -22,7 +22,7 @@ import { FC, ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -35,6 +35,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
+import GatheringBreakdownDataBadge from '@/js/modules/analytics-4/components/site-goals/components/GatheringBreakdownDataBadge';
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import {
@@ -222,10 +223,20 @@ const LeadGenerationPerformanceWidget: FC<
 	return (
 		<WidgetComponent
 			Header={ WidgetHeaderTitle }
-			headerContents={ __(
-				'Lead generation performance',
-				'google-site-kit'
-			) }
+			headerContents={
+				<Fragment>
+					<span>
+						{ __(
+							'Lead generation performance',
+							'google-site-kit'
+						) }
+					</span>
+					<GatheringBreakdownDataBadge
+						goalType={ GOAL_TYPES.LEAD }
+						variant="widget"
+					/>
+				</Fragment>
+			}
 			collapsible
 		>
 			{ loading && <PreviewBlock width="100%" height="130px" /> }
