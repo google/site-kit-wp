@@ -33,6 +33,7 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
+	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTED_DRIVERS,
@@ -104,6 +105,28 @@ function Template( {
 
 export const Default = Template.bind( {} ) as Story< TemplateProps >;
 Default.scenario = {};
+
+export const GatheringBreakdownData = Template.bind(
+	{}
+) as Story< TemplateProps >;
+GatheringBreakdownData.storyName = 'Gathering breakdown data';
+GatheringBreakdownData.args = {
+	setupRegistry: ( registry ) => {
+		setupDefaultRegistry( registry );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
+		} );
+		SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS.forEach( ( customDimension ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsCustomDimensionGatheringData( {
+					customDimension,
+					gatheringData: true,
+				} );
+		} );
+	},
+};
 
 export const ViewOnly = Template.bind( {} ) as Story< TemplateProps >;
 ViewOnly.storyName = 'View-only user';
