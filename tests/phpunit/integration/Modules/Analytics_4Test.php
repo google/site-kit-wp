@@ -1772,6 +1772,26 @@ class Analytics_4Test extends TestCase {
 			'Analytics 4 module should expose the expected datapoints with conversion reporting'
 		);
 	}
+
+	public function test_get_datapoints__registers_advanced_data_breakdowns_when_site_goals_enabled() {
+		$this->enable_feature( 'siteGoals' );
+
+		$analytics = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
+
+		$datapoints = $analytics->get_datapoints();
+
+		$this->assertContains(
+			'advanced-data-breakdowns-settings',
+			$datapoints,
+			'Enabling the siteGoals feature flag should register the advanced data breakdowns datapoint.'
+		);
+		$this->assertContains(
+			'save-advanced-data-breakdowns-settings',
+			$datapoints,
+			'Enabling the siteGoals feature flag should register the save advanced data breakdowns datapoint.'
+		);
+	}
+
 	public function test_get_debug_fields() {
 		$this->analytics->register();
 
