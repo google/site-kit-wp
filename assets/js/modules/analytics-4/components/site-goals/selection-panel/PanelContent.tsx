@@ -24,7 +24,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { Fragment, useState } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -152,87 +152,90 @@ const PanelContent: FC< PanelContentProps > = ( {
 		} );
 	}
 
+	// A single combined breakdown notice covers every active goal type section.
+	// Its copy variant (and which dimensions gate it) follows whichever sections
+	// are present and still missing their breakdown dimension.
+	const breakdownGoalTypes = [
+		...( hasEcommerceGoalDrivers ? [ GOAL_TYPES.ECOMMERCE ] : [] ),
+		...( hasLeadGoalDrivers ? [ GOAL_TYPES.LEAD ] : [] ),
+	];
+
 	return (
 		<SelectionPanelContent className="googlesitekit-site-goals-selection-panel__content">
+			{ breakdownGoalTypes.length > 0 && (
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_PANEL }
+					goalTypes={ breakdownGoalTypes }
+				/>
+			) }
+
 			{ hasEcommerceGoalDrivers && (
-				<Fragment>
-					<BreakdownNoticeArea
-						origin={ BREAKDOWN_ORIGIN_PANEL }
+				<GoalTypeSection
+					listID={ GOAL_TYPES.ECOMMERCE }
+					title={ __(
+						'Online store performance',
+						'google-site-kit'
+					) }
+					isExpanded={ isEcommerceExpanded }
+					onToggleExpand={ () =>
+						setIsEcommerceExpanded(
+							( previousState ) => ! previousState
+						)
+					}
+				>
+					<VisitorEngagementEventList
+						eventIDs={ secondaryEcommerceEvents }
 						goalType={ GOAL_TYPES.ECOMMERCE }
-					/>
-					<GoalTypeSection
 						listID={ GOAL_TYPES.ECOMMERCE }
-						title={ __(
-							'Online store performance',
-							'google-site-kit'
+					/>
+					<GoalTypeList
+						listID={ GOAL_TYPES.ECOMMERCE }
+						options={ ecommerceOptions }
+						selectedIDs={ getSelectedDriverIDs(
+							selectedDriverState,
+							GOAL_TYPES.ECOMMERCE
 						) }
-						isExpanded={ isEcommerceExpanded }
-						onToggleExpand={ () =>
-							setIsEcommerceExpanded(
-								( previousState ) => ! previousState
+						onToggleDriver={ ( driverID, isChecked ) =>
+							onToggleDriver(
+								GOAL_TYPES.ECOMMERCE,
+								driverID,
+								isChecked
 							)
 						}
-					>
-						<VisitorEngagementEventList
-							eventIDs={ secondaryEcommerceEvents }
-							goalType={ GOAL_TYPES.ECOMMERCE }
-							listID={ GOAL_TYPES.ECOMMERCE }
-						/>
-						<GoalTypeList
-							listID={ GOAL_TYPES.ECOMMERCE }
-							options={ ecommerceOptions }
-							selectedIDs={ getSelectedDriverIDs(
-								selectedDriverState,
-								GOAL_TYPES.ECOMMERCE
-							) }
-							onToggleDriver={ ( driverID, isChecked ) =>
-								onToggleDriver(
-									GOAL_TYPES.ECOMMERCE,
-									driverID,
-									isChecked
-								)
-							}
-						/>
-					</GoalTypeSection>
-				</Fragment>
+					/>
+				</GoalTypeSection>
 			) }
 
 			{ hasLeadGoalDrivers && (
-				<Fragment>
-					<BreakdownNoticeArea
-						origin={ BREAKDOWN_ORIGIN_PANEL }
-						goalType={ GOAL_TYPES.LEAD }
-					/>
-					<GoalTypeSection
+				<GoalTypeSection
+					listID={ GOAL_TYPES.LEAD }
+					title={ __(
+						'Lead generation performance',
+						'google-site-kit'
+					) }
+					isExpanded={ isLeadExpanded }
+					onToggleExpand={ () =>
+						setIsLeadExpanded(
+							( previousState ) => ! previousState
+						)
+					}
+				>
+					<GoalTypeList
 						listID={ GOAL_TYPES.LEAD }
-						title={ __(
-							'Lead generation performance',
-							'google-site-kit'
+						options={ leadOptions }
+						selectedIDs={ getSelectedDriverIDs(
+							selectedDriverState,
+							GOAL_TYPES.LEAD
 						) }
-						isExpanded={ isLeadExpanded }
-						onToggleExpand={ () =>
-							setIsLeadExpanded(
-								( previousState ) => ! previousState
+						onToggleDriver={ ( driverID, isChecked ) =>
+							onToggleDriver(
+								GOAL_TYPES.LEAD,
+								driverID,
+								isChecked
 							)
 						}
-					>
-						<GoalTypeList
-							listID={ GOAL_TYPES.LEAD }
-							options={ leadOptions }
-							selectedIDs={ getSelectedDriverIDs(
-								selectedDriverState,
-								GOAL_TYPES.LEAD
-							) }
-							onToggleDriver={ ( driverID, isChecked ) =>
-								onToggleDriver(
-									GOAL_TYPES.LEAD,
-									driverID,
-									isChecked
-								)
-							}
-						/>
-					</GoalTypeSection>
-				</Fragment>
+					/>
+				</GoalTypeSection>
 			) }
 		</SelectionPanelContent>
 	);
