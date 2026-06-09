@@ -32,7 +32,7 @@ import {
 	colors,
 	fontSizes,
 	spacing,
-} from '@/js/components/PDFExport/pdf-theme';
+} from '@/js/components/pdf-export/pdf-theme';
 
 const styles = StyleSheet.create( {
 	footer: {
