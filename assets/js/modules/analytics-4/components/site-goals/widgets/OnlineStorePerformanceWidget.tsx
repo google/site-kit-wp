@@ -359,7 +359,7 @@ const OnlineStorePerformanceWidget: FC<
 
 			<BreakdownNoticeArea
 				origin={ BREAKDOWN_ORIGIN_WIDGET }
-				goalType={ GOAL_TYPES.ECOMMERCE }
+				goalTypes={ [ GOAL_TYPES.ECOMMERCE ] }
 			/>
 
 			<TilesGroup
