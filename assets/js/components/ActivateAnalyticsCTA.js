@@ -328,7 +328,7 @@ export default function ActivateAnalyticsCTA( {
 				<SpinnerButton
 					className="googlesitekit-activate-analytics-cta__button--primary"
 					onClick={ () => {
-						onClickCallback();
+						activateModuleCallback();
 						trackEvents.confirm( analyticsEventLabel );
 					} }
 					isSaving={ inProgress }
