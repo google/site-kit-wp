@@ -32,7 +32,10 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { getItem, setItem } from '@/js/googlesitekit/api/cache';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	PERMISSION_MANAGE_OPTIONS,
+} from '@/js/googlesitekit/datastore/user/constants';
 import useFormValue from '@/js/hooks/useFormValue';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import {
@@ -281,6 +284,13 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 	} = useDispatch( MODULES_ANALYTICS_4 );
 	const { setValues } = useDispatch( CORE_FORMS );
 
+	const canSyncCustomDimensions = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).isAuthenticated() &&
+			select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ),
+		[]
+	);
+
 	// The synced `availableCustomDimensions` setting is only refreshed via report
 	// errors, and no report yet queries the breakdown dimensions. Sync it (at
 	// most once a day) so an out-of-band GA4 change to them is detected.
@@ -291,24 +301,28 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 	useEffect( () => {
 		let ignore = false;
 
-		( async () => {
-			const { cacheHit } = await getItem( AVAILABILITY_SYNC_CACHE_KEY );
+		if ( canSyncCustomDimensions ) {
+			( async () => {
+				const { cacheHit } = await getItem(
+					AVAILABILITY_SYNC_CACHE_KEY
+				);
 
-			if ( ignore || cacheHit ) {
-				return;
-			}
+				if ( ignore || cacheHit ) {
+					return;
+				}
 
-			await setItem( AVAILABILITY_SYNC_CACHE_KEY, true, {
-				ttl: DAY_IN_SECONDS,
-			} );
+				await setItem( AVAILABILITY_SYNC_CACHE_KEY, true, {
+					ttl: DAY_IN_SECONDS,
+				} );
 
-			scheduleSyncAvailableCustomDimensions();
-		} )();
+				scheduleSyncAvailableCustomDimensions();
+			} )();
+		}
 
 		return () => {
 			ignore = true;
 		};
-	}, [ scheduleSyncAvailableCustomDimensions ] );
+	}, [ canSyncCustomDimensions, scheduleSyncAvailableCustomDimensions ] );
 
 	const onDismissComplete =
 		origin === BREAKDOWN_ORIGIN_WIDGET
