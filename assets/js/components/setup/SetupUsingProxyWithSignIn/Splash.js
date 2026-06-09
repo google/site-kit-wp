@@ -45,6 +45,9 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 export default function Splash( { children } ) {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const setupFlowRefreshPhase4Enabled = useFeature(
+		'setupFlowRefreshPhase4'
+	);
 
 	const analyticsModuleAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( MODULE_SLUG_ANALYTICS_4 )
@@ -54,6 +57,9 @@ export default function Splash( { children } ) {
 	);
 	const isSecondAdmin = useSelect( ( select ) =>
 		select( CORE_SITE ).hasConnectedAdmins()
+	);
+	const hasViewableModules = useSelect(
+		( select ) => !! select( CORE_USER ).getViewableModules()?.length
 	);
 	const siteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
@@ -98,15 +104,30 @@ export default function Splash( { children } ) {
 
 		getHelpURL = changedURLHelpLink;
 	} else if ( isSecondAdmin ) {
-		title = __(
-			'Connect your Google account to Site Kit',
-			'google-site-kit'
-		);
-		description = __(
-			'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google services.',
-			'google-site-kit'
-		);
-		showLearnMoreLink = true;
+		if ( setupFlowRefreshPhase4Enabled ) {
+			title = __( "Let's get started!", 'google-site-kit' );
+
+			description =
+				analyticsModuleActive && hasViewableModules
+					? __(
+							'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the setup, you’ll see stats from all connected Google services that are shared with you:',
+							'google-site-kit'
+					  )
+					: __(
+							'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the setup, you’ll see stats from all connected Google services.',
+							'google-site-kit'
+					  );
+		} else {
+			title = __(
+				'Connect your Google account to Site Kit',
+				'google-site-kit'
+			);
+			description = __(
+				'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google services.',
+				'google-site-kit'
+			);
+			showLearnMoreLink = true;
+		}
 	} else if ( setupFlowRefreshEnabled ) {
 		title = __( 'Let’s get started!', 'google-site-kit' );
 	} else {

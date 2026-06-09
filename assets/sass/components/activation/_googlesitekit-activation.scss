@@ -21,6 +21,47 @@
 	.googlesitekit-activation__title {
 		margin: 10px 0 20px;
 	}
+
+	.googlesitekit-activation__auto-updates-label {
+		color: $c-surfaces-on-surface;
+		display: block;
+		font-size: $fs-body-md;
+		font-weight: $fw-normal;
+		letter-spacing: $ls-s;
+		line-height: $lh-body-md;
+	}
+}
+
+#googlesitekit-notice-activated.googlesitekit-notice-activated--with-auto-updates-checkbox {
+	background: $c-surfaces-surface;
+
+	.googlesitekit-activation__auto-updates {
+		margin-bottom: 5px;
+		padding-left: 0;
+
+		.googlesitekit-activation__auto-updates-label {
+			color: $c-surfaces-on-background-variant;
+			font-size: $fs-body-sm;
+		}
+
+		.mdc-form-field {
+			align-items: center;
+			gap: 7px;
+
+			label {
+				padding-left: 0;
+			}
+		}
+	}
+
+	.googlesitekit-activation__title {
+		margin-bottom: 8px;
+		margin-left: 7px;
+	}
+
+	.googlesitekit-logo {
+		margin-left: 7px;
+	}
 }
 
 .googlesitekit-noscript {

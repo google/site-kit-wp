@@ -27,7 +27,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import PDFMetricChartTile from '@/js/components/PDFExport/components/PDFMetricChartTile';
+import PDFMetricChartTile from '@/js/components/pdf-export/shared-react-pdf-components/PDFMetricChartTile';
 import { numFmt } from '@/js/util';
 import type { SearchFunnelMetric, SearchFunnelPDFData } from './getPDFData';
 

@@ -30,23 +30,23 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import ensureGoogleChartsLoaded from '@/js/components/PDFExport/ensure-google-charts-loaded';
-import renderGoogleChartToDataURI from '@/js/components/PDFExport/render-google-chart-to-data-uri';
+import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
+import renderGoogleChartToDataURI from '@/js/components/pdf-export/render-google-chart-to-data-uri';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import getPDFData, { GetPDFDataParams } from './getPDFData';
 import { getGraphReportArgs, getTotalsReportArgs } from './reportOptions';
 
-jest.mock( '@/js/components/PDFExport/ensure-google-charts-loaded', () => ( {
+jest.mock( '@/js/components/pdf-export/ensure-google-charts-loaded', () => ( {
 	__esModule: true,
 	default: jest.fn(),
 } ) );
 jest.mock(
-	'@/js/components/PDFExport/render-google-chart-to-data-uri',
+	'@/js/components/pdf-export/render-google-chart-to-data-uri',
 	() => ( {
 		// Keep the real `getVisualization` (used by `getPDFData` to build the
 		// DataTable); only the default rasteriser export is mocked.
 		...jest.requireActual(
-			'@/js/components/PDFExport/render-google-chart-to-data-uri'
+			'@/js/components/pdf-export/render-google-chart-to-data-uri'
 		),
 		__esModule: true,
 		default: jest.fn(),

@@ -27,10 +27,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ensureGoogleChartsLoaded from '@/js/components/PDFExport/ensure-google-charts-loaded';
+import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
 import renderGoogleChartToDataURI, {
 	getVisualization,
-} from '@/js/components/PDFExport/render-google-chart-to-data-uri';
+} from '@/js/components/pdf-export/render-google-chart-to-data-uri';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';

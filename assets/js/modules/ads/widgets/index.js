@@ -16,4 +16,5 @@
  * limitations under the License.
  */
 
-export function registerWidgets() {}
+// eslint-disable-next-line no-unused-vars
+export function registerWidgets( widgets ) {}

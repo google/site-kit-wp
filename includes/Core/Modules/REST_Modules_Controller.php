@@ -217,6 +217,38 @@ class REST_Modules_Controller {
 			return current_user_can( Permissions::MANAGE_OPTIONS );
 		};
 
+		// Resolves the permission check for a module data request. A datapoint
+		// implementing Permission_Aware_Datapoint provides its own check (e.g. to
+		// allow any dashboard-viewing user to persist a per-user setting);
+		// otherwise the method's default check is used.
+		$datapoint_permission_callback = function ( WP_REST_Request $request, callable $default_callback ) {
+			try {
+				$method    = $request->get_method();
+				$module    = $this->modules->get_module( $request['slug'] );
+				$datapoint = $module->get_datapoint_definition( "{$method}:{$request['datapoint']}" );
+			} catch ( Exception $e ) {
+				// The module or datapoint could not be resolved; defer to the
+				// default permission check (the request callback then surfaces
+				// the actual invalid-module/datapoint error).
+				return $default_callback( $request );
+			}
+
+			if ( ! $datapoint instanceof Permission_Aware_Datapoint ) {
+				return $default_callback( $request );
+			}
+
+			// A datapoint that defines its own permission check must never
+			// silently fall back to the (broader) default if that check fails,
+			// so any error here denies access (`\Throwable`, not just
+			// `\Exception`, so a `\Error`/`\TypeError` is also fail-closed)
+			// rather than reverting to the default permission.
+			try {
+				return $datapoint->permission_callback();
+			} catch ( \Throwable $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+				return false;
+			}
+		};
+
 		$get_module_schema = function () {
 			return $this->get_module_schema();
 		};
@@ -558,7 +590,9 @@ class REST_Modules_Controller {
 							}
 							return new WP_REST_Response( $data );
 						},
-						'permission_callback' => $can_view_insights,
+						'permission_callback' => function ( WP_REST_Request $request ) use ( $datapoint_permission_callback, $can_view_insights ) {
+							return $datapoint_permission_callback( $request, $can_view_insights );
+						},
 					),
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
@@ -581,7 +615,9 @@ class REST_Modules_Controller {
 							}
 							return new WP_REST_Response( $data );
 						},
-						'permission_callback' => $can_manage_options,
+						'permission_callback' => function ( WP_REST_Request $request ) use ( $datapoint_permission_callback, $can_manage_options ) {
+							return $datapoint_permission_callback( $request, $can_manage_options );
+						},
 						'args'                => array(
 							'data' => array(
 								'type'              => 'object',

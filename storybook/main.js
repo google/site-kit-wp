@@ -57,7 +57,7 @@ const siteKitPackageAliases = mapValues(
 			}
 		}
 
-		return path.resolve( rootDir, `assets/js/${ global }-${ api }.js` );
+		return path.resolve( rootDir, `assets/js/${ global }-${ api }.ts` );
 	}
 );
 

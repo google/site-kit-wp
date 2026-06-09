@@ -21,6 +21,7 @@ export { default as AccountCreateLegacy } from './AccountCreateLegacy';
 export { default as AccountSelect } from './AccountSelect';
 export { default as CreatePropertyInfoNotice } from './CreatePropertyInfoNotice';
 export { default as EnhancedMeasurementSwitch } from './EnhancedMeasurementSwitch';
+export { default as MeasurementSettingRow } from './MeasurementSettingRow';
 export { default as PropertyHint } from './PropertyHint';
 export { default as PropertySelect } from './PropertySelect';
 export { default as TrackingExclusionSwitches } from './TrackingExclusionSwitches';

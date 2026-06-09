@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Modules\Analytics_4\Datapoints;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Site_Goals_Settings;
@@ -89,6 +90,16 @@ class Get_Site_Goals_SettingsTest extends TestCase {
 		// Analytics scopes) pass base-scope validation via the owner's OAuth
 		// client; the closure still reads the current user's own settings.
 		$this->assertTrue( $this->datapoint->is_shareable(), 'The Site Goals settings datapoint should be shareable.' );
+	}
+
+	public function test_permission_callback() {
+		// Per-user settings are gated on dashboard access rather than the default
+		// insights permission, so view-only users can read their own selection.
+		$this->assertSame(
+			current_user_can( Permissions::VIEW_DASHBOARD ),
+			$this->datapoint->permission_callback(),
+			'The datapoint permission should gate on the VIEW_DASHBOARD capability.'
+		);
 	}
 
 	public function test_parse_response() {
