@@ -40,6 +40,7 @@ import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/compo
 import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
+	SITE_GOALS_VOTE_ID_WIDGET_ONLINE_STORE,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_CATALOG,
@@ -51,6 +52,9 @@ import {
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import BreakdownNotice from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNotice';
+import { useBreakdownNoticeTooltip } from '@/js/modules/analytics-4/components/site-goals/notifications/useBreakdownNoticeTooltip';
+import { useSiteGoalsBreakdownNoticeCopy } from '@/js/modules/analytics-4/components/site-goals/notifications/useSiteGoalsBreakdownNoticeCopy';
 import {
 	NUMBER_FORMAT,
 	PERCENT_FORMAT,
@@ -63,6 +67,7 @@ import {
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
+import WidgetFeedbackPrompt from './WidgetFeedbackPrompt';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -135,7 +140,6 @@ const OnlineStorePerformanceWidget: FC<
 		Header?: unknown;
 		headerContents?: ReactNode;
 		collapsible?: boolean;
-		children?: ReactNode;
 	} >;
 	const WidgetNullComponent = WidgetNull as FC;
 	const WidgetReportErrorComponent = WidgetReportError as FC< {
@@ -151,6 +155,11 @@ const OnlineStorePerformanceWidget: FC<
 				path: '/TODO-SUPPORT-PATH',
 			} ),
 		[]
+	);
+
+	const showBreakdownTooltip = useBreakdownNoticeTooltip();
+	const breakdownNoticeCopy = useSiteGoalsBreakdownNoticeCopy(
+		GOAL_TYPES.ECOMMERCE
 	);
 
 	const primaryEvent: keyof typeof EVENT_TOTAL_LABELS | undefined = useSelect(
@@ -355,6 +364,12 @@ const OnlineStorePerformanceWidget: FC<
 				</TilesGroup>
 			) }
 
+			<BreakdownNotice
+				className="googlesitekit-site-goals-breakdown-notice"
+				onDismissComplete={ showBreakdownTooltip }
+				{ ...breakdownNoticeCopy }
+			/>
+
 			<TilesGroup
 				className="googlesitekit-site-goals-visitor-engagement"
 				title={ __(
@@ -382,6 +397,10 @@ const OnlineStorePerformanceWidget: FC<
 					goalType={ GOAL_TYPES.ECOMMERCE }
 				/>
 			</TilesGroup>
+
+			<WidgetFeedbackPrompt
+				voteID={ SITE_GOALS_VOTE_ID_WIDGET_ONLINE_STORE }
+			/>
 		</WidgetComponent>
 	);
 };

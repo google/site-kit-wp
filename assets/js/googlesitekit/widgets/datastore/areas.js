@@ -84,6 +84,7 @@ export const actions = {
 	 * @param {string}      slug                           Widget Area's slug.
 	 * @param {Object}      settings                       Widget Area's settings.
 	 * @param {string}      [settings.title]               Optional. Title for this widget area.
+	 * @param {string}      [settings.pdfTitle]            Optional. Short title used for this area's PDF export section and side-sheet checkbox.
 	 * @param {string}      [settings.subtitle]            Optional. Subtitle for this widget area.
 	 * @param {WPComponent} [settings.Icon]                Optional. React component to render icon for this widget area.
 	 * @param {string}      [settings.style]               Optional. Widget area style (one of "boxes", "composite"). Default: "boxes".
@@ -100,6 +101,7 @@ export const actions = {
 			priority = 10,
 			style = WIDGET_AREA_STYLES.BOXES,
 			title,
+			pdfTitle,
 			subtitle,
 			Icon,
 			hasNewBadge = false,
@@ -121,6 +123,7 @@ export const actions = {
 					priority,
 					style,
 					title,
+					pdfTitle,
 					subtitle,
 					Icon,
 					hasNewBadge,

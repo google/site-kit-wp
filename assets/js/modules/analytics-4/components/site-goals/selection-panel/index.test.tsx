@@ -29,6 +29,7 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
+	SITE_GOALS_BREAKDOWN_NOTICE,
 	SITE_GOALS_SELECTED_DRIVERS,
 	SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTION_FORM,
@@ -38,6 +39,7 @@ import {
 	GOAL_DRIVER_IDS,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	EDIT_SCOPE,
@@ -55,6 +57,10 @@ import {
 	provideUserCapabilities,
 	waitForDefaultTimeouts,
 } from '@tests/js/utils';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '../../../../../../../tests/js/mock-survey-endpoints';
 import SiteGoalsSelectionPanel from '.';
 
 jest.mock( '@/js/googlesitekit/data/create-snapshot-store', () => ( {
@@ -72,6 +78,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
+		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
 		provideSiteInfo( registry );
@@ -93,6 +100,12 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetSiteGoalsSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( { availableCustomDimensions: [] } );
+		// Default to the breakdown notice being hidden (intro modal not yet
+		// dismissed); individual tests opt in by dismissing the intro modal.
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		registry
 			.dispatch( CORE_UI )
@@ -238,9 +251,13 @@ describe( 'SiteGoalsSelectionPanel', () => {
 
 		await waitForDefaultTimeouts();
 
+		// "Products added to cart" also appears in the Primary Action row when
+		// `add_to_cart` is primary. Scope the assertion to the visitor-engagement item.
 		expect( queryByText( 'Visitor engagement' ) ).not.toBeInTheDocument();
 		expect(
-			queryByText( 'Products added to cart' )
+			document.querySelector(
+				'#site-goals-selection-visitor-engagement-add_to_cart-ecommerce'
+			)
 		).not.toBeInTheDocument();
 	} );
 
@@ -394,6 +411,86 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		).toBeDisabled();
 	} );
 
+	it( 'shows "Purchase" as the ecommerce key action', async () => {
+		const { findByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		expect( await findByText( 'Purchase' ) ).toBeInTheDocument();
+	} );
+
+	it( 'shows "Form completion" as the lead key action', async () => {
+		const { findByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		expect( await findByText( 'Form completion' ) ).toBeInTheDocument();
+	} );
+
+	it( 'shows "Products added to cart" for ecommerce add_to_cart', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'add_to_cart', 'contact' ] );
+
+		const { findByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		expect(
+			await findByText( 'Products added to cart' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'dispatches an up vote for the ecommerce key action on thumbs-up click', async () => {
+		mockSurveyEndpoints();
+
+		const { findAllByRole } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		const upButtons = await findAllByRole( 'button', {
+			name: 'Yes, this was helpful',
+		} );
+
+		fireEvent.click( upButtons[ 0 ] );
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: {
+						triggerID:
+							'vote:site_goals_primary_action_panel_online_store:up',
+					},
+				},
+			} )
+		);
+	} );
+
+	it( 'dispatches a down vote for the lead key action on thumbs-down click', async () => {
+		mockSurveyEndpoints();
+
+		const { findAllByRole } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		const downButtons = await findAllByRole( 'button', {
+			name: 'No, this was not helpful',
+		} );
+
+		fireEvent.click( downButtons[ 1 ] );
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: {
+						triggerID:
+							'vote:site_goals_primary_action_panel_lead_generation:down',
+					},
+				},
+			} )
+		);
+	} );
+
 	it( 'shows max selection notice and disables save while allowing selection over six', async () => {
 		const { getByRole, getByText } = render( <SiteGoalsSelectionPanel />, {
 			registry,
@@ -450,7 +547,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 	} );
 
 	it( 'does not show a custom dimensions warning when the author dimension is available', async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			availableCustomDimensions: [ 'googlesitekit_post_author' ],
 		} );
 
@@ -675,6 +772,52 @@ describe( 'SiteGoalsSelectionPanel', () => {
 			[ GOAL_TYPES.ECOMMERCE ]: expect.arrayContaining( [
 				GOAL_DRIVER_IDS.TOP_AUTHORS,
 			] ),
+		} );
+	} );
+
+	it( 'defers the breakdown tooltip until the panel is closed, sharing dismissal with the widgets', async () => {
+		// Aggregated state so the breakdown notice is rendered in the panel.
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [ SITE_GOALS_INTRO_MODAL_BANNER ] );
+		fetchMock.postOnce(
+			new RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
+			{ body: [ SITE_GOALS_BREAKDOWN_NOTICE ], status: 200 }
+		);
+
+		const { getAllByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		fireEvent.click( getAllByText( 'No thanks' )[ 0 ] );
+
+		// While the panel is open the tooltip must not be shown yet.
+		expect(
+			registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+		).toBeUndefined();
+
+		// Dismissal is shared with the widgets via the single slug.
+		await waitFor( () => {
+			expect(
+				registry
+					.select( CORE_USER )
+					.isItemDismissed( SITE_GOALS_BREAKDOWN_NOTICE )
+			).toBe( true );
+		} );
+
+		fireEvent.click(
+			document.querySelector(
+				'.googlesitekit-selection-panel-header__close'
+			) as Element
+		);
+
+		// Once the panel closes the deferred tooltip is shown.
+		await waitFor( () => {
+			expect(
+				registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+			).toMatchObject( { isTooltipVisible: true } );
 		} );
 	} );
 } );

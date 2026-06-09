@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -22,29 +27,38 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
+	DATE_RANGE_OFFSET,
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import {
 	createTestRegistry,
+	fireEvent,
 	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
 	render,
+	waitFor,
 } from '@tests/js/test-utils';
+import { surveyTriggerEndpoint } from '../../../../../../../tests/js/mock-survey-endpoints';
 import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
 describe( 'LeadGenerationPerformanceWidget', () => {
 	let registry: WPDataRegistry;
+
 	const widgetProps: WidgetComponentProps = getWidgetComponentProps(
 		'analyticsLeadGenerationPerformance'
 	);
@@ -439,7 +453,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_ANALYTICS_4,
@@ -447,10 +464,16 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 				connected: true,
 			},
 		] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( { availableCustomDimensions: [] } );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetSiteGoalsSettings( {} );
+		// Default to the breakdown notice being hidden (intro modal not yet
+		// dismissed); individual tests opt in by dismissing the intro modal.
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	it( 'renders WidgetNull when no lead events are detected', async () => {
@@ -477,6 +500,51 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		await waitForRegistry();
 
 		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'renders the breakdown notice in the aggregated state and shows the tooltip on dismiss', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		// Aggregated state: intro modal dismissed, breakdown dimensions not yet
+		// created (availableCustomDimensions seeded as [] in beforeEach).
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [ SITE_GOALS_INTRO_MODAL_BANNER ] );
+		fetchMock.postOnce(
+			new RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
+			{ body: [], status: 200 }
+		);
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+		const leadEventsReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
+		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { getByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Want to see results for each form?' )
+		).toBeInTheDocument();
+
+		fireEvent.click( getByText( 'No thanks' ) );
+
+		await waitFor( () => {
+			expect(
+				registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+			).toMatchObject( { isTooltipVisible: true } );
+		} );
 	} );
 
 	it( 'renders primary and goal driver sections with a single detected lead event', async () => {
@@ -946,5 +1014,88 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		expect(
 			queryByText( 'Products added to cart' )
 		).not.toBeInTheDocument();
+	} );
+
+	it( 'dispatches an up vote on thumbs-up click', async () => {
+		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+
+		const leadEventsReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.CONTACT,
+		] );
+		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+
+		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { getByRole, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		fireEvent.click(
+			getByRole( 'button', { name: 'Yes, this was helpful' } )
+		);
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: {
+						triggerID: 'vote:site_goals_widget_lead_generation:up',
+					},
+				},
+			} )
+		);
+	} );
+
+	it( 'dispatches a down vote on thumbs-down click', async () => {
+		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+
+		const leadEventsReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.CONTACT,
+		] );
+		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+
+		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { getByRole, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		fireEvent.click(
+			getByRole( 'button', { name: 'No, this was not helpful' } )
+		);
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: {
+						triggerID:
+							'vote:site_goals_widget_lead_generation:down',
+					},
+				},
+			} )
+		);
 	} );
 } );

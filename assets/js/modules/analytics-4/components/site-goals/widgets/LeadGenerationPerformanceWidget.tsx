@@ -37,7 +37,10 @@ import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
-import { SITE_GOALS_DEFAULT_SELECTED_DRIVERS } from '@/js/modules/analytics-4/components/site-goals/constants';
+import {
+	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
+	SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION,
+} from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_CATALOG,
 	GOAL_TYPES,
@@ -48,6 +51,9 @@ import {
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import BreakdownNotice from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNotice';
+import { useBreakdownNoticeTooltip } from '@/js/modules/analytics-4/components/site-goals/notifications/useBreakdownNoticeTooltip';
+import { useSiteGoalsBreakdownNoticeCopy } from '@/js/modules/analytics-4/components/site-goals/notifications/useSiteGoalsBreakdownNoticeCopy';
 import {
 	NUMBER_FORMAT,
 	PERCENT_FORMAT,
@@ -57,6 +63,7 @@ import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
+import WidgetFeedbackPrompt from './WidgetFeedbackPrompt';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -71,7 +78,6 @@ const LeadGenerationPerformanceWidget: FC<
 		Header?: unknown;
 		headerContents?: ReactNode;
 		collapsible?: boolean;
-		children?: ReactNode;
 	} >;
 	const WidgetNullComponent = WidgetNull as FC;
 	const WidgetReportErrorComponent = WidgetReportError as FC< {
@@ -87,6 +93,11 @@ const LeadGenerationPerformanceWidget: FC<
 				path: '/TODO-SUPPORT-PATH',
 			} ),
 		[]
+	);
+
+	const showBreakdownTooltip = useBreakdownNoticeTooltip();
+	const breakdownNoticeCopy = useSiteGoalsBreakdownNoticeCopy(
+		GOAL_TYPES.LEAD
 	);
 
 	const detectedLeadEvents = useSelect(
@@ -296,6 +307,12 @@ const LeadGenerationPerformanceWidget: FC<
 				</TilesGroup>
 			) }
 
+			<BreakdownNotice
+				className="googlesitekit-site-goals-breakdown-notice"
+				onDismissComplete={ showBreakdownTooltip }
+				{ ...breakdownNoticeCopy }
+			/>
+
 			<TilesGroup
 				className="googlesitekit-site-goals-visitor-engagement"
 				title={ __(
@@ -320,6 +337,10 @@ const LeadGenerationPerformanceWidget: FC<
 					goalType={ GOAL_TYPES.LEAD }
 				/>
 			</TilesGroup>
+
+			<WidgetFeedbackPrompt
+				voteID={ SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION }
+			/>
 		</WidgetComponent>
 	);
 };

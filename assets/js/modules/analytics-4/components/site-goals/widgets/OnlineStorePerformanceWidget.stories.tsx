@@ -30,6 +30,7 @@ import {
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ENUM_CONVERSION_EVENTS,
@@ -137,6 +138,9 @@ function commonSetup( registry: WPDataRegistry ) {
 
 	provideModuleRegistrations( registry );
 
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetSettings( { availableCustomDimensions: [] } );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '34567' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID( '56789' );
@@ -146,6 +150,9 @@ function commonSetup( registry: WPDataRegistry ) {
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {} );
 
 	registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
+	registry
+		.dispatch( CORE_USER )
+		.receiveGetDismissedItems( [ SITE_GOALS_INTRO_MODAL_BANNER ] );
 
 	provideKeyMetrics( registry );
 }
