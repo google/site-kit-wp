@@ -24,10 +24,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
 import { getPreviousDate } from '@/js/util';
 import {
@@ -73,7 +70,6 @@ function provideAudienceTilesMockReport(
 	} = {}
 ) {
 	const dates = registry.select( CORE_USER ).getDateRangeDates( {
-		offsetDays: DATE_RANGE_OFFSET,
 		compare: true,
 	} );
 
@@ -483,7 +479,6 @@ describe( 'AudienceTilesWidget', () => {
 		];
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -599,7 +594,6 @@ describe( 'AudienceTilesWidget', () => {
 		];
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 

@@ -31,16 +31,16 @@ import {
 } from '@/js/googlesitekit/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
-	SITE_GOALS_EFFECTIVE_DRIVERS,
-	SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTED_DRIVERS,
 	SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTION_FORM,
 	SITE_GOALS_SELECTION_PANEL_OPENED_KEY,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
+import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
@@ -63,11 +63,21 @@ function setupDefaultRegistry( registry: WPDataRegistry ) {
 			ENUM_CONVERSION_EVENTS.CONTACT,
 		] );
 
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+		goalDrivers: SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
+		visitorEngagement: SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
+	} );
+
+	// Aggregated state so the breakdown notice renders above each section.
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetSettings( { availableCustomDimensions: [] } );
+	registry
+		.dispatch( CORE_USER )
+		.receiveGetDismissedItems( [ SITE_GOALS_INTRO_MODAL_BANNER ] );
+
 	registry.dispatch( CORE_FORMS ).setValues( SITE_GOALS_SELECTION_FORM, {
-		[ SITE_GOALS_EFFECTIVE_DRIVERS ]: SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 		[ SITE_GOALS_SELECTED_DRIVERS ]: SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
-		[ SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT ]:
-			SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
 		[ SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT ]:
 			SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
 	} );

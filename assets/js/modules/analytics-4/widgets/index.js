@@ -115,7 +115,24 @@ import ConversionReportingNotificationCTAWidget from '@/js/modules/analytics-4/c
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
-const DashboardAllTrafficWidgetGA4PDF = lazy( () =>
+/**
+ * Wraps `lazy` with a `preload` method exposing the import factory.
+ *
+ * The PDF orchestrator awaits `preload()` to resolve the chunk before handing
+ * the component to `@react-pdf`, whose renderer does not honour `Suspense`.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} factory Dynamic import factory returning `{ default }`.
+ * @return {Object} Lazy component with a `preload` method.
+ */
+function lazyWithPreload( factory ) {
+	const Component = lazy( factory );
+	Component.preload = factory;
+	return Component;
+}
+
+const DashboardAllTrafficWidgetGA4PDF = lazyWithPreload( () =>
 	import(
 		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
 		'@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/indexPDF'
@@ -135,7 +152,7 @@ export function registerWidgets( widgets ) {
 			pdf: {
 				Component: DashboardAllTrafficWidgetGA4PDF,
 				getData: getAllTrafficPDFData,
-				label: __( 'All Visitors', 'google-site-kit' ),
+				label: __( 'Site traffic over time', 'google-site-kit' ),
 			},
 		},
 		[

@@ -124,6 +124,14 @@ abstract class Module {
 	private $google_services;
 
 	/**
+	 * Memoized datapoint definitions map.
+	 *
+	 * @since n.e.x.t
+	 * @var array|null
+	 */
+	private $datapoint_definitions;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -283,13 +291,22 @@ abstract class Module {
 	 * Gets the datapoint definition instance.
 	 *
 	 * @since 1.77.0
+	 * @since n.e.x.t Changed visibility to public so REST permission checks can
+	 *               inspect a datapoint (e.g. for Permission_Aware_Datapoint).
 	 *
-	 * @param string $datapoint_id Datapoint ID.
+	 * @param string $datapoint_id Datapoint ID, in the `METHOD:datapoint` form (e.g. `GET:report`).
 	 * @return Datapoint Datapoint instance.
 	 * @throws Invalid_Datapoint_Exception Thrown if no datapoint exists by the given ID.
 	 */
-	protected function get_datapoint_definition( $datapoint_id ) {
-		$definitions = $this->get_datapoint_definitions();
+	public function get_datapoint_definition( $datapoint_id ) {
+		// Memoize the definitions map: a single module data request resolves the
+		// same datapoint twice (once for the permission check, once to execute),
+		// and rebuilding the full map instantiates every datapoint object.
+		if ( null === $this->datapoint_definitions ) {
+			$this->datapoint_definitions = $this->get_datapoint_definitions();
+		}
+
+		$definitions = $this->datapoint_definitions;
 
 		// All datapoints must be defined.
 		if ( empty( $definitions[ $datapoint_id ] ) ) {

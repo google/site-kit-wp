@@ -324,7 +324,11 @@ export const reducer = createReducer( ( state: PDFState, action: Action ) => {
 			break;
 
 		case START_EXPORTING:
-			state.isExporting = true;
+			// Ignore a second start while an export is already in flight so a
+			// double-click cannot mount two orchestrators.
+			if ( ! state.isExporting ) {
+				state.isExporting = true;
+			}
 			break;
 
 		case FINISH_EXPORTING:

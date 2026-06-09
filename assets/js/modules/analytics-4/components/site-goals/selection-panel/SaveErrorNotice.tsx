@@ -24,6 +24,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Select, useSelect } from 'googlesitekit-data';
 import SelectionPanelError from '@/js/components/SelectionPanel/SelectionPanelError';
 import useFormValue from '@/js/hooks/useFormValue';
 import {
@@ -37,25 +38,12 @@ import {
 	GoalDriverSelectionState,
 	GoalType,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { getSelectedDriverIDs } from '@/js/modules/analytics-4/components/site-goals/utils/selectedDrivers';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 interface SaveErrorNoticeProps {
 	hasEcommerceGoalDrivers: boolean;
 	hasLeadGoalDrivers: boolean;
-}
-
-function getSelectedCountForGoalType(
-	selectedDrivers: GoalDriverSelectionState | undefined,
-	goalType: GoalType
-): number {
-	const selectedDriverIDs = selectedDrivers?.[ goalType ];
-
-	if ( ! Array.isArray( selectedDriverIDs ) ) {
-		return 0;
-	}
-
-	return selectedDriverIDs.filter(
-		( selectedDriverID ) => typeof selectedDriverID === 'string'
-	).length;
 }
 
 export default function SaveErrorNotice( {
@@ -70,6 +58,15 @@ export default function SaveErrorNotice( {
 		| GoalDriverSelectionState
 		| undefined;
 
+	const saveError = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getErrorForAction(
+				'saveSiteGoalsSettings',
+				[]
+			),
+		[]
+	);
+
 	const activeGoalTypes: GoalType[] = [];
 
 	if ( hasEcommerceGoalDrivers ) {
@@ -80,44 +77,46 @@ export default function SaveErrorNotice( {
 		activeGoalTypes.push( GOAL_TYPES.LEAD );
 	}
 
+	let validationMessage: string | undefined;
+
 	for ( const goalType of activeGoalTypes ) {
-		const selectedCount = getSelectedCountForGoalType(
+		const selectedCount = getSelectedDriverIDs(
 			selectedDriverState,
 			goalType
-		);
+		).length;
 
 		if ( selectedCount < SITE_GOALS_MIN_SELECTED_DRIVERS ) {
-			return (
-				<SelectionPanelError
-					error={ {
-						message: sprintf(
-							/* translators: %d: minimum number of selected metrics. */
-							__(
-								'Select at least %d metric',
-								'google-site-kit'
-							),
-							SITE_GOALS_MIN_SELECTED_DRIVERS
-						),
-					} }
-					skipRetryMessage
-				/>
+			validationMessage = sprintf(
+				/* translators: %d: minimum number of selected metrics. */
+				__( 'Select at least %d metric', 'google-site-kit' ),
+				SITE_GOALS_MIN_SELECTED_DRIVERS
 			);
+			break;
 		}
 
 		if ( selectedCount > SITE_GOALS_MAX_SELECTED_DRIVERS ) {
-			return (
-				<SelectionPanelError
-					error={ {
-						message: sprintf(
-							/* translators: %d: maximum number of selected metrics. */
-							__( 'Select up to %d metrics', 'google-site-kit' ),
-							SITE_GOALS_MAX_SELECTED_DRIVERS
-						),
-					} }
-					skipRetryMessage
-				/>
+			validationMessage = sprintf(
+				/* translators: %d: maximum number of selected metrics. */
+				__( 'Select up to %d metrics', 'google-site-kit' ),
+				SITE_GOALS_MAX_SELECTED_DRIVERS
 			);
+			break;
 		}
+	}
+
+	// Validation errors take precedence (saving is disabled while the selection
+	// is invalid); otherwise surface the API error from the save action.
+	if ( validationMessage ) {
+		return (
+			<SelectionPanelError
+				error={ { message: validationMessage } }
+				skipRetryMessage
+			/>
+		);
+	}
+
+	if ( saveError ) {
+		return <SelectionPanelError error={ saveError } />;
 	}
 
 	return null;

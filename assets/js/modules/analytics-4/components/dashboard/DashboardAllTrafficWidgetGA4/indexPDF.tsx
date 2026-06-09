@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Image, StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Image, StyleSheet, Text } from '@react-pdf/renderer';
 
 /**
  * WordPress dependencies
@@ -29,7 +29,10 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import PDFMetricTile from '@/js/components/PDFExport/components/PDFMetricTile';
+import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
+import PDFMetricTile from '@/js/components/pdf-export/shared-react-pdf-components/PDFMetricTile';
+import PDFWidgetSection from '@/js/components/pdf-export/shared-react-pdf-components/PDFWidgetSection';
+import type { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
 import { calculateChange, numFmt } from '@/js/util';
 import type { AllTrafficPDFData } from './getPDFData';
 
@@ -40,55 +43,54 @@ const styles = StyleSheet.create( {
 		marginTop: 12,
 	},
 	noData: {
+		fontFamily: PDF_FONT_FAMILY_TEXT,
 		fontSize: 9,
 		color: '#646464',
 	},
 } );
 
-export interface DashboardAllTrafficWidgetGA4PDFProps {
-	data?: AllTrafficPDFData[ 'data' ];
-	chartImages?: AllTrafficPDFData[ 'chartImages' ];
-}
-
 export default function DashboardAllTrafficWidgetGA4PDF( {
 	data,
 	chartImages,
-}: DashboardAllTrafficWidgetGA4PDFProps ) {
-	if ( ! data ) {
+}: PDFWidgetComponentProps ) {
+	const trafficData = data as AllTrafficPDFData[ 'data' ];
+
+	if ( ! trafficData ) {
 		return (
-			<View>
+			<PDFWidgetSection
+				heading={ __(
+					'Your site traffic over time',
+					'google-site-kit'
+				) }
+			>
 				<Text style={ styles.noData }>
 					{ __( 'No data available.', 'google-site-kit' ) }
 				</Text>
-			</View>
+			</PDFWidgetSection>
 		);
 	}
 
-	const { totalsReport, graphReport } = data;
+	const { totalsReport, graphReport } = trafficData;
 	const [ current, previous ] = totalsReport?.totals || [];
 	const currentValue = Number( current?.metricValues?.[ 0 ]?.value );
 	const previousValue = Number( previous?.metricValues?.[ 0 ]?.value );
 
 	const change = calculateChange( previousValue, currentValue );
-	const changeData =
+	const changeText =
 		typeof change === 'number'
-			? {
-					change: numFmt( Math.abs( change ), {
-						style: 'percent',
-						maximumFractionDigits: 1,
-					} ),
-					changeDirection: ( change >= 0 ? 'up' : 'down' ) as
-						| 'up'
-						| 'down',
-			  }
+			? numFmt( change, {
+					style: 'percent',
+					signDisplay: 'exceptZero',
+					maximumFractionDigits: 1,
+			  } )
 			: undefined;
 
 	const graphRowCount = graphReport?.rows?.length || 0;
 	const comparisonLabel =
 		graphRowCount > 0
 			? sprintf(
-					/* translators: %d: number of days */
-					__( 'compared to the previous %d days', 'google-site-kit' ),
+					/* translators: %d: number of days in the comparison period */
+					__( 'Vs. prev. %d days', 'google-site-kit' ),
 					graphRowCount
 			  )
 			: undefined;
@@ -98,22 +100,23 @@ export default function DashboardAllTrafficWidgetGA4PDF( {
 	const lineChart = chartImages?.lineChart;
 
 	return (
-		<View>
+		<PDFWidgetSection
+			heading={ __( 'Your site traffic over time', 'google-site-kit' ) }
+		>
 			<PDFMetricTile
-				title={ __( 'All Visitors', 'google-site-kit' ) }
+				title={ __( 'All visitors', 'google-site-kit' ) }
 				value={ formattedValue }
+				change={ changeText }
+				isNegative={ typeof change === 'number' && change < 0 }
 				changeLabel={ comparisonLabel }
-				{ ...( changeData || {} ) }
 			/>
 			{ lineChart ? (
 				<Image src={ lineChart } style={ styles.chart } />
 			) : (
-				<View>
-					<Text style={ styles.noData }>
-						{ __( 'No data available.', 'google-site-kit' ) }
-					</Text>
-				</View>
+				<Text style={ styles.noData }>
+					{ __( 'No data available.', 'google-site-kit' ) }
+				</Text>
 			) }
-		</View>
+		</PDFWidgetSection>
 	);
 }

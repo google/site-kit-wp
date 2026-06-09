@@ -63,7 +63,7 @@ function renderTree(
 }
 
 describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
-	it( 'should render the All Visitors metric tile and the line chart image when chart images are supplied', () => {
+	it( 'should render the widget heading, All visitors metric tile, and the line chart image when chart images are supplied', () => {
 		const data = buildReports( {
 			currentUsers: '1234',
 			previousUsers: '1000',
@@ -76,10 +76,11 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		} );
 		const json = JSON.stringify( tree );
 
-		expect( json ).toContain( 'All Visitors' );
+		expect( json ).toContain( 'Your site traffic over time' );
+		expect( json ).toContain( 'All visitors' );
 		// `numFmt` abbreviates large totals, matching the dashboard widget.
 		expect( json ).toContain( '1.2K' );
-		expect( json ).toContain( 'compared to the previous 28 days' );
+		expect( json ).toContain( 'Vs. prev. 28 days' );
 		// The rasterised chart is embedded as an image with the supplied data URI.
 		expect( json ).toContain( LINE_CHART_DATA_URI );
 		expect( json ).not.toContain( 'No data available' );
@@ -96,12 +97,12 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		const json = JSON.stringify( tree );
 
 		// The metric tile still renders; only the chart area falls back.
-		expect( json ).toContain( 'All Visitors' );
+		expect( json ).toContain( 'All visitors' );
 		expect( json ).toContain( 'No data available' );
 		expect( json ).not.toContain( 'data:image' );
 	} );
 
-	it( 'should show an up arrow when the period-over-period change is positive', () => {
+	it( 'should render a green chip with a positive signed change', () => {
 		const data = buildReports( {
 			currentUsers: '1200',
 			previousUsers: '1000',
@@ -114,11 +115,11 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		} );
 		const json = JSON.stringify( tree );
 
-		expect( json ).toContain( '#34a853' );
-		expect( json ).toContain( 'M4,0 L8,8 L0,8 Z' );
+		expect( json ).toContain( '#d8ffc0' );
+		expect( json ).toContain( '+20%' );
 	} );
 
-	it( 'should show a down arrow when the period-over-period change is negative', () => {
+	it( 'should render a red chip with a negative signed change', () => {
 		const data = buildReports( {
 			currentUsers: '800',
 			previousUsers: '1000',
@@ -131,8 +132,8 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		} );
 		const json = JSON.stringify( tree );
 
-		expect( json ).toContain( '#ea4335' );
-		expect( json ).toContain( 'M0,0 L8,0 L4,8 Z' );
+		expect( json ).toContain( '#ffded3' );
+		expect( json ).toContain( '-20%' );
 	} );
 
 	it( 'should render the No data available placeholder when data is null', () => {
@@ -140,7 +141,7 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		const json = JSON.stringify( tree );
 
 		expect( json ).toContain( 'No data available' );
-		expect( json ).not.toContain( 'All Visitors' );
+		expect( json ).not.toContain( 'All visitors' );
 	} );
 
 	it( 'should render the No data available placeholder when data is undefined', () => {

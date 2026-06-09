@@ -47,10 +47,7 @@ import {
 	getDimensionFiltersForEvents,
 	normalizePrimaryEvents,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { numFmt } from '@/js/util';
 
 interface ReportRow {
@@ -69,10 +66,7 @@ const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
 	onExpandableRowsChange,
 } ) => {
 	const dates = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} ),
+		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
 		[]
 	);
 	const eventNames = useMemo(

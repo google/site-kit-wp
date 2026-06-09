@@ -45,7 +45,7 @@
 		"postinstall": "node -e \"process.env.SKIP_PATCH_PACKAGE || require('child_process').execSync('patch-package', {stdio:'inherit'})\"",
 		"preinstall": "./bin/check-node-version.js",
 		"typecheck": "tsc --noEmit",
-		"typecheck-staged": "tsc-files assets/js/types/svg.d.ts assets/js/types/equivalent-key-map.d.ts"
+		"typecheck-staged": "tsc-files assets/js/types/globals.d.ts assets/js/types/svg.d.ts assets/js/types/ttf.d.ts assets/js/types/equivalent-key-map.d.ts tests/js/types/jest-matchers.d.ts"
 	},
 	"browserslist": [
 		"extends @wordpress/browserslist-config"

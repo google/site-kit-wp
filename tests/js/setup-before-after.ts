@@ -27,9 +27,8 @@ import fetchMockJest from 'fetch-mock-jest';
  */
 import { enabledFeatures } from '../../assets/js/features';
 
-declare global {
-	const fetchMock: typeof fetchMockJest;
-}
+// The `fetchMock` global is typed in `tests/js/types/jest-matchers.d.ts` so that
+// test files also type-check in isolation (e.g. under `tsc-files`).
 
 // Set fetchMock global so we don't have to import fetchMock in every test.
 // This global is instantiated in tests/js/setup-globals.js.

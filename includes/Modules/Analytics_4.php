@@ -10,8 +10,6 @@
  * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
-// phpcs:disable Generic.Metrics.CyclomaticComplexity.MaxExceeded
-
 namespace Google\Site_Kit\Modules;
 
 use Exception;
@@ -33,7 +31,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Inline_Data;
-use Google\Site_Kit\Core\Modules\Module_With_Inline_Data_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -45,10 +42,6 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
-use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
-use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -70,9 +63,11 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Property;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Webdatastream;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Account_Summaries;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Accounts;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Advanced_Data_Breakdowns_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Ads_Links;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Adsense_Links;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Audience_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Batch_Report;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Lookup;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Destinations;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Enhanced_Measurement_Settings;
@@ -82,12 +77,15 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Property;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Has_Property_Access;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Key_Events;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Report;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Site_Goals_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams_Batch;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Advanced_Data_Breakdowns_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Sync_Audiences;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Custom_Dimension_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Resource_Data_Availability_Date;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Site_Goals_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Set_Google_Tag_ID_Mismatch;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Set_Is_Web_Data_Stream_Unavailable;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Sync_Custom_Dimensions;
@@ -95,9 +93,9 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Update_Enhanced_Measurement_S
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
-use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
+use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdsLinked;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Interface;
@@ -110,11 +108,11 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty as Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1betaProperty;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_TagManager;
-use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Modules\Analytics_4\Advanced_Data_Breakdowns_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
@@ -142,7 +140,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	use Module_With_Settings_Trait;
 	use Module_With_Data_Available_State_Trait;
 	use Module_With_Tag_Trait;
-	use Module_With_Inline_Data_Trait;
 	use Feature_Metrics_Trait;
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
@@ -200,6 +197,15 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	protected $audience_settings;
 
 	/**
+	 * Site_Goals_Settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Site_Goals_Settings
+	 */
+	protected $site_goals_settings;
+
+	/**
 	 * Audience_Utilities instance.
 	 *
 	 * @since 1.172.0
@@ -207,6 +213,24 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @var Audience_Utilities
 	 */
 	protected $audience_utilities;
+
+	/**
+	 * Map of datapoint definitions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var array
+	 */
+	private $datapoints;
+
+	/**
+	 * Advanced_Data_Breakdowns_Settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Advanced_Data_Breakdowns_Settings
+	 */
+	protected Advanced_Data_Breakdowns_Settings $advanced_data_breakdowns_settings;
 
 	/**
 	 * Constructor.
@@ -227,11 +251,13 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		?Assets $assets = null
 	) {
 		parent::__construct( $context, $options, $user_options, $authentication, $assets );
-		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
-		$this->reset_audiences                  = new Reset_Audiences( $this->user_options );
-		$this->audience_settings                = new Audience_Settings( $this->options );
-		$this->audience_utilities               = new Audience_Utilities( $this->audience_settings );
-		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings(), $this->audience_settings );
+		$this->custom_dimensions_data_available  = new Custom_Dimensions_Data_Available( $this->transients );
+		$this->reset_audiences                   = new Reset_Audiences( $this->user_options );
+		$this->audience_settings                 = new Audience_Settings( $this->options );
+		$this->site_goals_settings               = new Site_Goals_Settings( $this->user_options );
+		$this->audience_utilities                = new Audience_Utilities( $this->audience_settings );
+		$this->resource_data_availability_date   = new Resource_Data_Availability_Date( $this->transients, $this->get_settings(), $this->audience_settings );
+		$this->advanced_data_breakdowns_settings = new Advanced_Data_Breakdowns_Settings( $this->options );
 	}
 
 	/**
@@ -242,9 +268,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 */
 	public function register() {
 		$this->register_scopes_hook();
-
-		$this->register_inline_data();
-
 		$this->register_feature_metrics();
 
 		$synchronize_property = new Synchronize_Property(
@@ -275,6 +298,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$conversion_reporting_provider->register();
 
 		$this->audience_settings->register();
+		$this->site_goals_settings->register();
+		$this->advanced_data_breakdowns_settings->register();
 
 		( new Advanced_Tracking( $this->context ) )->register();
 
@@ -451,6 +476,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					$routes,
 					array(
 						'/' . REST_Routes::REST_ROOT . '/modules/analytics-4/data/audience-settings',
+						'/' . REST_Routes::REST_ROOT . '/modules/analytics-4/data/site-goals-settings',
 					)
 				);
 			}
@@ -557,6 +583,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->custom_dimensions_data_available->reset_data_available();
 		$this->reset_audiences->reset_audience_data();
 		$this->audience_settings->delete();
+		$this->site_goals_settings->delete();
+		$this->advanced_data_breakdowns_settings->delete();
 	}
 
 	/**
@@ -697,7 +725,11 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		$datapoints = array(
+		if ( $this->datapoints ) {
+			return $this->datapoints;
+		}
+
+		$this->datapoints = array(
 			'GET:account-summaries'                     => new Get_Account_Summaries(
 				array(
 					'service' => function () {
@@ -828,9 +860,17 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					},
 				),
 			),
-			'GET:batch-report'                          => array(
-				'service'   => 'analyticsdata',
-				'shareable' => true,
+			'GET:batch-report'                          => new Get_Batch_Report(
+				array(
+					'service'           => function () {
+						return $this->get_service( 'analyticsdata' );
+					},
+					'settings'          => $this->get_settings(),
+					'context'           => $this->context,
+					'is_shared_request' => function ( Datapoint $datapoint ) {
+						return $this->is_shared_datapoint_request( $datapoint );
+					},
+				),
 			),
 			'GET:webdatastreams'                        => new Get_Webdatastreams(
 				array(
@@ -933,9 +973,36 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					'service'           => '',
 				)
 			),
+			'GET:site-goals-settings'                   => new Get_Site_Goals_Settings(
+				array(
+					'site_goals_settings' => $this->site_goals_settings,
+					'service'             => '',
+				)
+			),
+			'POST:save-site-goals-settings'             => new Save_Site_Goals_Settings(
+				array(
+					'site_goals_settings' => $this->site_goals_settings,
+					'service'             => '',
+				)
+			),
 		);
 
-		return $datapoints;
+		if ( Feature_Flags::enabled( 'siteGoals' ) ) {
+			$this->datapoints['GET:advanced-data-breakdowns-settings']       = new Get_Advanced_Data_Breakdowns_Settings(
+				array(
+					'advanced_data_breakdowns_settings' => $this->advanced_data_breakdowns_settings,
+					'service'                           => '',
+				)
+			);
+			$this->datapoints['POST:save-advanced-data-breakdowns-settings'] = new Save_Advanced_Data_Breakdowns_Settings(
+				array(
+					'advanced_data_breakdowns_settings' => $this->advanced_data_breakdowns_settings,
+					'service'                           => '',
+				)
+			);
+		}
+
+		return $this->datapoints;
 	}
 
 	/**
@@ -1324,78 +1391,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		}
 
 		$settings->merge( $google_tag_settings );
-	}
-
-	/**
-	 * Creates a request object for the given datapoint.
-	 *
-	 * @since 1.30.0
-	 *
-	 * @param Data_Request $data Data request object.
-	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
-	 *
-	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
-	 * @throws Invalid_Param_Exception Thrown if a parameter is invalid.
-	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing or empty.
-	 *
-	 * phpcs:ignore Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
-	 */
-	protected function create_data_request( Data_Request $data ) {
-		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:batch-report':
-				if ( empty( $data['requests'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'requests' ),
-						array( 'status' => 400 )
-					);
-				}
-
-				if ( ! is_array( $data['requests'] ) || count( $data['requests'] ) > 5 ) {
-					return new WP_Error(
-						'invalid_batch_size',
-						__( 'Batch report requests must be an array with 1-5 requests.', 'google-site-kit' ),
-						array( 'status' => 400 )
-					);
-				}
-
-				$settings = $this->get_settings()->get();
-				if ( empty( $settings['propertyID'] ) ) {
-					return new WP_Error(
-						'missing_required_setting',
-						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
-						array( 'status' => 500 )
-					);
-				}
-
-				$batch_requests = array();
-				$report         = new Analytics_4_Report_Request( $this->context );
-
-				foreach ( $data['requests'] as $request_data ) {
-					$data_request = new Data_Request( 'GET', 'modules', $this->slug, 'report', $request_data );
-					$request      = $report->create_request(
-						$data_request,
-						$this->is_shared_data_request( $data_request )
-					);
-					if ( is_wp_error( $request ) ) {
-						return $request;
-					}
-					$batch_requests[] = $request;
-				}
-
-				$property_id = self::normalize_property_id( $settings['propertyID'] );
-
-				$batch_request = new Google_Service_AnalyticsData\BatchRunReportsRequest();
-				$batch_request->setRequests( $batch_requests );
-
-				return $this->get_analyticsdata_service()->properties->batchRunReports(
-					$property_id,
-					$batch_request
-				);
-		}
-
-		return parent::create_data_request( $data );
 	}
 
 	/**
@@ -1990,16 +1985,16 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 *
 	 * @since 1.158.0
 	 * @since 1.160.0 Include $modules_data parameter to match the interface.
+	 * @since n.e.x.t Remove $modules_data parameter as per updated interface.
 	 *
-	 * @param array $modules_data Inline modules data.
 	 * @return array An array of the module's inline data.
 	 */
-	public function get_inline_data( $modules_data ) {
-		if ( ! $this->is_connected() ) {
-			return $modules_data;
-		}
-
+	public function get_inline_data() {
 		$inline_data = array();
+
+		if ( ! $this->is_connected() ) {
+			return $inline_data;
+		}
 
 		// Web data stream availability data.
 		$settings                                  = $this->get_settings()->get();
@@ -2015,7 +2010,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			$this->get_inline_conversion_reporting_events_detection()
 		);
 
-		$modules_data[ self::MODULE_SLUG ] = $inline_data;
-		return $modules_data;
+		return $inline_data;
 	}
 }
