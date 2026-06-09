@@ -49,7 +49,7 @@ exports.resolve = {
 		),
 		'@wordpress/api-fetch$': path.resolve(
 			rootDir,
-			'assets/js/api-fetch-shim.js'
+			'assets/js/api-fetch-shim.ts'
 		),
 		'@wordpress/i18n__non-shim': require.resolve( '@wordpress/i18n' ),
 		// React 17 ships `jsx-runtime` as a file but does not expose it via an
@@ -193,8 +193,19 @@ const svgRule = {
 
 exports.svgRule = svgRule;
 
+const ttfRule = {
+	test: /\.ttf$/,
+	type: 'asset/resource',
+	generator: {
+		filename: 'fonts/[name]-[contenthash][ext]',
+	},
+};
+
+exports.ttfRule = ttfRule;
+
 exports.createRules = ( mode ) => [
 	svgRule,
+	ttfRule,
 	{
 		test: /\.tsx?$/,
 		exclude: /node_modules/,

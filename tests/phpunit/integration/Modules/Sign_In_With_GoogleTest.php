@@ -449,19 +449,19 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->module->register();
 		$this->module->get_settings()->register();
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->module->get_inline_data();
 
-		$this->assertEquals( false, $inline_modules_data['sign-in-with-google']['isWooCommerceActive'], 'WooCommerce should be inactive by default in inline data.' );
-		$this->assertEquals( false, $inline_modules_data['sign-in-with-google']['isWooCommerceRegistrationEnabled'], 'WooCommerce registration should be disabled by default in inline data.' );
+		$this->assertEquals( false, $inline_module_data['isWooCommerceActive'], 'WooCommerce should be inactive by default in inline data.' );
+		$this->assertEquals( false, $inline_module_data['isWooCommerceRegistrationEnabled'], 'WooCommerce registration should be disabled by default in inline data.' );
 	}
 
 	public function test_inline_data_with_no_existing_client_id() {
 		$this->module->register();
 		$this->module->get_settings()->register();
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->module->get_inline_data();
 
-		$this->assertArrayNotHasKey( 'existingClientID', $inline_modules_data['sign-in-with-google'], 'Inline data should not include existingClientID when not set.' );
+		$this->assertArrayNotHasKey( 'existingClientID', $inline_module_data, 'Inline data should not include existingClientID when not set.' );
 	}
 
 	public function test_inline_data_with_existing_client_id() {
@@ -470,9 +470,9 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		update_option( Existing_Client_ID::OPTION, 'test_client_id.apps.googleusercontent.com' );
 
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+		$inline_module_data = $this->module->get_inline_data();
 
-		$this->assertEquals( 'test_client_id.apps.googleusercontent.com', $inline_modules_data['sign-in-with-google']['existingClientID'], 'Inline data should include existingClientID when option set.' );
+		$this->assertEquals( 'test_client_id.apps.googleusercontent.com', $inline_module_data['existingClientID'], 'Inline data should include existingClientID when option set.' );
 	}
 
 	public function test_shortcode_is_registered() {

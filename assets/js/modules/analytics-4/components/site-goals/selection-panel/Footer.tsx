@@ -24,13 +24,11 @@ import { FC } from 'react';
 /**
  * Internal dependencies
  */
-import { useDispatch } from 'googlesitekit-data';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { SelectionPanelFooter } from '@/js/components/SelectionPanel';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import useFormValue from '@/js/hooks/useFormValue';
 import {
-	SITE_GOALS_EFFECTIVE_DRIVERS,
-	SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT,
 	SITE_GOALS_MAX_SELECTED_DRIVERS,
 	SITE_GOALS_MIN_SELECTED_DRIVERS,
 	SITE_GOALS_SELECTED_DRIVERS,
@@ -42,11 +40,12 @@ import {
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import {
-	GoalDriverID,
 	GoalDriverSelectionState,
 	GoalType,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { getSelectedDriverIDs } from '@/js/modules/analytics-4/components/site-goals/utils/selectedDrivers';
 import { resolveVisitorEngagementSelectionState } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 interface FooterProps {
 	isOpen: boolean;
@@ -55,25 +54,9 @@ interface FooterProps {
 	hasLeadGoalDrivers: boolean;
 }
 
-function getSelectedDriverIDsForGoalType(
-	selectedDrivers: GoalDriverSelectionState | undefined,
-	goalType: GoalType
-): GoalDriverID[] {
-	const selectedDriverIDs = selectedDrivers?.[ goalType ];
-
-	if ( ! Array.isArray( selectedDriverIDs ) ) {
-		return [];
-	}
-
-	return selectedDriverIDs.filter(
-		( selectedDriverID ): selectedDriverID is GoalDriverID =>
-			typeof selectedDriverID === 'string'
-	);
-}
-
 function flattenSelections( selections: GoalDriverSelectionState ): string[] {
 	return [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ].flatMap( ( goalType ) =>
-		getSelectedDriverIDsForGoalType( selections, goalType ).map(
+		getSelectedDriverIDs( selections, goalType ).map(
 			( goalDriverID ) => `${ goalType }:${ goalDriverID }`
 		)
 	);
@@ -95,7 +78,7 @@ function hasInvalidSelection(
 	}
 
 	return goalTypesToValidate.some( ( goalType ) => {
-		const selectedCount = getSelectedDriverIDsForGoalType(
+		const selectedCount = getSelectedDriverIDs(
 			selectedDrivers,
 			goalType
 		).length;
@@ -114,6 +97,18 @@ const Footer: FC< FooterProps > = ( {
 	hasLeadGoalDrivers,
 } ) => {
 	const { setValues } = useDispatch( CORE_FORMS );
+	const { saveSiteGoalsSettings } = useDispatch( MODULES_ANALYTICS_4 );
+
+	const isSavingSiteGoalsSettings = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).isSavingSiteGoalsSettings(),
+		[]
+	);
+	const savedDrivers: GoalDriverSelectionState | undefined = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getSiteGoalsGoalDrivers(),
+		[]
+	);
 
 	const [ selectedDrivers ] = useFormValue(
 		SITE_GOALS_SELECTION_FORM,
@@ -141,22 +136,28 @@ const Footer: FC< FooterProps > = ( {
 		hasLeadGoalDrivers
 	);
 
-	function saveSettings() {
+	async function saveSettings() {
 		const sanitizedSelectionState =
 			resolveGoalDriverSelectionState( selectedDriverState );
 		const sanitizedVisitorEngagementSelectionState =
 			resolveVisitorEngagementSelectionState( selectedVisitorEngagement );
 
+		const { error } = await saveSiteGoalsSettings( {
+			goalDrivers: sanitizedSelectionState,
+			visitorEngagement: sanitizedVisitorEngagementSelectionState,
+		} );
+
+		if ( error ) {
+			return { error };
+		}
+
 		setValues( SITE_GOALS_SELECTION_FORM, {
 			[ SITE_GOALS_SELECTED_DRIVERS ]: sanitizedSelectionState,
-			[ SITE_GOALS_EFFECTIVE_DRIVERS ]: sanitizedSelectionState,
 			[ SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT ]:
-				sanitizedVisitorEngagementSelectionState,
-			[ SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT ]:
 				sanitizedVisitorEngagementSelectionState,
 		} );
 
-		return Promise.resolve( {} );
+		return { error };
 	}
 
 	return (
@@ -164,7 +165,15 @@ const Footer: FC< FooterProps > = ( {
 			isOpen={ isOpen }
 			closePanel={ closePanel }
 			saveSettings={ saveSettings }
-			savedItemSlugs={ [] }
+			isBusy={ isSavingSiteGoalsSettings }
+			// @ts-expect-error - `SelectionPanelFooter` prop typing is currently incomplete.
+			savedItemSlugs={
+				savedDrivers
+					? flattenSelections(
+							resolveGoalDriverSelectionState( savedDrivers )
+					  )
+					: []
+			}
 			// @ts-expect-error - `SelectionPanelFooter` prop typing is currently incomplete.
 			selectedItemSlugs={ selectedDriverSlugs }
 			minSelectedItemCount={
