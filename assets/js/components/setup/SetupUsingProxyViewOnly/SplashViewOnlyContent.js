@@ -72,7 +72,7 @@ export default function SplashViewOnlyContent( {
 				<p className="googlesitekit-setup__description googlesitekit-setup__description--view-only">
 					{ createInterpolateElement(
 						__(
-							"Get insights about how people find and use your site as well as how to improve and monetize your content, directly in your WordPress dashboard. An administrator has granted you access to view this site's dashboard containing stats from these shared Google services. <a>Learn more</a>",
+							"Get insights about how people find and use your site as well as how to improve and monetize your content, directly in your WordPress dashboard. <br /> An administrator has granted you access to view this site's dashboard containing stats from these shared Google services. <a>Learn more</a>",
 							'google-site-kit'
 						),
 						{
@@ -86,6 +86,7 @@ export default function SplashViewOnlyContent( {
 									external
 								/>
 							),
+							br: <br />,
 						}
 					) }
 				</p>
