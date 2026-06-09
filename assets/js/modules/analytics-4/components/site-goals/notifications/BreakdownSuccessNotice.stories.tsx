@@ -57,7 +57,7 @@ export const Ecommerce = Template.bind(
 ) as Story< BreakdownSuccessNoticeStoryProps >;
 Ecommerce.storyName = 'Ecommerce widget';
 Ecommerce.args = {
-	title: 'Success! Your goal breakdown is active',
+	title: 'Success! Event breakdown is now active',
 	description:
 		'Site Kit is now tracking your plugins individually. Because this more precise tracking just started from scratch, your dashboard will show fresh data building up from this moment forward. Individual results will appear soon, with long-term trends following as more data is gathered. <a>Learn more</a>',
 };

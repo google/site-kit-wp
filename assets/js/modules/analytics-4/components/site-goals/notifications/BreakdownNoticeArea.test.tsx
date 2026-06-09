@@ -29,10 +29,11 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/consta
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
-	BREAKDOWN_GOAL_TYPE_FORM_KEY,
 	BREAKDOWN_ORIGIN_FORM_KEY,
 	BREAKDOWN_ORIGIN_PANEL,
 	BREAKDOWN_ORIGIN_WIDGET,
+	BREAKDOWN_SCOPE_BOTH,
+	BREAKDOWN_SCOPE_FORM_KEY,
 	SITE_GOALS_BREAKDOWN_NOTICE,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
@@ -95,7 +96,7 @@ describe( 'BreakdownNoticeArea', () => {
 		const { getByText } = render(
 			<BreakdownNoticeArea
 				origin={ BREAKDOWN_ORIGIN_WIDGET }
-				goalType={ GOAL_TYPES.LEAD }
+				goalTypes={ [ GOAL_TYPES.LEAD ] }
 			/>,
 			{ registry }
 		);
@@ -112,7 +113,7 @@ describe( 'BreakdownNoticeArea', () => {
 		const lead = render(
 			<BreakdownNoticeArea
 				origin={ BREAKDOWN_ORIGIN_WIDGET }
-				goalType={ GOAL_TYPES.LEAD }
+				goalTypes={ [ GOAL_TYPES.LEAD ] }
 			/>,
 			{ registry }
 		);
@@ -123,7 +124,7 @@ describe( 'BreakdownNoticeArea', () => {
 		const ecommerce = render(
 			<BreakdownNoticeArea
 				origin={ BREAKDOWN_ORIGIN_WIDGET }
-				goalType={ GOAL_TYPES.ECOMMERCE }
+				goalTypes={ [ GOAL_TYPES.ECOMMERCE ] }
 			/>,
 			{ registry }
 		);
@@ -139,13 +140,13 @@ describe( 'BreakdownNoticeArea', () => {
 		registry
 			.dispatch( CORE_FORMS )
 			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
-				[ BREAKDOWN_GOAL_TYPE_FORM_KEY ]: GOAL_TYPES.LEAD,
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: GOAL_TYPES.LEAD,
 			} );
 
 		const { queryByText } = render(
 			<BreakdownNoticeArea
 				origin={ BREAKDOWN_ORIGIN_WIDGET }
-				goalType={ GOAL_TYPES.LEAD }
+				goalTypes={ [ GOAL_TYPES.LEAD ] }
 			/>,
 			{ registry }
 		);
@@ -162,7 +163,7 @@ describe( 'BreakdownNoticeArea', () => {
 		const { getByRole, getByText } = render(
 			<BreakdownNoticeArea
 				origin={ BREAKDOWN_ORIGIN_WIDGET }
-				goalType={ GOAL_TYPES.LEAD }
+				goalTypes={ [ GOAL_TYPES.LEAD ] }
 			/>,
 			{ registry }
 		);
@@ -189,7 +190,7 @@ describe( 'BreakdownNoticeArea', () => {
 		render(
 			<BreakdownNoticeArea
 				origin={ BREAKDOWN_ORIGIN_WIDGET }
-				goalType={ GOAL_TYPES.LEAD }
+				goalTypes={ [ GOAL_TYPES.LEAD ] }
 			/>,
 			{ registry }
 		);
@@ -211,7 +212,7 @@ describe( 'BreakdownNoticeArea', () => {
 		render(
 			<BreakdownNoticeArea
 				origin={ BREAKDOWN_ORIGIN_WIDGET }
-				goalType={ GOAL_TYPES.LEAD }
+				goalTypes={ [ GOAL_TYPES.LEAD ] }
 			/>,
 			{ registry }
 		);
@@ -232,13 +233,13 @@ describe( 'BreakdownNoticeArea', () => {
 			.dispatch( CORE_FORMS )
 			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
 				[ BREAKDOWN_ORIGIN_FORM_KEY ]: BREAKDOWN_ORIGIN_WIDGET,
-				[ BREAKDOWN_GOAL_TYPE_FORM_KEY ]: GOAL_TYPES.LEAD,
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: GOAL_TYPES.LEAD,
 			} );
 
 		const { getByText } = render(
 			<BreakdownNoticeArea
 				origin={ BREAKDOWN_ORIGIN_WIDGET }
-				goalType={ GOAL_TYPES.LEAD }
+				goalTypes={ [ GOAL_TYPES.LEAD ] }
 			/>,
 			{ registry }
 		);
@@ -255,19 +256,19 @@ describe( 'BreakdownNoticeArea', () => {
 			.dispatch( CORE_FORMS )
 			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
 				[ BREAKDOWN_ORIGIN_FORM_KEY ]: BREAKDOWN_ORIGIN_WIDGET,
-				[ BREAKDOWN_GOAL_TYPE_FORM_KEY ]: GOAL_TYPES.ECOMMERCE,
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: GOAL_TYPES.ECOMMERCE,
 			} );
 
 		// Success at the clicked instance (ecommerce widget).
 		const ecommerce = render(
 			<BreakdownNoticeArea
 				origin={ BREAKDOWN_ORIGIN_WIDGET }
-				goalType={ GOAL_TYPES.ECOMMERCE }
+				goalTypes={ [ GOAL_TYPES.ECOMMERCE ] }
 			/>,
 			{ registry }
 		);
 		expect(
-			ecommerce.getByText( /Your goal breakdown is active/ )
+			ecommerce.getByText( /Event breakdown is now active/ )
 		).toBeInTheDocument();
 		ecommerce.unmount();
 
@@ -275,7 +276,7 @@ describe( 'BreakdownNoticeArea', () => {
 		const lead = render(
 			<BreakdownNoticeArea
 				origin={ BREAKDOWN_ORIGIN_WIDGET }
-				goalType={ GOAL_TYPES.LEAD }
+				goalTypes={ [ GOAL_TYPES.LEAD ] }
 			/>,
 			{ registry }
 		);
@@ -286,7 +287,7 @@ describe( 'BreakdownNoticeArea', () => {
 		const panel = render(
 			<BreakdownNoticeArea
 				origin={ BREAKDOWN_ORIGIN_PANEL }
-				goalType={ GOAL_TYPES.ECOMMERCE }
+				goalTypes={ [ GOAL_TYPES.ECOMMERCE ] }
 			/>,
 			{ registry }
 		);
@@ -299,13 +300,13 @@ describe( 'BreakdownNoticeArea', () => {
 			.dispatch( CORE_FORMS )
 			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
 				[ BREAKDOWN_ORIGIN_FORM_KEY ]: BREAKDOWN_ORIGIN_PANEL,
-				[ BREAKDOWN_GOAL_TYPE_FORM_KEY ]: GOAL_TYPES.LEAD,
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: GOAL_TYPES.LEAD,
 			} );
 
 		const { container } = render(
 			<BreakdownNoticeArea
 				origin={ BREAKDOWN_ORIGIN_WIDGET }
-				goalType={ GOAL_TYPES.LEAD }
+				goalTypes={ [ GOAL_TYPES.LEAD ] }
 			/>,
 			{ registry }
 		);
@@ -321,13 +322,13 @@ describe( 'BreakdownNoticeArea', () => {
 			.dispatch( CORE_FORMS )
 			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
 				[ BREAKDOWN_ORIGIN_FORM_KEY ]: BREAKDOWN_ORIGIN_WIDGET,
-				[ BREAKDOWN_GOAL_TYPE_FORM_KEY ]: GOAL_TYPES.LEAD,
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: GOAL_TYPES.LEAD,
 			} );
 
 		const { container } = render(
 			<BreakdownNoticeArea
 				origin={ BREAKDOWN_ORIGIN_WIDGET }
-				goalType={ GOAL_TYPES.ECOMMERCE }
+				goalTypes={ [ GOAL_TYPES.ECOMMERCE ] }
 			/>,
 			{ registry }
 		);
@@ -348,7 +349,7 @@ describe( 'BreakdownNoticeArea', () => {
 		registry
 			.dispatch( CORE_FORMS )
 			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
-				[ BREAKDOWN_GOAL_TYPE_FORM_KEY ]: GOAL_TYPES.LEAD,
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: GOAL_TYPES.LEAD,
 			} );
 
 		[ BREAKDOWN_ORIGIN_WIDGET, BREAKDOWN_ORIGIN_PANEL ].forEach(
@@ -356,7 +357,7 @@ describe( 'BreakdownNoticeArea', () => {
 				const { getByText, getByRole, unmount } = render(
 					<BreakdownNoticeArea
 						origin={ origin }
-						goalType={ GOAL_TYPES.LEAD }
+						goalTypes={ [ GOAL_TYPES.LEAD ] }
 					/>,
 					{ registry }
 				);
@@ -386,7 +387,7 @@ describe( 'BreakdownNoticeArea', () => {
 		registry
 			.dispatch( CORE_FORMS )
 			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
-				[ BREAKDOWN_GOAL_TYPE_FORM_KEY ]: GOAL_TYPES.LEAD,
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: GOAL_TYPES.LEAD,
 			} );
 
 		[ BREAKDOWN_ORIGIN_WIDGET, BREAKDOWN_ORIGIN_PANEL ].forEach(
@@ -394,7 +395,7 @@ describe( 'BreakdownNoticeArea', () => {
 				const { getByText, unmount } = render(
 					<BreakdownNoticeArea
 						origin={ origin }
-						goalType={ GOAL_TYPES.LEAD }
+						goalTypes={ [ GOAL_TYPES.LEAD ] }
 					/>,
 					{ registry }
 				);
@@ -423,7 +424,7 @@ describe( 'BreakdownNoticeArea', () => {
 		registry
 			.dispatch( CORE_FORMS )
 			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
-				[ BREAKDOWN_GOAL_TYPE_FORM_KEY ]: GOAL_TYPES.ECOMMERCE,
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: GOAL_TYPES.ECOMMERCE,
 			} );
 
 		// The lead section's dimension exists, so it is not eligible for the
@@ -431,12 +432,79 @@ describe( 'BreakdownNoticeArea', () => {
 		const { queryByText } = render(
 			<BreakdownNoticeArea
 				origin={ BREAKDOWN_ORIGIN_WIDGET }
-				goalType={ GOAL_TYPES.LEAD }
+				goalTypes={ [ GOAL_TYPES.LEAD ] }
 			/>,
 			{ registry }
 		);
 
 		expect( queryByText( /Analytics update failed/ ) ).toBeNull();
+	} );
+
+	describe( 'combined Side Panel notice', () => {
+		it( 'renders the "both" New copy when both breakdown dimensions are missing', () => {
+			seedAvailableCustomDimensions( [] );
+			provideSiteInfo( registry, {
+				hasMultipleActiveEcommerceEventProviders: true,
+			} );
+
+			const { getByText } = render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_PANEL }
+					goalTypes={ [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ] }
+				/>,
+				{ registry }
+			);
+
+			expect(
+				getByText(
+					/Have multiple forms, or Using both WooCommerce and Easy Digital Downloads/
+				)
+			).toBeInTheDocument();
+		} );
+
+		it( 'scopes the combined notice to the goal type still missing its dimension', () => {
+			// The lead (form) dimension exists; only the ecommerce one is missing.
+			seedAvailableCustomDimensions( [ 'googlesitekit_form_id' ] );
+			provideSiteInfo( registry, {
+				hasMultipleActiveEcommerceEventProviders: true,
+			} );
+
+			const { getByText } = render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_PANEL }
+					goalTypes={ [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ] }
+				/>,
+				{ registry }
+			);
+
+			expect(
+				getByText(
+					'Using both WooCommerce and Easy Digital Downloads to sell products or services?'
+				)
+			).toBeInTheDocument();
+		} );
+
+		it( 'renders the combined success notice once both dimensions exist', () => {
+			seedAvailableCustomDimensions( ALL_CUSTOM_DIMENSIONS );
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+					[ BREAKDOWN_ORIGIN_FORM_KEY ]: BREAKDOWN_ORIGIN_PANEL,
+					[ BREAKDOWN_SCOPE_FORM_KEY ]: BREAKDOWN_SCOPE_BOTH,
+				} );
+
+			const { getByText } = render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_PANEL }
+					goalTypes={ [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ] }
+				/>,
+				{ registry }
+			);
+
+			expect(
+				getByText( /Breakdown is now active/ )
+			).toBeInTheDocument();
+		} );
 	} );
 
 	describe( 'gating', () => {
@@ -446,7 +514,7 @@ describe( 'BreakdownNoticeArea', () => {
 			const { container } = render(
 				<BreakdownNoticeArea
 					origin={ BREAKDOWN_ORIGIN_WIDGET }
-					goalType={ GOAL_TYPES.LEAD }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
 				/>,
 				{
 					registry,
@@ -464,7 +532,7 @@ describe( 'BreakdownNoticeArea', () => {
 			const { container } = render(
 				<BreakdownNoticeArea
 					origin={ BREAKDOWN_ORIGIN_WIDGET }
-					goalType={ GOAL_TYPES.LEAD }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
 				/>,
 				{ registry }
 			);
@@ -484,7 +552,7 @@ describe( 'BreakdownNoticeArea', () => {
 			const { container } = render(
 				<BreakdownNoticeArea
 					origin={ BREAKDOWN_ORIGIN_WIDGET }
-					goalType={ GOAL_TYPES.LEAD }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
 				/>,
 				{ registry }
 			);
@@ -500,7 +568,7 @@ describe( 'BreakdownNoticeArea', () => {
 			const { getByText } = render(
 				<BreakdownNoticeArea
 					origin={ BREAKDOWN_ORIGIN_WIDGET }
-					goalType={ GOAL_TYPES.LEAD }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
 				/>,
 				{ registry }
 			);
@@ -514,7 +582,7 @@ describe( 'BreakdownNoticeArea', () => {
 			const { container } = render(
 				<BreakdownNoticeArea
 					origin={ BREAKDOWN_ORIGIN_WIDGET }
-					goalType={ GOAL_TYPES.LEAD }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
 				/>,
 				{ registry }
 			);

@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { BREAKDOWN_SCOPE_BOTH } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { renderHook } from '@tests/js/test-utils';
 import { createTestRegistry, provideSiteInfo } from '@tests/js/utils';
@@ -75,6 +76,36 @@ describe( 'useSiteGoalsBreakdownNoticeCopy', () => {
 
 		expect( result.current.title ).toBe(
 			'Want to see results for each form?'
+		);
+	} );
+
+	it( 'returns the combined multi-plugin copy for the "both" scope', () => {
+		provideSiteInfo( registry, {
+			hasMultipleActiveEcommerceEventProviders: true,
+		} );
+
+		const { result } = renderHook(
+			() => useSiteGoalsBreakdownNoticeCopy( BREAKDOWN_SCOPE_BOTH ),
+			{ registry }
+		);
+
+		expect( result.current.title ).toBe(
+			'Have multiple forms, or Using both WooCommerce and Easy Digital Downloads for your site?'
+		);
+	} );
+
+	it( 'returns the combined single-plugin copy for the "both" scope', () => {
+		provideSiteInfo( registry, {
+			hasMultipleActiveEcommerceEventProviders: false,
+		} );
+
+		const { result } = renderHook(
+			() => useSiteGoalsBreakdownNoticeCopy( BREAKDOWN_SCOPE_BOTH ),
+			{ registry }
+		);
+
+		expect( result.current.title ).toBe(
+			'Have multiple forms, or selling products or services?'
 		);
 	} );
 } );

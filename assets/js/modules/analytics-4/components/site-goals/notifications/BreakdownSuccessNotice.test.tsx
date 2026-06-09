@@ -43,7 +43,7 @@ describe( 'BreakdownSuccessNotice', () => {
 	it( 'renders the ecommerce copy supplied by the parent', () => {
 		const { getByText } = render(
 			<BreakdownSuccessNotice
-				title="Success! Your goal breakdown is active"
+				title="Success! Event breakdown is now active"
 				description="Site Kit is now tracking your plugins individually."
 				onDismiss={ () => {} }
 			/>,
@@ -51,7 +51,7 @@ describe( 'BreakdownSuccessNotice', () => {
 		);
 
 		expect(
-			getByText( /Your goal breakdown is active/ )
+			getByText( /Event breakdown is now active/ )
 		).toBeInTheDocument();
 	} );
 

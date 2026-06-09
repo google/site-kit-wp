@@ -33,10 +33,11 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
 import {
-	BREAKDOWN_GOAL_TYPE_FORM_KEY,
 	BREAKDOWN_ORIGIN_FORM_KEY,
 	BREAKDOWN_ORIGIN_PANEL,
 	BREAKDOWN_ORIGIN_WIDGET,
+	BREAKDOWN_SCOPE_BOTH,
+	BREAKDOWN_SCOPE_FORM_KEY,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
@@ -117,8 +118,8 @@ describe( 'useBreakdownEnableHandler', () => {
 		expect( getFormValue( BREAKDOWN_ORIGIN_FORM_KEY ) ).toBe(
 			BREAKDOWN_ORIGIN_WIDGET
 		);
-		// The clicked goal type is recorded.
-		expect( getFormValue( BREAKDOWN_GOAL_TYPE_FORM_KEY ) ).toBe(
+		// The enabled scope is recorded.
+		expect( getFormValue( BREAKDOWN_SCOPE_FORM_KEY ) ).toBe(
 			GOAL_TYPES.LEAD
 		);
 
@@ -150,11 +151,13 @@ describe( 'useBreakdownEnableHandler', () => {
 			status: 200,
 		} );
 
+		// The Side Panel enables both goal types at once, recording the combined
+		// scope so the success/error notice shows the "both" copy.
 		const { result, waitForRegistry } = renderHook(
 			() =>
 				useBreakdownEnableHandler(
 					BREAKDOWN_ORIGIN_PANEL,
-					GOAL_TYPES.ECOMMERCE
+					BREAKDOWN_SCOPE_BOTH
 				),
 			{ registry }
 		);
@@ -170,8 +173,8 @@ describe( 'useBreakdownEnableHandler', () => {
 		expect( getFormValue( BREAKDOWN_ORIGIN_FORM_KEY ) ).toBe(
 			BREAKDOWN_ORIGIN_PANEL
 		);
-		expect( getFormValue( BREAKDOWN_GOAL_TYPE_FORM_KEY ) ).toBe(
-			GOAL_TYPES.ECOMMERCE
+		expect( getFormValue( BREAKDOWN_SCOPE_FORM_KEY ) ).toBe(
+			BREAKDOWN_SCOPE_BOTH
 		);
 		// The OAuth flow is not initiated when the scope is already granted.
 		expect(
