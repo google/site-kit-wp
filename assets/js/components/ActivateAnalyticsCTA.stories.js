@@ -21,6 +21,7 @@
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { ANALYTICS_SETUP_ERROR } from '@/js/modules/analytics-4/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -67,7 +68,7 @@ WithSetupFlowRefreshPhase4ActivationError.args = {
 	dismissedItemSlug: 'analytics-setup-cta-search-funnel',
 	setupRegistry: ( registry ) => {
 		registry.dispatch( CORE_SITE ).setInternalServerError( {
-			id: 'analytics-4-setup-error',
+			id: ANALYTICS_SETUP_ERROR,
 			description: 'This is an error',
 		} );
 	},

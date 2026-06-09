@@ -39,6 +39,9 @@ import { __ } from '@wordpress/i18n';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
+import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM, TYPE_LABEL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -48,7 +51,10 @@ import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '@/js/hooks/useCompleteModuleActivationCallback';
 import { useDebounce } from '@/js/hooks/useDebounce';
 import { useFeature } from '@/js/hooks/useFeature';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	ANALYTICS_SETUP_ERROR,
+	MODULE_SLUG_ANALYTICS_4,
+} from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import AnalyticsIcon from '@/svg/graphics/analytics.svg';
 
@@ -115,7 +121,7 @@ export default function ActivateAnalyticsCTA( {
 
 		return (
 			! analyticsModuleActive &&
-			internalServerError?.id === 'analytics-4-setup-error'
+			internalServerError?.id === ANALYTICS_SETUP_ERROR
 		);
 	} );
 
@@ -243,21 +249,21 @@ export default function ActivateAnalyticsCTA( {
 				className="googlesitekit-activate-analytics-cta googlesitekit-activate-analytics-cta--error"
 				ref={ trackingRef }
 			>
-				<div className="googlesitekit-activate-analytics-cta__top">
-					<div>
-						<p className="googlesitekit-activate-analytics-cta__title">
-							{ __(
-								'Analytics setup failed',
-								'google-site-kit'
-							) }
-						</p>
-						<p className="googlesitekit-activate-analytics-cta__description">
-							{ __(
-								'Something went wrong, please try again',
-								'google-site-kit'
-							) }
-						</p>
-					</div>
+				<div>
+					<Typography
+						type={ TYPE_LABEL }
+						size={ SIZE_MEDIUM }
+						as="h2"
+						className="googlesitekit-activate-analytics-cta__title"
+					>
+						{ __( 'Analytics setup failed', 'google-site-kit' ) }
+					</Typography>
+					<P className="googlesitekit-activate-analytics-cta__description">
+						{ __(
+							'Something went wrong, please try again',
+							'google-site-kit'
+						) }
+					</P>
 				</div>
 				<div className="googlesitekit-activate-analytics-cta__actions">
 					<Button

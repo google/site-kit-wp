@@ -39,6 +39,8 @@ export const REPORT_ARGS_NAV_KEY = '_r..nav';
 export const KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY =
 	'key-metrics-connect-ga4-cta-widget';
 
+export const ANALYTICS_SETUP_ERROR = 'analytics-4-setup-error';
+
 /**
  * Date that Site Kit will automatically switch to using GA4: September 25, 2023.
  *

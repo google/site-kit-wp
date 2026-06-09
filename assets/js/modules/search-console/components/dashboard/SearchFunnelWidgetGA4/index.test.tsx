@@ -37,7 +37,10 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	ANALYTICS_SETUP_ERROR,
+	MODULE_SLUG_ANALYTICS_4,
+} from '@/js/modules/analytics-4/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import * as tracking from '@/js/util/tracking';
 import { mockLocation } from '@tests/js/mock-browser-utils';
@@ -309,7 +312,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 
 	it( 'should render activation error state and dismiss CTA when "Got it" is clicked', async () => {
 		registry.dispatch( CORE_SITE ).setInternalServerError( {
-			id: 'analytics-4-setup-error',
+			id: ANALYTICS_SETUP_ERROR,
 			description: 'This is an error',
 		} );
 
@@ -347,7 +350,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 
 	it( 'should retry activation when "Retry Analytics setup" is clicked', async () => {
 		registry.dispatch( CORE_SITE ).setInternalServerError( {
-			id: 'analytics-4-setup-error',
+			id: ANALYTICS_SETUP_ERROR,
 			description: 'This is an error',
 		} );
 

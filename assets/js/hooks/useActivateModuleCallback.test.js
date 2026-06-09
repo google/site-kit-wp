@@ -27,7 +27,10 @@ import {
 	PERMISSION_MANAGE_OPTIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	ANALYTICS_SETUP_ERROR,
+	MODULE_SLUG_ANALYTICS_4,
+} from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
 import { mockLocation } from '@tests/js/mock-browser-utils';
@@ -179,7 +182,7 @@ describe( 'useActivateModuleCallback', () => {
 
 		expect( registry.select( CORE_SITE ).getInternalServerError() ).toEqual(
 			expect.objectContaining( {
-				id: 'analytics-4-setup-error',
+				id: ANALYTICS_SETUP_ERROR,
 				description: 'This is an error',
 			} )
 		);
