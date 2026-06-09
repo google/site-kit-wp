@@ -27,7 +27,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { deleteItem, setItem } from '@/js/googlesitekit/api/cache';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	PERMISSION_MANAGE_OPTIONS,
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	BREAKDOWN_ORIGIN_FORM_KEY,
 	BREAKDOWN_ORIGIN_PANEL,
@@ -202,6 +205,34 @@ describe( 'BreakdownNoticeArea', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.isSyncingAvailableCustomDimensions()
 			).toBe( true );
+		} );
+	} );
+
+	it( 'does not sync for users who cannot manage the module (e.g. view-only)', async () => {
+		seedAvailableCustomDimensions( ALL_CUSTOM_DIMENSIONS );
+		// Outside the throttle window, so a managing user would sync here.
+		await deleteItem( AVAILABILITY_SYNC_CACHE_KEY );
+		// The sync endpoint 403s without manage-options, so it must not be
+		// scheduled at all for these users.
+		provideUserCapabilities( registry, {
+			[ PERMISSION_MANAGE_OPTIONS ]: false,
+		} );
+
+		render(
+			<BreakdownNoticeArea
+				origin={ BREAKDOWN_ORIGIN_WIDGET }
+				goalTypes={ [ GOAL_TYPES.LEAD ] }
+			/>,
+			{ registry }
+		);
+
+		// Allow the cache-gated effect to run; it should bail without syncing.
+		await waitFor( () => {
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.isSyncingAvailableCustomDimensions()
+			).toBe( false );
 		} );
 	} );
 
