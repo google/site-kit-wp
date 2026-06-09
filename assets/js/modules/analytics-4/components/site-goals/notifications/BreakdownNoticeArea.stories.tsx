@@ -32,11 +32,14 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
-	BREAKDOWN_GOAL_TYPE_FORM_KEY,
 	BREAKDOWN_ORIGIN_FORM_KEY,
+	BREAKDOWN_ORIGIN_PANEL,
 	BREAKDOWN_ORIGIN_WIDGET,
+	BREAKDOWN_SCOPE_BOTH,
+	BREAKDOWN_SCOPE_FORM_KEY,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
@@ -56,6 +59,8 @@ import BreakdownNoticeArea from './BreakdownNoticeArea';
 
 interface BreakdownNoticeAreaStoryProps {
 	setupRegistry: ( registry: WPDataRegistry ) => void;
+	origin?: string;
+	goalTypes?: GoalType[];
 }
 
 function baseSetup(
@@ -82,13 +87,17 @@ function baseSetup(
 	} );
 }
 
-function Template( { setupRegistry }: BreakdownNoticeAreaStoryProps ) {
+function Template( {
+	setupRegistry,
+	origin = BREAKDOWN_ORIGIN_WIDGET,
+	goalTypes = [ GOAL_TYPES.LEAD ],
+}: BreakdownNoticeAreaStoryProps ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
 			<div style={ { backgroundColor: 'white', padding: '20px' } }>
 				<BreakdownNoticeArea
-					origin={ BREAKDOWN_ORIGIN_WIDGET }
-					goalType={ GOAL_TYPES.LEAD }
+					origin={ origin }
+					goalTypes={ goalTypes }
 				/>
 			</div>
 		</WithRegistrySetup>
@@ -114,7 +123,7 @@ Loading.args = {
 			.dispatch( CORE_FORMS )
 			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
 				[ BREAKDOWN_ORIGIN_FORM_KEY ]: BREAKDOWN_ORIGIN_WIDGET,
-				[ BREAKDOWN_GOAL_TYPE_FORM_KEY ]: GOAL_TYPES.LEAD,
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: GOAL_TYPES.LEAD,
 			} );
 		fetchMock.post(
 			new RegExp(
@@ -139,7 +148,7 @@ Success.args = {
 			.dispatch( CORE_FORMS )
 			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
 				[ BREAKDOWN_ORIGIN_FORM_KEY ]: BREAKDOWN_ORIGIN_WIDGET,
-				[ BREAKDOWN_GOAL_TYPE_FORM_KEY ]: GOAL_TYPES.LEAD,
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: GOAL_TYPES.LEAD,
 			} );
 	},
 };
@@ -162,7 +171,7 @@ GenericError.args = {
 		registry
 			.dispatch( CORE_FORMS )
 			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
-				[ BREAKDOWN_GOAL_TYPE_FORM_KEY ]: GOAL_TYPES.LEAD,
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: GOAL_TYPES.LEAD,
 			} );
 	},
 };
@@ -185,7 +194,40 @@ PermissionsError.args = {
 		registry
 			.dispatch( CORE_FORMS )
 			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
-				[ BREAKDOWN_GOAL_TYPE_FORM_KEY ]: GOAL_TYPES.LEAD,
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: GOAL_TYPES.LEAD,
+			} );
+	},
+};
+
+export const CombinedNew = Template.bind(
+	{}
+) as Story< BreakdownNoticeAreaStoryProps >;
+CombinedNew.storyName = 'Combined New (Side Panel)';
+CombinedNew.args = {
+	origin: BREAKDOWN_ORIGIN_PANEL,
+	goalTypes: [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ],
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		baseSetup( registry, [] );
+		provideSiteInfo( registry, {
+			hasMultipleActiveEcommerceEventProviders: true,
+		} );
+	},
+};
+
+export const CombinedSuccess = Template.bind(
+	{}
+) as Story< BreakdownNoticeAreaStoryProps >;
+CombinedSuccess.storyName = 'Combined success (Side Panel)';
+CombinedSuccess.args = {
+	origin: BREAKDOWN_ORIGIN_PANEL,
+	goalTypes: [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ],
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		baseSetup( registry, ALL_CUSTOM_DIMENSIONS );
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+				[ BREAKDOWN_ORIGIN_FORM_KEY ]: BREAKDOWN_ORIGIN_PANEL,
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: BREAKDOWN_SCOPE_BOTH,
 			} );
 	},
 };
