@@ -75,3 +75,21 @@ export const SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT = {
 	[ GOAL_TYPES.ECOMMERCE ]: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
 	[ GOAL_TYPES.LEAD ]: [],
 };
+
+export const SITE_GOALS_VOTE_ID_WIDGET_ONLINE_STORE =
+	'site_goals_widget_online_store';
+export const SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION =
+	'site_goals_widget_lead_generation';
+export const SITE_GOALS_VOTE_ID_PANEL_ONLINE_STORE =
+	'site_goals_primary_action_panel_online_store';
+export const SITE_GOALS_VOTE_ID_PANEL_LEAD_GENERATION =
+	'site_goals_primary_action_panel_lead_generation';
+
+export const SITE_GOALS_PANEL_VOTE_IDS_BY_GOAL_TYPE = {
+	[ GOAL_TYPES.ECOMMERCE ]: SITE_GOALS_VOTE_ID_PANEL_ONLINE_STORE,
+	[ GOAL_TYPES.LEAD ]: SITE_GOALS_VOTE_ID_PANEL_LEAD_GENERATION,
+};
+
+// Placeholder for the downvote "Tell us more" Google Form URL. Replace it once
+// the real URL is ready. Tracked in #12727.
+export const SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL = '#';

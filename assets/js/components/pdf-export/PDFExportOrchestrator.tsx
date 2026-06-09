@@ -48,6 +48,7 @@ import type {
 } from '@/js/googlesitekit/widgets/types';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { getPreviousDate } from '@/js/util';
+import { registerPDFFonts } from './pdf-fonts-react';
 import { getPDFFilename, triggerDownload } from './pdf-utils';
 import DashboardReport from './shared-react-pdf-components/DashboardReport';
 import type { PDFReportArea, PDFReportWidget } from './types';
@@ -422,6 +423,9 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				throwIfAborted( signal );
 				dispatch( { type: 'TRANSITION', nextStage: STAGE_BUILDING } );
 				armStageTimeout( BUILDING_TIMEOUT_MS );
+
+				registerPDFFonts();
+				throwIfAborted( signal );
 
 				const areas: PDFReportArea[] = discoveredAreas.map(
 					( area ) => ( {

@@ -41,6 +41,7 @@ import {
 	BREAKDOWN_ORIGIN_WIDGET,
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
+	SITE_GOALS_VOTE_ID_WIDGET_ONLINE_STORE,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_CATALOG,
@@ -65,6 +66,7 @@ import {
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
+import WidgetFeedbackPrompt from './WidgetFeedbackPrompt';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -137,7 +139,6 @@ const OnlineStorePerformanceWidget: FC<
 		Header?: unknown;
 		headerContents?: ReactNode;
 		collapsible?: boolean;
-		children?: ReactNode;
 	} >;
 	const WidgetNullComponent = WidgetNull as FC;
 	const WidgetReportErrorComponent = WidgetReportError as FC< {
@@ -389,6 +390,10 @@ const OnlineStorePerformanceWidget: FC<
 					goalType={ GOAL_TYPES.ECOMMERCE }
 				/>
 			</TilesGroup>
+
+			<WidgetFeedbackPrompt
+				voteID={ SITE_GOALS_VOTE_ID_WIDGET_ONLINE_STORE }
+			/>
 		</WidgetComponent>
 	);
 };

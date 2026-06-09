@@ -51,6 +51,7 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 } from '@tests/js/utils';
+import { surveyTriggerEndpoint } from '../../../../../../../tests/js/mock-survey-endpoints';
 import OnlineStorePerformanceWidget from './OnlineStorePerformanceWidget';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
@@ -505,12 +506,14 @@ describe( 'OnlineStorePerformanceWidget', () => {
 
 	beforeEach( async () => {
 		registry = createTestRegistry();
+		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		// Mark the breakdown notice's throttled availability sync as already done,
 		// so it doesn't schedule a background sync during these tests.
 		await setItem( AVAILABILITY_SYNC_CACHE_KEY, true );
-		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
+		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_ANALYTICS_4,
@@ -1265,5 +1268,89 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			queryByText( 'How are your visitors engaging?' )
 		).toBeInTheDocument();
+	} );
+
+	it( 'dispatches an up vote on thumbs-up click', async () => {
+		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+
+		const primaryEventReport = buildPrimaryEventReportOptions(
+			dates,
+			ENUM_CONVERSION_EVENTS.PURCHASE
+		);
+		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		provideAnalytics4MockReport( registry, primaryEventReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { getByRole, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		fireEvent.click(
+			getByRole( 'button', { name: 'Yes, this was helpful' } )
+		);
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: {
+						triggerID: 'vote:site_goals_widget_online_store:up',
+					},
+				},
+			} )
+		);
+	} );
+
+	it( 'dispatches a down vote on thumbs-down click', async () => {
+		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+
+		const primaryEventReport = buildPrimaryEventReportOptions(
+			dates,
+			ENUM_CONVERSION_EVENTS.PURCHASE
+		);
+		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		provideAnalytics4MockReport( registry, primaryEventReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { getByRole, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		fireEvent.click(
+			getByRole( 'button', { name: 'No, this was not helpful' } )
+		);
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: {
+						triggerID: 'vote:site_goals_widget_online_store:down',
+					},
+				},
+			} )
+		);
 	} );
 } );

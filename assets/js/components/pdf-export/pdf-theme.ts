@@ -1,7 +1,7 @@
 /**
- * User Feedback styles.
+ * Shared theme constants for the PDF export (@react-pdf/renderer).
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,16 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-surveys-modal";
-@import "googlesitekit-survey-header";
-@import "googlesitekit-surveys";
-@import "googlesitekit-survey-completion";
-@import "googlesitekit-survey-open-text";
-@import "googlesitekit-survey-single-select";
-@import "googlesitekit-thumbs-survey-trigger";
+/**
+ * Registered @react-pdf font family for display sizes and headings.
+ *
+ * Maps to Google Sans Display (regular / 400 only).
+ */
+export const PDF_FONT_FAMILY_DISPLAY = 'GoogleSansDisplay';
+
+/**
+ * Registered @react-pdf font family for body text and captions.
+ *
+ * Maps to Google Sans Text (regular / 400 and medium / 500).
+ */
+export const PDF_FONT_FAMILY_TEXT = 'GoogleSansText';

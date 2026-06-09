@@ -22,6 +22,11 @@
 import { isEqual } from 'lodash';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import { createRegistrySelector } from 'googlesitekit-data';
@@ -476,6 +481,58 @@ export const selectors = {
 			detectedEvents.includes( event )
 		);
 	} ),
+
+	/**
+	 * Returns the Key action label for the Site Goals side panel Primary Action row.
+	 *
+	 * For ecommerce, returns the label of the primary event (`purchase` or `add_to_cart`).
+	 * For lead, returns `Form completion` when any lead event is detected.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}               state    Data store's state.
+	 * @param {('ecommerce'|'lead')} goalType Goal type.
+	 * @return {(string|undefined)} Label, or `undefined` for unresolved events or unknown goal types.
+	 */
+	getPrimaryActionPanelLabel: createRegistrySelector(
+		( select ) => ( state, goalType ) => {
+			if ( goalType === 'ecommerce' ) {
+				const primaryEvent =
+					select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent();
+
+				if ( primaryEvent === undefined ) {
+					return undefined;
+				}
+
+				if ( primaryEvent === ENUM_CONVERSION_EVENTS.PURCHASE ) {
+					return __( 'Purchase', 'google-site-kit' );
+				}
+
+				if ( primaryEvent === ENUM_CONVERSION_EVENTS.ADD_TO_CART ) {
+					return __( 'Products added to cart', 'google-site-kit' );
+				}
+
+				return undefined;
+			}
+
+			if ( goalType === 'lead' ) {
+				const detectedLeadEvents =
+					select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents();
+
+				if ( detectedLeadEvents === undefined ) {
+					return undefined;
+				}
+
+				if ( detectedLeadEvents.length > 0 ) {
+					return __( 'Form completion', 'google-site-kit' );
+				}
+
+				return undefined;
+			}
+
+			return undefined;
+		}
+	),
 
 	/**
 	 * Checks if there are new conversion events after initial events were detected. Regardless of how KM were setup.

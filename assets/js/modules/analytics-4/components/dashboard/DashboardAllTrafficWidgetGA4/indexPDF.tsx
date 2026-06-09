@@ -29,6 +29,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
 import PDFMetricTile from '@/js/components/pdf-export/shared-react-pdf-components/PDFMetricTile';
 import PDFWidgetSection from '@/js/components/pdf-export/shared-react-pdf-components/PDFWidgetSection';
 import type { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
@@ -44,6 +45,7 @@ const styles = StyleSheet.create( {
 		marginTop: 16,
 	},
 	noData: {
+		fontFamily: PDF_FONT_FAMILY_TEXT,
 		fontSize: 9,
 		color: '#646464',
 	},
