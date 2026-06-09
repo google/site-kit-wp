@@ -302,7 +302,7 @@ const LeadGenerationPerformanceWidget: FC<
 
 			<BreakdownNoticeArea
 				origin={ BREAKDOWN_ORIGIN_WIDGET }
-				goalType={ GOAL_TYPES.LEAD }
+				goalTypes={ [ GOAL_TYPES.LEAD ] }
 			/>
 
 			<TilesGroup
