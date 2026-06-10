@@ -137,6 +137,16 @@ ZeroDataPreviousRange.args = {
 	format: { style: 'decimal' },
 };
 
+export const ZeroDataBothRanges = Template.bind( {} ) as Story< TileProps >;
+ZeroDataBothRanges.storyName = 'Zero Data (Both Ranges)';
+ZeroDataBothRanges.args = {
+	title: 'Form Submissions',
+	subtitle: 'Total submissions',
+	currentValue: 0,
+	previousValue: 0,
+	format: { style: 'decimal' },
+};
+
 export const CustomDateRange = Template.bind( {} ) as Story< TileProps >;
 CustomDateRange.storyName = 'Custom Date Range (90 days)';
 CustomDateRange.args = {
