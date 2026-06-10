@@ -25,14 +25,21 @@ import { useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { ANCHOR_ID_SITE_GOALS } from '@/js/googlesitekit/constants';
+import {
+	ACTIVE_CONTEXT_ID,
+	CORE_UI,
+} from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 import {
 	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
 	SITE_GOALS_BREAKDOWN_NOTICE,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { getSiteGoalsTour } from '@/js/modules/analytics-4/components/site-goals/feature-tours/site-goals';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { getNavigationalScrollTop } from '@/js/util/scroll';
 import IntroModalEcommerce from './IntroModalEcommerce';
 import IntroModalEcommerceAndLead from './IntroModalEcommerceAndLead';
 import IntroModalLead from './IntroModalLead';
@@ -85,6 +92,9 @@ export default function IntroModal() {
 	const [ isOpen, setIsOpen ] = useState( true );
 
 	const { dismissItem, triggerOnDemandTour } = useDispatch( CORE_USER );
+	const { setValue } = useDispatch( CORE_UI );
+
+	const breakpoint = useBreakpoint();
 
 	const trackEvent = useNotificationEvents(
 		SITE_GOALS_INTRO_MODAL_BANNER
@@ -149,6 +159,24 @@ export default function IntroModal() {
 					! isBreakdownNoticeDismissed,
 			} )
 		);
+
+		// Go to the Site Goals section the same way the navigation chip
+		// does. Set the URL hash, set the section as the active context,
+		// and scroll to the section anchor. The active context makes the
+		// Site Goals widgets load right away, so the tour finds its first
+		// target. From here the navigation's scroll tracking updates the
+		// hash and the active context.
+		global.history.replaceState( {}, '', `#${ ANCHOR_ID_SITE_GOALS }` );
+
+		setValue( ACTIVE_CONTEXT_ID, ANCHOR_ID_SITE_GOALS );
+
+		global.scrollTo( {
+			top: getNavigationalScrollTop(
+				`#${ ANCHOR_ID_SITE_GOALS }`,
+				breakpoint
+			),
+			behavior: 'smooth',
+		} );
 	}
 
 	if (
