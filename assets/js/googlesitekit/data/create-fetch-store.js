@@ -53,8 +53,8 @@ function defaultValidateParams() {}
  * and the error key, so the params and the fetch options stay separate.
  *
  * This helper reads the fetch options from a last argument that is a plain
- * object with a `signal` key. So give a store's own params other keys, and the
- * helper tells the params and the fetch options apart.
+ * object with a `signal` key. Give a store's own params other keys, so the
+ * helper keeps them separate from the fetch options.
  *
  * @since n.e.x.t
  *

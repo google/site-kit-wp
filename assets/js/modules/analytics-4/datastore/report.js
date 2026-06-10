@@ -138,7 +138,7 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	*getReport( options = {} ) {
+	*getReport( options = {}, fetchOptions ) {
 		const registry = yield commonActions.getRegistry();
 		const existingReport = registry
 			.select( MODULES_ANALYTICS_4 )
@@ -150,7 +150,16 @@ const baseResolvers = {
 			return;
 		}
 
-		yield fetchGetReportStore.actions.fetchGetReport( options );
+		// Pass the fetch options, such as `{ signal }` to cancel the
+		// request, only when the caller provides them. A trailing
+		// `undefined` argument would save a request error under a
+		// different key, so a consumer reading the error for these report
+		// options would no longer find it.
+		const fetchArgs = fetchOptions
+			? [ options, fetchOptions ]
+			: [ options ];
+
+		yield fetchGetReportStore.actions.fetchGetReport( ...fetchArgs );
 	},
 };
 

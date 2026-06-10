@@ -183,6 +183,51 @@ describe( 'modules/analytics-4 report', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock.lastOptions().signal ).toBeUndefined();
 			} );
+
+			it( 'forwards the abort signal from a getReport call to the report request', async () => {
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: fixtures.report,
+					status: 200,
+				} );
+
+				const { signal } = new AbortController();
+
+				await registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getReport( options, { signal } );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBe( signal );
+			} );
+
+			it( 'stores the error under the report options when a getReport call with an abort signal fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: response,
+					status: 500,
+				} );
+
+				const { signal } = new AbortController();
+
+				await registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getReport( options, { signal } );
+
+				// The store saves the error under the report options alone,
+				// so the same options that read the report also find the
+				// error.
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getErrorForSelector( 'getReport', [ options ] )
+				).toEqual( response );
+				expect( console ).toHaveErrored();
+			} );
 		} );
 
 		describe( 'getPageTitles', () => {
