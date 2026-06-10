@@ -24,6 +24,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -31,6 +32,8 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, useSelect } from 'googlesitekit-data';
 import BadgeWithTooltip from '@/js/components/BadgeWithTooltip';
+import Link from '@/js/components/Link';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -73,6 +76,14 @@ const GatheringBreakdownDataBadge: FC< GatheringBreakdownDataBadgeProps > = ( {
 		[]
 	);
 
+	const documentationURL = useSelect(
+		( select: Select ) =>
+			// TODO: Replace the `site-goals` slug once the Site Goals
+			// documentation page is available.
+			select( CORE_SITE ).getDocumentationLinkURL( 'site-goals' ),
+		[]
+	);
+
 	// Avoid a flash while either gating selector is still resolving, or while a
 	// dimensions sync is in flight.
 	if (
@@ -98,9 +109,20 @@ const GatheringBreakdownDataBadge: FC< GatheringBreakdownDataBadgeProps > = ( {
 		<BadgeWithTooltip
 			className="googlesitekit-site-goals-gathering-breakdown-data-badge"
 			label={ label }
-			tooltipTitle={ __(
-				'Analytics is now tracking your goals, but needs more data before the breakdown can be shown.',
-				'google-site-kit'
+			tooltipTitle={ createInterpolateElement(
+				__(
+					'We’re still collecting breakdown data for your selected dashboard timeframe and previous period comparisons. <a>Learn more</a>',
+					'google-site-kit'
+				),
+				{
+					a: (
+						<Link
+							href={ documentationURL }
+							external
+							hideExternalIndicator
+						/>
+					),
+				}
 			) }
 		/>
 	);
