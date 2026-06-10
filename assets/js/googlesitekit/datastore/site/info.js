@@ -196,6 +196,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				isMultisite,
 				hasActiveLeadEventProviders,
 				hasActiveEcommerceEventProviders,
+				hasMultipleActiveEcommerceEventProviders,
 			} = payload.siteInfo;
 
 			state.siteInfo = {
@@ -234,6 +235,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				isMultisite,
 				hasActiveLeadEventProviders,
 				hasActiveEcommerceEventProviders,
+				hasMultipleActiveEcommerceEventProviders,
 			};
 			break;
 
@@ -325,6 +327,7 @@ export const resolvers = {
 			isMultisite,
 			hasActiveLeadEventProviders,
 			hasActiveEcommerceEventProviders,
+			hasMultipleActiveEcommerceEventProviders,
 		} = global._googlesitekitBaseData;
 
 		const {
@@ -370,6 +373,7 @@ export const resolvers = {
 			isMultisite,
 			hasActiveLeadEventProviders,
 			hasActiveEcommerceEventProviders,
+			hasMultipleActiveEcommerceEventProviders,
 		} );
 	},
 };
@@ -1017,6 +1021,18 @@ export const selectors = {
 	 */
 	hasActiveEcommerceEventProviders: getSiteInfoProperty(
 		'hasActiveEcommerceEventProviders'
+	),
+
+	/**
+	 * Checks if more than one ecommerce event provider plugin is active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} `true` if multiple ecommerce event providers are active; `false` if not. Returns `undefined` if not yet loaded.
+	 */
+	hasMultipleActiveEcommerceEventProviders: getSiteInfoProperty(
+		'hasMultipleActiveEcommerceEventProviders'
 	),
 };
 

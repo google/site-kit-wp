@@ -29,6 +29,8 @@ import { GOAL_DRIVER_IDS, GOAL_TYPES } from './constants';
 export type GoalDriverID =
 	typeof GOAL_DRIVER_IDS[ keyof typeof GOAL_DRIVER_IDS ];
 export type GoalType = typeof GOAL_TYPES[ keyof typeof GOAL_TYPES ];
+
+export type BreakdownScope = GoalType | 'both';
 export type GoalDriverSelectionState = Record< GoalType, GoalDriverID[] >;
 
 export interface GoalDriverRow {
