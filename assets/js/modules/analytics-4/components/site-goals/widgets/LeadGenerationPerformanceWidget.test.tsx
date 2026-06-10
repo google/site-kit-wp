@@ -27,6 +27,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { setItem } from '@/js/googlesitekit/api/cache';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
@@ -34,6 +35,7 @@ import {
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { AVAILABILITY_SYNC_CACHE_KEY } from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
@@ -51,6 +53,7 @@ import {
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
+import { provideUserCapabilities } from '@tests/js/utils';
 import { surveyTriggerEndpoint } from '../../../../../../../tests/js/mock-survey-endpoints';
 import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
 
@@ -451,11 +454,15 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			.finishResolution( 'getReport', [ countriesOptions ] );
 	}
 
-	beforeEach( () => {
+	beforeEach( async () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		// Mark the breakdown notice's throttled availability sync as already done,
+		// so it doesn't schedule a background sync during these tests.
+		await setItem( AVAILABILITY_SYNC_CACHE_KEY, true );
+		provideUserCapabilities( registry );
 		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 		provideModules( registry, [
 			{

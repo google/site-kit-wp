@@ -24,8 +24,10 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
+import { setItem } from '@/js/googlesitekit/api/cache';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { SITE_GOALS_BREAKDOWN_NOTICE } from '@/js/modules/analytics-4/components/site-goals/constants';
+import { AVAILABILITY_SYNC_CACHE_KEY } from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
@@ -37,6 +39,7 @@ import { fireEvent, render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserCapabilities,
 } from '@tests/js/utils';
@@ -48,13 +51,22 @@ describe( 'PanelContent', () => {
 	const ECOMMERCE_NOTICE_TITLE =
 		'Using both WooCommerce and Easy Digital Downloads to sell products or services?';
 	const LEAD_NOTICE_TITLE = 'Want to see results for each form?';
+	const BOTH_NOTICE_TITLE =
+		'Have multiple forms, or Using both WooCommerce and Easy Digital Downloads for your site?';
 
 	mockBrowserScrolling();
 
-	beforeEach( () => {
+	beforeEach( async () => {
 		registry = createTestRegistry();
+		// Mark the breakdown notice's throttled availability sync as already done,
+		// so it doesn't schedule a background sync during these tests.
+		await setItem( AVAILABILITY_SYNC_CACHE_KEY, true );
 		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
+		// Both ecommerce plugins active, so the "both plugins" notice copy shows.
+		provideSiteInfo( registry, {
+			hasMultipleActiveEcommerceEventProviders: true,
+		} );
 		provideModules( registry, [
 			{ slug: MODULE_SLUG_ANALYTICS_4, connected: true },
 		] );
@@ -74,17 +86,21 @@ describe( 'PanelContent', () => {
 			.receiveGetDismissedItems( [ SITE_GOALS_INTRO_MODAL_BANNER ] );
 	} );
 
-	it( 'renders a breakdown notice above each active goal type section', () => {
-		const { getByText } = render(
+	it( 'renders a single combined breakdown notice above the sections', () => {
+		const { getByText, queryByText, getAllByText } = render(
 			<PanelContent hasEcommerceGoalDrivers hasLeadGoalDrivers />,
 			{ registry }
 		);
 
-		expect( getByText( ECOMMERCE_NOTICE_TITLE ) ).toBeInTheDocument();
-		expect( getByText( LEAD_NOTICE_TITLE ) ).toBeInTheDocument();
+		// Both dimensions are missing, so a single combined "both" notice shows
+		// (not one per section).
+		expect( getByText( BOTH_NOTICE_TITLE ) ).toBeInTheDocument();
+		expect( queryByText( ECOMMERCE_NOTICE_TITLE ) ).not.toBeInTheDocument();
+		expect( queryByText( LEAD_NOTICE_TITLE ) ).not.toBeInTheDocument();
+		expect( getAllByText( 'No thanks' ) ).toHaveLength( 1 );
 	} );
 
-	it( 'renders only the ecommerce notice when only ecommerce is active', () => {
+	it( 'scopes the combined notice to ecommerce when only ecommerce is active', () => {
 		const { getByText, queryByText } = render(
 			<PanelContent
 				hasLeadGoalDrivers={ false }
@@ -95,9 +111,10 @@ describe( 'PanelContent', () => {
 
 		expect( getByText( ECOMMERCE_NOTICE_TITLE ) ).toBeInTheDocument();
 		expect( queryByText( LEAD_NOTICE_TITLE ) ).not.toBeInTheDocument();
+		expect( queryByText( BOTH_NOTICE_TITLE ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'renders only the lead notice when only lead is active', () => {
+	it( 'scopes the combined notice to lead when only lead is active', () => {
 		const { getByText, queryByText } = render(
 			<PanelContent
 				hasEcommerceGoalDrivers={ false }
@@ -108,9 +125,10 @@ describe( 'PanelContent', () => {
 
 		expect( getByText( LEAD_NOTICE_TITLE ) ).toBeInTheDocument();
 		expect( queryByText( ECOMMERCE_NOTICE_TITLE ) ).not.toBeInTheDocument();
+		expect( queryByText( BOTH_NOTICE_TITLE ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'dismisses both notices via the shared slug when either is dismissed', async () => {
+	it( 'dismisses the combined notice via the shared slug', async () => {
 		fetchMock.postOnce(
 			new RegExp( '^/google-site-kit/v1/core/user/data/dismiss-item' ),
 			{ body: [ SITE_GOALS_BREAKDOWN_NOTICE ], status: 200 }
@@ -121,9 +139,9 @@ describe( 'PanelContent', () => {
 			{ registry }
 		);
 
-		// One "No thanks" per active goal type notice.
+		// A single combined notice means a single "No thanks".
 		const dismissButtons = getAllByText( 'No thanks' );
-		expect( dismissButtons ).toHaveLength( 2 );
+		expect( dismissButtons ).toHaveLength( 1 );
 
 		fireEvent.click( dismissButtons[ 0 ] );
 
@@ -135,8 +153,6 @@ describe( 'PanelContent', () => {
 			).toBe( true );
 		} );
 
-		// Both notices share the slug, so both disappear.
-		expect( queryByText( ECOMMERCE_NOTICE_TITLE ) ).not.toBeInTheDocument();
-		expect( queryByText( LEAD_NOTICE_TITLE ) ).not.toBeInTheDocument();
+		expect( queryByText( BOTH_NOTICE_TITLE ) ).not.toBeInTheDocument();
 	} );
 } );

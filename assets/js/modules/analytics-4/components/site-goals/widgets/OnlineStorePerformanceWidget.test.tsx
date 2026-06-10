@@ -27,6 +27,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { setItem } from '@/js/googlesitekit/api/cache';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
@@ -34,10 +35,10 @@ import {
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { AVAILABILITY_SYNC_CACHE_KEY } from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	DATE_RANGE_OFFSET,
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
@@ -48,6 +49,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 } from '@tests/js/utils';
 import { surveyTriggerEndpoint } from '../../../../../../../tests/js/mock-survey-endpoints';
 import OnlineStorePerformanceWidget from './OnlineStorePerformanceWidget';
@@ -502,11 +504,15 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.finishResolution( 'getReport', [ deviceTypeOptions ] );
 	}
 
-	beforeEach( () => {
+	beforeEach( async () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		// Mark the breakdown notice's throttled availability sync as already done,
+		// so it doesn't schedule a background sync during these tests.
+		await setItem( AVAILABILITY_SYNC_CACHE_KEY, true );
+		provideUserCapabilities( registry );
 		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 		provideModules( registry, [
 			{
@@ -815,6 +821,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		// Both ecommerce plugins active, so the "both plugins" notice copy shows.
+		provideSiteInfo( registry, {
+			hasMultipleActiveEcommerceEventProviders: true,
+		} );
 		// Aggregated state: intro modal dismissed, breakdown dimensions not yet
 		// created (availableCustomDimensions seeded as [] in beforeEach).
 		registry
@@ -826,25 +836,23 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
-		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ], {
-			loading: true,
-		} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.startResolution( 'getReport', [
-				buildPrimaryEventReportOptions(
-					dates,
-					ENUM_CONVERSION_EVENTS.PURCHASE
-				),
-			] );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.startResolution( 'getReport', [
-				buildEngagementReportOptions( dates ),
-			] );
+		// The breakdown notice in the widget only renders once the primary
+		// section has loaded (it shows a skeleton while loading), so seed the
+		// reports as loaded.
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		provideAnalytics4MockReport(
+			registry,
+			buildPrimaryEventReportOptions(
+				dates,
+				ENUM_CONVERSION_EVENTS.PURCHASE
+			)
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
 
 		const { getByText, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
