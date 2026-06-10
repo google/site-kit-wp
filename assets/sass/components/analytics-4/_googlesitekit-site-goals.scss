@@ -16,6 +16,27 @@
 
 .googlesitekit-plugin {
 
+	.googlesitekit-widget--analyticsOnlineStorePerformance,
+	.googlesitekit-widget--analyticsLeadGenerationPerformance {
+
+		.googlesitekit-widget__header-inner {
+
+			@media (min-width: $bp-tablet) {
+				align-items: center;
+				display: flex;
+				gap: 10px;
+			}
+
+			.googlesitekit-badge {
+				margin-top: 10px;
+
+				@media (min-width: $bp-tablet) {
+					margin-top: 0;
+				}
+			}
+		}
+	}
+
 	.googlesitekit-site-goals-tiles-group {
 
 		@media (min-width: $bp-tablet) {

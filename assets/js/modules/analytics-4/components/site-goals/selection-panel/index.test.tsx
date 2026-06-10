@@ -30,6 +30,7 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
+	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
 	SITE_GOALS_BREAKDOWN_NOTICE,
 	SITE_GOALS_SELECTED_DRIVERS,
 	SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT,
@@ -130,6 +131,29 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		expect(
 			getByRole( 'button', { name: 'Lead generation performance' } )
 		).toBeInTheDocument();
+	} );
+
+	it( 'renders the gathering breakdown data badge when the dimensions are gathering data', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
+		} );
+		SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS.forEach( ( customDimension ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsCustomDimensionGatheringData( {
+					customDimension,
+					gatheringData: true,
+				} );
+		} );
+
+		const { getAllByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		// One badge per goal-type section (online store and lead generation).
+		expect( getAllByText( 'Gathering data' ) ).toHaveLength( 2 );
 	} );
 
 	it( 'collapses and expands a goal-type list', async () => {
