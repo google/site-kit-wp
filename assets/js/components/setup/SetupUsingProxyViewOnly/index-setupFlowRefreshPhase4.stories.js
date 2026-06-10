@@ -28,7 +28,10 @@ import {
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import AnalyticsIcon from '@/svg/graphics/analytics.svg';
+import SearchConsoleIcon from '@/svg/graphics/search-console.svg';
 import {
+	provideModuleRegistrations,
 	provideModules,
 	provideSiteConnection,
 	provideUserCapabilities,
@@ -83,6 +86,17 @@ export default {
 						active: true,
 						connected: true,
 						shareable: true,
+					},
+				] );
+
+				provideModuleRegistrations( registry, [
+					{
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
+						Icon: SearchConsoleIcon,
+					},
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						Icon: AnalyticsIcon,
 					},
 				] );
 
