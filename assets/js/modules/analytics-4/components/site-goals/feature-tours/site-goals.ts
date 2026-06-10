@@ -48,7 +48,7 @@ const TOUR_READY_CHECK_MAX_TOTAL_WAIT_MS = 5000;
  * wait never cancels the tour. `triggerOnDemandTour` waits for this check
  * before it starts the tour.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @return Promise that always resolves to `true`, when the target renders or the wait ends.
  */
@@ -94,7 +94,7 @@ const defaultStepOptions = {
  * Returns the Google Analytics event category for the Site Goals tour,
  * prefixed with the current view context.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param viewContext The current view context.
  * @return The event category string.
@@ -116,7 +116,7 @@ function gaEventCategory( viewContext: string ) {
  * the notice and the notice is not always rendered. Its copy depends on
  * `isEcommerceOnly`: sales copy when `true`, leads copy when `false`.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param params                    Tour params.
  * @param params.isEcommerceOnly    True when only ecommerce events are detected. Picks the breakdown step copy.

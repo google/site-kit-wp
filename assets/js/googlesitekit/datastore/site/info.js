@@ -998,7 +998,7 @@ export const selectors = {
 	/**
 	 * Checks if any lead event provider plugin is active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} `true` if a lead event provider is active; `false` if not. Returns `undefined` if not yet loaded.
@@ -1010,7 +1010,7 @@ export const selectors = {
 	/**
 	 * Checks if any ecommerce event provider plugin is active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} `true` if an ecommerce event provider is active; `false` if not. Returns `undefined` if not yet loaded.

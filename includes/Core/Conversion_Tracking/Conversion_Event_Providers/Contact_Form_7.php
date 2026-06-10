@@ -27,7 +27,7 @@ class Contact_Form_7 extends Conversion_Events_Provider {
 	/**
 	 * Gets the provider category.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return string Provider category.
 	 */

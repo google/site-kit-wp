@@ -29,7 +29,7 @@ export type { PDFWidgetComponentProps };
 /**
  * A loaded PDF widget ready to render into the report document.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  */
 export interface PDFReportWidget {
 	slug: string;
@@ -42,7 +42,7 @@ export interface PDFReportWidget {
 /**
  * One report section (one widget area) with its loaded widgets.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  */
 export interface PDFReportArea {
 	areaSlug: string;

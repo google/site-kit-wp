@@ -51,7 +51,7 @@ export interface BreakdownNoticeCopy {
  * be resolved from the data store here, instead of being passed in awkwardly
  * from every caller.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param {string} goalType The goal type the notice is shown for.
  * @return {BreakdownNoticeCopy} The `title`, `description` and `ctaLabel`.
