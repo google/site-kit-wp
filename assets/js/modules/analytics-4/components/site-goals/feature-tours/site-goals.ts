@@ -43,13 +43,13 @@ const TOUR_READY_CHECK_MAX_TOTAL_WAIT_MS = 5000;
  *
  * react-joyride skips a step when its target is not on the page. A tour that
  * starts too early skips every step and shows nothing. This check waits for
- * the first step's target to render, five seconds at most, so the tour is
- * never blocked. `triggerOnDemandTour` waits for this check before it starts
- * the tour.
+ * the first step's target to render. After five seconds the tour starts
+ * anyway, so the wait only delays the start and never cancels the tour.
+ * `triggerOnDemandTour` waits for this check before it starts the tour.
  *
  * @since n.e.x.t
  *
- * @return Promise that resolves to `true` once the tour can start.
+ * @return Promise that always resolves to `true`, when the target renders or the wait ends.
  */
 function checkSiteGoalsTourRequirements(): Promise< boolean > {
 	return new Promise( ( resolve ) => {
