@@ -294,9 +294,19 @@ SecondaryAdminWithSharedServices.args = {
 				PERMISSION_READ_SHARED_MODULE_DATA,
 				MODULE_SLUG_ANALYTICS_4
 			) ]: true,
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				MODULE_SLUG_SEARCH_CONSOLE
+			) ]: true,
 		} );
 
 		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
+				active: true,
+				connected: true,
+				shareable: true,
+			},
 			{
 				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
