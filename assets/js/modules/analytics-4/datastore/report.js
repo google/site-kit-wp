@@ -140,9 +140,21 @@ const baseInitialState = {
 const baseResolvers = {
 	*getReport( options = {}, fetchOptions ) {
 		const registry = yield commonActions.getRegistry();
+
+		// Both `getReport` and `fetchGetReport` below get this same list.
+		// Different arguments would make the registry run this resolver
+		// again and send an extra request that cancelling does not stop.
+		// The list holds `fetchOptions`, such as `{ signal }` to cancel
+		// the request, only when the caller gives it, because `undefined`
+		// would move the request error to a different key, where a lookup
+		// with these options finds nothing.
+		const resolverArgs = fetchOptions
+			? [ options, fetchOptions ]
+			: [ options ];
+
 		const existingReport = registry
 			.select( MODULES_ANALYTICS_4 )
-			.getReport( options );
+			.getReport( ...resolverArgs );
 
 		// If there is already a report loaded in state, consider it fulfilled
 		// and don't make an API request.
@@ -150,16 +162,7 @@ const baseResolvers = {
 			return;
 		}
 
-		// Pass the fetch options, such as `{ signal }` to cancel the
-		// request, only when the caller provides them. A trailing
-		// `undefined` argument would save a request error under a
-		// different key, so a consumer reading the error for these report
-		// options would no longer find it.
-		const fetchArgs = fetchOptions
-			? [ options, fetchOptions ]
-			: [ options ];
-
-		yield fetchGetReportStore.actions.fetchGetReport( ...fetchArgs );
+		yield fetchGetReportStore.actions.fetchGetReport( ...resolverArgs );
 	},
 };
 

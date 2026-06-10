@@ -31,6 +31,7 @@ import {
 	provideSiteInfo,
 	subscribeUntil,
 	untilResolved,
+	waitForDefaultTimeouts,
 } from '@tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { MODULES_ANALYTICS_4 } from './constants';
@@ -196,6 +197,11 @@ describe( 'modules/analytics-4 report', () => {
 					.resolveSelect( MODULES_ANALYTICS_4 )
 					.getReport( options, { signal } );
 
+				// The registry starts resolver runs from a timeout. Wait the
+				// timeouts out, so a second run with the same options would
+				// send its request inside this test and fail it here.
+				await waitForDefaultTimeouts();
+
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock.lastOptions().signal ).toBe( signal );
 			} );
@@ -217,6 +223,13 @@ describe( 'modules/analytics-4 report', () => {
 				await registry
 					.resolveSelect( MODULES_ANALYTICS_4 )
 					.getReport( options, { signal } );
+
+				// The registry starts resolver runs from a timeout. Wait the
+				// timeouts out, so a second run with the same options would
+				// send its request inside this test and fail it here.
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				// The store saves the error under the report options alone,
 				// so the same options that read the report also find the

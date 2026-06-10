@@ -20,7 +20,11 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock-jest';
-import { createTestRegistry, provideSiteInfo } from 'tests/js/utils';
+import {
+	createTestRegistry,
+	provideSiteInfo,
+	waitForDefaultTimeouts,
+} from 'tests/js/utils';
 
 /**
  * WordPress dependencies
@@ -132,6 +136,11 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			dates: DATES,
 			signal,
 		} );
+
+		// The registry starts resolver runs from a timeout. Wait the
+		// timeouts out, so an extra run would add its request to the calls
+		// this test counts.
+		await waitForDefaultTimeouts();
 
 		const signals = fetchMock
 			.calls( reportEndpoint )
