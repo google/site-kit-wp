@@ -97,8 +97,11 @@ interface BreakdownDimensionStateArgs {
 
 interface BreakdownDimensionState {
 	hasBreakdownDimensions: boolean | undefined;
-	// Scope derived from the goal types whose dimension is still missing — drives
-	// the "New"/loading copy and the scope passed to the enable handler.
+	/**
+	 * Scope derived from the goal types whose dimension is still missing.
+	 * Determines the "New"/loading copy and the scope passed to the
+	 * "enable" handler.
+	 */
 	missingScope: BreakdownScope;
 }
 
