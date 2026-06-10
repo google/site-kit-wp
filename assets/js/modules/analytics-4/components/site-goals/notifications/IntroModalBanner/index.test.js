@@ -145,7 +145,7 @@ describe( 'IntroModal', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
-		// The tour starts only after its first target is on the page.
+		// The tour waits for its first target, so add it before the click.
 		appendTourTarget();
 
 		const { getByRole } = render( <IntroModal />, {
@@ -197,9 +197,9 @@ describe( 'IntroModal', () => {
 		// to the section anchor, the same actions the navigation chip
 		// performs.
 		expect( global.location.hash ).toBe( '#site-goals' );
-		expect(
-			registry.select( CORE_UI ).getValue( ACTIVE_CONTEXT_ID )
-		).toBe( 'site-goals' );
+		expect( registry.select( CORE_UI ).getValue( ACTIVE_CONTEXT_ID ) ).toBe(
+			'site-goals'
+		);
 		expect( scrollToSpy ).toHaveBeenCalledWith( {
 			top: 12345,
 			behavior: 'smooth',

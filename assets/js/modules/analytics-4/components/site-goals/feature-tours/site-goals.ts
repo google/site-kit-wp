@@ -29,7 +29,7 @@ import { AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY } from '@/js/googlesitekit/widge
 
 export const SITE_GOALS_TOUR = 'site-goals-feature-tour';
 
-// The first step's target. The tour starts only after this element renders.
+// The first step's target. The tour waits for this element before it starts.
 const FIRST_STEP_TARGET = '.googlesitekit-site-goals-primary-action';
 
 // The widgets render the target only after their reports load. Look for
@@ -42,10 +42,11 @@ const TOUR_READY_CHECK_MAX_TOTAL_WAIT_MS = 5000;
  * Waits until the Site Goals tour can start.
  *
  * react-joyride skips a step when its target is not on the page. A tour that
- * starts too early skips every step and shows nothing. This check waits for
- * the first step's target to render. After five seconds the tour starts
- * anyway, so the wait only delays the start and never cancels the tour.
- * `triggerOnDemandTour` waits for this check before it starts the tour.
+ * starts too early skips every step and shows nothing. This check lets the
+ * tour start as soon as the first step's target renders. When the target is
+ * slow, the wait ends after five seconds and the tour starts anyway, so the
+ * wait never cancels the tour. `triggerOnDemandTour` waits for this check
+ * before it starts the tour.
  *
  * @since n.e.x.t
  *
@@ -108,12 +109,12 @@ function gaEventCategory( viewContext: string ) {
  * The tour starts when the user clicks "Show me" on the Site Goals intro modal
  * and runs on the Site Goals widget. The first step points at the key action
  * tile group and the last step points at the goal drivers. The last step's
- * button says "Done" instead of the shared "Got it". The tour starts only
- * after the first step's target renders, because react-joyride skips a step
- * when its target is missing. The breakdown notice step is included only when
- * `hasBreakdownNotice` is true, because that step targets the notice and the
- * notice is not always rendered. Its copy depends on `isEcommerceOnly`: sales
- * copy when `true`, leads copy when `false`.
+ * button says "Done" instead of the shared "Got it". The tour waits for the
+ * first step's target to render, five seconds at most, because react-joyride
+ * skips a step when its target is missing. The breakdown notice step is
+ * included only when `hasBreakdownNotice` is true, because that step targets
+ * the notice and the notice is not always rendered. Its copy depends on
+ * `isEcommerceOnly`: sales copy when `true`, leads copy when `false`.
  *
  * @since n.e.x.t
  *
