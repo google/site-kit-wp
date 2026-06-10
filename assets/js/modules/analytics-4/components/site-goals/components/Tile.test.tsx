@@ -29,10 +29,13 @@ describe( 'Tile', () => {
 		format: { style: 'decimal' },
 	};
 
-	it.each( [ 0, 980 ] )(
-		'hides the change badge and comparison label when the previous value is zero and the current value is %d',
-		( currentValue ) => {
-			const { container, queryByText } = render(
+	it.each( [
+		[ 0, '0' ],
+		[ 980, '980' ],
+	] )(
+		'shows the value and label with no change badge and no comparison label when the previous value is zero and the current value is %d',
+		( currentValue, expectedValue ) => {
+			const { container, getByText, queryByText } = render(
 				<Tile
 					{ ...baseProps }
 					currentValue={ currentValue }
@@ -40,6 +43,8 @@ describe( 'Tile', () => {
 				/>
 			);
 
+			expect( getByText( expectedValue ) ).toBeInTheDocument();
+			expect( getByText( 'Total submissions' ) ).toBeInTheDocument();
 			expect(
 				container.querySelector( '.googlesitekit-change-badge' )
 			).not.toBeInTheDocument();
@@ -47,8 +52,8 @@ describe( 'Tile', () => {
 		}
 	);
 
-	it( 'shows the change badge and comparison label when the previous value is above zero', () => {
-		const { container, getByText } = render(
+	it( 'shows the percentage change badge and comparison label when the previous value is above zero', () => {
+		const { getByText } = render(
 			<Tile
 				{ ...baseProps }
 				currentValue={ 1234 }
@@ -56,9 +61,7 @@ describe( 'Tile', () => {
 			/>
 		);
 
-		expect(
-			container.querySelector( '.googlesitekit-change-badge' )
-		).toBeInTheDocument();
+		expect( getByText( '+12.2%' ) ).toBeInTheDocument();
 		expect( getByText( /Vs\. prev\./ ) ).toBeInTheDocument();
 	} );
 
@@ -72,5 +75,13 @@ describe( 'Tile', () => {
 		);
 
 		expect( getByText( '0%' ) ).toBeInTheDocument();
+	} );
+
+	it( 'shows a -100% change badge when the previous value is above zero and the current value is zero', () => {
+		const { getByText } = render(
+			<Tile { ...baseProps } currentValue={ 0 } previousValue={ 1100 } />
+		);
+
+		expect( getByText( '-100%' ) ).toBeInTheDocument();
 	} );
 } );

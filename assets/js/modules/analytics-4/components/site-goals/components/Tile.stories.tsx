@@ -146,6 +146,7 @@ ZeroDataBothRanges.args = {
 	previousValue: 0,
 	format: { style: 'decimal' },
 };
+ZeroDataBothRanges.scenario = {};
 
 export const CustomDateRange = Template.bind( {} ) as Story< TileProps >;
 CustomDateRange.storyName = 'Custom Date Range (90 days)';
