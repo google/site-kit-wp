@@ -63,6 +63,7 @@ const CountriesGoalDriver: FC< GoalDriverComponentProps > = ( {
 	loading: providedLoading,
 	error: providedError,
 	primaryEvent,
+	breakdownFilter,
 	onExpandableRowsChange,
 } ) => {
 	const dates = useSelect(
@@ -76,8 +77,10 @@ const CountriesGoalDriver: FC< GoalDriverComponentProps > = ( {
 			return undefined;
 		}
 
-		const eventDimensionFilters =
-			getDimensionFiltersForEvents( eventNames );
+		const eventDimensionFilters = getDimensionFiltersForEvents(
+			eventNames,
+			breakdownFilter
+		);
 
 		return {
 			...dates,
@@ -100,7 +103,7 @@ const CountriesGoalDriver: FC< GoalDriverComponentProps > = ( {
 			keepEmptyRows: false,
 			reportID: `analytics-4_site-goals_countries_${ goalType }`,
 		};
-	}, [ dates, goalType, primaryEvent ] );
+	}, [ dates, goalType, primaryEvent, breakdownFilter ] );
 	const report = useSelect(
 		( select: Select ) =>
 			reportOptions

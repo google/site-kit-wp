@@ -63,6 +63,7 @@ const TopTrafficChannelsRateGoalDriver: FC< GoalDriverComponentProps > = ( {
 	loading: providedLoading,
 	error: providedError,
 	primaryEvent,
+	breakdownFilter,
 	onExpandableRowsChange,
 } ) => {
 	const dates = useSelect(
@@ -76,7 +77,10 @@ const TopTrafficChannelsRateGoalDriver: FC< GoalDriverComponentProps > = ( {
 			return undefined;
 		}
 
-		const dimensionFilters = getDimensionFiltersForEvents( eventNames );
+		const dimensionFilters = getDimensionFiltersForEvents(
+			eventNames,
+			breakdownFilter
+		);
 
 		return {
 			...dates,
@@ -93,7 +97,7 @@ const TopTrafficChannelsRateGoalDriver: FC< GoalDriverComponentProps > = ( {
 			keepEmptyRows: false,
 			reportID: `analytics-4_site-goals_top-traffic-channels-rate_${ goalType }`,
 		};
-	}, [ dates, goalType, primaryEvent ] );
+	}, [ dates, goalType, primaryEvent, breakdownFilter ] );
 
 	const report = useSelect(
 		( select: Select ) =>

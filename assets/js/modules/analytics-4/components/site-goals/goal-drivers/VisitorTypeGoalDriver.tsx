@@ -68,6 +68,7 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 	loading: providedLoading,
 	error: providedError,
 	primaryEvent,
+	breakdownFilter,
 	onExpandableRowsChange,
 } ) => {
 	const dates = useSelect(
@@ -79,8 +80,8 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 		[ primaryEvent ]
 	);
 	const dimensionFilters = useMemo(
-		() => getDimensionFiltersForEvents( eventNames ),
-		[ eventNames ]
+		() => getDimensionFiltersForEvents( eventNames, breakdownFilter ),
+		[ eventNames, breakdownFilter ]
 	);
 	const reportOptions = useMemo( () => {
 		if ( ! dates || ! eventNames.length ) {

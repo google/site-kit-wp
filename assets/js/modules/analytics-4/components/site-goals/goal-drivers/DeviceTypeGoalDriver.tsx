@@ -63,6 +63,7 @@ const DeviceTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 	loading: providedLoading,
 	error: providedError,
 	primaryEvent,
+	breakdownFilter,
 	onExpandableRowsChange,
 } ) => {
 	const dates = useSelect(
@@ -76,8 +77,10 @@ const DeviceTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 			return undefined;
 		}
 
-		const eventDimensionFilters =
-			getDimensionFiltersForEvents( eventNames );
+		const eventDimensionFilters = getDimensionFiltersForEvents(
+			eventNames,
+			breakdownFilter
+		);
 
 		return {
 			...dates,
@@ -94,7 +97,7 @@ const DeviceTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 			keepEmptyRows: false,
 			reportID: `analytics-4_site-goals_device-type_${ goalType }`,
 		};
-	}, [ dates, goalType, primaryEvent ] );
+	}, [ dates, goalType, primaryEvent, breakdownFilter ] );
 	const report = useSelect(
 		( select: Select ) =>
 			reportOptions
