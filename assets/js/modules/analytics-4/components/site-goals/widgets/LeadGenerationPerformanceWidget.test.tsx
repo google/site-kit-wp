@@ -27,18 +27,28 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { setItem } from '@/js/googlesitekit/api/cache';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
+	BREAKDOWN_ORIGIN_FORM_KEY,
+	BREAKDOWN_ORIGIN_WIDGET,
+	BREAKDOWN_SCOPE_FORM_KEY,
+	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
+} from '@/js/modules/analytics-4/components/site-goals/constants';
+import {
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { AVAILABILITY_SYNC_CACHE_KEY } from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	DATE_RANGE_OFFSET,
 	ENUM_CONVERSION_EVENTS,
+	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
@@ -51,6 +61,7 @@ import {
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
+import { provideUserCapabilities } from '@tests/js/utils';
 import { surveyTriggerEndpoint } from '../../../../../../../tests/js/mock-survey-endpoints';
 import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
 
@@ -451,11 +462,15 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			.finishResolution( 'getReport', [ countriesOptions ] );
 	}
 
-	beforeEach( () => {
+	beforeEach( async () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		// Mark the breakdown notice's throttled availability sync as already done,
+		// so it doesn't schedule a background sync during these tests.
+		await setItem( AVAILABILITY_SYNC_CACHE_KEY, true );
+		provideUserCapabilities( registry );
 		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 		provideModules( registry, [
 			{
@@ -1097,5 +1112,99 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 				},
 			} )
 		);
+	} );
+
+	function seedReadyReports() {
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+
+		provideAnalytics4MockReport(
+			registry,
+			buildLeadEventsReportOptions( dates, [
+				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+			] )
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+	}
+
+	function seedBreakdownDimensions( gatheringData: boolean ) {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
+		} );
+		SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS.forEach( ( customDimension ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsCustomDimensionGatheringData( {
+					customDimension,
+					gatheringData,
+				} );
+		} );
+	}
+
+	it( 'renders the gathering breakdown data badge when the dimensions are gathering data', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedReadyReports();
+		seedBreakdownDimensions( true );
+
+		const { getByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Gathering breakdown data' ) ).toBeInTheDocument();
+	} );
+
+	it( 'does not render the gathering breakdown data badge when the dimensions have data available', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedReadyReports();
+		seedBreakdownDimensions( false );
+
+		const { queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			queryByText( 'Gathering breakdown data' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders the gathering breakdown data badge alongside the breakdown success notice', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedReadyReports();
+		seedBreakdownDimensions( true );
+
+		// Mark this widget as the instance that just enabled the breakdown so the
+		// success notice from #12801 renders.
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+				[ BREAKDOWN_ORIGIN_FORM_KEY ]: BREAKDOWN_ORIGIN_WIDGET,
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: GOAL_TYPES.LEAD,
+			} );
+
+		const { getByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Gathering breakdown data' ) ).toBeInTheDocument();
+		expect(
+			getByText( /Individual form tracking is now active/i )
+		).toBeInTheDocument();
 	} );
 } );

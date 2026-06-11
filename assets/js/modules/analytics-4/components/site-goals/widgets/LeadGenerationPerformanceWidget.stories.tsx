@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
@@ -550,6 +551,32 @@ Ready.args = {
 		seedGoalDriverReports( registry, [
 			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 		] );
+	},
+};
+
+export const GatheringBreakdownData = Template.bind( {} ) as Story;
+GatheringBreakdownData.storyName = 'Gathering Breakdown Data';
+GatheringBreakdownData.args = {
+	selectedGoalDriverIDs: THREE_VISIBLE_GOAL_DRIVERS,
+	setupRegistry: ( registry ) => {
+		commonSetup( registry );
+		provideAnalytics4MockReport( registry, singleEventReportOptions );
+		provideAnalytics4MockReport( registry, engagementReportOptions );
+		seedGoalDriverReports( registry, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
+		} );
+		SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS.forEach( ( customDimension ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsCustomDimensionGatheringData( {
+					customDimension,
+					gatheringData: true,
+				} );
+		} );
 	},
 };
 

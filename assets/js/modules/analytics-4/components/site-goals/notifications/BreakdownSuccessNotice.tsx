@@ -1,5 +1,5 @@
 /**
- * Site Goals breakdown notice.
+ * Site Goals breakdown success notice.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -29,60 +29,34 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useDispatch } from 'googlesitekit-data';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { SITE_GOALS_BREAKDOWN_NOTICE } from '@/js/modules/analytics-4/components/site-goals/constants';
 
-interface BreakdownNoticeProps {
+interface BreakdownSuccessNoticeProps {
 	title: ReactNode;
 	description: ReactNode;
-	ctaLabel: string;
-	onCTAClick: () => void;
+	onDismiss: () => void;
 	className?: string;
-	ctaInProgress?: boolean;
-	ctaDisabled?: boolean;
-	onDismissComplete?: () => void;
 }
 
-const BreakdownNotice: FC< BreakdownNoticeProps > = ( {
+const BreakdownSuccessNotice: FC< BreakdownSuccessNoticeProps > = ( {
 	title,
 	description,
-	ctaLabel,
-	onCTAClick,
+	onDismiss,
 	className,
-	ctaInProgress,
-	ctaDisabled,
-	onDismissComplete,
 } ) => {
-	const { dismissItem } = useDispatch( CORE_USER );
-
-	async function handleDismiss() {
-		// Wait for the dismissal to persist (which hides the notice) before
-		// triggering the tooltip, so they don't briefly overlap.
-		await dismissItem( SITE_GOALS_BREAKDOWN_NOTICE );
-		onDismissComplete?.();
-	}
-
 	return (
 		<Notice
 			className={ className }
-			type={ NOTICE_TYPES.NEW }
+			type={ NOTICE_TYPES.SUCCESS }
 			title={ title }
 			description={ description }
-			ctaButton={ {
-				label: ctaLabel,
-				onClick: onCTAClick,
-				inProgress: ctaInProgress,
-				disabled: ctaDisabled,
-			} }
 			dismissButton={ {
-				label: __( 'No thanks', 'google-site-kit' ),
-				onClick: handleDismiss,
+				label: __( 'Got it', 'google-site-kit' ),
+				onClick: onDismiss,
 			} }
 		/>
 	);
 };
 
-export default BreakdownNotice;
+export default BreakdownSuccessNotice;
