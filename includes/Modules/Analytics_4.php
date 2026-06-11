@@ -71,6 +71,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Batch_Report;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Lookup;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Destinations;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Enhanced_Measurement_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Form_Metadata;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Google_Tag_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Properties;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Property;
@@ -998,6 +999,11 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				array(
 					'advanced_data_breakdowns_settings' => $this->advanced_data_breakdowns_settings,
 					'service'                           => '',
+				)
+			);
+			$this->datapoints['GET:form-metadata']                           = new Get_Form_Metadata(
+				array(
+					'service' => '',
 				)
 			);
 		}
