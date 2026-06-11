@@ -401,7 +401,7 @@ final class Modules implements Provides_Feature_Metrics {
 	 * Populates modules data to pass to JS.
 	 *
 	 * @since 1.96.0
-	 * @since n.e.x.t Directly register data from modules with inline data.
+	 * @since 1.181.0 Directly register data from modules with inline data.
 	 *
 	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.

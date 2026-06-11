@@ -86,7 +86,7 @@ type WidgetWithPDF = Widget & { pdf: WidgetPDFConfig };
 /**
  * Determines whether a registry widget declares a PDF export configuration.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param widget Registry widget.
  * @return `true` when the widget has a `pdf` config.
@@ -106,7 +106,7 @@ const initialState: State = { stage: STAGE_IDLE };
 /**
  * Validates and applies stage transitions for the export state machine.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param state  Current reducer state.
  * @param action Dispatched action with a `nextStage` payload.
@@ -127,7 +127,7 @@ function reducer( state: State, action: Action ): State {
 /**
  * Determines whether the given error is an `AbortError` DOMException.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param error The caught value.
  * @return `true` when the error is an AbortError.
@@ -149,7 +149,7 @@ function throwIfAborted( signal: AbortSignal ): void {
  * Returns a promise that resolves on the next animation frame, or rejects
  * if the signal is aborted before the frame fires.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param signal Abort signal to observe.
  * @return Resolves on the next frame, rejects on abort.

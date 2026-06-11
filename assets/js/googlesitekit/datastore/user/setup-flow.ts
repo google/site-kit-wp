@@ -52,7 +52,7 @@ export const selectors = {
 	/**
 	 * Determines whether the current user has access to the feature tour.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return {(boolean|undefined)} Whether the user has access to the feature tour, or `undefined` if module access has not yet been resolved.
 	 */

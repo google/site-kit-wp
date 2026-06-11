@@ -117,7 +117,7 @@ export const selectors = {
 	/**
 	 * Checks whether only ecommerce conversion reporting events have been detected.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return {(boolean|undefined)} True when ecommerce events are detected and no lead events are detected, otherwise false. Undefined if detected events are not loaded yet.
 	 */

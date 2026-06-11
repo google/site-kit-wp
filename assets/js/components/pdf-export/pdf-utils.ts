@@ -20,7 +20,7 @@
  * Sanitizes a free-form string into a lowercase, hyphen-separated slug
  * suitable for use inside a filename.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param value Input string. Empty and non-string values become an empty slug.
  * @return The sanitized slug.
@@ -41,7 +41,7 @@ function slugify( value: unknown ): string {
 /**
  * Returns the current date as `YYYY-MM-DD` using the local timezone.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param [now] Optional date instance, defaults to `new Date()`.
  * @return The formatted date.
@@ -67,7 +67,7 @@ function getISODate(
  * range are passed through `slugify` so the filename is filesystem-safe on
  * every supported OS.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param siteName    Site name or URL.
  * @param [dateRange] Optional date range slug, e.g. `last-28-days`.
@@ -100,7 +100,7 @@ export function getPDFFilename(
  * anchor element with the `download` attribute, clicking it programmatically,
  * and removing it from the DOM.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param  url      Blob URL pointing to the generated file.
  * @param  filename Suggested filename for the downloaded file.

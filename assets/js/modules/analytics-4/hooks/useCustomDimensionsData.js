@@ -45,7 +45,7 @@ import { isInvalidCustomDimensionError } from '@/js/modules/analytics-4/utils/cu
 /**
  * Custom dimensions data and state.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @typedef {Object} CustomDimensionsData
  * @property {Array<string>|null} customDimensions                    Custom dimensions for the wrapped metric.
