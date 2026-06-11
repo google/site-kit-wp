@@ -26,12 +26,14 @@ import { useState } from '@wordpress/element';
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import {
 	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
 	SITE_GOALS_BREAKDOWN_NOTICE,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { getSiteGoalsTour } from '@/js/modules/analytics-4/components/site-goals/feature-tours/site-goals';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import IntroModalEcommerce from './IntroModalEcommerce';
 import IntroModalEcommerceAndLead from './IntroModalEcommerceAndLead';
@@ -132,6 +134,23 @@ export default function IntroModal() {
 		[]
 	);
 
+	const hasInsufficientAnalyticsAccess = useSelect( ( select: Select ) => {
+		// Skip the access check for view-only users. The check only works
+		// for signed-in users. The shared dashboard already limits this
+		// modal to roles that can view Analytics.
+		if ( ! select( CORE_USER ).isAuthenticated() ) {
+			return false;
+		}
+
+		const hasAccess = select( CORE_MODULES ).hasModuleAccess(
+			MODULE_SLUG_ANALYTICS_4
+		);
+
+		// While the access check is still loading, the modal stays hidden.
+		// It only appears after the check returns `true`.
+		return hasAccess !== true;
+	}, [] );
+
 	function handleClose() {
 		setIsOpen( false );
 		dismissItem( SITE_GOALS_INTRO_MODAL_BANNER );
@@ -155,6 +174,7 @@ export default function IntroModal() {
 		hasEcommerceConversionReportingEvents === undefined ||
 		hasLeadConversionReportingEvents === undefined ||
 		isIntroModalDismissed !== false ||
+		hasInsufficientAnalyticsAccess ||
 		! isOpen
 	) {
 		return null;
