@@ -22,7 +22,7 @@ import { FC, ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -35,9 +35,11 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
+import GatheringBreakdownDataBadge from '@/js/modules/analytics-4/components/site-goals/components/GatheringBreakdownDataBadge';
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import {
+	BREAKDOWN_ORIGIN_WIDGET,
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
@@ -51,9 +53,7 @@ import {
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import BreakdownNotice from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNotice';
-import { useBreakdownNoticeTooltip } from '@/js/modules/analytics-4/components/site-goals/notifications/useBreakdownNoticeTooltip';
-import { useSiteGoalsBreakdownNoticeCopy } from '@/js/modules/analytics-4/components/site-goals/notifications/useSiteGoalsBreakdownNoticeCopy';
+import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
 import {
 	NUMBER_FORMAT,
 	PERCENT_FORMAT,
@@ -93,11 +93,6 @@ const LeadGenerationPerformanceWidget: FC<
 				path: '/TODO-SUPPORT-PATH',
 			} ),
 		[]
-	);
-
-	const showBreakdownTooltip = useBreakdownNoticeTooltip();
-	const breakdownNoticeCopy = useSiteGoalsBreakdownNoticeCopy(
-		GOAL_TYPES.LEAD
 	);
 
 	const detectedLeadEvents = useSelect(
@@ -228,10 +223,20 @@ const LeadGenerationPerformanceWidget: FC<
 	return (
 		<WidgetComponent
 			Header={ WidgetHeaderTitle }
-			headerContents={ __(
-				'Lead generation performance',
-				'google-site-kit'
-			) }
+			headerContents={
+				<Fragment>
+					<span>
+						{ __(
+							'Lead generation performance',
+							'google-site-kit'
+						) }
+					</span>
+					<GatheringBreakdownDataBadge
+						goalType={ GOAL_TYPES.LEAD }
+						variant="widget"
+					/>
+				</Fragment>
+			}
 			collapsible
 		>
 			{ loading && <PreviewBlock width="100%" height="130px" /> }
@@ -307,10 +312,9 @@ const LeadGenerationPerformanceWidget: FC<
 				</TilesGroup>
 			) }
 
-			<BreakdownNotice
-				className="googlesitekit-site-goals-breakdown-notice"
-				onDismissComplete={ showBreakdownTooltip }
-				{ ...breakdownNoticeCopy }
+			<BreakdownNoticeArea
+				origin={ BREAKDOWN_ORIGIN_WIDGET }
+				goalTypes={ [ GOAL_TYPES.LEAD ] }
 			/>
 
 			<TilesGroup

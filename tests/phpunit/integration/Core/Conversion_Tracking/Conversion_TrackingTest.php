@@ -21,6 +21,7 @@ use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking_Settings;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeConversionEventProvider;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeConversionEventProvider_Active;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeEcommerceEventProvider_Active;
+use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeEcommerceEventProvider_Active_Two;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeLeadEventProvider_Active;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\TestCase;
@@ -232,8 +233,10 @@ class Conversion_TrackingTest extends TestCase {
 
 		$this->assertArrayHasKey( 'hasActiveLeadEventProviders', $data );
 		$this->assertArrayHasKey( 'hasActiveEcommerceEventProviders', $data );
+		$this->assertArrayHasKey( 'hasMultipleActiveEcommerceEventProviders', $data );
 		$this->assertFalse( $data['hasActiveLeadEventProviders'] );
 		$this->assertFalse( $data['hasActiveEcommerceEventProviders'] );
+		$this->assertFalse( $data['hasMultipleActiveEcommerceEventProviders'] );
 	}
 
 	public function test_inline_js_base_data__with_active_lead_provider() {
@@ -260,6 +263,22 @@ class Conversion_TrackingTest extends TestCase {
 
 		$this->assertFalse( $data['hasActiveLeadEventProviders'] );
 		$this->assertTrue( $data['hasActiveEcommerceEventProviders'] );
+		// A single active ecommerce provider is not "multiple".
+		$this->assertFalse( $data['hasMultipleActiveEcommerceEventProviders'] );
+	}
+
+	public function test_inline_js_base_data__with_multiple_active_ecommerce_providers() {
+		Conversion_Tracking::$providers = array(
+			FakeEcommerceEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG     => FakeEcommerceEventProvider_Active::class,
+			FakeEcommerceEventProvider_Active_Two::CONVERSION_EVENT_PROVIDER_SLUG => FakeEcommerceEventProvider_Active_Two::class,
+		);
+
+		$this->conversion_tracking->register();
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		$this->assertTrue( $data['hasActiveEcommerceEventProviders'] );
+		$this->assertTrue( $data['hasMultipleActiveEcommerceEventProviders'] );
 	}
 
 	public function test_inline_js_base_data__with_both_active_providers() {

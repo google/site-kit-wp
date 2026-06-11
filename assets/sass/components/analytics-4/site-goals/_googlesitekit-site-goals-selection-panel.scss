@@ -113,6 +113,23 @@
 		margin-top: $grid-gap-desktop;
 	}
 
+	.googlesitekit-site-goals-selection-panel__section-header {
+
+		@media (min-width: $bp-tablet) {
+			align-items: center;
+			display: flex;
+			gap: 10px;
+		}
+
+		.googlesitekit-badge {
+			margin-top: 6px;
+
+			@media (min-width: $bp-tablet) {
+				margin-top: 0;
+			}
+		}
+	}
+
 	.googlesitekit-site-goals-selection-panel__section-toggle {
 		align-items: center;
 		background: transparent;
