@@ -29,12 +29,14 @@ export interface TilesGroupProps {
 	title: string;
 	className?: string;
 	headerCTA?: ReactNode;
+	badge?: ReactNode;
 }
 
 export const TilesGroup: FC< TilesGroupProps > = ( {
 	title,
 	className,
 	headerCTA,
+	badge,
 	children,
 } ) => {
 	const breakpoint = useBreakpoint();
@@ -57,6 +59,11 @@ export const TilesGroup: FC< TilesGroupProps > = ( {
 					</div>
 				) }
 			</div>
+			{ badge && (
+				<div className="googlesitekit-site-goals-tiles-group__badge">
+					{ badge }
+				</div>
+			) }
 			<div className="googlesitekit-site-goals-tiles-group__tiles">
 				{ children }
 			</div>
