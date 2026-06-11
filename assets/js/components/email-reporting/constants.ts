@@ -18,3 +18,8 @@
 
 export const USER_SETTINGS_SELECTION_PANEL_OPENED_KEY =
 	'emailReportingUserSettingsSelectionPanelOpened';
+
+// A golink with this key opens the Site Kit dashboard with the email
+// reporting setup panel. The key is registered in `Email_Reporting::register()`.
+export const EMAIL_REPORTING_SETUP_GOLINK_KEY =
+	'manage-subscription-email-reporting';
