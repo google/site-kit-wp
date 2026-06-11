@@ -36,6 +36,7 @@ import {
 	useRegistry,
 	useSelect,
 } from 'googlesitekit-data';
+import { EMAIL_REPORTING_SETUP_GOLINK_KEY } from '@/js/components/email-reporting/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -207,6 +208,13 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 	);
 	const userName = useSelect(
 		( select: Select ) => select( CORE_USER ).getName(),
+		[]
+	);
+	const emailReportingSetupURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getGoLinkURL(
+				EMAIL_REPORTING_SETUP_GOLINK_KEY
+			),
 		[]
 	);
 	const selectedContextSlugs = useSelect(
@@ -465,6 +473,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 						}
 						generatedAt={ generatedAt }
 						areas={ areas }
+						emailReportingSetupURL={ emailReportingSetupURL }
 					/>
 				);
 
