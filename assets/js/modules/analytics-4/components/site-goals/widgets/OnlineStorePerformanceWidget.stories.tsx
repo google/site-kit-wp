@@ -660,6 +660,20 @@ function seedTabbedBreakdown(
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ discoveryOptions ] );
 
+	// The breakdown custom dimensions exist and are done gathering, so neither
+	// the "enable breakdown" notice nor the gathering badge renders.
+	registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+		availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
+	} );
+	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS.forEach( ( customDimension ) => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsCustomDimensionGatheringData( {
+				customDimension,
+				gatheringData: false,
+			} );
+	} );
+
 	// Partial-data state for the provider dimension.
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( false );
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
