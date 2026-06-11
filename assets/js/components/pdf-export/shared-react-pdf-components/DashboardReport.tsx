@@ -35,6 +35,7 @@ import {
 	PDF_FONT_FAMILY_TEXT,
 } from '@/js/components/pdf-export/pdf-theme';
 import type { PDFReportArea } from '@/js/components/pdf-export/types';
+import PDFEmailReportingNotice from './PDFEmailReportingNotice';
 
 const DEFAULT_PAGE_HEIGHT = 792;
 
@@ -96,6 +97,8 @@ export interface DashboardReportProps {
 	generatedAt: string;
 	pageHeight?: number;
 	areas?: PDFReportArea[];
+	/** Golink URL for the "Set up email reports" button in the email reporting notice. */
+	emailReportingSetupURL?: string;
 }
 
 const DashboardReport: FC< DashboardReportProps > = ( {
@@ -105,6 +108,7 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 	generatedAt,
 	pageHeight = DEFAULT_PAGE_HEIGHT,
 	areas = [],
+	emailReportingSetupURL,
 } ) => {
 	const footerLine = userName
 		? sprintf(
@@ -182,6 +186,9 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 						</View>
 					) ) }
 				</View>
+				<PDFEmailReportingNotice
+					emailReportingSetupURL={ emailReportingSetupURL }
+				/>
 				<View style={ styles.footer }>
 					<Text>{ footerLine }</Text>
 				</View>

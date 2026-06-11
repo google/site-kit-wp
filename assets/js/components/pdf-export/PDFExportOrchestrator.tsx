@@ -209,6 +209,16 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		( select: Select ) => select( CORE_USER ).getName(),
 		[]
 	);
+	// A golink with this key opens the Site Kit dashboard with the email
+	// reporting setup panel. The key is registered in
+	// `Email_Reporting::register()`.
+	const emailReportingSetupURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getGoLinkURL(
+				'manage-subscription-email-reporting'
+			),
+		[]
+	);
 	const selectedContextSlugs = useSelect(
 		( select: Select ) => select( CORE_PDF ).getSelectedContextSlugs(),
 		[]
@@ -465,6 +475,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 						}
 						generatedAt={ generatedAt }
 						areas={ areas }
+						emailReportingSetupURL={ emailReportingSetupURL }
 					/>
 				);
 
