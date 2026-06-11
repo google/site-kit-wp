@@ -25,6 +25,7 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { getSiteGoalsTour } from '@/js/modules/analytics-4/components/site-goals/feature-tours/site-goals';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -37,6 +38,7 @@ import {
 	createTestRegistry,
 	fireEvent,
 	provideModules,
+	provideUserAuthentication,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -65,6 +67,13 @@ describe( 'IntroModal', () => {
 		provideModules( registry, [
 			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
 		] );
+		provideUserAuthentication( registry );
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: MODULE_SLUG_ANALYTICS_4 }
+			);
 		// Breakdown notice gating: dimensions not yet created so the tour
 		// includes the breakdown step.
 		registry
@@ -130,5 +139,38 @@ describe( 'IntroModal', () => {
 				} )
 			);
 		} );
+	} );
+
+	it( 'does not render for an authenticated user without access to Analytics', () => {
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: false },
+				{ slug: MODULE_SLUG_ANALYTICS_4 }
+			);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const { container } = render( <IntroModal />, {
+			registry,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'still renders for a view-only user with detected events', () => {
+		provideUserAuthentication( registry, { authenticated: false } );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const { getByRole } = render( <IntroModal />, {
+			registry,
+		} );
+
+		expect(
+			getByRole( 'button', { name: /show me/i } )
+		).toBeInTheDocument();
 	} );
 } );
