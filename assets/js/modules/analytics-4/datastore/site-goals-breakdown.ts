@@ -825,7 +825,11 @@ const baseSelectors = {
 				// must still render, so check against null rather than falsy.
 				labels[ formID ] =
 					title !== null
-						? `“${ title }”`
+						? sprintf(
+								/* translators: %s: form title, e.g. "Contact". */
+								__( '“%s” form', 'google-site-kit' ),
+								title
+						  )
 						: sprintf(
 								/* translators: %s: numeric form ID used as a fallback label when a form title can't be resolved. */
 								__( 'Form #%s', 'google-site-kit' ),
