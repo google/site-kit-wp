@@ -32,7 +32,10 @@ export function normalizePrimaryEvents(
 	);
 }
 
-export function getDimensionFiltersForEvents( eventNames: string[] ) {
+export function getDimensionFiltersForEvents(
+	eventNames: string[],
+	breakdownFilter?: Record< string, unknown >
+) {
 	if ( ! eventNames.length ) {
 		return undefined;
 	}
@@ -42,5 +45,6 @@ export function getDimensionFiltersForEvents( eventNames: string[] ) {
 			filterType: 'inListFilter',
 			value: eventNames,
 		},
+		...breakdownFilter,
 	};
 }
