@@ -24,11 +24,14 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { Story } from '@/js/types/Story';
+import { provideUserAuthentication } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import IntroModal from './index';
 
@@ -37,8 +40,22 @@ function Template( {
 }: {
 	setupRegistry?: ( registry: WPDataRegistry ) => void;
 } ) {
+	function setupBaseRegistry( registry: WPDataRegistry ) {
+		// An authenticated user only sees the modal when the Analytics
+		// access check returns true, so the stories provide that state.
+		provideUserAuthentication( registry );
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveCheckModuleAccess(
+				{ access: true },
+				{ slug: MODULE_SLUG_ANALYTICS_4 }
+			);
+
+		setupRegistry?.( registry );
+	}
+
 	return (
-		<WithRegistrySetup func={ setupRegistry }>
+		<WithRegistrySetup func={ setupBaseRegistry }>
 			<IntroModal />
 		</WithRegistrySetup>
 	);
