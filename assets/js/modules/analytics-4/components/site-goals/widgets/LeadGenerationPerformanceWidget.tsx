@@ -65,6 +65,7 @@ import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { FormMetadata } from '@/js/modules/analytics-4/datastore/site-goals-breakdown';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
+import { untrailingslashit } from '@/js/util';
 import WidgetFeedbackPrompt from './WidgetFeedbackPrompt';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
@@ -111,7 +112,9 @@ function getFormTabTooltip(
 		// Content is added via createInterpolateElement.
 		// eslint-disable-next-line jsx-a11y/anchor-has-content
 		<a
-			href={ `${ referenceSiteURL }${ pages[ 0 ] }` }
+			// The page path always starts with a slash, so strip the site URL's
+			// trailing one to avoid a double slash.
+			href={ `${ untrailingslashit( referenceSiteURL ) }${ pages[ 0 ] }` }
 			target="_blank"
 			rel="noreferrer noopener"
 		/>
