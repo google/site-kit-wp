@@ -36,7 +36,6 @@ import {
 	useRegistry,
 	useSelect,
 } from 'googlesitekit-data';
-import { EMAIL_REPORTING_SETUP_GOLINK_KEY } from '@/js/components/email-reporting/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -210,10 +209,13 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		( select: Select ) => select( CORE_USER ).getName(),
 		[]
 	);
+	// A golink with this key opens the Site Kit dashboard with the email
+	// reporting setup panel. The key is registered in
+	// `Email_Reporting::register()`.
 	const emailReportingSetupURL = useSelect(
 		( select: Select ) =>
 			select( CORE_SITE ).getGoLinkURL(
-				EMAIL_REPORTING_SETUP_GOLINK_KEY
+				'manage-subscription-email-reporting'
 			),
 		[]
 	);
