@@ -62,7 +62,7 @@ export interface AllTrafficPDFData {
  * intentionally not implemented here, it lands alongside the line chart
  * fill-in via a follow-up ticket.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param {Object}      params          Loader parameters.
  * @param {Object}      params.registry WordPress data registry.

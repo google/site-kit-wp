@@ -18,7 +18,7 @@ use Google\Site_Kit\Core\Util\Sanitize;
 /**
  * Class for per-user Site Goals settings.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  * @access private
  * @ignore
  */
@@ -42,7 +42,7 @@ class Site_Goals_Settings extends User_Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return string The type name.
 	 */
@@ -53,7 +53,7 @@ class Site_Goals_Settings extends User_Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return array The default value.
 	 */
@@ -64,7 +64,7 @@ class Site_Goals_Settings extends User_Setting {
 	/**
 	 * Merges an array of settings to update.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param array $partial Partial settings array to save.
 	 * @return bool True on success, false on failure.
@@ -85,7 +85,7 @@ class Site_Goals_Settings extends User_Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return callable Sanitize callback.
 	 */
@@ -111,7 +111,7 @@ class Site_Goals_Settings extends User_Setting {
 	 * Sanitizes the per-goal-type selections, validating `ecommerce` and `lead`
 	 * sub-keys as string arrays.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param array $selections Goal type selections to sanitize.
 	 * @return array The sanitized selections.

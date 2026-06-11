@@ -205,6 +205,28 @@ describe( 'PDFExportOrchestrator', () => {
 		expect( pdf ).toHaveBeenCalledTimes( 1 );
 	} );
 
+	it( 'passes the email reporting golink URL to the report document', async () => {
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		const reportDocument = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
+		expect( reportDocument.props.emailReportingSetupURL ).toBe(
+			'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=manage-subscription-email-reporting'
+		);
+	} );
+
 	it( 'registers the PDF fonts before rendering the document', async () => {
 		const getData: jest.Mock = jest.fn( () =>
 			Promise.resolve( { data: { totalUsers: 100 } } )
