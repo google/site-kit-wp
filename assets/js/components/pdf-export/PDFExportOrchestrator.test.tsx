@@ -1,5 +1,5 @@
 /**
- * PDFExportOrchestrator tests.
+ * PDFExportOrchestrator component tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -26,6 +26,7 @@ import { pdf } from '@react-pdf/renderer';
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { CONTEXT_MAIN_DASHBOARD_TRAFFIC } from '@/js/googlesitekit/widgets/default-contexts';
@@ -38,6 +39,13 @@ import {
 } from '@tests/js/test-utils';
 import { registerPDFFonts } from './pdf-fonts-react';
 import PDFExportOrchestrator from './PDFExportOrchestrator';
+
+// `@react-pdf/renderer` is auto-mocked via `__mocks__/@react-pdf/renderer.js`,
+// which exports `pdf` as a `jest.fn()` returning a stub `toBlob()`. That lets
+// the orchestrator's BUILDING stage resolve instantly so we can capture the
+// element handed to `pdf()`, all without loading fontkit (which needs Node APIs
+// JSDOM lacks). The mock also renders the report primitives as host elements,
+// so `DashboardReport`/`PDFFooter` import cleanly.
 
 // Stub the download trigger so the anchor click does not attempt a JSDOM
 // navigation; the filename helper stays real.
@@ -55,11 +63,15 @@ function NullComponent() {
 }
 
 describe( 'PDFExportOrchestrator', () => {
+	const ADMIN_URL = 'http://example.com/wp-admin/';
 	let registry: ReturnType< typeof createTestRegistry >;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		provideSiteInfo( registry, { siteName: 'Example Site' } );
+		provideSiteInfo( registry, {
+			adminURL: ADMIN_URL,
+			siteName: 'Example Site',
+		} );
 		provideUserInfo( registry );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-10' );
 		registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
@@ -98,7 +110,60 @@ describe( 'PDFExportOrchestrator', () => {
 		} );
 	}
 
-	it( 'loads the selected widget data with PDF-adjusted dates and builds the PDF', async () => {
+	/**
+	 * Renders the orchestrator and resolves with the React element passed to
+	 * the mocked `pdf()` once the BUILDING stage runs.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return The captured `DashboardReport` element.
+	 */
+	async function renderAndCaptureReport() {
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => expect( pdf ).toHaveBeenCalled() );
+
+		return ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
+	}
+
+	it( 'should pass the resolved dashboard, help center, and privacy policy URLs to DashboardReport', async () => {
+		const reportElement = await renderAndCaptureReport();
+
+		expect( reportElement.props.dashboardURL ).toBe(
+			registry.select( CORE_SITE ).getGoLinkURL( 'dashboard' )
+		);
+		expect( reportElement.props.helpCenterURL ).toBe(
+			'https://sitekit.withgoogle.com/support/'
+		);
+		expect( reportElement.props.privacyPolicyURL ).toBe(
+			'https://policies.google.com/privacy'
+		);
+	} );
+
+	it( 'should build each URL via getGoLinkURL with the expected handler key', async () => {
+		const reportElement = await renderAndCaptureReport();
+
+		expect( reportElement.props.dashboardURL ).toBe(
+			`${ ADMIN_URL }index.php?action=googlesitekit_go&to=dashboard`
+		);
+		expect( reportElement.props.helpCenterURL ).toBe(
+			'https://sitekit.withgoogle.com/support/'
+		);
+		expect( reportElement.props.privacyPolicyURL ).toBe(
+			'https://policies.google.com/privacy'
+		);
+	} );
+
+	it( 'should load the selected widget data with PDF-adjusted dates and build the PDF', async () => {
 		const getData: jest.Mock = jest.fn( () =>
 			Promise.resolve( { data: { totalUsers: 100 } } )
 		);
@@ -125,7 +190,7 @@ describe( 'PDFExportOrchestrator', () => {
 		expect( pdf ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'transitions to error and does not build a PDF when the only widget fails', async () => {
+	it( 'should transition to error and not build a PDF when the only widget fails', async () => {
 		const getData = jest.fn( () =>
 			Promise.reject( new Error( 'report failed' ) )
 		);
@@ -144,7 +209,7 @@ describe( 'PDFExportOrchestrator', () => {
 		expect( pdf ).not.toHaveBeenCalled();
 	} );
 
-	it( 'isolates a failing widget when another widget succeeds', async () => {
+	it( 'should isolate a failing widget when another widget succeeds', async () => {
 		const failing = jest.fn( () =>
 			Promise.reject( new Error( 'report failed' ) )
 		);
@@ -169,7 +234,7 @@ describe( 'PDFExportOrchestrator', () => {
 		expect( pdf ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'registers the PDF fonts before rendering the document', async () => {
+	it( 'should register the PDF fonts before rendering the document', async () => {
 		const getData: jest.Mock = jest.fn( () =>
 			Promise.resolve( { data: { totalUsers: 100 } } )
 		);
@@ -191,7 +256,7 @@ describe( 'PDFExportOrchestrator', () => {
 		).toBeLessThan( ( pdf as jest.Mock ).mock.invocationCallOrder[ 0 ] );
 	} );
 
-	it( 'transitions to error and does not build a PDF when font registration fails', async () => {
+	it( 'should transition to error and not build a PDF when font registration fails', async () => {
 		jest.mocked( registerPDFFonts ).mockImplementationOnce( () => {
 			throw new Error( 'font registration failed' );
 		} );
