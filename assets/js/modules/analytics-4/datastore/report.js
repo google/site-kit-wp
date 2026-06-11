@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { isPlainObject } from 'lodash';
+import { isEmpty, isPlainObject } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -138,19 +138,19 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	*getReport( options = {}, fetchOptions ) {
+	*getReport( options = {}, fetchOptions = {} ) {
 		const registry = yield commonActions.getRegistry();
 
 		// Both `getReport` and `fetchGetReport` below get this same list.
 		// Different arguments would make the registry run this resolver
 		// again and send an extra request that cancelling does not stop.
 		// The list holds `fetchOptions`, such as `{ signal }` to cancel
-		// the request, only when the caller gives it, because `undefined`
+		// the request, only when it has entries, because an empty object
 		// would move the request error to a different key, where a lookup
 		// with these options finds nothing.
-		const resolverArgs = fetchOptions
-			? [ options, fetchOptions ]
-			: [ options ];
+		const resolverArgs = isEmpty( fetchOptions )
+			? [ options ]
+			: [ options, fetchOptions ];
 
 		const existingReport = registry
 			.select( MODULES_ANALYTICS_4 )
@@ -172,6 +172,7 @@ const baseSelectors = {
 	 *
 	 * @since 1.94.0
 	 * @since 1.111.0 Add metricFilters to the options list, to reflect added support for the metric filters.
+	 * @since n.e.x.t Accept optional fetch options as a second argument, such as `{ signal }` to cancel the report request.
 	 *
 	 * @param {Object}         state                      Data store's state.
 	 * @param {Object}         options                    Options for generating the report.
@@ -186,9 +187,11 @@ const baseSelectors = {
 	 * @param {Array.<Object>} [options.orderby]          Optional. An order definition object, or a list of order definition objects, each one containing 'fieldName' and 'sortOrder'. 'sortOrder' must be either 'ASCENDING' or 'DESCENDING'. Default empty array.
 	 * @param {string}         [options.url]              Optional. URL to get a report for only this URL. Default an empty string.
 	 * @param {number}         [options.limit]            Optional. Maximum number of entries to return. Default 1000.
+	 * @param {Object}         [fetchOptions]             Optional. Fetch options that change how the request runs, such as `{ signal }` to cancel it.
 	 * @return {(Array.<Object>|undefined)} An Analytics report; `undefined` if not loaded.
 	 */
-	getReport( state, options ) {
+	// eslint-disable-next-line no-unused-vars -- The fetch options only change how the request runs, so the selector does not read them.
+	getReport( state, options = {}, fetchOptions = {} ) {
 		const { reports } = state;
 
 		return reports[ stringifyObject( options ) ];

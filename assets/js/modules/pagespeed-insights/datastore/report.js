@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isEmpty } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -74,12 +75,20 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	*getReport( url, strategy ) {
+	*getReport( url, strategy, fetchOptions = {} ) {
 		if ( ! url || ! strategy ) {
 			return;
 		}
 
-		yield fetchGetReportStore.actions.fetchGetReport( url, strategy );
+		// The list holds `fetchOptions`, such as `{ signal }` to cancel
+		// the request, only when it has entries, because an empty object
+		// would move the request error to a different key, where a lookup
+		// with the URL and strategy finds nothing.
+		const resolverArgs = isEmpty( fetchOptions )
+			? [ url, strategy ]
+			: [ url, strategy, fetchOptions ];
+
+		yield fetchGetReportStore.actions.fetchGetReport( ...resolverArgs );
 	},
 };
 
@@ -88,13 +97,16 @@ const baseSelectors = {
 	 * Gets a PageSpeed Insights report for the given strategy and URL.
 	 *
 	 * @since 1.10.0
+	 * @since n.e.x.t Accept optional fetch options as a third argument, such as `{ signal }` to cancel the report request.
 	 *
-	 * @param {Object} state    Data store's state.
-	 * @param {string} url      URL used for generating the report.
-	 * @param {string} strategy Strategy used for generating the report.
+	 * @param {Object} state          Data store's state.
+	 * @param {string} url            URL used for generating the report.
+	 * @param {string} strategy       Strategy used for generating the report.
+	 * @param {Object} [fetchOptions] Optional. Fetch options that change how the request runs, such as `{ signal }` to cancel it.
 	 * @return {(Object|undefined)} A PageSpeed Insights report; `undefined` if not loaded.
 	 */
-	getReport( state, url, strategy ) {
+	// eslint-disable-next-line no-unused-vars -- The fetch options only change how the request runs, so the selector does not read them.
+	getReport( state, url, strategy, fetchOptions = {} ) {
 		const { reports } = state;
 
 		return reports[ `${ strategy }::${ url }` ];

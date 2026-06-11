@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isPlainObject } from 'lodash';
+import { isEmpty, isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -127,19 +127,31 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	*getReport( options = {} ) {
+	*getReport( options = {}, fetchOptions = {} ) {
 		const registry = yield commonActions.getRegistry();
+
+		// Both `getReport` and `fetchGetReport` below get this same list.
+		// Different arguments would make the registry run this resolver
+		// again and send an extra request that cancelling does not stop.
+		// The list holds `fetchOptions`, such as `{ signal }` to cancel
+		// the request, only when it has entries, because an empty object
+		// would move the request error to a different key, where a lookup
+		// with these options finds nothing.
+		const resolverArgs = isEmpty( fetchOptions )
+			? [ options ]
+			: [ options, fetchOptions ];
+
 		const existingReport = registry
 			.select( MODULES_SEARCH_CONSOLE )
-			.getReport( options );
+			.getReport( ...resolverArgs );
 
-		// If there are already alerts loaded in state, consider it fulfilled
+		// If there is already a report loaded in state, consider it fulfilled
 		// and don't make an API request.
 		if ( existingReport ) {
 			return;
 		}
 
-		yield fetchGetReportStore.actions.fetchGetReport( options );
+		yield fetchGetReportStore.actions.fetchGetReport( ...resolverArgs );
 	},
 };
 
@@ -148,6 +160,7 @@ const baseSelectors = {
 	 * Gets a Search Console report for the given options.
 	 *
 	 * @since 1.15.0
+	 * @since n.e.x.t Accept optional fetch options as a second argument, such as `{ signal }` to cancel the report request.
 	 *
 	 * @param {Object}         state                Data store's state.
 	 * @param {Object}         options              Options for generating the report.
@@ -156,9 +169,11 @@ const baseSelectors = {
 	 * @param {Array.<string>} [options.dimensions] Optional. List of {@link https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query#dimensionFilterGroups.filters.dimension|dimensions} to group results by. Default an empty array.
 	 * @param {string}         [options.url]        Optional. URL to get a report for only this URL. Default an empty string.
 	 * @param {number}         [options.limit]      Optional. Maximum number of entries to return. Default 1000.
+	 * @param {Object}         [fetchOptions]       Optional. Fetch options that change how the request runs, such as `{ signal }` to cancel it.
 	 * @return {(Array.<Object>|undefined)} A Search Console report; `undefined` if not loaded.
 	 */
-	getReport( state, options = {} ) {
+	// eslint-disable-next-line no-unused-vars -- The fetch options only change how the request runs, so the selector does not read them.
+	getReport( state, options = {}, fetchOptions = {} ) {
 		const { reports } = state;
 
 		return reports[ stringifyObject( options ) ];

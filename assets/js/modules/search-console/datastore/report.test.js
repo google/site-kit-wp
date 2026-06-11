@@ -29,6 +29,7 @@ import {
 	provideSiteInfo,
 	subscribeUntil,
 	untilResolved,
+	waitForDefaultTimeouts,
 } from '@tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from './constants';
@@ -208,6 +209,70 @@ describe( 'modules/search-console report', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock.lastOptions().signal ).toBeUndefined();
+			} );
+
+			it( 'forwards the abort signal from a getReport call to the report request', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, {
+					body: fixtures.report,
+				} );
+
+				const options = {
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
+				};
+				const { signal } = new AbortController();
+
+				await registry
+					.resolveSelect( MODULES_SEARCH_CONSOLE )
+					.getReport( options, { signal } );
+
+				// The registry starts resolver runs from a timeout. Wait the
+				// timeouts out, so a second run with the same options would
+				// send its request inside this test and fail it here.
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBe( signal );
+			} );
+
+			it( 'stores the error under the report options when a getReport call with an abort signal fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( searchAnalyticsRegexp, {
+					body: response,
+					status: 500,
+				} );
+
+				const options = {
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
+				};
+				const { signal } = new AbortController();
+
+				await registry
+					.resolveSelect( MODULES_SEARCH_CONSOLE )
+					.getReport( options, { signal } );
+
+				// The registry starts resolver runs from a timeout. Wait the
+				// timeouts out, so a second run with the same options would
+				// send its request inside this test and fail it here.
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				// The store saves the error under the report options alone,
+				// so the same options that read the report also find the
+				// error.
+				expect(
+					registry
+						.select( MODULES_SEARCH_CONSOLE )
+						.getErrorForSelector( 'getReport', [ options ] )
+				).toEqual( response );
+				expect( console ).toHaveErrored();
 			} );
 		} );
 

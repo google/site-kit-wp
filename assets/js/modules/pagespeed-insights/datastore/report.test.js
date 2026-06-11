@@ -24,6 +24,7 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	untilResolved,
+	waitForDefaultTimeouts,
 } from '@tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { MODULES_PAGESPEED_INSIGHTS } from './constants';
@@ -180,6 +181,70 @@ describe( 'modules/pagespeed-insights report', () => {
 					.select( MODULES_PAGESPEED_INSIGHTS )
 					.getReport( url, strategy );
 				expect( report ).toEqual( undefined );
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'forwards the abort signal from a getReport call to the report request', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
+					{ body: fixtures.pagespeedDesktop, status: 200 }
+				);
+
+				const strategy = 'mobile';
+				const url = 'http://example.com/';
+				const { signal } = new AbortController();
+
+				await registry
+					.resolveSelect( MODULES_PAGESPEED_INSIGHTS )
+					.getReport( url, strategy, { signal } );
+
+				// The registry starts resolver runs from a timeout. Wait the
+				// timeouts out, so a second run with the same arguments would
+				// send its request inside this test and fail it here.
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBe( signal );
+			} );
+
+			it( 'stores the error under the URL and strategy when a getReport call with an abort signal fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
+					{ body: response, status: 500 }
+				);
+
+				const strategy = 'mobile';
+				const url = 'http://example.com/';
+				const { signal } = new AbortController();
+
+				await registry
+					.resolveSelect( MODULES_PAGESPEED_INSIGHTS )
+					.getReport( url, strategy, { signal } );
+
+				// The registry starts resolver runs from a timeout. Wait the
+				// timeouts out, so a second run with the same arguments would
+				// send its request inside this test and fail it here.
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				// The store saves the error under the URL and strategy alone,
+				// so the same arguments that read the report also find the
+				// error.
+				expect(
+					registry
+						.select( MODULES_PAGESPEED_INSIGHTS )
+						.getErrorForSelector( 'getReport', [ url, strategy ] )
+				).toEqual( response );
 				expect( console ).toHaveErrored();
 			} );
 		} );
