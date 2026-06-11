@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Image, StyleSheet, Text } from '@react-pdf/renderer';
 
 /**
  * WordPress dependencies
@@ -37,12 +37,10 @@ import { calculateChange, numFmt } from '@/js/util';
 import type { AllTrafficPDFData } from './getPDFData';
 
 const styles = StyleSheet.create( {
-	chartPlaceholder: {
+	chart: {
 		width: '100%',
-		height: 64,
-		backgroundColor: '#ebeef0',
-		borderRadius: 8,
-		marginTop: 16,
+		height: 200,
+		marginTop: 12,
 	},
 	noData: {
 		fontFamily: PDF_FONT_FAMILY_TEXT,
@@ -53,6 +51,7 @@ const styles = StyleSheet.create( {
 
 export default function DashboardAllTrafficWidgetGA4PDF( {
 	data,
+	chartImages,
 }: PDFWidgetComponentProps ) {
 	const trafficData = data as AllTrafficPDFData[ 'data' ];
 
@@ -98,6 +97,8 @@ export default function DashboardAllTrafficWidgetGA4PDF( {
 
 	const formattedValue = numFmt( currentValue || 0 );
 
+	const lineChart = chartImages?.lineChart;
+
 	return (
 		<PDFWidgetSection
 			heading={ __( 'Your site traffic over time', 'google-site-kit' ) }
@@ -109,7 +110,13 @@ export default function DashboardAllTrafficWidgetGA4PDF( {
 				isNegative={ typeof change === 'number' && change < 0 }
 				changeLabel={ comparisonLabel }
 			/>
-			<View style={ styles.chartPlaceholder } />
+			{ lineChart ? (
+				<Image src={ lineChart } style={ styles.chart } />
+			) : (
+				<Text style={ styles.noData }>
+					{ __( 'No data available.', 'google-site-kit' ) }
+				</Text>
+			) }
 		</PDFWidgetSection>
 	);
 }

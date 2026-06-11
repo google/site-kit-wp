@@ -30,9 +30,39 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
+import renderGoogleChartToDataURI from '@/js/components/pdf-export/render-google-chart-to-data-uri';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import getPDFData, { GetPDFDataParams } from './getPDFData';
 import { getGraphReportArgs, getTotalsReportArgs } from './reportOptions';
+
+jest.mock( '@/js/components/pdf-export/ensure-google-charts-loaded', () => ( {
+	__esModule: true,
+	default: jest.fn(),
+} ) );
+jest.mock(
+	'@/js/components/pdf-export/render-google-chart-to-data-uri',
+	() => ( {
+		// Keep the real `getVisualization` (used by `getPDFData` to build the
+		// DataTable); only the default rasteriser export is mocked.
+		...jest.requireActual(
+			'@/js/components/pdf-export/render-google-chart-to-data-uri'
+		),
+		__esModule: true,
+		default: jest.fn(),
+	} )
+);
+
+const mockEnsureGoogleChartsLoaded =
+	ensureGoogleChartsLoaded as jest.MockedFunction<
+		typeof ensureGoogleChartsLoaded
+	>;
+const mockRenderGoogleChartToDataURI =
+	renderGoogleChartToDataURI as jest.MockedFunction<
+		typeof renderGoogleChartToDataURI
+	>;
+
+const LINE_CHART_DATA_URI = 'data:image/jpeg;base64,TU9DSw==';
 
 type Registry = WPDataRegistry & GetPDFDataParams[ 'registry' ];
 
@@ -47,20 +77,45 @@ const DATES = {
 	compareEndDate: '2025-01-07',
 };
 
+function setGoogle( value: unknown ) {
+	( global as unknown as { google?: unknown } ).google = value;
+}
+
 describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 	let registry: Registry;
+	let dataTable: { addColumn: jest.Mock; addRows: jest.Mock };
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
 		provideSiteInfo( registry );
+
+		mockEnsureGoogleChartsLoaded.mockReset().mockResolvedValue( undefined );
+		mockRenderGoogleChartToDataURI
+			.mockReset()
+			.mockResolvedValue( LINE_CHART_DATA_URI );
+
+		// `getPDFData` builds the chart data via `new google.visualization.DataTable()`.
+		dataTable = { addColumn: jest.fn(), addRows: jest.fn() };
+		setGoogle( {
+			visualization: { DataTable: jest.fn( () => dataTable ) },
+		} );
 	} );
 
-	it( 'resolves both totals and graph reports in parallel and returns the expected shape', async () => {
+	afterEach( () => {
+		setGoogle( undefined );
+	} );
+
+	it( 'should resolve both totals and graph reports in parallel and return the expected shape', async () => {
 		const totalsReport = {
 			totals: [ { metricValues: [ { value: '100' } ] } ],
 		};
 		const graphReport = {
-			rows: [ { metricValues: [ { value: '10' } ] } ],
+			rows: [
+				{
+					dimensionValues: [ { value: '20250108' } ],
+					metricValues: [ { value: '10' } ],
+				},
+			],
 		};
 
 		const totalsArgs = getTotalsReportArgs( DATES );
@@ -84,6 +139,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 
 		expect( result ).toEqual( {
 			data: { totalsReport, graphReport },
+			chartImages: { lineChart: LINE_CHART_DATA_URI },
 		} );
 
 		// The resolver short-circuits when data is already present, so no
@@ -91,7 +147,80 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
-	it( 'forwards the current entity URL when one is set', async () => {
+	it( 'should load Google Charts and rasterise the line chart with the expected DataTable and options', async () => {
+		const totalsReport = {
+			totals: [ { metricValues: [ { value: '100' } ] } ],
+		};
+		const graphReport = {
+			rows: [
+				{
+					dimensionValues: [ { value: '20250108' } ],
+					metricValues: [ { value: '10' } ],
+				},
+				{
+					dimensionValues: [ { value: '20250109' } ],
+					metricValues: [ { value: '20' } ],
+				},
+			],
+		};
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( totalsReport, {
+				options: getTotalsReportArgs( DATES ),
+			} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( graphReport, {
+				options: getGraphReportArgs( {
+					startDate: DATES.startDate,
+					endDate: DATES.endDate,
+				} ),
+			} );
+
+		const signal = new AbortController().signal;
+		const result = await getPDFData( { registry, dates: DATES, signal } );
+
+		expect( mockEnsureGoogleChartsLoaded ).toHaveBeenCalledTimes( 1 );
+
+		// The DataTable mirrors the dashboard's UserCountGraph shape: a date
+		// column followed by a total-users column.
+		expect( dataTable.addColumn ).toHaveBeenNthCalledWith(
+			1,
+			'date',
+			'Day'
+		);
+		expect( dataTable.addColumn ).toHaveBeenNthCalledWith(
+			2,
+			'number',
+			'Users'
+		);
+		expect( dataTable.addRows ).toHaveBeenCalledWith( [
+			[ new Date( 2025, 0, 8 ), 10 ],
+			[ new Date( 2025, 0, 9 ), 20 ],
+		] );
+
+		expect( mockRenderGoogleChartToDataURI ).toHaveBeenCalledTimes( 1 );
+		const renderArgs = mockRenderGoogleChartToDataURI.mock.calls[ 0 ][ 0 ];
+		expect( renderArgs.chartType ).toBe( 'LineChart' );
+		expect( renderArgs.width ).toBe( 540 );
+		expect( renderArgs.height ).toBe( 200 );
+		expect( renderArgs.signal ).toBe( signal );
+		expect( renderArgs.dataTable ).toBe( dataTable );
+		expect( renderArgs.options ).toMatchObject( {
+			curveType: 'function',
+			colors: [ '#3c7251' ],
+			legend: { position: 'none' },
+			hAxis: { format: 'MMM d' },
+			series: { 0: { color: '#3c7251', lineWidth: 3 } },
+		} );
+
+		expect( result.chartImages ).toEqual( {
+			lineChart: LINE_CHART_DATA_URI,
+		} );
+	} );
+
+	it( 'should forward the current entity URL when one is set', async () => {
 		const entityURL = 'https://example.com/post-1';
 		provideSiteInfo( registry, { currentEntityURL: entityURL } );
 
@@ -122,7 +251,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		}
 	} );
 
-	it( 'stops building the report without dispatching a request when signal is already aborted', async () => {
+	it( 'should stop building the report without dispatching a request when signal is already aborted', async () => {
 		const controller = new AbortController();
 		controller.abort();
 
@@ -134,9 +263,12 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 
 		expect( result ).toEqual( { data: null } );
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
+		// No chart work happens once the export is aborted.
+		expect( mockEnsureGoogleChartsLoaded ).not.toHaveBeenCalled();
+		expect( mockRenderGoogleChartToDataURI ).not.toHaveBeenCalled();
 	} );
 
-	it( 'stops building the report when signal aborts after the request is dispatched but is not yet resolved', async () => {
+	it( 'should stop building the report when signal aborts after the request is dispatched but is not yet resolved', async () => {
 		const controller = new AbortController();
 		const deferredResolvers: Array< () => void > = [];
 
@@ -172,5 +304,8 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 
 		expect( result ).toEqual( { data: null } );
 		expect( fetchMock ).toHaveFetched( reportEndpoint );
+		// The post-fetch abort check runs before the chart is rasterised.
+		expect( mockEnsureGoogleChartsLoaded ).not.toHaveBeenCalled();
+		expect( mockRenderGoogleChartToDataURI ).not.toHaveBeenCalled();
 	} );
 } );

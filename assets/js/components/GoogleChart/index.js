@@ -52,6 +52,7 @@ import GatheringDataNotice, {
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import GoogleChartErrorHandler from '@/js/components/GoogleChartErrorHandler';
 import DateMarker from './DateMarker';
+import { CHART_VERSION } from './constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { isSiteKitScreen } from '@/js/util/is-site-kit-screen';
@@ -402,7 +403,7 @@ export default function GoogleChart( props ) {
 					chartEvents={ combinedChartEvents }
 					chartLanguage={ getLocale() }
 					chartType={ chartType }
-					chartVersion="49"
+					chartVersion={ CHART_VERSION }
 					data={ filteredData }
 					loader={ loader }
 					height={ height }
