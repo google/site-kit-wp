@@ -296,8 +296,8 @@ describe( 'modules/analytics-4 site goals breakdown', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getFormTitles( [ '5', '12' ] )
 			).toEqual( {
-				5: '“Contact”',
-				12: '“Newsletter signup”',
+				5: '“Contact” form',
+				12: '“Newsletter signup” form',
 			} );
 		} );
 
@@ -326,7 +326,7 @@ describe( 'modules/analytics-4 site goals breakdown', () => {
 
 			expect(
 				registry.select( MODULES_ANALYTICS_4 ).getFormTitles( [ '7' ] )
-			).toEqual( { 7: '“0”' } );
+			).toEqual( { 7: '“0” form' } );
 		} );
 	} );
 

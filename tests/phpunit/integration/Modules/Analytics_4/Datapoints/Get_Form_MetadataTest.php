@@ -35,9 +35,18 @@ class Get_Form_MetadataTest extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		// Form plugins register their CPTs in production; register one here so the
-		// `read_post` capability check maps correctly for `wpforms` form posts.
-		register_post_type( 'wpforms', array( 'public' => true ) );
+		// Mirror how WPForms registers its CPT in production: non-public, with a
+		// custom capability type (whose capabilities are granted to no one) and
+		// `map_meta_cap` disabled. Title resolution must not depend on post
+		// capabilities, or it would fail for every real form plugin.
+		register_post_type(
+			'wpforms',
+			array(
+				'public'          => false,
+				'capability_type' => 'wpforms_form',
+				'map_meta_cap'    => false,
+			)
+		);
 
 		$this->datapoint = new Get_Form_Metadata( array( 'service' => '' ) );
 	}
@@ -97,7 +106,7 @@ class Get_Form_MetadataTest extends TestCase {
 		);
 	}
 
-	public function test_create_request__does_not_disclose_private_form_to_low_privilege_user() {
+	public function test_create_request__does_not_disclose_unpublished_form_title() {
 		$form_id = self::factory()->post->create(
 			array(
 				'post_title'  => 'Secret form',
@@ -106,15 +115,12 @@ class Get_Form_MetadataTest extends TestCase {
 			)
 		);
 
-		$subscriber = self::factory()->user->create( array( 'role' => 'subscriber' ) );
-		wp_set_current_user( $subscriber );
-
 		$request = $this->datapoint->create_request( $this->data_request( array( $form_id ) ) );
 
-		// The subscriber can't read the private form, so its title isn't disclosed.
+		// Only published forms resolve a title; private/draft/trashed don't.
 		$this->assertNull(
 			$request()[ $form_id ]['title'],
-			'A private form title must not be disclosed to a user who cannot read it.'
+			'An unpublished form title must not be disclosed.'
 		);
 	}
 
