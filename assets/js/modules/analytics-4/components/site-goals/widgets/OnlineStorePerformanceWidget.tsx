@@ -22,7 +22,7 @@ import { FC, ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
-import { Fragment, createInterpolateElement } from '@wordpress/element';
+import { Fragment, useMemo } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -35,11 +35,16 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
+import BreakdownTabs from '@/js/modules/analytics-4/components/site-goals/components/BreakdownTabs';
 import GatheringBreakdownDataBadge from '@/js/modules/analytics-4/components/site-goals/components/GatheringBreakdownDataBadge';
-import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
+import KeyActionTiles from '@/js/modules/analytics-4/components/site-goals/components/KeyActionTiles';
+import OtherSourcesNotice from '@/js/modules/analytics-4/components/site-goals/components/OtherSourcesNotice';
+import PartialDataBadge from '@/js/modules/analytics-4/components/site-goals/components/PartialDataBadge';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import {
 	BREAKDOWN_ORIGIN_WIDGET,
+	SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDERS,
+	SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDER_LABELS,
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
 	SITE_GOALS_VOTE_ID_WIDGET_ONLINE_STORE,
@@ -54,19 +59,18 @@ import {
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { useSiteGoalsBreakdown } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsBreakdown';
 import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
-import {
-	NUMBER_FORMAT,
-	PERCENT_FORMAT,
-} from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import {
 	VisitorEngagementTiles,
 	resolveVisitorEngagementSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
-import { numFmt } from '@/js/util';
 import WidgetFeedbackPrompt from './WidgetFeedbackPrompt';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
@@ -94,7 +98,8 @@ const EVENT_TOTAL_LABELS = {
 
 function getWidgetReportOptions(
 	dates: DateRange,
-	primaryEvent: keyof typeof EVENT_TOTAL_LABELS | undefined
+	primaryEvent: keyof typeof EVENT_TOTAL_LABELS | undefined,
+	breakdownFilter?: Record< string, unknown >
 ) {
 	const primaryEventReportOptions: ReportOptions | null = primaryEvent
 		? {
@@ -103,7 +108,9 @@ function getWidgetReportOptions(
 				dimensions: [ { name: 'eventName' } ],
 				dimensionFilters: {
 					eventName: primaryEvent,
-				},
+					// Scopes the Key action to the selected breakdown tab.
+					...breakdownFilter,
+				} as ReportOptions[ 'dimensionFilters' ],
 				reportID:
 					'analytics-4_online-store-performance-widget_primaryEventReportOptions',
 		  }
@@ -113,6 +120,12 @@ function getWidgetReportOptions(
 		? {
 				...dates,
 				metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
+				...( breakdownFilter
+					? {
+							dimensionFilters:
+								breakdownFilter as ReportOptions[ 'dimensionFilters' ],
+					  }
+					: {} ),
 				reportID: 'analytics-4_site-goals_engagementReportOptions',
 		  }
 		: null;
@@ -217,8 +230,40 @@ const OnlineStorePerformanceWidget: FC<
 		[]
 	) as DateRange;
 
+	// The "Other sources" metric mirrors the Key action's primary event, so detect
+	// unattributed events for that event only.
+	const detectionEventNames = useMemo(
+		() => ( primaryEvent ? [ primaryEvent ] : [] ),
+		[ primaryEvent ]
+	);
+
+	const {
+		breakdownDimension,
+		breakdownValues,
+		hasBreakdownTabs,
+		activeTabID,
+		setSelectedTab,
+		isOtherSourcesTab,
+		hasOtherSources,
+		otherSourcesCount,
+		otherSourcesPreviousCount,
+		breakdownFilter,
+	} = useSiteGoalsBreakdown( GOAL_TYPES.ECOMMERCE, {
+		// Discovery is scoped to the known ecommerce events; the tabs are then
+		// restricted to supported ecommerce plugins via the allowlist.
+		eventNames: CONVERSION_REPORTING_ECOMMERCE_EVENTS,
+		detectionEventNames,
+		supportedValues: SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDERS,
+	} );
+
+	// Only the tabbed breakdown shows the partial-data badge; the badge itself
+	// renders nothing unless the dimension is in partial-data state.
+	const partialDataBadge = hasBreakdownTabs ? (
+		<PartialDataBadge customDimensionSlug={ breakdownDimension } />
+	) : undefined;
+
 	const { primaryEventReportOptions, engagementReportOptions } =
-		getWidgetReportOptions( dates, primaryEvent );
+		getWidgetReportOptions( dates, primaryEvent, breakdownFilter );
 
 	const primaryEventReport =
 		useInViewSelect(
@@ -300,68 +345,58 @@ const OnlineStorePerformanceWidget: FC<
 			}
 			collapsible
 		>
-			{ loading && (
+			{ hasBreakdownTabs && (
+				<BreakdownTabs
+					tabs={ ( breakdownValues ?? [] ).map( ( value ) => ( {
+						id: value,
+						label:
+							SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDER_LABELS[
+								value
+							] ?? value,
+					} ) ) }
+					activeTabID={ activeTabID }
+					onTabChange={ setSelectedTab }
+					showOtherSources={ hasOtherSources }
+					otherSourcesLabel={ __(
+						'Other sources',
+						'google-site-kit'
+					) }
+				/>
+			) }
+
+			{ isOtherSourcesTab && (
+				<OtherSourcesNotice learnMoreURL={ keyActionSupportURL } />
+			) }
+
+			{ loading ? (
 				<PreviewBlock
 					className="googlesitekit-site-goals-tiles-group"
 					width="100%"
 					height="130px"
 				/>
-			) }
-
-			{ ! loading && (
+			) : (
 				<TilesGroup
 					className="googlesitekit-site-goals-primary-action"
 					title={ __( 'Key action', 'google-site-kit' ) }
+					badge={ partialDataBadge }
 				>
-					<Tile
-						title={
-							EVENT_RATE_LABELS[ primaryEvent ] ||
-							__( 'Unknown Event', 'google-site-kit' )
-						}
-						subtitle={ sprintf(
-							/* translators: %s: formatted number of total sessions */
-							__( 'of %s total sessions', 'google-site-kit' ),
-							numFmt( currentSessions, NUMBER_FORMAT )
-						) }
-						infoTooltip={ createInterpolateElement(
-							__(
-								'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form). <a>Learn more</a>',
-								'google-site-kit'
-							),
-							{
-								a: (
-									// Content is added via
-									// createInterpolateElement, so this
-									// can be safely ignored.
-									//
-									// eslint-disable-next-line jsx-a11y/anchor-has-content
-									<a
-										href={ keyActionSupportURL }
-										target="_blank"
-										rel="noreferrer noopener"
-									/>
-								),
-							}
-						) }
-						currentValue={ currentRate }
-						previousValue={ previousRate }
-						format={ PERCENT_FORMAT }
-						primary
-					/>
-
-					<Tile
-						title={
-							EVENT_TOTAL_LABELS[ primaryEvent ] ||
-							__( 'Unknown Event', 'google-site-kit' )
-						}
-						subtitle={ sprintf(
+					<KeyActionTiles
+						isOtherSourcesTab={ isOtherSourcesTab }
+						supportURL={ keyActionSupportURL }
+						rateTitle={ EVENT_RATE_LABELS[ primaryEvent ] }
+						totalTitle={ EVENT_TOTAL_LABELS[ primaryEvent ] }
+						totalSubtitle={ sprintf(
 							/* translators: %s: GA4 event name */
 							__( '“%s” events', 'google-site-kit' ),
 							primaryEvent
 						) }
-						currentValue={ currentPrimaryCount }
-						previousValue={ previousPrimaryCount }
-						format={ NUMBER_FORMAT }
+						currentRate={ currentRate }
+						previousRate={ previousRate }
+						currentSessions={ currentSessions }
+						currentCount={ currentPrimaryCount }
+						previousCount={ previousPrimaryCount }
+						otherSourcesCount={ otherSourcesCount }
+						otherSourcesPreviousCount={ otherSourcesPreviousCount }
 					/>
 				</TilesGroup>
 			) }
@@ -371,33 +406,43 @@ const OnlineStorePerformanceWidget: FC<
 				goalTypes={ [ GOAL_TYPES.ECOMMERCE ] }
 			/>
 
-			<TilesGroup
-				className="googlesitekit-site-goals-visitor-engagement"
-				title={ __(
-					'How are your visitors engaging?',
-					'google-site-kit'
-				) }
-			>
-				<VisitorEngagementTiles
-					dates={ dates }
-					events={ enabledSecondaryEvents }
-				/>
-			</TilesGroup>
+			{ /* The "Other sources" tab aggregates events without a provider, so
+			     it shows the Key action only. */ }
+			{ ! isOtherSourcesTab && (
+				<Fragment>
+					<TilesGroup
+						className="googlesitekit-site-goals-visitor-engagement"
+						title={ __(
+							'How are your visitors engaging?',
+							'google-site-kit'
+						) }
+						badge={ partialDataBadge }
+					>
+						<VisitorEngagementTiles
+							dates={ dates }
+							events={ enabledSecondaryEvents }
+							breakdownFilter={ breakdownFilter }
+						/>
+					</TilesGroup>
 
-			<TilesGroup
-				className="googlesitekit-site-goals-goal-drivers-group"
-				title={ __(
-					'What’s helping you reach your goals?',
-					'google-site-kit'
-				) }
-				headerCTA={ <ChangeGoalDriversLink /> }
-			>
-				<GoalDriverTiles
-					drivers={ drivers }
-					primaryEvent={ primaryEvent }
-					goalType={ GOAL_TYPES.ECOMMERCE }
-				/>
-			</TilesGroup>
+					<TilesGroup
+						className="googlesitekit-site-goals-goal-drivers-group"
+						title={ __(
+							'What’s helping you reach your goals?',
+							'google-site-kit'
+						) }
+						headerCTA={ <ChangeGoalDriversLink /> }
+						badge={ partialDataBadge }
+					>
+						<GoalDriverTiles
+							drivers={ drivers }
+							primaryEvent={ primaryEvent }
+							goalType={ GOAL_TYPES.ECOMMERCE }
+							breakdownFilter={ breakdownFilter }
+						/>
+					</TilesGroup>
+				</Fragment>
+			) }
 
 			<WidgetFeedbackPrompt
 				voteID={ SITE_GOALS_VOTE_ID_WIDGET_ONLINE_STORE }
