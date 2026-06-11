@@ -19,6 +19,14 @@
 	.googlesitekit-widget--analyticsOnlineStorePerformance,
 	.googlesitekit-widget--analyticsLeadGenerationPerformance {
 
+		.googlesitekit-widget__header {
+			border-bottom: 0;
+		}
+
+		.googlesitekit-widget__body {
+			padding-top: 6px;
+		}
+
 		.googlesitekit-widget__header-inner {
 
 			@media (min-width: $bp-tablet) {
@@ -110,6 +118,68 @@
 		line-height: $lh-label-md;
 	}
 
+	.googlesitekit-site-goals-other-sources-notice {
+		margin-bottom: 24px;
+		padding: 0 0 0 24px;
+	}
+
+	.googlesitekit-site-goals-breakdown-tabs {
+		position: relative;
+
+		@media (min-width: $bp-tablet) {
+			margin-bottom: 34px;
+		}
+
+		&::after {
+			border-bottom: 1px solid $c-utility-divider;
+    		bottom: 0.5px;
+			content: " ";
+			display: block;
+    		left: 0;
+			position: absolute;
+    		width: 100%;
+			z-index: 0;
+		}
+
+		.mdc-tab-bar {
+			position: relative;
+    		z-index: 1;
+		}
+
+		.mdc-tab {
+			border-radius: 8px 8px 0 0;
+			color: $c-surfaces-on-background-variant;
+			font-size: $fs-body-md;
+			letter-spacing: 0.25px;
+			line-height: 20px;
+
+			// Drop pointer events on the tab itself so the info tooltip inside can
+			// be hovered (the tab button/ripple would otherwise capture them);
+			// re-enabled on the content below, mirroring the audience tiles tabs.
+			pointer-events: none;
+			transition: background-color 0.2s ease-in-out;
+
+			&:hover {
+				background-color: $c-site-kit-sk-10;
+			}
+
+			.mdc-tab__ripple::before,
+			.mdc-tab__ripple::after {
+				background-color: transparent;
+			}
+
+			.mdc-tab__content {
+				pointer-events: auto;
+			}
+
+			.googlesitekit-info-tooltip {
+				color: $c-neutral-n-500;
+				height: 16px;
+				margin-left: 4px;
+			}
+		}
+	}
+
 	.googlesitekit-site-goals-tiles-group__tiles {
 		align-items: stretch;
 		display: grid;
@@ -123,6 +193,16 @@
 
 		@media (min-width: $bp-desktop) {
 			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+	}
+
+	.googlesitekit-site-goals-tiles-group__badge {
+		margin: -10px 0 12px;
+
+		// The badge component renders nothing outside partial-data state; hide
+		// the wrapper too so its margins don't shift the layout.
+		&:empty {
+			display: none;
 		}
 	}
 
