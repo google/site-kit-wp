@@ -98,18 +98,12 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	protected function resolve_form_metadata( $form_id ) {
 		$title = '';
 
-		// Resolve titles only for known form CPTs (Contact Form 7, WPForms,
-		// Mailchimp/MC4WP, Popup Maker). Echoing `get_the_title()` for arbitrary
-		// post types would let a view-only/shared-dashboard user enumerate titles
-		// of unrelated posts/pages — including private or draft content — by
-		// guessing IDs. The `read_post` check additionally blocks form posts the
-		// current user isn't allowed to read (e.g. private/draft).
 		$post_type = get_post_type( $form_id );
 		$plugin    = $post_type
 			? self::PLUGIN_BY_POST_TYPE[ $post_type ] ?? null
 			: null;
 
-		if ( $plugin && current_user_can( 'read_post', $form_id ) ) {
+		if ( $plugin && 'publish' === get_post_status( $form_id ) ) {
 			$title = get_the_title( $form_id );
 		}
 
