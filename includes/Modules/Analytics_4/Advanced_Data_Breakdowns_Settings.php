@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
 /**
  * Class for reading and writing the advanced data breakdowns settings.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class Advanced_Data_Breakdowns_Settings extends Setting implements Setting_With_
 	/**
 	 * Gets the default settings, with advanced data breakdowns disabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return array Default settings, with `enabled` set to `false`.
 	 */
@@ -43,7 +43,7 @@ class Advanced_Data_Breakdowns_Settings extends Setting implements Setting_With_
 	/**
 	 * Gets the setting's storage type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return string The storage type, `object`.
 	 */
@@ -54,7 +54,7 @@ class Advanced_Data_Breakdowns_Settings extends Setting implements Setting_With_
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return callable Callback that casts `enabled` to a boolean and keeps the stored value when the input is not an array.
 	 */
@@ -77,7 +77,7 @@ class Advanced_Data_Breakdowns_Settings extends Setting implements Setting_With_
 	/**
 	 * Gets the keys a view-only user is allowed to read.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return array Keys a view-only user may read, currently just `enabled`.
 	 */
@@ -88,7 +88,7 @@ class Advanced_Data_Breakdowns_Settings extends Setting implements Setting_With_
 	/**
 	 * Checks whether advanced data breakdowns is enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return bool True when enabled, false otherwise.
 	 */
@@ -102,7 +102,7 @@ class Advanced_Data_Breakdowns_Settings extends Setting implements Setting_With_
 	 * Merges the given settings with the existing ones. Keeps existing values
 	 * for keys not present in the given settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param array $settings Settings to merge in. Keys not given keep their stored value.
 	 * @return array The full settings after the merge.

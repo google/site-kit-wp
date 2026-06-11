@@ -23,7 +23,7 @@ interface Module_With_Inline_Data {
 	 *
 	 * @since 1.158.0
 	 * @since 1.160.0 Include `$modules_data` parameter.
-	 * @since n.e.x.t Remove `$modules_data` parameter.
+	 * @since 1.181.0 Remove `$modules_data` parameter.
 	 *
 	 * @return array An array of the module's inline data.
 	 */

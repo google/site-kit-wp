@@ -86,7 +86,7 @@ interface SiteGoalsRegistry {
 /**
  * Validates the per-goal-type selections of a site goals setting.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param {*}      selections Goal type selections to validate.
  * @param {string} key        The setting key the selections belong to.
@@ -111,7 +111,7 @@ function validateGoalTypeSelections( selections: unknown, key: string ): void {
 /**
  * Validates site goals settings.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param {*} settings Site goals settings to validate.
  * @return {void}
@@ -195,7 +195,7 @@ const baseActions = {
 	 * Marks the breakdown notice tooltip as pending, so the Side Panel parent
 	 * shows it once the panel overlay closes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -209,7 +209,7 @@ const baseActions = {
 	/**
 	 * Clears the pending breakdown notice tooltip flag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -223,7 +223,7 @@ const baseActions = {
 	/**
 	 * Saves the site goals settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param {Object} settings Partial site goals settings to save.
 	 * @return {Object} Object with `response` and `error`.
@@ -281,7 +281,7 @@ const baseSelectors = {
 	/**
 	 * Gets the site goals settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object|undefined} Site goals settings, or `undefined` if not loaded.
@@ -293,7 +293,7 @@ const baseSelectors = {
 	/**
 	 * Gets the selected site goals goal drivers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return {Object|undefined} Goal driver selections, or `undefined` if not loaded.
 	 */
@@ -305,7 +305,7 @@ const baseSelectors = {
 	/**
 	 * Gets the selected site goals visitor engagement events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return {Object|undefined} Visitor engagement selections, or `undefined` if not loaded.
 	 */
@@ -318,7 +318,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether the site goals settings are currently being saved.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} `true` if the settings are being saved, otherwise `false`.
@@ -333,7 +333,7 @@ const baseSelectors = {
 	 * Checks whether the breakdown notice tooltip is pending (deferred from the
 	 * Side Panel until it closes).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} `true` if the tooltip is pending, otherwise `false`.
