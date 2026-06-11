@@ -19,7 +19,7 @@ namespace Google\Site_Kit\Core\Modules;
  * default so it can, for example, allow any dashboard-viewing user to persist a
  * per-user setting.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ interface Permission_Aware_Datapoint {
 	/**
 	 * Checks whether the current user is allowed to access the datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return bool True if the current user is allowed, false otherwise.
 	 */

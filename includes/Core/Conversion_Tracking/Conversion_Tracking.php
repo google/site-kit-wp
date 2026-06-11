@@ -178,7 +178,7 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	/**
 	 * Adds active event provider category flags to the inline base data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param array $data Inline base data.
 	 * @return array Filtered $data.
