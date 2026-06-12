@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -34,24 +34,53 @@ import { useDispatch } from 'googlesitekit-data';
 import NotificationFromServer from '@/js/components/NotificationFromServer';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
-function CoreSiteBannerNotification( { id, ...props } ) {
+function CoreSiteBannerNotification( { id, ctaURL, ctaTarget, ...props } ) {
+	const [ inProgress, setInProgress ] = useState( false );
+
 	const { dismissNotification, acceptNotification } =
 		useDispatch( CORE_SITE );
 
-	const onCTAClick = useCallback( () => {
-		acceptNotification( id );
-	}, [ id, acceptNotification ] );
+	const onCTAClick = useCallback(
+		async ( event ) => {
+			// If `ctaURL` is present, the CTA is rendered as a link with `href`,
+			// which navigates immediately on click. Prevent that so we can mark the
+			// notification as accepted (and invalidate the cached list) before
+			// navigating manually below.
+			if ( ctaURL ) {
+				event.preventDefault();
+			}
 
-	const onDismissClick = useCallback( () => {
-		dismissNotification( id );
+			setInProgress( true );
+			const { error } = await acceptNotification( id );
+			setInProgress( false );
+
+			if ( error || ! ctaURL ) {
+				return;
+			}
+
+			if ( ctaTarget === '_blank' ) {
+				window.open( ctaURL, '_blank' );
+				return;
+			}
+
+			window.location.assign( ctaURL );
+		},
+		[ id, acceptNotification, ctaURL, ctaTarget ]
+	);
+
+	const onDismissClick = useCallback( async () => {
+		await dismissNotification( id );
 	}, [ id, dismissNotification ] );
 
 	return (
 		<NotificationFromServer
 			onCTAClick={ onCTAClick }
 			onDismissClick={ onDismissClick }
+			ctaInProgress={ inProgress }
 			{ ...props }
 			id={ id }
+			ctaURL={ ctaURL }
+			ctaTarget={ ctaTarget }
 		/>
 	);
 }
