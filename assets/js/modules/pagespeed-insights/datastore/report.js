@@ -74,17 +74,18 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
+	// This resolver and the `getReport` selector share one signature,
+	// with no default values. When a request fails, the store saves
+	// the error under the exact arguments of the call, so
+	// `fetchGetReport` below must get the arguments the caller sent.
+	// A default like `fetchOptions = {}` would add an argument the
+	// caller did not send, and an error lookup with only the URL and
+	// strategy would not find the saved error.
 	*getReport( url, strategy, fetchOptions ) {
 		if ( ! url || ! strategy ) {
 			return;
 		}
 
-		// `fetchOptions` has no `= {}` default on purpose. The
-		// `fetchGetReport` call below must get the same arguments the
-		// caller passed. A default `{}` would add an argument when the
-		// caller passes none. The store would then save a request error
-		// under a different key, and a lookup with the URL and strategy
-		// would not find it.
 		yield fetchGetReportStore.actions.fetchGetReport(
 			url,
 			strategy,
@@ -107,7 +108,7 @@ const baseSelectors = {
 	 * @return {(Object|undefined)} A PageSpeed Insights report; `undefined` if not loaded.
 	 */
 	// eslint-disable-next-line no-unused-vars -- The fetch options only change how the request runs, so the selector does not read them.
-	getReport( state, url, strategy, fetchOptions = {} ) {
+	getReport( state, url, strategy, fetchOptions ) {
 		const { reports } = state;
 
 		return reports[ `${ strategy }::${ url }` ];

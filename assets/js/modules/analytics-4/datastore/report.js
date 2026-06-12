@@ -138,15 +138,16 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	*getReport( options = {}, fetchOptions ) {
+	// This resolver and the `getReport` selector share one signature,
+	// with no default values. The registry compares arguments to
+	// decide if a call is new, so the calls below must get the exact
+	// arguments the caller sent. A default like `fetchOptions = {}`
+	// would add an argument the caller did not send, and the registry
+	// would fetch the same report again. A default for `options` alone
+	// would force a caller to write `getReport( undefined, { signal } )`.
+	*getReport( options, fetchOptions ) {
 		const registry = yield commonActions.getRegistry();
 
-		// `fetchOptions` has no `= {}` default on purpose. The `getReport`
-		// and `fetchGetReport` calls below must get the same arguments the
-		// caller passed. A default `{}` would add an argument when the
-		// caller passes none. The registry would then see new arguments,
-		// run this resolver again, and send a second request. That second
-		// request has no abort signal, so cancelling does not stop it.
 		const existingReport = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getReport( options, fetchOptions );
@@ -189,7 +190,7 @@ const baseSelectors = {
 	 * @return {(Array.<Object>|undefined)} An Analytics report; `undefined` if not loaded.
 	 */
 	// eslint-disable-next-line no-unused-vars -- The fetch options only change how the request runs, so the selector does not read them.
-	getReport( state, options = {}, fetchOptions = {} ) {
+	getReport( state, options, fetchOptions ) {
 		const { reports } = state;
 
 		return reports[ stringifyObject( options ) ];
