@@ -445,6 +445,48 @@ describe( 'createFetchStore store', () => {
 				);
 			} );
 
+			it( 'ignores the last argument when it is undefined', () => {
+				const controlCallback = jest.fn();
+				const fetchStoreDefinition = createFetchStore( {
+					baseName: 'getSomeData',
+					argsToParams: STORE_PARAMS.argsToParams,
+					validateParams: STORE_PARAMS.validateParams,
+					controlCallback,
+				} );
+
+				// A resolver always passes its `fetchOptions` argument, so
+				// the action may get `undefined` as its last argument.
+				const action = fetchStoreDefinition.actions.fetchGetSomeData(
+					{},
+					'aValue',
+					undefined
+				);
+
+				action.next(); // START_FETCH
+
+				// When the last argument is `undefined`, the action drops
+				// it, so the error key matches the key of a call without
+				// the argument.
+				expect( action.next().value.payload.args ).toStrictEqual( [
+					{},
+					'aValue',
+				] );
+
+				const fetchStep = action.next(); // FETCH
+				expect( fetchStep.value.payload ).toEqual( {
+					params: { objParam: {}, aParam: 'aValue' },
+					fetchOptions: undefined,
+				} );
+
+				fetchStoreDefinition.controls.FETCH_GET_SOME_DATA(
+					fetchStep.value
+				);
+				expect( controlCallback ).toHaveBeenCalledWith(
+					{ objParam: {}, aParam: 'aValue' },
+					undefined
+				);
+			} );
+
 			it( 'stores the fetching flag by params only, so fetch options leave it unchanged', async () => {
 				fetchMock.getOnce(
 					new RegExp(
@@ -457,7 +499,7 @@ describe( 'createFetchStore store', () => {
 				const requestArgs = [ {}, 'aValue' ];
 
 				// The fetching flag uses the stringified params. A request made
-				// with fetch options still reads as in progress when you check
+				// with fetch options still shows as in progress when you check
 				// it without them.
 				dispatch.fetchGetSomeData( ...requestArgs, { signal } );
 				expect( select.isFetchingGetSomeData( ...requestArgs ) ).toBe(

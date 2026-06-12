@@ -187,13 +187,36 @@ describe( 'modules/adsense report', () => {
 					.resolveSelect( MODULES_ADSENSE )
 					.getReport( options, { signal } );
 
-				// The registry starts resolver runs from a timeout. Wait the
-				// timeouts out, so a second run with the same options would
-				// send its request inside this test and fail it here.
+				// The registry starts resolver runs from a timeout. Wait for
+				// those timeouts to finish, so a second run with the same
+				// options would send its request inside this test and make
+				// the test fail.
 				await waitForDefaultTimeouts();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock.lastOptions().signal ).toBe( signal );
+			} );
+
+			it( 'sends one request and no abort signal when a getReport call has no fetch options', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/report'
+					),
+					{ body: getAdSenseMockResponse( options ) }
+				);
+
+				await registry
+					.resolveSelect( MODULES_ADSENSE )
+					.getReport( options );
+
+				// The registry starts resolver runs from a timeout. Wait for
+				// those timeouts to finish, so a second run with the same
+				// options would send its request inside this test and make
+				// the test fail.
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBeUndefined();
 			} );
 
 			it( 'stores the error under the report options when a getReport call with an abort signal fails', async () => {
@@ -216,14 +239,15 @@ describe( 'modules/adsense report', () => {
 					.resolveSelect( MODULES_ADSENSE )
 					.getReport( options, { signal } );
 
-				// The registry starts resolver runs from a timeout. Wait the
-				// timeouts out, so a second run with the same options would
-				// send its request inside this test and fail it here.
+				// The registry starts resolver runs from a timeout. Wait for
+				// those timeouts to finish, so a second run with the same
+				// options would send its request inside this test and make
+				// the test fail.
 				await waitForDefaultTimeouts();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				// The store saves the error under the report options alone,
+				// The store saves the error under the report options only,
 				// so the same options that read the report also find the
 				// error.
 				expect(

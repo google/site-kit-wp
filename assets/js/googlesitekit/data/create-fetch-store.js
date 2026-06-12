@@ -53,8 +53,11 @@ function defaultValidateParams() {}
  * and the error key, so the params and the fetch options stay separate.
  *
  * This helper reads the fetch options from a last argument that is a plain
- * object with a `signal` key. Give a store's own params other keys, so the
- * helper keeps them separate from the fetch options.
+ * object with a `signal` key. A last argument of `undefined` means the
+ * caller passes no fetch options. So a resolver can always pass its
+ * `fetchOptions` argument, with or without a value. A store's own params
+ * must not use a `signal` key, because the helper finds the fetch options
+ * by that key.
  *
  * @since n.e.x.t
  *
@@ -70,6 +73,16 @@ function separateFetchOptionsFromArgs( args ) {
 		return {
 			fetchArgs: args.slice( 0, -1 ),
 			fetchOptions: lastArg,
+		};
+	}
+
+	// A resolver always passes its `fetchOptions` argument here, so the
+	// last argument can be `undefined`. Drop it. The call then keeps the
+	// same error key as a call without the argument.
+	if ( args.length && lastArg === undefined ) {
+		return {
+			fetchArgs: args.slice( 0, -1 ),
+			fetchOptions: undefined,
 		};
 	}
 
@@ -122,7 +135,7 @@ const {
  *
  * @param {Object}   args                   Arguments for creating the fetch store.
  * @param {string}   args.baseName          The base name to use for all the created infrastructure.
- * @param {Function} args.controlCallback   Callback function to issue the API request. Receives two arguments. The
+ * @param {Function} args.controlCallback   Callback function to send the API request. Receives two arguments. The
  *                                          first is the params object that `argsToParams` builds from the action
  *                                          arguments. The second is the fetch options, such as `{ signal }` to cancel
  *                                          the request, or `undefined` when the caller passes none.

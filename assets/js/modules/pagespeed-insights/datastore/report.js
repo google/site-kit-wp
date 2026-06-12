@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isEmpty } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -75,20 +74,22 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	*getReport( url, strategy, fetchOptions = {} ) {
+	*getReport( url, strategy, fetchOptions ) {
 		if ( ! url || ! strategy ) {
 			return;
 		}
 
-		// The list holds `fetchOptions`, such as `{ signal }` to cancel
-		// the request, only when it has entries, because an empty object
-		// would move the request error to a different key, where a lookup
-		// with the URL and strategy finds nothing.
-		const resolverArgs = isEmpty( fetchOptions )
-			? [ url, strategy ]
-			: [ url, strategy, fetchOptions ];
-
-		yield fetchGetReportStore.actions.fetchGetReport( ...resolverArgs );
+		// `fetchOptions` has no `= {}` default on purpose. The
+		// `fetchGetReport` call below must get the same arguments the
+		// caller passed. A default `{}` would add an argument when the
+		// caller passes none. The store would then save a request error
+		// under a different key, and a lookup with the URL and strategy
+		// would not find it.
+		yield fetchGetReportStore.actions.fetchGetReport(
+			url,
+			strategy,
+			fetchOptions
+		);
 	},
 };
 

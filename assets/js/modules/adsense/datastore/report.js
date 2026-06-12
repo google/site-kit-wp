@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isEmpty, isPlainObject } from 'lodash';
+import { isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -98,23 +98,18 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	*getReport( options = {}, fetchOptions = {} ) {
+	*getReport( options = {}, fetchOptions ) {
 		const registry = yield commonActions.getRegistry();
 
-		// Both `getReport` and `fetchGetReport` below get this same list.
-		// Different arguments would make the registry run this resolver
-		// again and send an extra request that cancelling does not stop.
-		// The list holds `fetchOptions`, such as `{ signal }` to cancel
-		// the request, only when it has entries, because an empty object
-		// would move the request error to a different key, where a lookup
-		// with these options finds nothing.
-		const resolverArgs = isEmpty( fetchOptions )
-			? [ options ]
-			: [ options, fetchOptions ];
-
+		// `fetchOptions` has no `= {}` default on purpose. The `getReport`
+		// and `fetchGetReport` calls below must get the same arguments the
+		// caller passed. A default `{}` would add an argument when the
+		// caller passes none. The registry would then see new arguments,
+		// run this resolver again, and send a second request. That second
+		// request has no abort signal, so cancelling does not stop it.
 		const existingReport = registry
 			.select( MODULES_ADSENSE )
-			.getReport( ...resolverArgs );
+			.getReport( options, fetchOptions );
 
 		// If there is already a report loaded in state, consider it fulfilled
 		// and don't make an API request.
@@ -122,7 +117,10 @@ const baseResolvers = {
 			return;
 		}
 
-		yield fetchGetReportStore.actions.fetchGetReport( ...resolverArgs );
+		yield fetchGetReportStore.actions.fetchGetReport(
+			options,
+			fetchOptions
+		);
 	},
 };
 
