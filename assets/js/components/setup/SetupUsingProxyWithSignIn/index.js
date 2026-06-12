@@ -37,11 +37,20 @@ import {
 	ANALYTICS_NOTICE_CHECKBOX,
 	ANALYTICS_NOTICE_FORM_NAME,
 } from '@/js/components/setup/constants';
+import AnalyticsActivationErrorNotification, {
+	ANALYTICS_ACTIVATION_ERROR_NOTIFICATION,
+} from '@/js/components/setup/SetupUsingProxyWithSignIn/AnalyticsActivationErrorNotification';
 import { setItem } from '@/js/googlesitekit/api/cache';
+import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 import useForwardableParams from '@/js/hooks/useForwardableParams';
@@ -56,12 +65,17 @@ import Splash from './Splash';
 
 export default function SetupUsingProxyWithSignIn() {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const setupFlowRefreshPhase4Enabled = useFeature(
+		'setupFlowRefreshPhase4'
+	);
 	const forwardableParams = useForwardableParams();
 
 	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { activateModule } = useDispatch( CORE_MODULES );
-	const { saveInitialSetupSettings } = useDispatch( CORE_USER );
+	const { saveInitialSetupSettings, setIsAnalyticsSetupComplete } =
+		useDispatch( CORE_USER );
+	const { registerNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const proxySetupURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxySetupURL()
@@ -80,6 +94,50 @@ export default function SetupUsingProxyWithSignIn() {
 		)
 	);
 
+	const setupAnalytics = useCallback( async () => {
+		let moduleReauthURL;
+
+		const { error, response } = await activateModule(
+			MODULE_SLUG_ANALYTICS_4
+		);
+
+		if ( ! error ) {
+			await trackEvent(
+				`${ viewContext }_setup`,
+				setupFlowRefreshEnabled
+					? 'setup_flow_v3_start_with_analytics'
+					: 'start_setup_with_analytics'
+			);
+
+			moduleReauthURL = response.moduleReauthURL;
+
+			if ( setupFlowRefreshEnabled ) {
+				moduleReauthURL = addQueryArgs( moduleReauthURL, {
+					showProgress: true,
+				} );
+
+				setIsAnalyticsSetupComplete( false );
+
+				const { error: saveInitialSetupSettingsError } =
+					await saveInitialSetupSettings();
+
+				if ( saveInitialSetupSettingsError ) {
+					throw saveInitialSetupSettingsError;
+				}
+			}
+		} else {
+			throw error;
+		}
+
+		return moduleReauthURL;
+	}, [
+		activateModule,
+		saveInitialSetupSettings,
+		setIsAnalyticsSetupComplete,
+		setupFlowRefreshEnabled,
+		viewContext,
+	] );
+
 	const onButtonClick = useCallback(
 		async ( event ) => {
 			event.preventDefault();
@@ -87,28 +145,27 @@ export default function SetupUsingProxyWithSignIn() {
 			let moduleReauthURL;
 
 			if ( connectAnalytics ) {
-				const { error, response } = await activateModule(
-					MODULE_SLUG_ANALYTICS_4
-				);
+				try {
+					moduleReauthURL = await setupAnalytics();
+				} catch {
+					if ( setupFlowRefreshPhase4Enabled ) {
+						registerNotification(
+							ANALYTICS_ACTIVATION_ERROR_NOTIFICATION,
+							{
+								Component: () => (
+									<AnalyticsActivationErrorNotification
+										onRetry={ onButtonClick }
+									/>
+								),
+								priority: PRIORITY.ERROR_HIGH,
+								areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
+								viewContexts: [ VIEW_CONTEXT_SPLASH ],
+								isDismissible: false,
+								featureFlag: 'setupFlowRefreshPhase4',
+							}
+						);
 
-				if ( ! error ) {
-					await trackEvent(
-						`${ viewContext }_setup`,
-						setupFlowRefreshEnabled
-							? 'setup_flow_v3_start_with_analytics'
-							: 'start_setup_with_analytics'
-					);
-
-					moduleReauthURL = response.moduleReauthURL;
-
-					if ( setupFlowRefreshEnabled ) {
-						moduleReauthURL = addQueryArgs( moduleReauthURL, {
-							showProgress: true,
-						} );
-
-						await saveInitialSetupSettings( {
-							isAnalyticsSetupComplete: false,
-						} );
+						return;
 					}
 				}
 			}
@@ -169,11 +226,12 @@ export default function SetupUsingProxyWithSignIn() {
 			proxySetupURL,
 			postAuthDashboardURL,
 			isConnected,
-			activateModule,
+			setupAnalytics,
 			forwardableParams,
 			viewContext,
+			registerNotification,
 			setupFlowRefreshEnabled,
-			saveInitialSetupSettings,
+			setupFlowRefreshPhase4Enabled,
 			navigateTo,
 		]
 	);

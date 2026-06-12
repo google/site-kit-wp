@@ -26,6 +26,9 @@ import { withQuery } from '@storybook/addon-queryparams';
  */
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import SetupUsingProxyWithSignIn from '@/js/components/setup/SetupUsingProxyWithSignIn';
+import AnalyticsActivationErrorNotification, {
+	ANALYTICS_ACTIVATION_ERROR_NOTIFICATION,
+} from '@/js/components/setup/SetupUsingProxyWithSignIn/AnalyticsActivationErrorNotification';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
@@ -34,6 +37,11 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import {
+	NOTIFICATION_AREAS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import {
@@ -310,6 +318,46 @@ SecondaryAdminWithSharedServices.parameters = {
 	features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
 };
 SecondaryAdminWithSharedServices.scenario = {};
+
+export const AnalyticsActivationError = Template.bind( {} );
+AnalyticsActivationError.storyName = 'Analytics activation error';
+AnalyticsActivationError.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: false,
+			resettable: false,
+		} );
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification( ANALYTICS_ACTIVATION_ERROR_NOTIFICATION, {
+				Component: () => (
+					<AnalyticsActivationErrorNotification
+						onRetry={ () => null }
+					/>
+				),
+				priority: PRIORITY.ERROR_HIGH,
+				areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
+				viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+				isDismissible: false,
+				featureFlag: 'setupFlowRefreshPhase4',
+			} );
+	},
+};
+
+AnalyticsActivationError.parameters = {
+	features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+};
+
+AnalyticsActivationError.scenario = {};
 
 export default {
 	title: 'Setup / Using Proxy With Sign-in and setupFlowRefresh enabled',

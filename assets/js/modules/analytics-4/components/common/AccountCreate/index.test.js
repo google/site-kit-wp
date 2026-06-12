@@ -506,10 +506,6 @@ describe( 'AccountCreate', () => {
 				const initialSetupSettingsEndpoint = new RegExp(
 					'^/google-site-kit/v1/core/user/data/initial-setup-settings'
 				);
-				fetchMock.getOnce( initialSetupSettingsEndpoint, {
-					body: { isAnalyticsSetupComplete: false },
-					status: 200,
-				} );
 				fetchMock.postOnce( initialSetupSettingsEndpoint, {
 					body: { isAnalyticsSetupComplete: true },
 					status: 200,

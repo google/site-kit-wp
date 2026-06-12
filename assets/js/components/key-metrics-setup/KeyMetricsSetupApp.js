@@ -90,9 +90,8 @@ export default function KeyMetricsSetupApp() {
 
 	const isSavingInitialSetup = useSelect(
 		( select ) =>
-			select( CORE_USER ).isFetchingSaveInitialSetupSettings( {
-				isAnalyticsSetupComplete: true,
-			} ) || select( CORE_LOCATION ).isNavigating()
+			select( CORE_USER ).isFetchingSaveInitialSetupSettings() ||
+			select( CORE_LOCATION ).isNavigating()
 	);
 
 	const isGA4Connected = useSelect( ( select ) =>
@@ -108,11 +107,7 @@ export default function KeyMetricsSetupApp() {
 	);
 
 	const saveInitialSetupError = useSelect( ( select ) =>
-		select( CORE_USER ).getErrorForAction( 'saveInitialSetupSettings', [
-			{
-				isAnalyticsSetupComplete: true,
-			},
-		] )
+		select( CORE_USER ).getErrorForAction( 'saveInitialSetupSettings' )
 	);
 
 	const values = useSelect(
@@ -125,6 +120,7 @@ export default function KeyMetricsSetupApp() {
 	const {
 		saveUserInputSettings,
 		saveInitialSetupSettings,
+		setIsAnalyticsSetupComplete,
 		clearActionError,
 	} = useDispatch( CORE_USER );
 
@@ -186,9 +182,9 @@ export default function KeyMetricsSetupApp() {
 	} );
 
 	const saveInitialSetup = useCallback( async () => {
-		const response = await saveInitialSetupSettings( {
-			isAnalyticsSetupComplete: true,
-		} );
+		setIsAnalyticsSetupComplete( true );
+
+		const response = await saveInitialSetupSettings();
 
 		if ( response.error ) {
 			return;
@@ -211,17 +207,14 @@ export default function KeyMetricsSetupApp() {
 	}, [
 		dashboardURL,
 		saveInitialSetupSettings,
+		setIsAnalyticsSetupComplete,
 		navigateTo,
 		forwardableParams,
 		isInitialSetupFlow,
 	] );
 
 	const submitChanges = useCallback( async () => {
-		clearActionError( 'saveInitialSetupSettings', [
-			{
-				isAnalyticsSetupComplete: true,
-			},
-		] );
+		clearActionError( 'saveInitialSetupSettings' );
 
 		const response = await saveUserInputSettings();
 

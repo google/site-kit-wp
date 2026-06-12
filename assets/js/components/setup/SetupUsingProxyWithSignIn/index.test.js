@@ -752,6 +752,218 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			} );
 		} );
 
+		it( 'should show an error notification and prevent navigation when Analytics activation fails with setupFlowRefreshPhase4 enabled', async () => {
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/modules/data/activation'
+				),
+				{
+					body: {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					},
+					status: 500,
+				}
+			);
+
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( ANALYTICS_NOTICE_FORM_NAME, {
+					[ ANALYTICS_NOTICE_CHECKBOX ]: true,
+				} );
+
+			provideModuleRegistrations( registry );
+
+			const { getByRole, getByText, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click(
+				getByRole( 'button', { name: /sign in with google/i } )
+			);
+
+			await waitFor( () => {
+				expect(
+					getByText( 'Connecting Site Kit failed' )
+				).toBeInTheDocument();
+			} );
+
+			await waitFor( () => {
+				expect( global.location.assign ).not.toHaveBeenCalled();
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		it( 'should show an error notification and prevent navigation when saving initial setup settings fails with setupFlowRefreshPhase4 enabled', async () => {
+			fetchMock.postOnce(
+				initialSetupSettingsEndpoint,
+				{
+					body: {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					},
+					status: 500,
+				},
+				{ overwriteRoutes: true }
+			);
+
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/modules/data/activation'
+				),
+				{ body: { success: true } }
+			);
+
+			fetchMock.getOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/user/data/authentication'
+				),
+				{
+					body: {
+						authenticated: true,
+						requiredScopes: [
+							'https://www.googleapis.com/auth/analytics.readonly',
+						],
+						grantedScopes: [],
+						unsatisfiedScopes: [
+							'https://www.googleapis.com/auth/analytics.readonly',
+						],
+						needsReauthentication: true,
+					},
+				}
+			);
+
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( ANALYTICS_NOTICE_FORM_NAME, {
+					[ ANALYTICS_NOTICE_CHECKBOX ]: true,
+				} );
+
+			provideModuleRegistrations( registry );
+
+			const { getByRole, getByText, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click(
+				getByRole( 'button', { name: /sign in with google/i } )
+			);
+
+			await waitFor( () => {
+				expect(
+					getByText( 'Connecting Site Kit failed' )
+				).toBeInTheDocument();
+			} );
+
+			expect( global.location.assign ).not.toHaveBeenCalled();
+			expect( console ).toHaveErrored();
+		} );
+
+		it( 'should retry plugin setup when the Analytics activation error notification CTA is clicked', async () => {
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/modules/data/activation'
+				),
+				{
+					body: {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					},
+					status: 500,
+				}
+			);
+
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/modules/data/activation'
+				),
+				{ body: { success: true } }
+			);
+
+			fetchMock.postOnce( initialSetupSettingsEndpoint, {
+				body: { settings: { isAnalyticsSetupComplete: false } },
+			} );
+
+			fetchMock.getOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/user/data/authentication'
+				),
+				{
+					body: {
+						authenticated: true,
+						requiredScopes: [
+							'https://www.googleapis.com/auth/analytics.readonly',
+						],
+						grantedScopes: [],
+						unsatisfiedScopes: [
+							'https://www.googleapis.com/auth/analytics.readonly',
+						],
+						needsReauthentication: true,
+					},
+				}
+			);
+
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( ANALYTICS_NOTICE_FORM_NAME, {
+					[ ANALYTICS_NOTICE_CHECKBOX ]: true,
+				} );
+
+			provideModuleRegistrations( registry );
+
+			const { getByRole, getByText, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click(
+				getByRole( 'button', { name: /sign in with google/i } )
+			);
+
+			await waitFor( () => {
+				expect(
+					getByText( 'Connecting Site Kit failed' )
+				).toBeInTheDocument();
+			} );
+
+			fireEvent.click(
+				getByRole( 'button', { name: /retry plugin setup/i } )
+			);
+
+			await act( () =>
+				registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getAdminReauthURL()
+			);
+
+			await waitFor( () => {
+				expect( global.location.assign ).toHaveBeenCalled();
+			} );
+		} );
+
 		it( 'should allow exiting the setup', async () => {
 			registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 				adminURL: 'http://example.com/wp-admin/',
