@@ -48,6 +48,7 @@ export interface GoalDriverComponentProps {
 	limit?: number;
 	goalType: GoalType;
 	primaryEvent?: string | string[];
+	breakdownFilter?: Record< string, unknown >;
 	onExpandableRowsChange?: (
 		id: GoalDriverID,
 		hasExpandableRows: boolean

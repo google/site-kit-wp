@@ -48,6 +48,7 @@ interface GoalDriverTilesProps {
 	hasExpandableRows?: boolean;
 	primaryEvent?: string | string[];
 	goalType: GoalType;
+	breakdownFilter?: Record< string, unknown >;
 }
 
 interface RenderableGoalDriver extends GoalDriverTilesDriver {
@@ -65,6 +66,7 @@ const GoalDriverTiles: FC< GoalDriverTilesProps > = ( {
 	hasExpandableRows,
 	primaryEvent,
 	goalType,
+	breakdownFilter,
 } ) => {
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
@@ -120,6 +122,7 @@ const GoalDriverTiles: FC< GoalDriverTilesProps > = ( {
 							<DriverComponent
 								goalType={ goalType }
 								primaryEvent={ primaryEvent }
+								breakdownFilter={ breakdownFilter }
 								limit={ limit }
 								onExpandableRowsChange={
 									onExpandableRowsChange

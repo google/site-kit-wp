@@ -43,20 +43,26 @@ interface DateRange {
 interface VisitorEngagementTilesProps {
 	dates: DateRange;
 	events?: VisitorEngagementEventID[];
+	breakdownFilter?: Record< string, unknown >;
 }
 
 const VisitorEngagementTiles: FC< VisitorEngagementTilesProps > = ( {
 	dates,
 	events = [],
+	breakdownFilter,
 } ) => {
 	return (
 		<Fragment>
-			<EngagementRateTile dates={ dates } />
+			<EngagementRateTile
+				dates={ dates }
+				breakdownFilter={ breakdownFilter }
+			/>
 			{ events.map( ( eventName ) => (
 				<VisitorEngagementEventTile
 					key={ eventName }
 					dates={ dates }
 					eventName={ eventName }
+					breakdownFilter={ breakdownFilter }
 				/>
 			) ) }
 		</Fragment>
