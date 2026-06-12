@@ -19,7 +19,12 @@
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { HOUR_IN_SECONDS } from '@/js/util';
 import { mockLocation } from '@tests/js/mock-browser-utils';
+import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -50,11 +55,22 @@ describe( 'CoreSiteBannerNotification', () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification( defaultProps.id, {
+				Component: () => null,
+				areaSlug: NOTIFICATION_AREAS.HEADER,
+				isDismissible: true,
+			} );
+
 		windowOpenMock = jest.fn();
 		global.open = windowOpenMock;
 	} );
 
-	it( 'marks the notification as accepted before navigating to the CTA URL', async () => {
+	it( 'marks the notification as accepted and dismisses it before navigating to the CTA URL', async () => {
 		let resolveMarkNotification;
 		const markNotificationPromise = new Promise( ( resolve ) => {
 			resolveMarkNotification = resolve;
@@ -62,6 +78,9 @@ describe( 'CoreSiteBannerNotification', () => {
 
 		fetchMock.postOnce( markNotificationsEndpoint, () => {
 			return markNotificationPromise;
+		} );
+		fetchMock.postOnce( dismissItemEndpoint, {
+			body: [ defaultProps.id ],
 		} );
 
 		const { getByRole } = render(
@@ -72,6 +91,7 @@ describe( 'CoreSiteBannerNotification', () => {
 		fireEvent.click( getByRole( 'button', { name: 'Go to page' } ) );
 
 		expect( global.location.assign ).not.toHaveBeenCalled();
+		expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
 
 		await waitFor( () => {
 			expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
@@ -88,6 +108,14 @@ describe( 'CoreSiteBannerNotification', () => {
 					},
 				},
 			} );
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+				body: {
+					data: {
+						slug: 'test-notification',
+						expiration: HOUR_IN_SECONDS,
+					},
+				},
+			} );
 			expect( global.location.assign ).toHaveBeenCalledWith(
 				'https://example.com/page'
 			);
@@ -98,6 +126,9 @@ describe( 'CoreSiteBannerNotification', () => {
 		fetchMock.postOnce( markNotificationsEndpoint, {
 			body: 'true',
 			status: 200,
+		} );
+		fetchMock.postOnce( dismissItemEndpoint, {
+			body: [ defaultProps.id ],
 		} );
 
 		const { getByRole } = render(
@@ -111,6 +142,14 @@ describe( 'CoreSiteBannerNotification', () => {
 		fireEvent.click( getByRole( 'button', { name: /Go to page/ } ) );
 
 		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+				body: {
+					data: {
+						slug: 'test-notification',
+						expiration: HOUR_IN_SECONDS,
+					},
+				},
+			} );
 			expect( windowOpenMock ).toHaveBeenCalledWith(
 				'https://example.com/page',
 				'_blank'
@@ -120,7 +159,7 @@ describe( 'CoreSiteBannerNotification', () => {
 		expect( global.location.assign ).not.toHaveBeenCalled();
 	} );
 
-	it( 'does not navigate when marking the notification as accepted fails', async () => {
+	it( 'does not navigate or dismiss from the queue when marking the notification as accepted fails', async () => {
 		fetchMock.postOnce( markNotificationsEndpoint, {
 			body: {
 				code: 'internal_server_error',
@@ -141,6 +180,7 @@ describe( 'CoreSiteBannerNotification', () => {
 			expect( fetchMock ).toHaveFetched( markNotificationsEndpoint );
 		} );
 
+		expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
 		expect( global.location.assign ).not.toHaveBeenCalled();
 		expect( windowOpenMock ).not.toHaveBeenCalled();
 		expect( console ).toHaveErrored();
