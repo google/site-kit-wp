@@ -178,22 +178,28 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	/**
 	 * Adds active event provider category flags to the inline base data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param array $data Inline base data.
 	 * @return array Filtered $data.
 	 */
 	protected function inline_js_base_data( $data ) {
-		$data['hasActiveLeadEventProviders']      = false;
-		$data['hasActiveEcommerceEventProviders'] = false;
+		$data['hasActiveLeadEventProviders']              = false;
+		$data['hasActiveEcommerceEventProviders']         = false;
+		$data['hasMultipleActiveEcommerceEventProviders'] = false;
+
+		$active_ecommerce_providers = 0;
 
 		foreach ( $this->get_active_providers() as $provider ) {
 			if ( Conversion_Events_Provider::CATEGORY_LEAD === $provider->get_category() ) {
 				$data['hasActiveLeadEventProviders'] = true;
 			} elseif ( Conversion_Events_Provider::CATEGORY_ECOMMERCE === $provider->get_category() ) {
 				$data['hasActiveEcommerceEventProviders'] = true;
+				++$active_ecommerce_providers;
 			}
 		}
+
+		$data['hasMultipleActiveEcommerceEventProviders'] = $active_ecommerce_providers > 1;
 
 		return $data;
 	}

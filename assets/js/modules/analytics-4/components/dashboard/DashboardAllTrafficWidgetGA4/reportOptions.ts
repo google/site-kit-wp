@@ -38,7 +38,7 @@ const TOTAL_USERS_METRIC: ReportOptions[ 'metrics' ] = [
  * `useAllTrafficWidgetReport`; the PDF loader combines it inside
  * `getTotalsReportArgs` below.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param {Object} [options]                  Options.
  * @param {string} [options.compareStartDate] Comparison start date.
@@ -72,7 +72,7 @@ export function getTotalsReportOptions( {
 /**
  * Builds the report-options fragment for the All Visitors date-dimension graph report.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param {Object} [options]                  Options.
  * @param {Object} [options.dimensionFilters] Dimension filters keyed by dimension name.
@@ -104,7 +104,7 @@ export function getGraphReportOptions( {
  * Used by the PDF loader, which has the full date range, entity URL, and
  * dimension filters available up-front.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param {Object} options                    Options.
  * @param {string} options.startDate          Report start date.
@@ -150,7 +150,7 @@ export function getTotalsReportArgs( {
 /**
  * Builds the complete GA4 `getReport` args for the All Visitors date-dimension graph report.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param {Object} options                    Options.
  * @param {string} options.startDate          Report start date.

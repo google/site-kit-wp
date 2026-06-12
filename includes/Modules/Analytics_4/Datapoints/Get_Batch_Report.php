@@ -23,7 +23,7 @@ use WP_Error;
 /**
  * Get batch report datapoint class.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ class Get_Batch_Report extends Shareable_Datapoint implements Executable_Datapoi
 	/**
 	 * Module settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 * @var Settings
 	 */
 	private $settings;
@@ -40,7 +40,7 @@ class Get_Batch_Report extends Shareable_Datapoint implements Executable_Datapoi
 	/**
 	 * Context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 * @var Context
 	 */
 	private $context;
@@ -48,7 +48,7 @@ class Get_Batch_Report extends Shareable_Datapoint implements Executable_Datapoi
 	/**
 	 * Closure that returns whether the current request is for shared data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 * @var \Closure
 	 */
 	private $is_shared_request;
@@ -56,7 +56,7 @@ class Get_Batch_Report extends Shareable_Datapoint implements Executable_Datapoi
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -70,7 +70,7 @@ class Get_Batch_Report extends Shareable_Datapoint implements Executable_Datapoi
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return mixed Request object on success, or WP_Error on failure.
@@ -130,7 +130,7 @@ class Get_Batch_Report extends Shareable_Datapoint implements Executable_Datapoi
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data Data request object.

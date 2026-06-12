@@ -35,10 +35,28 @@ export const SITE_GOALS_MAX_SELECTED_DRIVERS = 6;
 
 export const SITE_GOALS_BREAKDOWN_NOTICE = 'site_goals_breakdown_notice';
 
-export const SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS = [
-	'googlesitekit_event_provider',
-	'googlesitekit_form_id',
-];
+export const SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE: Record<
+	string,
+	string
+> = {
+	[ GOAL_TYPES.ECOMMERCE ]: 'googlesitekit_event_provider',
+	[ GOAL_TYPES.LEAD ]: 'googlesitekit_form_id',
+};
+
+export const SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS = Object.values(
+	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE
+);
+
+export const SITE_GOALS_BREAKDOWN_NOTIFICATION = 'site_goals_breakdown';
+
+export const BREAKDOWN_ORIGIN_WIDGET = 'widget';
+export const BREAKDOWN_ORIGIN_PANEL = 'panel';
+
+export const BREAKDOWN_ORIGIN_FORM_KEY = 'breakdownOrigin';
+export const BREAKDOWN_SCOPE_FORM_KEY = 'breakdownScope';
+export const BREAKDOWN_DISMISSED_FORM_KEY = 'breakdownDismissed';
+
+export const BREAKDOWN_SCOPE_BOTH = 'both';
 
 export const SITE_GOALS_DEFAULT_SELECTED_DRIVERS = {
 	[ GOAL_TYPES.ECOMMERCE ]: [

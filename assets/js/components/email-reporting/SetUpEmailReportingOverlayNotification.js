@@ -83,6 +83,7 @@ export default function SetUpEmailReportingOverlayNotification( {
 			'google-site-kit'
 		),
 		dismissLabel: __( 'Got it', 'google-site-kit' ),
+		isCenteredOnMobile: false,
 	};
 
 	const showTooltip = useShowTooltip( tooltipSettings );

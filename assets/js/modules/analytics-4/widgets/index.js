@@ -121,7 +121,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
  * The PDF orchestrator awaits `preload()` to resolve the chunk before handing
  * the component to `@react-pdf`, whose renderer does not honour `Suspense`.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param {Function} factory Dynamic import factory returning `{ default }`.
  * @return {Object} Lazy component with a `preload` method.
