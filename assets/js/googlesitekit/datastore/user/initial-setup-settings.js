@@ -31,9 +31,11 @@ import {
 	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { CORE_USER } from './constants';
+const { clearActionError, setErrorForAction } = errorStoreActions;
 
 // Actions
 const SET_IS_ANALYTICS_SETUP_COMPLETE = 'SET_IS_ANALYTICS_SETUP_COMPLETE';
@@ -86,30 +88,33 @@ const baseActions = {
 	 *
 	 * @since 1.164.0
 	 *
-	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	saveInitialSetupSettings: createValidatedAction(
-		( settings = {} ) => {
-			invariant(
-				isPlainObject( settings ),
-				'Initial setup settings should be an object to save.'
-			);
-		},
-		function* ( settings = {} ) {
+		() => {},
+		function* () {
 			const registry = yield commonActions.getRegistry();
-			const initialSetupSettings = yield commonActions.await(
-				registry.resolveSelect( CORE_USER ).getInitialSetupSettings()
+
+			yield clearActionError( 'saveInitialSetupSettings' );
+
+			const initialSetupSettings =
+				registry.select( CORE_USER ).getInitialSetupSettings() || {};
+
+			invariant(
+				isPlainObject( initialSetupSettings ),
+				'Initial setup settings should be an object.'
 			);
 
-			const finalSettings = {
-				...initialSetupSettings,
-				...settings,
-			};
+			const { response, error } =
+				yield fetchSaveInitialSetupSettingsStore.actions.fetchSaveInitialSetupSettings(
+					initialSetupSettings
+				);
 
-			return yield fetchSaveInitialSetupSettingsStore.actions.fetchSaveInitialSetupSettings(
-				finalSettings
-			);
+			if ( error ) {
+				yield setErrorForAction( error, 'saveInitialSetupSettings' );
+			}
+
+			return { response, error };
 		}
 	),
 

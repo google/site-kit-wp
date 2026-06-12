@@ -49,6 +49,18 @@
 			}
 		}
 
+		.googlesitekit-notice-container {
+			margin: $grid-gap-phone $grid-gap-phone 0 $grid-gap-phone;
+
+			@media (min-width: $bp-nonMobile) {
+				margin: $grid-gap-desktop $grid-gap-desktop 0 $grid-gap-desktop;
+			}
+
+			@media (min-width: $bp-desktop) {
+				margin: 0 10px 0 0;
+			}
+		}
+
 		.googlesitekit-setup__title {
 			display: inline-block;
 			margin: 0.67em 0;
@@ -147,18 +159,6 @@
 		.googlesitekit-setup__wrapper {
 			border-radius: 0;
 			flex-grow: 1;
-		}
-
-		.googlesitekit-setup__reset-notice {
-			margin: $grid-gap-phone $grid-gap-phone 0 $grid-gap-phone;
-
-			@media (min-width: $bp-nonMobile) {
-				margin: $grid-gap-desktop $grid-gap-desktop 0 $grid-gap-desktop;
-			}
-
-			@media (min-width: $bp-desktop) {
-				margin: 0 10px 0 0;
-			}
 		}
 	}
 
