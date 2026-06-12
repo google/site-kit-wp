@@ -310,7 +310,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 		);
 	} );
 
-	it( 'should render activation error state and dismiss CTA when "Got it" is clicked', async () => {
+	it( 'should render normal CTA again when "Got it" is clicked from activation error state', async () => {
 		registry.dispatch( CORE_SITE ).setInternalServerError( {
 			id: ANALYTICS_SETUP_ERROR,
 			description: 'This is an error',
@@ -341,10 +341,13 @@ describe( 'SearchFunnelWidgetGA4', () => {
 				registry
 					.select( CORE_USER )
 					.isItemDismissed( 'analytics-setup-cta-search-funnel' )
-			).toBe( true );
+			).toBe( false );
 			expect(
 				queryByText( 'Analytics setup failed' )
 			).not.toBeInTheDocument();
+			expect(
+				getByRole( 'button', { name: 'Set up Analytics' } )
+			).toBeInTheDocument();
 		} );
 	} );
 

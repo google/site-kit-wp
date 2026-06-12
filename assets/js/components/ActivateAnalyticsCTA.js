@@ -205,7 +205,6 @@ export default function ActivateAnalyticsCTA( {
 
 	function handleActivationErrorDismiss() {
 		clearInternalServerError();
-		handleDismiss();
 	}
 
 	const onClickCallback = analyticsModuleActive
