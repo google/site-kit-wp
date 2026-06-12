@@ -24,6 +24,7 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	untilResolved,
+	waitForDefaultTimeouts,
 } from '@tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { MODULES_PAGESPEED_INSIGHTS } from './constants';
@@ -61,6 +62,46 @@ describe( 'modules/pagespeed-insights report', () => {
 					.fetchGetReport( url, strategy );
 
 				expect( response ).toEqual( fixtures.pagespeedDesktop );
+			} );
+
+			it( 'forwards the abort signal from the fetch options to the report request', async () => {
+				const strategy = 'desktop';
+				const url = 'http://example.com/';
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
+					{ body: fixtures.pagespeedDesktop, status: 200 }
+				);
+
+				const { signal } = new AbortController();
+
+				await registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.fetchGetReport( url, strategy, { signal } );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBe( signal );
+			} );
+
+			it( 'sends no abort signal to the report request when the call has no fetch options', async () => {
+				const strategy = 'desktop';
+				const url = 'http://example.com/';
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
+					{ body: fixtures.pagespeedDesktop, status: 200 }
+				);
+
+				await registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.fetchGetReport( url, strategy );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBeUndefined();
 			} );
 		} );
 	} );
@@ -140,6 +181,97 @@ describe( 'modules/pagespeed-insights report', () => {
 					.select( MODULES_PAGESPEED_INSIGHTS )
 					.getReport( url, strategy );
 				expect( report ).toEqual( undefined );
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'forwards the abort signal from a getReport call to the report request', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
+					{ body: fixtures.pagespeedDesktop, status: 200 }
+				);
+
+				const strategy = 'mobile';
+				const url = 'http://example.com/';
+				const { signal } = new AbortController();
+
+				await registry
+					.resolveSelect( MODULES_PAGESPEED_INSIGHTS )
+					.getReport( url, strategy, { signal } );
+
+				// The registry starts resolver runs from a timeout. Wait for
+				// those timeouts to finish, so a second run with the same
+				// arguments would send its request inside this test and make
+				// the test fail.
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBe( signal );
+			} );
+
+			it( 'sends one request and no abort signal when a getReport call has no fetch options', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
+					{ body: fixtures.pagespeedDesktop, status: 200 }
+				);
+
+				const strategy = 'mobile';
+				const url = 'http://example.com/';
+
+				await registry
+					.resolveSelect( MODULES_PAGESPEED_INSIGHTS )
+					.getReport( url, strategy );
+
+				// The registry starts resolver runs from a timeout. Wait for
+				// those timeouts to finish, so a second run with the same
+				// arguments would send its request inside this test and make
+				// the test fail.
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBeUndefined();
+			} );
+
+			it( 'stores the error under the URL and strategy when a getReport call with an abort signal fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
+					{ body: response, status: 500 }
+				);
+
+				const strategy = 'mobile';
+				const url = 'http://example.com/';
+				const { signal } = new AbortController();
+
+				await registry
+					.resolveSelect( MODULES_PAGESPEED_INSIGHTS )
+					.getReport( url, strategy, { signal } );
+
+				// The registry starts resolver runs from a timeout. Wait for
+				// those timeouts to finish, so a second run with the same
+				// arguments would send its request inside this test and make
+				// the test fail.
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				// The store saves the error under the URL and strategy only,
+				// so the same arguments that read the report also find the
+				// error.
+				expect(
+					registry
+						.select( MODULES_PAGESPEED_INSIGHTS )
+						.getErrorForSelector( 'getReport', [ url, strategy ] )
+				).toEqual( response );
 				expect( console ).toHaveErrored();
 			} );
 		} );

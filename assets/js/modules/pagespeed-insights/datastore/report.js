@@ -41,11 +41,14 @@ import { MODULES_PAGESPEED_INSIGHTS } from './constants';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
-	controlCallback: ( { strategy, url } ) => {
-		return get( 'modules', MODULE_SLUG_PAGESPEED_INSIGHTS, 'pagespeed', {
-			strategy,
-			url,
-		} );
+	controlCallback: ( { strategy, url }, { signal } = {} ) => {
+		return get(
+			'modules',
+			MODULE_SLUG_PAGESPEED_INSIGHTS,
+			'pagespeed',
+			{ strategy, url },
+			{ signal }
+		);
 	},
 	reducerCallback: createReducer( ( state, report, { strategy, url } ) => {
 		state.reports = state.reports || {};
@@ -71,12 +74,23 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	*getReport( url, strategy ) {
+	// This resolver and the `getReport` selector share one signature,
+	// with no default values. When a request fails, the store saves
+	// the error under the exact arguments of the call, so
+	// `fetchGetReport` below must get the arguments the caller sent.
+	// A default like `fetchOptions = {}` would add an argument the
+	// caller did not send, and an error lookup with only the URL and
+	// strategy would not find the saved error.
+	*getReport( url, strategy, fetchOptions ) {
 		if ( ! url || ! strategy ) {
 			return;
 		}
 
-		yield fetchGetReportStore.actions.fetchGetReport( url, strategy );
+		yield fetchGetReportStore.actions.fetchGetReport(
+			url,
+			strategy,
+			fetchOptions
+		);
 	},
 };
 
@@ -85,13 +99,16 @@ const baseSelectors = {
 	 * Gets a PageSpeed Insights report for the given strategy and URL.
 	 *
 	 * @since 1.10.0
+	 * @since n.e.x.t Accept optional fetch options as a third argument, such as `{ signal }` to cancel the report request.
 	 *
-	 * @param {Object} state    Data store's state.
-	 * @param {string} url      URL used for generating the report.
-	 * @param {string} strategy Strategy used for generating the report.
+	 * @param {Object} state          Data store's state.
+	 * @param {string} url            URL used for generating the report.
+	 * @param {string} strategy       Strategy used for generating the report.
+	 * @param {Object} [fetchOptions] Optional. Fetch options that change how the request runs, such as `{ signal }` to cancel it.
 	 * @return {(Object|undefined)} A PageSpeed Insights report; `undefined` if not loaded.
 	 */
-	getReport( state, url, strategy ) {
+	// eslint-disable-next-line no-unused-vars -- The fetch options only change how the request runs, so the selector does not read them.
+	getReport( state, url, strategy, fetchOptions ) {
 		const { reports } = state;
 
 		return reports[ `${ strategy }::${ url }` ];

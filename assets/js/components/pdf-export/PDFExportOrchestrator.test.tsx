@@ -56,6 +56,9 @@ function NullComponent() {
 
 describe( 'PDFExportOrchestrator', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
+	const OriginalAbortController = global.AbortController;
+	const originalCreateObjectURL = global.URL.createObjectURL;
+	const originalRevokeObjectURL = global.URL.revokeObjectURL;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -64,11 +67,23 @@ describe( 'PDFExportOrchestrator', () => {
 		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-10' );
 		registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
 
+		global.URL.createObjectURL = jest.fn( () => 'blob:mock-url' );
+		global.URL.revokeObjectURL = jest.fn();
+	} );
+
+	afterEach( () => {
+		// Clear the mocks after each test. Clearing before a test would erase a
+		// call that the test still needs to check.
 		( pdf as jest.Mock ).mockClear();
 		jest.mocked( registerPDFFonts ).mockClear();
 
-		global.URL.createObjectURL = jest.fn( () => 'blob:mock-url' );
-		global.URL.revokeObjectURL = jest.fn();
+		// Put the real `AbortController` back after a test replaced it with the
+		// recording subclass.
+		global.AbortController = OriginalAbortController;
+
+		// Put the real URL helpers back after the mocks from `beforeEach`.
+		global.URL.createObjectURL = originalCreateObjectURL;
+		global.URL.revokeObjectURL = originalRevokeObjectURL;
 	} );
 
 	function registerPDFWidget(
@@ -96,6 +111,27 @@ describe( 'PDFExportOrchestrator', () => {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
+	}
+
+	// The orchestrator creates its own `AbortController` on mount and keeps it
+	// private. To read that controller's signal in a test, replace the global
+	// constructor with a subclass that records each new instance. The records
+	// cover only the controllers built during the test. A spy on
+	// `AbortController.prototype.abort` would also count the unmount cleanup
+	// from a prior test, which React runs during this test's first render.
+	function recordExportControllers(): AbortController[] {
+		const controllers: AbortController[] = [];
+
+		class RecordingAbortController extends OriginalAbortController {
+			constructor() {
+				super();
+				controllers.push( this );
+			}
+		}
+
+		global.AbortController = RecordingAbortController;
+
+		return controllers;
 	}
 
 	it( 'loads the selected widget data with PDF-adjusted dates and builds the PDF', async () => {
@@ -233,5 +269,60 @@ describe( 'PDFExportOrchestrator', () => {
 		} );
 
 		expect( pdf ).not.toHaveBeenCalled();
+	} );
+
+	it( 'aborts the running requests and shows the error when the export fails', async () => {
+		// Register a widget so the export reaches the BUILDING stage, then make
+		// that stage fail with a non-abort error so the orchestrator runs its
+		// catch path.
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [],
+		} );
+
+		( pdf as jest.Mock ).mockReturnValueOnce( {
+			toBlob: jest.fn( () =>
+				Promise.reject( new Error( 'build failed' ) )
+			),
+		} );
+
+		const controllers = recordExportControllers();
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'error' );
+		} );
+
+		// The error transition aborts the export's controller. The signal then
+		// reports aborted, so any request that is still running stops.
+		expect( controllers[ 0 ].signal.aborted ).toBe( true );
+	} );
+
+	it( 'does not abort the controller on a successful export', async () => {
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [],
+		} );
+
+		const controllers = recordExportControllers();
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		// A successful export reaches COMPLETE without an abort. Its signal
+		// still reports not aborted while the component stays mounted.
+		expect( controllers[ 0 ].signal.aborted ).toBe( false );
 	} );
 } );

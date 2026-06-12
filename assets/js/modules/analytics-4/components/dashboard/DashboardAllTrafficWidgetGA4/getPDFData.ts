@@ -29,6 +29,8 @@ import { getGraphReportArgs, getTotalsReportArgs } from './reportOptions';
 
 export interface GetPDFDataParams {
 	registry: {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Registry actions are loosely typed in this codebase.
+		dispatch: ( storeName: string ) => any;
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Registry selectors are loosely typed in this codebase.
 		resolveSelect: ( storeName: string ) => any;
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Registry selectors are loosely typed in this codebase.
@@ -52,9 +54,13 @@ export interface AllTrafficPDFData {
  * Loads the GA4 reports needed by the All Visitors PDF widget.
  *
  * Resolves the totals and date-dimension graph reports in parallel via the
- * registry, short-circuiting between awaits if the supplied signal is aborted.
- * The chart rasterisation step is intentionally not implemented here, it lands
- * alongside the line chart fill-in via a follow-up ticket.
+ * registry, stopping early between awaits when the supplied signal is
+ * aborted. Forwards the signal to each report request, so cancelling the
+ * export also stops any request that is still running. Invalidates the
+ * resolutions left by earlier runs, so a rerun after a cancelled or failed
+ * export fetches the reports again. The chart rasterisation step is
+ * intentionally not implemented here, it lands alongside the line chart
+ * fill-in via a follow-up ticket.
  *
  * @since 1.181.0
  *
@@ -91,9 +97,24 @@ export default async function getPDFData( {
 		url,
 	} );
 
+	// The registry remembers each `getReport` call by its arguments, and
+	// every abort signal looks the same to it. After a cancelled or failed
+	// run, the registry would treat the calls below as already done and
+	// return `undefined` reports without fetching. Invalidate the earlier
+	// calls, so this run fetches the reports again. A report that already
+	// loaded stays in state, so a successful earlier run adds no extra
+	// request.
+	const { invalidateResolution } = registry.dispatch( MODULES_ANALYTICS_4 );
+	invalidateResolution( 'getReport', [ totalsArgs, { signal } ] );
+	invalidateResolution( 'getReport', [ graphArgs, { signal } ] );
+
 	const [ totalsReport, graphReport ] = await Promise.all( [
-		registry.resolveSelect( MODULES_ANALYTICS_4 ).getReport( totalsArgs ),
-		registry.resolveSelect( MODULES_ANALYTICS_4 ).getReport( graphArgs ),
+		registry
+			.resolveSelect( MODULES_ANALYTICS_4 )
+			.getReport( totalsArgs, { signal } ),
+		registry
+			.resolveSelect( MODULES_ANALYTICS_4 )
+			.getReport( graphArgs, { signal } ),
 	] );
 
 	if ( signal.aborted ) {
