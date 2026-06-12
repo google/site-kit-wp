@@ -19,6 +19,8 @@
 /**
  * Internal dependencies
  */
+import { createCacheKey } from '@/js/googlesitekit/api';
+import { getItem, setItem } from '@/js/googlesitekit/api/cache';
 import { createTestRegistry } from '@tests/js/utils';
 import { CORE_SITE } from './constants';
 import { actions, selectors } from './index';
@@ -80,6 +82,69 @@ describe( 'core/site notifications', () => {
 					).toThrow();
 				}
 			);
+
+			it.each( [ [ 'accepted' ], [ 'dismissed' ] ] )(
+				'invalidates notifications API cache on success when notification state is "%s".',
+				async ( notificationState ) => {
+					fetchMock.postOnce( markNotificationsEndpoint, {
+						body: 'true',
+						status: 200,
+					} );
+
+					const cacheKey = createCacheKey(
+						'core',
+						'site',
+						'notifications'
+					);
+					expect( await setItem( cacheKey, 'test-value' ) ).toBe(
+						true
+					);
+					expect( ( await getItem( cacheKey ) ).value ).toEqual(
+						'test-value'
+					);
+
+					await registry
+						.dispatch( CORE_SITE )
+						.fetchMarkNotification( {
+							notificationID: 'abc',
+							notificationState,
+						} );
+
+					expect( ( await getItem( cacheKey ) ).value ).toBeFalsy();
+				}
+			);
+
+			it( 'does not invalidate notifications API cache when the API returns an error.', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetchMock.postOnce( markNotificationsEndpoint, {
+					body: response,
+					status: 500,
+				} );
+
+				const cacheKey = createCacheKey(
+					'core',
+					'site',
+					'notifications'
+				);
+				expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );
+				expect( ( await getItem( cacheKey ) ).value ).toEqual(
+					'test-value'
+				);
+
+				await registry.dispatch( CORE_SITE ).fetchMarkNotification( {
+					notificationID: 'abc',
+					notificationState: 'accepted',
+				} );
+
+				expect( ( await getItem( cacheKey ) ).value ).toEqual(
+					'test-value'
+				);
+				expect( console ).toHaveErrored();
+			} );
 		} );
 		describe( 'acceptNotification', () => {
 			it( 'accepts a notification with a valid notification ID.', () => {
