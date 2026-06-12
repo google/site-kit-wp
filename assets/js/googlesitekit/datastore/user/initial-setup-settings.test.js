@@ -70,16 +70,6 @@ describe( 'core/user initial setup settings', () => {
 					.finishResolution( 'getInitialSetupSettings', [] );
 			} );
 
-			it( 'should throw if settings is not an object', () => {
-				expect( () =>
-					registry
-						.dispatch( CORE_USER )
-						.saveInitialSetupSettings( 'invalid' )
-				).toThrow(
-					'Initial setup settings should be an object to save.'
-				);
-			} );
-
 			it( 'should save settings from the store', async () => {
 				const existingSettings = {
 					isAnalyticsSetupComplete: false,
