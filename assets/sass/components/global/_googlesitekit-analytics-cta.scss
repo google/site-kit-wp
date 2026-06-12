@@ -145,6 +145,11 @@
 			}
 		}
 
+		.googlesitekit-activate-analytics-cta__title {
+			color: $c-surfaces-on-surface;
+			margin: 0 0 4px;
+		}
+
 		.googlesitekit-activate-analytics-cta__actions {
 			align-items: center;
 			display: flex;
@@ -177,6 +182,10 @@
 					background-color: transparent;
 				}
 
+				.googlesitekit-activate-analytics-cta--error & {
+					color: $c-utility-on-error-container;
+				}
+
 				&:hover:not(:disabled) {
 					background-color: $c-interactive-tertiary-hover;
 				}
@@ -189,6 +198,44 @@
 
 			.googlesitekit-activate-analytics-cta__button--primary {
 				@include mdc-button-filled-accessible( $c-surfaces-on-surface );
+			}
+		}
+
+		&.googlesitekit-activate-analytics-cta--error {
+			background-color: $c-utility-error-container;
+
+			.googlesitekit-activate-analytics-cta__title,
+			.googlesitekit-activate-analytics-cta__description {
+				color: $c-utility-on-error-container;
+			}
+
+			.googlesitekit-activate-analytics-cta__actions {
+				.googlesitekit-activate-analytics-cta__button--secondary {
+					&.googlesitekit-activate-analytics-cta__dismiss-button--error {
+						color: $c-utility-on-error-container;
+					}
+
+					&:hover:not(:disabled) {
+						background-color: rgba(
+							$c-utility-on-error-container,
+							0.08
+						);
+					}
+
+					&:active:not(:disabled),
+					&:focus:not(:disabled) {
+						background-color: rgba(
+							$c-utility-on-error-container,
+							0.12
+						);
+					}
+				}
+
+				.googlesitekit-activate-analytics-cta__button--primary {
+					@include mdc-button-filled-accessible(
+						$c-utility-on-error-container
+					);
+				}
 			}
 		}
 	}

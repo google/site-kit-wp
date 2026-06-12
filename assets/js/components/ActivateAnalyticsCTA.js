@@ -39,6 +39,9 @@ import { __ } from '@wordpress/i18n';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
+import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM, TYPE_LABEL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -48,7 +51,10 @@ import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '@/js/hooks/useCompleteModuleActivationCallback';
 import { useDebounce } from '@/js/hooks/useDebounce';
 import { useFeature } from '@/js/hooks/useFeature';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	ANALYTICS_SETUP_ERROR,
+	MODULE_SLUG_ANALYTICS_4,
+} from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import AnalyticsIcon from '@/svg/graphics/analytics.svg';
 
@@ -59,6 +65,9 @@ export default function ActivateAnalyticsCTA( {
 } ) {
 	const trackingRef = useRef();
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const setupFlowRefreshPhase4Enabled = useFeature(
+		'setupFlowRefreshPhase4'
+	);
 
 	const trackEvents = useNotificationEvents(
 		'activate-analytics-cta',
@@ -102,6 +111,20 @@ export default function ActivateAnalyticsCTA( {
 		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
 	} );
 
+	const hasActivationError = useSelect( ( select ) => {
+		if ( ! setupFlowRefreshEnabled || ! setupFlowRefreshPhase4Enabled ) {
+			return false;
+		}
+
+		const internalServerError =
+			select( CORE_SITE ).getInternalServerError();
+
+		return (
+			! analyticsModuleActive &&
+			internalServerError?.id === ANALYTICS_SETUP_ERROR
+		);
+	} );
+
 	const [ inProgress, setInProgress ] = useState( false );
 
 	const isNavigatingToReauthURL = useSelect( ( select ) => {
@@ -140,10 +163,17 @@ export default function ActivateAnalyticsCTA( {
 	useEffect( () => {
 		if ( isActivating || isNavigatingToReauthURL ) {
 			setInProgress( true );
+		} else if ( hasActivationError ) {
+			setInProgress( false );
 		} else {
 			debouncedSetInProgress( false );
 		}
-	}, [ isActivating, isNavigatingToReauthURL, debouncedSetInProgress ] );
+	}, [
+		isActivating,
+		isNavigatingToReauthURL,
+		debouncedSetInProgress,
+		hasActivationError,
+	] );
 
 	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
@@ -160,10 +190,21 @@ export default function ActivateAnalyticsCTA( {
 	}, [ inView, hasBeenInView, trackEvents, analyticsEventLabel ] );
 
 	const { dismissItem } = useDispatch( CORE_USER );
+	const { clearInternalServerError } = useDispatch( CORE_SITE );
 
 	function handleDismiss() {
 		trackEvents.dismiss( analyticsEventLabel );
 		dismissItem( dismissedItemSlug );
+	}
+
+	function handleActivationRetry() {
+		clearInternalServerError();
+		activateModuleCallback();
+		trackEvents.confirm( analyticsEventLabel );
+	}
+
+	function handleActivationErrorDismiss() {
+		clearInternalServerError();
 	}
 
 	const onClickCallback = analyticsModuleActive
@@ -202,6 +243,49 @@ export default function ActivateAnalyticsCTA( {
 									'Set up Google Analytics',
 									'google-site-kit'
 							  ) }
+					</SpinnerButton>
+				</div>
+			</div>
+		);
+	}
+
+	if ( hasActivationError ) {
+		return (
+			<div
+				className="googlesitekit-activate-analytics-cta googlesitekit-activate-analytics-cta--error"
+				ref={ trackingRef }
+			>
+				<div>
+					<Typography
+						type={ TYPE_LABEL }
+						size={ SIZE_MEDIUM }
+						as="h2"
+						className="googlesitekit-activate-analytics-cta__title"
+					>
+						{ __( 'Analytics setup failed', 'google-site-kit' ) }
+					</Typography>
+					<P className="googlesitekit-activate-analytics-cta__description">
+						{ __(
+							'Something went wrong, please try again',
+							'google-site-kit'
+						) }
+					</P>
+				</div>
+				<div className="googlesitekit-activate-analytics-cta__actions">
+					<Button
+						className="googlesitekit-activate-analytics-cta__button--secondary googlesitekit-activate-analytics-cta__dismiss-button--error"
+						onClick={ handleActivationErrorDismiss }
+						tertiary
+					>
+						{ __( 'Got it', 'google-site-kit' ) }
+					</Button>
+					<SpinnerButton
+						className="googlesitekit-activate-analytics-cta__button--primary"
+						onClick={ handleActivationRetry }
+						isSaving={ inProgress }
+						disabled={ inProgress }
+					>
+						{ __( 'Retry Analytics setup', 'google-site-kit' ) }
 					</SpinnerButton>
 				</div>
 			</div>

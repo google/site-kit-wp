@@ -32,7 +32,10 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	ANALYTICS_SETUP_ERROR,
+	MODULE_SLUG_ANALYTICS_4,
+} from '@/js/modules/analytics-4/constants';
 import * as tracking from '@/js/util/tracking';
 import {
 	createTestRegistry,
@@ -42,8 +45,17 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 	render,
+	waitFor,
 } from '@tests/js/test-utils';
 import AdminBarWidgets from './AdminBarWidgets';
+
+const dismissItemEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/dismiss-item'
+);
+
+const activateEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/modules/data/activation'
+);
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
@@ -77,6 +89,11 @@ describe( 'AdminBarWidgets', () => {
 		} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		fetchMock.post( dismissItemEndpoint, {
+			body: [ 'analytics-setup-cta-admin-bar' ],
+			status: 200,
+		} );
 
 		fetchMock.get(
 			new RegExp(
@@ -274,5 +291,73 @@ describe( 'AdminBarWidgets', () => {
 			'click_learn_more_link',
 			'admin_bar'
 		);
+	} );
+
+	it( 'should render normal CTA again when "Got it" is clicked from activation error state', async () => {
+		registry.dispatch( CORE_SITE ).setInternalServerError( {
+			id: ANALYTICS_SETUP_ERROR,
+			description: 'This is an error',
+		} );
+
+		const { getByText, getByRole, queryByText, waitForRegistry } = render(
+			<AdminBarWidgets />,
+			{
+				registry,
+				features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( getByText( 'Analytics setup failed' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Something went wrong, please try again' )
+		).toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'button', { name: 'Got it' } ) );
+
+		await waitFor( () => {
+			expect(
+				registry.select( CORE_SITE ).getInternalServerError()
+			).toBeUndefined();
+			expect(
+				registry
+					.select( CORE_USER )
+					.isItemDismissed( 'analytics-setup-cta-admin-bar' )
+			).toBe( false );
+			expect(
+				queryByText( 'Analytics setup failed' )
+			).not.toBeInTheDocument();
+			expect(
+				getByRole( 'button', { name: 'Set up Analytics' } )
+			).toBeInTheDocument();
+		} );
+	} );
+
+	it( 'should retry activation when "Retry Analytics setup" is clicked', async () => {
+		registry.dispatch( CORE_SITE ).setInternalServerError( {
+			id: ANALYTICS_SETUP_ERROR,
+			description: 'This is an error',
+		} );
+
+		fetchMock.postOnce( activateEndpoint, {
+			body: { message: 'Retry failed' },
+			status: 500,
+		} );
+
+		const { getByRole, waitForRegistry } = render( <AdminBarWidgets />, {
+			registry,
+			features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+		} );
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			getByRole( 'button', { name: 'Retry Analytics setup' } )
+		);
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( activateEndpoint );
+		} );
 	} );
 } );
