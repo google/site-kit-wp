@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { invalidateCache, set } from 'googlesitekit-api';
+import { set } from 'googlesitekit-api';
 import { combineStores } from 'googlesitekit-data';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
@@ -41,17 +41,11 @@ function isValidNotificationID( notificationID ) {
 
 const fetchMarkNotificationStore = createFetchStore( {
 	baseName: 'markNotification',
-	controlCallback: async ( { notificationID, notificationState } ) => {
-		const response = await set( 'core', 'site', 'mark-notification', {
+	controlCallback: ( { notificationID, notificationState } ) => {
+		return set( 'core', 'site', 'mark-notification', {
 			notificationID,
 			notificationState,
 		} );
-
-		// Clear the cached notifications list so a marked notification does not
-		// reappear on the next page load.
-		await invalidateCache( 'core', 'site', 'notifications' );
-
-		return response;
 	},
 	argsToParams: ( { notificationID, notificationState } ) => {
 		return { notificationID, notificationState };

@@ -33,6 +33,8 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch } from 'googlesitekit-data';
 import NotificationFromServer from '@/js/components/NotificationFromServer';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { HOUR_IN_SECONDS } from '@/js/util';
 
 function CoreSiteBannerNotification( { id, ctaURL, ctaTarget, ...props } ) {
 	const [ inProgress, setInProgress ] = useState( false );
@@ -40,11 +42,14 @@ function CoreSiteBannerNotification( { id, ctaURL, ctaTarget, ...props } ) {
 	const { dismissNotification, acceptNotification } =
 		useDispatch( CORE_SITE );
 
+	const { dismissNotification: dismissFromQueue } =
+		useDispatch( CORE_NOTIFICATIONS );
+
 	const onCTAClick = useCallback(
 		async ( event ) => {
 			// If `ctaURL` is present, the CTA is rendered as a link with `href`,
 			// which navigates immediately on click. Prevent that so we can mark the
-			// notification as accepted (and invalidate the cached list) before
+			// notification as accepted and dismiss it from the queue before
 			// navigating manually below.
 			if ( ctaURL ) {
 				event.preventDefault();
@@ -52,6 +57,17 @@ function CoreSiteBannerNotification( { id, ctaURL, ctaTarget, ...props } ) {
 
 			setInProgress( true );
 			const { error } = await acceptNotification( id );
+
+			if ( ! error ) {
+				// Dismiss here rather than via `dismissOnClick` on the CTA in
+				// `NotificationFromServer` > `BannerNotification`, because
+				// `BannerNotification` runs `dismissOnClick` only after `onClick`
+				// completes—and this handler navigates at the end of `onClick`.
+				await dismissFromQueue( id, {
+					expiresInSeconds: HOUR_IN_SECONDS,
+				} );
+			}
+
 			setInProgress( false );
 
 			if ( error || ! ctaURL ) {
@@ -65,7 +81,7 @@ function CoreSiteBannerNotification( { id, ctaURL, ctaTarget, ...props } ) {
 
 			window.location.assign( ctaURL );
 		},
-		[ id, acceptNotification, ctaURL, ctaTarget ]
+		[ id, acceptNotification, dismissFromQueue, ctaURL, ctaTarget ]
 	);
 
 	const onDismissClick = useCallback( async () => {
