@@ -59,6 +59,10 @@ export function AdminScreenTooltip() {
 			}
 	);
 
+	const isSelectionPanelOpen = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( 'selectionPanelOpen' )
+	);
+
 	function handleViewTooltip() {
 		trackEvent(
 			`${ viewContext }_${ tooltipSlug }`,
@@ -80,7 +84,7 @@ export function AdminScreenTooltip() {
 		setValue( 'admin-screen-tooltip', undefined );
 	}, [ setValue, tooltipSlug, viewContext, gaTrackingEventLabel ] );
 
-	if ( ! isTooltipVisible ) {
+	if ( ! isTooltipVisible || isSelectionPanelOpen ) {
 		return null;
 	}
 
