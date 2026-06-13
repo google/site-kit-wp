@@ -23,6 +23,9 @@ import { SHARED_DASHBOARD_SPLASH_ITEM_KEY } from '@/js/components/setup/constant
 import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import { fireEvent, muteFetch, render, waitFor } from '@tests/js/test-utils';
 import {
@@ -178,6 +181,31 @@ describe( 'SetupUsingProxyViewOnly', () => {
 
 	describe( 'with the `setupFlowRefreshPhase4` feature flag enabled', () => {
 		it( 'renders phase4 splash content and progress indicator', async () => {
+			registry.dispatch( CORE_MODULES ).receiveGetModules(
+				Object.values(
+					registry.select( CORE_MODULES ).getModules()
+				).map( ( module ) => {
+					if (
+						MODULE_SLUG_ANALYTICS_4 === module.slug ||
+						MODULE_SLUG_SEARCH_CONSOLE === module.slug
+					) {
+						return {
+							...module,
+							active: true,
+							connected: true,
+							shareable: true,
+						};
+					}
+
+					return module;
+				} )
+			);
+
+			registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+				'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+				'googlesitekit_read_shared_module_data::["search-console"]': true,
+			} );
+
 			const { container, getByText, getByRole, waitForRegistry } = render(
 				<SetupUsingProxyViewOnly />,
 				{
@@ -217,6 +245,17 @@ describe( 'SetupUsingProxyViewOnly', () => {
 			expect(
 				container.querySelector( '.googlesitekit-layout--rounded' )
 			).toBeNull();
+
+			expect( getByText( 'Search Console' ) ).toBeInTheDocument();
+			expect( getByText( 'Analytics' ) ).toBeInTheDocument();
+
+			expect(
+				Array.from(
+					container.querySelectorAll(
+						'.googlesitekit-setup__services-list-item-name'
+					)
+				).map( ( element ) => element.textContent )
+			).toEqual( [ 'Search Console', 'Analytics' ] );
 		} );
 
 		it( 'should allow exiting the setup', async () => {

@@ -34,6 +34,7 @@ import { __ } from '@wordpress/i18n';
 import { Button } from 'googlesitekit-components';
 import Link from '@/js/components/Link';
 import OptIn from '@/js/components/OptIn';
+import Services from '@/js/components/setup/Services';
 import SplashScreenshotSVG from '@/js/components/setup/SetupUsingProxyWithSignIn/SetupFlowSVG';
 import Typography from '@/js/components/Typography';
 import {
@@ -91,6 +92,8 @@ export default function SplashViewOnlyContent( {
 						}
 					) }
 				</p>
+
+				<Services />
 
 				<OptIn />
 
