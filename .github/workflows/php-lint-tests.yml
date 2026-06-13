@@ -191,7 +191,7 @@ jobs:
       - name: Setup PHP for Tests
         uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # ratchet:shivammathur/setup-php@v2
         with:
-          extensions: mysqli, uopz
+          extensions: mysqli
           php-version: ${{ matrix.php_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
