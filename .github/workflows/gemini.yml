@@ -70,9 +70,24 @@ jobs:
         run: |
           npm install -g @google/gemini-cli@0.42.0
           gemini --version
+      - name: Fetch issue body
+        id: issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+        run: |
+          body=$(gh issue view "$ISSUE_NUMBER" --json body --jq '.body')
+          # Validate issue number is a positive integer before use
+          if ! [[ "$ISSUE_NUMBER" =~ ^[0-9]+$ ]]; then
+            echo "Invalid issue number"
+            exit 1
+          fi
+          echo "issue_body<<EOF_DELIMITER" >> "$GITHUB_OUTPUT"
+          echo "$body" >> "$GITHUB_OUTPUT"
+          echo "EOF_DELIMITER" >> "$GITHUB_OUTPUT"
       - name: Run /implement command
         run: |
-          gemini --approval-mode=yolo --model=gemini-3-pro-preview "/implement ${{ inputs.issue_number }}"
+          gemini --approval-mode=interactive --model=gemini-3-pro-preview "/implement ${{ inputs.issue_number }}"
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_MCP_PAT: ${{ secrets.GITHUB_TOKEN }}
