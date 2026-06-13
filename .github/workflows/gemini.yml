@@ -72,7 +72,7 @@ jobs:
           gemini --version
       - name: Run /implement command
         run: |
-          gemini --approval-mode=yolo --model=gemini-3-pro-preview "/implement ${{ inputs.issue_number }}"
+          gemini --model=gemini-3-pro-preview "/implement ${{ inputs.issue_number }}"
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_MCP_PAT: ${{ secrets.GITHUB_TOKEN }}
