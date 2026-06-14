@@ -56,7 +56,6 @@ import Details from './Details';
 import { getAccountLabel } from './utils';
 
 export default function UserMenu() {
-	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const [ showProgress ] = useQueryArg( 'showProgress' );
 
@@ -97,8 +96,7 @@ export default function UserMenu() {
 	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const showManageEmailReports =
-		emailReportingEnabled && ! isInitialSetupFlow;
+	const showManageEmailReports = ! isInitialSetupFlow;
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
 	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () => {

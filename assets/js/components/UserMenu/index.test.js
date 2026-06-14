@@ -217,7 +217,7 @@ describe( 'UserMenu', () => {
 
 			const { container, queryByText } = render( <UserMenu />, {
 				registry,
-				features: [ 'proactiveUserEngagement', 'setupFlowRefresh' ],
+				features: [ 'setupFlowRefresh' ],
 			} );
 
 			fireEvent.click(
@@ -231,10 +231,10 @@ describe( 'UserMenu', () => {
 			).not.toBeInTheDocument();
 		} );
 
-		it( 'should show Manage email reports when `showProgress` is not "true" and both feature flags are enabled', () => {
+		it( 'should show Manage email reports when `showProgress` is not "true" and `setupFlowRefresh` is enabled', () => {
 			const { container, getByText } = render( <UserMenu />, {
 				registry,
-				features: [ 'proactiveUserEngagement', 'setupFlowRefresh' ],
+				features: [ 'setupFlowRefresh' ],
 			} );
 
 			fireEvent.click(
@@ -252,7 +252,6 @@ describe( 'UserMenu', () => {
 
 			const { container, getByText } = render( <UserMenu />, {
 				registry,
-				features: [ 'proactiveUserEngagement' ],
 			} );
 
 			fireEvent.click(
