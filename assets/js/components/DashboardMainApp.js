@@ -298,7 +298,6 @@ export default function DashboardMainApp() {
 		);
 	} );
 
-	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
 
@@ -472,12 +471,8 @@ export default function DashboardMainApp() {
 				</Fragment>
 			) }
 
-			{ emailReportingEnabled && (
-				<Fragment>
-					<UserSettingsSelectionPanel />
-					<PUESurveyTriggers />
-				</Fragment>
-			) }
+			<UserSettingsSelectionPanel />
+			<PUESurveyTriggers />
 
 			{ configuredAudiences && <AudienceSelectionPanel /> }
 
