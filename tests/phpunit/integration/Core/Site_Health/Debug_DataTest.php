@@ -76,9 +76,7 @@ class Debug_DataTest extends TestCase {
 		$this->assertArrayHasKey( 'consent_api', $info['google-site-kit']['fields'] );
 	}
 
-	public function test_email_reports_fields__present_when_feature_flag_enabled() {
-		$reset_feature = $this->enable_feature( 'proactiveUserEngagement' );
-
+	public function test_email_reports_fields__present_by_default() {
 		remove_all_filters( 'debug_information' );
 
 		$debug_data = $this->new_debug_data();
@@ -106,39 +104,6 @@ class Debug_DataTest extends TestCase {
 			'email_reports_last_sent',
 			$fields,
 			'Email Reports last sent field should be present.'
-		);
-
-		$reset_feature();
-	}
-
-	public function test_email_reports_fields__absent_when_feature_flag_disabled() {
-		remove_all_filters( 'debug_information' );
-
-		$debug_data = $this->new_debug_data();
-		$debug_data->register();
-
-		$info   = apply_filters( 'debug_information', array() );
-		$fields = $info['google-site-kit']['fields'];
-
-		$this->assertArrayNotHasKey(
-			'email_reports_status',
-			$fields,
-			'Email Reports status field should not be present when the feature flag is disabled.'
-		);
-		$this->assertArrayNotHasKey(
-			'email_reports_subscribers',
-			$fields,
-			'Email Reports subscribers field should not be present when the feature flag is disabled.'
-		);
-		$this->assertArrayNotHasKey(
-			'email_reports_deliverability',
-			$fields,
-			'Email Reports deliverability field should not be present when the feature flag is disabled.'
-		);
-		$this->assertArrayNotHasKey(
-			'email_reports_last_sent',
-			$fields,
-			'Email Reports last sent field should not be present when the feature flag is disabled.'
 		);
 	}
 
