@@ -291,6 +291,7 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 	 */
 	private function invoke_cron_callback( Conversion_Reporting_Provider $provider ) {
 		$method = new \ReflectionMethod( $provider, 'cron_callback' );
+		$method->setAccessible( true );
 		$method->invoke( $provider );
 	}
 
