@@ -394,6 +394,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 				totalsReport: { rows: [] },
 				graphReport: { rows: [] },
 			},
+			chartImages: { lineChart: LINE_CHART_DATA_URI },
 		} );
 	} );
 } );
