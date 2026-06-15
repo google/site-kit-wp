@@ -261,17 +261,11 @@ export default function AccountCreate( { className } ) {
 	}, [ hasRequiredScope, autoSubmit, handleSubmit ] );
 
 	// If the user clicks "Back", rollback settings to restore saved values, if any.
-	const { resetAccountSettings, rollbackSettings } =
-		useDispatch( MODULES_ANALYTICS_4 );
+	const { rollbackSettings } = useDispatch( MODULES_ANALYTICS_4 );
 	const handleBack = useCallback( () => {
 		setAccountCreationErrorCode( undefined );
 		rollbackSettings();
-		resetAccountSettings();
-	}, [
-		resetAccountSettings,
-		rollbackSettings,
-		setAccountCreationErrorCode,
-	] );
+	}, [ rollbackSettings, setAccountCreationErrorCode ] );
 
 	// Navigate the user directly to the dashboard without setting up Analytics.
 	// `isAnalyticsSetupComplete` is persisted to `true` so the dashboard's
