@@ -196,14 +196,14 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 			FakeEcommerceEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeEcommerceEventProvider_Active::class,
 		);
 
-		$provider = new Test_Conversion_Reporting_Provider(
+		$provider = new Conversion_Reporting_Provider(
 			$this->context,
 			$this->settings,
 			$this->user_options,
 			$analytics_4
 		);
 
-		$provider->cron_callback();
+		$this->invoke_cron_callback( $provider );
 
 		$site_goals_settings = new Site_Goals_Settings( $options );
 		$site_goals_settings->register();
@@ -267,14 +267,14 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 			FakeLeadEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeLeadEventProvider_Active::class,
 		);
 
-		$provider = new Test_Conversion_Reporting_Provider(
+		$provider = new Conversion_Reporting_Provider(
 			$this->context,
 			$this->settings,
 			$this->user_options,
 			$analytics_4
 		);
 
-		$provider->cron_callback();
+		$this->invoke_cron_callback( $provider );
 
 		$site_goals_settings = new Site_Goals_Settings( $options );
 		$site_goals_settings->register();
