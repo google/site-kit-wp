@@ -294,4 +294,39 @@ class Conversion_TrackingTest extends TestCase {
 		$this->assertTrue( $data['hasActiveLeadEventProviders'] );
 		$this->assertTrue( $data['hasActiveEcommerceEventProviders'] );
 	}
+
+	public function test_get_active_provider_categories__no_active_providers() {
+		Conversion_Tracking::$providers = array();
+		$categories                     = $this->conversion_tracking->get_active_provider_categories();
+		$this->assertEquals( array(), $categories, 'With no active providers, the categories list should be empty.' );
+	}
+
+	public function test_get_active_provider_categories__with_lead_provider() {
+		Conversion_Tracking::$providers = array(
+			FakeLeadEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeLeadEventProvider_Active::class,
+		);
+		$categories                     = $this->conversion_tracking->get_active_provider_categories();
+		$this->assertContains( Conversion_Events_Provider::CATEGORY_LEAD, $categories, 'An active lead provider should produce the lead category.' );
+		$this->assertNotContains( Conversion_Events_Provider::CATEGORY_ECOMMERCE, $categories, 'With only a lead provider, the ecommerce category should not be present.' );
+	}
+
+	public function test_get_active_provider_categories__with_ecommerce_provider() {
+		Conversion_Tracking::$providers = array(
+			FakeEcommerceEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeEcommerceEventProvider_Active::class,
+		);
+		$categories                     = $this->conversion_tracking->get_active_provider_categories();
+		$this->assertContains( Conversion_Events_Provider::CATEGORY_ECOMMERCE, $categories, 'An active ecommerce provider should produce the ecommerce category.' );
+		$this->assertNotContains( Conversion_Events_Provider::CATEGORY_LEAD, $categories, 'With only an ecommerce provider, the lead category should not be present.' );
+	}
+
+	public function test_get_active_provider_categories__with_both_providers() {
+		Conversion_Tracking::$providers = array(
+			FakeLeadEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG      => FakeLeadEventProvider_Active::class,
+			FakeEcommerceEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeEcommerceEventProvider_Active::class,
+		);
+		$categories                     = $this->conversion_tracking->get_active_provider_categories();
+		$this->assertContains( Conversion_Events_Provider::CATEGORY_LEAD, $categories, 'An active lead provider should produce the lead category.' );
+		$this->assertContains( Conversion_Events_Provider::CATEGORY_ECOMMERCE, $categories, 'An active ecommerce provider should produce the ecommerce category.' );
+		$this->assertCount( 2, $categories, 'With one lead and one ecommerce provider, there should be exactly two categories.' );
+	}
 }
