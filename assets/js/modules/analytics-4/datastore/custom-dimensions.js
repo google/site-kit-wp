@@ -123,7 +123,7 @@ const baseActions = {
 	 * Creates custom dimensions and syncs them in the settings.
 	 *
 	 * @since 1.113.0
-	 * @since n.e.x.t Added the Site Goals custom dimensions when the `siteGoals` feature flag is on and advanced data breakdowns is enabled.
+	 * @since 1.181.0 Added the Site Goals custom dimensions when the `siteGoals` feature flag is on and advanced data breakdowns is enabled.
 	 *
 	 * @param {Array<string>} customDimensions Optional additional custom dimensions to create.
 	 */

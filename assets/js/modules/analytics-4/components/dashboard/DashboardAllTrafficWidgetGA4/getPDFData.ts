@@ -44,6 +44,8 @@ const LINE_CHART_HEIGHT = 200;
 
 export interface GetPDFDataParams {
 	registry: {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Registry actions are loosely typed in this codebase.
+		dispatch: ( storeName: string ) => any;
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Registry selectors are loosely typed in this codebase.
 		resolveSelect: ( storeName: string ) => any;
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Registry selectors are loosely typed in this codebase.
@@ -206,11 +208,15 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
  * Loads the GA4 reports and rasterised line chart for the All Visitors PDF widget.
  *
  * Resolves the totals and date-dimension graph reports in parallel via the
- * registry, short-circuiting between awaits if the supplied signal is aborted.
- * Once the reports resolve it loads Google Charts offscreen and rasterises the
- * All Visitors line chart to a JPEG data URI for embedding in the PDF.
+ * registry, stopping early between awaits when the supplied signal is
+ * aborted. Forwards the signal to each report request, so cancelling the
+ * export also stops any request that is still running. Invalidates the
+ * resolutions left by earlier runs, so a rerun after a cancelled or failed
+ * export fetches the reports again. Once the reports resolve it loads Google
+ * Charts offscreen and rasterises the All Visitors line chart to a JPEG data
+ * URI for embedding in the PDF.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param {Object}      params          Loader parameters.
  * @param {Object}      params.registry WordPress data registry.
@@ -245,9 +251,24 @@ export default async function getPDFData( {
 		url,
 	} );
 
+	// The registry remembers each `getReport` call by its arguments, and
+	// every abort signal looks the same to it. After a cancelled or failed
+	// run, the registry would treat the calls below as already done and
+	// return `undefined` reports without fetching. Invalidate the earlier
+	// calls, so this run fetches the reports again. A report that already
+	// loaded stays in state, so a successful earlier run adds no extra
+	// request.
+	const { invalidateResolution } = registry.dispatch( MODULES_ANALYTICS_4 );
+	invalidateResolution( 'getReport', [ totalsArgs, { signal } ] );
+	invalidateResolution( 'getReport', [ graphArgs, { signal } ] );
+
 	const [ totalsReport, graphReport ] = await Promise.all( [
-		registry.resolveSelect( MODULES_ANALYTICS_4 ).getReport( totalsArgs ),
-		registry.resolveSelect( MODULES_ANALYTICS_4 ).getReport( graphArgs ),
+		registry
+			.resolveSelect( MODULES_ANALYTICS_4 )
+			.getReport( totalsArgs, { signal } ),
+		registry
+			.resolveSelect( MODULES_ANALYTICS_4 )
+			.getReport( graphArgs, { signal } ),
 	] );
 
 	if ( signal.aborted ) {

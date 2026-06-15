@@ -15,7 +15,7 @@ use Google\Site_Kit\Context;
 /**
  * Golink handler for connecting a specific module.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Connect_Module_Golink_Handler implements Golink_Handler_Interface {
 	/**
 	 * Module slug to connect.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 * @var string
 	 */
 	private $module_slug;
@@ -32,7 +32,7 @@ class Connect_Module_Golink_Handler implements Golink_Handler_Interface {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param string $module_slug Module slug to connect.
 	 */
@@ -43,7 +43,7 @@ class Connect_Module_Golink_Handler implements Golink_Handler_Interface {
 	/**
 	 * Builds the module connect destination URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param Context $context Plugin context.
 	 * @return string Destination URL.

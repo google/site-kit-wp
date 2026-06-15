@@ -51,12 +51,13 @@ import { MODULES_ANALYTICS_4 } from './constants';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
-	controlCallback: ( { options } ) => {
+	controlCallback: ( { options }, { signal } = {} ) => {
 		return get(
 			'modules',
 			MODULE_SLUG_ANALYTICS_4,
 			'report',
-			normalizeReportOptions( options )
+			normalizeReportOptions( options ),
+			{ signal }
 		);
 	},
 	reducerCallback: createReducer( ( state, report, { options } ) => {
@@ -137,11 +138,19 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	*getReport( options = {} ) {
+	// This resolver and the `getReport` selector share one signature,
+	// with no default values. The registry compares arguments to
+	// decide if a call is new, so the calls below must get the exact
+	// arguments the caller sent. A default like `fetchOptions = {}`
+	// would add an argument the caller did not send, and the registry
+	// would fetch the same report again. A default for `options` alone
+	// would force a caller to write `getReport( undefined, { signal } )`.
+	*getReport( options, fetchOptions ) {
 		const registry = yield commonActions.getRegistry();
+
 		const existingReport = registry
 			.select( MODULES_ANALYTICS_4 )
-			.getReport( options );
+			.getReport( options, fetchOptions );
 
 		// If there is already a report loaded in state, consider it fulfilled
 		// and don't make an API request.
@@ -149,7 +158,10 @@ const baseResolvers = {
 			return;
 		}
 
-		yield fetchGetReportStore.actions.fetchGetReport( options );
+		yield fetchGetReportStore.actions.fetchGetReport(
+			options,
+			fetchOptions
+		);
 	},
 };
 
@@ -159,6 +171,7 @@ const baseSelectors = {
 	 *
 	 * @since 1.94.0
 	 * @since 1.111.0 Add metricFilters to the options list, to reflect added support for the metric filters.
+	 * @since n.e.x.t Accept optional fetch options as a second argument, such as `{ signal }` to cancel the report request.
 	 *
 	 * @param {Object}         state                      Data store's state.
 	 * @param {Object}         options                    Options for generating the report.
@@ -173,9 +186,11 @@ const baseSelectors = {
 	 * @param {Array.<Object>} [options.orderby]          Optional. An order definition object, or a list of order definition objects, each one containing 'fieldName' and 'sortOrder'. 'sortOrder' must be either 'ASCENDING' or 'DESCENDING'. Default empty array.
 	 * @param {string}         [options.url]              Optional. URL to get a report for only this URL. Default an empty string.
 	 * @param {number}         [options.limit]            Optional. Maximum number of entries to return. Default 1000.
+	 * @param {Object}         [fetchOptions]             Optional. Fetch options that change how the request runs, such as `{ signal }` to cancel it.
 	 * @return {(Array.<Object>|undefined)} An Analytics report; `undefined` if not loaded.
 	 */
-	getReport( state, options ) {
+	// eslint-disable-next-line no-unused-vars -- The fetch options only change how the request runs, so the selector does not read them.
+	getReport( state, options, fetchOptions ) {
 		const { reports } = state;
 
 		return reports[ stringifyObject( options ) ];

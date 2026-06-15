@@ -70,7 +70,7 @@ abstract class Conversion_Events_Provider {
 	/**
 	 * Gets the provider category.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return string Provider category, one of CATEGORY_LEAD or CATEGORY_ECOMMERCE.
 	 */
