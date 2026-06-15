@@ -118,7 +118,9 @@ describe( 'AdaptiveFooterLayout', () => {
 			</AdaptiveFooterLayout>
 		);
 
-		expect( onFooterInlineChange ).toHaveBeenCalledTimes( 0 );
+		// The first call is when the component is mounted.
+		expect( onFooterInlineChange ).toHaveBeenCalledTimes( 1 );
+		expect( onFooterInlineChange ).toHaveBeenCalledWith( false );
 
 		setViewportHeight( 500 );
 
@@ -132,7 +134,8 @@ describe( 'AdaptiveFooterLayout', () => {
 			).toBeInTheDocument();
 		} );
 
-		expect( onFooterInlineChange ).toHaveBeenCalledTimes( 1 );
-		expect( onFooterInlineChange ).toHaveBeenCalledWith( true );
+		// The second call is when the viewport is resized.
+		expect( onFooterInlineChange ).toHaveBeenCalledTimes( 2 );
+		expect( onFooterInlineChange ).toHaveBeenLastCalledWith( true );
 	} );
 } );
