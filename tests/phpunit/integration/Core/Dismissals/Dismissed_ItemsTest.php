@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\Dismissals;
 
 use Google\Site_Kit\Context;
@@ -41,22 +38,23 @@ class Dismissed_ItemsTest extends TestCase {
 	}
 
 	public function test_add() {
-		$this->assertEmpty( $this->user_options->get( Dismissed_Items::OPTION ) );
+		$this->assertEmpty( $this->user_options->get( Dismissed_Items::OPTION ), 'Dismissed items option should be empty initially.' );
 
 		$this->dismissed_items->add( 'foo' );
 		$this->assertEquals(
 			array(
 				'foo' => 0,
 			),
-			$this->user_options->get( Dismissed_Items::OPTION )
+			$this->user_options->get( Dismissed_Items::OPTION ),
+			'Dismissed items should contain item without expiration.'
 		);
 
 		$this->dismissed_items->add( 'bar', 100 );
 		$user_options = $this->user_options->get( Dismissed_Items::OPTION );
-		$this->assertArrayHasKey( 'foo', $user_options );
-		$this->assertEquals( 0, $user_options['foo'] );
-		$this->assertArrayHasKey( 'bar', $user_options );
-		$this->assertEqualsWithDelta( time() + 100, $user_options['bar'], 2 );
+		$this->assertArrayHasKey( 'foo', $user_options, 'Dismissed items should contain non-expiring item.' );
+		$this->assertEquals( 0, $user_options['foo'], 'Non-expiring dismissal should store zero.' );
+		$this->assertArrayHasKey( 'bar', $user_options, 'Dismissed items should contain expiring item.' );
+		$this->assertEqualsWithDelta( time() + 100, $user_options['bar'], 2, 'Expiring dismissal should store future timestamp.' );
 	}
 
 	public function test_remove() {
@@ -70,12 +68,12 @@ class Dismissed_ItemsTest extends TestCase {
 		);
 
 		$user_options = $this->user_options->get( Dismissed_Items::OPTION );
-		$this->assertArrayHasKey( 'foo', $user_options );
-		$this->assertArrayHasKey( 'bar', $user_options );
-		$this->assertArrayHasKey( 'baz', $user_options );
-		$this->assertEquals( 0, $user_options['foo'] );
-		$this->assertEqualsWithDelta( time() + 100, $user_options['bar'], 2 );
-		$this->assertEqualsWithDelta( time() + 200, $user_options['baz'], 2 );
+		$this->assertArrayHasKey( 'foo', $user_options, 'Dismissed items should contain foo before removal.' );
+		$this->assertArrayHasKey( 'bar', $user_options, 'Dismissed items should contain bar before removal.' );
+		$this->assertArrayHasKey( 'baz', $user_options, 'Dismissed items should contain baz before removal.' );
+		$this->assertEquals( 0, $user_options['foo'], 'Foo dismissal should store zero before removal.' );
+		$this->assertEqualsWithDelta( time() + 100, $user_options['bar'], 2, 'Bar dismissal should store future timestamp.' );
+		$this->assertEqualsWithDelta( time() + 200, $user_options['baz'], 2, 'Baz dismissal should store future timestamp.' );
 
 		$this->dismissed_items->remove( 'bar' );
 
@@ -85,7 +83,8 @@ class Dismissed_ItemsTest extends TestCase {
 				'baz' => time() + 200,
 
 			),
-			$this->user_options->get( Dismissed_Items::OPTION )
+			$this->user_options->get( Dismissed_Items::OPTION ),
+			'Dismissed items should omit removed item.'
 		);
 
 		// If the item is not in dismissed items, there should be no change.
@@ -97,7 +96,8 @@ class Dismissed_ItemsTest extends TestCase {
 				'baz' => time() + 200,
 
 			),
-			$this->user_options->get( Dismissed_Items::OPTION )
+			$this->user_options->get( Dismissed_Items::OPTION ),
+			'Dismissed items should remain unchanged after removing missing item.'
 		);
 	}
 
@@ -116,7 +116,8 @@ class Dismissed_ItemsTest extends TestCase {
 				'foo',
 				'bar',
 			),
-			$this->dismissed_items->get_dismissed_items()
+			$this->dismissed_items->get_dismissed_items(),
+			'Dismissed items should omit expired items.'
 		);
 	}
 
@@ -130,8 +131,8 @@ class Dismissed_ItemsTest extends TestCase {
 			)
 		);
 
-		$this->assertTrue( $this->dismissed_items->is_dismissed( 'foo' ) );
-		$this->assertTrue( $this->dismissed_items->is_dismissed( 'bar' ) );
-		$this->assertFalse( $this->dismissed_items->is_dismissed( 'baz' ) );
+		$this->assertTrue( $this->dismissed_items->is_dismissed( 'foo' ), 'Non-expiring item should be dismissed.' );
+		$this->assertTrue( $this->dismissed_items->is_dismissed( 'bar' ), 'Future-expiring item should be dismissed.' );
+		$this->assertFalse( $this->dismissed_items->is_dismissed( 'baz' ), 'Expired item should not be dismissed.' );
 	}
 }

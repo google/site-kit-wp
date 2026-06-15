@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\Dismissals;
 
 use Google\Site_Kit\Context;
@@ -63,8 +60,8 @@ class REST_Dismissals_ControllerTest extends TestCase {
 
 		$this->controller->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ), 'Dismissals REST routes should be registered.' );
+		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ), 'Dismissals preload paths should be registered.' );
 	}
 
 	public function test_get_dismissed_items() {
@@ -79,10 +76,11 @@ class REST_Dismissals_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/dismissed-items' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEqualSets(
-			array( 'foo', 'bar' ),
-			$response->get_data()
-		);
+			$this->assertEqualSets(
+				array( 'foo', 'bar' ),
+				$response->get_data(),
+				'Dismissed items response should contain non-expired items.'
+			);
 	}
 
 
@@ -98,10 +96,11 @@ class REST_Dismissals_ControllerTest extends TestCase {
 		$this->dismissed_items->add( 'bar', 100 );
 		$this->dismissed_items->add( 'baz', 200 );
 
-		$this->assertEqualSets(
-			array( 'foo', 'bar', 'baz' ),
-			array_keys( $this->dismissed_items->get() )
-		);
+			$this->assertEqualSets(
+				array( 'foo', 'bar', 'baz' ),
+				array_keys( $this->dismissed_items->get() ),
+				'Dismissed items should contain all items before deletion.'
+			);
 
 		$request = new WP_REST_Request( 'DELETE', '/' . REST_Routes::REST_ROOT . '/core/user/data/dismissed-items' );
 		$request->set_body_params(
@@ -113,15 +112,17 @@ class REST_Dismissals_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEqualSets(
-			$expected_remaining_items,
-			array_keys( $this->dismissed_items->get() )
-		);
+			$this->assertEqualSets(
+				$expected_remaining_items,
+				array_keys( $this->dismissed_items->get() ),
+				'Dismissed items should contain expected remaining items.'
+			);
 
-		$this->assertEqualSets(
-			$expected_remaining_items,
-			$response->get_data()
-		);
+			$this->assertEqualSets(
+				$expected_remaining_items,
+				$response->get_data(),
+				'Delete dismissed items response should contain remaining items.'
+			);
 	}
 
 
@@ -162,8 +163,8 @@ class REST_Dismissals_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 400, $response->get_status() );
-		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'] );
+		$this->assertEquals( 400, $response->get_status(), 'Invalid dismissed items response should use bad request status.' );
+		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'], 'Invalid dismissed items response should include invalid param code.' );
 	}
 
 	public function provider_dismissed_item_deletions__wrong_data() {
@@ -204,9 +205,10 @@ class REST_Dismissals_ControllerTest extends TestCase {
 			)
 		);
 
-		$this->assertEqualSets(
-			array( 'foo', 'bar' ),
-			rest_get_server()->dispatch( $request )->get_data()
-		);
+			$this->assertEqualSets(
+				array( 'foo', 'bar' ),
+				rest_get_server()->dispatch( $request )->get_data(),
+				'Dismiss item response should contain active dismissed items.'
+			);
 	}
 }
