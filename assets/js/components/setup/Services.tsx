@@ -17,14 +17,28 @@
  */
 
 /**
+ * External dependencies
+ */
+import type { FunctionComponent, SVGAttributes } from 'react';
+
+/**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
+type ServiceIcon = FunctionComponent< SVGAttributes< SVGElement > >;
+
+interface Service {
+	slug: string;
+	name: string;
+	order: number;
+	Icon: ServiceIcon | null;
+}
+
 export default function Services() {
-	const services = useSelect( ( select ) => {
+	const services = useSelect( ( select: Select ): Service[] | undefined => {
 		const viewableModules = select( CORE_USER ).getViewableModules();
 
 		if ( viewableModules === undefined ) {
@@ -32,7 +46,7 @@ export default function Services() {
 		}
 
 		return viewableModules
-			.map( ( moduleSlug ) => {
+			.map( ( moduleSlug: string ): Service | null => {
 				const module = select( CORE_MODULES ).getModule( moduleSlug );
 
 				if ( ! module ) {
@@ -48,12 +62,15 @@ export default function Services() {
 					Icon,
 				};
 			} )
-			.filter( Boolean )
+			.filter(
+				( service: Service | null ): service is Service =>
+					service !== null
+			)
 			.sort(
-				( firstModule, secondModule ) =>
+				( firstModule: Service, secondModule: Service ) =>
 					firstModule.order - secondModule.order
 			);
-	} );
+	}, [] );
 
 	if ( ! services?.length ) {
 		return null;
