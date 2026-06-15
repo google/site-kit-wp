@@ -155,7 +155,7 @@ describe( 'AdaptiveFooterLayout', () => {
 		setViewportHeight( 500 );
 
 		act( () => {
-			window.dispatchEvent( new Event( 'resize' ) );
+			global.dispatchEvent( new Event( 'resize' ) );
 		} );
 
 		await waitFor( () => {
@@ -163,5 +163,42 @@ describe( 'AdaptiveFooterLayout', () => {
 				container.querySelector( '.test-content--inline' )
 			).toBeInTheDocument();
 		} );
+	} );
+
+	it( 'should call onFooterInlineChange when the footer inline state changes', async () => {
+		contentBottom = 300;
+		footerHeight = 100;
+		setViewportHeight( 300 );
+
+		const onFooterInlineChange = jest.fn();
+
+		const { container } = render(
+			<AdaptiveFooterLayout
+				className="test-content"
+				inlineClassName="test-content--inline"
+				footerClassName="test-footer"
+				footer={ <button>Complete setup</button> }
+				onFooterInlineChange={ onFooterInlineChange }
+			>
+				<div>Questions content</div>
+			</AdaptiveFooterLayout>
+		);
+
+		expect( onFooterInlineChange ).toHaveBeenCalledTimes( 0 );
+
+		setViewportHeight( 500 );
+
+		act( () => {
+			global.dispatchEvent( new Event( 'resize' ) );
+		} );
+
+		await waitFor( () => {
+			expect(
+				container.querySelector( '.test-content--inline' )
+			).toBeInTheDocument();
+		} );
+
+		expect( onFooterInlineChange ).toHaveBeenCalledTimes( 1 );
+		expect( onFooterInlineChange ).toHaveBeenCalledWith( true );
 	} );
 } );

@@ -33,6 +33,7 @@ interface AdaptiveFooterLayoutProps {
 	footerClassName: string;
 	footer: ReactNode;
 	children?: ReactNode;
+	onFooterInlineChange?: ( isInline: boolean ) => void;
 }
 
 const AdaptiveFooterLayout: FC< AdaptiveFooterLayoutProps > = ( {
@@ -41,6 +42,7 @@ const AdaptiveFooterLayout: FC< AdaptiveFooterLayoutProps > = ( {
 	footerClassName,
 	footer,
 	children,
+	onFooterInlineChange,
 } ) => {
 	const contentRef = useRef< HTMLDivElement >( null );
 	const footerRef = useRef< HTMLDivElement >( null );
@@ -62,16 +64,20 @@ const AdaptiveFooterLayout: FC< AdaptiveFooterLayoutProps > = ( {
 				contentRef.current.getBoundingClientRect().bottom;
 			const footerHeight = footerRef.current.offsetHeight;
 
-			setFooterInline(
-				contentBottom + footerHeight <= view!.innerHeight
-			);
+			const isInline = contentBottom + footerHeight <= view!.innerHeight;
+
+			setFooterInline( isInline );
+
+			if ( isInline !== footerInline ) {
+				onFooterInlineChange?.( isInline );
+			}
 		}
 
 		checkFits();
 		view.addEventListener( 'resize', checkFits );
 
 		return () => view.removeEventListener( 'resize', checkFits );
-	}, [] );
+	}, [ footerInline, onFooterInlineChange ] );
 
 	return (
 		<div
