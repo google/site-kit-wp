@@ -33,6 +33,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Link from '@/js/components/Link';
 import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
+import Services from '@/js/components/setup/Services';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
 import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
@@ -41,6 +42,7 @@ import {
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
+import { useFeature } from '@/js/hooks/useFeature';
 import { Cell, Row } from '@/js/material-components';
 import SplashBackground from '@/svg/graphics/splash-graphic.svg';
 import AnalyticsOptIn from './AnalyticsOptIn';
@@ -68,6 +70,9 @@ export default function SplashContent( {
 	const breakpoint = useBreakpoint();
 	const isMobileOrTablet =
 		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
+	const setupFlowRefreshPhase4Enabled = useFeature(
+		'setupFlowRefreshPhase4'
+	);
 
 	const cellDetailsProp = analyticsModuleActive
 		? { smSize: 4, mdSize: 6, lgSize: 6 }
@@ -139,6 +144,9 @@ export default function SplashContent( {
 								) }
 							</P>
 						) }
+
+					{ setupFlowRefreshPhase4Enabled &&
+						analyticsModuleActive && <Services /> }
 
 					{ analyticsModuleAvailable && ! analyticsModuleActive && (
 						<AnalyticsOptIn />
