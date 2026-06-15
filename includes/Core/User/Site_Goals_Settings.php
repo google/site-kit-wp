@@ -1,8 +1,8 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Analytics_4\Site_Goals_Settings
+ * Class Google\Site_Kit\Core\User\Site_Goals_Settings
  *
- * @package   Google\Site_Kit\Modules\Analytics_4
+ * @package   Google\Site_Kit\Core\User
  * @copyright 2026 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
@@ -10,7 +10,7 @@
  * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
-namespace Google\Site_Kit\Modules\Analytics_4;
+namespace Google\Site_Kit\Core\User;
 
 use Google\Site_Kit\Core\Storage\User_Setting;
 use Google\Site_Kit\Core\Util\Sanitize;
@@ -19,6 +19,7 @@ use Google\Site_Kit\Core\Util\Sanitize;
  * Class for per-user Site Goals settings.
  *
  * @since 1.181.0
+ * @since n.e.x.t Moved from Modules\Analytics_4 to Core\User namespace.
  * @access private
  * @ignore
  */
@@ -27,7 +28,7 @@ class Site_Goals_Settings extends User_Setting {
 	/**
 	 * The user option name for Site Goals settings.
 	 */
-	const OPTION = 'googlesitekit_analytics-4_site_goals_settings';
+	const OPTION = 'googlesitekit_site_goals_settings';
 
 	/**
 	 * Allowed top-level setting keys.

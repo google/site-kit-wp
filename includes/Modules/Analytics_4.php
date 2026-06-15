@@ -96,7 +96,7 @@ use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
-use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Settings;
+use Google\Site_Kit\Core\User\Site_Goals_Settings as User_Site_Goals_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdsLinked;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Interface;
@@ -198,13 +198,14 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	protected $audience_settings;
 
 	/**
-	 * Site_Goals_Settings instance.
+	 * Per-user Site_Goals_Settings instance.
 	 *
 	 * @since 1.181.0
+	 * @since 1.182.0 Renamed from $site_goals_settings and type moved to Core\User.
 	 *
-	 * @var Site_Goals_Settings
+	 * @var User_Site_Goals_Settings
 	 */
-	protected $site_goals_settings;
+	protected $user_site_goals_settings;
 
 	/**
 	 * Audience_Utilities instance.
@@ -255,7 +256,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->custom_dimensions_data_available  = new Custom_Dimensions_Data_Available( $this->transients );
 		$this->reset_audiences                   = new Reset_Audiences( $this->user_options );
 		$this->audience_settings                 = new Audience_Settings( $this->options );
-		$this->site_goals_settings               = new Site_Goals_Settings( $this->user_options );
+		$this->user_site_goals_settings          = new User_Site_Goals_Settings( $this->user_options );
 		$this->audience_utilities                = new Audience_Utilities( $this->audience_settings );
 		$this->resource_data_availability_date   = new Resource_Data_Availability_Date( $this->transients, $this->get_settings(), $this->audience_settings );
 		$this->advanced_data_breakdowns_settings = new Advanced_Data_Breakdowns_Settings( $this->options );
@@ -299,7 +300,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$conversion_reporting_provider->register();
 
 		$this->audience_settings->register();
-		$this->site_goals_settings->register();
+		$this->user_site_goals_settings->register();
 		$this->advanced_data_breakdowns_settings->register();
 
 		( new Advanced_Tracking( $this->context ) )->register();
@@ -584,7 +585,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->custom_dimensions_data_available->reset_data_available();
 		$this->reset_audiences->reset_audience_data();
 		$this->audience_settings->delete();
-		$this->site_goals_settings->delete();
+		$this->user_site_goals_settings->delete();
 		$this->advanced_data_breakdowns_settings->delete();
 	}
 
@@ -976,13 +977,13 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			),
 			'GET:site-goals-settings'                   => new Get_Site_Goals_Settings(
 				array(
-					'site_goals_settings' => $this->site_goals_settings,
+					'site_goals_settings' => $this->user_site_goals_settings,
 					'service'             => '',
 				)
 			),
 			'POST:save-site-goals-settings'             => new Save_Site_Goals_Settings(
 				array(
-					'site_goals_settings' => $this->site_goals_settings,
+					'site_goals_settings' => $this->user_site_goals_settings,
 					'service'             => '',
 				)
 			),

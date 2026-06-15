@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Modules\Permission_Aware_Datapoint;
 use Google\Site_Kit\Core\Modules\Shareable_Datapoint;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Settings;
+use Google\Site_Kit\Core\User\Site_Goals_Settings;
 
 /**
  * Base class for the per-user Site Goals settings datapoints.
