@@ -51,9 +51,13 @@ interface DateRange {
 
 interface EngagementRateTileProps {
 	dates: DateRange;
+	breakdownFilter?: Record< string, unknown >;
 }
 
-const EngagementRateTile: FC< EngagementRateTileProps > = ( { dates } ) => {
+const EngagementRateTile: FC< EngagementRateTileProps > = ( {
+	dates,
+	breakdownFilter,
+} ) => {
 	// TODO: Update the link to the relevant support URL once it's created.
 	// See: https://github.com/google/site-kit-wp/issues/12727
 	const engagementSupportURL = useSelect(
@@ -70,6 +74,13 @@ const EngagementRateTile: FC< EngagementRateTileProps > = ( { dates } ) => {
 			compareStartDate: dates.compareStartDate,
 			endDate: dates.endDate,
 			metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
+			// Scopes the engagement report to the selected breakdown tab when set.
+			...( breakdownFilter
+				? {
+						dimensionFilters:
+							breakdownFilter as ReportOptions[ 'dimensionFilters' ],
+				  }
+				: {} ),
 			reportID: 'analytics-4_site-goals_engagementReportOptions',
 			startDate: dates.startDate,
 		} ),
@@ -78,6 +89,7 @@ const EngagementRateTile: FC< EngagementRateTileProps > = ( { dates } ) => {
 			dates.compareStartDate,
 			dates.endDate,
 			dates.startDate,
+			breakdownFilter,
 		]
 	);
 

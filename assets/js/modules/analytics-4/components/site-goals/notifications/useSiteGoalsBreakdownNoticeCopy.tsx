@@ -43,6 +43,20 @@ export interface BreakdownNoticeCopy {
 	ctaLabel: string;
 }
 
+/**
+ * Gets the breakdown notice copy for a goal type.
+ *
+ * Single source of truth for the notice copy so the widgets and the Side Panel
+ * render the same strings without duplicating them at each call site. This is a
+ * hook (rather than a plain function) so the "Learn more" documentation URL can
+ * be resolved from the data store here, instead of being passed in awkwardly
+ * from every caller.
+ *
+ * @since 1.181.0
+ *
+ * @param {string} scope The goal scope/type the notice is shown for.
+ * @return {BreakdownNoticeCopy} The `title`, `description` and `ctaLabel`.
+ */
 export function useSiteGoalsBreakdownNoticeCopy(
 	scope: BreakdownScope
 ): BreakdownNoticeCopy {

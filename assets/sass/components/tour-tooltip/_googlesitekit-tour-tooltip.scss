@@ -339,6 +339,20 @@
 	left: 195px !important;
 }
 
+// On mobile and tablet, shift the tooltip farther from the edge and realign its
+// arrow with the user menu so it stays on screen.
+// !important is required to override Joyride's inline styles.
+@media (max-width: $bp-desktop) {
+
+	#react-joyride-step-0:has(.googlesitekit-tour-tooltip--user-menu) > div.__floater {
+		left: -90px !important;
+	}
+
+	#react-joyride-step-0:has(.googlesitekit-tour-tooltip--user-menu) .__floater__arrow > span {
+		left: 215px !important;
+	}
+}
+
 // !important is required to override Joyride's inline styles.
 .folded #react-joyride-step-0:has(.googlesitekit-tour-tooltip__fixed-settings-tooltip) > div.__floater {
 	left: 46px !important;

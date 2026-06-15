@@ -29,6 +29,50 @@ import { AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY } from '@/js/googlesitekit/widge
 
 export const SITE_GOALS_TOUR = 'site-goals-feature-tour';
 
+// The first step's target. The tour waits for this element before it starts.
+const FIRST_STEP_TARGET = '.googlesitekit-site-goals-primary-action';
+
+// The widgets render the target only after their reports load. Look for
+// the target every 250ms. Stop after five seconds, so a section that
+// never loads cannot block the tour.
+const TOUR_READY_CHECK_INTERVAL_MS = 250;
+const TOUR_READY_CHECK_MAX_TOTAL_WAIT_MS = 5000;
+
+/**
+ * Waits until the Site Goals tour can start.
+ *
+ * react-joyride skips a step when its target is not on the page. A tour that
+ * starts too early skips every step and shows nothing. This check lets the
+ * tour start as soon as the first step's target renders. When the target is
+ * slow, the wait ends after five seconds and the tour starts anyway, so the
+ * wait never cancels the tour. `triggerOnDemandTour` waits for this check
+ * before it starts the tour.
+ *
+ * @since 1.181.0
+ *
+ * @return Promise that always resolves to `true`, when the target renders or the wait ends.
+ */
+function checkSiteGoalsTourRequirements(): Promise< boolean > {
+	return new Promise( ( resolve ) => {
+		let remainingWaitMs = TOUR_READY_CHECK_MAX_TOTAL_WAIT_MS;
+
+		function checkTarget() {
+			if (
+				global.document.querySelector( FIRST_STEP_TARGET ) ||
+				remainingWaitMs <= 0
+			) {
+				resolve( true );
+				return;
+			}
+
+			remainingWaitMs -= TOUR_READY_CHECK_INTERVAL_MS;
+			global.setTimeout( checkTarget, TOUR_READY_CHECK_INTERVAL_MS );
+		}
+
+		checkTarget();
+	} );
+}
+
 const defaultStepOptions = {
 	offset: -2,
 	spotlightPadding: 0,
@@ -50,7 +94,7 @@ const defaultStepOptions = {
  * Returns the Google Analytics event category for the Site Goals tour,
  * prefixed with the current view context.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param viewContext The current view context.
  * @return The event category string.
@@ -64,12 +108,15 @@ function gaEventCategory( viewContext: string ) {
  *
  * The tour starts when the user clicks "Show me" on the Site Goals intro modal
  * and runs on the Site Goals widget. The first step points at the key action
- * tile group and the last step points at the goal drivers. The breakdown notice
- * step is included only when `hasBreakdownNotice` is true, because that step
- * targets the notice and the notice is not always rendered. Its copy depends on
+ * tile group and the last step points at the goal drivers. The last step's
+ * button says "Done" instead of the shared "Got it". The tour waits for the
+ * first step's target to render, five seconds at most, because react-joyride
+ * skips a step when its target is missing. The breakdown notice step is
+ * included only when `hasBreakdownNotice` is true, because that step targets
+ * the notice and the notice is not always rendered. Its copy depends on
  * `isEcommerceOnly`: sales copy when `true`, leads copy when `false`.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param params                    Tour params.
  * @param params.isEcommerceOnly    True when only ecommerce events are detected. Picks the breakdown step copy.
@@ -111,10 +158,11 @@ export function getSiteGoalsTour( {
 		contexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		gaEventCategory,
 		preloadWidgetAreas: [ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ],
+		checkRequirements: checkSiteGoalsTourRequirements,
 		steps: [
 			{
 				...defaultStepOptions,
-				target: '.googlesitekit-site-goals-primary-action',
+				target: FIRST_STEP_TARGET,
 				title: __(
 					'Your main goal is front and center',
 					'google-site-kit'
@@ -133,6 +181,12 @@ export function getSiteGoalsTour( {
 					'Discover which traffic channels or locations are bringing in the best results, so you can focus on what works. Customize this list with metrics that matter the most to you.',
 					'google-site-kit'
 				),
+				// Show "Done" on the last step's button instead of the
+				// shared "Got it". react-joyride merges this over the tour
+				// locale, so all other labels stay the same.
+				locale: {
+					last: __( 'Done', 'google-site-kit' ),
+				},
 			},
 		],
 	};

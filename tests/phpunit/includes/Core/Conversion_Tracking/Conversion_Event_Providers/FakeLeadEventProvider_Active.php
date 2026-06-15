@@ -22,7 +22,7 @@ class FakeLeadEventProvider_Active extends FakeConversionEventProvider_Active {
 	/**
 	 * Gets the provider category.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return string Provider category.
 	 */
