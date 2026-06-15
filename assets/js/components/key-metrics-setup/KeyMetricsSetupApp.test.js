@@ -29,6 +29,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import * as searchConsoleFixtures from '@/js/modules/search-console/datastore/__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import * as tracking from '@/js/util/tracking';
+import { setupAdaptiveFooterLayoutTests } from '@tests/js/adaptive-footer-layout-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	act,
@@ -42,7 +43,7 @@ import {
 	waitFor,
 	waitForTimeouts,
 } from '@tests/js/test-utils';
-import { getViewportHeight, setViewportHeight } from '@tests/js/viewport-utils';
+import { setViewportHeight } from '@tests/js/viewport-utils';
 import KeyMetricsSetupApp from './KeyMetricsSetupApp';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -715,85 +716,10 @@ describe( 'KeyMetricsSetupApp', () => {
 	} );
 
 	describe( 'error handling', () => {
-		let originalGetBoundingClientRect;
-		let originalOffsetHeight;
-		let contentBottom;
-		let footerHeight;
-		let originalInnerHeight;
-
-		beforeEach( () => {
-			contentBottom = 0;
-			footerHeight = 0;
-			originalInnerHeight = getViewportHeight();
-
-			originalGetBoundingClientRect =
-				HTMLElement.prototype.getBoundingClientRect;
-			originalOffsetHeight = Object.getOwnPropertyDescriptor(
-				HTMLElement.prototype,
-				'offsetHeight'
-			);
-
-			HTMLElement.prototype.getBoundingClientRect = function () {
-				if (
-					this.classList?.contains(
-						'googlesitekit-key-metrics-setup__content'
-					)
-				) {
-					return {
-						x: 0,
-						y: 0,
-						top: 0,
-						left: 0,
-						right: 0,
-						bottom: contentBottom,
-						width: 0,
-						height: 0,
-					};
-				}
-
-				return {
-					x: 0,
-					y: 0,
-					top: 0,
-					left: 0,
-					right: 0,
-					bottom: 0,
-					width: 0,
-					height: 0,
-				};
-			};
-
-			Object.defineProperty( HTMLElement.prototype, 'offsetHeight', {
-				configurable: true,
-				// eslint-disable-next-line sitekit/acronym-case
-				get() {
-					if (
-						this.classList?.contains(
-							'googlesitekit-key-metrics-setup__footer'
-						)
-					) {
-						return footerHeight;
-					}
-
-					return 0;
-				},
-			} );
-		} );
-
-		afterEach( () => {
-			HTMLElement.prototype.getBoundingClientRect =
-				originalGetBoundingClientRect;
-
-			if ( originalOffsetHeight ) {
-				Object.defineProperty(
-					HTMLElement.prototype,
-					'offsetHeight',
-					originalOffsetHeight
-				);
-			}
-
-			setViewportHeight( originalInnerHeight );
-		} );
+		const adaptiveFooterMeasurements = setupAdaptiveFooterLayoutTests(
+			'googlesitekit-key-metrics-setup__content',
+			'googlesitekit-key-metrics-setup__footer'
+		);
 
 		describe( 'when saving the user input fails', () => {
 			beforeEach( () => {
@@ -916,8 +842,8 @@ describe( 'KeyMetricsSetupApp', () => {
 			} );
 
 			it( 'should apply the inline class to the error notice when the content and footer fit in the viewport', async () => {
-				contentBottom = 300;
-				footerHeight = 100;
+				adaptiveFooterMeasurements.contentBottom = 300;
+				adaptiveFooterMeasurements.footerHeight = 100;
 				setViewportHeight( 500 );
 
 				fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
@@ -973,8 +899,8 @@ describe( 'KeyMetricsSetupApp', () => {
 			} );
 
 			it( 'should not apply the inline class to the error notice when the content and footer do not fit in the viewport', async () => {
-				contentBottom = 300;
-				footerHeight = 100;
+				adaptiveFooterMeasurements.contentBottom = 300;
+				adaptiveFooterMeasurements.footerHeight = 100;
 				setViewportHeight( 300 );
 
 				fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
@@ -1093,8 +1019,8 @@ describe( 'KeyMetricsSetupApp', () => {
 			} );
 
 			it( 'should apply the inline class to the error notice when the content and footer fit in the viewport', async () => {
-				contentBottom = 300;
-				footerHeight = 100;
+				adaptiveFooterMeasurements.contentBottom = 300;
+				adaptiveFooterMeasurements.footerHeight = 100;
 				setViewportHeight( 500 );
 
 				fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
@@ -1158,8 +1084,8 @@ describe( 'KeyMetricsSetupApp', () => {
 			} );
 
 			it( 'should not apply the inline class to the error notice when the content and footer do not fit in the viewport', async () => {
-				contentBottom = 300;
-				footerHeight = 100;
+				adaptiveFooterMeasurements.contentBottom = 300;
+				adaptiveFooterMeasurements.footerHeight = 100;
 				setViewportHeight( 300 );
 
 				fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
