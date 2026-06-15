@@ -42,6 +42,7 @@ import {
 	waitFor,
 	waitForTimeouts,
 } from '@tests/js/test-utils';
+import { getViewportHeight, setViewportHeight } from '@tests/js/viewport-utils';
 import KeyMetricsSetupApp from './KeyMetricsSetupApp';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -714,33 +715,91 @@ describe( 'KeyMetricsSetupApp', () => {
 	} );
 
 	describe( 'error handling', () => {
-		describe( 'when saving the user input fails', () => {
-			let container;
-			let getByRole;
-			let getByText;
-			let waitForRegistry;
+		let originalGetBoundingClientRect;
+		let originalOffsetHeight;
+		let contentBottom;
+		let footerHeight;
+		let originalInnerHeight;
 
-			beforeEach( async () => {
+		beforeEach( () => {
+			contentBottom = 0;
+			footerHeight = 0;
+			originalInnerHeight = getViewportHeight();
+
+			originalGetBoundingClientRect =
+				HTMLElement.prototype.getBoundingClientRect;
+			originalOffsetHeight = Object.getOwnPropertyDescriptor(
+				HTMLElement.prototype,
+				'offsetHeight'
+			);
+
+			HTMLElement.prototype.getBoundingClientRect = function () {
+				if (
+					this.classList?.contains(
+						'googlesitekit-key-metrics-setup__content'
+					)
+				) {
+					return {
+						x: 0,
+						y: 0,
+						top: 0,
+						left: 0,
+						right: 0,
+						bottom: contentBottom,
+						width: 0,
+						height: 0,
+					};
+				}
+
+				return {
+					x: 0,
+					y: 0,
+					top: 0,
+					left: 0,
+					right: 0,
+					bottom: 0,
+					width: 0,
+					height: 0,
+				};
+			};
+
+			Object.defineProperty( HTMLElement.prototype, 'offsetHeight', {
+				configurable: true,
+				// eslint-disable-next-line sitekit/acronym-case
+				get() {
+					if (
+						this.classList?.contains(
+							'googlesitekit-key-metrics-setup__footer'
+						)
+					) {
+						return footerHeight;
+					}
+
+					return 0;
+				},
+			} );
+		} );
+
+		afterEach( () => {
+			HTMLElement.prototype.getBoundingClientRect =
+				originalGetBoundingClientRect;
+
+			if ( originalOffsetHeight ) {
+				Object.defineProperty(
+					HTMLElement.prototype,
+					'offsetHeight',
+					originalOffsetHeight
+				);
+			}
+
+			setViewportHeight( originalInnerHeight );
+		} );
+
+		describe( 'when saving the user input fails', () => {
+			beforeEach( () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( {} );
-
-				( { container, getByRole, getByText, waitForRegistry } = render(
-					<KeyMetricsSetupApp />,
-					{
-						registry,
-						viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
-					}
-				) );
-
-				await waitForRegistry();
-				await waitForFocus();
-
-				act( () => {
-					fireEvent.click(
-						getByRole( 'radio', { name: 'Publish a blog' } )
-					);
-				} );
 			} );
 
 			it( 'should show an error and a `Continue without saving` button', async () => {
@@ -751,6 +810,21 @@ describe( 'KeyMetricsSetupApp', () => {
 						data: { status: 500 },
 					},
 					status: 500,
+				} );
+
+				const { container, getByRole, getByText, waitForRegistry } =
+					render( <KeyMetricsSetupApp />, {
+						registry,
+						viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+					} );
+
+				await waitForRegistry();
+				await waitForFocus();
+
+				act( () => {
+					fireEvent.click(
+						getByRole( 'radio', { name: 'Publish a blog' } )
+					);
 				} );
 
 				act( () => {
@@ -805,6 +879,23 @@ describe( 'KeyMetricsSetupApp', () => {
 					body: { settings: { isAnalyticsSetupComplete: true } },
 				} );
 
+				const { getByRole, waitForRegistry } = render(
+					<KeyMetricsSetupApp />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+					}
+				);
+
+				await waitForRegistry();
+				await waitForFocus();
+
+				act( () => {
+					fireEvent.click(
+						getByRole( 'radio', { name: 'Publish a blog' } )
+					);
+				} );
+
 				act( () => {
 					fireEvent.click(
 						getByRole( 'button', { name: 'Complete setup' } )
@@ -823,26 +914,28 @@ describe( 'KeyMetricsSetupApp', () => {
 					);
 				} );
 			} );
-		} );
 
-		describe( 'when saving the initial setup settings fails', () => {
-			let container;
-			let getByRole;
-			let getByText;
-			let waitForRegistry;
+			it( 'should apply the inline class to the error notice when the content and footer fit in the viewport', async () => {
+				contentBottom = 300;
+				footerHeight = 100;
+				setViewportHeight( 500 );
 
-			beforeEach( async () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSettings( {} );
+				fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
+					body: {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					},
+					status: 500,
+				} );
 
-				( { container, getByRole, getByText, waitForRegistry } = render(
+				const { container, getByRole, waitForRegistry } = render(
 					<KeyMetricsSetupApp />,
 					{
 						registry,
 						viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
 					}
-				) );
+				);
 
 				await waitForRegistry();
 				await waitForFocus();
@@ -852,6 +945,96 @@ describe( 'KeyMetricsSetupApp', () => {
 						getByRole( 'radio', { name: 'Publish a blog' } )
 					);
 				} );
+
+				act( () => {
+					fireEvent.click(
+						getByRole( 'button', { name: 'Complete setup' } )
+					);
+				} );
+
+				await waitForRegistry();
+
+				const errorElement = container.querySelector(
+					'.googlesitekit-key-metrics-setup__error'
+				);
+
+				expect( errorElement ).toHaveClass(
+					'googlesitekit-key-metrics-setup__error--inline'
+				);
+
+				expect( console ).toHaveErroredWith( [
+					'Google Site Kit API Error',
+					'method:POST',
+					'datapoint:user-input-settings',
+					'type:core',
+					'identifier:user',
+					'error:"Internal server error"',
+				] );
+			} );
+
+			it( 'should not apply the inline class to the error notice when the content and footer do not fit in the viewport', async () => {
+				contentBottom = 300;
+				footerHeight = 100;
+				setViewportHeight( 300 );
+
+				fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
+					body: {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					},
+					status: 500,
+				} );
+
+				const { container, getByRole, waitForRegistry } = render(
+					<KeyMetricsSetupApp />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+					}
+				);
+
+				await waitForRegistry();
+				await waitForFocus();
+
+				act( () => {
+					fireEvent.click(
+						getByRole( 'radio', { name: 'Publish a blog' } )
+					);
+				} );
+
+				act( () => {
+					fireEvent.click(
+						getByRole( 'button', { name: 'Complete setup' } )
+					);
+				} );
+
+				await waitForRegistry();
+
+				const errorElement = container.querySelector(
+					'.googlesitekit-key-metrics-setup__error'
+				);
+
+				expect( errorElement ).not.toHaveClass(
+					'googlesitekit-key-metrics-setup__error--inline'
+				);
+
+				expect( console ).toHaveErroredWith( [
+					'Google Site Kit API Error',
+					'method:POST',
+					'datapoint:user-input-settings',
+					'type:core',
+					'identifier:user',
+					'error:"Internal server error"',
+				] );
+			} );
+		} );
+
+		describe( 'when saving the initial setup settings fails', () => {
+			beforeEach( () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
 			} );
 
 			it( 'should show an error', async () => {
@@ -873,6 +1056,21 @@ describe( 'KeyMetricsSetupApp', () => {
 					status: 500,
 				} );
 
+				const { container, getByRole, getByText, waitForRegistry } =
+					render( <KeyMetricsSetupApp />, {
+						registry,
+						viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+					} );
+
+				await waitForRegistry();
+				await waitForFocus();
+
+				act( () => {
+					fireEvent.click(
+						getByRole( 'radio', { name: 'Publish a blog' } )
+					);
+				} );
+
 				fireEvent.click(
 					getByRole( 'button', { name: 'Complete setup' } )
 				);
@@ -892,6 +1090,136 @@ describe( 'KeyMetricsSetupApp', () => {
 				} );
 
 				expect( container ).toMatchSnapshot();
+			} );
+
+			it( 'should apply the inline class to the error notice when the content and footer fit in the viewport', async () => {
+				contentBottom = 300;
+				footerHeight = 100;
+				setViewportHeight( 500 );
+
+				fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
+					body: {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					},
+					status: 500,
+				} );
+
+				fetchMock.postOnce( initialSetupSettingsEndpoint, {
+					body: {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					},
+					status: 500,
+				} );
+
+				const { container, getByRole, getByText, waitForRegistry } =
+					render( <KeyMetricsSetupApp />, {
+						registry,
+						viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+					} );
+
+				await waitForRegistry();
+				await waitForFocus();
+
+				act( () => {
+					fireEvent.click(
+						getByRole( 'radio', { name: 'Publish a blog' } )
+					);
+				} );
+
+				fireEvent.click(
+					getByRole( 'button', { name: 'Complete setup' } )
+				);
+
+				await waitForRegistry();
+
+				fireEvent.click(
+					getByRole( 'button', { name: 'Continue without saving' } )
+				);
+
+				await waitForRegistry();
+
+				await waitFor( () => {
+					expect(
+						getByText( 'Something went wrong, please try again' )
+					).toBeInTheDocument();
+				} );
+
+				const errorElement = container.querySelector(
+					'.googlesitekit-key-metrics-setup__error'
+				);
+
+				expect( errorElement ).toHaveClass(
+					'googlesitekit-key-metrics-setup__error--inline'
+				);
+			} );
+
+			it( 'should not apply the inline class to the error notice when the content and footer do not fit in the viewport', async () => {
+				contentBottom = 300;
+				footerHeight = 100;
+				setViewportHeight( 300 );
+
+				fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
+					body: {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					},
+					status: 500,
+				} );
+
+				fetchMock.postOnce( initialSetupSettingsEndpoint, {
+					body: {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					},
+					status: 500,
+				} );
+
+				const { container, getByRole, getByText, waitForRegistry } =
+					render( <KeyMetricsSetupApp />, {
+						registry,
+						viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+					} );
+
+				await waitForRegistry();
+				await waitForFocus();
+
+				act( () => {
+					fireEvent.click(
+						getByRole( 'radio', { name: 'Publish a blog' } )
+					);
+				} );
+
+				fireEvent.click(
+					getByRole( 'button', { name: 'Complete setup' } )
+				);
+
+				await waitForRegistry();
+
+				fireEvent.click(
+					getByRole( 'button', { name: 'Continue without saving' } )
+				);
+
+				await waitForRegistry();
+
+				await waitFor( () => {
+					expect(
+						getByText( 'Something went wrong, please try again' )
+					).toBeInTheDocument();
+				} );
+
+				const errorElement = container.querySelector(
+					'.googlesitekit-key-metrics-setup__error'
+				);
+
+				expect( errorElement ).not.toHaveClass(
+					'googlesitekit-key-metrics-setup__error--inline'
+				);
 			} );
 		} );
 	} );
