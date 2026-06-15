@@ -86,7 +86,7 @@ describe( 'UserMenu', () => {
 
 			expect(
 				container.querySelector( '#user-menu' ).children.length
-			).toEqual( 2 );
+			).toEqual( 3 );
 		} );
 
 		it( 'should open the menu when clicked', () => {
@@ -106,7 +106,7 @@ describe( 'UserMenu', () => {
 
 		describe( 'clicking the disconnect menu item', () => {
 			beforeEach( async () => {
-				fireEvent.click( menu.children[ 2 ] );
+				fireEvent.click( menu.children[ 3 ] );
 
 				await waitFor( () => {
 					expect(
@@ -172,7 +172,7 @@ describe( 'UserMenu', () => {
 				.select( CORE_SITE )
 				.getProxyPermissionsURL();
 
-			fireEvent.click( menu.children[ 1 ] );
+			fireEvent.click( menu.children[ 2 ] );
 
 			await waitFor( () => {
 				expect( locationAssignMock ).toHaveBeenCalled();
@@ -183,7 +183,7 @@ describe( 'UserMenu', () => {
 		} );
 
 		it( 'should select a menu option on pressing space', async () => {
-			fireEvent.keyDown( menu.children[ 2 ], { keyCode: SPACE } );
+			fireEvent.keyDown( menu.children[ 3 ], { keyCode: SPACE } );
 
 			await waitFor( () => {
 				expect(
@@ -193,7 +193,7 @@ describe( 'UserMenu', () => {
 		} );
 
 		it( 'should select a menu option on pressing enter', async () => {
-			fireEvent.keyDown( menu.children[ 2 ], { keyCode: ENTER } );
+			fireEvent.keyDown( menu.children[ 3 ], { keyCode: ENTER } );
 
 			await waitFor( () => {
 				expect(
