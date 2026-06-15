@@ -86,7 +86,6 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Sync_Audiences;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Custom_Dimension_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Resource_Data_Availability_Date;
-use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Site_Goals_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Set_Google_Tag_ID_Mismatch;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Set_Is_Web_Data_Stream_Unavailable;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Sync_Custom_Dimensions;
@@ -989,13 +988,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			),
 			'GET:site-goals-settings'                   => new Get_Site_Goals_Settings(
 				array(
-					'site_goals_settings' => $this->user_site_goals_settings,
-					'service'             => '',
-				)
-			),
-			'POST:save-site-goals-settings'             => new Save_Site_Goals_Settings(
-				array(
-					'site_goals_settings' => $this->user_site_goals_settings,
+					'site_goals_settings' => $this->site_goals_settings,
 					'service'             => '',
 				)
 			),

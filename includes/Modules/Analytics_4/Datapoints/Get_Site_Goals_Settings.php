@@ -10,30 +10,70 @@
 
 namespace Google\Site_Kit\Modules\Analytics_4\Datapoints;
 
+use Google\Site_Kit\Core\Modules\Executable_Datapoint;
+use Google\Site_Kit\Core\Modules\Shareable_Datapoint;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Settings;
 
 /**
- * Class for the Site Goals settings retrieval datapoint.
+ * Class for the site-wide Site Goals settings retrieval datapoint.
  *
- * @since 1.181.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
-class Get_Site_Goals_Settings extends Site_Goals_Settings_Datapoint {
+class Get_Site_Goals_Settings extends Shareable_Datapoint implements Executable_Datapoint {
+
+	/**
+	 * Site_Goals_Settings instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Site_Goals_Settings
+	 */
+	private $site_goals_settings;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $definition Definition fields.
+	 */
+	public function __construct( array $definition ) {
+		parent::__construct( $definition );
+		$this->site_goals_settings = $definition['site_goals_settings'];
+	}
 
 	/**
 	 * Creates a request object.
 	 *
-	 * @since 1.181.0
+	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data_request Data request object.
-	 * @return callable Closure that returns Site Goals settings.
+	 * @return callable Closure that returns site-wide Site Goals settings.
 	 */
 	public function create_request( Data_Request $data_request ) {
 		$site_goals_settings = $this->site_goals_settings;
 
 		return function () use ( $site_goals_settings ) {
-			return $site_goals_settings->get();
+			$settings = $site_goals_settings->get();
+			return current_user_can( Permissions::MANAGE_OPTIONS )
+				? $settings
+				: array_intersect_key( $settings, array_flip( $site_goals_settings->get_view_only_keys() ) );
 		};
+	}
+
+	/**
+	 * Parses a response.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed        $response Request response.
+	 * @param Data_Request $data     Data request object.
+	 * @return mixed The response without any modifications.
+	 */
+	public function parse_response( $response, Data_Request $data ) {
+		return $response;
 	}
 }
