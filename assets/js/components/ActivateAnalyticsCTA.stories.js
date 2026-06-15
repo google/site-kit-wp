@@ -19,7 +19,9 @@
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { ANALYTICS_SETUP_ERROR } from '@/js/modules/analytics-4/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -59,6 +61,22 @@ WithSetupFlowRefreshCompleteSetup.parameters = {
 	features: [ 'setupFlowRefresh' ],
 };
 
+export const WithSetupFlowRefreshPhase4ActivationError = Template.bind( {} );
+WithSetupFlowRefreshPhase4ActivationError.storyName =
+	'Setup Flow Refresh Phase 4 - Activation Error';
+WithSetupFlowRefreshPhase4ActivationError.args = {
+	dismissedItemSlug: 'analytics-setup-cta-search-funnel',
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_SITE ).setInternalServerError( {
+			id: ANALYTICS_SETUP_ERROR,
+			description: 'This is an error',
+		} );
+	},
+};
+WithSetupFlowRefreshPhase4ActivationError.parameters = {
+	features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+};
+
 export default {
 	title: 'Components/ActivateAnalyticsCTA',
 	component: ActivateAnalyticsCTA,
@@ -67,6 +85,10 @@ export default {
 			const analyticsActive = args?.isAnalyticsActive || false;
 
 			function setupRegistry( registry ) {
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
