@@ -33,6 +33,8 @@ class Resource_Data_Availability_Date {
 	 */
 	const CUSTOM_DIMENSION_SLUGS = array(
 		'googlesitekit_post_type',
+		'googlesitekit_event_provider',
+		'googlesitekit_form_id',
 	);
 
 	const RESOURCE_TYPE_AUDIENCE         = 'audience';

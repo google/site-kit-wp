@@ -126,7 +126,7 @@ abstract class Module {
 	/**
 	 * Memoized datapoint definitions map.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 * @var array|null
 	 */
 	private $datapoint_definitions;
@@ -291,7 +291,7 @@ abstract class Module {
 	 * Gets the datapoint definition instance.
 	 *
 	 * @since 1.77.0
-	 * @since n.e.x.t Changed visibility to public so REST permission checks can
+	 * @since 1.181.0 Changed visibility to public so REST permission checks can
 	 *               inspect a datapoint (e.g. for Permission_Aware_Datapoint).
 	 *
 	 * @param string $datapoint_id Datapoint ID, in the `METHOD:datapoint` form (e.g. `GET:report`).

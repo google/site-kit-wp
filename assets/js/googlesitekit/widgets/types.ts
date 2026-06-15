@@ -24,7 +24,7 @@ import type { ComponentType } from 'react';
 /**
  * Date range passed to a PDF widget's `getData`, adjusted to exclude the current day.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  */
 export interface PDFReportDates {
 	startDate: string;
@@ -39,7 +39,7 @@ export interface PDFReportDates {
  * `data` is `unknown` at this boundary: each widget owns its own data shape and
  * narrows it inside its own `Component`.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  */
 export interface PDFWidgetComponentProps {
 	data?: unknown;
@@ -50,7 +50,7 @@ export interface PDFWidgetComponentProps {
  * A PDF widget `Component`, optionally exposing a `preload` to resolve its lazy
  * chunk before rendering (the `@react-pdf` renderer does not honour Suspense).
  *
- * @since n.e.x.t
+ * @since 1.181.0
  */
 export type PDFWidgetComponent = ComponentType< PDFWidgetComponentProps > & {
 	preload?: () => Promise< {
@@ -61,7 +61,7 @@ export type PDFWidgetComponent = ComponentType< PDFWidgetComponentProps > & {
 /**
  * Resolved output of a PDF widget's `getData`.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  */
 export interface WidgetPDFData {
 	data?: unknown;
@@ -71,7 +71,7 @@ export interface WidgetPDFData {
 /**
  * PDF export configuration for a widget.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  */
 export interface WidgetPDFConfig {
 	Component: PDFWidgetComponent;
@@ -89,7 +89,7 @@ export interface WidgetPDFConfig {
  * Represents a registered widget with its configuration and settings.
  *
  * @since 1.170.0
- * @since n.e.x.t Added optional `pdf` config.
+ * @since 1.181.0 Added optional `pdf` config.
  */
 export interface Widget {
 	slug: string;
@@ -110,7 +110,7 @@ export interface Widget {
  * Represents a registered widget area as returned by `getWidgetAreas` /
  * `getWidgetArea`. This is the typed lens over the `.js` widgets datastore.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  */
 export interface WidgetArea {
 	slug: string;

@@ -24,6 +24,7 @@ import { waitFor } from '@testing-library/react';
 /**
  * Internal dependencies
  */
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import Notifications from '@/js/components/notifications/Notifications';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -82,6 +83,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 	afterEach( () => {
 		fetchMock.reset();
 		mockShowTooltip.mockClear();
+		useShowTooltip.mockClear();
 	} );
 
 	describe( 'checkRequirements', () => {
@@ -349,6 +351,20 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 
 			await waitFor( () =>
 				expect( mockShowTooltip ).toHaveBeenCalledTimes( 1 )
+			);
+		} );
+
+		it( 'anchors the tooltip on mobile', () => {
+			render( <NotificationComponent />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'proactiveUserEngagement' ],
+			} );
+
+			expect( useShowTooltip ).toHaveBeenCalledWith(
+				expect.objectContaining( {
+					isCenteredOnMobile: false,
+				} )
 			);
 		} );
 

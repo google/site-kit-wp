@@ -19,7 +19,7 @@ use Google\Site_Kit\Modules\Analytics_4\Advanced_Data_Breakdowns_Settings;
 /**
  * Class for the advanced data breakdowns settings retrieval datapoint.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class Get_Advanced_Data_Breakdowns_Settings extends Shareable_Datapoint implemen
 	/**
 	 * The advanced data breakdowns settings this datapoint reads from.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @var Advanced_Data_Breakdowns_Settings
 	 */
@@ -37,7 +37,7 @@ class Get_Advanced_Data_Breakdowns_Settings extends Shareable_Datapoint implemen
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param array $definition Datapoint definition. Must include the `advanced_data_breakdowns_settings` instance.
 	 */
@@ -51,7 +51,7 @@ class Get_Advanced_Data_Breakdowns_Settings extends Shareable_Datapoint implemen
 	 *
 	 * Users who can manage options get the full settings. Everyone else gets only the view-only keys.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param Data_Request $data_request The REST data request.
 	 * @return callable Callback that returns the settings the current user may read.
@@ -74,7 +74,7 @@ class Get_Advanced_Data_Breakdowns_Settings extends Shareable_Datapoint implemen
 	 * The settings already have the shape the REST API needs, so there is
 	 * nothing to parse.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param mixed        $response The settings from `create_request`.
 	 * @param Data_Request $data     The REST data request.
