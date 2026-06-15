@@ -193,6 +193,27 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                 </li>
                 <li
                   class="mdc-list-item"
+                  id="manage-email-reports"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage email reports
+                    </span>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
                   id="manage-sites"
                   role="menuitem"
                   tabindex="-1"
@@ -548,6 +569,27 @@ exports[`SetupUsingProxyWithSignIn should not render the progress indicator when
                         wapuu.wordpress@gmail.com
                       </p>
                     </div>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
+                  id="manage-email-reports"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage email reports
+                    </span>
                   </div>
                 </li>
                 <li
@@ -966,6 +1008,27 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                 </li>
                 <li
                   class="mdc-list-item"
+                  id="manage-email-reports"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage email reports
+                    </span>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
                   id="manage-sites"
                   role="menuitem"
                   tabindex="-1"
@@ -1295,6 +1358,27 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                         wapuu.wordpress@gmail.com
                       </p>
                     </div>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
+                  id="manage-email-reports"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage email reports
+                    </span>
                   </div>
                 </li>
                 <li
@@ -1667,6 +1751,27 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 </li>
                 <li
                   class="mdc-list-item"
+                  id="manage-email-reports"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage email reports
+                    </span>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
                   id="manage-sites"
                   role="menuitem"
                   tabindex="-1"
@@ -1951,6 +2056,27 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                         wapuu.wordpress@gmail.com
                       </p>
                     </div>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
+                  id="manage-email-reports"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage email reports
+                    </span>
                   </div>
                 </li>
                 <li
@@ -2323,6 +2449,27 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 </li>
                 <li
                   class="mdc-list-item"
+                  id="manage-email-reports"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage email reports
+                    </span>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
                   id="manage-sites"
                   role="menuitem"
                   tabindex="-1"
@@ -2687,6 +2834,27 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                         wapuu.wordpress@gmail.com
                       </p>
                     </div>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
+                  id="manage-email-reports"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage email reports
+                    </span>
                   </div>
                 </li>
                 <li
