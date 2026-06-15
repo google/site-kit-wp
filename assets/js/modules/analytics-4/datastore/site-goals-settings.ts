@@ -17,46 +17,21 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-import { isPlainObject } from 'lodash';
-
-/**
  * Internal dependencies
  */
-import { get, set } from 'googlesitekit-api';
-import {
-	Select,
-	commonActions,
-	createReducer,
-	createRegistrySelector,
-} from 'googlesitekit-data';
-import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { get } from 'googlesitekit-api';
+import { commonActions, createReducer } from 'googlesitekit-data';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import {
-	combineStores,
-	createValidatedAction,
-} from '@/js/googlesitekit/data/utils';
-import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
-import { GoalDriverSelectionState } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import { VisitorEngagementSelectionState } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement/registry';
+import { combineStores } from '@/js/googlesitekit/data/utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
 
-const { setErrorForAction, clearActionError } = errorStoreActions;
-
-export interface SiteGoalsSettings {
-	goalDrivers?: GoalDriverSelectionState;
-	visitorEngagement?: VisitorEngagementSelectionState;
+export interface SiteGoalsSiteSettings {
+	activeWidgets: string[];
 }
 
 interface State {
-	siteGoalsSettings?: {
-		settings: SiteGoalsSettings;
-		savedSettings: SiteGoalsSettings;
-	};
-	isFetchingSaveSiteGoalsSettings?: Record< string, boolean >;
+	siteGoalsSiteSettings?: SiteGoalsSiteSettings;
 	breakdownTooltipPending?: boolean;
 }
 
@@ -68,77 +43,15 @@ interface SetBreakdownTooltipPendingAction {
 	payload: { isPending: boolean };
 }
 
-// Result shape returned by the fetch-store save action.
-type SaveResult = { response?: SiteGoalsSettings; error?: unknown };
-
-// Minimal typed view over the registry exposed inside the generator actions and
-// resolvers. The shared redux-routine/registry infrastructure is untyped JS, so
-// only the selectors this store actually reaches are declared here.
-interface SiteGoalsRegistry {
-	select: ( store: string ) => {
-		getSiteGoalsSettings: () => SiteGoalsSettings | undefined;
-	};
-	resolveSelect: ( store: string ) => {
-		getSiteGoalsSettings: () => Promise< SiteGoalsSettings | undefined >;
+// Minimal registry view for resolvers.
+interface SiteGoalsSiteRegistry {
+	select: ( storeName: string ) => {
+		getSiteGoalsSiteSettings: () => SiteGoalsSiteSettings | undefined;
 	};
 }
 
-/**
- * Validates the per-goal-type selections of a site goals setting.
- *
- * @since 1.181.0
- *
- * @param {*}      selections Goal type selections to validate.
- * @param {string} key        The setting key the selections belong to.
- * @return {void}
- */
-function validateGoalTypeSelections( selections: unknown, key: string ): void {
-	invariant( isPlainObject( selections ), `${ key } should be an object.` );
-
-	const goalTypeSelections = selections as Record< string, unknown >;
-
-	// Goal type sub-keys come from the shared GOAL_TYPES source of truth.
-	Object.values( GOAL_TYPES ).forEach( ( goalType ) => {
-		if ( goalTypeSelections[ goalType ] !== undefined ) {
-			invariant(
-				Array.isArray( goalTypeSelections[ goalType ] ),
-				`${ key }.${ goalType } should be an array.`
-			);
-		}
-	} );
-}
-
-/**
- * Validates site goals settings.
- *
- * @since 1.181.0
- *
- * @param {*} settings Site goals settings to validate.
- * @return {void}
- */
-function validateSiteGoalsSettings( settings: unknown ): void {
-	invariant( isPlainObject( settings ), 'settings should be an object.' );
-
-	const siteGoalsSettings = settings as Record< string, unknown >;
-
-	[ 'goalDrivers', 'visitorEngagement' ].forEach( ( key ) => {
-		if ( siteGoalsSettings[ key ] !== undefined ) {
-			validateGoalTypeSelections( siteGoalsSettings[ key ], key );
-		}
-	} );
-}
-
-const fetchStoreReducerCallback = createReducer(
-	( state: State, settings: SiteGoalsSettings ) => {
-		state.siteGoalsSettings = {
-			settings,
-			savedSettings: settings,
-		};
-	}
-);
-
-const fetchGetSiteGoalsSettingsStore = createFetchStore( {
-	baseName: 'getSiteGoalsSettings',
+const fetchGetSiteGoalsSiteSettingsStore = createFetchStore( {
+	baseName: 'getSiteGoalsSiteSettings',
 	controlCallback() {
 		return get(
 			'modules',
@@ -151,29 +64,17 @@ const fetchGetSiteGoalsSettingsStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback: fetchStoreReducerCallback,
+	reducerCallback: createReducer(
+		( state: State, settings: SiteGoalsSiteSettings ) => {
+			state.siteGoalsSiteSettings = settings;
+		}
+	),
 } ) as {
-	actions: { fetchGetSiteGoalsSettings: () => unknown };
-};
-
-const fetchSaveSiteGoalsSettingsStore = createFetchStore( {
-	baseName: 'saveSiteGoalsSettings',
-	controlCallback: ( settings: SiteGoalsSettings ) =>
-		set( 'modules', MODULE_SLUG_ANALYTICS_4, 'save-site-goals-settings', {
-			settings,
-		} ),
-	reducerCallback: fetchStoreReducerCallback,
-	argsToParams: ( settings: SiteGoalsSettings ) => settings,
-	validateParams: validateSiteGoalsSettings,
-	isAction: true,
-} ) as {
-	actions: {
-		fetchSaveSiteGoalsSettings: ( settings: SiteGoalsSettings ) => unknown;
-	};
+	actions: { fetchGetSiteGoalsSiteSettings: () => unknown };
 };
 
 const baseInitialState: State = {
-	siteGoalsSettings: undefined,
+	siteGoalsSiteSettings: undefined,
 	breakdownTooltipPending: false,
 };
 
@@ -195,7 +96,7 @@ const baseActions = {
 	 * Marks the breakdown notice tooltip as pending, so the Side Panel parent
 	 * shows it once the panel overlay closes.
 	 *
-	 * @since 1.181.0
+	 * @since n.e.x.t
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -209,7 +110,7 @@ const baseActions = {
 	/**
 	 * Clears the pending breakdown notice tooltip flag.
 	 *
-	 * @since 1.181.0
+	 * @since n.e.x.t
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -219,121 +120,74 @@ const baseActions = {
 			payload: { isPending: false },
 		};
 	},
-
-	/**
-	 * Saves the site goals settings.
-	 *
-	 * @since 1.181.0
-	 *
-	 * @param {Object} settings Partial site goals settings to save.
-	 * @return {Object} Object with `response` and `error`.
-	 */
-	saveSiteGoalsSettings: createValidatedAction(
-		( settings: SiteGoalsSettings ) => {
-			validateSiteGoalsSettings( settings );
-		},
-		function* (
-			settings: SiteGoalsSettings
-		): Generator< unknown, SaveResult, unknown > {
-			yield clearActionError( 'saveSiteGoalsSettings', [] );
-
-			const registry =
-				( yield commonActions.getRegistry() ) as SiteGoalsRegistry;
-
-			const currentSettings = ( yield commonActions.await(
-				registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getSiteGoalsSettings()
-			) ) as SiteGoalsSettings | undefined;
-
-			const { response, error } =
-				( yield fetchSaveSiteGoalsSettingsStore.actions.fetchSaveSiteGoalsSettings(
-					{
-						...currentSettings,
-						...settings,
-					}
-				) ) as SaveResult;
-
-			if ( error ) {
-				yield setErrorForAction( error, 'saveSiteGoalsSettings', [] );
-			}
-
-			return { response, error };
-		}
-	),
 };
 
 const baseResolvers = {
-	*getSiteGoalsSettings(): Generator< unknown, void, unknown > {
+	*getSiteGoalsSiteSettings(): Generator< unknown, void, unknown > {
 		const registry =
-			( yield commonActions.getRegistry() ) as SiteGoalsRegistry;
+			( yield commonActions.getRegistry() ) as SiteGoalsSiteRegistry;
 
 		if (
-			registry.select( MODULES_ANALYTICS_4 ).getSiteGoalsSettings() ===
-			undefined
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getSiteGoalsSiteSettings() === undefined
 		) {
-			yield fetchGetSiteGoalsSettingsStore.actions.fetchGetSiteGoalsSettings();
+			yield fetchGetSiteGoalsSiteSettingsStore.actions.fetchGetSiteGoalsSiteSettings();
 		}
 	},
 };
 
 const baseSelectors = {
 	/**
-	 * Gets the site goals settings.
+	 * Gets the site-wide site goals settings.
 	 *
-	 * @since 1.181.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object|undefined} Site goals settings, or `undefined` if not loaded.
+	 * @return {Object|undefined} Site-wide site goals settings, or `undefined` if not loaded.
 	 */
-	getSiteGoalsSettings( state: State ): SiteGoalsSettings | undefined {
-		return state.siteGoalsSettings?.settings;
+	getSiteGoalsSiteSettings(
+		state: State
+	): SiteGoalsSiteSettings | undefined {
+		return state.siteGoalsSiteSettings;
 	},
 
 	/**
-	 * Gets the selected site goals goal drivers.
+	 * Gets the active widget categories.
 	 *
-	 * @since 1.181.0
-	 *
-	 * @return {Object|undefined} Goal driver selections, or `undefined` if not loaded.
-	 */
-	getSiteGoalsGoalDrivers: createRegistrySelector(
-		( select: Select ) => () =>
-			select( MODULES_ANALYTICS_4 ).getSiteGoalsSettings()?.goalDrivers
-	),
-
-	/**
-	 * Gets the selected site goals visitor engagement events.
-	 *
-	 * @since 1.181.0
-	 *
-	 * @return {Object|undefined} Visitor engagement selections, or `undefined` if not loaded.
-	 */
-	getSiteGoalsVisitorEngagement: createRegistrySelector(
-		( select: Select ) => () =>
-			select( MODULES_ANALYTICS_4 ).getSiteGoalsSettings()
-				?.visitorEngagement
-	),
-
-	/**
-	 * Checks whether the site goals settings are currently being saved.
-	 *
-	 * @since 1.181.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean} `true` if the settings are being saved, otherwise `false`.
+	 * @return {Array|undefined} Active widget category slugs, or `undefined` if not loaded.
 	 */
-	isSavingSiteGoalsSettings( state: State ): boolean {
-		return Object.values(
-			state.isFetchingSaveSiteGoalsSettings || {}
-		).some( Boolean );
+	getActiveWidgets( state: State ): string[] | undefined {
+		return state.siteGoalsSiteSettings?.activeWidgets;
+	},
+
+	/**
+	 * Checks whether a given widget category is active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state    Data store's state.
+	 * @param {string} category Widget category slug (e.g. 'lead' or 'ecommerce').
+	 * @return {boolean|undefined} `true` if active, `false` if not, `undefined` if not loaded.
+	 */
+	isSiteGoalWidgetActive(
+		state: State,
+		category: string
+	): boolean | undefined {
+		if ( state.siteGoalsSiteSettings === undefined ) {
+			return undefined;
+		}
+		return state.siteGoalsSiteSettings.activeWidgets.includes( category );
 	},
 
 	/**
 	 * Checks whether the breakdown notice tooltip is pending (deferred from the
 	 * Side Panel until it closes).
 	 *
-	 * @since 1.181.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} `true` if the tooltip is pending, otherwise `false`.
@@ -354,17 +208,13 @@ interface Store {
 	selectors: Record< string, unknown >;
 }
 
-const store = combineStores(
-	fetchGetSiteGoalsSettingsStore,
-	fetchSaveSiteGoalsSettingsStore,
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		reducer: baseReducer,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	}
-) as Store;
+const store = combineStores( fetchGetSiteGoalsSiteSettingsStore, {
+	initialState: baseInitialState,
+	actions: baseActions,
+	reducer: baseReducer,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} ) as Store;
 
 export const initialState = store.initialState;
 export const actions = store.actions;
