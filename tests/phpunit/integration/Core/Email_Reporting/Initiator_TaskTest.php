@@ -149,6 +149,10 @@ class Initiator_TaskTest extends TestCase {
 			$this->assertSame( 0, (int) $send_attempts, 'Email log send attempts should start at zero.' );
 
 			$reference_dates = get_post_meta( $post->ID, Email_Log::META_REPORT_REFERENCE_DATES, true );
+			if ( is_string( $reference_dates ) ) {
+				$reference_dates = json_decode( $reference_dates, true );
+			}
+
 			$this->assertIsArray( $reference_dates, 'Reference dates should decode to an array.' );
 			$this->assertArrayHasKey( 'startDate', $reference_dates, 'Reference dates should include start date.' );
 			$this->assertArrayHasKey( 'endDate', $reference_dates, 'Reference dates should include end date.' );
