@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Image, StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Image, StyleSheet, Text } from '@react-pdf/renderer';
 
 /**
  * WordPress dependencies
@@ -113,11 +113,9 @@ export default function DashboardAllTrafficWidgetGA4PDF( {
 			{ lineChart ? (
 				<Image src={ lineChart } style={ styles.chart } />
 			) : (
-				<View>
-					<Text style={ styles.noData }>
-						{ __( 'No data available.', 'google-site-kit' ) }
-					</Text>
-				</View>
+				<Text style={ styles.noData }>
+					{ __( 'No data available.', 'google-site-kit' ) }
+				</Text>
 			) }
 		</PDFWidgetSection>
 	);

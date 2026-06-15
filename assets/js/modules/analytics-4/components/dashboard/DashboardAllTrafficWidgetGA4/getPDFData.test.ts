@@ -20,7 +20,11 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock-jest';
-import { createTestRegistry, provideSiteInfo } from 'tests/js/utils';
+import {
+	createTestRegistry,
+	provideSiteInfo,
+	waitForDefaultTimeouts,
+} from 'tests/js/utils';
 
 /**
  * WordPress dependencies
@@ -251,6 +255,34 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		}
 	} );
 
+	it( 'should forward the abort signal to each report request', async () => {
+		fetchMock.get( reportEndpoint, { body: { rows: [] }, status: 200 } );
+
+		const { signal } = new AbortController();
+
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal,
+		} );
+
+		// The registry starts resolver runs from a timeout. Wait the
+		// timeouts out, so an extra run would add its request to the calls
+		// this test counts.
+		await waitForDefaultTimeouts();
+
+		const signals = fetchMock
+			.calls( reportEndpoint )
+			.map( ( [ , options ] ) => options?.signal );
+
+		// Check with `toBe` that each request received this exact signal
+		// object. Every `AbortSignal` looks the same to `toEqual`, so a
+		// `toEqual` check could pass with the wrong signal.
+		expect( signals ).toHaveLength( 2 );
+		expect( signals[ 0 ] ).toBe( signal );
+		expect( signals[ 1 ] ).toBe( signal );
+	} );
+
 	it( 'should stop building the report without dispatching a request when signal is already aborted', async () => {
 		const controller = new AbortController();
 		controller.abort();
@@ -307,5 +339,62 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		// The post-fetch abort check runs before the chart is rasterised.
 		expect( mockEnsureGoogleChartsLoaded ).not.toHaveBeenCalled();
 		expect( mockRenderGoogleChartToDataURI ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should fetch the reports again when a new run starts after an aborted run', async () => {
+		const firstController = new AbortController();
+		const deferredResolvers: Array< () => void > = [];
+		let requestCount = 0;
+
+		fetchMock.get( reportEndpoint, () => {
+			requestCount++;
+
+			// Keep the first run's two requests waiting, so the abort
+			// happens while they still run. Later requests get a normal
+			// response.
+			if ( requestCount <= 2 ) {
+				return new Promise< { body: unknown; status: number } >(
+					( resolve ) => {
+						deferredResolvers.push( () =>
+							resolve( { body: { rows: [] }, status: 200 } )
+						);
+					}
+				);
+			}
+
+			return { body: { rows: [] }, status: 200 };
+		} );
+
+		const firstRun = getPDFData( {
+			registry,
+			dates: DATES,
+			signal: firstController.signal,
+		} );
+
+		// Wait for both report requests to start before aborting.
+		while ( deferredResolvers.length < 2 ) {
+			await new Promise( ( advance ) => setTimeout( advance, 0 ) );
+		}
+
+		firstController.abort();
+		deferredResolvers.forEach( ( resolve ) => resolve() );
+
+		expect( await firstRun ).toEqual( { data: null } );
+		expect( fetchMock.calls( reportEndpoint ) ).toHaveLength( 2 );
+
+		const secondRun = await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+		} );
+
+		expect( fetchMock.calls( reportEndpoint ) ).toHaveLength( 4 );
+		expect( secondRun ).toEqual( {
+			data: {
+				totalsReport: { rows: [] },
+				graphReport: { rows: [] },
+			},
+			chartImages: { lineChart: LINE_CHART_DATA_URI },
+		} );
 	} );
 } );

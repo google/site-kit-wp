@@ -107,24 +107,26 @@ export const Tile: FC< TileProps > = ( {
 							{ subtitle }
 						</p>
 					</div>
-					<div className="googlesitekit-site-goals-tile__change-container">
-						<ChangeBadge
-							previousValue={ previousValue }
-							currentValue={ currentValue }
-						/>
-						{ comparisonDays && previousValue !== 0 && (
-							<p className="googlesitekit-site-goals-tile__comparison-label">
-								{ sprintf(
-									/* translators: %d: number of days in the comparison period */
-									__(
-										'Vs. prev. %d days',
-										'google-site-kit'
-									),
-									comparisonDays
-								) }
-							</p>
-						) }
-					</div>
+					{ previousValue !== 0 && (
+						<div className="googlesitekit-site-goals-tile__change-container">
+							<ChangeBadge
+								previousValue={ previousValue }
+								currentValue={ currentValue }
+							/>
+							{ comparisonDays && (
+								<p className="googlesitekit-site-goals-tile__comparison-label">
+									{ sprintf(
+										/* translators: %d: number of days in the comparison period */
+										__(
+											'Vs. prev. %d days',
+											'google-site-kit'
+										),
+										comparisonDays
+									) }
+								</p>
+							) }
+						</div>
+					) }
 				</Fragment>
 			) }
 		</GoalTile>

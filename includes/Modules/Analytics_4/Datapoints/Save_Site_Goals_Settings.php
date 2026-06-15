@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 /**
  * Class for the Site Goals settings save datapoint.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Save_Site_Goals_Settings extends Site_Goals_Settings_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return callable Closure that saves Site Goals settings and returns the updated settings.

@@ -63,7 +63,7 @@ function renderTree(
 }
 
 describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
-	it( 'should render the All visitors metric tile and the line chart image when chart images are supplied', () => {
+	it( 'should render the widget heading, All visitors metric tile, and the line chart image when chart images are supplied', () => {
 		const data = buildReports( {
 			currentUsers: '1234',
 			previousUsers: '1000',
@@ -102,7 +102,7 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		expect( json ).not.toContain( 'data:image' );
 	} );
 
-	it( 'should show an up arrow when the period-over-period change is positive', () => {
+	it( 'should render a green chip with a positive signed change', () => {
 		const data = buildReports( {
 			currentUsers: '1200',
 			previousUsers: '1000',
@@ -119,7 +119,7 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		expect( json ).toContain( '+20%' );
 	} );
 
-	it( 'should show a down arrow when the period-over-period change is negative', () => {
+	it( 'should render a red chip with a negative signed change', () => {
 		const data = buildReports( {
 			currentUsers: '800',
 			previousUsers: '1000',
