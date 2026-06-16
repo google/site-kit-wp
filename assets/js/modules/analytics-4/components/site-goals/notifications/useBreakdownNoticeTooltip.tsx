@@ -40,7 +40,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
  * the panel overlay has closed. Keeping it here means the tooltip slug, copy and
  * dismiss label live in a single place shared by all of them.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @return {Function} The `showTooltip` callback.
  */

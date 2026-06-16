@@ -48,7 +48,7 @@ const { setErrorForAction, clearActionError } = errorStoreActions;
 /**
  * Advanced data breakdowns settings shape.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  */
 export interface AdvancedDataBreakdownsSettings {
 	enabled: boolean;
@@ -69,7 +69,7 @@ type Action = {
 /**
  * Checks that advanced data breakdowns settings are an object with a boolean `enabled` flag.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param  settings Advanced data breakdowns settings to validate.
  * @return {void}
@@ -155,7 +155,7 @@ const baseActions = {
 	/**
 	 * Sets the advanced data breakdowns enabled flag in local state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param enabled Whether breakdowns are enabled.
 	 * @return Redux-style action.
@@ -175,7 +175,7 @@ const baseActions = {
 	/**
 	 * Saves the advanced data breakdowns settings via the dedicated endpoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return Object with `response` and `error`.
 	 */
@@ -251,7 +251,7 @@ const baseSelectors = {
 	/**
 	 * Gets the full advanced data breakdowns settings object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param state Data store's state.
 	 * @return Settings object, or `undefined` while loading.
@@ -265,7 +265,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether advanced data breakdowns is enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return `true` when enabled, `false` when not, `undefined` while loading.
 	 */

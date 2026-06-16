@@ -21,7 +21,7 @@ use WP_Error;
 /**
  * Class for the advanced data breakdowns settings save datapoint.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class Save_Advanced_Data_Breakdowns_Settings extends Datapoint implements Execut
 	/**
 	 * The advanced data breakdowns settings this datapoint writes to.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @var Advanced_Data_Breakdowns_Settings
 	 */
@@ -39,7 +39,7 @@ class Save_Advanced_Data_Breakdowns_Settings extends Datapoint implements Execut
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param array $definition Datapoint definition. Must include the `advanced_data_breakdowns_settings` instance.
 	 */
@@ -53,7 +53,7 @@ class Save_Advanced_Data_Breakdowns_Settings extends Datapoint implements Execut
 	 *
 	 * Returns a `WP_Error` when the user cannot manage options, and throws when the `enabled` value is not a boolean.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param Data_Request $data_request The REST data request, read for its `settings` payload.
 	 * @return callable|WP_Error Callback that saves the settings, or a `WP_Error` when the user lacks permission.
@@ -93,7 +93,7 @@ class Save_Advanced_Data_Breakdowns_Settings extends Datapoint implements Execut
 	 * The settings already have the shape the REST API needs, so there is
 	 * nothing to parse.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param mixed        $response The settings from `create_request`.
 	 * @param Data_Request $data     The REST data request.

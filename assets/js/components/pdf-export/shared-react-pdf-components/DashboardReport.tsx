@@ -36,6 +36,7 @@ import {
 } from '@/js/components/pdf-export/pdf-theme';
 import PDFFooter from '@/js/components/pdf-export/shared-react-pdf-components/PDFFooter';
 import type { PDFReportArea } from '@/js/components/pdf-export/types';
+import PDFEmailReportingNotice from './PDFEmailReportingNotice';
 
 const DEFAULT_PAGE_HEIGHT = 792;
 
@@ -90,6 +91,8 @@ export interface DashboardReportProps {
 	privacyPolicyURL: string;
 	pageHeight?: number;
 	areas?: PDFReportArea[];
+	/** Golink URL for the "Set up email reports" button in the email reporting notice. */
+	emailReportingSetupURL?: string;
 }
 
 const DashboardReport: FC< DashboardReportProps > = ( {
@@ -100,6 +103,7 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 	privacyPolicyURL,
 	pageHeight = DEFAULT_PAGE_HEIGHT,
 	areas = [],
+	emailReportingSetupURL,
 } ) => {
 	return (
 		<Document
@@ -164,6 +168,9 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 						</View>
 					) ) }
 				</View>
+				<PDFEmailReportingNotice
+					emailReportingSetupURL={ emailReportingSetupURL }
+				/>
 				<PDFFooter
 					dashboardURL={ dashboardURL }
 					helpCenterURL={ helpCenterURL }

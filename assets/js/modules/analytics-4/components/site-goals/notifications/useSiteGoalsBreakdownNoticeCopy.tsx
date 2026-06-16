@@ -33,8 +33,9 @@ import { __ } from '@wordpress/i18n';
 import { Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { BREAKDOWN_SCOPE_BOTH } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
-import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { BreakdownScope } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 
 export interface BreakdownNoticeCopy {
 	title: string;
@@ -51,19 +52,24 @@ export interface BreakdownNoticeCopy {
  * be resolved from the data store here, instead of being passed in awkwardly
  * from every caller.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
- * @param {string} goalType The goal type the notice is shown for.
+ * @param {string} scope The goal scope/type the notice is shown for.
  * @return {BreakdownNoticeCopy} The `title`, `description` and `ctaLabel`.
  */
 export function useSiteGoalsBreakdownNoticeCopy(
-	goalType: GoalType
+	scope: BreakdownScope
 ): BreakdownNoticeCopy {
 	const documentationURL = useSelect(
 		( select: Select ) =>
 			// TODO: Replace the `site-goals` slug once the Site Goals
 			// documentation page is available.
 			select( CORE_SITE ).getDocumentationLinkURL( 'site-goals' ),
+		[]
+	);
+	const hasMultipleEcommerceProviders = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).hasMultipleActiveEcommerceEventProviders(),
 		[]
 	);
 
@@ -80,15 +86,75 @@ export function useSiteGoalsBreakdownNoticeCopy(
 		/>
 	);
 
-	if ( goalType === GOAL_TYPES.ECOMMERCE ) {
+	if ( scope === GOAL_TYPES.ECOMMERCE ) {
+		// Two ecommerce plugins active (WooCommerce + Easy Digital Downloads):
+		// the breakdown separates the two stores.
+		if ( hasMultipleEcommerceProviders ) {
+			return {
+				title: __(
+					'Using both WooCommerce and Easy Digital Downloads to sell products or services?',
+					'google-site-kit'
+				),
+				description: createInterpolateElement(
+					__(
+						'If you use both WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
+						'google-site-kit'
+					),
+					{ a: learnMoreLink }
+				),
+				ctaLabel,
+			};
+		}
+
+		// A single ecommerce plugin active: the breakdown separates results by
+		// plugin (source) more generally.
 		return {
 			title: __(
-				'Using both WooCommerce and Easy Digital Downloads to sell products or services?',
+				'See exactly which plugins are driving your results',
 				'google-site-kit'
 			),
 			description: createInterpolateElement(
 				__(
-					'If you use both WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
+					'Currently, your sales and leads are combined into one total. Enable this breakdown to separate results by plugin and track specific flows. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
+					'google-site-kit'
+				),
+				{ a: learnMoreLink }
+			),
+			ctaLabel,
+		};
+	}
+
+	// Both the lead and ecommerce breakdown dimensions are missing (the Side
+	// Panel's combined notice covering both goal type sections at once).
+	if ( scope === BREAKDOWN_SCOPE_BOTH ) {
+		// Two ecommerce plugins active: name both stores alongside forms.
+		if ( hasMultipleEcommerceProviders ) {
+			return {
+				title: __(
+					'Have multiple forms, or Using both WooCommerce and Easy Digital Downloads for your site?',
+					'google-site-kit'
+				),
+				description: createInterpolateElement(
+					__(
+						'If you use WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
+						'google-site-kit'
+					),
+					{ a: learnMoreLink }
+				),
+				ctaLabel,
+			};
+		}
+
+		// A single ecommerce plugin active: keep the copy generic across forms
+		// and products.
+		return {
+			title: __(
+				'Have multiple forms, or selling products or services?',
+				'google-site-kit'
+			),
+			description: createInterpolateElement(
+				__(
+					'If you use multiple forms or sell products, your events data might be grouped together. Enable this breakdown to see results for each form and product source separately and track how each one is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
 					'google-site-kit'
 				),
 				{ a: learnMoreLink }

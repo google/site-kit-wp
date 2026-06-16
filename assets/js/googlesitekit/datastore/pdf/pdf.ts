@@ -261,7 +261,7 @@ export const actions = {
 	/**
 	 * Marks the PDF export as in progress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return Redux-style action.
 	 */
@@ -275,7 +275,7 @@ export const actions = {
 	/**
 	 * Marks the PDF export as finished.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return Redux-style action.
 	 */
@@ -433,7 +433,7 @@ export const selectors = {
 	/**
 	 * Determines whether a PDF export is currently in progress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param state Data store's state.
 	 * @return `true` when exporting.

@@ -16,7 +16,6 @@ use WP_Post;
 use WP_Term;
 use WP_User;
 use WP_Post_Type;
-use WP_Screen;
 
 /**
  * Class providing access to entities.
@@ -46,8 +45,8 @@ final class Entity_Factory {
 
 		// If currently in WP admin, run admin-specific checks.
 		if ( is_admin() ) {
-			$screen = get_current_screen();
-			if ( ! $screen instanceof WP_Screen || 'post' !== $screen->base ) {
+			$screen = Current_Screen::get();
+			if ( null === $screen || 'post' !== $screen->base ) {
 				return null;
 			}
 

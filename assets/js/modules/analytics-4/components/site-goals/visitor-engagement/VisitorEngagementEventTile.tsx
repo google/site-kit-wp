@@ -49,11 +49,13 @@ interface VisitorEngagementEventTileProps {
 		compareEndDate?: string;
 	};
 	eventName: VisitorEngagementEventID;
+	breakdownFilter?: Record< string, unknown >;
 }
 
 const VisitorEngagementEventTile: FC< VisitorEngagementEventTileProps > = ( {
 	dates,
 	eventName,
+	breakdownFilter,
 } ) => {
 	const reportOptions: ReportOptions = useMemo(
 		() => ( {
@@ -63,7 +65,9 @@ const VisitorEngagementEventTile: FC< VisitorEngagementEventTileProps > = ( {
 			dimensions: [ { name: 'eventName' } ],
 			dimensionFilters: {
 				eventName,
-			},
+				// Scopes the report to the selected breakdown tab when set.
+				...breakdownFilter,
+			} as ReportOptions[ 'dimensionFilters' ],
 			endDate: dates.endDate,
 			reportID: `analytics-4_site-goals_visitor-engagement_${ eventName }`,
 			startDate: dates.startDate,
@@ -74,6 +78,7 @@ const VisitorEngagementEventTile: FC< VisitorEngagementEventTileProps > = ( {
 			dates.endDate,
 			dates.startDate,
 			eventName,
+			breakdownFilter,
 		]
 	);
 
