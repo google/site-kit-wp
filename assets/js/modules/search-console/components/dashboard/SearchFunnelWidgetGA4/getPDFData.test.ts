@@ -215,7 +215,7 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 		expect( fetchMock ).not.toHaveFetched( searchConsoleReportEndpoint );
 	} );
 
-	it( 'should rasterise four line charts (smoothed, dotted previous series) with the per-metric colour and signal', async () => {
+	it( 'should rasterise four line charts (smoothed, dotted previous series) with the per-metric color and signal', async () => {
 		provideReports( registry );
 
 		const signal = new AbortController().signal;

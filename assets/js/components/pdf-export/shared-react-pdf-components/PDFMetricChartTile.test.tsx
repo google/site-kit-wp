@@ -52,7 +52,7 @@ describe( 'PDFMetricChartTile', () => {
 		expect( json ).not.toContain( 'Data unavailable' );
 	} );
 
-	it( 'should render the current and previous period legend swatches in the series colour', () => {
+	it( 'should render the current and previous period legend swatches in the series color', () => {
 		const json = renderTile( {
 			title: 'Total Impressions',
 			value: '9.2K',
@@ -64,13 +64,13 @@ describe( 'PDFMetricChartTile', () => {
 
 		expect( json ).toContain( 'Impressions' );
 		expect( json ).toContain( 'Previous period' );
-		// The legend swatches are drawn in the metric's series colour, with the
+		// The legend swatches are drawn in the metric's series color, with the
 		// previous-period swatch dashed to mirror the chart's dotted line.
 		expect( json ).toContain( '#6380b8' );
 		expect( json ).toContain( '3 2' );
 	} );
 
-	it( 'should render the up arrow and success colour for a positive change', () => {
+	it( 'should render the up arrow and success color for a positive change', () => {
 		const json = renderTile( {
 			title: 'Total Clicks',
 			value: '3.6K',
@@ -86,7 +86,7 @@ describe( 'PDFMetricChartTile', () => {
 		expect( json ).toContain( '#34a853' );
 	} );
 
-	it( 'should render the down arrow and error colour for a negative change', () => {
+	it( 'should render the down arrow and error color for a negative change', () => {
 		const json = renderTile( {
 			title: 'Total Impressions',
 			value: '9.2K',

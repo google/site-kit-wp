@@ -89,7 +89,7 @@ describe( 'SearchFunnelWidgetGA4 PDF', () => {
 		expect( json ).not.toContain( 'Data unavailable' );
 	} );
 
-	it( 'should colour the change chips green for positive and red for negative changes', () => {
+	it( 'should color the change chips green for positive and red for negative changes', () => {
 		const json = renderTree( {
 			data: buildData(),
 			chartImages: buildChartImages(),

@@ -33,7 +33,7 @@ import type { FC } from 'react';
  */
 import { __ } from '@wordpress/i18n';
 
-// Colour tokens sourced from the PDF report Figma design.
+// color tokens sourced from the PDF report Figma design.
 const COLORS = {
 	// surfaces/on-surface
 	text: '#161b18',
@@ -153,7 +153,7 @@ interface LegendSwatchProps {
 	dashed?: boolean;
 }
 
-function LegendSwatch( { color, dashed }: LegendSwatchProps ) {
+const LegendSwatch: FC< LegendSwatchProps > = ( { color, dashed = false } ) => {
 	return (
 		<Svg width={ 16 } height={ 2 } viewBox="0 0 16 2">
 			<Line
@@ -167,7 +167,7 @@ function LegendSwatch( { color, dashed }: LegendSwatchProps ) {
 			/>
 		</Svg>
 	);
-}
+};
 
 export interface PDFMetricChartTileProps {
 	/** Heading rendered above the metric value, e.g. "Total Impressions". */
@@ -176,7 +176,7 @@ export interface PDFMetricChartTileProps {
 	value: string;
 	/** Pre-formatted change chip text, e.g. "5.2%". Hides the chip when omitted. */
 	change?: string;
-	/** Direction the change chip points; controls the arrow and colour. */
+	/** Direction the change chip points; controls the arrow and color. */
 	changeDirection?: 'up' | 'down';
 	/** Caption rendered below the chip, e.g. "Vs. prev. 28 days". */
 	changeLabel?: string;
@@ -184,7 +184,7 @@ export interface PDFMetricChartTileProps {
 	currentLabel: string;
 	/** Legend label for the previous-period series, e.g. "Previous period". */
 	previousLabel?: string;
-	/** Series colour used for the legend swatches, matching the chart. */
+	/** Series color used for the legend swatches, matching the chart. */
 	color: string;
 	/** JPEG data URI for the rasterised line chart. */
 	chartImage?: string | null;

@@ -50,7 +50,7 @@ import {
 	getSearchConsoleReportOptions,
 } from './reportOptions';
 
-// Per-metric line colours matching the dashboard's Search Funnel widget.
+// Per-metric line colors matching the dashboard's Search Funnel widget.
 const IMPRESSIONS_COLOR = '#6380b8';
 const CLICKS_COLOR = '#4bbbbb';
 const UNIQUE_VISITORS_COLOR = '#3c7251';
@@ -145,12 +145,12 @@ interface MetricCardResult {
  * Builds Google Charts options matching the dashboard's Search Funnel line charts.
  *
  * The current period draws as a solid smoothed line and the previous period as a
- * dotted line of the same colour, mirroring the dashboard.
+ * dotted line of the same color, mirroring the dashboard.
  *
  * @since n.e.x.t
  *
  * @param {Object}  options         Options.
- * @param {string}  options.color   Series colour for both lines.
+ * @param {string}  options.color   Series color for both lines.
  * @param {Array}   options.ticks   Date ticks for the horizontal axis.
  * @param {boolean} options.hasData Whether any data point is greater than zero.
  * @return {Object} Google Charts options object.
@@ -267,7 +267,7 @@ function buildChartDataTable(
  * @param {Object}      options              Options.
  * @param {Array}       options.dataRows     Chart data rows (without the header row).
  * @param {string}      options.currentLabel Column label for the current-period series.
- * @param {string}      options.color        Series colour for both lines.
+ * @param {string}      options.color        Series color for both lines.
  * @param {AbortSignal} options.signal       Cancellation signal.
  * @return {Promise<string>} The rendered chart image as a data URI.
  */
@@ -340,7 +340,7 @@ async function resolveReport(
  * @param {Object}      options.reportError     Selector error for the report, if any.
  * @param {string}      options.metricKey       Which metric the card represents.
  * @param {string}      options.currentLabel    Current-period series label.
- * @param {string}      options.color           Series colour for the chart.
+ * @param {string}      options.color           Series color for the chart.
  * @param {number}      options.dateRangeLength Number of days in the date range.
  * @param {AbortSignal} options.signal          Cancellation signal.
  * @return {Promise<Object>} The metric card result.
@@ -424,7 +424,7 @@ async function buildSearchConsoleCard( {
  * @param {Array}       options.dataLabels         Data labels passed to the extractor.
  * @param {Array}       options.tooltipDataFormats Tooltip formatters passed to the extractor.
  * @param {Array}       options.chartDataFormats   Chart value formatters passed to the extractor.
- * @param {string}      options.color              Series colour for the chart.
+ * @param {string}      options.color              Series color for the chart.
  * @param {number}      options.dateRangeLength    Number of days in the date range.
  * @param {string}      options.referenceDate      Reference date for padding empty series.
  * @param {AbortSignal} options.signal             Cancellation signal.
