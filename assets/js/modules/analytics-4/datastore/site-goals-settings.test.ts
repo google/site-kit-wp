@@ -125,12 +125,22 @@ describe( 'modules/analytics-4 site goals settings', () => {
 		} );
 
 		describe( 'isSiteGoalWidgetActive', () => {
-			it( 'should return undefined before settings are loaded', () => {
+			it( 'should return undefined before settings are loaded', async () => {
+				fetchMock.getOnce( getSiteGoalsSettingsEndpoint, {
+					body: { activeWidgets: [] },
+					status: 200,
+				} );
+
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.isSiteGoalWidgetActive( 'ecommerce' )
 				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getSiteGoalsSettings();
 			} );
 
 			it( 'should return true for a category that is in activeWidgets', () => {
