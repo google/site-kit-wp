@@ -147,6 +147,7 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 		$options     = new Options( $this->context );
 		$user_id     = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
+		$this->user_options->switch_user( $user_id );
 
 		$authentication = new Authentication( $this->context, $options, $this->user_options );
 		$analytics_4    = new Analytics_4( $this->context, $options, $this->user_options, $authentication );
@@ -218,6 +219,7 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 		$options     = new Options( $this->context );
 		$user_id     = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
+		$this->user_options->switch_user( $user_id );
 
 		$authentication = new Authentication( $this->context, $options, $this->user_options );
 		$analytics_4    = new Analytics_4( $this->context, $options, $this->user_options, $authentication );
