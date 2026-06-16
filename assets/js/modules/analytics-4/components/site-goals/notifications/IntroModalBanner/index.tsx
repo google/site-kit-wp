@@ -41,6 +41,7 @@ import {
 import { getSiteGoalsTour } from '@/js/modules/analytics-4/components/site-goals/feature-tours/site-goals';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { useSiteGoalsSectionReady } from '@/js/modules/analytics-4/hooks/useSiteGoalsSectionReady';
 import { getNavigationalScrollTop } from '@/js/util/scroll';
 import IntroModalEcommerce from './IntroModalEcommerce';
 import IntroModalEcommerceAndLead from './IntroModalEcommerceAndLead';
@@ -161,6 +162,26 @@ export default function IntroModal() {
 		return hasAccess !== true;
 	}, [] );
 
+	// All the checks the modal needs, apart from the section being ready.
+	// It needs at least one detected event type. If there is none, the
+	// modal never shows, so the hook below should not load the widget
+	// areas or wait.
+	const canShowSiteGoalsIntroModal =
+		hasEcommerceConversionReportingEvents !== undefined &&
+		hasLeadConversionReportingEvents !== undefined &&
+		( hasEcommerceConversionReportingEvents ||
+			hasLeadConversionReportingEvents ) &&
+		isIntroModalDismissed === false &&
+		! hasInsufficientAnalyticsAccess &&
+		isOpen;
+
+	// While the modal can show, the hook loads the widget areas above and
+	// including the Site Goals section, and reports ready once the section
+	// has loaded and stopped moving.
+	const isSiteGoalsSectionReady = useSiteGoalsSectionReady(
+		canShowSiteGoalsIntroModal
+	);
+
 	function handleClose() {
 		setIsOpen( false );
 		dismissItem( SITE_GOALS_INTRO_MODAL_BANNER );
@@ -198,13 +219,7 @@ export default function IntroModal() {
 		} );
 	}
 
-	if (
-		hasEcommerceConversionReportingEvents === undefined ||
-		hasLeadConversionReportingEvents === undefined ||
-		isIntroModalDismissed !== false ||
-		hasInsufficientAnalyticsAccess ||
-		! isOpen
-	) {
+	if ( ! canShowSiteGoalsIntroModal || ! isSiteGoalsSectionReady ) {
 		return null;
 	}
 
