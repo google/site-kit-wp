@@ -29,3 +29,24 @@ export const PDF_FONT_FAMILY_DISPLAY = 'GoogleSansDisplay';
  * Maps to Google Sans Text (regular / 400 and medium / 500).
  */
 export const PDF_FONT_FAMILY_TEXT = 'GoogleSansText';
+export const PDF_COLOR_TEXT_PRIMARY = '#161b18';
+export const PDF_COLOR_TEXT_SECONDARY = '#5f6368';
+export const PDF_COLOR_TEXT_MUTED = '#6C726E';
+export const PDF_COLOR_LINK = '#108080';
+export const PDF_COLOR_BORDER = '#dadce0';
+
+/**
+ * Header-specific colour tokens for the PDF report header strip.
+ *
+ * @since n.e.x.t
+ */
+export const PDF_HEADER_COLORS = {
+	logo: PDF_COLOR_TEXT_SECONDARY,
+	title: PDF_COLOR_TEXT_PRIMARY,
+	subtitle: PDF_COLOR_TEXT_SECONDARY,
+	siteURL: PDF_COLOR_TEXT_MUTED,
+	link: PDF_COLOR_LINK,
+	chipBorder: PDF_COLOR_BORDER,
+	chipText: PDF_COLOR_TEXT_PRIMARY,
+	chipIcon: PDF_COLOR_TEXT_SECONDARY,
+};
