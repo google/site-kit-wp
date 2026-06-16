@@ -48,5 +48,5 @@ export const PDF_HEADER_COLORS = {
 	link: PDF_COLOR_LINK,
 	chipBorder: PDF_COLOR_BORDER,
 	chipText: PDF_COLOR_TEXT_PRIMARY,
-	chipIcon: PDF_COLOR_TEXT_SECONDARY,
+	chipIcon: PDF_COLOR_TEXT_PRIMARY,
 };
