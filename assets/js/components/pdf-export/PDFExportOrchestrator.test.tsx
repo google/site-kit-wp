@@ -28,7 +28,10 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
-import { CONTEXT_MAIN_DASHBOARD_TRAFFIC } from '@/js/googlesitekit/widgets/default-contexts';
+import {
+	CONTEXT_MAIN_DASHBOARD_CONTENT,
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+} from '@/js/googlesitekit/widgets/default-contexts';
 import {
 	createTestRegistry,
 	provideSiteInfo,
@@ -38,6 +41,7 @@ import {
 } from '@tests/js/test-utils';
 import { registerPDFFonts } from './pdf-fonts-react';
 import PDFExportOrchestrator from './PDFExportOrchestrator';
+import { SECTION_ICONS } from './section-icons';
 
 // Stub the download trigger so the anchor click does not attempt a JSDOM
 // navigation; the filename helper stays real.
@@ -225,6 +229,74 @@ describe( 'PDFExportOrchestrator', () => {
 		expect( reportDocument.props.emailReportingSetupURL ).toBe(
 			'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=manage-subscription-email-reporting'
 		);
+	} );
+
+	it( 'passes the resolved header props and the derived sections to the report document', async () => {
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		const { props } = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
+
+		expect( props.siteName ).toBe( 'Example Site' );
+		expect( props.siteURL ).toBe( 'http://example.com' );
+		expect( props.dashboardURL ).toBe(
+			'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=dashboard'
+		);
+		// PDF-adjusted reporting period: end date is the day before the
+		// reference date (2021-01-10).
+		expect( props.dateRange.endDate ).toBe( '2021-01-09' );
+		expect( props.dateRange.startDate ).toBeDefined();
+
+		// One section per discovered area, in area order, with the icon looked
+		// up by the area's dashboard context slug.
+		expect( props.sections ).toEqual( [
+			{
+				slug: 'trafficArea',
+				label: 'Traffic',
+				Icon: SECTION_ICONS[ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			},
+		] );
+	} );
+
+	it( 'derives a single section for an area shared across multiple selected contexts', async () => {
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+
+		registerPDFWidget( 'sharedArea', 'sharedWidget', getData );
+
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidgetArea( 'sharedArea', CONTEXT_MAIN_DASHBOARD_CONTENT );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [
+				CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+				CONTEXT_MAIN_DASHBOARD_CONTENT,
+			],
+			widgetSlugs: [],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		const { props } = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
+		expect( props.sections ).toHaveLength( 1 );
+		expect( props.sections[ 0 ].slug ).toBe( 'sharedArea' );
 	} );
 
 	it( 'registers the PDF fonts before rendering the document', async () => {
