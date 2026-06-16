@@ -300,6 +300,207 @@ describe( 'modules/search-console report', () => {
 				).toEqual( response );
 				expect( console ).toHaveErrored();
 			} );
+
+			it( 'sends one request when two getReport calls differ only in `reportID`', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, {
+					body: fixtures.report,
+				} );
+
+				const firstOptions = {
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
+					reportID: 'test_first-widget_component_reportArgs',
+				};
+				const secondOptions = {
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
+					reportID: 'test_second-widget_component_reportArgs',
+				};
+
+				registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getReport( firstOptions );
+				registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getReport( secondOptions );
+
+				// Wait for both resolvers together. `untilResolved` checks only
+				// on the next registry update, so awaiting them one after the
+				// other can hang if the second finishes during the first wait.
+				const firstResolution = untilResolved(
+					registry,
+					MODULES_SEARCH_CONSOLE
+				).getReport( firstOptions );
+				const secondResolution = untilResolved(
+					registry,
+					MODULES_SEARCH_CONSOLE
+				).getReport( secondOptions );
+
+				await Promise.all( [ firstResolution, secondResolution ] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				const firstReport = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getReport( firstOptions );
+				const secondReport = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getReport( secondOptions );
+
+				expect( firstReport ).toEqual( fixtures.report );
+				// Both calls read the same saved report, so state stores the
+				// report once.
+				expect( firstReport ).toBe( secondReport );
+			} );
+
+			it( 'does not make a network request when the same report is already saved under another `reportID`', async () => {
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.receiveGetReport( fixtures.report, {
+						options: {
+							startDate: '2020-01-01',
+							endDate: '2020-04-05',
+							reportID: 'test_first-widget_component_reportArgs',
+						},
+					} );
+
+				const secondOptions = {
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
+					reportID: 'test_second-widget_component_reportArgs',
+				};
+
+				// An error for these options stays set when a matching report
+				// is already cached. The resolver reads the shared report
+				// without clearing the error.
+				const error = { code: 'test_error', message: 'Test error' };
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.setErrorForSelector( error, 'getReport', [
+						secondOptions,
+					] );
+
+				const report = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getReport( secondOptions );
+
+				await untilResolved(
+					registry,
+					MODULES_SEARCH_CONSOLE
+				).getReport( secondOptions );
+
+				expect( fetchMock ).not.toHaveFetched();
+				expect( report ).toEqual( fixtures.report );
+				expect(
+					registry
+						.select( MODULES_SEARCH_CONSOLE )
+						.getErrorForSelector( 'getReport', [ secondOptions ] )
+				).toEqual( error );
+			} );
+
+			it( 'stores the error for every getReport call that shares one failed request', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				// Hold the response open so both calls join one running
+				// request, instead of the first finishing before the second
+				// resolver runs.
+				const deferredResolvers = [];
+				fetchMock.getOnce(
+					searchAnalyticsRegexp,
+					() =>
+						new Promise( ( resolve ) => {
+							deferredResolvers.push( () =>
+								resolve( { body: response, status: 500 } )
+							);
+						} )
+				);
+
+				const firstOptions = {
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
+					reportID: 'test_first-widget_component_reportArgs',
+				};
+				const secondOptions = {
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
+					reportID: 'test_second-widget_component_reportArgs',
+				};
+
+				// Start the first call and wait until it sends the shared
+				// request.
+				registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getReport( firstOptions );
+				while ( deferredResolvers.length < 1 ) {
+					await waitForDefaultTimeouts();
+				}
+
+				// The request is running now. Start the second call so it
+				// joins that request instead of sending another.
+				registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getReport( secondOptions );
+				await waitForDefaultTimeouts();
+
+				// Create both waiters before releasing the request, so each
+				// subscribes while its resolver still runs. `untilResolved`
+				// checks only on the next registry update, so a resolver that
+				// finishes first would otherwise leave its waiter waiting until
+				// the test times out.
+				const firstResolution = untilResolved(
+					registry,
+					MODULES_SEARCH_CONSOLE
+				).getReport( firstOptions );
+				const secondResolution = untilResolved(
+					registry,
+					MODULES_SEARCH_CONSOLE
+				).getReport( secondOptions );
+
+				deferredResolvers.forEach( ( resolve ) => resolve() );
+
+				await Promise.all( [ firstResolution, secondResolution ] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect(
+					registry
+						.select( MODULES_SEARCH_CONSOLE )
+						.getErrorForSelector( 'getReport', [ firstOptions ] )
+				).toEqual( response );
+				expect(
+					registry
+						.select( MODULES_SEARCH_CONSOLE )
+						.getErrorForSelector( 'getReport', [ secondOptions ] )
+				).toEqual( response );
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'does not send the `reportID` option with the report request', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, {
+					body: fixtures.report,
+				} );
+
+				const options = {
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
+					reportID: 'test_widget_component_reportArgs',
+				};
+
+				registry.select( MODULES_SEARCH_CONSOLE ).getReport( options );
+
+				await untilResolved(
+					registry,
+					MODULES_SEARCH_CONSOLE
+				).getReport( options );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				const [ reportRequestURL ] = fetchMock.lastCall();
+				expect( reportRequestURL ).not.toContain( 'reportID' );
+			} );
 		} );
 
 		describe( 'isGatheringData', () => {
