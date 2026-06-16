@@ -20,7 +20,12 @@
  * Internal dependencies
  */
 import { get } from 'googlesitekit-api';
-import { commonActions, createReducer } from 'googlesitekit-data';
+import {
+	Select,
+	commonActions,
+	createReducer,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { combineStores } from '@/js/googlesitekit/data/utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -173,15 +178,17 @@ const baseSelectors = {
 	 * @param {string} category Widget category slug (e.g. 'lead' or 'ecommerce').
 	 * @return {boolean|undefined} `true` if active, `false` if not, `undefined` if not loaded.
 	 */
-	isSiteGoalWidgetActive(
-		state: State,
-		category: string
-	): boolean | undefined {
-		if ( state.siteGoalsSiteSettings === undefined ) {
-			return undefined;
-		}
-		return state.siteGoalsSiteSettings.activeWidgets.includes( category );
-	},
+	isSiteGoalWidgetActive: createRegistrySelector(
+		( select: Select ) =>
+			( _state: State, category: string ): boolean | undefined => {
+				const settings =
+					select( MODULES_ANALYTICS_4 ).getSiteGoalsSiteSettings();
+				if ( settings === undefined ) {
+					return undefined;
+				}
+				return settings.activeWidgets.includes( category );
+			}
+	),
 
 	/**
 	 * Checks whether the breakdown notice tooltip is pending (deferred from the
