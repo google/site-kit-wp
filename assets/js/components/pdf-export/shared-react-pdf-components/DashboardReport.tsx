@@ -31,11 +31,18 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
+	PDF_COLOR_BORDER,
+	PDF_COLOR_TEXT_PRIMARY,
+	PDF_COLOR_TEXT_SECONDARY,
 	PDF_FONT_FAMILY_DISPLAY,
 	PDF_FONT_FAMILY_TEXT,
 } from '@/js/components/pdf-export/pdf-theme';
-import type { PDFReportArea } from '@/js/components/pdf-export/types';
+import type {
+	PDFHeaderSection,
+	PDFReportArea,
+} from '@/js/components/pdf-export/types';
 import PDFEmailReportingNotice from './PDFEmailReportingNotice';
+import PDFHeader from './PDFHeader';
 
 const DEFAULT_PAGE_HEIGHT = 792;
 
@@ -48,20 +55,6 @@ const styles = StyleSheet.create( {
 		fontSize: 12,
 		backgroundColor: '#f3f5f7',
 	},
-	header: {
-		marginBottom: 32,
-	},
-	headerSiteName: {
-		fontFamily: PDF_FONT_FAMILY_DISPLAY,
-		fontSize: 20,
-		fontWeight: 400,
-		marginBottom: 4,
-	},
-	headerDateRange: {
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 11,
-		color: '#5f6368',
-	},
 	body: {
 		flexGrow: 1,
 	},
@@ -72,27 +65,33 @@ const styles = StyleSheet.create( {
 		fontFamily: PDF_FONT_FAMILY_DISPLAY,
 		fontSize: 24,
 		fontWeight: 'normal',
-		color: '#161b18',
+		color: PDF_COLOR_TEXT_PRIMARY,
 		marginBottom: 12,
 	},
 	emptyText: {
 		fontFamily: PDF_FONT_FAMILY_TEXT,
 		fontSize: 11,
-		color: '#5f6368',
+		color: PDF_COLOR_TEXT_SECONDARY,
 	},
 	footer: {
 		borderTopWidth: 1,
-		borderTopColor: '#dadce0',
+		borderTopColor: PDF_COLOR_BORDER,
 		paddingTop: 12,
 		fontFamily: PDF_FONT_FAMILY_TEXT,
 		fontSize: 9,
-		color: '#5f6368',
+		color: PDF_COLOR_TEXT_SECONDARY,
 	},
 } );
 
 export interface DashboardReportProps {
 	siteName: string;
-	dateRange?: string;
+	siteURL: string;
+	dashboardURL?: string;
+	dateRange: {
+		startDate: string;
+		endDate: string;
+	};
+	sections: PDFHeaderSection[];
 	userName?: string;
 	generatedAt: string;
 	pageHeight?: number;
@@ -103,7 +102,10 @@ export interface DashboardReportProps {
 
 const DashboardReport: FC< DashboardReportProps > = ( {
 	siteName,
+	siteURL,
+	dashboardURL,
 	dateRange,
+	sections,
 	userName,
 	generatedAt,
 	pageHeight = DEFAULT_PAGE_HEIGHT,
@@ -125,7 +127,15 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 
 	return (
 		<Document
-			title={ __( 'Site Kit Dashboard Report', 'google-site-kit' ) }
+			title={
+				siteName
+					? sprintf(
+							/* translators: %s: Site name. */
+							__( '%s – Site Kit report', 'google-site-kit' ),
+							siteName
+					  )
+					: __( 'Site Kit Dashboard Report', 'google-site-kit' )
+			}
 			author="Site Kit by Google"
 		>
 			<Page
@@ -133,14 +143,12 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 				style={ styles.page }
 				wrap={ false }
 			>
-				<View style={ styles.header }>
-					<Text style={ styles.headerSiteName }>{ siteName }</Text>
-					{ dateRange ? (
-						<Text style={ styles.headerDateRange }>
-							{ dateRange }
-						</Text>
-					) : null }
-				</View>
+				<PDFHeader
+					siteURL={ siteURL }
+					dashboardURL={ dashboardURL }
+					dateRange={ dateRange }
+					sections={ sections }
+				/>
 				<View style={ styles.body }>
 					{ areas.length === 0 && (
 						<Text style={ styles.emptyText }>
