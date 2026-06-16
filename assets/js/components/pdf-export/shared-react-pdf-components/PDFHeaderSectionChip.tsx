@@ -1,0 +1,81 @@
+/**
+ * PDFHeaderSectionChip: a section pill rendered in the PDF report header.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import { Link, StyleSheet, Text, View } from '@react-pdf/renderer';
+import { FC } from 'react';
+
+/**
+ * Internal dependencies
+ */
+import {
+	PDF_FONT_FAMILY_TEXT,
+	PDF_HEADER_COLORS,
+} from '@/js/components/pdf-export/pdf-theme';
+import type { PDFIcon } from '@/js/components/pdf-export/types';
+
+const styles = StyleSheet.create( {
+	link: {
+		textDecoration: 'none',
+	},
+	chip: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		borderWidth: 1,
+		borderColor: PDF_HEADER_COLORS.chipBorder,
+		borderRadius: 100,
+		paddingVertical: 4,
+		paddingHorizontal: 8,
+	},
+	label: {
+		fontFamily: PDF_FONT_FAMILY_TEXT,
+		fontSize: 12,
+		fontWeight: 500,
+		lineHeight: 16 / 12,
+		letterSpacing: 0.5,
+		color: PDF_HEADER_COLORS.chipText,
+		marginLeft: 4,
+	},
+} );
+
+export interface PDFHeaderSectionChipProps {
+	label: string;
+	Icon?: PDFIcon;
+}
+
+const PDFHeaderSectionChip: FC< PDFHeaderSectionChipProps > = ( {
+	label,
+	Icon,
+} ) => {
+	// No `src` yet, so the chip stays inert (clicking does nothing): #12553 adds
+	// `src={ `#${ slug }` }` plus matching section ids to enable jump-to-section.
+	// A bare "#" is NOT used because @react-pdf treats any non-`#id` src as an
+	// external URI and would emit a broken clickable link in every PDF.
+	return (
+		<Link style={ styles.link }>
+			<View style={ styles.chip }>
+				{ Icon && <Icon color={ PDF_HEADER_COLORS.chipIcon } /> }
+				<Text style={ styles.label }>{ label }</Text>
+			</View>
+		</Link>
+	);
+};
+
+export default PDFHeaderSectionChip;
