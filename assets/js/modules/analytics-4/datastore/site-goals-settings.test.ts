@@ -35,7 +35,7 @@ import { MODULES_ANALYTICS_4 } from './constants';
 describe( 'modules/analytics-4 site goals settings', () => {
 	let registry: WPDataRegistry;
 
-	const getSiteGoalsSiteSettingsEndpoint = new RegExp(
+	const getSiteGoalsSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/site-goals-settings'
 	);
 
@@ -44,9 +44,9 @@ describe( 'modules/analytics-4 site goals settings', () => {
 	} );
 
 	describe( 'selectors', () => {
-		describe( 'getSiteGoalsSiteSettings', () => {
+		describe( 'getSiteGoalsSettings', () => {
 			it( 'should fetch the settings from the endpoint when not yet loaded', async () => {
-				fetchMock.getOnce( getSiteGoalsSiteSettingsEndpoint, {
+				fetchMock.getOnce( getSiteGoalsSettingsEndpoint, {
 					body: { activeWidgets: [ 'ecommerce', 'lead' ] },
 					status: 200,
 				} );
@@ -54,39 +54,39 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.getSiteGoalsSiteSettings()
+						.getSiteGoalsSettings()
 				).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getSiteGoalsSiteSettings();
+				).getSiteGoalsSettings();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.getSiteGoalsSiteSettings()
+						.getSiteGoalsSettings()
 				).toEqual( { activeWidgets: [ 'ecommerce', 'lead' ] } );
 			} );
 
-			it( 'should not fetch when settings are already loaded via receiveGetSiteGoalsSiteSettings', async () => {
+			it( 'should not fetch when settings are already loaded via receiveGetSiteGoalsSettings', async () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSiteGoalsSiteSettings( {
+					.receiveGetSiteGoalsSettings( {
 						activeWidgets: [ 'ecommerce' ],
 					} );
 
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.getSiteGoalsSiteSettings()
+						.getSiteGoalsSettings()
 				).toEqual( { activeWidgets: [ 'ecommerce' ] } );
 
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getSiteGoalsSiteSettings();
+				).getSiteGoalsSettings();
 
 				expect( fetchMock ).toHaveFetchedTimes( 0 );
 			} );
@@ -102,7 +102,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 			it( 'should return the activeWidgets array after settings are loaded', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSiteGoalsSiteSettings( {
+					.receiveGetSiteGoalsSettings( {
 						activeWidgets: [ 'ecommerce', 'lead' ],
 					} );
 
@@ -114,7 +114,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 			it( 'should return an empty array when no widgets are active', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSiteGoalsSiteSettings( {
+					.receiveGetSiteGoalsSettings( {
 						activeWidgets: [],
 					} );
 
@@ -136,7 +136,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 			it( 'should return true for a category that is in activeWidgets', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSiteGoalsSiteSettings( {
+					.receiveGetSiteGoalsSettings( {
 						activeWidgets: [ 'ecommerce', 'lead' ],
 					} );
 
@@ -155,7 +155,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 			it( 'should return false for a category that is not in activeWidgets', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSiteGoalsSiteSettings( {
+					.receiveGetSiteGoalsSettings( {
 						activeWidgets: [ 'ecommerce' ],
 					} );
 
@@ -169,7 +169,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 			it( 'should return false for all categories when activeWidgets is empty', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSiteGoalsSiteSettings( {
+					.receiveGetSiteGoalsSettings( {
 						activeWidgets: [],
 					} );
 

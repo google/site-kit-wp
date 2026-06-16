@@ -79,10 +79,10 @@ describe( 'Analytics 4 widget registrations', () => {
 			],
 		] )(
 			'should gate widgets correctly when %s',
-			( _, siteGoalsSiteSettings, expectedPresent, expectedAbsent ) => {
+			( _, siteGoalsSettings, expectedPresent, expectedAbsent ) => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSiteGoalsSiteSettings( siteGoalsSiteSettings );
+					.receiveGetSiteGoalsSettings( siteGoalsSettings );
 				registerWidgets( widgets );
 
 				const slugs = registry

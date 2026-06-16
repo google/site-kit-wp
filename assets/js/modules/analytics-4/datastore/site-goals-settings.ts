@@ -31,12 +31,12 @@ import { combineStores } from '@/js/googlesitekit/data/utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
 
-export interface SiteGoalsSiteSettings {
+export interface SiteGoalsSettings {
 	activeWidgets: string[];
 }
 
 interface State {
-	siteGoalsSiteSettings?: SiteGoalsSiteSettings;
+	siteGoalsSettings?: SiteGoalsSettings;
 	breakdownTooltipPending?: boolean;
 }
 
@@ -49,14 +49,14 @@ interface SetBreakdownTooltipPendingAction {
 }
 
 // Minimal registry view for resolvers.
-interface SiteGoalsSiteRegistry {
+interface SiteGoalsRegistry {
 	select: ( storeName: string ) => {
-		getSiteGoalsSiteSettings: () => SiteGoalsSiteSettings | undefined;
+		getSiteGoalsSettings: () => SiteGoalsSettings | undefined;
 	};
 }
 
-const fetchGetSiteGoalsSiteSettingsStore = createFetchStore( {
-	baseName: 'getSiteGoalsSiteSettings',
+const fetchGetSiteGoalsSettingsStore = createFetchStore( {
+	baseName: 'getSiteGoalsSettings',
 	controlCallback() {
 		return get(
 			'modules',
@@ -70,16 +70,16 @@ const fetchGetSiteGoalsSiteSettingsStore = createFetchStore( {
 		);
 	},
 	reducerCallback: createReducer(
-		( state: State, settings: SiteGoalsSiteSettings ) => {
-			state.siteGoalsSiteSettings = settings;
+		( state: State, settings: SiteGoalsSettings ) => {
+			state.siteGoalsSettings = settings;
 		}
 	),
 } ) as {
-	actions: { fetchGetSiteGoalsSiteSettings: () => unknown };
+	actions: { fetchGetSiteGoalsSettings: () => unknown };
 };
 
 const baseInitialState: State = {
-	siteGoalsSiteSettings: undefined,
+	siteGoalsSettings: undefined,
 	breakdownTooltipPending: false,
 };
 
@@ -128,16 +128,15 @@ const baseActions = {
 };
 
 const baseResolvers = {
-	*getSiteGoalsSiteSettings(): Generator< unknown, void, unknown > {
+	*getSiteGoalsSettings(): Generator< unknown, void, unknown > {
 		const registry =
-			( yield commonActions.getRegistry() ) as SiteGoalsSiteRegistry;
+			( yield commonActions.getRegistry() ) as SiteGoalsRegistry;
 
 		if (
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getSiteGoalsSiteSettings() === undefined
+			registry.select( MODULES_ANALYTICS_4 ).getSiteGoalsSettings() ===
+			undefined
 		) {
-			yield fetchGetSiteGoalsSiteSettingsStore.actions.fetchGetSiteGoalsSiteSettings();
+			yield fetchGetSiteGoalsSettingsStore.actions.fetchGetSiteGoalsSettings();
 		}
 	},
 };
@@ -151,10 +150,8 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {Object|undefined} Site-wide site goals settings, or `undefined` if not loaded.
 	 */
-	getSiteGoalsSiteSettings(
-		state: State
-	): SiteGoalsSiteSettings | undefined {
-		return state.siteGoalsSiteSettings;
+	getSiteGoalsSettings( state: State ): SiteGoalsSettings | undefined {
+		return state.siteGoalsSettings;
 	},
 
 	/**
@@ -166,7 +163,7 @@ const baseSelectors = {
 	 * @return {Array|undefined} Active widget category slugs, or `undefined` if not loaded.
 	 */
 	getActiveWidgets( state: State ): string[] | undefined {
-		return state.siteGoalsSiteSettings?.activeWidgets;
+		return state.siteGoalsSettings?.activeWidgets;
 	},
 
 	/**
@@ -182,7 +179,7 @@ const baseSelectors = {
 		( select: Select ) =>
 			( _state: State, category: string ): boolean | undefined => {
 				const settings =
-					select( MODULES_ANALYTICS_4 ).getSiteGoalsSiteSettings();
+					select( MODULES_ANALYTICS_4 ).getSiteGoalsSettings();
 				if ( settings === undefined ) {
 					return undefined;
 				}
@@ -215,7 +212,7 @@ interface Store {
 	selectors: Record< string, unknown >;
 }
 
-const store = combineStores( fetchGetSiteGoalsSiteSettingsStore, {
+const store = combineStores( fetchGetSiteGoalsSettingsStore, {
 	initialState: baseInitialState,
 	actions: baseActions,
 	reducer: baseReducer,
