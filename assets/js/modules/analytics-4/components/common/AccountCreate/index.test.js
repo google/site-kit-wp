@@ -457,7 +457,7 @@ describe( 'AccountCreate', () => {
 			);
 		} );
 
-		it( 'should clear the error query arg and rollback settings when Back is clicked', async () => {
+		it( 'should clear the error query arg and rollback settings when the Back button is clicked', async () => {
 			global.location.href =
 				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&accountCreationErrorCode=user_cancel';
 
