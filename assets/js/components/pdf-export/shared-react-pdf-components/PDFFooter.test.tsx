@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import TestRenderer from 'react-test-renderer';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -29,6 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { render } from '@tests/js/test-utils';
 import PDFFooter from './PDFFooter';
 
 jest.mock( '@wordpress/i18n', () => {
@@ -39,82 +35,26 @@ jest.mock( '@wordpress/i18n', () => {
 	};
 } );
 
-interface FooterLink {
-	src: string | undefined;
-	text: string;
-}
-
-/**
- * Collects every rendered link primitive, in document order, with its `src` and
- * concatenated text content. `@react-pdf/renderer` is auto-mocked (see
- * `__mocks__/@react-pdf/renderer.js`), which renders `<Link>` as a `pdf-link`
- * host element.
- *
- * @since n.e.x.t
- *
- * @param node Root JSON node produced by the test renderer.
- * @return The collected links.
- */
-function collectLinks(
-	node: TestRenderer.ReactTestRendererJSON | null
-): FooterLink[] {
-	const links: FooterLink[] = [];
-
-	function visit(
-		current:
-			| string
-			| number
-			| TestRenderer.ReactTestRendererJSON
-			| null
-			| undefined
-	) {
-		if ( ! current || typeof current !== 'object' ) {
-			return;
-		}
-
-		if ( current.type === 'pdf-link' ) {
-			const text = ( current.children || [] )
-				.filter(
-					( child ): child is string => typeof child === 'string'
-				)
-				.join( '' );
-			links.push( { src: current.props?.src, text } );
-		}
-
-		if ( Array.isArray( current.children ) ) {
-			current.children.forEach( visit );
-		}
-	}
-
-	visit( node );
-	return links;
-}
-
 describe( 'PDFFooter', () => {
 	const props = {
-		dashboardURL:
-			'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=dashboard',
-		helpCenterURL:
-			'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=help-center',
-		privacyPolicyURL:
-			'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=privacy-policy',
+		dashboardURL: 'https://example.com/dashboard',
+		helpCenterURL: 'https://example.com/help-center',
+		privacyPolicyURL: 'https://example.com/privacy-policy',
 	};
 
 	beforeEach( () => {
 		( __ as jest.Mock ).mockClear();
 	} );
 
-	function renderFooter(): TestRenderer.ReactTestRendererJSON {
-		const renderer = TestRenderer.create( <PDFFooter { ...props } /> );
-		const tree = renderer.toJSON();
-		if ( ! tree || Array.isArray( tree ) ) {
-			throw new Error( 'Unexpected render output.' );
-		}
-		return tree;
-	}
-
 	it( 'should render exactly three links, in the required order, with the expected labels and src values supplied via props', () => {
-		const links = collectLinks( renderFooter() );
+		const { container } = render( <PDFFooter { ...props } /> );
+
+		const links = Array.from(
+			container.querySelectorAll( 'pdf-link' )
+		).map( ( link ) => ( {
+			src: link.getAttribute( 'src' ),
+			text: link.textContent,
+		} ) );
 
 		expect( links ).toEqual( [
 			{ src: props.dashboardURL, text: 'View dashboard' },
@@ -124,7 +64,7 @@ describe( 'PDFFooter', () => {
 	} );
 
 	it( 'should wrap each label in __() with the google-site-kit text domain so it translates', () => {
-		renderFooter();
+		render( <PDFFooter { ...props } /> );
 
 		expect( __ ).toHaveBeenCalledWith(
 			'View dashboard',
