@@ -257,6 +257,202 @@ describe( 'modules/adsense report', () => {
 				).toEqual( response );
 				expect( console ).toHaveErrored();
 			} );
+
+			it( 'sends one request when two getReport calls differ only in `reportID`', async () => {
+				const report = getAdSenseMockResponse( options );
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/report'
+					),
+					{ body: report }
+				);
+
+				const firstOptions = {
+					...options,
+					reportID: 'test_first-widget_component_reportArgs',
+				};
+				const secondOptions = {
+					...options,
+					reportID: 'test_second-widget_component_reportArgs',
+				};
+
+				registry.select( MODULES_ADSENSE ).getReport( firstOptions );
+				registry.select( MODULES_ADSENSE ).getReport( secondOptions );
+
+				// Wait for both resolvers together. `untilResolved` checks only
+				// on the next registry update, so awaiting them one after the
+				// other can hang if the second finishes during the first wait.
+				const firstResolution = untilResolved(
+					registry,
+					MODULES_ADSENSE
+				).getReport( firstOptions );
+				const secondResolution = untilResolved(
+					registry,
+					MODULES_ADSENSE
+				).getReport( secondOptions );
+
+				await Promise.all( [ firstResolution, secondResolution ] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				const firstReport = registry
+					.select( MODULES_ADSENSE )
+					.getReport( firstOptions );
+				const secondReport = registry
+					.select( MODULES_ADSENSE )
+					.getReport( secondOptions );
+
+				expect( firstReport ).toEqual( report );
+				// Both calls read the same saved report, so state stores the
+				// report once.
+				expect( firstReport ).toBe( secondReport );
+			} );
+
+			it( 'does not make a network request when the same report is already saved under another `reportID`', async () => {
+				const report = getAdSenseMockResponse( options );
+
+				registry.dispatch( MODULES_ADSENSE ).receiveGetReport( report, {
+					options: {
+						...options,
+						reportID: 'test_first-widget_component_reportArgs',
+					},
+				} );
+
+				const secondOptions = {
+					...options,
+					reportID: 'test_second-widget_component_reportArgs',
+				};
+
+				// An error for these options stays set when a matching report
+				// is already cached. The resolver reads the shared report
+				// without clearing the error.
+				const error = { code: 'test_error', message: 'Test error' };
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.setErrorForSelector( error, 'getReport', [
+						secondOptions,
+					] );
+
+				const initialReport = registry
+					.select( MODULES_ADSENSE )
+					.getReport( secondOptions );
+
+				await untilResolved( registry, MODULES_ADSENSE ).getReport(
+					secondOptions
+				);
+
+				expect( fetchMock ).not.toHaveFetched();
+				expect( initialReport ).toEqual( report );
+				expect(
+					registry
+						.select( MODULES_ADSENSE )
+						.getErrorForSelector( 'getReport', [ secondOptions ] )
+				).toEqual( error );
+			} );
+
+			it( 'stores the error for every getReport call that shares one failed request', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				// Hold the response open so both calls join one running
+				// request, instead of the first finishing before the second
+				// resolver runs.
+				const deferredResolvers = [];
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/report'
+					),
+					() =>
+						new Promise( ( resolve ) => {
+							deferredResolvers.push( () =>
+								resolve( { body: response, status: 500 } )
+							);
+						} )
+				);
+
+				const firstOptions = {
+					...options,
+					reportID: 'test_first-widget_component_reportArgs',
+				};
+				const secondOptions = {
+					...options,
+					reportID: 'test_second-widget_component_reportArgs',
+				};
+
+				// Start the first call and wait until it sends the shared
+				// request.
+				registry.select( MODULES_ADSENSE ).getReport( firstOptions );
+				while ( deferredResolvers.length < 1 ) {
+					await waitForDefaultTimeouts();
+				}
+
+				// The request is running now. Start the second call so it
+				// joins that request instead of sending another.
+				registry.select( MODULES_ADSENSE ).getReport( secondOptions );
+				await waitForDefaultTimeouts();
+
+				// Create both waiters before releasing the request, so each
+				// subscribes while its resolver still runs. `untilResolved`
+				// checks only on the next registry update, so a resolver that
+				// finishes first would otherwise leave its waiter waiting until
+				// the test times out.
+				const firstResolution = untilResolved(
+					registry,
+					MODULES_ADSENSE
+				).getReport( firstOptions );
+				const secondResolution = untilResolved(
+					registry,
+					MODULES_ADSENSE
+				).getReport( secondOptions );
+
+				deferredResolvers.forEach( ( resolve ) => resolve() );
+
+				await Promise.all( [ firstResolution, secondResolution ] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect(
+					registry
+						.select( MODULES_ADSENSE )
+						.getErrorForSelector( 'getReport', [ firstOptions ] )
+				).toEqual( response );
+				expect(
+					registry
+						.select( MODULES_ADSENSE )
+						.getErrorForSelector( 'getReport', [ secondOptions ] )
+				).toEqual( response );
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'does not send the `reportID` option with the report request', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/adsense/data/report'
+					),
+					{ body: getAdSenseMockResponse( options ) }
+				);
+
+				const optionsWithReportID = {
+					...options,
+					reportID: 'test_widget_component_reportArgs',
+				};
+
+				registry
+					.select( MODULES_ADSENSE )
+					.getReport( optionsWithReportID );
+
+				await untilResolved( registry, MODULES_ADSENSE ).getReport(
+					optionsWithReportID
+				);
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				const [ reportRequestURL ] = fetchMock.lastCall();
+				expect( reportRequestURL ).not.toContain( 'reportID' );
+			} );
 		} );
 	} );
 } );
