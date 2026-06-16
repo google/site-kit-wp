@@ -50,8 +50,9 @@ import useViewOnly from '@/js/hooks/useViewOnly';
 import { getPreviousDate } from '@/js/util';
 import { registerPDFFonts } from './pdf-fonts-react';
 import { getPDFFilename, triggerDownload } from './pdf-utils';
+import { SECTION_ICONS } from './section-icons';
 import DashboardReport from './shared-react-pdf-components/DashboardReport';
-import type { PDFReportArea, PDFReportWidget } from './types';
+import type { PDFHeaderSection, PDFReportArea, PDFReportWidget } from './types';
 
 const STAGE_IDLE = 'IDLE' as const;
 const STAGE_LOADING = 'LOADING' as const;
@@ -219,6 +220,10 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 			),
 		[]
 	);
+	const dashboardURL = useSelect(
+		( select: Select ) => select( CORE_SITE ).getGoLinkURL( 'dashboard' ),
+		[]
+	);
 	const selectedContextSlugs = useSelect(
 		( select: Select ) => select( CORE_PDF ).getSelectedContextSlugs(),
 		[]
@@ -297,10 +302,9 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		}
 		global.addEventListener( 'beforeunload', beforeUnloadHandler );
 
+		const reportSiteName = typeof siteName === 'string' ? siteName : '';
 		const referenceName =
-			typeof siteName === 'string' && siteName.length > 0
-				? siteName
-				: referenceSiteURL || '';
+			reportSiteName.length > 0 ? reportSiteName : referenceSiteURL || '';
 
 		async function run() {
 			try {
@@ -332,15 +336,24 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				 ).select( CORE_WIDGETS );
 				const discoveredAreas: Array< {
 					areaSlug: string;
+					areaContextSlug: string;
 					areaTitle: string;
 					widgets: WidgetWithPDF[];
 				} > = [];
+				// An area can be assigned to more than one context; track the
+				// slugs already discovered so a shared area is not rendered (and
+				// chipped) twice when multiple of its contexts are selected.
+				const discoveredAreaSlugs = new Set< string >();
 
 				selectedContextSlugs.forEach( ( contextSlug: string ) => {
 					const contextAreas: WidgetArea[] =
 						widgetsSelect.getWidgetAreas( contextSlug );
 
 					contextAreas.forEach( ( area ) => {
+						if ( discoveredAreaSlugs.has( area.slug ) ) {
+							return;
+						}
+
 						const pdfWidgets: WidgetWithPDF[] = widgetsSelect
 							.getWidgets( area.slug, {
 								modules: viewableModules || undefined,
@@ -351,8 +364,10 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 							return;
 						}
 
+						discoveredAreaSlugs.add( area.slug );
 						discoveredAreas.push( {
 							areaSlug: area.slug,
+							areaContextSlug: contextSlug,
 							areaTitle: area.pdfTitle || area.title || '',
 							widgets: pdfWidgets,
 						} );
@@ -454,6 +469,16 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 					} )
 				);
 
+				// One header chip per area, in area order, with the icon looked
+				// up by the area's dashboard context slug.
+				const sections: PDFHeaderSection[] = discoveredAreas.map(
+					( area ) => ( {
+						slug: area.areaSlug,
+						label: area.areaTitle,
+						Icon: SECTION_ICONS[ area.areaContextSlug ],
+					} )
+				);
+
 				// Footer timestamp uses the real generation time, not the dashboard date range.
 				// eslint-disable-next-line sitekit/no-direct-date
 				const generatedAt = new Date().toLocaleString();
@@ -464,12 +489,14 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 
 				const document = (
 					<DashboardReport
-						siteName={ referenceName }
-						dateRange={
-							typeof dateRange === 'string'
-								? dateRange
-								: undefined
-						}
+						siteName={ reportSiteName }
+						siteURL={ referenceSiteURL || '' }
+						dashboardURL={ dashboardURL }
+						dateRange={ {
+							startDate: dates.startDate,
+							endDate: dates.endDate,
+						} }
+						sections={ sections }
 						userName={
 							typeof userName === 'string' ? userName : undefined
 						}
