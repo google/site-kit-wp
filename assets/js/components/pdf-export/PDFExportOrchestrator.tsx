@@ -467,7 +467,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 								: undefined
 						}
 						dashboardURL={ dashboardURL || '' }
-						helpCenterURL="https://sitekit.withgoogle.com/support/"
+						helpCenterURL="https://sitekit.withgoogle.com/support/?doc=get-support"
 						privacyPolicyURL="https://policies.google.com/privacy"
 						areas={ areas }
 						emailReportingSetupURL={ emailReportingSetupURL }

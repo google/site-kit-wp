@@ -34,7 +34,7 @@ function FakeWidget( { data }: PDFWidgetComponentProps ) {
 
 const footerProps = {
 	dashboardURL: 'http://example.com/wp-admin/index.php?to=dashboard',
-	helpCenterURL: 'https://sitekit.withgoogle.com/support/',
+	helpCenterURL: 'https://sitekit.withgoogle.com/support/?doc=get-support',
 	privacyPolicyURL: 'https://policies.google.com/privacy',
 };
 

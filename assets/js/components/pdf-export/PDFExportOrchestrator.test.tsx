@@ -178,7 +178,7 @@ describe( 'PDFExportOrchestrator', () => {
 			registry.select( CORE_SITE ).getGoLinkURL( 'dashboard' )
 		);
 		expect( reportElement.props.helpCenterURL ).toBe(
-			'https://sitekit.withgoogle.com/support/'
+			'https://sitekit.withgoogle.com/support/?doc=get-support'
 		);
 		expect( reportElement.props.privacyPolicyURL ).toBe(
 			'https://policies.google.com/privacy'
@@ -192,7 +192,7 @@ describe( 'PDFExportOrchestrator', () => {
 			`${ ADMIN_URL }index.php?action=googlesitekit_go&to=dashboard`
 		);
 		expect( reportElement.props.helpCenterURL ).toBe(
-			'https://sitekit.withgoogle.com/support/'
+			'https://sitekit.withgoogle.com/support/?doc=get-support'
 		);
 		expect( reportElement.props.privacyPolicyURL ).toBe(
 			'https://policies.google.com/privacy'
