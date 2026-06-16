@@ -25,7 +25,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -34,6 +34,7 @@ import {
 	PDF_FONT_FAMILY_DISPLAY,
 	PDF_FONT_FAMILY_TEXT,
 } from '@/js/components/pdf-export/pdf-theme';
+import PDFFooter from '@/js/components/pdf-export/shared-react-pdf-components/PDFFooter';
 import type { PDFReportArea } from '@/js/components/pdf-export/types';
 import PDFEmailReportingNotice from './PDFEmailReportingNotice';
 
@@ -80,21 +81,14 @@ const styles = StyleSheet.create( {
 		fontSize: 11,
 		color: '#5f6368',
 	},
-	footer: {
-		borderTopWidth: 1,
-		borderTopColor: '#dadce0',
-		paddingTop: 12,
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 9,
-		color: '#5f6368',
-	},
 } );
 
 export interface DashboardReportProps {
 	siteName: string;
 	dateRange?: string;
-	userName?: string;
-	generatedAt: string;
+	dashboardURL: string;
+	helpCenterURL: string;
+	privacyPolicyURL: string;
 	pageHeight?: number;
 	areas?: PDFReportArea[];
 	/** Golink URL for the "Set up email reports" button in the email reporting notice. */
@@ -104,25 +98,13 @@ export interface DashboardReportProps {
 const DashboardReport: FC< DashboardReportProps > = ( {
 	siteName,
 	dateRange,
-	userName,
-	generatedAt,
+	dashboardURL,
+	helpCenterURL,
+	privacyPolicyURL,
 	pageHeight = DEFAULT_PAGE_HEIGHT,
 	areas = [],
 	emailReportingSetupURL,
 } ) => {
-	const footerLine = userName
-		? sprintf(
-				/* translators: 1: Date and time string. 2: User name. */
-				__( 'Generated %1$s by %2$s', 'google-site-kit' ),
-				generatedAt,
-				userName
-		  )
-		: sprintf(
-				/* translators: %s: Date and time string. */
-				__( 'Generated %s', 'google-site-kit' ),
-				generatedAt
-		  );
-
 	return (
 		<Document
 			title={ __( 'Site Kit Dashboard Report', 'google-site-kit' ) }
@@ -189,9 +171,11 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 				<PDFEmailReportingNotice
 					emailReportingSetupURL={ emailReportingSetupURL }
 				/>
-				<View style={ styles.footer }>
-					<Text>{ footerLine }</Text>
-				</View>
+				<PDFFooter
+					dashboardURL={ dashboardURL }
+					helpCenterURL={ helpCenterURL }
+					privacyPolicyURL={ privacyPolicyURL }
+				/>
 			</Page>
 		</Document>
 	);

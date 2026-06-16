@@ -32,19 +32,25 @@ function FakeWidget( { data }: PDFWidgetComponentProps ) {
 	return <Text>{ `widget:${ String( data ) }` }</Text>;
 }
 
+const footerProps = {
+	dashboardURL: 'http://example.com/wp-admin/index.php?to=dashboard',
+	helpCenterURL: 'https://sitekit.withgoogle.com/support/?doc=get-support',
+	privacyPolicyURL: 'https://policies.google.com/privacy',
+};
+
 function renderDashboardReport( props: Partial< DashboardReportProps > = {} ) {
 	return render(
 		<DashboardReport
 			siteName="Example Site"
-			generatedAt="2021-01-10"
 			areas={ [] }
+			{ ...footerProps }
 			{ ...props }
 		/>
 	);
 }
 
 describe( 'DashboardReport', () => {
-	it( 'renders one section per area with its title and widget components', () => {
+	it( 'should render one section per area with its title and widget components', () => {
 		const areas = [
 			{
 				areaSlug: 'mainDashboardTrafficPrimary',
@@ -66,7 +72,7 @@ describe( 'DashboardReport', () => {
 		expect( getByText( 'widget:visitors' ) ).toBeInTheDocument();
 	} );
 
-	it( 'renders a placeholder for a widget without a resolved component', () => {
+	it( 'should render a placeholder for a widget without a resolved component', () => {
 		const areas = [
 			{
 				areaSlug: 'mainDashboardTrafficPrimary',
@@ -86,7 +92,7 @@ describe( 'DashboardReport', () => {
 		expect( getByText( 'Data unavailable.' ) ).toBeInTheDocument();
 	} );
 
-	it( 'renders the "No report data available." message when there are no areas', () => {
+	it( 'should render gracefully when there are no areas', () => {
 		const { getByText } = renderDashboardReport();
 
 		expect( getByText( 'No report data available.' ) ).toBeInTheDocument();

@@ -384,7 +384,7 @@ class Email_Template_Formatter {
 					$first_report_date,
 				)
 			),
-			'learn_more_url'         => add_query_arg( 'doc', 'email-reporting', 'https://sitekit.withgoogle.com/support/' ),
+			'learn_more_url'         => 'https://sitekit.withgoogle.com/support/?doc=email-reporting',
 			'primary_call_to_action' => array(
 				'label' => __( 'View dashboard', 'google-site-kit' ),
 				'url'   => $dashboard_url,
