@@ -25,6 +25,7 @@ import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
+	ACCOUNT_CREATE,
 	EDIT_SCOPE,
 	GTM_SCOPE,
 	MODULES_ANALYTICS_4,
@@ -454,6 +455,53 @@ describe( 'AccountCreate', () => {
 					'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
 				)
 			);
+		} );
+
+		it( 'should clear the error query arg and rollback settings when the Back button is clicked', async () => {
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&accountCreationErrorCode=user_cancel';
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				accountID: ACCOUNT_CREATE,
+				propertyID: '',
+				webDataStreamID: '',
+			} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAccountSummaries( {
+					accountSummaries: [
+						{
+							_id: '123',
+							displayName: 'Existing account',
+						},
+					],
+					nextPageToken: null,
+				} );
+
+			const rollbackSettingsSpy = jest.spyOn(
+				registry.dispatch( MODULES_ANALYTICS_4 ),
+				'rollbackSettings'
+			);
+
+			const { getByRole, waitForRegistry } = render( <AccountCreate />, {
+				registry,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			await waitForRegistry();
+
+			fireEvent.click( getByRole( 'button', { name: /back/i } ) );
+
+			expect( rollbackSettingsSpy ).toHaveBeenCalled();
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getAccountID()
+			).toBeUndefined();
+			expect( global.location.href ).not.toContain(
+				'accountCreationErrorCode=user_cancel'
+			);
+
+			rollbackSettingsSpy.mockRestore();
 		} );
 
 		describe( 'Continue without Analytics button', () => {
