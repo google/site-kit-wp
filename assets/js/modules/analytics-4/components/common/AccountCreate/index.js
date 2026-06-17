@@ -52,6 +52,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
+import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
 import { Cell } from '@/js/material-components';
 import { EnhancedMeasurementSwitch } from '@/js/modules/analytics-4/components/common';
@@ -107,6 +108,9 @@ export default function AccountCreate( { className } ) {
 	const [ autoSubmit, setAutoSubmit ] = useFormValue(
 		FORM_ACCOUNT_CREATE,
 		'autoSubmit'
+	);
+	const [ , setAccountCreationErrorCode ] = useQueryArg(
+		'accountCreationErrorCode'
 	);
 	const siteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
@@ -258,10 +262,10 @@ export default function AccountCreate( { className } ) {
 
 	// If the user clicks "Back", rollback settings to restore saved values, if any.
 	const { rollbackSettings } = useDispatch( MODULES_ANALYTICS_4 );
-	const handleBack = useCallback(
-		() => rollbackSettings(),
-		[ rollbackSettings ]
-	);
+	const handleBack = useCallback( () => {
+		setAccountCreationErrorCode( undefined );
+		rollbackSettings();
+	}, [ rollbackSettings, setAccountCreationErrorCode ] );
 
 	// Navigate the user directly to the dashboard without setting up Analytics.
 	// `isAnalyticsSetupComplete` is persisted to `true` so the dashboard's
