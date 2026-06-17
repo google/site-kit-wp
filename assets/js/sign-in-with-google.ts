@@ -95,7 +95,11 @@ export async function handleCredentialResponse(
 }
 
 export function setupSignInWithGoogle( data: SignInWithGoogleData ) {
-	google?.accounts.id.initialize( {
+	if ( typeof google?.accounts?.id === 'undefined' ) {
+		return;
+	}
+
+	google.accounts.id.initialize( {
 		client_id: data.clientID, // eslint-disable-line camelcase
 		callback: ( response ) => handleCredentialResponse( response, data ),
 		library_name: 'Site-Kit', // eslint-disable-line camelcase
@@ -156,7 +160,7 @@ export function setupSignInWithGoogle( data: SignInWithGoogleData ) {
 	}
 
 	if ( data.shouldShowOneTapPrompt ) {
-		google?.accounts.id.prompt();
+		google.accounts.id.prompt();
 	}
 
 	if ( data.redirectTo ) {
