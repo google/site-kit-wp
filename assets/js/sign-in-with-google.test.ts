@@ -121,4 +121,48 @@ describe( 'sign-in-with-google', () => {
 
 		expect( window.google.accounts.id.renderButton ).toHaveBeenCalled();
 	} );
+
+	it( 'should not render with an explicit width by default', async () => {
+		await import( './sign-in-with-google' );
+
+		expect( window.google.accounts.id.renderButton ).toHaveBeenCalledWith(
+			expect.any( HTMLElement ),
+			expect.not.objectContaining( {
+				width: expect.anything(),
+			} )
+		);
+	} );
+
+	it( 'should render with an explicit width if the width attribute is used', async () => {
+		document.body.innerHTML =
+			'<div class="googlesitekit-sign-in-with-google__frontend-output-button" data-googlesitekit-siwg-width="200"></div>';
+
+		await import( './sign-in-with-google' );
+
+		expect( window.google.accounts.id.renderButton ).toHaveBeenCalledWith(
+			expect.any( HTMLElement ),
+			expect.objectContaining( {
+				width: 200,
+			} )
+		);
+	} );
+
+	it( 'should render width an explicit width of 320 on the login form', async () => {
+		document.body.innerHTML =
+			'<div id="login"><form id="loginform"></form></div>';
+
+		window._googlesitekitSignInWithGoogleData = {
+			...data,
+			isWPLogin: true,
+		};
+
+		await import( './sign-in-with-google' );
+
+		expect( window.google.accounts.id.renderButton ).toHaveBeenCalledWith(
+			expect.any( HTMLElement ),
+			expect.objectContaining( {
+				width: 320,
+			} )
+		);
+	} );
 } );

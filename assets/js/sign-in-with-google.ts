@@ -108,6 +108,8 @@ export function setupSignInWithGoogle( data: SignInWithGoogleData ) {
 			'googlesitekit-sign-in-with-google__frontend-output-button'
 		);
 
+		buttonDivToAddToLoginForm.dataset.googlesitekitSiwgWidth = '320';
+
 		document
 			.getElementById( 'login' )
 			?.insertBefore(
@@ -139,6 +141,15 @@ export function setupSignInWithGoogle( data: SignInWithGoogleData ) {
 					siwgButtonDiv.dataset.googlesitekitSiwgTheme ||
 					data.defaultButtonOptions.theme,
 			} as google.accounts.id.GsiButtonConfiguration;
+
+			const width = Number(
+				siwgButtonDiv.dataset.googlesitekitSiwgWidth
+			);
+
+			if ( ! isNaN( width ) ) {
+				buttonOptions.width = width;
+				siwgButtonDiv.style.maxInlineSize = `${ width }px`;
+			}
 
 			google.accounts.id.renderButton( siwgButtonDiv, buttonOptions );
 		} );

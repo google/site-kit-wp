@@ -291,6 +291,14 @@ class Sign_In_With_GoogleTest extends TestCase {
 					'data-googlesitekit-siwg-shape="pill"',
 				),
 			),
+			'with width attribute'                 => array(
+				array(
+					'width' => '360',
+				),
+				array(
+					'data-googlesitekit-siwg-width="360"',
+				),
+			),
 		);
 	}
 
