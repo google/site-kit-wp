@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Link, StyleSheet, Text, View } from '@react-pdf/renderer';
+import { StyleSheet, Text, View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
@@ -32,9 +32,6 @@ import {
 import type { PDFIcon } from '@/js/components/pdf-export/types';
 
 const styles = StyleSheet.create( {
-	link: {
-		textDecoration: 'none',
-	},
 	chip: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -51,6 +48,9 @@ const styles = StyleSheet.create( {
 		lineHeight: 16 / 12,
 		letterSpacing: 0.5,
 		color: PDF_HEADER_COLORS.chipText,
+	},
+	// Only offset the label from the icon; without one it would be off-centre.
+	labelWithIcon: {
 		marginLeft: 4,
 	},
 } );
@@ -64,17 +64,23 @@ const PDFHeaderSectionChip: FC< PDFHeaderSectionChipProps > = ( {
 	label,
 	Icon,
 } ) => {
-	// No `src` yet, so the chip stays inert (clicking does nothing): #12553 adds
-	// `src={ `#${ slug }` }` plus matching section ids to enable jump-to-section.
-	// A bare "#" is NOT used because @react-pdf treats any non-`#id` src as an
-	// external URI and would emit a broken clickable link in every PDF.
+	// Rendered as a plain pill for now: the chip has no jump-to-section target
+	// yet, so wrapping it in a srcless <Link> would only risk an empty/broken
+	// link annotation in the PDF. #12553 wires the anchor by wrapping this in a
+	// `<Link src={ `#${ slug }` } />` plus matching section ids. A bare "#" is
+	// NOT used because @react-pdf treats any non-`#id` src as an external URI
+	// and would emit a broken clickable link in every PDF.
 	return (
-		<Link style={ styles.link }>
-			<View style={ styles.chip }>
-				{ Icon && <Icon color={ PDF_HEADER_COLORS.chipIcon } /> }
-				<Text style={ styles.label }>{ label }</Text>
-			</View>
-		</Link>
+		<View style={ styles.chip }>
+			{ Icon && <Icon color={ PDF_HEADER_COLORS.chipIcon } /> }
+			<Text
+				style={
+					Icon ? [ styles.label, styles.labelWithIcon ] : styles.label
+				}
+			>
+				{ label }
+			</Text>
+		</View>
 	);
 };
 
