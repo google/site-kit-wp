@@ -343,7 +343,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 
 				selectedContextSlugs.forEach( ( contextSlug: string ) => {
 					const contextAreas: WidgetArea[] =
-						widgetsSelect.getWidgetAreas( contextSlug );
+						widgetsSelect.getWidgetAreas( contextSlug ) || [];
 
 					contextAreas.forEach( ( area ) => {
 						if ( discoveredAreaSlugs.has( area.slug ) ) {
