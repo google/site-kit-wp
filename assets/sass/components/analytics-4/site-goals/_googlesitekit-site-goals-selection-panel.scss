@@ -32,6 +32,12 @@
 			flex: 1 1 auto;
 			min-height: 0;
 			overflow-y: auto;
+
+			// When the user scrolls the panel, the thumbs feedback tooltip can slide
+			// up over the panel header or down over the footer. The panel content
+			// uses `position: relative` so it hides any part of the tooltip that
+			// passes its edges, and the tooltip stays inside.
+			position: relative;
 		}
 
 		.googlesitekit-site-goals-selection-panel__footer-container {
