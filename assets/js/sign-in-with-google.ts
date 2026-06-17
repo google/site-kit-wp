@@ -129,15 +129,18 @@ export function setupSignInWithGoogle( data: SignInWithGoogleData ) {
 		// eslint-disable-next-line sitekit/acronym-case
 		buttons.forEach( ( siwgButtonDiv: HTMLElement ) => {
 			const buttonOptions = {
-				shape: siwgButtonDiv.dataset.googlesitekitSiwgShape,
-				text: siwgButtonDiv.dataset.googlesitekitSiwgText,
-				theme: siwgButtonDiv.dataset.googlesitekitSiwgTheme,
-			};
+				shape:
+					siwgButtonDiv.dataset.googlesitekitSiwgShape ||
+					data.defaultButtonOptions.shape,
+				text:
+					siwgButtonDiv.dataset.googlesitekitSiwgText ||
+					data.defaultButtonOptions.text,
+				theme:
+					siwgButtonDiv.dataset.googlesitekitSiwgTheme ||
+					data.defaultButtonOptions.theme,
+			} as google.accounts.id.GsiButtonConfiguration;
 
-			google.accounts.id.renderButton( siwgButtonDiv, {
-				...data.defaultButtonOptions,
-				...buttonOptions,
-			} as google.accounts.id.GsiButtonConfiguration );
+			google.accounts.id.renderButton( siwgButtonDiv, buttonOptions );
 		} );
 	}
 
