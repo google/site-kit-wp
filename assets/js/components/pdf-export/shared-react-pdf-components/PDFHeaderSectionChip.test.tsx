@@ -46,15 +46,14 @@ describe( 'PDFHeaderSectionChip', () => {
 	} );
 
 	it( 'renders an inert chip with no link target yet (#12553 wires the anchor)', () => {
-		const { container } = render(
+		const { container, getByText } = render(
 			<PDFHeaderSectionChip label="Traffic" Icon={ FakeIcon } />
 		);
 
-		// The chip is a <Link> wrapper but has no `src`, so clicking does
-		// nothing until #12553 adds the real section anchor.
-		const link = container.querySelector( 'pdf-link' );
-		expect( link ).toBeInTheDocument();
-		expect( link ).not.toHaveAttribute( 'src' );
+		// The chip is a plain pill until #12553 adds the section anchor, so it
+		// must not emit a (srcless) link annotation.
+		expect( container.querySelector( 'pdf-link' ) ).not.toBeInTheDocument();
+		expect( getByText( 'Traffic' ) ).toBeInTheDocument();
 	} );
 
 	it( 'renders the label without an icon when none is supplied', () => {
