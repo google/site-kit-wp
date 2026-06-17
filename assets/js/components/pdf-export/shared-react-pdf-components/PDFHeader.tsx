@@ -210,11 +210,17 @@ const PDFHeader: FC< PDFHeaderProps > = ( {
 					</Text>
 				</View>
 				<View style={ styles.siteBlock }>
-					<Link src={ dashboardURL } style={ styles.siteLink }>
+					{ dashboardURL ? (
+						<Link src={ dashboardURL } style={ styles.siteLink }>
+							<Text style={ styles.siteURL }>
+								{ getSiteHost( siteURL ) }
+							</Text>
+						</Link>
+					) : (
 						<Text style={ styles.siteURL }>
 							{ getSiteHost( siteURL ) }
 						</Text>
-					</Link>
+					) }
 				</View>
 			</View>
 			<View style={ styles.chipRow }>
