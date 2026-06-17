@@ -51,6 +51,30 @@
 			margin-top: 24px;
 		}
 
+		.googlesitekit-setup__services-list {
+			display: flex;
+			flex-direction: column;
+			gap: $grid-gap-phone;
+			list-style: none;
+			margin: $grid-gap-phone 0 0;
+			padding: 0;
+		}
+
+		.googlesitekit-setup__services-list-item {
+			align-items: center;
+			display: flex;
+			gap: 10px;
+		}
+
+		.googlesitekit-setup__services-list-item-icon {
+			display: inline-flex;
+		}
+
+		.googlesitekit-setup__services-list-item-name {
+			color: $c-surfaces-on-surface;
+			font-size: $fs-label-sm;
+		}
+
 		.mdc-form-field {
 			align-items: flex-start;
 		}
@@ -196,6 +220,20 @@
 
 			@media (min-width: $bp-nonTablet) {
 				padding-bottom: $grid-gap-desktop;
+			}
+		}
+	}
+
+	.googlesitekit-view-only-splash {
+
+		.googlesitekit-splash {
+
+			.googlesitekit-setup__title {
+				margin: 0.29em 0 0;
+			}
+
+			.googlesitekit-opt-in {
+				margin-top: 24px;
 			}
 		}
 	}

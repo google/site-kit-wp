@@ -20,7 +20,7 @@ use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Settings;
 /**
  * Base class for the per-user Site Goals settings datapoints.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ abstract class Site_Goals_Settings_Datapoint extends Shareable_Datapoint impleme
 	/**
 	 * Site Goals settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 * @var Site_Goals_Settings
 	 */
 	protected $site_goals_settings;
@@ -37,7 +37,7 @@ abstract class Site_Goals_Settings_Datapoint extends Shareable_Datapoint impleme
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -49,7 +49,7 @@ abstract class Site_Goals_Settings_Datapoint extends Shareable_Datapoint impleme
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data     Data request object.
@@ -62,7 +62,7 @@ abstract class Site_Goals_Settings_Datapoint extends Shareable_Datapoint impleme
 	/**
 	 * Checks whether the current user is allowed to access the datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @return bool True if the current user can view the dashboard, false otherwise.
 	 */

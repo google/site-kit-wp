@@ -321,7 +321,7 @@ class Plain_Text_Formatter {
 		}
 
 		$lines[] = self::format_link( __( 'Privacy Policy', 'google-site-kit' ), 'https://policies.google.com/privacy' );
-		$lines[] = self::format_link( __( 'Help Center', 'google-site-kit' ), add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ) );
+		$lines[] = self::format_link( __( 'Help Center', 'google-site-kit' ), 'https://sitekit.withgoogle.com/support/?doc=get-support' );
 
 		return $lines;
 	}

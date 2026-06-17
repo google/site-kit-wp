@@ -36,7 +36,10 @@ import {
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import AnalyticsIcon from '@/svg/graphics/analytics.svg';
+import SearchConsoleIcon from '@/svg/graphics/search-console.svg';
 import {
+	provideModuleRegistrations,
 	provideModules,
 	provideSiteConnection,
 	provideSiteInfo,
@@ -251,6 +254,86 @@ WithAnalyticsActive.args = {
 	},
 };
 WithAnalyticsActive.scenario = {};
+
+export const SecondaryAdminAnalyticsNotActive = Template.bind( {} );
+SecondaryAdminAnalyticsNotActive.storyName =
+	'Secondary admin, Analytics not setup (setupFlowRefreshPhase4 enabled)';
+SecondaryAdminAnalyticsNotActive.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: true,
+			hasMultipleAdmins: true,
+			resettable: false,
+		} );
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+	},
+};
+SecondaryAdminAnalyticsNotActive.parameters = {
+	features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+};
+SecondaryAdminAnalyticsNotActive.scenario = {};
+
+export const SecondaryAdminWithSharedServices = Template.bind( {} );
+SecondaryAdminWithSharedServices.storyName =
+	'Secondary admin with shared services (setupFlowRefreshPhase4 enabled)';
+SecondaryAdminWithSharedServices.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: true,
+			hasMultipleAdmins: true,
+			resettable: false,
+		} );
+
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: true,
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				MODULE_SLUG_ANALYTICS_4
+			) ]: true,
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				MODULE_SLUG_SEARCH_CONSOLE
+			) ]: true,
+		} );
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
+				active: true,
+				connected: true,
+				shareable: true,
+			},
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+				shareable: true,
+			},
+		] );
+
+		provideModuleRegistrations( registry, [
+			{
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
+				Icon: SearchConsoleIcon,
+			},
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				Icon: AnalyticsIcon,
+			},
+		] );
+	},
+};
+SecondaryAdminWithSharedServices.parameters = {
+	features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+};
+SecondaryAdminWithSharedServices.scenario = {};
 
 export default {
 	title: 'Setup / Using Proxy With Sign-in and setupFlowRefresh enabled',

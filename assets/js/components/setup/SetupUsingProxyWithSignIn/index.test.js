@@ -37,6 +37,7 @@ import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures_
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import * as tracking from '@/js/util/tracking';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
@@ -46,6 +47,7 @@ import {
 	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
+	provideSiteConnection,
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserCapabilities,
@@ -501,6 +503,130 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 					/Get visitor insights by connecting Google Analytics as part of setup/
 				)
 			).not.toBeInTheDocument();
+		} );
+
+		it( 'should show the correct title and description for a secondary admin when Analytics is not active with the setupFlowRefreshPhase4 feature flag enabled', async () => {
+			provideSiteConnection( registry, {
+				hasConnectedAdmins: true,
+				hasMultipleAdmins: true,
+			} );
+
+			registry.dispatch( CORE_MODULES ).receiveGetModules(
+				coreModulesFixture.map( ( module ) => {
+					if ( MODULE_SLUG_ANALYTICS_4 === module.slug ) {
+						return {
+							...module,
+							active: false,
+						};
+					}
+
+					return module;
+				} )
+			);
+
+			const {
+				container,
+				getByRole,
+				getByText,
+				queryByText,
+				waitForRegistry,
+			} = render( <SetupUsingProxyWithSignIn />, {
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+				features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+			} );
+
+			await waitForRegistry();
+
+			expect(
+				getByRole( 'heading', { name: "Let's get started!" } )
+			).toBeInTheDocument();
+
+			expect(
+				getByText(
+					/Once you complete the setup, you’ll see stats from all connected Google services\./
+				)
+			).toBeInTheDocument();
+
+			expect(
+				queryByText(
+					/all connected Google services that are shared with you:/
+				)
+			).not.toBeInTheDocument();
+
+			expect(
+				container.querySelector( '.googlesitekit-setup__services-list' )
+			).toBeNull();
+			expect(
+				getByText(
+					/Get visitor insights by connecting Google Analytics as part of setup/
+				)
+			).toBeInTheDocument();
+		} );
+
+		it( 'should show the correct title and description for a secondary admin when Analytics is active and shared services are viewable with the setupFlowRefreshPhase4 feature flag enabled', async () => {
+			provideSiteConnection( registry, {
+				hasConnectedAdmins: true,
+				hasMultipleAdmins: true,
+			} );
+
+			registry.dispatch( CORE_MODULES ).receiveGetModules(
+				coreModulesFixture.map( ( module ) => {
+					if (
+						MODULE_SLUG_ANALYTICS_4 === module.slug ||
+						MODULE_SLUG_SEARCH_CONSOLE === module.slug
+					) {
+						return {
+							...module,
+							active: true,
+							shareable: true,
+						};
+					}
+
+					return module;
+				} )
+			);
+
+			registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+				'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+				'googlesitekit_read_shared_module_data::["search-console"]': true,
+			} );
+
+			const { container, getByRole, getByText, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				getByRole( 'heading', { name: "Let's get started!" } )
+			).toBeInTheDocument();
+
+			expect(
+				getByText(
+					/all connected Google services that are shared with you:/
+				)
+			).toBeInTheDocument();
+
+			expect(
+				container.querySelector( '.googlesitekit-setup__services-list' )
+			).toBeInTheDocument();
+
+			expect( getByText( 'Search Console' ) ).toBeInTheDocument();
+			expect( getByText( 'Analytics' ) ).toBeInTheDocument();
+
+			expect(
+				Array.from(
+					container.querySelectorAll(
+						'.googlesitekit-setup__services-list-item-name'
+					)
+				).map( ( element ) => element.textContent )
+			).toEqual( [ 'Search Console', 'Analytics' ] );
 		} );
 
 		it( 'should navigate to the proxy setup URL with Analytics re-auth redirect URL and `showProgress` query argument on CTA click if chosen to connect Analytics', async () => {

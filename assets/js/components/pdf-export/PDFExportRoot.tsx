@@ -30,7 +30,7 @@ import { Fragment, Suspense, lazy, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
-import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-generation/constants';
+import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import PDFReportSnackbarHost from './PDFReportSnackbarHost';

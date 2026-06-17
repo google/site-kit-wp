@@ -53,6 +53,14 @@ class Web_Tag extends Module_Web_Tag {
 	private $redirect_to;
 
 	/**
+	 * Whether the tag renders for the existing-user link flow on `wp-admin/profile.php`.
+	 *
+	 * @since n.e.x.t
+	 * @var bool
+	 */
+	private bool $is_existing_user_flow = false;
+
+	/**
 	 * Sets the module settings.
 	 *
 	 * @since 1.159.0
@@ -88,16 +96,33 @@ class Web_Tag extends Module_Web_Tag {
 	}
 
 	/**
+	 * Sets whether the tag renders for the existing-user link flow on `wp-admin/profile.php`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param bool $is_existing_user_flow Existing-user link flow flag.
+	 */
+	public function set_is_existing_user_flow( bool $is_existing_user_flow ): void {
+		$this->is_existing_user_flow = $is_existing_user_flow;
+	}
+
+	/**
 	 * Registers tag hooks.
 	 *
 	 * @since 1.159.0
+	 * @since n.e.x.t Runs on `admin_footer` for the existing-user link flow.
 	 */
 	public function register() {
-		// Render the Sign in with Google script that converts placeholder
-		// <div>s with Sign in with Google buttons.
-		add_action( 'wp_footer', $this->get_method_proxy( 'render' ) );
-		// Output the Sign in with Google JS on the WordPress login page.
-		add_action( 'login_footer', $this->get_method_proxy( 'render' ) );
+		if ( $this->is_existing_user_flow ) {
+			// Output the Sign in with Google JS on the existing-user link flow.
+			add_action( 'admin_footer', $this->get_method_proxy( 'render' ) );
+		} else {
+			// Render the Sign in with Google script that converts placeholder
+			// <div>s with Sign in with Google buttons.
+			add_action( 'wp_footer', $this->get_method_proxy( 'render' ) );
+			// Output the Sign in with Google JS on the WordPress login page.
+			add_action( 'login_footer', $this->get_method_proxy( 'render' ) );
+		}
 
 		$this->do_init_tag_action();
 	}
@@ -110,9 +135,10 @@ class Web_Tag extends Module_Web_Tag {
 	 * @since 1.144.0 Renamed to `render_signinwithgoogle` and conditionally
 	 *                rendered the code to replace buttons.
 	 * @since 1.159.0 moved from main Sign_In_With_Google class to Web_Tag.
+	 * @since n.e.x.t Added support for the existing-user link flow.
 	 */
 	protected function render() {
-		$is_woocommerce       = class_exists( 'woocommerce' );
+		$is_woocommerce       = class_exists( 'WooCommerce' );
 		$is_woocommerce_login = did_action( 'woocommerce_login_form_start' );
 
 		$login_uri = add_query_arg( 'action', 'googlesitekit_auth', wp_login_url() );
@@ -123,8 +149,13 @@ class Web_Tag extends Module_Web_Tag {
 			'shape' => $this->settings['shape'],
 		);
 
-		// Whether this is a WordPress/WooCommerce login page.
 		$is_login_page = $this->is_wp_login || $is_woocommerce_login;
+
+		// On login pages, and when a user connects their account from their
+		// own profile page, the sign-in response says where to send the user
+		// next (eg. back to the profile page). Both cases should follow that
+		// redirect instead of reloading the current page, so group them here.
+		$follows_post_redirect = $is_login_page || $this->is_existing_user_flow;
 
 		// Check to see if we should show the One Tap prompt on this page.
 		//
@@ -148,7 +179,10 @@ class Web_Tag extends Module_Web_Tag {
 ( () => {
 	async function handleCredentialResponse( response ) {
 		<?php if ( ! is_preview() ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
-		<?php if ( $is_woocommerce && ! $this->is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		<?php if ( $this->is_existing_user_flow ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+		response.integration = 'existing_user';
+		response.connect_nonce = <?php echo wp_json_encode( wp_create_nonce( Authenticator::CONNECT_EXISTING_USER_NONCE_ACTION ) ); ?>;
+		<?php elseif ( $is_woocommerce && ! $this->is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		response.integration = 'woocommerce';
 		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		try {
@@ -169,7 +203,7 @@ class Web_Tag extends Module_Web_Tag {
 				sessionStorage.setItem( `siwg-comment-text-${postId}`, commentText );
 			}
 
-			<?php if ( empty( $this->redirect_to ) && ! $is_login_page ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+			<?php if ( empty( $this->redirect_to ) && ! $follows_post_redirect ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 				location.reload();
 			<?php else : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 				if ( res.ok && res.redirected ) {
@@ -197,7 +231,7 @@ class Web_Tag extends Module_Web_Tag {
 		document.getElementById( 'login' ).insertBefore( buttonDivToAddToLoginForm, document.getElementById( 'loginform' ) );
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
-	<?php if ( ! is_user_logged_in() || $this->is_wp_login || is_preview() ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	<?php if ( ! is_user_logged_in() || $this->is_wp_login || is_preview() || $this->is_existing_user_flow ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 			<?php
 			/**
 			 * Render SiwG buttons for all `<div>` elements with the "magic

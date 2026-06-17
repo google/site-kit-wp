@@ -197,6 +197,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				isMultisite,
 				hasActiveLeadEventProviders,
 				hasActiveEcommerceEventProviders,
+				hasMultipleActiveEcommerceEventProviders,
 			} = payload.siteInfo;
 
 			state.siteInfo = {
@@ -235,6 +236,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				isMultisite,
 				hasActiveLeadEventProviders,
 				hasActiveEcommerceEventProviders,
+				hasMultipleActiveEcommerceEventProviders,
 			};
 			break;
 
@@ -329,6 +331,7 @@ export const resolvers = {
 			isMultisite,
 			hasActiveLeadEventProviders,
 			hasActiveEcommerceEventProviders,
+			hasMultipleActiveEcommerceEventProviders,
 		} = baseData;
 
 		const {
@@ -374,6 +377,7 @@ export const resolvers = {
 			isMultisite,
 			hasActiveLeadEventProviders,
 			hasActiveEcommerceEventProviders,
+			hasMultipleActiveEcommerceEventProviders,
 		} );
 	},
 };
@@ -1002,7 +1006,7 @@ export const selectors = {
 	/**
 	 * Checks if any lead event provider plugin is active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} `true` if a lead event provider is active; `false` if not. Returns `undefined` if not yet loaded.
@@ -1014,13 +1018,25 @@ export const selectors = {
 	/**
 	 * Checks if any ecommerce event provider plugin is active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} `true` if an ecommerce event provider is active; `false` if not. Returns `undefined` if not yet loaded.
 	 */
 	hasActiveEcommerceEventProviders: getSiteInfoProperty(
 		'hasActiveEcommerceEventProviders'
+	),
+
+	/**
+	 * Checks if more than one ecommerce event provider plugin is active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} `true` if multiple ecommerce event providers are active; `false` if not. Returns `undefined` if not yet loaded.
+	 */
+	hasMultipleActiveEcommerceEventProviders: getSiteInfoProperty(
+		'hasMultipleActiveEcommerceEventProviders'
 	),
 };
 

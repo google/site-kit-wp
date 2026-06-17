@@ -64,6 +64,7 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( {
 	loading: providedLoading,
 	error: providedError,
 	primaryEvent,
+	breakdownFilter,
 	onExpandableRowsChange,
 } ) => {
 	const headerLabel = __( 'Events', 'google-site-kit' );
@@ -81,7 +82,10 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( {
 		return {
 			...dates,
 			dimensions: [ 'pagePath', 'eventName' ],
-			dimensionFilters: getDimensionFiltersForEvents( eventNames ),
+			dimensionFilters: getDimensionFiltersForEvents(
+				eventNames,
+				breakdownFilter
+			),
 			metrics: [ { name: 'eventCount' } ],
 			orderby: [
 				{
@@ -93,7 +97,7 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( {
 			keepEmptyRows: false,
 			reportID: `analytics-4_site-goals_top-pages_${ goalType }`,
 		};
-	}, [ dates, primaryEvent, goalType ] );
+	}, [ dates, primaryEvent, goalType, breakdownFilter ] );
 	const report = useSelect(
 		( select: Select ) =>
 			reportOptions

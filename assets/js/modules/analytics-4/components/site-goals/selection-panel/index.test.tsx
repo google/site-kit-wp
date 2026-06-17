@@ -24,11 +24,13 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
+import { setItem } from '@/js/googlesitekit/api/cache';
 import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
+	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
 	SITE_GOALS_BREAKDOWN_NOTICE,
 	SITE_GOALS_SELECTED_DRIVERS,
 	SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT,
@@ -39,6 +41,7 @@ import {
 	GOAL_DRIVER_IDS,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import { AVAILABILITY_SYNC_CACHE_KEY } from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
@@ -57,6 +60,10 @@ import {
 	provideUserCapabilities,
 	waitForDefaultTimeouts,
 } from '@tests/js/utils';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '../../../../../../../tests/js/mock-survey-endpoints';
 import SiteGoalsSelectionPanel from '.';
 
 jest.mock( '@/js/googlesitekit/data/create-snapshot-store', () => ( {
@@ -71,8 +78,12 @@ describe( 'SiteGoalsSelectionPanel', () => {
 
 	mockBrowserScrolling();
 
-	beforeEach( () => {
+	beforeEach( async () => {
 		registry = createTestRegistry();
+
+		// Mark the breakdown notice's throttled availability sync as already done,
+		// so it doesn't schedule a background sync during these tests.
+		await setItem( AVAILABILITY_SYNC_CACHE_KEY, true );
 
 		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
@@ -120,6 +131,29 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		expect(
 			getByRole( 'button', { name: 'Lead generation performance' } )
 		).toBeInTheDocument();
+	} );
+
+	it( 'renders the gathering breakdown data badge when the dimensions are gathering data', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
+		} );
+		SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS.forEach( ( customDimension ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsCustomDimensionGatheringData( {
+					customDimension,
+					gatheringData: true,
+				} );
+		} );
+
+		const { getAllByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		// One badge per goal-type section (online store and lead generation).
+		expect( getAllByText( 'Gathering data' ) ).toHaveLength( 2 );
 	} );
 
 	it( 'collapses and expands a goal-type list', async () => {
@@ -246,9 +280,13 @@ describe( 'SiteGoalsSelectionPanel', () => {
 
 		await waitForDefaultTimeouts();
 
+		// "Products added to cart" also appears in the Primary Action row when
+		// `add_to_cart` is primary. Scope the assertion to the visitor-engagement item.
 		expect( queryByText( 'Visitor engagement' ) ).not.toBeInTheDocument();
 		expect(
-			queryByText( 'Products added to cart' )
+			document.querySelector(
+				'#site-goals-selection-visitor-engagement-add_to_cart-ecommerce'
+			)
 		).not.toBeInTheDocument();
 	} );
 
@@ -400,6 +438,86 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		expect(
 			getByRole( 'button', { name: /apply changes|save selection/i } )
 		).toBeDisabled();
+	} );
+
+	it( 'shows "Purchase" as the ecommerce key action', async () => {
+		const { findByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		expect( await findByText( 'Purchase' ) ).toBeInTheDocument();
+	} );
+
+	it( 'shows "Form completion" as the lead key action', async () => {
+		const { findByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		expect( await findByText( 'Form completion' ) ).toBeInTheDocument();
+	} );
+
+	it( 'shows "Products added to cart" for ecommerce add_to_cart', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'add_to_cart', 'contact' ] );
+
+		const { findByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		expect(
+			await findByText( 'Products added to cart' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'dispatches an up vote for the ecommerce key action on thumbs-up click', async () => {
+		mockSurveyEndpoints();
+
+		const { findAllByRole } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		const upButtons = await findAllByRole( 'button', {
+			name: 'Yes, this was helpful',
+		} );
+
+		fireEvent.click( upButtons[ 0 ] );
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: {
+						triggerID:
+							'vote:site_goals_primary_action_panel_online_store:up',
+					},
+				},
+			} )
+		);
+	} );
+
+	it( 'dispatches a down vote for the lead key action on thumbs-down click', async () => {
+		mockSurveyEndpoints();
+
+		const { findAllByRole } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		const downButtons = await findAllByRole( 'button', {
+			name: 'No, this was not helpful',
+		} );
+
+		fireEvent.click( downButtons[ 1 ] );
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: {
+						triggerID:
+							'vote:site_goals_primary_action_panel_lead_generation:down',
+					},
+				},
+			} )
+		);
 	} );
 
 	it( 'shows max selection notice and disables save while allowing selection over six', async () => {

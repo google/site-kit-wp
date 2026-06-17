@@ -35,10 +35,42 @@ export const SITE_GOALS_MAX_SELECTED_DRIVERS = 6;
 
 export const SITE_GOALS_BREAKDOWN_NOTICE = 'site_goals_breakdown_notice';
 
-export const SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS = [
-	'googlesitekit_event_provider',
-	'googlesitekit_form_id',
-];
+export const SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE: Record<
+	string,
+	string
+> = {
+	[ GOAL_TYPES.ECOMMERCE ]: 'googlesitekit_event_provider',
+	[ GOAL_TYPES.LEAD ]: 'googlesitekit_form_id',
+};
+
+export const SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS = Object.values(
+	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE
+);
+
+export const SITE_GOALS_BREAKDOWN_OTHER_SOURCES_TAB_ID = 'other-sources';
+
+export const SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDER_LABELS: Record<
+	string,
+	string
+> = {
+	woocommerce: 'WooCommerce',
+	'easy-digital-downloads': 'Easy Digital Downloads',
+};
+
+export const SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDERS = Object.keys(
+	SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDER_LABELS
+);
+
+export const SITE_GOALS_BREAKDOWN_NOTIFICATION = 'site_goals_breakdown';
+
+export const BREAKDOWN_ORIGIN_WIDGET = 'widget';
+export const BREAKDOWN_ORIGIN_PANEL = 'panel';
+
+export const BREAKDOWN_ORIGIN_FORM_KEY = 'breakdownOrigin';
+export const BREAKDOWN_SCOPE_FORM_KEY = 'breakdownScope';
+export const BREAKDOWN_DISMISSED_FORM_KEY = 'breakdownDismissed';
+
+export const BREAKDOWN_SCOPE_BOTH = 'both';
 
 export const SITE_GOALS_DEFAULT_SELECTED_DRIVERS = {
 	[ GOAL_TYPES.ECOMMERCE ]: [
@@ -57,3 +89,21 @@ export const SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT = {
 	[ GOAL_TYPES.ECOMMERCE ]: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
 	[ GOAL_TYPES.LEAD ]: [],
 };
+
+export const SITE_GOALS_VOTE_ID_WIDGET_ONLINE_STORE =
+	'site_goals_widget_online_store';
+export const SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION =
+	'site_goals_widget_lead_generation';
+export const SITE_GOALS_VOTE_ID_PANEL_ONLINE_STORE =
+	'site_goals_primary_action_panel_online_store';
+export const SITE_GOALS_VOTE_ID_PANEL_LEAD_GENERATION =
+	'site_goals_primary_action_panel_lead_generation';
+
+export const SITE_GOALS_PANEL_VOTE_IDS_BY_GOAL_TYPE = {
+	[ GOAL_TYPES.ECOMMERCE ]: SITE_GOALS_VOTE_ID_PANEL_ONLINE_STORE,
+	[ GOAL_TYPES.LEAD ]: SITE_GOALS_VOTE_ID_PANEL_LEAD_GENERATION,
+};
+
+// Placeholder for the downvote "Tell us more" Google Form URL. Replace it once
+// the real URL is ready. Tracked in #12727.
+export const SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL = '#';

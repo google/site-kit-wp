@@ -370,6 +370,16 @@ describe( 'core/pdf store', () => {
 					true
 				);
 			} );
+
+			it( 'should ignore a second start while already exporting', () => {
+				registry.dispatch( CORE_PDF ).startExporting();
+				// A second start must be a no-op so two orchestrators cannot mount.
+				registry.dispatch( CORE_PDF ).startExporting();
+
+				expect( registry.select( CORE_PDF ).isExporting() ).toBe(
+					true
+				);
+			} );
 		} );
 
 		describe( 'finishExporting', () => {

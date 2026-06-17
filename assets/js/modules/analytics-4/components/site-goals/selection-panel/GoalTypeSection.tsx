@@ -26,6 +26,8 @@ import { FC, ReactNode } from 'react';
  * Internal dependencies
  */
 import Typography from '@/js/components/Typography';
+import GatheringBreakdownDataBadge from '@/js/modules/analytics-4/components/site-goals/components/GatheringBreakdownDataBadge';
+import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import ChevronDownIcon from '@/svg/icons/chevron-down.svg';
 
 interface GoalTypeSectionProps {
@@ -45,35 +47,38 @@ const GoalTypeSection: FC< GoalTypeSectionProps > = ( {
 } ) => {
 	return (
 		<section className="googlesitekit-site-goals-selection-panel__section">
-			<button
-				type="button"
-				className="googlesitekit-site-goals-selection-panel__section-toggle"
-				onClick={ onToggleExpand }
-				aria-expanded={ isExpanded }
-				aria-controls={ `site-goals-selection-section-${ listID }` }
-			>
-				<span className="googlesitekit-site-goals-selection-panel__section-toggle-content">
-					<ChevronDownIcon
-						width={ 20 }
-						height={ 20 }
-						className={ classnames(
-							'googlesitekit-site-goals-selection-panel__section-toggle-icon',
-							{
-								'googlesitekit-site-goals-selection-panel__section-toggle-icon--expanded':
-									isExpanded,
-							}
-						) }
-					/>
-					<Typography
-						as="span"
-						type="title"
-						size="large"
-						className="googlesitekit-site-goals-selection-panel__section-title"
-					>
-						{ title }
-					</Typography>
-				</span>
-			</button>
+			<div className="googlesitekit-site-goals-selection-panel__section-header">
+				<button
+					type="button"
+					className="googlesitekit-site-goals-selection-panel__section-toggle"
+					onClick={ onToggleExpand }
+					aria-expanded={ isExpanded }
+					aria-controls={ `site-goals-selection-section-${ listID }` }
+				>
+					<span className="googlesitekit-site-goals-selection-panel__section-toggle-content">
+						<ChevronDownIcon
+							width={ 20 }
+							height={ 20 }
+							className={ classnames(
+								'googlesitekit-site-goals-selection-panel__section-toggle-icon',
+								{
+									'googlesitekit-site-goals-selection-panel__section-toggle-icon--expanded':
+										isExpanded,
+								}
+							) }
+						/>
+						<Typography
+							as="span"
+							type="title"
+							size="large"
+							className="googlesitekit-site-goals-selection-panel__section-title"
+						>
+							{ title }
+						</Typography>
+					</span>
+				</button>
+				<GatheringBreakdownDataBadge goalType={ listID as GoalType } />
+			</div>
 
 			{ isExpanded && (
 				<div

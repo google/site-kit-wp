@@ -27,23 +27,40 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { setItem } from '@/js/googlesitekit/api/cache';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
+	BREAKDOWN_ORIGIN_FORM_KEY,
+	BREAKDOWN_ORIGIN_WIDGET,
+	BREAKDOWN_SCOPE_FORM_KEY,
+	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
+} from '@/js/modules/analytics-4/components/site-goals/constants';
+import {
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { AVAILABILITY_SYNC_CACHE_KEY } from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	DATE_RANGE_OFFSET,
 	ENUM_CONVERSION_EVENTS,
+	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
+import { getPreviousDate } from '@/js/util';
 import { fireEvent, render, waitFor } from '@tests/js/test-utils';
-import { createTestRegistry, provideModules } from '@tests/js/utils';
+import {
+	createTestRegistry,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserCapabilities,
+} from '@tests/js/utils';
+import { surveyTriggerEndpoint } from '../../../../../../../tests/js/mock-survey-endpoints';
 import OnlineStorePerformanceWidget from './OnlineStorePerformanceWidget';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
@@ -56,7 +73,8 @@ describe( 'OnlineStorePerformanceWidget', () => {
 
 	function buildPrimaryEventReportOptions(
 		dates: Record< string, unknown >,
-		primaryEvent: string
+		primaryEvent: string,
+		breakdownFilter: Record< string, unknown > = {}
 	) {
 		return {
 			...dates,
@@ -64,23 +82,29 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			dimensions: [ { name: 'eventName' } ],
 			dimensionFilters: {
 				eventName: primaryEvent,
+				...breakdownFilter,
 			},
 			reportID:
 				'analytics-4_online-store-performance-widget_primaryEventReportOptions',
 		};
 	}
 
-	function buildEngagementReportOptions( dates: Record< string, unknown > ) {
+	function buildEngagementReportOptions(
+		dates: Record< string, unknown >,
+		breakdownFilter?: Record< string, unknown >
+	) {
 		return {
 			...dates,
 			metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
+			...( breakdownFilter ? { dimensionFilters: breakdownFilter } : {} ),
 			reportID: 'analytics-4_site-goals_engagementReportOptions',
 		};
 	}
 
 	function buildVisitorEngagementEventReportOptions(
 		dates: Record< string, unknown >,
-		eventName: string
+		eventName: string,
+		breakdownFilter: Record< string, unknown > = {}
 	) {
 		return {
 			...dates,
@@ -88,6 +112,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			dimensions: [ { name: 'eventName' } ],
 			dimensionFilters: {
 				eventName,
+				...breakdownFilter,
 			},
 			reportID: `analytics-4_site-goals_visitor-engagement_${ eventName }`,
 		};
@@ -98,7 +123,12 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		{
 			empty = false,
 			loading = false,
-		}: { empty?: boolean; loading?: boolean } = {}
+			breakdownFilter = {},
+		}: {
+			empty?: boolean;
+			loading?: boolean;
+			breakdownFilter?: Record< string, unknown >;
+		} = {}
 	) {
 		const dates = registry.select( CORE_USER ).getDateRangeDates();
 
@@ -107,6 +137,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 				filterType: 'inListFilter',
 				value: eventNames,
 			},
+			...breakdownFilter,
 		};
 
 		const topTrafficChannelsOptions = {
@@ -496,9 +527,170 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.finishResolution( 'getReport', [ deviceTypeOptions ] );
 	}
 
-	beforeEach( () => {
+	// Seeds the breakdown discovery report (which provider tabs to show) plus the
+	// partial-data state, so the breakdown selectors resolve without network.
+	// Empty `providerValues` keeps the widget in aggregated mode (no tabs).
+	function seedBreakdown( {
+		providerValues = [],
+		availabilityDate,
+		hasOtherSources = true,
+	}: {
+		providerValues?: string[];
+		availabilityDate?: number;
+		hasOtherSources?: boolean;
+	} = {} ) {
+		const dimension = 'customEvent:googlesitekit_event_provider';
+		const eventFilter = {
+			eventName: {
+				filterType: 'inListFilter',
+				value: [
+					ENUM_CONVERSION_EVENTS.PURCHASE,
+					ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+				],
+			},
+		};
+		// The tab structure is evaluated over the fixed 90-day discovery window.
+		const referenceDate = registry.select( CORE_USER ).getReferenceDate();
+		const discoveryDates = {
+			startDate: getPreviousDate( referenceDate, 90 ),
+			endDate: referenceDate,
+		};
+		const options = {
+			...discoveryDates,
+			dimensions: [ dimension ],
+			dimensionFilters: {
+				[ dimension ]: {
+					filterType: 'emptyFilter',
+					notExpression: true,
+				},
+				...eventFilter,
+			},
+			metrics: [ { name: 'eventCount' } ],
+			orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+			reportID:
+				'analytics-4_site-goals-breakdown_values_googlesitekit_event_provider',
+		};
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: providerValues.map( ( value, index ) => ( {
+					dimensionValues: [ { value } ],
+					metricValues: [ { value: String( 100 - index ) } ],
+				} ) ),
+			},
+			{ options }
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ options ] );
+
+		// "Other sources" = all primary-event count − the count attributed to a
+		// supported provider. Existence is decided over the discovery window;
+		// the displayed count over the current compare range. When
+		// hasOtherSources, all (100) exceeds attributed (90) by 10.
+		const eventNameFilter = {
+			eventName: {
+				filterType: 'inListFilter',
+				value: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+			},
+		};
+
+		function buildOtherSourcesOptions(
+			optionDates: Record< string, string >,
+			kind: string
+		) {
+			return {
+				...optionDates,
+				metrics: [ { name: 'eventCount' } ],
+				dimensionFilters: {
+					...eventNameFilter,
+					...( 'attributed' === kind
+						? {
+								[ dimension ]: {
+									filterType: 'inListFilter',
+									value: providerValues,
+								},
+						  }
+						: {} ),
+				},
+				reportID: `analytics-4_site-goals-breakdown_other-sources-${ kind }_googlesitekit_event_provider`,
+			};
+		}
+
+		function seedReport(
+			reportOptions: Record< string, unknown >,
+			report: unknown
+		) {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetReport( report, { options: reportOptions } );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getReport', [ reportOptions ] );
+		}
+
+		function compareTotals( count: number ) {
+			return {
+				totals: [
+					{
+						dimensionValues: [ { value: 'date_range_0' } ],
+						metricValues: [ { value: String( count ) } ],
+					},
+					{
+						dimensionValues: [ { value: 'date_range_1' } ],
+						metricValues: [ { value: '0' } ],
+					},
+				],
+			};
+		}
+
+		const allCount = hasOtherSources ? 100 : 90;
+
+		// Existence over the discovery window (single-range totals).
+		seedReport( buildOtherSourcesOptions( discoveryDates, 'all' ), {
+			totals: [ { metricValues: [ { value: String( allCount ) } ] } ],
+		} );
+		seedReport( buildOtherSourcesOptions( discoveryDates, 'attributed' ), {
+			totals: [ { metricValues: [ { value: '90' } ] } ],
+		} );
+
+		// Displayed count over the current compare range.
+		const compareDates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( { compare: true } );
+		seedReport(
+			buildOtherSourcesOptions( compareDates, 'all' ),
+			compareTotals( allCount )
+		);
+		seedReport(
+			buildOtherSourcesOptions( compareDates, 'attributed' ),
+			compareTotals( 90 )
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: availabilityDate
+				? {
+						customDimension: {
+							googlesitekit_event_provider: availabilityDate,
+						},
+				  }
+				: {},
+		} );
+	}
+
+	beforeEach( async () => {
 		registry = createTestRegistry();
+		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		// Mark the breakdown notice's throttled availability sync as already done,
+		// so it doesn't schedule a background sync during these tests.
+		await setItem( AVAILABILITY_SYNC_CACHE_KEY, true );
+		provideUserCapabilities( registry );
+		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_ANALYTICS_4,
@@ -516,6 +708,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		// Default to the breakdown notice being hidden (intro modal not yet
 		// dismissed); individual tests opt in by dismissing the intro modal.
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		// Default to aggregated mode (no breakdown provider values yet); tabbed
+		// tests re-seed with provider values.
+		seedBreakdown();
 	} );
 
 	it( 'renders WidgetNull when no ecommerce events are detected', async () => {
@@ -806,6 +1002,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		// Both ecommerce plugins active, so the "both plugins" notice copy shows.
+		provideSiteInfo( registry, {
+			hasMultipleActiveEcommerceEventProviders: true,
+		} );
 		// Aggregated state: intro modal dismissed, breakdown dimensions not yet
 		// created (availableCustomDimensions seeded as [] in beforeEach).
 		registry
@@ -817,25 +1017,23 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
-		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ], {
-			loading: true,
-		} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.startResolution( 'getReport', [
-				buildPrimaryEventReportOptions(
-					dates,
-					ENUM_CONVERSION_EVENTS.PURCHASE
-				),
-			] );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.startResolution( 'getReport', [
-				buildEngagementReportOptions( dates ),
-			] );
+		// The breakdown notice in the widget only renders once the primary
+		// section has loaded (it shows a skeleton while loading), so seed the
+		// reports as loaded.
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		provideAnalytics4MockReport(
+			registry,
+			buildPrimaryEventReportOptions(
+				dates,
+				ENUM_CONVERSION_EVENTS.PURCHASE
+			)
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
 
 		const { getByText, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
@@ -1251,5 +1449,366 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			queryByText( 'How are your visitors engaging?' )
 		).toBeInTheDocument();
+	} );
+
+	it( 'dispatches an up vote on thumbs-up click', async () => {
+		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+
+		const primaryEventReport = buildPrimaryEventReportOptions(
+			dates,
+			ENUM_CONVERSION_EVENTS.PURCHASE
+		);
+		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		provideAnalytics4MockReport( registry, primaryEventReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { getByRole, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		fireEvent.click(
+			getByRole( 'button', { name: 'Yes, this was helpful' } )
+		);
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: {
+						triggerID: 'vote:site_goals_widget_online_store:up',
+					},
+				},
+			} )
+		);
+	} );
+
+	it( 'dispatches a down vote on thumbs-down click', async () => {
+		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+
+		const primaryEventReport = buildPrimaryEventReportOptions(
+			dates,
+			ENUM_CONVERSION_EVENTS.PURCHASE
+		);
+		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		provideAnalytics4MockReport( registry, primaryEventReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { getByRole, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		fireEvent.click(
+			getByRole( 'button', { name: 'No, this was not helpful' } )
+		);
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: {
+					data: {
+						triggerID: 'vote:site_goals_widget_online_store:down',
+					},
+				},
+			} )
+		);
+	} );
+
+	function seedReadyReports() {
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+
+		provideAnalytics4MockReport(
+			registry,
+			buildPrimaryEventReportOptions(
+				dates,
+				ENUM_CONVERSION_EVENTS.PURCHASE
+			)
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+	}
+
+	function seedBreakdownDimensions( gatheringData: boolean ) {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
+		} );
+		SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS.forEach( ( customDimension ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsCustomDimensionGatheringData( {
+					customDimension,
+					gatheringData,
+				} );
+		} );
+	}
+
+	it( 'renders the gathering breakdown data badge when the dimensions are gathering data', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		seedReadyReports();
+		seedBreakdownDimensions( true );
+
+		const { getByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Gathering breakdown data' ) ).toBeInTheDocument();
+	} );
+
+	it( 'does not render the gathering breakdown data badge when the dimensions have data available', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		seedReadyReports();
+		seedBreakdownDimensions( false );
+
+		const { queryByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			queryByText( 'Gathering breakdown data' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders the gathering breakdown data badge alongside the breakdown success notice', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		seedReadyReports();
+		seedBreakdownDimensions( true );
+
+		// Mark this widget as the instance that just enabled the breakdown so the
+		// success notice from #12801 renders.
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+				[ BREAKDOWN_ORIGIN_FORM_KEY ]: BREAKDOWN_ORIGIN_WIDGET,
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: GOAL_TYPES.ECOMMERCE,
+			} );
+
+		const { getByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Gathering breakdown data' ) ).toBeInTheDocument();
+		expect(
+			getByText( /Event breakdown is now active/i )
+		).toBeInTheDocument();
+	} );
+
+	const PROVIDER_DIMENSION = 'customEvent:googlesitekit_event_provider';
+
+	// Seeds the Key action, visitor engagement and goal driver reports for a
+	// breakdown tab whose section reports carry the given provider filter.
+	function seedTabbedReports( breakdownFilter: Record< string, unknown > ) {
+		const dates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( { compare: true } );
+
+		provideAnalytics4MockReport(
+			registry,
+			buildPrimaryEventReportOptions(
+				dates,
+				ENUM_CONVERSION_EVENTS.PURCHASE,
+				breakdownFilter
+			)
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates, breakdownFilter )
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildVisitorEngagementEventReportOptions(
+				dates,
+				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+				breakdownFilter
+			)
+		);
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ], {
+			breakdownFilter,
+		} );
+	}
+
+	it( 'stays in aggregated mode without tabs when no provider values exist', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const dates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( { compare: true } );
+		provideAnalytics4MockReport(
+			registry,
+			buildPrimaryEventReportOptions(
+				dates,
+				ENUM_CONVERSION_EVENTS.PURCHASE
+			)
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const { queryByRole, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( queryByRole( 'tab' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'renders breakdown tabs with provider labels and an Other sources tab', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		seedBreakdown( {
+			providerValues: [ 'woocommerce', 'easy-digital-downloads' ],
+		} );
+		// The first provider tab is active by default.
+		seedTabbedReports( { [ PROVIDER_DIMENSION ]: 'woocommerce' } );
+
+		const { getByRole, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByRole( 'tab', { name: 'WooCommerce' } )
+		).toBeInTheDocument();
+		expect(
+			getByRole( 'tab', { name: 'Easy Digital Downloads' } )
+		).toBeInTheDocument();
+		expect(
+			getByRole( 'tab', { name: 'Other sources' } )
+		).toBeInTheDocument();
+	} );
+
+	it( 'renders the partial data badge on each section in the tabbed view', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		// Availability date (2026) is after the reference date range, so the
+		// dimension is in partial data state.
+		seedBreakdown( {
+			providerValues: [ 'woocommerce' ],
+			availabilityDate: 20260519,
+		} );
+		seedTabbedReports( { [ PROVIDER_DIMENSION ]: 'woocommerce' } );
+
+		const { getAllByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		// Key action, visitor engagement and goal drivers each get a badge.
+		expect( getAllByText( 'Partial data' ).length ).toBeGreaterThanOrEqual(
+			3
+		);
+	} );
+
+	it( 'does not render the partial data badge when not in partial data state', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		// Availability date before the date range → full data, not partial.
+		seedBreakdown( {
+			providerValues: [ 'woocommerce' ],
+			availabilityDate: 20200101,
+		} );
+		seedTabbedReports( { [ PROVIDER_DIMENSION ]: 'woocommerce' } );
+
+		const { queryByText, getByRole, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		// Tabs still render, but no partial data badge.
+		expect(
+			getByRole( 'tab', { name: 'WooCommerce' } )
+		).toBeInTheDocument();
+		expect( queryByText( 'Partial data' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'renders only the Key action on the Other sources tab', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		seedBreakdown( { providerValues: [ 'woocommerce' ] } );
+		// Initial (woocommerce) tab reports. The Other sources tab applies no
+		// section filter (its single metric comes from the breakdown report seeded
+		// above), so it falls back to the unfiltered primary/engagement reports.
+		seedTabbedReports( { [ PROVIDER_DIMENSION ]: 'woocommerce' } );
+		const dates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( { compare: true } );
+		provideAnalytics4MockReport(
+			registry,
+			buildPrimaryEventReportOptions(
+				dates,
+				ENUM_CONVERSION_EVENTS.PURCHASE
+			)
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+
+		const { getByRole, getByText, queryByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		fireEvent.click( getByRole( 'tab', { name: 'Other sources' } ) );
+
+		await waitFor( () => {
+			expect( getByText( 'Key action' ) ).toBeInTheDocument();
+		} );
+		expect(
+			queryByText( 'How are your visitors engaging?' )
+		).not.toBeInTheDocument();
+		expect(
+			queryByText( 'What’s helping you reach your goals?' )
+		).not.toBeInTheDocument();
 	} );
 } );

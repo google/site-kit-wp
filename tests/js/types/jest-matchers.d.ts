@@ -18,3 +18,8 @@
 
 /// <reference types="@testing-library/jest-dom" />
 /// <reference types="@wordpress/jest-console" />
+/// <reference types="fetch-mock-jest" />
+
+// `fetchMock` is set up as a global in `tests/js/setup-before-after.ts`; declare
+// it here so test files type-check in isolation (e.g. under `tsc-files`).
+declare const fetchMock: typeof import('fetch-mock-jest');

@@ -70,6 +70,7 @@ describe( 'core/site site info', () => {
 			isMultisite: false,
 			hasActiveLeadEventProviders: false,
 			hasActiveEcommerceEventProviders: false,
+			hasMultipleActiveEcommerceEventProviders: false,
 		};
 
 		entityInfo = {
@@ -522,6 +523,10 @@ describe( 'core/site site info', () => {
 			[
 				'hasActiveEcommerceEventProviders',
 				'hasActiveEcommerceEventProviders',
+			],
+			[
+				'hasMultipleActiveEcommerceEventProviders',
+				'hasMultipleActiveEcommerceEventProviders',
 			],
 		] )( '%s', ( selector, infoKey ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
