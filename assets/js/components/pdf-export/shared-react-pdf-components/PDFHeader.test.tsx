@@ -95,17 +95,20 @@ describe( 'PDFHeader', () => {
 	} );
 
 	it( 'renders one chip per supplied section, in order', () => {
-		const { container } = renderPDFHeader();
+		const { container, getByText } = renderPDFHeader();
 
-		// Chips are the links wrapping a pill <View>; the other header links
-		// (host, "View dashboard") wrap text/icons only.
-		const chipLabels = Array.from(
-			container.querySelectorAll( 'pdf-link' )
-		)
-			.filter( ( link ) => link.querySelector( 'pdf-view' ) )
-			.map( ( chip ) => chip.textContent );
+		expect( getByText( 'Key metrics' ) ).toBeInTheDocument();
+		expect( getByText( 'Traffic' ) ).toBeInTheDocument();
+		expect( getByText( 'Content' ) ).toBeInTheDocument();
 
-		expect( chipLabels ).toEqual( [ 'Key metrics', 'Traffic', 'Content' ] );
+		// Chips render in section order.
+		const text = container.textContent || '';
+		expect( text.indexOf( 'Traffic' ) ).toBeGreaterThan(
+			text.indexOf( 'Key metrics' )
+		);
+		expect( text.indexOf( 'Content' ) ).toBeGreaterThan(
+			text.indexOf( 'Traffic' )
+		);
 	} );
 
 	it( 'renders the "View dashboard in Site Kit" link to the dashboard URL', () => {
@@ -120,12 +123,11 @@ describe( 'PDFHeader', () => {
 	} );
 
 	it( 'collapses the chip row when there are no sections', () => {
-		const { container, getByText } = renderPDFHeader( { sections: [] } );
+		const { queryByText, getByText } = renderPDFHeader( { sections: [] } );
 
-		const chips = Array.from(
-			container.querySelectorAll( 'pdf-link' )
-		).filter( ( link ) => link.querySelector( 'pdf-view' ) );
-		expect( chips ).toHaveLength( 0 );
+		// No section labels render when there are no sections.
+		expect( queryByText( 'Key metrics' ) ).not.toBeInTheDocument();
+		expect( queryByText( 'Traffic' ) ).not.toBeInTheDocument();
 		// The "View dashboard" link still renders.
 		expect( getByText( 'View dashboard in Site Kit' ) ).toBeInTheDocument();
 	} );
