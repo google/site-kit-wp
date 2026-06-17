@@ -150,7 +150,7 @@ export function setupSignInWithGoogle( data: SignInWithGoogleData ) {
 				siwgButtonDiv.dataset.googlesitekitSiwgWidth
 			);
 
-			if ( ! isNaN( width ) ) {
+			if ( ! isNaN( width ) && width > 0 ) {
 				buttonOptions.width = width;
 				siwgButtonDiv.style.maxInlineSize = `${ width }px`;
 			}
