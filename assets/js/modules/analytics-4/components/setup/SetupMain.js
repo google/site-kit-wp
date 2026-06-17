@@ -27,6 +27,7 @@ import PropTypes from 'prop-types';
  */
 import { Fragment, useEffect, useState } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -100,7 +101,8 @@ export default function SetupMain( { finishSetup } ) {
 	useExistingTagEffect();
 
 	const [ showProgress ] = useQueryArg( 'showProgress' );
-	const [ accountCreationErrorCode ] = useQueryArg(
+	const accountCreationErrorCode = getQueryArg(
+		location.href,
 		'accountCreationErrorCode'
 	);
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );

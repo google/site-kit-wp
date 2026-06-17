@@ -24,7 +24,9 @@ import { Text } from '@react-pdf/renderer';
 /**
  * Internal dependencies
  */
+import { SECTION_ICONS } from '@/js/components/pdf-export/section-icons';
 import type { PDFWidgetComponentProps } from '@/js/components/pdf-export/types';
+import { CONTEXT_MAIN_DASHBOARD_TRAFFIC } from '@/js/googlesitekit/widgets/default-contexts';
 import { render } from '@tests/js/test-utils';
 import DashboardReport, { DashboardReportProps } from './DashboardReport';
 
@@ -32,19 +34,28 @@ function FakeWidget( { data }: PDFWidgetComponentProps ) {
 	return <Text>{ `widget:${ String( data ) }` }</Text>;
 }
 
+const footerProps = {
+	dashboardURL: 'http://example.com/wp-admin/index.php?to=dashboard',
+	helpCenterURL: 'https://sitekit.withgoogle.com/support/?doc=get-support',
+	privacyPolicyURL: 'https://policies.google.com/privacy',
+};
+
 function renderDashboardReport( props: Partial< DashboardReportProps > = {} ) {
 	return render(
 		<DashboardReport
 			siteName="Example Site"
-			generatedAt="2021-01-10"
+			siteURL="https://www.example.com/"
+			dateRange={ { startDate: '2021-01-01', endDate: '2021-01-28' } }
+			sections={ [] }
 			areas={ [] }
+			{ ...footerProps }
 			{ ...props }
 		/>
 	);
 }
 
 describe( 'DashboardReport', () => {
-	it( 'renders one section per area with its title and widget components', () => {
+	it( 'should render one section per area with its title and widget components', () => {
 		const areas = [
 			{
 				areaSlug: 'mainDashboardTrafficPrimary',
@@ -66,7 +77,7 @@ describe( 'DashboardReport', () => {
 		expect( getByText( 'widget:visitors' ) ).toBeInTheDocument();
 	} );
 
-	it( 'renders a placeholder for a widget without a resolved component', () => {
+	it( 'should render a placeholder for a widget without a resolved component', () => {
 		const areas = [
 			{
 				areaSlug: 'mainDashboardTrafficPrimary',
@@ -86,7 +97,7 @@ describe( 'DashboardReport', () => {
 		expect( getByText( 'Data unavailable.' ) ).toBeInTheDocument();
 	} );
 
-	it( 'renders the "No report data available." message when there are no areas', () => {
+	it( 'should render gracefully when there are no areas', () => {
 		const { getByText } = renderDashboardReport();
 
 		expect( getByText( 'No report data available.' ) ).toBeInTheDocument();
@@ -104,13 +115,37 @@ describe( 'DashboardReport', () => {
 	} );
 
 	it( 'links the "Set up email reports" button to the given email reporting setup URL', () => {
-		const { container } = renderDashboardReport( {
+		const { getByText } = renderDashboardReport( {
 			emailReportingSetupURL: 'https://example.com/golink',
 		} );
 
-		expect( container.querySelector( 'pdf-link' ) ).toHaveAttribute(
-			'src',
-			'https://example.com/golink'
-		);
+		expect(
+			getByText( 'Set up email reports' ).closest( 'pdf-link' )
+		).toHaveAttribute( 'src', 'https://example.com/golink' );
+	} );
+
+	it( 'renders the header with the forwarded props', () => {
+		const { getByText } = renderDashboardReport( {
+			dashboardURL: 'https://example.com/go-dashboard',
+			sections: [
+				{
+					slug: 'mainDashboardTrafficPrimary',
+					label: 'Traffic',
+					Icon: SECTION_ICONS[ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+				},
+			],
+		} );
+
+		// Title and formatted date range come from the header.
+		expect( getByText( "Your site's performance" ) ).toBeInTheDocument();
+		expect(
+			getByText( /Jan 1, 2021\s*-\s*Jan 28, 2021/ )
+		).toBeInTheDocument();
+		// Host is derived from the forwarded `siteURL` and linked to `dashboardURL`.
+		expect(
+			getByText( 'www.example.com' ).closest( 'pdf-link' )
+		).toHaveAttribute( 'src', 'https://example.com/go-dashboard' );
+		// The forwarded section renders as a chip.
+		expect( getByText( 'Traffic' ) ).toBeInTheDocument();
 	} );
 } );

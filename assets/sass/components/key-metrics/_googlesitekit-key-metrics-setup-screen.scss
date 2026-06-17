@@ -68,6 +68,19 @@
 				bottom: 86px;
 			}
 		}
+
+		.googlesitekit-key-metrics-setup__error--inline {
+			border-radius: $br-sm;
+			position: initial;
+
+			& + .googlesitekit-key-metrics-setup__footer {
+				margin-top: $grid-gap-phone;
+
+				@media (min-width: $bp-nonTablet) {
+					margin-top: $grid-gap-desktop;
+				}
+			}
+		}
 	}
 
 	.googlesitekit-key-metrics-setup__title {

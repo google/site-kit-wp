@@ -2,6 +2,7 @@
 	"googleTagGateway",
 	"gtagUserData",
 	"pdfGeneration",
+	"rrmExpressSetup",
 	"setupFlowRefresh",
 	"setupFlowRefreshPhase4",
 	"siteGoals"
