@@ -46,7 +46,6 @@ import {
 import { Cell, Row } from '@/js/material-components';
 import SplashBackground from '@/svg/graphics/splash-graphic.svg';
 import AnalyticsOptIn from './AnalyticsOptIn';
-import ResetNotice from './ResetNotice';
 import SplashScreenshotSVG from './SetupFlowSVG';
 
 export default function SplashContent( {
@@ -77,8 +76,9 @@ export default function SplashContent( {
 
 	return (
 		<Fragment>
-			<Notifications areaSlug={ NOTIFICATION_AREAS.SPLASH_CONTENT } />
-			<ResetNotice />
+			<div className="googlesitekit-setup__notifications">
+				<Notifications areaSlug={ NOTIFICATION_AREAS.SPLASH_CONTENT } />
+			</div>
 			<Row className="googlesitekit-setup__content">
 				<Cell { ...cellDetailsProp }>
 					<Typography

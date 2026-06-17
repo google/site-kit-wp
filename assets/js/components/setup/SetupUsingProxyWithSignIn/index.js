@@ -24,8 +24,8 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
-import { addQueryArgs } from '@wordpress/url';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
+import { addQueryArgs, getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -41,7 +41,6 @@ import AnalyticsActivationErrorNotification, {
 	ANALYTICS_ACTIVATION_ERROR_NOTIFICATION,
 } from '@/js/components/setup/SetupUsingProxyWithSignIn/AnalyticsActivationErrorNotification';
 import { setItem } from '@/js/googlesitekit/api/cache';
-import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -60,7 +59,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { trackEvent } from '@/js/util';
 import Actions from './Actions';
 import Header from './Header';
-import ResetNotice from './ResetNotice';
+import ResetNotice, { RESET_SUCCESS_NOTIFICATION } from './ResetNotice';
 import Splash from './Splash';
 
 export default function SetupUsingProxyWithSignIn() {
@@ -93,6 +92,21 @@ export default function SetupUsingProxyWithSignIn() {
 			forwardableParams
 		)
 	);
+
+	const showResetNotice =
+		getQueryArg( location.href, 'notification' ) === 'reset_success';
+
+	useEffect( () => {
+		if ( showResetNotice ) {
+			registerNotification( RESET_SUCCESS_NOTIFICATION, {
+				areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
+				Component: ResetNotice,
+				isDismissible: false,
+				priority: PRIORITY.INFO,
+				viewContexts: [ viewContext ],
+			} );
+		}
+	}, [ registerNotification, showResetNotice, viewContext ] );
 
 	const setupAnalytics = useCallback( async () => {
 		let moduleReauthURL;
@@ -159,7 +173,7 @@ export default function SetupUsingProxyWithSignIn() {
 								),
 								priority: PRIORITY.ERROR_HIGH,
 								areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
-								viewContexts: [ VIEW_CONTEXT_SPLASH ],
+								viewContexts: [ viewContext ],
 								isDismissible: false,
 								featureFlag: 'setupFlowRefreshPhase4',
 							}
@@ -270,7 +284,8 @@ export default function SetupUsingProxyWithSignIn() {
 					<Grid>
 						<Row>
 							<Cell size={ 12 }>
-								<ResetNotice />
+								{ showResetNotice && <ResetNotice /> }
+								{ showResetNotice && <br /> }
 								{ splashSetupContent }
 							</Cell>
 						</Row>

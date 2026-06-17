@@ -359,6 +359,51 @@ AnalyticsActivationError.parameters = {
 
 AnalyticsActivationError.scenario = {};
 
+export const ResetSuccessAnalyticsActivationError = Template.bind( {} );
+ResetSuccessAnalyticsActivationError.storyName =
+	'Reset success with Analytics activation error';
+ResetSuccessAnalyticsActivationError.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: false,
+			resettable: false,
+		} );
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification( ANALYTICS_ACTIVATION_ERROR_NOTIFICATION, {
+				Component: () => (
+					<AnalyticsActivationErrorNotification
+						onRetry={ () => null }
+					/>
+				),
+				priority: PRIORITY.ERROR_HIGH,
+				areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
+				viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+				isDismissible: false,
+				featureFlag: 'setupFlowRefreshPhase4',
+			} );
+	},
+};
+
+ResetSuccessAnalyticsActivationError.parameters = {
+	features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+	query: {
+		googlesitekit_context: '',
+		notification: 'reset_success',
+	},
+};
+
+ResetSuccessAnalyticsActivationError.scenario = {};
+
 export default {
 	title: 'Setup / Using Proxy With Sign-in and setupFlowRefresh enabled',
 	decorators: [
