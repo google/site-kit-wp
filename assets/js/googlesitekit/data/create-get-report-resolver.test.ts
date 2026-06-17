@@ -287,8 +287,17 @@ describe( 'createGetReportResolver', () => {
 	} );
 
 	it( 'sends a separate request for a call that passes its own signal', async () => {
-		// Allow more than one response; this case expects two requests.
-		fetchMock.get( reportEndpointRegExp, { body: report } );
+		// Hold each response open. The first request then stays running when
+		// the second call starts, so the store holds no saved report yet. The
+		// second call reaches the signal branch and sends its own request.
+		const deferredResolvers: Array< () => void > = [];
+		fetchMock.get(
+			reportEndpointRegExp,
+			() =>
+				new Promise( ( resolve ) => {
+					deferredResolvers.push( () => resolve( { body: report } ) );
+				} )
+		);
 
 		const noSignalOptions = {
 			...baseOptions,
@@ -300,20 +309,32 @@ describe( 'createGetReportResolver', () => {
 		};
 		const { signal } = new AbortController();
 
+		// Start the call without a signal and wait until it sends its request.
 		registry.select( TEST_STORE ).getReport( noSignalOptions );
-		registry.select( TEST_STORE ).getReport( signalOptions, { signal } );
+		while ( deferredResolvers.length < 1 ) {
+			await waitForDefaultTimeouts();
+		}
 
-		// Create both waiters before either resolver finishes, so neither wait
+		// The first request is still running. Start the call with a signal so
+		// it sends its own request rather than joining the running one.
+		registry.select( TEST_STORE ).getReport( signalOptions, { signal } );
+		while ( deferredResolvers.length < 2 ) {
+			await waitForDefaultTimeouts();
+		}
+
+		// Create both waiters before releasing the requests, so neither wait
 		// hangs. `untilResolved` checks only on the next registry update.
 		const noSignalResolution = resolved().getReport( noSignalOptions );
 		const signalResolution = resolved().getReport( signalOptions, {
 			signal,
 		} );
 
+		deferredResolvers.forEach( ( resolve ) => resolve() );
+
 		await Promise.all( [ noSignalResolution, signalResolution ] );
 
-		// The call that passes a signal does not join the shared request, so
-		// two requests go out instead of one.
+		// Two requests go out, one for each call, because the signal call runs
+		// its own request.
 		expect( fetchMock ).toHaveFetchedTimes( 2 );
 	} );
 } );
