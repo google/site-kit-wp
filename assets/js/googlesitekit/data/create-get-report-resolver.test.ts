@@ -285,4 +285,35 @@ describe( 'createGetReportResolver', () => {
 		).toEqual( response );
 		expect( console ).toHaveErrored();
 	} );
+
+	it( 'sends a separate request for a call that passes its own signal', async () => {
+		// Allow more than one response; this case expects two requests.
+		fetchMock.get( reportEndpointRegExp, { body: report } );
+
+		const noSignalOptions = {
+			...baseOptions,
+			reportID: 'test_first-widget_component_reportArgs',
+		};
+		const signalOptions = {
+			...baseOptions,
+			reportID: 'test_second-widget_component_reportArgs',
+		};
+		const { signal } = new AbortController();
+
+		registry.select( TEST_STORE ).getReport( noSignalOptions );
+		registry.select( TEST_STORE ).getReport( signalOptions, { signal } );
+
+		// Create both waiters before either resolver finishes, so neither wait
+		// hangs. `untilResolved` checks only on the next registry update.
+		const noSignalResolution = resolved().getReport( noSignalOptions );
+		const signalResolution = resolved().getReport( signalOptions, {
+			signal,
+		} );
+
+		await Promise.all( [ noSignalResolution, signalResolution ] );
+
+		// The call that passes a signal does not join the shared request, so
+		// two requests go out instead of one.
+		expect( fetchMock ).toHaveFetchedTimes( 2 );
+	} );
 } );

@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isPlainObject } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -48,6 +49,10 @@ const { clearSelectorError, setErrorForSelector } = errorStoreActions;
  * for it instead of sending a second one. If that request fails, the resolver
  * copies the error to each waiting call, so every call can read its own error.
  *
+ * A call that passes its own `signal` makes its own request and never shares
+ * one. That call decides when its request is cancelled, so sharing would let
+ * one call's cancellation abort another call's report.
+ *
  * @since n.e.x.t
  *
  * @param storeName Report datastore name, such as `modules/analytics-4`.
@@ -63,6 +68,10 @@ export function createGetReportResolver( storeName: string ) {
 	// request is saved under its report cache key. That key leaves out
 	// `reportID`, so two calls that differ only in `reportID` find the same
 	// running request.
+	//
+	// This holds the request promise, not just an `isFetching` flag. A waiting
+	// call must read the same request's result to copy its error, and a flag
+	// can't hand that result back.
 	const runningReportRequests = new WeakMap<
 		WPDataRegistry,
 		Map< string, Promise< unknown > >
@@ -94,6 +103,23 @@ export function createGetReportResolver( storeName: string ) {
 			return;
 		}
 
+		// A call that brings its own `signal` decides when its request is
+		// cancelled. Sharing one request across such calls would let one
+		// call's cancellation abort another call's report. So this call makes
+		// its own request and skips the shared map below. Calls without a
+		// signal still share one request.
+		if (
+			isPlainObject( fetchOptions ) &&
+			( fetchOptions as { signal?: unknown } ).signal
+		) {
+			yield commonActions.await(
+				registry
+					.dispatch( storeName )
+					.fetchGetReport( options, fetchOptions )
+			);
+			return;
+		}
+
 		let runningRequests = runningReportRequests.get( registry );
 		if ( ! runningRequests ) {
 			runningRequests = new Map();
@@ -106,15 +132,21 @@ export function createGetReportResolver( storeName: string ) {
 		// request instead of sending a second one.
 		const runningRequest = runningRequests.get( reportCacheKey );
 		if ( runningRequest ) {
+			// Clear this call's own stale error before waiting. If the shared
+			// request now succeeds, this call should not keep an old error.
+			// The cached-report branch above keeps an existing error on
+			// purpose, because there a report and an error apply at once.
 			yield clearSelectorError( 'getReport', [ options ] );
 
 			const awaitResult = yield commonActions.await( runningRequest );
 			const { error } = awaitResult as { error?: unknown };
 
 			if ( error ) {
-				// The call that sent the request saves the error under its
-				// own options. Save the error under this call's options too,
-				// so `getErrorForSelector` finds it for this call.
+				// Report state drops `reportID`, but error state keeps the full
+				// options, so each call has its own error key. The call that
+				// sent the request saves the error under its own options. Save
+				// it under this call's options too, so `getErrorForSelector`
+				// finds it for this call.
 				yield setErrorForSelector( error, 'getReport', [ options ] );
 			}
 
