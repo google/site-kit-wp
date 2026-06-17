@@ -31,12 +31,12 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
-	PDF_COLOR_BORDER,
 	PDF_COLOR_TEXT_PRIMARY,
 	PDF_COLOR_TEXT_SECONDARY,
 	PDF_FONT_FAMILY_DISPLAY,
 	PDF_FONT_FAMILY_TEXT,
 } from '@/js/components/pdf-export/pdf-theme';
+import PDFFooter from '@/js/components/pdf-export/shared-react-pdf-components/PDFFooter';
 import type {
 	PDFHeaderSection,
 	PDFReportArea,
@@ -73,27 +73,19 @@ const styles = StyleSheet.create( {
 		fontSize: 11,
 		color: PDF_COLOR_TEXT_SECONDARY,
 	},
-	footer: {
-		borderTopWidth: 1,
-		borderTopColor: PDF_COLOR_BORDER,
-		paddingTop: 12,
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 9,
-		color: PDF_COLOR_TEXT_SECONDARY,
-	},
 } );
 
 export interface DashboardReportProps {
 	siteName: string;
 	siteURL: string;
-	dashboardURL?: string;
+	dashboardURL: string;
 	dateRange: {
 		startDate: string;
 		endDate: string;
 	};
 	sections: PDFHeaderSection[];
-	userName?: string;
-	generatedAt: string;
+	helpCenterURL: string;
+	privacyPolicyURL: string;
 	pageHeight?: number;
 	areas?: PDFReportArea[];
 	/** Golink URL for the "Set up email reports" button in the email reporting notice. */
@@ -106,25 +98,12 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 	dashboardURL,
 	dateRange,
 	sections,
-	userName,
-	generatedAt,
+	helpCenterURL,
+	privacyPolicyURL,
 	pageHeight = DEFAULT_PAGE_HEIGHT,
 	areas = [],
 	emailReportingSetupURL,
 } ) => {
-	const footerLine = userName
-		? sprintf(
-				/* translators: 1: Date and time string. 2: User name. */
-				__( 'Generated %1$s by %2$s', 'google-site-kit' ),
-				generatedAt,
-				userName
-		  )
-		: sprintf(
-				/* translators: %s: Date and time string. */
-				__( 'Generated %s', 'google-site-kit' ),
-				generatedAt
-		  );
-
 	return (
 		<Document
 			title={
@@ -197,9 +176,11 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 				<PDFEmailReportingNotice
 					emailReportingSetupURL={ emailReportingSetupURL }
 				/>
-				<View style={ styles.footer }>
-					<Text>{ footerLine }</Text>
-				</View>
+				<PDFFooter
+					dashboardURL={ dashboardURL }
+					helpCenterURL={ helpCenterURL }
+					privacyPolicyURL={ privacyPolicyURL }
+				/>
 			</Page>
 		</Document>
 	);

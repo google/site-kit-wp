@@ -59,8 +59,8 @@ function renderPDFHeader( props: Partial< PDFHeaderProps > = {} ) {
 }
 
 describe( 'PDFHeader', () => {
-	it( 'renders the Site Kit logo (colour "G" + wordmark) as inline SVG', () => {
-		const { container } = renderPDFHeader();
+	it( 'renders the Site Kit logo (colour "G" + wordmark)', () => {
+		const { container, getByText } = renderPDFHeader();
 
 		const svgs = Array.from( container.querySelectorAll( 'pdf-svg' ) );
 		// The colour Google "G" is the only SVG with exactly four paths.
@@ -69,12 +69,8 @@ describe( 'PDFHeader', () => {
 				( svg ) => svg.querySelectorAll( 'pdf-path' ).length === 4
 			)
 		).toBeTruthy();
-		// The "Site Kit" wordmark is the only SVG with seven paths.
-		expect(
-			svgs.find(
-				( svg ) => svg.querySelectorAll( 'pdf-path' ).length === 7
-			)
-		).toBeTruthy();
+		// The "Site Kit" wordmark is rendered as text rather than SVG paths.
+		expect( getByText( 'Site Kit' ) ).toBeInTheDocument();
 	} );
 
 	it( 'renders the title and the formatted date range', () => {

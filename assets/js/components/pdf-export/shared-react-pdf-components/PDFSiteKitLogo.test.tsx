@@ -24,20 +24,17 @@ import PDFSiteKitLogo from './PDFSiteKitLogo';
 
 describe( 'PDFSiteKitLogo', () => {
 	it( 'renders the colour Google "G" and the "Site Kit" wordmark', () => {
-		const { container } = render( <PDFSiteKitLogo /> );
+		const { container, getByText } = render( <PDFSiteKitLogo /> );
 
+		// The "G" is four coloured paths.
 		const svgs = Array.from( container.querySelectorAll( 'pdf-svg' ) );
-		// The "G" is four coloured paths; the wordmark is seven.
 		expect(
 			svgs.find(
 				( svg ) => svg.querySelectorAll( 'pdf-path' ).length === 4
 			)
 		).toBeTruthy();
-		expect(
-			svgs.find(
-				( svg ) => svg.querySelectorAll( 'pdf-path' ).length === 7
-			)
-		).toBeTruthy();
+		// The wordmark is rendered as text rather than SVG paths.
+		expect( getByText( 'Site Kit' ) ).toBeInTheDocument();
 	} );
 
 	it( 'renders the "G" with the brand colours', () => {

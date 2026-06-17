@@ -206,8 +206,8 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		( select: Select ) => select( CORE_USER ).getDateRange(),
 		[]
 	);
-	const userName = useSelect(
-		( select: Select ) => select( CORE_USER ).getName(),
+	const dashboardURL = useSelect(
+		( select: Select ) => select( CORE_SITE ).getGoLinkURL( 'dashboard' ),
 		[]
 	);
 	// A golink with this key opens the Site Kit dashboard with the email
@@ -218,10 +218,6 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 			select( CORE_SITE ).getGoLinkURL(
 				'manage-subscription-email-reporting'
 			),
-		[]
-	);
-	const dashboardURL = useSelect(
-		( select: Select ) => select( CORE_SITE ).getGoLinkURL( 'dashboard' ),
 		[]
 	);
 	const selectedContextSlugs = useSelect(
@@ -479,9 +475,6 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 					} )
 				);
 
-				// Footer timestamp uses the real generation time, not the dashboard date range.
-				// eslint-disable-next-line sitekit/no-direct-date
-				const generatedAt = new Date().toLocaleString();
 				const filename = getPDFFilename(
 					referenceName,
 					typeof dateRange === 'string' ? dateRange : undefined
@@ -491,16 +484,14 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 					<DashboardReport
 						siteName={ reportSiteName }
 						siteURL={ referenceSiteURL || '' }
-						dashboardURL={ dashboardURL }
+						dashboardURL={ dashboardURL || '' }
 						dateRange={ {
 							startDate: dates.startDate,
 							endDate: dates.endDate,
 						} }
 						sections={ sections }
-						userName={
-							typeof userName === 'string' ? userName : undefined
-						}
-						generatedAt={ generatedAt }
+						helpCenterURL="https://sitekit.withgoogle.com/support/?doc=get-support"
+						privacyPolicyURL="https://policies.google.com/privacy"
 						areas={ areas }
 						emailReportingSetupURL={ emailReportingSetupURL }
 					/>
