@@ -71,9 +71,9 @@ type Registry = WPDataRegistry & {
 /**
  * A single row of Google Charts data.
  *
- * Rows are heterogeneous: a leading `Date` for the day column followed by the
- * metric numbers and tooltip strings the dashboard's charts produce, so the
- * element type is a union rather than a precise per-column tuple.
+ * Rows have various types of content: a leading `Date` for the day
+ * column followed by the metric numbers and tooltip strings the
+ * dashboard's charts produce.
  */
 type ChartRow = Array< Date | number | string | null >;
 
@@ -378,7 +378,8 @@ async function buildSearchConsoleCard( {
 	signal,
 }: {
 	// The Search Console report has no shared type yet, so it is `unknown` and
-	// narrowed via `Array.isArray` below; tighten once that store is typed.
+	// narrowed via `Array.isArray` below; adjust this type once that store is
+	// typed.
 	report: unknown;
 	reportError: unknown;
 	metricKey: 'impressions' | 'clicks';
@@ -528,14 +529,15 @@ async function buildAnalyticsCard( {
  * Loads the reports and rasterised line charts for the Search traffic over time PDF widget.
  *
  * Resolves the four reports (Search Console impressions/clicks, GA4 Key Events
- * overview and series, GA4 Unique Visitors) in parallel, short-circuiting between
- * awaits when the supplied signal is aborted. Once the reports resolve it loads
- * Google Charts offscreen and rasterises a current/previous line chart per metric.
+ * overview and series, GA4 Unique Visitors) in parallel, cancelling incomplete and
+ * yet-to-have-started resolutions when the supplied signal is aborted.
+ * 
+ * Once the reports resolve, loads Google Charts offscreen and rasterises a
+ * current/previous line chart per metric.
  *
- * Per-metric report or rasterisation failures are isolated so the component can
+ * Per-metric report or rasterization failures are isolated so the component can
  * render a per-card "Data unavailable" placeholder; the loader only throws when
- * all four metrics fail, so the orchestrator can transition the whole widget to
- * its fallback.
+ * all four metrics fail.
  *
  * @since n.e.x.t
  *
