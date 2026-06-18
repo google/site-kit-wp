@@ -62,15 +62,25 @@ const getNavigationalScrollTopSpy = jest.spyOn(
 );
 const scrollToSpy = jest.spyOn( global, 'scrollTo' );
 
-// Adds the tour's first step target to the page, so `checkRequirements`
-// resolves right away. The `afterEach` below removes it.
+/**
+ * Adds the tour's first step target to the page, so `checkRequirements`
+ * resolves right away. The `afterEach` below removes it.
+ *
+ * @since n.e.x.t
+ */
 function appendTourTarget() {
 	const target = document.createElement( 'div' );
 	target.className = 'googlesitekit-site-goals-primary-action';
 	document.body.appendChild( target );
 }
 
-// Waits until the intro modal renders its "Show me" button.
+/**
+ * Waits until the intro modal renders its "Show me" button.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} getByRole The `getByRole` query from the render result.
+ */
 async function waitForIntroModalToShow( getByRole ) {
 	await waitFor( () => {
 		expect(

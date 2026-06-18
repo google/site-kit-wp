@@ -25,8 +25,14 @@ import {
 	waitForSiteGoalsSectionReady,
 } from './site-goals';
 
-// Adds the element the tour points to first, and returns it so a test can
-// mock its position. The `afterEach` in the wait tests removes it.
+/**
+ * Adds the element the tour points to first. The `afterEach` in the wait
+ * tests removes it.
+ *
+ * @since n.e.x.t
+ *
+ * @return The added element, so a test can mock its position.
+ */
 function appendTourTarget() {
 	const target = document.createElement( 'div' );
 	target.className = 'googlesitekit-site-goals-primary-action';
@@ -34,8 +40,15 @@ function appendTourTarget() {
 	return target;
 }
 
-// Adds a widget area box, the way `WidgetAreaRenderer` makes one. The
-// `afterEach` in the wait tests removes it.
+/**
+ * Adds a widget area box, the way `WidgetAreaRenderer` makes one. The
+ * `afterEach` in the wait tests removes it.
+ *
+ * @since n.e.x.t
+ *
+ * @param slug The widget area slug.
+ * @return The added widget area box.
+ */
 function appendPreloadArea( slug: string ) {
 	const area = document.createElement( 'div' );
 	area.className = `googlesitekit-widget-area--${ slug }`;
@@ -43,8 +56,15 @@ function appendPreloadArea( slug: string ) {
 	return area;
 }
 
-// Adds a gray placeholder inside an area, like the one a widget shows
-// while it loads.
+/**
+ * Adds a gray placeholder inside an area, like the one a widget shows while
+ * it loads.
+ *
+ * @since n.e.x.t
+ *
+ * @param parent The area element to add the placeholder to.
+ * @return The added placeholder element.
+ */
 function appendPlaceholder( parent: Element ) {
 	const placeholder = document.createElement( 'div' );
 	placeholder.className = 'googlesitekit-preview-block';
@@ -189,7 +209,7 @@ describe( 'waitForSiteGoalsSectionReady', () => {
 		jest.restoreAllMocks();
 	} );
 
-	it( 'finishes once the data has loaded and the target stops moving', async () => {
+	it( 'finishes once the data has loaded and the target keeps the same position', async () => {
 		jest.useFakeTimers();
 		const target = appendTourTarget();
 		// No placeholder on the page, and the target stays at the same top.
@@ -197,10 +217,10 @@ describe( 'waitForSiteGoalsSectionReady', () => {
 			top: 100,
 		} as DOMRect );
 
-		const readyPromise = waitForSiteGoalsSectionReady();
+		const isSiteGoalsReady = waitForSiteGoalsSectionReady();
 
 		let isResolved = false;
-		readyPromise.then( () => {
+		isSiteGoalsReady.then( () => {
 			isResolved = true;
 		} );
 
@@ -210,26 +230,26 @@ describe( 'waitForSiteGoalsSectionReady', () => {
 
 		// The second check sees the same top, so the wait resolves.
 		jest.advanceTimersByTime( 250 );
-		await expect( readyPromise ).resolves.toBe( true );
+		await expect( isSiteGoalsReady ).resolves.toBe( true );
 
 		jest.useRealTimers();
 	} );
 
-	it( 'keeps waiting while an area still shows a placeholder, even when the target is not moving', async () => {
+	it( 'keeps waiting while an area still shows a placeholder, even when the target keeps the same position', async () => {
 		jest.useFakeTimers();
 		appendTourTarget();
 		const area = appendPreloadArea( PRELOAD_AREA_SLUG );
 		const placeholder = appendPlaceholder( area );
 
-		const readyPromise = waitForSiteGoalsSectionReady();
+		const isSiteGoalsReady = waitForSiteGoalsSectionReady();
 
 		let isResolved = false;
-		readyPromise.then( () => {
+		isSiteGoalsReady.then( () => {
 			isResolved = true;
 		} );
 
 		// A placeholder means the data has not loaded yet, so the wait
-		// holds even though the target is not moving.
+		// holds even though the target keeps the same position.
 		for ( let check = 0; check < 4; check++ ) {
 			jest.advanceTimersByTime( 250 );
 			await Promise.resolve();
@@ -240,25 +260,25 @@ describe( 'waitForSiteGoalsSectionReady', () => {
 		placeholder.remove();
 		jest.advanceTimersByTime( 250 );
 
-		await expect( readyPromise ).resolves.toBe( true );
+		await expect( isSiteGoalsReady ).resolves.toBe( true );
 
 		jest.useRealTimers();
 	} );
 
-	it( 'keeps waiting while the target is still moving', async () => {
+	it( 'keeps waiting while the target keeps shifting position', async () => {
 		jest.useFakeTimers();
 		const target = appendTourTarget();
 		// No placeholder, but the top changes on every check, the way the
-		// page moves while the content loads.
+		// layout shifts while the content loads.
 		let nextTop = 100;
 		jest.spyOn( target, 'getBoundingClientRect' ).mockImplementation(
 			() => ( { top: ( nextTop += 20 ) } as DOMRect )
 		);
 
-		const readyPromise = waitForSiteGoalsSectionReady();
+		const isSiteGoalsReady = waitForSiteGoalsSectionReady();
 
 		let isResolved = false;
-		readyPromise.then( () => {
+		isSiteGoalsReady.then( () => {
 			isResolved = true;
 		} );
 
@@ -277,10 +297,10 @@ describe( 'waitForSiteGoalsSectionReady', () => {
 	it( 'keeps waiting while the target is missing, then finishes once it appears and stays still', async () => {
 		jest.useFakeTimers();
 
-		const readyPromise = waitForSiteGoalsSectionReady();
+		const isSiteGoalsReady = waitForSiteGoalsSectionReady();
 
 		let isResolved = false;
-		readyPromise.then( () => {
+		isSiteGoalsReady.then( () => {
 			isResolved = true;
 		} );
 
@@ -298,7 +318,7 @@ describe( 'waitForSiteGoalsSectionReady', () => {
 		await Promise.resolve();
 		jest.advanceTimersByTime( 250 );
 
-		await expect( readyPromise ).resolves.toBe( true );
+		await expect( isSiteGoalsReady ).resolves.toBe( true );
 
 		jest.useRealTimers();
 	} );
@@ -309,7 +329,7 @@ describe( 'waitForSiteGoalsSectionReady', () => {
 		const area = appendPreloadArea( PRELOAD_AREA_SLUG );
 		appendPlaceholder( area );
 
-		const readyPromise = waitForSiteGoalsSectionReady();
+		const isSiteGoalsReady = waitForSiteGoalsSectionReady();
 
 		// The placeholder never goes away, so only the 30-second limit ends
 		// the wait. Run all 120 checks of 250ms each.
@@ -319,7 +339,7 @@ describe( 'waitForSiteGoalsSectionReady', () => {
 			await Promise.resolve();
 		}
 
-		await expect( readyPromise ).resolves.toBe( true );
+		await expect( isSiteGoalsReady ).resolves.toBe( true );
 
 		jest.useRealTimers();
 	} );

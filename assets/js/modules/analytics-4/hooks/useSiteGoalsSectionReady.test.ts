@@ -32,22 +32,31 @@ import { SITE_GOALS_TOUR_PRELOAD_WIDGET_AREAS } from '@/js/modules/analytics-4/c
 import { actHook, createTestRegistry, renderHook } from '@tests/js/test-utils';
 import { useSiteGoalsSectionReady } from './useSiteGoalsSectionReady';
 
-// Adds the element the Site Goals tour points to first. The hook waits for
-// this element before it reports the section loaded, so every test that needs
-// a loaded section adds it. The `afterEach` below removes it.
+/**
+ * Adds the element the Site Goals tour points to first. The hook waits for
+ * this element before it reports the section loaded, so every test that needs
+ * a loaded section adds it. The `afterEach` below removes it.
+ *
+ * @since n.e.x.t
+ *
+ * @return {void}
+ */
 function appendTourTarget() {
 	const target = document.createElement( 'div' );
 	target.className = 'googlesitekit-site-goals-primary-action';
 	document.body.appendChild( target );
 }
 
-// Moves the fake clock forward so the hook finishes waiting and reports the
-// Site Goals section as loaded. The hook reads the target's position when it
-// mounts, then again every 250 milliseconds, and finishes once two reads in a
-// row return the same position. Advancing 500 milliseconds gives the wait
-// enough time to finish. `renderHook` renders the hook with
-// `@testing-library/react-hooks`, so `actHook` is the `act` helper that
-// applies the hook's state change. Use this only after `jest.useFakeTimers()`.
+/**
+ * Moves the fake timers forward so the wait inside the hook finishes and the
+ * hook reports the Site Goals section as ready. The wait checks the target
+ * position every 250 milliseconds and finishes once two checks in a row match,
+ * so 500 milliseconds is enough. Use this only after `jest.useFakeTimers()`.
+ *
+ * @since n.e.x.t
+ *
+ * @return {void}
+ */
 async function advanceUntilSectionLoads() {
 	// eslint-disable-next-line require-await
 	await actHook( async () => {
@@ -99,7 +108,7 @@ describe( 'useSiteGoalsSectionReady', () => {
 		);
 	} );
 
-	it( 'returns true after the Site Goals section loads and stops moving', async () => {
+	it( 'returns true after the Site Goals section loads and its layout settles', async () => {
 		jest.useFakeTimers();
 		appendTourTarget();
 

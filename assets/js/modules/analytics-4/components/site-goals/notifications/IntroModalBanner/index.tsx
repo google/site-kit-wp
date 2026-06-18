@@ -177,7 +177,7 @@ export default function IntroModal() {
 
 	// While the modal can show, the hook loads the widget areas above and
 	// including the Site Goals section, and reports ready once the section
-	// has loaded and stopped moving.
+	// has loaded and its layout has settled.
 	const isSiteGoalsSectionReady = useSiteGoalsSectionReady(
 		canShowSiteGoalsIntroModal
 	);

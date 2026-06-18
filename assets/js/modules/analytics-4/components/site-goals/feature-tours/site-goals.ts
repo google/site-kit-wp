@@ -34,16 +34,20 @@ import {
 
 export const SITE_GOALS_TOUR = 'site-goals-feature-tour';
 
-// The first element the tour points to. The modal waits for it before it
-// shows. The tour waits for it before it starts.
+/**
+ * The first element the tour points to. The modal waits for it before it
+ * shows. The tour waits for it before it starts.
+ */
 const FIRST_STEP_TARGET = '.googlesitekit-site-goals-primary-action';
 
-// The widget areas at and above the Site Goals section, in the order they
-// appear on the page. Normally an area loads its data only when the user
-// scrolls to it. The tour loads all of these before it starts, so the page
-// reaches its full height first. Without this, an area that loads later would
-// push the Site Goals section down, and the tour would point at the wrong
-// place. Loading an area the site does not have has no effect.
+/**
+ * The widget areas at and above the Site Goals section, in the order they
+ * appear on the page. Normally an area loads its data only when the user
+ * scrolls to it. The tour loads all of these before it starts, so the page
+ * reaches its full height first. Without this, an area that loads later would
+ * push the Site Goals section down, and the tour would point at the wrong
+ * place. Loading an area the site does not have has no effect.
+ */
 export const SITE_GOALS_TOUR_PRELOAD_WIDGET_AREAS = [
 	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
@@ -51,50 +55,41 @@ export const SITE_GOALS_TOUR_PRELOAD_WIDGET_AREAS = [
 	AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY,
 ];
 
-// The CSS class of the gray placeholder a widget shows while it loads its
-// data. The wait below looks for this class to tell when a widget area is
-// still loading.
+/**
+ * The CSS class of the gray placeholder a widget shows while it loads its
+ * data, rendered by `PreviewBlock`. The wait below looks for this class to
+ * tell when a widget area is still loading, so keep it in sync if
+ * `PreviewBlock` renames the class.
+ */
 const LOADING_PLACEHOLDER_CLASS = 'googlesitekit-preview-block';
 
-// The CSS class on a widget area's container. Each area also carries a
-// `--<slug>` suffix, so the wait can look at one area at a time.
+/**
+ * The CSS class on a widget area's container, rendered by `WidgetAreaRenderer`.
+ * Each area also carries a `--<slug>` suffix, so the wait can look at one area
+ * at a time. Keep it in sync if `WidgetAreaRenderer` renames the class.
+ */
 const WIDGET_AREA_CLASS = 'googlesitekit-widget-area';
 
-// How often the wait checks the page (250 milliseconds), and the longest it
-// runs before it gives up (30 seconds). The limit stops a section that never
-// loads from blocking the modal or the tour.
+/**
+ * How often the wait checks the page (250 milliseconds), and the longest it
+ * runs before it gives up (30 seconds). The limit stops a section that never
+ * loads from blocking the modal or the tour.
+ */
 const SECTION_READY_CHECK_INTERVAL_MS = 250;
 const SECTION_READY_CHECK_MAX_TOTAL_WAIT_MS = 30000;
 
 /**
- * Waits until the Site Goals section has loaded and stopped moving.
+ * Waits until the Site Goals section has loaded and its layout has settled.
  *
- * The tour points at a target on the page and shows a spotlight around it.
- * The tour shows the spotlight again whenever the page moves. If the tour
- * starts while the page is still moving, the spotlight ends up in the wrong
- * place. So the page must stop moving first.
- *
- * The page moves while its widgets load. The tour loads every widget area
- * above and including the Site Goals section before it starts, so the page
- * reaches its full height up front. While a widget loads, it shows a gray
- * placeholder with a fixed height. When the data arrives, the real content
- * replaces the placeholder at a different height, which moves the target. A
- * slow network makes this take longer.
- *
- * The section is ready when all three of these are true:
- * - No widget area the tour loads still shows a placeholder, so the data has
- *   arrived.
- * - The target is on the page.
- * - The target has the same top position on two checks in a row, so the page
- *   has stopped moving.
- *
- * The modal waits for this before it shows. The tour waits for it again,
- * through `checkRequirements`, before it starts. If the section never loads
- * or the target never appears, the wait gives up after 30 seconds, so it
- * never blocks the modal or the tour.
+ * The tour draws a spotlight around its target and redraws it on every
+ * layout shift. The widget areas above and including Site Goals shift the
+ * layout as their data loads, so the tour must wait for them, or the
+ * spotlight lands in the wrong place. The wait ends once those areas have
+ * loaded and the layout settles, or after 30 seconds, so a section that
+ * never loads cannot block the modal or the tour.
  *
  * @since 1.181.0
- * @since n.e.x.t Renamed from `checkSiteGoalsTourRequirements`, exported it, and made it wait for the widget areas above Site Goals to load and the target to stop moving before the tour starts.
+ * @since n.e.x.t Renamed from `checkSiteGoalsTourRequirements`, exported it, and made it wait for the widget areas above Site Goals to load and the layout to settle before the tour starts.
  *
  * @param signal Optional `AbortSignal` to stop the wait. The hook passes one so it can cancel on unmount. The tour passes the data registry through `checkRequirements`, which is not a signal, so the wait ignores it.
  * @return Promise that resolves to `true` when the section is ready or the wait gives up, or `false` when the signal aborts.
@@ -118,7 +113,7 @@ export function waitForSiteGoalsSectionReady(
 
 			// Check whether any widget area the tour loads still shows a
 			// placeholder. A placeholder means the data has not arrived, so the
-			// target can still move.
+			// layout can still shift.
 			const isPreloadAreaLoading =
 				SITE_GOALS_TOUR_PRELOAD_WIDGET_AREAS.some( ( slug ) =>
 					global.document.querySelector(
@@ -128,8 +123,8 @@ export function waitForSiteGoalsSectionReady(
 
 			// The section is ready when all three are true: no placeholder is
 			// left, the target is on the page, and its top position matches the
-			// last check. The page has stopped moving, so the tour can start and
-			// its spotlight will not jump.
+			// last check. The layout has settled, so the tour can start and its
+			// spotlight will not jump.
 			if (
 				( target &&
 					! isPreloadAreaLoading &&
@@ -196,23 +191,16 @@ function gaEventCategory( viewContext: string ) {
 /**
  * Returns the Site Goals tour config.
  *
- * The tour starts when the user clicks "Show me" on the Site Goals intro
- * modal and runs on the Site Goals widget. The first step points at the
- * key action tile group. The last step points at the goal drivers, and
- * its button says "Done" instead of the shared "Got it".
- *
- * The tour loads every widget area above and including the Site Goals
- * section before it starts. It waits up to 30 seconds for those areas to
- * load and the target to stop moving. The target must be on the page first,
- * or react-joyride skips that step.
+ * The tour starts from the "Show me" button on the intro modal and runs on
+ * the Site Goals widget. It loads the widget areas above and including Site
+ * Goals and waits for the layout to settle before it starts, through
+ * `preloadWidgetAreas` and `checkRequirements`.
  *
  * The breakdown notice step is included only when `hasBreakdownNotice` is
- * true, because that step points at the notice and the notice is not
- * always on the page. Its copy depends on `isEcommerceOnly`: sales copy
- * when `true`, leads copy when `false`.
+ * true, since that step points at a notice that is not always on the page.
  *
  * @since 1.181.0
- * @since n.e.x.t Load every widget area above and including the Site Goals section before the tour starts, and wait for them to load and the target to stop moving.
+ * @since n.e.x.t Load every widget area above and including the Site Goals section before the tour starts, and wait for them to load and the layout to settle.
  *
  * @param params                    Tour params.
  * @param params.isEcommerceOnly    True when only ecommerce events are detected. Picks the breakdown step copy.

@@ -35,15 +35,16 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/feature-tours/site-goals';
 
 /**
- * Waits for the Site Goals section to load and stop moving.
+ * Waits for the Site Goals section to load and its layout to settle.
  *
  * While `enabled` is `true`, the hook tells the widget areas above and
  * including the Site Goals section to load their data, so the page reaches
  * its full height before the tour starts. It returns `true` once those areas
- * finish loading and the target the tour points to stops moving, after at
- * most 30 seconds. When `enabled` turns `false`, or the component unmounts,
- * the hook stops loading those areas. The widgets keep the data they already
- * fetched, because an area stays loaded once it has come into view.
+ * finish loading and the target the tour points to keeps the same position,
+ * after at most 30 seconds. When `enabled` turns `false`, or the component
+ * unmounts, the hook stops loading those areas. The widgets keep the data
+ * they already fetched, because an area stays loaded once it has come into
+ * view.
  *
  * @since n.e.x.t
  *
