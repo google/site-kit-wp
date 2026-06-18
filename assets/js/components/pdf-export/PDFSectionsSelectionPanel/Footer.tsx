@@ -34,6 +34,8 @@ import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 
 interface FooterProps {
 	closePanel: () => void;
@@ -49,11 +51,21 @@ const Footer: FC< FooterProps > = ( { closePanel, hasSelection } ) => {
 		( select: Select ) => select( CORE_PDF ).getStatus(),
 		[]
 	);
+	const selectedContextSlugs = useSelect(
+		( select: Select ) => select( CORE_PDF ).getSelectedContextSlugs(),
+		[]
+	);
 
 	const { setValue } = useDispatch( CORE_UI );
 	const { startExporting } = useDispatch( CORE_PDF );
+	const viewContext = useViewContext();
 
 	function handleDownloadClick() {
+		trackEvent(
+			`${ viewContext }_pdf_generation_section_selection-sidebar`,
+			'pdf_download_report',
+			selectedContextSlugs.join( ',' )
+		);
 		setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, false );
 		startExporting();
 	}
