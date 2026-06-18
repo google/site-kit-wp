@@ -33,7 +33,11 @@ import type { FC } from 'react';
  */
 import { __ } from '@wordpress/i18n';
 
-// Color tokens sourced from the PDF report Figma design.
+/**
+ * Color tokens sourced from the PDF report Figma design.
+ *
+ * See: https://www.figma.com/design/fwNvz1r40HJk2FpqBUhDme/PDF-report-generation.
+ */
 const COLORS = {
 	// surfaces/on-surface
 	text: '#161b18',
@@ -168,7 +172,6 @@ const LegendSwatch: FC< LegendSwatchProps > = ( { color, dashed = false } ) => {
 		</Svg>
 	);
 };
-
 export interface PDFMetricChartTileProps {
 	/** Heading rendered above the metric value, e.g. "Total Impressions". */
 	title: string;
