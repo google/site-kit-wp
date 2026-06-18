@@ -21,9 +21,17 @@ const GA4_STATS_REPORT_ID =
 const GA4_VISITORS_REPORT_ID =
 	'search-console_search-funnel-widget-ga4_widget_ga4VisitorsOverviewAndStatsArgs';
 
-// Both GA4 metrics in this widget are filtered to the Organic Search channel,
-// matching the dashboard's Search Funnel widget. Returned as fresh objects so
-// callers never share (and risk mutating) a single instance across reports.
+/**
+ * Builds the dimension filters scoping both GA4 metrics in this widget to the
+ * Organic Search channel, matching the dashboard's Search Funnel widget.
+ *
+ * Returned as a fresh object so callers never share (and risk mutating) a
+ * single instance across reports.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Object} Dimension filters scoped to the Organic Search channel.
+ */
 function organicSearchDimensionFilters() {
 	return {
 		sessionDefaultChannelGrouping: [ 'Organic Search' ],
