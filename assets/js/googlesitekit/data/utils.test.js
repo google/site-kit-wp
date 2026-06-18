@@ -30,7 +30,6 @@ import { createRegistry } from '@wordpress/data';
  * Internal dependencies
  */
 import {
-	GLOBAL_DATA_VALUE_NOT_FOUND,
 	collect,
 	collectName,
 	collectReducers,
@@ -978,53 +977,43 @@ describe( 'data utils', () => {
 	} );
 
 	describe( 'getGlobalData', () => {
-		const propertyName = '_googlesitekitTestData';
 		let mockGlobal;
 
 		beforeEach( () => {
-			mockGlobal = {};
-		} );
-
-		it( 'should throw an error when the global data property name is not found', () => {
-			expect( () =>
-				getGlobalData( 'invalidKey', undefined, mockGlobal )
-			).toThrow( 'Global data property invalidKey not found.' );
-		} );
-
-		it( 'should return the deep cloned global data object when no child property name is provided', () => {
-			const globalData = { foo: 'bar', baz: { qux: 'quux' } };
-			mockGlobal[ propertyName ] = globalData;
-
-			const data = getGlobalData( propertyName, undefined, mockGlobal );
-
-			expect( data ).toEqual( globalData );
-			expect( data ).not.toBe( globalData );
-		} );
-
-		it( 'should return the deep cloned value at the path of the global data object when the path is provided', () => {
-			const globalData = {
-				foo: 'bar',
-				baz: { qux: { quuz: { quuq: 'quuq' } } },
+			mockGlobal = {
+				_googlesitekitTestData: {
+					foo: 'bar',
+					baz: { qux: { quuz: 'quuq' } },
+				},
 			};
-			mockGlobal[ propertyName ] = globalData;
-
-			const data = getGlobalData( propertyName, 'baz.qux', mockGlobal );
-
-			expect( data ).toEqual( globalData.baz.qux );
-			expect( data ).not.toBe( globalData.baz.qux );
 		} );
 
-		it( 'should return the `GLOBAL_DATA_VALUE_NOT_FOUND` symbol when the path is not found', () => {
-			const globalData = { foo: 'bar', baz: { qux: 'quux' } };
-			mockGlobal[ propertyName ] = globalData;
+		it.each( [ 'invalidKey', 'invalidKey.invalidKey' ] )(
+			'should throw an error when the global data property name is not found',
+			( path ) => {
+				expect( () => getGlobalData( path, mockGlobal ) ).toThrow(
+					`Global data value not found at path ${ path }.`
+				);
+			}
+		);
 
-			const data = getGlobalData(
-				propertyName,
-				'baz.qux.quuz',
-				mockGlobal
-			);
+		it.each( [
+			{
+				path: '_googlesitekitTestData',
+				expectedValue: { foo: 'bar', baz: { qux: { quuz: 'quuq' } } },
+			},
+			{
+				path: '_googlesitekitTestData.baz.qux',
+				expectedValue: { quuz: 'quuq' },
+			},
+		] )(
+			'should return the deep cloned value at the path of the global data object',
+			( { path, expectedValue } ) => {
+				const data = getGlobalData( path, mockGlobal );
 
-			expect( data ).toBe( GLOBAL_DATA_VALUE_NOT_FOUND );
-		} );
+				expect( data ).toEqual( expectedValue );
+				expect( data ).not.toBe( expectedValue );
+			}
+		);
 	} );
 } );
