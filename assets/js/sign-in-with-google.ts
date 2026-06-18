@@ -49,7 +49,7 @@ export async function handleCredentialResponse(
 
 	if ( data.isExistingUserFlow ) {
 		body.append( 'integration', 'existing_user' );
-		body.append( 'connectNonce', data.connectNonce );
+		body.append( 'connect_nonce', data.connectNonce );
 	} else if ( data.isWooCommerce && ! data.isWPLogin ) {
 		body.append( 'integration', 'woocommerce' );
 	}
