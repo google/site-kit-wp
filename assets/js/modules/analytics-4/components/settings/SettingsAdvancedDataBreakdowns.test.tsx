@@ -75,7 +75,7 @@ describe( 'SettingsAdvancedDataBreakdowns', () => {
 			.finishResolution( 'getAccountSummaries', [] );
 	} );
 
-	it( 'shows a progress bar while the setting is loading', () => {
+	it( 'shows a progress bar while the setting is loading', async () => {
 		// Keep the settings request pending so the row stays in its loading
 		// state instead of erroring on an unmatched fetch.
 		freezeFetch(
@@ -84,26 +84,34 @@ describe( 'SettingsAdvancedDataBreakdowns', () => {
 			)
 		);
 
-		const { container } = render( <SettingsAdvancedDataBreakdowns />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<SettingsAdvancedDataBreakdowns />,
+			{ registry }
+		);
 
 		expect(
 			container.querySelector(
 				'.googlesitekit-settings-measurement-row--loading'
 			)
 		).toBeInTheDocument();
+
+		// Wait for the pending settings request to settle inside `act()`, so
+		// its state update does not bleed into the next test.
+		await waitForRegistry();
 	} );
 
 	it( "shows a progress bar while the selected property's custom dimensions are loading", async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetAdvancedDataBreakdownsSettings( {} );
-		// Mark the custom dimensions as not yet resolved, so the row shows its
-		// loading state.
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.invalidateResolution( 'getCustomDimensions', [ propertyID ] );
+		// Select a property whose custom dimensions are not in the store, and
+		// keep the request for them pending so the row stays loading.
+		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '654321' );
+		freezeFetch(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/custom-dimensions'
+			)
+		);
 
 		const { container, waitForRegistry } = render(
 			<SettingsAdvancedDataBreakdowns />,
