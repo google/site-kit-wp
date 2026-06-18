@@ -64,39 +64,54 @@ class Get_Advanced_Data_Breakdowns_SettingsTest extends TestCase {
 		);
 	}
 
-	public function test_create_request__returns_dedicated_option_for_admin(): void {
+	public function test_create_request__returns_property_map_for_admin(): void {
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
 
-		$this->settings->merge( array( 'enabled' => true ) );
+		$this->settings->merge(
+			array(
+				'123456789' => true,
+				'987654321' => false,
+			)
+		);
 
 		$data_request = new Data_Request( 'GET', 'modules', 'analytics-4', 'advanced-data-breakdowns-settings', array() );
 		$request      = $this->datapoint->create_request( $data_request );
 		$response     = $request();
 
 		$this->assertSame(
-			array( 'enabled' => true ),
+			array(
+				'123456789' => true,
+				'987654321' => false,
+			),
 			$response,
-			'An admin should see the dedicated option as-is.'
+			'An admin should see the property map as-is.'
 		);
 	}
 
-	public function test_create_request__returns_view_only_keys_for_non_admin(): void {
+	public function test_create_request__returns_every_property_state_for_non_admin(): void {
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user->ID );
 
-		$this->settings->merge( array( 'enabled' => true ) );
+		$this->settings->merge(
+			array(
+				'123456789' => true,
+				'987654321' => false,
+			)
+		);
 
 		$data_request = new Data_Request( 'GET', 'modules', 'analytics-4', 'advanced-data-breakdowns-settings', array() );
 		$request      = $this->datapoint->create_request( $data_request );
 		$response     = $request();
 
-		$this->assertArrayHasKey(
-			'enabled',
+		$this->assertSame(
+			array(
+				'123456789' => true,
+				'987654321' => false,
+			),
 			$response,
-			'View-only users should see the `enabled` key.'
+			'A view-only user should read every property\'s state.'
 		);
-		$this->assertTrue( $response['enabled'], 'View-only users should read the stored value.' );
 	}
 
 	public function test_merge__does_not_touch_main_analytics_4_settings(): void {
@@ -108,7 +123,7 @@ class Get_Advanced_Data_Breakdowns_SettingsTest extends TestCase {
 			array( 'propertyID' => '12345' )
 		);
 
-		$this->settings->merge( array( 'enabled' => true ) );
+		$this->settings->merge( array( '123456789' => true ) );
 
 		$analytics_4_settings = get_option( 'googlesitekit_analytics-4_settings' );
 		$this->assertSame(
@@ -118,9 +133,9 @@ class Get_Advanced_Data_Breakdowns_SettingsTest extends TestCase {
 		);
 	}
 
-	public function test_parse_response_returns_unchanged(): void {
+	public function test_parse_response__returns_the_settings_unchanged(): void {
 		$data_request = new Data_Request( 'GET', 'modules', 'analytics-4', 'advanced-data-breakdowns-settings', array() );
-		$payload      = array( 'enabled' => true );
+		$payload      = array( '123456789' => true );
 
 		$this->assertSame(
 			$payload,
