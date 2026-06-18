@@ -81,7 +81,7 @@ class Web_TagTest extends TestCase {
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Footer should include SIWG marker text.' );
 		$this->assertStringContainsString( 'data-siwg-config', $output, 'Footer should include SIWG config data.' );
 		$this->assertStringContainsString( 'dist/assets/js/sign-in-with-google', $output, 'Footer should include the SIWG bundle script tag.' );
-		$this->assertStringContainsString( '"clientID":"test-client-id.app.googleusercontent.com"', $output, 'Footer should include configured client ID.' );
+		$this->assertStringContainsString( esc_attr( '"clientID":"test-client-id.app.googleusercontent.com"' ), $output, 'Footer should include configured client ID.' );
 
 		// Renders the button with the correct clientID and redirect_uri.
 		$this->web_tag->set_settings(
@@ -101,12 +101,12 @@ class Web_TagTest extends TestCase {
 		$this->assertStringContainsString( 'data-siwg-config', $output, 'Footer should include SIWG config data.' );
 		$this->assertStringContainsString( 'dist/assets/js/sign-in-with-google', $output, 'Footer should include the SIWG bundle script tag.' );
 
-		$this->assertStringContainsString( '"clientID":"1234567890.googleusercontent.com"', $output, 'Footer should include client ID config.' );
-		$this->assertStringContainsString( sprintf( '"loginURI":%s', wp_json_encode( 'http://example.org/wp-login.php?action=googlesitekit_auth' ) ), $output, 'Footer should include login fetch URL.' );
+		$this->assertStringContainsString( esc_attr( '"clientID":"1234567890.googleusercontent.com"' ), $output, 'Footer should include client ID config.' );
+		$this->assertStringContainsString( esc_attr( sprintf( '"loginURI":%s', wp_json_encode( 'http://example.org/wp-login.php?action=googlesitekit_auth' ) ) ), $output, 'Footer should include login fetch URL.' );
 
-		$this->assertStringContainsString( sprintf( '"text":"%s"', Settings::TEXT_CONTINUE_WITH_GOOGLE['value'] ), $output, 'Footer should include text config.' );
-		$this->assertStringContainsString( sprintf( '"theme":"%s"', Settings::THEME_LIGHT['value'] ), $output, 'Footer should include theme config.' );
-		$this->assertStringContainsString( sprintf( '"shape":"%s"', Settings::SHAPE_RECTANGULAR['value'] ), $output, 'Footer should include shape config.' );
+		$this->assertStringContainsString( esc_attr( sprintf( '"text":"%s"', Settings::TEXT_CONTINUE_WITH_GOOGLE['value'] ) ), $output, 'Footer should include text config.' );
+		$this->assertStringContainsString( esc_attr( sprintf( '"theme":"%s"', Settings::THEME_LIGHT['value'] ) ), $output, 'Footer should include theme config.' );
+		$this->assertStringContainsString( esc_attr( sprintf( '"shape":"%s"', Settings::SHAPE_RECTANGULAR['value'] ) ), $output, 'Footer should include shape config.' );
 
 		// The Sign in with Google JS should always render, even on the front
 		// page.
@@ -149,7 +149,7 @@ class Web_TagTest extends TestCase {
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Login footer should include SIWG marker text.' );
 		$this->assertStringContainsString( 'data-siwg-config', $output, 'Login footer should include SIWG config data.' );
 		$this->assertStringContainsString( 'dist/assets/js/sign-in-with-google', $output, 'Login footer should include the SIWG bundle script tag.' );
-		$this->assertStringContainsString( '"clientID":"test-client-id.app.googleusercontent.com"', $output, 'Login footer should include configured client ID.' );
+		$this->assertStringContainsString( esc_attr( '"clientID":"test-client-id.app.googleusercontent.com"' ), $output, 'Login footer should include configured client ID.' );
 	}
 
 	public function test_register() {
@@ -190,10 +190,10 @@ class Web_TagTest extends TestCase {
 		$wp_query->is_preview = $previous_preview;
 
 		// Button render loop fires on preview even when the admin is logged in.
-		$this->assertStringContainsString( '"isPreview":true', $output, 'Preview pages should be marked as preview in the inline config.' );
-		$this->assertStringContainsString( '"isUserLoggedIn":true', $output, 'Preview config should preserve the logged-in state.' );
+		$this->assertStringContainsString( esc_attr( '"isPreview":true' ), $output, 'Preview pages should be marked as preview in the inline config.' );
+		$this->assertStringContainsString( esc_attr( '"isUserLoggedIn":true' ), $output, 'Preview config should preserve the logged-in state.' );
 		// One Tap prompt is suppressed on preview pages.
-		$this->assertStringContainsString( '"shouldShowOneTapPrompt":false', $output, 'One Tap should not be invoked on preview pages.' );
+		$this->assertStringContainsString( esc_attr( '"shouldShowOneTapPrompt":false' ), $output, 'One Tap should not be invoked on preview pages.' );
 	}
 
 	public function test_render_on_wp_footer_during_preview_for_logged_out_visitor_skips_one_tap() {
@@ -223,7 +223,7 @@ class Web_TagTest extends TestCase {
 
 		$wp_query->is_preview = $previous_preview;
 
-		$this->assertStringContainsString( '"shouldShowOneTapPrompt":false', $output, 'One Tap should not be invoked on preview pages, even when the visitor is logged out.' );
+		$this->assertStringContainsString( esc_attr( '"shouldShowOneTapPrompt":false' ), $output, 'One Tap should not be invoked on preview pages, even when the visitor is logged out.' );
 	}
 
 	public function test_register__adds_admin_footer_action_only_for_existing_user_flow() {
@@ -247,14 +247,14 @@ class Web_TagTest extends TestCase {
 		// existing-user link flow and includes the matching nonce.
 		$this->web_tag->set_is_existing_user_flow( true );
 		$output = $this->capture_render_output();
-		$this->assertStringContainsString( '"isExistingUserFlow":true', $output, 'The connect integration should be set in the existing-user flow.' );
-		$this->assertStringContainsString( sprintf( '"connectNonce":"%s"', wp_create_nonce( Authenticator::CONNECT_EXISTING_USER_NONCE_ACTION ) ), $output, 'Rendered nonce should be a valid wp_create_nonce.' );
+		$this->assertStringContainsString( esc_attr( '"isExistingUserFlow":true' ), $output, 'The connect integration should be set in the existing-user flow.' );
+		$this->assertStringContainsString( esc_attr( sprintf( '"connectNonce":"%s"', wp_create_nonce( Authenticator::CONNECT_EXISTING_USER_NONCE_ACTION ) ) ), $output, 'Rendered nonce should be a valid wp_create_nonce.' );
 
 		// When the flag is off, the markers should not appear.
 		$this->web_tag->set_is_existing_user_flow( false );
 		$output = $this->capture_render_output();
-		$this->assertStringContainsString( '"isExistingUserFlow":false', $output, 'The connect integration should not be set when not in the existing-user flow.' );
-		$this->assertStringContainsString( '"connectNonce":""', $output, 'The connect nonce should not be set when not in the existing-user flow.' );
+		$this->assertStringContainsString( esc_attr( '"isExistingUserFlow":false' ), $output, 'The connect integration should not be set when not in the existing-user flow.' );
+		$this->assertStringContainsString( esc_attr( '"connectNonce":""' ), $output, 'The connect nonce should not be set when not in the existing-user flow.' );
 	}
 
 	public function test_register__runs_button_render_loop_on_existing_user_flow_even_when_logged_in() {
@@ -269,8 +269,8 @@ class Web_TagTest extends TestCase {
 		// skips logged-in users. The existing-user flow is one of the
 		// conditions that lets it run anyway, so a logged-in user on their
 		// own profile still gets the button.
-		$this->assertStringContainsString( '"isExistingUserFlow":true', $output, 'A logged-in user on their profile should still get the Sign in with Google button.' );
-		$this->assertStringContainsString( '"isUserLoggedIn":true', $output, 'The config should preserve the logged-in state.' );
+		$this->assertStringContainsString( esc_attr( '"isExistingUserFlow":true' ), $output, 'A logged-in user on their profile should still get the Sign in with Google button.' );
+		$this->assertStringContainsString( esc_attr( '"isUserLoggedIn":true' ), $output, 'The config should preserve the logged-in state.' );
 		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__frontend-output-button', $output, 'The button should attach to the Sign in with Google placeholder.' );
 	}
 
@@ -300,8 +300,8 @@ class Web_TagTest extends TestCase {
 
 		$output = $this->capture_render_output();
 
-		$this->assertStringContainsString( '"isExistingUserFlow":true', $output, 'The profile connect button should use the existing-user link flow even when WooCommerce is active.' );
-		$this->assertStringContainsString( '"isWooCommerce":true', $output, 'WooCommerce should be marked as active.' );
+		$this->assertStringContainsString( esc_attr( '"isExistingUserFlow":true' ), $output, 'The profile connect button should use the existing-user link flow even when WooCommerce is active.' );
+		$this->assertStringContainsString( esc_attr( '"isWooCommerce":true' ), $output, 'WooCommerce should be marked as active.' );
 	}
 
 	private function capture_render_output() {
