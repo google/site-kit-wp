@@ -153,6 +153,19 @@ describe( 'Popper', () => {
 		);
 	} );
 
+	it( 'renders the popper content inside the popper root element', async () => {
+		const { container, findByRole } = render( <PopperWrapper /> );
+
+		await findByRole( 'button', { name: 'Inside' } );
+
+		const root = container.querySelector( '.googlesitekit-popper-root' );
+
+		expect( root ).not.toBeNull();
+		expect(
+			root?.querySelector( '.googlesitekit-popper' )
+		).toBeInTheDocument();
+	} );
+
 	describe( 'auto-dismiss', () => {
 		beforeEach( () => {
 			jest.useFakeTimers();
