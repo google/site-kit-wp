@@ -30,7 +30,9 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { CONTEXT_MAIN_DASHBOARD_TRAFFIC } from '@/js/googlesitekit/widgets/default-contexts';
+import * as tracking from '@/js/util/tracking';
 import {
+	act,
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserInfo,
@@ -39,6 +41,9 @@ import {
 } from '@tests/js/test-utils';
 import { registerPDFFonts } from './pdf-fonts-react';
 import PDFExportOrchestrator from './PDFExportOrchestrator';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 // `@react-pdf/renderer` is auto-mocked via `__mocks__/@react-pdf/renderer.js`,
 // which exports `pdf` as a `jest.fn()` returning a stub `toBlob()`. That lets
@@ -88,6 +93,7 @@ describe( 'PDFExportOrchestrator', () => {
 		// call that the test still needs to check.
 		( pdf as jest.Mock ).mockClear();
 		jest.mocked( registerPDFFonts ).mockClear();
+		mockTrackEvent.mockClear();
 
 		// Put the real `AbortController` back after a test replaced it with the
 		// recording subclass.
@@ -389,5 +395,114 @@ describe( 'PDFExportOrchestrator', () => {
 		// A successful export reaches COMPLETE without an abort. Its signal
 		// still reports not aborted while the component stays mounted.
 		expect( controllers[ 0 ].signal.aborted ).toBe( false );
+	} );
+
+	it( 'fires pdf_generation_complete with the selected context slugs on success', async () => {
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pdf_generation`,
+			'pdf_generation_complete',
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+		);
+	} );
+
+	it( 'fires pdf_generation_error with "building" label when the PDF build fails', async () => {
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [],
+		} );
+
+		( pdf as jest.Mock ).mockReturnValueOnce( {
+			toBlob: jest.fn( () =>
+				Promise.reject( new Error( 'build failed' ) )
+			),
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'error' );
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pdf_generation`,
+			'pdf_generation_error',
+			'building'
+		);
+	} );
+
+	it( 'fires pdf_generation_error with "loading" label when all widget data fails to load', async () => {
+		const getData = jest.fn( () =>
+			Promise.reject( new Error( 'report failed' ) )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'error' );
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pdf_generation`,
+			'pdf_generation_error',
+			'loading'
+		);
+	} );
+
+	it( 'fires pdf_generation_cancel with the current stage label when the user cancels', async () => {
+		let resolveData: ( value: unknown ) => void;
+		const getData: jest.Mock = jest.fn(
+			() =>
+				new Promise( ( resolve ) => {
+					resolveData = resolve;
+				} )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => expect( getData ).toHaveBeenCalled() );
+
+		act( () => {
+			registry.dispatch( CORE_PDF ).requestCancel();
+		} );
+
+		// Unblock getData so throwIfAborted can propagate the abort to catch.
+		resolveData!( { data: null } );
+
+		await waitFor( () => {
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pdf_generation`,
+				'pdf_generation_cancel',
+				'loading'
+			);
+		} );
 	} );
 } );
