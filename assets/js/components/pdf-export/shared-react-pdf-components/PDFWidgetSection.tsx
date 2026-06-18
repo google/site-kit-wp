@@ -22,8 +22,14 @@
 import { StyleSheet, Text, View } from '@react-pdf/renderer';
 import type { FC, ReactNode } from 'react';
 
+/**
+ * Internal dependencies
+ */
+import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
+
 const styles = StyleSheet.create( {
 	heading: {
+		fontFamily: PDF_FONT_FAMILY_TEXT,
 		fontSize: 13,
 		color: '#6c726e',
 		marginBottom: 8,

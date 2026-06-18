@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`KeyMetricsSetupApp error handling should show an error and a \`Continue without saving\` button when saving the user input fails 1`] = `
+exports[`KeyMetricsSetupApp error handling when saving the initial setup settings fails should show an error 1`] = `
 <div>
   <header
     class="googlesitekit-header"
@@ -456,7 +456,7 @@ exports[`KeyMetricsSetupApp error handling should show an error and a \`Continue
                     </div>
                   </div>
                   <div
-                    class="googlesitekit-user-input__error googlesitekit-key-metrics-setup__error"
+                    class="googlesitekit-user-input__error googlesitekit-key-metrics-setup__error googlesitekit-key-metrics-setup__error--inline"
                   >
                     <div
                       class="googlesitekit-notice-container"
@@ -474,14 +474,9 @@ exports[`KeyMetricsSetupApp error handling should show an error and a \`Continue
                           class="googlesitekit-notice__content"
                         >
                           <p
-                            class="googlesitekit-notice__title"
-                          >
-                            Saving your answer failed
-                          </p>
-                          <p
                             class="googlesitekit-notice__description"
                           >
-                            Retry to save your answer, or continue without saving. You can always edit your answer in Settings later.
+                            Something went wrong, please try again
                           </p>
                         </div>
                       </div>
@@ -545,7 +540,7 @@ exports[`KeyMetricsSetupApp error handling should show an error and a \`Continue
 </div>
 `;
 
-exports[`KeyMetricsSetupApp error handling should show an error when saving initial setup settings fails 1`] = `
+exports[`KeyMetricsSetupApp error handling when saving the user input fails should show an error and a \`Continue without saving\` button 1`] = `
 <div>
   <header
     class="googlesitekit-header"
@@ -1001,7 +996,7 @@ exports[`KeyMetricsSetupApp error handling should show an error when saving init
                     </div>
                   </div>
                   <div
-                    class="googlesitekit-user-input__error googlesitekit-key-metrics-setup__error"
+                    class="googlesitekit-user-input__error googlesitekit-key-metrics-setup__error googlesitekit-key-metrics-setup__error--inline"
                   >
                     <div
                       class="googlesitekit-notice-container"
@@ -1019,9 +1014,14 @@ exports[`KeyMetricsSetupApp error handling should show an error when saving init
                           class="googlesitekit-notice__content"
                         >
                           <p
+                            class="googlesitekit-notice__title"
+                          >
+                            Saving your answer failed
+                          </p>
+                          <p
                             class="googlesitekit-notice__description"
                           >
-                            Something went wrong, please try again
+                            Retry to save your answer, or continue without saving. You can always edit your answer in Settings later.
                           </p>
                         </div>
                       </div>

@@ -48,9 +48,11 @@ import type {
 } from '@/js/googlesitekit/widgets/types';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { getPreviousDate } from '@/js/util';
+import { registerPDFFonts } from './pdf-fonts-react';
 import { getPDFFilename, triggerDownload } from './pdf-utils';
+import { SECTION_ICONS } from './section-icons';
 import DashboardReport from './shared-react-pdf-components/DashboardReport';
-import type { PDFReportArea, PDFReportWidget } from './types';
+import type { PDFHeaderSection, PDFReportArea, PDFReportWidget } from './types';
 
 const STAGE_IDLE = 'IDLE' as const;
 const STAGE_LOADING = 'LOADING' as const;
@@ -85,7 +87,7 @@ type WidgetWithPDF = Widget & { pdf: WidgetPDFConfig };
 /**
  * Determines whether a registry widget declares a PDF export configuration.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param widget Registry widget.
  * @return `true` when the widget has a `pdf` config.
@@ -105,7 +107,7 @@ const initialState: State = { stage: STAGE_IDLE };
 /**
  * Validates and applies stage transitions for the export state machine.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param state  Current reducer state.
  * @param action Dispatched action with a `nextStage` payload.
@@ -126,7 +128,7 @@ function reducer( state: State, action: Action ): State {
 /**
  * Determines whether the given error is an `AbortError` DOMException.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param error The caught value.
  * @return `true` when the error is an AbortError.
@@ -148,7 +150,7 @@ function throwIfAborted( signal: AbortSignal ): void {
  * Returns a promise that resolves on the next animation frame, or rejects
  * if the signal is aborted before the frame fires.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  *
  * @param signal Abort signal to observe.
  * @return Resolves on the next frame, rejects on abort.
@@ -204,8 +206,18 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		( select: Select ) => select( CORE_USER ).getDateRange(),
 		[]
 	);
-	const userName = useSelect(
-		( select: Select ) => select( CORE_USER ).getName(),
+	const dashboardURL = useSelect(
+		( select: Select ) => select( CORE_SITE ).getGoLinkURL( 'dashboard' ),
+		[]
+	);
+	// A golink with this key opens the Site Kit dashboard with the email
+	// reporting setup panel. The key is registered in
+	// `Email_Reporting::register()`.
+	const emailReportingSetupURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getGoLinkURL(
+				'manage-subscription-email-reporting'
+			),
 		[]
 	);
 	const selectedContextSlugs = useSelect(
@@ -286,10 +298,9 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		}
 		global.addEventListener( 'beforeunload', beforeUnloadHandler );
 
+		const reportSiteName = typeof siteName === 'string' ? siteName : '';
 		const referenceName =
-			typeof siteName === 'string' && siteName.length > 0
-				? siteName
-				: referenceSiteURL || '';
+			reportSiteName.length > 0 ? reportSiteName : referenceSiteURL || '';
 
 		async function run() {
 			try {
@@ -321,15 +332,24 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				 ).select( CORE_WIDGETS );
 				const discoveredAreas: Array< {
 					areaSlug: string;
+					areaContextSlug: string;
 					areaTitle: string;
 					widgets: WidgetWithPDF[];
 				} > = [];
+				// An area can be assigned to more than one context; track the
+				// slugs already discovered so a shared area is not rendered (and
+				// chipped) twice when multiple of its contexts are selected.
+				const discoveredAreaSlugs = new Set< string >();
 
 				selectedContextSlugs.forEach( ( contextSlug: string ) => {
 					const contextAreas: WidgetArea[] =
-						widgetsSelect.getWidgetAreas( contextSlug );
+						widgetsSelect.getWidgetAreas( contextSlug ) || [];
 
 					contextAreas.forEach( ( area ) => {
+						if ( discoveredAreaSlugs.has( area.slug ) ) {
+							return;
+						}
+
 						const pdfWidgets: WidgetWithPDF[] = widgetsSelect
 							.getWidgets( area.slug, {
 								modules: viewableModules || undefined,
@@ -340,8 +360,10 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 							return;
 						}
 
+						discoveredAreaSlugs.add( area.slug );
 						discoveredAreas.push( {
 							areaSlug: area.slug,
+							areaContextSlug: contextSlug,
 							areaTitle: area.pdfTitle || area.title || '',
 							widgets: pdfWidgets,
 						} );
@@ -423,6 +445,9 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				dispatch( { type: 'TRANSITION', nextStage: STAGE_BUILDING } );
 				armStageTimeout( BUILDING_TIMEOUT_MS );
 
+				registerPDFFonts();
+				throwIfAborted( signal );
+
 				const areas: PDFReportArea[] = discoveredAreas.map(
 					( area ) => ( {
 						areaSlug: area.areaSlug,
@@ -440,9 +465,16 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 					} )
 				);
 
-				// Footer timestamp uses the real generation time, not the dashboard date range.
-				// eslint-disable-next-line sitekit/no-direct-date
-				const generatedAt = new Date().toLocaleString();
+				// One header chip per area, in area order, with the icon looked
+				// up by the area's dashboard context slug.
+				const sections: PDFHeaderSection[] = discoveredAreas.map(
+					( area ) => ( {
+						slug: area.areaSlug,
+						label: area.areaTitle,
+						Icon: SECTION_ICONS[ area.areaContextSlug ],
+					} )
+				);
+
 				const filename = getPDFFilename(
 					referenceName,
 					typeof dateRange === 'string' ? dateRange : undefined
@@ -450,17 +482,18 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 
 				const document = (
 					<DashboardReport
-						siteName={ referenceName }
-						dateRange={
-							typeof dateRange === 'string'
-								? dateRange
-								: undefined
-						}
-						userName={
-							typeof userName === 'string' ? userName : undefined
-						}
-						generatedAt={ generatedAt }
+						siteName={ reportSiteName }
+						siteURL={ referenceSiteURL || '' }
+						dashboardURL={ dashboardURL || '' }
+						dateRange={ {
+							startDate: dates.startDate,
+							endDate: dates.endDate,
+						} }
+						sections={ sections }
+						helpCenterURL="https://sitekit.withgoogle.com/support/?doc=get-support"
+						privacyPolicyURL="https://policies.google.com/privacy"
 						areas={ areas }
+						emailReportingSetupURL={ emailReportingSetupURL }
 					/>
 				);
 
@@ -501,6 +534,12 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 					onCompleteRef.current();
 					return;
 				}
+
+				// Stop any request that is still running, so it ends now
+				// instead of finishing in the background after the user sees
+				// the error. On the stage-timeout path, `abort()` already ran,
+				// so this call does nothing.
+				abortControllerRef.current?.abort();
 
 				dispatch( { type: 'TRANSITION', nextStage: STAGE_ERROR } );
 				setStatus( 'error' );

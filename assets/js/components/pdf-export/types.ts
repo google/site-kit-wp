@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import type { FC } from 'react';
+
+/**
  * Internal dependencies
  */
 import type {
@@ -27,9 +32,30 @@ import type {
 export type { PDFWidgetComponentProps };
 
 /**
- * A loaded PDF widget ready to render into the report document.
+ * A section icon rendered with `@react-pdf/renderer` SVG primitives.
  *
  * @since n.e.x.t
+ */
+export type PDFIcon = FC< {
+	size?: number;
+	color?: string;
+} >;
+
+/**
+ * One header section chip: a dashboard area surfaced in the PDF.
+ *
+ * @since n.e.x.t
+ */
+export interface PDFHeaderSection {
+	slug: string;
+	label: string;
+	Icon?: PDFIcon;
+}
+
+/**
+ * A loaded PDF widget ready to render into the report document.
+ *
+ * @since 1.181.0
  */
 export interface PDFReportWidget {
 	slug: string;
@@ -42,7 +68,7 @@ export interface PDFReportWidget {
 /**
  * One report section (one widget area) with its loaded widgets.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  */
 export interface PDFReportArea {
 	areaSlug: string;

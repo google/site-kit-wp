@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Util\Current_Screen;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Requires_Javascript_Trait;
 use WP_REST_Server;
@@ -244,10 +245,10 @@ final class Admin_Bar {
 	 * @since 1.0.0
 	 */
 	private function is_admin_post_screen() {
-		$current_screen = function_exists( 'get_current_screen' ) ? get_current_screen() : false;
+		$current_screen = Current_Screen::get();
 
 		// No screen context available.
-		if ( ! $current_screen instanceof \WP_Screen ) {
+		if ( null === $current_screen ) {
 			return false;
 		}
 

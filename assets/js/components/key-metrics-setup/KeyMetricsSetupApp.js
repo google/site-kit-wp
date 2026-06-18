@@ -31,6 +31,7 @@ import {
 	createInterpolateElement,
 	useCallback,
 	useEffect,
+	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
@@ -75,6 +76,8 @@ import { trackEvent } from '@/js/util';
 export default function KeyMetricsSetupApp() {
 	const viewContext = useViewContext();
 	const forwardableParams = useForwardableParams();
+
+	const [ isFooterInline, setIsFooterInline ] = useState( false );
 
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
@@ -328,6 +331,7 @@ export default function KeyMetricsSetupApp() {
 							inlineClassName="googlesitekit-key-metrics-setup__content--footer-inline"
 							footerClassName="googlesitekit-user-input__footer googlesitekit-key-metrics-setup__footer"
 							footer={ footer }
+							onFooterInlineChange={ setIsFooterInline }
 						>
 							<Typography
 								as="h1"
@@ -383,7 +387,15 @@ export default function KeyMetricsSetupApp() {
 							/>
 
 							{ saveInitialSetupError && (
-								<div className="googlesitekit-user-input__error googlesitekit-key-metrics-setup__error">
+								<div
+									className={ classnames(
+										'googlesitekit-user-input__error googlesitekit-key-metrics-setup__error',
+										{
+											'googlesitekit-key-metrics-setup__error--inline':
+												isFooterInline,
+										}
+									) }
+								>
 									<Notice
 										description={ __(
 											'Something went wrong, please try again',
@@ -396,7 +408,15 @@ export default function KeyMetricsSetupApp() {
 
 							{ ! saveInitialSetupError &&
 								!! saveUserInputError && (
-									<div className="googlesitekit-user-input__error googlesitekit-key-metrics-setup__error">
+									<div
+										className={ classnames(
+											'googlesitekit-user-input__error googlesitekit-key-metrics-setup__error',
+											{
+												'googlesitekit-key-metrics-setup__error--inline':
+													isFooterInline,
+											}
+										) }
+									>
 										<Notice
 											title={ __(
 												'Saving your answer failed',

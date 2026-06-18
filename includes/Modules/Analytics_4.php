@@ -71,6 +71,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Batch_Report;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Lookup;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Destinations;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Enhanced_Measurement_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Form_Metadata;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Google_Tag_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Properties;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Property;
@@ -199,7 +200,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	/**
 	 * Site_Goals_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @var Site_Goals_Settings
 	 */
@@ -217,7 +218,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	/**
 	 * Map of datapoint definitions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @var array
 	 */
@@ -226,7 +227,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	/**
 	 * Advanced_Data_Breakdowns_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @var Advanced_Data_Breakdowns_Settings
 	 */
@@ -988,16 +989,21 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		);
 
 		if ( Feature_Flags::enabled( 'siteGoals' ) ) {
-			$datapoints['GET:advanced-data-breakdowns-settings']       = new Get_Advanced_Data_Breakdowns_Settings(
+			$this->datapoints['GET:advanced-data-breakdowns-settings']       = new Get_Advanced_Data_Breakdowns_Settings(
 				array(
 					'advanced_data_breakdowns_settings' => $this->advanced_data_breakdowns_settings,
 					'service'                           => '',
 				)
 			);
-			$datapoints['POST:save-advanced-data-breakdowns-settings'] = new Save_Advanced_Data_Breakdowns_Settings(
+			$this->datapoints['POST:save-advanced-data-breakdowns-settings'] = new Save_Advanced_Data_Breakdowns_Settings(
 				array(
 					'advanced_data_breakdowns_settings' => $this->advanced_data_breakdowns_settings,
 					'service'                           => '',
+				)
+			);
+			$this->datapoints['GET:form-metadata']                           = new Get_Form_Metadata(
+				array(
+					'service' => '',
 				)
 			);
 		}
@@ -1985,7 +1991,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 *
 	 * @since 1.158.0
 	 * @since 1.160.0 Include $modules_data parameter to match the interface.
-	 * @since n.e.x.t Remove $modules_data parameter as per updated interface.
+	 * @since 1.181.0 Remove $modules_data parameter as per updated interface.
 	 *
 	 * @return array An array of the module's inline data.
 	 */

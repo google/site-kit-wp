@@ -32,6 +32,12 @@
 			flex: 1 1 auto;
 			min-height: 0;
 			overflow-y: auto;
+
+			// When the user scrolls the panel, the thumbs feedback tooltip can slide
+			// up over the panel header or down over the footer. The panel content
+			// uses `position: relative` so it hides any part of the tooltip that
+			// passes its edges, and the tooltip stays inside.
+			position: relative;
 		}
 
 		.googlesitekit-site-goals-selection-panel__footer-container {
@@ -104,13 +110,30 @@
 		padding: $grid-gap-phone;
 
 		@media (min-width: $bp-tablet) {
-        	margin-top: 32px;
+			margin-top: 32px;
 			padding: 0 $grid-gap-desktop $grid-gap-desktop;
 		}
 	}
 
 	.googlesitekit-site-goals-selection-panel__section + .googlesitekit-site-goals-selection-panel__section {
 		margin-top: $grid-gap-desktop;
+	}
+
+	.googlesitekit-site-goals-selection-panel__section-header {
+
+		@media (min-width: $bp-tablet) {
+			align-items: center;
+			display: flex;
+			gap: 10px;
+		}
+
+		.googlesitekit-badge {
+			margin-top: 6px;
+
+			@media (min-width: $bp-tablet) {
+				margin-top: 0;
+			}
+		}
 	}
 
 	.googlesitekit-site-goals-selection-panel__section-toggle {
@@ -166,5 +189,46 @@
 
 	.googlesitekit-site-goals-selection-panel__subsection {
 		margin-bottom: 14px;
+	}
+
+	.googlesitekit-site-goals-selection-panel__primary-action-row {
+		align-items: center;
+		display: flex;
+		gap: 12px;
+		justify-content: space-between;
+		margin-bottom: $grid-gap-desktop;
+	}
+
+	.googlesitekit-site-goals-selection-panel__primary-action-row-label {
+		display: flex;
+		flex-direction: column;
+		gap: 1px;
+	}
+
+	.googlesitekit-site-goals-selection-panel__primary-action-row-key {
+		color: $c-surfaces-on-surface-variant;
+	}
+
+	.googlesitekit-site-goals-selection-panel__primary-action-row-value {
+		color: $c-surfaces-on-surface;
+		letter-spacing: 0;
+		line-height: 1.4;
+	}
+
+	.googlesitekit-site-goals-selection-panel__primary-action-row-feedback {
+		align-items: center;
+		align-self: flex-end;
+		display: flex;
+		gap: 8px;
+		margin-top: 10px;
+	}
+
+	.googlesitekit-site-goals-selection-panel__primary-action-row-prompt {
+		color: $c-surfaces-on-surface-variant;
+
+		@media (max-width: $bp-mobileOnly) {
+			max-width: 65px;
+			text-align: right;
+		}
 	}
 }
