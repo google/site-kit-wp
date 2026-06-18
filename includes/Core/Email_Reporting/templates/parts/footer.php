@@ -61,7 +61,7 @@
 			);
 			$footer_links[] = array(
 				'label' => __( 'Help Center', 'google-site-kit' ),
-				'url'   => add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ),
+				'url'   => 'https://sitekit.withgoogle.com/support/?doc=get-support',
 			);
 
 			$footer_links_count = count( $footer_links );
