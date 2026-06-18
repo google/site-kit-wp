@@ -18,6 +18,7 @@
  * External dependencies
  */
 import { StyleSheet, Text, View } from '@react-pdf/renderer';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -120,10 +121,10 @@ export interface SearchFunnelWidgetGA4PDFProps {
 	chartImages?: SearchFunnelPDFData[ 'chartImages' ];
 }
 
-export default function SearchFunnelWidgetGA4PDF( {
+const SearchFunnelWidgetGA4PDF: FC< SearchFunnelWidgetGA4PDFProps > = ( {
 	data,
 	chartImages,
-}: SearchFunnelWidgetGA4PDFProps ) {
+} ) => {
 	if ( ! data ) {
 		return (
 			<View>
@@ -174,4 +175,6 @@ export default function SearchFunnelWidgetGA4PDF( {
 			</View>
 		</View>
 	);
-}
+};
+
+export default SearchFunnelWidgetGA4PDF;
