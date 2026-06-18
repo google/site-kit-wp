@@ -70,6 +70,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Batch_Report;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Lookup;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Destinations;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Custom_Dimensions;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Enhanced_Measurement_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Form_Metadata;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Google_Tag_Settings;
@@ -910,6 +911,13 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					},
 					'scopes'                 => array( self::EDIT_SCOPE ),
 					'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics custom dimension on your behalf.', 'google-site-kit' ),
+				)
+			),
+			'GET:custom-dimensions'                     => new Get_Custom_Dimensions(
+				array(
+					'service' => function () {
+						return $this->get_service( 'analyticsadmin' );
+					},
 				)
 			),
 			'POST:sync-custom-dimensions'               => new Sync_Custom_Dimensions(
