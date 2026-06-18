@@ -27,6 +27,16 @@ import { isPlainObject, omit } from 'lodash';
 import { stringifyObject } from './stringify';
 
 /**
+ * Report options shared by the Analytics 4, Search Console, and AdSense stores.
+ *
+ * @since n.e.x.t
+ */
+export type ReportRequestOptions = {
+	reportID?: string;
+	[ key: string ]: unknown;
+};
+
+/**
  * Removes `reportID` from report options.
  *
  * `reportID` is only a label that says which part of the plugin asked for the
@@ -40,12 +50,14 @@ import { stringifyObject } from './stringify';
  * @param options Report options as the caller passed them.
  * @return Report options without `reportID`.
  */
-export function getCacheableReportOptions( options: unknown ): unknown {
+export function getCacheableReportOptions(
+	options?: ReportRequestOptions
+): ReportRequestOptions | undefined {
 	if ( ! isPlainObject( options ) ) {
 		return options;
 	}
 
-	return omit( options as Record< string, unknown >, [ 'reportID' ] );
+	return omit( options, [ 'reportID' ] ) as ReportRequestOptions;
 }
 
 /**
@@ -60,8 +72,8 @@ export function getCacheableReportOptions( options: unknown ): unknown {
  * @param options Report options as the caller passed them.
  * @return Cache key for the saved report and the running request map.
  */
-export function getReportCacheKey( options: unknown ): string {
+export function getReportCacheKey( options?: ReportRequestOptions ): string {
 	return stringifyObject(
-		getCacheableReportOptions( options ) as Record< string, unknown >
+		getCacheableReportOptions( options ) as ReportRequestOptions
 	);
 }

@@ -31,7 +31,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { commonActions } from 'googlesitekit-data';
-import { getReportCacheKey } from '@/js/util/report-options';
+import {
+	ReportRequestOptions,
+	getReportCacheKey,
+} from '@/js/util/report-options';
 import { actions as errorStoreActions } from './create-error-store';
 
 const { clearSelectorError, setErrorForSelector } = errorStoreActions;
@@ -85,8 +88,8 @@ export function createGetReportResolver( storeName: string ) {
 	// the same report again. A default for `options` alone would force the
 	// caller to write `getReport( undefined, { signal } )`.
 	return function* getReport(
-		options?: unknown,
-		fetchOptions?: unknown
+		options?: ReportRequestOptions,
+		fetchOptions?: { signal?: AbortSignal }
 	): Generator< unknown, void, unknown > {
 		const registryResult = yield commonActions.getRegistry();
 		const registry = registryResult as WPDataRegistry;
@@ -108,10 +111,7 @@ export function createGetReportResolver( storeName: string ) {
 		// call's cancellation abort another call's report. So this call makes
 		// its own request and skips the shared map below. Calls without a
 		// signal still share one request.
-		if (
-			isPlainObject( fetchOptions ) &&
-			( fetchOptions as { signal?: unknown } ).signal
-		) {
+		if ( isPlainObject( fetchOptions ) && fetchOptions?.signal ) {
 			yield commonActions.await(
 				registry
 					.dispatch( storeName )

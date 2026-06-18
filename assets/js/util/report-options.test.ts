@@ -19,7 +19,11 @@
 /**
  * Internal dependencies
  */
-import { getCacheableReportOptions, getReportCacheKey } from './report-options';
+import {
+	ReportRequestOptions,
+	getCacheableReportOptions,
+	getReportCacheKey,
+} from './report-options';
 
 describe( 'getCacheableReportOptions', () => {
 	it( 'removes `reportID` and keeps every other option unchanged', () => {
@@ -87,7 +91,9 @@ describe( 'getCacheableReportOptions', () => {
 		[ 123 ],
 		[ [ 'date' ] ],
 	] )( 'returns the passed value %s unchanged', ( value: unknown ) => {
-		expect( getCacheableReportOptions( value ) ).toBe( value );
+		expect(
+			getCacheableReportOptions( value as ReportRequestOptions )
+		).toBe( value );
 	} );
 } );
 

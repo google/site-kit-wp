@@ -33,6 +33,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { get, setUsingCache } from 'googlesitekit-api';
 import { combineStores, commonStore, createReducer } from 'googlesitekit-data';
 import {
+	ReportRequestOptions,
 	getCacheableReportOptions,
 	getReportCacheKey,
 } from '@/js/util/report-options';
@@ -59,32 +60,35 @@ interface TestReportState {
 	reports: Record< string, unknown >;
 }
 
-// Builds a small report store for the test. It combines the shared resolver,
-// a fetch store, an error store, and a selector that reads each report by its
-// cache key.
+/**
+ * Builds a small report store for the test. It combines the shared resolver,
+ * a fetch store, an error store, and a selector that reads each report by its
+ * cache key.
+ *
+ * @since n.e.x.t
+ *
+ * @return The combined report store the test registers.
+ */
 function createReportStore() {
 	const fetchGetReportStore = createFetchStore( {
 		baseName: 'getReport',
-		controlCallback: ( { options }: { options: unknown } ) =>
-			get(
-				'core',
-				'test',
-				'report',
-				options as Parameters< typeof get >[ 3 ]
-			),
+		controlCallback: ( { options }: { options: ReportRequestOptions } ) =>
+			get( 'core', 'test', 'report', options ),
 		reducerCallback: createReducer(
 			(
 				state: TestReportState,
 				response: unknown,
-				{ options }: { options: unknown }
+				{ options }: { options: ReportRequestOptions }
 			) => {
 				state.reports[ getReportCacheKey( options ) ] = response;
 			}
 		),
-		argsToParams: ( options: unknown ) => {
+		argsToParams: ( options: ReportRequestOptions ) => {
 			return { options: getCacheableReportOptions( options ) };
 		},
-		validateParams: ( { options }: { options?: unknown } = {} ) => {
+		validateParams: ( {
+			options,
+		}: { options?: ReportRequestOptions } = {} ) => {
 			invariant( isPlainObject( options ), 'options must be an object.' );
 		},
 	} );
@@ -99,7 +103,10 @@ function createReportStore() {
 				getReport: createGetReportResolver( TEST_STORE ),
 			},
 			selectors: {
-				getReport( state: TestReportState, options: unknown ) {
+				getReport(
+					state: TestReportState,
+					options: ReportRequestOptions
+				) {
 					return state.reports[ getReportCacheKey( options ) ];
 				},
 			},
@@ -122,16 +129,6 @@ describe( 'createGetReportResolver', () => {
 	afterAll( () => {
 		setUsingCache( true );
 	} );
-
-	// The selectors that `untilResolved` returns are typed to take no
-	// arguments, but they accept arguments when they run. This helper changes
-	// their type so the test can pass the report options.
-	function resolved() {
-		return untilResolved( registry, TEST_STORE ) as Record<
-			string,
-			( ...args: unknown[] ) => Promise< unknown >
-		>;
-	}
 
 	it( 'requires a store name', () => {
 		expect( () => createGetReportResolver( '' ) ).toThrow(
@@ -164,8 +161,13 @@ describe( 'createGetReportResolver', () => {
 		// Wait for both resolvers together. `untilResolved` checks only on the
 		// next registry update, so awaiting them one after the other can hang
 		// if the second finishes during the first wait.
-		const firstResolution = resolved().getReport( firstOptions );
-		const secondResolution = resolved().getReport( secondOptions );
+		const firstResolution = untilResolved( registry, TEST_STORE ).getReport(
+			firstOptions
+		);
+		const secondResolution = untilResolved(
+			registry,
+			TEST_STORE
+		).getReport( secondOptions );
 
 		await Promise.all( [ firstResolution, secondResolution ] );
 
@@ -182,6 +184,29 @@ describe( 'createGetReportResolver', () => {
 		// Both calls read the same saved report, so state stores the report
 		// once.
 		expect( firstReport ).toBe( secondReport );
+	} );
+
+	it( 'does not send the `reportID` option with the report request', async () => {
+		fetchMock.getOnce( reportEndpointRegExp, { body: report } );
+
+		const optionsWithReportID = {
+			...baseOptions,
+			reportID: 'test_widget_component_reportArgs',
+		};
+
+		registry.select( TEST_STORE ).getReport( optionsWithReportID );
+
+		await untilResolved( registry, TEST_STORE ).getReport(
+			optionsWithReportID
+		);
+
+		expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+		// `reportID` is only a label, so the report request leaves it out and
+		// the request URL never includes it.
+		const reportRequestURL = fetchMock.lastCall()?.[ 0 ];
+
+		expect( reportRequestURL ).not.toContain( 'reportID' );
 	} );
 
 	it( 'does not make a network request when the same report is already saved under another `reportID`', async () => {
@@ -209,7 +234,7 @@ describe( 'createGetReportResolver', () => {
 			.select( TEST_STORE )
 			.getReport( secondOptions );
 
-		await resolved().getReport( secondOptions );
+		await untilResolved( registry, TEST_STORE ).getReport( secondOptions );
 
 		expect( fetchMock ).not.toHaveFetched();
 		expect( savedReport ).toEqual( report );
@@ -265,8 +290,13 @@ describe( 'createGetReportResolver', () => {
 		// checks only on the next registry update, so a resolver that
 		// finishes first would otherwise leave its waiter waiting until
 		// the test times out.
-		const firstResolution = resolved().getReport( firstOptions );
-		const secondResolution = resolved().getReport( secondOptions );
+		const firstResolution = untilResolved( registry, TEST_STORE ).getReport(
+			firstOptions
+		);
+		const secondResolution = untilResolved(
+			registry,
+			TEST_STORE
+		).getReport( secondOptions );
 
 		deferredResolvers.forEach( ( resolve ) => resolve() );
 
@@ -324,10 +354,14 @@ describe( 'createGetReportResolver', () => {
 
 		// Create both waiters before releasing the requests, so neither wait
 		// hangs. `untilResolved` checks only on the next registry update.
-		const noSignalResolution = resolved().getReport( noSignalOptions );
-		const signalResolution = resolved().getReport( signalOptions, {
-			signal,
-		} );
+		const noSignalResolution = untilResolved(
+			registry,
+			TEST_STORE
+		).getReport( noSignalOptions );
+		const signalResolution = untilResolved(
+			registry,
+			TEST_STORE
+		).getReport( signalOptions, { signal } );
 
 		deferredResolvers.forEach( ( resolve ) => resolve() );
 
