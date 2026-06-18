@@ -499,8 +499,8 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$output = $this->capture_action( 'admin_footer' );
 
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'An unlinked user on their profile should get the Sign in with Google connect button.' );
-		$this->assertStringContainsString( '"isExistingUserFlow":true', $output, 'The connect button should use the existing-user link flow.' );
-		$this->assertStringContainsString( '"connectNonce":', $output, 'The connect request should include its nonce.' );
+		$this->assertStringContainsString( esc_attr( '"isExistingUserFlow":true' ), $output, 'The connect button should use the existing-user link flow.' );
+		$this->assertStringContainsString( esc_attr( '"connectNonce":' ), $output, 'The connect request should include its nonce.' );
 	}
 
 	public function test_maybe_render_profile_signinwithgoogle__does_not_show_connect_button_outside_own_profile() {
