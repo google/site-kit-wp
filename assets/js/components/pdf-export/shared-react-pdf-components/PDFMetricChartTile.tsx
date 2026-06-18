@@ -33,7 +33,7 @@ import type { FC } from 'react';
  */
 import { __ } from '@wordpress/i18n';
 
-// color tokens sourced from the PDF report Figma design.
+// Color tokens sourced from the PDF report Figma design.
 const COLORS = {
 	// surfaces/on-surface
 	text: '#161b18',

@@ -22,6 +22,7 @@ import { identity } from 'lodash';
 /**
  * WordPress dependencies
  */
+import type { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -34,6 +35,7 @@ import renderGoogleChartToDataURI, {
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import type { Report } from '@/js/modules/analytics-4/datastore/types';
 import { extractAnalytics4DashboardData } from '@/js/modules/analytics-4/utils';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import {
@@ -59,20 +61,32 @@ const KEY_EVENTS_COLOR = '#8e68cb';
 const LINE_CHART_WIDTH = 240;
 const LINE_CHART_HEIGHT = 120;
 
-// Chart data is loosely typed throughout this codebase: rows are mixed arrays of
-// dates, numbers and tooltip strings.
-/* eslint-disable @typescript-eslint/no-explicit-any -- Registry selectors and report rows are loosely typed in this codebase. */
-type Registry = {
-	resolveSelect: ( storeName: string ) => any;
-	select: ( storeName: string ) => any;
+type Registry = WPDataRegistry & {
+	// `resolveSelect` exists on the runtime registry but is absent from the
+	// `@wordpress/data` registry types; alias it to the same loose shape as
+	// `select` until those upstream types include it.
+	resolveSelect: WPDataRegistry[ 'select' ];
 };
 
-type ChartRow = any[];
+/**
+ * A single row of Google Charts data.
+ *
+ * Rows are heterogeneous: a leading `Date` for the day column followed by the
+ * metric numbers and tooltip strings the dashboard's charts produce, so the
+ * element type is a union rather than a precise per-column tuple.
+ */
+type ChartRow = Array< Date | number | string | null >;
 
-// The report/chart utilities are JS modules whose JSDoc types are looser than
-// their runtime contracts; alias them to the shapes this loader relies on.
+// The chart/report utilities below are still untyped JS modules whose JSDoc
+// types are looser than their runtime contracts. We alias each to the shape
+// this loader relies on so the rest of the file stays type-checked. Their
+// `report` inputs are typed `unknown` because we don't yet have a shared
+// Search Console report type; the per-value format callbacks stay `any` because
+// their inputs genuinely vary per metric. Replace these aliases with the real
+// types once the underlying modules are migrated to TypeScript.
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const partitionReportRows = partitionReport as unknown as (
-	report: any,
+	report: unknown,
 	options: { dateRangeLength: number }
 ) => { compareRange: ChartRow[]; currentRange: ChartRow[] };
 
@@ -85,7 +99,7 @@ const getSearchConsoleChartData = getSiteStatsDataForGoogleChart as unknown as (
 ) => ChartRow[];
 
 const getAnalyticsChartData = extractAnalytics4DashboardData as unknown as (
-	report: any,
+	report: unknown,
 	selectedStats: number,
 	days: number,
 	referenceDate: string,
@@ -95,7 +109,7 @@ const getAnalyticsChartData = extractAnalytics4DashboardData as unknown as (
 ) => ChartRow[];
 
 const getMetricDatapointAndChange = getDatapointAndChange as unknown as (
-	report: any,
+	report: unknown,
 	selectedStat: number
 ) => { datapoint: number; change: number | null };
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -283,8 +297,9 @@ function rasterizeChart( {
 	signal: AbortSignal;
 } ): Promise< string > {
 	// A tick per day, dropping the first so a tick sits at the range start,
-	// matching the dashboard's Search Funnel charts.
-	const [ , ...ticks ] = dataRows.map( ( row ) => row[ 0 ] );
+	// matching the dashboard's Search Funnel charts. The leading column is always
+	// the day `Date`.
+	const [ , ...ticks ] = dataRows.map( ( row ) => row[ 0 ] as Date );
 	const hasData = dataRows.some(
 		( row ) => Number( row[ 2 ] ) > 0 || Number( row[ 3 ] ) > 0
 	);
@@ -310,13 +325,12 @@ function rasterizeChart( {
  * @param {AbortSignal} signal    Cancellation signal.
  * @return {Promise<Object>} The resolved report and any error.
  */
-async function resolveReport(
+async function resolveReport< T = unknown >(
 	registry: Registry,
 	storeName: string,
 	args: object,
 	signal: AbortSignal
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Reports are loosely typed in this codebase.
-): Promise< { report: any; error: any } > {
+): Promise< { report: T | undefined; error: unknown } > {
 	await registry.resolveSelect( storeName ).getReport( args, { signal } );
 
 	return {
@@ -354,10 +368,10 @@ async function buildSearchConsoleCard( {
 	dateRangeLength,
 	signal,
 }: {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Reports are loosely typed in this codebase.
-	report: any;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Errors are loosely typed in this codebase.
-	reportError: any;
+	// The Search Console report has no shared type yet, so it is `unknown` and
+	// narrowed via `Array.isArray` below; tighten once that store is typed.
+	report: unknown;
+	reportError: unknown;
 	metricKey: 'impressions' | 'clicks';
 	currentLabel: string;
 	color: string;
@@ -444,19 +458,15 @@ async function buildAnalyticsCard( {
 	referenceDate,
 	signal,
 }: {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Reports are loosely typed in this codebase.
-	statsReport: any;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Errors are loosely typed in this codebase.
-	statsError: any;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Reports are loosely typed in this codebase.
-	totalsReport: any;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Errors are loosely typed in this codebase.
-	totalsError: any;
+	statsReport: Report | undefined;
+	statsError: unknown;
+	totalsReport: Report | undefined;
+	totalsError: unknown;
 	currentLabel: string;
 	dataLabels: string[];
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Format callbacks are loosely typed in this codebase.
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Format callbacks accept per-metric values whose type varies (numbers and percentages).
 	tooltipDataFormats: Array< ( value: any ) => string >;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Format callbacks are loosely typed in this codebase.
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Format callbacks accept per-metric values whose type varies (numbers and percentages).
 	chartDataFormats: Array< ( value: any ) => any >;
 	color: string;
 	dateRangeLength: number;
@@ -574,19 +584,19 @@ export default async function getPDFData( {
 				searchConsoleArgs,
 				signal
 			),
-			resolveReport(
+			resolveReport< Report >(
 				registry,
 				MODULES_ANALYTICS_4,
 				keyEventsOverviewArgs,
 				signal
 			),
-			resolveReport(
+			resolveReport< Report >(
 				registry,
 				MODULES_ANALYTICS_4,
 				keyEventsStatsArgs,
 				signal
 			),
-			resolveReport(
+			resolveReport< Report >(
 				registry,
 				MODULES_ANALYTICS_4,
 				visitorsArgs,
