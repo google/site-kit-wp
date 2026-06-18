@@ -45,8 +45,13 @@ import MeasurementSettingRow from '@/js/modules/analytics-4/components/common/Me
 import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE,
 	SITE_GOALS_CUSTOM_DIMENSIONS,
 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	isValidPropertyID,
+	isValidPropertySelection,
+} from '@/js/modules/analytics-4/utils/validation';
 import { trackEvent } from '@/js/util';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 
@@ -59,21 +64,72 @@ interface SettingsAdvancedDataBreakdownsProps {
 const SettingsAdvancedDataBreakdowns: FC<
 	SettingsAdvancedDataBreakdownsProps
 > = ( { hasModuleAccess = true } ) => {
-	const isAdvancedDataBreakdownsEnabled = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).isAdvancedDataBreakdownsEnabled(),
+	const propertyID = useSelect(
+		( select: Select ) => select( MODULES_ANALYTICS_4 ).getPropertyID(),
 		[]
 	);
 
-	// The setting is still loading until the selector returns a boolean.
+	const isAdvancedDataBreakdownsEnabled = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).isAdvancedDataBreakdownsEnabled(
+				propertyID
+			),
+		[ propertyID ]
+	);
+
+	/**
+	 * Until the per-property map loads, the row stays in its loading state, so
+	 * the Enable button can't save a partly loaded map and drop the other
+	 * properties.
+	 */
 	const isSettingsLoaded = isAdvancedDataBreakdownsEnabled !== undefined;
 
 	const hasAllCustomDimensions = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+		( select: Select ) => {
+			// "Set up a new property" has no custom dimensions yet.
+			if ( propertyID === PROPERTY_CREATE ) {
+				return false;
+			}
+
+			// The selected property isn't known yet, for example right after an
+			// account change, before a property is matched.
+			if ( ! isValidPropertyID( propertyID ) ) {
+				return undefined;
+			}
+
+			return select( MODULES_ANALYTICS_4 ).hasCustomDimensionsForProperty(
+				propertyID,
 				SITE_GOALS_CUSTOM_DIMENSIONS
-			),
-		[]
+			);
+		},
+		[ propertyID ]
+	);
+
+	/**
+	 * The row's enabled state depends on the selected property's custom
+	 * dimensions, so the row keeps loading until the selection is final and
+	 * those dimensions resolve, like the Enhanced measurement switch above
+	 * it. The "Set up a new property" selection has nothing to resolve.
+	 */
+	const isDimensionsLoaded = useSelect(
+		( select: Select ) => {
+			if (
+				! isValidPropertySelection( propertyID ) ||
+				select( MODULES_ANALYTICS_4 ).isLoadingPropertySummaries()
+			) {
+				return false;
+			}
+
+			if ( propertyID === PROPERTY_CREATE ) {
+				return true;
+			}
+
+			return select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getCustomDimensions',
+				[ propertyID ]
+			);
+		},
+		[ propertyID ]
 	);
 
 	const hasEditScope = useSelect(
@@ -126,7 +182,7 @@ const SettingsAdvancedDataBreakdowns: FC<
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
 
 	const enableAndCreate = useCallback( async () => {
-		setAdvancedDataBreakdownsEnabled( true );
+		setAdvancedDataBreakdownsEnabled( propertyID, true );
 
 		const { error } = await saveAdvancedDataBreakdownsSettings();
 
@@ -138,6 +194,7 @@ const SettingsAdvancedDataBreakdowns: FC<
 
 		createCustomDimensions();
 	}, [
+		propertyID,
 		setAdvancedDataBreakdownsEnabled,
 		saveAdvancedDataBreakdownsSettings,
 		createCustomDimensions,
@@ -172,8 +229,13 @@ const SettingsAdvancedDataBreakdowns: FC<
 		}
 	}, [ autoSubmit, enableAndCreate, hasEditScope, setAutoSubmit ] );
 
-	const isComplete =
-		isAdvancedDataBreakdownsEnabled && hasAllCustomDimensions === true;
+	/**
+	 * The green check reflects whether the selected property has all the Site
+	 * Goals custom dimensions, so it updates with the property selection and
+	 * stays when you switch away and back. The per-property enabled flag
+	 * controls custom dimension creation, not this display state.
+	 */
+	const isComplete = hasAllCustomDimensions === true;
 
 	// This uses Link instead of SupportLink, because SupportLink is not typed
 	// for the `external` and `onClick` props in TypeScript.
@@ -214,7 +276,7 @@ const SettingsAdvancedDataBreakdowns: FC<
 
 	return (
 		<MeasurementSettingRow
-			loading={ ! isSettingsLoaded }
+			loading={ ! isSettingsLoaded || ! isDimensionsLoaded }
 			isEnabled={ isComplete }
 			title={ __( 'Advanced data breakdowns', 'google-site-kit' ) }
 			description={ helperText }
@@ -223,7 +285,10 @@ const SettingsAdvancedDataBreakdowns: FC<
 				<SpinnerButton
 					onClick={ handleEnable }
 					disabled={
-						isSaving || isCreatingDimensions || ! hasModuleAccess
+						isSaving ||
+						isCreatingDimensions ||
+						! hasModuleAccess ||
+						! isValidPropertyID( propertyID )
 					}
 					isSaving={ isSaving || isCreatingDimensions }
 					inverse

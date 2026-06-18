@@ -28,9 +28,11 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE,
 	SITE_GOALS_CUSTOM_DIMENSIONS,
 } from '@/js/modules/analytics-4/datastore/constants';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	freezeFetch,
@@ -39,7 +41,7 @@ import {
 	provideUserAuthentication,
 	render,
 	waitFor,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import SettingsAdvancedDataBreakdowns from './SettingsAdvancedDataBreakdowns';
 
 describe( 'SettingsAdvancedDataBreakdowns', () => {
@@ -57,6 +59,20 @@ describe( 'SettingsAdvancedDataBreakdowns', () => {
 			propertyID,
 			availableCustomDimensions: [],
 		} );
+		// By default the selected property has no Site Goals custom
+		// dimensions. Tests that need them set the property's list themselves.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetCustomDimensions( [], { propertyID } );
+		// The row stays in its loading state while the property summaries
+		// load, so set them as loaded.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries( {
+			accountSummaries: [],
+			nextPageToken: null,
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getAccountSummaries', [] );
 	} );
 
 	it( 'shows a progress bar while the setting is loading', () => {
@@ -79,46 +95,103 @@ describe( 'SettingsAdvancedDataBreakdowns', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'renders the Enable button when the setting is off', () => {
+	it( "shows a progress bar while the selected property's custom dimensions are loading", async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetAdvancedDataBreakdownsSettings( { enabled: false } );
+			.receiveGetAdvancedDataBreakdownsSettings( {} );
+		// Select a property whose custom dimensions aren't in the store, and
+		// keep the request for them pending.
+		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '654321' );
+		freezeFetch(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/custom-dimensions'
+			)
+		);
 
-		const { getByRole } = render( <SettingsAdvancedDataBreakdowns />, {
+		const { container, waitForRegistry } = render(
+			<SettingsAdvancedDataBreakdowns />,
+			{ registry }
+		);
+
+		// The pending custom-dimensions request still dispatches its start
+		// action, so wait for that state update inside `act()`. Without this,
+		// the update lands after the test and React logs an `act()` warning.
+		await waitForRegistry();
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-settings-measurement-row--loading'
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'shows a progress bar while no property is selected', () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAdvancedDataBreakdownsSettings( {} );
+		// Changing the account clears the property selection until a new
+		// property is matched.
+		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '' );
+
+		const { container } = render( <SettingsAdvancedDataBreakdowns />, {
 			registry,
 		} );
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-settings-measurement-row--loading'
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'shows the Enable button when the selected property has no Site Goals custom dimensions', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAdvancedDataBreakdownsSettings( {} );
+
+		const { getByRole, waitForRegistry } = render(
+			<SettingsAdvancedDataBreakdowns />,
+			{ registry }
+		);
+
+		await waitForRegistry();
 
 		expect(
 			getByRole( 'button', { name: /enable/i } )
 		).toBeInTheDocument();
 	} );
 
-	it( 'disables the Enable button when the user has no module access', () => {
+	it( 'disables the Enable button when the user has no module access', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetAdvancedDataBreakdownsSettings( { enabled: false } );
+			.receiveGetAdvancedDataBreakdownsSettings( {} );
 
-		const { getByRole } = render(
+		const { getByRole, waitForRegistry } = render(
 			<SettingsAdvancedDataBreakdowns hasModuleAccess={ false } />,
 			{ registry }
 		);
 
+		await waitForRegistry();
+
 		expect( getByRole( 'button', { name: /enable/i } ) ).toBeDisabled();
 	} );
 
-	it( 'shows the green check and hides the Enable button when all dimensions exist', () => {
+	it( 'shows the green check and hides the Enable button when the selected property has every Site Goals custom dimension', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetAdvancedDataBreakdownsSettings( { enabled: true } );
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			propertyID,
-			availableCustomDimensions: SITE_GOALS_CUSTOM_DIMENSIONS,
-		} );
+			.receiveGetAdvancedDataBreakdownsSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetCustomDimensions( SITE_GOALS_CUSTOM_DIMENSIONS, {
+				propertyID,
+			} );
 
-		const { container, queryByRole } = render(
+		const { container, queryByRole, waitForRegistry } = render(
 			<SettingsAdvancedDataBreakdowns />,
 			{ registry }
 		);
+
+		await waitForRegistry();
 
 		expect(
 			container.querySelector(
@@ -130,15 +203,96 @@ describe( 'SettingsAdvancedDataBreakdowns', () => {
 		).not.toBeInTheDocument();
 	} );
 
+	it( 'updates the row when the selected property changes', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAdvancedDataBreakdownsSettings( {} );
+		// Another property already has every Site Goals custom dimension.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetCustomDimensions( SITE_GOALS_CUSTOM_DIMENSIONS, {
+				propertyID: '654321',
+			} );
+
+		const { container, getByRole, queryByRole, waitForRegistry } = render(
+			<SettingsAdvancedDataBreakdowns />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		// The selected property has no Site Goals custom dimensions, so the
+		// row shows the Enable button.
+		expect(
+			getByRole( 'button', { name: /enable/i } )
+		).toBeInTheDocument();
+
+		// Selecting the property that has every dimension shows the green
+		// check without saving.
+		act( () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '654321' );
+		} );
+
+		await waitFor( () => {
+			expect(
+				container.querySelector(
+					'.googlesitekit-settings-measurement-row__icon--check'
+				)
+			).toBeInTheDocument();
+		} );
+		expect(
+			queryByRole( 'button', { name: /enable/i } )
+		).not.toBeInTheDocument();
+
+		// Selecting the first property again shows the Enable button.
+		act( () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setPropertyID( propertyID );
+		} );
+
+		await waitFor( () => {
+			expect(
+				getByRole( 'button', { name: /enable/i } )
+			).toBeInTheDocument();
+		} );
+	} );
+
+	it( 'shows a disabled Enable button and no green check while a new property is being set up', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAdvancedDataBreakdownsSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setPropertyID( PROPERTY_CREATE );
+
+		const { container, getByRole, waitForRegistry } = render(
+			<SettingsAdvancedDataBreakdowns />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-settings-measurement-row__icon--check'
+			)
+		).not.toBeInTheDocument();
+		expect( getByRole( 'button', { name: /enable/i } ) ).toBeDisabled();
+	} );
+
 	it( 'triggers the OAuth scope prompt when the edit scope is missing', async () => {
 		provideUserAuthentication( registry, { grantedScopes: [] } );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetAdvancedDataBreakdownsSettings( { enabled: false } );
+			.receiveGetAdvancedDataBreakdownsSettings( {} );
 
-		const { getByRole } = render( <SettingsAdvancedDataBreakdowns />, {
-			registry,
-		} );
+		const { getByRole, waitForRegistry } = render(
+			<SettingsAdvancedDataBreakdowns />,
+			{ registry }
+		);
+
+		await waitForRegistry();
 
 		fireEvent.click( getByRole( 'button', { name: /enable/i } ) );
 
@@ -154,7 +308,7 @@ describe( 'SettingsAdvancedDataBreakdowns', () => {
 	it( 'records the save error and skips creating dimensions when the save fails', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetAdvancedDataBreakdownsSettings( { enabled: false } );
+			.receiveGetAdvancedDataBreakdownsSettings( {} );
 
 		const errorPayload = {
 			code: 'internal_error',
@@ -169,9 +323,12 @@ describe( 'SettingsAdvancedDataBreakdowns', () => {
 			{ body: errorPayload, status: 500 }
 		);
 
-		const { getByRole } = render( <SettingsAdvancedDataBreakdowns />, {
-			registry,
-		} );
+		const { getByRole, waitForRegistry } = render(
+			<SettingsAdvancedDataBreakdowns />,
+			{ registry }
+		);
+
+		await waitForRegistry();
 
 		fireEvent.click( getByRole( 'button', { name: /enable/i } ) );
 
@@ -188,7 +345,21 @@ describe( 'SettingsAdvancedDataBreakdowns', () => {
 			).toBe( 'Save failed' );
 		} );
 
-		// The dimensions are not created when the save fails.
+		// Clicking Enable saves the selected property's flag, even though the
+		// save then fails.
+		const saveCalls = fetchMock
+			.calls(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/save-advanced-data-breakdowns-settings'
+				)
+			)
+			.map( ( [ , request ] ) => JSON.parse( request?.body as string ) );
+
+		expect( saveCalls ).toEqual( [
+			{ data: { settings: { [ propertyID ]: true } } },
+		] );
+
+		// The dimensions aren't created when the save fails.
 		expect( fetchMock ).not.toHaveFetched(
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
