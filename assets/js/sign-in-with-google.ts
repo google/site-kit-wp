@@ -16,10 +16,15 @@
  * limitations under the License.
  */
 
-export type SignInWithGoogleData = {
+type IdentityServices = typeof google.accounts.id;
+
+import ButtonConfiguration = google.accounts.id.GsiButtonConfiguration;
+import CredentialResponse = google.accounts.id.CredentialResponse;
+
+export type SignInWithGoogleConfig = {
 	clientID: string;
 	connectNonce: string;
-	defaultButtonOptions: google.accounts.id.GsiButtonConfiguration;
+	defaultButtonOptions: ButtonConfiguration;
 	followsPostRedirect: boolean;
 	isExistingUserFlow: boolean;
 	isPreview: boolean;
@@ -34,11 +39,51 @@ export type SignInWithGoogleData = {
 	shouldShowOneTapPrompt: boolean;
 };
 
-export async function handleCredentialResponse(
-	response: google.accounts.id.CredentialResponse,
-	data: SignInWithGoogleData
+function getCommentTextKey( element: HTMLTextAreaElement ) {
+	if ( ! element.form ) {
+		return 'siwg-comment-text-0';
+	}
+
+	const formData = new FormData( element.form );
+	const postID = formData.get( 'comment_post_ID' );
+
+	return `siwg-comment-text-${ postID }`;
+}
+
+function restoreCommentText( element: HTMLTextAreaElement ) {
+	const key = getCommentTextKey( element );
+	const commentText = sessionStorage.getItem( key );
+
+	if ( commentText ) {
+		element.value = commentText;
+		sessionStorage.removeItem( key );
+	}
+}
+
+function saveCommentText( element: HTMLTextAreaElement ) {
+	const key = getCommentTextKey( element );
+
+	if ( element.value ) {
+		sessionStorage.setItem( key, element.value );
+	}
+}
+
+async function handleCredentialResponse(
+	response: CredentialResponse,
+	config: SignInWithGoogleConfig
 ) {
-	if ( data.isPreview ) {
+	const {
+		connectNonce,
+		followsPostRedirect,
+		isExistingUserFlow,
+		isPreview,
+		isWooCommerce,
+		isWPLogin,
+		loginURI,
+		redirectTo,
+	} = config;
+
+	if ( isPreview ) {
 		return;
 	}
 
@@ -47,143 +92,124 @@ export async function handleCredentialResponse(
 	body.append( 'credential', response.credential );
 	body.append( 'select_by', response.select_by );
 
-	if ( data.isExistingUserFlow ) {
+	if ( isExistingUserFlow ) {
 		body.append( 'integration', 'existing_user' );
-		body.append( 'connect_nonce', data.connectNonce );
-	} else if ( data.isWooCommerce && ! data.isWPLogin ) {
+		body.append( 'connect_nonce', connectNonce );
+	} else if ( isWooCommerce && ! isWPLogin ) {
 		body.append( 'integration', 'woocommerce' );
 	}
 
+	const comment = <HTMLTextAreaElement | null>(
+		document.getElementById( 'comment' )
+	);
+
+	if ( comment ) {
+		saveCommentText( comment );
+	}
+
 	try {
-		const res = await fetch( data.loginURI, {
+		const res = await fetch( loginURI, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			body,
 		} );
 
-		/*
-		 * Preserve comment text in case of redirect after login on a page
-		 * with a Sign in with Google button in the WordPress comments.
-		 */
-		const commentField = <HTMLInputElement | null>(
-			document.getElementById( 'comment' )
-		);
-
-		const postID = document
-			.querySelector(
-				'.googlesitekit-sign-in-with-google__comments-form-button'
-			)
-			?.className?.match(
-				/googlesitekit-sign-in-with-google__comments-form-button-postid-(\d+)/
-			)?.[ 1 ];
-
-		if ( postID && commentField?.value ) {
-			sessionStorage.setItem(
-				`siwg-comment-text-${ postID }`,
-				commentField.value
-			);
-		}
-
-		if ( ! data.redirectTo && ! data.followsPostRedirect ) {
+		if ( ! redirectTo && ! followsPostRedirect ) {
 			location.reload();
 		} else if ( res.ok && res.redirected ) {
 			location.assign( res.url );
 		}
 	} catch ( error ) {
-		console.error( error ); // eslint-disable-line no-console
+		global.console.error( error );
 	}
 }
 
-export function setupSignInWithGoogle( data: SignInWithGoogleData ) {
-	if ( typeof google?.accounts?.id === 'undefined' ) {
-		return;
-	}
+export function setupSignInWithGoogle(
+	identityService: IdentityServices,
+	config: SignInWithGoogleConfig
+) {
+	const { initialize, prompt, renderButton } = identityService;
 
-	google.accounts.id.initialize( {
-		client_id: data.clientID, // eslint-disable-line camelcase
-		callback: ( response ) => handleCredentialResponse( response, data ),
-		library_name: 'Site-Kit', // eslint-disable-line camelcase
-	} as google.accounts.id.IdConfiguration ); // eslint-disable-line sitekit/acronym-case
+	const {
+		clientID,
+		defaultButtonOptions,
+		isExistingUserFlow,
+		isPreview,
+		isUserLoggedIn,
+		isWPLogin,
+		redirectTo,
+		redirectCookieTTL,
+		redirectCookieName,
+		redirectCookiePath,
+		shouldShowOneTapPrompt,
+	} = config;
 
-	if ( data.isWPLogin ) {
-		const buttonDivToAddToLoginForm = document.createElement( 'div' );
+	initialize( {
+		client_id: clientID,
+		callback: ( response ) => handleCredentialResponse( response, config ),
+	} );
 
-		buttonDivToAddToLoginForm.classList.add(
+	const login = document.getElementById( 'login' );
+
+	const shouldInsertButton = isWPLogin && login;
+
+	if ( shouldInsertButton ) {
+		const button = document.createElement( 'div' );
+		const loginForm = document.getElementById( 'loginform' );
+
+		button.classList.add(
 			'googlesitekit-sign-in-with-google__frontend-output-button'
 		);
 
-		document
-			.getElementById( 'login' )
-			?.insertBefore(
-				buttonDivToAddToLoginForm,
-				document.getElementById( 'loginform' )
-			);
+		login.insertBefore( button, loginForm );
 	}
 
-	if (
-		! data.isUserLoggedIn ||
-		data.isWPLogin ||
-		data.isPreview ||
-		data.isExistingUserFlow
-	) {
+	const shouldRenderButton =
+		! isUserLoggedIn || isWPLogin || isPreview || isExistingUserFlow;
+
+	if ( shouldRenderButton ) {
 		const buttons = document.querySelectorAll(
 			'.googlesitekit-sign-in-with-google__frontend-output-button'
 		);
 
 		// eslint-disable-next-line sitekit/acronym-case
-		buttons.forEach( ( siwgButtonDiv: HTMLElement ) => {
-			const buttonOptions = {
-				shape:
-					siwgButtonDiv.dataset.googlesitekitSiwgShape ||
-					data.defaultButtonOptions.shape,
-				text:
-					siwgButtonDiv.dataset.googlesitekitSiwgText ||
-					data.defaultButtonOptions.text,
-				theme:
-					siwgButtonDiv.dataset.googlesitekitSiwgTheme ||
-					data.defaultButtonOptions.theme,
-			} as google.accounts.id.GsiButtonConfiguration;
+		buttons.forEach( ( element: HTMLElement ) => {
+			const {
+				googlesitekitSiwgShape: shape = defaultButtonOptions.shape,
+				googlesitekitSiwgText: text = defaultButtonOptions.text,
+				googlesitekitSiwgTheme: theme = defaultButtonOptions.theme,
+			} = element.dataset;
 
-			google.accounts.id.renderButton( siwgButtonDiv, buttonOptions );
+			const buttonOptions = { shape, text, theme } as ButtonConfiguration;
+
+			renderButton( element, buttonOptions );
 		} );
 	}
 
-	if ( data.shouldShowOneTapPrompt ) {
-		google.accounts.id.prompt();
+	if ( shouldShowOneTapPrompt ) {
+		prompt();
 	}
 
-	if ( data.redirectTo ) {
-		const expires = new Date(); // eslint-disable-line sitekit/no-direct-date
-
-		expires.setTime( expires.getTime() + data.redirectCookieTTL );
-
-		document.cookie = `${ data.redirectCookieName }=${
-			data.redirectTo
-		};expires=${ expires.toUTCString() };path=${ data.redirectCookiePath }`;
+	if ( redirectTo ) {
+		document.cookie = `${ redirectCookieName }=${ redirectTo };max-age=${ redirectCookieTTL };path=${ redirectCookiePath }`;
 	}
 
-	/*
-	 * If there is a matching saved comment text in sessionStorage, restore it
-	 * to the comment field and remove it from sessionStorage.
-	 */
-	const postID = document.body.className.match( /postid-(\d+)/ )?.[ 1 ];
-
-	const commentField = <HTMLInputElement | null>(
+	const comment = <HTMLTextAreaElement | null>(
 		document.getElementById( 'comment' )
 	);
 
-	const commentText = sessionStorage.getItem(
-		`siwg-comment-text-${ postID }`
-	);
-
-	if ( commentField && commentText && postID ) {
-		commentField.value = commentText;
-		sessionStorage.removeItem( `siwg-comment-text-${ postID }` );
+	if ( comment ) {
+		restoreCommentText( comment );
 	}
 }
 
-const data = window._googlesitekitSignInWithGoogleData;
+const configJSON = document.currentScript?.dataset.siwgConfig;
+const identityService = global.google?.accounts?.id;
 
-if ( data ) {
-	setupSignInWithGoogle( data );
+if ( identityService && configJSON ) {
+	try {
+		setupSignInWithGoogle( identityService, JSON.parse( configJSON ) );
+	} catch ( error ) {
+		global.console.error( error );
+	}
 }
