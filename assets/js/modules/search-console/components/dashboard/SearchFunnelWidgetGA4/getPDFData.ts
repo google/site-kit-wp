@@ -84,7 +84,6 @@ type ChartRow = Array< Date | number | string | null >;
 // Search Console report type; the per-value format callbacks stay `any` because
 // their inputs genuinely vary per metric. Replace these aliases with the real
 // types once the underlying modules are migrated to TypeScript.
-/* eslint-disable @typescript-eslint/no-explicit-any */
 const partitionReportRows = partitionReport as unknown as (
 	report: unknown,
 	options: { dateRangeLength: number }
@@ -104,15 +103,24 @@ const getAnalyticsChartData = extractAnalytics4DashboardData as unknown as (
 	days: number,
 	referenceDate: string,
 	dataLabels: string[],
-	tooltipDataFormats: Array< ( value: any ) => string >,
-	chartDataFormats: Array< ( value: any ) => any >
+	/**
+	 * This type should be more explicit in the future, it seems that often the
+	 * value here is a number from our existing usage, but this should be
+	 * confirmed.
+	 */
+	tooltipDataFormats: Array< ( value: unknown ) => string >,
+	/**
+	 * These types should be more explicit in the future, it seems that often the
+	 * value here is a number from our existing usage, but this should be
+	 * confirmed.
+	 */
+	chartDataFormats: Array< ( value: unknown ) => unknown >
 ) => ChartRow[];
 
 const getMetricDatapointAndChange = getDatapointAndChange as unknown as (
 	report: unknown,
 	selectedStat: number
 ) => { datapoint: number; change: number | null };
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export interface GetPDFDataParams {
 	registry: Registry;
@@ -156,7 +164,8 @@ interface MetricCardResult {
 }
 
 /**
- * Builds Google Charts options matching the dashboard's Search Funnel line charts.
+ * Builds Google Charts options matching the dashboard's Search Funnel line
+ * charts.
  *
  * The current period draws as a solid smoothed line and the previous period as a
  * dotted line of the same color, mirroring the dashboard.
