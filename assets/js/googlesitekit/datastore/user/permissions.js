@@ -168,8 +168,8 @@ const baseResolvers = {
 
 		try {
 			preloadedPermissions = getGlobalData(
-				'_googlesitekitAPIFetchData.preloadedData'
-			)?.[ '/google-site-kit/v1/core/user/data/permissions' ]?.body;
+				"_googlesitekitAPIFetchData.preloadedData['/google-site-kit/v1/core/user/data/permissions'].body"
+			);
 		} catch ( error ) {
 			global.console.error( 'Could not load core/user permissions.' );
 			return;

@@ -219,6 +219,10 @@ describe( 'core/user authentication', () => {
 				expect( hasCapability ).toBeUndefined();
 
 				await untilResolved( registry, CORE_USER ).getCapabilities();
+
+				expect( console ).toHaveErroredWith(
+					'Could not load core/user permissions.'
+				);
 			} );
 
 			it( 'should return FALSE if base capability is unavailable', () => {
@@ -441,6 +445,10 @@ describe( 'core/user authentication', () => {
 				expect( canViewSharedModule ).toBeUndefined();
 
 				await untilResolved( registry, CORE_USER ).getCapabilities();
+
+				expect( console ).toHaveErroredWith(
+					'Could not load core/user permissions.'
+				);
 			} );
 
 			it( 'should return FALSE if the module is shared but the user does not have the view permission', () => {
