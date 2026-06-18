@@ -27,6 +27,8 @@ import TestRenderer from 'react-test-renderer';
  */
 import DashboardAllTrafficWidgetGA4PDF from './indexPDF';
 
+const LINE_CHART_DATA_URI = 'data:image/jpeg;base64,TU9DS0NIQVJU';
+
 function buildReports( {
 	currentUsers,
 	previousUsers,
@@ -61,7 +63,30 @@ function renderTree(
 }
 
 describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
-	it( 'renders the widget heading, All visitors metric tile, and a chart placeholder against shaped data', () => {
+	it( 'should render the widget heading, All visitors metric tile, and the line chart image when chart images are supplied', () => {
+		const data = buildReports( {
+			currentUsers: '1234',
+			previousUsers: '1000',
+			rowCount: 28,
+		} );
+
+		const tree = renderTree( {
+			data,
+			chartImages: { lineChart: LINE_CHART_DATA_URI },
+		} );
+		const json = JSON.stringify( tree );
+
+		expect( json ).toContain( 'Your site traffic over time' );
+		expect( json ).toContain( 'All visitors' );
+		// `numFmt` abbreviates large totals, matching the dashboard widget.
+		expect( json ).toContain( '1.2K' );
+		expect( json ).toContain( 'Vs. prev. 28 days' );
+		// The rasterised chart is embedded as an image with the supplied data URI.
+		expect( json ).toContain( LINE_CHART_DATA_URI );
+		expect( json ).not.toContain( 'No data available' );
+	} );
+
+	it( 'should render the No data available chart fallback when chart images are missing', () => {
 		const data = buildReports( {
 			currentUsers: '1234',
 			previousUsers: '1000',
@@ -71,54 +96,55 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		const tree = renderTree( { data } );
 		const json = JSON.stringify( tree );
 
-		expect( json ).toContain( 'Your site traffic over time' );
+		// The metric tile still renders; only the chart area falls back.
 		expect( json ).toContain( 'All visitors' );
-		// `numFmt` abbreviates large totals, matching the dashboard widget.
-		expect( json ).toContain( '1.2K' );
-		expect( json ).toContain( 'Vs. prev. 28 days' );
-		// Short chart placeholder block uses our fixed background color.
-		expect( json ).toContain( '#ebeef0' );
-		expect( json ).not.toContain( 'No data available' );
+		expect( json ).toContain( 'No data available' );
+		expect( json ).not.toContain( 'data:image' );
 	} );
 
-	it( 'renders a green chip with a positive signed change', () => {
+	it( 'should render a green chip with a positive signed change', () => {
 		const data = buildReports( {
 			currentUsers: '1200',
 			previousUsers: '1000',
 			rowCount: 28,
 		} );
 
-		const tree = renderTree( { data } );
+		const tree = renderTree( {
+			data,
+			chartImages: { lineChart: LINE_CHART_DATA_URI },
+		} );
 		const json = JSON.stringify( tree );
 
 		expect( json ).toContain( '#d8ffc0' );
 		expect( json ).toContain( '+20%' );
 	} );
 
-	it( 'renders a red chip with a negative signed change', () => {
+	it( 'should render a red chip with a negative signed change', () => {
 		const data = buildReports( {
 			currentUsers: '800',
 			previousUsers: '1000',
 			rowCount: 28,
 		} );
 
-		const tree = renderTree( { data } );
+		const tree = renderTree( {
+			data,
+			chartImages: { lineChart: LINE_CHART_DATA_URI },
+		} );
 		const json = JSON.stringify( tree );
 
 		expect( json ).toContain( '#ffded3' );
 		expect( json ).toContain( '-20%' );
 	} );
 
-	it( 'renders the No data available placeholder when data is null', () => {
+	it( 'should render the No data available placeholder when data is null', () => {
 		const tree = renderTree( { data: null } );
 		const json = JSON.stringify( tree );
 
 		expect( json ).toContain( 'No data available' );
 		expect( json ).not.toContain( 'All visitors' );
-		expect( json ).not.toContain( '#ebeef0' );
 	} );
 
-	it( 'renders the No data available placeholder when data is undefined', () => {
+	it( 'should render the No data available placeholder when data is undefined', () => {
 		const tree = renderTree( {} );
 		const json = JSON.stringify( tree );
 

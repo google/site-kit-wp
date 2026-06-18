@@ -39,7 +39,6 @@ export type PopperPlacement =
 
 const DEFAULT_AUTO_DISMISS_MS = 4000;
 const DEFAULT_OFFSET = 9;
-const POPPER_STYLE = { zIndex: 99999 };
 
 interface PopperProps {
 	/**
@@ -164,7 +163,7 @@ const Popper: FC< PopperProps > = ( {
 			open={ hasAnchorElement }
 			anchorEl={ anchorElement }
 			placement={ placement }
-			style={ POPPER_STYLE }
+			className="googlesitekit-popper-root"
 			// MUI Popper sets `role="tooltip"` by default. Clear it because this is a notification panel, not a tooltip.
 			role={ undefined }
 			modifiers={ {
