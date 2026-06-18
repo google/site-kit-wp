@@ -169,12 +169,9 @@ class Web_Tag extends Module_Web_Tag {
 
 		// Set the cookie time to live to 5 minutes. If the redirect_to is
 		// empty, set the cookie to expire immediately.
-		$cookie_expire_time = 300000;
-		if ( empty( $this->redirect_to ) ) {
-			$cookie_expire_time *= -1;
-		}
+		$cookie_expire_time = ! empty( $this->redirect_to ) ? 5 * MINUTE_IN_SECONDS : 0;
 
-		$script_data = array(
+		$config = array(
 			'clientID'               => $this->settings['clientID'],
 			'defaultButtonOptions'   => $btn_args,
 			'loginURI'               => $login_uri,
@@ -207,13 +204,12 @@ class Web_Tag extends Module_Web_Tag {
 		</style>
 		<?php
 		BC_Functions::wp_print_script_tag( array( 'src' => 'https://accounts.google.com/gsi/client' ) );
-		BC_Functions::wp_print_inline_script_tag(
-			sprintf(
-				'var _googlesitekitSignInWithGoogleData = %s;',
-				wp_json_encode( $script_data )
+		BC_Functions::wp_print_script_tag(
+			array(
+				'data-siwg-config' => wp_json_encode( $config ),
+				'src'              => plugins_url( "dist/assets/js/{$filename}", GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
 			)
 		);
-		BC_Functions::wp_print_script_tag( array( 'src' => plugins_url( "dist/assets/js/{$filename}", GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 		printf( "\n<!-- %s -->\n", esc_html__( 'End Sign in with Google button added by Site Kit', 'google-site-kit' ) );
 	}
 }

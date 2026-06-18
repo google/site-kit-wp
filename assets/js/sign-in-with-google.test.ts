@@ -19,9 +19,12 @@
 /**
  * Internal dependencies
  */
-import type { SignInWithGoogleData } from './sign-in-with-google';
+import {
+	type SignInWithGoogleConfig,
+	setupSignInWithGoogle,
+} from './sign-in-with-google';
 
-const data: SignInWithGoogleData = {
+const config: SignInWithGoogleConfig = {
 	clientID: 'test-client-id.apps.googleusercontent.com',
 	connectNonce: '',
 	defaultButtonOptions: {
@@ -39,7 +42,7 @@ const data: SignInWithGoogleData = {
 	loginURI: 'http://example.com/wp-login.php?action=googlesitekit_auth',
 	redirectCookieName: 'googlesitekit_siwg_redirect_to',
 	redirectCookiePath: '/',
-	redirectCookieTTL: 60000,
+	redirectCookieTTL: 300,
 	redirectTo: '',
 	shouldShowOneTapPrompt: false,
 };
@@ -50,8 +53,6 @@ describe( 'sign-in-with-google', () => {
 
 		document.body.innerHTML =
 			'<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>';
-
-		window._googlesitekitSignInWithGoogleData = data;
 
 		( window.google as unknown as {
 			accounts: {
@@ -72,12 +73,12 @@ describe( 'sign-in-with-google', () => {
 		};
 	} );
 
-	it( 'should initialize with config data and render a button', async () => {
-		await import( './sign-in-with-google' );
+	it( 'should initialize with config data and render a button', () => {
+		setupSignInWithGoogle( window.google.accounts.id, config );
 
 		expect( window.google.accounts.id.initialize ).toHaveBeenCalledWith(
 			expect.objectContaining( {
-				client_id: data.clientID,
+				client_id: config.clientID,
 			} )
 		);
 
@@ -85,45 +86,41 @@ describe( 'sign-in-with-google', () => {
 		expect( window.google.accounts.id.renderButton ).toHaveBeenCalled();
 	} );
 
-	it( 'should initialize with config data and show the One Tap prompt when configured', async () => {
-		window._googlesitekitSignInWithGoogleData = {
-			...data,
+	it( 'should initialize with config data and show the One Tap prompt when configured', () => {
+		setupSignInWithGoogle( window.google.accounts.id, {
+			...config,
 			shouldShowOneTapPrompt: true,
-		};
-
-		await import( './sign-in-with-google' );
+		} );
 
 		expect( window.google.accounts.id.initialize ).toHaveBeenCalledWith(
 			expect.objectContaining( {
-				client_id: data.clientID,
+				client_id: config.clientID,
 			} )
 		);
 
 		expect( window.google.accounts.id.prompt ).toHaveBeenCalled();
 	} );
 
-	it( 'should add a button to the login form when isWPLogin is true and the form is present', async () => {
+	it( 'should add a button to the login form when isWPLogin is true and the form is present', () => {
 		document.body.innerHTML =
 			'<div id="login"><form id="loginform"></form></div>';
 
-		window._googlesitekitSignInWithGoogleData = {
-			...data,
+		setupSignInWithGoogle( window.google.accounts.id, {
+			...config,
 			isWPLogin: true,
-		};
-
-		await import( './sign-in-with-google' );
+		} );
 
 		expect( window.google.accounts.id.initialize ).toHaveBeenCalledWith(
 			expect.objectContaining( {
-				client_id: data.clientID,
+				client_id: config.clientID,
 			} )
 		);
 
 		expect( window.google.accounts.id.renderButton ).toHaveBeenCalled();
 	} );
 
-	it( 'should not render with an explicit width by default', async () => {
-		await import( './sign-in-with-google' );
+	it( 'should not render with an explicit width by default', () => {
+		setupSignInWithGoogle( window.google.accounts.id, config );
 
 		expect( window.google.accounts.id.renderButton ).toHaveBeenCalledWith(
 			expect.any( HTMLElement ),
@@ -133,11 +130,11 @@ describe( 'sign-in-with-google', () => {
 		);
 	} );
 
-	it( 'should render with an explicit width if the width attribute is used', async () => {
+	it( 'should render with an explicit width if the width attribute is used', () => {
 		document.body.innerHTML =
 			'<div class="googlesitekit-sign-in-with-google__frontend-output-button" data-googlesitekit-siwg-width="200"></div>';
 
-		await import( './sign-in-with-google' );
+		setupSignInWithGoogle( window.google.accounts.id, config );
 
 		expect( window.google.accounts.id.renderButton ).toHaveBeenCalledWith(
 			expect.any( HTMLElement ),
@@ -147,16 +144,14 @@ describe( 'sign-in-with-google', () => {
 		);
 	} );
 
-	it( 'should render width an explicit width of 320 on the login form', async () => {
+	it( 'should render width an explicit width of 320 on the login form', () => {
 		document.body.innerHTML =
 			'<div id="login"><form id="loginform"></form></div>';
 
-		window._googlesitekitSignInWithGoogleData = {
-			...data,
+		setupSignInWithGoogle( window.google.accounts.id, {
+			...config,
 			isWPLogin: true,
-		};
-
-		await import( './sign-in-with-google' );
+		} );
 
 		expect( window.google.accounts.id.renderButton ).toHaveBeenCalledWith(
 			expect.any( HTMLElement ),

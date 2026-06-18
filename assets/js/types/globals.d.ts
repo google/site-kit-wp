@@ -25,7 +25,6 @@ declare global {
 	interface Window {
 		gtag: ( ...args: unknown[] ) => void;
 		_googlesitekitAnalyticsTrackingData?: import('@/js/analytics-advanced-tracking/types').AdvancedTrackingEvent[];
-		_googlesitekitSignInWithGoogleData?: import('@/js/sign-in-with-google').SignInWithGoogleData;
 		googlesitekitAdminPointersTracking: {
 			register: (
 				slug: string,

@@ -79,7 +79,7 @@ class Web_TagTest extends TestCase {
 
 		// Check that the Sign in with Google script is rendered.
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Footer should include SIWG marker text.' );
-		$this->assertStringContainsString( 'var _googlesitekitSignInWithGoogleData = ', $output, 'Footer should include SIWG inline config data.' );
+		$this->assertStringContainsString( 'data-siwg-config', $output, 'Footer should include SIWG config data.' );
 		$this->assertStringContainsString( 'dist/assets/js/sign-in-with-google', $output, 'Footer should include the SIWG bundle script tag.' );
 		$this->assertStringContainsString( '"clientID":"test-client-id.app.googleusercontent.com"', $output, 'Footer should include configured client ID.' );
 
@@ -98,7 +98,7 @@ class Web_TagTest extends TestCase {
 
 		// Check the rendered button contains the expected data.
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Footer should include SIWG marker text for custom settings.' );
-		$this->assertStringContainsString( 'var _googlesitekitSignInWithGoogleData = ', $output, 'Footer should include SIWG inline config data.' );
+		$this->assertStringContainsString( 'data-siwg-config', $output, 'Footer should include SIWG config data.' );
 		$this->assertStringContainsString( 'dist/assets/js/sign-in-with-google', $output, 'Footer should include the SIWG bundle script tag.' );
 
 		$this->assertStringContainsString( '"clientID":"1234567890.googleusercontent.com"', $output, 'Footer should include client ID config.' );
@@ -115,7 +115,7 @@ class Web_TagTest extends TestCase {
 
 		// The button shouldn't be rendered on a non-login page.
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Footer should still include SIWG marker on front page (script-only).' );
-		$this->assertStringContainsString( 'var _googlesitekitSignInWithGoogleData = ', $output, 'Footer should include SIWG inline config data.' );
+		$this->assertStringContainsString( 'data-siwg-config', $output, 'Footer should include SIWG config data.' );
 		$this->assertStringContainsString( 'dist/assets/js/sign-in-with-google', $output, 'Footer should include the SIWG bundle script tag.' );
 
 		// Enable Sign in with Google One Tap.
@@ -134,7 +134,7 @@ class Web_TagTest extends TestCase {
 
 		// Check the rendered button contains the expected data.
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Footer should include SIWG marker when One Tap enabled on all pages.' );
-		$this->assertStringContainsString( 'var _googlesitekitSignInWithGoogleData = ', $output, 'Footer should include SIWG inline config data.' );
+		$this->assertStringContainsString( 'data-siwg-config', $output, 'Footer should include SIWG config data.' );
 		$this->assertStringContainsString( 'dist/assets/js/sign-in-with-google', $output, 'Footer should include the SIWG bundle script tag.' );
 	}
 
@@ -147,7 +147,7 @@ class Web_TagTest extends TestCase {
 
 		// Check that the Sign in with Google script is rendered.
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Login footer should include SIWG marker text.' );
-		$this->assertStringContainsString( 'var _googlesitekitSignInWithGoogleData = ', $output, 'Login footer should include SIWG inline config data.' );
+		$this->assertStringContainsString( 'data-siwg-config', $output, 'Login footer should include SIWG config data.' );
 		$this->assertStringContainsString( 'dist/assets/js/sign-in-with-google', $output, 'Login footer should include the SIWG bundle script tag.' );
 		$this->assertStringContainsString( '"clientID":"test-client-id.app.googleusercontent.com"', $output, 'Login footer should include configured client ID.' );
 	}
