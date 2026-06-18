@@ -52,7 +52,8 @@ const Footer: FC< FooterProps > = ( { closePanel, hasSelection } ) => {
 		[]
 	);
 	const selectedContextSlugs = useSelect(
-		( select: Select ) => select( CORE_PDF ).getSelectedContextSlugs(),
+		( select: Select ) =>
+			select( CORE_PDF ).getSelectedContextSlugs() || [],
 		[]
 	);
 

@@ -223,7 +223,8 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		[]
 	);
 	const selectedContextSlugs = useSelect(
-		( select: Select ) => select( CORE_PDF ).getSelectedContextSlugs(),
+		( select: Select ) =>
+			select( CORE_PDF ).getSelectedContextSlugs() || [],
 		[]
 	);
 	const dates = useSelect(
@@ -307,6 +308,33 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 			reportSiteName.length > 0 ? reportSiteName : referenceSiteURL || '';
 		const resolvedDateRange =
 			typeof dateRange === 'string' ? dateRange : undefined;
+
+		// Resolve the lazy component chunk up front and fetch widget data.
+		// @react-pdf does not honour Suspense, so the document tree must hold
+		// a concrete component before rendering starts.
+		async function resolveWidgetData(
+			widget: WidgetWithPDF
+		): Promise<
+			Pick< PDFReportWidget, 'Component' | 'data' | 'chartImages' >
+		> {
+			let Component = widget.pdf.Component;
+			if ( typeof Component.preload === 'function' ) {
+				const loadedModule = await Component.preload();
+				throwIfAborted( signal );
+				Component = loadedModule.default;
+			}
+			const result = await widget.pdf.getData( {
+				registry,
+				dates,
+				signal,
+			} );
+			throwIfAborted( signal );
+			return {
+				Component,
+				data: result?.data ?? null,
+				chartImages: result?.chartImages,
+			};
+		}
 
 		async function run() {
 			let currentStage: Stage = STAGE_LOADING;
@@ -402,28 +430,10 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 					const widget = flatWidgets[ index ];
 
 					try {
-						// Resolve the lazy component chunk up front: @react-pdf
-						// does not honour Suspense, so the document tree must
-						// hold a concrete component.
-						let Component = widget.pdf.Component;
-						if ( typeof Component.preload === 'function' ) {
-							const loadedModule = await Component.preload();
-							throwIfAborted( signal );
-							Component = loadedModule.default;
-						}
-
-						const result = await widget.pdf.getData( {
-							registry,
-							dates,
-							signal,
-						} );
-						throwIfAborted( signal );
-
-						loaded.set( widget.slug, {
-							Component,
-							data: result?.data ?? null,
-							chartImages: result?.chartImages,
-						} );
+						loaded.set(
+							widget.slug,
+							await resolveWidgetData( widget )
+						);
 					} catch ( error ) {
 						if ( isAbortError( error ) ) {
 							throw error;
