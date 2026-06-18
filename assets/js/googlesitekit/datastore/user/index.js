@@ -39,7 +39,6 @@ import notifications from './notifications';
 import permissions from './permissions';
 import prompts from './prompts';
 import setupFlow from './setup-flow';
-import siteGoalsSettings from './site-goals-settings';
 import surveys from './surveys';
 import tracking from './tracking';
 import userInfo from './user-info';
@@ -68,8 +67,7 @@ const store = combineStores(
 	conversionReportingSettings,
 	emailReportingSettings,
 	initialSetupSettings,
-	setupFlow,
-	siteGoalsSettings
+	setupFlow
 );
 
 export const {

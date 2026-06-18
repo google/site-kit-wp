@@ -33,7 +33,6 @@ import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import SelectionPanel from '@/js/components/SelectionPanel';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useFormValue from '@/js/hooks/useFormValue';
 import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
@@ -80,12 +79,13 @@ const SiteGoalsSelectionPanel: FC = () => {
 	);
 
 	const effectiveDrivers = useSelect(
-		( select: Select ) => select( CORE_USER ).getSiteGoalsGoalDrivers(),
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getSiteGoalsGoalDrivers(),
 		[]
 	);
 	const effectiveVisitorEngagement = useSelect(
 		( select: Select ) =>
-			select( CORE_USER ).getSiteGoalsVisitorEngagement(),
+			select( MODULES_ANALYTICS_4 ).getSiteGoalsVisitorEngagement(),
 		[]
 	);
 	const [ isCustomDimensionsAutoSubmit ] = useFormValue(

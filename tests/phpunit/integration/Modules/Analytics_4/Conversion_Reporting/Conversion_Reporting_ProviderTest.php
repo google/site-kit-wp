@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Provider;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
-use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Site_Settings;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeEcommerceEventProvider_Active;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeLeadEventProvider_Active;
 use Google\Site_Kit\Tests\FakeHttp;
@@ -136,7 +136,7 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 
 		$this->invoke_cron_callback( $provider );
 
-		$site_goals_settings = new Site_Goals_Settings( $options );
+		$site_goals_settings = new Site_Goals_Site_Settings( $options );
 		$site_goals_settings->register();
 
 		$this->assertEmpty( $site_goals_settings->get()['activeWidgets'], 'With no active providers, the cron callback should not add any activeWidgets.' );
@@ -206,7 +206,7 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 
 		$this->invoke_cron_callback( $provider );
 
-		$site_goals_settings = new Site_Goals_Settings( $options );
+		$site_goals_settings = new Site_Goals_Site_Settings( $options );
 		$site_goals_settings->register();
 		$active_widgets = $site_goals_settings->get()['activeWidgets'];
 
@@ -278,7 +278,7 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 
 		$this->invoke_cron_callback( $provider );
 
-		$site_goals_settings = new Site_Goals_Settings( $options );
+		$site_goals_settings = new Site_Goals_Site_Settings( $options );
 		$site_goals_settings->register();
 		$active_widgets = $site_goals_settings->get()['activeWidgets'];
 

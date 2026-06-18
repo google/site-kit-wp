@@ -18,7 +18,7 @@ use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
-use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Site_Settings;
 
 /**
  * Class providing the integration of conversion reporting.
@@ -51,11 +51,11 @@ class Conversion_Reporting_Provider {
 	private $analytics;
 
 	/**
-	 * Site_Goals_Settings instance.
+	 * Site_Goals_Site_Settings instance.
 	 *
-	 * @var Site_Goals_Settings
+	 * @var Site_Goals_Site_Settings
 	 */
-	private $site_goals_settings;
+	private $site_goals_site_settings;
 
 	/**
 	 * Conversion_Reporting_Cron instance.
@@ -92,16 +92,16 @@ class Conversion_Reporting_Provider {
 		$this->user_options = $user_options;
 		$this->analytics    = $analytics;
 
-		$transients                = new Transients( $context );
-		$this->site_goals_settings = new Site_Goals_Settings( new Options( $context ) );
-		$new_badge_events_sync     = new Conversion_Reporting_New_Badge_Events_Sync( $transients );
-		$this->events_sync         = new Conversion_Reporting_Events_Sync(
+		$transients                     = new Transients( $context );
+		$this->site_goals_site_settings = new Site_Goals_Site_Settings( new Options( $context ) );
+		$new_badge_events_sync          = new Conversion_Reporting_New_Badge_Events_Sync( $transients );
+		$this->events_sync              = new Conversion_Reporting_Events_Sync(
 			$settings,
 			$transients,
 			$this->analytics,
 			$new_badge_events_sync
 		);
-		$this->cron                = new Conversion_Reporting_Cron( fn() => $this->cron_callback() );
+		$this->cron                     = new Conversion_Reporting_Cron( fn() => $this->cron_callback() );
 	}
 
 	/**
@@ -157,7 +157,7 @@ class Conversion_Reporting_Provider {
 		}
 
 		if ( ! empty( $active_widgets ) ) {
-			$this->site_goals_settings->merge( array( 'activeWidgets' => $active_widgets ) );
+			$this->site_goals_site_settings->merge( array( 'activeWidgets' => $active_widgets ) );
 		}
 
 		$restore_user();

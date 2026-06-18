@@ -7,10 +7,12 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 namespace Google\Site_Kit\Tests\Modules\Analytics_4;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Settings;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -25,89 +27,185 @@ class Site_Goals_SettingsTest extends TestCase {
 
 	public function set_up() {
 		parent::set_up();
-		$context                   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options                   = new Options( $context );
-		$this->site_goals_settings = new Site_Goals_Settings( $options );
+		$user_id      = $this->factory()->user->create();
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options = new User_Options( $context, $user_id );
+		$meta_key     = $user_options->get_meta_key( Site_Goals_Settings::OPTION );
+
+		unregister_meta_key( 'user', $meta_key );
+		remove_all_filters( "sanitize_user_meta_{$meta_key}" );
+
+		$this->site_goals_settings = new Site_Goals_Settings( $user_options );
 		$this->site_goals_settings->register();
 	}
 
 	public function test_get_default() {
-		$this->assertEquals( array( 'activeWidgets' => array() ), $this->site_goals_settings->get(), 'The default settings should have an empty activeWidgets array.' );
+		$this->assertEquals( array(), $this->site_goals_settings->get() );
 	}
 
-	public function test_get_type() {
-		$this->assertEquals( 'array', $this->site_goals_settings->get_type(), 'The setting type should be array.' );
+	public function test_merge__saves_goal_drivers_and_visitor_engagement() {
+		$settings = array(
+			'goalDrivers'       => array(
+				'ecommerce' => array( 'topTrafficChannels', 'visitorType' ),
+				'lead'      => array( 'topTrafficChannels' ),
+			),
+			'visitorEngagement' => array(
+				'ecommerce' => array( 'add_to_cart' ),
+				'lead'      => array(),
+			),
+		);
+
+		$this->site_goals_settings->merge( $settings );
+
+		$this->assertEqualSetsWithIndex( $settings, $this->site_goals_settings->get() );
 	}
 
-	public function test_get_view_only_keys() {
-		$this->assertSame( array( 'activeWidgets' ), $this->site_goals_settings->get_view_only_keys(), 'Only activeWidgets should be a view-only key.' );
+	public function test_merge__preserves_existing_settings() {
+		$this->site_goals_settings->merge(
+			array(
+				'goalDrivers' => array(
+					'ecommerce' => array( 'topTrafficChannels' ),
+					'lead'      => array(),
+				),
+			)
+		);
+
+		// Partial save of only `visitorEngagement` preserves existing `goalDrivers`.
+		$this->site_goals_settings->merge(
+			array(
+				'visitorEngagement' => array(
+					'ecommerce' => array( 'add_to_cart' ),
+				),
+			)
+		);
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'goalDrivers'       => array(
+					'ecommerce' => array( 'topTrafficChannels' ),
+					'lead'      => array(),
+				),
+				'visitorEngagement' => array(
+					'ecommerce' => array( 'add_to_cart' ),
+				),
+			),
+			$this->site_goals_settings->get()
+		);
 	}
 
-	public function test_merge__sets_active_widgets() {
-		$this->site_goals_settings->merge( array( 'activeWidgets' => array( 'ecommerce' ) ) );
+	public function test_merge__ignores_unknown_keys() {
+		$this->site_goals_settings->merge(
+			array(
+				'goalDrivers' => array(
+					'ecommerce' => array( 'topTrafficChannels' ),
+				),
+				'unknownKey'  => array( 'foo' ),
+			)
+		);
 
-		$this->assertEquals( array( 'activeWidgets' => array( 'ecommerce' ) ), $this->site_goals_settings->get(), 'The merged activeWidgets should be persisted.' );
+		$this->assertEqualSetsWithIndex(
+			array(
+				'goalDrivers' => array(
+					'ecommerce' => array( 'topTrafficChannels' ),
+				),
+			),
+			$this->site_goals_settings->get()
+		);
 	}
 
-	public function test_merge__unions_active_widgets() {
-		$this->site_goals_settings->merge( array( 'activeWidgets' => array( 'ecommerce' ) ) );
-		$this->site_goals_settings->merge( array( 'activeWidgets' => array( 'lead' ) ) );
+	public function test_merge__ignores_null_values() {
+		$this->site_goals_settings->merge(
+			array(
+				'goalDrivers' => array(
+					'ecommerce' => array( 'topTrafficChannels' ),
+				),
+			)
+		);
 
-		$result = $this->site_goals_settings->get();
-		$this->assertContains( 'ecommerce', $result['activeWidgets'], 'The first merged widget should be retained after a second merge.' );
-		$this->assertContains( 'lead', $result['activeWidgets'], 'The second merged widget should be added to activeWidgets.' );
-	}
+		$this->site_goals_settings->merge(
+			array(
+				'goalDrivers'       => null,
+				'visitorEngagement' => array(
+					'ecommerce' => array( 'add_to_cart' ),
+				),
+			)
+		);
 
-	public function test_merge__deduplicates_active_widgets() {
-		$this->site_goals_settings->merge( array( 'activeWidgets' => array( 'ecommerce' ) ) );
-		$this->site_goals_settings->merge( array( 'activeWidgets' => array( 'ecommerce' ) ) );
-
-		$this->assertEquals( array( 'activeWidgets' => array( 'ecommerce' ) ), $this->site_goals_settings->get(), 'Duplicate widget values should be deduplicated after successive merges.' );
-	}
-
-	public function test_merge__returns_merged_value() {
-		$result = $this->site_goals_settings->merge( array( 'activeWidgets' => array( 'ecommerce' ) ) );
-
-		$this->assertIsArray( $result, 'The merge method should return an array.' );
-		$this->assertArrayHasKey( 'activeWidgets', $result, 'The returned array should include the activeWidgets key.' );
+		$this->assertEqualSetsWithIndex(
+			array(
+				'goalDrivers'       => array(
+					'ecommerce' => array( 'topTrafficChannels' ),
+				),
+				'visitorEngagement' => array(
+					'ecommerce' => array( 'add_to_cart' ),
+				),
+			),
+			$this->site_goals_settings->get()
+		);
 	}
 
 	public function data_site_goals_settings() {
 		return array(
-			'non-array - bool'              => array(
+			'non-array - bool'                       => array(
 				false,
-				array( 'activeWidgets' => array() ),
+				array(),
 			),
-			'non-array - int'               => array(
+			'non-array - int'                        => array(
 				123,
-				array( 'activeWidgets' => array() ),
+				array(),
 			),
-			'valid activeWidgets ecommerce' => array(
-				array( 'activeWidgets' => array( 'ecommerce' ) ),
-				array( 'activeWidgets' => array( 'ecommerce' ) ),
-			),
-			'valid activeWidgets both'      => array(
-				array( 'activeWidgets' => array( 'ecommerce', 'lead' ) ),
-				array( 'activeWidgets' => array( 'ecommerce', 'lead' ) ),
-			),
-			'strips invalid widget values'  => array(
-				array( 'activeWidgets' => array( 'ecommerce', 'invalid-widget', 'lead' ) ),
-				array( 'activeWidgets' => array( 'ecommerce', 'lead' ) ),
-			),
-			'strips non-string from array'  => array(
-				array( 'activeWidgets' => array( 'ecommerce', false, null, array() ) ),
-				array( 'activeWidgets' => array( 'ecommerce' ) ),
-			),
-			'non-array activeWidgets'       => array(
-				array( 'activeWidgets' => 'not-an-array' ),
-				array( 'activeWidgets' => array() ),
-			),
-			'unknown top-level key ignored' => array(
+			'strips non-string values from sub-keys' => array(
 				array(
-					'activeWidgets' => array( 'lead' ),
-					'unknownKey'    => 'value',
+					'goalDrivers' => array(
+						'ecommerce' => array( 'topTrafficChannels', false, null, array(), 'visitorType', '' ),
+						'lead'      => array( 'topTrafficChannels' ),
+					),
 				),
-				array( 'activeWidgets' => array( 'lead' ) ),
+				array(
+					'goalDrivers' => array(
+						'ecommerce' => array( 'topTrafficChannels', 'visitorType' ),
+						'lead'      => array( 'topTrafficChannels' ),
+					),
+				),
+			),
+			'drops non-array top-level keys'         => array(
+				array(
+					'goalDrivers'       => 'invalid',
+					'visitorEngagement' => array(
+						'ecommerce' => array( 'add_to_cart' ),
+					),
+				),
+				array(
+					'visitorEngagement' => array(
+						'ecommerce' => array( 'add_to_cart' ),
+					),
+				),
+			),
+			'drops non-array sub-keys'               => array(
+				array(
+					'goalDrivers' => array(
+						'ecommerce' => 'invalid',
+						'lead'      => array( 'visitorType' ),
+					),
+				),
+				array(
+					'goalDrivers' => array(
+						'lead' => array( 'visitorType' ),
+					),
+				),
+			),
+			'drops unknown keys'                     => array(
+				array(
+					'goalDrivers' => array(
+						'ecommerce' => array( 'topTrafficChannels' ),
+					),
+					'unknownKey'  => array( 'foo' ),
+				),
+				array(
+					'goalDrivers' => array(
+						'ecommerce' => array( 'topTrafficChannels' ),
+					),
+				),
 			),
 		);
 	}
@@ -120,6 +218,6 @@ class Site_Goals_SettingsTest extends TestCase {
 	 */
 	public function test_get_sanitize_callback( $input, $expected ) {
 		$this->site_goals_settings->set( $input );
-		$this->assertEquals( $expected, $this->site_goals_settings->get(), 'The sanitize callback should produce the expected output.' );
+		$this->assertEquals( $expected, $this->site_goals_settings->get() );
 	}
 }

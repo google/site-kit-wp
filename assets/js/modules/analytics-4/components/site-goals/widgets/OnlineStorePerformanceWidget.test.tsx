@@ -702,7 +702,9 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetSettings( { availableCustomDimensions: [] } );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
-		registry.dispatch( CORE_USER ).receiveGetSiteGoalsSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSiteGoalsSettings( {} );
 		// Default to the breakdown notice being hidden (intro modal not yet
 		// dismissed); individual tests opt in by dismissing the intro modal.
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
@@ -1379,7 +1381,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 				ENUM_CONVERSION_EVENTS.PURCHASE,
 				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
 			] );
-		registry.dispatch( CORE_USER ).receiveGetSiteGoalsSettings( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
 			visitorEngagement: {
 				[ GOAL_TYPES.ECOMMERCE ]: [],
 				[ GOAL_TYPES.LEAD ]: [],

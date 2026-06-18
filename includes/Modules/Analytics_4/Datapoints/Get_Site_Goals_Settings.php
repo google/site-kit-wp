@@ -10,28 +10,28 @@
 
 namespace Google\Site_Kit\Modules\Analytics_4\Datapoints;
 
-use Google\Site_Kit\Core\Modules\Executable_Datapoint;
-use Google\Site_Kit\Core\Modules\Shareable_Datapoint;
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Site_Settings;
 
 /**
- * Class for the site-wide Site Goals settings retrieval datapoint.
+ * Class for the Site Goals settings retrieval datapoint.
  *
- * @since n.e.x.t
+ * Returns a merged object combining per-user settings (goalDrivers,
+ * visitorEngagement) with site-wide settings (activeWidgets).
+ *
+ * @since 1.181.0
  * @access private
  * @ignore
  */
-class Get_Site_Goals_Settings extends Shareable_Datapoint implements Executable_Datapoint {
+class Get_Site_Goals_Settings extends Site_Goals_Settings_Datapoint {
 
 	/**
-	 * Site_Goals_Settings instance.
+	 * Site-wide Site Goals settings instance.
 	 *
 	 * @since n.e.x.t
-	 * @var Site_Goals_Settings
+	 * @var Site_Goals_Site_Settings
 	 */
-	private $site_goals_settings;
+	private $site_goals_site_settings;
 
 	/**
 	 * Constructor.
@@ -42,38 +42,26 @@ class Get_Site_Goals_Settings extends Shareable_Datapoint implements Executable_
 	 */
 	public function __construct( array $definition ) {
 		parent::__construct( $definition );
-		$this->site_goals_settings = $definition['site_goals_settings'];
+		$this->site_goals_site_settings = $definition['site_goals_site_settings'];
 	}
 
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
 	 * @param Data_Request $data_request Data request object.
-	 * @return callable Closure that returns site-wide Site Goals settings.
+	 * @return callable Closure that returns merged Site Goals settings.
 	 */
 	public function create_request( Data_Request $data_request ) {
-		$site_goals_settings = $this->site_goals_settings;
+		$site_goals_settings      = $this->site_goals_settings;
+		$site_goals_site_settings = $this->site_goals_site_settings;
 
-		return function () use ( $site_goals_settings ) {
-			$settings = $site_goals_settings->get();
-			return current_user_can( Permissions::MANAGE_OPTIONS )
-				? $settings
-				: array_intersect_key( $settings, array_flip( $site_goals_settings->get_view_only_keys() ) );
+		return function () use ( $site_goals_settings, $site_goals_site_settings ) {
+			return array_merge(
+				$site_goals_settings->get(),
+				$site_goals_site_settings->get()
+			);
 		};
-	}
-
-	/**
-	 * Parses a response.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param mixed        $response Request response.
-	 * @param Data_Request $data     Data request object.
-	 * @return mixed The response without any modifications.
-	 */
-	public function parse_response( $response, Data_Request $data ) {
-		return $response;
 	}
 }

@@ -6,132 +6,125 @@
  * @copyright 2026 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Modules\Analytics_4;
 
-use Google\Site_Kit\Core\Storage\Setting;
-use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
+use Google\Site_Kit\Core\Storage\User_Setting;
 use Google\Site_Kit\Core\Util\Sanitize;
 
 /**
- * Class for site-wide Site Goals settings.
+ * Class for per-user Site Goals settings.
  *
- * @since n.e.x.t
+ * @since 1.181.0
  * @access private
  * @ignore
  */
-class Site_Goals_Settings extends Setting implements Setting_With_ViewOnly_Keys_Interface {
+class Site_Goals_Settings extends User_Setting {
 
 	/**
-	 * The option name for this setting.
+	 * The user option name for Site Goals settings.
 	 */
 	const OPTION = 'googlesitekit_analytics-4_site_goals_settings';
 
 	/**
-	 * Allowed values for the `activeWidgets` key.
+	 * Allowed top-level setting keys.
 	 */
-	const ALLOWED_WIDGETS = array( 'ecommerce', 'lead' );
+	const SETTING_KEYS = array( 'goalDrivers', 'visitorEngagement' );
 
 	/**
-	 * Gets the default value for settings.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return array The default value.
+	 * Per-setting goal type sub-keys.
 	 */
-	public function get_default() {
-		return array(
-			'activeWidgets' => array(),
-		);
+	const GOAL_TYPE_KEYS = array( 'ecommerce', 'lead' );
+
+	/**
+	 * Gets the expected value type.
+	 *
+	 * @since 1.181.0
+	 *
+	 * @return string The type name.
+	 */
+	protected function get_type() {
+		return 'object';
 	}
 
 	/**
-	 * Gets the type of the setting.
+	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
-	 * @return string The type of the setting.
+	 * @return array The default value.
 	 */
-	public function get_type() {
-		return 'array';
+	protected function get_default() {
+		return array();
+	}
+
+	/**
+	 * Merges an array of settings to update.
+	 *
+	 * @since 1.181.0
+	 *
+	 * @param array $partial Partial settings array to save.
+	 * @return bool True on success, false on failure.
+	 */
+	public function merge( array $partial ) {
+		// Drop null values so a partial save preserves existing keys instead of
+		// overwriting them. Unknown keys are dropped by the sanitize callback on set().
+		$partial = array_filter(
+			$partial,
+			function ( $value ) {
+				return null !== $value;
+			}
+		);
+
+		return $this->set( array_merge( $this->get(), $partial ) );
 	}
 
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
-	 * @return callable The sanitization callback.
+	 * @return callable Sanitize callback.
 	 */
 	protected function get_sanitize_callback() {
-		return function ( $option ) {
-			return $this->sanitize( $option );
+		return function ( $settings ) {
+			if ( ! is_array( $settings ) ) {
+				return array();
+			}
+
+			$sanitized_settings = array();
+
+			foreach ( self::SETTING_KEYS as $key ) {
+				if ( isset( $settings[ $key ] ) && is_array( $settings[ $key ] ) ) {
+					$sanitized_settings[ $key ] = $this->sanitize_goal_type_selections( $settings[ $key ] );
+				}
+			}
+
+			return $sanitized_settings;
 		};
 	}
 
 	/**
-	 * Gets the view-only keys for the setting.
+	 * Sanitizes the per-goal-type selections, validating `ecommerce` and `lead`
+	 * sub-keys as string arrays.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.181.0
 	 *
-	 * @return array List of view-only keys.
+	 * @param array $selections Goal type selections to sanitize.
+	 * @return array The sanitized selections.
 	 */
-	public function get_view_only_keys() {
-		return array( 'activeWidgets' );
-	}
+	private function sanitize_goal_type_selections( $selections ) {
+		$sanitized = array();
 
-	/**
-	 * Merges the given settings with the existing ones, unioning activeWidgets
-	 * so that existing values are never dropped.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $settings The settings to merge.
-	 * @return array The merged settings.
-	 */
-	public function merge( $settings ) {
-		$existing = $this->get();
-
-		if ( isset( $settings['activeWidgets'] ) && is_array( $settings['activeWidgets'] ) ) {
-			$settings['activeWidgets'] = array_values(
-				array_unique(
-					array_merge(
-						$existing['activeWidgets'] ?? array(),
-						$settings['activeWidgets']
-					)
-				)
-			);
+		foreach ( self::GOAL_TYPE_KEYS as $goal_type ) {
+			if ( isset( $selections[ $goal_type ] ) && is_array( $selections[ $goal_type ] ) ) {
+				$sanitized[ $goal_type ] = Sanitize::sanitize_string_list( $selections[ $goal_type ] );
+			}
 		}
 
-		$merged = array_merge( $existing, $settings );
-		$this->set( $merged );
-
-		return $merged;
-	}
-
-	/**
-	 * Sanitizes the settings.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $option The option to sanitize.
-	 * @return array The sanitized settings.
-	 */
-	private function sanitize( $option ) {
-		$new_option = $this->get_default();
-
-		if ( isset( $option['activeWidgets'] ) && is_array( $option['activeWidgets'] ) ) {
-			$new_option['activeWidgets'] = array_values(
-				array_unique(
-					array_intersect(
-						Sanitize::sanitize_string_list( $option['activeWidgets'] ),
-						self::ALLOWED_WIDGETS
-					)
-				)
-			);
-		}
-
-		return $new_option;
+		return $sanitized;
 	}
 }

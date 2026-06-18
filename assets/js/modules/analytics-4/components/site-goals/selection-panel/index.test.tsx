@@ -103,7 +103,9 @@ describe( 'SiteGoalsSelectionPanel', () => {
 				ENUM_CONVERSION_EVENTS.CONTACT,
 			] );
 
-		registry.dispatch( CORE_USER ).receiveGetSiteGoalsSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSiteGoalsSettings( {} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetSettings( { availableCustomDimensions: [] } );
@@ -317,7 +319,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 	it( 'persists the saved goal driver selection to the module store on save', async () => {
 		fetchMock.postOnce(
 			new RegExp(
-				'^/google-site-kit/v1/core/user/data/site-goals-settings'
+				'^/google-site-kit/v1/modules/analytics-4/data/save-site-goals-settings'
 			),
 			( _url, opts ) => ( {
 				body: JSON.parse( opts.body as string ).data.settings,
@@ -345,7 +347,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 
 		await waitFor( () => {
 			const goalDrivers = registry
-				.select( CORE_USER )
+				.select( MODULES_ANALYTICS_4 )
 				.getSiteGoalsGoalDrivers();
 
 			expect( goalDrivers[ GOAL_TYPES.ECOMMERCE ] ).not.toContain(
@@ -357,7 +359,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 	it( 'persists the saved visitor engagement selection to the module store on save', async () => {
 		fetchMock.postOnce(
 			new RegExp(
-				'^/google-site-kit/v1/core/user/data/site-goals-settings'
+				'^/google-site-kit/v1/modules/analytics-4/data/save-site-goals-settings'
 			),
 			( _url, opts ) => ( {
 				body: JSON.parse( opts.body as string ).data.settings,
@@ -385,7 +387,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 
 		await waitFor( () => {
 			const visitorEngagement = registry
-				.select( CORE_USER )
+				.select( MODULES_ANALYTICS_4 )
 				.getSiteGoalsVisitorEngagement();
 
 			expect( visitorEngagement[ GOAL_TYPES.ECOMMERCE ] ).not.toContain(

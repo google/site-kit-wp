@@ -684,7 +684,9 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetSettings( { availableCustomDimensions: [] } );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
-		registry.dispatch( CORE_USER ).receiveGetSiteGoalsSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSiteGoalsSettings( {} );
 		// Default to the breakdown notice being hidden (intro modal not yet
 		// dismissed); individual tests opt in by dismissing the intro modal.
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
