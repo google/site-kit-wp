@@ -20,7 +20,7 @@
  * External dependencies
  */
 import { StyleSheet, Text, View } from '@react-pdf/renderer';
-import { Style } from '@react-pdf/types';
+import { Style } from '@react-pdf/stylesheet';
 import { FC, ReactNode } from 'react';
 
 /**
