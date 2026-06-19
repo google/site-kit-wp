@@ -25,7 +25,7 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import { set } from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
 	combineStores,
 	commonActions,
@@ -64,6 +64,25 @@ const fetchCreateCustomDimensionStore = createFetchStore( {
 			propertyID,
 			customDimension,
 		} ),
+	reducerCallback: createReducer(
+		( state, createdCustomDimension, { propertyID } ) => {
+			const parameterName = createdCustomDimension?.parameterName;
+			const propertyCustomDimensions =
+				state.propertyCustomDimensions?.[ propertyID ];
+
+			// Append the new dimension only when the property's list is already
+			// loaded. Otherwise the `getCustomDimensions` resolver loads it in full.
+			if (
+				! parameterName ||
+				! propertyCustomDimensions ||
+				propertyCustomDimensions.includes( parameterName )
+			) {
+				return;
+			}
+
+			propertyCustomDimensions.push( parameterName );
+		}
+	),
 	argsToParams: ( propertyID, customDimension ) => ( {
 		propertyID,
 		customDimension,
@@ -106,8 +125,32 @@ const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 	isAction: true,
 } );
 
+const fetchGetCustomDimensionsStore = createFetchStore( {
+	baseName: 'getCustomDimensions',
+	controlCallback: ( { propertyID } ) =>
+		get(
+			'modules',
+			MODULE_SLUG_ANALYTICS_4,
+			'custom-dimensions',
+			{ propertyID },
+			{ useCache: false }
+		),
+	reducerCallback: createReducer( ( state, dimensions, { propertyID } ) => {
+		state.propertyCustomDimensions = state.propertyCustomDimensions || {};
+		state.propertyCustomDimensions[ propertyID ] = dimensions;
+	} ),
+	argsToParams: ( propertyID ) => ( { propertyID } ),
+	validateParams: ( { propertyID } = {} ) => {
+		invariant(
+			isValidPropertyID( propertyID ),
+			'A valid GA4 propertyID is required.'
+		);
+	},
+} );
+
 const baseInitialState = {
 	customDimensionsBeingCreated: [],
+	propertyCustomDimensions: {},
 	syncTimeoutID: undefined,
 };
 
@@ -124,6 +167,7 @@ const baseActions = {
 	 *
 	 * @since 1.113.0
 	 * @since 1.181.0 Added the Site Goals custom dimensions when the `siteGoals` feature flag is on and advanced data breakdowns is enabled.
+	 * @since n.e.x.t Created the missing custom dimensions on the selected property, and added the Site Goals dimensions only when advanced data breakdowns is enabled for that property.
 	 *
 	 * @param {Array<string>} customDimensions Optional additional custom dimensions to create.
 	 */
@@ -138,6 +182,16 @@ const baseActions = {
 				registry.resolveSelect( CORE_USER ).getUserInputSettings(),
 			] )
 		);
+
+		const propertyID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyID();
+
+		// Custom dimensions are created on the selected property, so there's
+		// nothing to create until a valid property is selected.
+		if ( ! isValidPropertyID( propertyID ) ) {
+			return;
+		}
 
 		const selectedMetricTiles = registry
 			.select( CORE_USER )
@@ -161,13 +215,13 @@ const baseActions = {
 		];
 
 		// Add the Site Goals custom dimensions when the Site Goals feature is on
-		// and advanced data breakdowns is enabled. The breakdowns setting is read
-		// inside this check so feature-off flows (eg. key metrics setup) skip it
-		// and never fetch it. The settings row already loaded it, so it is ready.
+		// and advanced data breakdowns is enabled for the selected property. The
+		// breakdowns setting is read only inside this check, so flows with the
+		// feature off, like key metrics setup, never request it.
 		if ( isFeatureEnabled( 'siteGoals' ) ) {
 			const isAdvancedDataBreakdownsEnabled = registry
 				.select( MODULES_ANALYTICS_4 )
-				.isAdvancedDataBreakdownsEnabled();
+				.isAdvancedDataBreakdownsEnabled( propertyID );
 
 			if ( isAdvancedDataBreakdownsEnabled ) {
 				SITE_GOALS_CUSTOM_DIMENSIONS.forEach( ( dimension ) => {
@@ -180,13 +234,32 @@ const baseActions = {
 			}
 		}
 
-		const availableCustomDimensions = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getAvailableCustomDimensions();
+		// If no custom dimensions are required, there's nothing to create.
+		if ( ! uniqueRequiredCustomDimensions.length ) {
+			return;
+		}
+
+		/**
+		 * The selected property's custom dimensions, read from the property
+		 * itself, not from the saved `availableCustomDimensions`, which only
+		 * holds the dimensions of the property saved in settings.
+		 */
+		const propertyCustomDimensions = yield commonActions.await(
+			registry
+				.resolveSelect( MODULES_ANALYTICS_4 )
+				.getCustomDimensions( propertyID )
+		);
+
+		// Stop when the property's dimensions didn't load. Without the list, we
+		// can't tell which are missing, so creating them could add ones that
+		// already exist.
+		if ( ! Array.isArray( propertyCustomDimensions ) ) {
+			return;
+		}
 
 		// Find out the missing custom dimensions.
 		const missingCustomDimensions = uniqueRequiredCustomDimensions.filter(
-			( dimension ) => ! availableCustomDimensions?.includes( dimension )
+			( dimension ) => ! propertyCustomDimensions.includes( dimension )
 		);
 
 		// If there are no missing custom dimensions, bail.
@@ -198,10 +271,6 @@ const baseActions = {
 			type: SET_CUSTOM_DIMENSIONS_BEING_CREATED,
 			payload: { customDimensions: missingCustomDimensions },
 		};
-
-		const propertyID = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getPropertyID();
 
 		// Create missing custom dimensions.
 		for ( const dimension of missingCustomDimensions ) {
@@ -357,6 +426,24 @@ const baseResolvers = {
 
 		yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions();
 	},
+
+	*getCustomDimensions( propertyID ) {
+		if ( ! isValidPropertyID( propertyID ) ) {
+			return;
+		}
+
+		const registry = yield commonActions.getRegistry();
+
+		const propertyCustomDimensions = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getCustomDimensions( propertyID );
+
+		if ( propertyCustomDimensions === undefined ) {
+			yield fetchGetCustomDimensionsStore.actions.fetchGetCustomDimensions(
+				propertyID
+			);
+		}
+	},
 };
 
 const baseSelectors = {
@@ -392,6 +479,56 @@ const baseSelectors = {
 
 			return dimensionsToCheck.every( ( dimension ) =>
 				availableCustomDimensions.includes( dimension )
+			);
+		}
+	),
+
+	/**
+	 * Gets the Site Kit custom dimensions available on the given property.
+	 *
+	 * Unlike `getAvailableCustomDimensions`, this reads any property's
+	 * dimensions, so it works for a property selected in a form but not yet
+	 * saved in settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} propertyID GA4 property ID to get the custom dimensions for.
+	 * @return {(Array.<string>|undefined)} List of `googlesitekit_`-prefixed parameter names, or undefined if they aren't loaded yet.
+	 */
+	getCustomDimensions( state, propertyID ) {
+		return state.propertyCustomDimensions?.[ propertyID ];
+	},
+
+	/**
+	 * Checks whether the given property has all the provided custom dimensions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}               state            Data store's state.
+	 * @param {string}               propertyID       GA4 property ID to check the custom dimensions on.
+	 * @param {string|Array<string>} customDimensions Custom dimensions to check.
+	 * @return {(boolean|undefined)} True if the property has all the provided dimensions, false if not. Undefined if they aren't loaded yet.
+	 */
+	hasCustomDimensionsForProperty: createRegistrySelector(
+		( select ) => ( state, propertyID, customDimensions ) => {
+			/**
+			 * The dimensions to check, as an array even when the caller passes
+			 * a single string.
+			 */
+			const dimensionsToCheck = Array.isArray( customDimensions )
+				? customDimensions
+				: [ customDimensions ];
+
+			const propertyCustomDimensions =
+				select( MODULES_ANALYTICS_4 ).getCustomDimensions( propertyID );
+
+			if ( propertyCustomDimensions === undefined ) {
+				return undefined;
+			}
+
+			return dimensionsToCheck.every( ( dimension ) =>
+				propertyCustomDimensions.includes( dimension )
 			);
 		}
 	),
@@ -466,6 +603,7 @@ const baseSelectors = {
 const store = combineStores(
 	fetchCreateCustomDimensionStore,
 	fetchSyncAvailableCustomDimensionsStore,
+	fetchGetCustomDimensionsStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

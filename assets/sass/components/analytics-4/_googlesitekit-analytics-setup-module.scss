@@ -216,6 +216,12 @@
 				@media (min-width: $bp-desktop) {
 					margin-bottom: $grid-gap-desktop;
 				}
+
+				// The error message sits below the input. Add space below it so
+				// the error doesn't crowd the toggle in the next row.
+				.mdc-text-field-helper-line {
+					margin-bottom: $grid-gap-phone / 2;
+				}
 			}
 		}
 	}
