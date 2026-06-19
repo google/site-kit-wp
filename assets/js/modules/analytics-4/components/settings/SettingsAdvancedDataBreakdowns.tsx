@@ -182,7 +182,7 @@ const SettingsAdvancedDataBreakdowns: FC<
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
 
 	const enableAndCreate = useCallback( async () => {
-		setAdvancedDataBreakdownsEnabled( propertyID, true );
+		setAdvancedDataBreakdownsEnabled( { [ propertyID ]: true } );
 
 		const { error } = await saveAdvancedDataBreakdownsSettings();
 

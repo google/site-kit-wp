@@ -388,26 +388,30 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				expect( dimensionNames ).toContain( 'googlesitekit_post_type' );
 			} );
 
-			it( "doesn't create the Site Goals dimensions when the selected property's flag is off", async () => {
-				// Turn on the flag for another property, but not the selected one.
+			it( "doesn't create the Site Goals dimensions when the selected property's 'enabled' flag is off", async () => {
+				// Turn on the "enabled" flag for another property, but not the selected one.
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetAdvancedDataBreakdownsSettings( {
 						654321: true,
 					} );
+
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID,
 					availableCustomDimensions: [],
 				} );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetCustomDimensions( [], { propertyID } );
+
 				// No key metric tiles need custom dimensions, so the Site Goals
 				// dimensions are the only ones the action could create.
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 					widgetSlugs: [ 'non-existent-widget-slug' ],
 					isWidgetHidden: false,
 				} );
+
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetUserInputSettings( coreUserInputSettings );

@@ -65,7 +65,7 @@ const SET_ADVANCED_DATA_BREAKDOWNS_ENABLED =
 
 type Action = {
 	type: typeof SET_ADVANCED_DATA_BREAKDOWNS_ENABLED;
-	payload: { propertyID: string; enabled: boolean };
+	payload: { settings: AdvancedDataBreakdownsSettings };
 };
 
 /**
@@ -158,28 +158,32 @@ const baseInitialState: AdvancedDataBreakdownsState = {
 
 const baseActions = {
 	/**
-	 * Sets a property's advanced data breakdowns enabled flag in local state.
+	 * Sets the advanced data breakdowns enabled flags for one or more properties in local state.
 	 *
 	 * @since 1.181.0
-	 * @since n.e.x.t Set the flag per property, not as a single shared flag.
+	 * @since n.e.x.t Took a property-to-boolean map, so one call can set several properties.
 	 *
-	 * @param propertyID The GA4 property ID to set the flag for.
-	 * @param enabled    Whether breakdowns are enabled for the property.
+	 * @param settings A map of GA4 property ID to enabled flag, for example `{ '123456789': true }`.
 	 * @return Redux-style action.
 	 */
-	setAdvancedDataBreakdownsEnabled( propertyID: string, enabled: boolean ) {
+	setAdvancedDataBreakdownsEnabled(
+		settings: AdvancedDataBreakdownsSettings
+	) {
+		validateAdvancedDataBreakdownsSettings( settings );
+
+		// `validateAdvancedDataBreakdownsSettings` checks the values are
+		// booleans. Check the keys here too, because this action is the one
+		// place a caller writes a property ID into the saved map.
 		invariant(
-			isValidPropertyID( propertyID ),
-			'A valid GA4 propertyID is required.'
-		);
-		invariant(
-			typeof enabled === 'boolean',
-			'enabled should be a boolean.'
+			Object.keys( settings ).every( ( propertyID ) =>
+				isValidPropertyID( propertyID )
+			),
+			'advancedDataBreakdownsSettings keys should all be valid GA4 property IDs.'
 		);
 
 		return {
 			type: SET_ADVANCED_DATA_BREAKDOWNS_ENABLED,
-			payload: { propertyID, enabled },
+			payload: { settings },
 		};
 	},
 
@@ -244,10 +248,10 @@ const baseReducer = createReducer(
 	( state: AdvancedDataBreakdownsState, { type, payload }: Action ) => {
 		switch ( type ) {
 			case SET_ADVANCED_DATA_BREAKDOWNS_ENABLED: {
-				const { propertyID, enabled } = payload;
+				const { settings } = payload;
 				state.advancedDataBreakdownsSettings = {
 					...state.advancedDataBreakdownsSettings,
-					[ propertyID ]: enabled,
+					...settings,
 				};
 				break;
 			}

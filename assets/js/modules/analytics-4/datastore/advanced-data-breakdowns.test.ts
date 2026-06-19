@@ -58,7 +58,9 @@ describe( 'modules/analytics-4 advanced data breakdowns', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setAdvancedDataBreakdownsEnabled( propertyID, true );
+					.setAdvancedDataBreakdownsEnabled( {
+						[ propertyID ]: true,
+					} );
 
 				expect(
 					registry
@@ -70,23 +72,28 @@ describe( 'modules/analytics-4 advanced data breakdowns', () => {
 				} );
 			} );
 
-			it( 'requires a valid property ID', () => {
+			it( 'requires every key to be a valid property ID', () => {
 				expect( () =>
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
-						.setAdvancedDataBreakdownsEnabled(
-							PROPERTY_CREATE,
-							true
-						)
-				).toThrow( 'A valid GA4 propertyID is required.' );
+						.setAdvancedDataBreakdownsEnabled( {
+							[ PROPERTY_CREATE ]: true,
+						} )
+				).toThrow(
+					'advancedDataBreakdownsSettings keys should all be valid GA4 property IDs.'
+				);
 			} );
 
-			it( 'requires the enabled flag to be a boolean', () => {
+			it( 'requires every value to be a boolean', () => {
 				expect( () =>
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
-						.setAdvancedDataBreakdownsEnabled( propertyID, 'yes' )
-				).toThrow( 'enabled should be a boolean.' );
+						.setAdvancedDataBreakdownsEnabled( {
+							[ propertyID ]: 'yes',
+						} )
+				).toThrow(
+					'advancedDataBreakdownsSettings values should all be booleans.'
+				);
 			} );
 		} );
 
@@ -101,7 +108,9 @@ describe( 'modules/analytics-4 advanced data breakdowns', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setAdvancedDataBreakdownsEnabled( propertyID, true );
+					.setAdvancedDataBreakdownsEnabled( {
+						[ propertyID ]: true,
+					} );
 
 				const { response, error } = await registry
 					.dispatch( MODULES_ANALYTICS_4 )

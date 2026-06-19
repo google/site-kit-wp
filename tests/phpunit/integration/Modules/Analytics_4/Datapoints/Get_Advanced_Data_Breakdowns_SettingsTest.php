@@ -110,7 +110,7 @@ class Get_Advanced_Data_Breakdowns_SettingsTest extends TestCase {
 				'987654321' => false,
 			),
 			$response,
-			'A view-only user should read every property\'s state.'
+			"A view-only user should read every property's state."
 		);
 	}
 
