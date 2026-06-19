@@ -79,6 +79,7 @@ import {
 } from '@/js/modules/analytics-4/components/dashboard';
 import getAllTrafficPDFData from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/getPDFData';
 import { ModulePopularPagesWidgetGA4 } from '@/js/modules/analytics-4/components/module';
+import getModulePopularPagesPDFData from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/getPDFData';
 import {
 	LeadGenerationPerformanceWidget,
 	OnlineStorePerformanceWidget,
@@ -136,6 +137,16 @@ const DashboardAllTrafficWidgetGA4PDF = lazyWithPreload( () =>
 	import(
 		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
 		'@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/indexPDF'
+	)
+);
+
+/**
+ * Lazy-loaded PDF component for the Top content over time widget.
+ */
+const ModulePopularPagesWidgetGA4PDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/ModulePopularPagesWidgetGA4PDF'
 	)
 );
 
@@ -345,6 +356,11 @@ export function registerWidgets( widgets ) {
 			priority: 4,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			pdf: {
+				Component: ModulePopularPagesWidgetGA4PDF,
+				getData: getModulePopularPagesPDFData,
+				label: __( 'Top content over time', 'google-site-kit' ),
+			},
 		},
 		[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
 	);
