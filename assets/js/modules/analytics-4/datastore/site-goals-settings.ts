@@ -333,18 +333,6 @@ const baseSelectors = {
 	),
 
 	/**
-	 * Gets the active widget categories.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {Array|undefined} Active widget category slugs, or `undefined` if not loaded.
-	 */
-	getActiveWidgets( state: State ): string[] | undefined {
-		return state.siteGoalsSettings?.activeWidgets;
-	},
-
-	/**
 	 * Checks whether a given widget category is active.
 	 *
 	 * @since n.e.x.t

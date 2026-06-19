@@ -267,38 +267,6 @@ describe( 'modules/analytics-4 site goals settings', () => {
 			} );
 		} );
 
-		describe( 'getActiveWidgets', () => {
-			it( 'should return undefined before settings are loaded', () => {
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getActiveWidgets()
-				).toBeUndefined();
-			} );
-
-			it( 'should return the activeWidgets array after settings are loaded', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSiteGoalsSettings( {
-						activeWidgets: [ 'ecommerce', 'lead' ],
-					} );
-
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getActiveWidgets()
-				).toEqual( [ 'ecommerce', 'lead' ] );
-			} );
-
-			it( 'should return an empty array when no widgets are active', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSiteGoalsSettings( {
-						activeWidgets: [],
-					} );
-
-				expect(
-					registry.select( MODULES_ANALYTICS_4 ).getActiveWidgets()
-				).toEqual( [] );
-			} );
-		} );
-
 		describe( 'isSiteGoalWidgetActive', () => {
 			it( 'should return undefined before settings are loaded', async () => {
 				fetchMock.getOnce( getSiteGoalsSettingsEndpoint, {
