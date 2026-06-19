@@ -57,8 +57,8 @@ async function disconnectFromSiteKit() {
 	await page.waitForSelector( 'button[aria-controls="user-menu"]' );
 	await page.click( 'button[aria-controls="user-menu"]' );
 
-	await page.waitForSelector( '#user-menu #disconnect' );
-	await page.click( '#user-menu #disconnect' );
+	await page.waitForSelector( '#user-menu .mdc-list-item' );
+	await page.click( '#user-menu .mdc-list-item' );
 
 	await page.waitForSelector(
 		'.mdc-dialog__container button.mdc-button--danger'
