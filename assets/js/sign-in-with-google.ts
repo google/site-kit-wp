@@ -144,10 +144,14 @@ export function setupSignInWithGoogle(
 		shouldShowOneTapPrompt,
 	} = config;
 
-	initialize( {
+	const idConfig = {
 		client_id: clientID,
-		callback: ( response ) => handleCredentialResponse( response, config ),
-	} );
+		callback: ( response: CredentialResponse ) =>
+			handleCredentialResponse( response, config ),
+		library_name: 'Site-Kit',
+	};
+
+	initialize( idConfig );
 
 	const login = document.getElementById( 'login' );
 
