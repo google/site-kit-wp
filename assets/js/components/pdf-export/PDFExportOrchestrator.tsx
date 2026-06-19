@@ -309,7 +309,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		const resolvedDateRange =
 			typeof dateRange === 'string' ? dateRange : undefined;
 
-		// Resolve the lazy component chunk up front and fetch widget data.
+		// Resolve the lazy component chunk up-front and fetch widget data.
 		// @react-pdf does not honour Suspense, so the document tree must hold
 		// a concrete component before rendering starts.
 		async function resolveWidgetData(
@@ -318,17 +318,21 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 			Pick< PDFReportWidget, 'Component' | 'data' | 'chartImages' >
 		> {
 			let Component = widget.pdf.Component;
+
 			if ( typeof Component.preload === 'function' ) {
 				const loadedModule = await Component.preload();
 				throwIfAborted( signal );
 				Component = loadedModule.default;
 			}
+
 			const result = await widget.pdf.getData( {
 				registry,
 				dates,
 				signal,
 			} );
+
 			throwIfAborted( signal );
+
 			return {
 				Component,
 				data: result?.data ?? null,
@@ -339,6 +343,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		async function run() {
 			let currentStage: Stage = STAGE_LOADING;
 			const eventCategory = `${ viewContext }_pdf_generation`;
+
 			try {
 				dispatch( { type: 'TRANSITION', nextStage: STAGE_LOADING } );
 				setStatus( 'progress' );
