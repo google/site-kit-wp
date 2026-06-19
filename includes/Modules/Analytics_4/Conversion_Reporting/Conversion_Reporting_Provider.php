@@ -134,7 +134,17 @@ class Conversion_Reporting_Provider {
 		$restore_user = $this->user_options->switch_user( $owner_id );
 
 		$this->events_sync->sync_detected_events();
+		$this->update_active_site_goals_widgets();
 
+		$restore_user();
+	}
+
+	/**
+	 * Updates active widgets based on detected events and active categories.
+	 *
+	 * @since n.e.x.t
+	 */
+	protected function update_active_site_goals_widgets() {
 		$settings        = $this->analytics->get_settings()->get();
 		$detected_events = $settings['detectedEvents'] ?? array();
 
@@ -159,7 +169,5 @@ class Conversion_Reporting_Provider {
 		if ( ! empty( $active_widgets ) ) {
 			$this->site_goals_site_settings->merge( array( 'activeWidgets' => $active_widgets ) );
 		}
-
-		$restore_user();
 	}
 }
