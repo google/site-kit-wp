@@ -5,9 +5,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Tests\Core\Conversion_Tracking\Conversion_Event_Providers;
 
 use Google\Site_Kit\Context;
@@ -34,12 +31,12 @@ class WooCommerceTest extends TestCase {
 	 * @runInSeparateProcess
 	 */
 	public function test_is_active() {
-		$this->assertFalse( $this->woocommerce->is_active() );
+		$this->assertFalse( $this->woocommerce->is_active(), 'WooCommerce provider should not be active before class exists.' );
 
 		// Fake the existence of the `WooCommerce` class.
 		class_alias( __CLASS__, 'WooCommerce' );
 
-		$this->assertTrue( $this->woocommerce->is_active() );
+		$this->assertTrue( $this->woocommerce->is_active(), 'WooCommerce provider should be active after class exists.' );
 	}
 
 	public function test_events_to_track() {
@@ -300,7 +297,7 @@ class WooCommerceTest extends TestCase {
 
 		$result = $method->invoke( $this->woocommerce, $phone, $country );
 
-		$this->assertEquals( $expected, $result );
+		$this->assertEquals( $expected, $result, 'Normalized WooCommerce phone should match expected value.' );
 	}
 
 	public function phone_normalization_data_provider() {
@@ -446,6 +443,6 @@ class WooCommerceTest extends TestCase {
 
 		// Should fallback to Enhanced_Conversions::get_normalized_value().
 		// Enhanced_Conversions normalizes to lowercase and trims, but keeps other chars.
-		$this->assertEquals( '+94771770589', $result );
+		$this->assertEquals( '+94771770589', $result, 'Normalized phone should fall back when country is empty.' );
 	}
 }
