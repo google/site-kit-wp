@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { Text } from '@react-pdf/renderer';
+import TestRenderer from 'react-test-renderer';
 
 /**
  * Internal dependencies
@@ -52,5 +53,33 @@ describe( 'PDFWidgetSection', () => {
 		expect(
 			queryByText( 'Your site traffic over time' )
 		).not.toBeInTheDocument();
+	} );
+
+	it( 'uses the shared card padding and radius by default', () => {
+		const json = JSON.stringify(
+			TestRenderer.create(
+				<PDFWidgetSection>
+					<Text>child</Text>
+				</PDFWidgetSection>
+			).toJSON()
+		);
+
+		expect( json ).toContain( '"padding":20' );
+		expect( json ).toContain( '"borderRadius":14' );
+	} );
+
+	it( 'merges cardStyle onto the card when a widget passes it', () => {
+		const json = JSON.stringify(
+			TestRenderer.create(
+				<PDFWidgetSection
+					cardStyle={ { borderRadius: 8, paddingHorizontal: 0 } }
+				>
+					<Text>child</Text>
+				</PDFWidgetSection>
+			).toJSON()
+		);
+
+		expect( json ).toContain( '"borderRadius":8' );
+		expect( json ).toContain( '"paddingHorizontal":0' );
 	} );
 } );

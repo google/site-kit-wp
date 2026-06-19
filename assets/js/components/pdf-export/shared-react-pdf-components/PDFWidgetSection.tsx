@@ -20,7 +20,8 @@
  * External dependencies
  */
 import { StyleSheet, Text, View } from '@react-pdf/renderer';
-import type { FC, ReactNode } from 'react';
+import { Style } from '@react-pdf/types';
+import { FC, ReactNode } from 'react';
 
 /**
  * Internal dependencies
@@ -45,17 +46,24 @@ const styles = StyleSheet.create( {
 export interface PDFWidgetSectionProps {
 	/** Optional widget heading rendered on the page above the card. */
 	heading?: string;
+	/** Optional style merged onto the card. */
+	cardStyle?: Style;
 	children: ReactNode;
 }
 
 const PDFWidgetSection: FC< PDFWidgetSectionProps > = ( {
 	heading,
+	cardStyle,
 	children,
 } ) => {
 	return (
 		<View>
 			{ !! heading && <Text style={ styles.heading }>{ heading }</Text> }
-			<View style={ styles.card }>{ children }</View>
+			<View
+				style={ cardStyle ? [ styles.card, cardStyle ] : styles.card }
+			>
+				{ children }
+			</View>
 		</View>
 	);
 };
