@@ -365,11 +365,11 @@ class Eligible_Subscribers_QueryTest extends TestCase {
 			$this->query->get_eligible_users_count( $current_admin ),
 			'Expected admin present in both queries to be counted once.'
 		);
-			$this->assertEqualSets(
-				array( $shared_admin, $shared_editor ),
-				wp_list_pluck( $this->query->get_eligible_users( $current_admin, array( 'per_page' => 20 ) ), 'ID' ),
-				'Eligible users should include deduplicated users.'
-			);
+		$this->assertEqualSets(
+			array( $shared_admin, $shared_editor ),
+			wp_list_pluck( $this->query->get_eligible_users( $current_admin, array( 'per_page' => 20 ) ), 'ID' ),
+			'Eligible users should include deduplicated users.'
+		);
 	}
 
 	public function test_get_eligible_users_excludes_subscribed_users() {
@@ -387,11 +387,11 @@ class Eligible_Subscribers_QueryTest extends TestCase {
 
 		$results = $this->query->get_eligible_users( $current_admin );
 
-			$this->assertEqualSets(
-				array( $unsubscribed_user ),
-				wp_list_pluck( $results, 'ID' ),
-				'Eligible users should exclude subscribed users.'
-			);
+		$this->assertEqualSets(
+			array( $unsubscribed_user ),
+			wp_list_pluck( $results, 'ID' ),
+			'Eligible users should exclude subscribed users.'
+		);
 	}
 
 	private function create_admin_with_token( $login = null, $display_name = null, $email = null ) {

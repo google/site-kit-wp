@@ -76,11 +76,11 @@ class REST_Dismissals_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/dismissed-items' );
 		$response = rest_get_server()->dispatch( $request );
 
-			$this->assertEqualSets(
-				array( 'foo', 'bar' ),
-				$response->get_data(),
-				'Dismissed items response should contain non-expired items.'
-			);
+		$this->assertEqualSets(
+			array( 'foo', 'bar' ),
+			$response->get_data(),
+			'Dismissed items response should contain non-expired items.'
+		);
 	}
 
 
@@ -96,11 +96,11 @@ class REST_Dismissals_ControllerTest extends TestCase {
 		$this->dismissed_items->add( 'bar', 100 );
 		$this->dismissed_items->add( 'baz', 200 );
 
-			$this->assertEqualSets(
-				array( 'foo', 'bar', 'baz' ),
-				array_keys( $this->dismissed_items->get() ),
-				'Dismissed items should contain all items before deletion.'
-			);
+		$this->assertEqualSets(
+			array( 'foo', 'bar', 'baz' ),
+			array_keys( $this->dismissed_items->get() ),
+			'Dismissed items should contain all items before deletion.'
+		);
 
 		$request = new WP_REST_Request( 'DELETE', '/' . REST_Routes::REST_ROOT . '/core/user/data/dismissed-items' );
 		$request->set_body_params(
@@ -112,17 +112,17 @@ class REST_Dismissals_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-			$this->assertEqualSets(
-				$expected_remaining_items,
-				array_keys( $this->dismissed_items->get() ),
-				'Dismissed items should contain expected remaining items.'
-			);
+		$this->assertEqualSets(
+			$expected_remaining_items,
+			array_keys( $this->dismissed_items->get() ),
+			'Dismissed items should contain expected remaining items.'
+		);
 
-			$this->assertEqualSets(
-				$expected_remaining_items,
-				$response->get_data(),
-				'Delete dismissed items response should contain remaining items.'
-			);
+		$this->assertEqualSets(
+			$expected_remaining_items,
+			$response->get_data(),
+			'Delete dismissed items response should contain remaining items.'
+		);
 	}
 
 
@@ -205,10 +205,10 @@ class REST_Dismissals_ControllerTest extends TestCase {
 			)
 		);
 
-			$this->assertEqualSets(
-				array( 'foo', 'bar' ),
-				rest_get_server()->dispatch( $request )->get_data(),
-				'Dismiss item response should contain active dismissed items.'
-			);
+		$this->assertEqualSets(
+			array( 'foo', 'bar' ),
+			rest_get_server()->dispatch( $request )->get_data(),
+			'Dismiss item response should contain active dismissed items.'
+		);
 	}
 }
