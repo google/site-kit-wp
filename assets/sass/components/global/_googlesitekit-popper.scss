@@ -16,6 +16,16 @@
  * limitations under the License.
  */
 
+.googlesitekit-popper-root {
+	// The popper renders next to its anchor, not at the document root, so its
+	// z-index competes only with nearby elements in the same stacking context,
+	// not with the global `$z-index-sk-*` scale (9970 and up). This value sits
+	// above the Site Goals charts (8) and below the dashboard navigation (10),
+	// so the popper slides under the top nav on scroll instead of covering it.
+	// The entity header uses the same value for the same reason.
+	z-index: $z-index-sk-popper;
+}
+
 .googlesitekit-popper {
 	background-color: $c-surfaces-on-surface;
 	border-radius: 4px;

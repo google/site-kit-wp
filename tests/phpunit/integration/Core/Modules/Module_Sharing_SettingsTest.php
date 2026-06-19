@@ -9,8 +9,6 @@
  *
  * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Modules;
 
@@ -50,14 +48,15 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 
 	public function test_get_default() {
 		$default_settings = get_option( $this->get_option_name() );
-		$this->assertTrue( is_array( $default_settings ) );
+		$this->assertTrue( is_array( $default_settings ), 'Default sharing settings should be stored as an array.' );
 		$this->assertEmpty(
-			$default_settings
+			$default_settings,
+			'Default sharing settings should not include any modules.'
 		);
 	}
 
 	public function test_get_sanitize_callback() {
-		$this->assertEmpty( get_option( $this->get_option_name() ) );
+		$this->assertEmpty( get_option( $this->get_option_name() ), 'Sharing settings option should start empty.' );
 
 		// Test sanitizing invalid sharedRoles.
 		$test_sharing_settings = array(
@@ -89,13 +88,13 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		);
 		$this->settings->set( $test_sharing_settings );
 		// Use get_option() instead of $settings->get() to test sanitization and set() in isolation.
-		$this->assertEquals( $expected, get_option( $this->get_option_name() ) );
+			$this->assertEquals( $expected, get_option( $this->get_option_name() ), 'Sharing settings sanitizer should remove invalid roles.' );
 	}
 
 	public function test_get() {
 		$defaultSettings = $this->settings->get();
-		$this->assertTrue( is_array( $defaultSettings ) );
-		$this->assertEmpty( $defaultSettings );
+		$this->assertTrue( is_array( $defaultSettings ), 'Sharing settings getter should return an array.' );
+		$this->assertEmpty( $defaultSettings, 'Sharing settings getter should default to empty array.' );
 
 		// Test invalid settings when we get settings.
 		$test_sharing_settings = array(
@@ -135,7 +134,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 			),
 		);
 		$this->settings->set( $test_sharing_settings );
-		$this->assertEquals( $expected, $this->settings->get() );
+		$this->assertEquals( $expected, $this->settings->get(), 'Getter should normalize invalid sharing settings.' );
 	}
 
 	/**
@@ -149,7 +148,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 
 		$actual = $this->settings->get_module( $module_slug );
 
-		$this->assertEquals( $expected, $actual );
+		$this->assertEquals( $expected, $actual, 'Module sharing getter should return saved or default settings.' );
 	}
 
 	public function data_get_module() {
@@ -215,11 +214,11 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 			),
 		);
 		$this->settings->set( $test_sharing_settings );
-		$this->assertEquals( $test_sharing_settings, $this->settings->get() );
+		$this->assertEquals( $test_sharing_settings, $this->settings->get(), 'Sharing settings should include module before unset.' );
 
 		$this->settings->unset_module( 'pagespeed-insights' );
 
-		$this->assertEquals( $expected, $this->settings->get() );
+		$this->assertEquals( $expected, $this->settings->get(), 'Unsetting module should remove only selected module.' );
 	}
 
 	public function test_get_all_shared_roles() {
@@ -242,11 +241,11 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 			),
 		);
 		$this->settings->set( $test_sharing_settings );
-		$this->assertEqualSets( array( 'contributor', 'editor', 'author' ), $this->settings->get_all_shared_roles() );
+		$this->assertEqualSets( array( 'contributor', 'editor', 'author' ), $this->settings->get_all_shared_roles(), 'Shared role getter should aggregate unique configured roles.' );
 	}
 
 	public function test_get_shared_roles() {
-		$this->assertEmpty( $this->settings->get_shared_roles( 'pagespeed-insights' ) );
+		$this->assertEmpty( $this->settings->get_shared_roles( 'pagespeed-insights' ), 'Module without sharing settings should return no shared roles.' );
 
 		$test_sharing_settings = array(
 			'analytics-4'        => array(
@@ -260,13 +259,13 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		);
 
 		$this->settings->set( $test_sharing_settings );
-		$this->assertEquals( array( 'editor', 'author' ), $this->settings->get_shared_roles( 'analytics-4' ) );
-		$this->assertEmpty( $this->settings->get_shared_roles( 'pagespeed-insights' ) );
+		$this->assertEquals( array( 'editor', 'author' ), $this->settings->get_shared_roles( 'analytics-4' ), 'Shared role getter should return roles for requested module.' );
+		$this->assertEmpty( $this->settings->get_shared_roles( 'pagespeed-insights' ), 'Module with empty sharing settings should return no shared roles.' );
 	}
 
 	public function test_merge() {
 		// Check there are no settings to begin with.
-		$this->assertEmpty( $this->settings->get() );
+		$this->assertEmpty( $this->settings->get(), 'Sharing settings should start empty before merge.' );
 
 		$this->assertTrue(
 			$this->settings->merge(
@@ -280,7 +279,8 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 						'management'  => 'all_admins',
 					),
 				)
-			)
+			),
+			'Merge should accept valid module sharing settings.'
 		);
 
 		// Modules with `null` values are ignored.
@@ -290,7 +290,8 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 					'search-console' => null,
 					'analytics-4'    => null,
 				)
-			)
+			),
+			'Merge should ignore null module settings.'
 		);
 
 		// Modules with `empty` values are ignored.
@@ -300,7 +301,8 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 					'search-console' => array(),
 					'analytics-4'    => array(),
 				)
-			)
+			),
+			'Merge should ignore empty module settings.'
 		);
 
 		// Merges settings with valid partials and keeps the rest.
@@ -331,8 +333,8 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 			),
 		);
 
-		$this->assertTrue( $this->settings->merge( $test_sharing_settings ) );
-		$this->assertEquals( $expected, $this->settings->get() );
+			$this->assertTrue( $this->settings->merge( $test_sharing_settings ), 'Merge should accept valid partial module settings.' );
+			$this->assertEquals( $expected, $this->settings->get(), 'Merge should preserve omitted module setting fields.' );
 
 		// Keeps the valid parts of partial and discards the invalid parts.
 		$test_sharing_settings = array(
@@ -361,7 +363,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 			),
 		);
 
-		$this->assertTrue( $this->settings->merge( $test_sharing_settings ) );
-		$this->assertEquals( $expected, $this->settings->get() );
+			$this->assertTrue( $this->settings->merge( $test_sharing_settings ), 'Merge should accept partially valid module settings.' );
+			$this->assertEquals( $expected, $this->settings->get(), 'Merge should discard invalid fields and keep valid fields.' );
 	}
 }
