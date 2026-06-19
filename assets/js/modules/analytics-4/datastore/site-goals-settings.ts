@@ -46,13 +46,17 @@ import { MODULES_ANALYTICS_4 } from './constants';
 
 const { setErrorForAction, clearActionError } = errorStoreActions;
 
-// Per-user fields that the SAVE endpoint accepts.
+/**
+ * Per-user fields that the SAVE endpoint accepts.
+ */
 export interface PerUserSiteGoalsSettings {
 	goalDrivers?: GoalDriverSelectionState;
 	visitorEngagement?: VisitorEngagementSelectionState;
 }
 
-// Full merged settings returned by the GET endpoint.
+/**
+ * Full merged settings returned by the GET endpoint.
+ */
 export interface SiteGoalsSettings extends PerUserSiteGoalsSettings {
 	activeWidgets?: string[];
 }
@@ -71,12 +75,16 @@ interface SetBreakdownTooltipPendingAction {
 	payload: { isPending: boolean };
 }
 
-// Result shape returned by the fetch-store save action.
+/**
+ * Result shape returned by the fetch-store save action.
+ */
 type SaveResult = { response?: PerUserSiteGoalsSettings; error?: unknown };
 
-// Minimal typed view over the registry exposed inside the generator actions and
-// resolvers. The shared redux-routine/registry infrastructure is untyped JS, so
-// only the selectors this store actually reaches are declared here.
+/**
+ * Minimal typed view over the registry exposed inside the generator actions and
+ * resolvers. The shared redux-routine/registry infrastructure is untyped JS, so
+ * only the selectors this store actually reaches are declared here.
+ */
 interface SiteGoalsRegistry {
 	select: ( store: string ) => {
 		getSiteGoalsSettings: () => SiteGoalsSettings | undefined;
