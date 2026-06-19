@@ -38,23 +38,23 @@ function organicSearchDimensionFilters() {
 	};
 }
 
-function dateDimensions() {
-	return [ { name: 'date' } ];
-}
-
-function dateOrderby() {
-	return [ { dimension: { dimensionName: 'date' } } ];
-}
-
-interface SearchConsoleReportOptions {
-	/** Start date of the combined current + previous range (the comparison start date). */
-	compareStartDate: string;
-	/** End date of the report. */
+/**
+ * Search Console report options.
+ *
+ * @since n.e.x.t
+ */
+type SearchConsoleReportOptions = {
+	startDate: string;
 	endDate: string;
-	/** Entity URL filter, if any. */
+	dimensions: string;
 	url?: string;
-}
+};
 
+/**
+ * Analytics 4 report params.
+ *
+ * @since n.e.x.t
+ */
 interface Analytics4ReportDates {
 	startDate: string;
 	endDate: string;
@@ -64,9 +64,35 @@ interface Analytics4ReportDates {
 	url?: string;
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any -- Report args are loosely typed plain objects in this codebase. */
-type ReportArgs = Record< string, any >;
-/* eslint-enable @typescript-eslint/no-explicit-any */
+/**
+ * Analytics 4 report options.
+ *
+ * @since n.e.x.t
+ */
+type Analytics4ReportOptions = {
+	startDate: string;
+	endDate: string;
+	compareStartDate?: string;
+	compareEndDate?: string;
+	metrics: Array< string | { name: string; expression?: string } >;
+	dimensions?: Array< string | { name: string } >;
+	dimensionFilters?: Record<
+		string,
+		string | string[] | { filterType?: string; value?: string | string[] }
+	>;
+	metricFilters?: Record<
+		string,
+		string | { filterType?: string; value?: string | number }
+	>;
+	orderby?: Array< {
+		metric?: { metricName: string };
+		dimension?: { dimensionName: string };
+		desc?: boolean;
+	} >;
+	url?: string;
+	limit?: number;
+	reportID?: string;
+};
 
 /**
  * Builds the Search Console `getReport` args for the impressions/clicks date series.
@@ -86,8 +112,12 @@ export function getSearchConsoleReportOptions( {
 	compareStartDate,
 	endDate,
 	url,
-}: SearchConsoleReportOptions ): ReportArgs {
-	const args: ReportArgs = {
+}: {
+	compareStartDate: string;
+	endDate: string;
+	url?: string;
+} ): SearchConsoleReportOptions {
+	const args: SearchConsoleReportOptions = {
 		startDate: compareStartDate,
 		endDate,
 		dimensions: 'date',
@@ -111,7 +141,7 @@ export function getSearchConsoleReportOptions( {
  * @param {string} dates.compareStartDate Comparison start date.
  * @param {string} dates.compareEndDate   Comparison end date.
  * @param {string} [dates.url]            Entity URL filter, if any.
- * @return {Object} GA4 getReport args.
+ * @return {Analytics4ReportOptions} GA4 getReport args.
  */
 export function getGA4KeyEventsOverviewReportOptions( {
 	startDate,
@@ -119,8 +149,8 @@ export function getGA4KeyEventsOverviewReportOptions( {
 	compareStartDate,
 	compareEndDate,
 	url,
-}: Analytics4ReportDates ): ReportArgs {
-	const args: ReportArgs = {
+}: Analytics4ReportDates ): Analytics4ReportOptions {
+	const args: Analytics4ReportOptions = {
 		startDate,
 		endDate,
 		compareStartDate,
@@ -159,16 +189,16 @@ export function getGA4KeyEventsReportOptions( {
 	compareStartDate,
 	compareEndDate,
 	url,
-}: Analytics4ReportDates ): ReportArgs {
-	const args: ReportArgs = {
+}: Analytics4ReportDates ): Analytics4ReportOptions {
+	const args: Analytics4ReportOptions = {
 		...getGA4KeyEventsOverviewReportOptions( {
 			startDate,
 			endDate,
 			compareStartDate,
 			compareEndDate,
 		} ),
-		dimensions: dateDimensions(),
-		orderby: dateOrderby(),
+		dimensions: [ { name: 'date' } ],
+		orderby: [ { dimension: { dimensionName: 'date' } } ],
 		reportID: GA4_STATS_REPORT_ID,
 	};
 
@@ -201,16 +231,16 @@ export function getGA4VisitorsReportOptions( {
 	compareStartDate,
 	compareEndDate,
 	url,
-}: Analytics4ReportDates ): ReportArgs {
-	const args: ReportArgs = {
+}: Analytics4ReportDates ): Analytics4ReportOptions {
+	const args: Analytics4ReportOptions = {
 		startDate,
 		endDate,
 		compareStartDate,
 		compareEndDate,
 		metrics: [ { name: 'totalUsers' } ],
-		dimensions: dateDimensions(),
+		dimensions: [ { name: 'date' } ],
 		dimensionFilters: organicSearchDimensionFilters(),
-		orderby: dateOrderby(),
+		orderby: [ { dimension: { dimensionName: 'date' } } ],
 		reportID: GA4_VISITORS_REPORT_ID,
 	};
 

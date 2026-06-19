@@ -103,18 +103,8 @@ const getAnalyticsChartData = extractAnalytics4DashboardData as unknown as (
 	days: number,
 	referenceDate: string,
 	dataLabels: string[],
-	/**
-	 * This type should be more explicit in the future, it seems that often the
-	 * value here is a number from our existing usage, but this should be
-	 * confirmed.
-	 */
-	tooltipDataFormats: Array< ( value: unknown ) => string >,
-	/**
-	 * These types should be more explicit in the future, it seems that often the
-	 * value here is a number from our existing usage, but this should be
-	 * confirmed.
-	 */
-	chartDataFormats: Array< ( value: unknown ) => unknown >
+	tooltipDataFormats: Array< ( value: number ) => string >,
+	chartDataFormats: Array< ( value: number ) => number >
 ) => ChartRow[];
 
 const getMetricDatapointAndChange = getDatapointAndChange as unknown as (
@@ -474,10 +464,8 @@ async function buildAnalyticsCard( {
 	totalsError: unknown;
 	currentLabel: string;
 	dataLabels: string[];
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Format callbacks accept per-metric values whose type varies (numbers and percentages).
-	tooltipDataFormats: Array< ( value: any ) => string >;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Format callbacks accept per-metric values whose type varies (numbers and percentages).
-	chartDataFormats: Array< ( value: any ) => any >;
+	tooltipDataFormats: Array< ( value: number | string ) => string >;
+	chartDataFormats: Array< ( value: number ) => number >;
 	color: string;
 	dateRangeLength: number;
 	referenceDate: string;
@@ -632,6 +620,18 @@ export default async function getPDFData( {
 		.getDateRangeNumberOfDays();
 	const referenceDate = registry.select( CORE_USER ).getReferenceDate();
 
+	function numericTooltipFormatter( x: number | string ): string {
+		return ( typeof x === 'string' ? parseFloat( x ) : x ).toLocaleString();
+	}
+
+	function percentageTooltipFormatter( x: number | string ): string {
+		return numFmt( ( typeof x === 'string' ? parseFloat( x ) : x ) / 100, {
+			style: 'percent',
+			signDisplay: 'never',
+			maximumFractionDigits: 2,
+		} );
+	}
+
 	const [ impressions, clicks, uniqueVisitors, keyEvents ] =
 		await Promise.all( [
 			buildSearchConsoleCard( {
@@ -659,9 +659,7 @@ export default async function getPDFData( {
 				totalsError: visitors.error,
 				currentLabel: __( 'Unique Visitors', 'google-site-kit' ),
 				dataLabels: [ __( 'Unique Visitors', 'google-site-kit' ) ],
-				tooltipDataFormats: [
-					( x ) => parseFloat( x ).toLocaleString(),
-				],
+				tooltipDataFormats: [ numericTooltipFormatter ],
 				chartDataFormats: [ identity ],
 				color: UNIQUE_VISITORS_COLOR,
 				dateRangeLength,
@@ -679,13 +677,8 @@ export default async function getPDFData( {
 					__( 'Engagement Rate %', 'google-site-kit' ),
 				],
 				tooltipDataFormats: [
-					( x ) => parseFloat( x ).toLocaleString(),
-					( x ) =>
-						numFmt( x / 100, {
-							style: 'percent',
-							signDisplay: 'never',
-							maximumFractionDigits: 2,
-						} ),
+					numericTooltipFormatter,
+					percentageTooltipFormatter,
 				],
 				chartDataFormats: [ identity, ( x ) => x * 100 ],
 				color: KEY_EVENTS_COLOR,
