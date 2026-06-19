@@ -130,10 +130,19 @@ class Get_Site_Goals_SettingsTest extends TestCase {
 	}
 
 	public function test_is_shareable() {
+		// Must be shareable so shared-dashboard viewers (without their own
+		// Analytics scopes) pass base-scope validation via the owner's OAuth
+		// client; the closure still reads the current user's own settings in
+		// addition to the site-wide settings.
 		$this->assertTrue( $this->datapoint->is_shareable(), 'The Site Goals settings datapoint should be shareable.' );
 	}
 
 	public function test_permission_callback() {
+		// Per-user settings are gated on dashboard access rather than the default
+		// insights permission, so view-only users can read their own selection. Even
+		// though the site-wide settings are not user-specific, they are still gated
+		// on the same permission to allow view-only users to read which widgets
+		// are active for the site.
 		$this->assertSame(
 			current_user_can( Permissions::VIEW_DASHBOARD ),
 			$this->datapoint->permission_callback(),
