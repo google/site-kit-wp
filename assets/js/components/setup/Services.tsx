@@ -85,7 +85,7 @@ export default function Services() {
 				>
 					{ Icon && (
 						<span className="googlesitekit-setup__services-list-item-icon">
-							<Icon width={ 30 } height={ 30 } />
+							<Icon width={ 24 } height={ 24 } />
 						</span>
 					) }
 					<span className="googlesitekit-setup__services-list-item-name">
