@@ -552,11 +552,13 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetKeyMetricsSettings( keyMetricsSettings );
+
 				// The saved property already has every required dimension.
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID,
 					availableCustomDimensions: customDimensionNames,
 				} );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setPropertyID( selectedPropertyID );
@@ -569,6 +571,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				const createEndpoint = new RegExp(
 					'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
 				);
+
 				fetchMock.postOnce( createEndpoint, {
 					body: customDimension,
 					status: 200,
@@ -580,6 +583,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 					},
 					status: 200,
 				} );
+
 				fetchMock.postOnce(
 					new RegExp(
 						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
@@ -603,6 +607,7 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				const createCallPropertyIDs = createCalls.map(
 					( payload ) => payload?.data?.propertyID
 				);
+
 				expect( createCallPropertyIDs ).toEqual( [
 					selectedPropertyID,
 					selectedPropertyID,
@@ -638,18 +643,22 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetUserInputSettings( coreUserInputSettings );
+
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetKeyMetricsSettings( keyMetricsSettings );
+
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID,
 					availableCustomDimensions: [],
 				} );
+
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetAdvancedDataBreakdownsSettings( {
 						[ propertyID ]: true,
 					} );
+
 				// The request for the selected property's custom dimensions
 				// fails, so the list stays unknown and nothing is created.
 				fetchMock.getOnce( customDimensionsEndpoint, {
