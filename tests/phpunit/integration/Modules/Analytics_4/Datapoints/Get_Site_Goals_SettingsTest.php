@@ -7,7 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
 
 namespace Google\Site_Kit\Tests\Modules\Analytics_4\Datapoints;
 
@@ -126,7 +125,7 @@ class Get_Site_Goals_SettingsTest extends TestCase {
 		$request      = $this->datapoint->create_request( $data_request );
 		$response     = $request();
 
-		$this->assertArrayHasKey( 'goalDrivers', $response );
+		$this->assertArrayHasKey( 'goalDrivers', $response, 'The response should contain per-user goalDrivers even when no site-wide settings are present.' );
 		$this->assertSame( array(), $response['activeWidgets'], 'activeWidgets should default to empty array.' );
 	}
 
