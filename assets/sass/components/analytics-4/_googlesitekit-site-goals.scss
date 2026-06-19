@@ -30,7 +30,11 @@
 		// When the whole widget fails, its report error notice needs the
 		// standard top space, not the tight 6px the tiles use.
 		.googlesitekit-widget__body:has(> .googlesitekit-cta--error) {
-			padding-top: $grid-gap-desktop;
+			padding-top: $grid-gap-phone;
+
+			@media (min-width: $bp-tablet) {
+				padding-top: $grid-gap-desktop;
+			}
 		}
 
 		.googlesitekit-widget__header-inner {
