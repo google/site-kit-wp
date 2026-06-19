@@ -531,7 +531,7 @@ async function buildAnalyticsCard( {
  * Resolves the four reports (Search Console impressions/clicks, GA4 Key Events
  * overview and series, GA4 Unique Visitors) in parallel, cancelling incomplete and
  * yet-to-have-started resolutions when the supplied signal is aborted.
- * 
+ *
  * Once the reports resolve, loads Google Charts offscreen and rasterises a
  * current/previous line chart per metric.
  *
