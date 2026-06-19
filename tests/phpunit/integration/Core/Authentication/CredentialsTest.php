@@ -35,22 +35,24 @@ class CredentialsTest extends TestCase {
 
 		$this->assertEqualSets(
 			$this->registered_default,
-			$encrypted_options->get( Credentials::OPTION )
+			$encrypted_options->get( Credentials::OPTION ),
+			'Encrypted credentials should contain the registered defaults.'
 		);
 		$this->assertEqualSets(
 			$this->registered_default,
-			$credentials->get()
+			$credentials->get(),
+			'Credentials should return registered defaults.'
 		);
 
 		$encrypted_options->set( Credentials::OPTION, array( 'oauth2_client_id' => 'test-client-id' ) );
 
-		// Defaults are merged before returning
 		$this->assertEqualSets(
 			array(
 				'oauth2_client_id'     => 'test-client-id',
 				'oauth2_client_secret' => '',
 			),
-			$credentials->get()
+			$credentials->get(),
+			'Credentials should merge stored values with defaults.'
 		);
 
 		$encrypted_options->set(
@@ -66,7 +68,8 @@ class CredentialsTest extends TestCase {
 				'oauth2_client_id'     => 'test-client-id',
 				'oauth2_client_secret' => 'test-client-secret',
 			),
-			$credentials->get()
+			$credentials->get(),
+			'Credentials should return stored OAuth client values.'
 		);
 	}
 
@@ -92,7 +95,7 @@ class CredentialsTest extends TestCase {
 		$encrypted_options = new Encrypted_Options( $options );
 		$credentials       = new Credentials( $encrypted_options );
 
-		$this->assertEqualSets( $this->registered_default, $encrypted_options->get( Credentials::OPTION ) );
+		$this->assertEqualSets( $this->registered_default, $encrypted_options->get( Credentials::OPTION ), 'Encrypted credentials should contain defaults before set.' );
 		$this->assertTrue( $credentials->set( array( 'test-credentials' ) ), 'Setting credentials should return true.' );
 		$this->assertEquals( array( 'test-credentials' ), $encrypted_options->get( Credentials::OPTION ), 'Encrypted options should contain the set credentials.' );
 	}
