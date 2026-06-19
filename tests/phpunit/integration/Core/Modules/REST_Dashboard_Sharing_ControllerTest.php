@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Modules;
 
@@ -79,7 +77,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 	public function test_register() {
 		$this->controller->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ), 'Controller should register dashboard sharing REST route.' );
 	}
 
 	public function test_sharing_settings__requires_authenticated_admin() {
@@ -104,7 +102,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 		// This admin hasn't authenticated with the Site Kit proxy service yet,
 		// so they aren't allowed to modify Dashboard Sharing settings.
-		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
+			$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'Unauthenticated admin should be forbidden from sharing settings.' );
 	}
 
 	public function test_sharing_settings__create_new_settings() {
@@ -151,7 +149,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 				'pagespeed-insights' => $admin_1->ID,
 			),
 		);
-		$this->assertEquals( $expected_response, $response->get_data() );
+		$this->assertEquals( $expected_response, $response->get_data(), 'Creating sharing settings should save allowed module changes.' );
 	}
 
 	public function test_sharing_settings__modify_shared_roles_settings() {
@@ -220,7 +218,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 			),
 			'newOwnerIDs' => (object) array(),
 		);
-		$this->assertEquals( $expected_response, $response->get_data() );
+		$this->assertEquals( $expected_response, $response->get_data(), 'Shared role update should apply owner and all-admin changes.' );
 	}
 
 	public function test_sharing_settings__modify_management_settings() {
@@ -289,7 +287,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 			),
 			'newOwnerIDs' => (object) array(),
 		);
-		$this->assertEquals( $expected_response, $response->get_data() );
+		$this->assertEquals( $expected_response, $response->get_data(), 'Management update should apply owner changes only.' );
 	}
 
 	private function grant_manage_options_permission() {
