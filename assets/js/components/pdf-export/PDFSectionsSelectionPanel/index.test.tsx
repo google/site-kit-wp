@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
@@ -27,6 +28,7 @@ import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
+import * as tracking from '@/js/util/tracking';
 import {
 	act,
 	createTestRegistry,
@@ -35,6 +37,9 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 import PDFSectionsSelectionPanel from './index';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 function NullComponent() {
 	return null;
@@ -97,6 +102,10 @@ describe( 'PDFSectionsSelectionPanel', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registerSections( registry );
+	} );
+
+	afterEach( () => {
+		mockTrackEvent.mockClear();
 	} );
 
 	function openPanel() {
@@ -221,5 +230,76 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		expect(
 			registry.select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY )
 		).toBe( false );
+	} );
+
+	it( 'fires pdf_generation_sidebar_view once when the panel opens', async () => {
+		const { findByRole } = render( <PDFSectionsSelectionPanel />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		openPanel();
+
+		await findByRole( 'checkbox', { name: /^Traffic$/ } );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pdf_generation_section_selection-sidebar`,
+			'pdf_generation_sidebar_view'
+		);
+		expect(
+			mockTrackEvent.mock.calls.filter(
+				( [ , event ]: string[] ) =>
+					event === 'pdf_generation_sidebar_view'
+			)
+		).toHaveLength( 1 );
+	} );
+
+	it( 'fires pdf_generation_sidebar_close when the panel is closed via Cancel', async () => {
+		const { findByRole, getByRole } = render(
+			<PDFSectionsSelectionPanel />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		openPanel();
+
+		await findByRole( 'checkbox', { name: /^Traffic$/ } );
+
+		mockTrackEvent.mockClear();
+
+		fireEvent.click( getByRole( 'button', { name: 'Cancel' } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pdf_generation_section_selection-sidebar`,
+			'pdf_generation_sidebar_close'
+		);
+	} );
+
+	it( 'does not fire pdf_generation_sidebar_close when Download is clicked', async () => {
+		const { findByRole } = render( <PDFSectionsSelectionPanel />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		openPanel();
+
+		await findByRole( 'checkbox', { name: /^Traffic$/ } );
+
+		mockTrackEvent.mockClear();
+
+		fireEvent.click(
+			await findByRole( 'button', { name: 'Download report' } )
+		);
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).isExporting() ).toBe( true );
+		} );
+
+		expect( mockTrackEvent ).not.toHaveBeenCalledWith(
+			expect.anything(),
+			'pdf_generation_sidebar_close'
+		);
 	} );
 } );

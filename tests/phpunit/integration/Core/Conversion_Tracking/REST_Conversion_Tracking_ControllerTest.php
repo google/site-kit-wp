@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
@@ -75,8 +72,8 @@ class REST_Conversion_Tracking_ControllerTest extends TestCase {
 
 		$this->controller->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ), 'Conversion tracking REST routes should be registered.' );
+		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ), 'Conversion tracking preload paths should be registered.' );
 	}
 
 	public function test_get_settings() {
@@ -96,7 +93,7 @@ class REST_Conversion_Tracking_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/conversion-tracking' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEqualSetsWithIndex( $original_settings, $response->get_data() );
+		$this->assertEqualSetsWithIndex( $original_settings, $response->get_data(), 'Conversion tracking response should contain stored settings.' );
 	}
 
 	public function test_get_settings__requires_authenticated_admin() {
@@ -116,7 +113,7 @@ class REST_Conversion_Tracking_ControllerTest extends TestCase {
 
 		// This request is made by a user who is not authenticated with dashboard
 		// view permissions and is therefore forbidden.
-		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'Settings response should forbid unauthenticated admins.' );
 	}
 
 	public function test_set_settings() {
@@ -147,7 +144,7 @@ class REST_Conversion_Tracking_ControllerTest extends TestCase {
 		);
 
 		$response = rest_get_server()->dispatch( $request );
-		$this->assertEqualSetsWithIndex( $changed_settings, $response->get_data() );
+		$this->assertEqualSetsWithIndex( $changed_settings, $response->get_data(), 'Conversion tracking response should contain changed settings.' );
 	}
 
 	public function test_set_settings__requires_authenticated_admin() {
@@ -179,7 +176,7 @@ class REST_Conversion_Tracking_ControllerTest extends TestCase {
 
 		// This request is made by a user who is not authenticated with dashboard
 		// view permissions and is therefore forbidden.
-		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'Settings update should forbid unauthenticated admins.' );
 	}
 
 	/**
@@ -213,8 +210,8 @@ class REST_Conversion_Tracking_ControllerTest extends TestCase {
 
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 400, $response->get_status() );
-		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'] );
+		$this->assertEquals( 400, $response->get_status(), 'Invalid settings response should use bad request status.' );
+		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'], 'Invalid settings response should include invalid param code.' );
 	}
 
 	public function provider_wrong_settings_data() {
@@ -238,7 +235,7 @@ class REST_Conversion_Tracking_ControllerTest extends TestCase {
 
 		// This request is made by a user who is not authenticated with dashboard
 		// view permissions and is therefore forbidden.
-		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'API settings response should forbid unauthenticated admins.' );
 	}
 
 	private function grant_manage_options_permission() {

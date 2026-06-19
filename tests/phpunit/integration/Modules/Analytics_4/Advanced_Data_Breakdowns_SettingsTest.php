@@ -45,9 +45,9 @@ class Advanced_Data_Breakdowns_SettingsTest extends SettingsTestCase {
 		$this->settings->register();
 
 		$this->assertEqualSetsWithIndex(
-			array( 'enabled' => false ),
+			array(),
 			$this->settings->get_default(),
-			'The default value should disable advanced data breakdowns.'
+			'The default value should be an empty property map.'
 		);
 	}
 
@@ -60,82 +60,105 @@ class Advanced_Data_Breakdowns_SettingsTest extends SettingsTestCase {
 	public function test_get_view_only_keys(): void {
 		$this->settings->register();
 
+		$this->settings->merge(
+			array(
+				'123456789' => true,
+				'987654321' => false,
+			)
+		);
+
 		$this->assertEqualSets(
-			array( 'enabled' ),
+			array( '123456789', '987654321' ),
 			$this->settings->get_view_only_keys(),
-			'View-only users should be able to read the `enabled` flag.'
+			'View-only users should read every stored property ID.'
 		);
 	}
 
-	public function test_sanitize_casts_enabled_to_boolean(): void {
+	public function test_sanitize__casts_each_property_value_to_boolean(): void {
 		$this->settings->register();
 
 		$this->options->set(
 			$this->get_option_name(),
-			array( 'enabled' => 'yes' )
+			array(
+				'123456789' => 'yes',
+				'987654321' => 0,
+			)
 		);
 
 		$this->assertSame(
-			array( 'enabled' => true ),
+			array(
+				'123456789' => true,
+				'987654321' => false,
+			),
 			$this->settings->get(),
-			'A non-empty string for `enabled` should sanitize to `true`.'
-		);
-
-		$this->options->set(
-			$this->get_option_name(),
-			array( 'enabled' => 0 )
-		);
-
-		$this->assertSame(
-			array( 'enabled' => false ),
-			$this->settings->get(),
-			'A zero integer for `enabled` should sanitize to `false`.'
+			'Each property value should sanitize to a boolean.'
 		);
 	}
 
-	public function test_sanitize_keeps_existing_value_when_input_is_not_array(): void {
+	public function test_sanitize__keeps_existing_value_when_input_is_not_array(): void {
 		$this->settings->register();
 
-		$this->settings->merge( array( 'enabled' => true ) );
+		$this->settings->merge( array( '123456789' => true ) );
 
 		$this->options->set( $this->get_option_name(), 'invalid' );
 
 		$this->assertSame(
-			array( 'enabled' => true ),
+			array( '123456789' => true ),
 			$this->settings->get(),
 			'A non-array input should leave the existing value untouched.'
 		);
 	}
 
-	public function test_is_enabled_returns_stored_state(): void {
+	public function test_is_enabled__returns_the_stored_state_for_the_given_property(): void {
 		$this->settings->register();
 
-		$this->assertFalse( $this->settings->is_enabled(), 'The default state should be disabled.' );
-
-		$this->settings->merge( array( 'enabled' => true ) );
-
-		$this->assertTrue( $this->settings->is_enabled(), '`is_enabled()` should reflect the stored value.' );
-	}
-
-	public function test_merge_partial_update(): void {
-		$this->settings->register();
-
-		$this->settings->merge( array( 'enabled' => true ) );
-
-		$merged = $this->settings->merge( array() );
-
-		$this->assertSame(
-			array( 'enabled' => true ),
-			$merged,
-			'An empty merge should keep the existing value.'
+		$this->assertFalse(
+			$this->settings->is_enabled( '123456789' ),
+			'A property with no stored state should be disabled.'
 		);
 
-		$updated = $this->settings->merge( array( 'enabled' => false ) );
+		$this->settings->merge(
+			array(
+				'123456789' => true,
+				'987654321' => false,
+			)
+		);
+
+		$this->assertTrue(
+			$this->settings->is_enabled( '123456789' ),
+			'`is_enabled()` should return true for the enabled property.'
+		);
+		$this->assertFalse(
+			$this->settings->is_enabled( '987654321' ),
+			'`is_enabled()` should return false for the disabled property.'
+		);
+	}
+
+	public function test_merge__keeps_other_properties_states(): void {
+		$this->settings->register();
+
+		$this->settings->merge( array( '123456789' => true ) );
+
+		$merged = $this->settings->merge( array( '987654321' => true ) );
 
 		$this->assertSame(
-			array( 'enabled' => false ),
+			array(
+				'123456789' => true,
+				'987654321' => true,
+			),
+			$merged,
+			'Merging a new property should keep the other properties\' states.'
+		);
+
+		$updated = $this->settings->merge( array( '123456789' => false ) );
+
+		$this->assertSame(
+			array(
+				'123456789' => false,
+				'987654321' => true,
+			),
 			$updated,
-			'Merging a new value should overwrite the previous one.'
+			'Merging should overwrite the given property and keep the others.'
 		);
 	}
 }

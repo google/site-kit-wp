@@ -46,16 +46,23 @@ import { MODULES_ANALYTICS_4 } from './constants';
 
 const { setErrorForAction, clearActionError } = errorStoreActions;
 
-export interface SiteGoalsSettings {
+/**
+ * Per-user fields that the SAVE endpoint accepts.
+ */
+export interface PerUserSiteGoalsSettings {
 	goalDrivers?: GoalDriverSelectionState;
 	visitorEngagement?: VisitorEngagementSelectionState;
 }
 
+/**
+ * Full merged settings returned by the GET endpoint.
+ */
+export interface SiteGoalsSettings extends PerUserSiteGoalsSettings {
+	activeWidgets?: string[];
+}
+
 interface State {
-	siteGoalsSettings?: {
-		settings: SiteGoalsSettings;
-		savedSettings: SiteGoalsSettings;
-	};
+	siteGoalsSettings?: SiteGoalsSettings;
 	isFetchingSaveSiteGoalsSettings?: Record< string, boolean >;
 	breakdownTooltipPending?: boolean;
 }
@@ -68,12 +75,16 @@ interface SetBreakdownTooltipPendingAction {
 	payload: { isPending: boolean };
 }
 
-// Result shape returned by the fetch-store save action.
-type SaveResult = { response?: SiteGoalsSettings; error?: unknown };
+/**
+ * Result shape returned by the fetch-store save action.
+ */
+type SaveResult = { response?: PerUserSiteGoalsSettings; error?: unknown };
 
-// Minimal typed view over the registry exposed inside the generator actions and
-// resolvers. The shared redux-routine/registry infrastructure is untyped JS, so
-// only the selectors this store actually reaches are declared here.
+/**
+ * Minimal typed view over the registry exposed inside the generator actions and
+ * resolvers. The shared redux-routine/registry infrastructure is untyped JS, so
+ * only the selectors this store actually reaches are declared here.
+ */
 interface SiteGoalsRegistry {
 	select: ( store: string ) => {
 		getSiteGoalsSettings: () => SiteGoalsSettings | undefined;
@@ -109,11 +120,11 @@ function validateGoalTypeSelections( selections: unknown, key: string ): void {
 }
 
 /**
- * Validates site goals settings.
+ * Validates the per-user site goals settings (goalDrivers, visitorEngagement).
  *
  * @since 1.181.0
  *
- * @param {*} settings Site goals settings to validate.
+ * @param {*} settings Per-user site goals settings to validate.
  * @return {void}
  */
 function validateSiteGoalsSettings( settings: unknown ): void {
@@ -127,15 +138,6 @@ function validateSiteGoalsSettings( settings: unknown ): void {
 		}
 	} );
 }
-
-const fetchStoreReducerCallback = createReducer(
-	( state: State, settings: SiteGoalsSettings ) => {
-		state.siteGoalsSettings = {
-			settings,
-			savedSettings: settings,
-		};
-	}
-);
 
 const fetchGetSiteGoalsSettingsStore = createFetchStore( {
 	baseName: 'getSiteGoalsSettings',
@@ -151,24 +153,39 @@ const fetchGetSiteGoalsSettingsStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback: fetchStoreReducerCallback,
+	reducerCallback: createReducer(
+		( state: State, settings: SiteGoalsSettings ) => {
+			state.siteGoalsSettings = settings;
+		}
+	),
 } ) as {
 	actions: { fetchGetSiteGoalsSettings: () => unknown };
 };
 
 const fetchSaveSiteGoalsSettingsStore = createFetchStore( {
 	baseName: 'saveSiteGoalsSettings',
-	controlCallback: ( settings: SiteGoalsSettings ) =>
+	controlCallback: ( settings: PerUserSiteGoalsSettings ) =>
 		set( 'modules', MODULE_SLUG_ANALYTICS_4, 'save-site-goals-settings', {
 			settings,
 		} ),
-	reducerCallback: fetchStoreReducerCallback,
-	argsToParams: ( settings: SiteGoalsSettings ) => settings,
+	reducerCallback: createReducer(
+		( state: State, perUserSettings: PerUserSiteGoalsSettings ) => {
+			// Merge the per-user response over existing settings, preserving
+			// site-wide activeWidgets already in state.
+			state.siteGoalsSettings = {
+				...state.siteGoalsSettings,
+				...perUserSettings,
+			};
+		}
+	),
+	argsToParams: ( settings: PerUserSiteGoalsSettings ) => settings,
 	validateParams: validateSiteGoalsSettings,
 	isAction: true,
 } ) as {
 	actions: {
-		fetchSaveSiteGoalsSettings: ( settings: SiteGoalsSettings ) => unknown;
+		fetchSaveSiteGoalsSettings: (
+			settings: PerUserSiteGoalsSettings
+		) => unknown;
 	};
 };
 
@@ -191,6 +208,56 @@ const baseReducer = createReducer(
 );
 
 const baseActions = {
+	/**
+	 * Saves the per-user site goals settings (goalDrivers, visitorEngagement).
+	 *
+	 * @since 1.181.0
+	 *
+	 * @param {Object} settings Partial per-user site goals settings to save.
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	saveSiteGoalsSettings: createValidatedAction(
+		( settings: PerUserSiteGoalsSettings ) => {
+			validateSiteGoalsSettings( settings );
+		},
+		function* (
+			settings: PerUserSiteGoalsSettings
+		): Generator< unknown, SaveResult, unknown > {
+			yield clearActionError( 'saveSiteGoalsSettings', [] );
+
+			const registry =
+				( yield commonActions.getRegistry() ) as SiteGoalsRegistry;
+
+			const currentSettings = ( yield commonActions.await(
+				registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getSiteGoalsSettings()
+			) ) as SiteGoalsSettings | undefined;
+
+			// Only send the per-user fields to the save endpoint.
+			const perUserSettings: PerUserSiteGoalsSettings = {
+				...( currentSettings?.goalDrivers !== undefined && {
+					goalDrivers: currentSettings.goalDrivers,
+				} ),
+				...( currentSettings?.visitorEngagement !== undefined && {
+					visitorEngagement: currentSettings.visitorEngagement,
+				} ),
+				...settings,
+			};
+
+			const { response, error } =
+				( yield fetchSaveSiteGoalsSettingsStore.actions.fetchSaveSiteGoalsSettings(
+					perUserSettings
+				) ) as SaveResult;
+
+			if ( error ) {
+				yield setErrorForAction( error, 'saveSiteGoalsSettings', [] );
+			}
+
+			return { response, error };
+		}
+	),
+
 	/**
 	 * Marks the breakdown notice tooltip as pending, so the Side Panel parent
 	 * shows it once the panel overlay closes.
@@ -219,48 +286,6 @@ const baseActions = {
 			payload: { isPending: false },
 		};
 	},
-
-	/**
-	 * Saves the site goals settings.
-	 *
-	 * @since 1.181.0
-	 *
-	 * @param {Object} settings Partial site goals settings to save.
-	 * @return {Object} Object with `response` and `error`.
-	 */
-	saveSiteGoalsSettings: createValidatedAction(
-		( settings: SiteGoalsSettings ) => {
-			validateSiteGoalsSettings( settings );
-		},
-		function* (
-			settings: SiteGoalsSettings
-		): Generator< unknown, SaveResult, unknown > {
-			yield clearActionError( 'saveSiteGoalsSettings', [] );
-
-			const registry =
-				( yield commonActions.getRegistry() ) as SiteGoalsRegistry;
-
-			const currentSettings = ( yield commonActions.await(
-				registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getSiteGoalsSettings()
-			) ) as SiteGoalsSettings | undefined;
-
-			const { response, error } =
-				( yield fetchSaveSiteGoalsSettingsStore.actions.fetchSaveSiteGoalsSettings(
-					{
-						...currentSettings,
-						...settings,
-					}
-				) ) as SaveResult;
-
-			if ( error ) {
-				yield setErrorForAction( error, 'saveSiteGoalsSettings', [] );
-			}
-
-			return { response, error };
-		}
-	),
 };
 
 const baseResolvers = {
@@ -279,7 +304,7 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Gets the site goals settings.
+	 * Gets the merged site goals settings (per-user + site-wide).
 	 *
 	 * @since 1.181.0
 	 *
@@ -287,7 +312,7 @@ const baseSelectors = {
 	 * @return {Object|undefined} Site goals settings, or `undefined` if not loaded.
 	 */
 	getSiteGoalsSettings( state: State ): SiteGoalsSettings | undefined {
-		return state.siteGoalsSettings?.settings;
+		return state.siteGoalsSettings;
 	},
 
 	/**
@@ -313,6 +338,27 @@ const baseSelectors = {
 		( select: Select ) => () =>
 			select( MODULES_ANALYTICS_4 ).getSiteGoalsSettings()
 				?.visitorEngagement
+	),
+
+	/**
+	 * Checks whether a given widget category is active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state    Data store's state.
+	 * @param {string} category Widget category slug (e.g. 'lead' or 'ecommerce').
+	 * @return {boolean|undefined} `true` if active, `false` if not, `undefined` if not loaded.
+	 */
+	isSiteGoalWidgetActive: createRegistrySelector(
+		( select: Select ) =>
+			( _state: State, category: string ): boolean | undefined => {
+				const settings =
+					select( MODULES_ANALYTICS_4 ).getSiteGoalsSettings();
+				if ( settings === undefined ) {
+					return undefined;
+				}
+				return ( settings.activeWidgets ?? [] ).includes( category );
+			}
 	),
 
 	/**

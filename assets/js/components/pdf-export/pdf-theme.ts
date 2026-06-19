@@ -29,6 +29,27 @@ export const PDF_FONT_FAMILY_DISPLAY = 'GoogleSansDisplay';
  * Maps to Google Sans Text (regular / 400 and medium / 500).
  */
 export const PDF_FONT_FAMILY_TEXT = 'GoogleSansText';
+export const PDF_COLOR_TEXT_PRIMARY = '#161b18';
+export const PDF_COLOR_TEXT_SECONDARY = '#5f6368';
+export const PDF_COLOR_TEXT_MUTED = '#6C726E';
+export const PDF_COLOR_LINK = '#108080';
+export const PDF_COLOR_BORDER = '#dadce0';
+
+/**
+ * Header-specific colour tokens for the PDF report header strip.
+ *
+ * @since n.e.x.t
+ */
+export const PDF_HEADER_COLORS = {
+	logo: PDF_COLOR_TEXT_SECONDARY,
+	title: PDF_COLOR_TEXT_PRIMARY,
+	subtitle: PDF_COLOR_TEXT_SECONDARY,
+	siteURL: PDF_COLOR_TEXT_MUTED,
+	link: PDF_COLOR_LINK,
+	chipBorder: PDF_COLOR_BORDER,
+	chipText: PDF_COLOR_TEXT_PRIMARY,
+	chipIcon: PDF_COLOR_TEXT_PRIMARY,
+};
 
 /**
  * Colour tokens shared across the PDF report header, footer, and tiles.
@@ -36,11 +57,8 @@ export const PDF_FONT_FAMILY_TEXT = 'GoogleSansText';
  * @since n.e.x.t
  */
 export const colors = {
-	/** Primary body and heading text. */
 	text: '#202124',
-	/** Muted secondary text, e.g. date ranges and captions. */
 	secondary: '#5f6368',
-	/** Muted footer link text (Figma: surfaces/on-surface-variant). */
 	onSurfaceVariant: '#6c726e',
 } as const;
 
@@ -50,13 +68,9 @@ export const colors = {
  * @since n.e.x.t
  */
 export const fontSizes = {
-	/** Small print, e.g. footer links and captions. */
 	small: 12,
-	/** Default body copy. */
 	body: 12,
-	/** Section subheadings. */
 	subheading: 16,
-	/** The report title. */
 	heading: 20,
 } as const;
 
