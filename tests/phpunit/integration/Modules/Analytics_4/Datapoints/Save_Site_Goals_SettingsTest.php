@@ -7,7 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
 
 namespace Google\Site_Kit\Tests\Modules\Analytics_4\Datapoints;
 
@@ -156,10 +155,17 @@ class Save_Site_Goals_SettingsTest extends TestCase {
 	}
 
 	public function test_is_shareable() {
+		// The `Save_Site_Goals_Settings` datapoint currently is used to save per-user
+		// settings only. However, it must be shareable so shared-dashboard viewers
+		// (without their own Analytics scopes) pass base-scope validation via the
+		// owner's OAuth client.
 		$this->assertTrue( $this->datapoint->is_shareable(), 'The Site Goals save datapoint should be shareable.' );
 	}
 
 	public function test_permission_callback() {
+		// The `Save_Site_Goals_Settings` datapoint currently is used to save per-user
+		// settings only. These settings are gated on dashboard access rather than the default
+		// `manage_options` permission, so view-only users can persist their own selection.
 		$this->assertSame(
 			current_user_can( Permissions::VIEW_DASHBOARD ),
 			$this->datapoint->permission_callback(),
