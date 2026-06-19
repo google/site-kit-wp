@@ -48,6 +48,9 @@ const bodyTextStyles = {
 
 const PAGE_LINK_COLOR = '#108080';
 
+// Maximum URL characters shown in the Title column before the ellipsis.
+const MAX_URL_LENGTH = 70;
+
 const styles = StyleSheet.create( {
 	titleCell: {
 		flexDirection: 'row',
@@ -114,6 +117,7 @@ const ModulePopularPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 	const columns: Array< PDFTableColumn< PopularPageRow > > = [
 		{
 			header: __( 'Title', 'google-site-kit' ),
+			// 42.8% of the 1084px row, about 464px.
 			width: '42.8%',
 			// Shows the page title above its URL, with the row rank to the left.
 			cell: ( row ) => (
@@ -121,25 +125,32 @@ const ModulePopularPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 					<Text style={ styles.rank }>{ `${ row.rank }.` }</Text>
 					<View style={ styles.titleGroup }>
 						<Text style={ styles.title }>{ row.title }</Text>
-						<Text style={ styles.url }>{ row.url }</Text>
+						<Text style={ styles.url }>
+							{ row.url.length > MAX_URL_LENGTH
+								? `${ row.url.slice( 0, MAX_URL_LENGTH ) }…`
+								: row.url }
+						</Text>
 					</View>
 				</View>
 			),
 		},
 		{
 			header: __( 'Pageviews', 'google-site-kit' ),
+			// 6.46% of the 1084px row, about 70px.
 			width: '6.46%',
 			align: 'right',
 			format: ( row ) => numFmt( row.pageviews, { style: 'decimal' } ),
 		},
 		{
 			header: __( 'Sessions', 'google-site-kit' ),
+			// 10.15% of the 1084px row, about 110px.
 			width: '10.15%',
 			align: 'right',
 			format: ( row ) => numFmt( row.sessions, { style: 'decimal' } ),
 		},
 		{
 			header: __( 'Engaged sessions', 'google-site-kit' ),
+			// 15.5% of the 1084px row, about 168px.
 			width: '15.5%',
 			align: 'right',
 			// The "Engaged sessions" column shows the engagement rate metric,
@@ -148,6 +159,7 @@ const ModulePopularPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 		},
 		{
 			header: __( 'Session duration', 'google-site-kit' ),
+			// 10.33% of the 1084px row, about 112px.
 			width: '10.33%',
 			align: 'right',
 			// numFmt with 's' renders seconds as Xm Ys (for example 1m 38s or

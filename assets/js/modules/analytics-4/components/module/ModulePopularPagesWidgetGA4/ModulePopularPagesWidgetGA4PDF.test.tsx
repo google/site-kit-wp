@@ -113,6 +113,30 @@ describe( 'ModulePopularPagesWidgetGA4PDF', () => {
 		);
 	} );
 
+	it( 'truncates a long page URL with an ellipsis', () => {
+		const longURL = `/${ 'a'.repeat( 80 ) }`;
+		const json = renderJSON( {
+			data: {
+				rows: [
+					{
+						dimensionValues: [ { value: longURL } ],
+						metricValues: [
+							{ value: '1' },
+							{ value: '1' },
+							{ value: '0.5' },
+							{ value: '1' },
+						],
+					},
+				],
+				titles: { [ longURL ]: 'Long Title' },
+			},
+		} );
+
+		// The full URL is replaced by a truncated form ending in an ellipsis.
+		expect( json ).toContain( '…' );
+		expect( json ).not.toContain( longURL );
+	} );
+
 	it( 'numbers each row by its rank in the Title cell', () => {
 		const json = renderJSON( { data: DATA } );
 
