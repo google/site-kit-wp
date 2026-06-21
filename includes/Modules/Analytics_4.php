@@ -711,6 +711,38 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				: join( ', ', $site_kit_audiences ),
 		);
 
+		if ( Feature_Flags::enabled( 'siteGoals' ) ) {
+			$active_widget_slugs = $this->site_goals_site_settings->get()['activeWidgets'] ?? array();
+			$widget_names        = array(
+				'ecommerce' => __( 'Online store performance', 'google-site-kit' ),
+				'lead'      => __( 'Lead generation performance', 'google-site-kit' ),
+			);
+			$widget_labels       = array_values(
+				array_filter(
+					array_map(
+						function ( $slug ) use ( $widget_names ) {
+							return $widget_names[ $slug ] ?? null;
+						},
+						$active_widget_slugs
+					)
+				)
+			);
+
+			$debug_fields['analytics_4_site_goals_widgets'] = array(
+				'label' => __( 'Analytics: Site Goal Widgets', 'google-site-kit' ),
+				'value' => empty( $widget_labels )
+					? __( 'None', 'google-site-kit' )
+					: join(
+						/* translators: used between list items, there is a space after the comma */
+						__( ', ', 'google-site-kit' ),
+						$widget_labels
+					),
+				'debug' => empty( $active_widget_slugs )
+					? 'none'
+					: join( ', ', $active_widget_slugs ),
+			);
+		}
+
 		return $debug_fields;
 	}
 
