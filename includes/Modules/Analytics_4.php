@@ -717,16 +717,12 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'ecommerce' => __( 'Online store performance', 'google-site-kit' ),
 				'lead'      => __( 'Lead generation performance', 'google-site-kit' ),
 			);
-			$widget_labels       = array_values(
-				array_filter(
-					array_map(
-						function ( $slug ) use ( $widget_names ) {
-							return $widget_names[ $slug ] ?? null;
-						},
-						$active_widget_slugs
-					)
-				)
-			);
+			$widget_labels       = array();
+			foreach ( $active_widget_slugs as $slug ) {
+				if ( isset( $widget_names[ $slug ] ) ) {
+					$widget_labels[] = $widget_names[ $slug ];
+				}
+			}
 
 			$debug_fields['analytics_4_site_goals_widgets'] = array(
 				'label' => __( 'Analytics: Site Goal Widgets', 'google-site-kit' ),
