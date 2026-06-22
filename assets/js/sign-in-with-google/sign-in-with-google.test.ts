@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import {
+	type IdentityServices,
 	type SignInWithGoogleConfig,
 	setupSignInWithGoogle,
 } from './sign-in-with-google';
@@ -47,82 +48,70 @@ const config: SignInWithGoogleConfig = {
 	shouldShowOneTapPrompt: false,
 };
 
+const identityServices = {
+	initialize: jest.fn(),
+	prompt: jest.fn(),
+	renderButton: jest.fn(),
+} as unknown as IdentityServices;
+
 describe( 'sign-in-with-google', () => {
 	beforeEach( () => {
 		jest.resetModules();
 
 		document.body.innerHTML =
 			'<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>';
-
-		( window.google as unknown as {
-			accounts: {
-				id: {
-					initialize: jest.Mock;
-					renderButton: jest.Mock;
-					prompt: jest.Mock;
-				};
-			};
-		} ) = {
-			accounts: {
-				id: {
-					initialize: jest.fn(),
-					renderButton: jest.fn(),
-					prompt: jest.fn(),
-				},
-			},
-		};
 	} );
 
 	it( 'should initialize with config data and render a button', () => {
-		setupSignInWithGoogle( window.google.accounts.id, config );
+		setupSignInWithGoogle( identityServices, config );
 
-		expect( window.google.accounts.id.initialize ).toHaveBeenCalledWith(
+		expect( identityServices.initialize ).toHaveBeenCalledWith(
 			expect.objectContaining( {
 				client_id: config.clientID,
 			} )
 		);
 
-		expect( window.google.accounts.id.prompt ).not.toHaveBeenCalled();
-		expect( window.google.accounts.id.renderButton ).toHaveBeenCalled();
+		expect( identityServices.prompt ).not.toHaveBeenCalled();
+		expect( identityServices.renderButton ).toHaveBeenCalled();
 	} );
 
 	it( 'should initialize with config data and show the One Tap prompt when configured', () => {
-		setupSignInWithGoogle( window.google.accounts.id, {
+		setupSignInWithGoogle( identityServices, {
 			...config,
 			shouldShowOneTapPrompt: true,
 		} );
 
-		expect( window.google.accounts.id.initialize ).toHaveBeenCalledWith(
+		expect( identityServices.initialize ).toHaveBeenCalledWith(
 			expect.objectContaining( {
 				client_id: config.clientID,
 			} )
 		);
 
-		expect( window.google.accounts.id.prompt ).toHaveBeenCalled();
+		expect( identityServices.prompt ).toHaveBeenCalled();
 	} );
 
 	it( 'should add a button to the login form when isWPLogin is true and the form is present', () => {
 		document.body.innerHTML =
 			'<div id="login"><form id="loginform"></form></div>';
 
-		setupSignInWithGoogle( window.google.accounts.id, {
+		setupSignInWithGoogle( identityServices, {
 			...config,
 			isWPLogin: true,
 		} );
 
-		expect( window.google.accounts.id.initialize ).toHaveBeenCalledWith(
+		expect( identityServices.initialize ).toHaveBeenCalledWith(
 			expect.objectContaining( {
 				client_id: config.clientID,
 			} )
 		);
 
-		expect( window.google.accounts.id.renderButton ).toHaveBeenCalled();
+		expect( identityServices.renderButton ).toHaveBeenCalled();
 	} );
 
 	it( 'should not render with an explicit width by default', () => {
-		setupSignInWithGoogle( window.google.accounts.id, config );
+		setupSignInWithGoogle( identityServices, config );
 
-		expect( window.google.accounts.id.renderButton ).toHaveBeenCalledWith(
+		expect( identityServices.renderButton ).toHaveBeenCalledWith(
 			expect.any( HTMLElement ),
 			expect.not.objectContaining( {
 				width: expect.anything(),
@@ -134,9 +123,9 @@ describe( 'sign-in-with-google', () => {
 		document.body.innerHTML =
 			'<div class="googlesitekit-sign-in-with-google__frontend-output-button" data-googlesitekit-siwg-width="200"></div>';
 
-		setupSignInWithGoogle( window.google.accounts.id, config );
+		setupSignInWithGoogle( identityServices, config );
 
-		expect( window.google.accounts.id.renderButton ).toHaveBeenCalledWith(
+		expect( identityServices.renderButton ).toHaveBeenCalledWith(
 			expect.any( HTMLElement ),
 			expect.objectContaining( {
 				width: 200,
@@ -148,12 +137,12 @@ describe( 'sign-in-with-google', () => {
 		document.body.innerHTML =
 			'<div id="login"><form id="loginform"></form></div>';
 
-		setupSignInWithGoogle( window.google.accounts.id, {
+		setupSignInWithGoogle( identityServices, {
 			...config,
 			isWPLogin: true,
 		} );
 
-		expect( window.google.accounts.id.renderButton ).toHaveBeenCalledWith(
+		expect( identityServices.renderButton ).toHaveBeenCalledWith(
 			expect.any( HTMLElement ),
 			expect.objectContaining( {
 				width: 320,

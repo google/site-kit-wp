@@ -16,210 +16,27 @@
  * limitations under the License.
  */
 
-type IdentityServices = typeof google.accounts.id;
+/**
+ * Internal dependencies
+ */
+import { setupSignInWithGoogle } from '@/js/sign-in-with-google/sign-in-with-google';
 
-import ButtonConfiguration = google.accounts.id.GsiButtonConfiguration;
-import CredentialResponse = google.accounts.id.CredentialResponse;
+try {
+	const configJSON = document.currentScript?.dataset.siwgConfig;
 
-export type SignInWithGoogleConfig = {
-	clientID: string;
-	connectNonce: string;
-	defaultButtonOptions: ButtonConfiguration;
-	followsPostRedirect: boolean;
-	isExistingUserFlow: boolean;
-	isPreview: boolean;
-	isUserLoggedIn: boolean;
-	isWooCommerce: boolean;
-	isWPLogin: boolean;
-	loginURI: string;
-	redirectCookieName: string;
-	redirectCookiePath: string;
-	redirectCookieTTL: number;
-	redirectTo: string;
-	shouldShowOneTapPrompt: boolean;
-};
-
-function getCommentTextKey( element: HTMLTextAreaElement ) {
-	if ( ! element.form ) {
-		return 'siwg-comment-text-0';
+	if ( ! configJSON ) {
+		throw new Error( 'Configuration data not found.' );
 	}
 
-	const formData = new FormData( element.form );
-	const postID = formData.get( 'comment_post_ID' );
+	const identityServices = global.google?.accounts?.id;
 
-	return `siwg-comment-text-${ postID }`;
-}
-
-function restoreCommentText( element: HTMLTextAreaElement ) {
-	const key = getCommentTextKey( element );
-	const commentText = sessionStorage.getItem( key );
-
-	if ( commentText ) {
-		element.value = commentText;
-		sessionStorage.removeItem( key );
-	}
-}
-
-function saveCommentText( element: HTMLTextAreaElement ) {
-	const key = getCommentTextKey( element );
-
-	if ( element.value ) {
-		sessionStorage.setItem( key, element.value );
-	}
-}
-
-async function handleCredentialResponse(
-	response: CredentialResponse,
-	config: SignInWithGoogleConfig
-) {
-	const {
-		connectNonce,
-		followsPostRedirect,
-		isExistingUserFlow,
-		isPreview,
-		isWooCommerce,
-		isWPLogin,
-		loginURI,
-		redirectTo,
-	} = config;
-
-	if ( isPreview ) {
-		return;
+	if ( ! identityServices ) {
+		throw new Error( 'Google identity services not found.' );
 	}
 
-	const body = new URLSearchParams(); // eslint-disable-line sitekit/acronym-case
+	const config = JSON.parse( configJSON );
 
-	body.append( 'credential', response.credential );
-	body.append( 'select_by', response.select_by );
-
-	if ( isExistingUserFlow ) {
-		body.append( 'integration', 'existing_user' );
-		body.append( 'connect_nonce', connectNonce );
-	} else if ( isWooCommerce && ! isWPLogin ) {
-		body.append( 'integration', 'woocommerce' );
-	}
-
-	const comment = <HTMLTextAreaElement | null>(
-		document.getElementById( 'comment' )
-	);
-
-	if ( comment ) {
-		saveCommentText( comment );
-	}
-
-	try {
-		const res = await fetch( loginURI, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-			body,
-		} );
-
-		if ( ! redirectTo && ! followsPostRedirect ) {
-			location.reload();
-		} else if ( res.ok && res.redirected ) {
-			location.assign( res.url );
-		}
-	} catch ( error ) {
-		global.console.error( error );
-	}
-}
-
-export function setupSignInWithGoogle(
-	identityService: IdentityServices,
-	config: SignInWithGoogleConfig
-) {
-	const { initialize, prompt, renderButton } = identityService;
-
-	const {
-		clientID,
-		defaultButtonOptions,
-		isExistingUserFlow,
-		isPreview,
-		isUserLoggedIn,
-		isWPLogin,
-		redirectTo,
-		redirectCookieTTL,
-		redirectCookieName,
-		redirectCookiePath,
-		shouldShowOneTapPrompt,
-	} = config;
-
-	initialize( {
-		client_id: clientID,
-		callback: ( response ) => handleCredentialResponse( response, config ),
-	} );
-
-	const login = document.getElementById( 'login' );
-
-	const shouldInsertButton = isWPLogin && login;
-
-	if ( shouldInsertButton ) {
-		const button = document.createElement( 'div' );
-		const loginForm = document.getElementById( 'loginform' );
-
-		button.classList.add(
-			'googlesitekit-sign-in-with-google__frontend-output-button'
-		);
-
-		button.dataset.googlesitekitSiwgWidth = '320';
-
-		login.insertBefore( button, loginForm );
-	}
-
-	const shouldRenderButton =
-		! isUserLoggedIn || isWPLogin || isPreview || isExistingUserFlow;
-
-	if ( shouldRenderButton ) {
-		const buttons = document.querySelectorAll(
-			'.googlesitekit-sign-in-with-google__frontend-output-button'
-		);
-
-		// eslint-disable-next-line sitekit/acronym-case
-		buttons.forEach( ( element: HTMLElement ) => {
-			const {
-				googlesitekitSiwgShape: shape = defaultButtonOptions.shape,
-				googlesitekitSiwgText: text = defaultButtonOptions.text,
-				googlesitekitSiwgTheme: theme = defaultButtonOptions.theme,
-				googlesitekitSiwgWidth,
-			} = element.dataset;
-
-			const buttonOptions = { shape, text, theme } as ButtonConfiguration;
-
-			const width = Number( googlesitekitSiwgWidth );
-
-			if ( ! isNaN( width ) && width > 0 ) {
-				buttonOptions.width = width;
-				element.style.maxInlineSize = `${ width }px`;
-			}
-
-			renderButton( element, buttonOptions );
-		} );
-	}
-
-	if ( shouldShowOneTapPrompt ) {
-		prompt();
-	}
-
-	if ( redirectTo ) {
-		document.cookie = `${ redirectCookieName }=${ redirectTo };max-age=${ redirectCookieTTL };path=${ redirectCookiePath }`;
-	}
-
-	const comment = <HTMLTextAreaElement | null>(
-		document.getElementById( 'comment' )
-	);
-
-	if ( comment ) {
-		restoreCommentText( comment );
-	}
-}
-
-const configJSON = document.currentScript?.dataset.siwgConfig;
-const identityService = global.google?.accounts?.id;
-
-if ( identityService && configJSON ) {
-	try {
-		setupSignInWithGoogle( identityService, JSON.parse( configJSON ) );
-	} catch ( error ) {
-		global.console.error( error );
-	}
+	setupSignInWithGoogle( identityServices, config );
+} catch ( error ) {
+	global.console.error( error );
 }
