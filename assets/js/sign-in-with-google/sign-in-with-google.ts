@@ -165,6 +165,8 @@ export function setupSignInWithGoogle(
 			'googlesitekit-sign-in-with-google__frontend-output-button'
 		);
 
+		button.dataset.googlesitekitSiwgWidth = '320';
+
 		login.insertBefore( button, loginForm );
 	}
 
