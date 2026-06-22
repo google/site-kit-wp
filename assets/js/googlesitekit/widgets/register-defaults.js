@@ -46,7 +46,6 @@ import {
 } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
 import ConnectGA4CTAWidget from '@/js/modules/analytics-4/components/widgets/ConnectGA4CTAWidget';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { WIDGET_AREA_STYLES } from './datastore/constants';
 import * as WIDGET_AREAS from './default-areas';
 import * as WIDGET_CONTEXTS from './default-contexts';
@@ -113,25 +112,12 @@ export function registerDefaults( widgetsAPI ) {
 			priority: 1,
 			CTA: ChangeMetricsLink,
 			filterActiveWidgets( select, areaWidgets ) {
-				const canViewSharedAnalytics = select(
-					CORE_USER
-				).hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 );
-
-				const canViewSharedSearchConsole = select(
-					CORE_USER
-				).hasAccessToShareableModule( MODULE_SLUG_SEARCH_CONSOLE );
-
 				// Prevent showing only one widget tile in this area when
 				// only Search Console is shared.
 				// See: https://github.com/google/site-kit-wp/issues/7435
-				const hasOnlyOneWidget =
-					areaWidgets.length === 1 &&
-					allKeyMetricsTileWidgets.includes( areaWidgets[ 0 ].slug );
-
 				if (
-					! canViewSharedAnalytics ||
-					! canViewSharedSearchConsole ||
-					hasOnlyOneWidget
+					areaWidgets.length === 1 &&
+					allKeyMetricsTileWidgets.includes( areaWidgets[ 0 ].slug )
 				) {
 					return [];
 				}
