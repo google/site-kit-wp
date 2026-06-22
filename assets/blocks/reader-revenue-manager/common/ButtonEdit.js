@@ -53,7 +53,6 @@ import EditorButton from './EditorButton';
  * @param {string} props.noSnippetWithoutModuleAccessNotice            No snippet without module access notice.
  * @param {Object} props.attributes                                    Block attributes.
  * @param {Function} props.setAttributes                               Block attribute setter.
- * @param {string} props.className                                     Block class name.
  * @return {Element} Element to render.
  */
 export default function ButtonEdit( {
@@ -65,15 +64,14 @@ export default function ButtonEdit( {
 	noSnippetWithoutModuleAccessNotice,
 	attributes,
 	setAttributes,
-	className,
 } ) {
 	const [ hasModuleAccess, setHasModuleAccess ] = useState( undefined );
 
 	const { buttonClassName } = attributes;
-	const blockProps = useBlockProps( { className } );
+	const blockProps = useBlockProps();
 
 	function handleClassChange( value ) {
-		const sanitizedValue = value.trim();
+		const sanitizedValue = ( value || '' ).trim();
 		setAttributes( {
 			buttonClassName: sanitizedValue ? sanitizedValue : undefined,
 		} );
@@ -187,5 +185,4 @@ ButtonEdit.propTypes = {
 		buttonClassName: PropTypes.string,
 	} ).isRequired,
 	setAttributes: PropTypes.func.isRequired,
-	className: PropTypes.string,
 };

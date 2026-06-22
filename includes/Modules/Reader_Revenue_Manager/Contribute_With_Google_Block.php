@@ -23,6 +23,7 @@ use Google\Site_Kit\Core\Util\Block_Support;
  * @ignore
  */
 class Contribute_With_Google_Block {
+	use Block_Button_Trait;
 	/**
 	 * Context instance.
 	 *
@@ -120,30 +121,4 @@ class Contribute_With_Google_Block {
 		);
 	}
 
-	/**
-	 * Gets the sanitized button class attribute.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $attributes Block attributes.
-	 * @return string Button class attribute.
-	 */
-	private function get_button_class_attribute( $attributes ) {
-		if ( ! is_array( $attributes ) || empty( $attributes['buttonClassName'] ) || ! is_string( $attributes['buttonClassName'] ) ) {
-			return '';
-		}
-
-		$classes = array_filter(
-			array_map(
-				'sanitize_html_class',
-				preg_split( '/\s+/', trim( $attributes['buttonClassName'] ) )
-			)
-		);
-
-		if ( empty( $classes ) ) {
-			return '';
-		}
-
-		return sprintf( ' class="%s"', esc_attr( implode( ' ', $classes ) ) );
-	}
 }
