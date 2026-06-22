@@ -34,6 +34,8 @@ import { Button } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import DownloadIcon from '@/svg/icons/download.svg';
 
 const PDFDownloadButton: FC = () => {
@@ -44,10 +46,17 @@ const PDFDownloadButton: FC = () => {
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
+	const viewContext = useViewContext();
 
 	const togglePanel = useCallback( () => {
+		if ( ! isOpen ) {
+			trackEvent(
+				`${ viewContext }_headerbar`,
+				'open_pdf_generation_sidebar'
+			);
+		}
 		setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, ! isOpen );
-	}, [ isOpen, setValue ] );
+	}, [ isOpen, setValue, viewContext ] );
 
 	return (
 		<Button

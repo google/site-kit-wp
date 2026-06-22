@@ -37,6 +37,7 @@ use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reportin
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
+use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Site_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
@@ -1715,6 +1716,7 @@ class Analytics_4Test extends TestCase {
 				'webdatastreams-batch',
 				'create-account-ticket',
 				'enhanced-measurement-settings',
+				'custom-dimensions',
 				'create-custom-dimension',
 				'set-is-web-data-stream-unavailable',
 				'sync-custom-dimensions',
@@ -1755,6 +1757,7 @@ class Analytics_4Test extends TestCase {
 				'webdatastreams-batch',
 				'create-account-ticket',
 				'enhanced-measurement-settings',
+				'custom-dimensions',
 				'create-custom-dimension',
 				'set-is-web-data-stream-unavailable',
 				'sync-custom-dimensions',
@@ -1860,6 +1863,81 @@ class Analytics_4Test extends TestCase {
 			array_keys( $this->analytics->get_debug_fields() ),
 			'Analytics 4 module should expose the expected debug fields when AdSense is enabled'
 		);
+	}
+
+	public function test_get_debug_fields__site_goals_widgets_absent_when_feature_disabled() {
+		$this->analytics->register();
+
+		$this->assertArrayNotHasKey(
+			'analytics_4_site_goals_widgets',
+			$this->analytics->get_debug_fields(),
+			'analytics_4_site_goals_widgets should not be present when the siteGoals feature flag is disabled'
+		);
+	}
+
+	public function test_get_debug_fields__site_goals_widgets_present_when_feature_enabled() {
+		$this->enable_feature( 'siteGoals' );
+		$this->analytics->register();
+
+		$this->assertArrayHasKey(
+			'analytics_4_site_goals_widgets',
+			$this->analytics->get_debug_fields(),
+			'analytics_4_site_goals_widgets should be present when the siteGoals feature flag is enabled'
+		);
+	}
+
+	public function test_get_debug_fields__site_goals_widgets_none_when_empty() {
+		$this->enable_feature( 'siteGoals' );
+		$this->analytics->register();
+
+		$debug_fields = $this->analytics->get_debug_fields();
+		$field        = $debug_fields['analytics_4_site_goals_widgets'];
+
+		$this->assertEquals( 'Analytics: Site Goal Widgets', $field['label'], 'label should be Analytics: Site Goal Widgets' );
+		$this->assertEquals( 'None', $field['value'], 'value should be None when no active widgets are set' );
+		$this->assertEquals( 'none', $field['debug'], 'debug should be none when no active widgets are set' );
+	}
+
+	public function test_get_debug_fields__site_goals_widgets_ecommerce() {
+		$this->enable_feature( 'siteGoals' );
+		$this->analytics->register();
+
+		$site_goals_site_settings = new Site_Goals_Site_Settings( $this->options );
+		$site_goals_site_settings->set( array( 'activeWidgets' => array( 'ecommerce' ) ) );
+
+		$debug_fields = $this->analytics->get_debug_fields();
+		$field        = $debug_fields['analytics_4_site_goals_widgets'];
+
+		$this->assertEquals( 'Online store performance', $field['value'], 'value should show ecommerce widget label' );
+		$this->assertEquals( 'ecommerce', $field['debug'], 'debug should show raw ecommerce slug' );
+	}
+
+	public function test_get_debug_fields__site_goals_widgets_lead() {
+		$this->enable_feature( 'siteGoals' );
+		$this->analytics->register();
+
+		$site_goals_site_settings = new Site_Goals_Site_Settings( $this->options );
+		$site_goals_site_settings->set( array( 'activeWidgets' => array( 'lead' ) ) );
+
+		$debug_fields = $this->analytics->get_debug_fields();
+		$field        = $debug_fields['analytics_4_site_goals_widgets'];
+
+		$this->assertEquals( 'Lead generation performance', $field['value'], 'value should show lead widget label' );
+		$this->assertEquals( 'lead', $field['debug'], 'debug should show raw lead slug' );
+	}
+
+	public function test_get_debug_fields__site_goals_widgets_both() {
+		$this->enable_feature( 'siteGoals' );
+		$this->analytics->register();
+
+		$site_goals_site_settings = new Site_Goals_Site_Settings( $this->options );
+		$site_goals_site_settings->set( array( 'activeWidgets' => array( 'ecommerce', 'lead' ) ) );
+
+		$debug_fields = $this->analytics->get_debug_fields();
+		$field        = $debug_fields['analytics_4_site_goals_widgets'];
+
+		$this->assertEquals( 'Online store performance, Lead generation performance', $field['value'], 'value should list both widget labels joined by comma' );
+		$this->assertEquals( 'ecommerce, lead', $field['debug'], 'debug should list both raw slugs joined by comma' );
 	}
 
 	/**

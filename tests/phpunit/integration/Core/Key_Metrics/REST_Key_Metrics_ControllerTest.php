@@ -9,8 +9,6 @@
  *
  * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Key_Metrics;
 
@@ -77,8 +75,8 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 
 		$this->controller->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ), 'Controller should register key metrics REST routes.' );
+		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ), 'Controller should register key metrics preload paths.' );
 	}
 
 	public function test_get_settings() {
@@ -97,7 +95,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEqualSetsWithIndex( $original_settings, $response->get_data() );
+		$this->assertEqualSetsWithIndex( $original_settings, $response->get_data(), 'GET endpoint should return stored key metrics settings.' );
 	}
 
 	public function test_set_settings() {
@@ -119,7 +117,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( 200, $response->get_status(), 'POST endpoint should accept valid key metrics settings.' );
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
 		$request->set_body_params(
@@ -146,8 +144,8 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 400, $response->get_status() );
-		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'] );
+		$this->assertEquals( 400, $response->get_status(), 'POST endpoint should reject too many widget slugs.' );
+		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'], 'Invalid widget slug count should return REST param error.' );
 	}
 
 	public function test_set_settings__only__isWidgetHidden() {
@@ -182,7 +180,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		);
 
 		$response = rest_get_server()->dispatch( $request );
-		$this->assertEqualSetsWithIndex( $expected_settings, $response->get_data() );
+		$this->assertEqualSetsWithIndex( $expected_settings, $response->get_data(), 'Partial update should preserve existing widget slugs.' );
 	}
 
 	/**
@@ -195,7 +193,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		$this->assertFalse( $this->key_metrics_setup_completed_by->get() );
+		$this->assertFalse( $this->key_metrics_setup_completed_by->get(), 'Setup completed option should start unset.' );
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/key-metrics' );
 		$request->set_body_params(
@@ -208,7 +206,7 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 
 		rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( $expected, $this->key_metrics_setup_completed_by->get() );
+		$this->assertEquals( $expected, $this->key_metrics_setup_completed_by->get(), 'Setup completed option should reflect valid settings update.' );
 	}
 
 	public function data_setup_completed() {
@@ -254,8 +252,8 @@ class REST_Key_Metrics_ControllerTest extends TestCase {
 		);
 
 		$response = rest_get_server()->dispatch( $request );
-		$this->assertEquals( 400, $response->get_status() );
-		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'] );
+		$this->assertEquals( 400, $response->get_status(), 'POST endpoint should reject malformed settings data.' );
+		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'], 'Malformed settings data should return REST param error.' );
 	}
 
 	public function provider_wrong_data() {

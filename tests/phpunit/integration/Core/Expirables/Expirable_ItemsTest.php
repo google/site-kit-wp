@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Expirables;
 
@@ -41,7 +39,7 @@ class Expirable_ItemsTest extends TestCase {
 	}
 
 	public function test_add() {
-		$this->assertEmpty( $this->user_options->get( Expirable_Items::OPTION ) );
+		$this->assertEmpty( $this->user_options->get( Expirable_Items::OPTION ), 'Expirable items should start with no stored timers.' );
 
 		$current_time      = time();
 		$expected_time_foo = $current_time + 1000;
@@ -51,10 +49,10 @@ class Expirable_ItemsTest extends TestCase {
 		$user_options          = $this->user_options->get( Expirable_Items::OPTION );
 		$expected_time_foo_bar = $current_time + 100;
 
-		$this->assertArrayHasKey( 'foo', $user_options );
-		$this->assertEqualsWithDelta( $expected_time_foo, $user_options['foo'], 2 );
-		$this->assertArrayHasKey( 'bar', $user_options );
-		$this->assertEqualsWithDelta( $expected_time_foo_bar, $user_options['bar'], 2 );
+		$this->assertArrayHasKey( 'foo', $user_options, 'Expirable items should store foo timer.' );
+		$this->assertEqualsWithDelta( $expected_time_foo, $user_options['foo'], 2, 'Foo timer should expire relative to add call.' );
+		$this->assertArrayHasKey( 'bar', $user_options, 'Expirable items should store bar timer.' );
+		$this->assertEqualsWithDelta( $expected_time_foo_bar, $user_options['bar'], 2, 'Bar timer should expire relative to later add call.' );
 	}
 
 	public function test_remove() {
@@ -69,15 +67,15 @@ class Expirable_ItemsTest extends TestCase {
 
 		$user_options = $this->user_options->get( Expirable_Items::OPTION );
 
-		$this->assertEqualsWithDelta( time() + 50, $user_options['foo'], 2 );
-		$this->assertEqualsWithDelta( time() + 100, $user_options['bar'], 2 );
-		$this->assertEqualsWithDelta( time() + 500, $user_options['baz'], 2 );
+		$this->assertEqualsWithDelta( time() + 50, $user_options['foo'], 2, 'Foo timer should exist before removal.' );
+		$this->assertEqualsWithDelta( time() + 100, $user_options['bar'], 2, 'Bar timer should exist before removal.' );
+		$this->assertEqualsWithDelta( time() + 500, $user_options['baz'], 2, 'Baz timer should exist before removal.' );
 
 		$this->expirable_items->remove( 'bar' );
 
 		$user_options_updated = $this->user_options->get( Expirable_Items::OPTION );
 
-		$this->assertEqualsWithDelta( time() + 50, $user_options_updated['foo'], 2 );
-		$this->assertEqualsWithDelta( time() + 500, $user_options_updated['baz'], 2 );
+		$this->assertEqualsWithDelta( time() + 50, $user_options_updated['foo'], 2, 'Removing bar should preserve foo timer.' );
+		$this->assertEqualsWithDelta( time() + 500, $user_options_updated['baz'], 2, 'Removing bar should preserve baz timer.' );
 	}
 }

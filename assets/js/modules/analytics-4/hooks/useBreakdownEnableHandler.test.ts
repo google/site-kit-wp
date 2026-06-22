@@ -86,8 +86,14 @@ describe( 'useBreakdownEnableHandler', () => {
 			propertyID: '12345',
 			availableCustomDimensions: [],
 		} );
-		// createCustomDimensions dedupes against key-metric requirements, which
-		// read these settings; seed them so they don't trigger network requests.
+		// Set the selected property's custom dimensions in the store, so
+		// createCustomDimensions reads them instead of fetching the
+		// custom-dimensions endpoint.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetCustomDimensions( [], { propertyID: '12345' } );
+		// createCustomDimensions reads the key-metric settings to find required
+		// dimensions, so set them here to avoid extra network requests.
 		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 			widgetSlugs: [],
 			isWidgetHidden: false,
