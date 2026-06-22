@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import {
+	type IdentityServices,
 	type SignInWithGoogleConfig,
 	setupSignInWithGoogle,
 } from './sign-in-with-google';
@@ -47,75 +48,63 @@ const config: SignInWithGoogleConfig = {
 	shouldShowOneTapPrompt: false,
 };
 
+const identityService = {
+	initialize: jest.fn(),
+	prompt: jest.fn(),
+	renderButton: jest.fn(),
+} as unknown as IdentityServices;
+
 describe( 'sign-in-with-google', () => {
 	beforeEach( () => {
 		jest.resetModules();
 
 		document.body.innerHTML =
 			'<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>';
-
-		( window.google as unknown as {
-			accounts: {
-				id: {
-					initialize: jest.Mock;
-					renderButton: jest.Mock;
-					prompt: jest.Mock;
-				};
-			};
-		} ) = {
-			accounts: {
-				id: {
-					initialize: jest.fn(),
-					renderButton: jest.fn(),
-					prompt: jest.fn(),
-				},
-			},
-		};
 	} );
 
 	it( 'should initialize with config data and render a button', () => {
-		setupSignInWithGoogle( window.google.accounts.id, config );
+		setupSignInWithGoogle( identityService, config );
 
-		expect( window.google.accounts.id.initialize ).toHaveBeenCalledWith(
+		expect( identityService.initialize ).toHaveBeenCalledWith(
 			expect.objectContaining( {
 				client_id: config.clientID,
 			} )
 		);
 
-		expect( window.google.accounts.id.prompt ).not.toHaveBeenCalled();
-		expect( window.google.accounts.id.renderButton ).toHaveBeenCalled();
+		expect( identityService.prompt ).not.toHaveBeenCalled();
+		expect( identityService.renderButton ).toHaveBeenCalled();
 	} );
 
 	it( 'should initialize with config data and show the One Tap prompt when configured', () => {
-		setupSignInWithGoogle( window.google.accounts.id, {
+		setupSignInWithGoogle( identityService, {
 			...config,
 			shouldShowOneTapPrompt: true,
 		} );
 
-		expect( window.google.accounts.id.initialize ).toHaveBeenCalledWith(
+		expect( identityService.initialize ).toHaveBeenCalledWith(
 			expect.objectContaining( {
 				client_id: config.clientID,
 			} )
 		);
 
-		expect( window.google.accounts.id.prompt ).toHaveBeenCalled();
+		expect( identityService.prompt ).toHaveBeenCalled();
 	} );
 
 	it( 'should add a button to the login form when isWPLogin is true and the form is present', () => {
 		document.body.innerHTML =
 			'<div id="login"><form id="loginform"></form></div>';
 
-		setupSignInWithGoogle( window.google.accounts.id, {
+		setupSignInWithGoogle( identityService, {
 			...config,
 			isWPLogin: true,
 		} );
 
-		expect( window.google.accounts.id.initialize ).toHaveBeenCalledWith(
+		expect( identityService.initialize ).toHaveBeenCalledWith(
 			expect.objectContaining( {
 				client_id: config.clientID,
 			} )
 		);
 
-		expect( window.google.accounts.id.renderButton ).toHaveBeenCalled();
+		expect( identityService.renderButton ).toHaveBeenCalled();
 	} );
 } );
