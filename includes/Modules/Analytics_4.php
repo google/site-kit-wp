@@ -725,9 +725,12 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$settings = $this->get_settings()->get();
 
 		return array(
-			'audseg_setup_completed'   => (bool) $this->audience_settings->get()['audienceSegmentationSetupCompletedBy'],
-			'audseg_audience_count'    => count( $this->audience_settings->get()['availableAudiences'] ?? array() ),
-			'analytics_adsense_linked' => $this->is_adsense_connected() && $settings['adSenseLinked'],
+			'audseg_setup_completed'              => (bool) $this->audience_settings->get()['audienceSegmentationSetupCompletedBy'],
+			'audseg_audience_count'               => count( $this->audience_settings->get()['availableAudiences'] ?? array() ),
+			'analytics_adsense_linked'            => $this->is_adsense_connected() && $settings['adSenseLinked'],
+			'conversion_tracking_detected_events' => $settings['detectedEvents'] ?? array(),
+			'site_goals_widgets'                  => $this->site_goals_site_settings->get()['activeWidgets'] ?? array(),
+			'custom_dimensions'                   => $settings['availableCustomDimensions'] ?: array(),
 		);
 	}
 
