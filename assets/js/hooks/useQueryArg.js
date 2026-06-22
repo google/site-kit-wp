@@ -40,9 +40,17 @@ function useQueryArg( key, initialValue, _global = global ) {
 	function onSetValue( newValue ) {
 		setValue( newValue );
 
-		const newURL = addQueryArgs( _global.location.href, {
-			[ key ]: newValue,
-		} );
+		const href = _global.location.href;
+		const hashIndex = href.indexOf( '#' );
+		const urlWithoutHash =
+			hashIndex === -1 ? href : href.slice( 0, hashIndex );
+		const hash = hashIndex === -1 ? '' : href.slice( hashIndex );
+
+		const newURL =
+			addQueryArgs( urlWithoutHash, {
+				[ key ]: newValue,
+			} ) + hash;
+
 		_global.history.replaceState( null, '', newURL );
 	}
 
