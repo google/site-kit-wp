@@ -140,6 +140,12 @@ describe( 'TopAuthorsGoalDriver', () => {
 			propertyID: '12345',
 			availableCustomDimensions: [],
 		} );
+		// Set the selected property's custom dimensions in the store, so
+		// createCustomDimensions reads them instead of fetching the
+		// custom-dimensions endpoint.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetCustomDimensions( [], { propertyID: '12345' } );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
 			{
 				createTime: '2014-10-02T15:01:23Z',

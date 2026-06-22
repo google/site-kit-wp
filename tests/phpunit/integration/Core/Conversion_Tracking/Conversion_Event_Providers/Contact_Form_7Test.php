@@ -5,9 +5,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Tests\Core\Conversion_Tracking\Conversion_Event_Providers;
 
 use Google\Site_Kit\Context;
@@ -35,23 +32,23 @@ class Contact_Form_7Test extends TestCase {
 	 * @runInSeparateProcess
 	 */
 	public function test_is_active() {
-		$this->assertFalse( $this->contactform->is_active() );
+		$this->assertFalse( $this->contactform->is_active(), 'Contact Form 7 provider should not be active before plugin constant.' );
 		define( 'WPCF7_VERSION', 1 );
-		$this->assertTrue( $this->contactform->is_active() );
+		$this->assertTrue( $this->contactform->is_active(), 'Contact Form 7 provider should be active after plugin constant.' );
 	}
 
 	public function test_get_event_names() {
 		$events = $this->contactform->get_event_names();
-		$this->assertCount( 1, $events );
-		$this->assertEquals( 'contact', $events[0] );
+		$this->assertCount( 1, $events, 'Contact Form 7 provider should expose one event.' );
+		$this->assertEquals( 'contact', $events[0], 'Contact Form 7 event should be contact.' );
 	}
 
 	public function test_register_script() {
 		$handle = 'googlesitekit-events-provider-' . Contact_Form_7::CONVERSION_EVENT_PROVIDER_SLUG;
-		$this->assertFalse( wp_script_is( $handle, 'registered' ) );
+		$this->assertFalse( wp_script_is( $handle, 'registered' ), 'Contact Form 7 script should not be registered initially.' );
 
 		$script = $this->contactform->register_script();
-		$this->assertInstanceOf( Script::class, $script );
-		$this->assertTrue( wp_script_is( $handle, 'registered' ) );
+		$this->assertInstanceOf( Script::class, $script, 'Contact Form 7 provider should return a script.' );
+		$this->assertTrue( wp_script_is( $handle, 'registered' ), 'Contact Form 7 script should be registered.' );
 	}
 }

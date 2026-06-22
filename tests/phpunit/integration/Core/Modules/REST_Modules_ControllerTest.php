@@ -584,7 +584,8 @@ class REST_Modules_ControllerTest extends TestCase {
 			array(
 				'defaultKey' => 'default-value',
 			),
-			$response->get_data()
+			$response->get_data(),
+			'Admin settings endpoint should return writable defaults only.'
 		);
 	}
 
@@ -619,7 +620,8 @@ class REST_Modules_ControllerTest extends TestCase {
 				'defaultKey'  => 'default-value',
 				'viewOnlyKey' => 'default-value',
 			),
-			$response->get_data()
+			$response->get_data(),
+			'Admin settings endpoint should include view-only defaults.'
 		);
 	}
 
@@ -657,7 +659,8 @@ class REST_Modules_ControllerTest extends TestCase {
 				array(
 					'viewOnlyKey' => 'default-value',
 				),
-				$response->get_data()
+				$response->get_data(),
+				'Shared role settings endpoint should return view-only fields.'
 			);
 		}
 	}

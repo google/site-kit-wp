@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Modules\Tags;
 
@@ -30,11 +28,11 @@ class Module_AMP_TagTest extends TestCase {
 
 	public function test_is_tag_blocked() {
 		// Tag is not blocked by default.
-		$this->assertFalse( $this->amp_tag->is_tag_blocked() );
+		$this->assertFalse( $this->amp_tag->is_tag_blocked(), 'AMP tag should not be blocked without filter.' );
 
 		add_filter( "googlesitekit_{$this->module_slug}_tag_amp_blocked", '__return_true' );
 
-		$this->assertTrue( $this->amp_tag->is_tag_blocked() );
+		$this->assertTrue( $this->amp_tag->is_tag_blocked(), 'AMP tag blocked filter should block tag.' );
 	}
 
 	/**
@@ -44,14 +42,14 @@ class Module_AMP_TagTest extends TestCase {
 	 */
 	public function test_get_tag_blocked_on_consent_attribute( $filter_value, $expected ) {
 		// Returns empty string by default.
-		$this->assertEquals( '', $this->amp_tag->get_tag_blocked_on_consent_attribute() );
+		$this->assertEquals( '', $this->amp_tag->get_tag_blocked_on_consent_attribute(), 'AMP tag should omit consent block attribute by default.' );
 
 		$filter_callback = function () use ( $filter_value ) {
 			return $filter_value;
 		};
 		add_filter( "googlesitekit_{$this->module_slug}_tag_amp_block_on_consent", $filter_callback );
 
-		$this->assertEquals( $expected, $this->amp_tag->get_tag_blocked_on_consent_attribute() );
+		$this->assertEquals( $expected, $this->amp_tag->get_tag_blocked_on_consent_attribute(), 'AMP consent filter should control block-on-consent attribute.' );
 	}
 
 	public function amp_block_on_consent_attribute_provider() {

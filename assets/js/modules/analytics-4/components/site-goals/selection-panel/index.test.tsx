@@ -739,6 +739,12 @@ describe( 'SiteGoalsSelectionPanel', () => {
 			propertyID: '12345',
 			availableCustomDimensions: [],
 		} );
+		// Set the selected property's custom dimensions in the store, so
+		// createCustomDimensions reads them instead of fetching the
+		// custom-dimensions endpoint.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetCustomDimensions( [], { propertyID: '12345' } );
 		fetchMock.postOnce(
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'

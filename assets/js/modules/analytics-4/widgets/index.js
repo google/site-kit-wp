@@ -26,7 +26,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { isFeatureEnabled } from '@/js/features';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -812,7 +811,9 @@ export function registerWidgets( widgets ) {
 				wrapWidget: false,
 				modules: [ MODULE_SLUG_ANALYTICS_4 ],
 				isActive: ( select ) =>
-					!! select( CORE_SITE ).hasActiveEcommerceEventProviders(),
+					!! select( MODULES_ANALYTICS_4 ).isSiteGoalWidgetActive(
+						'ecommerce'
+					),
 			},
 			[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
 		);
@@ -826,7 +827,9 @@ export function registerWidgets( widgets ) {
 				wrapWidget: false,
 				modules: [ MODULE_SLUG_ANALYTICS_4 ],
 				isActive: ( select ) =>
-					!! select( CORE_SITE ).hasActiveLeadEventProviders(),
+					!! select( MODULES_ANALYTICS_4 ).isSiteGoalWidgetActive(
+						'lead'
+					),
 			},
 			[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
 		);

@@ -124,6 +124,7 @@ export const DEFAULT_NOTIFICATIONS = {
 				false,
 				requireModuleGatheringData( MODULES_SEARCH_CONSOLE )
 			),
+			requireIsAuthenticatedUser(),
 			requireCanActivateModule( MODULE_SLUG_ANALYTICS_4 )
 		),
 		featureFlag: 'setupFlowRefresh',

@@ -164,7 +164,7 @@ class Analytics_Setup_Email_Notice implements Email_Notice_Interface {
 			'title'            => __( 'Understand how visitors interact with your content', 'google-site-kit' ),
 			'body'             => __( 'Get a deeper understanding of your customers. Analytics gives you the free tools you need to analyze data for your business in one place.', 'google-site-kit' ),
 			'learn_more_label' => __( 'Learn more', 'google-site-kit' ),
-			'learn_more_url'   => add_query_arg( 'doc', 'ga4', 'https://sitekit.withgoogle.com/support/' ),
+			'learn_more_url'   => 'https://sitekit.withgoogle.com/support/?doc=ga4',
 			'cta_label'        => __( 'Set up Analytics', 'google-site-kit' ),
 			'cta_url'          => add_query_arg(
 				'notice_id',
