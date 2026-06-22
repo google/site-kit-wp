@@ -32,10 +32,15 @@ import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-mana
  * Contribute with Google Block Edit component.
  *
  * @since 1.148.0
+ * @since n.e.x.t Added attributes, setAttributes, and className to props.
  *
+ * @param {Object}   props               Component props.
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Block attribute setter.
+ * @param {string}   props.className     Block class name.
  * @return {Element} Element to render.
  */
-export default function Edit() {
+export default function Edit( { attributes, setAttributes, className } ) {
 	const publicationID = select(
 		MODULES_READER_REVENUE_MANAGER
 	).getPublicationID();
@@ -49,6 +54,9 @@ export default function Edit() {
 
 	return (
 		<ButtonEdit
+			attributes={ attributes }
+			setAttributes={ setAttributes }
+			className={ className }
 			buttonLabel={
 				/* translators: Button label for Contribute with Google. See: https://github.com/subscriptions-project/swg-js/blob/05af2d45cfcaf831a6b4d35c28f2c7b5c2e39308/src/i18n/swg-strings.ts#L58-L91 (please refer to the latest version of the file) */
 				__( 'Contribute with Google', 'google-site-kit' )

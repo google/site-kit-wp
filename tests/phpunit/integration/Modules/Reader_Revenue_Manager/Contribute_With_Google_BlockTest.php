@@ -92,4 +92,22 @@ class Contribute_With_Google_BlockTest extends TestCase {
 
 		$this->assertEquals( '<div style="margin: 0 auto;"><button swg-standard-button="contribution"></button></div>', $output, 'Output should match expected markup when tag guard allows activation.' );
 	}
+
+	public function test_render_callback_with_button_class_name() {
+		$this->settings->set(
+			array(
+				'paymentOption' => 'contributions',
+				'publicationID' => 'test-publication-id',
+				'snippetMode'   => 'sitewide',
+			)
+		);
+
+		$output = $this->block->render_callback(
+			array(
+				'buttonClassName' => 'custom-class another-class invalid@class',
+			)
+		);
+
+		$this->assertEquals( '<div style="margin: 0 auto;"><button swg-standard-button="contribution" class="custom-class another-class invalidclass"></button></div>', $output, 'Output should include sanitized button classes.' );
+	}
 }

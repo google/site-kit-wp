@@ -25,12 +25,13 @@ import PropTypes from 'prop-types';
  */
 import GoogleLogoIcon from '@/svg/graphics/logo-g.svg';
 
-export default function EditorButton( { children, disabled } ) {
+export default function EditorButton( { children, className, disabled } ) {
 	return (
 		<button
 			disabled={ disabled }
 			className={ classnames(
 				'googlesitekit-blocks-reader-revenue-manager-button',
+				className,
 				{
 					'googlesitekit-blocks-reader-revenue-manager-button--disabled':
 						disabled,
@@ -45,5 +46,6 @@ export default function EditorButton( { children, disabled } ) {
 
 EditorButton.propTypes = {
 	children: PropTypes.node.isRequired,
+	className: PropTypes.string,
 	disabled: PropTypes.bool.isRequired,
 };

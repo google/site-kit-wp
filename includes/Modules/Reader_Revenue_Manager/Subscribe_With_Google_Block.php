@@ -97,10 +97,12 @@ class Subscribe_With_Google_Block {
 	 * Render callback for the block.
 	 *
 	 * @since 1.148.0
+	 * @since n.e.x.t Added the `$attributes` parameter.
 	 *
+	 * @param array $attributes Block attributes.
 	 * @return string Rendered block.
 	 */
-	public function render_callback() {
+	public function render_callback( $attributes = array() ) {
 		// If the payment option is not `subscriptions` or the tag is not placed, do not render the block.
 		$settings = $this->settings->get();
 
@@ -112,6 +114,36 @@ class Subscribe_With_Google_Block {
 
 		// Ensure the button is centered to match the editor preview.
 		// TODO: Add a stylesheet to the page and style the button container using a class.
-		return '<div style="margin: 0 auto;"><button swg-standard-button="subscription"></button></div>';
+		return sprintf(
+			'<div style="margin: 0 auto;"><button swg-standard-button="subscription"%s></button></div>',
+			$this->get_button_class_attribute( $attributes )
+		);
+	}
+
+	/**
+	 * Gets the sanitized button class attribute.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $attributes Block attributes.
+	 * @return string Button class attribute.
+	 */
+	private function get_button_class_attribute( $attributes ) {
+		if ( ! is_array( $attributes ) || empty( $attributes['buttonClassName'] ) || ! is_string( $attributes['buttonClassName'] ) ) {
+			return '';
+		}
+
+		$classes = array_filter(
+			array_map(
+				'sanitize_html_class',
+				preg_split( '/\s+/', trim( $attributes['buttonClassName'] ) )
+			)
+		);
+
+		if ( empty( $classes ) ) {
+			return '';
+		}
+
+		return sprintf( ' class="%s"', esc_attr( implode( ' ', $classes ) ) );
 	}
 }

@@ -8,6 +8,11 @@
 	"icon": "google",
 	"description": "Allow users to subscribe using Reader Revenue Manager to access content behind a paywall.",
 	"textdomain": "google-site-kit",
+	"attributes": {
+		"buttonClassName": {
+			"type": "string"
+		}
+	},
 	"supports": {
 		"inserter": true
 	}

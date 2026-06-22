@@ -23,9 +23,10 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { InspectorControls, useBlockProps } from '@wordpress-core/block-editor';
-import { Notice } from '@wordpress-core/components';
+import { Notice, PanelBody, TextControl } from '@wordpress-core/components';
 import { useSelect } from '@wordpress-core/data';
 import { Fragment, useEffect, useState } from '@wordpress-core/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -50,6 +51,9 @@ import EditorButton from './EditorButton';
  * @param {string} props.invalidPaymentOptionWithoutModuleAccessNotice Invalid payment option without module access notice.
  * @param {string} props.noSnippetWithModuleAccessNotice               No snippet with module access notice.
  * @param {string} props.noSnippetWithoutModuleAccessNotice            No snippet without module access notice.
+ * @param {Object} props.attributes                                    Block attributes.
+ * @param {Function} props.setAttributes                               Block attribute setter.
+ * @param {string} props.className                                     Block class name.
  * @return {Element} Element to render.
  */
 export default function ButtonEdit( {
@@ -59,10 +63,21 @@ export default function ButtonEdit( {
 	invalidPaymentOptionWithoutModuleAccessNotice,
 	noSnippetWithModuleAccessNotice,
 	noSnippetWithoutModuleAccessNotice,
+	attributes,
+	setAttributes,
+	className,
 } ) {
 	const [ hasModuleAccess, setHasModuleAccess ] = useState( undefined );
 
-	const blockProps = useBlockProps();
+	const { buttonClassName } = attributes;
+	const blockProps = useBlockProps( { className } );
+
+	function handleClassChange( value ) {
+		const sanitizedValue = value.trim();
+		setAttributes( {
+			buttonClassName: sanitizedValue ? sanitizedValue : undefined,
+		} );
+	}
 
 	// Determine if the user has access to the module.
 	useEffect( () => {
@@ -117,18 +132,42 @@ export default function ButtonEdit( {
 
 	return (
 		<Fragment>
-			{ notice && (
-				<InspectorControls>
+			<InspectorControls>
+				<PanelBody
+					title={ __( 'Button settings', 'google-site-kit' ) }
+					initialOpen
+				>
+					<TextControl
+						label={ __( 'HTML class', 'google-site-kit' ) }
+						help={ __(
+							'Add optional classes to customize the button in the editor and on the frontend.',
+							'google-site-kit'
+						) }
+						value={ buttonClassName || '' }
+						onChange={ handleClassChange }
+						// Opt-in to new WordPress components styles introduced in Gutenberg 6.7+.
+						// Safe for pre-6.7 WordPress: these props are ignored in older versions.
+						// __next40pxDefaultSize - use new 40px height (replaces deprecated 36px)
+						// __nextHasNoMarginBottom - remove legacy bottom margin
+						// Ref: https://github.com/WordPress/gutenberg/pull/61132
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+				{ notice && (
 					<div className="block-editor-block-card">
 						<Notice status="warning" isDismissible={ false }>
 							{ notice }
 						</Notice>
 					</div>
-				</InspectorControls>
-			) }
+				) }
+			</InspectorControls>
 			<div { ...blockProps }>
 				<div className="googlesitekit-blocks-reader-revenue-manager">
-					<EditorButton disabled={ disabled }>
+					<EditorButton
+						className={ buttonClassName || '' }
+						disabled={ disabled }
+					>
 						{ buttonLabel }
 					</EditorButton>
 				</div>
@@ -144,4 +183,9 @@ ButtonEdit.propTypes = {
 	invalidPaymentOptionWithoutModuleAccessNotice: PropTypes.node.isRequired,
 	noSnippetWithModuleAccessNotice: PropTypes.node.isRequired,
 	noSnippetWithoutModuleAccessNotice: PropTypes.node.isRequired,
+	attributes: PropTypes.shape( {
+		buttonClassName: PropTypes.string,
+	} ).isRequired,
+	setAttributes: PropTypes.func.isRequired,
+	className: PropTypes.string,
 };
