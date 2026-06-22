@@ -134,7 +134,7 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 			expect( learnMoreLink ).toHaveAttribute( 'href', expectedHelpURL );
 
 			expect(
-				getByRole( 'button', { name: /^retry$/i } )
+				getByRole( 'button', { name: 'Retry' } )
 			).toBeInTheDocument();
 
 			if ( expectsDismissButton ) {
