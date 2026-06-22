@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Context;
@@ -54,7 +51,8 @@ class Consent_Mode_SettingsTest extends SettingsTestCase {
 				'enabled' => false,
 				'regions' => Regions::get_regions(),
 			),
-			$default_settings
+			$default_settings,
+			'Default consent mode settings should include enabled and regions.'
 		);
 	}
 
@@ -150,24 +148,24 @@ class Consent_Mode_SettingsTest extends SettingsTestCase {
 	 */
 	public function test_get_sanitize_callback( $input, $expected ) {
 		$this->settings->set( $input );
-		$this->assertEqualSetsWithIndex( $expected, $this->settings->get() );
+		$this->assertEqualSetsWithIndex( $expected, $this->settings->get(), 'Sanitized consent mode settings should match expected values.' );
 	}
 
 	public function test_is_consent_mode_enabled() {
-		$this->assertFalse( $this->settings->is_consent_mode_enabled() );
+		$this->assertFalse( $this->settings->is_consent_mode_enabled(), 'Consent mode should be disabled by default.' );
 
 		$this->settings->set( array( 'enabled' => true ) );
-		$this->assertTrue( $this->settings->is_consent_mode_enabled() );
+		$this->assertTrue( $this->settings->is_consent_mode_enabled(), 'Consent mode should be enabled after setting enabled true.' );
 
 		$this->settings->set( array( 'enabled' => false ) );
-		$this->assertFalse( $this->settings->is_consent_mode_enabled() );
+		$this->assertFalse( $this->settings->is_consent_mode_enabled(), 'Consent mode should be disabled after setting enabled false.' );
 	}
 
 	public function test_get_regions() {
-		$this->assertEquals( Regions::get_regions(), $this->settings->get_regions() );
+		$this->assertEquals( Regions::get_regions(), $this->settings->get_regions(), 'Consent mode regions should default to all regions.' );
 
 		$regions = array( 'SG', 'UA-AS' );
 		$this->settings->set( array( 'regions' => $regions ) );
-		$this->assertEquals( $regions, $this->settings->get_regions() );
+		$this->assertEquals( $regions, $this->settings->get_regions(), 'Consent mode regions should match stored regions.' );
 	}
 }
