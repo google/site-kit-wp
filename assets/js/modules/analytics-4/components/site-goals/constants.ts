@@ -47,6 +47,20 @@ export const SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS = Object.values(
 	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE
 );
 
+export const SITE_GOALS_BREAKDOWN_OTHER_SOURCES_TAB_ID = 'other-sources';
+
+export const SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDER_LABELS: Record<
+	string,
+	string
+> = {
+	woocommerce: 'WooCommerce',
+	'easy-digital-downloads': 'Easy Digital Downloads',
+};
+
+export const SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDERS = Object.keys(
+	SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDER_LABELS
+);
+
 export const SITE_GOALS_BREAKDOWN_NOTIFICATION = 'site_goals_breakdown';
 
 export const BREAKDOWN_ORIGIN_WIDGET = 'widget';

@@ -9,8 +9,6 @@
  *
  * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Modules;
 
@@ -34,7 +32,7 @@ class Module_RegistryTest extends TestCase {
 			if ( ! $expected_exception ) {
 				$this->fail( 'No exception expected but a ' . get_class( $exception ) . ' was thrown' );
 			}
-			$this->assertEquals( $expected_exception, $exception->getMessage() );
+				$this->assertEquals( $expected_exception, $exception->getMessage(), 'Invalid module registration should throw expected message.' );
 		}
 	}
 
@@ -52,14 +50,14 @@ class Module_RegistryTest extends TestCase {
 	public function test_get_all() {
 		$registry = new Module_Registry();
 
-		$this->assertEquals( array(), $registry->get_all() );
+		$this->assertEquals( array(), $registry->get_all(), 'New registry should start without registered modules.' );
 
 		$registry->register( FakeModule::class );
-		$this->assertEquals( array( FakeModule::class ), $registry->get_all() );
+		$this->assertEquals( array( FakeModule::class ), $registry->get_all(), 'Registry should store registered module class.' );
 
 		// Registering the same module again does not result in a duplicate entry.
 		$registry->register( FakeModule::class );
-		$this->assertEquals( array( FakeModule::class ), $registry->get_all() );
+		$this->assertEquals( array( FakeModule::class ), $registry->get_all(), 'Duplicate registration should not add module twice.' );
 
 		$mock_module       = $this->getMockBuilder( FakeModule::class )
 								->disableOriginalConstructor()
@@ -73,7 +71,8 @@ class Module_RegistryTest extends TestCase {
 				FakeModule::class,
 				$mock_module_class,
 			),
-			$registry->get_all()
+			$registry->get_all(),
+			'Registry should include all unique registered modules.'
 		);
 	}
 }

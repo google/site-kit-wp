@@ -5,9 +5,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Tests\Core\Conversion_Tracking\Conversion_Event_Providers;
 
 use Google\Site_Kit\Context;
@@ -35,23 +32,23 @@ class WPFormsTest extends TestCase {
 	 * @runInSeparateProcess
 	 */
 	public function test_is_active() {
-		$this->assertFalse( $this->wpforms->is_active() );
+		$this->assertFalse( $this->wpforms->is_active(), 'WPForms provider should not be active before plugin constant.' );
 		define( 'WPFORMS_VERSION', 1 );
-		$this->assertTrue( $this->wpforms->is_active() );
+		$this->assertTrue( $this->wpforms->is_active(), 'WPForms provider should be active after plugin constant.' );
 	}
 
 	public function test_get_event_names() {
 		$events = $this->wpforms->get_event_names();
-		$this->assertCount( 1, $events );
-		$this->assertEquals( 'submit_lead_form', $events[0] );
+		$this->assertCount( 1, $events, 'WPForms provider should expose one event.' );
+		$this->assertEquals( 'submit_lead_form', $events[0], 'WPForms event should be submit_lead_form.' );
 	}
 
 	public function test_register_script() {
 		$handle = 'googlesitekit-events-provider-' . WPForms::CONVERSION_EVENT_PROVIDER_SLUG;
-		$this->assertFalse( wp_script_is( $handle, 'registered' ) );
+		$this->assertFalse( wp_script_is( $handle, 'registered' ), 'WPForms script should not be registered initially.' );
 
 		$script = $this->wpforms->register_script();
-		$this->assertInstanceOf( Script::class, $script );
-		$this->assertTrue( wp_script_is( $handle, 'registered' ) );
+		$this->assertInstanceOf( Script::class, $script, 'WPForms provider should return a script.' );
+		$this->assertTrue( wp_script_is( $handle, 'registered' ), 'WPForms script should be registered.' );
 	}
 }

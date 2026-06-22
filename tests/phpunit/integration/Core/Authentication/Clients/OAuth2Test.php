@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\Authentication\Clients;
 
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Utils;
@@ -39,11 +37,11 @@ class OAuth2Test extends TestCase {
 
 		// Request with no params should have an empty body.
 		$request = $auth->generateCredentialsRequest();
-		$this->assertEquals( array(), self::get_parsed_request_body( $request ) );
+		$this->assertEquals( array(), self::get_parsed_request_body( $request ), 'Credentials request body should be empty without params.' );
 
 		// Request with params should also have an empty body, unless a refresh token is set.
 		$request = $auth->generateCredentialsRequest();
-		$this->assertEquals( array(), self::get_parsed_request_body( $request ) );
+		$this->assertEquals( array(), self::get_parsed_request_body( $request ), 'Credentials request body should be empty without refresh token.' );
 
 		// Request with refresh token and params should have them in the body accordingly.
 		$refresh_token = 'test-refresh-token';
@@ -56,7 +54,8 @@ class OAuth2Test extends TestCase {
 					'refresh_token' => $refresh_token,
 				),
 			),
-			self::get_parsed_request_body( $request )
+			self::get_parsed_request_body( $request ),
+			'Credentials request body should include refresh token params.'
 		);
 	}
 }

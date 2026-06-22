@@ -46,12 +46,14 @@ import type {
 	WidgetArea,
 	WidgetPDFConfig,
 } from '@/js/googlesitekit/widgets/types';
+import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
-import { getPreviousDate } from '@/js/util';
+import { getPreviousDate, trackEvent } from '@/js/util';
 import { registerPDFFonts } from './pdf-fonts-react';
 import { getPDFFilename, triggerDownload } from './pdf-utils';
+import { SECTION_ICONS } from './section-icons';
 import DashboardReport from './shared-react-pdf-components/DashboardReport';
-import type { PDFReportArea, PDFReportWidget } from './types';
+import type { PDFHeaderSection, PDFReportArea, PDFReportWidget } from './types';
 
 const STAGE_IDLE = 'IDLE' as const;
 const STAGE_LOADING = 'LOADING' as const;
@@ -187,6 +189,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 	const { setStatus, setProgress, setBlob, clearExport, clearCancelRequest } =
 		useDispatch( CORE_PDF );
 
+	const viewContext = useViewContext();
 	const viewOnly = useViewOnly();
 
 	const cancelRequested = useSelect(
@@ -205,8 +208,8 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		( select: Select ) => select( CORE_USER ).getDateRange(),
 		[]
 	);
-	const userName = useSelect(
-		( select: Select ) => select( CORE_USER ).getName(),
+	const dashboardURL = useSelect(
+		( select: Select ) => select( CORE_SITE ).getGoLinkURL( 'dashboard' ),
 		[]
 	);
 	// A golink with this key opens the Site Kit dashboard with the email
@@ -220,7 +223,8 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		[]
 	);
 	const selectedContextSlugs = useSelect(
-		( select: Select ) => select( CORE_PDF ).getSelectedContextSlugs(),
+		( select: Select ) =>
+			select( CORE_PDF ).getSelectedContextSlugs() || [],
 		[]
 	);
 	const dates = useSelect(
@@ -253,6 +257,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		null
 	);
 	const timeoutAbortRef = useRef( false );
+	const userCancelRef = useRef( false );
 	const onCompleteRef = useRef( onComplete );
 
 	useEffect( () => {
@@ -280,6 +285,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 
 	useEffect( () => {
 		if ( cancelRequested ) {
+			userCancelRef.current = true;
 			abortControllerRef.current?.abort();
 			clearCancelRequest();
 		}
@@ -297,12 +303,47 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		}
 		global.addEventListener( 'beforeunload', beforeUnloadHandler );
 
+		const reportSiteName = typeof siteName === 'string' ? siteName : '';
 		const referenceName =
-			typeof siteName === 'string' && siteName.length > 0
-				? siteName
-				: referenceSiteURL || '';
+			reportSiteName.length > 0 ? reportSiteName : referenceSiteURL || '';
+		const resolvedDateRange =
+			typeof dateRange === 'string' ? dateRange : undefined;
+
+		// Resolve the lazy component chunk up-front and fetch widget data.
+		// @react-pdf does not honour Suspense, so the document tree must hold
+		// a concrete component before rendering starts.
+		async function resolveWidgetData(
+			widget: WidgetWithPDF
+		): Promise<
+			Pick< PDFReportWidget, 'Component' | 'data' | 'chartImages' >
+		> {
+			let Component = widget.pdf.Component;
+
+			if ( typeof Component.preload === 'function' ) {
+				const loadedModule = await Component.preload();
+				throwIfAborted( signal );
+				Component = loadedModule.default;
+			}
+
+			const result = await widget.pdf.getData( {
+				registry,
+				dates,
+				signal,
+			} );
+
+			throwIfAborted( signal );
+
+			return {
+				Component,
+				data: result?.data ?? null,
+				chartImages: result?.chartImages,
+			};
+		}
 
 		async function run() {
+			let currentStage: Stage = STAGE_LOADING;
+			const eventCategory = `${ viewContext }_pdf_generation`;
+
 			try {
 				dispatch( { type: 'TRANSITION', nextStage: STAGE_LOADING } );
 				setStatus( 'progress' );
@@ -332,15 +373,24 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				 ).select( CORE_WIDGETS );
 				const discoveredAreas: Array< {
 					areaSlug: string;
+					areaContextSlug: string;
 					areaTitle: string;
 					widgets: WidgetWithPDF[];
 				} > = [];
+				// An area can be assigned to more than one context; track the
+				// slugs already discovered so a shared area is not rendered (and
+				// chipped) twice when multiple of its contexts are selected.
+				const discoveredAreaSlugs = new Set< string >();
 
 				selectedContextSlugs.forEach( ( contextSlug: string ) => {
 					const contextAreas: WidgetArea[] =
-						widgetsSelect.getWidgetAreas( contextSlug );
+						widgetsSelect.getWidgetAreas( contextSlug ) || [];
 
 					contextAreas.forEach( ( area ) => {
+						if ( discoveredAreaSlugs.has( area.slug ) ) {
+							return;
+						}
+
 						const pdfWidgets: WidgetWithPDF[] = widgetsSelect
 							.getWidgets( area.slug, {
 								modules: viewableModules || undefined,
@@ -351,8 +401,10 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 							return;
 						}
 
+						discoveredAreaSlugs.add( area.slug );
 						discoveredAreas.push( {
 							areaSlug: area.slug,
+							areaContextSlug: contextSlug,
 							areaTitle: area.pdfTitle || area.title || '',
 							widgets: pdfWidgets,
 						} );
@@ -383,28 +435,10 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 					const widget = flatWidgets[ index ];
 
 					try {
-						// Resolve the lazy component chunk up front: @react-pdf
-						// does not honour Suspense, so the document tree must
-						// hold a concrete component.
-						let Component = widget.pdf.Component;
-						if ( typeof Component.preload === 'function' ) {
-							const loadedModule = await Component.preload();
-							throwIfAborted( signal );
-							Component = loadedModule.default;
-						}
-
-						const result = await widget.pdf.getData( {
-							registry,
-							dates,
-							signal,
-						} );
-						throwIfAborted( signal );
-
-						loaded.set( widget.slug, {
-							Component,
-							data: result?.data ?? null,
-							chartImages: result?.chartImages,
-						} );
+						loaded.set(
+							widget.slug,
+							await resolveWidgetData( widget )
+						);
 					} catch ( error ) {
 						if ( isAbortError( error ) ) {
 							throw error;
@@ -431,6 +465,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				}
 
 				throwIfAborted( signal );
+				currentStage = STAGE_BUILDING;
 				dispatch( { type: 'TRANSITION', nextStage: STAGE_BUILDING } );
 				armStageTimeout( BUILDING_TIMEOUT_MS );
 
@@ -454,26 +489,33 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 					} )
 				);
 
-				// Footer timestamp uses the real generation time, not the dashboard date range.
-				// eslint-disable-next-line sitekit/no-direct-date
-				const generatedAt = new Date().toLocaleString();
+				// One header chip per area, in area order, with the icon looked
+				// up by the area's dashboard context slug.
+				const sections: PDFHeaderSection[] = discoveredAreas.map(
+					( area ) => ( {
+						slug: area.areaSlug,
+						label: area.areaTitle,
+						Icon: SECTION_ICONS[ area.areaContextSlug ],
+					} )
+				);
+
 				const filename = getPDFFilename(
 					referenceName,
-					typeof dateRange === 'string' ? dateRange : undefined
+					resolvedDateRange
 				);
 
 				const document = (
 					<DashboardReport
-						siteName={ referenceName }
-						dateRange={
-							typeof dateRange === 'string'
-								? dateRange
-								: undefined
-						}
-						userName={
-							typeof userName === 'string' ? userName : undefined
-						}
-						generatedAt={ generatedAt }
+						siteName={ reportSiteName }
+						siteURL={ referenceSiteURL || '' }
+						dashboardURL={ dashboardURL || '' }
+						dateRange={ {
+							startDate: dates.startDate,
+							endDate: dates.endDate,
+						} }
+						sections={ sections }
+						helpCenterURL="https://sitekit.withgoogle.com/support/?doc=get-support"
+						privacyPolicyURL="https://policies.google.com/privacy"
 						areas={ areas }
 						emailReportingSetupURL={ emailReportingSetupURL }
 					/>
@@ -481,9 +523,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 
 				const blob = await pdf( document ).toBlob();
 
-				if ( signal.aborted ) {
-					throw new DOMException( 'Aborted', 'AbortError' );
-				}
+				throwIfAborted( signal );
 
 				const blobURL = URL.createObjectURL( blob );
 				setBlob( { url: blobURL, filename } );
@@ -496,6 +536,11 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 
 				clearStageTimeout();
 				dispatch( { type: 'TRANSITION', nextStage: STAGE_COMPLETE } );
+				trackEvent(
+					eventCategory,
+					'pdf_generation_complete',
+					selectedContextSlugs.join( ',' )
+				);
 				setStatus( 'success' );
 
 				completeTimeoutRef.current = setTimeout( () => {
@@ -505,9 +550,17 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 			} catch ( error ) {
 				clearStageTimeout();
 
-				// User cancel is silent (IDLE). Timeout abort routes to ERROR
-				// so the snackbar shows the failure.
+				// User cancel and teardown (unmount/navigate) are both silent
+				// (IDLE). Only a user cancel fires a tracking event; teardown
+				// aborts are not intentional user actions.
 				if ( isAbortError( error ) && ! timeoutAbortRef.current ) {
+					if ( userCancelRef.current ) {
+						trackEvent(
+							eventCategory,
+							'pdf_generation_cancel',
+							currentStage.toLowerCase()
+						);
+					}
 					dispatch( {
 						type: 'TRANSITION',
 						nextStage: STAGE_IDLE,
@@ -517,6 +570,17 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 					return;
 				}
 
+				// Stop any request that is still running, so it ends now
+				// instead of finishing in the background after the user sees
+				// the error. On the stage-timeout path, `abort()` already ran,
+				// so this call does nothing.
+				abortControllerRef.current?.abort();
+
+				const errorLabel = timeoutAbortRef.current
+					? `${ currentStage.toLowerCase() }_timeout`
+					: currentStage.toLowerCase();
+
+				trackEvent( eventCategory, 'pdf_generation_error', errorLabel );
 				dispatch( { type: 'TRANSITION', nextStage: STAGE_ERROR } );
 				setStatus( 'error' );
 				onCompleteRef.current();

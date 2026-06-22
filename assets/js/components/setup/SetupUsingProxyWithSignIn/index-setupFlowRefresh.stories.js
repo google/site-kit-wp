@@ -44,7 +44,10 @@ import {
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import AnalyticsIcon from '@/svg/graphics/analytics.svg';
+import SearchConsoleIcon from '@/svg/graphics/search-console.svg';
 import {
+	provideModuleRegistrations,
 	provideModules,
 	provideSiteConnection,
 	provideSiteInfo,
@@ -302,14 +305,35 @@ SecondaryAdminWithSharedServices.args = {
 				PERMISSION_READ_SHARED_MODULE_DATA,
 				MODULE_SLUG_ANALYTICS_4
 			) ]: true,
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				MODULE_SLUG_SEARCH_CONSOLE
+			) ]: true,
 		} );
 
 		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
+				active: true,
+				connected: true,
+				shareable: true,
+			},
 			{
 				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 				shareable: true,
+			},
+		] );
+
+		provideModuleRegistrations( registry, [
+			{
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
+				Icon: SearchConsoleIcon,
+			},
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				Icon: AnalyticsIcon,
 			},
 		] );
 	},
