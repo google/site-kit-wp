@@ -53,7 +53,7 @@ const GENERAL_ERROR = {
 };
 
 interface AudienceSegmentationSetupErrorWidgetStoryProps {
-	errors: typeof INSUFFICIENT_PERMISSIONS_ERROR;
+	errors: typeof INSUFFICIENT_PERMISSIONS_ERROR | typeof GENERAL_ERROR;
 	isAudienceCreationVariant: boolean;
 	onDismiss: () => void;
 }

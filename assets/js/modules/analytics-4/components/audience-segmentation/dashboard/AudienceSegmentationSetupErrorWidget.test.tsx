@@ -199,7 +199,7 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 			{ registry }
 		);
 
-		fireEvent.click( getByRole( 'button', { name: /^retry$/i } ) );
+		fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
 
 		expect( onRetry ).toHaveBeenCalledTimes( 1 );
 	} );
