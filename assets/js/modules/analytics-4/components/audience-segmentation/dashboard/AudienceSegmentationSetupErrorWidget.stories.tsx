@@ -54,7 +54,8 @@ const GENERAL_ERROR = {
 
 interface AudienceSegmentationSetupErrorWidgetStoryProps {
 	errors: typeof INSUFFICIENT_PERMISSIONS_ERROR;
-	onDismiss?: () => void;
+	isAudienceCreationVariant: boolean;
+	onDismiss: () => void;
 }
 
 function setupRegistry( registry: WPDataRegistry ) {
@@ -71,12 +72,14 @@ function setupRegistry( registry: WPDataRegistry ) {
 
 function Template( {
 	errors,
+	isAudienceCreationVariant,
 	onDismiss,
 }: AudienceSegmentationSetupErrorWidgetStoryProps ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
 			<WidgetWithComponentProps
 				errors={ errors }
+				isAudienceCreationVariant={ isAudienceCreationVariant }
 				onRetry={ () => {} }
 				onDismiss={ onDismiss }
 			/>
@@ -91,6 +94,7 @@ AudienceCreationPermissionsError.storyName =
 	'Audience creation permissions error';
 AudienceCreationPermissionsError.args = {
 	errors: INSUFFICIENT_PERMISSIONS_ERROR,
+	isAudienceCreationVariant: true,
 	onDismiss: () => {},
 };
 AudienceCreationPermissionsError.scenario = {};
@@ -101,6 +105,7 @@ export const AudienceCreationGeneralError = Template.bind(
 AudienceCreationGeneralError.storyName = 'Audience creation general error';
 AudienceCreationGeneralError.args = {
 	errors: GENERAL_ERROR,
+	isAudienceCreationVariant: true,
 	onDismiss: () => {},
 };
 AudienceCreationGeneralError.scenario = {};
@@ -112,6 +117,7 @@ VisitorGroupsSetupPermissionsError.storyName =
 	'Visitor groups setup permissions error';
 VisitorGroupsSetupPermissionsError.args = {
 	errors: INSUFFICIENT_PERMISSIONS_ERROR,
+	isAudienceCreationVariant: false,
 	onDismiss: () => {},
 };
 VisitorGroupsSetupPermissionsError.scenario = {};
@@ -122,6 +128,7 @@ export const VisitorGroupsSetupGeneralError = Template.bind(
 VisitorGroupsSetupGeneralError.storyName = 'Visitor groups setup general error';
 VisitorGroupsSetupGeneralError.args = {
 	errors: GENERAL_ERROR,
+	isAudienceCreationVariant: false,
 	onDismiss: () => {},
 };
 VisitorGroupsSetupGeneralError.scenario = {};

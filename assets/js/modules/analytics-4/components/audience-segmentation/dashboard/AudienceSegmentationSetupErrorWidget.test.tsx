@@ -43,6 +43,21 @@ const MockWidget: FC< {
 	return <div className={ className }>{ children }</div>;
 };
 
+function normalizeTextContent( text = '' ) {
+	return text
+		.replace( /<[^>]+>/g, ' ' )
+		.replace( /\s+/g, ' ' )
+		.trim();
+}
+
+function getVisibleDescriptionText( descriptionText: string ) {
+	return normalizeTextContent(
+		descriptionText
+			.replace( '<br />', ' ' )
+			.replace( '<a>Learn more</a>', 'Learn more' )
+	);
+}
+
 describe( 'AudienceSegmentationSetupErrorWidget', () => {
 	let registry: WPDataRegistry;
 
@@ -59,11 +74,12 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 				message: 'Error message.',
 				data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
 			},
+			isAudienceCreationVariant: true,
 			onDismiss: jest.fn(),
 			expectedTitle: 'Creating visitor groups failed',
 			expectedDescription:
-				"It seems that you don't have the required permissions to create visitor groups. You can contact your administrator and ask for Analytics write permissions and then retry.",
-			expectsDismissButton: true,
+				'It seems that you don’t have the required permissions to create visitor groups. You can contact your administrator and ask for Analytics write permissions and then retry. <a>Learn more</a>',
+			expectsLearnMoreLink: true,
 		},
 		{
 			testName: 'audience creation general error',
@@ -72,11 +88,12 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 				message: 'Error message.',
 				data: { status: 500 },
 			},
+			isAudienceCreationVariant: true,
 			onDismiss: jest.fn(),
 			expectedTitle: 'Creating visitor groups failed',
 			expectedDescription:
-				"To create your audience groups we'll need to update your Analytics property which failed during setup.",
-			expectsDismissButton: true,
+				'To create your audience groups we’ll need to update your Analytics property which failed during setup. <a>Learn more</a>',
+			expectsLearnMoreLink: true,
 		},
 		{
 			testName: 'visitor groups setup permissions error',
@@ -85,11 +102,12 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 				message: 'Error message.',
 				data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
 			},
-			onDismiss: undefined,
+			isAudienceCreationVariant: false,
+			onDismiss: jest.fn(),
 			expectedTitle: 'Visitor groups setup failed',
 			expectedDescription:
-				"It seems that you don't have the required permissions to set up visitor groups. Please contact your administrator.",
-			expectsDismissButton: false,
+				'It seems that you don’t have the required permissions to set up visitor groups.<br />You can contact your administrator. <a>Learn more</a>',
+			expectsLearnMoreLink: false,
 		},
 		{
 			testName: 'visitor groups setup general error',
@@ -98,29 +116,32 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 				message: 'Error message.',
 				data: { status: 500 },
 			},
-			onDismiss: undefined,
+			isAudienceCreationVariant: false,
+			onDismiss: jest.fn(),
 			expectedTitle: 'Visitor groups setup failed',
 			expectedDescription:
-				'An error occurred while setting up visitor groups, please try again.',
-			expectsDismissButton: false,
+				'An error occurred while setting up visitor groups, please try again. <a>Learn more</a>',
+			expectsLearnMoreLink: true,
 		},
 	] )(
 		'renders the $testName variant',
 		( {
 			errors,
+			isAudienceCreationVariant,
 			onDismiss,
 			expectedTitle,
 			expectedDescription,
-			expectsDismissButton,
+			expectsLearnMoreLink,
 		} ) => {
 			const expectedHelpURL = registry
 				.select( CORE_SITE )
 				.getDocumentationLinkURL( 'visitor-groups' );
 
-			const { getByRole, getByText, queryByRole } = render(
+			const { container, getByRole, getByText, queryByRole } = render(
 				<AudienceSegmentationSetupErrorWidget
 					Widget={ MockWidget }
 					errors={ errors }
+					isAudienceCreationVariant={ isAudienceCreationVariant }
 					onRetry={ () => {} }
 					onDismiss={ onDismiss }
 				/>,
@@ -128,24 +149,35 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 			);
 
 			expect( getByText( expectedTitle ) ).toBeInTheDocument();
-			expect( getByText( expectedDescription ) ).toBeInTheDocument();
 
-			const learnMoreLink = getByRole( 'link', { name: /learn more/i } );
-			expect( learnMoreLink ).toHaveAttribute( 'href', expectedHelpURL );
+			const description = container.querySelector(
+				'.googlesitekit-notice__description'
+			);
+			expect( description ).toBeInTheDocument();
+			expect(
+				normalizeTextContent( description?.textContent )
+			).toContain( getVisibleDescriptionText( expectedDescription ) );
+
+			if ( expectsLearnMoreLink ) {
+				const learnMoreLink = getByRole( 'link', {
+					name: /learn more/i,
+				} );
+				expect( learnMoreLink ).toHaveAttribute(
+					'href',
+					expectedHelpURL
+				);
+			} else {
+				expect(
+					queryByRole( 'link', { name: /learn more/i } )
+				).not.toBeInTheDocument();
+			}
 
 			expect(
 				getByRole( 'button', { name: 'Retry' } )
 			).toBeInTheDocument();
-
-			if ( expectsDismissButton ) {
-				expect(
-					getByRole( 'button', { name: /no thanks/i } )
-				).toBeInTheDocument();
-			} else {
-				expect(
-					queryByRole( 'button', { name: /no thanks/i } )
-				).not.toBeInTheDocument();
-			}
+			expect(
+				getByRole( 'button', { name: /no thanks/i } )
+			).toBeInTheDocument();
 		}
 	);
 
@@ -160,7 +192,9 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 					message: 'Error message.',
 					data: { status: 500 },
 				} }
+				isAudienceCreationVariant={ false }
 				onRetry={ onRetry }
+				onDismiss={ () => {} }
 			/>,
 			{ registry }
 		);
@@ -181,6 +215,7 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 					message: 'Error message.',
 					data: { status: 500 },
 				} }
+				isAudienceCreationVariant={ false }
 				onRetry={ () => {} }
 				onDismiss={ onDismiss }
 			/>,

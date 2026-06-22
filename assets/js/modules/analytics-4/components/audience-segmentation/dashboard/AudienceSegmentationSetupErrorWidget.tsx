@@ -52,18 +52,18 @@ type AudienceSegmentationSetupErrorWidgetErrors =
 export interface AudienceSegmentationSetupErrorWidgetProps {
 	Widget: ElementType;
 	errors: AudienceSegmentationSetupErrorWidgetErrors;
+	isAudienceCreationVariant: boolean;
 	onRetry: () => void;
-	onDismiss?: () => void;
+	onDismiss: () => void;
 }
 
 const AudienceSegmentationSetupErrorWidget: FC<
 	AudienceSegmentationSetupErrorWidgetProps
-> = ( { Widget, errors, onRetry, onDismiss } ) => {
+> = ( { Widget, errors, isAudienceCreationVariant, onRetry, onDismiss } ) => {
 	const normalizedErrors = Array.isArray( errors ) ? errors : [ errors ];
 	const isPermissionsError = isInsufficientPermissionsError(
 		normalizedErrors[ 0 ]
 	);
-	const isAudienceCreationError = !! onDismiss;
 
 	const visitorGroupsDocumentationLinkURL = useSelect(
 		( select: Select ) =>
@@ -74,7 +74,7 @@ const AudienceSegmentationSetupErrorWidget: FC<
 	let title = '';
 	let descriptionText = '';
 
-	if ( isAudienceCreationError ) {
+	if ( isAudienceCreationVariant ) {
 		title = __( 'Creating visitor groups failed', 'google-site-kit' );
 		descriptionText = isPermissionsError
 			? __(
@@ -123,12 +123,10 @@ const AudienceSegmentationSetupErrorWidget: FC<
 					label: __( 'Retry', 'google-site-kit' ),
 					onClick: onRetry,
 				} }
-				dismissButton={
-					onDismiss && {
-						label: __( 'No thanks', 'google-site-kit' ),
-						onClick: onDismiss,
-					}
-				}
+				dismissButton={ {
+					label: __( 'No thanks', 'google-site-kit' ),
+					onClick: onDismiss,
+				} }
 			/>
 		</Widget>
 	);
