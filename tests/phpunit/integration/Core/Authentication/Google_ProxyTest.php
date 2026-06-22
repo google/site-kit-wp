@@ -635,7 +635,7 @@ class Google_ProxyTest extends TestCase {
 
 		$response = $this->google_proxy->register_site();
 
-		$this->assertWPError( $response );
+		$this->assertWPError( $response, 'Invalid proxy response should return a WP error.' );
 		$this->assertEquals( $expected_error_code, $response->get_error_code(), 'Error response should contain error code.' );
 		$this->assertEquals( $expected_error_message, $response->get_error_message(), 'Error response should contain error message.' );
 	}

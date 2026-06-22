@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Modules;
 
@@ -25,7 +23,8 @@ class Module_SettingsTest extends SettingsTestCase {
 		// Check default.
 		$this->assertEquals(
 			array( 'defaultKey' => 'default-value' ),
-			get_option( $this->get_option_name() )
+			get_option( $this->get_option_name() ),
+			'Module settings should use registered defaults.'
 		);
 
 		$settings->merge(
@@ -38,7 +37,8 @@ class Module_SettingsTest extends SettingsTestCase {
 		// Ensure only existing data is updated.
 		$this->assertEqualSetsWithIndex(
 			array( 'defaultKey' => 'updated-value' ),
-			get_option( $this->get_option_name() )
+			get_option( $this->get_option_name() ),
+			'Merge should update only known module setting keys.'
 		);
 
 		// Anything returned by get() will be updated, not just defaults.
@@ -48,12 +48,13 @@ class Module_SettingsTest extends SettingsTestCase {
 				'defaultKey' => 'default-value',
 				'newKey'     => 'new-value',
 			),
-			get_option( $this->get_option_name() )
+			get_option( $this->get_option_name() ),
+			'Merge should include keys returned by settings getter.'
 		);
 
 		// Null values are ignored.
 		$settings->merge( array( 'defaultKey' => null ) );
-		$this->assertEquals( 'default-value', get_option( $this->get_option_name() )['defaultKey'] );
+		$this->assertEquals( 'default-value', get_option( $this->get_option_name() )['defaultKey'], 'Merge should ignore null module setting values.' );
 	}
 
 	/**

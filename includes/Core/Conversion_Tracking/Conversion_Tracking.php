@@ -184,20 +184,17 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	 * @return array Filtered $data.
 	 */
 	protected function inline_js_base_data( $data ) {
-		$data['hasActiveLeadEventProviders']              = false;
-		$data['hasActiveEcommerceEventProviders']         = false;
-		$data['hasMultipleActiveEcommerceEventProviders'] = false;
+		$active_categories = $this->get_active_provider_categories();
 
-		$active_ecommerce_providers = 0;
+		$data['hasActiveLeadEventProviders']      = in_array( Conversion_Events_Provider::CATEGORY_LEAD, $active_categories, true );
+		$data['hasActiveEcommerceEventProviders'] = in_array( Conversion_Events_Provider::CATEGORY_ECOMMERCE, $active_categories, true );
 
-		foreach ( $this->get_active_providers() as $provider ) {
-			if ( Conversion_Events_Provider::CATEGORY_LEAD === $provider->get_category() ) {
-				$data['hasActiveLeadEventProviders'] = true;
-			} elseif ( Conversion_Events_Provider::CATEGORY_ECOMMERCE === $provider->get_category() ) {
-				$data['hasActiveEcommerceEventProviders'] = true;
-				++$active_ecommerce_providers;
-			}
-		}
+		$active_ecommerce_providers = count(
+			array_filter(
+				$this->get_active_providers(),
+				fn( $provider ) => Conversion_Events_Provider::CATEGORY_ECOMMERCE === $provider->get_category()
+			)
+		);
 
 		$data['hasMultipleActiveEcommerceEventProviders'] = $active_ecommerce_providers > 1;
 
@@ -255,6 +252,29 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 		}
 
 		return $active_providers;
+	}
+
+	/**
+	 * Gets the unique categories of active conversion event providers.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of unique active provider category strings, constrained to known categories.
+	 */
+	public function get_active_provider_categories() {
+		$categories = array_map(
+			fn( Conversion_Events_Provider $provider ) => $provider->get_category(),
+			$this->get_active_providers()
+		);
+
+		return array_values(
+			array_unique(
+				array_intersect(
+					$categories,
+					array( Conversion_Events_Provider::CATEGORY_LEAD, Conversion_Events_Provider::CATEGORY_ECOMMERCE )
+				)
+			)
+		);
 	}
 
 	/**

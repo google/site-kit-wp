@@ -74,6 +74,22 @@ function Template() {
 					/>
 				</div>
 
+				<div style={ { marginBottom: '50px' } }>
+					<TextField
+						className="mdc-text-field--error"
+						label="With Error"
+						name="textfield"
+						value="https://www.sitekitbygoogle.com"
+						helperText="This is the error message."
+						trailingIcon={
+							<span className="googlesitekit-text-field-icon--error">
+								<WarningIcon width={ 14 } height={ 12 } />
+							</span>
+						}
+						outlined
+					/>
+				</div>
+
 				<div>
 					<TextField
 						label="Textarea"

@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\Authentication\Clients;
 
 use Google\Site_Kit\Context;
@@ -29,10 +27,10 @@ class OAuth_Client_BaseTest extends TestCase {
 			->getMockForAbstractClass();
 		$client       = $oauth_client->get_client();
 
-		$this->assertInstanceOf( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client', $client );
+		$this->assertInstanceOf( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client', $client, 'OAuth client should create a Google Site Kit client.' );
 
 		$retry = $client->getConfig( 'retry' );
-		$this->assertEquals( 3, $retry['retries'] );
+		$this->assertEquals( 3, $retry['retries'], 'OAuth client should use the default retry count.' );
 	}
 
 	public function test_get_required_scopes() {
@@ -47,7 +45,8 @@ class OAuth_Client_BaseTest extends TestCase {
 				'https://www.googleapis.com/auth/userinfo.email',
 				'openid',
 			),
-			$oauth_client->get_required_scopes()
+			$oauth_client->get_required_scopes(),
+			'OAuth client should return the default required scopes.'
 		);
 	}
 
@@ -61,7 +60,7 @@ class OAuth_Client_BaseTest extends TestCase {
 		$granted_scopes = array( 'test-scope' );
 		update_user_option( $user_id, OAuth_Client_Base::OPTION_AUTH_SCOPES, $granted_scopes );
 
-		$this->assertEquals( $granted_scopes, $oauth_client->get_granted_scopes() );
+		$this->assertEquals( $granted_scopes, $oauth_client->get_granted_scopes(), 'OAuth client should return stored granted scopes.' );
 	}
 
 	public function test_set_granted_scopes() {
@@ -79,15 +78,15 @@ class OAuth_Client_BaseTest extends TestCase {
 			}
 		);
 
-		$this->assertNotContains( 'test-scope', (array) get_user_option( OAuth_Client_Base::OPTION_AUTH_SCOPES, $user_id ) );
+		$this->assertNotContains( 'test-scope', (array) get_user_option( OAuth_Client_Base::OPTION_AUTH_SCOPES, $user_id ), 'User auth scopes should not contain test scope.' );
 
 		$oauth_client->set_granted_scopes( array( 'test-scope' ) );
-		$this->assertContains( 'test-scope', (array) get_user_option( OAuth_Client_Base::OPTION_AUTH_SCOPES, $user_id ) );
+		$this->assertContains( 'test-scope', (array) get_user_option( OAuth_Client_Base::OPTION_AUTH_SCOPES, $user_id ), 'User auth scopes should contain the granted scope.' );
 
 		// It ignores any scope that is not required.
 		$oauth_client->set_granted_scopes( array( 'test-scope', 'unsupported-scope' ) );
-		$this->assertContains( 'test-scope', (array) get_user_option( OAuth_Client_Base::OPTION_AUTH_SCOPES, $user_id ) );
-		$this->assertNotContains( 'unsupported-scope', (array) get_user_option( OAuth_Client_Base::OPTION_AUTH_SCOPES, $user_id ) );
+		$this->assertContains( 'test-scope', (array) get_user_option( OAuth_Client_Base::OPTION_AUTH_SCOPES, $user_id ), 'User auth scopes should keep required scopes.' );
+		$this->assertNotContains( 'unsupported-scope', (array) get_user_option( OAuth_Client_Base::OPTION_AUTH_SCOPES, $user_id ), 'User auth scopes should ignore unsupported scopes.' );
 	}
 
 	public function test_get_token() {
@@ -115,7 +114,7 @@ class OAuth_Client_BaseTest extends TestCase {
 			'created'      => 649724400,
 		);
 		$token->set( $token_data );
-		$this->assertEquals( $token_data, $oauth_client->get_token() );
+		$this->assertEquals( $token_data, $oauth_client->get_token(), 'OAuth client should return stored token data.' );
 	}
 
 	public function test_set_token() {
@@ -143,7 +142,7 @@ class OAuth_Client_BaseTest extends TestCase {
 			'created'      => 649724400,
 		);
 		$oauth_client->set_token( $token_data );
-		$this->assertEquals( $token_data, $token->get() );
+		$this->assertEquals( $token_data, $token->get(), 'Token storage should contain the OAuth client token data.' );
 	}
 
 	public function test_get_error_message_unknown() {
@@ -151,9 +150,9 @@ class OAuth_Client_BaseTest extends TestCase {
 			->setConstructorArgs( array( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) )
 			->getMockForAbstractClass();
 
-		$this->assertStringContainsString( 'Unknown Error (code: unknown_code)', $oauth_client->get_error_message( 'unknown_code' ) );
-		$this->assertStringContainsString( 'Unknown Error (code: )', $oauth_client->get_error_message( '' ) );
-		$this->assertStringContainsString( 'Unknown Error (code: 123)', $oauth_client->get_error_message( 123 ) );
+		$this->assertStringContainsString( 'Unknown Error (code: unknown_code)', $oauth_client->get_error_message( 'unknown_code' ), 'Unknown error message should include the error code.' );
+		$this->assertStringContainsString( 'Unknown Error (code: )', $oauth_client->get_error_message( '' ), 'Unknown error message should allow empty codes.' );
+		$this->assertStringContainsString( 'Unknown Error (code: 123)', $oauth_client->get_error_message( 123 ), 'Unknown error message should include numeric codes.' );
 	}
 
 	/**
@@ -166,8 +165,8 @@ class OAuth_Client_BaseTest extends TestCase {
 
 		$message = $oauth_client->get_error_message( $error_code );
 
-		$this->assertMatchesRegularExpression( '/unable|invalid|failed/i', $message );
-		$this->assertStringNotContainsString( 'Unknown Error', $message );
+		$this->assertMatchesRegularExpression( '/unable|invalid|failed/i', $message, 'Known error message should describe the failure.' );
+		$this->assertStringNotContainsString( 'Unknown Error', $message, 'Known error message should not use the unknown fallback.' );
 	}
 
 	public function error_message_provider() {
