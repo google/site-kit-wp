@@ -48,7 +48,7 @@ const config: SignInWithGoogleConfig = {
 	shouldShowOneTapPrompt: false,
 };
 
-const identityService = {
+const identityServices = {
 	initialize: jest.fn(),
 	prompt: jest.fn(),
 	renderButton: jest.fn(),
@@ -63,48 +63,48 @@ describe( 'sign-in-with-google', () => {
 	} );
 
 	it( 'should initialize with config data and render a button', () => {
-		setupSignInWithGoogle( identityService, config );
+		setupSignInWithGoogle( identityServices, config );
 
-		expect( identityService.initialize ).toHaveBeenCalledWith(
+		expect( identityServices.initialize ).toHaveBeenCalledWith(
 			expect.objectContaining( {
 				client_id: config.clientID,
 			} )
 		);
 
-		expect( identityService.prompt ).not.toHaveBeenCalled();
-		expect( identityService.renderButton ).toHaveBeenCalled();
+		expect( identityServices.prompt ).not.toHaveBeenCalled();
+		expect( identityServices.renderButton ).toHaveBeenCalled();
 	} );
 
 	it( 'should initialize with config data and show the One Tap prompt when configured', () => {
-		setupSignInWithGoogle( identityService, {
+		setupSignInWithGoogle( identityServices, {
 			...config,
 			shouldShowOneTapPrompt: true,
 		} );
 
-		expect( identityService.initialize ).toHaveBeenCalledWith(
+		expect( identityServices.initialize ).toHaveBeenCalledWith(
 			expect.objectContaining( {
 				client_id: config.clientID,
 			} )
 		);
 
-		expect( identityService.prompt ).toHaveBeenCalled();
+		expect( identityServices.prompt ).toHaveBeenCalled();
 	} );
 
 	it( 'should add a button to the login form when isWPLogin is true and the form is present', () => {
 		document.body.innerHTML =
 			'<div id="login"><form id="loginform"></form></div>';
 
-		setupSignInWithGoogle( identityService, {
+		setupSignInWithGoogle( identityServices, {
 			...config,
 			isWPLogin: true,
 		} );
 
-		expect( identityService.initialize ).toHaveBeenCalledWith(
+		expect( identityServices.initialize ).toHaveBeenCalledWith(
 			expect.objectContaining( {
 				client_id: config.clientID,
 			} )
 		);
 
-		expect( identityService.renderButton ).toHaveBeenCalled();
+		expect( identityServices.renderButton ).toHaveBeenCalled();
 	} );
 } );

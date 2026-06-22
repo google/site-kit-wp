@@ -28,15 +28,15 @@ try {
 		throw new Error( 'Configuration data not found.' );
 	}
 
-	const identityService = global.google?.accounts?.id;
+	const identityServices = global.google?.accounts?.id;
 
-	if ( ! identityService ) {
+	if ( ! identityServices ) {
 		throw new Error( 'Google identity services not found.' );
 	}
 
 	const config = JSON.parse( configJSON );
 
-	setupSignInWithGoogle( identityService, config );
+	setupSignInWithGoogle( identityServices, config );
 } catch ( error ) {
 	global.console.error( error );
 }

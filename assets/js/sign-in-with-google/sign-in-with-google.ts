@@ -125,10 +125,10 @@ async function handleCredentialResponse(
 }
 
 export function setupSignInWithGoogle(
-	identityService: IdentityServices,
+	identityServices: IdentityServices,
 	config: SignInWithGoogleConfig
 ) {
-	const { initialize, prompt, renderButton } = identityService;
+	const { initialize, prompt, renderButton } = identityServices;
 
 	const {
 		clientID,
