@@ -77,6 +77,12 @@ describe( 'useCreateCustomDimensionsEffect', () => {
 			propertyID: '12345',
 			availableCustomDimensions: [],
 		} );
+		// Set the selected property's custom dimensions in the store, so
+		// createCustomDimensions reads them instead of fetching the
+		// custom-dimensions endpoint.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetCustomDimensions( [], { propertyID: '12345' } );
 	} );
 
 	it( 'creates explicit custom dimensions after OAuth even when key metrics setup is not completed', async () => {
