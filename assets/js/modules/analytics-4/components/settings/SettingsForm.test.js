@@ -51,7 +51,7 @@ describe( 'SettingsForm', () => {
 		mockTrackEvent.mockClear();
 	} );
 
-	it( 'does not track the learn more link when setupFlowRefresh is disabled', () => {
+	it( 'should not track the learn more link when setupFlowRefresh is disabled', () => {
 		const { getByRole } = render( <SettingsForm />, {
 			registry,
 			viewContext: VIEW_CONTEXT_SETTINGS,
@@ -66,7 +66,7 @@ describe( 'SettingsForm', () => {
 		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 
-	it( 'tracks the learn more link when setupFlowRefresh is enabled', () => {
+	it( 'should track the learn more link when setupFlowRefresh is enabled', () => {
 		const { getByRole } = render( <SettingsForm />, {
 			features: [ 'setupFlowRefresh' ],
 			registry,
