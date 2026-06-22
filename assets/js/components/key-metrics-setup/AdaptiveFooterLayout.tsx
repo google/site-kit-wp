@@ -25,7 +25,12 @@ import { FC, ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
-import { useLayoutEffect, useRef, useState } from '@wordpress/element';
+import {
+	useEffect,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from '@wordpress/element';
 
 interface AdaptiveFooterLayoutProps {
 	className: string;
@@ -33,6 +38,7 @@ interface AdaptiveFooterLayoutProps {
 	footerClassName: string;
 	footer: ReactNode;
 	children?: ReactNode;
+	onFooterInlineChange?: ( isInline: boolean ) => void;
 }
 
 const AdaptiveFooterLayout: FC< AdaptiveFooterLayoutProps > = ( {
@@ -41,6 +47,7 @@ const AdaptiveFooterLayout: FC< AdaptiveFooterLayoutProps > = ( {
 	footerClassName,
 	footer,
 	children,
+	onFooterInlineChange,
 } ) => {
 	const contentRef = useRef< HTMLDivElement >( null );
 	const footerRef = useRef< HTMLDivElement >( null );
@@ -72,6 +79,10 @@ const AdaptiveFooterLayout: FC< AdaptiveFooterLayoutProps > = ( {
 
 		return () => view.removeEventListener( 'resize', checkFits );
 	}, [] );
+
+	useEffect( () => {
+		onFooterInlineChange?.( footerInline );
+	}, [ footerInline, onFooterInlineChange ] );
 
 	return (
 		<div

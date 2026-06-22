@@ -565,6 +565,22 @@ describe( 'ActivateAnalyticsNotification', () => {
 			expect( isActive ).toBe( false );
 		} );
 
+		it( 'is not active when the user is unauthenticated', async () => {
+			provideUserAuthentication( registry, { authenticated: false } );
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: false,
+				},
+			] );
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.receiveIsDataAvailableOnLoad( true );
+
+			const isActive = await notification.checkRequirements( registry );
+			expect( isActive ).toBe( false );
+		} );
+
 		it( 'is not active when the user cannot activate Analytics', async () => {
 			provideModules( registry, [
 				{
