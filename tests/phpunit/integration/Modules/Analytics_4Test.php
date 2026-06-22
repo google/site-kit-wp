@@ -135,6 +135,13 @@ class Analytics_4Test extends TestCase {
 	private $audience_settings;
 
 	/**
+	 * Site Goals site settings instance.
+	 *
+	 * @var Site_Goals_Site_Settings
+	 */
+	private $site_goals_site_settings;
+
+	/**
 	 * Fake HTTP request handler calls.
 	 *
 	 * @var array
@@ -145,13 +152,14 @@ class Analytics_4Test extends TestCase {
 		parent::set_up();
 		$this->request_handler_calls = array();
 
-		$this->context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->options           = new Options( $this->context );
-		$this->user              = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$this->user_options      = new User_Options( $this->context, $this->user->ID );
-		$this->authentication    = new Authentication( $this->context, $this->options, $this->user_options );
-		$this->analytics         = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
-		$this->audience_settings = new Audience_Settings( $this->options );
+		$this->context                  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->options                  = new Options( $this->context );
+		$this->user                     = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$this->user_options             = new User_Options( $this->context, $this->user->ID );
+		$this->authentication           = new Authentication( $this->context, $this->options, $this->user_options );
+		$this->analytics                = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
+		$this->audience_settings        = new Audience_Settings( $this->options );
+		$this->site_goals_site_settings = new Site_Goals_Site_Settings( $this->options );
 
 		wp_set_current_user( $this->user->ID );
 		remove_all_actions( 'wp_enqueue_scripts' );
@@ -1953,6 +1961,9 @@ class Analytics_4Test extends TestCase {
 		$this->audience_settings->merge(
 			$settings['audience_settings'] ?? array()
 		);
+		$this->site_goals_site_settings->merge(
+			$settings['site_goals_site_settings'] ?? array()
+		);
 		( new AdSense_Settings( $this->options ) )->set(
 			array(
 				'accountSetupComplete' => $settings['analytics_settings']['adSenseLinked'] ?? false,
@@ -1978,39 +1989,127 @@ class Analytics_4Test extends TestCase {
 			'audienceSegmentationSetupCompletedBy' => 2,
 		);
 
+		$default_new_metrics = array(
+			'conversion_tracking_detected_events' => array(),
+			'site_goals_widgets'                  => array(),
+			'custom_dimensions'                   => array(),
+		);
+
 		return array(
 			'default values when audience segmentation is not setup and adsense is unlinked' => array(
 				array(),
-				array(
-					'audseg_setup_completed'   => false,
-					'audseg_audience_count'    => 0,
-					'analytics_adsense_linked' => false,
+				array_merge(
+					array(
+						'audseg_setup_completed'   => false,
+						'audseg_audience_count'    => 0,
+						'analytics_adsense_linked' => false,
+					),
+					$default_new_metrics
 				),
 				'When settings are not set, feature metrics should be false or zero by default.',
 			),
-			'when audience segmentation is setup' => array(
+			'when audience segmentation is setup'    => array(
 				array(
 					'audience_settings' => $activated_audience_segmentation_settings,
 				),
-				array(
-					'audseg_setup_completed'   => true,
-					'audseg_audience_count'    => 2,
-					'analytics_adsense_linked' => false,
+				array_merge(
+					array(
+						'audseg_setup_completed'   => true,
+						'audseg_audience_count'    => 2,
+						'analytics_adsense_linked' => false,
+					),
+					$default_new_metrics
 				),
 				'When audience settings are set, feature metrics should reflect them.',
 			),
-			'when adsense is linked'              => array(
+			'when adsense is linked'                 => array(
 				array(
 					'analytics_settings' => array(
 						'adSenseLinked' => true,
 					),
 				),
-				array(
-					'audseg_setup_completed'   => false,
-					'audseg_audience_count'    => 0,
-					'analytics_adsense_linked' => true,
+				array_merge(
+					array(
+						'audseg_setup_completed'   => false,
+						'audseg_audience_count'    => 0,
+						'analytics_adsense_linked' => true,
+					),
+					$default_new_metrics
 				),
 				'When adsense is linked, feature metrics should reflect it.',
+			),
+			'when detected events are set'           => array(
+				array(
+					'analytics_settings' => array(
+						'detectedEvents' => array( 'purchase', 'add_to_cart' ),
+					),
+				),
+				array_merge(
+					array(
+						'audseg_setup_completed'   => false,
+						'audseg_audience_count'    => 0,
+						'analytics_adsense_linked' => false,
+					),
+					$default_new_metrics,
+					array(
+						'conversion_tracking_detected_events' => array( 'purchase', 'add_to_cart' ),
+					)
+				),
+				'When detected events are set, they should be reflected in conversion_tracking_detected_events.',
+			),
+			'when site goals widgets are active'     => array(
+				array(
+					'site_goals_site_settings' => array(
+						'activeWidgets' => array( 'ecommerce', 'lead' ),
+					),
+				),
+				array_merge(
+					array(
+						'audseg_setup_completed'   => false,
+						'audseg_audience_count'    => 0,
+						'analytics_adsense_linked' => false,
+					),
+					$default_new_metrics,
+					array(
+						'site_goals_widgets' => array( 'ecommerce', 'lead' ),
+					)
+				),
+				'When site goals widgets are active, they should be reflected in site_goals_widgets.',
+			),
+			'when custom dimensions are available'   => array(
+				array(
+					'analytics_settings' => array(
+						'availableCustomDimensions' => array( 'googlesitekit_post_type', 'googlesitekit_post_author' ),
+					),
+				),
+				array_merge(
+					array(
+						'audseg_setup_completed'   => false,
+						'audseg_audience_count'    => 0,
+						'analytics_adsense_linked' => false,
+					),
+					$default_new_metrics,
+					array(
+						'custom_dimensions' => array( 'googlesitekit_post_type', 'googlesitekit_post_author' ),
+					)
+				),
+				'When custom dimensions are available, their slugs should be reflected in custom_dimensions.',
+			),
+			'when availableCustomDimensions is null' => array(
+				array(
+					'analytics_settings' => array(
+						'availableCustomDimensions' => null,
+					),
+				),
+				array_merge(
+					array(
+						'audseg_setup_completed'   => false,
+						'audseg_audience_count'    => 0,
+						'analytics_adsense_linked' => false,
+					),
+					$default_new_metrics
+				),
+				'When availableCustomDimensions is null, custom_dimensions should default to an empty array.',
 			),
 		);
 	}
