@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\Consent_Mode;
 
 use Google\Site_Kit\Context;
@@ -88,8 +85,8 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 
 		$this->controller->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ), 'Consent mode REST routes should be registered.' );
+		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ), 'Consent mode preload paths should be registered.' );
 	}
 
 	public function test_get_settings() {
@@ -108,7 +105,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/consent-mode' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEqualSetsWithIndex( $original_settings, $response->get_data() );
+		$this->assertEqualSetsWithIndex( $original_settings, $response->get_data(), 'Consent mode response should contain stored settings.' );
 	}
 
 	public function test_get_settings__requires_authenticated_admin() {
@@ -127,7 +124,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 
 		// This admin hasn't authenticated with the Site Kit proxy service yet,
 		// so they aren't allowed to modify Dashboard Sharing settings.
-		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'Settings response should forbid unauthenticated admins.' );
 	}
 
 	public function test_set_settings() {
@@ -158,7 +155,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		);
 
 		$response = rest_get_server()->dispatch( $request );
-		$this->assertEqualSetsWithIndex( $changed_settings, $response->get_data() );
+		$this->assertEqualSetsWithIndex( $changed_settings, $response->get_data(), 'Consent mode response should contain changed settings.' );
 	}
 
 	public function test_set_settings__requires_authenticated_admin() {
@@ -189,7 +186,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 		// This admin hasn't authenticated with the Site Kit proxy service yet,
 		// so they aren't allowed to modify Dashboard Sharing settings.
-		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'Settings update should forbid unauthenticated admins.' );
 	}
 
 	/**
@@ -208,8 +205,8 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		);
 
 		$response = rest_get_server()->dispatch( $request );
-		$this->assertEquals( 400, $response->get_status() );
-		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'] );
+		$this->assertEquals( 400, $response->get_status(), 'Invalid settings response should use bad request status.' );
+		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'], 'Invalid settings response should include invalid param code.' );
 	}
 
 	public function provider_wrong_settings_data() {
@@ -246,17 +243,17 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 
 		$response_data = $response->get_data();
 
-		$this->assertFalse( $response_data['hasConsentAPI'] );
-		$this->assertIsArray( $response_data['wpConsentPlugin'] );
+		$this->assertFalse( $response_data['hasConsentAPI'], 'Consent API info should report no consent API.' );
+		$this->assertIsArray( $response_data['wpConsentPlugin'], 'Consent API info should include WP Consent plugin data.' );
 
 		$wp_consent_plugin = $response_data['wpConsentPlugin'];
 
 		// Plugin not installed (see mock_installed_plugins)
-		$this->assertFalse( $wp_consent_plugin['installed'] );
+		$this->assertFalse( $wp_consent_plugin['installed'], 'WP Consent plugin should not be installed.' );
 		// Plugin is not installed, hence cannot be activated.
-		$this->assertFalse( $wp_consent_plugin['activateURL'] );
+		$this->assertFalse( $wp_consent_plugin['activateURL'], 'WP Consent plugin should not have an activate URL.' );
 
-		$this->assertStringStartsWith( 'http://example.org/wp-admin/update.php?action=install-plugin&plugin=wp-consent-api&_wpnonce=', $wp_consent_plugin['installURL'] );
+		$this->assertStringStartsWith( 'http://example.org/wp-admin/update.php?action=install-plugin&plugin=wp-consent-api&_wpnonce=', $wp_consent_plugin['installURL'], 'WP Consent plugin should include an install URL.' );
 	}
 
 	/**
@@ -276,16 +273,16 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 
 		$response_data = $response->get_data();
 
-		$this->assertFalse( $response_data['hasConsentAPI'] );
-		$this->assertIsArray( $response_data['wpConsentPlugin'] );
+		$this->assertFalse( $response_data['hasConsentAPI'], 'Multisite consent API info should report no consent API.' );
+		$this->assertIsArray( $response_data['wpConsentPlugin'], 'Multisite response should include WP Consent plugin data.' );
 
 		$wp_consent_plugin = $response_data['wpConsentPlugin'];
 
-		$this->assertFalse( $wp_consent_plugin['installed'] );
+		$this->assertFalse( $wp_consent_plugin['installed'], 'WP Consent plugin should not be installed on multisite.' );
 
 		// We don't expect the ability to install or activate plugins on multisite.
-		$this->assertFalse( $wp_consent_plugin['activateURL'] );
-		$this->assertFalse( $wp_consent_plugin['installURL'] );
+		$this->assertFalse( $wp_consent_plugin['activateURL'], 'WP Consent plugin should not have a multisite activate URL.' );
+		$this->assertFalse( $wp_consent_plugin['installURL'], 'WP Consent plugin should not have a multisite install URL.' );
 	}
 
 	public function test_get_api_info__requires_authenticated_admin() {
@@ -296,7 +293,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 
 		// This admin hasn't authenticated with the Site Kit proxy service yet,
 		// so they aren't allowed to modify Dashboard Sharing settings.
-		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'Consent API info should forbid unauthenticated admins.' );
 	}
 
 	public function test_get_ads_measurement_status() {
@@ -309,7 +306,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 
 		$response_data = $response->get_data();
 
-		$this->assertFalse( $response_data['connected'] );
+		$this->assertFalse( $response_data['connected'], 'Ads measurement status should default to disconnected.' );
 	}
 
 	private function grant_manage_options_permission() {
@@ -341,7 +338,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/ads-measurement-status' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'Ads measurement status should forbid unauthenticated admins.' );
 	}
 
 	public function test_get_ads_measurement_status__early_return_on_first_passing_check() {
@@ -380,10 +377,10 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 
 		$response_data = $response->get_data();
 
-		$this->assertTrue( $response_data['connected'] );
-		$this->assertEquals( 1, $check_calls['first'] );
-		$this->assertEquals( 1, $check_calls['second'] );
-		$this->assertEquals( 0, $check_calls['third'] );
+		$this->assertTrue( $response_data['connected'], 'Ads measurement status should be connected after passing check.' );
+		$this->assertEquals( 1, $check_calls['first'], 'First ads measurement check should run once.' );
+		$this->assertEquals( 1, $check_calls['second'], 'Second ads measurement check should run once.' );
+		$this->assertEquals( 0, $check_calls['third'], 'Third ads measurement check should not run.' );
 	}
 
 	public function test_get_ads_measurement_status__handles_empty_checks_array() {
@@ -398,7 +395,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 
 		$response_data = $response->get_data();
 
-		$this->assertFalse( $response_data['connected'] );
+		$this->assertFalse( $response_data['connected'], 'Ads measurement status should be disconnected with no checks.' );
 	}
 
 	public function data_non_callable_checks_provider() {
@@ -429,7 +426,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 
 		$response_data = $response->get_data();
 
-		$this->assertFalse( $response_data['connected'] );
+		$this->assertFalse( $response_data['connected'], 'Ads measurement status should ignore non-callable checks.' );
 	}
 
 	public function data_non_array_filter_result_provider() {
@@ -460,6 +457,6 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 
 		$response_data = $response->get_data();
 
-		$this->assertFalse( $response_data['connected'] );
+		$this->assertFalse( $response_data['connected'], 'Ads measurement status should ignore non-array checks.' );
 	}
 }
