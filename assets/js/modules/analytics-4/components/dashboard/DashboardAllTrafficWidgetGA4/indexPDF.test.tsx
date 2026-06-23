@@ -28,6 +28,9 @@ import TestRenderer from 'react-test-renderer';
 import DashboardAllTrafficWidgetGA4PDF from './indexPDF';
 
 const LINE_CHART_DATA_URI = 'data:image/jpeg;base64,TU9DS0NIQVJU';
+const CHANNEL_CHART_DATA_URI = 'data:image/jpeg;base64,Q0hBTk5FTA==';
+const LOCATION_CHART_DATA_URI = 'data:image/jpeg;base64,TE9DQVRJT05T';
+const DEVICE_CHART_DATA_URI = 'data:image/jpeg;base64,REVWSUNFUw==';
 
 function buildReports( {
 	currentUsers,
@@ -149,5 +152,92 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		const json = JSON.stringify( tree );
 
 		expect( json ).toContain( 'No data available' );
+	} );
+
+	it( 'should render the three breakdown pie tiles with legend rows and donut images', () => {
+		const data = {
+			...buildReports( {
+				currentUsers: '1234',
+				previousUsers: '1000',
+				rowCount: 28,
+			} ),
+			channelBreakdown: [
+				{ label: 'Organic Search', percentage: 0.792 },
+				{ label: 'Direct', percentage: 0.133 },
+			],
+			locationBreakdown: [
+				{ label: 'Singapore', percentage: 0.228 },
+				{ label: 'Others', percentage: 0.156 },
+			],
+			deviceBreakdown: [
+				{ label: 'Desktop', percentage: 0.584 },
+				{ label: 'Mobile', percentage: 0.413 },
+			],
+		};
+
+		const tree = renderTree( {
+			data,
+			chartImages: {
+				lineChart: LINE_CHART_DATA_URI,
+				channelChart: CHANNEL_CHART_DATA_URI,
+				locationChart: LOCATION_CHART_DATA_URI,
+				deviceChart: DEVICE_CHART_DATA_URI,
+			},
+		} );
+		const json = JSON.stringify( tree );
+
+		// Each breakdown renders its titled tile.
+		expect( json ).toContain( 'Visitors by channels' );
+		expect( json ).toContain( 'Visitors by locations' );
+		expect( json ).toContain( 'Visitors by devices' );
+
+		// The legend pairs each label with its formatted percentage.
+		expect( json ).toContain( 'Organic Search' );
+		expect( json ).toContain( '79.2%' );
+		expect( json ).toContain( 'Singapore' );
+		expect( json ).toContain( '22.8%' );
+		expect( json ).toContain( 'Desktop' );
+		expect( json ).toContain( '58.4%' );
+
+		// The first two swatches use the shared palette, in order.
+		expect( json ).toContain( '"backgroundColor":"#fece72"' );
+		expect( json ).toContain( '"backgroundColor":"#a983e6"' );
+
+		// Each tile embeds its donut image.
+		expect( json ).toContain( CHANNEL_CHART_DATA_URI );
+		expect( json ).toContain( LOCATION_CHART_DATA_URI );
+		expect( json ).toContain( DEVICE_CHART_DATA_URI );
+	} );
+
+	it( 'should render a Data unavailable placeholder for a breakdown whose chart image is missing', () => {
+		const data = {
+			...buildReports( {
+				currentUsers: '1234',
+				previousUsers: '1000',
+				rowCount: 28,
+			} ),
+			channelBreakdown: null,
+			locationBreakdown: [ { label: 'Singapore', percentage: 0.5 } ],
+			deviceBreakdown: [ { label: 'Desktop', percentage: 0.5 } ],
+		};
+
+		const tree = renderTree( {
+			data,
+			chartImages: {
+				lineChart: LINE_CHART_DATA_URI,
+				locationChart: LOCATION_CHART_DATA_URI,
+				deviceChart: DEVICE_CHART_DATA_URI,
+			},
+		} );
+		const json = JSON.stringify( tree );
+
+		// The channels tile has no donut, so it shows the placeholder.
+		expect( json ).toContain( 'Visitors by channels' );
+		expect( json ).toContain( 'Data unavailable' );
+		expect( json ).not.toContain( CHANNEL_CHART_DATA_URI );
+
+		// The other two tiles still render their donuts.
+		expect( json ).toContain( LOCATION_CHART_DATA_URI );
+		expect( json ).toContain( DEVICE_CHART_DATA_URI );
 	} );
 } );
