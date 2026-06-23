@@ -36,6 +36,9 @@ interface AnalyticsActivationErrorNotificationProps {
 	onRetry?: () => void;
 }
 
+export const ANALYTICS_ACTIVATION_ERROR_NOTIFICATION =
+	'analytics-activation-error-notification';
+
 const AnalyticsActivationErrorNotification: FC<
 	AnalyticsActivationErrorNotificationProps
 > = ( { onRetry }: AnalyticsActivationErrorNotificationProps ) => {
