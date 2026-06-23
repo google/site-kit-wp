@@ -37,6 +37,7 @@ import { ZeroDataMessage } from '@/js/modules/search-console/components/common';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { generateDateRangeArgs } from '@/js/modules/search-console/util';
 import { numFmt } from '@/js/util';
+import { getPopularKeywordsReportOptions } from './reportOptions';
 
 export default function DashboardPopularKeywordsWidget( props ) {
 	const { Widget, WidgetReportError } = props;
@@ -53,10 +54,7 @@ export default function DashboardPopularKeywordsWidget( props ) {
 
 	const reportArgs = {
 		...dateRangeDates,
-		dimensions: 'query',
-		limit: 10,
-		reportID:
-			'search-console_dashboard-popular-keywords-widget_widget_reportArgs',
+		...getPopularKeywordsReportOptions(),
 	};
 
 	const url = useSelect( ( select ) =>
