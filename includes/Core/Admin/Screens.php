@@ -455,6 +455,19 @@ final class Screens {
 									exit;
 								}
 							}
+
+							if ( false === ( $initial_setup_settings['hasSitePurposeAnswer'] ?? null ) ) {
+								wp_safe_redirect(
+									$context->admin_url(
+										'key-metrics-setup',
+										array(
+											'showProgress' => 'true',
+										)
+									)
+								);
+
+								exit;
+							}
 						}
 					},
 					'render_callback'     => function ( Context $context ) {

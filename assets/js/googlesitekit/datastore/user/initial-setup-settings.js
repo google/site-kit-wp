@@ -37,6 +37,7 @@ import { CORE_USER } from './constants';
 
 // Actions
 const SET_IS_ANALYTICS_SETUP_COMPLETE = 'SET_IS_ANALYTICS_SETUP_COMPLETE';
+const SET_HAS_SITE_PURPOSE_ANSWER = 'SET_HAS_SITE_PURPOSE_ANSWER';
 
 const baseInitialState = {
 	initialSetupSettings: undefined,
@@ -74,6 +75,12 @@ const fetchSaveInitialSetupSettingsStore = createFetchStore( {
 			invariant(
 				typeof settings.isAnalyticsSetupComplete === 'boolean',
 				'isAnalyticsSetupComplete should be a boolean.'
+			);
+		}
+		if ( settings.hasSitePurposeAnswer !== undefined ) {
+			invariant(
+				typeof settings.hasSitePurposeAnswer === 'boolean',
+				'hasSitePurposeAnswer should be a boolean.'
 			);
 		}
 	},
@@ -133,6 +140,27 @@ const baseActions = {
 			payload: { isAnalyticsSetupComplete },
 		};
 	},
+
+	/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
+	/**
+	 * Sets whether the user has answered the site purpose question.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {boolean} hasSitePurposeAnswer Whether or not the user has answered the site purpose question.
+	 * @return {Object} Redux-style action.
+	 */
+	setHasSitePurposeAnswer( hasSitePurposeAnswer ) {
+		invariant(
+			typeof hasSitePurposeAnswer === 'boolean',
+			'Site purpose answer status should be a boolean.'
+		);
+
+		return {
+			type: SET_HAS_SITE_PURPOSE_ANSWER,
+			payload: { hasSitePurposeAnswer },
+		};
+	},
 };
 
 const baseReducer = createReducer( ( state, { type, payload } ) => {
@@ -143,6 +171,17 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 			state.initialSetupSettings = {
 				...state.initialSetupSettings,
 				isAnalyticsSetupComplete,
+			};
+
+			break;
+		}
+
+		case SET_HAS_SITE_PURPOSE_ANSWER: {
+			const { hasSitePurposeAnswer } = payload;
+
+			state.initialSetupSettings = {
+				...state.initialSetupSettings,
+				hasSitePurposeAnswer,
 			};
 
 			break;
@@ -194,6 +233,21 @@ const baseSelectors = {
 			select( CORE_USER ).getInitialSetupSettings();
 
 		return initialSetupSettings?.isAnalyticsSetupComplete;
+	} ),
+
+	/**
+	 * Returns whether the user has answered the site purpose question.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|null|undefined)} Whether the site purpose question has been answered; `undefined` if not loaded or `null` if not set yet.
+	 */
+	hasSitePurposeAnswer: createRegistrySelector( ( select ) => () => {
+		const initialSetupSettings =
+			select( CORE_USER ).getInitialSetupSettings();
+
+		return initialSetupSettings?.hasSitePurposeAnswer;
 	} ),
 };
 

@@ -217,7 +217,7 @@ describe( 'KeyMetricsSetupApp', () => {
 		);
 	} );
 
-	it( 'should call saveInitialSetupSettings with isAnalyticsSetupComplete:true after successful setup', async () => {
+	it( 'should mark Analytics setup and the site purpose answer complete after successful setup', async () => {
 		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
 			body: {
 				purpose: {
@@ -229,7 +229,12 @@ describe( 'KeyMetricsSetupApp', () => {
 		} );
 
 		fetchMock.postOnce( initialSetupSettingsEndpoint, {
-			body: { settings: { isAnalyticsSetupComplete: true } },
+			body: {
+				settings: {
+					isAnalyticsSetupComplete: true,
+					hasSitePurposeAnswer: true,
+				},
+			},
 			status: 200,
 		} );
 
@@ -248,7 +253,10 @@ describe( 'KeyMetricsSetupApp', () => {
 				method: 'POST',
 				body: {
 					data: {
-						settings: { isAnalyticsSetupComplete: true },
+						settings: {
+							isAnalyticsSetupComplete: true,
+							hasSitePurposeAnswer: true,
+						},
 					},
 				},
 			} );

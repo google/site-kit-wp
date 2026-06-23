@@ -54,14 +54,36 @@ import Header from './Header';
 import ResetNotice from './ResetNotice';
 import Splash from './Splash';
 
+async function saveSetupSettings( {
+	shouldSave,
+	setupFlowRefreshPhase4Enabled,
+	setHasSitePurposeAnswer,
+	saveInitialSetupSettings,
+} ) {
+	if ( setupFlowRefreshPhase4Enabled ) {
+		setHasSitePurposeAnswer( false );
+	}
+
+	if ( shouldSave || setupFlowRefreshPhase4Enabled ) {
+		await saveInitialSetupSettings();
+	}
+}
+
 export default function SetupUsingProxyWithSignIn() {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const setupFlowRefreshPhase4Enabled = useFeature(
+		'setupFlowRefreshPhase4'
+	);
 	const forwardableParams = useForwardableParams();
 
 	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { activateModule } = useDispatch( CORE_MODULES );
-	const { saveInitialSetupSettings } = useDispatch( CORE_USER );
+	const {
+		saveInitialSetupSettings,
+		setIsAnalyticsSetupComplete,
+		setHasSitePurposeAnswer,
+	} = useDispatch( CORE_USER );
 
 	const proxySetupURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxySetupURL()
@@ -85,6 +107,7 @@ export default function SetupUsingProxyWithSignIn() {
 			event.preventDefault();
 
 			let moduleReauthURL;
+			let shouldSaveInitialSetupSettings = false;
 
 			if ( connectAnalytics ) {
 				const { error, response } = await activateModule(
@@ -106,12 +129,18 @@ export default function SetupUsingProxyWithSignIn() {
 							showProgress: true,
 						} );
 
-						await saveInitialSetupSettings( {
-							isAnalyticsSetupComplete: false,
-						} );
+						setIsAnalyticsSetupComplete( false );
+						shouldSaveInitialSetupSettings = true;
 					}
 				}
 			}
+
+			await saveSetupSettings( {
+				shouldSave: shouldSaveInitialSetupSettings,
+				setupFlowRefreshPhase4Enabled,
+				setHasSitePurposeAnswer,
+				saveInitialSetupSettings,
+			} );
 
 			if ( proxySetupURL ) {
 				await Promise.all( [
@@ -173,7 +202,10 @@ export default function SetupUsingProxyWithSignIn() {
 			forwardableParams,
 			viewContext,
 			setupFlowRefreshEnabled,
+			setupFlowRefreshPhase4Enabled,
 			saveInitialSetupSettings,
+			setIsAnalyticsSetupComplete,
+			setHasSitePurposeAnswer,
 			navigateTo,
 		]
 	);

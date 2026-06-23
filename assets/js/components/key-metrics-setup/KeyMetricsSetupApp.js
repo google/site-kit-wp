@@ -31,6 +31,7 @@ import {
 	createInterpolateElement,
 	useCallback,
 	useEffect,
+	useMemo,
 	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -64,6 +65,7 @@ import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { useFeature } from '@/js/hooks/useFeature';
 import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
@@ -76,6 +78,9 @@ import { trackEvent } from '@/js/util';
 export default function KeyMetricsSetupApp() {
 	const viewContext = useViewContext();
 	const forwardableParams = useForwardableParams();
+	const setupFlowRefreshPhase4Enabled = useFeature(
+		'setupFlowRefreshPhase4'
+	);
 
 	const [ isFooterInline, setIsFooterInline ] = useState( false );
 
@@ -95,11 +100,16 @@ export default function KeyMetricsSetupApp() {
 		( select ) =>
 			select( CORE_USER ).isFetchingSaveInitialSetupSettings( {
 				isAnalyticsSetupComplete: true,
+				hasSitePurposeAnswer: true,
 			} ) || select( CORE_LOCATION ).isNavigating()
 	);
 
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
+	);
+
+	const isGA4Active = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const settingsLoaded = useSelect(
@@ -114,6 +124,7 @@ export default function KeyMetricsSetupApp() {
 		select( CORE_USER ).getErrorForAction( 'saveInitialSetupSettings', [
 			{
 				isAnalyticsSetupComplete: true,
+				hasSitePurposeAnswer: true,
 			},
 		] )
 	);
@@ -128,6 +139,7 @@ export default function KeyMetricsSetupApp() {
 	const {
 		saveUserInputSettings,
 		saveInitialSetupSettings,
+		setHasSitePurposeAnswer,
 		clearActionError,
 	} = useDispatch( CORE_USER );
 
@@ -170,6 +182,14 @@ export default function KeyMetricsSetupApp() {
 
 	const isInitialSetupFlow = !! showProgress;
 
+	const progressIndicatorProps = useMemo(
+		() =>
+			setupFlowRefreshPhase4Enabled && ! isGA4Active
+				? { totalSegments: 5, currentSegment: 3 }
+				: { totalSegments: 6, currentSegment: 4 },
+		[ isGA4Active, setupFlowRefreshPhase4Enabled ]
+	);
+
 	useMount( () => {
 		if ( isInitialSetupFlow ) {
 			trackEvent(
@@ -189,8 +209,11 @@ export default function KeyMetricsSetupApp() {
 	} );
 
 	const saveInitialSetup = useCallback( async () => {
+		setHasSitePurposeAnswer( true );
+
 		const response = await saveInitialSetupSettings( {
 			isAnalyticsSetupComplete: true,
+			hasSitePurposeAnswer: true,
 		} );
 
 		if ( response.error ) {
@@ -214,6 +237,7 @@ export default function KeyMetricsSetupApp() {
 	}, [
 		dashboardURL,
 		saveInitialSetupSettings,
+		setHasSitePurposeAnswer,
 		navigateTo,
 		forwardableParams,
 		isInitialSetupFlow,
@@ -223,6 +247,7 @@ export default function KeyMetricsSetupApp() {
 		clearActionError( 'saveInitialSetupSettings', [
 			{
 				isAnalyticsSetupComplete: true,
+				hasSitePurposeAnswer: true,
 			},
 		] );
 
@@ -321,7 +346,7 @@ export default function KeyMetricsSetupApp() {
 	const keyMetricsLayout = (
 		<Layout rounded={ ! isInitialSetupFlow }>
 			{ isInitialSetupFlow && (
-				<ProgressIndicator totalSegments={ 6 } currentSegment={ 4 } />
+				<ProgressIndicator { ...progressIndicatorProps } />
 			) }
 			<Grid>
 				<Row>
