@@ -24,7 +24,11 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, createInterpolateElement } from '@wordpress/element';
+import {
+	Fragment,
+	createInterpolateElement,
+	useCallback,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -39,10 +43,12 @@ import EntityOwnershipChangeNotice from '@/js/components/settings/EntityOwnershi
 import SettingsGroup from '@/js/components/settings/SettingsGroup';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { useFeature } from '@/js/hooks/useFeature';
+import useViewContext from '@/js/hooks/useViewContext';
 import { TrackingExclusionSwitches } from '@/js/modules/analytics-4/components/common';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { isValidAccountID } from '@/js/modules/analytics-4/utils/validation';
+import { trackEvent } from '@/js/util';
 import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNotice';
 import SettingsAdvancedDataBreakdowns from './SettingsAdvancedDataBreakdowns';
 import SettingsControls from './SettingsControls';
@@ -51,7 +57,9 @@ import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwit
 export default function SettingsForm( { hasModuleAccess } ) {
 	const gtgEnabled = useFeature( 'googleTagGateway' );
 	const gtagUserDataEnabled = useFeature( 'gtagUserData' );
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const siteGoalsEnabled = useFeature( 'siteGoals' );
+	const viewContext = useViewContext();
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
@@ -62,6 +70,16 @@ export default function SettingsForm( { hasModuleAccess } ) {
 			'plugin-conversion-tracking'
 		)
 	);
+
+	const onClickLearnMoreLink = useCallback( () => {
+		if ( setupFlowRefreshEnabled ) {
+			trackEvent(
+				viewContext,
+				'click_learn_more_link',
+				'plugin_conversion_tracking'
+			);
+		}
+	}, [ setupFlowRefreshEnabled, viewContext ] );
 
 	return (
 		<Fragment>
@@ -93,6 +111,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 										'Learn more about conversion tracking',
 										'google-site-kit'
 									) }
+									onClick={ onClickLearnMoreLink }
 									external
 									hideExternalIndicator
 								/>
