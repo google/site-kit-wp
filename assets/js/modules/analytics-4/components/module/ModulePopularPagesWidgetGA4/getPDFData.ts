@@ -25,6 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { PDFReportDates } from '@/js/googlesitekit/widgets/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
@@ -32,6 +33,7 @@ import {
 	ReportOptions,
 	ReportRow,
 } from '@/js/modules/analytics-4/datastore/types';
+import { getFullURL } from '@/js/util';
 import { getPopularPagesReportArgs } from './reportOptions';
 
 /**
@@ -51,13 +53,23 @@ export interface GetPDFDataParams {
 }
 
 /**
+ * Links for one page row: the entity dashboard golink for the title, and the
+ * page's own public URL for the URL line.
+ */
+export interface PopularPageLinks {
+	detailsURL: string;
+	permaLink: string;
+}
+
+/**
  * Data the Top content over time PDF widget renders.
  */
 export interface PopularPagesPDFData {
-	/** Report rows and the page-path-to-title map, or `null` when cancelled. */
+	/** Report rows, the page titles, and the per-page links, or `null` when cancelled. */
 	data: {
 		rows: ReportRow[];
 		titles: Record< string, string >;
+		links: Record< string, PopularPageLinks >;
 	} | null;
 }
 
@@ -169,6 +181,40 @@ function getTitleMap(
 }
 
 /**
+ * Maps each page path to its entity dashboard golink and public URL.
+ *
+ * The title links to the page's Site Kit detail view through the golink, which
+ * keeps working if Site Kit's internal URL changes after the PDF is saved. The
+ * URL line links to the page itself.
+ *
+ * @since n.e.x.t
+ *
+ * @param registry  WordPress data registry.
+ * @param pagePaths Page paths from the main report rows.
+ * @return Map of page path to its golink and public URL.
+ */
+function getPopularPageLinkMap(
+	registry: GetPDFDataParams[ 'registry' ],
+	pagePaths: string[]
+): Record< string, PopularPageLinks > {
+	const coreSite = registry.select( CORE_SITE );
+	const siteURL = coreSite.getReferenceSiteURL();
+
+	const links: Record< string, PopularPageLinks > = {};
+
+	pagePaths.forEach( ( pagePath ) => {
+		const permaLink = getFullURL( siteURL, pagePath );
+		links[ pagePath ] = {
+			detailsURL:
+				coreSite.getGoLinkURL( 'dashboard', { permaLink } ) ?? '',
+			permaLink,
+		};
+	} );
+
+	return links;
+}
+
+/**
  * Loads the report rows and page titles for the Top content over time PDF widget.
  *
  * Loads the Most popular pages report, then a second report that matches each
@@ -211,9 +257,10 @@ export default async function getPDFData( {
 
 	const rows = report?.rows ?? [];
 	const pagePaths = getPagePaths( report );
+	const links = getPopularPageLinkMap( registry, pagePaths );
 
 	if ( pagePaths.length === 0 ) {
-		return { data: { rows, titles: {} } };
+		return { data: { rows, titles: {}, links } };
 	}
 
 	const titlesArgs = getPageTitlesReportArgs( dates, pagePaths );
@@ -227,5 +274,11 @@ export default async function getPDFData( {
 		return { data: null };
 	}
 
-	return { data: { rows, titles: getTitleMap( pagePaths, titlesReport ) } };
+	return {
+		data: {
+			rows,
+			titles: getTitleMap( pagePaths, titlesReport ),
+			links,
+		},
+	};
 }

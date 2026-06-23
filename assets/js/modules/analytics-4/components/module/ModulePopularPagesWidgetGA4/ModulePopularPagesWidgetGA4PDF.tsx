@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Link, StyleSheet, Text, View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
@@ -67,6 +67,7 @@ const styles = StyleSheet.create( {
 	title: {
 		...bodyTextStyles,
 		color: PAGE_LINK_COLOR,
+		textDecoration: 'none',
 	},
 	url: {
 		fontFamily: PDF_FONT_FAMILY_TEXT,
@@ -74,6 +75,7 @@ const styles = StyleSheet.create( {
 		lineHeight: 1.33,
 		letterSpacing: 0.1,
 		color: PAGE_LINK_COLOR,
+		textDecoration: 'none',
 	},
 	noData: {
 		fontFamily: PDF_FONT_FAMILY_TEXT,
@@ -85,7 +87,9 @@ const styles = StyleSheet.create( {
 interface PopularPageRow {
 	rank: number;
 	title: string;
-	url: string;
+	displayURL: string;
+	detailsURL: string;
+	permaLink: string;
 	pageviews: string;
 	sessions: string;
 	engagementRate: string;
@@ -99,14 +103,22 @@ const ModulePopularPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 	const popularPagesData = data as PopularPagesPDFData[ 'data' ];
 	const rows = popularPagesData?.rows ?? [];
 	const titles = popularPagesData?.titles ?? {};
+	const links = popularPagesData?.links ?? {};
 
 	const tableRows: PopularPageRow[] = rows.map( ( row, index ) => {
 		const url = row.dimensionValues?.[ 0 ]?.value ?? '';
+		const { detailsURL = '', permaLink = '' } = links[ url ] ?? {};
+		const displayURL =
+			url.length > MAX_URL_LENGTH
+				? `${ url.slice( 0, MAX_URL_LENGTH ) }…`
+				: url;
 
 		return {
 			rank: index + 1,
 			title: titles[ url ] ?? '',
-			url,
+			displayURL,
+			detailsURL,
+			permaLink,
 			pageviews: row.metricValues?.[ 0 ]?.value ?? '',
 			sessions: row.metricValues?.[ 1 ]?.value ?? '',
 			engagementRate: row.metricValues?.[ 2 ]?.value ?? '',
@@ -119,17 +131,19 @@ const ModulePopularPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 			header: __( 'Title', 'google-site-kit' ),
 			// 42.8% of the 1084px row, about 464px.
 			width: '42.8%',
-			// Shows the page title above its URL, with the row rank to the left.
+			// Shows the page title above its URL, with the row rank to the
+			// left. The title links to the page's Site Kit entity dashboard,
+			// and the URL links to the page itself.
 			cell: ( row ) => (
 				<View style={ styles.titleCell }>
 					<Text style={ styles.rank }>{ `${ row.rank }.` }</Text>
 					<View style={ styles.titleGroup }>
-						<Text style={ styles.title }>{ row.title }</Text>
-						<Text style={ styles.url }>
-							{ row.url.length > MAX_URL_LENGTH
-								? `${ row.url.slice( 0, MAX_URL_LENGTH ) }…`
-								: row.url }
-						</Text>
+						<Link src={ row.detailsURL } style={ styles.title }>
+							{ row.title }
+						</Link>
+						<Link src={ row.permaLink } style={ styles.url }>
+							{ row.displayURL }
+						</Link>
 					</View>
 				</View>
 			),
