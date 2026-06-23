@@ -79,12 +79,7 @@ WithSaveInitialSetupError.args = {
 					reason: '',
 				},
 			},
-			'saveInitialSetupSettings',
-			[
-				{
-					isAnalyticsSetupComplete: true,
-				},
-			]
+			'saveInitialSetupSettings'
 		);
 	},
 };

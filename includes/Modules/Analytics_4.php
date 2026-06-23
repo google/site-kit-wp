@@ -711,6 +711,34 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				: join( ', ', $site_kit_audiences ),
 		);
 
+		if ( Feature_Flags::enabled( 'siteGoals' ) ) {
+			$active_widget_slugs = $this->site_goals_site_settings->get()['activeWidgets'] ?? array();
+			$widget_names        = array(
+				'ecommerce' => __( 'Online store performance', 'google-site-kit' ),
+				'lead'      => __( 'Lead generation performance', 'google-site-kit' ),
+			);
+			$widget_labels       = array();
+			foreach ( $active_widget_slugs as $slug ) {
+				if ( isset( $widget_names[ $slug ] ) ) {
+					$widget_labels[] = $widget_names[ $slug ];
+				}
+			}
+
+			$debug_fields['analytics_4_site_goals_widgets'] = array(
+				'label' => __( 'Analytics: Site Goal Widgets', 'google-site-kit' ),
+				'value' => empty( $widget_labels )
+					? __( 'None', 'google-site-kit' )
+					: join(
+						/* translators: used between list items, there is a space after the comma */
+						__( ', ', 'google-site-kit' ),
+						$widget_labels
+					),
+				'debug' => empty( $active_widget_slugs )
+					? 'none'
+					: join( ', ', $active_widget_slugs ),
+			);
+		}
+
 		return $debug_fields;
 	}
 
@@ -725,9 +753,12 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$settings = $this->get_settings()->get();
 
 		return array(
-			'audseg_setup_completed'   => (bool) $this->audience_settings->get()['audienceSegmentationSetupCompletedBy'],
-			'audseg_audience_count'    => count( $this->audience_settings->get()['availableAudiences'] ?? array() ),
-			'analytics_adsense_linked' => $this->is_adsense_connected() && $settings['adSenseLinked'],
+			'audseg_setup_completed'              => (bool) $this->audience_settings->get()['audienceSegmentationSetupCompletedBy'],
+			'audseg_audience_count'               => count( $this->audience_settings->get()['availableAudiences'] ?? array() ),
+			'analytics_adsense_linked'            => $this->is_adsense_connected() && $settings['adSenseLinked'],
+			'conversion_tracking_detected_events' => $settings['detectedEvents'] ?? array(),
+			'site_goals_widgets'                  => $this->site_goals_site_settings->get()['activeWidgets'] ?? array(),
+			'custom_dimensions'                   => $settings['availableCustomDimensions'] ?: array(),
 		);
 	}
 
@@ -1299,6 +1330,17 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 */
 	private function get_provisioning_callback_error_redirect_url( $error_code, $show_progress ) {
 		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+			// If the account creation was triggered from the settings edit screen,
+			// redirect back to the settings edit screen with the error code.
+			if ( $this->is_connected() ) {
+				return add_query_arg(
+					array(
+						'accountCreationErrorCode' => $error_code,
+					),
+					$this->context->admin_url( 'settings' )
+				) . '#connected-services/analytics-4/edit';
+			}
+
 			$args = array(
 				'slug'                     => 'analytics-4',
 				'reAuth'                   => 'true',

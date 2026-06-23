@@ -32,11 +32,13 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Link from '@/js/components/Link';
+import Notifications from '@/js/components/notifications/Notifications';
 import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
 import Services from '@/js/components/setup/Services';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
 import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -46,7 +48,6 @@ import { useFeature } from '@/js/hooks/useFeature';
 import { Cell, Row } from '@/js/material-components';
 import SplashBackground from '@/svg/graphics/splash-graphic.svg';
 import AnalyticsOptIn from './AnalyticsOptIn';
-import ResetNotice from './ResetNotice';
 import SplashScreenshotSVG from './SetupFlowSVG';
 
 export default function SplashContent( {
@@ -80,7 +81,9 @@ export default function SplashContent( {
 
 	return (
 		<Fragment>
-			<ResetNotice />
+			<div className="googlesitekit-setup__notifications">
+				<Notifications areaSlug={ NOTIFICATION_AREAS.SPLASH_CONTENT } />
+			</div>
 			<Row className="googlesitekit-setup__content">
 				<Cell { ...cellDetailsProp }>
 					<Typography

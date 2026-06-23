@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\Dashboard_Sharing;
 
 use Google\Site_Kit\Context;
@@ -56,21 +53,21 @@ class View_Only_PointerTest extends TestCase {
 	}
 
 	public function test_register() {
-		$this->assertTrue( has_filter( 'googlesitekit_admin_pointers' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_admin_pointers' ), 'View-only pointer should register admin pointers filter.' );
 
 		$view_only_pointer = $this->get_registered_pointer();
 
-		$this->assertInstanceOf( 'Google\Site_Kit\Core\Admin\Pointer', $view_only_pointer );
-		$this->assertEquals( View_Only_Pointer::SLUG, $view_only_pointer->get_slug() );
+		$this->assertInstanceOf( 'Google\Site_Kit\Core\Admin\Pointer', $view_only_pointer, 'Registered view-only pointer should be a pointer instance.' );
+		$this->assertEquals( View_Only_Pointer::SLUG, $view_only_pointer->get_slug(), 'Registered view-only pointer should use expected slug.' );
 	}
 
 	public function test_active_callback__wrong_hook_suffix() {
 		$view_only_pointer = $this->get_registered_pointer();
 
-		$this->assertIsCallable( array( $view_only_pointer, 'is_active' ) );
+		$this->assertIsCallable( array( $view_only_pointer, 'is_active' ), 'View-only pointer active callback should be callable.' );
 
 		// Should Return false because hook suffix is not index.php
-		$this->assertFalse( $view_only_pointer->is_active( 'settings.php' ) );
+		$this->assertFalse( $view_only_pointer->is_active( 'settings.php' ), 'View-only pointer should not be active on wrong hook suffix.' );
 	}
 
 	public function test_active_callback__can_authenticate() {
@@ -81,7 +78,7 @@ class View_Only_PointerTest extends TestCase {
 		$view_only_pointer = $this->get_registered_pointer();
 
 		// Should Return false because current user can AUTHENTICATE.
-		$this->assertFalse( $view_only_pointer->is_active( 'index.php' ) );
+		$this->assertFalse( $view_only_pointer->is_active( 'index.php' ), 'View-only pointer should not be active for authenticating users.' );
 	}
 
 	public function test_active_callback__can_not_view_splash() {
@@ -92,7 +89,7 @@ class View_Only_PointerTest extends TestCase {
 		$view_only_pointer = $this->get_registered_pointer();
 
 		// Should Return false because current user can not VIEW_SPLASH.
-		$this->assertFalse( $view_only_pointer->is_active( 'index.php' ) );
+		$this->assertFalse( $view_only_pointer->is_active( 'index.php' ), 'View-only pointer should not be active without splash access.' );
 	}
 
 	public function test_active_callback__splash_not_dismissed() {
@@ -105,7 +102,7 @@ class View_Only_PointerTest extends TestCase {
 		$view_only_pointer = $this->get_registered_pointer();
 
 		// Should Return true.
-		$this->assertTrue( $view_only_pointer->is_active( 'index.php' ) );
+		$this->assertTrue( $view_only_pointer->is_active( 'index.php' ), 'View-only pointer should be active before splash dismissal.' );
 	}
 
 	public function test_active_callback__splash_dismissed() {
@@ -120,7 +117,7 @@ class View_Only_PointerTest extends TestCase {
 		$this->dismissed_items->add( 'shared_dashboard_splash' );
 
 		// Should Return false because current user can no longer VIEW_SPLASH due to splash dismissal.
-		$this->assertFalse( $view_only_pointer->is_active( 'index.php' ) );
+		$this->assertFalse( $view_only_pointer->is_active( 'index.php' ), 'View-only pointer should not be active after splash dismissal.' );
 	}
 
 	public function test_active_callback__pointer_dismissed() {
@@ -135,7 +132,7 @@ class View_Only_PointerTest extends TestCase {
 		update_user_meta( $user_id, 'dismissed_wp_pointers', View_Only_Pointer::SLUG );
 
 		// Should Return false because the pointer has been dismissed.
-		$this->assertFalse( $view_only_pointer->is_active( 'index.php' ) );
+		$this->assertFalse( $view_only_pointer->is_active( 'index.php' ), 'View-only pointer should not be active after pointer dismissal.' );
 	}
 
 	public function test_active_callback__dismissed_wp_pointers_meta_is_array() {
@@ -153,7 +150,7 @@ class View_Only_PointerTest extends TestCase {
 
 		// Should remain active because the array does not contain the pointer slug,
 		// and must not throw a TypeError when calling explode() on the meta value.
-		$this->assertTrue( $view_only_pointer->is_active( 'index.php' ) );
+		$this->assertTrue( $view_only_pointer->is_active( 'index.php' ), 'View-only pointer should remain active with unrelated dismissal data.' );
 	}
 
 	private function get_registered_pointer() {

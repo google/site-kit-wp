@@ -37,6 +37,7 @@ use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reportin
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
+use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Site_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Data_Available_State_ContractTests;
@@ -134,6 +135,13 @@ class Analytics_4Test extends TestCase {
 	private $audience_settings;
 
 	/**
+	 * Site Goals site settings instance.
+	 *
+	 * @var Site_Goals_Site_Settings
+	 */
+	private $site_goals_site_settings;
+
+	/**
 	 * Fake HTTP request handler calls.
 	 *
 	 * @var array
@@ -144,13 +152,14 @@ class Analytics_4Test extends TestCase {
 		parent::set_up();
 		$this->request_handler_calls = array();
 
-		$this->context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->options           = new Options( $this->context );
-		$this->user              = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$this->user_options      = new User_Options( $this->context, $this->user->ID );
-		$this->authentication    = new Authentication( $this->context, $this->options, $this->user_options );
-		$this->analytics         = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
-		$this->audience_settings = new Audience_Settings( $this->options );
+		$this->context                  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->options                  = new Options( $this->context );
+		$this->user                     = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$this->user_options             = new User_Options( $this->context, $this->user->ID );
+		$this->authentication           = new Authentication( $this->context, $this->options, $this->user_options );
+		$this->analytics                = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
+		$this->audience_settings        = new Audience_Settings( $this->options );
+		$this->site_goals_site_settings = new Site_Goals_Site_Settings( $this->options );
 
 		wp_set_current_user( $this->user->ID );
 		remove_all_actions( 'wp_enqueue_scripts' );
@@ -403,9 +412,26 @@ class Analytics_4Test extends TestCase {
 		return array(
 			'method'                      => $method,
 			'analytics'                   => $analytics,
+			'context'                     => $context,
 			'dashboard_url'               => $dashboard_url,
 			'admin_id'                    => $admin_id,
 			'account_ticked_id_transient' => $account_ticked_id_transient,
+		);
+	}
+
+	/**
+	 * Connects the Analytics 4 module with the minimum required settings.
+	 *
+	 * @param Analytics_4 $analytics Analytics 4 module instance.
+	 */
+	private function connect_analytics_module( Analytics_4 $analytics ) {
+		$analytics->get_settings()->merge(
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '987654321',
+				'webDataStreamID' => '1234567890',
+				'measurementID'   => 'G-1A2BCD345E',
+			)
 		);
 	}
 
@@ -680,6 +706,75 @@ class Analytics_4Test extends TestCase {
 				'Should redirect to Analytics setup screen with the account creation error code.'
 			);
 		}
+	}
+
+	/**
+	 * @dataProvider data_handle_provisioning_callback_connected_error_redirect
+	 */
+	public function test_handle_provisioning_callback__error_redirect_to_settings_when_connected( $params ) {
+		$this->enable_feature( 'setupFlowRefresh' );
+
+		$test_variables              = $this->set_up_handle_provisioning_callback_test();
+		$method                      = $test_variables['method'];
+		$analytics                   = $test_variables['analytics'];
+		$context                     = $test_variables['context'];
+		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
+
+		$this->connect_analytics_module( $analytics );
+
+		$settings_url = $context->admin_url( 'settings' );
+
+		if ( ! empty( $params['set_transient'] ) ) {
+			set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
+		}
+
+		if ( ! empty( $params['error'] ) ) {
+			$_GET['error'] = $params['error'];
+		}
+
+		try {
+			$method->invokeArgs( $analytics, array() );
+			$this->fail( 'Expected redirect to Analytics settings edit screen with error' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				add_query_arg(
+					array(
+						'accountCreationErrorCode' => $params['error_code'],
+					),
+					$settings_url
+				) . '#connected-services/analytics-4/edit',
+				$redirect->get_location(),
+				'Should redirect to Analytics settings edit screen with the account creation error code.'
+			);
+		}
+
+		if ( ! empty( $params['error'] ) ) {
+			unset( $_GET['error'] );
+		}
+	}
+
+	public function data_handle_provisioning_callback_connected_error_redirect() {
+		return array(
+			'account_ticket_id_mismatch' => array(
+				array(
+					'error_code'    => 'account_ticket_id_mismatch',
+					'set_transient' => false,
+				),
+			),
+			'user_cancel'                => array(
+				array(
+					'error_code'    => 'user_cancel',
+					'set_transient' => true,
+					'error'         => 'user_cancel',
+				),
+			),
+			'callback_missing_parameter' => array(
+				array(
+					'error_code'    => 'callback_missing_parameter',
+					'set_transient' => true,
+				),
+			),
+		);
 	}
 
 	public function data_handle_provisioning_callback_error_redirect_show_progress() {
@@ -1864,6 +1959,81 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_get_debug_fields__site_goals_widgets_absent_when_feature_disabled() {
+		$this->analytics->register();
+
+		$this->assertArrayNotHasKey(
+			'analytics_4_site_goals_widgets',
+			$this->analytics->get_debug_fields(),
+			'analytics_4_site_goals_widgets should not be present when the siteGoals feature flag is disabled'
+		);
+	}
+
+	public function test_get_debug_fields__site_goals_widgets_present_when_feature_enabled() {
+		$this->enable_feature( 'siteGoals' );
+		$this->analytics->register();
+
+		$this->assertArrayHasKey(
+			'analytics_4_site_goals_widgets',
+			$this->analytics->get_debug_fields(),
+			'analytics_4_site_goals_widgets should be present when the siteGoals feature flag is enabled'
+		);
+	}
+
+	public function test_get_debug_fields__site_goals_widgets_none_when_empty() {
+		$this->enable_feature( 'siteGoals' );
+		$this->analytics->register();
+
+		$debug_fields = $this->analytics->get_debug_fields();
+		$field        = $debug_fields['analytics_4_site_goals_widgets'];
+
+		$this->assertEquals( 'Analytics: Site Goal Widgets', $field['label'], 'label should be Analytics: Site Goal Widgets' );
+		$this->assertEquals( 'None', $field['value'], 'value should be None when no active widgets are set' );
+		$this->assertEquals( 'none', $field['debug'], 'debug should be none when no active widgets are set' );
+	}
+
+	public function test_get_debug_fields__site_goals_widgets_ecommerce() {
+		$this->enable_feature( 'siteGoals' );
+		$this->analytics->register();
+
+		$site_goals_site_settings = new Site_Goals_Site_Settings( $this->options );
+		$site_goals_site_settings->set( array( 'activeWidgets' => array( 'ecommerce' ) ) );
+
+		$debug_fields = $this->analytics->get_debug_fields();
+		$field        = $debug_fields['analytics_4_site_goals_widgets'];
+
+		$this->assertEquals( 'Online store performance', $field['value'], 'value should show ecommerce widget label' );
+		$this->assertEquals( 'ecommerce', $field['debug'], 'debug should show raw ecommerce slug' );
+	}
+
+	public function test_get_debug_fields__site_goals_widgets_lead() {
+		$this->enable_feature( 'siteGoals' );
+		$this->analytics->register();
+
+		$site_goals_site_settings = new Site_Goals_Site_Settings( $this->options );
+		$site_goals_site_settings->set( array( 'activeWidgets' => array( 'lead' ) ) );
+
+		$debug_fields = $this->analytics->get_debug_fields();
+		$field        = $debug_fields['analytics_4_site_goals_widgets'];
+
+		$this->assertEquals( 'Lead generation performance', $field['value'], 'value should show lead widget label' );
+		$this->assertEquals( 'lead', $field['debug'], 'debug should show raw lead slug' );
+	}
+
+	public function test_get_debug_fields__site_goals_widgets_both() {
+		$this->enable_feature( 'siteGoals' );
+		$this->analytics->register();
+
+		$site_goals_site_settings = new Site_Goals_Site_Settings( $this->options );
+		$site_goals_site_settings->set( array( 'activeWidgets' => array( 'ecommerce', 'lead' ) ) );
+
+		$debug_fields = $this->analytics->get_debug_fields();
+		$field        = $debug_fields['analytics_4_site_goals_widgets'];
+
+		$this->assertEquals( 'Online store performance, Lead generation performance', $field['value'], 'value should list both widget labels joined by comma' );
+		$this->assertEquals( 'ecommerce, lead', $field['debug'], 'debug should list both raw slugs joined by comma' );
+	}
+
 	/**
 	 * @dataProvider data_feature_metrics_settings
 	 *
@@ -1876,6 +2046,9 @@ class Analytics_4Test extends TestCase {
 		$this->analytics->get_settings()->merge( $settings['analytics_settings'] ?? array() );
 		$this->audience_settings->merge(
 			$settings['audience_settings'] ?? array()
+		);
+		$this->site_goals_site_settings->merge(
+			$settings['site_goals_site_settings'] ?? array()
 		);
 		( new AdSense_Settings( $this->options ) )->set(
 			array(
@@ -1902,39 +2075,127 @@ class Analytics_4Test extends TestCase {
 			'audienceSegmentationSetupCompletedBy' => 2,
 		);
 
+		$default_new_metrics = array(
+			'conversion_tracking_detected_events' => array(),
+			'site_goals_widgets'                  => array(),
+			'custom_dimensions'                   => array(),
+		);
+
 		return array(
 			'default values when audience segmentation is not setup and adsense is unlinked' => array(
 				array(),
-				array(
-					'audseg_setup_completed'   => false,
-					'audseg_audience_count'    => 0,
-					'analytics_adsense_linked' => false,
+				array_merge(
+					array(
+						'audseg_setup_completed'   => false,
+						'audseg_audience_count'    => 0,
+						'analytics_adsense_linked' => false,
+					),
+					$default_new_metrics
 				),
 				'When settings are not set, feature metrics should be false or zero by default.',
 			),
-			'when audience segmentation is setup' => array(
+			'when audience segmentation is setup'    => array(
 				array(
 					'audience_settings' => $activated_audience_segmentation_settings,
 				),
-				array(
-					'audseg_setup_completed'   => true,
-					'audseg_audience_count'    => 2,
-					'analytics_adsense_linked' => false,
+				array_merge(
+					array(
+						'audseg_setup_completed'   => true,
+						'audseg_audience_count'    => 2,
+						'analytics_adsense_linked' => false,
+					),
+					$default_new_metrics
 				),
 				'When audience settings are set, feature metrics should reflect them.',
 			),
-			'when adsense is linked'              => array(
+			'when adsense is linked'                 => array(
 				array(
 					'analytics_settings' => array(
 						'adSenseLinked' => true,
 					),
 				),
-				array(
-					'audseg_setup_completed'   => false,
-					'audseg_audience_count'    => 0,
-					'analytics_adsense_linked' => true,
+				array_merge(
+					array(
+						'audseg_setup_completed'   => false,
+						'audseg_audience_count'    => 0,
+						'analytics_adsense_linked' => true,
+					),
+					$default_new_metrics
 				),
 				'When adsense is linked, feature metrics should reflect it.',
+			),
+			'when detected events are set'           => array(
+				array(
+					'analytics_settings' => array(
+						'detectedEvents' => array( 'purchase', 'add_to_cart' ),
+					),
+				),
+				array_merge(
+					array(
+						'audseg_setup_completed'   => false,
+						'audseg_audience_count'    => 0,
+						'analytics_adsense_linked' => false,
+					),
+					$default_new_metrics,
+					array(
+						'conversion_tracking_detected_events' => array( 'purchase', 'add_to_cart' ),
+					)
+				),
+				'When detected events are set, they should be reflected in conversion_tracking_detected_events.',
+			),
+			'when site goals widgets are active'     => array(
+				array(
+					'site_goals_site_settings' => array(
+						'activeWidgets' => array( 'ecommerce', 'lead' ),
+					),
+				),
+				array_merge(
+					array(
+						'audseg_setup_completed'   => false,
+						'audseg_audience_count'    => 0,
+						'analytics_adsense_linked' => false,
+					),
+					$default_new_metrics,
+					array(
+						'site_goals_widgets' => array( 'ecommerce', 'lead' ),
+					)
+				),
+				'When site goals widgets are active, they should be reflected in site_goals_widgets.',
+			),
+			'when custom dimensions are available'   => array(
+				array(
+					'analytics_settings' => array(
+						'availableCustomDimensions' => array( 'googlesitekit_post_type', 'googlesitekit_post_author' ),
+					),
+				),
+				array_merge(
+					array(
+						'audseg_setup_completed'   => false,
+						'audseg_audience_count'    => 0,
+						'analytics_adsense_linked' => false,
+					),
+					$default_new_metrics,
+					array(
+						'custom_dimensions' => array( 'googlesitekit_post_type', 'googlesitekit_post_author' ),
+					)
+				),
+				'When custom dimensions are available, their slugs should be reflected in custom_dimensions.',
+			),
+			'when availableCustomDimensions is null' => array(
+				array(
+					'analytics_settings' => array(
+						'availableCustomDimensions' => null,
+					),
+				),
+				array_merge(
+					array(
+						'audseg_setup_completed'   => false,
+						'audseg_audience_count'    => 0,
+						'analytics_adsense_linked' => false,
+					),
+					$default_new_metrics
+				),
+				'When availableCustomDimensions is null, custom_dimensions should default to an empty array.',
 			),
 		);
 	}
