@@ -53,7 +53,6 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<ButtonEdit
-			select={ select }
 			attributes={ attributes }
 			setAttributes={ setAttributes }
 			buttonLabel={

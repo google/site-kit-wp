@@ -24,6 +24,7 @@ use Google\Site_Kit\Core\Util\Block_Support;
  */
 class Subscribe_With_Google_Block {
 	use Block_Button_Trait;
+
 	/**
 	 * Context instance.
 	 *
