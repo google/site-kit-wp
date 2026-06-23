@@ -33,7 +33,6 @@ import {
 } from 'googlesitekit-data';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { CORE_USER } from './constants';
 const { clearActionError, setErrorForAction } = errorStoreActions;
 
@@ -90,33 +89,30 @@ const baseActions = {
 	 *
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	saveInitialSetupSettings: createValidatedAction(
-		() => {},
-		function* () {
-			const registry = yield commonActions.getRegistry();
+	*saveInitialSetupSettings() {
+		const registry = yield commonActions.getRegistry();
 
-			yield clearActionError( 'saveInitialSetupSettings' );
+		yield clearActionError( 'saveInitialSetupSettings' );
 
-			const initialSetupSettings =
-				registry.select( CORE_USER ).getInitialSetupSettings() || {};
+		const initialSetupSettings =
+			registry.select( CORE_USER ).getInitialSetupSettings() || {};
 
-			invariant(
-				isPlainObject( initialSetupSettings ),
-				'Initial setup settings should be an object.'
+		invariant(
+			isPlainObject( initialSetupSettings ),
+			'Initial setup settings should be an object.'
+		);
+
+		const { response, error } =
+			yield fetchSaveInitialSetupSettingsStore.actions.fetchSaveInitialSetupSettings(
+				initialSetupSettings
 			);
 
-			const { response, error } =
-				yield fetchSaveInitialSetupSettingsStore.actions.fetchSaveInitialSetupSettings(
-					initialSetupSettings
-				);
-
-			if ( error ) {
-				yield setErrorForAction( error, 'saveInitialSetupSettings' );
-			}
-
-			return { response, error };
+		if ( error ) {
+			yield setErrorForAction( error, 'saveInitialSetupSettings' );
 		}
-	),
+
+		return { response, error };
+	},
 
 	/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
 	/**

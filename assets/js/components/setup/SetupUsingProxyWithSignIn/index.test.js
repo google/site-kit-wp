@@ -857,25 +857,6 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 				{ body: { success: true } }
 			);
 
-			fetchMock.getOnce(
-				new RegExp(
-					'^/google-site-kit/v1/core/user/data/authentication'
-				),
-				{
-					body: {
-						authenticated: true,
-						requiredScopes: [
-							'https://www.googleapis.com/auth/analytics.readonly',
-						],
-						grantedScopes: [],
-						unsatisfiedScopes: [
-							'https://www.googleapis.com/auth/analytics.readonly',
-						],
-						needsReauthentication: true,
-					},
-				}
-			);
-
 			registry
 				.dispatch( CORE_FORMS )
 				.setValues( ANALYTICS_NOTICE_FORM_NAME, {
@@ -935,25 +916,6 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 				body: { settings: { isAnalyticsSetupComplete: false } },
 			} );
 
-			fetchMock.getOnce(
-				new RegExp(
-					'^/google-site-kit/v1/core/user/data/authentication'
-				),
-				{
-					body: {
-						authenticated: true,
-						requiredScopes: [
-							'https://www.googleapis.com/auth/analytics.readonly',
-						],
-						grantedScopes: [],
-						unsatisfiedScopes: [
-							'https://www.googleapis.com/auth/analytics.readonly',
-						],
-						needsReauthentication: true,
-					},
-				}
-			);
-
 			registry
 				.dispatch( CORE_FORMS )
 				.setValues( ANALYTICS_NOTICE_FORM_NAME, {
@@ -983,18 +945,33 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 				).toBeInTheDocument();
 			} );
 
+			expect( global.location.assign ).toHaveBeenCalledTimes( 0 );
+
 			fireEvent.click(
 				getByRole( 'button', { name: /retry plugin setup/i } )
 			);
 
-			await act( () =>
-				registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getAdminReauthURL()
-			);
+			const proxySetupURL = registry
+				.select( CORE_SITE )
+				.getProxySetupURL();
+
+			const dashboardURL = registry
+				.select( CORE_SITE )
+				.getAdminURL( 'googlesitekit-dashboard', {
+					slug: MODULE_SLUG_ANALYTICS_4,
+					reAuth: true,
+					showProgress: true,
+				} );
+
+			const expectedURL = addQueryArgs( proxySetupURL, {
+				redirect: dashboardURL,
+			} );
 
 			await waitFor( () => {
-				expect( global.location.assign ).toHaveBeenCalled();
+				expect( global.location.assign ).toHaveBeenCalledTimes( 1 );
+				expect( global.location.assign ).toHaveBeenCalledWith(
+					expectedURL
+				);
 			} );
 		} );
 

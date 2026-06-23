@@ -115,32 +115,32 @@ export default function SetupUsingProxyWithSignIn() {
 			MODULE_SLUG_ANALYTICS_4
 		);
 
-		if ( ! error ) {
-			await trackEvent(
-				`${ viewContext }_setup`,
-				setupFlowRefreshEnabled
-					? 'setup_flow_v3_start_with_analytics'
-					: 'start_setup_with_analytics'
-			);
-
-			moduleReauthURL = response.moduleReauthURL;
-
-			if ( setupFlowRefreshEnabled ) {
-				moduleReauthURL = addQueryArgs( moduleReauthURL, {
-					showProgress: true,
-				} );
-
-				setIsAnalyticsSetupComplete( false );
-
-				const { error: saveInitialSetupSettingsError } =
-					await saveInitialSetupSettings();
-
-				if ( saveInitialSetupSettingsError ) {
-					throw saveInitialSetupSettingsError;
-				}
-			}
-		} else {
+		if ( error ) {
 			throw error;
+		}
+
+		await trackEvent(
+			`${ viewContext }_setup`,
+			setupFlowRefreshEnabled
+				? 'setup_flow_v3_start_with_analytics'
+				: 'start_setup_with_analytics'
+		);
+
+		moduleReauthURL = response.moduleReauthURL;
+
+		if ( setupFlowRefreshEnabled ) {
+			moduleReauthURL = addQueryArgs( moduleReauthURL, {
+				showProgress: true,
+			} );
+
+			setIsAnalyticsSetupComplete( false );
+
+			const { error: saveInitialSetupSettingsError } =
+				await saveInitialSetupSettings();
+
+			if ( saveInitialSetupSettingsError ) {
+				throw saveInitialSetupSettingsError;
+			}
 		}
 
 		return moduleReauthURL;
