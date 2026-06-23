@@ -108,6 +108,7 @@ const AudienceSegmentationSetupErrorWidget: FC<
 				{ __( 'Learn more', 'google-site-kit' ) }
 			</Link>
 		),
+		br: <br />,
 	} ) as ReactNode;
 
 	return (

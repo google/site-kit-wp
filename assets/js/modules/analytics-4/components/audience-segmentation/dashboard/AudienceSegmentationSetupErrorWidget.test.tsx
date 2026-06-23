@@ -43,21 +43,6 @@ const MockWidget: FC< {
 	return <div className={ className }>{ children }</div>;
 };
 
-function normalizeTextContent( text = '' ) {
-	return text
-		.replace( /<[^>]+>/g, ' ' )
-		.replace( /\s+/g, ' ' )
-		.trim();
-}
-
-function getVisibleDescriptionText( descriptionText: string ) {
-	return normalizeTextContent(
-		descriptionText
-			.replace( '<br />', ' ' )
-			.replace( '<a>Learn more</a>', 'Learn more' )
-	);
-}
-
 describe( 'AudienceSegmentationSetupErrorWidget', () => {
 	let registry: WPDataRegistry;
 
@@ -78,8 +63,7 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 			onDismiss: jest.fn(),
 			expectedTitle: 'Creating visitor groups failed',
 			expectedDescription:
-				'It seems that you don’t have the required permissions to create visitor groups. You can contact your administrator and ask for Analytics write permissions and then retry. <a>Learn more</a>',
-			expectsLearnMoreLink: true,
+				'It seems that you don’t have the required permissions to create visitor groups. You can contact your administrator and ask for Analytics write permissions and then retry. Learn more',
 		},
 		{
 			testName: 'audience creation general error',
@@ -92,8 +76,7 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 			onDismiss: jest.fn(),
 			expectedTitle: 'Creating visitor groups failed',
 			expectedDescription:
-				'To create your audience groups we’ll need to update your Analytics property which failed during setup. <a>Learn more</a>',
-			expectsLearnMoreLink: true,
+				'To create your audience groups we’ll need to update your Analytics property which failed during setup. Learn more',
 		},
 		{
 			testName: 'visitor groups setup permissions error',
@@ -106,8 +89,7 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 			onDismiss: jest.fn(),
 			expectedTitle: 'Visitor groups setup failed',
 			expectedDescription:
-				'It seems that you don’t have the required permissions to set up visitor groups.<br />You can contact your administrator. <a>Learn more</a>',
-			expectsLearnMoreLink: false,
+				'It seems that you don’t have the required permissions to set up visitor groups.You can contact your administrator. Learn more',
 		},
 		{
 			testName: 'visitor groups setup general error',
@@ -120,8 +102,7 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 			onDismiss: jest.fn(),
 			expectedTitle: 'Visitor groups setup failed',
 			expectedDescription:
-				'An error occurred while setting up visitor groups, please try again. <a>Learn more</a>',
-			expectsLearnMoreLink: true,
+				'An error occurred while setting up visitor groups, please try again. Learn more',
 		},
 	] )(
 		'renders the $testName variant',
@@ -131,13 +112,12 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 			onDismiss,
 			expectedTitle,
 			expectedDescription,
-			expectsLearnMoreLink,
 		} ) => {
 			const expectedHelpURL = registry
 				.select( CORE_SITE )
 				.getDocumentationLinkURL( 'visitor-groups' );
 
-			const { container, getByRole, getByText, queryByRole } = render(
+			const { container, getByRole, getByText } = render(
 				<AudienceSegmentationSetupErrorWidget
 					Widget={ MockWidget }
 					errors={ errors }
@@ -154,23 +134,12 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 				'.googlesitekit-notice__description'
 			);
 			expect( description ).toBeInTheDocument();
-			expect(
-				normalizeTextContent( description?.textContent )
-			).toContain( getVisibleDescriptionText( expectedDescription ) );
+			expect( description ).toHaveTextContent( expectedDescription );
 
-			if ( expectsLearnMoreLink ) {
-				const learnMoreLink = getByRole( 'link', {
-					name: /learn more/i,
-				} );
-				expect( learnMoreLink ).toHaveAttribute(
-					'href',
-					expectedHelpURL
-				);
-			} else {
-				expect(
-					queryByRole( 'link', { name: /learn more/i } )
-				).not.toBeInTheDocument();
-			}
+			const learnMoreLink = getByRole( 'link', {
+				name: /learn more/i,
+			} );
+			expect( learnMoreLink ).toHaveAttribute( 'href', expectedHelpURL );
 
 			expect(
 				getByRole( 'button', { name: 'Retry' } )
