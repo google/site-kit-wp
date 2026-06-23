@@ -1,0 +1,194 @@
+/**
+ * PDFTable: shared table for PDF report widgets (@react-pdf/renderer).
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import { StyleSheet, Text, View } from '@react-pdf/renderer';
+import { ReactElement, ReactNode } from 'react';
+
+/**
+ * Internal dependencies
+ */
+import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
+
+const COLORS = {
+	text: '#161b18',
+	divider: '#ebeef0',
+};
+
+const ROW_PADDING_HORIZONTAL = 12;
+
+const headerTextStyles = {
+	fontFamily: PDF_FONT_FAMILY_TEXT,
+	color: COLORS.text,
+	fontSize: 7,
+	fontWeight: 500,
+	lineHeight: 1.14,
+	letterSpacing: -0.05,
+};
+
+const bodyTextStyles = {
+	fontFamily: PDF_FONT_FAMILY_TEXT,
+	color: COLORS.text,
+	fontSize: 7,
+	lineHeight: 1.43,
+	letterSpacing: 0.125,
+};
+
+const styles = StyleSheet.create( {
+	headerRow: {
+		flexDirection: 'row',
+		columnGap: 20,
+		borderBottomWidth: 1,
+		borderBottomColor: COLORS.divider,
+		paddingBottom: 8,
+		paddingHorizontal: ROW_PADDING_HORIZONTAL,
+	},
+	bodyRow: {
+		paddingHorizontal: ROW_PADDING_HORIZONTAL,
+	},
+	bodyRowContent: {
+		flexDirection: 'row',
+		columnGap: 20,
+		alignItems: 'flex-start',
+		borderBottomWidth: 1,
+		borderBottomColor: COLORS.divider,
+		paddingVertical: 4,
+	},
+	bodyRowContentLast: {
+		borderBottomWidth: 0,
+	},
+	headerText: {
+		...headerTextStyles,
+	},
+	headerTextRight: {
+		...headerTextStyles,
+		textAlign: 'right',
+	},
+	bodyText: {
+		...bodyTextStyles,
+	},
+	bodyTextRight: {
+		...bodyTextStyles,
+		textAlign: 'right',
+	},
+} );
+
+export interface PDFTableColumn< Row > {
+	/** Column heading rendered in the header row. */
+	header: string;
+	/** Cell width, such as `'40%'` or a point value. Defaults to an equal share of the row. */
+	width?: number | string;
+	/** Text alignment for the header and cells. Defaults to left. */
+	align?: 'left' | 'right';
+	/** Renders custom cell content, used instead of format when a column sets both. */
+	cell?: ( row: Row ) => ReactNode;
+	/** Returns the cell text, which the table renders as a single line of `<Text>`. */
+	format?: ( row: Row ) => string;
+}
+
+export interface PDFTableProps< Row > {
+	/** Column definitions in the order they appear. */
+	columns: Array< PDFTableColumn< Row > >;
+	/** The rows of data. Each row renders one cell per column, from the column's `cell` or `format`. */
+	rows: Row[];
+}
+
+/**
+ * Builds the style for one column cell.
+ *
+ * Returns a fixed width when the column sets one, or an equal share of the row
+ * when it does not.
+ *
+ * @since n.e.x.t
+ *
+ * @param column Column definition for the cell.
+ * @return The width or flex style for the cell.
+ */
+function getCellStyle< Row >( column: PDFTableColumn< Row > ) {
+	return column.width !== undefined ? { width: column.width } : { flex: 1 };
+}
+
+// `FC` can't take the generic `Row` type, so PDFTable is a function declaration
+// instead of an `FC< Props >` component.
+export default function PDFTable< Row >( {
+	columns,
+	rows,
+}: PDFTableProps< Row > ): ReactElement {
+	return (
+		<View>
+			<View style={ styles.headerRow }>
+				{ columns.map( ( column, columnIndex ) => (
+					<View key={ columnIndex } style={ getCellStyle( column ) }>
+						<Text
+							style={
+								column.align === 'right'
+									? styles.headerTextRight
+									: styles.headerText
+							}
+						>
+							{ column.header }
+						</Text>
+					</View>
+				) ) }
+			</View>
+			{ rows.map( ( row, rowIndex ) => {
+				const isLastRow = rowIndex === rows.length - 1;
+
+				return (
+					<View key={ rowIndex } style={ styles.bodyRow }>
+						<View
+							style={
+								isLastRow
+									? [
+											styles.bodyRowContent,
+											styles.bodyRowContentLast,
+									  ]
+									: styles.bodyRowContent
+							}
+						>
+							{ columns.map( ( column, columnIndex ) => (
+								<View
+									key={ columnIndex }
+									style={ getCellStyle( column ) }
+								>
+									{ column.cell ? (
+										column.cell( row )
+									) : (
+										<Text
+											style={
+												column.align === 'right'
+													? styles.bodyTextRight
+													: styles.bodyText
+											}
+										>
+											{ column.format
+												? column.format( row )
+												: '' }
+										</Text>
+									) }
+								</View>
+							) ) }
+						</View>
+					</View>
+				);
+			} ) }
+		</View>
+	);
+}

@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Expirables;
 
@@ -74,8 +72,8 @@ class REST_Expirable_Items_ControllerTest extends TestCase {
 
 		$this->controller->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ), 'Controller should register expirable items REST routes.' );
+		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ), 'Controller should register expirable items preload paths.' );
 	}
 
 	public function test_get_expirable_items() {
@@ -93,9 +91,9 @@ class REST_Expirable_Items_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
-		$this->assertEqualsWithDelta( time() + 100, $data['foo'], 2 );
-		$this->assertEqualsWithDelta( time() + 100, $data['bar'], 2 );
-		$this->assertEqualsWithDelta( time() - 10, $data['baz'], 2 );
+		$this->assertEqualsWithDelta( time() + 100, $data['foo'], 2, 'GET endpoint should return foo timer.' );
+		$this->assertEqualsWithDelta( time() + 100, $data['bar'], 2, 'GET endpoint should return bar timer.' );
+		$this->assertEqualsWithDelta( time() - 10, $data['baz'], 2, 'GET endpoint should return expired baz timer.' );
 	}
 
 	public function test_set_expirable_item_timers() {
@@ -122,8 +120,8 @@ class REST_Expirable_Items_ControllerTest extends TestCase {
 
 		$data = rest_get_server()->dispatch( $request )->get_data();
 
-		$this->assertEqualsWithDelta( time() + 100, $data['foo'], 2 );
-		$this->assertEqualsWithDelta( time() - 10, $data['baz'], 2 );
+		$this->assertEqualsWithDelta( time() + 100, $data['foo'], 2, 'Timer update endpoint should preserve foo timer.' );
+		$this->assertEqualsWithDelta( time() - 10, $data['baz'], 2, 'Timer update endpoint should preserve expired baz timer.' );
 	}
 
 	private function grant_manage_options_permission() {

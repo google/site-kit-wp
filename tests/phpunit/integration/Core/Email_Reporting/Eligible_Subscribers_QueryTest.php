@@ -75,7 +75,11 @@ class Eligible_Subscribers_QueryTest extends TestCase {
 
 		$results = $this->query->get_eligible_users( $current_admin );
 
-		$this->assertEqualSets( array( $other_admin ), wp_list_pluck( $results, 'ID' ) );
+		$this->assertEqualSets(
+			array( $other_admin ),
+			wp_list_pluck( $results, 'ID' ),
+			'Eligible users should exclude the current user.'
+		);
 	}
 
 	public function test_get_eligible_users_includes_shared_roles() {
@@ -95,7 +99,11 @@ class Eligible_Subscribers_QueryTest extends TestCase {
 
 		$results = $this->query->get_eligible_users( $current_admin );
 
-		$this->assertEqualSets( array( $other_admin, $editor ), wp_list_pluck( $results, 'ID' ) );
+		$this->assertEqualSets(
+			array( $other_admin, $editor ),
+			wp_list_pluck( $results, 'ID' ),
+			'Eligible users should include users with shared roles.'
+		);
 	}
 
 	public function test_get_eligible_users_excludes_pagespeed_insights_only_users() {
@@ -184,8 +192,16 @@ class Eligible_Subscribers_QueryTest extends TestCase {
 		$name_results = $this->query->get_eligible_users( $current_admin, array( 'search' => 'display name' ) );
 		$mail_results = $this->query->get_eligible_users( $current_admin, array( 'search' => 'display-search' ) );
 
-		$this->assertEqualSets( array( $name_match_id ), wp_list_pluck( $name_results, 'ID' ) );
-		$this->assertEqualSets( array( $mail_match_id ), wp_list_pluck( $mail_results, 'ID' ) );
+		$this->assertEqualSets(
+			array( $name_match_id ),
+			wp_list_pluck( $name_results, 'ID' ),
+			'Search results should include display name matches.'
+		);
+		$this->assertEqualSets(
+			array( $mail_match_id ),
+			wp_list_pluck( $mail_results, 'ID' ),
+			'Search results should include email matches.'
+		);
 		$this->assertNotContains( $other_user_id, wp_list_pluck( $name_results, 'ID' ), 'Search results should exclude non-matching users.' );
 	}
 
@@ -267,7 +283,7 @@ class Eligible_Subscribers_QueryTest extends TestCase {
 			wp_list_pluck( $results, 'ID' ),
 			'Role-based search should return authenticated admins even when name/email do not match.'
 		);
-		$this->assertNotContains( $editor_id, wp_list_pluck( $results, 'ID' ), 'Administrator role search should not include shared non-admin roles unless they also match name/email.' );
+		$this->assertNotContains( $editor_id, wp_list_pluck( $results, 'ID' ), 'Admin role search should exclude unmatched shared non-admins.' );
 	}
 
 	public function test_get_eligible_users_count_returns_total_matching_users() {
@@ -351,7 +367,8 @@ class Eligible_Subscribers_QueryTest extends TestCase {
 		);
 		$this->assertEqualSets(
 			array( $shared_admin, $shared_editor ),
-			wp_list_pluck( $this->query->get_eligible_users( $current_admin, array( 'per_page' => 20 ) ), 'ID' )
+			wp_list_pluck( $this->query->get_eligible_users( $current_admin, array( 'per_page' => 20 ) ), 'ID' ),
+			'Eligible users should include deduplicated users.'
 		);
 	}
 
@@ -370,7 +387,11 @@ class Eligible_Subscribers_QueryTest extends TestCase {
 
 		$results = $this->query->get_eligible_users( $current_admin );
 
-		$this->assertEqualSets( array( $unsubscribed_user ), wp_list_pluck( $results, 'ID' ) );
+		$this->assertEqualSets(
+			array( $unsubscribed_user ),
+			wp_list_pluck( $results, 'ID' ),
+			'Eligible users should exclude subscribed users.'
+		);
 	}
 
 	private function create_admin_with_token( $login = null, $display_name = null, $email = null ) {

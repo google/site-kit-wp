@@ -39,7 +39,6 @@ import {
 	ANCHOR_ID_SITE_GOALS,
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
-	VIEW_CONTEXT_MAIN_DASHBOARD,
 } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
@@ -67,6 +66,7 @@ import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
 import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { AudienceSelectionPanel } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
 import SiteGoalsIntroModalBanner from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
@@ -137,8 +137,8 @@ export default function DashboardMainApp() {
 
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
+	const viewContext = useViewContext();
 	const viewOnlyDashboard = useViewOnly();
-
 	const breakpoint = useBreakpoint();
 
 	const [ widgetArea, setWidgetArea ] = useQueryArg( 'widgetArea' );
@@ -327,10 +327,7 @@ export default function DashboardMainApp() {
 		).isItemDismissed( INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG );
 		const queuedHeaderNotifications = select(
 			CORE_NOTIFICATIONS
-		).getQueuedNotifications(
-			VIEW_CONTEXT_MAIN_DASHBOARD,
-			NOTIFICATION_GROUPS.DEFAULT
-		);
+		).getQueuedNotifications( viewContext, NOTIFICATION_GROUPS.DEFAULT );
 		const firstHeaderNotificationID =
 			queuedHeaderNotifications?.[ 0 ]?.id || null;
 

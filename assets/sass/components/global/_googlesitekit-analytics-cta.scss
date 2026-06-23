@@ -209,6 +209,11 @@
 				color: $c-utility-on-error-container;
 			}
 
+			.googlesitekit-activate-analytics-cta__title {
+				font-size: $fs-body-md;
+				font-weight: $fw-medium;
+			}
+
 			.googlesitekit-activate-analytics-cta__actions {
 				.googlesitekit-activate-analytics-cta__button--secondary {
 					&.googlesitekit-activate-analytics-cta__dismiss-button--error {
