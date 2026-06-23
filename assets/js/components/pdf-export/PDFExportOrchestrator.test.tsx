@@ -150,7 +150,7 @@ describe( 'PDFExportOrchestrator', () => {
 		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
 		registry.dispatch( CORE_PDF ).setSelection( {
 			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
-			widgetSlugs: [],
+			widgetSlugs: [ 'trafficWidget' ],
 		} );
 
 		renderOrchestrator();
@@ -216,7 +216,7 @@ describe( 'PDFExportOrchestrator', () => {
 		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
 		registry.dispatch( CORE_PDF ).setSelection( {
 			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
-			widgetSlugs: [],
+			widgetSlugs: [ 'trafficWidget' ],
 		} );
 
 		renderOrchestrator();
@@ -243,7 +243,7 @@ describe( 'PDFExportOrchestrator', () => {
 		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
 		registry.dispatch( CORE_PDF ).setSelection( {
 			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
-			widgetSlugs: [],
+			widgetSlugs: [ 'trafficWidget' ],
 		} );
 
 		renderOrchestrator();
@@ -266,7 +266,7 @@ describe( 'PDFExportOrchestrator', () => {
 		registerPDFWidget( 'trafficAreaB', 'trafficWidgetB', succeeding );
 		registry.dispatch( CORE_PDF ).setSelection( {
 			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
-			widgetSlugs: [],
+			widgetSlugs: [ 'trafficWidgetA', 'trafficWidgetB' ],
 		} );
 
 		renderOrchestrator();
@@ -280,6 +280,60 @@ describe( 'PDFExportOrchestrator', () => {
 		expect( pdf ).toHaveBeenCalledTimes( 1 );
 	} );
 
+	it( 'renders the selected widget and skips the deselected widget in the same section', async () => {
+		const selectedGetData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		const deselectedGetData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+
+		// The Content section holds two PDF widgets. The user keeps the first
+		// checked and unchecks the second.
+		const dispatch = registry.dispatch( CORE_WIDGETS );
+		dispatch.registerWidgetArea( 'contentArea', {
+			title: 'Area',
+			pdfTitle: 'Content',
+			style: 'boxes',
+			priority: 1,
+		} );
+		dispatch.assignWidgetArea(
+			'contentArea',
+			CONTEXT_MAIN_DASHBOARD_CONTENT
+		);
+		dispatch.registerWidget( 'selectedWidget', {
+			Component: NullComponent,
+			pdf: { Component: NullComponent, getData: selectedGetData },
+		} );
+		dispatch.assignWidget( 'selectedWidget', 'contentArea' );
+		dispatch.registerWidget( 'deselectedWidget', {
+			Component: NullComponent,
+			pdf: { Component: NullComponent, getData: deselectedGetData },
+		} );
+		dispatch.assignWidget( 'deselectedWidget', 'contentArea' );
+
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_CONTENT ],
+			widgetSlugs: [ 'selectedWidget' ],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => expect( pdf ).toHaveBeenCalled() );
+
+		// The deselected widget is dropped before loading, so only the selected
+		// widget's data loader runs.
+		expect( selectedGetData ).toHaveBeenCalledTimes( 1 );
+		expect( deselectedGetData ).not.toHaveBeenCalled();
+
+		// The report renders the one selected widget and leaves out the
+		// deselected one.
+		const { props } = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
+		expect( props.areas ).toHaveLength( 1 );
+		expect( props.areas[ 0 ].widgets ).toHaveLength( 1 );
+		expect( props.areas[ 0 ].widgets[ 0 ].slug ).toBe( 'selectedWidget' );
+	} );
+
 	it( 'should pass the email reporting golink URL to the report document', async () => {
 		const getData: jest.Mock = jest.fn( () =>
 			Promise.resolve( { data: { totalUsers: 100 } } )
@@ -287,7 +341,7 @@ describe( 'PDFExportOrchestrator', () => {
 		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
 		registry.dispatch( CORE_PDF ).setSelection( {
 			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
-			widgetSlugs: [],
+			widgetSlugs: [ 'trafficWidget' ],
 		} );
 
 		renderOrchestrator();
@@ -309,7 +363,7 @@ describe( 'PDFExportOrchestrator', () => {
 		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
 		registry.dispatch( CORE_PDF ).setSelection( {
 			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
-			widgetSlugs: [],
+			widgetSlugs: [ 'trafficWidget' ],
 		} );
 
 		renderOrchestrator();
@@ -356,7 +410,7 @@ describe( 'PDFExportOrchestrator', () => {
 				CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 				CONTEXT_MAIN_DASHBOARD_CONTENT,
 			],
-			widgetSlugs: [],
+			widgetSlugs: [ 'sharedWidget' ],
 		} );
 
 		renderOrchestrator();
@@ -377,7 +431,7 @@ describe( 'PDFExportOrchestrator', () => {
 		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
 		registry.dispatch( CORE_PDF ).setSelection( {
 			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
-			widgetSlugs: [],
+			widgetSlugs: [ 'trafficWidget' ],
 		} );
 
 		renderOrchestrator();
@@ -402,7 +456,7 @@ describe( 'PDFExportOrchestrator', () => {
 		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
 		registry.dispatch( CORE_PDF ).setSelection( {
 			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
-			widgetSlugs: [],
+			widgetSlugs: [ 'trafficWidget' ],
 		} );
 
 		renderOrchestrator();
@@ -424,7 +478,7 @@ describe( 'PDFExportOrchestrator', () => {
 		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
 		registry.dispatch( CORE_PDF ).setSelection( {
 			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
-			widgetSlugs: [],
+			widgetSlugs: [ 'trafficWidget' ],
 		} );
 
 		( pdf as jest.Mock ).mockReturnValueOnce( {
@@ -453,7 +507,7 @@ describe( 'PDFExportOrchestrator', () => {
 		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
 		registry.dispatch( CORE_PDF ).setSelection( {
 			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
-			widgetSlugs: [],
+			widgetSlugs: [ 'trafficWidget' ],
 		} );
 
 		const controllers = recordExportControllers();
@@ -476,7 +530,7 @@ describe( 'PDFExportOrchestrator', () => {
 		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
 		registry.dispatch( CORE_PDF ).setSelection( {
 			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
-			widgetSlugs: [],
+			widgetSlugs: [ 'trafficWidget' ],
 		} );
 
 		renderOrchestrator();
@@ -499,7 +553,7 @@ describe( 'PDFExportOrchestrator', () => {
 		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
 		registry.dispatch( CORE_PDF ).setSelection( {
 			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
-			widgetSlugs: [],
+			widgetSlugs: [ 'trafficWidget' ],
 		} );
 
 		( pdf as jest.Mock ).mockReturnValueOnce( {
@@ -528,7 +582,7 @@ describe( 'PDFExportOrchestrator', () => {
 		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
 		registry.dispatch( CORE_PDF ).setSelection( {
 			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
-			widgetSlugs: [],
+			widgetSlugs: [ 'trafficWidget' ],
 		} );
 
 		renderOrchestrator();
@@ -555,7 +609,7 @@ describe( 'PDFExportOrchestrator', () => {
 		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
 		registry.dispatch( CORE_PDF ).setSelection( {
 			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
-			widgetSlugs: [],
+			widgetSlugs: [ 'trafficWidget' ],
 		} );
 
 		renderOrchestrator();

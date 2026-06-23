@@ -227,6 +227,10 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 			select( CORE_PDF ).getSelectedContextSlugs() || [],
 		[]
 	);
+	const selectedWidgetSlugs = useSelect(
+		( select: Select ) => select( CORE_PDF ).getSelectedWidgetSlugs() || [],
+		[]
+	);
 	const dates = useSelect(
 		( select: Select ) =>
 			select( CORE_USER ).getDateRangeDates( {
@@ -355,9 +359,9 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 
 				// Discovery: walk the registry inline (the orchestrator owns the
 				// contexts → areas → widgets walk; there is no centralised
-				// PDF-aware selector). `selectedContextSlugs`, `dates` and
-				// `viewableModules` are snapshotted once above; nothing below
-				// re-reads reactive state.
+				// PDF-aware selector). `selectedContextSlugs`,
+				// `selectedWidgetSlugs`, `dates` and `viewableModules` are
+				// snapshotted once above; nothing below re-reads reactive state.
 				const widgetsSelect = (
 					registry as unknown as {
 						select: ( storeName: string ) => {
@@ -381,6 +385,9 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				// slugs already discovered so a shared area is not rendered (and
 				// chipped) twice when multiple of its contexts are selected.
 				const discoveredAreaSlugs = new Set< string >();
+				// An area can hold several PDF widgets. Export only the ones the
+				// user kept checked, not every widget in the area.
+				const selectedWidgetSlugSet = new Set( selectedWidgetSlugs );
 
 				selectedContextSlugs.forEach( ( contextSlug: string ) => {
 					const contextAreas: WidgetArea[] =
@@ -395,7 +402,10 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 							.getWidgets( area.slug, {
 								modules: viewableModules || undefined,
 							} )
-							.filter( hasPDFConfig );
+							.filter( hasPDFConfig )
+							.filter( ( widget ) =>
+								selectedWidgetSlugSet.has( widget.slug )
+							);
 
 						if ( pdfWidgets.length === 0 ) {
 							return;
