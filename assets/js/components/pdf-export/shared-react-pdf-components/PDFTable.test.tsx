@@ -133,7 +133,7 @@ describe( 'PDFTable', () => {
 		expect( json ).toContain( '"flex":1' );
 	} );
 
-	it( 'puts a column gap between the cells', () => {
+	it( 'applies the default column gap of 20 between the cells', () => {
 		const columns: Array< PDFTableColumn< TestRow > > = [
 			{ header: 'Name', format: ( row ) => row.name },
 		];
@@ -143,6 +143,19 @@ describe( 'PDFTable', () => {
 		);
 
 		expect( json ).toContain( '"columnGap":20' );
+	} );
+
+	it( 'uses the columnGap prop instead of the default when it is set', () => {
+		const columns: Array< PDFTableColumn< TestRow > > = [
+			{ header: 'Name', format: ( row ) => row.name },
+		];
+
+		const json = renderJSON(
+			<PDFTable columns={ columns } rows={ rows } columnGap={ 4 } />
+		);
+
+		expect( json ).toContain( '"columnGap":4' );
+		expect( json ).not.toContain( '"columnGap":20' );
 	} );
 
 	it( 'right-aligns the header and cell text when a column sets align to right', () => {
