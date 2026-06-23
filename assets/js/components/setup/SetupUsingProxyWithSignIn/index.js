@@ -24,8 +24,8 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
-import { addQueryArgs } from '@wordpress/url';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
+import { addQueryArgs, getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -37,11 +37,19 @@ import {
 	ANALYTICS_NOTICE_CHECKBOX,
 	ANALYTICS_NOTICE_FORM_NAME,
 } from '@/js/components/setup/constants';
+import AnalyticsActivationErrorNotification, {
+	ANALYTICS_ACTIVATION_ERROR_NOTIFICATION,
+} from '@/js/components/setup/SetupUsingProxyWithSignIn/AnalyticsActivationErrorNotification';
 import { setItem } from '@/js/googlesitekit/api/cache';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 import useForwardableParams from '@/js/hooks/useForwardableParams';
@@ -51,7 +59,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { trackEvent } from '@/js/util';
 import Actions from './Actions';
 import Header from './Header';
-import ResetNotice from './ResetNotice';
+import ResetNotice, { RESET_SUCCESS_NOTIFICATION } from './ResetNotice';
 import Splash from './Splash';
 
 async function saveSetupSettings( {
@@ -84,6 +92,7 @@ export default function SetupUsingProxyWithSignIn() {
 		setIsAnalyticsSetupComplete,
 		setHasSitePurposeAnswer,
 	} = useDispatch( CORE_USER );
+	const { registerNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const proxySetupURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxySetupURL()
@@ -102,35 +111,94 @@ export default function SetupUsingProxyWithSignIn() {
 		)
 	);
 
+	const showResetNotice =
+		getQueryArg( location.href, 'notification' ) === 'reset_success';
+
+	useEffect( () => {
+		if ( showResetNotice ) {
+			registerNotification( RESET_SUCCESS_NOTIFICATION, {
+				areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
+				Component: ResetNotice,
+				isDismissible: false,
+				priority: PRIORITY.INFO,
+				viewContexts: [ viewContext ],
+			} );
+		}
+	}, [ registerNotification, showResetNotice, viewContext ] );
+
+	const setupAnalytics = useCallback( async () => {
+		let moduleReauthURL;
+
+		const { error, response } = await activateModule(
+			MODULE_SLUG_ANALYTICS_4
+		);
+
+		if ( error ) {
+			throw error;
+		}
+
+		await trackEvent(
+			`${ viewContext }_setup`,
+			setupFlowRefreshEnabled
+				? 'setup_flow_v3_start_with_analytics'
+				: 'start_setup_with_analytics'
+		);
+
+		moduleReauthURL = response.moduleReauthURL;
+
+		if ( setupFlowRefreshEnabled ) {
+			moduleReauthURL = addQueryArgs( moduleReauthURL, {
+				showProgress: true,
+			} );
+
+			setIsAnalyticsSetupComplete( false );
+
+			const { error: saveInitialSetupSettingsError } =
+				await saveInitialSetupSettings();
+
+			if ( saveInitialSetupSettingsError ) {
+				throw saveInitialSetupSettingsError;
+			}
+		}
+
+		return moduleReauthURL;
+	}, [
+		activateModule,
+		saveInitialSetupSettings,
+		setIsAnalyticsSetupComplete,
+		setupFlowRefreshEnabled,
+		viewContext,
+	] );
+
 	const onButtonClick = useCallback(
 		async ( event ) => {
 			event.preventDefault();
 
 			let moduleReauthURL;
-			let shouldSaveInitialSetupSettings = false;
+			const shouldSaveInitialSetupSettings = false;
 
 			if ( connectAnalytics ) {
-				const { error, response } = await activateModule(
-					MODULE_SLUG_ANALYTICS_4
-				);
+				try {
+					moduleReauthURL = await setupAnalytics();
+				} catch {
+					if ( setupFlowRefreshPhase4Enabled ) {
+						registerNotification(
+							ANALYTICS_ACTIVATION_ERROR_NOTIFICATION,
+							{
+								Component: () => (
+									<AnalyticsActivationErrorNotification
+										onRetry={ onButtonClick }
+									/>
+								),
+								priority: PRIORITY.ERROR_HIGH,
+								areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
+								viewContexts: [ viewContext ],
+								isDismissible: false,
+								featureFlag: 'setupFlowRefreshPhase4',
+							}
+						);
 
-				if ( ! error ) {
-					await trackEvent(
-						`${ viewContext }_setup`,
-						setupFlowRefreshEnabled
-							? 'setup_flow_v3_start_with_analytics'
-							: 'start_setup_with_analytics'
-					);
-
-					moduleReauthURL = response.moduleReauthURL;
-
-					if ( setupFlowRefreshEnabled ) {
-						moduleReauthURL = addQueryArgs( moduleReauthURL, {
-							showProgress: true,
-						} );
-
-						setIsAnalyticsSetupComplete( false );
-						shouldSaveInitialSetupSettings = true;
+						return;
 					}
 				}
 			}
@@ -198,14 +266,12 @@ export default function SetupUsingProxyWithSignIn() {
 			proxySetupURL,
 			postAuthDashboardURL,
 			isConnected,
-			activateModule,
+			setupAnalytics,
 			forwardableParams,
 			viewContext,
+			registerNotification,
 			setupFlowRefreshEnabled,
 			setupFlowRefreshPhase4Enabled,
-			saveInitialSetupSettings,
-			setIsAnalyticsSetupComplete,
-			setHasSitePurposeAnswer,
 			navigateTo,
 		]
 	);
@@ -244,7 +310,8 @@ export default function SetupUsingProxyWithSignIn() {
 					<Grid>
 						<Row>
 							<Cell size={ 12 }>
-								<ResetNotice />
+								{ showResetNotice && <ResetNotice /> }
+								{ showResetNotice && <br /> }
 								{ splashSetupContent }
 							</Cell>
 						</Row>

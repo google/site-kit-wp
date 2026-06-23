@@ -70,17 +70,7 @@ describe( 'core/user initial setup settings', () => {
 					.finishResolution( 'getInitialSetupSettings', [] );
 			} );
 
-			it( 'should throw if settings is not an object', () => {
-				expect( () =>
-					registry
-						.dispatch( CORE_USER )
-						.saveInitialSetupSettings( 'invalid' )
-				).toThrow(
-					'Initial setup settings should be an object to save.'
-				);
-			} );
-
-			it( 'should save settings from the store when no arguments are provided', async () => {
+			it( 'should save settings from the store', async () => {
 				const existingSettings = {
 					isAnalyticsSetupComplete: false,
 				};
@@ -126,78 +116,32 @@ describe( 'core/user initial setup settings', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
-			it( 'should save provided settings and update the store', async () => {
-				const settingsToSave = {
-					isAnalyticsSetupComplete: false,
-				};
-
-				fetchMock.postOnce( initialSetupSettingsEndpoint, {
-					body: settingsToSave,
-					status: 200,
-				} );
-
-				await registry
-					.dispatch( CORE_USER )
-					.saveInitialSetupSettings( settingsToSave );
-
-				expect( fetchMock ).toHaveFetched(
-					initialSetupSettingsEndpoint,
-					{
-						body: {
-							data: {
-								settings: settingsToSave,
-							},
-						},
-					}
-				);
-
-				expect( store.getState().initialSetupSettings ).toEqual(
-					settingsToSave
-				);
-			} );
-
 			it( 'should dispatch an error if the request fails', async () => {
-				const existingSettings = {
-					isAnalyticsSetupComplete: false,
-				};
-				const settingsToSave = {
-					isAnalyticsSetupComplete: true,
-				};
-				const finalSettings = {
-					...existingSettings,
-					...settingsToSave,
-				};
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
 
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetInitialSetupSettings( existingSettings );
-
-				registry
-					.dispatch( CORE_USER )
-					.finishResolution( 'getInitialSetupSettings', [] );
-
 				fetchMock.post( initialSetupSettingsEndpoint, {
 					body: response,
 					status: 500,
 				} );
 
+				registry
+					.dispatch( CORE_USER )
+					.setIsAnalyticsSetupComplete( true );
+
 				const { error } = await registry
 					.dispatch( CORE_USER )
-					.saveInitialSetupSettings( settingsToSave );
+					.saveInitialSetupSettings();
 
 				expect( console ).toHaveErrored();
 				expect( error ).toEqual( response );
 				expect(
 					registry
 						.select( CORE_USER )
-						.getErrorForAction( 'saveInitialSetupSettings', [
-							finalSettings,
-						] )
+						.getErrorForAction( 'saveInitialSetupSettings' )
 				).toMatchObject( response );
 			} );
 		} );
