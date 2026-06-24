@@ -1,5 +1,5 @@
 /**
- * Shared pie chart colour palette for the PDF export (@react-pdf/renderer).
+ * Shared colors for the PDF report's donut breakdowns.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -17,13 +17,14 @@
  */
 
 /**
- * Ordered colors for the PDF report's donut breakdowns.
+ * The colors for the donut breakdowns, in slice order.
  *
- * The PDF passes this array to Google Charts as the donut's `colors` option and
- * reuses the same color for each legend swatch, so a segment and its legend
- * entry always match. The colors and their order mirror the dashboard's All
- * Traffic widget, so the same dimension reads the same in both surfaces. Keep
- * this list in step with the dashboard palette in `usePieChartSlices`.
+ * The PDF report sends this list to Google Charts as the donut's `colors`
+ * option, and it gives each legend swatch the same color. So a donut segment
+ * and its legend row always share one color. The colors and their order are the
+ * same as the dashboard's All Traffic widget, so each dimension looks the same
+ * in the dashboard and the PDF. Keep this list the same as the dashboard colors
+ * in `usePieChartSlices`.
  *
  * @since n.e.x.t
  */

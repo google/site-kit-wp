@@ -40,28 +40,46 @@ import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDime
 import {
 	CHANNELS_BREAKDOWN_REPORT_ID,
 	DEVICES_BREAKDOWN_REPORT_ID,
+	LOCATIONS_BREAKDOWN_REPORT_ID,
 	getBreakdownReportArgs,
 	getGraphReportArgs,
 	getTotalsReportArgs,
-	LOCATIONS_BREAKDOWN_REPORT_ID,
 } from './reportOptions';
 
-// Matches the dashboard's All Visitors line colour (the default graph colour).
+/**
+ * The same color as the dashboard's All Visitors line, the default graph color.
+ */
 const LINE_CHART_COLOR = '#3c7251';
 const LINE_CHART_WIDTH = 540;
 const LINE_CHART_HEIGHT = 200;
 
-// Matches the dashboard's All Traffic donut hole.
-const BREAKDOWN_PIE_HOLE = 0.6;
-// Square render size, in PDF points, for each breakdown donut.
+/**
+ * The size of the hole in the middle of each breakdown donut, from 0 to 1.
+ */
+const BREAKDOWN_PIE_HOLE = 0.56;
+
+/**
+ * The width and height of each breakdown donut, in PDF points.
+ */
 const BREAKDOWN_CHART_SIZE = 72.85;
-// Top slices kept per breakdown before the rest roll into one "Others" slice,
-// matching the dashboard's All Traffic pie.
+
+/**
+ * How many times bigger than its display size each donut renders, so its curved
+ * edges stay sharp in the PDF.
+ */
+const BREAKDOWN_CHART_SCALE_FACTOR = 4;
+
+/**
+ * How many top slices to keep for each breakdown. The rest combine into one
+ * "Others" slice, the same as the dashboard's All Traffic pie.
+ */
 const BREAKDOWN_MAX_SLICES = 5;
 
-// The three GA4 breakdowns shown below the line chart, in render order. Each
-// pairs the dashboard's dimension with a distinct report ID, so the three
-// reports resolve and cache independently.
+/**
+ * The three GA4 breakdowns shown below the line chart, in the order they
+ * render. Each pairs a dashboard dimension with its own report ID, so the three
+ * reports load and cache on their own.
+ */
 const BREAKDOWNS = [
 	{
 		dimensionName: 'sessionDefaultChannelGrouping',
@@ -245,7 +263,7 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 		series: {
 			0: {
 				color: LINE_CHART_COLOR,
-				lineWidth: 3,
+				lineWidth: 5,
 				targetAxisIndex: 1,
 			},
 		},
@@ -256,9 +274,9 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 /**
  * Builds the Google Charts `DataTable` for one breakdown donut.
  *
- * One row per legend entry: the segment label and its share of the total. The
- * shares are relative, so the donut draws the same slices whether the values
- * are fractions or raw counts.
+ * One row per legend entry, with the segment label and its share of the total.
+ * The shares are proportions, so the donut draws the same slices whether the
+ * values are fractions or whole counts.
  *
  * @since n.e.x.t
  *
@@ -286,9 +304,9 @@ function buildBreakdownChartDataTable( rows: BreakdownRow[] ): object {
 /**
  * Builds Google Charts options for a breakdown donut.
  *
- * Mirrors the dashboard's All Traffic donut: the same hole size and the shared
- * color palette, with the slice labels, legend, and interactivity stripped so
- * the rasterised image is a clean donut.
+ * Uses the same hole size and colors as the dashboard's All Traffic donut, with
+ * the slice labels, legend, and clicks removed, so the rendered image is a
+ * clean donut.
  *
  * @since n.e.x.t
  *
@@ -298,7 +316,7 @@ function getBreakdownChartOptions(): object {
 	return {
 		pieHole: BREAKDOWN_PIE_HOLE,
 		colors: PIE_CHART_COLORS,
-		// JPEG output has no transparency, so a transparent background renders
+		// JPEG output has no transparency, so a transparent background turns
 		// black. Fill it white to match the card behind the donut.
 		backgroundColor: '#ffffff',
 		chartArea: {
@@ -316,15 +334,12 @@ function getBreakdownChartOptions(): object {
 }
 
 /**
- * Builds the legend rows and rasterised donut for one breakdown.
+ * Builds the legend rows and the donut image for one breakdown.
  *
- * Collapses the report to the top slices plus an "Others" slice with the
- * dashboard's own helper, so the slices and their order match the dashboard.
- * Each breakdown is isolated: a missing report, empty data, or a failed render
- * resolves to `{ rows: null }` so the component shows its "Data unavailable"
- * placeholder for that tile while the others still render. An abort raised
- * mid-render is swallowed here too, and the caller re-checks the signal after
- * all breakdowns settle, so cancelling still ends the export.
+ * Uses the dashboard's helper, so the slices and their order match the
+ * dashboard: the top slices plus an "Others" slice. Returns `{ rows: null }`
+ * on a missing report, empty data, or a failed or cancelled render, so that
+ * tile shows its "Data unavailable" placeholder while the other tiles render.
  *
  * @since n.e.x.t
  *
@@ -347,7 +362,7 @@ async function loadBreakdownChart(
 			withOthers: true,
 		} );
 
-		// The first row is the header; the rest are `[ label, percentage ]`.
+		// The first row is the header. The rest are `[ label, percentage ]`.
 		const rows: BreakdownRow[] = dataMap
 			.slice( 1 )
 			.map( ( row: [ string, number ] ) => ( {
@@ -365,6 +380,7 @@ async function loadBreakdownChart(
 			options: getBreakdownChartOptions(),
 			width: BREAKDOWN_CHART_SIZE,
 			height: BREAKDOWN_CHART_SIZE,
+			scaleFactor: BREAKDOWN_CHART_SCALE_FACTOR,
 			signal,
 		} );
 
@@ -375,18 +391,13 @@ async function loadBreakdownChart(
 }
 
 /**
- * Loads the GA4 reports and rasterised charts for the All Visitors PDF widget.
+ * Loads the GA4 reports and chart images for the All Visitors PDF widget.
  *
- * Resolves the totals, date-dimension graph, and three breakdown reports
- * (channels, locations, devices) in parallel via the registry, stopping early
- * between awaits when the supplied signal is aborted. Forwards the signal to
- * each report request, so cancelling the export also stops any request that is
- * still running. Invalidates the resolutions left by earlier runs, so a rerun
- * after a cancelled or failed export fetches the reports again. Once the
- * reports resolve it loads Google Charts offscreen and rasterises the All
- * Visitors line chart and the three breakdown donuts to JPEG data URIs for
- * embedding in the PDF. Each breakdown is isolated: its tile falls back to a
- * placeholder when its report or render fails, while the rest still render.
+ * Fetches the totals, graph, and three breakdown reports (channels, locations,
+ * and devices) at the same time, and stops early when the signal is aborted.
+ * Then it draws the line chart and the three donuts as JPEG data URIs for the
+ * PDF. If one breakdown's report or render fails, its tile falls back to a
+ * placeholder and the other tiles still render.
  *
  * @since 1.181.0
  * @since n.e.x.t Also loads the channel, location, and device breakdown donuts.
@@ -475,7 +486,7 @@ export default async function getPDFData( {
 
 	await ensureGoogleChartsLoaded();
 
-	// Cancelling during loading stops here, before any chart is rasterised.
+	// Cancelling during loading stops here, before any chart is drawn.
 	if ( signal.aborted ) {
 		return { data: null };
 	}
@@ -492,7 +503,9 @@ export default async function getPDFData( {
 	} );
 
 	const [ channel, location, device ] = await Promise.all(
-		breakdownReports.map( ( report ) => loadBreakdownChart( report, signal ) )
+		breakdownReports.map( ( report ) =>
+			loadBreakdownChart( report, signal )
+		)
 	);
 
 	if ( signal.aborted ) {

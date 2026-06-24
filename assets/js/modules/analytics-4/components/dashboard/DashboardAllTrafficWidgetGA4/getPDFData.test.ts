@@ -42,10 +42,10 @@ import getPDFData, { GetPDFDataParams } from './getPDFData';
 import {
 	CHANNELS_BREAKDOWN_REPORT_ID,
 	DEVICES_BREAKDOWN_REPORT_ID,
+	LOCATIONS_BREAKDOWN_REPORT_ID,
 	getBreakdownReportArgs,
 	getGraphReportArgs,
 	getTotalsReportArgs,
-	LOCATIONS_BREAKDOWN_REPORT_ID,
 } from './reportOptions';
 
 jest.mock( '@/js/components/pdf-export/ensure-google-charts-loaded', () => ( {
@@ -55,8 +55,8 @@ jest.mock( '@/js/components/pdf-export/ensure-google-charts-loaded', () => ( {
 jest.mock(
 	'@/js/components/pdf-export/render-google-chart-to-data-uri',
 	() => ( {
-		// Keep the real `getVisualization` (used by `getPDFData` to build the
-		// DataTable); only the default rasteriser export is mocked.
+		// Keep the real `getVisualization`, which `getPDFData` uses to build the
+		// DataTable. Mock only the default export that renders charts to images.
 		...jest.requireActual(
 			'@/js/components/pdf-export/render-google-chart-to-data-uri'
 		),
@@ -143,7 +143,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			.mockReset()
 			.mockResolvedValue( LINE_CHART_DATA_URI );
 
-		// `getPDFData` builds each chart's data via `new google.visualization.DataTable()`.
+		// `getPDFData` builds each chart's data with `new google.visualization.DataTable()`.
 		dataTable = { addColumn: jest.fn(), addRows: jest.fn() };
 		setGoogle( {
 			visualization: { DataTable: jest.fn( () => dataTable ) },
@@ -245,7 +245,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
-	it( 'should load Google Charts and rasterise the line chart with the expected DataTable and options', async () => {
+	it( 'should load Google Charts and render the line chart with the expected DataTable and options', async () => {
 		const totalsReport = {
 			totals: [ { metricValues: [ { value: '100' } ] } ],
 		};
@@ -276,7 +276,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 				} ),
 			} );
 		// Empty breakdown reports leave the donuts unrendered, so the only
-		// rasterised chart in this test is the line chart.
+		// rendered chart in this test is the line chart.
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport( buildBreakdownReport( [] ), {
@@ -327,7 +327,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			colors: [ '#3c7251' ],
 			legend: { position: 'none' },
 			hAxis: { format: 'MMM d' },
-			series: { 0: { color: '#3c7251', lineWidth: 3 } },
+			series: { 0: { color: '#3c7251', lineWidth: 5 } },
 		} );
 
 		expect( result.chartImages?.lineChart ).toBe( LINE_CHART_DATA_URI );
@@ -343,32 +343,31 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			.receiveGetReport( totalsReport, {
 				options: getTotalsReportArgs( DATES ),
 			} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( { rows: [] }, {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{ rows: [] },
+			{
 				options: getGraphReportArgs( {
 					startDate: DATES.startDate,
 					endDate: DATES.endDate,
 				} ),
-			} );
+			}
+		);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport( buildBreakdownReport( [] ), {
 				options: channelsArgs,
 			} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport(
-				buildBreakdownReport( [
-					[ 'Singapore', 60 ],
-					[ 'Brazil', 50 ],
-					[ 'China', 40 ],
-					[ 'United States', 30 ],
-					[ 'India', 20 ],
-					[ 'Canada', 10 ],
-				] ),
-				{ options: locationsArgs }
-			);
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			buildBreakdownReport( [
+				[ 'Singapore', 60 ],
+				[ 'Brazil', 50 ],
+				[ 'China', 40 ],
+				[ 'United States', 30 ],
+				[ 'India', 20 ],
+				[ 'Canada', 10 ],
+			] ),
+			{ options: locationsArgs }
+		);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport( buildBreakdownReport( [] ), {
@@ -396,21 +395,22 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		expect( result.chartImages?.locationChart ).toBe( LINE_CHART_DATA_URI );
 	} );
 
-	it( 'should rasterise each donut as a PieChart with the shared colour palette', async () => {
+	it( 'should render each donut as a PieChart with the shared colors', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport(
 				{ totals: [ { metricValues: [ { value: '100' } ] } ] },
 				{ options: getTotalsReportArgs( DATES ) }
 			);
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( { rows: [] }, {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{ rows: [] },
+			{
 				options: getGraphReportArgs( {
 					startDate: DATES.startDate,
 					endDate: DATES.endDate,
 				} ),
-			} );
+			}
+		);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport( buildBreakdownReport( [ [ 'Direct', 1 ] ] ), {
@@ -439,27 +439,30 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		expect( pieCalls ).toHaveLength( 3 );
 		pieCalls.forEach( ( [ args ] ) => {
 			expect( args.options ).toMatchObject( {
-				pieHole: 0.6,
+				pieHole: 0.56,
 				colors: PIE_CHART_COLORS,
 			} );
+			// The donut renders at 4x its display size so its edges stay sharp.
+			expect( args.scaleFactor ).toBe( 4 );
 		} );
 	} );
 
-	it( 'should isolate a breakdown whose report fails so the others still return', async () => {
+	it( 'should still return the other breakdowns when one breakdown report fails', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport(
 				{ totals: [ { metricValues: [ { value: '100' } ] } ] },
 				{ options: getTotalsReportArgs( DATES ) }
 			);
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( { rows: [] }, {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{ rows: [] },
+			{
 				options: getGraphReportArgs( {
 					startDate: DATES.startDate,
 					endDate: DATES.endDate,
 				} ),
-			} );
+			}
+		);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport( buildBreakdownReport( [ [ 'Direct', 1 ] ] ), {
@@ -504,21 +507,22 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		expect( result.chartImages?.deviceChart ).toBe( LINE_CHART_DATA_URI );
 	} );
 
-	it( 'should isolate a breakdown whose chart render fails so the others still return', async () => {
+	it( 'should still return the other breakdowns when one breakdown chart render fails', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport(
 				{ totals: [ { metricValues: [ { value: '100' } ] } ] },
 				{ options: getTotalsReportArgs( DATES ) }
 			);
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( { rows: [] }, {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{ rows: [] },
+			{
 				options: getGraphReportArgs( {
 					startDate: DATES.startDate,
 					endDate: DATES.endDate,
 				} ),
-			} );
+			}
+		);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport( buildBreakdownReport( [ [ 'Direct', 1 ] ] ), {
@@ -584,7 +588,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		} );
 
 		const calls = fetchMock.calls( reportEndpoint );
-		// Totals, graph, and the three breakdown reports each carry the URL.
+		// Totals, graph, and the three breakdown reports each include the URL.
 		expect( calls ).toHaveLength( 5 );
 		for ( const [ requestedURL ] of calls ) {
 			expect( requestedURL ).toContain( encodeURIComponent( entityURL ) );
@@ -672,12 +676,12 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 
 		expect( result ).toEqual( { data: null } );
 		expect( fetchMock ).toHaveFetched( reportEndpoint );
-		// The post-fetch abort check runs before any chart is rasterised.
+		// The post-fetch abort check runs before any chart is rendered.
 		expect( mockEnsureGoogleChartsLoaded ).not.toHaveBeenCalled();
 		expect( mockRenderGoogleChartToDataURI ).not.toHaveBeenCalled();
 	} );
 
-	it( 'should not rasterise any chart once the export is aborted before the chart stage', async () => {
+	it( 'should not render any chart once the export is aborted before the chart stage', async () => {
 		const controller = new AbortController();
 
 		registry
@@ -686,14 +690,15 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 				{ totals: [ { metricValues: [ { value: '100' } ] } ] },
 				{ options: getTotalsReportArgs( DATES ) }
 			);
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( { rows: [] }, {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{ rows: [] },
+			{
 				options: getGraphReportArgs( {
 					startDate: DATES.startDate,
 					endDate: DATES.endDate,
 				} ),
-			} );
+			}
+		);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport( buildBreakdownReport( [ [ 'Direct', 1 ] ] ), {

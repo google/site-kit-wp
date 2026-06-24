@@ -81,10 +81,10 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 
 		expect( json ).toContain( 'Your site traffic over time' );
 		expect( json ).toContain( 'All visitors' );
-		// `numFmt` abbreviates large totals, matching the dashboard widget.
+		// `numFmt` shortens large totals, the same as the dashboard widget.
 		expect( json ).toContain( '1.2K' );
 		expect( json ).toContain( 'Vs. prev. 28 days' );
-		// The rasterised chart is embedded as an image with the supplied data URI.
+		// The rendered chart is embedded as an image with the supplied data URI.
 		expect( json ).toContain( LINE_CHART_DATA_URI );
 		expect( json ).not.toContain( 'No data available' );
 	} );
@@ -99,7 +99,7 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		const tree = renderTree( { data } );
 		const json = JSON.stringify( tree );
 
-		// The metric tile still renders; only the chart area falls back.
+		// The metric tile still renders. Only the chart area falls back.
 		expect( json ).toContain( 'All visitors' );
 		expect( json ).toContain( 'No data available' );
 		expect( json ).not.toContain( 'data:image' );
@@ -199,7 +199,7 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		expect( json ).toContain( 'Desktop' );
 		expect( json ).toContain( '58.4%' );
 
-		// The first two swatches use the shared palette, in order.
+		// The first two swatches use the shared colors, in order.
 		expect( json ).toContain( '"backgroundColor":"#fece72"' );
 		expect( json ).toContain( '"backgroundColor":"#a983e6"' );
 

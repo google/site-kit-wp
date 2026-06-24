@@ -189,23 +189,24 @@ export function getGraphReportArgs( {
 /**
  * Builds the complete GA4 `getReport` args for one All Visitors breakdown pie.
  *
- * Mirrors the dashboard's pie query in `index.js`: one breakdown dimension,
- * ordered by total users descending, over the same date range and comparison
- * range as the metric tile and line chart. The comparison range stays in the
- * args so the rows come back split by date range, which the dashboard's
- * `extractAnalyticsDataForPieChart` helper reads when it builds the slices. The
- * PDF loader calls this once per dimension (channels, locations, devices).
+ * Uses the same query as the dashboard's pie chart in `index.js`: one breakdown
+ * dimension, sorted by total users from high to low, over the same date range
+ * and comparison range as the metric tile and line chart. The comparison range
+ * stays in the args, so the rows come back split by date range. The dashboard's
+ * `extractAnalyticsDataForPieChart` helper reads that split when it builds the
+ * slices. The PDF loader calls this once for each dimension (channels,
+ * locations, devices).
  *
  * @since n.e.x.t
  *
- * @param {Object} options                   Options.
- * @param {string} options.dimensionName     GA4 dimension to break down by.
- * @param {string} options.reportID          Report ID for this breakdown.
- * @param {string} options.startDate         Report start date.
- * @param {string} options.endDate           Report end date.
+ * @param {Object} options                    Options.
+ * @param {string} options.dimensionName      GA4 dimension to break down by.
+ * @param {string} options.reportID           Report ID for this breakdown.
+ * @param {string} options.startDate          Report start date.
+ * @param {string} options.endDate            Report end date.
  * @param {string} [options.compareStartDate] Comparison start date.
  * @param {string} [options.compareEndDate]   Comparison end date.
- * @param {string} [options.url]             Entity URL filter, if any.
+ * @param {string} [options.url]              Entity URL filter, if any.
  * @return {Object} GA4 getReport args.
  */
 export function getBreakdownReportArgs( {

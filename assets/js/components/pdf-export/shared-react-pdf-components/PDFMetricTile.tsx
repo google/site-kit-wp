@@ -55,7 +55,7 @@ const tileStyles = StyleSheet.create( {
 		letterSpacing: -0.05,
 		lineHeight: 1.143,
 		color: COLORS.text,
-		marginBottom: 6,
+		marginBottom: 0,
 	},
 	value: {
 		fontFamily: PDF_FONT_FAMILY_DISPLAY,
@@ -69,7 +69,7 @@ const tileStyles = StyleSheet.create( {
 		alignItems: 'flex-end',
 	},
 	chip: {
-		borderRadius: 10,
+		borderRadius: 6,
 		paddingVertical: 2,
 		paddingHorizontal: 4,
 	},
@@ -86,7 +86,7 @@ const tileStyles = StyleSheet.create( {
 		letterSpacing: 0.1,
 		lineHeight: 1.333,
 		color: COLORS.secondary,
-		marginTop: 8,
+		marginTop: 4,
 	},
 } );
 

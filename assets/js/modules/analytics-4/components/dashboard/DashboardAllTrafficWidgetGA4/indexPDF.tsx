@@ -59,8 +59,8 @@ const styles = StyleSheet.create( {
 		flexShrink: 1,
 		flexBasis: 0,
 		backgroundColor: '#ffffff',
-		borderRadius: 14,
-		padding: 20,
+		borderRadius: 8,
+		padding: 12,
 	},
 	cardGap: {
 		width: 12,
@@ -82,8 +82,8 @@ const styles = StyleSheet.create( {
 /**
  * Builds the legend rows for a breakdown donut.
  *
- * Pairs each segment with its palette color, by index, and formats its share
- * as a percentage. The color order matches the donut, since both read
+ * Pairs each segment with its color by index, and formats its share as a
+ * percentage. The color order matches the donut, because both read
  * `PIE_CHART_COLORS` in the same slice order.
  *
  * @since n.e.x.t
@@ -98,6 +98,7 @@ function buildLegendRows( breakdown: BreakdownRow[] | null | undefined ) {
 			style: 'percent',
 			maximumFractionDigits: 1,
 		} ),
+		// A breakdown has at most 5 rows, so each row maps to one of the 5 colors.
 		color: PIE_CHART_COLORS[ index ],
 	} ) );
 }

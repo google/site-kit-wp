@@ -51,25 +51,23 @@ const tileStyles = StyleSheet.create( {
 	},
 	body: {
 		flexDirection: 'row',
-		alignItems: 'center',
+		alignItems: 'flex-start',
 		justifyContent: 'space-between',
 	},
 	legend: {
 		flexDirection: 'column',
-		flexGrow: 1,
-		flexShrink: 1,
-		marginRight: 12,
+		width: 87,
 	},
 	legendRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		marginBottom: 8,
+		marginBottom: 6.5,
 	},
 	swatch: {
 		width: 6,
 		height: 6,
 		borderRadius: 3,
-		marginRight: 8,
+		marginRight: 3,
 	},
 	label: {
 		flexGrow: 1,
@@ -93,6 +91,7 @@ const tileStyles = StyleSheet.create( {
 	chart: {
 		width: 72.85,
 		height: 72.85,
+		marginRight: 12,
 	},
 	noData: {
 		fontFamily: PDF_FONT_FAMILY_TEXT,
@@ -102,20 +101,20 @@ const tileStyles = StyleSheet.create( {
 } );
 
 export interface PDFPieChartTileRow {
-	/** Segment label, e.g. "Organic Search". */
+	/** The donut segment's label, like "Organic Search". */
 	label: string;
-	/** Pre-formatted percentage shown on the right, e.g. "79.2%". */
+	/** The formatted percentage shown on the right, like "79.2%". */
 	percentage: string;
-	/** Swatch color, matching this row's donut segment. */
+	/** The swatch color, the same as this row's donut segment. */
 	color: string;
 }
 
 export interface PDFPieChartTileProps {
-	/** Tile heading, e.g. "Visitors by channels". */
+	/** The tile heading, like "Visitors by channels". */
 	title: string;
-	/** Ordered legend rows, in the same order as the donut segments. */
+	/** The legend rows, in the same order as the donut segments. */
 	rows: PDFPieChartTileRow[];
-	/** Donut chart JPEG data URI. Shows the placeholder when nullish. */
+	/** The donut chart as a JPEG data URI. When it's not set, the tile shows the placeholder instead. */
 	chartImage?: string;
 }
 
@@ -133,12 +132,14 @@ const PDFPieChartTile: FC< PDFPieChartTileProps > = ( {
 						{ rows.map( ( { label, percentage, color } ) => (
 							<View key={ label } style={ tileStyles.legendRow }>
 								<View
-									style={ {
-										...tileStyles.swatch,
-										backgroundColor: color,
-									} }
+									style={ [
+										tileStyles.swatch,
+										{ backgroundColor: color },
+									] }
 								/>
-								<Text style={ tileStyles.label }>{ label }</Text>
+								<Text style={ tileStyles.label }>
+									{ label }
+								</Text>
 								<Text style={ tileStyles.percentage }>
 									{ percentage }
 								</Text>
