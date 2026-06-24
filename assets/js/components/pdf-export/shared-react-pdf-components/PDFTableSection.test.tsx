@@ -70,7 +70,7 @@ describe( 'PDFTableSection', () => {
 		expect( json ).toContain( 'Home' );
 	} );
 
-	it( 'passes the columnGap through to the table', () => {
+	it( 'applies the columnGap prop to the table', () => {
 		const json = renderJSON(
 			<PDFTableSection
 				heading="Top pages"

@@ -140,7 +140,7 @@ describe( 'ModulePopularPagesWidgetGA4PDF', () => {
 	it( 'renders the title and URL links without an underline', () => {
 		const json = renderJSON( { data: DATA } );
 
-		// @react-pdf underlines links by default, the PDF report removes it.
+		// @react-pdf underlines links by default, so the PDF report removes it.
 		expect( json ).toContain( '"textDecoration":"none"' );
 	} );
 

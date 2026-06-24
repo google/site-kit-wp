@@ -58,7 +58,7 @@ describe( 'DashboardPopularKeywordsWidget reportOptions', () => {
 			} );
 		} );
 
-		it( 'limits the report to ten rows', () => {
+		it( 'limits the report to 10 rows', () => {
 			expect( getPopularKeywordsReportOptions().limit ).toBe( 10 );
 		} );
 

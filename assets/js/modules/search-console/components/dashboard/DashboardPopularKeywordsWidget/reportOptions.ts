@@ -45,9 +45,8 @@ export interface PopularKeywordsReportDates {
 /**
  * Builds the report options the dashboard widget and its PDF export share.
  *
- * Returns the query dimension, the ten-row limit, and the report ID. The caller
- * adds the date range. One builder keeps the dashboard widget and the PDF export
- * requesting the same dimensions, limit, and report ID.
+ * Returns the query dimension, the limit of 10 rows, and the report ID. The
+ * caller adds the date range.
  *
  * @since n.e.x.t
  *

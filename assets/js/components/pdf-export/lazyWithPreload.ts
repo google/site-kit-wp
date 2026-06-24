@@ -27,7 +27,7 @@ import { ComponentType, LazyExoticComponent } from 'react';
 import { lazy } from '@wordpress/element';
 
 /**
- * A lazy component that also exposes its import factory as a `preload` method.
+ * A lazy component with a `preload` method that runs its import factory.
  */
 type PreloadableLazyComponent< Props > = LazyExoticComponent<
 	ComponentType< Props >
@@ -36,7 +36,7 @@ type PreloadableLazyComponent< Props > = LazyExoticComponent<
 };
 
 /**
- * Wraps `lazy` with a `preload` method exposing the import factory.
+ * Wraps `lazy` and adds a `preload` method that runs the import factory.
  *
  * The PDF orchestrator awaits `preload()` to resolve the chunk before
  * passing the component to `@react-pdf`, whose renderer doesn't honor

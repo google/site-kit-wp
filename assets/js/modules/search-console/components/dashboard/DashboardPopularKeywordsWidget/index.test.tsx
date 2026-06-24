@@ -46,10 +46,12 @@ describe( 'DashboardPopularKeywordsWidget', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+
 		provideSiteInfo( registry );
 		provideModules( registry, [
 			{ slug: MODULE_SLUG_SEARCH_CONSOLE, active: true, connected: true },
 		] );
+
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.setPropertyID( 'https://example.com' );
@@ -58,7 +60,7 @@ describe( 'DashboardPopularKeywordsWidget', () => {
 			.receiveIsGatheringData( false );
 	} );
 
-	it( 'renders the search queries table with its columns, rows, and the Search Console source link', async () => {
+	it( 'renders the table columns, query rows, and the Search Console link', async () => {
 		const reportArgs = getPopularKeywordsReportArgs(
 			registry.select( CORE_USER ).getDateRangeDates()
 		);
@@ -68,9 +70,8 @@ describe( 'DashboardPopularKeywordsWidget', () => {
 			{ keys: [ 'dog toys' ], clicks: 89, impressions: 210 },
 		];
 
-		// Store the report under the exact args the widget builds for this date
-		// range, so the widget finds it only when it requests the report with
-		// those args.
+		// Store the report under the same args the widget builds for this date
+		// range. The widget reads it back only when it requests with those args.
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.receiveGetReport( report, { options: reportArgs } );

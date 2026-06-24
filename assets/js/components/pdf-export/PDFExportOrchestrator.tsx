@@ -361,7 +361,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				// contexts → areas → widgets walk; there is no centralised
 				// PDF-aware selector). `selectedContextSlugs`,
 				// `selectedWidgetSlugs`, `dates` and `viewableModules` are
-				// snapshotted once above; nothing below re-reads reactive state.
+				// snapshotted once above. Nothing below re-reads reactive state.
 				const widgetsSelect = (
 					registry as unknown as {
 						select: ( storeName: string ) => {

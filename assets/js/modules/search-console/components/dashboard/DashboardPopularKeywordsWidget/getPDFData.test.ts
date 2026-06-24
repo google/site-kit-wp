@@ -139,7 +139,7 @@ describe( 'DashboardPopularKeywordsWidget getPDFData', () => {
 		} );
 	} );
 
-	it( 'requests the report with the query dimension, ten-row limit, and report ID', async () => {
+	it( 'requests the report with the query dimension, a limit of 10 rows, and the report ID', async () => {
 		fetchMock.getOnce( reportEndpoint, { body: REPORT, status: 200 } );
 
 		await getPDFData( {
@@ -172,16 +172,15 @@ describe( 'DashboardPopularKeywordsWidget getPDFData', () => {
 		// this test checks.
 		await waitForDefaultTimeouts();
 
-		// Check with `toBe` that the request received this exact signal object.
-		// Every `AbortSignal` looks the same to `toEqual`, so a `toEqual` check
-		// could pass with the wrong signal.
+		// The request must receive the same `signal` object, so aborting the
+		// export stops it. A `toEqual` check would pass for any signal.
 		expect( fetchMock.calls( reportEndpoint ) ).toHaveLength( 1 );
 
 		const [ [ , options ] ] = fetchMock.calls( reportEndpoint );
 		expect( options?.signal ).toBe( signal );
 	} );
 
-	it( 'returns null data without fetching when the signal is already aborted', async () => {
+	it( 'skips the request and returns null data when the signal is already aborted', async () => {
 		const controller = new AbortController();
 		controller.abort();
 
@@ -195,7 +194,7 @@ describe( 'DashboardPopularKeywordsWidget getPDFData', () => {
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
-	it( 'returns empty rows when the report has no rows', async () => {
+	it( 'returns an empty row list when the report has no rows', async () => {
 		fetchMock.getOnce( reportEndpoint, { body: [], status: 200 } );
 
 		const result = await getPDFData( {
@@ -207,7 +206,7 @@ describe( 'DashboardPopularKeywordsWidget getPDFData', () => {
 		expect( result.data?.rows ).toEqual( [] );
 	} );
 
-	it( 'returns null data when the signal aborts after the report loads', async () => {
+	it( 'returns null data when the signal aborts after the report request is sent', async () => {
 		const controller = new AbortController();
 		const deferredResolvers: Array< () => void > = [];
 
@@ -242,7 +241,7 @@ describe( 'DashboardPopularKeywordsWidget getPDFData', () => {
 		expect( result ).toEqual( { data: null } );
 	} );
 
-	it( 'fetches the report again when a new run starts after an aborted run', async () => {
+	it( 'fetches the report again on a new call after an earlier call was aborted', async () => {
 		const firstController = new AbortController();
 		const deferredResolvers: Array< () => void > = [];
 		let requestCount = 0;

@@ -37,8 +37,8 @@ describe( 'lazyWithPreload', () => {
 			Promise.resolve( { default: () => null } )
 		);
 
-		// A lazy component carries a `$$typeof` marker, so this confirms the
-		// helper returns a lazy component instead of the factory it received.
+		// A lazy component has a `$$typeof` marker, so this confirms the helper
+		// returns a lazy component instead of the factory it received.
 		expect( Component ).toHaveProperty( '$$typeof' );
 	} );
 } );

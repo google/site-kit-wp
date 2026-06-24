@@ -280,17 +280,18 @@ describe( 'PDFExportOrchestrator', () => {
 		expect( pdf ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'renders the selected widget and skips the deselected widget in the same section', async () => {
-		const selectedGetData: jest.Mock = jest.fn( () =>
+	it( 'includes only the checked widget when the user unchecks the other widget in the same section', async () => {
+		const checkedGetData: jest.Mock = jest.fn( () =>
 			Promise.resolve( { data: { totalUsers: 100 } } )
 		);
-		const deselectedGetData: jest.Mock = jest.fn( () =>
+		const uncheckedGetData: jest.Mock = jest.fn( () =>
 			Promise.resolve( { data: { totalUsers: 100 } } )
 		);
 
-		// The Content section holds two PDF widgets. The user keeps the first
-		// checked and unchecks the second.
+		// Register a widget area with two widgets. The area becomes one section
+		// in the PDF. The user checks the first widget and unchecks the second.
 		const dispatch = registry.dispatch( CORE_WIDGETS );
+
 		dispatch.registerWidgetArea( 'contentArea', {
 			title: 'Area',
 			pdfTitle: 'Content',
@@ -301,37 +302,38 @@ describe( 'PDFExportOrchestrator', () => {
 			'contentArea',
 			CONTEXT_MAIN_DASHBOARD_CONTENT
 		);
-		dispatch.registerWidget( 'selectedWidget', {
+
+		dispatch.registerWidget( 'checkedWidget', {
 			Component: NullComponent,
-			pdf: { Component: NullComponent, getData: selectedGetData },
+			pdf: { Component: NullComponent, getData: checkedGetData },
 		} );
-		dispatch.assignWidget( 'selectedWidget', 'contentArea' );
-		dispatch.registerWidget( 'deselectedWidget', {
+		dispatch.assignWidget( 'checkedWidget', 'contentArea' );
+
+		dispatch.registerWidget( 'uncheckedWidget', {
 			Component: NullComponent,
-			pdf: { Component: NullComponent, getData: deselectedGetData },
+			pdf: { Component: NullComponent, getData: uncheckedGetData },
 		} );
-		dispatch.assignWidget( 'deselectedWidget', 'contentArea' );
+		dispatch.assignWidget( 'uncheckedWidget', 'contentArea' );
 
 		registry.dispatch( CORE_PDF ).setSelection( {
 			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_CONTENT ],
-			widgetSlugs: [ 'selectedWidget' ],
+			widgetSlugs: [ 'checkedWidget' ],
 		} );
 
 		renderOrchestrator();
 
 		await waitFor( () => expect( pdf ).toHaveBeenCalled() );
 
-		// The deselected widget is dropped before loading, so only the selected
-		// widget's data loader runs.
-		expect( selectedGetData ).toHaveBeenCalledTimes( 1 );
-		expect( deselectedGetData ).not.toHaveBeenCalled();
+		// The orchestrator drops the unchecked widget before the loading stage,
+		// so only the checked widget's data loader runs.
+		expect( checkedGetData ).toHaveBeenCalledTimes( 1 );
+		expect( uncheckedGetData ).not.toHaveBeenCalled();
 
-		// The report renders the one selected widget and leaves out the
-		// deselected one.
+		// The report includes only the checked widget.
 		const { props } = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
 		expect( props.areas ).toHaveLength( 1 );
 		expect( props.areas[ 0 ].widgets ).toHaveLength( 1 );
-		expect( props.areas[ 0 ].widgets[ 0 ].slug ).toBe( 'selectedWidget' );
+		expect( props.areas[ 0 ].widgets[ 0 ].slug ).toBe( 'checkedWidget' );
 	} );
 
 	it( 'should pass the email reporting golink URL to the report document', async () => {
