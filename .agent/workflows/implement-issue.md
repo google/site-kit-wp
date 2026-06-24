@@ -17,10 +17,9 @@ project's AI tools). Follow it exactly. Summary of the steps:
 2. **Determine scope** (JS-only / PHP-only / full-stack) and the affected module.
 3. **Load only** the relevant `docs/context/{js,php}` convention docs (use the map in the
    playbook).
-4. **Branch off `develop`**: `git checkout -b <type>/<issue-number>-<slug>`.
-5. **Implement** with co-located tests and Storybook stories; cover every acceptance criterion
+4. **Implement** with co-located tests and Storybook stories; cover every acceptance criterion
    and Test Coverage item.
-6. **Self-review** against `docs/context/workflow/review-checklist.md` and fix gaps.
-7. **Verify**: lint, the specific test files you touched, and `npm run build:dev`.
+5. **Self-review** against `docs/context/workflow/review-checklist.md` and fix gaps.
+6. **Verify**: lint, the specific test files you touched, and `npm run build:dev`.
 
 **Local only** — do not commit, push, or open a PR unless explicitly asked.
