@@ -36,7 +36,7 @@ import { getFullURL } from '@/js/util';
 import { getPopularPagesReportArgs } from './reportOptions';
 
 /**
- * Links for one page row: the entity dashboard golink for the title, and the
+ * Links for one page row: the entity dashboard URL for the title, and the
  * page's own public URL for the URL line.
  */
 export interface PopularPageLinks {
@@ -164,17 +164,16 @@ function getTitleMap(
 }
 
 /**
- * Maps each page path to its entity dashboard golink and public URL.
+ * Maps each page path to its entity dashboard URL and public URL.
  *
- * The title links to the page's Site Kit detail view through the golink, which
- * keeps working if Site Kit's internal URL changes after the PDF is saved. The
- * URL line links to the page itself.
+ * The title links to the page's Site Kit detail view, the same entity dashboard
+ * link the dashboard builds for a page. The URL line links to the page itself.
  *
  * @since n.e.x.t
  *
  * @param registry  WordPress data registry.
  * @param pagePaths Page paths from the main report rows.
- * @return Map of page path to its golink and public URL.
+ * @return Map of page path to its entity dashboard URL and public URL.
  */
 function getPopularPageLinkMap(
 	registry: GetPDFDataParams[ 'registry' ],
@@ -189,7 +188,9 @@ function getPopularPageLinkMap(
 		const permaLink = getFullURL( siteURL, pagePath );
 		links[ pagePath ] = {
 			detailsURL:
-				coreSite.getGoLinkURL( 'dashboard', { permaLink } ) ?? '',
+				coreSite.getAdminURL( 'googlesitekit-dashboard', {
+					permaLink,
+				} ) ?? '',
 			permaLink,
 		};
 	} );

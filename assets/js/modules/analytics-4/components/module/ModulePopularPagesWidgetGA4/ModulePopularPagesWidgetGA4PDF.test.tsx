@@ -55,12 +55,12 @@ const DATA = {
 	links: {
 		'/home-page': {
 			detailsURL:
-				'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=dashboard&permaLink=http%3A%2F%2Fexample.com%2Fhome-page',
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=http%3A%2F%2Fexample.com%2Fhome-page',
 			permaLink: 'http://example.com/home-page',
 		},
 		'/about-page': {
 			detailsURL:
-				'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=dashboard&permaLink=http%3A%2F%2Fexample.com%2Fabout-page',
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=http%3A%2F%2Fexample.com%2Fabout-page',
 			permaLink: 'http://example.com/about-page',
 		},
 	},
@@ -125,12 +125,12 @@ describe( 'ModulePopularPagesWidgetGA4PDF', () => {
 		);
 	} );
 
-	it( 'links each title to its entity dashboard golink and each URL to its page', () => {
+	it( 'links each title to its entity dashboard and each URL to its page', () => {
 		const json = renderJSON( { data: DATA } );
 
-		// The title links to the entity dashboard golink.
+		// The title links to the entity dashboard.
 		expect( json ).toContain(
-			'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=dashboard&permaLink=http%3A%2F%2Fexample.com%2Fhome-page'
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=http%3A%2F%2Fexample.com%2Fhome-page'
 		);
 		// The URL line links to the page itself.
 		expect( json ).toContain( 'http://example.com/home-page' );

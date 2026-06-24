@@ -94,18 +94,18 @@ const TITLES_REPORT = {
 
 /**
  * Per-page links the loader builds for each page path, from the default test
- * admin URL and reference site URL. The title golink points at the entity
- * dashboard, and the permaLink at the page itself.
+ * admin URL and reference site URL. The title links to the entity dashboard,
+ * and the permaLink to the page itself.
  */
 const LINKS = {
 	'/': {
 		detailsURL:
-			'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=dashboard&permaLink=http%3A%2F%2Fexample.com%2F',
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=http%3A%2F%2Fexample.com%2F',
 		permaLink: 'http://example.com/',
 	},
 	'/about': {
 		detailsURL:
-			'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=dashboard&permaLink=http%3A%2F%2Fexample.com%2Fabout',
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=http%3A%2F%2Fexample.com%2Fabout',
 		permaLink: 'http://example.com/about',
 	},
 };
