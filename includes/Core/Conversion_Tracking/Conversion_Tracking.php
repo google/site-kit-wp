@@ -257,7 +257,7 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	/**
 	 * Gets the unique categories of active conversion event providers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @return array List of unique active provider category strings, constrained to known categories.
 	 */
@@ -332,7 +332,7 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	 * third-party add-on (e.g. Google Analytics for WooCommerce), so it accurately reflects
 	 * only what Site Kit itself tracks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @return array Array of Site Kit-tracked conversion events, or empty array.
 	 */
@@ -359,7 +359,7 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	 * third-party add-on (e.g. Google Analytics for WooCommerce), so it accurately reflects
 	 * only what Site Kit itself tracks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @return array Array of Site Kit-tracked enhanced conversion events, or empty array.
 	 */

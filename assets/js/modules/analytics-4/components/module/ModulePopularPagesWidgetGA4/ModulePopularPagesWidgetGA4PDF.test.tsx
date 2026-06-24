@@ -69,7 +69,7 @@ const DATA = {
 /**
  * Renders the widget to a JSON string for content and style assertions.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param props Props passed to the widget.
  * @return JSON string of the rendered tree.

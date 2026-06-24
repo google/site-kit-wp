@@ -112,7 +112,7 @@ const LINKS = {
 /**
  * Reads the `reportID` query arg from a report request URL.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param requestURL Report request URL.
  * @return The `reportID` query arg, or an empty string when absent.
@@ -131,7 +131,7 @@ function reportIDForRequest( requestURL: string ) {
  * page titles request returns the `titles` fixture, and every other report
  * request returns the `main` fixture.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param  [reports]        Report fixtures to return.
  * @param  [reports.main]   Report returned for requests other than the page titles report.

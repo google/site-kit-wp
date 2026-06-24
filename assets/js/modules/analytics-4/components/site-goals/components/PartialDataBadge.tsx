@@ -48,7 +48,7 @@ interface PartialDataBadgeProps {
  * `20260519` → "May 19, 2026", or an empty string when it's missing/invalid
  * (e.g. `0`, which can occur while the resource is still partial).
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param {number} [availabilityDate] Availability date as a YYYYMMDD number.
  * @return {string} The localized date, or an empty string.

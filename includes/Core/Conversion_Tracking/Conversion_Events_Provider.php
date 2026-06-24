@@ -93,7 +93,7 @@ abstract class Conversion_Events_Provider {
 	 * method to return only the events that Site Kit itself will track, so that internal feature
 	 * metrics accurately reflect Site Kit's own tracking rather than the add-on's coverage.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @return array List of event names.
 	 */
