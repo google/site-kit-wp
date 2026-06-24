@@ -29,7 +29,7 @@ import {
  * Adds the element the tour points to first. The `afterEach` in the wait
  * tests removes it.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @return The added element, so a test can mock its position.
  */
@@ -44,7 +44,7 @@ function appendTourTarget() {
  * Adds a widget area box, the way `WidgetAreaRenderer` makes one. The
  * `afterEach` in the wait tests removes it.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param slug The widget area slug.
  * @return The added widget area box.
@@ -60,7 +60,7 @@ function appendPreloadArea( slug: string ) {
  * Adds a gray placeholder inside an area, like the one a widget shows while
  * it loads.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param parent The area element to add the placeholder to.
  * @return The added placeholder element.

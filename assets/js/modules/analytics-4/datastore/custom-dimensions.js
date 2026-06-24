@@ -167,7 +167,7 @@ const baseActions = {
 	 *
 	 * @since 1.113.0
 	 * @since 1.181.0 Added the Site Goals custom dimensions when the `siteGoals` feature flag is on and advanced data breakdowns is enabled.
-	 * @since n.e.x.t Created the missing custom dimensions on the selected property, and added the Site Goals dimensions only when advanced data breakdowns is enabled for that property.
+	 * @since 1.182.0 Created the missing custom dimensions on the selected property, and added the Site Goals dimensions only when advanced data breakdowns is enabled for that property.
 	 *
 	 * @param {Array<string>} customDimensions Optional additional custom dimensions to create.
 	 */
@@ -490,7 +490,7 @@ const baseSelectors = {
 	 * dimensions, so it works for a property selected in a form but not yet
 	 * saved in settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID GA4 property ID to get the custom dimensions for.
@@ -503,7 +503,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether the given property has all the provided custom dimensions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param {Object}               state            Data store's state.
 	 * @param {string}               propertyID       GA4 property ID to check the custom dimensions on.

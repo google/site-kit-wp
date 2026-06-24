@@ -99,7 +99,7 @@ const baseSelectors = {
 	 * Gets a PageSpeed Insights report for the given strategy and URL.
 	 *
 	 * @since 1.10.0
-	 * @since n.e.x.t Accept optional fetch options as a third argument, such as `{ signal }` to cancel the report request.
+	 * @since 1.182.0 Accept optional fetch options as a third argument, such as `{ signal }` to cancel the report request.
 	 *
 	 * @param {Object} state          Data store's state.
 	 * @param {string} url            URL used for generating the report.

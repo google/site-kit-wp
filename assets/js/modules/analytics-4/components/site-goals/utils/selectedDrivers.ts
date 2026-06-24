@@ -29,7 +29,7 @@ import {
  * Returns the list of selected goal driver IDs for the given goal type,
  * filtering out any non-string entries.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param selectedDrivers Current selection state, keyed by goal type.
  * @param goalType        Goal type to read from.

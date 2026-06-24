@@ -22,10 +22,16 @@
 import classnames from 'classnames';
 
 /**
+ * WordPress dependencies
+ */
+import { useEffect } from '@wordpress/element';
+import { getQueryArg } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
 import { ProgressBar } from 'googlesitekit-components';
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { useFeature } from '@/js/hooks/useFeature';
@@ -95,7 +101,35 @@ export default function SettingsEdit() {
 		return false;
 	} );
 
+	const settingsLoaded = useSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getSettings() !== undefined
+	);
+
 	useExistingTagEffect();
+
+	const { setAccountID } = useDispatch( MODULES_ANALYTICS_4 );
+
+	const accountCreationErrorCode = getQueryArg(
+		location.href,
+		'accountCreationErrorCode'
+	);
+
+	useEffect( () => {
+		if (
+			setupFlowRefreshEnabled &&
+			settingsLoaded &&
+			accountCreationErrorCode &&
+			accountID !== ACCOUNT_CREATE
+		) {
+			setAccountID( ACCOUNT_CREATE );
+		}
+	}, [
+		setupFlowRefreshEnabled,
+		accountCreationErrorCode,
+		setAccountID,
+		accountID,
+		settingsLoaded,
+	] );
 
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 

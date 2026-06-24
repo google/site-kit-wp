@@ -89,7 +89,7 @@ const SECTION_READY_CHECK_MAX_TOTAL_WAIT_MS = 30000;
  * never loads cannot block the modal or the tour.
  *
  * @since 1.181.0
- * @since n.e.x.t Renamed from `checkSiteGoalsTourRequirements`, exported it, and made it wait for the widget areas above Site Goals to load and the layout to settle before the tour starts.
+ * @since 1.182.0 Renamed from `checkSiteGoalsTourRequirements`, exported it, and made it wait for the widget areas above Site Goals to load and the layout to settle before the tour starts.
  *
  * @param signal Optional `AbortSignal` to stop the wait. The hook passes one so it can cancel on unmount. The tour passes the data registry through `checkRequirements`, which is not a signal, so the wait ignores it.
  * @return Promise that resolves to `true` when the section is ready or the wait gives up, or `false` when the signal aborts.
@@ -200,7 +200,7 @@ function gaEventCategory( viewContext: string ) {
  * true, since that step points at a notice that is not always on the page.
  *
  * @since 1.181.0
- * @since n.e.x.t Load every widget area above and including the Site Goals section before the tour starts, and wait for them to load and the layout to settle.
+ * @since 1.182.0 Load every widget area above and including the Site Goals section before the tour starts, and wait for them to load and the layout to settle.
  *
  * @param params                    Tour params.
  * @param params.isEcommerceOnly    True when only ecommerce events are detected. Picks the breakdown step copy.
