@@ -1299,7 +1299,7 @@
 * Show the "Display visitor groups in dashboard" toggle in the Site Kit Admin settings even when Google Analytics is disconnected. See [#9264](https://github.com/google/site-kit-wp/issues/9264).
 * When a user clicks the CTA to visit the Publisher Center from one of the onboarding state notifications, resync the onboarding state upon returning to the Site Kit browser tab and update/hide the notification if the state has changed. See [#9262](https://github.com/google/site-kit-wp/issues/9262).
 * Show the Reader Revenue Manager module's setup banner again two weeks after being dismissed, and show a tooltip to let the user know it can be set up later in Settings. See [#9257](https://github.com/google/site-kit-wp/issues/9257).
-* Update text colour in Reader Revenue Manager publication creation screen. See [#9256](https://github.com/google/site-kit-wp/issues/9256).
+* Update text color in Reader Revenue Manager publication creation screen. See [#9256](https://github.com/google/site-kit-wp/issues/9256).
 * Reduce frequency of AdsLinks checks. See [#9141](https://github.com/google/site-kit-wp/issues/9141).
 * Improve offline connection check logic/behaviour. See [#9083](https://github.com/google/site-kit-wp/issues/9083).
 * Scroll to the Audiences Widget Area when clicking the "Show me" CTA on the Setup Success Notice that is shown when the Audience Segmentation feature has been set up. See [#8874](https://github.com/google/site-kit-wp/issues/8874).
@@ -2904,7 +2904,7 @@
 * Implement new selectors for sharing settings. See [#4795](https://github.com/google/site-kit-wp/issues/4795).
 * Implement new actions for sharing settings. See [#4794](https://github.com/google/site-kit-wp/issues/4794).
 * Implement new selector for shared ownership modules. See [#4791](https://github.com/google/site-kit-wp/issues/4791).
-* Fix single-page dashboard header background colour when using a non-default WordPress admin color scheme. See [#4769](https://github.com/google/site-kit-wp/issues/4769).
+* Fix single-page dashboard header background color when using a non-default WordPress admin color scheme. See [#4769](https://github.com/google/site-kit-wp/issues/4769).
 * Update admin notice messages to have `Site Kit by Google:` prefixes. Props carolinan. See [#4721](https://github.com/google/site-kit-wp/issues/4721).
 * Fix alignment issue of data block metric labels on small viewports. See [#4582](https://github.com/google/site-kit-wp/issues/4582).
 * Allow view-only users to make data requests for shared modules with owners. See [#4532](https://github.com/google/site-kit-wp/issues/4532).
