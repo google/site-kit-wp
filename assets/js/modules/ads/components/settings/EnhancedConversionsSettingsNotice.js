@@ -43,7 +43,11 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { useInView } from '@/js/hooks/useInView';
-import { ENHANCED_CONVERSIONS_NOTIFICATION_ADS } from '@/js/modules/ads/components/notifications/EnhancedConversionsNotification';
+import {
+	ECEE_ADS_SURVEY_TRIGGER_ID,
+	ENHANCED_CONVERSIONS_NOTIFICATION_ADS,
+} from '@/js/modules/ads/components/notifications/EnhancedConversionsNotification';
+import { DAY_IN_SECONDS } from '@/js/util';
 
 export default function EnhancedConversionsSettingsNotice( {
 	type = NOTICE_TYPES.INFO,
@@ -64,7 +68,7 @@ export default function EnhancedConversionsSettingsNotice( {
 		select( CORE_USER ).isItemDismissed( id )
 	);
 
-	const { dismissItem } = useDispatch( CORE_USER );
+	const { dismissItem, triggerSurvey } = useDispatch( CORE_USER );
 
 	const handleCTAClick = useCallback( async () => {
 		// Dismiss the notice when the CTA is clicked.
@@ -79,14 +83,17 @@ export default function EnhancedConversionsSettingsNotice( {
 		trackEvents.dismiss();
 	}, [ dismissItem, id, trackEvents ] );
 
-	// Track view event when notice comes into view.
+	// Track view event and fire survey trigger when notice comes into view.
 	useEffect( () => {
 		if ( ! isViewedOnce && inView ) {
 			trackEvents.view();
+			triggerSurvey( ECEE_ADS_SURVEY_TRIGGER_ID, {
+				ttl: DAY_IN_SECONDS,
+			} );
 
 			setIsViewedOnce( true );
 		}
-	}, [ inView, trackEvents, isViewedOnce ] );
+	}, [ inView, trackEvents, isViewedOnce, triggerSurvey ] );
 
 	if ( isDismissed ) {
 		return null;

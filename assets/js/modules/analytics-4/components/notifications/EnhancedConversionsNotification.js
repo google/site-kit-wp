@@ -24,22 +24,25 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
 import { escapeURI } from '@/js/util/escape-uri';
 
 export const ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS =
 	'ecee-notification-analytics';
+export const ECEE_ANALYTICS_SURVEY_TRIGGER_ID = 'view_ecee_analytics_banner';
 
 export default function EnhancedConversionsNotification( {
 	id,
@@ -61,6 +64,14 @@ export default function EnhancedConversionsNotification( {
 			path: escapeURI`/a${ accountID }p${ propertyID }/admin/datapolicies/datacollection`,
 		} );
 	} );
+
+	const { triggerSurvey } = useDispatch( CORE_USER );
+
+	useEffect( () => {
+		triggerSurvey( ECEE_ANALYTICS_SURVEY_TRIGGER_ID, {
+			ttl: DAY_IN_SECONDS,
+		} );
+	}, [ triggerSurvey ] );
 
 	return (
 		<Notification>
