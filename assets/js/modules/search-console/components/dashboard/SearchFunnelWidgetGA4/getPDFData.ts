@@ -46,6 +46,8 @@ import { numFmt } from '@/js/util';
 import { partitionReport } from '@/js/util/partition-report';
 import { getDatapointAndChange } from './Overview/utils';
 import {
+	Analytics4ReportOptions,
+	SearchConsoleReportOptions,
 	getGA4KeyEventsOverviewReportOptions,
 	getGA4KeyEventsReportOptions,
 	getGA4VisitorsReportOptions,
@@ -327,7 +329,7 @@ function rasterizeChart( {
 async function resolveReport< T = unknown >(
 	registry: Registry,
 	storeName: string,
-	args: object,
+	args: SearchConsoleReportOptions | Analytics4ReportOptions,
 	signal: AbortSignal
 ): Promise< { report: T | undefined; error: unknown } > {
 	await registry.resolveSelect( storeName ).getReport( args, { signal } );

@@ -43,7 +43,7 @@ function organicSearchDimensionFilters() {
  *
  * @since n.e.x.t
  */
-type SearchConsoleReportOptions = {
+export type SearchConsoleReportOptions = {
 	startDate: string;
 	endDate: string;
 	dimensions: string;
@@ -69,7 +69,7 @@ interface Analytics4ReportDates {
  *
  * @since n.e.x.t
  */
-type Analytics4ReportOptions = {
+export type Analytics4ReportOptions = {
 	startDate: string;
 	endDate: string;
 	compareStartDate?: string;
