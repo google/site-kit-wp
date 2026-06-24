@@ -1330,6 +1330,17 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 */
 	private function get_provisioning_callback_error_redirect_url( $error_code, $show_progress ) {
 		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+			// If the account creation was triggered from the settings edit screen,
+			// redirect back to the settings edit screen with the error code.
+			if ( $this->is_connected() ) {
+				return add_query_arg(
+					array(
+						'accountCreationErrorCode' => $error_code,
+					),
+					$this->context->admin_url( 'settings' )
+				) . '#connected-services/analytics-4/edit';
+			}
+
 			$args = array(
 				'slug'                     => 'analytics-4',
 				'reAuth'                   => 'true',

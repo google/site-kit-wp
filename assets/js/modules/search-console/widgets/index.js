@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import lazyWithPreload from '@/js/components/pdf-export/lazyWithPreload';
+import lazyWithPreload from '@/js/components/pdf-export/lazy-with-preload';
 import {
 	CORE_USER,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
@@ -39,6 +39,7 @@ import {
 import DashboardPopularKeywordsWidget from '@/js/modules/search-console/components/dashboard/DashboardPopularKeywordsWidget';
 import getPopularKeywordsPDFData from '@/js/modules/search-console/components/dashboard/DashboardPopularKeywordsWidget/getPDFData';
 import SearchFunnelWidgetGA4 from '@/js/modules/search-console/components/dashboard/SearchFunnelWidgetGA4';
+import getSearchFunnelPDFData from '@/js/modules/search-console/components/dashboard/SearchFunnelWidgetGA4/getPDFData';
 import PopularKeywordsWidget from '@/js/modules/search-console/components/widgets/PopularKeywordsWidget';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
@@ -49,6 +50,13 @@ const DashboardPopularKeywordsWidgetPDF = lazyWithPreload( () =>
 	import(
 		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
 		'@/js/modules/search-console/components/dashboard/DashboardPopularKeywordsWidget/DashboardPopularKeywordsWidgetPDF'
+	)
+);
+
+const SearchFunnelWidgetGA4PDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/search-console/components/dashboard/SearchFunnelWidgetGA4/indexPDF'
 	)
 );
 
@@ -85,6 +93,11 @@ export function registerWidgets( widgets ) {
 			priority: 3,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
+			pdf: {
+				Component: SearchFunnelWidgetGA4PDF,
+				getData: getSearchFunnelPDFData,
+				label: __( 'Search traffic over time', 'google-site-kit' ),
+			},
 		},
 		[
 			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,

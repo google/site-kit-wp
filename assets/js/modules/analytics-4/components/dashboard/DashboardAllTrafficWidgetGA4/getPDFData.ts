@@ -37,7 +37,7 @@ import type {
 import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDimensionStringToDate';
 import { getGraphReportArgs, getTotalsReportArgs } from './reportOptions';
 
-// Matches the dashboard's All Visitors line colour (the default graph colour).
+// Matches the dashboard's All Visitors line color (the default graph color).
 const LINE_CHART_COLOR = '#3c7251';
 const LINE_CHART_WIDTH = 540;
 const LINE_CHART_HEIGHT = 200;

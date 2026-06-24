@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import lazyWithPreload from '@/js/components/pdf-export/lazyWithPreload';
+import lazyWithPreload from '@/js/components/pdf-export/lazy-with-preload';
 import { isFeatureEnabled } from '@/js/features';
 import {
 	CORE_USER,
