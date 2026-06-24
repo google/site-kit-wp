@@ -50,7 +50,7 @@ const { setErrorForAction, clearActionError } = errorStoreActions;
  * Advanced data breakdowns settings: a map of GA4 property ID to enabled flag.
  *
  * @since 1.181.0
- * @since n.e.x.t Stored a per-property map instead of a single `enabled` flag.
+ * @since 1.182.0 Stored a per-property map instead of a single `enabled` flag.
  */
 export interface AdvancedDataBreakdownsSettings {
 	[ propertyID: string ]: boolean;
@@ -72,7 +72,7 @@ type Action = {
  * Checks that advanced data breakdowns settings are an object whose values are all booleans.
  *
  * @since 1.181.0
- * @since n.e.x.t Validated a per-property map of enabled flags.
+ * @since 1.182.0 Validated a per-property map of enabled flags.
  *
  * @param  settings Advanced data breakdowns settings to validate.
  * @return {void}
@@ -161,7 +161,7 @@ const baseActions = {
 	 * Sets the advanced data breakdowns enabled flags for one or more properties in local state.
 	 *
 	 * @since 1.181.0
-	 * @since n.e.x.t Took a property-to-boolean map, so one call can set several properties.
+	 * @since 1.182.0 Took a property-to-boolean map, so one call can set several properties.
 	 *
 	 * @param settings A map of GA4 property ID to enabled flag, for example `{ '123456789': true }`.
 	 * @return Redux-style action.
@@ -281,7 +281,7 @@ const baseSelectors = {
 	 * Checks whether advanced data breakdowns is enabled for the given property.
 	 *
 	 * @since 1.181.0
-	 * @since n.e.x.t Read the flag per property, not as a single shared flag.
+	 * @since 1.182.0 Read the flag per property, not as a single shared flag.
 	 *
 	 * @param state      Data store's state.
 	 * @param propertyID The GA4 property ID to check.

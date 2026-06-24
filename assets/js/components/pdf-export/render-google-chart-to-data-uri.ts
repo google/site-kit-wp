@@ -73,7 +73,7 @@ export interface GoogleVisualization {
 /**
  * Reads the (untyped) `google.visualization` global.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @return {Object|undefined} The `google.visualization` namespace, when present.
  */
@@ -90,7 +90,7 @@ export function getVisualization(): GoogleVisualization | undefined {
  *
  * `getImageURI()` only emits PNG; JPEG keeps the embedded PDF image small.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param {string} pngDataURI PNG data URI produced by `chart.getImageURI()`.
  * @return {Promise<string>} A `data:image/jpeg;base64,...` data URI.
@@ -135,7 +135,7 @@ function convertPNGToJPEG( pngDataURI: string ): Promise< string > {
  * re-encodes it through a canvas. The container is always removed, on both
  * success and failure, so repeated exports cannot leak detached nodes.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param {Object}      params                 Render parameters.
  * @param {string}      params.chartType       Google Charts class name to instantiate.

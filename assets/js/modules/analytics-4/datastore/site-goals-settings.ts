@@ -343,7 +343,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether a given widget category is active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param {Object} state    Data store's state.
 	 * @param {string} category Widget category slug (e.g. 'lead' or 'ecommerce').

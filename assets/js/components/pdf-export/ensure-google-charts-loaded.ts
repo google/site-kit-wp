@@ -36,7 +36,7 @@ interface GoogleChartsGlobal {
 /**
  * Reads the (untyped) `google` global as the narrow slice this loader needs.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @return {Object|undefined} The `google` global, when present.
  */
@@ -47,7 +47,7 @@ function getGoogle(): GoogleChartsGlobal | undefined {
 /**
  * Injects the Google Charts CDN loader script into the document head.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @return {Promise<void>} Resolves on the script's `load` event, rejects on `error`.
  */
@@ -69,7 +69,7 @@ function injectLoaderScript(): Promise< void > {
 /**
  * Loads the CDN loader (if needed) and the `corechart` package.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @return {Promise<void>} Resolves once Google Charts is ready to draw.
  */
@@ -112,7 +112,7 @@ let loadPromise: Promise< void > | null = null;
  * in-flight promise so repeat exports in the same session do not re-fetch the
  * loader script. A failed load resets the cache so a later attempt can retry.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @return {Promise<void>} Resolves once `google.visualization` is ready.
  */

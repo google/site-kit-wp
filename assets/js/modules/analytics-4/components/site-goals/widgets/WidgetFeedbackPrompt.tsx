@@ -42,7 +42,7 @@ interface WidgetFeedbackPromptProps {
  * Renders the "Is this section helpful?" prompt with thumbs feedback
  * for a Site Goals widget card.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param props        Component props.
  * @param props.voteID Identifier used to build the survey trigger string.

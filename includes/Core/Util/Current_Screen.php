@@ -15,7 +15,7 @@ use WP_Screen;
 /**
  * Helper for safely accessing the current `WP_Screen`.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ class Current_Screen {
 	 * (where `wp-admin/includes/screen.php` has not been loaded and
 	 * `get_current_screen()` is not defined).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @return WP_Screen|null Current `WP_Screen` instance, or null when called outside the admin.
 	 */

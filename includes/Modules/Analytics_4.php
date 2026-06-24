@@ -211,7 +211,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	/**
 	 * Site-wide Site_Goals_Site_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @var Site_Goals_Site_Settings
 	 */

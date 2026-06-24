@@ -59,7 +59,7 @@ function defaultValidateParams() {}
  * must not use a `signal` key, because the helper finds the fetch options
  * by that key.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param {Array} args All arguments passed to the generated `fetchX` action.
  * @return {Object} An object with `fetchArgs`, the arguments that build the
@@ -130,7 +130,7 @@ const {
  * - The resolver for 'getSomeData' should call 'fetchGetSomeData'.
  *
  * @since 1.10.0
- * @since n.e.x.t Accept an optional fetch options object on the generated `fetchX` action, such as `{ signal }` to cancel the request, and pass it to `controlCallback` as a second argument.
+ * @since 1.182.0 Accept an optional fetch options object on the generated `fetchX` action, such as `{ signal }` to cancel the request, and pass it to `controlCallback` as a second argument.
  * @private
  *
  * @param {Object}   args                   Arguments for creating the fetch store.
