@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import lazyWithPreload from './lazyWithPreload';
+import lazyWithPreload from './lazy-with-preload';
 
 describe( 'lazyWithPreload', () => {
 	it( 'adds the import factory as the preload method', () => {
