@@ -91,7 +91,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	 * Overrides the base implementation to exclude events already handled by the Google Analytics
 	 * for WooCommerce add-on, so the internal feature metric only reflects what Site Kit itself tracks.
 	 *
-	 * @since 1.182.0
+	 * @since n.e.x.t
 	 *
 	 * @return array List of event names.
 	 */
