@@ -86,6 +86,20 @@ class WooCommerce extends Conversion_Events_Provider {
 	}
 
 	/**
+	 * Gets the conversion event names directly tracked by Site Kit's Plugin Conversion Reporting feature.
+	 *
+	 * Overrides the base implementation to exclude events already handled by the Google Analytics
+	 * for WooCommerce add-on, so the internal feature metric only reflects what Site Kit itself tracks.
+	 *
+	 * @since 1.182.0
+	 *
+	 * @return array List of event names.
+	 */
+	public function get_site_kit_event_names() {
+		return $this->events_to_track();
+	}
+
+	/**
 	 * Gets the enhanced conversion event names that are tracked by this provider.
 	 *
 	 * @since 1.165.0
