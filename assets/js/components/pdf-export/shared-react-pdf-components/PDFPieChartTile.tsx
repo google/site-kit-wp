@@ -132,10 +132,10 @@ const PDFPieChartTile: FC< PDFPieChartTileProps > = ( {
 						{ rows.map( ( { label, percentage, color } ) => (
 							<View key={ label } style={ tileStyles.legendRow }>
 								<View
-									style={ [
-										tileStyles.swatch,
-										{ backgroundColor: color },
-									] }
+									style={ {
+										...tileStyles.swatch,
+										backgroundColor: color,
+									} }
 								/>
 								<Text style={ tileStyles.label }>
 									{ label }
