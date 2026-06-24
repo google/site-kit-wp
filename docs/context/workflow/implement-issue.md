@@ -1,7 +1,7 @@
 # Implementing a GitHub Issue — Playbook
 
 This is the **single source of truth** for implementing a GitHub issue in Site Kit by
-Google. Every AI coding tool (Claude Code, Gemini CLI, Antigravity) points at this file
+Google. Every AI coding tool (Gemini CLI, Antigravity, Claude Code) points at this file
 through a thin per-tool adapter, so the procedure stays identical everywhere. When you
 update the process, update it **here** — not in the adapters.
 
@@ -36,8 +36,7 @@ at requirements.
 Classify the work and identify the affected module:
 
 - **JS-only** / **PHP-only** / **full-stack**.
-- Which module? JS lives in `assets/js/modules/<slug>/`, PHP in `includes/Modules/<Module_Name>/`
-  (plus core code in `assets/js/googlesitekit/` and `includes/Core/`).
+- Which module? JS lives in `assets/js/`, PHP in `includes/`.
 
 Study an existing, similar feature before writing anything — match its structure and idioms.
 
@@ -80,25 +79,14 @@ Read **only** what the issue touches. Map:
 | Prompts & dismissals | `prompts-and-dismissals.md` |
 | PHPUnit integration tests | `phpunit.md` |
 
-## Step 4 — Create a branch
-
-Branch off `develop` (the base for all feature work):
-
-```bash
-git checkout develop && git pull
-git checkout -b <type>/<issue-number>-<short-slug>
-```
-
-`<type>` is `enhancement`, `fix`, `bug`, or `infrastructure` (match the issue's nature, e.g.
-`enhancement/12868-track-learn-more`).
-
-## Step 5 — Implement
+## Step 4 — Implement
 
 Follow the conventions you loaded in Step 3. In addition:
 
-- **Co-locate tests.** Add `*.test.js` / `*.test.tsx` next to each JS source file; add
-  `*Test.php` under the mirroring path in `tests/phpunit/integration/`.
-- **Storybook.** Add a `*.stories.js` next to any new UI component (and update VRT
+- **Co-locate tests.** Add `*.test.js` / `*.test.ts` / `*.test.tsx` next to each
+  JS or Typescript source file; add `*Test.php` under the mirroring path in
+  `tests/phpunit/integration/`.
+- **Storybook.** Add a `*.stories.ts` next to any new UI component (and update VRT
   references where relevant — see Storybook docs).
 - **Styles.** Put SCSS under `assets/sass/`.
 - **Feature flags.** Gate not-yet-shippable work behind a flag in `feature-flags.json`
@@ -106,14 +94,14 @@ Follow the conventions you loaded in Step 3. In addition:
 - Cover every Implementation Brief checkbox and Acceptance criterion. Implement the
   **Test Coverage** items as real tests.
 
-## Step 6 — Self-review
+## Step 5 — Self-review
 
 Before verifying, review your own diff against `review-checklist.md` (in this directory).
 Fix every requirements gap and convention violation you find; address critical/high quality
 issues. The bar is: all acceptance criteria met, all relevant conventions followed, tests
 written and passing.
 
-## Step 7 — Verify
+## Step 6 — Verify
 
 Run, and fix anything that fails:
 
@@ -124,7 +112,7 @@ Run, and fix anything that fails:
   - JS: `npm -w tests/js run test:js -- <path/to/file.test.js>`
   - PHP: `composer test -- --filter <TestClassName>`
 
-## Step 8 — Wrap up
+## Step 7 — Wrap up
 
 - Surface the **Changelog entry** sentence from the issue for the eventual PR description.
 - Summarize what changed: files created/modified/deleted, how acceptance criteria are met,

@@ -14,8 +14,8 @@ When the user asks to implement, build, or work on a GitHub issue / feature by n
 **`docs/context/workflow/review-checklist.md`**. Read only the `docs/context/{js,php}`
 convention docs the issue touches.
 
-Key guardrails: branch off `develop`; co-locate tests and Storybook stories; run lint, the
-specific test files touched, and `npm run build:dev`; and **never commit, push, or open a PR
+Key guardrails: co-locate tests and Storybook stories; run lint, the specific test
+files touched, and `npm run build:dev`; and **never commit, push, or open a PR
 unless explicitly asked**.
 
 For a full end-to-end run, prefer the `/implement-issue` workflow.

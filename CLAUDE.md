@@ -16,7 +16,14 @@ equivalents for the other tools follow the single shared playbook:
 - Review rubric: `docs/context/workflow/review-checklist.md`
 - Convention reference (read only what the issue touches): `docs/context/js/`, `docs/context/php/`
 
-To review a pull request, use `/review-pr <number>`.
+## Reviewing a pull request
+
+When asked to review a pull request by number, the **`review-pr`** skill activates
+automatically (or invoke `/review-pr <number>`). It follows the single shared playbook:
+
+- Procedure: `docs/context/workflow/review-pr.md`
+- Review rubric: `docs/context/workflow/review-checklist.md`
+- Convention reference (read only what the PR touches): `docs/context/js/`, `docs/context/php/`
 
 ## Working notes for Claude Code
 
