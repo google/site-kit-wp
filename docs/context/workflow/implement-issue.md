@@ -86,7 +86,7 @@ Follow the conventions you loaded in Step 3. In addition:
 - **Co-locate tests.** Add `*.test.js` / `*.test.ts` / `*.test.tsx` next to each
   JS or Typescript source file; add `*Test.php` under the mirroring path in
   `tests/phpunit/integration/`.
-- **Storybook.** Add a `*.stories.ts` next to any new UI component (and update VRT
+- **Storybook.** Add a `*.stories.js` or `*.stories.tsx` next to any new UI component (and update VRT
   references where relevant — see Storybook docs).
 - **Styles.** Put SCSS under `assets/sass/`.
 - **Feature flags.** Gate not-yet-shippable work behind a flag in `feature-flags.json`
