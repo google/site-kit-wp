@@ -35,6 +35,11 @@ import {
 } from '@tests/js/test-utils';
 import SettingsModules from './SettingsModules';
 
+jest.mock( './SettingsAdmin', () => {
+	const { mockCreateComponent } = require( '@tests/js/mock-component-utils' );
+	return mockCreateComponent( 'SettingsAdmin' );
+} );
+
 describe( 'SettingsModules', () => {
 	// Create hash history to interact with HashRouter using `history.push`
 	const history = createHashHistory();
