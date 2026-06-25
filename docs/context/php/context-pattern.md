@@ -6,7 +6,7 @@ The Context pattern in Site Kit provides a centralized service container that of
 
 The Context is a central object that encapsulates all environment-specific information and provides a consistent API for accessing plugin-related data. It's the first dependency injected into almost every Site Kit class.
 
-**Location**: `includes/Context.php:1-530`
+**Location**: `includes/Context.php`
 
 ## Core Responsibilities
 
@@ -76,7 +76,7 @@ $script_url = $context->url( 'dist/assets/js/googlesitekit-dashboard.js' );
 // Result: https://example.com/wp-content/plugins/google-site-kit/dist/assets/js/googlesitekit-dashboard.js
 ```
 
-**Location**: `includes/Context.php:92-116`
+**Location**: `path()` at `includes/Context.php:94-96`, `url()` at `includes/Context.php:105-107`
 
 #### Admin URLs
 
@@ -106,7 +106,9 @@ $settings_url = $context->admin_url( 'settings', array(
 // Result: https://example.com/wp-admin/admin.php?page=googlesitekit-settings&slug=analytics-4&reAuth=1
 ```
 
-**Location**: `includes/Context.php:128-158`
+The `page` query arg is always derived from the slug (`Core\Admin\Screens::PREFIX . $slug`, i.e. `googlesitekit-{slug}`); any `page` key passed in `$query_args` is ignored. In network mode the base URL is `network_admin_url( 'admin.php' )` instead of `admin_url( 'admin.php' )`.
+
+**Location**: `includes/Context.php:129-145`
 
 ### 2. Environment Detection
 
@@ -121,12 +123,15 @@ $settings_url = $context->admin_url( 'settings', array(
 public function is_amp()
 
 /**
- * Get the AMP mode for the site.
+ * Get the current AMP mode.
  *
- * \@return string 'primary', 'secondary', or empty string if not AMP.
+ * \@return bool|string 'primary' (standard mode), 'secondary' (transitional/reader
+ *                     mode or Web Stories active), or false if AMP is not active.
  */
 public function get_amp_mode()
 ```
+
+The string values returned by `get_amp_mode()` correspond to the `Context::AMP_MODE_PRIMARY` (`'primary'`) and `Context::AMP_MODE_SECONDARY` (`'secondary'`) class constants.
 
 **Usage Example**:
 
@@ -137,14 +142,14 @@ if ( $context->is_amp() ) {
 }
 
 $amp_mode = $context->get_amp_mode();
-if ( 'primary' === $amp_mode ) {
-    // Site is AMP-first
-} elseif ( 'secondary' === $amp_mode ) {
-    // Site has paired AMP
+if ( Context::AMP_MODE_PRIMARY === $amp_mode ) {
+    // Site is AMP-first (standard mode)
+} elseif ( Context::AMP_MODE_SECONDARY === $amp_mode ) {
+    // Site has paired AMP (transitional/reader mode)
 }
 ```
 
-**Location**: `includes/Context.php:291-341`
+**Location**: `is_amp()` at `includes/Context.php:308-314`, `get_amp_mode()` at `includes/Context.php:326-338`
 
 #### Network Mode Detection
 
@@ -180,7 +185,9 @@ if ( $context->is_network_active() ) {
 }
 ```
 
-**Location**: `includes/Context.php:369-398`
+Note: `is_network_mode()` returns the value of the `googlesitekit_is_network_mode` filter (added in 1.86.0), which defaults to `false` because Site Kit does not yet support a network mode. It always returns `false` when the plugin is not network active.
+
+**Location**: `is_network_mode()` at `includes/Context.php:154-170`, `is_network_active()` at `includes/Context.php:414-429`
 
 ### 3. Site Information
 
@@ -207,25 +214,39 @@ $site_url = $context->get_reference_site_url();
 // This URL is sent to Google Analytics for entity-specific data
 ```
 
-**Location**: `includes/Context.php:197-203`
+**Location**: `includes/Context.php:203-205`
 
-**Implementation**: `includes/Context.php:420-458`
+**Implementation**: `includes/Context.php:466-498`
 
 ```php
 private function filter_reference_url( $url = '' ) {
-    if ( empty( $url ) ) {
-        $url = $this->get_canonical_home_url();
-    }
+    $site_url = untrailingslashit( $this->get_canonical_home_url() );
 
     /**
-     * Filters the reference URL.
+     * Filters the reference site URL to use for stats.
      *
-     * Allows modification of the URL used for entity-specific data.
+     * This can be used to override the current site URL, for example when using the
+     * plugin on a non-public site, such as in a staging environment.
      */
-    $url = apply_filters( 'googlesitekit_analytics_reference_url', $url );
+    $reference_site_url = apply_filters( 'googlesitekit_site_url', $site_url );
+    $reference_site_url = untrailingslashit( $reference_site_url );
 
-    // Ensure URL is properly formatted
-    return esc_url_raw( trailingslashit( $url ) );
+    // Ensure this is not empty.
+    if ( empty( $reference_site_url ) ) {
+        $reference_site_url = $site_url;
+    }
+
+    // If no URL given, just return the reference site URL.
+    if ( empty( $url ) ) {
+        return $reference_site_url;
+    }
+
+    // Replace the site URL with the reference site URL.
+    if ( $reference_site_url !== $site_url ) {
+        $url = str_replace( $site_url, $reference_site_url, $url );
+    }
+
+    return $url;
 }
 ```
 
@@ -244,32 +265,41 @@ public function get_canonical_home_url()
 
 ```php
 $home_url = $context->get_canonical_home_url();
-// Result: https://example.com (with proper scheme detection)
+// Result: https://example.com
 ```
 
-**Location**: `includes/Context.php:170-195`
+Returns the value of the `googlesitekit_canonical_home_url` filter (added in 1.18.0), which defaults to `home_url()`. Plugins that dynamically modify `home_url()` per context (e.g. multilingual plugins) can use this filter to keep the URL considered by Site Kit stable.
+
+**Location**: `includes/Context.php:181-194`
 
 #### Reference Entity
 
 ```php
 /**
- * Get the reference entity for the current context.
+ * Get the entity for the current request context.
  *
- * \@return array Entity information array.
+ * \@return Entity|null The current entity, or null if none could be determined.
  */
 public function get_reference_entity()
 ```
+
+This returns a `Google\Site_Kit\Core\Util\Entity` instance (not an array), or `null` when no entity can be determined. The `Entity` class exposes `get_url()`, `get_type()`, `get_title()`, `get_id()`, and `get_mode()`.
 
 **Usage Example**:
 
 ```php
 $entity = $context->get_reference_entity();
-// For post: array( 'type' => 'post', 'id' => 123, 'title' => 'Post Title' )
-// For term: array( 'type' => 'term', 'id' => 456, 'title' => 'Category Name' )
-// For front page: array( 'type' => 'front_page' )
+if ( $entity ) {
+    $url   = $entity->get_url();   // e.g. https://example.com/?p=123
+    $type  = $entity->get_type();  // e.g. 'post', 'term', 'blog'
+    $title = $entity->get_title(); // e.g. 'Post Title'
+    $id    = $entity->get_id();    // e.g. 123
+}
 ```
 
-**Location**: `includes/Context.php:205-213`
+To resolve an entity from an arbitrary URL instead of the current context, use `get_reference_entity_from_url( $url )`.
+
+**Location**: `includes/Context.php:219-230`
 
 ### 4. Localization
 
@@ -279,12 +309,18 @@ $entity = $context->get_reference_entity();
 /**
  * Get locale for a specific context.
  *
- * \@param string $context 'site' or 'user'. Default 'site'.
- * \@param string $format  'language-code' or 'default'. Default 'default'.
- * \@return string Locale string.
+ * \@param string $context Optional. 'site' or 'user'. Default 'site'.
+ * \@param string $format  Optional. 'default', 'language-code', or 'language-variant'. Default 'default'.
+ * \@return string Locale in the required format.
  */
 public function get_locale( $context = 'site', $format = 'default' )
 ```
+
+The `$context` selects which WordPress core function is called: `'user'` uses `get_user_locale()`, anything else uses `get_locale()`. The `$format` controls the returned shape:
+
+- `'default'` returns the raw WordPress locale, e.g. `en_US`.
+- `'language-code'` returns the part before the first underscore, e.g. `en`.
+- `'language-variant'` returns the first two underscore-delimited segments, e.g. `en_US`.
 
 **Usage Example**:
 
@@ -295,14 +331,14 @@ $locale = $context->get_locale();
 
 // Get site locale as language code
 $lang = $context->get_locale( 'site', 'language-code' );
-// Result: en-US
+// Result: en
 
 // Get user locale
 $user_locale = $context->get_locale( 'user' );
 // Result: es_ES (if user has Spanish preference)
 ```
 
-**Location**: `includes/Context.php:460-503`
+**Location**: `includes/Context.php:509-530`
 
 ### 5. Input Access
 
@@ -336,13 +372,15 @@ $action = $context->input()->filter( INPUT_POST, 'action' );
 $id = $context->input()->filter( INPUT_GET, 'id', FILTER_VALIDATE_INT );
 ```
 
-**Location**: `includes/Context.php:114-116` (Context method) and `includes/Core/Util/Input.php` (Input class)
+`filter()` is a method of the `Input` class, reached via `$context->input()`. `Input::filter()` wraps PHP's `filter_input()` and adds a fallback for `INPUT_ENV`/`INPUT_SERVER` in environments where `filter_input()` does not work for those types.
+
+**Location**: `input()` (Context method) at `includes/Context.php:116-118`; `filter()` (Input class) at `includes/Core/Util/Input.php:64-80`
 
 ## Common Usage Patterns
 
 ### Pattern 1: Asset URL Generation
 
-**Location**: `includes/Core/Assets/Assets.php:200-250`
+**Location**: `includes/Core/Assets/Assets.php` (see `get_assets()` and the `dist/assets/` base URL built from `$this->context->url( 'dist/assets/' )`)
 
 ```php
 class Assets {
@@ -376,7 +414,7 @@ class Assets {
 
 ### Pattern 2: Environment-Aware Data Access
 
-**Location**: `includes/Core/Storage/Options.php:45-85`
+**Location**: `includes/Core/Storage/Options.php` (`Options` implements `Options_Interface`)
 
 ```php
 final class Options implements Options_Interface {
@@ -404,20 +442,30 @@ final class Options implements Options_Interface {
 
 ### Pattern 3: Admin Navigation
 
-**Location**: `includes/Core/Admin/Notice.php`
+**Location**: `includes/Core/Admin/Plugin_Action_Links.php`
 
 ```php
-class Notice {
+class Plugin_Action_Links {
     private $context;
 
-    public function render_activation_notice() {
-        $dashboard_url = $this->context->admin_url( 'dashboard' );
-        $settings_url  = $this->context->admin_url( 'settings' );
+    public function __construct( Context $context ) {
+        $this->context = $context;
+    }
 
-        printf(
-            '<a href="%s">View Dashboard</a> | <a href="%s">Settings</a>',
-            esc_url( $dashboard_url ),
-            esc_url( $settings_url )
+    public function register() {
+        add_filter(
+            'plugin_action_links_' . GOOGLESITEKIT_PLUGIN_BASENAME,
+            function ( $links ) {
+                $settings_link = sprintf(
+                    '<a href="%s">%s</a>',
+                    esc_url( $this->context->admin_url( 'settings' ) ),
+                    esc_html__( 'Settings', 'google-site-kit' )
+                );
+
+                array_unshift( $links, $settings_link );
+
+                return $links;
+            }
         );
     }
 }
@@ -425,47 +473,54 @@ class Notice {
 
 ### Pattern 4: Entity-Specific Data
 
-**Location**: Module data requests
+**Location**: Module code (e.g. `includes/Modules/Analytics_4.php`)
+
+Modules use the reference URL and entity to scope data to the current context. The reference site URL is the most common value passed through (for example as `reference_site_url` in tag/inline data), while the entity gives the URL, type, title, and ID of the current page when needed.
 
 ```php
 class Analytics_4 extends Module {
-    protected function create_data_request( Data_Request $data ) {
-        $base_url = $this->context->get_reference_site_url();
-        $entity   = $this->context->get_reference_entity();
+    private function get_reference_data() {
+        // Reference site URL, honoring the googlesitekit_site_url filter.
+        $site_url = $this->context->get_reference_site_url();
 
-        $request_data = array(
-            'url'    => $base_url,
-            'entity' => $entity,
+        // Entity for the current request (an Entity object, or null).
+        $entity = $this->context->get_reference_entity();
+
+        $data = array(
+            'reference_site_url' => $site_url,
         );
 
-        // Use entity information for scoped analytics queries
-        return $this->get_service( 'analyticsdata' )->properties_runReport(
-            $property_id,
-            $request_data
-        );
+        if ( $entity ) {
+            $data['url']   = $entity->get_url();
+            $data['title'] = $entity->get_title();
+        }
+
+        return $data;
     }
 }
 ```
 
 ## Context Initialization
 
-The Context object is initialized once in the main plugin file and passed throughout the application.
+The Context object is created once by the main `Plugin` class and passed throughout the application. It is constructed from the plugin main file in `Plugin::__construct()` and exposed via `Plugin::context()`.
 
-**Location**: `includes/Plugin.php:56-65`
+**Location**: `includes/Plugin.php` (`__construct()` at lines 48-50, `register()` from line 68)
 
 ```php
 final class Plugin {
     private $context;
 
-    private function __construct( $main_file ) {
+    public function __construct( $main_file ) {
         $this->context = new Context( $main_file );
     }
 
+    public function context() {
+        return $this->context;
+    }
+
     public function register() {
-        // Pass context to all subsystems
-        $options      = new Core\Storage\Options( $this->context );
-        $user_options = new Core\Storage\User_Options( $this->context, get_current_user_id() );
-        $assets       = new Core\Assets\Assets( $this->context );
+        // Pass context to all subsystems.
+        $options = new Core\Storage\Options( $this->context );
 
         // ... more initialization
     }

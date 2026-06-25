@@ -23,20 +23,19 @@ tests/phpunit/
 ├── bin/
 │   └── install-wp-tests.sh    # Test environment setup script
 ├── includes/
-│   ├── TestCase.php           # Base test class
+│   ├── TestCase.php                      # Base test class
+│   ├── FakeHttp.php                      # Google API HTTP mock
+│   ├── MethodSpy.php                     # Method invocation recorder
+│   ├── ModulesHelperTrait.php            # Module test helpers
+│   ├── UserAuthenticationTrait.php       # Auth test helpers
+│   ├── Fake_Site_Connection_Trait.php    # OAuth connection fakes
+│   ├── RestTestTrait.php                 # REST route registration helper
 │   ├── Core/
 │   │   └── Modules/
-│   │       ├── SettingsTestCase.php      # Settings test base class
 │   │       ├── FakeModule.php            # Module fake implementation
 │   │       └── Module_With_*_ContractTests.php  # Contract test traits
-│   ├── Fake/
-│   │   ├── FakeHttp.php       # Google API HTTP mock
-│   │   ├── MethodSpy.php      # Method invocation recorder
-│   │   └── ...                # Other test doubles
-│   └── Utils/
-│       ├── ModulesHelperTrait.php        # Module test helpers
-│       ├── UserAuthenticationTrait.php    # Auth test helpers
-│       └── ...                # Other utility traits
+│   └── Modules/
+│       └── SettingsTestCase.php          # Settings test base class
 └── integration/
     ├── Core/                  # Core functionality tests
     │   ├── Authentication/
@@ -65,10 +64,29 @@ use WP_UnitTestCase;
 class TestCase extends WP_UnitTestCase {
     protected $preserveGlobalState = false;
 
+    public static function set_up_before_class() {
+        parent::set_up_before_class();
+        // Loads feature flags from feature-flags.json and resets them for the class.
+        self::reset_feature_flags();
+    }
+
+    public static function tear_down_after_class() {
+        parent::tear_down_after_class();
+        self::reset_feature_flags();
+    }
+
     public function set_up() {
         parent::set_up();
 
-        // Initialize wp_scripts and wp_styles for each test
+        // Catch redirections with an exception (prevents exit/die, enables assertions).
+        add_filter( 'wp_redirect_status', function ( $status, $location ) {
+            $e = new RedirectException( "Intercepted attempt to redirect to $location" );
+            $e->set_location( $location );
+            $e->set_status( $status );
+            throw $e;
+        }, 10, 2 );
+
+        // Initialize the global $wp_scripts and $wp_styles.
         wp_scripts();
         wp_styles();
     }
@@ -76,10 +94,13 @@ class TestCase extends WP_UnitTestCase {
     public function tear_down() {
         parent::tear_down();
 
-        // Clean up globals
-        unset( $GLOBALS['current_screen'] );
-        $GLOBALS['wp_scripts'] = null;
-        $GLOBALS['wp_styles'] = null;
+        // Clear screen related globals.
+        unset( $GLOBALS['current_screen'], $GLOBALS['taxnow'], $GLOBALS['typenow'] );
+
+        // Clean up scripts and styles hooks to avoid interference between tests.
+        global $wp_scripts, $wp_styles;
+        $wp_scripts = null;
+        $wp_styles  = null;
     }
 }
 ```
@@ -103,11 +124,8 @@ namespace Google\Site_Kit\Tests\Modules;
 use Google\Site_Kit\Tests\TestCase;
 
 abstract class SettingsTestCase extends TestCase {
-    protected $object;
 
     /**
-     * Get the option name for the setting.
-     *
      * \@return string
      */
     abstract protected function get_option_name();
@@ -117,12 +135,17 @@ abstract class SettingsTestCase extends TestCase {
 
         $option_name = $this->get_option_name();
 
-        // Unregister the setting
-        unregister_setting( 'group', $option_name );
+        // Unregister setup that occurred during bootstrap.
+        $registered_settings = get_registered_settings();
+        if ( isset( $registered_settings[ $option_name ] ) ) {
+            unregister_setting( $option_name, $option_name );
+        }
 
         // Remove all filters for the option
-        remove_all_filters( "sanitize_option_{$option_name}" );
-        remove_all_filters( "default_option_{$option_name}" );
+        remove_all_filters( "option_$option_name" );
+        remove_all_filters( "site_option_$option_name" );
+        remove_all_filters( "default_option_$option_name" );
+        remove_all_filters( "default_site_option_$option_name" );
 
         // Delete option and site_option
         delete_option( $option_name );
@@ -267,12 +290,12 @@ public function tear_down() {
 
 ### FakeHttp - Google API Mocking
 
-**Location**: `tests/phpunit/includes/Fake/FakeHttp.php`
+**Location**: `tests/phpunit/includes/FakeHttp.php`
 
 Mock Google API responses:
 
 ```php
-use Google\Site_Kit\Tests\Fake\FakeHttp;
+use Google\Site_Kit\Tests\FakeHttp;
 
 public function test_get_accounts() {
     $google_client = new Google_Client();
@@ -300,12 +323,12 @@ public function test_get_accounts() {
 
 ### MethodSpy - Invocation Recording
 
-**Location**: `tests/phpunit/includes/Fake/MethodSpy.php`
+**Location**: `tests/phpunit/includes/MethodSpy.php`
 
 Record method calls for verification:
 
 ```php
-use Google\Site_Kit\Tests\Fake\MethodSpy;
+use Google\Site_Kit\Tests\MethodSpy;
 
 public function test_method_called_with_args() {
     $spy = new MethodSpy();
@@ -348,12 +371,12 @@ public function test_module_registration() {
 
 ### ModulesHelperTrait
 
-**Location**: `tests/phpunit/includes/Utils/ModulesHelperTrait.php`
+**Location**: `tests/phpunit/includes/ModulesHelperTrait.php`
 
 Module activation and connection helpers:
 
 ```php
-use Google\Site_Kit\Tests\Utils\ModulesHelperTrait;
+use Google\Site_Kit\Tests\ModulesHelperTrait;
 
 class MyTest extends TestCase {
     use ModulesHelperTrait;
@@ -432,23 +455,18 @@ class REST_Controller_Test extends TestCase {
 
 ### UserAuthenticationTrait
 
-**Location**: `tests/phpunit/includes/Utils/UserAuthenticationTrait.php`
+**Location**: `tests/phpunit/includes/UserAuthenticationTrait.php`
 
 Set user access tokens:
 
 ```php
-use Google\Site_Kit\Tests\Utils\UserAuthenticationTrait;
+use Google\Site_Kit\Tests\UserAuthenticationTrait;
 
 class MyTest extends TestCase {
     use UserAuthenticationTrait;
 
     public function test_authenticated_api_request() {
-        $access_token = array(
-            'access_token' => 'test-access-token',
-            'expires_in'   => 3600,
-        );
-
-        $this->set_user_access_token( $this->user->ID, $access_token );
+        $this->set_user_access_token( $this->user->ID, 'test-access-token' );
 
         $this->assertTrue( $this->authentication->is_authenticated() );
     }
@@ -794,13 +812,13 @@ class Analytics_4Test extends TestCase {
 
 ```bash
 # Run only module tests
-composer test:php -- --group=Modules
+composer test -- --group=Modules
 
 # Run only Analytics tests
-composer test:php -- --group=Analytics
+composer test -- --group=Analytics
 
 # Exclude multisite tests
-composer test:php -- --exclude-group=ms-required
+composer test -- --exclude-group=ms-required
 ```
 
 ## WordPress Test Configuration
@@ -971,32 +989,44 @@ The bootstrap file:
 ### Run All Tests
 
 ```bash
-composer test:php
+composer test
+```
+
+### Run Specific Test Class
+
+```bash
+composer test -- --filter SettingsTest
 ```
 
 ### Run Specific Test File
 
 ```bash
-composer test:php tests/phpunit/integration/Modules/Analytics_4/SettingsTest.php
+composer test -- tests/phpunit/integration/Modules/Analytics_4/SettingsTest.php
 ```
 
 ### Run Specific Test Method
 
 ```bash
-composer test:php --filter=test_register
+composer test -- --filter=test_register
 ```
 
 ### Run Tests with Coverage
 
 ```bash
-composer test:php -- --coverage-html coverage/
+composer test -- --coverage-html coverage/
 ```
 
 ### Run Tests for Specific Group
 
 ```bash
-composer test:php -- --group=Modules
-composer test:php -- --group=Analytics
+composer test -- --group=Modules
+composer test -- --group=Analytics
+```
+
+### Run Multisite Tests
+
+```bash
+composer test:multisite
 ```
 
 ## Code Style

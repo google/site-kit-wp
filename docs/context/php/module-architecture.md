@@ -16,11 +16,11 @@ The module architecture provides:
 
 ### Base Module Class
 
-**Location**: `includes/Core/Modules/Module.php:1-819`
+**Location**: `includes/Core/Modules/Module.php`
 
 All modules extend the abstract `Module` base class which provides:
 
--   Common dependencies (Context, Options, User_Options, Authentication, Assets)
+-   Common dependencies (Context, Options, User_Options, Authentication, Assets, Transients)
 -   Abstract methods that modules must implement
 -   Shared functionality for all modules
 
@@ -31,6 +31,7 @@ abstract class Module {
     protected $user_options;
     protected $authentication;
     protected $assets;
+    protected $transients;
 
     /**
      * Constructor.
@@ -47,10 +48,12 @@ abstract class Module {
         $this->user_options   = $user_options ?: new User_Options( $this->context );
         $this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
         $this->assets         = $assets ?: new Assets( $this->context );
+        $this->transients     = new Transients( $this->context );
+        $this->info           = $this->parse_info( (array) $this->setup_info() );
     }
 
     /**
-     * Register module functionality.
+     * Registers functionality through WordPress hooks.
      */
     abstract public function register();
 
@@ -63,9 +66,9 @@ abstract class Module {
 
 ### Module Registry
 
-**Location**: `includes/Core/Modules/Modules.php:1-1015`
+**Location**: `includes/Core/Modules/Modules.php`
 
-The `Modules` class manages all available modules, handles registration, and resolves dependencies.
+The `Modules` class manages all available modules, handles registration, and resolves dependencies. The set of core module classes is declared in the private `$core_modules` map (`slug => class`) and registered through a `Module_Registry` instance, filterable via `googlesitekit_available_modules`.
 
 ```php
 final class Modules {
@@ -75,29 +78,28 @@ final class Modules {
     private $authentication;
     private $assets;
 
-    private $modules = array();
+    private $modules      = array();
     private $dependencies = array();
-    private $dependants = array();
+    private $dependants   = array();
 
     public function register() {
-        add_action( 'googlesitekit_init', function () {
-            $this->register_modules();
-        });
-    }
+        // ...settings, persistent registration and asset filters...
 
-    private function register_modules() {
-        $modules = $this->get_available_modules();
-
-        foreach ( $modules as $module ) {
-            if ( $module->is_connected() && $module->is_active() ) {
+        // Only active (or force-active) modules have register() called on them.
+        $active_modules = $this->get_active_modules();
+        array_walk(
+            $active_modules,
+            function ( Module $module ) {
                 $module->register();
             }
-        }
+        );
+
+        // ...inline data, sharing and capability filters...
     }
 }
 ```
 
-**Location**: `includes/Core/Modules/Modules.php:428-477`
+`get_active_modules()` already filters `get_available_modules()` down to force-active or option-enabled modules, so `register()` simply walks that list. There is no separate `is_active()` method on the module instances and no `googlesitekit_init`-gated `register_modules()` helper.
 
 ## Module Interfaces
 
@@ -163,13 +165,15 @@ interface Module_With_Scopes {
 
 ```php
 final class Analytics_4 extends Module implements Module_With_Scopes {
-    use Module_With_Scopes_Trait;
+    use Module_With_Scopes_Trait; // Provides register_scopes_hook().
 
-    protected function setup_scopes() {
-        return array(
-            'https://www.googleapis.com/auth/analytics.readonly',
-            'https://www.googleapis.com/auth/analytics.edit',
-        );
+    public function get_scopes() {
+        return array( self::READONLY_SCOPE );
+    }
+
+    public function register() {
+        // The trait adds the scopes to the googlesitekit_auth_scopes filter.
+        $this->register_scopes_hook();
     }
 }
 ```
@@ -226,11 +230,24 @@ Manages Google tracking tag output.
 ```php
 interface Module_With_Tag {
     /**
-     * Get the module tag instance.
-     *
-     * \@return Module_Tag
+     * Registers the tag.
      */
-    public function get_tag();
+    public function register_tag();
+
+    /**
+     * Returns the Module_Tag_Matchers instance.
+     *
+     * \@return Module_Tag_Matchers
+     */
+    public function get_tag_matchers();
+
+    /**
+     * Checks if the module tag is found in the provided content.
+     *
+     * \@param string $content Content to search for the tags.
+     * \@return bool
+     */
+    public function has_placed_tag_in_content( $content );
 }
 ```
 
@@ -238,10 +255,19 @@ interface Module_With_Tag {
 
 ```php
 final class Analytics_4 extends Module implements Module_With_Tag {
-    use Module_With_Tag_Trait;
+    use Module_With_Tag_Trait; // Provides has_placed_tag_in_content().
 
-    protected function setup_tag() {
-        return new Tag( $this->options, $this->get_settings() );
+    public function register_tag() {
+        $tag = $this->context->is_amp()
+            ? new AMP_Tag( $this->get_measurement_id(), self::MODULE_SLUG )
+            : new Web_Tag( $this->get_measurement_id(), self::MODULE_SLUG );
+
+        // ...configure and register the tag...
+        $tag->register();
+    }
+
+    public function get_tag_matchers() {
+        return new Tag_Matchers();
     }
 }
 ```
@@ -257,11 +283,11 @@ Associates module with a Google service entity (property, account, etc.).
 ```php
 interface Module_With_Service_Entity {
     /**
-     * Get the service entity access.
+     * Checks if the current user has access to the current configured service entity.
      *
-     * \@return Service_Entity_Access
+     * \@return bool|WP_Error
      */
-    public function get_service_entity();
+    public function check_service_entity_access();
 }
 ```
 
@@ -297,24 +323,28 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data {
     }
 }
 
-// Data is automatically made available to JavaScript via:
-// googlesitekit.modules['analytics-4'].propertyID
+// The Modules::inline_modules_data() callback (hooked onto the
+// googlesitekit_inline_modules_data filter) merges this under the module slug,
+// exposed to JavaScript on the _googlesitekitModulesData global, e.g.:
+// _googlesitekitModulesData['analytics-4'].propertyID
 ```
 
 #### Provides_Feature_Metrics
 
-Indicates the module provides feature-level metrics.
+Indicates the module provides feature-level metrics. This interface lives under
+`Core\Tracking`, not `Core\Modules`.
 
-**Location**: `includes/Core/Modules/Provides_Feature_Metrics.php`
+**Location**: `includes/Core/Tracking/Provides_Feature_Metrics.php`
 
-**When to use**: When the module tracks and provides metrics for specific features (e.g., top cities, top content, user engagement).
+**When to use**: When the module tracks and provides metrics for specific features (e.g., audience segmentation, conversion tracking, custom dimensions).
 
 ```php
 interface Provides_Feature_Metrics {
     /**
-     * Get the feature metrics instance.
+     * Gets feature metrics to be tracked.
      *
-     * \@return Feature_Metrics
+     * \@return array Feature metrics tracking data tracked via the
+     *               `site-management/features` endpoint.
      */
     public function get_feature_metrics();
 }
@@ -323,11 +353,22 @@ interface Provides_Feature_Metrics {
 **Usage**:
 
 ```php
-final class Analytics_4 extends Module implements Provides_Feature_Metrics {
-    use Feature_Metrics_Trait;
+use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
+use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 
-    protected function setup_feature_metrics() {
-        return new Feature_Metrics( $this );
+final class Analytics_4 extends Module implements Provides_Feature_Metrics {
+    use Feature_Metrics_Trait; // Provides register_feature_metrics().
+
+    public function get_feature_metrics() {
+        return array(
+            'analytics_adsense_linked' => $this->is_adsense_connected(),
+            // ...other metrics merged into the googlesitekit_feature_metrics filter.
+        );
+    }
+
+    public function register() {
+        // The trait hooks get_feature_metrics() into googlesitekit_feature_metrics.
+        $this->register_feature_metrics();
     }
 }
 ```
@@ -352,11 +393,14 @@ interface Module_With_Persistent_Registration {
 **Usage**:
 
 ```php
-final class Analytics extends Module implements Module_With_Persistent_Registration {
+final class Ads extends Module implements Module_With_Persistent_Registration {
     public function register_persistent() {
-        // Register migration endpoints that should be available
-        // even when the module is not fully connected
-        $this->get_migration_controller()->register();
+        // Register functionality that should run even when the module is not
+        // active, e.g. exposing inline data regardless of activation status.
+        add_filter(
+            'googlesitekit_inline_modules_data',
+            fn ( $data ) => $this->persistent_inline_modules_data( $data )
+        );
     }
 }
 ```
@@ -386,13 +430,17 @@ interface Module_With_Deactivation {
 **Usage**:
 
 ```php
-final class Analytics_4 extends Module implements Module_With_Activation {
+final class Analytics_4 extends Module implements Module_With_Activation, Module_With_Deactivation {
     public function on_activation() {
-        // Reset data availability dates
-        $this->resource_data_availability_date->reset_all();
+        // Perform setup work, e.g. clearing a related dismissed item.
+        $dismissed_items = new Dismissed_Items( $this->user_options );
+        $dismissed_items->remove( 'key-metrics-connect-ga4-cta-widget' );
+    }
 
-        // Clear caches
-        delete_transient( 'googlesitekit_analytics_4_properties' );
+    public function on_deactivation() {
+        // Clean up when the module is deactivated.
+        $this->resource_data_availability_date->reset_all_resource_dates();
+        $this->get_settings()->delete();
     }
 }
 ```

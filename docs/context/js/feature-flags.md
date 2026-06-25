@@ -9,13 +9,19 @@ Feature flags are defined in `/feature-flags.json` at the project root:
 
 ```json
 [
-  "adsPax",
-  "gtagUserData",
   "googleTagGateway",
+  "gtagUserData",
+  "pdfGeneration",
   "proactiveUserEngagement",
-  "setupFlowRefresh"
+  "rrmExpressSetup",
+  "setupFlowRefresh",
+  "setupFlowRefreshPhase4",
+  "siteGoals"
 ]
 ```
+
+This list changes over time as features are added and removed; treat
+`/feature-flags.json` itself as the source of truth for the current set.
 
 ### Server Integration
 Feature flags are passed from the server to the client via a global JavaScript variable:
@@ -51,8 +57,8 @@ React hook for feature flag checking:
 
 ```javascript
 import { useContext } from '@wordpress/element';
-import FeaturesContext from '../components/FeaturesProvider/FeaturesContext';
-import { isFeatureEnabled } from '../features';
+import FeaturesContext from '@/js/components/FeaturesProvider/FeaturesContext';
+import { isFeatureEnabled } from '@/js/features';
 
 export function useFeature( feature ) {
     const enabledFeatures = useContext( FeaturesContext );
@@ -65,7 +71,7 @@ React context for feature flags:
 
 ```javascript
 import { createContext } from '@wordpress/element';
-import { enabledFeatures } from '../../features';
+import { enabledFeatures } from '@/js/features';
 
 const FeaturesContext = createContext( enabledFeatures );
 export default FeaturesContext;
@@ -77,20 +83,26 @@ export default FeaturesContext;
 Components can conditionally render features based on flags:
 
 ```javascript
-import { useFeature } from '../../../../hooks/useFeature';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function SettingsView() {
     const gtgEnabled = useFeature( 'googleTagGateway' );
-    const paxEnabled = useFeature( 'adsPax' );
-    
+    const siteGoalsEnabled = useFeature( 'siteGoals' );
+
     return (
         <div>
             {gtgEnabled && <GoogleTagGatewaySettings />}
-            {paxEnabled && <AdsPaxConfiguration />}
+            {siteGoalsEnabled && <SiteGoalsSettings />}
         </div>
     );
 }
 ```
+
+> Internal imports use the `@/` path alias (`@/*` → `assets/*`), so
+> `useFeature` is imported from `@/js/hooks/useFeature` regardless of where the
+> consuming component lives. In TypeScript components the same hook is used
+> unchanged; type props with an interface per
+> [`component-conventions.md`](./component-conventions.md).
 
 ### Notification Level Feature Flags
 Notifications can be controlled by feature flags using the `featureFlag` property:
@@ -135,7 +147,27 @@ if (
 - Remove feature flags and conditional code after full rollout
 
 ### Testing
-Feature flags support testing through optional parameters:
-- `_enabledFeatureFlags` parameter in `isFeatureEnabled` for unit tests
-- Context providers can be mocked for component testing
-- Notification queue testing supports feature flag simulation
+Feature flags support testing through several mechanisms:
+
+- The custom `render` and `renderHook` from `@tests/js/test-utils` accept a
+  `features` option that enables flags for the duration of the test:
+
+  ```javascript
+  import { renderHook } from '@tests/js/test-utils';
+  import { useFeature } from '@/js/hooks/useFeature';
+
+  const { result } = renderHook( () => useFeature( 'siteGoals' ), {
+      features: [ 'siteGoals' ],
+  } );
+  ```
+
+  Under the hood this calls `setEnabledFeatures( features )` (also exported from
+  `@tests/js/test-utils`), which mutates the shared `enabledFeatures` `Set`. The
+  global test setup clears it in an `afterEach`, so flags don't leak between
+  tests.
+- The `isFeatureEnabled` helper accepts an optional `_enabledFeatures` `Set`
+  argument for direct unit testing.
+- `shouldNotificationBeAddedToQueue` accepts an `_enabledFeatureFlags` array
+  (passed through to `isFeatureEnabled` as a `Set`) for notification-queue tests.
+- Test files are co-located and may be `.test.js`, `.test.ts`, or `.test.tsx`.
+  Run a single file with `npm -w tests/js run test:js -- <path>`.
