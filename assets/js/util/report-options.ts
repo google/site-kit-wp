@@ -24,17 +24,22 @@ import { isPlainObject, omit } from 'lodash';
 /**
  * Internal dependencies
  */
+import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { stringifyObject } from './stringify';
 
 /**
  * Report options shared by the Analytics 4, Search Console, and AdSense stores.
  *
+ * Analytics 4 passes `ReportOptions`. The type also allows any object, because
+ * the Search Console and AdSense stores pass other shapes. Search Console has
+ * no `metrics`, which `ReportOptions` requires, and AdSense uses a different
+ * `orderby`.
+ *
  * @since n.e.x.t
  */
 export type ReportRequestOptions = {
 	reportID?: string;
-	[ key: string ]: unknown;
-};
+} & ( ReportOptions | { [ key: string ]: unknown } );
 
 /**
  * Removes `reportID` from report options.
