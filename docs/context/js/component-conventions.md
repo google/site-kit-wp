@@ -43,20 +43,22 @@ import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 
 #### Path Aliases
 
-Site Kit uses the `@/js/` path alias for cleaner, more maintainable imports. This alias maps to `assets/js/` directory:
+Site Kit uses the `@` path alias for cleaner, more maintainable imports. It is configured in `tsconfig.json` as `@/*` → `./assets/*` (and enforced by the `no-relative-import-paths` ESLint rule with `rootDir: "assets"` and `prefix: "@"`), so `@/js/...` resolves to `assets/js/...`:
 
 ```javascript
 /**
  * Internal dependencies
  */
 // Using path alias (preferred)
-import { useSelect } from '@/js/data';
+import { useSelect } from 'googlesitekit-data';
 import DataBlock from '@/js/components/DataBlock';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 // Relative paths (avoid when possible)
 import DataBlock from '../../../components/DataBlock';
 ```
+
+The data store entrypoint is the dedicated `googlesitekit-data` webpack/tsconfig alias (not a path under `@/js/`); import `useSelect`, `useDispatch`, and friends from `'googlesitekit-data'`.
 
 **Benefits of path aliases:**
 - Imports remain consistent regardless of file location
@@ -71,7 +73,7 @@ import DataBlock from '../../../components/DataBlock';
 ## Component Structure
 
 ### Function Declaration
-Use function declarations for components, not arrow functions:
+In JavaScript (`.js`/`.jsx`) files, use function declarations for components, not arrow functions (enforced by the `react/function-component-definition` ESLint rule):
 
 ```javascript
 // Correct
@@ -89,6 +91,8 @@ const ComponentName = ( { prop1, prop2 } ) => {
     // component logic
 };
 ```
+
+> In TypeScript (`.ts`/`.tsx`) files this rule is disabled, and the preferred form is the `const Component: FC<Props> = ( ... ) => { ... }` arrow function — see the [TypeScript Components](#typescript-components) section below.
 
 ### Component Naming
 - Use PascalCase for component names
@@ -111,7 +115,7 @@ function Badge( {
 
 ## PropTypes
 
-Every component must include PropTypes validation after the component definition:
+In JavaScript (`.js`/`.jsx`) files, every component must include PropTypes validation after the component definition. In TypeScript files, use a props `interface` instead of PropTypes — see the [TypeScript Components](#typescript-components) section.
 
 ```javascript
 ComponentName.propTypes = {
@@ -206,7 +210,7 @@ Site Kit is progressively migrating to TypeScript. TypeScript components follow 
 
 ### TypeScript Import Structure
 
-TypeScript components use the same import ordering but with additional type imports:
+TypeScript components use the same import ordering. Type-only imports from external packages use the same `import ...` approach as all other imports (with no `type` keyword) — this is the active project convention:
 
 ```typescript
 /**
@@ -222,8 +226,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from '@/js/data';
+import { useSelect } from 'googlesitekit-data';
 import { ComponentProps } from './SomeComponent';
+```
 
 ### Function Component with TypeScript
 
@@ -277,29 +282,51 @@ interface ReportData {
 }
 ```
 
-**Generic Types:**
+**forwardRef in TypeScript:**
+
+The TypeScript form of the `forwardRef` pattern keeps the `FC<Props>` annotation and passes the ref element and props types to `forwardRef`. `forwardRef` is still imported from `@wordpress/element`:
+
 ```typescript
-// Component with generic type
-interface SelectProps<T> {
-    options: T[];
-    value: T;
-    onChange: ( value: T ) => void;
+/**
+ * External dependencies
+ */
+import classnames from 'classnames';
+import { FC } from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import { forwardRef } from '@wordpress/element';
+
+interface GridProps {
+    alignLeft?: boolean;
+    className?: string;
 }
 
-const Select = <T extends string | number>( {
-    options,
-    value,
-    onChange,
-}: SelectProps<T> ) => {
-    // implementation
-};
+const Grid: FC< GridProps > = forwardRef< HTMLDivElement, GridProps >(
+    ( { alignLeft = false, className = '', children, ...otherProps }, ref ) => {
+        return (
+            <div
+                className={ classnames( 'mdc-layout-grid', className, {
+                    'mdc-layout-grid--align-left': alignLeft,
+                } ) }
+                { ...otherProps }
+                ref={ ref }
+            >
+                { children }
+            </div>
+        );
+    }
+);
+
+export default Grid;
 ```
 
 ### TypeScript Best Practices
 
 1. **Define interfaces for all props** - Replace PropTypes with TypeScript interfaces
 2. **Use optional properties** with `?` for non-required props
-3. **Import types** using standard `import`. Do not use `import type`
+3. **Import types** using standard `import`. Do not use `import type`; this is the active project convention
 4. **Prefer interfaces over types** for object shapes
 5. **Use FC type** for function components: `const Component: FC<Props> = ...`
 6. Colocate types for components/functions in the same file as the component/function; avoid using `types.ts` files that disconnect the types from the function to which they pertain.
@@ -316,7 +343,11 @@ When migrating from JavaScript to TypeScript:
 
 1. **Always include the file header** with the correct license information
 2. **Group imports** in the specified order with comment separators
-3. **Use function declarations** for component definitions
-4. **Always include PropTypes** for all props, marking required ones appropriately
+3. **Component definition style depends on the file type:**
+   - In `.js`/`.jsx` files, use **function declarations** for named components — the `react/function-component-definition` ESLint rule enforces this (`namedComponents: "function-declaration"`).
+   - In `.ts`/`.tsx` files, that rule is turned off, so the documented `const Component: FC<Props> = ( ... ) => { ... }` arrow form is preferred (see the TypeScript Components section).
+4. **Type your props for every component:**
+   - In `.js`/`.jsx` files, **always include PropTypes** for all props, marking required ones appropriately.
+   - In `.ts`/`.tsx` files, define a props **interface** instead of PropTypes.
 5. **Use descriptive prop names** that clearly indicate their purpose
 6. **Follow consistent naming conventions** throughout the codebase

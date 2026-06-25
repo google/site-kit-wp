@@ -1,12 +1,14 @@
 # JavaScript Testing
 
-Site Kit uses a comprehensive testing strategy with Jest for unit and integration tests, plus specialized visual regression testing through Storybook.
+Site Kit uses a comprehensive testing strategy with Jest for unit and integration tests, Playwright (migrating from legacy Puppeteer) for end-to-end tests, and specialized visual regression testing through Storybook.
 
 ## Test Organization
 
 ### Test File Structure
 
-Tests are organized following specific patterns:
+Tests are co-located with the code they cover. Test files may be `.test.js`,
+`.test.jsx`, `.test.ts`, or `.test.tsx` (as the codebase migrates to TypeScript,
+new and migrated tests use `.test.ts`/`.test.tsx`):
 
 ```
 assets/js/
@@ -19,18 +21,23 @@ assets/js/
 │       ├── components/
 │       │   └── Component.test.js
 │       ├── datastore/
-│       │   └── store.test.js      // Datastore tests
-│       └── util/
+│       │   ├── store.test.js      // Datastore tests
+│       │   └── __fixtures__/      // Co-located mock/fixture data
+│       └── utils/
 │           └── helpers.test.js    // Utility tests
 └── util/
     └── function.test.js           // Utility function tests
 
 tests/js/
 ├── jest.config.js                 // Jest configuration
-├── test-utils.js                  // Testing utilities
-├── setup-globals.js               // Global test setup
-└── mock-data/                     // Mock data for tests
+├── test-utils.tsx                 // Custom render/renderHook + re-exported helpers
+├── utils.ts                       // Core registry/provide/fetch helpers
+├── setup-globals.js               // Global test setup (sets up globals)
+└── setup-before-after.ts          // Global beforeEach/afterEach (fetchMock, timers)
 ```
+
+Mock/fixture data is co-located with the code under test, typically in a
+`__fixtures__/` directory next to the datastore or component it supports.
 
 ### Testing Categories
 
@@ -41,20 +48,24 @@ Site Kit tests are categorized by scope and purpose:
 3. **Module Tests**: Test complete module functionality
 4. **Hook Tests**: Test custom React hooks
 5. **Utility Tests**: Test helper functions and utilities
+6. **End-to-End Tests**: Test full user flows in a real browser (Playwright; see
+   the [End-to-End Testing](#end-to-end-testing) section)
 
 ## Testing Conventions
 
 ### Component Testing Patterns
 
-Basic component test structure:
+Use the custom `render` from `@tests/js/test-utils` (re-exports everything from
+`@testing-library/react`). It wraps the UI in the registry, features, router, and
+view-context providers, and accepts a `registry` option, so there is no need to
+mount a context provider yourself. It also returns the `registry` it used, plus
+`waitForRegistry`:
 
 ```javascript
 /**
  * Component tests.
  */
-import { render, screen } from '@testing-library/react';
-import UserContext from 'googlesitekit-api';
-import { createTestRegistry } from '../../../tests/js/test-utils';
+import { render, screen, createTestRegistry } from '@tests/js/test-utils';
 import Component from './Component';
 
 describe( 'Component', () => {
@@ -65,23 +76,23 @@ describe( 'Component', () => {
     } );
 
     it( 'should render basic content', () => {
-        render( 
-            <UserContext.Provider value={ registry }>
-                <Component />
-            </UserContext.Provider>
-        );
-        
+        render( <Component />, { registry } );
+
         expect( screen.getByText( 'Expected Content' ) ).toBeInTheDocument();
     } );
 } );
 ```
+
+> In TypeScript test files (`.test.tsx`) the imports and APIs are identical;
+> `render`/`renderHook` are already typed in `test-utils.tsx`.
 
 ### Datastore Testing Patterns
 
 Datastore tests use specialized utilities:
 
 ```javascript
-import { createTestRegistry, freezeFetch, muteConsole } from '../../../tests/js/test-utils';
+import { setUsingCache } from 'googlesitekit-api';
+import { createTestRegistry, freezeFetch } from '@tests/js/test-utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 
 describe( 'modules/analytics-4 datastore', () => {
@@ -89,12 +100,16 @@ describe( 'modules/analytics-4 datastore', () => {
     let store;
 
     beforeAll( () => {
-        muteConsole( 'error' );
+        setUsingCache( false );
     } );
 
     beforeEach( () => {
         registry = createTestRegistry();
         store = registry.stores[ MODULES_ANALYTICS_4 ].store;
+    } );
+
+    afterAll( () => {
+        setUsingCache( true );
     } );
 
     describe( 'actions', () => {
@@ -123,22 +138,21 @@ describe( 'modules/analytics-4 datastore', () => {
 
 ### API Request Testing
 
-API interactions are tested using fetch mocks:
+API interactions are tested using fetch mocks. `fetchMock` (from
+`fetch-mock-jest`) is exposed as a global in `tests/js/setup-before-after.ts`, so
+it does not need to be imported, and it is reset automatically after every test
+(`afterEach( () => fetchMock.mockReset() )`) — individual tests don't need their
+own teardown:
 
 ```javascript
-import fetchMock from 'fetch-mock-jest';
-import { createTestRegistry, untilResolved } from '../../../tests/js/test-utils';
+import { createTestRegistry, untilResolved } from '@tests/js/test-utils';
+import { MODULES_ANALYTICS_4 } from './constants';
 
 describe( 'API requests', () => {
     let registry;
 
     beforeEach( () => {
         registry = createTestRegistry();
-    } );
-
-    afterEach( () => {
-        fetchMock.clearHistory();
-        fetchMock.restore();
     } );
 
     it( 'should make GET request for reports', async () => {
@@ -167,11 +181,13 @@ describe( 'API requests', () => {
 
 ### Custom Hook Testing
 
-Custom hooks are tested using specialized testing utilities:
+Custom hooks are tested using the custom `renderHook` from `@tests/js/test-utils`,
+which wraps the hook in the same providers as `render` and accepts a `registry`
+option (defaulting to a fresh test registry). For hook tests, use `actHook` (which
+test-utils re-exports as `act` of `@testing-library/react-hooks`):
 
 ```javascript
-import { renderHook, act } from '@testing-library/react';
-import { createTestRegistry } from '../../../tests/js/test-utils';
+import { actHook as act, renderHook, createTestRegistry } from '@tests/js/test-utils';
 import useMyCustomHook from './useMyCustomHook';
 
 describe( 'useMyCustomHook', () => {
@@ -182,19 +198,13 @@ describe( 'useMyCustomHook', () => {
     } );
 
     it( 'should return expected values', () => {
-        const { result } = renderHook( () => useMyCustomHook(), {
-            wrapper: ( { children } ) => (
-                <UserContext.Provider value={ registry }>
-                    { children }
-                </UserContext.Provider>
-            )
-        } );
+        const { result } = renderHook( () => useMyCustomHook(), { registry } );
 
         expect( result.current.value ).toBe( expectedValue );
     } );
 
     it( 'should handle actions', () => {
-        const { result } = renderHook( () => useMyCustomHook() );
+        const { result } = renderHook( () => useMyCustomHook(), { registry } );
 
         act( () => {
             result.current.doAction();
@@ -209,39 +219,40 @@ describe( 'useMyCustomHook', () => {
 
 ### Core Testing Utilities
 
-Site Kit provides comprehensive testing utilities in `tests/js/test-utils.js`:
+Site Kit re-exports its testing utilities from `tests/js/test-utils.tsx` (most of
+which are defined in `tests/js/utils.ts`):
 
 ```javascript
-import { 
-    createTestRegistry,     // Creates test registry with mocked data
-    provideUserInfo,        // Provides user authentication data
-    provideModuleRegistrations, // Registers all modules
-    provideSiteInfo,        // Provides site configuration
-    muteConsole,           // Mutes console warnings/errors
-    freezeFetch,           // Prevents real network requests
-    untilResolved,         // Waits for async operations
-    setEnabledFeatures     // Enables feature flags
-} from '../../../tests/js/test-utils';
+import {
+    createTestRegistry,         // Creates a test registry with all stores registered
+    provideUserInfo,            // Provides current-user info to CORE_USER
+    provideUserAuthentication,  // Provides authentication state to CORE_USER
+    provideSiteInfo,            // Provides site configuration to CORE_SITE
+    provideModules,             // Provides the list of available modules
+    provideModuleRegistrations, // Registers module datastores/components
+    freezeFetch,                // Leaves a fetch request pending (never resolves)
+    muteFetch,                  // Returns an empty/successful response for a request
+    untilResolved,              // Waits for a resolver to finish
+    setEnabledFeatures          // Enables feature flags for the current test
+} from '@tests/js/test-utils';
 
 // Example comprehensive test setup
 describe( 'Complex Component', () => {
     let registry;
 
-    beforeAll( () => {
-        muteConsole( 'error', 'warn' );
-    } );
-
     beforeEach( () => {
         registry = createTestRegistry();
-        
+
         // Provide required data
         provideUserInfo( registry );
+        provideModules( registry );
         provideModuleRegistrations( registry );
         provideSiteInfo( registry );
-        
-        // Enable feature flags for testing
-        setEnabledFeatures( [ 'userInput', 'keyMetrics' ] );
-        
+
+        // Enable feature flags for testing (see feature-flags.json for the
+        // current list of valid flags).
+        setEnabledFeatures( [ 'proactiveUserEngagement' ] );
+
         // Mock module settings
         registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
             propertyID: 'properties/12345',
@@ -250,6 +261,12 @@ describe( 'Complex Component', () => {
     } );
 } );
 ```
+
+> Console output is asserted, not muted: the `@wordpress/jest-console` matchers
+> (`expect( console ).toHaveErrored()` / `.not.toHaveErrored()`, and the `warn`/
+> `info`/`log` equivalents) are active globally, so a test that triggers a
+> `console.error` must assert it or the test fails. There is no `muteConsole`
+> helper.
 
 ### Mock Data Patterns
 
@@ -295,25 +312,82 @@ const mockSearchConsoleData = [
 
 ## Error Boundary Testing
 
-Test error handling in components:
+Test error handling in components with the shared `ThrowErrorComponent` helper
+(`tests/js/ThrowErrorComponent.js`), which throws on mount when given the
+`throwErrorOnMount` prop. Because the `@wordpress/jest-console` matchers are
+active, assert the expected `console.error` with `expect( console ).toHaveErrored()`:
 
 ```javascript
-import { createErrorComponent } from '../../../tests/js/test-utils';
+import { render, screen } from '@tests/js/test-utils';
+import ThrowErrorComponent from '@tests/js/ThrowErrorComponent';
+import WidgetErrorHandler from './';
 
 describe( 'Component Error Handling', () => {
     it( 'should handle component errors gracefully', () => {
-        const ThrowError = createErrorComponent();
-        
-        muteConsole( 'error' );
-        
         render(
             <WidgetErrorHandler slug="test-widget">
-                <ThrowError />
+                <ThrowErrorComponent throwErrorOnMount />
             </WidgetErrorHandler>
         );
 
-        expect( screen.getByText( 'Error loading widget' ) )
-            .toBeInTheDocument();
+        expect( console ).toHaveErrored();
+
+        expect( screen.getByText( /Error in Widget/ ) ).toBeInTheDocument();
     } );
 } );
 ```
+
+## Running Tests
+
+Run a single Jest test file (preferred — do not run the whole suite):
+
+```bash
+npm -w tests/js run test:js -- <path/to/file.test.js>
+```
+
+Jest discovers any `*.test.{js,jsx,ts,tsx}` file co-located with the code.
+
+Test title convention: `it(...)`/`test(...)` titles start with "should …" (e.g.
+`it( 'should render the report', …)`); `describe(...)` titles stay plain.
+
+## End-to-End Testing
+
+Site Kit's E2E tests are migrating from the legacy Puppeteer setup to Playwright:
+
+- **Playwright (current)** — `tests/playwright/`, run with `npm run test:playwright`.
+  All new E2E tests are written in Playwright (`*.spec.ts` under
+  `tests/playwright/specs/`). It uses a Docker-based WordPress environment with
+  per-test database isolation, cookie-based authentication (no real login), a
+  local Google API fixtures service, and Mailpit for email capture. Tests declare
+  their requirements via annotations such as `asUser`, `withPlugins`,
+  `withFeatureFlags`, and `withFixtures`, and use the `wp` fixture for REST/DB
+  helpers.
+
+  ```ts
+  import { expect, test } from '../playwright';
+  import { asUser, withPlugins } from '../wordpress';
+
+  test(
+      'should do something',
+      { annotation: [ asUser( 'admin' ), withPlugins( 'proxy-auth.php' ) ] },
+      async ( { page, wp } ) => {
+          // `page` is the standard Playwright page; `wp` is the Site Kit
+          // REST/DB fixture.
+      }
+  );
+  ```
+
+  **`tests/playwright/README.md` is the authoritative guide** — consult it for the
+  full set of annotations, fixtures, helpers, and the Docker environment. Do not
+  duplicate its content.
+
+- **Puppeteer (legacy)** — `tests/e2e/` (specs under `tests/e2e/specs/`), run with
+  `npm run test:e2e`. Maintained for existing coverage only; prefer Playwright for
+  new tests.
+
+## Visual Regression Testing
+
+Visual regression tests run through BackstopJS against Storybook stories
+(`*.stories.js`, increasingly `.tsx`). Run `npm run test:visualtest` to compare
+against reference images and `npm run test:visualapprove` to accept new
+screenshots as the reference.
