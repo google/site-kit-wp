@@ -58,6 +58,12 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 import { getViewportWidth, setViewportWidth } from '@tests/js/viewport-utils';
+import {
+	getGA4KeyEventsOverviewReportOptions,
+	getGA4KeyEventsReportOptions,
+	getGA4VisitorsReportOptions,
+	getSearchConsoleReportOptions,
+} from './reportOptions';
 import SearchFunnelWidgetGA4 from '.';
 
 jest.mock( 'react-use', () => ( {
@@ -308,6 +314,81 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			'click_learn_more_link',
 			'search_funnel'
 		);
+	} );
+
+	// Regression coverage for the reportOptions.ts extraction: the builders must
+	// keep producing the exact report args the dashboard relied on when they were
+	// inlined, so the dashboard and PDF report cannot drift.
+	describe( 'report options', () => {
+		const dates = {
+			startDate: '2025-01-08',
+			endDate: '2025-02-04',
+			compareStartDate: '2024-12-11',
+			compareEndDate: '2025-01-07',
+		};
+
+		it( 'should build the Search Console date-series args used by the dashboard', () => {
+			expect(
+				getSearchConsoleReportOptions( {
+					compareStartDate: dates.compareStartDate,
+					endDate: dates.endDate,
+				} )
+			).toEqual( {
+				startDate: dates.compareStartDate,
+				endDate: dates.endDate,
+				dimensions: 'date',
+			} );
+		} );
+
+		it( 'should append the entity URL to the Search Console args when provided', () => {
+			expect(
+				getSearchConsoleReportOptions( {
+					compareStartDate: dates.compareStartDate,
+					endDate: dates.endDate,
+					url: 'https://example.com/post-1',
+				} )
+			).toMatchObject( { url: 'https://example.com/post-1' } );
+		} );
+
+		it( 'should build the GA4 Key Events overview args used by the dashboard', () => {
+			expect( getGA4KeyEventsOverviewReportOptions( dates ) ).toEqual( {
+				...dates,
+				metrics: [ { name: 'keyEvents' }, { name: 'engagementRate' } ],
+				dimensionFilters: {
+					sessionDefaultChannelGrouping: [ 'Organic Search' ],
+				},
+				reportID:
+					'search-console_search-funnel-widget-ga4_widget_ga4OverviewArgs',
+			} );
+		} );
+
+		it( 'should build the GA4 Key Events date-series args inheriting the overview metrics and filters', () => {
+			expect( getGA4KeyEventsReportOptions( dates ) ).toEqual( {
+				...dates,
+				metrics: [ { name: 'keyEvents' }, { name: 'engagementRate' } ],
+				dimensionFilters: {
+					sessionDefaultChannelGrouping: [ 'Organic Search' ],
+				},
+				dimensions: [ { name: 'date' } ],
+				orderby: [ { dimension: { dimensionName: 'date' } } ],
+				reportID:
+					'search-console_search-funnel-widget-ga4_widget_ga4StatsArgs',
+			} );
+		} );
+
+		it( 'should build the GA4 Unique Visitors overview + date-series args used by the dashboard', () => {
+			expect( getGA4VisitorsReportOptions( dates ) ).toEqual( {
+				...dates,
+				metrics: [ { name: 'totalUsers' } ],
+				dimensions: [ { name: 'date' } ],
+				dimensionFilters: {
+					sessionDefaultChannelGrouping: [ 'Organic Search' ],
+				},
+				orderby: [ { dimension: { dimensionName: 'date' } } ],
+				reportID:
+					'search-console_search-funnel-widget-ga4_widget_ga4VisitorsOverviewAndStatsArgs',
+			} );
+		} );
 	} );
 
 	it( 'should render normal CTA again when "Got it" is clicked from activation error state', async () => {

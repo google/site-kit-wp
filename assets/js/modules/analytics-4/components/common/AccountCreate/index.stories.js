@@ -25,6 +25,8 @@ import classnames from 'classnames';
 /**
  * Internal dependencies
  */
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { Cell, Grid, Row } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -148,6 +150,24 @@ InitialSetupFlowWithGenericError.args = {
 	},
 };
 InitialSetupFlowWithGenericError.scenario = {};
+
+export const SettingsWithUserCancelError = Template.bind( {} );
+SettingsWithUserCancelError.storyName =
+	'Settings with terms of service not accepted error';
+SettingsWithUserCancelError.parameters = {
+	features: [ 'setupFlowRefresh' ],
+	query: {
+		accountCreationErrorCode: 'user_cancel',
+	},
+};
+SettingsWithUserCancelError.decorators = [
+	( Story ) => (
+		<ViewContextProvider value={ VIEW_CONTEXT_SETTINGS }>
+			<Story />
+		</ViewContextProvider>
+	),
+];
+SettingsWithUserCancelError.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AccountCreate',

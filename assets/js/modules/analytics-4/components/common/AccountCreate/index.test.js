@@ -21,7 +21,10 @@
  */
 import { createCacheKey } from '@/js/googlesitekit/api';
 import { getKeys, setItem } from '@/js/googlesitekit/api/cache';
-import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MODULE_SETUP,
+	VIEW_CONTEXT_SETTINGS,
+} from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
@@ -502,6 +505,51 @@ describe( 'AccountCreate', () => {
 			);
 
 			rollbackSettingsSpy.mockRestore();
+		} );
+
+		it( 'should clear the error query arg and keep the settings route when Back is clicked on a settings URL', async () => {
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-settings&accountCreationErrorCode=user_cancel#/connected-services/analytics-4/edit';
+
+			const savedAccountID = '123';
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				accountID: savedAccountID,
+			} );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				accountID: ACCOUNT_CREATE,
+			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAccountSummaries( {
+					accountSummaries: [
+						{
+							_id: savedAccountID,
+							displayName: 'Existing account',
+						},
+					],
+					nextPageToken: null,
+				} );
+
+			const { getByRole, waitForRegistry } = render( <AccountCreate />, {
+				registry,
+				features: [ 'setupFlowRefresh' ],
+				viewContext: VIEW_CONTEXT_SETTINGS,
+			} );
+
+			await waitForRegistry();
+
+			fireEvent.click( getByRole( 'button', { name: /back/i } ) );
+
+			expect( global.location.href ).not.toContain(
+				'accountCreationErrorCode=user_cancel'
+			);
+			expect( global.location.href ).toContain(
+				'#/connected-services/analytics-4/edit'
+			);
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getAccountID()
+			).toBe( savedAccountID );
 		} );
 
 		describe( 'Continue without Analytics button', () => {

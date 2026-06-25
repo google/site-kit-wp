@@ -257,7 +257,7 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	/**
 	 * Gets the unique categories of active conversion event providers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @return array List of unique active provider category strings, constrained to known categories.
 	 */
@@ -326,6 +326,62 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	}
 
 	/**
+	 * Returns conversion events directly tracked by Site Kit's Plugin Conversion Reporting feature.
+	 *
+	 * Unlike get_supported_conversion_events(), this excludes events that are delegated to a
+	 * third-party add-on (e.g. Google Analytics for WooCommerce), so it accurately reflects
+	 * only what Site Kit itself tracks.
+	 *
+	 * @since 1.182.0
+	 *
+	 * @return array Array of Site Kit-tracked conversion events, or empty array.
+	 */
+	public function get_site_kit_supported_conversion_events() {
+		$providers = $this->get_active_providers();
+
+		if ( empty( $providers ) ) {
+			return array();
+		}
+
+		$events = array();
+
+		foreach ( $providers as $provider ) {
+			$events = array_merge( $events, array_values( $provider->get_site_kit_event_names() ) );
+		}
+
+		return array_unique( $events );
+	}
+
+	/**
+	 * Returns enhanced conversion events directly tracked by Site Kit's Plugin Conversion Reporting feature.
+	 *
+	 * Unlike get_enhanced_conversion_events(), this excludes events that are delegated to a
+	 * third-party add-on (e.g. Google Analytics for WooCommerce), so it accurately reflects
+	 * only what Site Kit itself tracks.
+	 *
+	 * @since 1.182.0
+	 *
+	 * @return array Array of Site Kit-tracked enhanced conversion events, or empty array.
+	 */
+	public function get_site_kit_enhanced_conversion_events() {
+		$providers = $this->get_active_providers();
+
+		if ( empty( $providers ) ) {
+			return array();
+		}
+
+		$events = array();
+
+		foreach ( $providers as $provider ) {
+			$supported_enhanced_events = array_intersect( $provider->get_enhanced_event_names(), $provider->get_site_kit_event_names() );
+
+			$events = array_merge( $events, array_values( $supported_enhanced_events ) );
+		}
+
+		return array_unique( $events );
+	}
+
+	/**
 	 * Gets an array of internal feature metrics.
 	 *
 	 * @since 1.163.0
@@ -336,8 +392,8 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 		return array(
 			'conversion_tracking_enabled'    => $this->conversion_tracking_settings->is_conversion_tracking_enabled(),
 			'conversion_tracking_providers'  => array_keys( $this->get_active_providers() ),
-			'conversion_tracking_events'     => $this->get_supported_conversion_events(),
-			'conversion_tracking_events_enh' => $this->get_enhanced_conversion_events(),
+			'conversion_tracking_events'     => $this->get_site_kit_supported_conversion_events(),
+			'conversion_tracking_events_enh' => $this->get_site_kit_enhanced_conversion_events(),
 		);
 	}
 }

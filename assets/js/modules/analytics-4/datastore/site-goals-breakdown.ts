@@ -78,7 +78,7 @@ interface TotalsReport {
 /**
  * Reads a report's total event count for a date range.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param {Object} report        Report with totals per date range.
  * @param {string} dateRangeSlug Date range slug, e.g. `date_range_0`.
@@ -95,7 +95,7 @@ function getDateRangeTotal( report: TotalsReport, dateRangeSlug: string ) {
 /**
  * Reads a single-range report's total event count.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param {Object} report Report with a single totals row.
  * @return {number} The total event count, or `0` when absent.
@@ -113,7 +113,7 @@ function getSingleRangeTotal( report: TotalsReport ) {
  * Gets the fixed discovery date range (the last 90 days up to the reference
  * date), mirroring the `audiences` 90-day window precedent.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param {Function} getReferenceDate Returns the reference date string.
  * @return {Object} Date range with `startDate` and `endDate`.
@@ -133,7 +133,7 @@ function getDiscoveryDates( getReferenceDate: () => string ): DateRange {
  * The report groups events by the custom dimension and excludes empty values,
  * so its rows surface the distinct values present within the date range.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param {Object}        dates               Date range with `startDate` and `endDate`.
  * @param {string}        customDimensionSlug Custom dimension slug.
@@ -181,7 +181,7 @@ type BreakdownReportOptions = ReturnType< typeof getBreakdownReportOptions >;
  * The report groups events that carry one of the given form IDs by page,
  * ordered by event count, so each form's busiest pages come first.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param {Object}        dates               Date range with `startDate` and `endDate`.
  * @param {string}        customDimensionSlug Form ID custom dimension slug.
@@ -218,7 +218,7 @@ type FormPagePathsMap = Record< string, string[] >;
  * Builds report options for a total event count over compare dates, optionally
  * scoped to a set of attributed dimension values.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param {Object}        dates               Compare date range.
  * @param {string}        customDimensionSlug Breakdown custom dimension slug.
@@ -497,7 +497,7 @@ const baseSelectors = {
 	/**
 	 * Gets the distinct non-empty values for a breakdown custom dimension.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param {Object}        state               Data store's state.
 	 * @param {string}        customDimensionSlug Custom dimension slug.
@@ -542,7 +542,7 @@ const baseSelectors = {
 	 * Gets the pages each form appears on, ordered by event count (busiest
 	 * first).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param {Object}        state               Data store's state.
 	 * @param {string}        customDimensionSlug Form ID custom dimension slug.
@@ -608,7 +608,7 @@ const baseSelectors = {
 	 * total (events whose dimension is one of the tab values) from the overall
 	 * total rather than filtering for the unattributed events directly.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param {Object}        state                 Data store's state.
 	 * @param {string}        customDimensionSlug   Breakdown custom dimension slug.
@@ -692,7 +692,7 @@ const baseSelectors = {
 	 * when the range changes — only its displayed count follows the selection
 	 * (see `getUnattributedEventCounts`).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param {Object}        state                 Data store's state.
 	 * @param {string}        customDimensionSlug   Breakdown custom dimension slug.
@@ -755,7 +755,7 @@ const baseSelectors = {
 	/**
 	 * Gets resolved metadata for a single form ID from state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param {Object} state  Data store's state.
 	 * @param {string} formID Form ID.
@@ -771,7 +771,7 @@ const baseSelectors = {
 	/**
 	 * Gets metadata for a set of form IDs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param {Object}        state   Data store's state.
 	 * @param {Array<string>} formIDs Form IDs to resolve.
@@ -801,7 +801,7 @@ const baseSelectors = {
 	/**
 	 * Gets the display labels for a set of form IDs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param {Object}        state   Data store's state.
 	 * @param {Array<string>} formIDs Form IDs to label.

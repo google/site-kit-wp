@@ -23,7 +23,7 @@ class FakeEcommerceEventProvider_Active_Two extends FakeConversionEventProvider_
 	/**
 	 * Gets the provider category.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @return string Provider category.
 	 */

@@ -44,7 +44,6 @@ import SetupPluginConversionTrackingNotice from '@/js/components/conversion-trac
 import Link from '@/js/components/Link';
 import Null from '@/js/components/Null';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
-import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
@@ -66,9 +65,9 @@ import {
 import { getAccountDefaults as getAccountDefaults } from '@/js/modules/analytics-4/utils/account';
 import { trackEvent } from '@/js/util';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
+import AccountCreateIntro from './AccountCreateIntro';
 import AccountField from './AccountField';
 import Actions from './Actions';
-import AnalyticsAccountCreationErrorNotice from './AnalyticsAccountCreationErrorNotice';
 import CountrySelect from './CountrySelect';
 import PropertyField from './PropertyField';
 import TimezoneSelect from './TimezoneSelect';
@@ -302,25 +301,11 @@ export default function AccountCreate( { className } ) {
 				storeName={ MODULES_ANALYTICS_4 }
 			/>
 
-			{ hasAccountCreationError && (
-				<AnalyticsAccountCreationErrorNotice
-					errorCode={ accountCreationErrorCode }
-					onRetry={ handleSubmit }
-				/>
-			) }
-
-			{ ! isInitialSetupFlow && (
-				<Typography as="h3" type="title" size="large">
-					{ __( 'Create your Analytics account', 'google-site-kit' ) }
-				</Typography>
-			) }
-
-			<P size={ isInitialSetupFlow ? 'large' : undefined }>
-				{ __(
-					'We’ve pre-filled the required information for your new account. Confirm or edit any details:',
-					'google-site-kit'
-				) }
-			</P>
+			<AccountCreateIntro
+				isInitialSetupFlow={ isInitialSetupFlow }
+				accountCreationErrorCode={ accountCreationErrorCode }
+				onRetry={ handleSubmit }
+			/>
 
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--grid-layout">
 				<Cell

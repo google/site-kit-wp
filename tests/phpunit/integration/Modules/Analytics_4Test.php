@@ -412,9 +412,26 @@ class Analytics_4Test extends TestCase {
 		return array(
 			'method'                      => $method,
 			'analytics'                   => $analytics,
+			'context'                     => $context,
 			'dashboard_url'               => $dashboard_url,
 			'admin_id'                    => $admin_id,
 			'account_ticked_id_transient' => $account_ticked_id_transient,
+		);
+	}
+
+	/**
+	 * Connects the Analytics 4 module with the minimum required settings.
+	 *
+	 * @param Analytics_4 $analytics Analytics 4 module instance.
+	 */
+	private function connect_analytics_module( Analytics_4 $analytics ) {
+		$analytics->get_settings()->merge(
+			array(
+				'accountID'       => '12345678',
+				'propertyID'      => '987654321',
+				'webDataStreamID' => '1234567890',
+				'measurementID'   => 'G-1A2BCD345E',
+			)
 		);
 	}
 
@@ -689,6 +706,75 @@ class Analytics_4Test extends TestCase {
 				'Should redirect to Analytics setup screen with the account creation error code.'
 			);
 		}
+	}
+
+	/**
+	 * @dataProvider data_handle_provisioning_callback_connected_error_redirect
+	 */
+	public function test_handle_provisioning_callback__error_redirect_to_settings_when_connected( $params ) {
+		$this->enable_feature( 'setupFlowRefresh' );
+
+		$test_variables              = $this->set_up_handle_provisioning_callback_test();
+		$method                      = $test_variables['method'];
+		$analytics                   = $test_variables['analytics'];
+		$context                     = $test_variables['context'];
+		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
+
+		$this->connect_analytics_module( $analytics );
+
+		$settings_url = $context->admin_url( 'settings' );
+
+		if ( ! empty( $params['set_transient'] ) ) {
+			set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
+		}
+
+		if ( ! empty( $params['error'] ) ) {
+			$_GET['error'] = $params['error'];
+		}
+
+		try {
+			$method->invokeArgs( $analytics, array() );
+			$this->fail( 'Expected redirect to Analytics settings edit screen with error' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				add_query_arg(
+					array(
+						'accountCreationErrorCode' => $params['error_code'],
+					),
+					$settings_url
+				) . '#connected-services/analytics-4/edit',
+				$redirect->get_location(),
+				'Should redirect to Analytics settings edit screen with the account creation error code.'
+			);
+		}
+
+		if ( ! empty( $params['error'] ) ) {
+			unset( $_GET['error'] );
+		}
+	}
+
+	public function data_handle_provisioning_callback_connected_error_redirect() {
+		return array(
+			'account_ticket_id_mismatch' => array(
+				array(
+					'error_code'    => 'account_ticket_id_mismatch',
+					'set_transient' => false,
+				),
+			),
+			'user_cancel'                => array(
+				array(
+					'error_code'    => 'user_cancel',
+					'set_transient' => true,
+					'error'         => 'user_cancel',
+				),
+			),
+			'callback_missing_parameter' => array(
+				array(
+					'error_code'    => 'callback_missing_parameter',
+					'set_transient' => true,
+				),
+			),
+		);
 	}
 
 	public function data_handle_provisioning_callback_error_redirect_show_progress() {
