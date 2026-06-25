@@ -37,7 +37,7 @@ import { useSiteGoalsSectionReady } from './useSiteGoalsSectionReady';
  * this element before it reports the section loaded, so every test that needs
  * a loaded section adds it. The `afterEach` below removes it.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @return {void}
  */
@@ -53,7 +53,7 @@ function appendTourTarget() {
  * position every 250 milliseconds and finishes once two checks in a row match,
  * so 500 milliseconds is enough. Use this only after `jest.useFakeTimers()`.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @return {void}
  */

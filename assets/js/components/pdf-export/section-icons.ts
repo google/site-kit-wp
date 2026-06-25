@@ -40,7 +40,7 @@ const DEFAULT_SIZE = 12;
 /**
  * Builds a section icon component from inlined SVG children.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param renderChildren Receives the resolved fill colour, returns the SVG children.
  * @return Section icon component.
@@ -114,7 +114,7 @@ const MonetizationIcon = makeIcon( ( color ) =>
  * them here when entity-context export lands, otherwise those chips render
  * label-only (handled gracefully by `PDFHeaderSectionChip`).
  *
- * @since n.e.x.t
+ * @since 1.182.0
  */
 export const SECTION_ICONS: Record< string, PDFIcon > = {
 	[ CONTEXT_MAIN_DASHBOARD_KEY_METRICS ]: KeyMetricsIcon,

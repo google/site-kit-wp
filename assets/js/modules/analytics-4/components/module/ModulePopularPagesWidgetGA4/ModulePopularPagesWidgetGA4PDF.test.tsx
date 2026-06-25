@@ -52,12 +52,24 @@ const DATA = {
 		},
 	],
 	titles: { '/home-page': 'Home Title', '/about-page': 'About Title' },
+	links: {
+		'/home-page': {
+			detailsURL:
+				'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=dashboard&permaLink=http%3A%2F%2Fexample.com%2Fhome-page',
+			permaLink: 'http://example.com/home-page',
+		},
+		'/about-page': {
+			detailsURL:
+				'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=dashboard&permaLink=http%3A%2F%2Fexample.com%2Fabout-page',
+			permaLink: 'http://example.com/about-page',
+		},
+	},
 };
 
 /**
  * Renders the widget to a JSON string for content and style assertions.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param props Props passed to the widget.
  * @return JSON string of the rendered tree.
@@ -111,6 +123,25 @@ describe( 'ModulePopularPagesWidgetGA4PDF', () => {
 		expect( json.indexOf( 'Home Title' ) ).toBeLessThan(
 			json.indexOf( '/home-page' )
 		);
+	} );
+
+	it( 'links each title to its entity dashboard golink and each URL to its page', () => {
+		const json = renderJSON( { data: DATA } );
+
+		// The title links to the entity dashboard golink.
+		expect( json ).toContain(
+			'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=dashboard&permaLink=http%3A%2F%2Fexample.com%2Fhome-page'
+		);
+		// The URL line links to the page itself.
+		expect( json ).toContain( 'http://example.com/home-page' );
+		expect( json ).toContain( 'http://example.com/about-page' );
+	} );
+
+	it( 'renders the title and URL links without an underline', () => {
+		const json = renderJSON( { data: DATA } );
+
+		// @react-pdf underlines links by default, the PDF report removes it.
+		expect( json ).toContain( '"textDecoration":"none"' );
 	} );
 
 	it( 'truncates a long page URL with an ellipsis', () => {

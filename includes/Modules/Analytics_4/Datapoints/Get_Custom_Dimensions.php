@@ -24,7 +24,7 @@ use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
  * the request, so it can list the custom dimensions of a property that is not
  * yet saved in settings.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  * @access private
  * @ignore
  */
@@ -33,7 +33,7 @@ class Get_Custom_Dimensions extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Creates a request object to list the custom dimensions of the requested property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param Data_Request $data Data request object holding the `propertyID` to list custom dimensions for.
 	 * @throws Missing_Required_Param_Exception Thrown if the `propertyID` parameter is missing.
@@ -54,7 +54,7 @@ class Get_Custom_Dimensions extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses a response into the list of Site Kit custom dimension names on the property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data     Data request object.

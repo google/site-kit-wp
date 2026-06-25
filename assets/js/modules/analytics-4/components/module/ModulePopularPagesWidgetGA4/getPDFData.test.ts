@@ -92,9 +92,27 @@ const TITLES_REPORT = {
 };
 
 /**
+ * Per-page links the loader builds for each page path, from the default test
+ * admin URL and reference site URL. The title golink points at the entity
+ * dashboard, and the permaLink at the page itself.
+ */
+const LINKS = {
+	'/': {
+		detailsURL:
+			'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=dashboard&permaLink=http%3A%2F%2Fexample.com%2F',
+		permaLink: 'http://example.com/',
+	},
+	'/about': {
+		detailsURL:
+			'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=dashboard&permaLink=http%3A%2F%2Fexample.com%2Fabout',
+		permaLink: 'http://example.com/about',
+	},
+};
+
+/**
  * Reads the `reportID` query arg from a report request URL.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param requestURL Report request URL.
  * @return The `reportID` query arg, or an empty string when absent.
@@ -113,7 +131,7 @@ function reportIDForRequest( requestURL: string ) {
  * page titles request returns the `titles` fixture, and every other report
  * request returns the `main` fixture.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param  [reports]        Report fixtures to return.
  * @param  [reports.main]   Report returned for requests other than the page titles report.
@@ -140,7 +158,7 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 		provideSiteInfo( registry );
 	} );
 
-	it( 'fetches the main report, then the page titles report, and returns rows with the page titles', async () => {
+	it( 'returns rows, page titles, and per-page links from the two reports', async () => {
 		const requestedReportIDs: string[] = [];
 
 		fetchMock.get( reportEndpoint, ( requestURL ) => {
@@ -171,6 +189,7 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 			data: {
 				rows: MAIN_REPORT.rows,
 				titles: { '/': 'Home', '/about': 'About' },
+				links: LINKS,
 			},
 		} );
 	} );
@@ -258,7 +277,9 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 
 		await waitForDefaultTimeouts();
 
-		expect( result ).toEqual( { data: { rows: [], titles: {} } } );
+		expect( result ).toEqual( {
+			data: { rows: [], titles: {}, links: {} },
+		} );
 		expect( fetchMock.calls( reportEndpoint ) ).toHaveLength( 1 );
 	} );
 
@@ -368,6 +389,7 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 			data: {
 				rows: MAIN_REPORT.rows,
 				titles: { '/': 'Home', '/about': 'About' },
+				links: LINKS,
 			},
 		} );
 		expect( fetchMock.calls( reportEndpoint ) ).toHaveLength( 3 );

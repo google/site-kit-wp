@@ -34,7 +34,7 @@ export type { PDFWidgetComponentProps };
 /**
  * A section icon rendered with `@react-pdf/renderer` SVG primitives.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  */
 export type PDFIcon = FC< {
 	size?: number;
@@ -44,7 +44,7 @@ export type PDFIcon = FC< {
 /**
  * One header section chip: a dashboard area surfaced in the PDF.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  */
 export interface PDFHeaderSection {
 	slug: string;

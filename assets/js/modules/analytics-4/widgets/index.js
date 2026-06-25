@@ -19,12 +19,12 @@
 /**
  * WordPress dependencies
  */
-import { lazy } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import lazyWithPreload from '@/js/components/pdf-export/lazy-with-preload';
 import { isFeatureEnabled } from '@/js/features';
 import {
 	CORE_USER,
@@ -114,23 +114,6 @@ import {
 import ConversionReportingNotificationCTAWidget from '@/js/modules/analytics-4/components/widgets/ConversionReportingNotificationCTAWidget';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-
-/**
- * Wraps `lazy` with a `preload` method exposing the import factory.
- *
- * The PDF orchestrator awaits `preload()` to resolve the chunk before handing
- * the component to `@react-pdf`, whose renderer does not honour `Suspense`.
- *
- * @since 1.181.0
- *
- * @param {Function} factory Dynamic import factory returning `{ default }`.
- * @return {Object} Lazy component with a `preload` method.
- */
-function lazyWithPreload( factory ) {
-	const Component = lazy( factory );
-	Component.preload = factory;
-	return Component;
-}
 
 const DashboardAllTrafficWidgetGA4PDF = lazyWithPreload( () =>
 	import(
