@@ -595,7 +595,7 @@ describe( 'AccountCreate', () => {
 				).not.toBeInTheDocument();
 			} );
 
-			it( 'should navigate to the dashboard when clicked', async () => {
+			it( 'should navigate to the key metrics setup when clicked with the setupFlowRefreshPhase4 feature flag enabled', async () => {
 				global.location.href =
 					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true&accountCreationErrorCode=user_cancel';
 
@@ -611,7 +611,10 @@ describe( 'AccountCreate', () => {
 					<AccountCreate />,
 					{
 						registry,
-						features: [ 'setupFlowRefresh' ],
+						features: [
+							'setupFlowRefresh',
+							'setupFlowRefreshPhase4',
+						],
 					}
 				);
 
@@ -641,7 +644,7 @@ describe( 'AccountCreate', () => {
 				);
 
 				expect( global.location.assign ).toHaveBeenCalledWith(
-					expect.stringContaining( 'page=googlesitekit-dashboard' )
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup'
 				);
 			} );
 		} );
