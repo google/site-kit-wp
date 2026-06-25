@@ -41,7 +41,7 @@ the file + section when flagging a violation.
 - **Dependency injection** — `Context` injected first; dependencies via constructor (`dependency-injection.md`).
 - **Module architecture** — correct interfaces, lifecycle, trait usage (`module-architecture.md`).
 - **REST API** — route registered via filter; permission callbacks; schema validation (`rest-api.md`).
-- **Settings** — extends the correct base; `get_default_value()` implemented; sanitization (`settings-management.md`).
+- **Settings** — extends the correct base; `get_default()` implemented; sanitization (`settings-management.md`).
 - **Storage** — uses `Options`/`User_Options`/`Transients`, not raw WP functions (`storage-patterns.md`).
 - **Trait composition** — traits for horizontal reuse, not deep inheritance (`trait-composition.md`).
 - **Asset management** — assets registered via the module interface, not hardcoded enqueues (`asset-management.md`).
