@@ -62,21 +62,6 @@ import Header from './Header';
 import ResetNotice, { RESET_SUCCESS_NOTIFICATION } from './ResetNotice';
 import Splash from './Splash';
 
-async function saveSetupSettings( {
-	shouldSave,
-	setupFlowRefreshPhase4Enabled,
-	setHasSitePurposeAnswer,
-	saveInitialSetupSettings,
-} ) {
-	if ( setupFlowRefreshPhase4Enabled ) {
-		setHasSitePurposeAnswer( false );
-	}
-
-	if ( shouldSave || setupFlowRefreshPhase4Enabled ) {
-		await saveInitialSetupSettings();
-	}
-}
-
 export default function SetupUsingProxyWithSignIn() {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const setupFlowRefreshPhase4Enabled = useFeature(
@@ -94,6 +79,7 @@ export default function SetupUsingProxyWithSignIn() {
 	} = useDispatch( CORE_USER );
 	const { registerNotification } = useDispatch( CORE_NOTIFICATIONS );
 
+	const { getInitialSetupSettings } = useSelect( CORE_USER );
 	const proxySetupURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxySetupURL()
 	);
@@ -126,47 +112,60 @@ export default function SetupUsingProxyWithSignIn() {
 		}
 	}, [ registerNotification, showResetNotice, viewContext ] );
 
-	const setupAnalytics = useCallback( async () => {
+	const setup = useCallback( async () => {
 		let moduleReauthURL;
 
-		const { error, response } = await activateModule(
-			MODULE_SLUG_ANALYTICS_4
-		);
+		if ( connectAnalytics ) {
+			const { error, response } = await activateModule(
+				MODULE_SLUG_ANALYTICS_4
+			);
 
-		if ( error ) {
-			throw error;
+			if ( error ) {
+				throw error;
+			}
+
+			await trackEvent(
+				`${ viewContext }_setup`,
+				setupFlowRefreshEnabled
+					? 'setup_flow_v3_start_with_analytics'
+					: 'start_setup_with_analytics'
+			);
+
+			moduleReauthURL = response.moduleReauthURL;
+
+			if ( setupFlowRefreshEnabled ) {
+				moduleReauthURL = addQueryArgs( moduleReauthURL, {
+					showProgress: true,
+				} );
+
+				setIsAnalyticsSetupComplete( false );
+			}
 		}
 
-		await trackEvent(
-			`${ viewContext }_setup`,
-			setupFlowRefreshEnabled
-				? 'setup_flow_v3_start_with_analytics'
-				: 'start_setup_with_analytics'
-		);
+		if ( setupFlowRefreshPhase4Enabled ) {
+			setHasSitePurposeAnswer( false );
+		}
 
-		moduleReauthURL = response.moduleReauthURL;
+		const initialSetupSettings = await getInitialSetupSettings();
 
-		if ( setupFlowRefreshEnabled ) {
-			moduleReauthURL = addQueryArgs( moduleReauthURL, {
-				showProgress: true,
-			} );
+		if ( initialSetupSettings ) {
+			const { error } = await saveInitialSetupSettings();
 
-			setIsAnalyticsSetupComplete( false );
-
-			const { error: saveInitialSetupSettingsError } =
-				await saveInitialSetupSettings();
-
-			if ( saveInitialSetupSettingsError ) {
-				throw saveInitialSetupSettingsError;
+			if ( error ) {
+				throw error;
 			}
 		}
 
 		return moduleReauthURL;
 	}, [
 		activateModule,
+		connectAnalytics,
+		getInitialSetupSettings,
 		saveInitialSetupSettings,
+		setHasSitePurposeAnswer,
 		setIsAnalyticsSetupComplete,
 		setupFlowRefreshEnabled,
+		setupFlowRefreshPhase4Enabled,
 		viewContext,
 	] );
 
@@ -175,40 +174,27 @@ export default function SetupUsingProxyWithSignIn() {
 			event.preventDefault();
 
 			let moduleReauthURL;
-			const shouldSaveInitialSetupSettings = false;
 
-			if ( connectAnalytics ) {
-				try {
-					moduleReauthURL = await setupAnalytics();
-				} catch {
-					if ( setupFlowRefreshPhase4Enabled ) {
-						registerNotification(
-							ANALYTICS_ACTIVATION_ERROR_NOTIFICATION,
-							{
-								Component: () => (
-									<AnalyticsActivationErrorNotification
-										onRetry={ onButtonClick }
-									/>
-								),
-								priority: PRIORITY.ERROR_HIGH,
-								areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
-								viewContexts: [ viewContext ],
-								isDismissible: false,
-								featureFlag: 'setupFlowRefreshPhase4',
-							}
-						);
-
-						return;
-					}
+			try {
+				moduleReauthURL = await setup();
+			} catch {
+				if ( ! setupFlowRefreshPhase4Enabled ) {
+					return;
 				}
-			}
 
-			await saveSetupSettings( {
-				shouldSave: shouldSaveInitialSetupSettings,
-				setupFlowRefreshPhase4Enabled,
-				setHasSitePurposeAnswer,
-				saveInitialSetupSettings,
-			} );
+				registerNotification( ANALYTICS_ACTIVATION_ERROR_NOTIFICATION, {
+					Component: () => (
+						<AnalyticsActivationErrorNotification
+							onRetry={ onButtonClick }
+						/>
+					),
+					priority: PRIORITY.ERROR_HIGH,
+					areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
+					viewContexts: [ viewContext ],
+					isDismissible: false,
+					featureFlag: 'setupFlowRefreshPhase4',
+				} );
+			}
 
 			if ( proxySetupURL ) {
 				await Promise.all( [
@@ -262,19 +248,16 @@ export default function SetupUsingProxyWithSignIn() {
 			}
 		},
 		[
-			connectAnalytics,
-			setupFlowRefreshPhase4Enabled,
-			setHasSitePurposeAnswer,
-			saveInitialSetupSettings,
-			proxySetupURL,
-			isConnected,
 			forwardableParams,
-			postAuthDashboardURL,
-			setupAnalytics,
-			registerNotification,
-			viewContext,
-			setupFlowRefreshEnabled,
+			isConnected,
 			navigateTo,
+			postAuthDashboardURL,
+			proxySetupURL,
+			registerNotification,
+			setup,
+			setupFlowRefreshEnabled,
+			setupFlowRefreshPhase4Enabled,
+			viewContext,
 		]
 	);
 
