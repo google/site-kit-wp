@@ -1454,6 +1454,9 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
           class="mdc-layout-grid"
         >
           <div
+            class="googlesitekit-setup__notifications"
+          />
+          <div
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
@@ -1843,6 +1846,9 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
           class="mdc-layout-grid"
         >
           <div
+            class="googlesitekit-setup__notifications"
+          />
+          <div
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
@@ -2151,6 +2157,9 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
         <div
           class="mdc-layout-grid"
         >
+          <div
+            class="googlesitekit-setup__notifications"
+          />
           <div
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
@@ -2541,6 +2550,9 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
           class="mdc-layout-grid"
         >
           <div
+            class="googlesitekit-setup__notifications"
+          />
+          <div
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
@@ -2929,6 +2941,9 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
         <div
           class="mdc-layout-grid"
         >
+          <div
+            class="googlesitekit-setup__notifications"
+          />
           <div
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >

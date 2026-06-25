@@ -2,6 +2,8 @@
 /.*
 !.gemini/
 .gemini/*
+!.gemini/config.yml
+!.gemini/styleguide.md
 !.gemini/settings.json
 !.gemini/agents/
 !.gemini/agents/**

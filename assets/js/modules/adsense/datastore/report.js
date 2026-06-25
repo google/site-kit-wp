@@ -138,7 +138,7 @@ const baseSelectors = {
 	 * An AdSense report will be returned; `undefined` if the report is not yet loaded.
 	 *
 	 * @since 1.9.0
-	 * @since n.e.x.t Accept optional fetch options as a second argument, such as `{ signal }` to cancel the report request.
+	 * @since 1.182.0 Accept optional fetch options as a second argument, such as `{ signal }` to cancel the report request.
 	 *
 	 * @param {Object}         state                Data store's state.
 	 * @param {Object}         options              Options for generating the report.

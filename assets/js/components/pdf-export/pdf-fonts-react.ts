@@ -44,7 +44,7 @@ let fontsRegistered = false;
  * transitions to its ERROR stage rather than silently rendering in a fallback
  * typeface.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @return {string} The display font family name.
  */

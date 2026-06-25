@@ -35,7 +35,7 @@ export const POPULAR_PAGES_REPORT_ID =
  * order, the ten-row limit, and the report ID. The caller adds the date range.
  * One builder keeps the two widgets from requesting different reports.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @return The report options, without the date range.
  */
@@ -68,7 +68,7 @@ export function getPopularPagesReportOptions(): Pick<
  * Adds the date range to the shared options, so the PDF loader requests the
  * same report the dashboard widget uses.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param dates           Report date range.
  * @param dates.startDate Report start date (YYYY-MM-DD).

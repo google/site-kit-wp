@@ -34,7 +34,7 @@ class Advanced_Data_Breakdowns_Settings extends Setting implements Setting_With_
 	 * Gets the default settings, an empty map with no property enabled.
 	 *
 	 * @since 1.181.0
-	 * @since n.e.x.t Returned an empty array, since the setting now stores a per-property map.
+	 * @since 1.182.0 Returned an empty array, since the setting now stores a per-property map.
 	 *
 	 * @return array Default settings, an empty map.
 	 */
@@ -57,7 +57,7 @@ class Advanced_Data_Breakdowns_Settings extends Setting implements Setting_With_
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
 	 * @since 1.181.0
-	 * @since n.e.x.t Cast each property's value to a boolean, since the setting now stores a per-property map.
+	 * @since 1.182.0 Cast each property's value to a boolean, since the setting now stores a per-property map.
 	 *
 	 * @return callable Callback that casts each property's value to a boolean and keeps the stored value when the input isn't an array.
 	 */
@@ -78,7 +78,7 @@ class Advanced_Data_Breakdowns_Settings extends Setting implements Setting_With_
 	 * Gets the keys a view-only user is allowed to read.
 	 *
 	 * @since 1.181.0
-	 * @since n.e.x.t Returned the stored property IDs, since the setting now stores a per-property map.
+	 * @since 1.182.0 Returned the stored property IDs, since the setting now stores a per-property map.
 	 *
 	 * @return array Property IDs a view-only user may read.
 	 */
@@ -90,7 +90,7 @@ class Advanced_Data_Breakdowns_Settings extends Setting implements Setting_With_
 	 * Checks whether advanced data breakdowns is enabled for the given property.
 	 *
 	 * @since 1.181.0
-	 * @since n.e.x.t Added a property ID parameter, since the setting now stores a per-property map.
+	 * @since 1.182.0 Added a property ID parameter, since the setting now stores a per-property map.
 	 *
 	 * @param string $property_id Property ID to check the enabled flag for.
 	 * @return bool True when enabled for the property, false otherwise.
@@ -106,7 +106,7 @@ class Advanced_Data_Breakdowns_Settings extends Setting implements Setting_With_
 	 * for property IDs not present in the given settings.
 	 *
 	 * @since 1.181.0
-	 * @since n.e.x.t Used `array_replace` so the numeric property-ID keys are kept.
+	 * @since 1.182.0 Used `array_replace` so the numeric property-ID keys are kept.
 	 *
 	 * @param array $settings Settings to merge in. Property IDs not given keep their stored value.
 	 * @return array The full settings after the merge.
