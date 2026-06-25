@@ -408,6 +408,12 @@ final class Screens {
 	 * @since n.e.x.t
 	 */
 	private function analytics_setup_incomplete_redirect_dashboard_to_setup() {
+		$is_analytics_connected = $this->modules->is_module_connected( 'analytics-4' );
+
+		if ( $is_analytics_connected ) {
+			$this->no_site_purpose_answer_redirect_dashboard_to_setup();
+		}
+
 		$slug          = $this->context->input()->filter( INPUT_GET, 'slug' );
 		$show_progress = $this->context->input()->filter( INPUT_GET, 'showProgress', FILTER_VALIDATE_BOOLEAN );
 		$re_auth       = $this->context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
@@ -416,24 +422,18 @@ final class Screens {
 			return;
 		}
 
-		$is_analytics_connected = $this->modules->is_module_connected( 'analytics-4' );
-
-		if ( $is_analytics_connected ) {
-			$this->no_site_purpose_answer_redirect_dashboard_to_setup();
-		} else {
-			wp_safe_redirect(
-				$this->context->admin_url(
-					'dashboard',
-					array(
-						'slug'         => 'analytics-4',
-						'showProgress' => 'true',
-						'reAuth'       => 'true',
-					)
+		wp_safe_redirect(
+			$this->context->admin_url(
+				'dashboard',
+				array(
+					'slug'         => 'analytics-4',
+					'showProgress' => 'true',
+					'reAuth'       => 'true',
 				)
-			);
+			)
+		);
 
-			exit;
-		}
+		exit;
 	}
 
 	/**
@@ -473,10 +473,12 @@ final class Screens {
 
 							if ( false === $is_analytics_setup_complete ) {
 								$this->analytics_setup_incomplete_redirect_dashboard_to_setup();
+								return;
 							}
 
 							if ( false === $has_site_purpose_answer ) {
 								$this->no_site_purpose_answer_redirect_dashboard_to_setup();
+								return;
 							}
 						}
 					},
