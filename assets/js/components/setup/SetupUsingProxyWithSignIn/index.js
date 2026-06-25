@@ -194,6 +194,8 @@ export default function SetupUsingProxyWithSignIn() {
 					isDismissible: false,
 					featureFlag: 'setupFlowRefreshPhase4',
 				} );
+
+				return;
 			}
 
 			if ( proxySetupURL ) {
