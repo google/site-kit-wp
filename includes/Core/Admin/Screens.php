@@ -408,18 +408,18 @@ final class Screens {
 	 * @since n.e.x.t
 	 */
 	private function analytics_setup_incomplete_redirect_dashboard_to_setup() {
-		$is_analytics_connected = $this->modules->is_module_connected( 'analytics-4' );
-
-		if ( $is_analytics_connected ) {
-			$this->no_site_purpose_answer_redirect_dashboard_to_setup();
-		}
-
 		$slug          = $this->context->input()->filter( INPUT_GET, 'slug' );
 		$show_progress = $this->context->input()->filter( INPUT_GET, 'showProgress', FILTER_VALIDATE_BOOLEAN );
 		$re_auth       = $this->context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
 
 		if ( 'analytics-4' === $slug && $re_auth && $show_progress ) {
 			return;
+		}
+
+		$is_analytics_connected = $this->modules->is_module_connected( 'analytics-4' );
+
+		if ( $is_analytics_connected ) {
+			$this->no_site_purpose_answer_redirect_dashboard_to_setup();
 		}
 
 		wp_safe_redirect(
