@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Is_Widget_Area_Hidden;
 use Google\Site_Kit\Core\Modules\Analytics_4\Tag_Matchers;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
@@ -408,6 +409,11 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 					// Reset audience specific settings.
 					$this->reset_audiences->reset_audience_data();
+				}
+
+				if ( $this->is_connected() ) {
+					$key_metrics_setup_is_widget_area_hidden = new Key_Metrics_Setup_Is_Widget_Area_Hidden( $this->options );
+					$key_metrics_setup_is_widget_area_hidden->delete();
 				}
 			}
 		);

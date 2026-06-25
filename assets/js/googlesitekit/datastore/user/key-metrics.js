@@ -590,6 +590,13 @@ const baseSelectors = {
 	 * @return {boolean|undefined} True if the key metrics widget is hidden, false if it is not, or undefined if the key metrics settings are not loaded.
 	 */
 	isKeyMetricsWidgetHidden: createRegistrySelector( ( select ) => () => {
+		const isWidgetAreaHidden =
+			select( CORE_SITE ).isKeyMetricsWidgetAreaHidden();
+
+		if ( isWidgetAreaHidden ) {
+			return true;
+		}
+
 		const keyMetricsSettings = select( CORE_USER ).getKeyMetricsSettings();
 
 		if ( keyMetricsSettings === undefined ) {
