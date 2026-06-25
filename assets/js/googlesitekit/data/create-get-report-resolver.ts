@@ -83,10 +83,7 @@ export function createGetReportResolver( storeName: string ) {
 	// This resolver and the `getReport` selector take the same arguments, and
 	// neither sets a default. The registry compares the arguments to decide if
 	// a call is new, so this resolver must receive the exact arguments the
-	// caller sent. A default like `fetchOptions = {}` would add an argument the
-	// caller left out, and the registry would treat the call as new and fetch
-	// the same report again. A default for `options` alone would force the
-	// caller to write `getReport( undefined, { signal } )`.
+	// caller sent.
 	return function* getReport(
 		options?: ReportRequestOptions,
 		fetchOptions?: { signal?: AbortSignal }
