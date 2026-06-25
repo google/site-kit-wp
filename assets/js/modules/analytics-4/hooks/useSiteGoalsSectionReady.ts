@@ -46,7 +46,7 @@ import {
  * they already fetched, because an area stays loaded once it has come into
  * view.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param enabled Whether to load the widget areas and wait. While `false`, the hook reports the section as not ready.
  * @return Whether the Site Goals section is ready.

@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Util\Sanitize;
 /**
  * Class for site-wide Site Goals settings.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  * @access private
  * @ignore
  */
@@ -35,7 +35,7 @@ class Site_Goals_Site_Settings extends Setting {
 	/**
 	 * Gets the default value for settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @return array The default value.
 	 */
@@ -48,7 +48,7 @@ class Site_Goals_Site_Settings extends Setting {
 	/**
 	 * Gets the type of the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @return string The type of the setting.
 	 */
@@ -59,7 +59,7 @@ class Site_Goals_Site_Settings extends Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @return callable The sanitization callback.
 	 */
@@ -73,7 +73,7 @@ class Site_Goals_Site_Settings extends Setting {
 	 * Merges the given settings with the existing ones, unioning activeWidgets
 	 * so that existing values are never dropped.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param array $settings The settings to merge.
 	 * @return array The merged settings.
@@ -101,7 +101,7 @@ class Site_Goals_Site_Settings extends Setting {
 	/**
 	 * Sanitizes the settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param array $option The option to sanitize.
 	 * @return array The sanitized settings.

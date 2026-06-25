@@ -127,6 +127,53 @@ class WooCommerceTest extends TestCase {
 		$this->assertEquals( $expectedEvents, $events, 'Event names ' . implode( ', ', $events ) . ' do not match the expected values ' . implode( ', ', $expectedEvents ) . '.' );
 	}
 
+	public function test_get_site_kit_event_names() {
+		$events = $this->woocommerce->get_site_kit_event_names();
+		$this->assertCount( 2, $events, 'Expected 2 events when addon is inactive.' );
+		$this->assertContains( 'add_to_cart', $events, 'Expected add_to_cart event.' );
+		$this->assertContains( 'purchase', $events, 'Expected purchase event.' );
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function test_get_site_kit_event_names__excludes_wgai_events() {
+		class_alias( __CLASS__, 'WC_Google_Analytics_Integration' );
+
+		// When WGAI tracks add_to_cart, only purchase should be in Site Kit events.
+		update_option( 'woocommerce_google_analytics_settings', array( 'ga_event_tracking_enabled' => 'yes' ) );
+		$events = $this->woocommerce->get_site_kit_event_names();
+		$this->assertEquals( array( 'purchase' ), $events, 'Expected only purchase when WGAI tracks add_to_cart.' );
+
+		// When WGAI tracks purchase, only add_to_cart should be in Site Kit events.
+		update_option( 'woocommerce_google_analytics_settings', array( 'ga_ecommerce_tracking_enabled' => 'yes' ) );
+		$events = $this->woocommerce->get_site_kit_event_names();
+		$this->assertEquals( array( 'add_to_cart' ), $events, 'Expected only add_to_cart when WGAI tracks purchase.' );
+
+		// When WGAI tracks both, Site Kit events should be empty.
+		update_option(
+			'woocommerce_google_analytics_settings',
+			array(
+				'ga_ecommerce_tracking_enabled' => 'yes',
+				'ga_event_tracking_enabled'     => 'yes',
+			)
+		);
+		$events = $this->woocommerce->get_site_kit_event_names();
+		$this->assertEmpty( $events, 'Expected no events when WGAI tracks both add_to_cart and purchase.' );
+
+		// WGAI additional events (view_item_list, begin_checkout, etc.) should never appear.
+		update_option(
+			'woocommerce_google_analytics_settings',
+			array( 'ga_product_identifier' => 'id' ) // default: all WGAI events active.
+		);
+		$events = $this->woocommerce->get_site_kit_event_names();
+		$this->assertEmpty( $events, 'Expected no events when WGAI tracks all events by default.' );
+		$this->assertNotContains( 'view_item_list', $events, 'view_item_list should not appear in Site Kit events.' );
+		$this->assertNotContains( 'begin_checkout', $events, 'begin_checkout should not appear in Site Kit events.' );
+
+		delete_option( 'woocommerce_google_analytics_settings' );
+	}
+
 	/**
 	 * @dataProvider wgai_data_settings
 	 */

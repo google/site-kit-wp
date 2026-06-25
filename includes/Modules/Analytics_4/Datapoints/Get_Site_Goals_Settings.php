@@ -28,7 +28,7 @@ class Get_Site_Goals_Settings extends Site_Goals_Settings_Datapoint {
 	/**
 	 * Site-wide Site Goals settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 * @var Site_Goals_Site_Settings
 	 */
 	private $site_goals_site_settings;
@@ -36,7 +36,7 @@ class Get_Site_Goals_Settings extends Site_Goals_Settings_Datapoint {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param array $definition Definition fields.
 	 */

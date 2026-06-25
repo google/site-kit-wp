@@ -54,7 +54,7 @@ class Save_Advanced_Data_Breakdowns_Settings extends Datapoint implements Execut
 	 * Returns a `WP_Error` when the user can't manage options, and throws when any property's value isn't a boolean.
 	 *
 	 * @since 1.181.0
-	 * @since n.e.x.t Validated and saved a per-property map of enabled flags.
+	 * @since 1.182.0 Validated and saved a per-property map of enabled flags.
 	 *
 	 * @param Data_Request $data_request The REST data request, read for its `settings` map of property ID to enabled flag.
 	 * @return callable|WP_Error Callback that saves the settings, or a `WP_Error` when the user lacks permission.

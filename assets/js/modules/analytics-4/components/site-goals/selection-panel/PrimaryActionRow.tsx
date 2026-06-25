@@ -47,7 +47,7 @@ interface PrimaryActionRowProps {
  * Renders the Key action label and thumbs feedback trigger for a goal type
  * in the Site Goals selection panel.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param props          Component props.
  * @param props.goalType Goal type (`ecommerce` or `lead`).

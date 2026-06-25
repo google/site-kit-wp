@@ -1026,7 +1026,7 @@ export const selectors = {
 	/**
 	 * Checks if more than one ecommerce event provider plugin is active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} `true` if multiple ecommerce event providers are active; `false` if not. Returns `undefined` if not yet loaded.

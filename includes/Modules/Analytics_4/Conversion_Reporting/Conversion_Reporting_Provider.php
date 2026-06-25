@@ -142,7 +142,7 @@ class Conversion_Reporting_Provider {
 	/**
 	 * Updates active widgets based on detected events and active categories.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 */
 	protected function update_active_site_goals_widgets() {
 		$settings        = $this->analytics->get_settings()->get();
