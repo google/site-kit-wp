@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Modules\Tags;
 
@@ -30,24 +28,24 @@ class Module_Web_TagTest extends TestCase {
 
 	public function test_is_tag_blocked() {
 		// Tag is not blocked by default.
-		$this->assertFalse( $this->web_tag->is_tag_blocked() );
+		$this->assertFalse( $this->web_tag->is_tag_blocked(), 'Web tag should not be blocked without filter.' );
 
 		add_filter( "googlesitekit_{$this->module_slug}_tag_blocked", '__return_true' );
 
-		$this->assertTrue( $this->web_tag->is_tag_blocked() );
+		$this->assertTrue( $this->web_tag->is_tag_blocked(), 'Web tag blocked filter should block tag.' );
 
 		// The return value of the filter is cast to a boolean before returning.
 		add_filter( "googlesitekit_{$this->module_slug}_tag_blocked", '__return_empty_string' );
-		$this->assertFalse( $this->web_tag->is_tag_blocked() );
+		$this->assertFalse( $this->web_tag->is_tag_blocked(), 'Web tag blocked filter should cast empty value to false.' );
 	}
 
 	public function test_get_tag_blocked_on_consent_attribute() {
 		// Returns empty string by default.
-		$this->assertEquals( '', $this->web_tag->get_tag_blocked_on_consent_attribute() );
+		$this->assertEquals( '', $this->web_tag->get_tag_blocked_on_consent_attribute(), 'Web tag should omit consent block attribute by default.' );
 
 		// Returns attributes to prevent script loading if truthy.
 		add_filter( "googlesitekit_{$this->module_slug}_tag_block_on_consent", '__return_true' );
 
-		$this->assertEquals( ' type="text/plain" data-block-on-consent', $this->web_tag->get_tag_blocked_on_consent_attribute() );
+		$this->assertEquals( ' type="text/plain" data-block-on-consent', $this->web_tag->get_tag_blocked_on_consent_attribute(), 'Web tag should add script-blocking consent attributes.' );
 	}
 }

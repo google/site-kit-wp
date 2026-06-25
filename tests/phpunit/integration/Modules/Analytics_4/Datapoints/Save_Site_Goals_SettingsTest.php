@@ -155,16 +155,17 @@ class Save_Site_Goals_SettingsTest extends TestCase {
 	}
 
 	public function test_is_shareable() {
-		// Must be shareable so shared-dashboard viewers (without their own
-		// Analytics scopes) pass base-scope validation via the owner's OAuth
-		// client; the closure still writes the current user's own settings.
+		// The `Save_Site_Goals_Settings` datapoint currently is used to save per-user
+		// settings only. However, it must be shareable so shared-dashboard viewers
+		// (without their own Analytics scopes) pass base-scope validation via the
+		// owner's OAuth client.
 		$this->assertTrue( $this->datapoint->is_shareable(), 'The Site Goals save datapoint should be shareable.' );
 	}
 
 	public function test_permission_callback() {
-		// Per-user settings are gated on dashboard access rather than the default
-		// `manage_options` permission, so view-only users can persist their own
-		// selection.
+		// The `Save_Site_Goals_Settings` datapoint currently is used to save per-user
+		// settings only. These settings are gated on dashboard access rather than the default
+		// `manage_options` permission, so view-only users can persist their own selection.
 		$this->assertSame(
 			current_user_can( Permissions::VIEW_DASHBOARD ),
 			$this->datapoint->permission_callback(),

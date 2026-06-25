@@ -93,7 +93,7 @@ export function useSiteGoalsBreakdownResultCopy(
 				{ a: learnMoreLink }
 			),
 			permissionsErrorTitle: __(
-				'Event breakdown setup failed',
+				'Sales plugin breakdown setup failed',
 				'google-site-kit'
 			),
 		};

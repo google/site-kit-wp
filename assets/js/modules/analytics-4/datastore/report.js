@@ -151,7 +151,7 @@ const baseSelectors = {
 	 *
 	 * @since 1.94.0
 	 * @since 1.111.0 Add metricFilters to the options list, to reflect added support for the metric filters.
-	 * @since n.e.x.t Accept optional fetch options as a second argument, such as `{ signal }` to cancel the report request.
+	 * @since 1.182.0 Accept optional fetch options as a second argument, such as `{ signal }` to cancel the report request.
 	 * @since n.e.x.t Treat report options that differ only in `reportID` as one report.
 	 *
 	 * @param {Object}         state                      Data store's state.

@@ -488,7 +488,7 @@ export const selectors = {
 	 * For ecommerce, returns the label of the primary event (`purchase` or `add_to_cart`).
 	 * For lead, returns `Form completion` when any lead event is detected.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param {Object}               state    Data store's state.
 	 * @param {('ecommerce'|'lead')} goalType Goal type.

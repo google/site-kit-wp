@@ -27,11 +27,15 @@ import fetchMock from 'fetch-mock';
 import {
 	ACTIVE_CONTEXT_ID,
 	CORE_UI,
+	FORCED_IN_VIEW_WIDGET_AREAS,
 } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
-import { getSiteGoalsTour } from '@/js/modules/analytics-4/components/site-goals/feature-tours/site-goals';
+import {
+	SITE_GOALS_TOUR_PRELOAD_WIDGET_AREAS,
+	getSiteGoalsTour,
+} from '@/js/modules/analytics-4/components/site-goals/feature-tours/site-goals';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ENUM_CONVERSION_EVENTS,
@@ -58,12 +62,31 @@ const getNavigationalScrollTopSpy = jest.spyOn(
 );
 const scrollToSpy = jest.spyOn( global, 'scrollTo' );
 
-// Adds the tour's first step target to the page, so `checkRequirements`
-// resolves right away. The `afterEach` below removes it.
+/**
+ * Adds the tour's first step target to the page, so `checkRequirements`
+ * resolves right away. The `afterEach` below removes it.
+ *
+ * @since 1.182.0
+ */
 function appendTourTarget() {
 	const target = document.createElement( 'div' );
 	target.className = 'googlesitekit-site-goals-primary-action';
 	document.body.appendChild( target );
+}
+
+/**
+ * Waits until the intro modal renders its "Show me" button.
+ *
+ * @since 1.182.0
+ *
+ * @param {Function} getByRole The `getByRole` query from the render result.
+ */
+async function waitForIntroModalToShow( getByRole ) {
+	await waitFor( () => {
+		expect(
+			getByRole( 'button', { name: /show me/i } )
+		).toBeInTheDocument();
+	} );
 }
 
 describe( 'IntroModal', () => {
@@ -113,56 +136,148 @@ describe( 'IntroModal', () => {
 		scrollToSpy.mockClear();
 	} );
 
-	it( 'renders ecommerce-only variant when only ecommerce conversion events exist', () => {
+	it( 'renders ecommerce-only variant when only ecommerce conversion events exist', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		appendTourTarget();
 
-		const { container } = render( <IntroModal />, {
+		const { container, getByRole } = render( <IntroModal />, {
 			registry,
 		} );
+
+		await waitForIntroModalToShow( getByRole );
+
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'renders lead-only variant when only lead conversion events exist', () => {
+	it( 'renders lead-only variant when only lead conversion events exist', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+		appendTourTarget();
 
-		const { container } = render( <IntroModal />, {
+		const { container, getByRole } = render( <IntroModal />, {
 			registry,
 		} );
+
+		await waitForIntroModalToShow( getByRole );
+
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'renders ecommerce-and-lead variant when both conversion event types exist', () => {
+	it( 'renders ecommerce-and-lead variant when both conversion event types exist', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [
 				ENUM_CONVERSION_EVENTS.PURCHASE,
 				ENUM_CONVERSION_EVENTS.CONTACT,
 			] );
+		appendTourTarget();
 
-		const { container } = render( <IntroModal />, {
+		const { container, getByRole } = render( <IntroModal />, {
 			registry,
 		} );
+
+		await waitForIntroModalToShow( getByRole );
+
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'should start the Site Goals tour when the user clicks "Show me"', async () => {
+	it( 'renders nothing while the Site Goals section is missing', () => {
+		jest.useFakeTimers();
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
-		// The tour waits for its first target, so add it before the click.
+		const { container } = render( <IntroModal />, {
+			registry,
+		} );
+
+		// Two checks go by with no target on the page. The modal must keep
+		// waiting.
+		act( () => {
+			jest.advanceTimersByTime( 500 );
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+
+		jest.useRealTimers();
+	} );
+
+	it( 'renders modal after the wait limit when the section never appears', async () => {
+		jest.useFakeTimers();
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const { getByRole } = render( <IntroModal />, {
+			registry,
+		} );
+
+		// Run all 120 ticks of 250ms each. That is the full 30-second
+		// wait. The async act lets each check finish before the next timer
+		// runs.
+		for ( let check = 0; check < 120; check++ ) {
+			// eslint-disable-next-line require-await
+			await act( async () => {
+				jest.advanceTimersByTime( 250 );
+			} );
+		}
+
+		expect(
+			getByRole( 'button', { name: /show me/i } )
+		).toBeInTheDocument();
+
+		jest.useRealTimers();
+	} );
+
+	it( 'sets the widget areas to load while waiting, then clears them when the modal is dismissed', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 		appendTourTarget();
 
 		const { getByRole } = render( <IntroModal />, {
 			registry,
 		} );
 
+		// While the modal waits, it sets the widget areas to load.
+		expect(
+			registry.select( CORE_UI ).getValue( FORCED_IN_VIEW_WIDGET_AREAS )
+		).toEqual( SITE_GOALS_TOUR_PRELOAD_WIDGET_AREAS );
+
+		await waitForIntroModalToShow( getByRole );
+
+		// The dismissal also saves the dismissed item. The async act call
+		// lets that request finish inside the test.
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByRole( 'button', { name: /maybe later/i } ) );
+		} );
+
+		expect(
+			registry.select( CORE_UI ).getValue( FORCED_IN_VIEW_WIDGET_AREAS )
+		).toBeUndefined();
+	} );
+
+	it( 'should start the Site Goals tour when the user clicks "Show me"', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		appendTourTarget();
+
+		const { getByRole } = render( <IntroModal />, {
+			registry,
+		} );
+
+		await waitForIntroModalToShow( getByRole );
+
 		fireEvent.click( getByRole( 'button', { name: /show me/i } ) );
 
+		// The tour waits for the section again before it starts.
 		await waitFor( () => {
 			expect( registry.select( CORE_USER ).getCurrentTour() ).toEqual(
 				getSiteGoalsTour( {
@@ -171,6 +286,12 @@ describe( 'IntroModal', () => {
 				} )
 			);
 		} );
+
+		// The modal clears the widget areas to load when it closes. The tour
+		// then sets the same list itself.
+		expect(
+			registry.select( CORE_UI ).getValue( FORCED_IN_VIEW_WIDGET_AREAS )
+		).toEqual( SITE_GOALS_TOUR_PRELOAD_WIDGET_AREAS );
 	} );
 
 	it( 'should navigate to the Site Goals section when the user clicks "Show me"', async () => {
@@ -193,6 +314,8 @@ describe( 'IntroModal', () => {
 		const { getByRole } = render( <IntroModal />, {
 			registry,
 		} );
+
+		await waitForIntroModalToShow( getByRole );
 
 		// The click also dismisses the modal and starts the tour. The async
 		// act call lets those updates finish inside the test. The callback
@@ -233,18 +356,17 @@ describe( 'IntroModal', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'still renders for a view-only user with detected events', () => {
+	it( 'still renders for a view-only user with detected events', async () => {
 		provideUserAuthentication( registry, { authenticated: false } );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		appendTourTarget();
 
 		const { getByRole } = render( <IntroModal />, {
 			registry,
 		} );
 
-		expect(
-			getByRole( 'button', { name: /show me/i } )
-		).toBeInTheDocument();
+		await waitForIntroModalToShow( getByRole );
 	} );
 } );

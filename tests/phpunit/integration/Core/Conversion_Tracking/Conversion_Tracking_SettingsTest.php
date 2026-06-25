@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
@@ -52,7 +49,8 @@ class Conversion_Tracking_SettingsTest extends SettingsTestCase {
 			array(
 				'enabled' => false,
 			),
-			$default_settings
+			$default_settings,
+			'Default conversion tracking settings should include enabled false.'
 		);
 	}
 
@@ -99,16 +97,16 @@ class Conversion_Tracking_SettingsTest extends SettingsTestCase {
 	 */
 	public function test_get_sanitize_callback( $input, $expected ) {
 		$this->settings->set( $input );
-		$this->assertEqualSetsWithIndex( $expected, $this->settings->get() );
+		$this->assertEqualSetsWithIndex( $expected, $this->settings->get(), 'Sanitized conversion tracking settings should match expected values.' );
 	}
 
 	public function test_is_conversion_tracking_enabled() {
-		$this->assertFalse( $this->settings->is_conversion_tracking_enabled() );
+		$this->assertFalse( $this->settings->is_conversion_tracking_enabled(), 'Conversion tracking should be disabled by default.' );
 
 		$this->settings->set( array( 'enabled' => true ) );
-		$this->assertTrue( $this->settings->is_conversion_tracking_enabled() );
+		$this->assertTrue( $this->settings->is_conversion_tracking_enabled(), 'Conversion tracking should be enabled after setting true.' );
 
 		$this->settings->set( array( 'enabled' => false ) );
-		$this->assertFalse( $this->settings->is_conversion_tracking_enabled() );
+		$this->assertFalse( $this->settings->is_conversion_tracking_enabled(), 'Conversion tracking should be disabled after setting false.' );
 	}
 }

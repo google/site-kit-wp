@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\Consent_Mode;
 
 use Google\Site_Kit\Context;
@@ -71,7 +68,7 @@ class Consent_ModeTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_head' );
 
-		$this->assertStringContainsString( 'Google tag (gtag.js) consent mode dataLayer added by Site Kit', $output );
+		$this->assertStringContainsString( 'Google tag (gtag.js) consent mode dataLayer added by Site Kit', $output, 'Consent mode snippet should render when enabled.' );
 	}
 
 	public function test_does_not_render_consent_mode_snippet_when_disabled() {
@@ -81,7 +78,7 @@ class Consent_ModeTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_head' );
 
-		$this->assertStringNotContainsString( 'Google tag (gtag.js) consent mode dataLayer added by Site Kit', $output );
+		$this->assertStringNotContainsString( 'Google tag (gtag.js) consent mode dataLayer added by Site Kit', $output, 'Consent mode snippet should not render when disabled.' );
 	}
 
 	public function test_register__googlesitekit_consent_mode_status() {
@@ -89,7 +86,7 @@ class Consent_ModeTest extends TestCase {
 
 		$this->consent_mode->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_consent_mode_status' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_consent_mode_status' ), 'Consent mode status filter should be registered.' );
 	}
 
 	public function test_get_feature_metrics() {
@@ -103,7 +100,7 @@ class Consent_ModeTest extends TestCase {
 				'wp_consent_api'       => 'none',
 			),
 			$feature_metrics,
-			'Feature metrics should indicate that consent mode is enabled and WP Consent API is not installed.'
+			'Feature metrics should report consent enabled without WP Consent API.'
 		);
 	}
 }

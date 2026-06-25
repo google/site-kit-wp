@@ -22,7 +22,7 @@ import { getViewportHeight, setViewportHeight } from '@tests/js/viewport-utils';
 /**
  * Mocks layout measurements for testing the `AdaptiveFooterLayout` component.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param {string} className       The class name of the content element.
  * @param {string} footerClassName The class name of the footer element.

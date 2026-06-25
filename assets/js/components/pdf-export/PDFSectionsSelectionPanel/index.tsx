@@ -24,7 +24,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -34,6 +34,8 @@ import InViewProvider from '@/js/components/InViewProvider';
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
 import SelectionPanel from '@/js/components/SelectionPanel';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import PanelContent from './PanelContent';
 
 const PDFSectionsSelectionPanel: FC = () => {
@@ -44,12 +46,31 @@ const PDFSectionsSelectionPanel: FC = () => {
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
+	const viewContext = useViewContext();
+	const viewEventFiredRef = useRef( false );
+
+	useEffect( () => {
+		if ( isOpen && ! viewEventFiredRef.current ) {
+			viewEventFiredRef.current = true;
+			trackEvent(
+				`${ viewContext }_pdf_generation_section_selection-sidebar`,
+				'pdf_generation_sidebar_view'
+			);
+		}
+		if ( ! isOpen ) {
+			viewEventFiredRef.current = false;
+		}
+	}, [ isOpen, viewContext ] );
 
 	const closePanel = useCallback( () => {
 		if ( isOpen ) {
+			trackEvent(
+				`${ viewContext }_pdf_generation_section_selection-sidebar`,
+				'pdf_generation_sidebar_close'
+			);
 			setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, false );
 		}
-	}, [ isOpen, setValue ] );
+	}, [ isOpen, setValue, viewContext ] );
 
 	return (
 		<InViewProvider

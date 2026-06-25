@@ -70,6 +70,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Batch_Report;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Lookup;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Destinations;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Custom_Dimensions;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Enhanced_Measurement_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Form_Metadata;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Google_Tag_Settings;
@@ -97,6 +98,7 @@ use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioning
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Site_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdsLinked;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Interface;
@@ -198,13 +200,22 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	protected $audience_settings;
 
 	/**
-	 * Site_Goals_Settings instance.
+	 * Per-user Site_Goals_Settings instance.
 	 *
 	 * @since 1.181.0
 	 *
 	 * @var Site_Goals_Settings
 	 */
 	protected $site_goals_settings;
+
+	/**
+	 * Site-wide Site_Goals_Site_Settings instance.
+	 *
+	 * @since 1.182.0
+	 *
+	 * @var Site_Goals_Site_Settings
+	 */
+	protected $site_goals_site_settings;
 
 	/**
 	 * Audience_Utilities instance.
@@ -256,6 +267,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->reset_audiences                   = new Reset_Audiences( $this->user_options );
 		$this->audience_settings                 = new Audience_Settings( $this->options );
 		$this->site_goals_settings               = new Site_Goals_Settings( $this->user_options );
+		$this->site_goals_site_settings          = new Site_Goals_Site_Settings( $this->options );
 		$this->audience_utilities                = new Audience_Utilities( $this->audience_settings );
 		$this->resource_data_availability_date   = new Resource_Data_Availability_Date( $this->transients, $this->get_settings(), $this->audience_settings );
 		$this->advanced_data_breakdowns_settings = new Advanced_Data_Breakdowns_Settings( $this->options );
@@ -300,6 +312,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 		$this->audience_settings->register();
 		$this->site_goals_settings->register();
+		$this->site_goals_site_settings->register();
 		$this->advanced_data_breakdowns_settings->register();
 
 		( new Advanced_Tracking( $this->context ) )->register();
@@ -698,6 +711,34 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				: join( ', ', $site_kit_audiences ),
 		);
 
+		if ( Feature_Flags::enabled( 'siteGoals' ) ) {
+			$active_widget_slugs = $this->site_goals_site_settings->get()['activeWidgets'] ?? array();
+			$widget_names        = array(
+				'ecommerce' => __( 'Online store performance', 'google-site-kit' ),
+				'lead'      => __( 'Lead generation performance', 'google-site-kit' ),
+			);
+			$widget_labels       = array();
+			foreach ( $active_widget_slugs as $slug ) {
+				if ( isset( $widget_names[ $slug ] ) ) {
+					$widget_labels[] = $widget_names[ $slug ];
+				}
+			}
+
+			$debug_fields['analytics_4_site_goals_widgets'] = array(
+				'label' => __( 'Analytics: Site Goal Widgets', 'google-site-kit' ),
+				'value' => empty( $widget_labels )
+					? __( 'None', 'google-site-kit' )
+					: join(
+						/* translators: used between list items, there is a space after the comma */
+						__( ', ', 'google-site-kit' ),
+						$widget_labels
+					),
+				'debug' => empty( $active_widget_slugs )
+					? 'none'
+					: join( ', ', $active_widget_slugs ),
+			);
+		}
+
 		return $debug_fields;
 	}
 
@@ -712,9 +753,12 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$settings = $this->get_settings()->get();
 
 		return array(
-			'audseg_setup_completed'   => (bool) $this->audience_settings->get()['audienceSegmentationSetupCompletedBy'],
-			'audseg_audience_count'    => count( $this->audience_settings->get()['availableAudiences'] ?? array() ),
-			'analytics_adsense_linked' => $this->is_adsense_connected() && $settings['adSenseLinked'],
+			'audseg_setup_completed'              => (bool) $this->audience_settings->get()['audienceSegmentationSetupCompletedBy'],
+			'audseg_audience_count'               => count( $this->audience_settings->get()['availableAudiences'] ?? array() ),
+			'analytics_adsense_linked'            => $this->is_adsense_connected() && $settings['adSenseLinked'],
+			'conversion_tracking_detected_events' => $settings['detectedEvents'] ?? array(),
+			'site_goals_widgets'                  => $this->site_goals_site_settings->get()['activeWidgets'] ?? array(),
+			'custom_dimensions'                   => $settings['availableCustomDimensions'] ?: array(),
 		);
 	}
 
@@ -912,6 +956,13 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics custom dimension on your behalf.', 'google-site-kit' ),
 				)
 			),
+			'GET:custom-dimensions'                     => new Get_Custom_Dimensions(
+				array(
+					'service' => function () {
+						return $this->get_service( 'analyticsadmin' );
+					},
+				)
+			),
 			'POST:sync-custom-dimensions'               => new Sync_Custom_Dimensions(
 				array(
 					'service'                          => function () {
@@ -976,8 +1027,9 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			),
 			'GET:site-goals-settings'                   => new Get_Site_Goals_Settings(
 				array(
-					'site_goals_settings' => $this->site_goals_settings,
-					'service'             => '',
+					'site_goals_settings'      => $this->site_goals_settings,
+					'site_goals_site_settings' => $this->site_goals_site_settings,
+					'service'                  => '',
 				)
 			),
 			'POST:save-site-goals-settings'             => new Save_Site_Goals_Settings(
@@ -1278,6 +1330,17 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 */
 	private function get_provisioning_callback_error_redirect_url( $error_code, $show_progress ) {
 		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+			// If the account creation was triggered from the settings edit screen,
+			// redirect back to the settings edit screen with the error code.
+			if ( $this->is_connected() ) {
+				return add_query_arg(
+					array(
+						'accountCreationErrorCode' => $error_code,
+					),
+					$this->context->admin_url( 'settings' )
+				) . '#connected-services/analytics-4/edit';
+			}
+
 			$args = array(
 				'slug'                     => 'analytics-4',
 				'reAuth'                   => 'true',

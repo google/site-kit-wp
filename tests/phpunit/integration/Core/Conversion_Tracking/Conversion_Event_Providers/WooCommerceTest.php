@@ -5,9 +5,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Tests\Core\Conversion_Tracking\Conversion_Event_Providers;
 
 use Google\Site_Kit\Context;
@@ -34,12 +31,12 @@ class WooCommerceTest extends TestCase {
 	 * @runInSeparateProcess
 	 */
 	public function test_is_active() {
-		$this->assertFalse( $this->woocommerce->is_active() );
+		$this->assertFalse( $this->woocommerce->is_active(), 'WooCommerce provider should not be active before class exists.' );
 
 		// Fake the existence of the `WooCommerce` class.
 		class_alias( __CLASS__, 'WooCommerce' );
 
-		$this->assertTrue( $this->woocommerce->is_active() );
+		$this->assertTrue( $this->woocommerce->is_active(), 'WooCommerce provider should be active after class exists.' );
 	}
 
 	public function test_events_to_track() {
@@ -128,6 +125,53 @@ class WooCommerceTest extends TestCase {
 		$events = $this->woocommerce->get_event_names();
 
 		$this->assertEquals( $expectedEvents, $events, 'Event names ' . implode( ', ', $events ) . ' do not match the expected values ' . implode( ', ', $expectedEvents ) . '.' );
+	}
+
+	public function test_get_site_kit_event_names() {
+		$events = $this->woocommerce->get_site_kit_event_names();
+		$this->assertCount( 2, $events, 'Expected 2 events when addon is inactive.' );
+		$this->assertContains( 'add_to_cart', $events, 'Expected add_to_cart event.' );
+		$this->assertContains( 'purchase', $events, 'Expected purchase event.' );
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function test_get_site_kit_event_names__excludes_wgai_events() {
+		class_alias( __CLASS__, 'WC_Google_Analytics_Integration' );
+
+		// When WGAI tracks add_to_cart, only purchase should be in Site Kit events.
+		update_option( 'woocommerce_google_analytics_settings', array( 'ga_event_tracking_enabled' => 'yes' ) );
+		$events = $this->woocommerce->get_site_kit_event_names();
+		$this->assertEquals( array( 'purchase' ), $events, 'Expected only purchase when WGAI tracks add_to_cart.' );
+
+		// When WGAI tracks purchase, only add_to_cart should be in Site Kit events.
+		update_option( 'woocommerce_google_analytics_settings', array( 'ga_ecommerce_tracking_enabled' => 'yes' ) );
+		$events = $this->woocommerce->get_site_kit_event_names();
+		$this->assertEquals( array( 'add_to_cart' ), $events, 'Expected only add_to_cart when WGAI tracks purchase.' );
+
+		// When WGAI tracks both, Site Kit events should be empty.
+		update_option(
+			'woocommerce_google_analytics_settings',
+			array(
+				'ga_ecommerce_tracking_enabled' => 'yes',
+				'ga_event_tracking_enabled'     => 'yes',
+			)
+		);
+		$events = $this->woocommerce->get_site_kit_event_names();
+		$this->assertEmpty( $events, 'Expected no events when WGAI tracks both add_to_cart and purchase.' );
+
+		// WGAI additional events (view_item_list, begin_checkout, etc.) should never appear.
+		update_option(
+			'woocommerce_google_analytics_settings',
+			array( 'ga_product_identifier' => 'id' ) // default: all WGAI events active.
+		);
+		$events = $this->woocommerce->get_site_kit_event_names();
+		$this->assertEmpty( $events, 'Expected no events when WGAI tracks all events by default.' );
+		$this->assertNotContains( 'view_item_list', $events, 'view_item_list should not appear in Site Kit events.' );
+		$this->assertNotContains( 'begin_checkout', $events, 'begin_checkout should not appear in Site Kit events.' );
+
+		delete_option( 'woocommerce_google_analytics_settings' );
 	}
 
 	/**
@@ -300,7 +344,7 @@ class WooCommerceTest extends TestCase {
 
 		$result = $method->invoke( $this->woocommerce, $phone, $country );
 
-		$this->assertEquals( $expected, $result );
+		$this->assertEquals( $expected, $result, 'Normalized WooCommerce phone should match expected value.' );
 	}
 
 	public function phone_normalization_data_provider() {
@@ -446,6 +490,6 @@ class WooCommerceTest extends TestCase {
 
 		// Should fallback to Enhanced_Conversions::get_normalized_value().
 		// Enhanced_Conversions normalizes to lowercase and trims, but keeps other chars.
-		$this->assertEquals( '+94771770589', $result );
+		$this->assertEquals( '+94771770589', $result, 'Normalized phone should fall back when country is empty.' );
 	}
 }

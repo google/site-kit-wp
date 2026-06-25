@@ -89,7 +89,7 @@ export interface PDFMetricTileProps {
 	value: string;
 	/** Pre-formatted, signed change string for the chip, e.g. "+5.1%". Hides the chip when omitted. */
 	change?: string;
-	/** Whether the change is negative; controls the chip colour. */
+	/** Whether the change is negative; controls the chip color. */
 	isNegative?: boolean;
 	/** Optional caption rendered below the chip, e.g. "Vs. prev. 28 days". */
 	changeLabel?: string;

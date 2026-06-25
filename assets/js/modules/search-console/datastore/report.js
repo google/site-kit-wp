@@ -138,7 +138,7 @@ const baseSelectors = {
 	 * Gets a Search Console report for the given options.
 	 *
 	 * @since 1.15.0
-	 * @since n.e.x.t Accept optional fetch options as a second argument, such as `{ signal }` to cancel the report request.
+	 * @since 1.182.0 Accept optional fetch options as a second argument, such as `{ signal }` to cancel the report request.
 	 * @since n.e.x.t Treat report options that differ only in `reportID` as one report.
 	 *
 	 * @param {Object}         state                Data store's state.
