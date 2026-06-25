@@ -79,7 +79,6 @@ export default function SetupUsingProxyWithSignIn() {
 	} = useDispatch( CORE_USER );
 	const { registerNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const { getInitialSetupSettings } = useSelect( CORE_USER );
 	const proxySetupURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxySetupURL()
 	);
@@ -114,6 +113,7 @@ export default function SetupUsingProxyWithSignIn() {
 
 	const setup = useCallback( async () => {
 		let moduleReauthURL;
+		let shouldSaveInitialSetupSettings = false;
 
 		if ( connectAnalytics ) {
 			const { error, response } = await activateModule(
@@ -139,16 +139,16 @@ export default function SetupUsingProxyWithSignIn() {
 				} );
 
 				setIsAnalyticsSetupComplete( false );
+				shouldSaveInitialSetupSettings = true;
 			}
 		}
 
 		if ( setupFlowRefreshPhase4Enabled ) {
 			setHasSitePurposeAnswer( false );
+			shouldSaveInitialSetupSettings = true;
 		}
 
-		const initialSetupSettings = await getInitialSetupSettings();
-
-		if ( initialSetupSettings ) {
+		if ( shouldSaveInitialSetupSettings ) {
 			const { error } = await saveInitialSetupSettings();
 
 			if ( error ) {
@@ -160,7 +160,6 @@ export default function SetupUsingProxyWithSignIn() {
 	}, [
 		activateModule,
 		connectAnalytics,
-		getInitialSetupSettings,
 		saveInitialSetupSettings,
 		setHasSitePurposeAnswer,
 		setIsAnalyticsSetupComplete,
