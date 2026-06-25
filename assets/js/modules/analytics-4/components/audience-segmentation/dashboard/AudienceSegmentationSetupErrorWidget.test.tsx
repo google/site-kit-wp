@@ -145,12 +145,12 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 				getByRole( 'button', { name: 'Retry' } )
 			).toBeInTheDocument();
 			expect(
-				getByRole( 'button', { name: /no thanks/i } )
+				getByRole( 'button', { name: 'No thanks' } )
 			).toBeInTheDocument();
 		}
 	);
 
-	it( 'calls onRetry when Retry is clicked', () => {
+	it( 'calls onRetry when the Retry button is clicked', () => {
 		const onRetry = jest.fn();
 
 		const { getByRole } = render(
@@ -173,7 +173,7 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 		expect( onRetry ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'calls onDismiss when No thanks is clicked', () => {
+	it( 'calls onDismiss when the "No thanks" button is clicked', () => {
 		const onDismiss = jest.fn();
 
 		const { getByRole } = render(
@@ -191,7 +191,7 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 			{ registry }
 		);
 
-		fireEvent.click( getByRole( 'button', { name: /no thanks/i } ) );
+		fireEvent.click( getByRole( 'button', { name: 'No thanks' } ) );
 
 		expect( onDismiss ).toHaveBeenCalledTimes( 1 );
 	} );
