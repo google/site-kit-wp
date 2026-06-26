@@ -19,14 +19,13 @@
 /**
  * WordPress dependencies
  */
-import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { PDFReportDates } from '@/js/googlesitekit/widgets/types';
+import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	Report,
@@ -37,23 +36,7 @@ import { getFullURL } from '@/js/util';
 import { getPopularPagesReportArgs } from './reportOptions';
 
 /**
- * Parameters for the Top content over time PDF data loader.
- */
-export interface GetPDFDataParams {
-	/** WordPress data registry, with `resolveSelect` added. */
-	registry: WPDataRegistry & {
-		// `resolveSelect` exists on the registry at runtime but is missing from
-		// the upstream `WPDataRegistry` type, so add it here, matching `select`.
-		resolveSelect: WPDataRegistry[ 'select' ];
-	};
-	/** Report date range. */
-	dates: PDFReportDates;
-	/** Signal that cancels the export. */
-	signal: AbortSignal;
-}
-
-/**
- * Links for one page row: the entity dashboard golink for the title, and the
+ * Links for one page row: the entity dashboard URL for the title, and the
  * page's own public URL for the URL line.
  */
 export interface PopularPageLinks {
@@ -181,17 +164,16 @@ function getTitleMap(
 }
 
 /**
- * Maps each page path to its entity dashboard golink and public URL.
+ * Maps each page path to its entity dashboard URL and public URL.
  *
- * The title links to the page's Site Kit detail view through the golink, which
- * keeps working if Site Kit's internal URL changes after the PDF is saved. The
- * URL line links to the page itself.
+ * The title links to the page's Site Kit detail view, the same entity dashboard
+ * link the dashboard builds for a page. The URL line links to the page itself.
  *
  * @since 1.182.0
  *
  * @param registry  WordPress data registry.
  * @param pagePaths Page paths from the main report rows.
- * @return Map of page path to its golink and public URL.
+ * @return Map of page path to its entity dashboard URL and public URL.
  */
 function getPopularPageLinkMap(
 	registry: GetPDFDataParams[ 'registry' ],
@@ -206,7 +188,9 @@ function getPopularPageLinkMap(
 		const permaLink = getFullURL( siteURL, pagePath );
 		links[ pagePath ] = {
 			detailsURL:
-				coreSite.getGoLinkURL( 'dashboard', { permaLink } ) ?? '',
+				coreSite.getAdminURL( 'googlesitekit-dashboard', {
+					permaLink,
+				} ) ?? '',
 			permaLink,
 		};
 	} );

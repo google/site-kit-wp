@@ -33,6 +33,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
 import { PIE_CHART_COLORS } from '@/js/components/pdf-export/pie-chart-colors';
 import PDFMetricTile from '@/js/components/pdf-export/shared-react-pdf-components/PDFMetricTile';
+import PDFNoData from '@/js/components/pdf-export/shared-react-pdf-components/PDFNoData';
 import PDFPieChartTile from '@/js/components/pdf-export/shared-react-pdf-components/PDFPieChartTile';
 import type { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
 import { calculateChange, numFmt } from '@/js/util';
@@ -72,11 +73,6 @@ const styles = StyleSheet.create( {
 		objectFit: 'contain',
 		marginTop: 12,
 	},
-	noData: {
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 9,
-		color: '#646464',
-	},
 } );
 
 /**
@@ -114,9 +110,7 @@ export default function DashboardAllTrafficWidgetGA4PDF( {
 	if ( ! trafficData ) {
 		body = (
 			<View style={ styles.card }>
-				<Text style={ styles.noData }>
-					{ __( 'No data available.', 'google-site-kit' ) }
-				</Text>
+				<PDFNoData />
 			</View>
 		);
 	} else {
@@ -172,12 +166,7 @@ export default function DashboardAllTrafficWidgetGA4PDF( {
 						{ lineChart ? (
 							<Image src={ lineChart } style={ styles.chart } />
 						) : (
-							<Text style={ styles.noData }>
-								{ __(
-									'No data available.',
-									'google-site-kit'
-								) }
-							</Text>
+							<PDFNoData />
 						) }
 					</View>
 					<View style={ styles.cardGap } />
