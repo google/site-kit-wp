@@ -34,7 +34,8 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import getPDFData, { GetPDFDataParams } from './getPDFData';
+import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
+import getPDFData from './getPDFData';
 
 type Registry = WPDataRegistry & GetPDFDataParams[ 'registry' ];
 
@@ -93,42 +94,26 @@ const TITLES_REPORT = {
 
 /**
  * Per-page links the loader builds for each page path, from the default test
- * admin URL and reference site URL. The title golink points at the entity
- * dashboard, and the permaLink at the page itself.
+ * admin URL and reference site URL. The title links to the entity dashboard,
+ * and the permaLink to the page itself.
  */
 const LINKS = {
 	'/': {
 		detailsURL:
-			'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=dashboard&permaLink=http%3A%2F%2Fexample.com%2F',
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=http%3A%2F%2Fexample.com%2F',
 		permaLink: 'http://example.com/',
 	},
 	'/about': {
 		detailsURL:
-			'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=dashboard&permaLink=http%3A%2F%2Fexample.com%2Fabout',
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=http%3A%2F%2Fexample.com%2Fabout',
 		permaLink: 'http://example.com/about',
 	},
 };
 
 /**
- * Reads the `reportID` query arg from a report request URL.
- *
- * @since 1.182.0
- *
- * @param requestURL Report request URL.
- * @return The `reportID` query arg, or an empty string when absent.
- */
-function reportIDForRequest( requestURL: string ) {
-	const parsedURL = new URL(
-		requestURL.startsWith( 'http' )
-			? requestURL
-			: `http://example.com${ requestURL }`
-	);
-	return parsedURL.searchParams.get( 'reportID' ) ?? '';
-}
-
-/**
- * Sets up `fetchMock` so each report request returns the matching fixture. The
- * page titles request returns the `titles` fixture, and every other report
+ * Sets up `fetchMock` so each report request returns the matching fixture. Only
+ * the page titles report requests the `pageTitle` dimension, so a request whose
+ * URL contains `pageTitle` returns the `titles` fixture, and every other report
  * request returns the `main` fixture.
  *
  * @since 1.182.0
@@ -143,9 +128,7 @@ function provideReports( {
 	titles = TITLES_REPORT,
 }: { main?: unknown; titles?: unknown } = {} ) {
 	fetchMock.get( reportEndpoint, ( requestURL ) => ( {
-		body: reportIDForRequest( requestURL ).includes( 'get-page-titles' )
-			? titles
-			: main,
+		body: requestURL.includes( 'pageTitle' ) ? titles : main,
 		status: 200,
 	} ) );
 }
@@ -159,16 +142,17 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 	} );
 
 	it( 'returns rows, page titles, and per-page links from the two reports', async () => {
-		const requestedReportIDs: string[] = [];
+		const requestedReports: string[] = [];
 
 		fetchMock.get( reportEndpoint, ( requestURL ) => {
-			const reportID = reportIDForRequest( requestURL );
-			requestedReportIDs.push( reportID );
+			// Only the page titles report requests the `pageTitle` dimension.
+			const isPageTitlesRequest = requestURL.includes( 'pageTitle' );
+			requestedReports.push(
+				isPageTitlesRequest ? 'page-titles' : 'main'
+			);
 
 			return {
-				body: reportID.includes( 'get-page-titles' )
-					? TITLES_REPORT
-					: MAIN_REPORT,
+				body: isPageTitlesRequest ? TITLES_REPORT : MAIN_REPORT,
 				status: 200,
 			};
 		} );
@@ -179,11 +163,8 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 			signal: new AbortController().signal,
 		} );
 
-		expect( requestedReportIDs ).toHaveLength( 2 );
-		expect( requestedReportIDs[ 0 ] ).toContain(
-			'module-popular-pages-widget-ga4'
-		);
-		expect( requestedReportIDs[ 1 ] ).toContain( 'get-page-titles' );
+		// The loader requests the main report first, then the page titles report.
+		expect( requestedReports ).toEqual( [ 'main', 'page-titles' ] );
 
 		expect( result ).toEqual( {
 			data: {
@@ -353,10 +334,9 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 				);
 			}
 
+			// Only the page titles report requests the `pageTitle` dimension.
 			return {
-				body: reportIDForRequest( requestURL ).includes(
-					'get-page-titles'
-				)
+				body: requestURL.includes( 'pageTitle' )
 					? TITLES_REPORT
 					: MAIN_REPORT,
 				status: 200,

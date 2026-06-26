@@ -35,7 +35,7 @@ import {
 import { replaceValuesInSearchConsoleReportWithZeroData } from '@/js/util/zero-reports';
 import { provideModules } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
-import DashboardPopularKeywordsWidget from './DashboardPopularKeywordsWidget';
+import DashboardPopularKeywordsWidget from '.';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'searchConsolePopularKeywords'

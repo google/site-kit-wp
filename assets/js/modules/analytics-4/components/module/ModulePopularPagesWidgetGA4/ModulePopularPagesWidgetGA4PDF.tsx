@@ -31,10 +31,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
-import PDFTable, {
-	PDFTableColumn,
-} from '@/js/components/pdf-export/shared-react-pdf-components/PDFTable';
-import PDFWidgetSection from '@/js/components/pdf-export/shared-react-pdf-components/PDFWidgetSection';
+import { PDFTableColumn } from '@/js/components/pdf-export/shared-react-pdf-components/PDFTable';
+import PDFTableSection from '@/js/components/pdf-export/shared-react-pdf-components/PDFTableSection';
 import { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
 import { numFmt } from '@/js/util';
 import { PopularPagesPDFData } from './getPDFData';
@@ -76,11 +74,6 @@ const styles = StyleSheet.create( {
 		letterSpacing: 0.1,
 		color: PAGE_LINK_COLOR,
 		textDecoration: 'none',
-	},
-	noData: {
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 9,
-		color: '#646464',
 	},
 } );
 
@@ -182,23 +175,12 @@ const ModulePopularPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 		},
 	];
 
-	const hasRows = tableRows.length > 0;
-	const cardStyle = {
-		borderRadius: 8,
-		paddingVertical: 8,
-		paddingHorizontal: hasRows ? 0 : 12,
-	};
-
 	return (
-		<PDFWidgetSection heading={ heading } cardStyle={ cardStyle }>
-			{ hasRows ? (
-				<PDFTable columns={ columns } rows={ tableRows } />
-			) : (
-				<Text style={ styles.noData }>
-					{ __( 'No data available.', 'google-site-kit' ) }
-				</Text>
-			) }
-		</PDFWidgetSection>
+		<PDFTableSection
+			heading={ heading }
+			columns={ columns }
+			rows={ tableRows }
+		/>
 	);
 };
 

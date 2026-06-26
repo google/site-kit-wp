@@ -26,18 +26,18 @@ import { isPlainObject } from 'lodash';
  * Internal dependencies
  */
 import { get } from 'googlesitekit-api';
-import {
-	combineStores,
-	commonActions,
-	createReducer,
-} from 'googlesitekit-data';
+import { combineStores, createReducer } from 'googlesitekit-data';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createGetReportResolver } from '@/js/googlesitekit/data/create-get-report-resolver';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import {
 	validateDimensions,
 	validateMetrics,
 } from '@/js/modules/adsense/util/report-validation';
-import { stringifyObject } from '@/js/util';
+import {
+	getCacheableReportOptions,
+	getReportCacheKey,
+} from '@/js/util/report-options';
 import {
 	isValidDateRange,
 	isValidOrders,
@@ -53,11 +53,10 @@ const fetchGetReportStore = createFetchStore( {
 		} );
 	},
 	reducerCallback: createReducer( ( state, report, { options } ) => {
-		state.reports = state.reports || {};
-		state.reports[ stringifyObject( options ) ] = report;
+		state.reports[ getReportCacheKey( options ) ] = report;
 	} ),
 	argsToParams: ( options ) => {
-		return { options };
+		return { options: getCacheableReportOptions( options ) };
 	},
 	validateParams: ( { options } = {} ) => {
 		invariant( isPlainObject( options ), 'options must be an object.' );
@@ -98,31 +97,7 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	// This resolver and the `getReport` selector share one signature,
-	// with no default values. The registry compares arguments to
-	// decide if a call is new, so the calls below must get the exact
-	// arguments the caller sent. A default like `fetchOptions = {}`
-	// would add an argument the caller did not send, and the registry
-	// would fetch the same report again. A default for `options` alone
-	// would force a caller to write `getReport( undefined, { signal } )`.
-	*getReport( options, fetchOptions ) {
-		const registry = yield commonActions.getRegistry();
-
-		const existingReport = registry
-			.select( MODULES_ADSENSE )
-			.getReport( options, fetchOptions );
-
-		// If there is already a report loaded in state, consider it fulfilled
-		// and don't make an API request.
-		if ( existingReport ) {
-			return;
-		}
-
-		yield fetchGetReportStore.actions.fetchGetReport(
-			options,
-			fetchOptions
-		);
-	},
+	getReport: createGetReportResolver( MODULES_ADSENSE ),
 };
 
 const baseSelectors = {
@@ -139,6 +114,7 @@ const baseSelectors = {
 	 *
 	 * @since 1.9.0
 	 * @since 1.182.0 Accept optional fetch options as a second argument, such as `{ signal }` to cancel the report request.
+	 * @since n.e.x.t Treat report options that differ only in `reportID` as one report.
 	 *
 	 * @param {Object}         state                Data store's state.
 	 * @param {Object}         options              Options for generating the report.
@@ -155,7 +131,7 @@ const baseSelectors = {
 	getReport( state, options, fetchOptions ) {
 		const { reports } = state;
 
-		return reports[ stringifyObject( options ) ];
+		return reports[ getReportCacheKey( options ) ];
 	},
 };
 
