@@ -248,36 +248,42 @@ export default function TourTooltips( {
 			return;
 		}
 
-		if ( ! step.isResponsive || breakpoint !== BREAKPOINT_SMALL ) {
-			element.scrollIntoView( { block: 'center' } );
-			return;
-		}
-
 		const tooltip = document.querySelector( '.__floater' );
 
-		if ( ! tooltip ) {
-			return;
-		}
+		const elementRect = element.getBoundingClientRect();
+		const tooltipRect = tooltip.getBoundingClientRect();
 
-		const { top, bottom } = element.getBoundingClientRect();
-		const { height: tooltipHeight } = tooltip.getBoundingClientRect();
+		const elementBottom = window.scrollY + elementRect.bottom;
+		const elementTop = window.scrollY + elementRect.top;
+		const tooltipBottom = window.scrollY + tooltipRect.bottom;
+		const tooltipTop = window.scrollY + tooltipRect.top;
 
-		const stepTop = top - tooltipHeight - 60 + window.scrollY;
+		const bottom = Math.max( elementBottom, tooltipBottom );
+		const top = Math.min( elementTop, tooltipTop );
 
-		if ( stepTop >= 0 ) {
+		const combinedHeight = bottom - top;
+		const windowHeight = window.innerHeight;
+
+		const scrollMargin = 60;
+
+		if ( windowHeight > combinedHeight + scrollMargin * 2 ) {
 			window.scrollTo( {
-				top: stepTop,
+				behavior: 'smooth',
+				top: top + combinedHeight / 2 - windowHeight / 2,
+			} );
+		} else if ( top === tooltipTop || bottom === tooltipBottom ) {
+			tooltip.style.scrollMarginBlock = scrollMargin;
+
+			tooltip.scrollIntoView( {
+				behavior: 'smooth',
+				block: top === tooltipTop ? 'start' : 'end',
 			} );
 		} else {
-			// We normally want to scroll to the top of the step's target, with enough space for the tooltip, but in some cases where the target is too close to the start of the page, no space will be left for the tooltip, so we switch to scrolling to the bottom of the target instead.
-			const stepBottom =
-				bottom -
-				window.innerHeight +
-				tooltipHeight +
-				60 +
-				window.scrollY;
-			window.scrollTo( {
-				top: stepBottom,
+			element.style.scrollMarginBlock = scrollMargin;
+
+			element.scrollIntoView( {
+				behavior: 'smooth',
+				block: 'start',
 			} );
 		}
 	}
