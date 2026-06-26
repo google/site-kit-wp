@@ -250,6 +250,10 @@ export default function TourTooltips( {
 
 		const tooltip = document.querySelector( '.__floater' );
 
+		if ( ! tooltip ) {
+			return;
+		}
+
 		const elementRect = element.getBoundingClientRect();
 		const tooltipRect = tooltip.getBoundingClientRect();
 
