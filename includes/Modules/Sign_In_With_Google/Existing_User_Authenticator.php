@@ -18,7 +18,7 @@ use WP_User;
  * from their own profile page to link an existing WordPress account to a
  * Google account.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class Existing_User_Authenticator extends Authenticator {
 	/**
 	 * Error code surfaced when the Google account is already linked to another user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 */
 	const ERROR_ACCOUNT_ALREADY_CONNECTED = 'googlesitekit_auth_account_already_connected';
 
@@ -42,7 +42,7 @@ class Existing_User_Authenticator extends Authenticator {
 	 * those, so reusing `?error=` would show the user an empty error box next
 	 * to our own error.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 */
 	const ERROR_QUERY_ARG = 'googlesitekit_error';
 
@@ -58,7 +58,7 @@ class Existing_User_Authenticator extends Authenticator {
 	 * - If the Google account is already linked to another WordPress user,
 	 *   an error is triggered.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param Input $input Input instance.
 	 * @return string Redirect URL.
@@ -120,7 +120,7 @@ class Existing_User_Authenticator extends Authenticator {
 	 * redirect back to the user's edit profile page with the error appended
 	 * as a query argument.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param string $code Error code.
 	 * @return string Redirect URL.

@@ -51,13 +51,14 @@ class Save_Advanced_Data_Breakdowns_Settings extends Datapoint implements Execut
 	/**
 	 * Builds the callback that saves the advanced data breakdowns settings.
 	 *
-	 * Returns a `WP_Error` when the user cannot manage options, and throws when the `enabled` value is not a boolean.
+	 * Returns a `WP_Error` when the user can't manage options, and throws when any property's value isn't a boolean.
 	 *
 	 * @since 1.181.0
+	 * @since 1.182.0 Validated and saved a per-property map of enabled flags.
 	 *
-	 * @param Data_Request $data_request The REST data request, read for its `settings` payload.
+	 * @param Data_Request $data_request The REST data request, read for its `settings` map of property ID to enabled flag.
 	 * @return callable|WP_Error Callback that saves the settings, or a `WP_Error` when the user lacks permission.
-	 * @throws Invalid_Param_Exception When `enabled` is set but is not a boolean.
+	 * @throws Invalid_Param_Exception When any property value in the `settings` map isn't a boolean.
 	 */
 	public function create_request( Data_Request $data_request ) {
 		if ( ! current_user_can( Permissions::MANAGE_OPTIONS ) ) {
@@ -70,20 +71,16 @@ class Save_Advanced_Data_Breakdowns_Settings extends Datapoint implements Execut
 
 		$settings = $data_request['settings'];
 
-		if ( isset( $settings['enabled'] ) && ! is_bool( $settings['enabled'] ) ) {
-			throw new Invalid_Param_Exception( 'enabled' );
+		foreach ( (array) $settings as $is_enabled ) {
+			if ( ! is_bool( $is_enabled ) ) {
+				throw new Invalid_Param_Exception( 'settings' );
+			}
 		}
 
 		$advanced_data_breakdowns_settings = $this->advanced_data_breakdowns_settings;
 
 		return function () use ( $settings, $advanced_data_breakdowns_settings ): array {
-			$new_settings = array();
-
-			if ( isset( $settings['enabled'] ) ) {
-				$new_settings['enabled'] = $settings['enabled'];
-			}
-
-			return $advanced_data_breakdowns_settings->merge( $new_settings );
+			return $advanced_data_breakdowns_settings->merge( (array) $settings );
 		};
 	}
 

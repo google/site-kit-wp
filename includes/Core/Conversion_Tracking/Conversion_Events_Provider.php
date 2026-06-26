@@ -86,6 +86,22 @@ abstract class Conversion_Events_Provider {
 	abstract public function get_event_names();
 
 	/**
+	 * Gets the conversion event names directly tracked by Site Kit's Plugin Conversion Reporting feature.
+	 *
+	 * By default this returns the same result as get_event_names(). Providers that delegate some
+	 * events to a third-party add-on (e.g. Google Analytics for WooCommerce) should override this
+	 * method to return only the events that Site Kit itself will track, so that internal feature
+	 * metrics accurately reflect Site Kit's own tracking rather than the add-on's coverage.
+	 *
+	 * @since 1.182.0
+	 *
+	 * @return array List of event names.
+	 */
+	public function get_site_kit_event_names() {
+		return $this->get_event_names();
+	}
+
+	/**
 	 * Gets the enhanced conversion event names.
 	 *
 	 * @since 1.165.0

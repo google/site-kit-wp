@@ -1,0 +1,30 @@
+# Gemini Code Assist configuration for Site Kit by Google.
+# Docs: https://docs.cloud.google.com/gemini/docs/code-review/customize-repo-review
+
+code_review:
+  # The signal/noise dial. MEDIUM (the default) is intentional: observed noise on
+  # this repo is concentrated at MEDIUM and HIGH, with no LOW comments, so raising
+  # this would drop valuable MEDIUM findings while keeping HIGH false positives.
+  # Lower it only if reviews are too sparse; do not raise it to silence noise.
+  comment_severity_threshold: MEDIUM
+
+  # Volume backstop for large PRs and repeated findings across sibling files.
+  # Blunt (selection order is unspecified), so kept high enough to rarely cut a
+  # genuinely useful comment.
+  max_review_comments: 15
+
+  pull_request_opened:
+    # Post a PR summary on open — useful for reviewer triage, low noise (one comment).
+    summary: true
+    # Do not review drafts; review at "ready for review", not work-in-progress.
+    include_drafts: false
+
+# Skip committed-but-generated or low-signal files so review budget goes to source.
+# Note: vendor/, third-party/, node_modules/, dist/, /release and /languages are
+# already gitignored and never appear in diffs, so they are not listed here.
+ignore_patterns:
+  - '**/*.lock'
+  - 'package-lock.json'
+  - 'codegen/apis/*.json' # API discovery documents
+  - 'tests/backstop/reference/**' # Visual regression reference images
+  - '**/*.snap' # Jest snapshot

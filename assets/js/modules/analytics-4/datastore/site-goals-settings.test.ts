@@ -64,7 +64,10 @@ describe( 'modules/analytics-4 site goals settings', () => {
 			it( 'should post the merged settings and update the store on success', async () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSiteGoalsSettings( { goalDrivers } );
+					.receiveGetSiteGoalsSettings( {
+						goalDrivers,
+						activeWidgets: [ 'ecommerce' ],
+					} );
 
 				fetchMock.postOnce(
 					saveSiteGoalsSettingsEndpoint,
@@ -95,11 +98,16 @@ describe( 'modules/analytics-4 site goals settings', () => {
 					}
 				);
 
+				// activeWidgets from site-wide settings is preserved in state.
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.getSiteGoalsSettings()
-				).toEqual( { goalDrivers, visitorEngagement } );
+				).toEqual( {
+					goalDrivers,
+					visitorEngagement,
+					activeWidgets: [ 'ecommerce' ],
+				} );
 			} );
 
 			it( 'should return an error when the request fails', async () => {
@@ -141,7 +149,11 @@ describe( 'modules/analytics-4 site goals settings', () => {
 		describe( 'getSiteGoalsSettings', () => {
 			it( 'should fetch the settings from the endpoint when not yet loaded', async () => {
 				fetchMock.getOnce( getSiteGoalsSettingsEndpoint, {
-					body: { goalDrivers, visitorEngagement },
+					body: {
+						goalDrivers,
+						visitorEngagement,
+						activeWidgets: [ 'ecommerce' ],
+					},
 					status: 200,
 				} );
 
@@ -161,46 +173,25 @@ describe( 'modules/analytics-4 site goals settings', () => {
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.getSiteGoalsSettings()
-				).toEqual( { goalDrivers, visitorEngagement } );
-			} );
-
-			it( 'should fetch via the getSiteGoalsGoalDrivers derived selector', async () => {
-				fetchMock.getOnce( getSiteGoalsSettingsEndpoint, {
-					body: { goalDrivers, visitorEngagement },
-					status: 200,
+				).toEqual( {
+					goalDrivers,
+					visitorEngagement,
+					activeWidgets: [ 'ecommerce' ],
 				} );
-
-				// Components only call the derived selectors, so resolution
-				// must be triggered through them, not getSiteGoalsSettings.
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getSiteGoalsGoalDrivers()
-				).toBeUndefined();
-
-				await untilResolved(
-					registry,
-					MODULES_ANALYTICS_4
-				).getSiteGoalsSettings();
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getSiteGoalsGoalDrivers()
-				).toEqual( goalDrivers );
 			} );
 
-			it( 'should not fetch when settings are already loaded', async () => {
+			it( 'should not fetch when settings are already loaded via receiveGetSiteGoalsSettings', async () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSiteGoalsSettings( { goalDrivers } );
+					.receiveGetSiteGoalsSettings( {
+						activeWidgets: [ 'ecommerce' ],
+					} );
 
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.getSiteGoalsSettings()
-				).toEqual( { goalDrivers } );
+				).toEqual( { activeWidgets: [ 'ecommerce' ] } );
 
 				await untilResolved(
 					registry,
@@ -218,6 +209,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 					.receiveGetSiteGoalsSettings( {
 						goalDrivers,
 						visitorEngagement,
+						activeWidgets: [ 'ecommerce' ],
 					} );
 
 				expect(
@@ -247,6 +239,103 @@ describe( 'modules/analytics-4 site goals settings', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.getSiteGoalsVisitorEngagement()
 				).toBeUndefined();
+			} );
+
+			it( 'should trigger fetch via the derived getSiteGoalsGoalDrivers selector', async () => {
+				fetchMock.getOnce( getSiteGoalsSettingsEndpoint, {
+					body: { goalDrivers, visitorEngagement },
+					status: 200,
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getSiteGoalsGoalDrivers()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getSiteGoalsSettings();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getSiteGoalsGoalDrivers()
+				).toEqual( goalDrivers );
+			} );
+		} );
+
+		describe( 'isSiteGoalWidgetActive', () => {
+			it( 'should return undefined before settings are loaded', async () => {
+				fetchMock.getOnce( getSiteGoalsSettingsEndpoint, {
+					body: { activeWidgets: [] },
+					status: 200,
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalWidgetActive( 'ecommerce' )
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getSiteGoalsSettings();
+			} );
+
+			it( 'should return true for a category that is in activeWidgets', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSiteGoalsSettings( {
+						activeWidgets: [ 'ecommerce', 'lead' ],
+					} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalWidgetActive( 'ecommerce' )
+				).toBe( true );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalWidgetActive( 'lead' )
+				).toBe( true );
+			} );
+
+			it( 'should return false for a category that is not in activeWidgets', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSiteGoalsSettings( {
+						activeWidgets: [ 'ecommerce' ],
+					} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalWidgetActive( 'lead' )
+				).toBe( false );
+			} );
+
+			it( 'should return false for all categories when activeWidgets is empty', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSiteGoalsSettings( {
+						activeWidgets: [],
+					} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalWidgetActive( 'ecommerce' )
+				).toBe( false );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalWidgetActive( 'lead' )
+				).toBe( false );
 			} );
 		} );
 

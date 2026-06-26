@@ -32,11 +32,11 @@ import { __ } from '@wordpress/i18n';
 import { get } from 'googlesitekit-api';
 import {
 	combineStores,
-	commonActions,
 	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createGetReportResolver } from '@/js/googlesitekit/data/create-get-report-resolver';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createGatheringDataStore } from '@/js/googlesitekit/modules/create-gathering-data-store';
@@ -46,7 +46,11 @@ import {
 	normalizeReportOptions,
 } from '@/js/modules/analytics-4/utils';
 import { validateReport } from '@/js/modules/analytics-4/utils/validation';
-import { DAY_IN_SECONDS, dateSub, stringifyObject } from '@/js/util';
+import { DAY_IN_SECONDS, dateSub } from '@/js/util';
+import {
+	getCacheableReportOptions,
+	getReportCacheKey,
+} from '@/js/util/report-options';
 import { MODULES_ANALYTICS_4 } from './constants';
 
 const fetchGetReportStore = createFetchStore( {
@@ -61,10 +65,10 @@ const fetchGetReportStore = createFetchStore( {
 		);
 	},
 	reducerCallback: createReducer( ( state, report, { options } ) => {
-		state.reports[ stringifyObject( options ) ] = report;
+		state.reports[ getReportCacheKey( options ) ] = report;
 	} ),
 	argsToParams: ( options ) => {
-		return { options };
+		return { options: getCacheableReportOptions( options ) };
 	},
 	validateParams: ( { options } = {} ) => validateReport( options ),
 } );
@@ -138,31 +142,7 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	// This resolver and the `getReport` selector share one signature,
-	// with no default values. The registry compares arguments to
-	// decide if a call is new, so the calls below must get the exact
-	// arguments the caller sent. A default like `fetchOptions = {}`
-	// would add an argument the caller did not send, and the registry
-	// would fetch the same report again. A default for `options` alone
-	// would force a caller to write `getReport( undefined, { signal } )`.
-	*getReport( options, fetchOptions ) {
-		const registry = yield commonActions.getRegistry();
-
-		const existingReport = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getReport( options, fetchOptions );
-
-		// If there is already a report loaded in state, consider it fulfilled
-		// and don't make an API request.
-		if ( existingReport ) {
-			return;
-		}
-
-		yield fetchGetReportStore.actions.fetchGetReport(
-			options,
-			fetchOptions
-		);
-	},
+	getReport: createGetReportResolver( MODULES_ANALYTICS_4 ),
 };
 
 const baseSelectors = {
@@ -171,7 +151,8 @@ const baseSelectors = {
 	 *
 	 * @since 1.94.0
 	 * @since 1.111.0 Add metricFilters to the options list, to reflect added support for the metric filters.
-	 * @since n.e.x.t Accept optional fetch options as a second argument, such as `{ signal }` to cancel the report request.
+	 * @since 1.182.0 Accept optional fetch options as a second argument, such as `{ signal }` to cancel the report request.
+	 * @since n.e.x.t Treat report options that differ only in `reportID` as one report.
 	 *
 	 * @param {Object}         state                      Data store's state.
 	 * @param {Object}         options                    Options for generating the report.
@@ -193,7 +174,7 @@ const baseSelectors = {
 	getReport( state, options, fetchOptions ) {
 		const { reports } = state;
 
-		return reports[ stringifyObject( options ) ];
+		return reports[ getReportCacheKey( options ) ];
 	},
 
 	/**
