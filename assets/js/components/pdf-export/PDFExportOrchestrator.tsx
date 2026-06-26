@@ -44,13 +44,16 @@ import type {
 	PDFReportDates,
 	Widget,
 	WidgetArea,
-	WidgetPDFConfig,
 } from '@/js/googlesitekit/widgets/types';
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { getPreviousDate, trackEvent } from '@/js/util';
 import { registerPDFFonts } from './pdf-fonts-react';
 import { getPDFFilename, triggerDownload } from './pdf-utils';
+import {
+	type WidgetWithPDF,
+	isActivePDFWidget,
+} from './pdf-widget-eligibility';
 import { SECTION_ICONS } from './section-icons';
 import DashboardReport from './shared-react-pdf-components/DashboardReport';
 import type { PDFHeaderSection, PDFReportArea, PDFReportWidget } from './types';
@@ -82,20 +85,6 @@ const COMPLETE_UNMOUNT_DELAY_MS = 2 * 1000;
 const BLOB_REVOKE_DELAY_MS = 30 * 1000;
 // Progress budget reserved for the data-loading stage; BUILDING fills the rest.
 const LOADING_PROGRESS_MAX = 90;
-
-type WidgetWithPDF = Widget & { pdf: WidgetPDFConfig };
-
-/**
- * Determines whether a registry widget declares a PDF export configuration.
- *
- * @since 1.181.0
- *
- * @param widget Registry widget.
- * @return `true` when the widget has a `pdf` config.
- */
-function hasPDFConfig( widget: Widget ): widget is WidgetWithPDF {
-	return !! widget.pdf;
-}
 
 interface State {
 	stage: Stage;
@@ -358,19 +347,21 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				// PDF-aware selector). `selectedContextSlugs`, `dates` and
 				// `viewableModules` are snapshotted once above; nothing below
 				// re-reads reactive state.
-				const widgetsSelect = (
-					registry as unknown as {
-						select: ( storeName: string ) => {
-							getWidgetAreas: (
-								contextSlug: string
-							) => WidgetArea[];
-							getWidgets: (
-								areaSlug: string,
-								options?: { modules?: string[] }
-							) => Widget[];
-						};
-					}
-				 ).select( CORE_WIDGETS );
+				// `useRegistry()` is untyped in this codebase, so narrow `select`
+				// through `unknown` to the minimal shape this discovery walk
+				// needs. A single `select` serves both the widgets lookup and
+				// each widget's `isActive` gate (whose signature is exactly
+				// `( storeName ) => unknown`).
+				const { select } = registry as unknown as {
+					select: ( storeName: string ) => unknown;
+				};
+				const widgetsSelect = select( CORE_WIDGETS ) as {
+					getWidgetAreas: ( contextSlug: string ) => WidgetArea[];
+					getWidgets: (
+						areaSlug: string,
+						options?: { modules?: string[] }
+					) => Widget[];
+				};
 				const discoveredAreas: Array< {
 					areaSlug: string;
 					areaContextSlug: string;
@@ -395,7 +386,9 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 							.getWidgets( area.slug, {
 								modules: viewableModules || undefined,
 							} )
-							.filter( hasPDFConfig );
+							.filter( ( widget ): widget is WidgetWithPDF =>
+								isActivePDFWidget( widget, select )
+							);
 
 						if ( pdfWidgets.length === 0 ) {
 							return;
