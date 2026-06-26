@@ -85,7 +85,7 @@ export interface FieldMetrics {
  * @param report Raw PSI API response.
  * @return Lab metrics with displayValue, score, and category for each metric.
  */
-export function extractLabMetrics( report: PSIReport ): LabMetrics {
+export function extractLabMetrics( report: PSIReport | null ): LabMetrics {
 	const audits = report?.lighthouseResult?.audits;
 	const lcp = audits?.[ 'largest-contentful-paint' ];
 	const cls = audits?.[ 'cumulative-layout-shift' ];
@@ -123,7 +123,9 @@ export function extractLabMetrics( report: PSIReport ): LabMetrics {
  * @param report Raw PSI API response.
  * @return Field metrics with per-metric values, or null when field data is unavailable.
  */
-export function extractFieldMetrics( report: PSIReport ): FieldMetrics | null {
+export function extractFieldMetrics(
+	report: PSIReport | null
+): FieldMetrics | null {
 	const metrics = report?.loadingExperience?.metrics;
 
 	if ( ! metrics ) {
