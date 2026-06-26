@@ -272,14 +272,14 @@ export default function TourTooltips( {
 				top: top + combinedHeight / 2 - windowHeight / 2,
 			} );
 		} else if ( top === tooltipTop || bottom === tooltipBottom ) {
-			tooltip.style.scrollMarginBlock = scrollMargin;
+			tooltip.style.scrollMarginBlock = `${ scrollMargin }px`;
 
 			tooltip.scrollIntoView( {
 				behavior: 'smooth',
 				block: top === tooltipTop ? 'start' : 'end',
 			} );
 		} else {
-			element.style.scrollMarginBlock = scrollMargin;
+			element.style.scrollMarginBlock = `${ scrollMargin }px`;
 
 			element.scrollIntoView( {
 				behavior: 'smooth',
