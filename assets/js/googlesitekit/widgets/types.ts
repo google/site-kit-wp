@@ -105,7 +105,8 @@ export interface WidgetPDFConfig {
 		signal: AbortSignal;
 	} ) => Promise< WidgetPDFData >;
 	label?: string;
-	isActive?: ( select: ( storeName: string ) => unknown ) => boolean;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The registry `select` is loosely typed, so `isActive` predicates can read store selectors without casting.
+	isActive?: ( select: ( storeName: string ) => any ) => boolean;
 }
 
 /**

@@ -352,7 +352,8 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				// `selectedWidgetSlugs`, `dates` and `viewableModules` are
 				// snapshotted once above. Nothing below re-reads reactive state.
 				const { select } = registry as unknown as {
-					select: ( storeName: string ) => unknown;
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The registry `select` is loosely typed, so `isActive` predicates can read store selectors without casting.
+					select: ( storeName: string ) => any;
 				};
 				const widgetsSelect = select( CORE_WIDGETS ) as {
 					getWidgetAreas: ( contextSlug: string ) => WidgetArea[];

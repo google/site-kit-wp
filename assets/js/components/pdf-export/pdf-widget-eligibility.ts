@@ -57,7 +57,8 @@ function hasPDFConfig( widget: Widget ): widget is WidgetWithPDF {
  */
 export function isActivePDFWidget(
 	widget: Widget,
-	select: ( storeName: string ) => unknown
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The registry `select` is loosely typed, so `isActive` predicates can read store selectors without casting.
+	select: ( storeName: string ) => any
 ): widget is WidgetWithPDF {
 	return (
 		hasPDFConfig( widget ) &&
