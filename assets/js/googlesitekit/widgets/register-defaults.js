@@ -217,6 +217,7 @@ export function registerDefaults( widgetsAPI ) {
 				'Find out how visitors experience your site',
 				'google-site-kit'
 			),
+			pdfTitle: __( 'Speed', 'google-site-kit' ),
 			subtitle: __(
 				'Keep track of how fast your pages are and get specific recommendations on what to improve',
 				'google-site-kit'
