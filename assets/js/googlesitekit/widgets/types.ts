@@ -81,6 +81,7 @@ export interface WidgetPDFConfig {
 		signal: AbortSignal;
 	} ) => Promise< WidgetPDFData >;
 	label?: string;
+	isActive?: ( select: ( storeName: string ) => unknown ) => boolean;
 }
 
 /**
