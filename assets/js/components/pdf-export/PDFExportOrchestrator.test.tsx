@@ -544,6 +544,70 @@ describe( 'PDFExportOrchestrator', () => {
 		);
 	} );
 
+	it( 'excludes a widget whose pdf.isActive returns false from the export', async () => {
+		const getData = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_WIDGETS ).registerWidget( 'inactiveWidget', {
+			Component: NullComponent,
+			pdf: {
+				Component: NullComponent,
+				getData: jest.fn( () => Promise.resolve( { data: null } ) ),
+				isActive: () => false,
+			},
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( 'inactiveWidget', 'trafficArea' );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		expect( getData ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	it( 'includes a widget whose pdf.isActive returns true', async () => {
+		const getData = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		const activeGetData = jest.fn( () =>
+			Promise.resolve( { data: null } )
+		);
+		registry.dispatch( CORE_WIDGETS ).registerWidget( 'activeWidget', {
+			Component: NullComponent,
+			pdf: {
+				Component: NullComponent,
+				getData: activeGetData,
+				isActive: () => true,
+			},
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( 'activeWidget', 'trafficArea' );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		expect( getData ).toHaveBeenCalledTimes( 1 );
+		expect( activeGetData ).toHaveBeenCalledTimes( 1 );
+	} );
+
 	it( 'fires pdf_generation_cancel with the current stage label when the user cancels', async () => {
 		let resolveData: ( value: unknown ) => void;
 		const getData: jest.Mock = jest.fn(
