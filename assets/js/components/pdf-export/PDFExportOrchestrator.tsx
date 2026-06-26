@@ -216,6 +216,10 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 			select( CORE_PDF ).getSelectedContextSlugs() || [],
 		[]
 	);
+	const selectedWidgetSlugs = useSelect(
+		( select: Select ) => select( CORE_PDF ).getSelectedWidgetSlugs() || [],
+		[]
+	);
 	const dates = useSelect(
 		( select: Select ) =>
 			select( CORE_USER ).getDateRangeDates( {
@@ -344,14 +348,9 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 
 				// Discovery: walk the registry inline (the orchestrator owns the
 				// contexts → areas → widgets walk; there is no centralised
-				// PDF-aware selector). `selectedContextSlugs`, `dates` and
-				// `viewableModules` are snapshotted once above; nothing below
-				// re-reads reactive state.
-				// `useRegistry()` is untyped in this codebase, so narrow `select`
-				// through `unknown` to the minimal shape this discovery walk
-				// needs. A single `select` serves both the widgets lookup and
-				// each widget's `isActive` gate (whose signature is exactly
-				// `( storeName ) => unknown`).
+				// PDF-aware selector). `selectedContextSlugs`,
+				// `selectedWidgetSlugs`, `dates` and `viewableModules` are
+				// snapshotted once above. Nothing below re-reads reactive state.
 				const { select } = registry as unknown as {
 					select: ( storeName: string ) => unknown;
 				};
@@ -372,6 +371,9 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				// slugs already discovered so a shared area is not rendered (and
 				// chipped) twice when multiple of its contexts are selected.
 				const discoveredAreaSlugs = new Set< string >();
+				// An area can hold several PDF widgets. Export only the ones the
+				// user kept checked, not every widget in the area.
+				const selectedWidgetSlugSet = new Set( selectedWidgetSlugs );
 
 				selectedContextSlugs.forEach( ( contextSlug: string ) => {
 					const contextAreas: WidgetArea[] =
@@ -388,6 +390,9 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 							} )
 							.filter( ( widget ): widget is WidgetWithPDF =>
 								isActivePDFWidget( widget, select )
+							)
+							.filter( ( widget ) =>
+								selectedWidgetSlugSet.has( widget.slug )
 							);
 
 						if ( pdfWidgets.length === 0 ) {
