@@ -139,7 +139,7 @@ describe( 'DashboardPopularKeywordsWidget getPDFData', () => {
 		} );
 	} );
 
-	it( 'requests the report with the query dimension, a limit of 10 rows, and the report ID', async () => {
+	it( 'requests the report with the query dimension, a limit of 10 rows, and the date range', async () => {
 		fetchMock.getOnce( reportEndpoint, { body: REPORT, status: 200 } );
 
 		await getPDFData( {
@@ -153,9 +153,6 @@ describe( 'DashboardPopularKeywordsWidget getPDFData', () => {
 
 		expect( params.get( 'dimensions' ) ).toBe( 'query' );
 		expect( params.get( 'limit' ) ).toBe( '10' );
-		expect( params.get( 'reportID' ) ).toBe(
-			'search-console_dashboard-popular-keywords-widget_widget_reportArgs'
-		);
 		expect( params.get( 'startDate' ) ).toBe( '2025-01-08' );
 		expect( params.get( 'endDate' ) ).toBe( '2025-02-04' );
 	} );
