@@ -139,7 +139,7 @@ describe( 'PDFExportOrchestrator', () => {
 	 * Renders the orchestrator and resolves with the React element passed to
 	 * the mocked `pdf()` once the BUILDING stage runs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @return The captured `DashboardReport` element.
 	 */

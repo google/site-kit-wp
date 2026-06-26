@@ -66,7 +66,7 @@ const scrollToSpy = jest.spyOn( global, 'scrollTo' );
  * Adds the tour's first step target to the page, so `checkRequirements`
  * resolves right away. The `afterEach` below removes it.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  */
 function appendTourTarget() {
 	const target = document.createElement( 'div' );
@@ -77,7 +77,7 @@ function appendTourTarget() {
 /**
  * Waits until the intro modal renders its "Show me" button.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param {Function} getByRole The `getByRole` query from the render result.
  */

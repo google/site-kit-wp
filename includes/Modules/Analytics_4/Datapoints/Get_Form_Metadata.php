@@ -25,7 +25,7 @@ use WP_Error;
  * dimension. Form plugins store their forms in different ways, so the title is
  * resolved with a multi-strategy lookup.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  * @access private
  * @ignore
  */
@@ -34,7 +34,7 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	/**
 	 * Maps a form post type to its originating plugin's display name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 * @var array
 	 */
 	const PLUGIN_BY_POST_TYPE = array(
@@ -47,7 +47,7 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return callable|WP_Error Closure returning a map of form ID to metadata, or WP_Error on invalid input.
@@ -85,7 +85,7 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	/**
 	 * Resolves metadata for a single form ID across the supported form plugins.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param int $form_id Form ID.
 	 * @return array {
@@ -132,7 +132,7 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data     Data request object.
@@ -149,7 +149,7 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	 * Goals breakdown, so any dashboard viewer (including shared-dashboard
 	 * view-only users) may read it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @return bool True if the current user can view the dashboard, false otherwise.
 	 */

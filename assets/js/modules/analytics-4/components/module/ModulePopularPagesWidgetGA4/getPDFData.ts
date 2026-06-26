@@ -75,7 +75,7 @@ const PAGE_TITLES_REPORT_ID =
  * The report has one dimension, `pagePath`, so each row's first dimension value
  * is its page path.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param [report] Most popular pages report.
  * @return Unique page paths in row order.
@@ -99,7 +99,7 @@ function getPagePaths( report?: Report ): string[] {
  * Matches the options the `getPageTitles` selector builds, so the PDF requests
  * the report the dashboard uses for its titles.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param dates           Report date range.
  * @param dates.startDate Report start date (YYYY-MM-DD).
@@ -134,7 +134,7 @@ function getPageTitlesReportArgs(
  * Keeps the first title found for each path and falls back to `(unknown)` for
  * any path the titles report missed, matching the dashboard's `getPageTitles`.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param pagePaths      Page paths from the main report rows.
  * @param [titlesReport] Page titles report.
@@ -169,7 +169,7 @@ function getTitleMap(
  * The title links to the page's Site Kit detail view, the same entity dashboard
  * link the dashboard builds for a page. The URL line links to the page itself.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param registry  WordPress data registry.
  * @param pagePaths Page paths from the main report rows.
@@ -206,7 +206,7 @@ function getPopularPageLinkMap(
  * `{ data: null }` as soon as the signal aborts, so cancelling the export stops
  * the work and the widget renders its empty state.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param params          Loader parameters.
  * @param params.registry WordPress data registry.

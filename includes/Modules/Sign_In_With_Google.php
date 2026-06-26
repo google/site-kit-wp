@@ -146,7 +146,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 *
 	 * @since 1.137.0
 	 * @since 1.141.0 Add functionality to allow users to disconnect their own account and admins to disconnect any user.
-	 * @since n.e.x.t Allow signed-in users to connect their existing WordPress account from their own profile page.
+	 * @since 1.182.0 Allow signed-in users to connect their existing WordPress account from their own profile page.
 	 */
 	public function register() {
 		$this->register_feature_metrics();
@@ -254,7 +254,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * Returns the base authenticator class's class name if no integration
 	 * matches the one supplied.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param string|null $integration Integration identifier from the auth request.
 	 * @return string Fully qualified authenticator class name.
@@ -679,7 +679,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	/**
 	 * Builds a `Hashed_User_ID` accessor scoped to a specific user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param int $user_id User ID to use to build the hashed ID.
 	 * @return Hashed_User_ID
@@ -781,7 +781,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * Callers can return early before setting any values on the tag and
 	 * rendering it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @return Web_Tag|null
 	 */
@@ -817,7 +817,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 *    added to a hook already firing at the current priority, and
 	 *    WordPress would skip it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 */
 	private function maybe_render_profile_signinwithgoogle() {
 		// `show_user_profile` only fires on the user's own profile.
@@ -850,7 +850,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * Shows an error on the profile page when linking the Google account
 	 * fails (eg. it is already linked to another user).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 */
 	private function render_profile_admin_errors() {
 		$current_screen = Current_Screen::get();
@@ -989,7 +989,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * can link their WordPress account to a Google account.
 	 *
 	 * @since 1.141.0
-	 * @since n.e.x.t Renamed from `render_disconnect_profile` and added the
+	 * @since 1.182.0 Renamed from `render_disconnect_profile` and added the
 	 *                ability to connect an existing profile.
 	 *
 	 * @param WP_User $user WordPress user object.
@@ -1042,7 +1042,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		/**
 		 * Renders the Sign in with Google button for the existing-user link flow.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.182.0
 		 *
 		 * @param array $args Button attributes. Sets `class` for the existing-user link placement.
 		 */

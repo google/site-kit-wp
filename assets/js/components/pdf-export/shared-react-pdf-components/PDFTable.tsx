@@ -117,7 +117,7 @@ export interface PDFTableProps< Row > {
  * Returns a fixed width when the column sets one, or an equal share of the row
  * when it does not.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param column Column definition for the cell.
  * @return The width or flex style for the cell.
