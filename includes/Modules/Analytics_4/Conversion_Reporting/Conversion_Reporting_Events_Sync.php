@@ -41,6 +41,17 @@ class Conversion_Reporting_Events_Sync {
 		'contact',
 	);
 
+	const LEAD_EVENT_NAMES = array(
+		'contact',
+		'generate_lead',
+		'submit_lead_form',
+	);
+
+	const ECOMMERCE_EVENT_NAMES = array(
+		'purchase',
+		'add_to_cart',
+	);
+
 	/**
 	 * Settings instance.
 	 *

@@ -16,6 +16,9 @@ use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
 /**
  * Class for reading and writing the advanced data breakdowns settings.
  *
+ * The setting stores a map of property ID to enabled flag, so each Analytics
+ * property keeps its own state, for example `array( '123456789' => true )`.
+ *
  * @since 1.181.0
  * @access private
  * @ignore
@@ -28,16 +31,15 @@ class Advanced_Data_Breakdowns_Settings extends Setting implements Setting_With_
 	public const OPTION = 'googlesitekit_analytics-4_advanced_data_breakdowns';
 
 	/**
-	 * Gets the default settings, with advanced data breakdowns disabled.
+	 * Gets the default settings, an empty map with no property enabled.
 	 *
 	 * @since 1.181.0
+	 * @since 1.182.0 Returned an empty array, since the setting now stores a per-property map.
 	 *
-	 * @return array Default settings, with `enabled` set to `false`.
+	 * @return array Default settings, an empty map.
 	 */
 	public function get_default(): array {
-		return array(
-			'enabled' => false,
-		);
+		return array();
 	}
 
 	/**
@@ -55,22 +57,20 @@ class Advanced_Data_Breakdowns_Settings extends Setting implements Setting_With_
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
 	 * @since 1.181.0
+	 * @since 1.182.0 Cast each property's value to a boolean, since the setting now stores a per-property map.
 	 *
-	 * @return callable Callback that casts `enabled` to a boolean and keeps the stored value when the input is not an array.
+	 * @return callable Callback that casts each property's value to a boolean and keeps the stored value when the input isn't an array.
 	 */
 	protected function get_sanitize_callback(): callable {
 		return function ( $option ): array {
-			$new_option = $this->get();
-
 			if ( ! is_array( $option ) ) {
-				return $new_option;
+				return $this->get();
 			}
 
-			if ( isset( $option['enabled'] ) ) {
-				$new_option['enabled'] = (bool) $option['enabled'];
-			}
-
-			return $new_option;
+			return array_map(
+				fn( $is_enabled ) => (bool) $is_enabled,
+				$option
+			);
 		};
 	}
 
@@ -78,38 +78,45 @@ class Advanced_Data_Breakdowns_Settings extends Setting implements Setting_With_
 	 * Gets the keys a view-only user is allowed to read.
 	 *
 	 * @since 1.181.0
+	 * @since 1.182.0 Returned the stored property IDs, since the setting now stores a per-property map.
 	 *
-	 * @return array Keys a view-only user may read, currently just `enabled`.
+	 * @return array Property IDs a view-only user may read.
 	 */
 	public function get_view_only_keys(): array {
-		return array( 'enabled' );
+		return array_keys( $this->get() );
 	}
 
 	/**
-	 * Checks whether advanced data breakdowns is enabled.
+	 * Checks whether advanced data breakdowns is enabled for the given property.
 	 *
 	 * @since 1.181.0
+	 * @since 1.182.0 Added a property ID parameter, since the setting now stores a per-property map.
 	 *
-	 * @return bool True when enabled, false otherwise.
+	 * @param string $property_id Property ID to check the enabled flag for.
+	 * @return bool True when enabled for the property, false otherwise.
 	 */
-	public function is_enabled(): bool {
+	public function is_enabled( string $property_id ): bool {
 		$settings = $this->get();
 
-		return ! empty( $settings['enabled'] );
+		return ! empty( $settings[ $property_id ] );
 	}
 
 	/**
 	 * Merges the given settings with the existing ones. Keeps existing values
-	 * for keys not present in the given settings.
+	 * for property IDs not present in the given settings.
 	 *
 	 * @since 1.181.0
+	 * @since 1.182.0 Used `array_replace` so the numeric property-ID keys are kept.
 	 *
-	 * @param array $settings Settings to merge in. Keys not given keep their stored value.
+	 * @param array $settings Settings to merge in. Property IDs not given keep their stored value.
 	 * @return array The full settings after the merge.
 	 */
 	public function merge( array $settings ): array {
 		$existing_settings = $this->get();
-		$updated_settings  = array_merge( $existing_settings, $settings );
+
+		// Use `array_replace`, not `array_merge`: property IDs are numeric keys,
+		// and `array_merge` renumbers integer keys, which would lose them.
+		$updated_settings = array_replace( $existing_settings, $settings );
 
 		$this->set( $updated_settings );
 

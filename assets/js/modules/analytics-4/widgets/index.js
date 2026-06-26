@@ -19,14 +19,13 @@
 /**
  * WordPress dependencies
  */
-import { lazy } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import lazyWithPreload from '@/js/components/pdf-export/lazy-with-preload';
 import { isFeatureEnabled } from '@/js/features';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -79,6 +78,7 @@ import {
 } from '@/js/modules/analytics-4/components/dashboard';
 import getAllTrafficPDFData from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/getPDFData';
 import { ModulePopularPagesWidgetGA4 } from '@/js/modules/analytics-4/components/module';
+import getModulePopularPagesPDFData from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/getPDFData';
 import {
 	LeadGenerationPerformanceWidget,
 	OnlineStorePerformanceWidget,
@@ -115,27 +115,20 @@ import ConversionReportingNotificationCTAWidget from '@/js/modules/analytics-4/c
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
-/**
- * Wraps `lazy` with a `preload` method exposing the import factory.
- *
- * The PDF orchestrator awaits `preload()` to resolve the chunk before handing
- * the component to `@react-pdf`, whose renderer does not honour `Suspense`.
- *
- * @since 1.181.0
- *
- * @param {Function} factory Dynamic import factory returning `{ default }`.
- * @return {Object} Lazy component with a `preload` method.
- */
-function lazyWithPreload( factory ) {
-	const Component = lazy( factory );
-	Component.preload = factory;
-	return Component;
-}
-
 const DashboardAllTrafficWidgetGA4PDF = lazyWithPreload( () =>
 	import(
 		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
 		'@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/indexPDF'
+	)
+);
+
+/**
+ * Lazy-loaded PDF component for the Top content over time widget.
+ */
+const ModulePopularPagesWidgetGA4PDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/ModulePopularPagesWidgetGA4PDF'
 	)
 );
 
@@ -345,6 +338,11 @@ export function registerWidgets( widgets ) {
 			priority: 4,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			pdf: {
+				Component: ModulePopularPagesWidgetGA4PDF,
+				getData: getModulePopularPagesPDFData,
+				label: __( 'Top content over time', 'google-site-kit' ),
+			},
 		},
 		[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
 	);
@@ -796,7 +794,9 @@ export function registerWidgets( widgets ) {
 				wrapWidget: false,
 				modules: [ MODULE_SLUG_ANALYTICS_4 ],
 				isActive: ( select ) =>
-					!! select( CORE_SITE ).hasActiveEcommerceEventProviders(),
+					!! select( MODULES_ANALYTICS_4 ).isSiteGoalWidgetActive(
+						'ecommerce'
+					),
 			},
 			[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
 		);
@@ -810,7 +810,9 @@ export function registerWidgets( widgets ) {
 				wrapWidget: false,
 				modules: [ MODULE_SLUG_ANALYTICS_4 ],
 				isActive: ( select ) =>
-					!! select( CORE_SITE ).hasActiveLeadEventProviders(),
+					!! select( MODULES_ANALYTICS_4 ).isSiteGoalWidgetActive(
+						'lead'
+					),
 			},
 			[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
 		);

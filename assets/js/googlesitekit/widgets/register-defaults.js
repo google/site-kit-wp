@@ -200,6 +200,7 @@ export function registerDefaults( widgetsAPI ) {
 		AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 		{
 			title: __( 'See how your content is doing', 'google-site-kit' ),
+			pdfTitle: __( 'Content', 'google-site-kit' ),
 			subtitle: __(
 				'Keep track of your most popular pages and how people found them from Search',
 				'google-site-kit'
@@ -271,6 +272,7 @@ export function registerDefaults( widgetsAPI ) {
 		AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
 		{
 			title: __( 'See how your content is doing', 'google-site-kit' ),
+			pdfTitle: __( 'Content', 'google-site-kit' ),
 			subtitle: __(
 				'Understand how people found this page from Search',
 				'google-site-kit'

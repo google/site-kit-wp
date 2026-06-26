@@ -38,7 +38,7 @@ export const PDF_COLOR_BORDER = '#dadce0';
 /**
  * Header-specific colour tokens for the PDF report header strip.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  */
 export const PDF_HEADER_COLORS = {
 	logo: PDF_COLOR_TEXT_SECONDARY,
@@ -54,7 +54,7 @@ export const PDF_HEADER_COLORS = {
 /**
  * Colour tokens shared across the PDF report header, footer, and tiles.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  */
 export const colors = {
 	text: '#202124',
@@ -65,7 +65,7 @@ export const colors = {
 /**
  * Font-size tokens shared across the PDF report components.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  */
 export const fontSizes = {
 	small: 12,
@@ -104,7 +104,7 @@ export const PDF_SCORE_BADGE_COLORS = {
 /**
  * Spacing tokens shared across the PDF report components.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  */
 export const spacing = {
 	/** Gap above the footer links (Figma: 44px above the footer). */

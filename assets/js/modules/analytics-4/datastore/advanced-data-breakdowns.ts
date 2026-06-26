@@ -41,17 +41,19 @@ import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-err
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { isValidPropertyID } from '@/js/modules/analytics-4/utils/validation';
 import { MODULES_ANALYTICS_4 } from './constants';
 
 const { setErrorForAction, clearActionError } = errorStoreActions;
 
 /**
- * Advanced data breakdowns settings shape.
+ * Advanced data breakdowns settings: a map of GA4 property ID to enabled flag.
  *
  * @since 1.181.0
+ * @since 1.182.0 Stored a per-property map instead of a single `enabled` flag.
  */
 export interface AdvancedDataBreakdownsSettings {
-	enabled: boolean;
+	[ propertyID: string ]: boolean;
 }
 
 interface AdvancedDataBreakdownsState {
@@ -63,13 +65,14 @@ const SET_ADVANCED_DATA_BREAKDOWNS_ENABLED =
 
 type Action = {
 	type: typeof SET_ADVANCED_DATA_BREAKDOWNS_ENABLED;
-	payload: { enabled: boolean };
+	payload: { settings: AdvancedDataBreakdownsSettings };
 };
 
 /**
- * Checks that advanced data breakdowns settings are an object with a boolean `enabled` flag.
+ * Checks that advanced data breakdowns settings are an object whose values are all booleans.
  *
  * @since 1.181.0
+ * @since 1.182.0 Validated a per-property map of enabled flags.
  *
  * @param  settings Advanced data breakdowns settings to validate.
  * @return {void}
@@ -80,8 +83,10 @@ function validateAdvancedDataBreakdownsSettings( settings: unknown ) {
 		'advancedDataBreakdownsSettings should be an object.'
 	);
 	invariant(
-		typeof ( settings as { enabled?: unknown } ).enabled === 'boolean',
-		'enabled should be a boolean.'
+		Object.values( settings as Record< string, unknown > ).every(
+			( isEnabled ) => typeof isEnabled === 'boolean'
+		),
+		'advancedDataBreakdownsSettings values should all be booleans.'
 	);
 }
 
@@ -153,22 +158,32 @@ const baseInitialState: AdvancedDataBreakdownsState = {
 
 const baseActions = {
 	/**
-	 * Sets the advanced data breakdowns enabled flag in local state.
+	 * Sets the advanced data breakdowns enabled flags for one or more properties in local state.
 	 *
 	 * @since 1.181.0
+	 * @since 1.182.0 Took a property-to-boolean map, so one call can set several properties.
 	 *
-	 * @param enabled Whether breakdowns are enabled.
+	 * @param settings A map of GA4 property ID to enabled flag, for example `{ '123456789': true }`.
 	 * @return Redux-style action.
 	 */
-	setAdvancedDataBreakdownsEnabled( enabled: boolean ) {
+	setAdvancedDataBreakdownsEnabled(
+		settings: AdvancedDataBreakdownsSettings
+	) {
+		validateAdvancedDataBreakdownsSettings( settings );
+
+		// `validateAdvancedDataBreakdownsSettings` checks the values are
+		// booleans. Check the keys here too, because this action is the one
+		// place a caller writes a property ID into the saved map.
 		invariant(
-			typeof enabled === 'boolean',
-			'enabled should be a boolean.'
+			Object.keys( settings ).every( ( propertyID ) =>
+				isValidPropertyID( propertyID )
+			),
+			'advancedDataBreakdownsSettings keys should all be valid GA4 property IDs.'
 		);
 
 		return {
 			type: SET_ADVANCED_DATA_BREAKDOWNS_ENABLED,
-			payload: { enabled },
+			payload: { settings },
 		};
 	},
 
@@ -233,10 +248,10 @@ const baseReducer = createReducer(
 	( state: AdvancedDataBreakdownsState, { type, payload }: Action ) => {
 		switch ( type ) {
 			case SET_ADVANCED_DATA_BREAKDOWNS_ENABLED: {
-				const { enabled } = payload;
+				const { settings } = payload;
 				state.advancedDataBreakdownsSettings = {
 					...state.advancedDataBreakdownsSettings,
-					enabled,
+					...settings,
 				};
 				break;
 			}
@@ -263,25 +278,32 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Checks whether advanced data breakdowns is enabled.
+	 * Checks whether advanced data breakdowns is enabled for the given property.
 	 *
 	 * @since 1.181.0
+	 * @since 1.182.0 Read the flag per property, not as a single shared flag.
 	 *
-	 * @return `true` when enabled, `false` when not, `undefined` while loading.
+	 * @param state      Data store's state.
+	 * @param propertyID The GA4 property ID to check.
+	 * @return `true` when enabled for the property, `false` when not, `undefined` while loading.
 	 */
 	isAdvancedDataBreakdownsEnabled: createRegistrySelector(
-		( select: Select ) => (): boolean | undefined => {
-			const settings =
-				select(
-					MODULES_ANALYTICS_4
-				).getAdvancedDataBreakdownsSettings();
+		( select: Select ) =>
+			(
+				state: AdvancedDataBreakdownsState,
+				propertyID: string
+			): boolean | undefined => {
+				const settings =
+					select(
+						MODULES_ANALYTICS_4
+					).getAdvancedDataBreakdownsSettings();
 
-			if ( settings === undefined ) {
-				return undefined;
+				if ( settings === undefined ) {
+					return undefined;
+				}
+
+				return !! settings[ propertyID ];
 			}
-
-			return !! settings.enabled;
-		}
 	),
 };
 

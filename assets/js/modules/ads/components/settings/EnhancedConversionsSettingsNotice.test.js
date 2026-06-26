@@ -21,10 +21,21 @@
  */
 import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { ENHANCED_CONVERSIONS_NOTIFICATION_ADS } from '@/js/modules/ads/components/notifications/EnhancedConversionsNotification';
+import {
+	ECEE_ADS_SURVEY_TRIGGER_ID,
+	ENHANCED_CONVERSIONS_NOTIFICATION_ADS,
+} from '@/js/modules/ads/components/notifications/EnhancedConversionsNotification';
 import * as tracking from '@/js/util/tracking';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '@tests/js/mock-survey-endpoints';
 import { fireEvent, render, waitFor } from '@tests/js/test-utils';
-import { createTestRegistry, provideSiteInfo } from '@tests/js/utils';
+import {
+	createTestRegistry,
+	provideSiteInfo,
+	provideUserAuthentication,
+} from '@tests/js/utils';
 import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNotice';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -43,8 +54,11 @@ describe( 'Ads EnhancedConversionsNotification', () => {
 		registry = createTestRegistry();
 
 		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		mockSurveyEndpoints();
 
 		mockTrackEvent.mockClear();
 	} );
@@ -81,7 +95,10 @@ describe( 'Ads EnhancedConversionsNotification', () => {
 		fireEvent.click( dismissButton );
 
 		await waitFor( () => {
-			expect( fetchMock ).toHaveFetchedTimes( 1 );
+			expect( fetchMock ).toHaveFetchedTimes(
+				1,
+				dismissItemEndpointRegExp
+			);
 			expect( fetchMock ).toHaveFetched( dismissItemEndpointRegExp );
 			expect(
 				registry.select( CORE_USER ).isItemDismissed( notificationID )
@@ -123,6 +140,31 @@ describe( 'Ads EnhancedConversionsNotification', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				eventCategory,
 				'view_notification'
+			);
+		} );
+
+		it( `should dispatch the ${ ECEE_ADS_SURVEY_TRIGGER_ID } survey trigger when the notification is viewed`, async () => {
+			const { waitForRegistry } = render(
+				<EnhancedConversionsSettingsNotice />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SETTINGS,
+				}
+			);
+
+			await waitForRegistry();
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched(
+					surveyTriggerEndpoint,
+					expect.objectContaining( {
+						body: {
+							data: {
+								triggerID: ECEE_ADS_SURVEY_TRIGGER_ID,
+							},
+						},
+					} )
+				)
 			);
 		} );
 

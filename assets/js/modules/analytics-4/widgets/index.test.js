@@ -26,10 +26,8 @@ import {
 } from '@/js/googlesitekit/widgets';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
-import {
-	createTestRegistry,
-	provideSiteInfo,
-} from '../../../../../tests/js/utils';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { registerWidgets } from './index';
 
 describe( 'Analytics 4 widget registrations', () => {
@@ -51,28 +49,19 @@ describe( 'Analytics 4 widget registrations', () => {
 		it.each( [
 			[
 				'only ecommerce active',
-				{
-					hasActiveEcommerceEventProviders: true,
-					hasActiveLeadEventProviders: false,
-				},
+				{ activeWidgets: [ 'ecommerce' ] },
 				[ 'analyticsOnlineStorePerformance' ],
 				[ 'analyticsLeadGenerationPerformance' ],
 			],
 			[
 				'only lead active',
-				{
-					hasActiveEcommerceEventProviders: false,
-					hasActiveLeadEventProviders: true,
-				},
+				{ activeWidgets: [ 'lead' ] },
 				[ 'analyticsLeadGenerationPerformance' ],
 				[ 'analyticsOnlineStorePerformance' ],
 			],
 			[
 				'both active',
-				{
-					hasActiveEcommerceEventProviders: true,
-					hasActiveLeadEventProviders: true,
-				},
+				{ activeWidgets: [ 'ecommerce', 'lead' ] },
 				[
 					'analyticsOnlineStorePerformance',
 					'analyticsLeadGenerationPerformance',
@@ -81,10 +70,7 @@ describe( 'Analytics 4 widget registrations', () => {
 			],
 			[
 				'neither active',
-				{
-					hasActiveEcommerceEventProviders: false,
-					hasActiveLeadEventProviders: false,
-				},
+				{ activeWidgets: [] },
 				[],
 				[
 					'analyticsOnlineStorePerformance',
@@ -93,8 +79,10 @@ describe( 'Analytics 4 widget registrations', () => {
 			],
 		] )(
 			'should gate widgets correctly when %s',
-			( _, siteInfo, expectedPresent, expectedAbsent ) => {
-				provideSiteInfo( registry, siteInfo );
+			( _, siteGoalsSettings, expectedPresent, expectedAbsent ) => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSiteGoalsSettings( siteGoalsSettings );
 				registerWidgets( widgets );
 
 				const slugs = registry

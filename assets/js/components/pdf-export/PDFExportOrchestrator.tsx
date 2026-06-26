@@ -46,8 +46,9 @@ import type {
 	WidgetArea,
 	WidgetPDFConfig,
 } from '@/js/googlesitekit/widgets/types';
+import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
-import { getPreviousDate } from '@/js/util';
+import { getPreviousDate, trackEvent } from '@/js/util';
 import { registerPDFFonts } from './pdf-fonts-react';
 import { getPDFFilename, triggerDownload } from './pdf-utils';
 import { SECTION_ICONS } from './section-icons';
@@ -188,6 +189,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 	const { setStatus, setProgress, setBlob, clearExport, clearCancelRequest } =
 		useDispatch( CORE_PDF );
 
+	const viewContext = useViewContext();
 	const viewOnly = useViewOnly();
 
 	const cancelRequested = useSelect(
@@ -221,7 +223,8 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		[]
 	);
 	const selectedContextSlugs = useSelect(
-		( select: Select ) => select( CORE_PDF ).getSelectedContextSlugs(),
+		( select: Select ) =>
+			select( CORE_PDF ).getSelectedContextSlugs() || [],
 		[]
 	);
 	const dates = useSelect(
@@ -254,6 +257,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		null
 	);
 	const timeoutAbortRef = useRef( false );
+	const userCancelRef = useRef( false );
 	const onCompleteRef = useRef( onComplete );
 
 	useEffect( () => {
@@ -281,6 +285,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 
 	useEffect( () => {
 		if ( cancelRequested ) {
+			userCancelRef.current = true;
 			abortControllerRef.current?.abort();
 			clearCancelRequest();
 		}
@@ -301,8 +306,44 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		const reportSiteName = typeof siteName === 'string' ? siteName : '';
 		const referenceName =
 			reportSiteName.length > 0 ? reportSiteName : referenceSiteURL || '';
+		const resolvedDateRange =
+			typeof dateRange === 'string' ? dateRange : undefined;
+
+		// Resolve the lazy component chunk up-front and fetch widget data.
+		// @react-pdf does not honour Suspense, so the document tree must hold
+		// a concrete component before rendering starts.
+		async function resolveWidgetData(
+			widget: WidgetWithPDF
+		): Promise<
+			Pick< PDFReportWidget, 'Component' | 'data' | 'chartImages' >
+		> {
+			let Component = widget.pdf.Component;
+
+			if ( typeof Component.preload === 'function' ) {
+				const loadedModule = await Component.preload();
+				throwIfAborted( signal );
+				Component = loadedModule.default;
+			}
+
+			const result = await widget.pdf.getData( {
+				registry,
+				dates,
+				signal,
+			} );
+
+			throwIfAborted( signal );
+
+			return {
+				Component,
+				data: result?.data ?? null,
+				chartImages: result?.chartImages,
+			};
+		}
 
 		async function run() {
+			let currentStage: Stage = STAGE_LOADING;
+			const eventCategory = `${ viewContext }_pdf_generation`;
+
 			try {
 				dispatch( { type: 'TRANSITION', nextStage: STAGE_LOADING } );
 				setStatus( 'progress' );
@@ -394,28 +435,10 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 					const widget = flatWidgets[ index ];
 
 					try {
-						// Resolve the lazy component chunk up front: @react-pdf
-						// does not honour Suspense, so the document tree must
-						// hold a concrete component.
-						let Component = widget.pdf.Component;
-						if ( typeof Component.preload === 'function' ) {
-							const loadedModule = await Component.preload();
-							throwIfAborted( signal );
-							Component = loadedModule.default;
-						}
-
-						const result = await widget.pdf.getData( {
-							registry,
-							dates,
-							signal,
-						} );
-						throwIfAborted( signal );
-
-						loaded.set( widget.slug, {
-							Component,
-							data: result?.data ?? null,
-							chartImages: result?.chartImages,
-						} );
+						loaded.set(
+							widget.slug,
+							await resolveWidgetData( widget )
+						);
 					} catch ( error ) {
 						if ( isAbortError( error ) ) {
 							throw error;
@@ -442,6 +465,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				}
 
 				throwIfAborted( signal );
+				currentStage = STAGE_BUILDING;
 				dispatch( { type: 'TRANSITION', nextStage: STAGE_BUILDING } );
 				armStageTimeout( BUILDING_TIMEOUT_MS );
 
@@ -477,7 +501,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 
 				const filename = getPDFFilename(
 					referenceName,
-					typeof dateRange === 'string' ? dateRange : undefined
+					resolvedDateRange
 				);
 
 				const document = (
@@ -499,9 +523,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 
 				const blob = await pdf( document ).toBlob();
 
-				if ( signal.aborted ) {
-					throw new DOMException( 'Aborted', 'AbortError' );
-				}
+				throwIfAborted( signal );
 
 				const blobURL = URL.createObjectURL( blob );
 				setBlob( { url: blobURL, filename } );
@@ -514,6 +536,11 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 
 				clearStageTimeout();
 				dispatch( { type: 'TRANSITION', nextStage: STAGE_COMPLETE } );
+				trackEvent(
+					eventCategory,
+					'pdf_generation_complete',
+					selectedContextSlugs.join( ',' )
+				);
 				setStatus( 'success' );
 
 				completeTimeoutRef.current = setTimeout( () => {
@@ -523,9 +550,17 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 			} catch ( error ) {
 				clearStageTimeout();
 
-				// User cancel is silent (IDLE). Timeout abort routes to ERROR
-				// so the snackbar shows the failure.
+				// User cancel and teardown (unmount/navigate) are both silent
+				// (IDLE). Only a user cancel fires a tracking event; teardown
+				// aborts are not intentional user actions.
 				if ( isAbortError( error ) && ! timeoutAbortRef.current ) {
+					if ( userCancelRef.current ) {
+						trackEvent(
+							eventCategory,
+							'pdf_generation_cancel',
+							currentStage.toLowerCase()
+						);
+					}
 					dispatch( {
 						type: 'TRANSITION',
 						nextStage: STAGE_IDLE,
@@ -541,6 +576,11 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				// so this call does nothing.
 				abortControllerRef.current?.abort();
 
+				const errorLabel = timeoutAbortRef.current
+					? `${ currentStage.toLowerCase() }_timeout`
+					: currentStage.toLowerCase();
+
+				trackEvent( eventCategory, 'pdf_generation_error', errorLabel );
 				dispatch( { type: 'TRANSITION', nextStage: STAGE_ERROR } );
 				setStatus( 'error' );
 				onCompleteRef.current();

@@ -64,7 +64,7 @@ interface ThumbsSurveyTriggerProps {
  * Renders thumbs-up and thumbs-down buttons that send a survey vote
  * and show a thank-you popper after the user votes.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param props                   Component props.
  * @param props.voteID            Identifier used to build the survey trigger string.

@@ -37,7 +37,7 @@ import type {
 import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDimensionStringToDate';
 import { getGraphReportArgs, getTotalsReportArgs } from './reportOptions';
 
-// Matches the dashboard's All Visitors line colour (the default graph colour).
+// Matches the dashboard's All Visitors line color (the default graph color).
 const LINE_CHART_COLOR = '#3c7251';
 const LINE_CHART_WIDTH = 540;
 const LINE_CHART_HEIGHT = 200;
@@ -79,7 +79,7 @@ interface LineChartPoint {
  * Rows whose date fails to parse are dropped, matching the dashboard's
  * tolerance for malformed dimension values.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param {Object} graphReport Date-dimension GA4 report.
  * @return {Array<Object>} Points of `{ date, value }`, ordered as returned.
@@ -111,7 +111,7 @@ function getLineChartPoints( graphReport: Report ): LineChartPoint[] {
  * Mirrors the dashboard's `UserCountGraph` shape: a date column followed by a
  * total-users column.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param {Array<Object>} points Parsed chart points.
  * @return {Object} A `google.visualization.DataTable` instance.
@@ -135,7 +135,7 @@ function buildLineChartDataTable( points: LineChartPoint[] ): object {
 /**
  * Builds Google Charts options matching the dashboard's All Visitors line chart.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param {Array<Object>} points Parsed chart points.
  * @return {Object} Google Charts options object.

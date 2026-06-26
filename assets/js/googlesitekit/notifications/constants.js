@@ -37,6 +37,7 @@ export const NOTIFICATION_AREAS = {
 	HEADER: 'notification-area-header',
 	DASHBOARD_TOP: 'notification-area-dashboard-top',
 	OVERLAYS: 'notification-area-overlays',
+	SPLASH_CONTENT: 'notification-area-splash-content',
 };
 
 export const NOTIFICATION_GROUPS = {

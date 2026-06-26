@@ -56,6 +56,10 @@ function Template( {
 
 	return (
 		<WithRegistrySetup func={ setupBaseRegistry }>
+			{ /* The modal waits for the element the tour points to first
+			before it shows. Add that element here so the modal shows in
+			the stories. */ }
+			<div className="googlesitekit-site-goals-primary-action" />
 			<IntroModal />
 		</WithRegistrySetup>
 	);
