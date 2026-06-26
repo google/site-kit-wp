@@ -605,20 +605,25 @@ describe( 'PDFExportOrchestrator', () => {
 			Promise.resolve( { data: { totalUsers: 100 } } )
 		);
 		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		const inactiveGetData = jest.fn( () =>
+			Promise.resolve( { data: null } )
+		);
 		registry.dispatch( CORE_WIDGETS ).registerWidget( 'inactiveWidget', {
 			Component: NullComponent,
 			pdf: {
 				Component: NullComponent,
-				getData: jest.fn( () => Promise.resolve( { data: null } ) ),
+				getData: inactiveGetData,
 				isActive: () => false,
 			},
 		} );
 		registry
 			.dispatch( CORE_WIDGETS )
 			.assignWidget( 'inactiveWidget', 'trafficArea' );
+		// Select both widgets so the only thing excluding `inactiveWidget` is
+		// its `pdf.isActive` predicate, not the user's widget selection.
 		registry.dispatch( CORE_PDF ).setSelection( {
 			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
-			widgetSlugs: [],
+			widgetSlugs: [ 'trafficWidget', 'inactiveWidget' ],
 		} );
 
 		renderOrchestrator();
@@ -628,6 +633,7 @@ describe( 'PDFExportOrchestrator', () => {
 		} );
 
 		expect( getData ).toHaveBeenCalledTimes( 1 );
+		expect( inactiveGetData ).not.toHaveBeenCalled();
 	} );
 
 	it( 'includes a widget whose pdf.isActive returns true', async () => {
@@ -651,7 +657,7 @@ describe( 'PDFExportOrchestrator', () => {
 			.assignWidget( 'activeWidget', 'trafficArea' );
 		registry.dispatch( CORE_PDF ).setSelection( {
 			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
-			widgetSlugs: [],
+			widgetSlugs: [ 'trafficWidget', 'activeWidget' ],
 		} );
 
 		renderOrchestrator();
