@@ -47,6 +47,7 @@ export default function SettingsAdmin() {
 	const proactiveUserEngagementEnabled = useFeature(
 		'proactiveUserEngagement'
 	);
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
 	const configuredAudiences = useSelect( ( select ) =>
 		select( CORE_USER ).getConfiguredAudiences()
@@ -154,11 +155,12 @@ export default function SettingsAdmin() {
 				</Cell>
 			) }
 
-			{ ( isAnalyticsConnected || !! configuredAudiences ) && (
-				<Cell size={ 12 }>
-					<SettingsCardAudiences />
-				</Cell>
-			) }
+			{ ! setupFlowRefreshEnabled &&
+				( isAnalyticsConnected || !! configuredAudiences ) && (
+					<Cell size={ 12 }>
+						<SettingsCardAudiences />
+					</Cell>
+				) }
 
 			{ proactiveUserEngagementEnabled && (
 				<Cell size={ 12 }>

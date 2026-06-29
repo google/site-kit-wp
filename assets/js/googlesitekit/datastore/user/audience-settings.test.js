@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
+import { enabledFeatures } from '@/js/features';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	createTestRegistry,
@@ -83,6 +84,10 @@ describe( 'modules/analytics-4 audience settings', () => {
 
 	afterAll( () => {
 		setUsingCache( true );
+	} );
+
+	afterEach( () => {
+		enabledFeatures.delete( 'setupFlowRefresh' );
 	} );
 
 	describe( 'actions', () => {
@@ -414,6 +419,38 @@ describe( 'modules/analytics-4 audience settings', () => {
 				).toEqual(
 					audienceSettingsResponse.isAudienceSegmentationWidgetHidden
 				);
+			} );
+
+			it( 'should return false when setupFlowRefresh is enabled regardless of stored value', () => {
+				enabledFeatures.add( 'setupFlowRefresh' );
+
+				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+					...audienceSettingsResponse,
+					isAudienceSegmentationWidgetHidden: true,
+				} );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.isAudienceSegmentationWidgetHidden()
+				).toEqual( false );
+			} );
+		} );
+
+		describe( 'getRawAudienceSegmentationWidgetHidden', () => {
+			it( 'should always return the stored value when setupFlowRefresh is enabled', () => {
+				enabledFeatures.add( 'setupFlowRefresh' );
+
+				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+					...audienceSettingsResponse,
+					isAudienceSegmentationWidgetHidden: true,
+				} );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getRawAudienceSegmentationWidgetHidden()
+				).toEqual( true );
 			} );
 		} );
 

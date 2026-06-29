@@ -66,6 +66,7 @@ import {
 	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
 } from '@/js/googlesitekit/widgets/default-areas';
 import {
+	AudienceSegmentationBackNotice,
 	AudienceTilesWidget,
 	ConnectAnalyticsCTAWidget,
 	InfoNoticeWidget,
@@ -152,6 +153,32 @@ export function registerWidgets( widgets ) {
 			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
 			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 		]
+	);
+
+	widgets.registerWidget(
+		'analyticsAudienceSegmentationBackNotice',
+		{
+			Component: AudienceSegmentationBackNotice,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 0,
+			wrapWidget: false,
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			isActive: ( select ) => {
+				if ( ! isFeatureEnabled( 'setupFlowRefresh' ) ) {
+					return false;
+				}
+				const isWidgetHidden =
+					select(
+						CORE_USER
+					).getRawAudienceSegmentationWidgetHidden();
+				const isDismissed = select( CORE_USER ).isItemDismissed(
+					'audience-segmentation-back-notice'
+				);
+
+				return isWidgetHidden === true && isDismissed === false;
+			},
+		},
+		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
 	);
 
 	widgets.registerWidget(

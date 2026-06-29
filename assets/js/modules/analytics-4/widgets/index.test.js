@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { enabledFeatures } from '@/js/features';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	createWidgets,
 	registerWidgets as registerDefaultWidgets,
@@ -43,6 +44,67 @@ describe( 'Analytics 4 widget registrations', () => {
 
 	afterEach( () => {
 		enabledFeatures.delete( 'siteGoals' );
+		enabledFeatures.delete( 'setupFlowRefresh' );
+	} );
+
+	describe( 'Audience segmentation back notice widget', () => {
+		it( 'should not register back notice widget when setupFlowRefresh is disabled', () => {
+			registerWidgets( widgets );
+
+			expect(
+				registry
+					.select( CORE_WIDGETS )
+					.getWidget( 'analyticsAudienceSegmentationBackNotice' )
+			).toBeNull();
+		} );
+
+		it( 'should register back notice widget when setupFlowRefresh is enabled', () => {
+			enabledFeatures.add( 'setupFlowRefresh' );
+
+			registerWidgets( widgets );
+
+			expect(
+				registry
+					.select( CORE_WIDGETS )
+					.getWidget( 'analyticsAudienceSegmentationBackNotice' )
+			).toBeDefined();
+		} );
+
+		it( 'should only be active when raw hidden is true and notice is not dismissed', () => {
+			enabledFeatures.add( 'setupFlowRefresh' );
+			registerWidgets( widgets );
+
+			const widget = registry
+				.select( CORE_WIDGETS )
+				.getWidget( 'analyticsAudienceSegmentationBackNotice' );
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+			registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+				configuredAudiences: [ 'audienceA' ],
+				isAudienceSegmentationWidgetHidden: true,
+				didSetAudiences: true,
+			} );
+
+			expect( widget.isActive( registry.select ) ).toBe( true );
+
+			registry
+
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					'audience-segmentation-back-notice',
+				] );
+
+			expect( widget.isActive( registry.select ) ).toBe( false );
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+			registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+				configuredAudiences: [ 'audienceA' ],
+				isAudienceSegmentationWidgetHidden: false,
+				didSetAudiences: true,
+			} );
+
+			expect( widget.isActive( registry.select ) ).toBe( false );
+		} );
 	} );
 
 	describe( 'Site Goals widgets', () => {
