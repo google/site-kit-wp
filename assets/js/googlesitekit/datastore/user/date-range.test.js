@@ -171,6 +171,33 @@ describe( 'core/user date-range', () => {
 					} );
 				} );
 			} );
+
+			it( 'should return the same object reference when inputs are unchanged', () => {
+				registry.dispatch( CORE_USER ).setDateRange( 'last-7-days' );
+
+				const first = registry
+					.select( CORE_USER )
+					.getDateRangeDates( options );
+				const second = registry
+					.select( CORE_USER )
+					.getDateRangeDates( options );
+
+				expect( first ).toBe( second );
+			} );
+
+			it( 'should return a different object reference when inputs change', () => {
+				registry.dispatch( CORE_USER ).setDateRange( 'last-7-days' );
+
+				const first = registry
+					.select( CORE_USER )
+					.getDateRangeDates( options );
+				registry.dispatch( CORE_USER ).setDateRange( 'last-14-days' );
+				const second = registry
+					.select( CORE_USER )
+					.getDateRangeDates( options );
+
+				expect( first ).not.toBe( second );
+			} );
 		} );
 
 		describe( 'getDateRangeNumberOfDays', () => {
