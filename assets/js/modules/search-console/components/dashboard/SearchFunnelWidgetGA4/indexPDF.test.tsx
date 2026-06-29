@@ -25,6 +25,7 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import SearchFunnelWidgetGA4PDF from './indexPDF';
 
 const CHART_DATA_URI = 'data:image/jpeg;base64,TU9DS0NIQVJU';
@@ -68,11 +69,11 @@ describe( 'SearchFunnelWidgetGA4 PDF', () => {
 
 		expect( json ).toContain( 'Search traffic over time' );
 
-		// All four card titles.
-		expect( json ).toContain( 'Total Impressions' );
-		expect( json ).toContain( 'Total Clicks' );
-		expect( json ).toContain( 'Unique Visitors from Search' );
-		expect( json ).toContain( 'Key Events' );
+		// All four card titles, in sentence case.
+		expect( json ).toContain( 'Total impressions' );
+		expect( json ).toContain( 'Total clicks' );
+		expect( json ).toContain( 'Unique visitors from Search' );
+		expect( json ).toContain( 'Key events' );
 
 		// Formatted headline values.
 		expect( json ).toContain( '9.2K' );
@@ -95,10 +96,10 @@ describe( 'SearchFunnelWidgetGA4 PDF', () => {
 			chartImages: buildChartImages(),
 		} );
 
-		// Total Clicks (+10%) and Unique Visitors (+20%) are positive (green).
+		// Total clicks (+10%) and Unique visitors (+20%) are positive (green).
 		expect( json ).toContain( '#34a853' );
 		expect( json ).toContain( '10%' );
-		// Total Impressions (-5.2%) is negative (red).
+		// Total impressions (-5.2%) is negative (red).
 		expect( json ).toContain( '#ea4335' );
 		expect( json ).toContain( '5.2%' );
 	} );
@@ -114,9 +115,9 @@ describe( 'SearchFunnelWidgetGA4 PDF', () => {
 
 		expect( json ).toContain( 'Data unavailable' );
 		// The other three cards still render their titles and charts.
-		expect( json ).toContain( 'Total Impressions' );
-		expect( json ).toContain( 'Total Clicks' );
-		expect( json ).toContain( 'Key Events' );
+		expect( json ).toContain( 'Total impressions' );
+		expect( json ).toContain( 'Total clicks' );
+		expect( json ).toContain( 'Key events' );
 	} );
 
 	it( 'should render the whole-widget fallback when data is null', () => {
@@ -124,6 +125,15 @@ describe( 'SearchFunnelWidgetGA4 PDF', () => {
 
 		expect( json ).toContain( 'Search traffic over time' );
 		expect( json ).toContain( 'Data unavailable' );
-		expect( json ).not.toContain( 'Total Impressions' );
+		expect( json ).not.toContain( 'Total impressions' );
+	} );
+
+	it( 'scales the sub-section heading font size', () => {
+		const json = renderTree( {
+			data: buildData(),
+			chartImages: buildChartImages(),
+		} );
+
+		expect( json ).toContain( `"fontSize":${ 16 * PDF_SCALE }` );
 	} );
 } );
