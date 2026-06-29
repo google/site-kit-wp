@@ -17,21 +17,21 @@
 /**
  * External dependencies
  */
-import {
-	Image,
-	Line,
-	Path,
-	StyleSheet,
-	Svg,
-	Text,
-	View,
-} from '@react-pdf/renderer';
+import { Image, Line, Path, Svg, Text, View } from '@react-pdf/renderer';
 import type { FC } from 'react';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import {
+	createPDFStyles,
+	scalePDFValue,
+} from '@/js/components/pdf-export/pdf-scale';
 
 /**
  * Color tokens sourced from the PDF report Figma design.
@@ -53,14 +53,14 @@ const COLORS = {
 	placeholderBg: '#f8f9fa',
 };
 
-const styles = StyleSheet.create( {
+const styles = createPDFStyles( {
 	card: {
 		backgroundColor: COLORS.cardBg,
-		borderRadius: 8,
+		borderRadius: 16,
 		borderWidth: 1,
 		borderColor: COLORS.border,
 		borderStyle: 'solid',
-		padding: 12,
+		padding: 24,
 	},
 	headerRow: {
 		flexDirection: 'row',
@@ -73,63 +73,63 @@ const styles = StyleSheet.create( {
 	},
 	headerRight: {
 		alignItems: 'flex-end',
-		marginLeft: 8,
+		marginLeft: 16,
 	},
 	title: {
-		fontSize: 9,
+		fontSize: 14,
 		color: COLORS.text,
-		marginBottom: 2,
+		marginBottom: 4,
 	},
 	value: {
-		fontSize: 22,
+		fontSize: 28,
 		color: COLORS.text,
 	},
 	chip: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 3,
+		gap: 6,
 		borderRadius: 100,
-		paddingVertical: 2,
-		paddingHorizontal: 6,
+		paddingVertical: 4,
+		paddingHorizontal: 8,
 	},
 	chipText: {
-		fontSize: 9,
+		fontSize: 12,
 	},
 	changeLabel: {
-		fontSize: 8,
+		fontSize: 12,
 		color: COLORS.secondary,
-		marginTop: 3,
+		marginTop: 8,
 		textAlign: 'right',
 	},
 	legendRow: {
 		flexDirection: 'row',
-		gap: 14,
-		marginTop: 8,
-		marginBottom: 2,
+		gap: 28,
+		marginTop: 16,
+		marginBottom: 4,
 	},
 	legendItem: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 4,
+		gap: 8,
 	},
 	legendLabel: {
-		fontSize: 8,
+		fontSize: 12,
 		color: COLORS.secondary,
 	},
 	chart: {
 		width: '100%',
-		height: 120,
-		marginTop: 4,
+		height: 240,
+		marginTop: 8,
 	},
 	placeholder: {
-		minHeight: 150,
+		minHeight: 300,
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: COLORS.placeholderBg,
-		borderRadius: 4,
+		borderRadius: 8,
 	},
 	placeholderText: {
-		fontSize: 9,
+		fontSize: 12,
 		color: COLORS.secondary,
 	},
 } );
@@ -141,7 +141,11 @@ interface ChangeArrowProps {
 
 const ChangeArrow: FC< ChangeArrowProps > = ( { direction, color } ) => {
 	return (
-		<Svg width={ 8 } height={ 8 } viewBox="0 0 8 8">
+		<Svg
+			width={ scalePDFValue( 16 ) }
+			height={ scalePDFValue( 16 ) }
+			viewBox="0 0 8 8"
+		>
 			<Path
 				d={
 					direction === 'up' ? 'M4,0 L8,8 L0,8 Z' : 'M0,0 L8,0 L4,8 Z'
@@ -159,7 +163,11 @@ interface LegendSwatchProps {
 
 const LegendSwatch: FC< LegendSwatchProps > = ( { color, dashed = false } ) => {
 	return (
-		<Svg width={ 16 } height={ 2 } viewBox="0 0 16 2">
+		<Svg
+			width={ scalePDFValue( 32 ) }
+			height={ scalePDFValue( 4 ) }
+			viewBox="0 0 16 2"
+		>
 			<Line
 				x1="0"
 				y1="1"
