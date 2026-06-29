@@ -46,7 +46,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Nonce action used by the existing-user link flow.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 */
 	const CONNECT_EXISTING_USER_NONCE_ACTION = 'googlesitekit_connect_existing_user';
 
@@ -54,7 +54,7 @@ class Authenticator implements Authenticator_Interface {
 	 * User options instance.
 	 *
 	 * @since 1.141.0
-	 * @since n.e.x.t Made `protected` so subclasses can reuse it.
+	 * @since 1.182.0 Made `protected` so subclasses can reuse it.
 	 * @var User_Options
 	 */
 	protected $user_options;
@@ -63,7 +63,7 @@ class Authenticator implements Authenticator_Interface {
 	 * Profile reader instance.
 	 *
 	 * @since 1.141.0
-	 * @since n.e.x.t Made `protected` so subclasses can reuse it.
+	 * @since 1.182.0 Made `protected` so subclasses can reuse it.
 	 * @var Profile_Reader_Interface
 	 */
 	protected $profile_reader;
@@ -300,7 +300,7 @@ class Authenticator implements Authenticator_Interface {
 	 * Gets the hashed Google user ID from the provided payload.
 	 *
 	 * @since 1.145.0
-	 * @since n.e.x.t Made `protected` so subclasses can reuse it.
+	 * @since 1.182.0 Made `protected` so subclasses can reuse it.
 	 *
 	 * @param array $payload Google auth payload.
 	 * @return string Hashed Google user ID.

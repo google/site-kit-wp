@@ -214,6 +214,43 @@ class Conversion_TrackingTest extends TestCase {
 		);
 	}
 
+	public function test_get_site_kit_supported_conversion_events() {
+		$events = $this->conversion_tracking->get_site_kit_supported_conversion_events();
+
+		$this->assertEquals(
+			array(
+				'fake_event_active_1',
+				'fake_event_active_2',
+			),
+			$events,
+			'Site Kit supported conversion events should match the expected values.'
+		);
+	}
+
+	public function test_get_site_kit_supported_conversion_events__no_active_providers() {
+		Conversion_Tracking::$providers = array();
+
+		$events = $this->conversion_tracking->get_site_kit_supported_conversion_events();
+
+		$this->assertEquals(
+			array(),
+			$events,
+			'Site Kit supported conversion events should be empty without active providers.'
+		);
+	}
+
+	public function test_get_site_kit_enhanced_conversion_events() {
+		$events = $this->conversion_tracking->get_site_kit_enhanced_conversion_events();
+
+		$this->assertEquals(
+			array(
+				'fake_event_active_2', // Only this event is defined as enhanced in the active provider.
+			),
+			$events,
+			'Site Kit enhanced conversion events should match the expected values.'
+		);
+	}
+
 	public function test_register__adds_inline_base_data_filter() {
 		$this->conversion_tracking->register();
 

@@ -56,8 +56,6 @@ const identityServices = {
 
 describe( 'sign-in-with-google', () => {
 	beforeEach( () => {
-		jest.resetModules();
-
 		document.body.innerHTML =
 			'<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>';
 	} );

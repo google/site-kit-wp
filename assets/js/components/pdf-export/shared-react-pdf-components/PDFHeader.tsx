@@ -47,7 +47,7 @@ const CHEVRON_RIGHT_PATH = 'M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z';
  * Extracts the host (e.g. "www.example.com") from the reference site URL for
  * display as the header's site address.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param {string} siteURL The reference site URL.
  * @return {string} The host, or the original value when it cannot be parsed.
@@ -66,7 +66,7 @@ function getSiteHost( siteURL: string ): string {
  * Returns an empty string for missing/invalid input: `stringToDate` throws on a
  * non-`YYYY-MM-DD` string, which would otherwise abort the whole PDF render.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param {string} dateString The date in `YYYY-MM-DD` format.
  * @return {string} The localized date, or an empty string.

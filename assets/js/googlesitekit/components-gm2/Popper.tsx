@@ -60,7 +60,7 @@ interface PopperProps {
  * Renders a floating notification panel anchored to an element. It closes
  * after a delay, on an outside click, or when the user presses Escape.
  *
- * @since n.e.x.t
+ * @since 1.182.0
  *
  * @param props                 Component props.
  * @param props.anchorElement   Anchor element. The popper opens when it is set, and closes when it is null.

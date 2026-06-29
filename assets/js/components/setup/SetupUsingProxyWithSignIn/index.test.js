@@ -505,6 +505,51 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			).not.toBeInTheDocument();
 		} );
 
+		it( 'should show the correct title and description for a secondary admin', async () => {
+			provideSiteConnection( registry, {
+				hasConnectedAdmins: true,
+				hasMultipleAdmins: true,
+			} );
+
+			registry.dispatch( CORE_MODULES ).receiveGetModules(
+				coreModulesFixture.map( ( module ) => {
+					if ( MODULE_SLUG_ANALYTICS_4 === module.slug ) {
+						return {
+							...module,
+							active: false,
+						};
+					}
+
+					return module;
+				} )
+			);
+
+			const { getByRole, getByText, queryByText, waitForRegistry } =
+				render( <SetupUsingProxyWithSignIn />, {
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh' ],
+				} );
+
+			await waitForRegistry();
+
+			expect(
+				getByRole( 'heading', { name: "Let's get started!" } )
+			).toBeInTheDocument();
+
+			expect(
+				getByText(
+					/Once you complete the setup, you’ll see stats from all connected Google services\./
+				)
+			).toBeInTheDocument();
+
+			expect(
+				queryByText(
+					/all connected Google services that are shared with you:/
+				)
+			).not.toBeInTheDocument();
+		} );
+
 		it( 'should show the correct title and description for a secondary admin when Analytics is not active with the setupFlowRefreshPhase4 feature flag enabled', async () => {
 			provideSiteConnection( registry, {
 				hasConnectedAdmins: true,
@@ -782,6 +827,195 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 							},
 						},
 					}
+				);
+			} );
+		} );
+
+		it( 'should show an error notification and prevent navigation when Analytics activation fails with setupFlowRefreshPhase4 enabled', async () => {
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/modules/data/activation'
+				),
+				{
+					body: {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					},
+					status: 500,
+				}
+			);
+
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( ANALYTICS_NOTICE_FORM_NAME, {
+					[ ANALYTICS_NOTICE_CHECKBOX ]: true,
+				} );
+
+			provideModuleRegistrations( registry );
+
+			const { getByRole, getByText, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click(
+				getByRole( 'button', { name: /sign in with google/i } )
+			);
+
+			await waitFor( () => {
+				expect(
+					getByText( 'Connecting Site Kit failed' )
+				).toBeInTheDocument();
+			} );
+
+			await waitFor( () => {
+				expect( global.location.assign ).not.toHaveBeenCalled();
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		it( 'should show an error notification and prevent navigation when saving initial setup settings fails with setupFlowRefreshPhase4 enabled', async () => {
+			fetchMock.postOnce(
+				initialSetupSettingsEndpoint,
+				{
+					body: {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					},
+					status: 500,
+				},
+				{ overwriteRoutes: true }
+			);
+
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/modules/data/activation'
+				),
+				{ body: { success: true } }
+			);
+
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( ANALYTICS_NOTICE_FORM_NAME, {
+					[ ANALYTICS_NOTICE_CHECKBOX ]: true,
+				} );
+
+			provideModuleRegistrations( registry );
+
+			const { getByRole, getByText, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click(
+				getByRole( 'button', { name: /sign in with google/i } )
+			);
+
+			await waitFor( () => {
+				expect(
+					getByText( 'Connecting Site Kit failed' )
+				).toBeInTheDocument();
+			} );
+
+			expect( global.location.assign ).not.toHaveBeenCalled();
+			expect( console ).toHaveErrored();
+		} );
+
+		it( 'should retry plugin setup when the Analytics activation error notification CTA is clicked', async () => {
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/modules/data/activation'
+				),
+				{
+					body: {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					},
+					status: 500,
+				}
+			);
+
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/modules/data/activation'
+				),
+				{ body: { success: true } }
+			);
+
+			fetchMock.postOnce( initialSetupSettingsEndpoint, {
+				body: { settings: { isAnalyticsSetupComplete: false } },
+			} );
+
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( ANALYTICS_NOTICE_FORM_NAME, {
+					[ ANALYTICS_NOTICE_CHECKBOX ]: true,
+				} );
+
+			provideModuleRegistrations( registry );
+
+			const { getByRole, getByText, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click(
+				getByRole( 'button', { name: /sign in with google/i } )
+			);
+
+			await waitFor( () => {
+				expect(
+					getByText( 'Connecting Site Kit failed' )
+				).toBeInTheDocument();
+			} );
+
+			expect( global.location.assign ).toHaveBeenCalledTimes( 0 );
+
+			fireEvent.click(
+				getByRole( 'button', { name: /retry plugin setup/i } )
+			);
+
+			const proxySetupURL = registry
+				.select( CORE_SITE )
+				.getProxySetupURL();
+
+			const dashboardURL = registry
+				.select( CORE_SITE )
+				.getAdminURL( 'googlesitekit-dashboard', {
+					slug: MODULE_SLUG_ANALYTICS_4,
+					reAuth: true,
+					showProgress: true,
+				} );
+
+			const expectedURL = addQueryArgs( proxySetupURL, {
+				redirect: dashboardURL,
+			} );
+
+			await waitFor( () => {
+				expect( global.location.assign ).toHaveBeenCalledTimes( 1 );
+				expect( global.location.assign ).toHaveBeenCalledWith(
+					expectedURL
 				);
 			} );
 		} );

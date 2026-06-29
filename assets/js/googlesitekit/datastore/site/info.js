@@ -35,6 +35,7 @@ import {
 	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
+import { getGlobalData } from '@/js/googlesitekit/data/utils';
 import { normalizeURL, untrailingslashit } from '@/js/util';
 import { negateDefined } from '@/js/util/negate';
 import { AMP_MODE_PRIMARY, AMP_MODE_SECONDARY, CORE_SITE } from './constants';
@@ -287,10 +288,13 @@ export const resolvers = {
 			return;
 		}
 
-		if (
-			! global._googlesitekitBaseData ||
-			! global._googlesitekitEntityData
-		) {
+		let baseData;
+		let entityData;
+
+		try {
+			baseData = getGlobalData( '_googlesitekitBaseData' );
+			entityData = getGlobalData( '_googlesitekitEntityData' );
+		} catch ( error ) {
 			global.console.error( 'Could not load core/site info.' );
 			return;
 		}
@@ -328,14 +332,14 @@ export const resolvers = {
 			hasActiveLeadEventProviders,
 			hasActiveEcommerceEventProviders,
 			hasMultipleActiveEcommerceEventProviders,
-		} = global._googlesitekitBaseData;
+		} = baseData;
 
 		const {
 			currentEntityID,
 			currentEntityTitle,
 			currentEntityType,
 			currentEntityURL,
-		} = global._googlesitekitEntityData;
+		} = entityData;
 
 		yield actions.receiveSiteInfo( {
 			adminURL,
@@ -1026,7 +1030,7 @@ export const selectors = {
 	/**
 	 * Checks if more than one ecommerce event provider plugin is active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} `true` if multiple ecommerce event providers are active; `false` if not. Returns `undefined` if not yet loaded.

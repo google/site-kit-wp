@@ -119,7 +119,11 @@ class Subscribed_Users_QueryTest extends TestCase {
 
 		$results = $this->query->for_frequency( 'weekly' );
 
-		$this->assertEqualSets( array( $admin_weekly, $editor_weekly ), $results );
+		$this->assertEqualSets(
+			array( $admin_weekly, $editor_weekly ),
+			$results,
+			'Weekly subscribers should include admins and shared users.'
+		);
 	}
 
 	public function test_for_frequency__excludes_subscribed_admin_without_site_kit_access() {

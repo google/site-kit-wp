@@ -57,7 +57,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Whether the tag renders for the existing-user link flow on `wp-admin/profile.php`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 * @var bool
 	 */
 	private bool $is_existing_user_flow = false;
@@ -100,7 +100,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Sets whether the tag renders for the existing-user link flow on `wp-admin/profile.php`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.182.0
 	 *
 	 * @param bool $is_existing_user_flow Existing-user link flow flag.
 	 */
@@ -112,7 +112,7 @@ class Web_Tag extends Module_Web_Tag {
 	 * Registers tag hooks.
 	 *
 	 * @since 1.159.0
-	 * @since n.e.x.t Runs on `admin_footer` for the existing-user link flow.
+	 * @since 1.182.0 Runs on `admin_footer` for the existing-user link flow.
 	 */
 	public function register() {
 		if ( $this->is_existing_user_flow ) {
@@ -137,7 +137,7 @@ class Web_Tag extends Module_Web_Tag {
 	 * @since 1.144.0 Renamed to `render_signinwithgoogle` and conditionally
 	 *                rendered the code to replace buttons.
 	 * @since 1.159.0 moved from main Sign_In_With_Google class to Web_Tag.
-	 * @since n.e.x.t Added support for the existing-user link flow.
+	 * @since 1.182.0 Added support for the existing-user link flow.
 	 */
 	protected function render() {
 		$is_woocommerce       = class_exists( 'WooCommerce' );

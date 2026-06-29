@@ -50,15 +50,18 @@ const tileStyles = StyleSheet.create( {
 	},
 	title: {
 		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 12,
-		fontWeight: 'normal',
+		fontSize: 7,
+		fontWeight: 500,
+		letterSpacing: -0.05,
+		lineHeight: 1.143,
 		color: COLORS.text,
-		marginBottom: 6,
+		marginBottom: 0,
 	},
 	value: {
 		fontFamily: PDF_FONT_FAMILY_DISPLAY,
-		fontSize: 24,
+		fontSize: 14,
 		fontWeight: 400,
+		lineHeight: 1.286,
 		color: COLORS.text,
 	},
 	aside: {
@@ -66,19 +69,24 @@ const tileStyles = StyleSheet.create( {
 		alignItems: 'flex-end',
 	},
 	chip: {
-		borderRadius: 10,
-		paddingVertical: 4,
-		paddingHorizontal: 8,
+		borderRadius: 6,
+		paddingVertical: 2,
+		paddingHorizontal: 4,
 	},
 	chipText: {
 		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 10,
+		fontSize: 6,
+		fontWeight: 500,
+		letterSpacing: 0.1,
+		lineHeight: 1.333,
 	},
 	changeLabel: {
 		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 10,
+		fontSize: 6,
+		letterSpacing: 0.1,
+		lineHeight: 1.333,
 		color: COLORS.secondary,
-		marginTop: 8,
+		marginTop: 4,
 	},
 } );
 
@@ -89,7 +97,7 @@ export interface PDFMetricTileProps {
 	value: string;
 	/** Pre-formatted, signed change string for the chip, e.g. "+5.1%". Hides the chip when omitted. */
 	change?: string;
-	/** Whether the change is negative; controls the chip colour. */
+	/** Whether the change is negative; controls the chip color. */
 	isNegative?: boolean;
 	/** Optional caption rendered below the chip, e.g. "Vs. prev. 28 days". */
 	changeLabel?: string;
