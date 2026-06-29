@@ -98,12 +98,16 @@ function isRenderableWidget(
 	return Boolean( widget.Component && widget.data );
 }
 
+function getPDFLocale(): string {
+	return getLocale().replace( /_/g, '-' );
+}
+
 function formatDocumentDate( dateString: string ): string {
 	if ( ! isValidDateString( dateString ) ) {
 		return '';
 	}
 
-	return new Intl.DateTimeFormat( getLocale(), {
+	return new Intl.DateTimeFormat( getPDFLocale(), {
 		month: 'short',
 		day: 'numeric',
 		year: 'numeric',
@@ -217,7 +221,7 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 			author={ siteName || __( 'Site Kit by Google', 'google-site-kit' ) }
 			subject={ __( 'Site Kit dashboard report', 'google-site-kit' ) }
 			keywords={ __( 'Site Kit, dashboard, report', 'google-site-kit' ) }
-			language={ getLocale() }
+			language={ getPDFLocale() }
 			pageMode="useOutlines"
 		>
 			<Page

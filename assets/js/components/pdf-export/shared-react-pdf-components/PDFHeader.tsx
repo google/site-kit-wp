@@ -67,6 +67,10 @@ function getSiteHost( siteURL: string ): string {
 	}
 }
 
+function getPDFLocale(): string {
+	return getLocale().replace( /_/g, '-' );
+}
+
 /**
  * Formats a `YYYY-MM-DD` date as a localized short date, e.g. "Jan 1, 2021".
  *
@@ -83,7 +87,7 @@ function formatHeaderDate( dateString: string ): string {
 		return '';
 	}
 
-	return new Intl.DateTimeFormat( getLocale(), {
+	return new Intl.DateTimeFormat( getPDFLocale(), {
 		month: 'short',
 		day: 'numeric',
 		year: 'numeric',

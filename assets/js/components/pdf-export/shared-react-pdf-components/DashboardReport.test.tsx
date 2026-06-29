@@ -124,6 +124,41 @@ describe( 'DashboardReport', () => {
 		} );
 	} );
 
+	it( 'normalizes underscore locales for document metadata and date formatting', () => {
+		const languageDescriptor = Object.getOwnPropertyDescriptor(
+			global.navigator,
+			'language'
+		);
+		Object.defineProperty( global.navigator, 'language', {
+			configurable: true,
+			value: 'de_DE',
+		} );
+
+		try {
+			const tree = TestRenderer.create(
+				createDashboardReportElement()
+			).root;
+			const document = tree.find(
+				( node ) => String( node.type ) === 'pdf-document'
+			);
+
+			expect( document.props ).toMatchObject( {
+				title: 'Example Site – 1. Jan. 2021 - 28. Jan. 2021 – Site Kit report',
+				language: 'de-DE',
+			} );
+		} finally {
+			if ( languageDescriptor ) {
+				Object.defineProperty(
+					global.navigator,
+					'language',
+					languageDescriptor
+				);
+			} else {
+				Reflect.deleteProperty( global.navigator, 'language' );
+			}
+		}
+	} );
+
 	it( 'sets one bookmark per renderable report area in render order', () => {
 		const areas = [
 			{
