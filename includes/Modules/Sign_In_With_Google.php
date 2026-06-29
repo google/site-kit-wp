@@ -607,7 +607,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			'class' => implode( ' ', $classes ),
 		);
 
-		$data_attributes = array( 'for-comment-form', 'post-id', 'shape', 'text', 'theme' );
+		$data_attributes = array( 'for-comment-form', 'post-id', 'shape', 'text', 'theme', 'width' );
 		foreach ( $data_attributes as $attribute ) {
 			if ( empty( $args[ $attribute ] ) || ! is_scalar( $args[ $attribute ] ) ) {
 				continue;
@@ -642,6 +642,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 				'shape' => '',
 				'text'  => '',
 				'theme' => '',
+				'width' => '',
 			),
 			$atts,
 			'site_kit_sign_in_with_google'
