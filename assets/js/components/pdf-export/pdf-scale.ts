@@ -1,0 +1,151 @@
+/**
+ * Shared scale and style helpers for the PDF report (@react-pdf/renderer).
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import { StyleSheet } from '@react-pdf/renderer';
+import type { Style } from '@react-pdf/stylesheet';
+
+/** Width of the PDF page, in points. */
+export const PDF_PAGE_WIDTH = 612;
+
+/** Width of the board the report content is laid out on, in pixels. */
+export const PDF_FIGMA_BOARD_WIDTH = 1180;
+
+/**
+ * Scale from a board pixel to a page point.
+ *
+ * The board is wider than the page, so every board size is multiplied by this
+ * scale to fit the page.
+ */
+export const PDF_SCALE = PDF_PAGE_WIDTH / PDF_FIGMA_BOARD_WIDTH;
+
+/** Padding from the page edge to the report content, in points. */
+export const PDF_PAGE_PADDING = 24;
+
+/**
+ * Style properties whose numeric value is a length that the scale applies to.
+ *
+ * Every other property keeps its value, so colors, font families, line heights,
+ * weights, and flex ratios stay the same.
+ */
+export const PDF_SCALED_PROPERTIES = new Set< string >( [
+	// Text.
+	'fontSize',
+	'letterSpacing',
+	// Margin.
+	'margin',
+	'marginHorizontal',
+	'marginVertical',
+	'marginTop',
+	'marginRight',
+	'marginBottom',
+	'marginLeft',
+	// Padding.
+	'padding',
+	'paddingHorizontal',
+	'paddingVertical',
+	'paddingTop',
+	'paddingRight',
+	'paddingBottom',
+	'paddingLeft',
+	// Size.
+	'width',
+	'height',
+	'minWidth',
+	'maxWidth',
+	'minHeight',
+	'maxHeight',
+	// Position.
+	'top',
+	'right',
+	'bottom',
+	'left',
+	// Gap.
+	'gap',
+	'rowGap',
+	'columnGap',
+	// Border width.
+	'borderWidth',
+	'borderTopWidth',
+	'borderRightWidth',
+	'borderBottomWidth',
+	'borderLeftWidth',
+	// Border radius.
+	'borderRadius',
+	'borderTopLeftRadius',
+	'borderTopRightRadius',
+	'borderBottomRightRadius',
+	'borderBottomLeftRadius',
+	// Flex.
+	'flexBasis',
+] );
+
+/**
+ * Scales one board length to a page point value.
+ *
+ * Used for a length that a widget sets outside a style object, such as an `Svg`
+ * width or height.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} value The length, in board pixels.
+ * @return {number} The length, in page points.
+ */
+export function scalePDFValue( value: number ): number {
+	return value * PDF_SCALE;
+}
+
+/**
+ * Builds scaled @react-pdf styles from raw board sizes.
+ *
+ * A widget writes its styles with the board sizes and passes them here. Each
+ * length property in `PDF_SCALED_PROPERTIES` with a numeric value is multiplied
+ * by `PDF_SCALE`. A non-numeric value (such as `'100%'`) and every other
+ * property keep their value. The result is passed to `StyleSheet.create`, so it
+ * is a drop-in replacement for it.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} styles Named styles with raw board sizes.
+ * @return {Object} The named styles with each length scaled to points.
+ */
+export function createPDFStyles< T extends Record< string, Style > >(
+	styles: T
+): T {
+	const scaledStyles: Record< string, Style > = {};
+
+	for ( const [ name, style ] of Object.entries( styles ) ) {
+		const scaledStyle: Record< string, unknown > = {};
+
+		for ( const [ property, value ] of Object.entries(
+			style as Record< string, unknown >
+		) ) {
+			scaledStyle[ property ] =
+				PDF_SCALED_PROPERTIES.has( property ) &&
+				typeof value === 'number'
+					? value * PDF_SCALE
+					: value;
+		}
+
+		scaledStyles[ name ] = scaledStyle as Style;
+	}
+
+	return StyleSheet.create( scaledStyles ) as T;
+}
