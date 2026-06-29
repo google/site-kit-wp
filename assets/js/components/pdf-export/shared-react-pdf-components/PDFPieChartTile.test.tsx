@@ -17,8 +17,14 @@
  */
 
 /**
+ * External dependencies
+ */
+import TestRenderer from 'react-test-renderer';
+
+/**
  * Internal dependencies
  */
+import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import { render } from '@tests/js/test-utils';
 import PDFPieChartTile from './PDFPieChartTile';
 
@@ -118,5 +124,22 @@ describe( 'PDFPieChartTile', () => {
 		expect(
 			container.querySelector( 'pdf-image' )
 		).not.toBeInTheDocument();
+	} );
+
+	it( 'scales the title font size and the donut image', () => {
+		const json = JSON.stringify(
+			TestRenderer.create(
+				<PDFPieChartTile
+					title="Visitors by channels"
+					rows={ ROWS }
+					chartImage={ CHART_DATA_URI }
+				/>
+			).toJSON()
+		);
+
+		// The tile title font size scales.
+		expect( json ).toContain( `"fontSize":${ 14 * PDF_SCALE }` );
+		// The donut image scales.
+		expect( json ).toContain( `"width":${ 145.7 * PDF_SCALE }` );
 	} );
 } );
