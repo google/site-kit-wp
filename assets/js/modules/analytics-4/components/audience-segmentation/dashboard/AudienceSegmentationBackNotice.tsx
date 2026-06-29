@@ -50,14 +50,14 @@ const AudienceSegmentationBackNotice: FC<
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { setValue } = useDispatch( CORE_UI );
 
-	const dismissNotice = useCallback( async () => {
+	const handleDismiss = useCallback( async () => {
 		await dismissItem( AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG );
 	}, [ dismissItem ] );
 
 	const handleSelectGroups = useCallback( async () => {
-		await dismissItem( AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG );
+		await handleDismiss();
 		setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
-	}, [ dismissItem, setValue ] );
+	}, [ handleDismiss, setValue ] );
 
 	return (
 		<Widget noPadding>
@@ -73,7 +73,7 @@ const AudienceSegmentationBackNotice: FC<
 				) }
 				dismissButton={ {
 					label: __( 'Got it', 'google-site-kit' ),
-					onClick: dismissNotice,
+					onClick: handleDismiss,
 				} }
 				ctaButton={ {
 					label: __( 'Select groups', 'google-site-kit' ),
