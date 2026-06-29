@@ -232,13 +232,17 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 			expect( args.signal ).toBe( signal );
 			expect( args.width ).toBe( 240 );
 			expect( args.height ).toBe( 120 );
+			// The higher scale keeps the line sharp.
+			expect( args.scaleFactor ).toBe( 4 );
+			// The line width, dashes, and fonts scale with the render, so the
+			// proportions stay the same.
 			expect( args.options ).toMatchObject( {
 				curveType: 'function',
 				colors: [ color ],
 				legend: { position: 'none' },
 				series: {
-					0: { color, lineWidth: 2 },
-					1: { color, lineWidth: 1, lineDashStyle: [ 3, 3 ] },
+					0: { color, lineWidth: 4 },
+					1: { color, lineWidth: 2, lineDashStyle: [ 6, 6 ] },
 				},
 			} );
 		} );
