@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Link, Path, StyleSheet, Svg, Text, View } from '@react-pdf/renderer';
+import { Link, Path, Svg, Text, View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
@@ -30,6 +30,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import {
+	PDF_PAGE_PADDING,
+	createPDFStyles,
+	scalePDFValue,
+} from '@/js/components/pdf-export/pdf-scale';
 import {
 	PDF_FONT_FAMILY_DISPLAY,
 	PDF_FONT_FAMILY_TEXT,
@@ -83,14 +88,19 @@ function formatHeaderDate( dateString: string ): string {
 	} ).format( stringToDate( dateString ) );
 }
 
-const styles = StyleSheet.create( {
+// Extend the white strip to the page edges and pad its content back, so the
+// strip spans the full page width.
+const headerPageBleed = {
+	marginTop: -PDF_PAGE_PADDING,
+	marginHorizontal: -PDF_PAGE_PADDING,
+	paddingHorizontal: PDF_PAGE_PADDING,
+};
+
+const styles = createPDFStyles( {
 	header: {
 		backgroundColor: '#FFFFFF',
-		marginTop: -24,
-		marginHorizontal: -24,
 		marginBottom: 24,
 		paddingTop: 16,
-		paddingHorizontal: 24,
 		paddingBottom: 6,
 	},
 	topRow: {
@@ -197,7 +207,7 @@ const PDFHeader: FC< PDFHeaderProps > = ( {
 			: startDate || endDate;
 
 	return (
-		<View style={ styles.header }>
+		<View style={ [ styles.header, headerPageBleed ] }>
 			<View style={ styles.topRow }>
 				<PDFSiteKitLogo />
 				<View style={ styles.divider } />
@@ -241,7 +251,11 @@ const PDFHeader: FC< PDFHeaderProps > = ( {
 							'google-site-kit'
 						) }
 					</Text>
-					<Svg width={ 10 } height={ 10 } viewBox="0 0 24 24">
+					<Svg
+						width={ scalePDFValue( 10 ) }
+						height={ scalePDFValue( 10 ) }
+						viewBox="0 0 24 24"
+					>
 						<Path
 							d={ CHEVRON_RIGHT_PATH }
 							fill={ PDF_HEADER_COLORS.link }
