@@ -499,8 +499,8 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$output = $this->capture_action( 'admin_footer' );
 
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'An unlinked user on their profile should get the Sign in with Google connect button.' );
-		$this->assertStringContainsString( "response.integration='existing_user'", $output, 'The connect button should use the existing-user link flow.' );
-		$this->assertStringContainsString( 'response.connect_nonce=', $output, 'The connect request should include its nonce.' );
+		$this->assertStringContainsString( esc_attr( '"isExistingUserFlow":true' ), $output, 'The connect button should use the existing-user link flow.' );
+		$this->assertStringContainsString( esc_attr( '"connectNonce":' ), $output, 'The connect request should include its nonce.' );
 	}
 
 	public function test_maybe_render_profile_signinwithgoogle__does_not_show_connect_button_outside_own_profile() {
@@ -524,7 +524,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$output = $this->capture_action( 'admin_footer' );
 
-		$this->assertStringNotContainsString( "response.integration='existing_user'", $output, 'The connect button should not appear when the user is not on their own profile.' );
+		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output, 'The connect button should not appear when the user is not on their own profile.' );
 	}
 
 	public function test_maybe_render_profile_signinwithgoogle__does_not_show_connect_button_when_user_already_linked() {
@@ -543,7 +543,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$output = $this->capture_action( 'admin_footer' );
 
-		$this->assertStringNotContainsString( "response.integration='existing_user'", $output, 'The connect button should not appear when the user already has a linked Google account.' );
+		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output, 'The connect button should not appear when the user already has a linked Google account.' );
 	}
 
 	public function test_maybe_render_profile_signinwithgoogle__skips_when_module_not_connected() {
@@ -562,7 +562,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$output = $this->capture_action( 'admin_footer' );
 
-		$this->assertStringNotContainsString( "response.integration='existing_user'", $output, "The connect button should not appear when Sign in with Google isn't connected." );
+		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output, "The connect button should not appear when Sign in with Google isn't connected." );
 	}
 
 	public function test_resolve_authenticator_class__returns_base_authenticator_when_no_integration() {
