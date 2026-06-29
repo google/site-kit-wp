@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Image, StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Image, Text, View } from '@react-pdf/renderer';
 
 /**
  * WordPress dependencies
@@ -30,6 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
 import { PIE_CHART_COLORS } from '@/js/components/pdf-export/pie-chart-colors';
 import PDFMetricTile from '@/js/components/pdf-export/shared-react-pdf-components/PDFMetricTile';
@@ -39,39 +40,39 @@ import type { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
 import { calculateChange, numFmt } from '@/js/util';
 import type { AllTrafficPDFData, BreakdownRow } from './getPDFData';
 
-const styles = StyleSheet.create( {
+const styles = createPDFStyles( {
 	heading: {
 		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 8,
-		letterSpacing: 0.25,
+		fontSize: 16,
+		letterSpacing: 0.5,
 		lineHeight: 1.5,
 		color: '#161b18',
-		marginBottom: 8,
+		marginBottom: 16,
 	},
 	row: {
 		flexDirection: 'row',
 		alignItems: 'stretch',
 	},
 	rowSpacing: {
-		marginTop: 12,
+		marginTop: 24,
 	},
 	card: {
 		flexGrow: 1,
 		flexShrink: 1,
 		flexBasis: 0,
 		backgroundColor: '#ffffff',
-		borderRadius: 8,
-		padding: 12,
+		borderRadius: 16,
+		padding: 24,
 	},
 	cardGap: {
-		width: 12,
+		width: 24,
 	},
 	chart: {
 		width: '100%',
 		// Fit the line chart to the card width without stretching it.
-		height: 88,
+		height: 176,
 		objectFit: 'contain',
-		marginTop: 12,
+		marginTop: 24,
 	},
 } );
 
