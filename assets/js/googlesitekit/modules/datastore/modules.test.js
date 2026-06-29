@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { cloneDeep } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import { invalidateCache } from 'googlesitekit-api';
@@ -51,13 +56,6 @@ import {
 
 describe( 'core/modules modules', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
-	const sharedOwnershipModulesList = {
-		sharedOwnershipModules: [
-			MODULE_SLUG_ANALYTICS_4,
-			MODULE_SLUG_SEARCH_CONSOLE,
-			MODULE_SLUG_TAGMANAGER,
-		],
-	};
 
 	const allModules = [
 		{
@@ -134,6 +132,7 @@ describe( 'core/modules modules', () => {
 
 	let registry;
 	let store;
+	let sharedOwnershipModulesList;
 
 	beforeEach( async () => {
 		// Invalidate the cache before every request, but keep it enabled to
@@ -142,6 +141,14 @@ describe( 'core/modules modules', () => {
 
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_MODULES ].store;
+
+		sharedOwnershipModulesList = {
+			sharedOwnershipModules: [
+				MODULE_SLUG_ANALYTICS_4,
+				MODULE_SLUG_SEARCH_CONSOLE,
+				MODULE_SLUG_TAGMANAGER,
+			],
+		};
 	} );
 
 	afterEach( () => {
@@ -2341,6 +2348,36 @@ describe( 'core/modules modules', () => {
 					)
 				);
 			} );
+
+			it( 'uses a cloned copy of the global data so modifications to the original object are not reflected in the store', async () => {
+				global[ dashboardSharingDataBaseVar ] =
+					sharedOwnershipModulesList;
+
+				provideModules( registry, FIXTURES );
+
+				const sharedOwnershipModules = await registry
+					.resolveSelect( CORE_MODULES )
+					.getSharedOwnershipModules();
+
+				const expectedSharedOwnershipModules = cloneDeep(
+					getModulesBySlugList(
+						sharedOwnershipModulesList.sharedOwnershipModules,
+						fixturesKeyValue
+					)
+				);
+
+				expect( sharedOwnershipModules ).toMatchObject(
+					expectedSharedOwnershipModules
+				);
+
+				sharedOwnershipModulesList.sharedOwnershipModules.push(
+					'new-module'
+				);
+
+				expect( sharedOwnershipModules ).toMatchObject(
+					expectedSharedOwnershipModules
+				);
+			} );
 		} );
 
 		describe( 'getShareableModules', () => {
@@ -2541,6 +2578,33 @@ describe( 'core/modules modules', () => {
 					.getInlineModulesData();
 
 				expect( inlineData ).toEqual( mockData );
+			} );
+
+			it( 'uses a cloned copy of the global data so modifications to the original object are not reflected in the store', async () => {
+				const mockData = {
+					[ MODULE_SLUG_ANALYTICS_4 ]: { test: 'data' },
+				};
+
+				global[ inlineModulesDataVar ] = mockData;
+
+				registry.select( CORE_MODULES ).getInlineModulesData();
+
+				await untilResolved(
+					registry,
+					CORE_MODULES
+				).getInlineModulesData();
+
+				const inlineData = registry
+					.select( CORE_MODULES )
+					.getInlineModulesData();
+
+				const expectedInlineData = cloneDeep( mockData );
+
+				expect( inlineData ).toEqual( expectedInlineData );
+
+				mockData[ MODULE_SLUG_ANALYTICS_4 ].test = 'new-data';
+
+				expect( inlineData ).toEqual( expectedInlineData );
 			} );
 		} );
 

@@ -33,6 +33,7 @@ const COLORS = {
 };
 
 const ROW_PADDING_HORIZONTAL = 12;
+const DEFAULT_COLUMN_GAP = 20;
 
 const headerTextStyles = {
 	fontFamily: PDF_FONT_FAMILY_TEXT,
@@ -54,7 +55,6 @@ const bodyTextStyles = {
 const styles = StyleSheet.create( {
 	headerRow: {
 		flexDirection: 'row',
-		columnGap: 20,
 		borderBottomWidth: 1,
 		borderBottomColor: COLORS.divider,
 		paddingBottom: 8,
@@ -65,7 +65,6 @@ const styles = StyleSheet.create( {
 	},
 	bodyRowContent: {
 		flexDirection: 'row',
-		columnGap: 20,
 		alignItems: 'flex-start',
 		borderBottomWidth: 1,
 		borderBottomColor: COLORS.divider,
@@ -108,6 +107,8 @@ export interface PDFTableProps< Row > {
 	columns: Array< PDFTableColumn< Row > >;
 	/** The rows of data. Each row renders one cell per column, from the column's `cell` or `format`. */
 	rows: Row[];
+	/** Horizontal gap in points (pt) between the cells of a row. Defaults to 20. */
+	columnGap?: number;
 }
 
 /**
@@ -130,10 +131,11 @@ function getCellStyle< Row >( column: PDFTableColumn< Row > ) {
 export default function PDFTable< Row >( {
 	columns,
 	rows,
+	columnGap = DEFAULT_COLUMN_GAP,
 }: PDFTableProps< Row > ): ReactElement {
 	return (
 		<View>
-			<View style={ styles.headerRow }>
+			<View style={ [ styles.headerRow, { columnGap } ] }>
 				{ columns.map( ( column, columnIndex ) => (
 					<View key={ columnIndex } style={ getCellStyle( column ) }>
 						<Text
@@ -158,9 +160,10 @@ export default function PDFTable< Row >( {
 								isLastRow
 									? [
 											styles.bodyRowContent,
+											{ columnGap },
 											styles.bodyRowContentLast,
 									  ]
-									: styles.bodyRowContent
+									: [ styles.bodyRowContent, { columnGap } ]
 							}
 						>
 							{ columns.map( ( column, columnIndex ) => (

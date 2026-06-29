@@ -37,6 +37,7 @@ module.exports = ( mode, rules ) => ( {
 		'googlesitekit-i18n': './js/googlesitekit-i18n.ts',
 		// Analytics advanced tracking script to be injected in the frontend.
 		'analytics-advanced-tracking': './js/analytics-advanced-tracking.ts',
+		'sign-in-with-google': './js/sign-in-with-google.ts',
 	},
 	externals,
 	output: {
