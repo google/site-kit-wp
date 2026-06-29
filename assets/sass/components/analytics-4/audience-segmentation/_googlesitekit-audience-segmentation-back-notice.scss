@@ -22,6 +22,12 @@
         .googlesitekit-notice.googlesitekit-notice--info {
             background-color: $c-neutral-n-0;
 
+            .googlesitekit-notice__content {
+                @media (min-width: $bp-desktop) {
+                    margin-right: 44px;
+                }
+            }
+
             .googlesitekit-notice__icon {
                 color: $c-surfaces-on-background-variant;
             }
