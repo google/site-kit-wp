@@ -108,7 +108,7 @@ export default function Actions( {
 
 	const learnMoreLink = useSelect( ( select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
-			'setup-connect-google-account'
+			'why-connect-google-account'
 		);
 	} );
 
