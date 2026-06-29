@@ -104,11 +104,13 @@ export default function Splash( { children } ) {
 
 		getHelpURL = changedURLHelpLink;
 	} else if ( isSecondAdmin ) {
-		if ( setupFlowRefreshPhase4Enabled ) {
+		if ( setupFlowRefreshEnabled ) {
 			title = __( "Let's get started!", 'google-site-kit' );
 
 			description =
-				analyticsModuleActive && hasViewableModules
+				setupFlowRefreshPhase4Enabled &&
+				analyticsModuleActive &&
+				hasViewableModules
 					? __(
 							'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the setup, you’ll see stats from all connected Google services that are shared with you:',
 							'google-site-kit'
