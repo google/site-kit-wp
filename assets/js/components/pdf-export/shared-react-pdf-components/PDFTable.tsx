@@ -19,12 +19,16 @@
 /**
  * External dependencies
  */
-import { StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Text, View } from '@react-pdf/renderer';
 import { ReactElement, ReactNode } from 'react';
 
 /**
  * Internal dependencies
  */
+import {
+	createPDFStyles,
+	scalePDFValue,
+} from '@/js/components/pdf-export/pdf-scale';
 import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
 
 const COLORS = {
@@ -32,32 +36,32 @@ const COLORS = {
 	divider: '#ebeef0',
 };
 
-const ROW_PADDING_HORIZONTAL = 12;
-const DEFAULT_COLUMN_GAP = 20;
+const ROW_PADDING_HORIZONTAL = 24;
+const DEFAULT_COLUMN_GAP = 40;
 
 const headerTextStyles = {
 	fontFamily: PDF_FONT_FAMILY_TEXT,
 	color: COLORS.text,
-	fontSize: 7,
+	fontSize: 14,
 	fontWeight: 500,
 	lineHeight: 1.14,
-	letterSpacing: -0.05,
+	letterSpacing: -0.1,
 };
 
 const bodyTextStyles = {
 	fontFamily: PDF_FONT_FAMILY_TEXT,
 	color: COLORS.text,
-	fontSize: 7,
+	fontSize: 14,
 	lineHeight: 1.43,
-	letterSpacing: 0.125,
+	letterSpacing: 0.25,
 };
 
-const styles = StyleSheet.create( {
+const styles = createPDFStyles( {
 	headerRow: {
 		flexDirection: 'row',
 		borderBottomWidth: 1,
 		borderBottomColor: COLORS.divider,
-		paddingBottom: 8,
+		paddingBottom: 16,
 		paddingHorizontal: ROW_PADDING_HORIZONTAL,
 	},
 	bodyRow: {
@@ -68,7 +72,7 @@ const styles = StyleSheet.create( {
 		alignItems: 'flex-start',
 		borderBottomWidth: 1,
 		borderBottomColor: COLORS.divider,
-		paddingVertical: 4,
+		paddingVertical: 8,
 	},
 	bodyRowContentLast: {
 		borderBottomWidth: 0,
@@ -107,7 +111,7 @@ export interface PDFTableProps< Row > {
 	columns: Array< PDFTableColumn< Row > >;
 	/** The rows of data. Each row renders one cell per column, from the column's `cell` or `format`. */
 	rows: Row[];
-	/** Horizontal gap in points (pt) between the cells of a row. Defaults to 20. */
+	/** Horizontal gap between the cells of a row, in board pixels that `scalePDFValue` scales. Defaults to 40. */
 	columnGap?: number;
 }
 
@@ -133,9 +137,13 @@ export default function PDFTable< Row >( {
 	rows,
 	columnGap = DEFAULT_COLUMN_GAP,
 }: PDFTableProps< Row > ): ReactElement {
+	const scaledColumnGap = scalePDFValue( columnGap );
+
 	return (
 		<View>
-			<View style={ [ styles.headerRow, { columnGap } ] }>
+			<View
+				style={ [ styles.headerRow, { columnGap: scaledColumnGap } ] }
+			>
 				{ columns.map( ( column, columnIndex ) => (
 					<View key={ columnIndex } style={ getCellStyle( column ) }>
 						<Text
@@ -160,10 +168,13 @@ export default function PDFTable< Row >( {
 								isLastRow
 									? [
 											styles.bodyRowContent,
-											{ columnGap },
+											{ columnGap: scaledColumnGap },
 											styles.bodyRowContentLast,
 									  ]
-									: [ styles.bodyRowContent, { columnGap } ]
+									: [
+											styles.bodyRowContent,
+											{ columnGap: scaledColumnGap },
+									  ]
 							}
 						>
 							{ columns.map( ( column, columnIndex ) => (
