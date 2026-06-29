@@ -46,6 +46,8 @@ import SiteKitSetupSuccessNotification from '@/js/components/notifications/SiteK
 import UnsatisfiedScopesAlert from '@/js/components/notifications/UnsatisfiedScopesAlert';
 import UnsatisfiedScopesAlertGTE from '@/js/components/notifications/UnsatisfiedScopesAlertGTE';
 import ZeroDataNotification from '@/js/components/notifications/ZeroDataNotification';
+import SplashSetupErrorMessageNotification from '@/js/components/setup/SetupUsingProxyWithSignIn/SplashSetupErrorMessageNotification';
+import { isFeatureEnabled } from '@/js/features';
 import {
 	SITE_KIT_VIEW_ONLY_CONTEXTS,
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
@@ -226,7 +228,18 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_SETTINGS,
 			VIEW_CONTEXT_SPLASH,
 		],
-		checkRequirements: async ( { select, resolveSelect } ) => {
+		checkRequirements: async ( { select, resolveSelect }, viewContext ) => {
+			const setupFlowRefreshPhase4Enabled = isFeatureEnabled(
+				'setupFlowRefreshPhase4'
+			);
+
+			if (
+				setupFlowRefreshPhase4Enabled &&
+				viewContext === VIEW_CONTEXT_SPLASH
+			) {
+				return false;
+			}
+
 			await resolveSelect( CORE_SITE ).getSiteInfo();
 
 			const temporaryPersistedPermissionsError = select(
@@ -249,6 +262,22 @@ export const DEFAULT_NOTIFICATIONS = {
 			return !! setupErrorMessage;
 		},
 		isDismissible: false,
+	},
+	'splash-setup-plugin-error': {
+		Component: SplashSetupErrorMessageNotification,
+		priority: PRIORITY.ERROR_HIGH,
+		areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
+		viewContexts: [ VIEW_CONTEXT_SPLASH ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await resolveSelect( CORE_SITE ).getSiteInfo();
+
+			const setupErrorMessage =
+				select( CORE_SITE ).getSetupErrorMessage();
+
+			return !! setupErrorMessage;
+		},
+		isDismissible: false,
+		featureFlag: 'setupFlowRefreshPhase4',
 	},
 	'auth-error': {
 		Component: AuthError,
