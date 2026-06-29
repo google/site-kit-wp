@@ -45,6 +45,7 @@ import {
 	PDFReportArea,
 	PDFReportWidget,
 } from '@/js/components/pdf-export/types';
+import { getLocale, isValidDateString, stringToDate } from '@/js/util';
 import PDFEmailReportingNotice from './PDFEmailReportingNotice';
 import PDFHeader from './PDFHeader';
 import PDFTypography from './PDFTypography';
@@ -95,6 +96,60 @@ function isRenderableWidget(
 	widget: PDFReportWidget
 ): widget is RenderableWidget {
 	return Boolean( widget.Component && widget.data );
+}
+
+function formatDocumentDate( dateString: string ): string {
+	if ( ! isValidDateString( dateString ) ) {
+		return '';
+	}
+
+	return new Intl.DateTimeFormat( getLocale(), {
+		month: 'short',
+		day: 'numeric',
+		year: 'numeric',
+	} ).format( stringToDate( dateString ) );
+}
+
+function getDocumentTitle(
+	siteName: string,
+	dateRange: {
+		startDate: string;
+		endDate: string;
+	}
+): string {
+	const startDate = formatDocumentDate( dateRange.startDate );
+	const endDate = formatDocumentDate( dateRange.endDate );
+	const formattedDateRange =
+		startDate && endDate
+			? `${ startDate } - ${ endDate }`
+			: startDate || endDate;
+
+	if ( siteName && formattedDateRange ) {
+		return sprintf(
+			/* translators: 1: Site name. 2: Date range. */
+			__( '%1$s – %2$s – Site Kit report', 'google-site-kit' ),
+			siteName,
+			formattedDateRange
+		);
+	}
+
+	if ( siteName ) {
+		return sprintf(
+			/* translators: %s: Site name. */
+			__( '%s – Site Kit report', 'google-site-kit' ),
+			siteName
+		);
+	}
+
+	if ( formattedDateRange ) {
+		return sprintf(
+			/* translators: %s: Date range. */
+			__( '%s Site Kit report', 'google-site-kit' ),
+			formattedDateRange
+		);
+	}
+
+	return __( 'Site Kit Dashboard Report', 'google-site-kit' );
 }
 
 export interface DashboardReportProps {
@@ -158,16 +213,12 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 
 	return (
 		<Document
-			title={
-				siteName
-					? sprintf(
-							/* translators: %s: Site name. */
-							__( '%s – Site Kit report', 'google-site-kit' ),
-							siteName
-					  )
-					: __( 'Site Kit Dashboard Report', 'google-site-kit' )
-			}
-			author="Site Kit by Google"
+			title={ getDocumentTitle( siteName, dateRange ) }
+			author={ siteName || __( 'Site Kit by Google', 'google-site-kit' ) }
+			subject={ __( 'Site Kit dashboard report', 'google-site-kit' ) }
+			keywords={ __( 'Site Kit, dashboard, report', 'google-site-kit' ) }
+			language={ getLocale() }
+			pageMode="useOutlines"
 		>
 			<Page
 				size={ [ PDF_PAGE_WIDTH, pageHeight ] }
@@ -196,7 +247,10 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 					) }
 					{ renderableAreas.map(
 						( { areaSlug, areaTitle, widgets } ) => (
-							<View key={ `section-${ areaSlug }` }>
+							<View
+								key={ `section-${ areaSlug }` }
+								{ ...{ bookmark: areaTitle } }
+							>
 								<PDFTypography
 									type="headline"
 									style={ styles.areaTitle }

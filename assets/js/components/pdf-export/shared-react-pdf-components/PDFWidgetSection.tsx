@@ -39,17 +39,20 @@ const styles = createPDFStyles( {
 export interface PDFWidgetSectionProps {
 	/** Optional widget heading rendered on the page above the card. */
 	heading?: string;
+	/** Optional PDF outline bookmark rendered on the outer section wrapper. */
+	bookmark?: string;
 	/** Optional style merged onto the card. */
 	cardStyle?: Style;
 }
 
 const PDFWidgetSection: FC< PDFWidgetSectionProps > = ( {
 	heading,
+	bookmark,
 	cardStyle,
 	children,
 } ) => {
 	return (
-		<View>
+		<View { ...{ bookmark } }>
 			{ !! heading && (
 				<PDFTypography size="large" style={ styles.heading }>
 					{ heading }

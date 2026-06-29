@@ -51,6 +51,12 @@ const defaultReportProps: DashboardReportProps = {
 	privacyPolicyURL: 'https://policies.google.com/privacy',
 };
 
+function createDashboardReportElement(
+	props: Partial< DashboardReportProps > = {}
+) {
+	return <DashboardReport { ...defaultReportProps } { ...props } />;
+}
+
 /**
  * Renders the report into the test DOM for content assertions.
  *
@@ -60,7 +66,7 @@ const defaultReportProps: DashboardReportProps = {
  * @return Render result with queries like `getByText`.
  */
 function renderDashboardReport( props: Partial< DashboardReportProps > = {} ) {
-	return render( <DashboardReport { ...defaultReportProps } { ...props } /> );
+	return render( createDashboardReportElement( props ) );
 }
 
 /**
@@ -75,9 +81,7 @@ function renderDashboardReportJSON(
 	props: Partial< DashboardReportProps > = {}
 ) {
 	return JSON.stringify(
-		TestRenderer.create(
-			<DashboardReport { ...defaultReportProps } { ...props } />
-		).toJSON()
+		TestRenderer.create( createDashboardReportElement( props ) ).toJSON()
 	);
 }
 
@@ -102,6 +106,71 @@ describe( 'DashboardReport', () => {
 
 		expect( getByText( 'Traffic' ) ).toBeInTheDocument();
 		expect( getByText( 'widget:visitors' ) ).toBeInTheDocument();
+	} );
+
+	it( 'sets document accessibility metadata', () => {
+		const tree = TestRenderer.create( createDashboardReportElement() ).root;
+		const document = tree.find(
+			( node ) => String( node.type ) === 'pdf-document'
+		);
+
+		expect( document.props ).toMatchObject( {
+			title: 'Example Site – Jan 1, 2021 - Jan 28, 2021 – Site Kit report',
+			author: 'Example Site',
+			subject: 'Site Kit dashboard report',
+			keywords: 'Site Kit, dashboard, report',
+			language: global.navigator.language,
+			pageMode: 'useOutlines',
+		} );
+	} );
+
+	it( 'sets one bookmark per renderable report area in render order', () => {
+		const areas = [
+			{
+				areaSlug: 'mainDashboardTrafficPrimary',
+				areaTitle: 'Traffic',
+				widgets: [
+					{
+						slug: 'analyticsAllTrafficGA4',
+						Component: FakeWidget,
+						data: 'visitors',
+					},
+				],
+			},
+			{
+				areaSlug: 'mainDashboardContentPrimary',
+				areaTitle: 'Content',
+				widgets: [
+					{
+						slug: 'analyticsTopPages',
+						Component: FakeWidget,
+						data: 'pages',
+					},
+				],
+			},
+			{
+				areaSlug: 'mainDashboardEmptyPrimary',
+				areaTitle: 'Empty',
+				widgets: [
+					{
+						slug: 'emptyWidget',
+						Component: null,
+						data: null,
+					},
+				],
+			},
+		];
+		const tree = TestRenderer.create(
+			createDashboardReportElement( { areas } )
+		).root;
+		const bookmarkedViews = tree.findAll(
+			( node ) =>
+				String( node.type ) === 'pdf-view' && !! node.props.bookmark
+		);
+
+		expect(
+			bookmarkedViews.map( ( view ) => view.props.bookmark )
+		).toEqual( [ 'Traffic', 'Content' ] );
 	} );
 
 	it( 'skips a widget without a component and keeps the rest of its area', () => {

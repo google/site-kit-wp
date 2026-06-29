@@ -69,6 +69,32 @@ describe( 'PDFWidgetSection', () => {
 		).not.toBeInTheDocument();
 	} );
 
+	it( 'passes the bookmark to the outer section wrapper when provided', () => {
+		const tree = TestRenderer.create(
+			<PDFWidgetSection bookmark="Traffic">
+				<Text>child</Text>
+			</PDFWidgetSection>
+		).root;
+		const views = tree.findAll(
+			( node ) => String( node.type ) === 'pdf-view'
+		);
+
+		expect( views[ 0 ].props.bookmark ).toBe( 'Traffic' );
+	} );
+
+	it( 'omits the bookmark from the outer section wrapper by default', () => {
+		const tree = TestRenderer.create(
+			<PDFWidgetSection>
+				<Text>child</Text>
+			</PDFWidgetSection>
+		).root;
+		const views = tree.findAll(
+			( node ) => String( node.type ) === 'pdf-view'
+		);
+
+		expect( views[ 0 ].props.bookmark ).toBeUndefined();
+	} );
+
 	it( 'uses the scaled shared card padding and radius by default', () => {
 		const widgetSectionJSON = renderJSON(
 			<PDFWidgetSection>
