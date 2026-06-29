@@ -48,14 +48,15 @@ describe( 'Analytics 4 widget registrations', () => {
 	} );
 
 	describe( 'Audience segmentation back notice widget', () => {
-		it( 'should not register back notice widget when setupFlowRefresh is disabled', () => {
+		it( 'should be registered but inactive when setupFlowRefresh is disabled', () => {
 			registerWidgets( widgets );
 
-			expect(
-				registry
-					.select( CORE_WIDGETS )
-					.getWidget( 'analyticsAudienceSegmentationBackNotice' )
-			).toBeNull();
+			const widget = registry
+				.select( CORE_WIDGETS )
+				.getWidget( 'analyticsAudienceSegmentationBackNotice' );
+
+			expect( widget ).toBeDefined();
+			expect( widget.isActive( registry.select ) ).toBe( false );
 		} );
 
 		it( 'should register back notice widget when setupFlowRefresh is enabled', () => {
