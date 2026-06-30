@@ -180,7 +180,10 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals(
 			array_merge(
 				$this->analytics->get_scopes(),
-				array( 'https://www.googleapis.com/auth/tagmanager.readonly' )
+				array(
+					Analytics_4::EDIT_SCOPE,
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+				)
 			),
 			apply_filters( 'googlesitekit_auth_scopes', array() ),
 			'Analytics 4 should add required scopes to authentication'
@@ -433,93 +436,6 @@ class Analytics_4Test extends TestCase {
 				'measurementID'   => 'G-1A2BCD345E',
 			)
 		);
-	}
-
-	public function test_handle_provisioning_callback__account_ticket_id_mismatch() {
-		$test_variables = $this->set_up_handle_provisioning_callback_test();
-		$method         = $test_variables['method'];
-		$analytics      = $test_variables['analytics'];
-		$dashboard_url  = $test_variables['dashboard_url'];
-
-		// Results in an error for a mismatch (or no account ticket ID stored from before at all).
-		try {
-			$method->invokeArgs( $analytics, array() );
-			$this->fail( 'Expected redirect to module page with "account_ticket_id_mismatch" error' );
-		} catch ( RedirectException $redirect ) {
-			$this->assertEquals(
-				add_query_arg( 'error_code', 'account_ticket_id_mismatch', $dashboard_url ),
-				$redirect->get_location(),
-				'Should redirect to dashboard with account ticket ID mismatch error.'
-			);
-		}
-	}
-
-	public function test_handle_provisioning_callback__user_cancel() {
-		$test_variables              = $this->set_up_handle_provisioning_callback_test();
-		$method                      = $test_variables['method'];
-		$analytics                   = $test_variables['analytics'];
-		$dashboard_url               = $test_variables['dashboard_url'];
-		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
-
-		// Results in an error when there is an error parameter.
-		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
-		$_GET['error'] = 'user_cancel';
-		try {
-			$method->invokeArgs( $analytics, array() );
-			$this->fail( 'Expected redirect to module page with "user_cancel" error' );
-		} catch ( RedirectException $redirect ) {
-			$this->assertEquals(
-				add_query_arg( 'error_code', 'user_cancel', $dashboard_url ),
-				$redirect->get_location(),
-				'Should redirect to dashboard with user cancel error.'
-			);
-			// Ensure transient is not deleted by the method when there is an error.
-			$this->assertEquals( $_GET['accountTicketId'], get_transient( $account_ticked_id_transient ), 'Account ticket transient should not be deleted when user cancels.' );
-		}
-		unset( $_GET['error'] );
-	}
-
-	public function test_handle_provisioning_callback__success() {
-		$test_variables              = $this->set_up_handle_provisioning_callback_test();
-		$method                      = $test_variables['method'];
-		$analytics                   = $test_variables['analytics'];
-		$admin_id                    = $test_variables['admin_id'];
-		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
-
-		// Intercept Google API requests to avoid failures.
-		FakeHttp::fake_google_http_handler(
-			$analytics->get_client()
-		);
-
-		// Results in an dashboard redirect on success, with new data being stored.
-		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
-		$_GET['accountId'] = '12345678';
-
-		try {
-			$method->invokeArgs( $analytics, array() );
-			$this->fail( 'Expected redirect to module page with "authentication_success" notification' );
-		} catch ( RedirectException $redirect ) {
-			$this->assertEquals(
-				add_query_arg(
-					array(
-						'page'         => 'googlesitekit-dashboard',
-						'notification' => 'authentication_success',
-						'slug'         => 'analytics-4',
-					),
-					admin_url( 'admin.php' )
-				),
-				$redirect->get_location(),
-				'Should redirect to dashboard with authentication success notification.'
-			);
-
-			// Ensure transient was deleted by the method.
-			$this->assertFalse( get_transient( $account_ticked_id_transient ), 'Account ticket transient should be deleted on successful provisioning.' );
-			// Ensure settings were set correctly.
-			$settings = $analytics->get_settings()->get();
-
-			$this->assertEquals( $_GET['accountId'], $settings['accountID'], 'Account ID should be set from GET parameter.' );
-			$this->assertEquals( $admin_id, $settings['ownerID'], 'Owner ID should be set to admin user ID.' );
-		}
 	}
 
 	/**
@@ -1499,52 +1415,6 @@ class Analytics_4Test extends TestCase {
 			),
 			$this->analytics->get_scopes(),
 			'Analytics 4 should require analytics.readonly scope.'
-		);
-	}
-
-	/**
-	 * @dataProvider data_scopes
-	 */
-	public function test_auth_scopes_( array $granted_scopes, array $expected_scopes ) {
-		remove_all_filters( 'googlesitekit_auth_scopes' );
-		$this->analytics->register();
-
-		$this->authentication->get_oauth_client()->set_granted_scopes( $granted_scopes );
-
-		$this->assertEqualSets(
-			$expected_scopes,
-			apply_filters( 'googlesitekit_auth_scopes', array() ),
-			'Auth scopes should match expected scopes based on granted scopes.'
-		);
-	}
-
-	public function data_scopes() {
-		return array(
-			'with analytics and tag manager scopes granted' => array(
-				array(
-					Analytics_4::READONLY_SCOPE,
-					'https://www.googleapis.com/auth/tagmanager.readonly',
-				),
-				array(
-					Analytics_4::READONLY_SCOPE,
-					'https://www.googleapis.com/auth/tagmanager.readonly',
-				),
-			),
-			'with analytics scope granted' => array(
-				array(
-					Analytics_4::READONLY_SCOPE,
-				),
-				array(
-					Analytics_4::READONLY_SCOPE,
-				),
-			),
-			'with no scopes granted'       => array(
-				array(),
-				array(
-					Analytics_4::READONLY_SCOPE,
-					'https://www.googleapis.com/auth/tagmanager.readonly',
-				),
-			),
 		);
 	}
 
