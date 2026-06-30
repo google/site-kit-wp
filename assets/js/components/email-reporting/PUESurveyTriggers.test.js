@@ -100,7 +100,6 @@ describe( 'PUESurveyTriggers', () => {
 		return render( <PUESurveyTriggers />, {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			features: [ 'proactiveUserEngagement' ],
 		} );
 	}
 

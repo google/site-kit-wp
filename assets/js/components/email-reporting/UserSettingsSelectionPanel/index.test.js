@@ -51,7 +51,6 @@ jest.mock(
 );
 
 describe( 'UserSettingsSelectionPanel', () => {
-	const features = [ 'proactiveUserEngagement' ];
 	const emailReportingSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/email-reporting-settings'
 	);
@@ -92,7 +91,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 	it( 'renders header subheading in admin view', () => {
 		const { getByText } = render( <UserSettingsSelectionPanel />, {
 			registry,
-			features,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -116,7 +114,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 			<UserSettingsSelectionPanel />,
 			{
 				registry,
-				features,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			}
 		);
@@ -131,7 +128,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 	it( 'displays the user email in the explanatory copy when available', () => {
 		const { getByText } = render( <UserSettingsSelectionPanel />, {
 			registry,
-			features,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -149,7 +145,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		const { getByRole } = render( <UserSettingsSelectionPanel />, {
 			registry,
-			features,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -167,7 +162,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		render( <UserSettingsSelectionPanel />, {
 			registry,
-			features,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -192,7 +186,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		const { getByRole } = render( <UserSettingsSelectionPanel />, {
 			registry,
-			features,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -216,7 +209,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 			<UserSettingsSelectionPanel />,
 			{
 				registry,
-				features,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -257,7 +249,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		const { getByRole } = render( <UserSettingsSelectionPanel />, {
 			registry,
-			features,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -278,7 +269,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		const { getByRole } = render( <UserSettingsSelectionPanel />, {
 			registry,
-			features,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -307,7 +297,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		const { getByRole } = render( <UserSettingsSelectionPanel />, {
 			registry,
-			features,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -358,7 +347,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		render( <UserSettingsSelectionPanel />, {
 			registry,
-			features,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
