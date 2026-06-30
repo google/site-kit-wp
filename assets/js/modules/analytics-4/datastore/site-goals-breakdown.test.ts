@@ -42,8 +42,8 @@ describe( 'modules/analytics-4 site goals breakdown', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/form-metadata'
 	);
 
-	function metadata( title: string | null, plugin: string | null = null ) {
-		return { title, plugin };
+	function metadata( title: string | null ) {
+		return { title };
 	}
 
 	// `untilResolved` types its proxy selectors as zero-argument, but the runtime
@@ -216,8 +216,8 @@ describe( 'modules/analytics-4 site goals breakdown', () => {
 		it( 'returns resolved metadata mapped by form ID', async () => {
 			fetchMock.getOnce( formMetadataEndpoint, {
 				body: {
-					5: metadata( 'Contact', 'WPForms' ),
-					12: metadata( 'Newsletter signup', 'Ninja Forms' ),
+					5: metadata( 'Contact' ),
+					12: metadata( 'Newsletter signup' ),
 				},
 				status: 200,
 			} );
@@ -232,15 +232,15 @@ describe( 'modules/analytics-4 site goals breakdown', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getFormMetadata( [ '5', '12' ] )
 			).toEqual( {
-				5: metadata( 'Contact', 'WPForms' ),
-				12: metadata( 'Newsletter signup', 'Ninja Forms' ),
+				5: metadata( 'Contact' ),
+				12: metadata( 'Newsletter signup' ),
 			} );
 		} );
 
 		it( 'resolves IDs the server omits to a null-metadata entry instead of hanging', async () => {
 			// '0' is dropped server-side by absint, so it's absent from the body.
 			fetchMock.getOnce( formMetadataEndpoint, {
-				body: { 5: metadata( 'Contact', 'WPForms' ) },
+				body: { 5: metadata( 'Contact' ) },
 				status: 200,
 			} );
 
@@ -254,14 +254,14 @@ describe( 'modules/analytics-4 site goals breakdown', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getFormMetadata( [ '5', '0' ] )
 			).toEqual( {
-				5: metadata( 'Contact', 'WPForms' ),
+				5: metadata( 'Contact' ),
 				0: metadata( null ),
 			} );
 		} );
 
 		it( 'caches results and does not re-fetch for the same IDs', async () => {
 			fetchMock.getOnce( formMetadataEndpoint, {
-				body: { 5: metadata( 'Contact', 'WPForms' ) },
+				body: { 5: metadata( 'Contact' ) },
 				status: 200,
 			} );
 
@@ -280,7 +280,7 @@ describe( 'modules/analytics-4 site goals breakdown', () => {
 		it( 'computes quoted title labels from the resolved metadata', async () => {
 			fetchMock.getOnce( formMetadataEndpoint, {
 				body: {
-					5: metadata( 'Contact', 'WPForms' ),
+					5: metadata( 'Contact' ),
 					12: metadata( 'Newsletter signup' ),
 				},
 				status: 200,
@@ -414,6 +414,113 @@ describe( 'modules/analytics-4 site goals breakdown', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getFormPagePaths( FORM_SLUG, [ '5', '12' ] )
 			).toEqual( { 5: [ '/contact' ] } );
+		} );
+	} );
+
+	describe( 'getFormProviders', () => {
+		const FORM_SLUG = 'googlesitekit_form_id';
+
+		function seedFormProvidersReport(
+			rows: Array< [ formID: string, provider: string, count: number ] >
+		) {
+			const dates = getDiscoveryDates();
+			const dimension = `customEvent:${ FORM_SLUG }`;
+			const options = {
+				...dates,
+				dimensions: [
+					dimension,
+					'customEvent:googlesitekit_event_provider',
+				],
+				dimensionFilters: {
+					[ dimension ]: {
+						filterType: 'inListFilter',
+						value: [ '5', '12' ],
+					},
+				},
+				metrics: [ { name: 'eventCount' } ],
+				orderby: [
+					{ metric: { metricName: 'eventCount' }, desc: true },
+				],
+				reportID: `analytics-4_site-goals-breakdown_form-providers_${ FORM_SLUG }`,
+			} as ReportOptions;
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+				{
+					rows: rows.map( ( [ formID, provider, count ] ) => ( {
+						dimensionValues: [
+							{ value: formID },
+							{ value: provider },
+						],
+						metricValues: [ { value: String( count ) } ],
+					} ) ),
+				},
+				{ options }
+			);
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getReport', [ options ] );
+		}
+
+		it( 'maps each form to its provider', async () => {
+			seedFormProvidersReport( [
+				[ '5', 'wpforms', 80 ],
+				[ '12', 'optin-monster', 5 ],
+			] );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getFormProviders( FORM_SLUG, [ '5', '12' ] );
+			await resolved().getFormProviders( FORM_SLUG, [ '5', '12' ] );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getFormProviders( FORM_SLUG, [ '5', '12' ] )
+			).toEqual( { 5: 'wpforms', 12: 'optin-monster' } );
+		} );
+
+		it( 'returns an empty object without querying when no form IDs are given', () => {
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getFormProviders( FORM_SLUG, [] )
+			).toEqual( {} );
+		} );
+
+		it( 'omits forms with no provider rows', async () => {
+			seedFormProvidersReport( [ [ '5', 'wpforms', 80 ] ] );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getFormProviders( FORM_SLUG, [ '5', '12' ] );
+			await resolved().getFormProviders( FORM_SLUG, [ '5', '12' ] );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getFormProviders( FORM_SLUG, [ '5', '12' ] )
+			).toEqual( { 5: 'wpforms' } );
+		} );
+
+		it( 'drops a form ID reported by more than one provider, since its creator is ambiguous', async () => {
+			// Form IDs aren't unique across plugins, so the same ID can carry two
+			// providers; the creator can't be asserted, so the form is omitted.
+			seedFormProvidersReport( [
+				[ '5', 'wpforms', 80 ],
+				[ '5', 'ninja-forms', 1 ],
+				[ '12', 'optin-monster', 5 ],
+			] );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getFormProviders( FORM_SLUG, [ '5', '12' ] );
+			await resolved().getFormProviders( FORM_SLUG, [ '5', '12' ] );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getFormProviders( FORM_SLUG, [ '5', '12' ] )
+			).toEqual( { 12: 'optin-monster' } );
 		} );
 	} );
 
