@@ -144,7 +144,7 @@ export function getChartOptions(
 	options,
 	{ gatheringData, chartType, startDate, endDate, breakpoint }
 ) {
-	const chartOptions = structuredClone( options );
+	const chartOptions = cloneDeep( options );
 	if ( gatheringData && chartType === 'LineChart' ) {
 		if ( ! options?.vAxis?.viewWindow?.min ) {
 			set( chartOptions, 'vAxis.viewWindow.min', 0 );
