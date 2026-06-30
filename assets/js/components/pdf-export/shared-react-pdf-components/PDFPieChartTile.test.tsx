@@ -137,9 +137,9 @@ describe( 'PDFPieChartTile', () => {
 			).toJSON()
 		);
 
-		// The tile title font size scales.
+		// The title font size scales with the page.
 		expect( json ).toContain( `"fontSize":${ 14 * PDF_SCALE }` );
-		// The donut image scales.
+		// The donut image width scales with the page.
 		expect( json ).toContain( `"width":${ 145.7 * PDF_SCALE }` );
 	} );
 } );

@@ -37,7 +37,6 @@ const styles = createPDFStyles( {
 	heading: {
 		fontSize: 16,
 		color: '#161b18',
-		// Add space above the heading, so this widget sits apart from the one above it.
 		marginTop: 24,
 		marginBottom: 16,
 	},

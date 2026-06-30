@@ -46,7 +46,7 @@ const styles = createPDFStyles( {
 		fontFamily: PDF_FONT_FAMILY_TEXT,
 		fontSize: 12,
 		fontWeight: 500,
-		lineHeight: 16 / 12,
+		lineHeight: 1.333,
 		letterSpacing: 0.5,
 		color: PDF_HEADER_COLORS.chipText,
 	},

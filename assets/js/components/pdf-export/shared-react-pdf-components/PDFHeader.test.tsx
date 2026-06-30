@@ -166,7 +166,7 @@ describe( 'PDFHeader', () => {
 		expect( getByText( 'not a url' ) ).toBeInTheDocument();
 	} );
 
-	it( 'extends the strip to the page edges and scales its other lengths', () => {
+	it( 'keeps the full-width offsets fixed and scales everything else', () => {
 		const json = JSON.stringify(
 			TestRenderer.create(
 				<PDFHeader
@@ -181,15 +181,15 @@ describe( 'PDFHeader', () => {
 			).toJSON()
 		);
 
-		// These offsets stay unscaled, so the strip spans the full page width.
+		// These offsets stay fixed, so the header background still reaches the page edges.
 		expect( json ).toContain( '"marginTop":-24' );
 		expect( json ).toContain( '"marginHorizontal":-24' );
 		expect( json ).toContain( '"paddingHorizontal":24' );
-		// The header's own spacing scales.
+		// The header's own padding and margin scale with the page.
 		expect( json ).toContain( `"marginBottom":${ 24 * PDF_SCALE }` );
 		expect( json ).toContain( `"paddingTop":${ 16 * PDF_SCALE }` );
 		expect( json ).toContain( `"paddingBottom":${ 6 * PDF_SCALE }` );
-		// The chevron icon scales.
+		// The chevron icon width scales with the page.
 		expect( json ).toContain( `"width":${ scalePDFValue( 10 ) }` );
 	} );
 } );

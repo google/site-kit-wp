@@ -88,9 +88,10 @@ function formatHeaderDate( dateString: string ): string {
 	} ).format( stringToDate( dateString ) );
 }
 
-// Extend the white strip to the page edges and pad its content back, so the
-// strip spans the full page width.
-const headerPageBleed = {
+// The page adds padding around its content. The header uses negative margins
+// to pull its white background to the page edges. It then uses matching
+// padding to keep its text at the page margin.
+const headerFullWidthOffsets = {
 	marginTop: -PDF_PAGE_PADDING,
 	marginHorizontal: -PDF_PAGE_PADDING,
 	paddingHorizontal: PDF_PAGE_PADDING,
@@ -207,7 +208,7 @@ const PDFHeader: FC< PDFHeaderProps > = ( {
 			: startDate || endDate;
 
 	return (
-		<View style={ [ styles.header, headerPageBleed ] }>
+		<View style={ [ styles.header, headerFullWidthOffsets ] }>
 			<View style={ styles.topRow }>
 				<PDFSiteKitLogo />
 				<View style={ styles.divider } />

@@ -137,7 +137,7 @@ describe( 'PDFMetricTile', () => {
 		expect( json ).not.toContain( '#ffded3' );
 	} );
 
-	it( 'scales the tile font sizes and the change chip padding', () => {
+	it( 'scales the tile font sizes, and chip padding', () => {
 		const json = JSON.stringify(
 			renderTile( {
 				title: 'All visitors',
@@ -146,10 +146,10 @@ describe( 'PDFMetricTile', () => {
 			} )
 		);
 
-		// The tile title and value font sizes scale.
+		// The font sizes of the title and value scale with the page.
 		expect( json ).toContain( `"fontSize":${ 14 * PDF_SCALE }` );
 		expect( json ).toContain( `"fontSize":${ 28 * PDF_SCALE }` );
-		// The change badge padding scales.
+		// The change chip padding scales with the page.
 		expect( json ).toContain( `"paddingHorizontal":${ 8 * PDF_SCALE }` );
 	} );
 } );

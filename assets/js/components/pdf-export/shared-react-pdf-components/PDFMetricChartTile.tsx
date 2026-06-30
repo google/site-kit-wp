@@ -122,7 +122,7 @@ const styles = createPDFStyles( {
 		marginTop: 8,
 	},
 	placeholder: {
-		minHeight: 300,
+		minHeight: 337,
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: COLORS.placeholderBg,

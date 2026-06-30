@@ -25,16 +25,16 @@ import type { Style } from '@react-pdf/stylesheet';
 /** Width of the PDF page, in points. */
 export const PDF_PAGE_WIDTH = 612;
 
-/** Width of the board the report content is laid out on, in pixels. */
-export const PDF_FIGMA_BOARD_WIDTH = 1180;
+/** Width of the Figma frame the report is designed in, in pixels. */
+export const PDF_FIGMA_FRAME_WIDTH = 1180;
 
 /**
- * Scale from a board pixel to a page point.
+ * Scale from a Figma frame pixel to a page point.
  *
- * The board is wider than the page, so every board size is multiplied by this
+ * The frame is wider than the page, so every frame size is multiplied by this
  * scale to fit the page.
  */
-export const PDF_SCALE = PDF_PAGE_WIDTH / PDF_FIGMA_BOARD_WIDTH;
+export const PDF_SCALE = PDF_PAGE_WIDTH / PDF_FIGMA_FRAME_WIDTH;
 
 /** Padding from the page edge to the report content, in points. */
 export const PDF_PAGE_PADDING = 24;
@@ -98,14 +98,14 @@ export const PDF_SCALED_PROPERTIES = new Set< string >( [
 ] );
 
 /**
- * Scales one board length to a page point value.
+ * Scales one Figma frame length to a page point value.
  *
  * Used for a length that a widget sets outside a style object, such as an `Svg`
  * width or height.
  *
  * @since n.e.x.t
  *
- * @param {number} value The length, in board pixels.
+ * @param {number} value The length, in Figma frame pixels.
  * @return {number} The length, in page points.
  */
 export function scalePDFValue( value: number ): number {
@@ -113,17 +113,16 @@ export function scalePDFValue( value: number ): number {
 }
 
 /**
- * Builds scaled @react-pdf styles from raw board sizes.
+ * Builds scaled @react-pdf styles from raw Figma frame sizes.
  *
- * A widget writes its styles with the board sizes and passes them here. Each
- * length property in `PDF_SCALED_PROPERTIES` with a numeric value is multiplied
- * by `PDF_SCALE`. A non-numeric value (such as `'100%'`) and every other
- * property keep their value. The result is passed to `StyleSheet.create`, so it
- * is a drop-in replacement for it.
+ * A widget writes its styles with the Figma frame sizes and passes them here.
+ * Each length property in `PDF_SCALED_PROPERTIES` with a numeric value is
+ * multiplied by `PDF_SCALE`. A non-numeric value (such as `'100%'`) and every
+ * other property keep their value. The result is passed to `StyleSheet.create`.
  *
  * @since n.e.x.t
  *
- * @param {Object} styles Named styles with raw board sizes.
+ * @param {Object} styles Named styles with raw Figma frame sizes.
  * @return {Object} The named styles with each length scaled to points.
  */
 export function createPDFStyles< T extends Record< string, Style > >(

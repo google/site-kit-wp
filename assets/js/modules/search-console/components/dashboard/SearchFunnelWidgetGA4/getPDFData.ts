@@ -62,10 +62,12 @@ const KEY_EVENTS_COLOR = '#8e68cb';
 
 const LINE_CHART_WIDTH = 240;
 const LINE_CHART_HEIGHT = 120;
-// The chart renders to an image. A higher render scale keeps the line sharp at
-// the display size. The option sizes below (line width, fonts, margins) are in
-// render pixels, so scale them by the same factor to keep the proportions.
+// The chart becomes an image in the PDF. To keep the lines crisp, we draw the
+// chart several times larger than it needs to be, then shrink it to fit.
 const LINE_CHART_SCALE_FACTOR = 4;
+// The chart draws at a larger size to stay crisp. So the option sizes below
+// (line width, fonts, and margins) use `LINE_CHART_OPTION_SCALE` to grow at
+// the same rate.
 const LINE_CHART_OPTION_SCALE = LINE_CHART_SCALE_FACTOR / 2;
 
 type Registry = WPDataRegistry & {

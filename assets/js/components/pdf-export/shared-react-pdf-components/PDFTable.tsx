@@ -111,7 +111,7 @@ export interface PDFTableProps< Row > {
 	columns: Array< PDFTableColumn< Row > >;
 	/** The rows of data. Each row renders one cell per column, from the column's `cell` or `format`. */
 	rows: Row[];
-	/** Horizontal gap between the cells of a row, in board pixels that `scalePDFValue` scales. Defaults to 40. */
+	/** Horizontal gap between the cells of a row, before `scalePDFValue` scales it. Defaults to 40. */
 	columnGap?: number;
 }
 

@@ -47,9 +47,7 @@ const styles = createPDFStyles( {
 	},
 	link: {
 		fontSize: fontSizes.small,
-		// react-pdf reads lineHeight as a multiple of the font size, so the ratio
-		// 16 / 12 keeps the same line height after the font size scales.
-		lineHeight: 16 / 12,
+		lineHeight: 1.333,
 		letterSpacing: 0.2,
 		color: colors.onSurfaceVariant,
 		textDecoration: 'none',

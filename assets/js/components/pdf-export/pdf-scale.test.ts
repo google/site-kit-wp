@@ -22,7 +22,7 @@
 import { PDF_SCALE, createPDFStyles, scalePDFValue } from './pdf-scale';
 
 describe( 'createPDFStyles', () => {
-	it( 'scales one length from each scaled property group by PDF_SCALE', () => {
+	it( 'scales a value from every length group', () => {
 		const styles = createPDFStyles( {
 			example: {
 				fontSize: 14,
@@ -54,7 +54,7 @@ describe( 'createPDFStyles', () => {
 		} );
 	} );
 
-	it( 'leaves every never-scaled property unchanged', () => {
+	it( 'leaves properties that are not lengths unchanged', () => {
 		const input = {
 			example: {
 				lineHeight: 1.5,
@@ -76,7 +76,7 @@ describe( 'createPDFStyles', () => {
 		expect( styles.example ).toEqual( input.example );
 	} );
 
-	it( 'leaves a percentage length unchanged', () => {
+	it( 'leaves a percentage value unchanged', () => {
 		const styles = createPDFStyles( {
 			example: {
 				width: '100%',
@@ -86,7 +86,7 @@ describe( 'createPDFStyles', () => {
 		expect( styles.example.width ).toBe( '100%' );
 	} );
 
-	it( 'keeps the minus sign on a negative length', () => {
+	it( 'scales a negative length and keeps it negative', () => {
 		const styles = createPDFStyles( {
 			example: {
 				marginTop: -24,
@@ -99,7 +99,7 @@ describe( 'createPDFStyles', () => {
 } );
 
 describe( 'scalePDFValue', () => {
-	it( 'multiplies a number by PDF_SCALE', () => {
+	it( 'multiplies a value by the scale', () => {
 		expect( scalePDFValue( 10 ) ).toBe( 10 * PDF_SCALE );
 	} );
 } );

@@ -133,7 +133,7 @@ describe( 'PDFMetricChartTile', () => {
 		expect( json ).not.toContain( 'data:image' );
 	} );
 
-	it( 'scales the tile font sizes and the change arrow', () => {
+	it( 'scales the tile font sizes, and arrow width', () => {
 		const json = renderTile( {
 			title: 'Total Clicks',
 			value: '3.6K',
@@ -144,10 +144,10 @@ describe( 'PDFMetricChartTile', () => {
 			chartImage: CHART_DATA_URI,
 		} );
 
-		// The tile title and value font sizes scale.
+		// The font sizes of the title and value scale with the page.
 		expect( json ).toContain( `"fontSize":${ 14 * PDF_SCALE }` );
 		expect( json ).toContain( `"fontSize":${ 28 * PDF_SCALE }` );
-		// The change arrow scales.
+		// The change arrow width scales with the page.
 		expect( json ).toContain( `"width":${ scalePDFValue( 16 ) }` );
 	} );
 } );
