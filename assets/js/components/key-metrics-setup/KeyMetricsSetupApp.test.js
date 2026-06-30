@@ -37,6 +37,7 @@ import {
 	fireEvent,
 	freezeFetch,
 	muteFetch,
+	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 	render,
@@ -344,6 +345,34 @@ describe( 'KeyMetricsSetupApp', () => {
 		await waitForRegistry();
 
 		expect( fetchMock ).toHaveFetched( analytics4SettingsEndpoint );
+		expect( fetchMock ).not.toHaveFetched( syncAudiencesEndpoint );
+		expect( fetchMock ).not.toHaveFetched( syncCustomDimensionsEndpoint );
+	} );
+
+	it( 'should not sync audiences and custom dimensions on render when the Analytics module is not active', async () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+
+		fetchMock.getOnce( analytics4SettingsEndpoint, {
+			body: analyticsFixtures.defaultSettings,
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences: null,
+		} );
+
+		const { waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
+		await waitForRegistry();
+
 		expect( fetchMock ).not.toHaveFetched( syncAudiencesEndpoint );
 		expect( fetchMock ).not.toHaveFetched( syncCustomDimensionsEndpoint );
 	} );
