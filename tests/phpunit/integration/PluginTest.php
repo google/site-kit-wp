@@ -36,6 +36,7 @@ class PluginTest extends TestCase {
 
 	public function tear_down() {
 		parent::tear_down();
+		remove_all_filters( 'googlesitekit_is_feature_enabled' );
 		// Restore the main instance after each test.
 		$this->force_set_property( 'Google\Site_Kit\Plugin', 'instance', self::$backup_instance );
 		// This ensures the REST server is initialized fresh for each test using it.
@@ -104,6 +105,26 @@ class PluginTest extends TestCase {
 
 		$routes = rest_get_server()->get_routes();
 		$this->assertArrayHasKey( '/' . REST_Routes::REST_ROOT . '/core/user/data/user-input-settings', $routes, 'REST API should register the user-input-settings endpoint' );
+	}
+
+	public function test_register__forces_setup_flow_refresh_feature_enabled() {
+		$plugin = new Plugin( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$plugin->register();
+
+		$this->assertTrue(
+			apply_filters( 'googlesitekit_is_feature_enabled', false, 'setupFlowRefresh' ),
+			'setupFlowRefresh should be force-enabled after plugin registration'
+		);
+	}
+
+	public function test_register__setup_flow_refresh_override_does_not_affect_other_flags() {
+		$plugin = new Plugin( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$plugin->register();
+
+		$this->assertFalse(
+			apply_filters( 'googlesitekit_is_feature_enabled', false, 'someOtherFeature' ),
+			'Non-target feature flags should retain their original value'
+		);
 	}
 
 	protected function assertActionRendersGeneratorTag( $action ) {
