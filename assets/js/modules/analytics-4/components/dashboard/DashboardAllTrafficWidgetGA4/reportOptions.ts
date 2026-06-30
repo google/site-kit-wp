@@ -25,6 +25,12 @@ export const TOTALS_REPORT_ID =
 	'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs';
 export const GRAPH_REPORT_ID =
 	'analytics-4_dashboard-all-traffic-widget-ga4_widget_graphArgs';
+export const CHANNELS_BREAKDOWN_REPORT_ID =
+	'analytics-4_dashboard-all-traffic-widget-ga4_widget_channelsBreakdownArgs';
+export const LOCATIONS_BREAKDOWN_REPORT_ID =
+	'analytics-4_dashboard-all-traffic-widget-ga4_widget_locationsBreakdownArgs';
+export const DEVICES_BREAKDOWN_REPORT_ID =
+	'analytics-4_dashboard-all-traffic-widget-ga4_widget_devicesBreakdownArgs';
 
 const TOTAL_USERS_METRIC: ReportOptions[ 'metrics' ] = [
 	{ name: 'totalUsers' },
@@ -174,6 +180,71 @@ export function getGraphReportArgs( {
 		metrics: TOTAL_USERS_METRIC,
 		...getGraphReportOptions( { dimensionFilters } ),
 	};
+	if ( url ) {
+		args.url = url;
+	}
+	return args;
+}
+
+/**
+ * Builds the complete GA4 `getReport` args for one All Visitors breakdown pie.
+ *
+ * Uses the same query as the dashboard's pie chart in `index.js`: one breakdown
+ * dimension, sorted by total users from high to low, over the same date range
+ * and comparison range as the metric tile and line chart. The comparison range
+ * stays in the args, so the rows come back split by date range. The dashboard's
+ * `extractAnalyticsDataForPieChart` helper reads that split when it builds the
+ * slices. The PDF loader calls this once for each dimension (channels,
+ * locations, devices).
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} options                    Options.
+ * @param {string} options.dimensionName      GA4 dimension to break down by.
+ * @param {string} options.reportID           Report ID for this breakdown.
+ * @param {string} options.startDate          Report start date.
+ * @param {string} options.endDate            Report end date.
+ * @param {string} [options.compareStartDate] Comparison start date.
+ * @param {string} [options.compareEndDate]   Comparison end date.
+ * @param {string} [options.url]              Entity URL filter, if any.
+ * @return {Object} GA4 getReport args.
+ */
+export function getBreakdownReportArgs( {
+	dimensionName,
+	reportID,
+	startDate,
+	endDate,
+	compareStartDate,
+	compareEndDate,
+	url,
+}: {
+	dimensionName: string;
+	reportID: string;
+} & Pick<
+	ReportOptions,
+	'startDate' | 'endDate' | 'compareStartDate' | 'compareEndDate' | 'url'
+> ): ReportOptions {
+	const args: ReportOptions = {
+		startDate,
+		endDate,
+		metrics: TOTAL_USERS_METRIC,
+		dimensions: [ dimensionName ],
+		orderby: [
+			{
+				metric: {
+					metricName: 'totalUsers',
+				},
+				desc: true,
+			},
+		],
+		reportID,
+	};
+	if ( compareStartDate ) {
+		args.compareStartDate = compareStartDate;
+	}
+	if ( compareEndDate ) {
+		args.compareEndDate = compareEndDate;
+	}
 	if ( url ) {
 		args.url = url;
 	}
