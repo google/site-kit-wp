@@ -100,6 +100,7 @@
 		"@testing-library/react": "^10.4.9",
 		"@testing-library/react-hooks": "^4.0.0",
 		"@types/faker": "^5.0.0",
+		"@types/google.accounts": "^0.0.18",
 		"@types/node": "^24.12.4",
 		"@typescript-eslint/eslint-plugin": "^6.21.0",
 		"@typescript-eslint/parser": "^6.21.0",
