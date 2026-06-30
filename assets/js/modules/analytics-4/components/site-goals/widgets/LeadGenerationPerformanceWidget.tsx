@@ -63,7 +63,6 @@ import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { FormMetadata } from '@/js/modules/analytics-4/datastore/site-goals-breakdown';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { untrailingslashit } from '@/js/util';
 import WidgetFeedbackPrompt from './WidgetFeedbackPrompt';
@@ -73,6 +72,20 @@ type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 interface LeadGenerationPerformanceWidgetProps extends WidgetComponentProps {
 	selectedGoalDriverIDs?: GoalDriverID[];
 }
+
+// Maps a lead-form event provider slug (the `googlesitekit_event_provider`
+// dimension value carried on every form conversion event) to its plugin's
+// display name, so the form tooltip can name the source from the report alone.
+// Keep this in sync with the lead-form providers in `assets/js/event-providers/`:
+// a slug missing here silently omits the form tab's source tooltip.
+const LEAD_PROVIDER_LABELS: Record< string, string > = {
+	'contact-form-7': 'Contact Form 7',
+	'ninja-forms': 'Ninja Forms',
+	wpforms: 'WPForms',
+	mailchimp: 'Mailchimp for WordPress',
+	'popup-maker': 'Popup Maker',
+	'optin-monster': 'OptinMonster',
+};
 
 // Builds the info-tooltip for a form tab. Has three variants depending on how
 // many pages the form was seen on, and falls back to the plugin-only variant
@@ -147,7 +160,7 @@ function getFormTabTooltip(
 function getFormBreakdownTabs(
 	breakdownValues: string[] | undefined,
 	formTitles: Record< string, string > | undefined,
-	formMetadata: Record< string, FormMetadata > | undefined,
+	formProviders: Record< string, string > | undefined,
 	formPagePaths: Record< string, string[] > | undefined,
 	referenceSiteURL: string,
 	learnMoreURL: string
@@ -158,16 +171,26 @@ function getFormBreakdownTabs(
 		return undefined;
 	}
 
-	return breakdownValues.map( ( formID ) => ( {
-		id: formID,
-		label: formTitles[ formID ],
-		tooltip: getFormTabTooltip(
-			formMetadata?.[ formID ]?.plugin,
-			formPagePaths?.[ formID ],
-			referenceSiteURL,
-			learnMoreURL
-		),
-	} ) );
+	return breakdownValues.map( ( formID ) => {
+		// The provider slug comes straight off the event's
+		// `googlesitekit_event_provider` dimension; map it to the plugin's
+		// display name for the tooltip.
+		const providerSlug = formProviders?.[ formID ];
+		const plugin = providerSlug
+			? LEAD_PROVIDER_LABELS[ providerSlug ]
+			: undefined;
+
+		return {
+			id: formID,
+			label: formTitles[ formID ],
+			tooltip: getFormTabTooltip(
+				plugin,
+				formPagePaths?.[ formID ],
+				referenceSiteURL,
+				learnMoreURL
+			),
+		};
+	} );
 }
 
 // The single/plural subtitle for the Total form completions tile.
@@ -323,15 +346,17 @@ const LeadGenerationPerformanceWidget: FC<
 				: undefined,
 		[ breakdownValues ]
 	) as Record< string, string > | undefined;
-	const formMetadata = useSelect(
+
+	const formProviders = useInViewSelect(
 		( select: Select ) =>
-			breakdownValues
-				? select( MODULES_ANALYTICS_4 ).getFormMetadata(
+			breakdownValues?.length
+				? select( MODULES_ANALYTICS_4 ).getFormProviders(
+						breakdownDimension,
 						breakdownValues
 				  )
 				: undefined,
-		[ breakdownValues ]
-	) as Record< string, FormMetadata > | undefined;
+		[ breakdownDimension, breakdownValues ]
+	) as Record< string, string > | undefined;
 
 	// Which pages each form appears on, used to pick the tooltip variant.
 	const formPagePaths = useInViewSelect(
@@ -353,7 +378,7 @@ const LeadGenerationPerformanceWidget: FC<
 	const breakdownTabs = getFormBreakdownTabs(
 		breakdownValues,
 		formTitles,
-		formMetadata,
+		formProviders,
 		formPagePaths,
 		referenceSiteURL,
 		keyActionSupportURL
