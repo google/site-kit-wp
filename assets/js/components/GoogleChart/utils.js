@@ -20,7 +20,6 @@
  * External dependencies
  */
 import { cloneDeep, findLast, merge, set } from 'lodash';
-
 /**
  * Internal dependencies
  */
