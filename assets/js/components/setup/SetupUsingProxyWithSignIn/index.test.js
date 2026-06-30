@@ -505,6 +505,51 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			).not.toBeInTheDocument();
 		} );
 
+		it( 'should show the correct title and description for a secondary admin', async () => {
+			provideSiteConnection( registry, {
+				hasConnectedAdmins: true,
+				hasMultipleAdmins: true,
+			} );
+
+			registry.dispatch( CORE_MODULES ).receiveGetModules(
+				coreModulesFixture.map( ( module ) => {
+					if ( MODULE_SLUG_ANALYTICS_4 === module.slug ) {
+						return {
+							...module,
+							active: false,
+						};
+					}
+
+					return module;
+				} )
+			);
+
+			const { getByRole, getByText, queryByText, waitForRegistry } =
+				render( <SetupUsingProxyWithSignIn />, {
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh' ],
+				} );
+
+			await waitForRegistry();
+
+			expect(
+				getByRole( 'heading', { name: "Let's get started!" } )
+			).toBeInTheDocument();
+
+			expect(
+				getByText(
+					/Once you complete the setup, you’ll see stats from all connected Google services\./
+				)
+			).toBeInTheDocument();
+
+			expect(
+				queryByText(
+					/all connected Google services that are shared with you:/
+				)
+			).not.toBeInTheDocument();
+		} );
+
 		it( 'should show the correct title and description for a secondary admin when Analytics is not active with the setupFlowRefreshPhase4 feature flag enabled', async () => {
 			provideSiteConnection( registry, {
 				hasConnectedAdmins: true,
