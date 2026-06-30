@@ -626,11 +626,11 @@ function seedTabbedBreakdown(
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ discoveryOptions ] );
 
-	// Form metadata backing the tab labels and tooltip plugin names.
+	// Form metadata backing the tab labels.
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetFormMetadata(
 		{
-			5: { title: 'Contact', plugin: 'WPForms' },
-			12: { title: 'Newsletter signup', plugin: 'Ninja Forms' },
+			5: { title: 'Contact' },
+			12: { title: 'Newsletter signup' },
 		},
 		{ formIDs }
 	);
@@ -676,6 +676,47 @@ function seedTabbedBreakdown(
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ formPagesOptions ] );
+
+	// The provider each form came from, read from the event's
+	// `googlesitekit_event_provider` dimension; names the source in the tooltip.
+	const formProvidersOptions = {
+		...discoveryDates,
+		dimensions: [
+			FORM_DIMENSION,
+			'customEvent:googlesitekit_event_provider',
+		],
+		dimensionFilters: {
+			[ FORM_DIMENSION ]: {
+				filterType: 'inListFilter',
+				value: formIDs,
+			},
+		},
+		metrics: [ { name: 'eventCount' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		reportID:
+			'analytics-4_site-goals-breakdown_form-providers_googlesitekit_form_id',
+	};
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: [
+				{
+					dimensionValues: [ { value: '5' }, { value: 'wpforms' } ],
+					metricValues: [ { value: '100' } ],
+				},
+				{
+					dimensionValues: [
+						{ value: '12' },
+						{ value: 'ninja-forms' },
+					],
+					metricValues: [ { value: '40' } ],
+				},
+			],
+		},
+		{ options: formProvidersOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ formProvidersOptions ] );
 
 	// The breakdown custom dimensions exist and are done gathering, so neither
 	// the "enable breakdown" notice nor the gathering badge renders.
