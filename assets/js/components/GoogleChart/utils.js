@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { findLast, merge, set } from 'lodash';
+import { cloneDeep, findLast, merge, set } from 'lodash';
 /**
  * Internal dependencies
  */
