@@ -52,7 +52,6 @@ const BREAKDOWN_DISCOVERY_DAYS = 90;
 
 export interface FormMetadata {
 	title: string | null;
-	plugin: string | null;
 }
 
 type FormMetadataMap = Record< string, FormMetadata >;
@@ -176,10 +175,51 @@ function getBreakdownReportOptions(
 type BreakdownReportOptions = ReturnType< typeof getBreakdownReportOptions >;
 
 /**
- * Builds the report options that surface the pages each form appears on.
+ * Builds the report options that pair each form with one extra dimension's value.
  *
- * The report groups events that carry one of the given form IDs by page,
- * ordered by event count, so each form's busiest pages come first.
+ * The page and provider breakdowns both group the form events by a second
+ * dimension, scoped to the given form IDs and ordered by event count, so the
+ * busiest value for each form comes first; only the second dimension and the
+ * report ID differ. They are kept as two separate reports — rather than one
+ * `[ formID, provider, pagePath ]` report — so each yields its busiest value
+ * per form independently: a combined report's first row per form would be the
+ * busiest provider-and-page pair, not the busiest of each.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}        dates               Date range with `startDate` and `endDate`.
+ * @param {string}        customDimensionSlug Form ID custom dimension slug.
+ * @param {Array<string>} formIDs             Form IDs to scope to.
+ * @param {string}        secondDimension     Dimension paired with the form ID.
+ * @param {string}        reportSlug          Report ID suffix identifying the report.
+ * @return {Object} Report options.
+ */
+function getFormPairedDimensionReportOptions(
+	dates: DateRange,
+	customDimensionSlug: string,
+	formIDs: string[],
+	secondDimension: string,
+	reportSlug: string
+) {
+	const dimension = `customEvent:${ customDimensionSlug }`;
+
+	return {
+		...dates,
+		dimensions: [ dimension, secondDimension ],
+		dimensionFilters: {
+			[ dimension ]: {
+				filterType: 'inListFilter',
+				value: formIDs,
+			},
+		},
+		metrics: [ { name: 'eventCount' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		reportID: `analytics-4_site-goals-breakdown_${ reportSlug }_${ customDimensionSlug }`,
+	};
+}
+
+/**
+ * Builds the report options that surface the pages each form appears on.
  *
  * @since 1.182.0
  *
@@ -193,26 +233,53 @@ function getFormPagesReportOptions(
 	customDimensionSlug: string,
 	formIDs: string[]
 ) {
-	const dimension = `customEvent:${ customDimensionSlug }`;
-
-	return {
-		...dates,
-		dimensions: [ dimension, 'pagePath' ],
-		dimensionFilters: {
-			[ dimension ]: {
-				filterType: 'inListFilter',
-				value: formIDs,
-			},
-		},
-		metrics: [ { name: 'eventCount' } ],
-		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
-		reportID: `analytics-4_site-goals-breakdown_form-pages_${ customDimensionSlug }`,
-	};
+	return getFormPairedDimensionReportOptions(
+		dates,
+		customDimensionSlug,
+		formIDs,
+		'pagePath',
+		'form-pages'
+	);
 }
 
 type FormPagesReportOptions = ReturnType< typeof getFormPagesReportOptions >;
 
 type FormPagePathsMap = Record< string, string[] >;
+
+/**
+ * Builds the report options that surface the event provider each form came from.
+ *
+ * Every conversion event carries both the form ID dimension and the
+ * `googlesitekit_event_provider` dimension, so this report pairs each form ID
+ * with its originating provider slug (e.g. `wpforms`, `optin-monster`) without
+ * any server-side plugin detection.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}        dates               Date range with `startDate` and `endDate`.
+ * @param {string}        customDimensionSlug Form ID custom dimension slug.
+ * @param {Array<string>} formIDs             Form IDs to look up providers for.
+ * @return {Object} Report options.
+ */
+function getFormProvidersReportOptions(
+	dates: DateRange,
+	customDimensionSlug: string,
+	formIDs: string[]
+) {
+	return getFormPairedDimensionReportOptions(
+		dates,
+		customDimensionSlug,
+		formIDs,
+		'customEvent:googlesitekit_event_provider',
+		'form-providers'
+	);
+}
+
+type FormProvidersReportOptions = ReturnType<
+	typeof getFormProvidersReportOptions
+>;
+
+type FormProvidersMap = Record< string, string >;
 
 /**
  * Builds report options for a total event count over compare dates, optionally
@@ -278,6 +345,7 @@ interface BreakdownRegistry {
 			options:
 				| BreakdownReportOptions
 				| FormPagesReportOptions
+				| FormProvidersReportOptions
 				| UnattributedReportOptions
 		) => Promise< Report | undefined >;
 	};
@@ -302,7 +370,6 @@ const fetchGetFormMetadataStore = createFetchStore( {
 				if ( state.formMetadata[ formID ] === undefined ) {
 					state.formMetadata[ formID ] = {
 						title: null,
-						plugin: null,
 					};
 				}
 			} );
@@ -322,6 +389,42 @@ const fetchGetFormMetadataStore = createFetchStore( {
 const baseInitialState: State = {
 	formMetadata: {},
 };
+
+/**
+ * Loads a paired-dimension form report (pages or providers).
+ *
+ * `getFormPagePaths` and `getFormProviders` resolve the same form-dimension
+ * report shape over the same events and date range; only the options builder
+ * (and therefore the second dimension) differs.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}        registry            WordPress data registry.
+ * @param {Function}      optionsBuilder      Builds the report options to resolve.
+ * @param {string}        customDimensionSlug Form ID custom dimension slug.
+ * @param {Array<string>} formIDs             Form IDs to scope to.
+ * @return {Promise<void>} Resolves once the report has loaded.
+ */
+async function loadFormDimensionReport(
+	registry: BreakdownRegistry,
+	optionsBuilder: (
+		dates: DateRange,
+		customDimensionSlug: string,
+		formIDs: string[]
+	) => ReturnType< typeof getFormPairedDimensionReportOptions >,
+	customDimensionSlug: string,
+	formIDs: string[]
+): Promise< void > {
+	await registry.resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+
+	const dates = getDiscoveryDates(
+		registry.select( CORE_USER ).getReferenceDate
+	);
+
+	await registry
+		.resolveSelect( MODULES_ANALYTICS_4 )
+		.getReport( optionsBuilder( dates, customDimensionSlug, formIDs ) );
+}
 
 const baseResolvers = {
 	*getBreakdownValues(
@@ -364,23 +467,33 @@ const baseResolvers = {
 			( yield commonActions.getRegistry() ) as BreakdownRegistry;
 
 		yield commonActions.await(
-			registry.resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
+			loadFormDimensionReport(
+				registry,
+				getFormPagesReportOptions,
+				customDimensionSlug,
+				formIDs
+			)
 		);
+	},
 
-		const dates = getDiscoveryDates(
-			registry.select( CORE_USER ).getReferenceDate
-		);
+	*getFormProviders(
+		customDimensionSlug: string,
+		formIDs: string[]
+	): Generator< unknown, void, unknown > {
+		if ( ! formIDs?.length ) {
+			return;
+		}
+
+		const registry =
+			( yield commonActions.getRegistry() ) as BreakdownRegistry;
 
 		yield commonActions.await(
-			registry
-				.resolveSelect( MODULES_ANALYTICS_4 )
-				.getReport(
-					getFormPagesReportOptions(
-						dates,
-						customDimensionSlug,
-						formIDs
-					)
-				)
+			loadFormDimensionReport(
+				registry,
+				getFormProvidersReportOptions,
+				customDimensionSlug,
+				formIDs
+			)
 		);
 	},
 
@@ -596,6 +709,80 @@ const baseSelectors = {
 				}
 
 				return pagesByForm;
+			}
+	),
+
+	/**
+	 * Gets the event provider each form came from.
+	 *
+	 * Reads the `googlesitekit_event_provider` dimension carried on every
+	 * conversion event, mapping each form ID to its originating provider slug
+	 * (e.g. `wpforms`, `optin-monster`). This needs no server-side plugin
+	 * detection: the source is already attached to the event.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}        state               Data store's state.
+	 * @param {string}        customDimensionSlug Form ID custom dimension slug.
+	 * @param {Array<string>} formIDs             Form IDs to look up providers for.
+	 * @return {(Object|undefined)} Map of form ID to provider slug, or `undefined` while loading.
+	 */
+	getFormProviders: createRegistrySelector(
+		( select: Select ) =>
+			(
+				state: State,
+				customDimensionSlug: string,
+				formIDs: string[]
+			): FormProvidersMap | undefined => {
+				if ( ! formIDs?.length ) {
+					return {};
+				}
+
+				const dates = getDiscoveryDates(
+					select( CORE_USER ).getReferenceDate
+				);
+
+				const report = select( MODULES_ANALYTICS_4 ).getReport(
+					getFormProvidersReportOptions(
+						dates,
+						customDimensionSlug,
+						formIDs
+					)
+				) as Report | undefined;
+
+				if ( report === undefined ) {
+					return undefined;
+				}
+
+				const providersByForm: FormProvidersMap = {};
+				const ambiguousFormIDs = new Set< string >();
+
+				// Form IDs aren't unique across plugins, so one ID can carry more
+				// than one provider. When it does we can't name a single creator,
+				// so drop the form ID rather than assert the busiest provider.
+				for ( const row of report.rows || [] ) {
+					const formID = row.dimensionValues?.[ 0 ]?.value;
+					const provider = row.dimensionValues?.[ 1 ]?.value;
+
+					if (
+						! formID ||
+						! provider ||
+						ambiguousFormIDs.has( formID )
+					) {
+						continue;
+					}
+
+					const seenProvider = providersByForm[ formID ];
+
+					if ( seenProvider === undefined ) {
+						providersByForm[ formID ] = provider;
+					} else if ( seenProvider !== provider ) {
+						delete providersByForm[ formID ];
+						ambiguousFormIDs.add( formID );
+					}
+				}
+
+				return providersByForm;
 			}
 	),
 
