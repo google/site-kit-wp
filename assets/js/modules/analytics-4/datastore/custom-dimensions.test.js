@@ -677,6 +677,87 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 				);
 				expect( console ).toHaveErrored();
 			} );
+
+			it( 'refetches the property custom dimensions on a retry after a prior load error, then creates them', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetUserInputSettings( coreUserInputSettings );
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetKeyMetricsSettings( keyMetricsSettings );
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+					availableCustomDimensions: [],
+				} );
+
+				// First attempt: the property custom dimensions request fails,
+				// recording a selector error and leaving the list unknown, so
+				// nothing is created.
+				fetchMock.getOnce( customDimensionsEndpoint, {
+					body: { code: 'error', message: 'Request failed' },
+					status: 403,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.createCustomDimensions();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getCustomDimensionsError( propertyID )
+				).not.toBeUndefined();
+				expect( console ).toHaveErrored();
+
+				// The resolver already finished with that error, so without
+				// invalidating its resolution a retry would never refetch. Mock
+				// a successful load plus the create and sync requests.
+				fetchMock.getOnce( customDimensionsEndpoint, {
+					body: [],
+					status: 200,
+				} );
+				fetchMock.post(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+					),
+					{
+						body: customDimension,
+						status: 200,
+					}
+				);
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					),
+					{
+						body: customDimensionNames,
+						status: 200,
+					}
+				);
+
+				// Second attempt (a Retry).
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.createCustomDimensions();
+
+				// A second custom-dimensions request was issued (the stale
+				// resolution was invalidated), its error is cleared, and
+				// creation then proceeds.
+				expect( fetchMock ).toHaveFetchedTimes(
+					2,
+					customDimensionsEndpoint
+				);
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getCustomDimensionsError( propertyID )
+				).toBeUndefined();
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+					)
+				);
+			} );
 		} );
 
 		describe( 'scheduleSyncAvailableCustomDimensions', () => {
@@ -1085,6 +1166,50 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 							'googlesitekit_post_categories'
 						)
 				).toEqual( error );
+			} );
+		} );
+
+		describe( 'getCustomDimensionsError', () => {
+			it( 'returns the load error the fetch store records when the property custom dimensions fail to load', async () => {
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+				} );
+
+				const errorResponse = {
+					code: 'insufficient_permissions',
+					message: 'Insufficient permissions',
+					data: { status: 403, reason: 'insufficientPermissions' },
+				};
+
+				fetchMock.getOnce( customDimensionsEndpoint, {
+					body: errorResponse,
+					status: 403,
+				} );
+
+				// Trigger the real load; the fetch store records the failure as a
+				// selector error, not an action error.
+				await registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getCustomDimensions( propertyID );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getCustomDimensionsError( propertyID )
+				).toEqual( errorResponse );
+
+				// Regression guard: the failure is not an action error, so reading
+				// it as one would silently return undefined and leave the notice
+				// stuck loading.
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getErrorForAction( 'getCustomDimensions', [
+							propertyID,
+						] )
+				).toBeUndefined();
+
+				expect( console ).toHaveErrored();
 			} );
 		} );
 	} );
