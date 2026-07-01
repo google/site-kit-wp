@@ -27,6 +27,9 @@
 			"type": "string",
 			"enum": [ "", "outline", "filled_blue", "filled_black" ]
 		},
+		"width": {
+			"type": "number"
+		},
 		"buttonClassName": {
 			"type": "string"
 		}

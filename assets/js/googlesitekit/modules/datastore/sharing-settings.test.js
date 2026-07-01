@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { cloneDeep } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -39,57 +44,6 @@ import { CORE_MODULES } from './constants';
 
 describe( 'core/modules sharing-settings', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
-	const sharingSettings = {
-		[ MODULE_SLUG_SEARCH_CONSOLE ]: {
-			sharedRoles: [ 'editor', 'subscriber' ],
-			management: 'all_admins',
-		},
-		[ MODULE_SLUG_ANALYTICS_4 ]: {
-			sharedRoles: [ 'editor' ],
-			management: 'owner',
-		},
-		[ MODULE_SLUG_PAGESPEED_INSIGHTS ]: {
-			sharedRoles: [ 'editor' ],
-			management: 'all_admins',
-		},
-		adsense: {
-			sharedRoles: [],
-			management: 'all_admins',
-		},
-	};
-	const shareableRoles = [
-		{
-			id: 'administrator',
-			displayName: 'Administrator',
-		},
-		{
-			id: 'editor',
-			displayName: 'Editor',
-		},
-		{
-			id: 'author',
-			displayName: 'Author',
-		},
-		{
-			id: 'contributor',
-			displayName: 'Contributor',
-		},
-	];
-	const dashboardSharingData = {
-		settings: sharingSettings,
-		roles: shareableRoles,
-	};
-	const defaultSharedOwnershipModuleSettings = {
-		[ MODULE_SLUG_PAGESPEED_INSIGHTS ]: {
-			sharedRoles: [],
-			management: 'all_admins',
-		},
-	};
-	const sharedOwnershipModules = [
-		MODULE_SLUG_ANALYTICS_4,
-		MODULE_SLUG_SEARCH_CONSOLE,
-		MODULE_SLUG_TAGMANAGER,
-	];
 	const eligibleSubscribersEndpointRegExp =
 		/email-reporting-eligible-subscribers/;
 
@@ -104,10 +58,67 @@ describe( 'core/modules sharing-settings', () => {
 
 	let registry;
 	let store;
+	let sharingSettings;
+	let shareableRoles;
+	let dashboardSharingData;
+	let defaultSharedOwnershipModuleSettings;
+	let sharedOwnershipModules;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_MODULES ].store;
+
+		sharingSettings = {
+			[ MODULE_SLUG_SEARCH_CONSOLE ]: {
+				sharedRoles: [ 'editor', 'subscriber' ],
+				management: 'all_admins',
+			},
+			[ MODULE_SLUG_ANALYTICS_4 ]: {
+				sharedRoles: [ 'editor' ],
+				management: 'owner',
+			},
+			[ MODULE_SLUG_PAGESPEED_INSIGHTS ]: {
+				sharedRoles: [ 'editor' ],
+				management: 'all_admins',
+			},
+			adsense: {
+				sharedRoles: [],
+				management: 'all_admins',
+			},
+		};
+		shareableRoles = [
+			{
+				id: 'administrator',
+				displayName: 'Administrator',
+			},
+			{
+				id: 'editor',
+				displayName: 'Editor',
+			},
+			{
+				id: 'author',
+				displayName: 'Author',
+			},
+			{
+				id: 'contributor',
+				displayName: 'Contributor',
+			},
+		];
+		dashboardSharingData = {
+			settings: sharingSettings,
+			roles: shareableRoles,
+		};
+		defaultSharedOwnershipModuleSettings = {
+			[ MODULE_SLUG_PAGESPEED_INSIGHTS ]: {
+				sharedRoles: [],
+				management: 'all_admins',
+			},
+		};
+		sharedOwnershipModules = [
+			MODULE_SLUG_ANALYTICS_4,
+			MODULE_SLUG_SEARCH_CONSOLE,
+			MODULE_SLUG_TAGMANAGER,
+		];
 	} );
 
 	afterEach( () => {
@@ -631,6 +642,28 @@ describe( 'core/modules sharing-settings', () => {
 
 				expect( sharingSettingsObj ).toMatchObject( sharingSettings );
 			} );
+
+			it( 'uses a cloned copy of the global data so modifications to the original object are not reflected in the store', async () => {
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+
+				const sharingSettingsObj = await registry
+					.resolveSelect( CORE_MODULES )
+					.getSharingSettings();
+
+				const expectedSharingSettings = cloneDeep( sharingSettings );
+
+				expect( sharingSettingsObj ).toMatchObject(
+					expectedSharingSettings
+				);
+
+				sharingSettings[ MODULE_SLUG_ANALYTICS_4 ].sharedRoles.push(
+					'contributor'
+				);
+
+				expect( sharingSettingsObj ).toMatchObject(
+					expectedSharingSettings
+				);
+			} );
 		} );
 
 		describe( 'getShareableRoles', () => {
@@ -665,6 +698,27 @@ describe( 'core/modules sharing-settings', () => {
 					.getShareableRoles();
 
 				expect( shareableRolesObj ).toMatchObject( shareableRoles );
+			} );
+
+			it( 'uses a cloned copy of the global data so modifications to the original object are not reflected in the store', async () => {
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+
+				const shareableRolesObj = await registry
+					.resolveSelect( CORE_MODULES )
+					.getShareableRoles();
+
+				const expectedShareableRoles = cloneDeep( shareableRoles );
+
+				expect( shareableRolesObj ).toMatchObject(
+					expectedShareableRoles
+				);
+
+				// Remove the last item from the shareableRoles array.
+				shareableRoles.pop();
+
+				expect( shareableRolesObj ).toMatchObject(
+					expectedShareableRoles
+				);
 			} );
 		} );
 
@@ -1390,6 +1444,32 @@ describe( 'core/modules sharing-settings', () => {
 
 				expect( defaultSharedOwnershipModuleSettingsObj ).toMatchObject(
 					defaultSharedOwnershipModuleSettings
+				);
+			} );
+
+			it( 'uses a cloned copy of the global data so modifications to the original object are not reflected in the store', async () => {
+				global[ dashboardSharingDataBaseVar ] = {
+					defaultSharedOwnershipModuleSettings,
+				};
+
+				const defaultSharedOwnershipModuleSettingsObj = await registry
+					.resolveSelect( CORE_MODULES )
+					.getDefaultSharedOwnershipModuleSettings();
+
+				const expectedDefaultSharedOwnershipModuleSettings = cloneDeep(
+					defaultSharedOwnershipModuleSettings
+				);
+
+				expect( defaultSharedOwnershipModuleSettingsObj ).toMatchObject(
+					expectedDefaultSharedOwnershipModuleSettings
+				);
+
+				defaultSharedOwnershipModuleSettings[
+					MODULE_SLUG_PAGESPEED_INSIGHTS
+				].sharedRoles.push( 'contributor' );
+
+				expect( defaultSharedOwnershipModuleSettingsObj ).toMatchObject(
+					expectedDefaultSharedOwnershipModuleSettings
 				);
 			} );
 		} );
