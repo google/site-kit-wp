@@ -28,7 +28,7 @@ import PropTypes from 'prop-types';
 import { calculateChange, numFmt } from '@/js/util';
 
 export default function ChangeBadge( props ) {
-	const { previousValue, currentValue, isAbsolute } = props;
+	const { previousValue, currentValue, isAbsolute, zeroChangeLabel } = props;
 
 	const change = isAbsolute
 		? currentValue - previousValue
@@ -41,6 +41,12 @@ export default function ChangeBadge( props ) {
 		return null;
 	}
 
+	const formattedChange = numFmt( change, {
+		style: 'percent',
+		signDisplay: 'exceptZero',
+		maximumFractionDigits: 1,
+	} );
+
 	return (
 		<div
 			className={ classnames( 'googlesitekit-change-badge', {
@@ -48,11 +54,7 @@ export default function ChangeBadge( props ) {
 				'googlesitekit-change-badge--zero': isZero,
 			} ) }
 		>
-			{ numFmt( change, {
-				style: 'percent',
-				signDisplay: 'exceptZero',
-				maximumFractionDigits: 1,
-			} ) }
+			{ isZero && zeroChangeLabel ? zeroChangeLabel : formattedChange }
 		</div>
 	);
 }
@@ -61,4 +63,5 @@ ChangeBadge.propTypes = {
 	isAbsolute: PropTypes.bool,
 	previousValue: PropTypes.number.isRequired,
 	currentValue: PropTypes.number.isRequired,
+	zeroChangeLabel: PropTypes.string,
 };

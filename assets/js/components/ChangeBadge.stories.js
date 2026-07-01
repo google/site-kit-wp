@@ -50,6 +50,14 @@ ZeroChange.args = {
 	currentValue: 1,
 };
 
+export const NoChange = Template.bind( {} );
+NoChange.storyName = 'No Change';
+NoChange.args = {
+	previousValue: 1,
+	currentValue: 1,
+	zeroChangeLabel: 'No change',
+};
+
 export default {
 	title: 'Components/ChangeBadge',
 	component: ChangeBadge,
