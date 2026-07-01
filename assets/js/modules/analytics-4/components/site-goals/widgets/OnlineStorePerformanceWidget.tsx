@@ -335,7 +335,7 @@ const OnlineStorePerformanceWidget: FC<
 			headerContents={
 				<Fragment>
 					<span>
-						{ __( 'Online Store Performance', 'google-site-kit' ) }
+						{ __( 'Online store performance', 'google-site-kit' ) }
 					</span>
 					<GatheringBreakdownDataBadge
 						goalType={ GOAL_TYPES.ECOMMERCE }
