@@ -112,7 +112,7 @@ export default function SaveErrorNotice( {
 	useEffect( () => {
 		if ( saveError ) {
 			trackEvent(
-				`${ viewContext }_site_goals_sidebar_save_error_notice`,
+				`${ viewContext }_site-goals-sidebar-save-error-notice`,
 				'view_notification'
 			);
 		}

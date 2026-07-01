@@ -320,18 +320,18 @@ function useBreakdownNoticeTracking( {
 	useEffect( () => {
 		if ( noticeState === 'new' || noticeState === 'loading' ) {
 			trackEvent(
-				`${ viewContext }_site_goals_breakdown_notice`,
+				`${ viewContext }_site-goals-breakdown-notice`,
 				'view_notification',
 				noticeLabel
 			);
 		} else if ( noticeState === 'success' ) {
 			trackEvent(
-				`${ viewContext }_site_goals_breakdown_success_notice`,
+				`${ viewContext }_site-goals-breakdown-success-notice`,
 				'view_notification'
 			);
 		} else if ( noticeState === 'error' ) {
 			trackEvent(
-				`${ viewContext }_site_goals_breakdown_error_notice`,
+				`${ viewContext }_site-goals-breakdown-error-notice`,
 				'view_notification',
 				errorLabel
 			);
@@ -340,7 +340,7 @@ function useBreakdownNoticeTracking( {
 
 	const handleNewNoticeConfirm = useCallback( () => {
 		trackEvent(
-			`${ viewContext }_site_goals_breakdown_notice`,
+			`${ viewContext }_site-goals-breakdown-notice`,
 			'confirm_notification',
 			noticeLabel
 		);
@@ -349,7 +349,7 @@ function useBreakdownNoticeTracking( {
 
 	const handleNewNoticeDismiss = useCallback( () => {
 		trackEvent(
-			`${ viewContext }_site_goals_breakdown_notice`,
+			`${ viewContext }_site-goals-breakdown-notice`,
 			'dismiss_notification',
 			noticeLabel
 		);
@@ -358,7 +358,7 @@ function useBreakdownNoticeTracking( {
 
 	const handleSuccessDismiss = useCallback( () => {
 		trackEvent(
-			`${ viewContext }_site_goals_breakdown_success_notice`,
+			`${ viewContext }_site-goals-breakdown-success-notice`,
 			'dismiss_notification'
 		);
 		dismissBreakdownResult();
@@ -366,7 +366,7 @@ function useBreakdownNoticeTracking( {
 
 	const handleErrorRetry = useCallback( () => {
 		trackEvent(
-			`${ viewContext }_site_goals_breakdown_error_notice`,
+			`${ viewContext }_site-goals-breakdown-error-notice`,
 			'confirm_notification',
 			errorLabel
 		);
@@ -375,7 +375,7 @@ function useBreakdownNoticeTracking( {
 
 	const handleErrorDismiss = useCallback( () => {
 		trackEvent(
-			`${ viewContext }_site_goals_breakdown_error_notice`,
+			`${ viewContext }_site-goals-breakdown-error-notice`,
 			'dismiss_notification',
 			errorLabel
 		);

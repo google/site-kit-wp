@@ -202,7 +202,7 @@ const SettingsAdvancedDataBreakdowns: FC<
 
 	function handleEnable() {
 		trackEvent(
-			`${ viewContext }_analytics_custom_dimensions_setting`,
+			`${ viewContext }_analytics-custom-dimensions-setting`,
 			'enable_custom_dimensions'
 		);
 
