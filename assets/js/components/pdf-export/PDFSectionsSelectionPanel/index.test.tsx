@@ -116,6 +116,43 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		} );
 	}
 
+	it( 'omits a section when every pdf widget in it has pdf.isActive returning false', async () => {
+		const dispatch = registry.dispatch( CORE_WIDGETS );
+		dispatch.registerWidgetArea( 'inactiveArea', {
+			title: 'Inactive',
+			pdfTitle: 'Inactive',
+			style: 'boxes',
+			priority: 1,
+		} );
+		dispatch.assignWidgetArea(
+			'inactiveArea',
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+		);
+		dispatch.registerWidget( 'inactiveWidget', {
+			Component: NullComponent,
+			pdf: {
+				Component: NullComponent,
+				getData: () => Promise.resolve( { data: null } ),
+				label: 'Inactive widget',
+				isActive: () => false,
+			},
+		} );
+		dispatch.assignWidget( 'inactiveWidget', 'inactiveArea' );
+
+		const { findByRole, queryByRole } = render(
+			<PDFSectionsSelectionPanel />,
+			{ registry }
+		);
+
+		openPanel();
+
+		await findByRole( 'checkbox', { name: /^Traffic$/ } );
+
+		expect(
+			queryByRole( 'checkbox', { name: /^Inactive$/ } )
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'renders a Traffic section with its labelled widgets, all selected by default', async () => {
 		const { findByRole, getByRole, queryByRole } = render(
 			<PDFSectionsSelectionPanel />,

@@ -267,7 +267,6 @@ describe( 'SettingsApp', () => {
 			history,
 			registry,
 			viewContext: VIEW_CONTEXT_SETTINGS,
-			features: [ 'proactiveUserEngagement' ],
 		} );
 
 		await waitForRegistry();

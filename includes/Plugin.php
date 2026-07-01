@@ -239,16 +239,14 @@ final class Plugin {
 				$conversion_tracking = new Core\Conversion_Tracking\Conversion_Tracking( $this->context, $options );
 				$conversion_tracking->register();
 
-				if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) ) {
-					$data_requests = new Core\Email_Reporting\Email_Reporting_Data_Requests(
-						$this->context,
-						$modules,
-						$transients,
-						$user_options,
-					);
+				$data_requests = new Core\Email_Reporting\Email_Reporting_Data_Requests(
+					$this->context,
+					$modules,
+					$transients,
+					$user_options,
+				);
 
-					( new Core\Email_Reporting\Email_Reporting( $this->context, $modules, $data_requests, $golinks, $authentication, $options, $user_options ) )->register();
-				}
+				( new Core\Email_Reporting\Email_Reporting( $this->context, $modules, $data_requests, $golinks, $authentication, $options, $user_options ) )->register();
 
 				if ( Feature_Flags::enabled( 'googleTagGateway' ) ) {
 					( new Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway( $this->context, $options ) )->register();
