@@ -440,6 +440,47 @@ describe( 'BreakdownNoticeArea', () => {
 		);
 	} );
 
+	it( 'renders the permissions error notice and clears the loading state when the property custom dimensions load fails', () => {
+		seedAvailableCustomDimensions( [] );
+
+		// A 403 on the property custom-dimensions load (user lacks permission on
+		// the GA4 property) aborts creation before any create error is recorded.
+		// The `getCustomDimensions` fetch store records this as a selector error.
+		const propertyID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyID();
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'insufficient_permissions',
+				message: 'Insufficient permissions',
+				data: { status: 403, reason: 'insufficientPermissions' },
+			},
+			'getCustomDimensions',
+			[ propertyID ]
+		);
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: GOAL_TYPES.LEAD,
+			} );
+
+		const { getByText, getByRole } = render(
+			<BreakdownNoticeArea
+				origin={ BREAKDOWN_ORIGIN_WIDGET }
+				goalTypes={ [ GOAL_TYPES.LEAD ] }
+			/>,
+			{ registry }
+		);
+
+		// The permissions error notice replaces the otherwise-stuck loading state.
+		expect(
+			getByText( 'Individual form tracking setup failed' )
+		).toBeInTheDocument();
+		// Retry and dismiss are available, so the CTA is not stuck loading.
+		expect( getByRole( 'button', { name: 'Retry' } ) ).toBeInTheDocument();
+		expect( getByRole( 'button', { name: 'Got it' } ) ).toBeInTheDocument();
+	} );
+
 	it( 'renders "Event breakdown setup failed" title for ECOMMERCE permissions error in widget and panel', () => {
 		seedAvailableCustomDimensions( [] );
 		provideCustomDimensionError( registry, {
