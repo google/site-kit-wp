@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { useEffect } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -27,6 +28,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { Select, useSelect } from 'googlesitekit-data';
 import SelectionPanelError from '@/js/components/SelectionPanel/SelectionPanelError';
 import useFormValue from '@/js/hooks/useFormValue';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
 	SITE_GOALS_MAX_SELECTED_DRIVERS,
 	SITE_GOALS_MIN_SELECTED_DRIVERS,
@@ -40,6 +42,7 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { getSelectedDriverIDs } from '@/js/modules/analytics-4/components/site-goals/utils/selectedDrivers';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { trackEvent } from '@/js/util';
 
 interface SaveErrorNoticeProps {
 	hasEcommerceGoalDrivers: boolean;
@@ -50,6 +53,8 @@ export default function SaveErrorNotice( {
 	hasEcommerceGoalDrivers,
 	hasLeadGoalDrivers,
 }: SaveErrorNoticeProps ) {
+	const viewContext = useViewContext();
+
 	const [ selectedDrivers ] = useFormValue(
 		SITE_GOALS_SELECTION_FORM,
 		SITE_GOALS_SELECTED_DRIVERS
@@ -103,6 +108,15 @@ export default function SaveErrorNotice( {
 			break;
 		}
 	}
+
+	useEffect( () => {
+		if ( saveError ) {
+			trackEvent(
+				`${ viewContext }_site_goals_sidebar_save_error_notice`,
+				'view_notification'
+			);
+		}
+	}, [ saveError, viewContext ] );
 
 	// Validation errors take precedence (saving is disabled while the selection
 	// is invalid); otherwise surface the API error from the save action.
