@@ -110,8 +110,11 @@ export default function KeyMetricsSetupApp() {
 		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ANALYTICS_4 )
 	);
 
-	const settingsLoaded = useSelect(
-		( select ) => select( MODULES_ANALYTICS_4 ).getSettings() !== undefined
+	const shouldSync = useSelect(
+		( select ) =>
+			isGA4Active &&
+			select( MODULES_ANALYTICS_4 ).getSettings() !== undefined,
+		[ isGA4Active ]
 	);
 
 	const saveUserInputError = useSelect( ( select ) =>
@@ -250,14 +253,14 @@ export default function KeyMetricsSetupApp() {
 		useDispatch( MODULES_ANALYTICS_4 );
 
 	useEffect( () => {
-		if ( ! settingsLoaded ) {
+		if ( ! shouldSync ) {
 			return;
 		}
 
 		syncAvailableAudiences();
 		fetchSyncAvailableCustomDimensions();
 	}, [
-		settingsLoaded,
+		shouldSync,
 		syncAvailableAudiences,
 		fetchSyncAvailableCustomDimensions,
 	] );
