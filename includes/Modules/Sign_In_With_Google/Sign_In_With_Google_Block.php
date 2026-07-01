@@ -115,6 +115,10 @@ class Sign_In_With_Google_Block {
 			}
 		}
 
+		if ( ! empty( $attributes['width'] ) ) {
+			$button_args['width'] = $attributes['width'];
+		}
+
 		if ( ! empty( $attributes['buttonClassName'] ) && is_string( $attributes['buttonClassName'] ) ) {
 			$classes = array_filter(
 				preg_split( '/\s+/', trim( $attributes['buttonClassName'] ) )
