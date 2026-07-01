@@ -52,14 +52,20 @@ type AudienceSegmentationSetupErrorWidgetErrors =
 export interface AudienceSegmentationSetupErrorWidgetProps {
 	Widget: ElementType;
 	errors: AudienceSegmentationSetupErrorWidgetErrors;
-	isAudienceCreationVariant: boolean;
+	isAudienceCreationVariant?: boolean;
 	onRetry: () => void;
 	onDismiss: () => void;
 }
 
 const AudienceSegmentationSetupErrorWidget: FC<
 	AudienceSegmentationSetupErrorWidgetProps
-> = ( { Widget, errors, isAudienceCreationVariant, onRetry, onDismiss } ) => {
+> = ( {
+	Widget,
+	errors,
+	isAudienceCreationVariant = false,
+	onRetry,
+	onDismiss,
+} ) => {
 	const normalizedErrors = Array.isArray( errors ) ? errors : [ errors ];
 	const isPermissionsError = isInsufficientPermissionsError(
 		normalizedErrors[ 0 ]

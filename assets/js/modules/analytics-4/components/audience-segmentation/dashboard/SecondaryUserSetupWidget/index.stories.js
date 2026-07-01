@@ -99,6 +99,15 @@ SetupError.args = {
 	},
 };
 
+export const SetupErrorSetupFlowRefreshPhase4 = Template.bind( {} );
+SetupErrorSetupFlowRefreshPhase4.storyName =
+	'Setup error, setupFlowRefreshPhase4 enabled';
+SetupErrorSetupFlowRefreshPhase4.args = SetupError.args;
+SetupErrorSetupFlowRefreshPhase4.parameters = {
+	features: [ 'setupFlowRefreshPhase4' ],
+};
+SetupErrorSetupFlowRefreshPhase4.scenario = {};
+
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/SecondaryUserSetupWidget',
 	decorators: [

@@ -111,6 +111,15 @@ SetupError.args = {
 	},
 };
 
+export const SetupErrorSetupFlowRefreshPhase4 = Template.bind( {} );
+SetupErrorSetupFlowRefreshPhase4.storyName =
+	'Setup error, setupFlowRefreshPhase4 enabled';
+SetupErrorSetupFlowRefreshPhase4.args = SetupError.args;
+SetupErrorSetupFlowRefreshPhase4.parameters = {
+	features: [ 'setupFlowRefreshPhase4' ],
+};
+SetupErrorSetupFlowRefreshPhase4.scenario = {};
+
 export const FailedAudience = Template.bind( {} );
 FailedAudience.storyName = 'Failed audience';
 FailedAudience.args = {
@@ -118,12 +127,12 @@ FailedAudience.args = {
 		provideUserAuthentication( registry, {
 			grantedScopes: EDIT_SCOPE,
 		} );
-		fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+		fetchMock.post( syncAvailableAudiencesEndpoint, {
 			body: availableAudiences.slice( 0, 2 ),
 			status: 200,
 		} );
 
-		fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+		fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
 			body: [ 'googlesitekit_post_author' ],
 			status: 200,
 		} );
@@ -134,12 +143,21 @@ FailedAudience.args = {
 			data: { status: 500 },
 		};
 
-		fetchMock.postOnce( createAudienceEndpoint, {
+		fetchMock.post( createAudienceEndpoint, {
 			body: errorResponse,
 			status: 500,
 		} );
 	},
 };
+
+export const FailedAudienceSetupFlowRefreshPhase4 = Template.bind( {} );
+FailedAudienceSetupFlowRefreshPhase4.storyName =
+	'Failed audience, setupFlowRefreshPhase4 enabled';
+FailedAudienceSetupFlowRefreshPhase4.args = FailedAudience.args;
+FailedAudienceSetupFlowRefreshPhase4.parameters = {
+	features: [ 'setupFlowRefreshPhase4' ],
+};
+FailedAudienceSetupFlowRefreshPhase4.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/PrimaryUserSetupWidget',

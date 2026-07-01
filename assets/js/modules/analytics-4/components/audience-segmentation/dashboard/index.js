@@ -18,6 +18,7 @@
 
 export { default as AudienceErrorModal } from './AudienceErrorModal';
 export { default as AudienceSegmentationErrorWidget } from './AudienceSegmentationErrorWidget';
+export { default as AudienceSegmentationSetupErrorWidget } from './AudienceSegmentationSetupErrorWidget';
 export { default as IntroductoryOverlayNotification } from './IntroductoryOverlayNotification';
 export { default as SetupCTABanner } from './SetupCTABanner';
 export { default as AudienceTilesWidget } from './AudienceTilesWidget';

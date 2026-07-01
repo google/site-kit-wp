@@ -72,6 +72,7 @@ import {
 	PrimaryUserSetupWidget,
 	SecondaryUserSetupWidget,
 } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
+import { AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSelectionPanel/constants';
 import {
 	DashboardAllTrafficWidgetGA4,
 	DashboardOverallPageMetricsWidgetGA4,
@@ -204,6 +205,14 @@ export function registerWidgets( widgets ) {
 					return false;
 				}
 
+				if (
+					select( CORE_USER ).isItemDismissed(
+						AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG
+					)
+				) {
+					return false;
+				}
+
 				const availableAudiences =
 					select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
 
@@ -251,6 +260,14 @@ export function registerWidgets( widgets ) {
 				).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 
 				if ( ! isAnalyticsConnected ) {
+					return false;
+				}
+
+				if (
+					select( CORE_USER ).isItemDismissed(
+						AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG
+					)
+				) {
 					return false;
 				}
 
