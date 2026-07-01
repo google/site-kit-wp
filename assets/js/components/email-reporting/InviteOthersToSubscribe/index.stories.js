@@ -199,7 +199,4 @@ export default {
 			);
 		},
 	],
-	parameters: {
-		features: [ 'proactiveUserEngagement' ],
-	},
 };

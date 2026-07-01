@@ -62,7 +62,6 @@ describe( 'EmailReportingCardNotice', () => {
 
 		const { getByText } = render( <EmailReportingCardNotice />, {
 			registry,
-			features: [ 'proactiveUserEngagement' ],
 		} );
 
 		// Title and description should be present.
@@ -83,7 +82,6 @@ describe( 'EmailReportingCardNotice', () => {
 
 		const { getByRole } = render( <EmailReportingCardNotice />, {
 			registry,
-			features: [ 'proactiveUserEngagement' ],
 		} );
 
 		fireEvent.click( getByRole( 'button', { name: /set up/i } ) );
@@ -109,7 +107,6 @@ describe( 'EmailReportingCardNotice', () => {
 
 		const { getByRole } = render( <EmailReportingCardNotice />, {
 			registry,
-			features: [ 'proactiveUserEngagement' ],
 		} );
 
 		fireEvent.click( getByRole( 'button', { name: /maybe later/i } ) );
@@ -126,7 +123,6 @@ describe( 'EmailReportingCardNotice', () => {
 
 		const { container } = render( <EmailReportingCardNotice />, {
 			registry,
-			features: [ 'proactiveUserEngagement' ],
 		} );
 
 		expect( container ).toBeEmptyDOMElement();
@@ -143,7 +139,6 @@ describe( 'EmailReportingCardNotice', () => {
 
 		const { container } = render( <EmailReportingCardNotice />, {
 			registry,
-			features: [ 'proactiveUserEngagement' ],
 		} );
 
 		expect( container ).toBeEmptyDOMElement();
@@ -158,7 +153,6 @@ describe( 'EmailReportingCardNotice', () => {
 
 		const { container } = render( <EmailReportingCardNotice />, {
 			registry,
-			features: [ 'proactiveUserEngagement' ],
 		} );
 
 		expect( container ).toBeEmptyDOMElement();

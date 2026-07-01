@@ -206,10 +206,7 @@ class Debug_Data {
 		$fields = array_merge( $fields, $this->get_module_sharing_settings_fields() );
 		$fields = array_merge( $fields, $this->get_key_metrics_fields() );
 		$fields = array_merge( $fields, $this->get_gtg_fields() );
-
-		if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) ) {
-			$fields = array_merge( $fields, $this->get_email_reports_fields() );
-		}
+		$fields = array_merge( $fields, $this->get_email_reports_fields() );
 
 		$fields = array_filter(
 			array_merge(

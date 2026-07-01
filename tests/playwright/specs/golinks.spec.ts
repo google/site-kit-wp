@@ -18,7 +18,7 @@
  * Internal dependencies
  */
 import { expect, test } from '../playwright';
-import { asUser, withFeatureFlags, withPlugins } from '../wordpress';
+import { asUser, withPlugins } from '../wordpress';
 
 const user = asUser( 'admin' );
 const plugins = withPlugins( 'proxy-auth.php' );
@@ -78,49 +78,28 @@ test.describe( 'Golinks', { annotation: [ user, plugins ] }, () => {
 		).toBeVisible();
 	} );
 
-	test( 'should fail for the subscription management link if the PUE feature flag is not enabled', async ( {
+	test( 'should redirect and open the email reporting panel', async ( {
 		wp,
 	} ) => {
 		await wp.visitAdmin(
 			'index.php?action=googlesitekit_go&to=manage-subscription-email-reporting'
 		);
 		await expect(
-			wp.page.locator( '.wp-die-message,p', {
-				hasText: 'The link you followed is invalid.',
+			wp.page.getByRole( 'heading', {
+				name: 'Email reports subscription',
 			} )
 		).toBeVisible();
 	} );
 
-	test(
-		'should redirect and open the email reporting panel if the PUE feature flag is enabled',
-		{ annotation: [ withFeatureFlags( 'proactiveUserEngagement' ) ] },
-		async ( { wp } ) => {
-			await wp.visitAdmin(
-				'index.php?action=googlesitekit_go&to=manage-subscription-email-reporting'
-			);
-			await expect(
-				wp.page.getByRole( 'heading', {
-					name: 'Email reports subscription',
-				} )
-			).toBeVisible();
-		}
-	);
-
-	test(
-		'should redirect to settings page if the PUE feature flag is enabled',
-		{ annotation: [ withFeatureFlags( 'proactiveUserEngagement' ) ] },
-		async ( { wp } ) => {
-			await wp.visitAdmin(
-				'index.php?action=googlesitekit_go&to=settings&module=analytics-4'
-			);
-			await expect(
-				wp.page.getByRole( 'heading', {
-					name: 'Settings',
-				} )
-			).toBeVisible();
-			await expect( wp.page ).toHaveURL(
-				/connected-services\/analytics-4/
-			);
-		}
-	);
+	test( 'should redirect to settings page', async ( { wp } ) => {
+		await wp.visitAdmin(
+			'index.php?action=googlesitekit_go&to=settings&module=analytics-4'
+		);
+		await expect(
+			wp.page.getByRole( 'heading', {
+				name: 'Settings',
+			} )
+		).toBeVisible();
+		await expect( wp.page ).toHaveURL( /connected-services\/analytics-4/ );
+	} );
 } );

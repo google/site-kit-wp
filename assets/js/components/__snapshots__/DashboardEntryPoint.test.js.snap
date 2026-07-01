@@ -6,6 +6,10 @@ exports[`DashboardEntryPoint should render the module setup component when the s
     ModuleSetup
     {"moduleSlug":"analytics-4"}
   </div>
+  <div>
+    UserSettingsSelectionPanel
+    {}
+  </div>
 </div>
 `;
 
