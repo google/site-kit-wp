@@ -39,6 +39,7 @@ import { __ } from '@wordpress/i18n';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { PDFSection } from '@/js/components/pdf-export/constants';
+import { isActivePDFWidget } from '@/js/components/pdf-export/pdf-widget-eligibility';
 import { SelectionPanelContent } from '@/js/components/SelectionPanel';
 import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
 import Typography from '@/js/components/Typography';
@@ -96,7 +97,9 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 				areas.forEach( ( area ) => {
 					const pdfWidgets: Widget[] = select( CORE_WIDGETS )
 						.getWidgets( area.slug, { modules } )
-						.filter( ( widget: Widget ) => !! widget.pdf );
+						.filter( ( widget: Widget ) =>
+							isActivePDFWidget( widget, select )
+						);
 
 					if ( pdfWidgets.length === 0 ) {
 						return;
