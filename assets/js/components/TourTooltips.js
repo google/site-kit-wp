@@ -37,6 +37,7 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import useViewContext from '@/js/hooks/useViewContext';
+import { getWordPressAdminBarHeight } from '@/js/util/scroll';
 import { trackEvent } from '@/js/util/tracking';
 import TourTooltip from './TourTooltip';
 
@@ -268,21 +269,33 @@ export default function TourTooltips( {
 		const combinedHeight = bottom - top;
 		const windowHeight = window.innerHeight;
 
-		const scrollMargin = 60;
+		const scrollMargin = 8; // Minimum distance from the viewport edge when scrolling a tooltip into view.
+		const wpAdminBarHeight = getWordPressAdminBarHeight();
 
-		if ( windowHeight > combinedHeight + scrollMargin * 2 ) {
+		const stepCenteredWindowHeight =
+			combinedHeight + wpAdminBarHeight + scrollMargin * 2;
+
+		const stepCenteredScrollTo =
+			top + combinedHeight / 2 - windowHeight / 2 - wpAdminBarHeight / 2;
+
+		// If the entire step fits within the viewport, with some spacing, center the step in the viewport.
+		if ( windowHeight > stepCenteredWindowHeight ) {
 			window.scrollTo( {
 				behavior: 'smooth',
-				top: top + combinedHeight / 2 - windowHeight / 2,
+				top: stepCenteredScrollTo,
 			} );
-		} else if ( top === tooltipTop || bottom === tooltipBottom ) {
+		}
+		// If the entire step doesnt fit, but the tooltip is outside the target, scroll the tooltip into view.
+		else if ( top === tooltipTop || bottom === tooltipBottom ) {
 			tooltip.style.scrollMarginBlock = `${ scrollMargin }px`;
 
 			tooltip.scrollIntoView( {
 				behavior: 'smooth',
 				block: top === tooltipTop ? 'start' : 'end',
 			} );
-		} else {
+		}
+		// If the entire step doesnt fit and the tooltip is inside the target, scroll the target into view.
+		else {
 			element.style.scrollMarginBlock = `${ scrollMargin }px`;
 
 			element.scrollIntoView( {
@@ -354,18 +367,33 @@ export default function TourTooltips( {
 			: { ...defaultStepOptions, ...step }
 	);
 
+	// Flip tooltips before they're obscured by the admin bar.
+	const floaterOptions = {
+		...floaterProps.options,
+		flip: {
+			...floaterProps.options?.flip,
+			padding: {
+				bottom: 0,
+				top: getWordPressAdminBarHeight(),
+			},
+		},
+	};
+
 	// Customize floater props based on feature flag.
-	const customFloaterProps = setupFlowRefreshEnabled
+	const floaterStyles = setupFlowRefreshEnabled
 		? {
-				...floaterProps,
-				styles: {
-					...floaterProps.styles,
-					floater: {
-						filter: 'drop-shadow(rgba(0, 0, 0, 0.25) 0px 4px 16px)',
-					},
+				...floaterProps.styles,
+				floater: {
+					filter: 'drop-shadow(rgba(0, 0, 0, 0.25) 0px 4px 16px)',
 				},
 		  }
-		: floaterProps;
+		: floaterProps.styles;
+
+	const customFloaterProps = {
+		...floaterProps,
+		options: floaterOptions,
+		styles: floaterStyles,
+	};
 
 	return (
 		<Joyride
