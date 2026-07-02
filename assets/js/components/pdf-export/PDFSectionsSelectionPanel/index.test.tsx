@@ -247,6 +247,74 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		);
 	} );
 
+	it( 'selects a widget whose eligibility resolves after the initial seeding, without re-seeding deselected ones', async () => {
+		// A widget gated on a store value that is not available when the panel
+		// opens, like a `pdf.isActive` that reads a not-yet-resolved setting.
+		const dispatch = registry.dispatch( CORE_WIDGETS );
+		dispatch.registerWidgetArea( 'pdfRevenueArea', {
+			title: 'Find out how much you’re earning from your content',
+			pdfTitle: 'Revenue',
+			style: 'boxes',
+			priority: 2,
+		} );
+		dispatch.assignWidgetArea(
+			'pdfRevenueArea',
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+		);
+		dispatch.registerWidget( 'pdfEarnings', {
+			Component: NullComponent,
+			pdf: {
+				Component: NullComponent,
+				getData: () => Promise.resolve( { data: null } ),
+				label: 'Earning performance',
+				isActive: (
+					select: ReturnType< typeof createTestRegistry >[ 'select' ]
+				) => select( CORE_UI ).getValue( 'adSenseLinked' ) === true,
+			},
+		} );
+		dispatch.assignWidget( 'pdfEarnings', 'pdfRevenueArea' );
+
+		const { findByRole, queryByRole } = render(
+			<PDFSectionsSelectionPanel />,
+			{ registry }
+		);
+
+		openPanel();
+
+		// The initial seeding runs with the gated widget still ineligible.
+		await findByRole( 'checkbox', { name: /^Traffic$/ } );
+		expect(
+			queryByRole( 'checkbox', { name: /^Revenue$/ } )
+		).not.toBeInTheDocument();
+
+		// The user deselects a seeded widget before the gate resolves.
+		fireEvent.click(
+			await findByRole( 'checkbox', { name: /^Search traffic$/ } )
+		);
+		await waitFor( () => {
+			expect(
+				registry.select( CORE_PDF ).getSelectedWidgetSlugs()
+			).toEqual( [ 'pdfAllTraffic' ] );
+		} );
+
+		// The gate resolves to eligible after the initial seeding.
+		act( () => {
+			registry.dispatch( CORE_UI ).setValue( 'adSenseLinked', true );
+		} );
+
+		// The late widget appears checked; the deselected one is not re-seeded.
+		const lateCheckbox = ( await findByRole( 'checkbox', {
+			name: /^Earning performance$/,
+		} ) ) as HTMLInputElement;
+
+		await waitFor( () => {
+			expect( lateCheckbox.checked ).toBe( true );
+		} );
+		expect(
+			[ ...registry.select( CORE_PDF ).getSelectedWidgetSlugs() ].sort()
+		).toEqual( [ 'pdfAllTraffic', 'pdfEarnings' ] );
+	} );
+
 	it( 'starts the export and closes the panel when Download is clicked', async () => {
 		const { findByRole } = render( <PDFSectionsSelectionPanel />, {
 			registry,
