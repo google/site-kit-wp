@@ -75,6 +75,33 @@ export const fontSizes = {
 } as const;
 
 /**
+ * Score-category colour tokens for the Speed PDF widget's indicator circles.
+ *
+ * Colours match the standard PageSpeed Insights / Lighthouse palette.
+ *
+ * @since n.e.x.t
+ */
+export const PDF_SCORE_COLORS = {
+	fast: '#0cce6b',
+	average: '#ffa400',
+	slow: '#ff4e42',
+} as const;
+
+/**
+ * Score-category badge colours for the Speed PDF widget's pill labels.
+ *
+ * Each entry carries a soft background and a dark legible text colour so the
+ * badge reads clearly at small font sizes in the printed report.
+ *
+ * @since n.e.x.t
+ */
+export const PDF_SCORE_BADGE_COLORS = {
+	fast: { background: '#e6f4ea', text: '#0d6a2d' },
+	average: { background: '#fef2d8', text: '#a85700' },
+	slow: { background: '#fce8e6', text: '#c5221f' },
+} as const;
+
+/**
  * Spacing tokens shared across the PDF report components.
  *
  * @since 1.182.0

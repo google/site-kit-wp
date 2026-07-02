@@ -37,6 +37,7 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import useViewContext from '@/js/hooks/useViewContext';
+import { getWordPressAdminBarHeight } from '@/js/util/scroll';
 import { trackEvent } from '@/js/util/tracking';
 import TourTooltip from './TourTooltip';
 
@@ -248,36 +249,58 @@ export default function TourTooltips( {
 			return;
 		}
 
-		if ( ! step.isResponsive || breakpoint !== BREAKPOINT_SMALL ) {
-			element.scrollIntoView( { block: 'center' } );
-			return;
-		}
-
 		const tooltip = document.querySelector( '.__floater' );
 
 		if ( ! tooltip ) {
 			return;
 		}
 
-		const { top, bottom } = element.getBoundingClientRect();
-		const { height: tooltipHeight } = tooltip.getBoundingClientRect();
+		const elementRect = element.getBoundingClientRect();
+		const tooltipRect = tooltip.getBoundingClientRect();
 
-		const stepTop = top - tooltipHeight - 60 + window.scrollY;
+		const elementBottom = window.scrollY + elementRect.bottom;
+		const elementTop = window.scrollY + elementRect.top;
+		const tooltipBottom = window.scrollY + tooltipRect.bottom;
+		const tooltipTop = window.scrollY + tooltipRect.top;
 
-		if ( stepTop >= 0 ) {
+		const bottom = Math.max( elementBottom, tooltipBottom );
+		const top = Math.min( elementTop, tooltipTop );
+
+		const combinedHeight = bottom - top;
+		const windowHeight = window.innerHeight;
+
+		const scrollMargin = 8; // Minimum distance from the viewport edge when scrolling a tooltip into view.
+		const wpAdminBarHeight = getWordPressAdminBarHeight();
+
+		const stepCenteredWindowHeight =
+			combinedHeight + wpAdminBarHeight + scrollMargin * 2;
+
+		const stepCenteredScrollTo =
+			top + combinedHeight / 2 - windowHeight / 2 - wpAdminBarHeight / 2;
+
+		// If the entire step fits within the viewport, with some spacing, center the step in the viewport.
+		if ( windowHeight > stepCenteredWindowHeight ) {
 			window.scrollTo( {
-				top: stepTop,
+				behavior: 'smooth',
+				top: stepCenteredScrollTo,
 			} );
-		} else {
-			// We normally want to scroll to the top of the step's target, with enough space for the tooltip, but in some cases where the target is too close to the start of the page, no space will be left for the tooltip, so we switch to scrolling to the bottom of the target instead.
-			const stepBottom =
-				bottom -
-				window.innerHeight +
-				tooltipHeight +
-				60 +
-				window.scrollY;
-			window.scrollTo( {
-				top: stepBottom,
+		}
+		// If the entire step doesnt fit, but the tooltip is outside the target, scroll the tooltip into view.
+		else if ( top === tooltipTop || bottom === tooltipBottom ) {
+			tooltip.style.scrollMarginBlock = `${ scrollMargin }px`;
+
+			tooltip.scrollIntoView( {
+				behavior: 'smooth',
+				block: top === tooltipTop ? 'start' : 'end',
+			} );
+		}
+		// If the entire step doesnt fit and the tooltip is inside the target, scroll the target into view.
+		else {
+			element.style.scrollMarginBlock = `${ scrollMargin }px`;
+
+			element.scrollIntoView( {
+				behavior: 'smooth',
+				block: 'start',
 			} );
 		}
 	}
@@ -344,18 +367,33 @@ export default function TourTooltips( {
 			: { ...defaultStepOptions, ...step }
 	);
 
+	// Flip tooltips before they're obscured by the admin bar.
+	const floaterOptions = {
+		...floaterProps.options,
+		flip: {
+			...floaterProps.options?.flip,
+			padding: {
+				bottom: 0,
+				top: getWordPressAdminBarHeight(),
+			},
+		},
+	};
+
 	// Customize floater props based on feature flag.
-	const customFloaterProps = setupFlowRefreshEnabled
+	const floaterStyles = setupFlowRefreshEnabled
 		? {
-				...floaterProps,
-				styles: {
-					...floaterProps.styles,
-					floater: {
-						filter: 'drop-shadow(rgba(0, 0, 0, 0.25) 0px 4px 16px)',
-					},
+				...floaterProps.styles,
+				floater: {
+					filter: 'drop-shadow(rgba(0, 0, 0, 0.25) 0px 4px 16px)',
 				},
 		  }
-		: floaterProps;
+		: floaterProps.styles;
+
+	const customFloaterProps = {
+		...floaterProps,
+		options: floaterOptions,
+		styles: floaterStyles,
+	};
 
 	return (
 		<Joyride
