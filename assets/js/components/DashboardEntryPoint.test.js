@@ -62,12 +62,11 @@ describe( 'DashboardEntryPoint', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'should render the user settings panel when the module setup is shown and proactive user engagement is enabled', () => {
+	it( 'should render the user settings panel when the module setup is shown', () => {
 		const { getByText } = render(
 			<DashboardEntryPoint setupModuleSlug="analytics-4" />,
 			{
 				registry,
-				features: [ 'proactiveUserEngagement' ],
 			}
 		);
 

@@ -16,7 +16,11 @@
  * limitations under the License.
  */
 /**
- *
+ * External dependencies
+ */
+import { cloneDeep } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import {
@@ -29,28 +33,31 @@ import { initialState } from './index';
 
 describe( 'core/user userInfo', () => {
 	const userDataGlobal = '_googlesitekitUserData';
-	const user = {
-		id: 1,
-		email: 'admin@example.com',
-		name: 'admin',
-		picture: 'https://path/to/image',
-		full_name: 'Dr Funkenstein',
-	};
-	const userData = {
-		user,
-		connectURL:
-			'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
-		initialVersion: '1.0.0',
-		verified: true,
-		isUserInputCompleted: true,
-	};
 
 	let registry;
 	let store;
+	let user;
+	let userData;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_USER ].store;
+
+		user = {
+			id: 1,
+			email: 'admin@example.com',
+			name: 'admin',
+			picture: 'https://path/to/image',
+			full_name: 'Dr Funkenstein',
+		};
+		userData = {
+			user,
+			connectURL:
+				'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
+			initialVersion: '1.0.0',
+			verified: true,
+			isUserInputCompleted: true,
+		};
 	} );
 
 	afterEach( () => {
@@ -260,6 +267,28 @@ describe( 'core/user userInfo', () => {
 				// Data must not be wiped after retrieving, as it could be used by other dependants.
 				expect( global[ userDataGlobal ] ).not.toEqual( undefined );
 			} );
+
+			it( 'uses a cloned copy of the global data so modifications to the original object are not reflected in the store', async () => {
+				global[ userDataGlobal ] = userData;
+
+				registry.select( CORE_USER ).getUser();
+				await subscribeUntil(
+					registry,
+					() =>
+						registry.select( CORE_USER ).getUser() !== initialState
+				);
+
+				const userInfo = registry.select( CORE_USER ).getUser();
+
+				const expectedUserInfo = cloneDeep( userData.user );
+
+				expect( userInfo ).toMatchObject( expectedUserInfo );
+
+				userData.user.name = 'modified-name';
+
+				expect( userInfo ).toMatchObject( expectedUserInfo );
+			} );
+
 			it( 'will return initial state (undefined) when no data is available', async () => {
 				expect( global[ userDataGlobal ] ).toEqual( undefined );
 
@@ -343,11 +372,11 @@ describe( 'core/user userInfo', () => {
 		} );
 
 		describe.each( [
-			[ 'getID', user.id ],
-			[ 'getName', user.name ],
-			[ 'getEmail', user.email ],
-			[ 'getPicture', user.picture ],
-			[ 'getFullName', user.full_name ],
+			[ 'getID', 1 ],
+			[ 'getName', 'admin' ],
+			[ 'getEmail', 'admin@example.com' ],
+			[ 'getPicture', 'https://path/to/image' ],
+			[ 'getFullName', 'Dr Funkenstein' ],
 		] )( '%s()', ( selector, expectedValue ) => {
 			it( 'uses a resolver to load user info then returns the info when this specific selector is used', async () => {
 				// Set up the global

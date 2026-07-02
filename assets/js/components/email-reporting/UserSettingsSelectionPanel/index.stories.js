@@ -261,9 +261,6 @@ WithoutManagePermission.args = {
 export default {
 	title: 'Components/EmailReporting/UserSettingsSelectionPanel',
 	component: UserSettingsSelectionPanel,
-	parameters: {
-		features: [ 'proactiveUserEngagement' ],
-	},
 	decorators: [
 		( Story, { args } ) => {
 			function setupRegistry( registry ) {

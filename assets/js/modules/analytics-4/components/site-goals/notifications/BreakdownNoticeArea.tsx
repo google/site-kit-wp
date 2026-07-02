@@ -346,7 +346,15 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 			}
 		}
 
-		return undefined;
+		// Also surface a failure to load the property's custom dimensions (e.g.
+		// the user lacks permission on the GA4 property), which aborts creation
+		// before any create error is recorded and otherwise leaves the notice
+		// stuck loading.
+		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+		return select( MODULES_ANALYTICS_4 ).getCustomDimensionsError(
+			propertyID
+		);
 	}, [] );
 	const isIntroModalDismissed = useSelect(
 		( select: Select ) =>

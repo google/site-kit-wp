@@ -20,10 +20,9 @@ use WP_Error;
 /**
  * Class for the Site Goals lead-generation form metadata datapoint.
  *
- * Resolves display metadata (title and originating plugin) for each
- * lead-generation form ID surfaced by the `googlesitekit_form_id` custom
- * dimension. Form plugins store their forms in different ways, so the title is
- * resolved with a multi-strategy lookup.
+ * Resolves the display title for each lead-generation form ID surfaced by the
+ * `googlesitekit_form_id` custom dimension. Form plugins store their forms in
+ * different ways, so the title is resolved with a multi-strategy lookup.
  *
  * @since 1.182.0
  * @access private
@@ -32,16 +31,19 @@ use WP_Error;
 class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapoint, Permission_Aware_Datapoint {
 
 	/**
-	 * Maps a form post type to its originating plugin's display name.
+	 * Post types whose titles may be disclosed as form names.
+	 *
+	 * Gates title resolution to known form CPTs, so unrelated post titles are
+	 * never echoed back.
 	 *
 	 * @since 1.182.0
 	 * @var array
 	 */
-	const PLUGIN_BY_POST_TYPE = array(
-		'wpcf7_contact_form' => 'Contact Form 7',
-		'wpforms'            => 'WPForms',
-		'mc4wp-form'         => 'Mailchimp for WordPress',
-		'popup'              => 'Popup Maker',
+	const FORM_POST_TYPES = array(
+		'wpcf7_contact_form',
+		'wpforms',
+		'mc4wp-form',
+		'popup',
 	);
 
 	/**
@@ -91,19 +93,17 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	 * @return array {
 	 *     Form metadata.
 	 *
-	 *     @type string|null $title  Resolved title, or null when none could be found.
-	 *     @type string|null $plugin Originating plugin display name, or null when unknown.
+	 *     @type string|null $title Resolved title, or null when none could be found.
 	 * }
 	 */
 	protected function resolve_form_metadata( $form_id ) {
 		$title = '';
 
 		$post_type = get_post_type( $form_id );
-		$plugin    = $post_type
-			? self::PLUGIN_BY_POST_TYPE[ $post_type ] ?? null
-			: null;
 
-		if ( $plugin && 'publish' === get_post_status( $form_id ) ) {
+		if ( $post_type
+			&& in_array( $post_type, self::FORM_POST_TYPES, true )
+			&& 'publish' === get_post_status( $form_id ) ) {
 			$title = get_the_title( $form_id );
 		}
 
@@ -117,15 +117,13 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 				$ninja_title = $ninja_form->get_setting( 'title' );
 
 				if ( ! empty( $ninja_title ) ) {
-					$title  = $ninja_title;
-					$plugin = 'Ninja Forms';
+					$title = $ninja_title;
 				}
 			}
 		}
 
 		return array(
-			'title'  => '' !== $title ? $title : null,
-			'plugin' => $plugin,
+			'title' => '' !== $title ? $title : null,
 		);
 	}
 
