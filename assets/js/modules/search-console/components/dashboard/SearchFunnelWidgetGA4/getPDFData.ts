@@ -62,13 +62,17 @@ const KEY_EVENTS_COLOR = '#8e68cb';
 
 const LINE_CHART_WIDTH = 240;
 const LINE_CHART_HEIGHT = 120;
-// The PDF shows each chart as an image. The chart renders at 4 times its
-// display size, so the lines stay sharp when the PDF shrinks the image to fit.
+/**
+ * PDFs show each chart as an image. The chart renders at 4 times its
+ * display size, so the lines stay sharp when the PDF shrinks the image to fit.
+ */
 const LINE_CHART_SCALE_FACTOR = 4;
-// `getLineChartOptions` sets the line widths, dash lengths, font sizes, and
-// chart margins in pixels of the rendered chart. The values were chosen at the
-// renderer's default scale factor of 2, so this ratio grows them to keep the
-// chart's proportions at the larger render size.
+/**
+ * `getLineChartOptions` sets the line widths, dash lengths, font sizes, and
+ * chart margins in pixels of the rendered chart. The values were chosen at the
+ * renderer's default scale factor of 2, so this ratio grows them to keep the
+ * chart's proportions at the larger render size.
+ */
 const LINE_CHART_OPTION_SCALE = LINE_CHART_SCALE_FACTOR / 2;
 
 type Registry = WPDataRegistry & {
