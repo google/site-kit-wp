@@ -404,7 +404,11 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 						discoveredAreas.push( {
 							areaSlug: area.slug,
 							areaContextSlug: contextSlug,
-							areaTitle: area.pdfTitle || area.title || '',
+							areaTitle:
+								area.pdfReportTitle ||
+								area.pdfTitle ||
+								area.title ||
+								'',
 							widgets: pdfWidgets,
 						} );
 					} );
