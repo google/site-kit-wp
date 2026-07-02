@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Document, Page, Text, View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
@@ -30,6 +30,11 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import {
+	PDF_PAGE_PADDING,
+	PDF_PAGE_WIDTH,
+	createPDFStyles,
+} from '@/js/components/pdf-export/pdf-scale';
 import {
 	PDF_COLOR_TEXT_PRIMARY,
 	PDF_COLOR_TEXT_SECONDARY,
@@ -46,11 +51,8 @@ import PDFHeader from './PDFHeader';
 
 const DEFAULT_PAGE_HEIGHT = 792;
 
-const styles = StyleSheet.create( {
+const styles = createPDFStyles( {
 	page: {
-		paddingTop: 24,
-		paddingBottom: 24,
-		paddingHorizontal: 24,
 		fontFamily: PDF_FONT_FAMILY_TEXT,
 		fontSize: 12,
 		backgroundColor: '#f3f5f7',
@@ -118,8 +120,8 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 			author="Site Kit by Google"
 		>
 			<Page
-				size={ [ 612, pageHeight ] }
-				style={ styles.page }
+				size={ [ PDF_PAGE_WIDTH, pageHeight ] }
+				style={ [ styles.page, { padding: PDF_PAGE_PADDING } ] }
 				wrap={ false }
 			>
 				<PDFHeader

@@ -1,5 +1,5 @@
 /**
- * PDFNoData tests.
+ * Section icon tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -24,31 +24,29 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
-import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
-import PDFNoData from './PDFNoData';
+import { CONTEXT_MAIN_DASHBOARD_TRAFFIC } from '@/js/googlesitekit/widgets/default-contexts';
+import { scalePDFValue } from './pdf-scale';
+import { SECTION_ICONS } from './section-icons';
 
-describe( 'PDFNoData', () => {
-	it( 'renders the "No data available." message', () => {
+describe( 'section icons', () => {
+	const TrafficIcon = SECTION_ICONS[ CONTEXT_MAIN_DASHBOARD_TRAFFIC ];
+
+	it( 'renders the icon at the scaled default size', () => {
 		const json = JSON.stringify(
-			TestRenderer.create( <PDFNoData /> ).toJSON()
+			TestRenderer.create( <TrafficIcon color="#161b18" /> ).toJSON()
 		);
 
-		expect( json ).toContain( 'No data available.' );
+		expect( json ).toContain( `"width":${ scalePDFValue( 20 ) }` );
+		expect( json ).toContain( `"height":${ scalePDFValue( 20 ) }` );
 	} );
 
-	it( 'renders the message in gray', () => {
+	it( 'scales a custom icon size', () => {
 		const json = JSON.stringify(
-			TestRenderer.create( <PDFNoData /> ).toJSON()
+			TestRenderer.create(
+				<TrafficIcon color="#161b18" size={ 10 } />
+			).toJSON()
 		);
 
-		expect( json ).toContain( '#646464' );
-	} );
-
-	it( 'renders the message at the scaled font size', () => {
-		const json = JSON.stringify(
-			TestRenderer.create( <PDFNoData /> ).toJSON()
-		);
-
-		expect( json ).toContain( `"fontSize":${ 12 * PDF_SCALE }` );
+		expect( json ).toContain( `"width":${ scalePDFValue( 10 ) }` );
 	} );
 } );

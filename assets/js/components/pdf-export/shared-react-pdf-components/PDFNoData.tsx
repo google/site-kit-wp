@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { StyleSheet, Text } from '@react-pdf/renderer';
+import { Text } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
@@ -30,12 +30,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
 
-const styles = StyleSheet.create( {
+const styles = createPDFStyles( {
 	noData: {
 		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 9,
+		fontSize: 12,
 		color: '#646464',
 	},
 } );

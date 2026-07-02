@@ -19,33 +19,34 @@
 /**
  * External dependencies
  */
-import { StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Text, View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
  * Internal dependencies
  */
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import {
 	PDF_FONT_FAMILY_TEXT,
 	PDF_HEADER_COLORS,
 } from '@/js/components/pdf-export/pdf-theme';
 import type { PDFIcon } from '@/js/components/pdf-export/types';
 
-const styles = StyleSheet.create( {
+const styles = createPDFStyles( {
 	chip: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		borderWidth: 1,
 		borderColor: PDF_HEADER_COLORS.chipBorder,
 		borderRadius: 100,
-		paddingVertical: 4,
-		paddingHorizontal: 8,
+		paddingVertical: 8,
+		paddingHorizontal: 12,
 	},
 	label: {
 		fontFamily: PDF_FONT_FAMILY_TEXT,
 		fontSize: 12,
 		fontWeight: 500,
-		lineHeight: 16 / 12,
+		lineHeight: 1.333,
 		letterSpacing: 0.5,
 		color: PDF_HEADER_COLORS.chipText,
 	},

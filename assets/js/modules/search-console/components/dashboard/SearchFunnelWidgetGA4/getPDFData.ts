@@ -62,6 +62,18 @@ const KEY_EVENTS_COLOR = '#8e68cb';
 
 const LINE_CHART_WIDTH = 240;
 const LINE_CHART_HEIGHT = 120;
+/**
+ * PDFs show each chart as an image. The chart renders at 4 times its
+ * display size, so the lines stay sharp when the PDF shrinks the image to fit.
+ */
+const LINE_CHART_SCALE_FACTOR = 4;
+/**
+ * `getLineChartOptions` sets the line widths, dash lengths, font sizes, and
+ * chart margins in pixels of the rendered chart. The values were chosen at the
+ * renderer's default scale factor of 2, so this ratio grows them to keep the
+ * chart's proportions at the larger render size.
+ */
+const LINE_CHART_OPTION_SCALE = LINE_CHART_SCALE_FACTOR / 2;
 
 type Registry = WPDataRegistry & {
 	// `resolveSelect` exists on the runtime registry but is absent from the
@@ -183,10 +195,10 @@ function getLineChartOptions( {
 		curveType: 'function',
 		colors: [ color ],
 		chartArea: {
-			left: 32,
-			right: 16,
-			top: 12,
-			bottom: 22,
+			left: 32 * LINE_CHART_OPTION_SCALE,
+			right: 16 * LINE_CHART_OPTION_SCALE,
+			top: 12 * LINE_CHART_OPTION_SCALE,
+			bottom: 22 * LINE_CHART_OPTION_SCALE,
 		},
 		legend: {
 			position: 'none',
@@ -198,7 +210,7 @@ function getLineChartOptions( {
 			},
 			textStyle: {
 				color: '#6c726e',
-				fontSize: 10,
+				fontSize: 10 * LINE_CHART_OPTION_SCALE,
 			},
 			ticks,
 		},
@@ -211,7 +223,7 @@ function getLineChartOptions( {
 			},
 			textStyle: {
 				color: '#6c726e',
-				fontSize: 10,
+				fontSize: 10 * LINE_CHART_OPTION_SCALE,
 			},
 			viewWindow: {
 				min: 0,
@@ -222,13 +234,16 @@ function getLineChartOptions( {
 		series: {
 			0: {
 				color,
-				lineWidth: 2,
+				lineWidth: 2 * LINE_CHART_OPTION_SCALE,
 				targetAxisIndex: 0,
 			},
 			1: {
 				color,
-				lineWidth: 1,
-				lineDashStyle: [ 3, 3 ],
+				lineWidth: 1 * LINE_CHART_OPTION_SCALE,
+				lineDashStyle: [
+					3 * LINE_CHART_OPTION_SCALE,
+					3 * LINE_CHART_OPTION_SCALE,
+				],
 				targetAxisIndex: 0,
 			},
 		},
@@ -311,6 +326,7 @@ function rasterizeChart( {
 		options: getLineChartOptions( { color, ticks, hasData } ),
 		width: LINE_CHART_WIDTH,
 		height: LINE_CHART_HEIGHT,
+		scaleFactor: LINE_CHART_SCALE_FACTOR,
 		signal,
 	} );
 }
@@ -659,8 +675,8 @@ export default async function getPDFData( {
 				statsError: visitors.error,
 				totalsReport: visitors.report,
 				totalsError: visitors.error,
-				currentLabel: __( 'Unique Visitors', 'google-site-kit' ),
-				dataLabels: [ __( 'Unique Visitors', 'google-site-kit' ) ],
+				currentLabel: __( 'Unique visitors', 'google-site-kit' ),
+				dataLabels: [ __( 'Unique visitors', 'google-site-kit' ) ],
 				tooltipDataFormats: [ numericTooltipFormatter ],
 				chartDataFormats: [ identity ],
 				color: UNIQUE_VISITORS_COLOR,
@@ -673,9 +689,9 @@ export default async function getPDFData( {
 				statsError: keyEventsStats.error,
 				totalsReport: keyEventsOverview.report,
 				totalsError: keyEventsOverview.error,
-				currentLabel: __( 'Key Events', 'google-site-kit' ),
+				currentLabel: __( 'Key events', 'google-site-kit' ),
 				dataLabels: [
-					__( 'Key Events', 'google-site-kit' ),
+					__( 'Key events', 'google-site-kit' ),
 					__( 'Engagement Rate %', 'google-site-kit' ),
 				],
 				tooltipDataFormats: [

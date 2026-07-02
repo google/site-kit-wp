@@ -20,10 +20,15 @@
  * External dependencies
  */
 import { Text } from '@react-pdf/renderer';
+import TestRenderer from 'react-test-renderer';
 
 /**
  * Internal dependencies
  */
+import {
+	PDF_PAGE_PADDING,
+	PDF_PAGE_WIDTH,
+} from '@/js/components/pdf-export/pdf-scale';
 import { SECTION_ICONS } from '@/js/components/pdf-export/section-icons';
 import type { PDFWidgetComponentProps } from '@/js/components/pdf-export/types';
 import { CONTEXT_MAIN_DASHBOARD_TRAFFIC } from '@/js/googlesitekit/widgets/default-contexts';
@@ -147,5 +152,26 @@ describe( 'DashboardReport', () => {
 		).toHaveAttribute( 'src', 'https://example.com/go-dashboard' );
 		// The forwarded section renders as a chip.
 		expect( getByText( 'Traffic' ) ).toBeInTheDocument();
+	} );
+
+	it( 'sets the page width and padding to fixed point values', () => {
+		const json = JSON.stringify(
+			TestRenderer.create(
+				<DashboardReport
+					siteName="Example Site"
+					siteURL="https://www.example.com/"
+					dateRange={ {
+						startDate: '2021-01-01',
+						endDate: '2021-01-28',
+					} }
+					sections={ [] }
+					areas={ [] }
+					{ ...footerProps }
+				/>
+			).toJSON()
+		);
+
+		expect( json ).toContain( `"padding":${ PDF_PAGE_PADDING }` );
+		expect( json ).toContain( `"size":[${ PDF_PAGE_WIDTH },` );
 	} );
 } );

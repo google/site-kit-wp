@@ -25,6 +25,7 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import { render } from '@tests/js/test-utils';
 import PDFWidgetSection from './PDFWidgetSection';
 
@@ -55,7 +56,7 @@ describe( 'PDFWidgetSection', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'uses the shared card padding and radius by default', () => {
+	it( 'uses the scaled shared card padding and radius by default', () => {
 		const json = JSON.stringify(
 			TestRenderer.create(
 				<PDFWidgetSection>
@@ -64,8 +65,20 @@ describe( 'PDFWidgetSection', () => {
 			).toJSON()
 		);
 
-		expect( json ).toContain( '"padding":20' );
-		expect( json ).toContain( '"borderRadius":14' );
+		expect( json ).toContain( `"padding":${ 24 * PDF_SCALE }` );
+		expect( json ).toContain( `"borderRadius":${ 16 * PDF_SCALE }` );
+	} );
+
+	it( 'scales the heading font size', () => {
+		const json = JSON.stringify(
+			TestRenderer.create(
+				<PDFWidgetSection heading="Top content over time">
+					<Text>child</Text>
+				</PDFWidgetSection>
+			).toJSON()
+		);
+
+		expect( json ).toContain( `"fontSize":${ 16 * PDF_SCALE }` );
 	} );
 
 	it( 'merges cardStyle onto the card when a widget passes it', () => {
