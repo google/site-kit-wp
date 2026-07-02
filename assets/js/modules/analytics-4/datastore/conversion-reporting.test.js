@@ -998,7 +998,6 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 
 			it( 'should return the primary ecommerce event', () => {
 				registry
-
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setDetectedEvents( [
 						ENUM_CONVERSION_EVENTS.PURCHASE,

@@ -178,10 +178,11 @@ describe( 'SettingsCardAudiences SetupCTA', () => {
 			syncAvailableCustomDimensionsEndpoint
 		);
 
-		// Fully drain the remaining `saveUserAudienceSettings()` action chain
-		// (which awaits several resolvers before hitting the frozen
-		// `audienceSettingsEndpoint` request) so it doesn't leak into, and
-		// pollute the shared `trackEvent` mock in, a later test.
+		// Ensure `saveUserAudienceSettings()` (which awaits several
+		// resolvers before hitting the frozen `audienceSettingsEndpoint`
+		// request) runs all actions until `audienceSettingsEndpoint`
+		// so it doesn't leak into, and pollute the shared `trackEvent`
+		// mock in a later test.
 		await act( () => waitForTimeouts( 100 ) );
 	} );
 

@@ -250,7 +250,6 @@ const LeadGenerationPerformanceWidget: FC<
 	LeadGenerationPerformanceWidgetProps
 > = ( { Widget, WidgetNull, WidgetReportError, selectedGoalDriverIDs } ) => {
 	const WidgetComponent = Widget as FC< {
-		children?: ReactNode;
 		Header?: unknown;
 		headerContents?: ReactNode;
 		collapsible?: boolean;
