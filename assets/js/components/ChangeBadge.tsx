@@ -20,26 +20,37 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
+import { FC } from 'react';
 
 /**
  * Internal dependencies
  */
 import { calculateChange, numFmt } from '@/js/util';
 
-export default function ChangeBadge( props ) {
-	const { previousValue, currentValue, isAbsolute, zeroChangeLabel } = props;
+export interface ChangeBadgeProps {
+	previousValue: number;
+	currentValue: number;
+	isAbsolute?: boolean;
+	zeroChangeLabel?: string;
+}
 
+const ChangeBadge: FC< ChangeBadgeProps > = ( {
+	previousValue,
+	currentValue,
+	isAbsolute = false,
+	zeroChangeLabel,
+} ) => {
 	const change = isAbsolute
 		? currentValue - previousValue
 		: calculateChange( previousValue, currentValue );
-	const isNegative = change < 0;
-	const isZero = change === 0;
 
 	// Do not display the change badge if the change value can't be calculated.
 	if ( change === null ) {
 		return null;
 	}
+
+	const isNegative = change < 0;
+	const isZero = change === 0;
 
 	const formattedChange = numFmt( change, {
 		style: 'percent',
@@ -57,11 +68,6 @@ export default function ChangeBadge( props ) {
 			{ isZero && zeroChangeLabel ? zeroChangeLabel : formattedChange }
 		</div>
 	);
-}
-
-ChangeBadge.propTypes = {
-	isAbsolute: PropTypes.bool,
-	previousValue: PropTypes.number.isRequired,
-	currentValue: PropTypes.number.isRequired,
-	zeroChangeLabel: PropTypes.string,
 };
+
+export default ChangeBadge;

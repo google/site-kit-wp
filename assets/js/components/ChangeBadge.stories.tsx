@@ -19,9 +19,10 @@
 /**
  * Internal dependencies
  */
-import ChangeBadge from './ChangeBadge';
+import { Story } from '@/js/types/Story';
+import ChangeBadge, { ChangeBadgeProps } from './ChangeBadge';
 
-function Template( args ) {
+function Template( args: ChangeBadgeProps ) {
 	return (
 		<div style={ { display: 'flex' } }>
 			<ChangeBadge { ...args } />
@@ -29,28 +30,28 @@ function Template( args ) {
 	);
 }
 
-export const Positive = Template.bind( {} );
+export const Positive = Template.bind( {} ) as Story< ChangeBadgeProps >;
 Positive.storyName = 'Positive';
 Positive.args = {
 	previousValue: 26,
 	currentValue: 51.5,
 };
 
-export const Negative = Template.bind( {} );
+export const Negative = Template.bind( {} ) as Story< ChangeBadgeProps >;
 Negative.storyName = 'Negative';
 Negative.args = {
 	previousValue: 51,
 	currentValue: 25,
 };
 
-export const ZeroChange = Template.bind( {} );
+export const ZeroChange = Template.bind( {} ) as Story< ChangeBadgeProps >;
 ZeroChange.storyName = 'ZeroChange';
 ZeroChange.args = {
 	previousValue: 1,
 	currentValue: 1,
 };
 
-export const NoChange = Template.bind( {} );
+export const NoChange = Template.bind( {} ) as Story< ChangeBadgeProps >;
 NoChange.storyName = 'No Change';
 NoChange.args = {
 	previousValue: 1,
