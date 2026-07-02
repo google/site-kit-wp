@@ -22,42 +22,34 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useMount } from 'react-use';
-import { useCallbackOne } from 'use-memo-one';
 
 /**
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { addQueryArgs, getQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
-import { useDispatch, useRegistry, useSelect } from 'googlesitekit-data';
+import { useRegistry, useSelect } from 'googlesitekit-data';
 import Header from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
 import ProgressIndicator from '@/js/components/ProgressIndicator';
 import ExitSetup from '@/js/components/setup/ExitSetup';
-import { deleteItem } from '@/js/googlesitekit/api/cache';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { useFeature } from '@/js/hooks/useFeature';
-import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
 import { Cell, Grid, Row } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { trackEvent } from '@/js/util';
+import { useFinishSetup, useModuleSetupTracking } from './hooks';
 import ModuleSetupFooter from './ModuleSetupFooter';
 
 export default function ModuleSetup( { moduleSlug } ) {
 	const viewContext = useViewContext();
-	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const [ showProgress ] = useQueryArg( 'showProgress' );
-	const forwardableParams = useForwardableParams();
 
 	const isInitialSetupFlow =
 		setupFlowRefreshEnabled &&
@@ -70,61 +62,28 @@ export default function ModuleSetup( { moduleSlug } ) {
 
 	const registry = useRegistry();
 
-	/**
-	 * When module setup done, we redirect the user to Site Kit dashboard.
-	 *
-	 * @since 1.0.0
-	 * @since 1.18.0 Added optional redirectURL parameter.
-	 *
-	 * @param {string} [redirectURL] URL to redirect to when complete. Defaults to Site Kit dashboard.
-	 */
-	const finishSetup = useCallbackOne(
-		async ( redirectURL ) => {
-			await deleteItem( 'module_setup' );
+	const finishSetup = useFinishSetup(
+		moduleSlug,
+		isInitialSetupFlow
+			? {
+					gaTrackingEventArgs: {
+						category: `${ viewContext }_setup`,
+						action: 'setup_flow_v3_complete_analytics_step',
+					},
+			  }
+			: {}
+	);
 
-			if ( isInitialSetupFlow ) {
-				await trackEvent(
-					`${ viewContext }_setup`,
-					'setup_flow_v3_complete_analytics_step'
-				);
-			} else {
-				await trackEvent(
-					'moduleSetup',
-					'complete_module_setup',
-					moduleSlug
-				);
-			}
-
-			if ( redirectURL ) {
-				navigateTo(
-					addQueryArgs( redirectURL, {
-						...forwardableParams,
-						...getQueryArgs( redirectURL ),
-					} )
-				);
-				return;
-			}
-
-			const { select, resolveSelect } = registry;
-			await resolveSelect( CORE_SITE ).getSiteInfo();
-			const adminURL = select( CORE_SITE ).getAdminURL(
-				'googlesitekit-dashboard',
-				{
-					...forwardableParams,
-					notification: 'authentication_success',
-					slug: moduleSlug,
-				}
-			);
-			navigateTo( adminURL );
-		},
-		[
-			forwardableParams,
-			registry,
-			navigateTo,
-			moduleSlug,
-			viewContext,
-			isInitialSetupFlow,
-		]
+	const { trackCancel: onCancelButtonClick } = useModuleSetupTracking(
+		moduleSlug,
+		isInitialSetupFlow
+			? {
+					viewGATrackingEventArgs: {
+						category: `${ viewContext }_setup`,
+						action: 'setup_flow_v3_view_analytics_step',
+					},
+			  }
+			: {}
 	);
 
 	const onCompleteSetup = module?.onCompleteSetup;
@@ -132,23 +91,6 @@ export default function ModuleSetup( { moduleSlug } ) {
 		() => onCompleteSetup( registry, finishSetup ),
 		[ onCompleteSetup, registry, finishSetup ]
 	);
-
-	const onCancelButtonClick = useCallback( async () => {
-		await trackEvent( 'moduleSetup', 'cancel_module_setup', moduleSlug );
-	}, [ moduleSlug ] );
-
-	useMount( () => {
-		if ( isInitialSetupFlow ) {
-			trackEvent(
-				`${ viewContext }_setup`,
-				'setup_flow_v3_view_analytics_step'
-			);
-
-			return;
-		}
-
-		trackEvent( 'moduleSetup', 'view_module_setup', moduleSlug );
-	} );
 
 	// Add the initial setup class to the body when the component mounts.
 	useMount( () => {
