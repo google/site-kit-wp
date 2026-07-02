@@ -75,7 +75,7 @@ export function getStickyHeaderHeight( breakpoint ) {
  * @param {string} breakpoint The current breakpoint.
  * @return {number} The height of the sticky WordPress admin bar, if present.
  */
-function getWordPressAdminBarHeight( breakpoint ) {
+export function getWordPressAdminBarHeight( breakpoint ) {
 	// WordPress admin bar is only sticky for breakpoints larger than BREAKPOINT_SMALL. If it's also not sticky then we can return a height of 0.
 	const wpAdminBar = document.querySelector( '#wpadminbar' );
 
