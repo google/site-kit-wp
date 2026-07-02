@@ -88,9 +88,11 @@ function formatHeaderDate( dateString: string ): string {
 	} ).format( stringToDate( dateString ) );
 }
 
-// The page adds padding around its content. The header uses negative margins
-// to pull its white background to the page edges. It then uses matching
-// padding to keep its text at the page margin.
+/**
+ * The page adds padding around its content. The header uses negative margins
+ * to pull its white background to the page edges. It then uses matching
+ * padding to keep its text at the page margin.
+ */
 const headerFullWidthOffsets = {
 	marginTop: -PDF_PAGE_PADDING,
 	marginHorizontal: -PDF_PAGE_PADDING,
