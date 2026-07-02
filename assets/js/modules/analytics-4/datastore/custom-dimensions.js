@@ -596,8 +596,6 @@ const baseSelectors = {
 	 */
 	getCustomDimensionsError: createRegistrySelector(
 		( select ) => ( state, propertyID ) => {
-			// The `getCustomDimensions` fetch store is not an action store, so its
-			// load failure is recorded as a selector error, not an action error.
 			return select( MODULES_ANALYTICS_4 ).getErrorForSelector(
 				'getCustomDimensions',
 				[ propertyID ]

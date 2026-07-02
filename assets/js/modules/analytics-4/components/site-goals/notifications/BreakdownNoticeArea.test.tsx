@@ -443,9 +443,6 @@ describe( 'BreakdownNoticeArea', () => {
 	it( 'renders the permissions error notice and clears the loading state when the property custom dimensions load fails', () => {
 		seedAvailableCustomDimensions( [] );
 
-		// A 403 on the property custom-dimensions load (user lacks permission on
-		// the GA4 property) aborts creation before any create error is recorded.
-		// The `getCustomDimensions` fetch store records this as a selector error.
 		const propertyID = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getPropertyID();
