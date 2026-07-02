@@ -980,5 +980,77 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				).toBeUndefined();
 			} );
 		} );
+
+		describe( 'getPrimaryActionEventSlug', () => {
+			it( 'should return undefined for ecommerce when detected events are not yet loaded', () => {
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
+					)
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionEventSlug( 'ecommerce' )
+				).toBeUndefined();
+			} );
+
+			it( 'should return the primary ecommerce event', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionEventSlug( 'ecommerce' )
+				).toBe( ENUM_CONVERSION_EVENTS.PURCHASE );
+			} );
+
+			it( 'should return undefined for lead when detected events are not yet loaded', () => {
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
+					)
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionEventSlug( 'lead' )
+				).toBeUndefined();
+			} );
+
+			it( 'should return the first detected lead event', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+					] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionEventSlug( 'lead' )
+				).toBe( ENUM_CONVERSION_EVENTS.GENERATE_LEAD );
+			} );
+
+			it( 'should return undefined for lead when no lead events are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionEventSlug( 'lead' )
+				).toBeUndefined();
+			} );
+		} );
 	} );
 } );

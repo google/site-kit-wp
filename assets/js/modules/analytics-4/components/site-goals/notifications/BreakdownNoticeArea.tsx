@@ -37,6 +37,7 @@ import {
 	PERMISSION_MANAGE_OPTIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
 import useFormValue from '@/js/hooks/useFormValue';
+import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import {
 	BREAKDOWN_DISMISSED_FORM_KEY,
@@ -67,7 +68,8 @@ import {
 	ALL_CUSTOM_DIMENSIONS,
 	useBreakdownEnableHandler,
 } from '@/js/modules/analytics-4/hooks/useBreakdownEnableHandler';
-import { DAY_IN_SECONDS } from '@/js/util';
+import { DAY_IN_SECONDS, trackEvent } from '@/js/util';
+import { isInsufficientPermissionsError } from '@/js/util/errors';
 
 export const AVAILABILITY_SYNC_CACHE_KEY =
 	'analytics4_site-goals_breakdown_availability-synced';
@@ -216,6 +218,179 @@ function resolveBreakdownNoticeState(
 	return null;
 }
 
+interface ComputeNoticeStateArgs {
+	isViewOnly: boolean;
+	hasBreakdownDimensions: boolean | undefined;
+	isIntroModalDismissed: boolean | undefined;
+	isNoticeDismissed: boolean | undefined;
+	creationError: unknown;
+	isBusy: boolean;
+	isDismissed: boolean;
+	isClickedInstance: boolean;
+	attempted: boolean;
+}
+
+/**
+ * Resolves the notice state, gating on the view-only and still-resolving cases.
+ *
+ * @since 1.182.0
+ *
+ * @param {Object} args Resolver arguments, see `ComputeNoticeStateArgs`.
+ * @return {?string} The resolved notice state, or `null` while gated or when no notice applies.
+ */
+function computeNoticeState(
+	args: ComputeNoticeStateArgs
+): BreakdownNoticeState {
+	const {
+		isViewOnly,
+		hasBreakdownDimensions,
+		isIntroModalDismissed,
+		isNoticeDismissed,
+		...rest
+	} = args;
+
+	// Avoid a flash while any of the gating selectors are still resolving.
+	if (
+		isViewOnly ||
+		hasBreakdownDimensions === undefined ||
+		isIntroModalDismissed === undefined ||
+		isNoticeDismissed === undefined
+	) {
+		return null;
+	}
+
+	return resolveBreakdownNoticeState( {
+		hasBreakdownDimensions,
+		isIntroModalDismissed,
+		isNoticeDismissed,
+		...rest,
+	} );
+}
+
+interface UseBreakdownNoticeTrackingArgs {
+	origin: string;
+	goalTypes: GoalType[];
+	creationError: unknown;
+	noticeState: BreakdownNoticeState;
+	handleEnable: () => void;
+	onDismissComplete: () => void;
+	dismissBreakdownResult: () => void;
+}
+
+/**
+ * Tracks the breakdown notice area's view/confirm/dismiss events.
+ *
+ * Kept outside the main component to keep its cyclomatic complexity within
+ * the project's lint threshold.
+ *
+ * @since 1.182.0
+ *
+ * @param {Object}   args                        Hook arguments.
+ * @param {string}   args.origin                 Notice origin, either the widget or the Side Panel.
+ * @param {Array}    args.goalTypes              Goal types the notice area covers.
+ * @param {*}        args.creationError          Custom dimension creation error, if any.
+ * @param {?string}  args.noticeState            Resolved notice state being displayed.
+ * @param {Function} args.handleEnable           Triggers the breakdown "enable" action.
+ * @param {Function} args.onDismissComplete      Called once the "New" notice's dismissal is persisted.
+ * @param {Function} args.dismissBreakdownResult Persists dismissal of the success/error notice.
+ * @return {Object} The tracked event handlers for the notice variants.
+ */
+function useBreakdownNoticeTracking( {
+	origin,
+	goalTypes,
+	creationError,
+	noticeState,
+	handleEnable,
+	onDismissComplete,
+	dismissBreakdownResult,
+}: UseBreakdownNoticeTrackingArgs ) {
+	const viewContext = useViewContext();
+
+	// `widget_ecommerce` | `widget_lead` | `side_panel`: the widgets render one
+	// notice per goal type, while the Side Panel renders a single combined one.
+	const noticeLabel =
+		origin === BREAKDOWN_ORIGIN_WIDGET
+			? `widget_${ goalTypes[ 0 ] }`
+			: 'side_panel';
+	const errorLabel =
+		creationError && isInsufficientPermissionsError( creationError )
+			? 'insufficient_permissions'
+			: 'setup_error';
+
+	useEffect( () => {
+		if ( noticeState === 'new' || noticeState === 'loading' ) {
+			trackEvent(
+				`${ viewContext }_site-goals-breakdown-notice`,
+				'view_notification',
+				noticeLabel
+			);
+		} else if ( noticeState === 'success' ) {
+			trackEvent(
+				`${ viewContext }_site-goals-breakdown-success-notice`,
+				'view_notification'
+			);
+		} else if ( noticeState === 'error' ) {
+			trackEvent(
+				`${ viewContext }_site-goals-breakdown-error-notice`,
+				'view_notification',
+				errorLabel
+			);
+		}
+	}, [ noticeState, viewContext, noticeLabel, errorLabel ] );
+
+	const handleNewNoticeConfirm = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_site-goals-breakdown-notice`,
+			'confirm_notification',
+			noticeLabel
+		);
+		handleEnable();
+	}, [ viewContext, noticeLabel, handleEnable ] );
+
+	const handleNewNoticeDismiss = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_site-goals-breakdown-notice`,
+			'dismiss_notification',
+			noticeLabel
+		);
+		onDismissComplete();
+	}, [ viewContext, noticeLabel, onDismissComplete ] );
+
+	const handleSuccessDismiss = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_site-goals-breakdown-success-notice`,
+			'dismiss_notification'
+		);
+		dismissBreakdownResult();
+	}, [ viewContext, dismissBreakdownResult ] );
+
+	const handleErrorRetry = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_site-goals-breakdown-error-notice`,
+			'confirm_notification',
+			errorLabel
+		);
+		handleEnable();
+	}, [ viewContext, errorLabel, handleEnable ] );
+
+	const handleErrorDismiss = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_site-goals-breakdown-error-notice`,
+			'dismiss_notification',
+			errorLabel
+		);
+		dismissBreakdownResult();
+	}, [ viewContext, errorLabel, dismissBreakdownResult ] );
+
+	return {
+		handleNewNoticeConfirm,
+		handleNewNoticeDismiss,
+		handleSuccessDismiss,
+		handleErrorRetry,
+		handleErrorDismiss,
+	};
+}
+
 const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 	origin,
 	goalTypes,
@@ -327,10 +502,13 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 		};
 	}, [ canSyncCustomDimensions, scheduleSyncAvailableCustomDimensions ] );
 
-	const onDismissComplete =
-		origin === BREAKDOWN_ORIGIN_WIDGET
-			? showBreakdownTooltip
-			: () => setSiteGoalsBreakdownTooltipPending( true );
+	const onDismissComplete = useCallback( () => {
+		if ( origin === BREAKDOWN_ORIGIN_WIDGET ) {
+			showBreakdownTooltip();
+		} else {
+			setSiteGoalsBreakdownTooltipPending( true );
+		}
+	}, [ origin, showBreakdownTooltip, setSiteGoalsBreakdownTooltipPending ] );
 
 	const isViewOnly = useViewOnly();
 
@@ -406,30 +584,18 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 
 	// Dismiss the in-session success/error notice and drop the shared
 	// `customDimensions` list so unrelated auto-create flows don't inherit it.
-	function dismissBreakdownResult() {
+	const dismissBreakdownResult = useCallback( () => {
 		return setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
 			[ BREAKDOWN_DISMISSED_FORM_KEY ]: true,
 			customDimensions: [],
 		} );
-	}
-
-	if ( isViewOnly ) {
-		return null;
-	}
-
-	// Avoid a flash while any of the gating selectors are still resolving.
-	if (
-		hasBreakdownDimensions === undefined ||
-		isIntroModalDismissed === undefined ||
-		isNoticeDismissed === undefined
-	) {
-		return null;
-	}
+	}, [ setValues ] );
 
 	// Suppresses "New" once an enable was attempted this session (any scope set).
 	const attempted = Boolean( breakdownScope );
 
-	const noticeState = resolveBreakdownNoticeState( {
+	const noticeState = computeNoticeState( {
+		isViewOnly,
 		hasBreakdownDimensions,
 		isIntroModalDismissed,
 		isNoticeDismissed,
@@ -440,14 +606,30 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 		attempted,
 	} );
 
+	const {
+		handleNewNoticeConfirm,
+		handleNewNoticeDismiss,
+		handleSuccessDismiss,
+		handleErrorRetry,
+		handleErrorDismiss,
+	} = useBreakdownNoticeTracking( {
+		origin,
+		goalTypes,
+		creationError,
+		noticeState,
+		handleEnable,
+		onDismissComplete,
+		dismissBreakdownResult,
+	} );
+
 	if ( noticeState === 'error' ) {
 		return (
 			<BreakdownErrorNotice
 				className={ className }
 				error={ creationError }
 				permissionsTitle={ permissionsErrorTitle }
-				onRetry={ handleEnable }
-				onDismiss={ dismissBreakdownResult }
+				onRetry={ handleErrorRetry }
+				onDismiss={ handleErrorDismiss }
 			/>
 		);
 	}
@@ -458,7 +640,7 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 				className={ className }
 				title={ successTitle }
 				description={ successDescription }
-				onDismiss={ dismissBreakdownResult }
+				onDismiss={ handleSuccessDismiss }
 			/>
 		);
 	}
@@ -473,10 +655,10 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 			<BreakdownNotice
 				className={ className }
 				{ ...noticeCopy }
-				onCTAClick={ handleEnable }
+				onCTAClick={ handleNewNoticeConfirm }
 				ctaInProgress={ ctaBusy }
 				ctaDisabled={ ctaBusy }
-				onDismissComplete={ onDismissComplete }
+				onDismissComplete={ handleNewNoticeDismiss }
 			/>
 		);
 	}
