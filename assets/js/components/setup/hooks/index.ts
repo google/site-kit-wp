@@ -20,6 +20,7 @@ export { default as useFinishSetup } from './useFinishSetup';
 export { default as useModuleSetupTracking } from './useModuleSetupTracking';
 export type {
 	FinishSetupCallback,
+	ModuleSetupGATrackingEventArgs,
 	UseFinishSetupOptions,
 	UseModuleSetupTrackingOptions,
 	UseModuleSetupTrackingReturn,

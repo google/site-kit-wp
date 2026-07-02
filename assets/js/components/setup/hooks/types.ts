@@ -22,12 +22,24 @@
 import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 
 /**
+ * GA tracking event args for module setup hooks.
+ *
+ * Requires `category` and `action`; `label` and `value` remain optional.
+ *
+ * @since n.e.x.t
+ */
+export type ModuleSetupGATrackingEventArgs = Required<
+	Pick< GATrackingEventArgs, 'category' | 'action' >
+> &
+	Pick< GATrackingEventArgs, 'label' | 'value' >;
+
+/**
  * Options for the `useFinishSetup` hook.
  *
  * @since n.e.x.t
  */
 export interface UseFinishSetupOptions {
-	gaTrackingEventArgs?: GATrackingEventArgs;
+	gaTrackingEventArgs?: ModuleSetupGATrackingEventArgs;
 }
 
 /**
@@ -36,8 +48,8 @@ export interface UseFinishSetupOptions {
  * @since n.e.x.t
  */
 export interface UseModuleSetupTrackingOptions {
-	viewGATrackingEventArgs?: GATrackingEventArgs;
-	cancelGATrackingEventArgs?: GATrackingEventArgs;
+	viewGATrackingEventArgs?: ModuleSetupGATrackingEventArgs;
+	cancelGATrackingEventArgs?: ModuleSetupGATrackingEventArgs;
 }
 
 /**

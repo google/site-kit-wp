@@ -24,7 +24,6 @@ import { useCallbackOne } from 'use-memo-one';
 /**
  * WordPress dependencies
  */
-import { useMemo } from '@wordpress/element';
 import { addQueryArgs, getQueryArgs } from '@wordpress/url';
 
 /**
@@ -35,9 +34,12 @@ import { deleteItem } from '@/js/googlesitekit/api/cache';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useForwardableParams from '@/js/hooks/useForwardableParams';
-import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 import { trackEvent } from '@/js/util';
-import { FinishSetupCallback, UseFinishSetupOptions } from './types';
+import {
+	FinishSetupCallback,
+	ModuleSetupGATrackingEventArgs,
+	UseFinishSetupOptions,
+} from './types';
 
 /**
  * Returns a callback to complete module setup.
@@ -65,24 +67,18 @@ export default function useFinishSetup(
 	// shape instead.
 	const registry = useRegistry() as unknown as Registry;
 
-	const defaultGATrackingEventArgs = useMemo(
-		(): GATrackingEventArgs => ( {
-			category: 'moduleSetup',
-			action: 'complete_module_setup',
-			label: moduleSlug,
-		} ),
-		[ moduleSlug ]
-	);
+	const defaultGATrackingEventArgs: ModuleSetupGATrackingEventArgs = {
+		category: 'moduleSetup',
+		action: 'complete_module_setup',
+		label: moduleSlug,
+	};
 
-	const resolvedGATrackingEventArgs: GATrackingEventArgs =
+	const { category, action, label, value } =
 		gaTrackingEventArgs ?? defaultGATrackingEventArgs;
 
 	return useCallbackOne(
 		async ( redirectURL?: string ) => {
 			await deleteItem( 'module_setup' );
-
-			const { category, action, label, value } =
-				resolvedGATrackingEventArgs;
 
 			await trackEvent( category, action, label, value );
 
@@ -109,7 +105,10 @@ export default function useFinishSetup(
 			navigateTo( adminURL );
 		},
 		[
-			resolvedGATrackingEventArgs,
+			category,
+			action,
+			label,
+			value,
 			forwardableParams,
 			registry,
 			navigateTo,

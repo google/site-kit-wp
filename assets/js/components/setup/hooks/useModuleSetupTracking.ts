@@ -24,14 +24,14 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useCallback, useMemo } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 import { trackEvent } from '@/js/util';
 import {
+	ModuleSetupGATrackingEventArgs,
 	UseModuleSetupTrackingOptions,
 	UseModuleSetupTrackingReturn,
 } from './types';
@@ -57,28 +57,22 @@ export default function useModuleSetupTracking(
 		cancelGATrackingEventArgs,
 	}: UseModuleSetupTrackingOptions = {}
 ): UseModuleSetupTrackingReturn {
-	const defaultViewGATrackingEventArgs = useMemo(
-		(): GATrackingEventArgs => ( {
-			category: 'moduleSetup',
-			action: 'view_module_setup',
-			label: moduleSlug,
-		} ),
-		[ moduleSlug ]
-	);
+	const defaultViewGATrackingEventArgs: ModuleSetupGATrackingEventArgs = {
+		category: 'moduleSetup',
+		action: 'view_module_setup',
+		label: moduleSlug,
+	};
 
-	const defaultCancelGATrackingEventArgs = useMemo(
-		(): GATrackingEventArgs => ( {
-			category: 'moduleSetup',
-			action: 'cancel_module_setup',
-			label: moduleSlug,
-		} ),
-		[ moduleSlug ]
-	);
+	const defaultCancelGATrackingEventArgs: ModuleSetupGATrackingEventArgs = {
+		category: 'moduleSetup',
+		action: 'cancel_module_setup',
+		label: moduleSlug,
+	};
 
-	const resolvedViewGATrackingEventArgs: GATrackingEventArgs =
+	const resolvedViewGATrackingEventArgs: ModuleSetupGATrackingEventArgs =
 		viewGATrackingEventArgs ?? defaultViewGATrackingEventArgs;
 
-	const resolvedCancelGATrackingEventArgs: GATrackingEventArgs =
+	const resolvedCancelGATrackingEventArgs: ModuleSetupGATrackingEventArgs =
 		cancelGATrackingEventArgs ?? defaultCancelGATrackingEventArgs;
 
 	useMount( () => {
@@ -88,12 +82,12 @@ export default function useModuleSetupTracking(
 		trackEvent( category, action, label, value );
 	} );
 
-	const trackCancel = useCallback( async () => {
-		const { category, action, label, value } =
-			resolvedCancelGATrackingEventArgs;
+	const { category, action, label, value } =
+		resolvedCancelGATrackingEventArgs;
 
+	const trackCancel = useCallback( async () => {
 		await trackEvent( category, action, label, value );
-	}, [ resolvedCancelGATrackingEventArgs ] );
+	}, [ category, action, label, value ] );
 
 	return { trackCancel };
 }
