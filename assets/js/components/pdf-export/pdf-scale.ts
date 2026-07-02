@@ -40,10 +40,11 @@ export const PDF_SCALE = PDF_PAGE_WIDTH / PDF_FIGMA_FRAME_WIDTH;
 export const PDF_PAGE_PADDING = 24;
 
 /**
- * Style properties whose numeric value is a length that the scale applies to.
+ * Style properties whose numeric value is a length.
  *
- * Every other property keeps its value, so colors, font families, line heights,
- * weights, and flex ratios stay the same.
+ * `createPDFStyles` multiplies these values by `PDF_SCALE`. Every other
+ * property, such as a color, font family, line height, weight, or flex ratio,
+ * keeps its value.
  */
 export const PDF_SCALED_PROPERTIES = new Set< string >( [
 	// Text.
@@ -100,8 +101,8 @@ export const PDF_SCALED_PROPERTIES = new Set< string >( [
 /**
  * Scales one Figma frame length to a page point value.
  *
- * Used for a length that a widget sets outside a style object, such as an `Svg`
- * width or height.
+ * Use it for a length that a widget sets outside a style object, such as an
+ * `Svg` width or height.
  *
  * @since n.e.x.t
  *
@@ -113,16 +114,16 @@ export function scalePDFValue( value: number ): number {
 }
 
 /**
- * Builds scaled @react-pdf styles from raw Figma frame sizes.
+ * Builds scaled @react-pdf styles from Figma frame sizes.
  *
- * A widget writes its styles with the Figma frame sizes and passes them here.
- * Each length property in `PDF_SCALED_PROPERTIES` with a numeric value is
- * multiplied by `PDF_SCALE`. A non-numeric value (such as `'100%'`) and every
- * other property keep their value. The result is passed to `StyleSheet.create`.
+ * A widget writes each style with the sizes from the Figma frame. Each length
+ * property in `PDF_SCALED_PROPERTIES` with a numeric value is multiplied by
+ * `PDF_SCALE`. A non-numeric value (such as `'100%'`) and every other property
+ * keep their values. The scaled styles are passed to `StyleSheet.create`.
  *
  * @since n.e.x.t
  *
- * @param {Object} styles Named styles with raw Figma frame sizes.
+ * @param {Object} styles Named styles with sizes from the Figma frame.
  * @return {Object} The named styles with each length scaled to points.
  */
 export function createPDFStyles< T extends Record< string, Style > >(

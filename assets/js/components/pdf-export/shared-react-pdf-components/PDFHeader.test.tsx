@@ -166,7 +166,7 @@ describe( 'PDFHeader', () => {
 		expect( getByText( 'not a url' ) ).toBeInTheDocument();
 	} );
 
-	it( 'keeps the full-width offsets fixed and scales everything else', () => {
+	it( 'keeps the full-width offsets fixed and scales the other lengths', () => {
 		const json = JSON.stringify(
 			TestRenderer.create(
 				<PDFHeader
@@ -181,7 +181,8 @@ describe( 'PDFHeader', () => {
 			).toJSON()
 		);
 
-		// These offsets stay fixed, so the header background still reaches the page edges.
+		// The full-width offsets stay fixed, so the header background reaches
+		// the page edges.
 		expect( json ).toContain( '"marginTop":-24' );
 		expect( json ).toContain( '"marginHorizontal":-24' );
 		expect( json ).toContain( '"paddingHorizontal":24' );

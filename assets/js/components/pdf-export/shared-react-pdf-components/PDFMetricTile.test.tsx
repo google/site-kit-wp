@@ -137,7 +137,7 @@ describe( 'PDFMetricTile', () => {
 		expect( json ).not.toContain( '#ffded3' );
 	} );
 
-	it( 'scales the tile font sizes, and chip padding', () => {
+	it( 'scales the tile font sizes and the chip padding', () => {
 		const json = JSON.stringify(
 			renderTile( {
 				title: 'All visitors',

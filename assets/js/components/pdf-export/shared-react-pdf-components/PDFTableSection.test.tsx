@@ -84,7 +84,7 @@ describe( 'PDFTableSection', () => {
 		expect( json ).toContain( `"columnGap":${ 4 * PDF_SCALE }` );
 	} );
 
-	it( 'uses the scaled table default column gap when no columnGap prop is given', () => {
+	it( "uses the table's scaled default column gap when no columnGap prop is given", () => {
 		const json = renderJSON(
 			<PDFTableSection
 				heading="Top pages"

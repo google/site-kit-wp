@@ -154,7 +154,7 @@ describe( 'DashboardReport', () => {
 		expect( getByText( 'Traffic' ) ).toBeInTheDocument();
 	} );
 
-	it( 'sets the page width and padding, with no scaling', () => {
+	it( 'sets the page width and padding to fixed point values', () => {
 		const json = JSON.stringify(
 			TestRenderer.create(
 				<DashboardReport

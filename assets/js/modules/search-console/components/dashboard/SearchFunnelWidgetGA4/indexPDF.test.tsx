@@ -69,7 +69,7 @@ describe( 'SearchFunnelWidgetGA4 PDF', () => {
 
 		expect( json ).toContain( 'Search traffic over time' );
 
-		// All four card titles, in sentence case.
+		// The four card titles render in sentence case.
 		expect( json ).toContain( 'Total impressions' );
 		expect( json ).toContain( 'Total clicks' );
 		expect( json ).toContain( 'Unique visitors from Search' );

@@ -54,7 +54,7 @@ describe( 'createPDFStyles', () => {
 		} );
 	} );
 
-	it( 'leaves properties that are not lengths unchanged', () => {
+	it( "keeps every property that isn't a length unchanged", () => {
 		const input = {
 			example: {
 				lineHeight: 1.5,
@@ -76,7 +76,7 @@ describe( 'createPDFStyles', () => {
 		expect( styles.example ).toEqual( input.example );
 	} );
 
-	it( 'leaves a percentage value unchanged', () => {
+	it( 'keeps a percentage value unchanged', () => {
 		const styles = createPDFStyles( {
 			example: {
 				width: '100%',

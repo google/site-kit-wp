@@ -62,7 +62,7 @@ interface CardDefinition {
 	color: string;
 }
 
-// Card definitions in the 2x2 grid order.
+// The cards render in the 2x2 grid in this order.
 const CARDS: CardDefinition[] = [
 	{
 		key: 'impressions',

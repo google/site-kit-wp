@@ -232,10 +232,11 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 			expect( args.signal ).toBe( signal );
 			expect( args.width ).toBe( 240 );
 			expect( args.height ).toBe( 120 );
-			// The chart renders at 4x so the line stays sharp.
+			// The chart renders at 4 times its display size, so the lines
+			// stay sharp.
 			expect( args.scaleFactor ).toBe( 4 );
-			// The line width, dashes, and fonts are in render pixels, so they
-			// scale with the render.
+			// The line widths and dash lengths are in pixels of the rendered
+			// chart, so they grow with the render size.
 			expect( args.options ).toMatchObject( {
 				curveType: 'function',
 				colors: [ color ],

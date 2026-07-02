@@ -133,7 +133,7 @@ describe( 'PDFMetricChartTile', () => {
 		expect( json ).not.toContain( 'data:image' );
 	} );
 
-	it( 'scales the tile font sizes, and arrow width', () => {
+	it( 'scales the tile font sizes and the arrow width', () => {
 		const json = renderTile( {
 			title: 'Total Clicks',
 			value: '3.6K',
