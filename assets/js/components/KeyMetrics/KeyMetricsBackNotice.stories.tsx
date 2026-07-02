@@ -39,17 +39,7 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 )( KeyMetricsBackNotice );
 
 function Template() {
-	return (
-		<div className="googlesitekit-widget-area--mainDashboardKeyMetricsPrimary">
-			<div className="googlesitekit-widget-area-widgets">
-				<div className="mdc-layout-grid__inner">
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-						<WidgetWithComponentProps />
-					</div>
-				</div>
-			</div>
-		</div>
-	);
+	return <WidgetWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );
