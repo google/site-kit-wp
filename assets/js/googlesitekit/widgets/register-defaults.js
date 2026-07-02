@@ -235,6 +235,8 @@ export function registerDefaults( widgetsAPI ) {
 				'Find out how much you’re earning from your content',
 				'google-site-kit'
 			),
+			pdfTitle: __( 'Revenue', 'google-site-kit' ),
+			pdfReportTitle: __( 'Monetization', 'google-site-kit' ),
 			subtitle: __(
 				'Track your AdSense revenue over time',
 				'google-site-kit'
