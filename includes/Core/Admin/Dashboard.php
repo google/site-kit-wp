@@ -18,7 +18,12 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\REST_Route;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Requires_Javascript_Trait;
+use WP_REST_Request;
+use WP_REST_Server;
 
 /**
  * Class to handle all wp-admin Dashboard related functionality.
@@ -71,28 +76,42 @@ final class Dashboard {
 	private $dismissed_items;
 
 	/**
+	 * Dashboard_Enabled instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Dashboard_Enabled
+	 */
+	private $dashboard_enabled;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 * @since 1.172.0 Added Dismissed_Items instance.
+	 * @since n.e.x.t Added Dashboard_Enabled instance.
 	 *
-	 * @param Context         $context         Plugin context.
-	 * @param Assets          $assets          Optional. Assets API instance. Default is a new instance.
-	 * @param Modules         $modules         Optional. Modules instance. Default is a new instance.
-	 * @param Dismissed_Items $dismissed_items Optional. Dismissed_Items instance. Default is a new instance.
+	 * @param Context            $context           Plugin context.
+	 * @param Assets             $assets            Optional. Assets API instance. Default is a new instance.
+	 * @param Modules            $modules           Optional. Modules instance. Default is a new instance.
+	 * @param Dismissed_Items    $dismissed_items   Optional. Dismissed_Items instance. Default is a new instance.
+	 * @param Dashboard_Enabled  $dashboard_enabled Optional. Dashboard_Enabled instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		?Assets $assets = null,
 		?Modules $modules = null,
-		?Dismissed_Items $dismissed_items = null
+		?Dismissed_Items $dismissed_items = null,
+		?Dashboard_Enabled $dashboard_enabled = null
 	) {
 		$this->context = $context;
 		$this->assets  = $assets ?: new Assets( $this->context );
 		$this->modules = $modules ?: new Modules( $this->context );
 
-		$this->authentication  = new Authentication( $this->context );
-		$this->dismissed_items = $dismissed_items;
+		$this->authentication    = new Authentication( $this->context );
+		$this->dismissed_items   = $dismissed_items;
+
+		$options                 = new Options( $this->context );
+		$this->dashboard_enabled = $dashboard_enabled ?: new Dashboard_Enabled( $options );
 	}
 
 	/**
@@ -107,6 +126,54 @@ final class Dashboard {
 				$this->add_widgets();
 			}
 		);
+
+		add_filter(
+			'googlesitekit_rest_routes',
+			function ( $routes ) {
+				return array_merge( $routes, $this->get_rest_routes() );
+			}
+		);
+
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function ( $routes ) {
+				return array_merge(
+					$routes,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/core/site/data/wp-dashboard-settings',
+					)
+				);
+			}
+		);
+
+		$this->dashboard_enabled->register();
+	}
+
+	/**
+	 * Checks if the WordPress dashboard widget is active and displaying.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if dashboard widget should display, false otherwise.
+	 */
+	public function is_active() {
+		if ( ! current_user_can( Permissions::VIEW_WP_DASHBOARD_WIDGET ) ) {
+			return false;
+		}
+
+		$enabled = $this->dashboard_enabled->get();
+		if ( ! $enabled ) {
+			return false;
+		}
+
+		/**
+		 * Filters whether the Site Kit WordPress dashboard widget should be displayed.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param bool $display Whether to display the WordPress dashboard widget.
+		 */
+		return (bool) apply_filters( 'googlesitekit_show_wp_dashboard_widget', true );
 	}
 
 	/**
@@ -115,7 +182,7 @@ final class Dashboard {
 	 * @since 1.0.0
 	 */
 	private function add_widgets() {
-		if ( ! current_user_can( Permissions::VIEW_WP_DASHBOARD_WIDGET ) ) {
+		if ( ! $this->is_active() ) {
 			return;
 		}
 
@@ -219,5 +286,62 @@ final class Dashboard {
 			<div class="googlesitekit-preview-block__wrapper"></div>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Gets related REST routes.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of REST_Route objects.
+	 */
+	private function get_rest_routes() {
+		$can_authenticate = function () {
+			return current_user_can( Permissions::AUTHENTICATE );
+		};
+
+		$settings_callback = function () {
+			return array(
+				'enabled' => $this->dashboard_enabled->get(),
+			);
+		};
+
+		return array(
+			new REST_Route(
+				'core/site/data/wp-dashboard-settings',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => $settings_callback,
+						'permission_callback' => $can_authenticate,
+					),
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => function ( WP_REST_Request $request ) use ( $settings_callback ) {
+							$data = $request->get_param( 'data' );
+
+							if ( isset( $data['enabled'] ) ) {
+								$this->dashboard_enabled->set( ! empty( $data['enabled'] ) );
+							}
+
+							return $settings_callback();
+						},
+						'permission_callback' => $can_authenticate,
+						'args'                => array(
+							'data' => array(
+								'type'       => 'object',
+								'required'   => true,
+								'properties' => array(
+									'enabled' => array(
+										'type'     => 'boolean',
+										'required' => false,
+									),
+								),
+							),
+						),
+					),
+				)
+			),
+		);
 	}
 }

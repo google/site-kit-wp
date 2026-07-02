@@ -37,8 +37,11 @@ export default function SettingsPlugin() {
 	const showAdminBar = useSelect( ( select ) =>
 		select( CORE_SITE ).getShowAdminBar()
 	);
+	const showWPDashboard = useSelect( ( select ) =>
+		select( CORE_SITE ).getShowWPDashboard()
+	);
 
-	const { setShowAdminBar } = useDispatch( CORE_SITE );
+	const { setShowAdminBar, setShowWPDashboard } = useDispatch( CORE_SITE );
 
 	const viewContext = useViewContext();
 
@@ -51,6 +54,17 @@ export default function SettingsPlugin() {
 			trackEvent( viewContext, action );
 		},
 		[ setShowAdminBar, viewContext ]
+	);
+
+	const onWPDashboardToggle = useCallback(
+		( { target } ) => {
+			const action = target.checked
+				? 'enable_wp_dashboard_widget'
+				: 'disable_wp_dashboard_widget';
+			setShowWPDashboard( !! target.checked );
+			trackEvent( viewContext, action );
+		},
+		[ setShowWPDashboard, viewContext ]
 	);
 
 	return (
@@ -79,6 +93,34 @@ export default function SettingsPlugin() {
 										<span>
 											{ __(
 												'Display relevant page stats in the Admin bar',
+												'google-site-kit'
+											) }
+										</span>
+									</Checkbox>
+								</div>
+							</div>
+						</Cell>
+					</Row>
+					<Row>
+						<Cell size={ 12 }>
+							<div className="googlesitekit-settings-module__meta-items">
+								<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--nomargin">
+									<Checkbox
+										id="wp-dashboard-toggle"
+										name="wp-dashboard-toggle"
+										value="1"
+										checked={ showWPDashboard }
+										onChange={ onWPDashboardToggle }
+										disabled={
+											showWPDashboard === undefined
+										}
+										loading={
+											showWPDashboard === undefined
+										}
+									>
+										<span>
+											{ __(
+												'Display summary stats in the WordPress dashboard',
 												'google-site-kit'
 											) }
 										</span>

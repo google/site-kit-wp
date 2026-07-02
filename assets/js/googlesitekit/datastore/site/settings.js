@@ -70,8 +70,45 @@ const fetchSetAdminBarSettingsStore = createFetchStore( {
 	isAction: true,
 } );
 
+const fetchGetWPDashboardSettingsStore = createFetchStore( {
+	baseName: 'getWPDashboardSettings',
+	controlCallback: () =>
+		get( 'core', 'site', 'wp-dashboard-settings', undefined, {
+			useCache: false,
+		} ),
+	reducerCallback: createReducer( ( state, wpDashboardSettings ) => {
+		state.wpDashboardSettings = {
+			...( state.wpDashboardSettings || {} ),
+			...wpDashboardSettings,
+		};
+	} ),
+} );
+
+const fetchSetWPDashboardSettingsStore = createFetchStore( {
+	baseName: 'setWPDashboardSettings',
+	controlCallback: ( { enabled } ) =>
+		set( 'core', 'site', 'wp-dashboard-settings', { enabled } ),
+	reducerCallback: createReducer( ( state, wpDashboardSettings ) => {
+		state.wpDashboardSettings = {
+			...( state.wpDashboardSettings || {} ),
+			...wpDashboardSettings,
+		};
+	} ),
+	argsToParams( { enabled } ) {
+		return { enabled };
+	},
+	validateParams( { enabled } ) {
+		invariant(
+			typeof enabled === 'boolean',
+			'enabled must be of boolean type'
+		);
+	},
+	isAction: true,
+} );
+
 const baseInitialState = {
 	adminBarSettings: undefined,
+	wpDashboardSettings: undefined,
 };
 
 const baseActions = {
@@ -87,6 +124,23 @@ const baseActions = {
 	*setShowAdminBar( enabled ) {
 		const { response, error } =
 			yield fetchSetAdminBarSettingsStore.actions.fetchSetAdminBarSettings(
+				{ enabled }
+			);
+		return { response, error };
+	},
+
+	/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
+	/**
+	 * Sets showWPDashboard setting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {boolean} enabled Whether to show or hide the WP dashboard widget.
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	*setShowWPDashboard( enabled ) {
+		const { response, error } =
+			yield fetchSetWPDashboardSettingsStore.actions.fetchSetWPDashboardSettings(
 				{ enabled }
 			);
 		return { response, error };
@@ -109,6 +163,15 @@ const baseResolvers = {
 		const settings = select( CORE_SITE ).getAdminBarSettings();
 		if ( settings === undefined ) {
 			yield fetchGetAdminBarSettingsStore.actions.fetchGetAdminBarSettings();
+		}
+	},
+
+	*getWPDashboardSettings() {
+		const { select } = yield commonActions.getRegistry();
+
+		const settings = select( CORE_SITE ).getWPDashboardSettings();
+		if ( settings === undefined ) {
+			yield fetchGetWPDashboardSettingsStore.actions.fetchGetWPDashboardSettings();
 		}
 	},
 };
@@ -136,6 +199,30 @@ const baseSelectors = {
 	 */
 	getShowAdminBar: createRegistrySelector( ( select ) => () => {
 		return select( CORE_SITE ).getAdminBarSettings()?.enabled;
+	} ),
+
+	/**
+	 * Gets WP dashboard settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Object} WP dashboard setting if they have been already resolved, otherwise undefined.
+	 */
+	getWPDashboardSettings( state ) {
+		return state.wpDashboardSettings;
+	},
+
+	/**
+	 * Gets showWPDashboard setting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} The showWPDashboard setting if it has been already resolved, otherwise undefined.
+	 */
+	getShowWPDashboard: createRegistrySelector( ( select ) => () => {
+		return select( CORE_SITE ).getWPDashboardSettings()?.enabled;
 	} ),
 
 	/**
@@ -222,6 +309,8 @@ const baseSelectors = {
 const store = combineStores(
 	fetchGetAdminBarSettingsStore,
 	fetchSetAdminBarSettingsStore,
+	fetchGetWPDashboardSettingsStore,
+	fetchSetWPDashboardSettingsStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
