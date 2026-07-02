@@ -63,7 +63,7 @@ export default function KeyMetricsBackNotice( {
 		<Widget noPadding>
 			<Notice
 				className="googlesitekit-key-metrics-back-notice"
-				type={ NOTICE_TYPES.INFO_ALT }
+				type={ NOTICE_TYPES.INFO_CIRCLE }
 				title={ __(
 					'Key metrics are back on your dashboard',
 					'google-site-kit'
