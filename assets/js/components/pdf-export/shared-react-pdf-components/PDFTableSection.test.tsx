@@ -25,6 +25,7 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import { PDFTableColumn } from './PDFTable';
 import PDFTableSection from './PDFTableSection';
 
@@ -70,7 +71,7 @@ describe( 'PDFTableSection', () => {
 		expect( json ).toContain( 'Home' );
 	} );
 
-	it( 'applies the columnGap prop to the table', () => {
+	it( 'applies the scaled columnGap prop to the table', () => {
 		const json = renderJSON(
 			<PDFTableSection
 				heading="Top pages"
@@ -80,10 +81,10 @@ describe( 'PDFTableSection', () => {
 			/>
 		);
 
-		expect( json ).toContain( '"columnGap":4' );
+		expect( json ).toContain( `"columnGap":${ 4 * PDF_SCALE }` );
 	} );
 
-	it( 'uses the table default column gap of 20 when no columnGap prop is given', () => {
+	it( "uses the table's scaled default column gap when no columnGap prop is given", () => {
 		const json = renderJSON(
 			<PDFTableSection
 				heading="Top pages"
@@ -92,7 +93,7 @@ describe( 'PDFTableSection', () => {
 			/>
 		);
 
-		expect( json ).toContain( '"columnGap":20' );
+		expect( json ).toContain( `"columnGap":${ 40 * PDF_SCALE }` );
 	} );
 
 	it( 'renders the empty state instead of the table when there are no rows', () => {

@@ -25,6 +25,7 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import ModulePopularPagesWidgetGA4PDF from './ModulePopularPagesWidgetGA4PDF';
 
 /**
@@ -224,5 +225,11 @@ describe( 'ModulePopularPagesWidgetGA4PDF', () => {
 
 		expect( json ).toContain( 'No data available' );
 		expect( json ).not.toContain( 'Pageviews' );
+	} );
+
+	it( 'scales the cell font size', () => {
+		const json = renderJSON( { data: DATA } );
+
+		expect( json ).toContain( `"fontSize":${ 14 * PDF_SCALE }` );
 	} );
 } );

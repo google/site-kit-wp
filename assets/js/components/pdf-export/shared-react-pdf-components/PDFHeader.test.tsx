@@ -17,8 +17,14 @@
  */
 
 /**
+ * External dependencies
+ */
+import TestRenderer from 'react-test-renderer';
+
+/**
  * Internal dependencies
  */
+import { PDF_SCALE, scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
 import { SECTION_ICONS } from '@/js/components/pdf-export/section-icons';
 import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
@@ -158,5 +164,33 @@ describe( 'PDFHeader', () => {
 		const { getByText } = renderPDFHeader( { siteURL: 'not a url' } );
 
 		expect( getByText( 'not a url' ) ).toBeInTheDocument();
+	} );
+
+	it( 'keeps the full-width offsets fixed and scales the other lengths', () => {
+		const json = JSON.stringify(
+			TestRenderer.create(
+				<PDFHeader
+					siteURL="https://www.example.com/"
+					dashboardURL="https://example.com/wp-admin/go-dashboard"
+					dateRange={ {
+						startDate: '2021-01-01',
+						endDate: '2021-01-28',
+					} }
+					sections={ sections }
+				/>
+			).toJSON()
+		);
+
+		// The full-width offsets stay fixed, so the header background reaches
+		// the page edges.
+		expect( json ).toContain( '"marginTop":-24' );
+		expect( json ).toContain( '"marginHorizontal":-24' );
+		expect( json ).toContain( '"paddingHorizontal":24' );
+		// The header's own padding and margin scale with the page.
+		expect( json ).toContain( `"marginBottom":${ 24 * PDF_SCALE }` );
+		expect( json ).toContain( `"paddingTop":${ 16 * PDF_SCALE }` );
+		expect( json ).toContain( `"paddingBottom":${ 6 * PDF_SCALE }` );
+		// The chevron icon width scales with the page.
+		expect( json ).toContain( `"width":${ scalePDFValue( 10 ) }` );
 	} );
 } );

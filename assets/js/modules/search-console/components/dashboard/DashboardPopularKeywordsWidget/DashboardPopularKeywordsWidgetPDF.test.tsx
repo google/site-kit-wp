@@ -25,6 +25,7 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import DashboardPopularKeywordsWidgetPDF from './DashboardPopularKeywordsWidgetPDF';
 
 /**
@@ -123,13 +124,13 @@ describe( 'DashboardPopularKeywordsWidgetPDF', () => {
 		expect( json ).toContain( '4,500' );
 	} );
 
-	it( 'applies the column widths and a 4pt (8px) column gap', () => {
+	it( 'applies the column widths and the scaled column gap', () => {
 		const json = renderJSON( { data: DATA } );
 
 		expect( json ).toContain( '66.7%' );
 		expect( json ).toContain( '3.69%' );
 		expect( json ).toContain( '28.87%' );
-		expect( json ).toContain( '"columnGap":4' );
+		expect( json ).toContain( `"columnGap":${ 8 * PDF_SCALE }` );
 	} );
 
 	it( 'renders the "No data available." message when there are no rows', () => {
