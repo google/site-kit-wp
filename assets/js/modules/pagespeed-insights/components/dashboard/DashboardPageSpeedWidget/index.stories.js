@@ -29,7 +29,7 @@ import {
 } from '@/js/modules/pagespeed-insights/datastore/constants';
 import { freezeFetch, provideModules, provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
-import DashboardPageSpeedWidget from './DashboardPageSpeedWidget';
+import DashboardPageSpeedWidget from './index';
 
 const url = fixtures.pagespeedMobile.loadingExperience.id;
 
