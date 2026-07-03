@@ -44,9 +44,6 @@ import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 import SettingsPlugin from './SettingsPlugin';
 
 export default function SettingsAdmin() {
-	const proactiveUserEngagementEnabled = useFeature(
-		'proactiveUserEngagement'
-	);
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
 	const configuredAudiences = useSelect( ( select ) =>
@@ -162,11 +159,9 @@ export default function SettingsAdmin() {
 					</Cell>
 				) }
 
-			{ proactiveUserEngagementEnabled && (
-				<Cell size={ 12 }>
-					<SettingsCardEmailReporting />
-				</Cell>
-			) }
+			<Cell size={ 12 }>
+				<SettingsCardEmailReporting />
+			</Cell>
 
 			<Cell size={ 12 }>
 				<Layout

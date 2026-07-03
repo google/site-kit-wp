@@ -79,12 +79,14 @@ export async function screenshot( name, options = {} ) {
  */
 export function step( name, cb, { screenshotArgs = {} } = {} ) {
 	return new Promise( async ( resolve, reject ) => {
+		const sceenshotFilename = name.replace( /\W+/g, '_' );
+
 		try {
 			const results = await ( typeof cb === 'function' ? cb() : cb );
-			await screenshot( `pass-${ name }`, screenshotArgs );
+			await screenshot( `pass-${ sceenshotFilename }`, screenshotArgs );
 			resolve( results );
 		} catch ( err ) {
-			await screenshot( `fail-${ name }`, screenshotArgs );
+			await screenshot( `fail-${ sceenshotFilename }`, screenshotArgs );
 			reject( err );
 		}
 	} );

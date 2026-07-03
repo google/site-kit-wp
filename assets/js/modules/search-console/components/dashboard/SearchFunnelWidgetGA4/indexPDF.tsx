@@ -17,7 +17,7 @@
 /**
  * External dependencies
  */
-import { StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Text, View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
@@ -28,15 +28,17 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import PDFMetricChartTile from '@/js/components/pdf-export/shared-react-pdf-components/PDFMetricChartTile';
 import { numFmt } from '@/js/util';
 import type { SearchFunnelMetric, SearchFunnelPDFData } from './getPDFData';
 
-const styles = StyleSheet.create( {
+const styles = createPDFStyles( {
 	heading: {
-		fontSize: 13,
+		fontSize: 16,
 		color: '#161b18',
-		marginBottom: 8,
+		marginTop: 24,
+		marginBottom: 16,
 	},
 	grid: {
 		flexDirection: 'row',
@@ -45,10 +47,10 @@ const styles = StyleSheet.create( {
 	},
 	cell: {
 		width: '48.5%',
-		marginBottom: 12,
+		marginBottom: 24,
 	},
 	noData: {
-		fontSize: 9,
+		fontSize: 12,
 		color: '#646464',
 	},
 } );
@@ -60,31 +62,30 @@ interface CardDefinition {
 	color: string;
 }
 
-// Card definitions in the 2x2 grid order, matching the dashboard's Search Funnel
-// metrics and the Figma design.
+// The cards render in the 2x2 grid in this order.
 const CARDS: CardDefinition[] = [
 	{
 		key: 'impressions',
-		title: __( 'Total Impressions', 'google-site-kit' ),
+		title: __( 'Total impressions', 'google-site-kit' ),
 		currentLabel: __( 'Impressions', 'google-site-kit' ),
 		color: '#6380b8',
 	},
 	{
 		key: 'clicks',
-		title: __( 'Total Clicks', 'google-site-kit' ),
+		title: __( 'Total clicks', 'google-site-kit' ),
 		currentLabel: __( 'Clicks', 'google-site-kit' ),
 		color: '#4bbbbb',
 	},
 	{
 		key: 'uniqueVisitors',
-		title: __( 'Unique Visitors from Search', 'google-site-kit' ),
-		currentLabel: __( 'Unique Visitors', 'google-site-kit' ),
+		title: __( 'Unique visitors from Search', 'google-site-kit' ),
+		currentLabel: __( 'Unique visitors', 'google-site-kit' ),
 		color: '#3c7251',
 	},
 	{
 		key: 'keyEvents',
-		title: __( 'Key Events', 'google-site-kit' ),
-		currentLabel: __( 'Key Events', 'google-site-kit' ),
+		title: __( 'Key events', 'google-site-kit' ),
+		currentLabel: __( 'Key events', 'google-site-kit' ),
 		color: '#8e68cb',
 	},
 ];

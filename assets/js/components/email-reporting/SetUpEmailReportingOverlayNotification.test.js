@@ -293,7 +293,6 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-					features: [ 'proactiveUserEngagement' ],
 				}
 			);
 
@@ -333,7 +332,6 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-					features: [ 'proactiveUserEngagement' ],
 				}
 			);
 
@@ -358,7 +356,6 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			render( <NotificationComponent />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'proactiveUserEngagement' ],
 			} );
 
 			expect( useShowTooltip ).toHaveBeenCalledWith(
@@ -378,7 +375,6 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			render( <NotificationComponent />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'proactiveUserEngagement' ],
 			} );
 
 			act( () => {

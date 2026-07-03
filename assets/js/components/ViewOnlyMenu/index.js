@@ -45,7 +45,6 @@ import {
 	CORE_USER,
 	PERMISSION_AUTHENTICATE,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
@@ -55,8 +54,6 @@ import SharedServices from './SharedServices';
 import Tracking from './Tracking';
 
 export default function ViewOnlyMenu() {
-	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
-
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
 	const viewContext = useViewContext();
@@ -134,7 +131,7 @@ export default function ViewOnlyMenu() {
 						<SharedServices viewableModules={ viewableModules } />
 					</MenuWithHeading>
 				) }
-				{ emailReportingEnabled && <ManageEmailReports /> }
+				<ManageEmailReports />
 				<Divider />
 				<MenuSection className="googlesitekit-view-only-menu__list-item">
 					<Tracking />

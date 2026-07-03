@@ -69,7 +69,7 @@ class Email_Report_Section_BuilderTest extends TestCase {
 				'post_status' => Email_Log::STATUS_SENT,
 			)
 		);
-		update_post_meta( $email_log_id, Email_Log::META_REPORT_REFERENCE_DATES, wp_json_encode( $date_range_meta ) );
+		update_post_meta( $email_log_id, Email_Log::META_REPORT_REFERENCE_DATES, $date_range_meta );
 		$email_log = get_post( $email_log_id );
 
 		// Example payload for the visitors section.

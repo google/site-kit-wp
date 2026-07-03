@@ -32,10 +32,12 @@ import {
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
+import { scalePDFValue } from './pdf-scale';
 import { PDF_HEADER_COLORS } from './pdf-theme';
 import type { PDFIcon } from './types';
 
-const DEFAULT_SIZE = 12;
+// The icon `viewBox` is 20 units, so the default size is 20 before scaling.
+const DEFAULT_SIZE = 20;
 
 /**
  * Builds a section icon component from inlined SVG children.
@@ -49,7 +51,11 @@ function makeIcon( renderChildren: ( color: string ) => ReactNode ): PDFIcon {
 	return function Icon( { size = DEFAULT_SIZE, color } ) {
 		return createElement(
 			Svg,
-			{ width: size, height: size, viewBox: '0 0 20 20' },
+			{
+				width: scalePDFValue( size ),
+				height: scalePDFValue( size ),
+				viewBox: '0 0 20 20',
+			},
 			renderChildren( color ?? PDF_HEADER_COLORS.chipIcon )
 		);
 	};

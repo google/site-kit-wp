@@ -16,5 +16,24 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import type { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
 /* eslint-disable @typescript-eslint/no-explicit-any -- The `Select` type is intentionally generic for now. */
+
+/**
+ * Site Kit data store selector function type.
+ */
 export type Select = ( select: any ) => any;
+
+/**
+ * Site Kit data registry type.
+ *
+ * Extends WordPress's `WPDataRegistry` with `resolveSelect`, which exists on
+ * the runtime registry but is absent from the `@wordpress/data` registry types.
+ */
+export type Registry = WPDataRegistry & {
+	resolveSelect: WPDataRegistry[ 'select' ];
+};

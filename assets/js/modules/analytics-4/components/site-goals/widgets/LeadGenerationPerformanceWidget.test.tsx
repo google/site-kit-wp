@@ -504,11 +504,13 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		availabilityDate,
 		hasOtherSources = true,
 		formPages = {},
+		formProviders = {},
 	}: {
 		formIDs?: string[];
 		availabilityDate?: number;
 		hasOtherSources?: boolean;
 		formPages?: Record< string, string[] >;
+		formProviders?: Record< string, string >;
 	} = {} ) {
 		// The tab structure is evaluated over the fixed 90-day discovery window.
 		const referenceDate = registry.select( CORE_USER ).getReferenceDate();
@@ -647,6 +649,46 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.finishResolution( 'getReport', [ formPagesOptions ] );
+
+			// The per-form "providers" report names the source plugin in the
+			// tab tooltip, read from the event's `googlesitekit_event_provider`
+			// dimension rather than backend detection.
+			const formProvidersOptions = {
+				...discoveryDates,
+				dimensions: [
+					FORM_DIMENSION,
+					'customEvent:googlesitekit_event_provider',
+				],
+				dimensionFilters: {
+					[ FORM_DIMENSION ]: {
+						filterType: 'inListFilter',
+						value: formIDs,
+					},
+				},
+				metrics: [ { name: 'eventCount' } ],
+				orderby: [
+					{ metric: { metricName: 'eventCount' }, desc: true },
+				],
+				reportID:
+					'analytics-4_site-goals-breakdown_form-providers_googlesitekit_form_id',
+			};
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+				{
+					rows: Object.entries( formProviders ).map(
+						( [ formID, provider ] ) => ( {
+							dimensionValues: [
+								{ value: formID },
+								{ value: provider },
+							],
+							metricValues: [ { value: '1' } ],
+						} )
+					),
+				},
+				{ options: formProvidersOptions }
+			);
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getReport', [ formProvidersOptions ] );
 		}
 
 		registry
@@ -1461,8 +1503,8 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		seedBreakdown( { formIDs: [ '5', '12' ] } );
 		fetchMock.getOnce( formMetadataEndpoint, {
 			body: {
-				5: { title: 'Contact', plugin: 'WPForms' },
-				12: { title: null, plugin: null },
+				5: { title: 'Contact' },
+				12: { title: null },
 			},
 			status: 200,
 		} );
@@ -1491,11 +1533,12 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		seedBreakdown( {
 			formIDs: [ '5', '12' ],
 			formPages: { 5: [ '/contact', '/about' ] },
+			formProviders: { 5: 'wpforms' },
 		} );
 		fetchMock.getOnce( formMetadataEndpoint, {
 			body: {
-				5: { title: 'Contact', plugin: 'WPForms' },
-				12: { title: 'Quote', plugin: null },
+				5: { title: 'Contact' },
+				12: { title: 'Quote' },
 			},
 			status: 200,
 		} );
@@ -1524,7 +1567,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 		seedBreakdown( { formIDs: [ '5' ] } );
 		fetchMock.getOnce( formMetadataEndpoint, {
-			body: { 5: { title: 'Contact', plugin: null } },
+			body: { 5: { title: 'Contact' } },
 			status: 200,
 		} );
 		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
@@ -1549,7 +1592,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 		seedBreakdown( { formIDs: [ '5' ], availabilityDate: 20260519 } );
 		fetchMock.getOnce( formMetadataEndpoint, {
-			body: { 5: { title: 'Contact', plugin: 'WPForms' } },
+			body: { 5: { title: 'Contact' } },
 			status: 200,
 		} );
 		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
@@ -1571,7 +1614,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 		seedBreakdown( { formIDs: [ '5' ] } );
 		fetchMock.getOnce( formMetadataEndpoint, {
-			body: { 5: { title: 'Contact', plugin: 'WPForms' } },
+			body: { 5: { title: 'Contact' } },
 			status: 200,
 		} );
 		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
@@ -1626,7 +1669,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 		seedBreakdown( { formIDs: [ '5' ], hasOtherSources: false } );
 		fetchMock.getOnce( formMetadataEndpoint, {
-			body: { 5: { title: 'Contact', plugin: 'WPForms' } },
+			body: { 5: { title: 'Contact' } },
 			status: 200,
 		} );
 		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );

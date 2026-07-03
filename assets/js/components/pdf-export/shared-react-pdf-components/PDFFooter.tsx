@@ -17,7 +17,7 @@
 /**
  * External dependencies
  */
-import { Link, StyleSheet, View } from '@react-pdf/renderer';
+import { Link, View } from '@react-pdf/renderer';
 import type { FC } from 'react';
 
 /**
@@ -28,13 +28,14 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import {
 	colors,
 	fontSizes,
 	spacing,
 } from '@/js/components/pdf-export/pdf-theme';
 
-const styles = StyleSheet.create( {
+const styles = createPDFStyles( {
 	footer: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
@@ -46,9 +47,7 @@ const styles = StyleSheet.create( {
 	},
 	link: {
 		fontSize: fontSizes.small,
-		// Matches the design's label/small token (12/16): react-pdf lineHeight
-		// is a unitless multiple of the font size, so 16 / 12 yields a 16pt line.
-		lineHeight: 16 / 12,
+		lineHeight: 1.333,
 		letterSpacing: 0.2,
 		color: colors.onSurfaceVariant,
 		textDecoration: 'none',
