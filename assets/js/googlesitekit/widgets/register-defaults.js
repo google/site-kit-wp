@@ -334,9 +334,9 @@ export function registerDefaults( widgetsAPI ) {
 				isActive: ( select ) =>
 					select( CORE_USER ).getRawKeyMetricsWidgetHidden() ===
 						true &&
-					! select( CORE_USER ).isItemDismissed(
+					select( CORE_USER ).isItemDismissed(
 						KEY_METRICS_BACK_NOTICE_SLUG
-					),
+					) === false,
 			},
 			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 		);
