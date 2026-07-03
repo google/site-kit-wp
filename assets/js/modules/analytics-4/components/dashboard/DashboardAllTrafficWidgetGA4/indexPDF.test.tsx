@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { ComponentProps } from 'react';
+import { ComponentProps } from 'react';
 import TestRenderer from 'react-test-renderer';
 
 /**
@@ -90,7 +90,7 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		expect( json ).not.toContain( 'No data available' );
 	} );
 
-	it( 'should render the No data available chart fallback when chart images are missing', () => {
+	it( 'should render the metric tile without a chart or placeholder when chart images are missing', () => {
 		const data = buildReports( {
 			currentUsers: '1234',
 			previousUsers: '1000',
@@ -100,9 +100,10 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		const tree = renderTree( { data } );
 		const json = JSON.stringify( tree );
 
-		// The metric tile still renders. Only the chart area falls back.
+		// The metric tile still renders. The chart area shows no chart image
+		// and no placeholder.
 		expect( json ).toContain( 'All visitors' );
-		expect( json ).toContain( 'No data available' );
+		expect( json ).not.toContain( 'No data available' );
 		expect( json ).not.toContain( 'data:image' );
 	} );
 
@@ -140,19 +141,12 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		expect( json ).toContain( '-20%' );
 	} );
 
-	it( 'should render the No data available placeholder when data is null', () => {
-		const tree = renderTree( { data: null } );
-		const json = JSON.stringify( tree );
-
-		expect( json ).toContain( 'No data available' );
-		expect( json ).not.toContain( 'All visitors' );
+	it( 'should render nothing when data is null', () => {
+		expect( renderTree( { data: null } ) ).toBeNull();
 	} );
 
-	it( 'should render the No data available placeholder when data is undefined', () => {
-		const tree = renderTree( {} );
-		const json = JSON.stringify( tree );
-
-		expect( json ).toContain( 'No data available' );
+	it( 'should render nothing when data is undefined', () => {
+		expect( renderTree( {} ) ).toBeNull();
 	} );
 
 	it( 'should render the three breakdown pie tiles with legend rows and donut images', () => {
@@ -208,9 +202,15 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		expect( json ).toContain( CHANNEL_CHART_DATA_URI );
 		expect( json ).toContain( LOCATION_CHART_DATA_URI );
 		expect( json ).toContain( DEVICE_CHART_DATA_URI );
+
+		// Four white cards render: the All visitors tile and three donuts.
+		// The card surface is the only white background in the tree.
+		const cardCount =
+			json.split( '"backgroundColor":"#ffffff"' ).length - 1;
+		expect( cardCount ).toBe( 4 );
 	} );
 
-	it( 'should render a Data unavailable placeholder for a breakdown whose chart image is missing', () => {
+	it( 'should render nothing for a breakdown whose chart image is missing', () => {
 		const data = {
 			...buildReports( {
 				currentUsers: '1234',
@@ -232,14 +232,31 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		} );
 		const json = JSON.stringify( tree );
 
-		// The channels tile has no donut, so it shows the placeholder.
-		expect( json ).toContain( 'Visitors by channels' );
-		expect( json ).toContain( 'Data unavailable' );
+		// The widget skips the channels tile, and no placeholder takes its
+		// place.
+		expect( json ).not.toContain( 'Visitors by channels' );
+		expect( json ).not.toContain( 'Data unavailable' );
 		expect( json ).not.toContain( CHANNEL_CHART_DATA_URI );
 
 		// The other two tiles still render their donuts.
+		expect( json ).toContain( 'Visitors by locations' );
 		expect( json ).toContain( LOCATION_CHART_DATA_URI );
+		expect( json ).toContain( 'Visitors by devices' );
 		expect( json ).toContain( DEVICE_CHART_DATA_URI );
+
+		// Three white cards render, so no empty card stands in for the
+		// missing channels tile. The card surface is the only white
+		// background in the tree.
+		const cardCount =
+			json.split( '"backgroundColor":"#ffffff"' ).length - 1;
+		expect( cardCount ).toBe( 3 );
+
+		// Four flex slots render for the three cards: an invisible spacer
+		// fills the fourth slot, so the lone card in the last row keeps its
+		// half width. The card flex style is the only `flexBasis` in the
+		// tree.
+		const flexSlotCount = json.split( '"flexBasis":0' ).length - 1;
+		expect( flexSlotCount ).toBe( 4 );
 	} );
 
 	it( 'scales the widget heading font size', () => {
