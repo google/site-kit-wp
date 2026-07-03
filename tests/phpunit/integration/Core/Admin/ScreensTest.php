@@ -236,6 +236,14 @@ class ScreensTest extends TestCase {
 		return null;
 	}
 
+	public function test_dashboard_initialize() {
+		$this->set_analytics_setup_complete( false );
+
+		$redirect = $this->load_dashboard_screen();
+
+		$this->assertNull( $redirect, 'Should not redirect.' );
+	}
+
 	public function test_dashboard_initialize__no_redirect_when_setup_complete_with_setupFlowRefresh_enabled() {
 		$this->enable_feature( 'setupFlowRefresh' );
 		$this->set_analytics_setup_complete( true );

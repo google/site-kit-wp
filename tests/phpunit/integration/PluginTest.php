@@ -110,13 +110,13 @@ class PluginTest extends TestCase {
 		$this->remove_setup_flow_refresh_filter( $plugin );
 	}
 
-	public function test_register__forces_setup_flow_refresh_feature_enabled() {
+	public function test_register__does_not_force_setup_flow_refresh_feature_enabled_in_tests() {
 		$plugin = new Plugin( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$plugin->register();
 
-		$this->assertTrue(
+		$this->assertFalse(
 			apply_filters( 'googlesitekit_is_feature_enabled', false, 'setupFlowRefresh' ),
-			'setupFlowRefresh should be force-enabled after plugin registration'
+			'setupFlowRefresh should not be force-enabled in test mode'
 		);
 
 		$this->remove_setup_flow_refresh_filter( $plugin );

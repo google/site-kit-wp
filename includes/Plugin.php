@@ -94,12 +94,14 @@ final class Plugin {
 		// Set up remote features before anything else.
 		( new Remote_Features_Provider( $this->context, $options ) )->register();
 
-		add_filter(
-			'googlesitekit_is_feature_enabled',
-			array( $this, 'force_setup_flow_refresh_feature_enabled' ),
-			20,
-			2
-		);
+		if ( ! defined( 'GOOGLESITEKIT_TESTS' ) ) {
+			add_filter(
+				'googlesitekit_is_feature_enabled',
+				array( $this, 'force_setup_flow_refresh_feature_enabled' ),
+				20,
+				2
+			);
+		}
 
 		// REST route to set up a temporary tag to verify meta tag output works reliably.
 		add_filter(
