@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import { Text, View } from '@react-pdf/renderer';
-import type { ReactNode } from 'react';
+import { View } from '@react-pdf/renderer';
+import { ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -31,9 +31,35 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { styles } from './pdfStyles';
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
+import { STRATEGY_COLUMN_WIDTH } from './MetricValueCell';
+
+const styles = createPDFStyles( {
+	headerRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		columnGap: 24,
+		padding: 24,
+		borderBottomWidth: 1,
+		borderBottomColor: PDF_COLORS.SURFACES_SURFACE_1,
+	},
+	headerTitleCell: {
+		flex: 1,
+	},
+	headerStrategyCell: {
+		width: STRATEGY_COLUMN_WIDTH,
+		alignItems: 'flex-start',
+	},
+	list: {
+		paddingHorizontal: 24,
+		paddingBottom: 16,
+	},
+} );
 
 interface MetricSectionProps {
+	/** The section's name in the header row, like "Lab data". */
 	title: string;
 	children: ReactNode;
 }
@@ -46,20 +72,22 @@ export default function MetricSection( {
 		<Fragment>
 			<View style={ styles.headerRow }>
 				<View style={ styles.headerTitleCell }>
-					<Text style={ styles.headerSectionTitle }>{ title }</Text>
+					<PDFTypography type="title" size="small">
+						{ title }
+					</PDFTypography>
 				</View>
 				<View style={ styles.headerStrategyCell }>
-					<Text style={ styles.headerStrategyLabel }>
+					<PDFTypography type="title" size="small">
 						{ __( 'Mobile', 'google-site-kit' ) }
-					</Text>
+					</PDFTypography>
 				</View>
 				<View style={ styles.headerStrategyCell }>
-					<Text style={ styles.headerStrategyLabel }>
+					<PDFTypography type="title" size="small">
 						{ __( 'Desktop', 'google-site-kit' ) }
-					</Text>
+					</PDFTypography>
 				</View>
 			</View>
-			{ children }
+			<View style={ styles.list }>{ children }</View>
 		</Fragment>
 	);
 }
