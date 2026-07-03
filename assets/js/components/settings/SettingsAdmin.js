@@ -84,7 +84,7 @@ export default function SettingsAdmin() {
 		// so if it's disconnected, return early.
 		//
 		// Because they're never called nothing else can be loading.
-		if ( isAnalyticsConnected === false && ! hasSitePurposeAnswer ) {
+		if ( isAnalyticsConnected === false ) {
 			return false;
 		}
 
