@@ -28,7 +28,16 @@ import googleSansDisplayMedium from './fonts/google-sans-display-medium.ttf';
 import googleSansDisplayRegular from './fonts/google-sans-display-regular.ttf';
 import googleSansTextMedium from './fonts/google-sans-text-medium.ttf';
 import googleSansTextRegular from './fonts/google-sans-text-regular.ttf';
-import { PDF_FONT_FAMILY_DISPLAY, PDF_FONT_FAMILY_TEXT } from './pdf-theme';
+import notoSansArabicMedium from './fonts/noto-sans-arabic-medium.ttf';
+import notoSansArabicRegular from './fonts/noto-sans-arabic-regular.ttf';
+import notoSansCyrillicMedium from './fonts/noto-sans-cyrillic-medium.ttf';
+import notoSansCyrillicRegular from './fonts/noto-sans-cyrillic-regular.ttf';
+import {
+	PDF_FONT_FAMILY_ARABIC,
+	PDF_FONT_FAMILY_CYRILLIC,
+	PDF_FONT_FAMILY_DISPLAY,
+	PDF_FONT_FAMILY_TEXT,
+} from './pdf-theme';
 
 let fontsRegistered = false;
 
@@ -36,17 +45,22 @@ let fontsRegistered = false;
  * Registers Site Kit's brand fonts with @react-pdf/renderer.
  *
  * Embeds Google Sans Display (400, 500) and Google Sans Text (400, 500) so
- * the generated PDF renders in the dashboard's typography. The font binaries are
- * emitted as hashed static assets by webpack and fetched by @react-pdf at
- * render time (not when this function runs), so the dashboard's page load is
- * unaffected. Registration is idempotent for the lifetime of the session.
+ * the generated PDF renders in the dashboard's typography, plus Noto Sans
+ * Arabic and Noto Sans (Cyrillic) as script fallbacks for non-Latin locales.
+ * Every binary is a local webpack `asset/resource` emitted as a hashed file
+ * under `dist/fonts/`, so none is inlined into the JS bundle. @react-pdf fetches
+ * a family's file only when a rendered text node references it, so a Latin PDF
+ * never requests the fallbacks and each non-Latin PDF fetches only its script.
+ * All loading happens at render time (not when this function runs), so the
+ * dashboard's page load is unaffected. Registration is idempotent for the
+ * lifetime of the session.
  *
  * Errors are intentionally not caught: a failure propagates so the orchestrator
  * transitions to its ERROR stage rather than silently rendering in a fallback
  * typeface.
  *
  * @since 1.182.0
- * @since n.e.x.t Added the Google Sans Display medium (500) weight.
+ * @since n.e.x.t Added the Google Sans Display medium (500) weight and the Noto Sans Arabic and Cyrillic script fallbacks.
  *
  * @return The display font family name.
  */
@@ -68,6 +82,22 @@ export function registerPDFFonts() {
 		fonts: [
 			{ src: googleSansTextRegular, fontWeight: 400 },
 			{ src: googleSansTextMedium, fontWeight: 500 },
+		],
+	} );
+
+	Font.register( {
+		family: PDF_FONT_FAMILY_ARABIC,
+		fonts: [
+			{ src: notoSansArabicRegular, fontWeight: 400 },
+			{ src: notoSansArabicMedium, fontWeight: 500 },
+		],
+	} );
+
+	Font.register( {
+		family: PDF_FONT_FAMILY_CYRILLIC,
+		fonts: [
+			{ src: notoSansCyrillicRegular, fontWeight: 400 },
+			{ src: notoSansCyrillicMedium, fontWeight: 500 },
 		],
 	} );
 

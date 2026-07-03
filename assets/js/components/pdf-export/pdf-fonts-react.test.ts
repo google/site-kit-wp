@@ -19,7 +19,12 @@
 /**
  * Internal dependencies
  */
-import { PDF_FONT_FAMILY_DISPLAY, PDF_FONT_FAMILY_TEXT } from './pdf-theme';
+import {
+	PDF_FONT_FAMILY_ARABIC,
+	PDF_FONT_FAMILY_CYRILLIC,
+	PDF_FONT_FAMILY_DISPLAY,
+	PDF_FONT_FAMILY_TEXT,
+} from './pdf-theme';
 
 /**
  * Imports fresh copies of the mocked renderer and the module under test.
@@ -53,28 +58,27 @@ describe( 'registerPDFFonts', () => {
 		jest.clearAllMocks();
 	} );
 
-	it( 'registers both families with the bundled weights and returns the display family', async () => {
+	it( 'registers the brand and fallback families with the bundled weights and returns the display family', async () => {
 		const { Font, registerPDFFonts } = await setup();
 
 		const family = registerPDFFonts();
 
 		expect( family ).toBe( PDF_FONT_FAMILY_DISPLAY );
-		expect( Font.register ).toHaveBeenCalledTimes( 2 );
+		expect( Font.register ).toHaveBeenCalledTimes( 4 );
 
 		const calls = jest.mocked( Font.register ).mock.calls as Array<
 			[ FontConfig ]
 		>;
-		const displayConfig = calls.find(
-			( [ config ] ) => config.family === PDF_FONT_FAMILY_DISPLAY
-		)?.[ 0 ];
-		const textConfig = calls.find(
-			( [ config ] ) => config.family === PDF_FONT_FAMILY_TEXT
-		)?.[ 0 ];
+		function weightsFor( familyName: string ) {
+			return calls
+				.find( ( [ config ] ) => config.family === familyName )?.[ 0 ]
+				.fonts.map( ( f ) => f.fontWeight );
+		}
 
-		expect( displayConfig?.fonts.map( ( f ) => f.fontWeight ) ).toEqual( [
-			400, 500,
-		] );
-		expect( textConfig?.fonts.map( ( f ) => f.fontWeight ) ).toEqual( [
+		expect( weightsFor( PDF_FONT_FAMILY_DISPLAY ) ).toEqual( [ 400, 500 ] );
+		expect( weightsFor( PDF_FONT_FAMILY_TEXT ) ).toEqual( [ 400, 500 ] );
+		expect( weightsFor( PDF_FONT_FAMILY_ARABIC ) ).toEqual( [ 400, 500 ] );
+		expect( weightsFor( PDF_FONT_FAMILY_CYRILLIC ) ).toEqual( [
 			400, 500,
 		] );
 	} );
@@ -91,10 +95,36 @@ describe( 'registerPDFFonts', () => {
 			.flatMap( ( [ config ] ) => config.fonts )
 			.map( ( { src } ) => src );
 
-		expect( sources ).toHaveLength( 4 );
+		expect( sources ).toHaveLength( 8 );
 		sources.forEach( ( src ) => {
 			expect( typeof src ).toBe( 'string' );
 			expect( src.startsWith( 'data:' ) ).toBe( false );
+		} );
+	} );
+
+	it( 'registers the Arabic and Cyrillic fallbacks from local self-hosted assets, not a remote URL', async () => {
+		const { Font, registerPDFFonts } = await setup();
+
+		registerPDFFonts();
+
+		const calls = jest.mocked( Font.register ).mock.calls as Array<
+			[ FontConfig ]
+		>;
+		const fallbackSources = calls
+			.filter(
+				( [ config ] ) =>
+					config.family === PDF_FONT_FAMILY_ARABIC ||
+					config.family === PDF_FONT_FAMILY_CYRILLIC
+			)
+			.flatMap( ( [ config ] ) => config.fonts )
+			.map( ( { src } ) => src );
+
+		expect( fallbackSources ).toHaveLength( 4 );
+		fallbackSources.forEach( ( src ) => {
+			expect( typeof src ).toBe( 'string' );
+			// The fallbacks are bundled webpack assets, not a remote font host,
+			// so the PDF renders without an external request.
+			expect( src ).not.toMatch( /^https?:\/\// );
 		} );
 	} );
 

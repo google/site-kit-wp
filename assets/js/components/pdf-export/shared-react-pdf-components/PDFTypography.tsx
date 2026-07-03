@@ -30,7 +30,9 @@ import { FC } from 'react';
 import {
 	PDF_COLORS,
 	PDF_TYPOGRAPHY,
+	getPDFFontFamily,
 } from '@/js/components/pdf-export/pdf-theme';
+import { getLocale } from '@/js/util';
 
 export type PDFTypographyType = keyof typeof PDF_TYPOGRAPHY;
 export type PDFTypographySize = keyof typeof PDF_TYPOGRAPHY[ 'body' ];
@@ -50,9 +52,14 @@ const PDFTypography: FC< PDFTypographyProps > = ( {
 	style,
 	children,
 } ) => {
+	const typeStyle = PDF_TYPOGRAPHY[ type ][ size ];
 	const baseStyles: Style[] = [
-		PDF_TYPOGRAPHY[ type ][ size ],
+		typeStyle,
 		{ color: PDF_COLORS.SURFACES_ON_SURFACE },
+		// Append the locale's script fallback to the family so non-Latin text
+		// renders legibly. Every report text renders through this component, so
+		// this is the single place the fallback needs to apply.
+		{ fontFamily: getPDFFontFamily( typeStyle.fontFamily, getLocale() ) },
 	];
 
 	return (

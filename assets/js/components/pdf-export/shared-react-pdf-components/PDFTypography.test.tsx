@@ -28,10 +28,22 @@ import TestRenderer from 'react-test-renderer';
 import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import {
 	PDF_COLORS,
+	PDF_FONT_FAMILY_ARABIC,
+	PDF_FONT_FAMILY_CYRILLIC,
 	PDF_FONT_FAMILY_DISPLAY,
 	PDF_FONT_FAMILY_TEXT,
 } from '@/js/components/pdf-export/pdf-theme';
 import PDFTypography from './PDFTypography';
+
+// `getLocale` reads the Site Kit locale from the legacy global data, so drive
+// the rendered locale by setting it rather than mocking the module.
+function setSiteKitLocale( locale?: string ) {
+	(
+		global as unknown as {
+			_googlesitekitLegacyData?: { locale?: string };
+		}
+	 )._googlesitekitLegacyData = locale ? { locale } : undefined;
+}
 
 /**
  * Merges a style array into one object, so assertions read one flat style.
@@ -144,6 +156,54 @@ describe( 'PDFTypography', () => {
 			fontSize: 14 * PDF_SCALE,
 			color: '#108080',
 			marginTop: 4,
+		} );
+	} );
+
+	describe( 'non-Latin font fallback', () => {
+		afterEach( () => {
+			setSiteKitLocale( undefined );
+		} );
+
+		it( 'stacks the Cyrillic fallback after the display family for a Cyrillic locale', () => {
+			setSiteKitLocale( 'ru_RU' );
+
+			const style = renderTextStyle( {
+				type: 'headline',
+				size: 'medium',
+				children: 'Заголовок',
+			} );
+
+			expect( style.fontFamily ).toEqual( [
+				PDF_FONT_FAMILY_DISPLAY,
+				PDF_FONT_FAMILY_CYRILLIC,
+			] );
+		} );
+
+		it( 'stacks the Arabic fallback after the text family for an Arabic locale', () => {
+			setSiteKitLocale( 'fa_IR' );
+
+			const style = renderTextStyle( {
+				type: 'body',
+				size: 'medium',
+				children: 'متن',
+			} );
+
+			expect( style.fontFamily ).toEqual( [
+				PDF_FONT_FAMILY_TEXT,
+				PDF_FONT_FAMILY_ARABIC,
+			] );
+		} );
+
+		it( 'keeps the brand family for a Latin locale', () => {
+			setSiteKitLocale( 'en_US' );
+
+			const style = renderTextStyle( {
+				type: 'body',
+				size: 'medium',
+				children: 'Text',
+			} );
+
+			expect( style.fontFamily ).toBe( PDF_FONT_FAMILY_TEXT );
 		} );
 	} );
 } );

@@ -42,6 +42,78 @@ export const PDF_FONT_FAMILY_DISPLAY = 'GoogleSansDisplay';
 export const PDF_FONT_FAMILY_TEXT = 'GoogleSansText';
 
 /**
+ * The `@react-pdf` family name for the Arabic-script fallback.
+ *
+ * `registerPDFFonts()` registers Noto Sans Arabic under it. It follows the
+ * brand family in a font stack so Arabic-script glyphs (for example Persian
+ * and Arabic) render while Latin keeps the brand typeface.
+ *
+ * @since n.e.x.t
+ */
+export const PDF_FONT_FAMILY_ARABIC = 'NotoSansArabic';
+
+/**
+ * The `@react-pdf` family name for the Cyrillic-script fallback.
+ *
+ * `registerPDFFonts()` registers Noto Sans under it. It follows the brand
+ * family in a font stack so Cyrillic-script glyphs (for example Russian and
+ * Ukrainian) render while Latin keeps the brand typeface.
+ *
+ * @since n.e.x.t
+ */
+export const PDF_FONT_FAMILY_CYRILLIC = 'NotoSans';
+
+const ARABIC_LANGUAGE_SUBTAGS = [ 'fa', 'ar' ];
+const CYRILLIC_LANGUAGE_SUBTAGS = [ 'ru', 'uk', 'bg', 'sr', 'be', 'mk' ];
+
+/**
+ * Resolves the script fallback family for a locale.
+ *
+ * Maps the locale's leading language subtag to the family that covers its
+ * script, or `undefined` for Latin and unrecognised locales.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} locale A BCP-47 or WordPress locale, e.g. `ru-RU` or `fa_IR`.
+ * @return {(string|undefined)} The fallback family, or `undefined` for Latin.
+ */
+export function getPDFFontFallbackFamily( locale: string ): string | undefined {
+	const languageSubtag = ( locale || '' ).toLowerCase().split( /[-_]/ )[ 0 ];
+
+	if ( ARABIC_LANGUAGE_SUBTAGS.includes( languageSubtag ) ) {
+		return PDF_FONT_FAMILY_ARABIC;
+	}
+
+	if ( CYRILLIC_LANGUAGE_SUBTAGS.includes( languageSubtag ) ) {
+		return PDF_FONT_FAMILY_CYRILLIC;
+	}
+
+	return undefined;
+}
+
+/**
+ * Builds the font-family stack for a base family in a locale.
+ *
+ * Returns the base family unchanged for Latin and unrecognised locales, or a
+ * `[ base, fallback ]` stack that `@react-pdf` resolves per glyph: Latin from
+ * the brand family, non-Latin from the script fallback.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} baseFamily The brand family the text would otherwise use.
+ * @param {string} locale     A BCP-47 or WordPress locale, e.g. `ru-RU`.
+ * @return {(string|string[])} The base family, or a `[ base, fallback ]` stack.
+ */
+export function getPDFFontFamily(
+	baseFamily: string,
+	locale: string
+): string | string[] {
+	const fallback = getPDFFontFallbackFamily( locale );
+
+	return fallback ? [ baseFamily, fallback ] : baseFamily;
+}
+
+/**
  * Shared colors for the PDF report.
  *
  * `@react-pdf` builds the PDF from JavaScript values and can't read the
