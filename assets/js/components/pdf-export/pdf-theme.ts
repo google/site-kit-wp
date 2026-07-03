@@ -70,7 +70,29 @@ export const PDF_COLORS = {
 	TEAL_T_300: '#4bbbbb', // $c-teal-t-300
 	SITE_KIT_SK_500: '#3c7251', // $c-site-kit-sk-500
 	VIOLET_V_300: '#8e68cb', // $c-violet-v-300
+	YELLOW_Y_100: '#fece72', // $c-yellow-y-100
+	VIOLET_V_200: '#a983e6', // $c-violet-v-200
+	BLUE_B_100: '#bed4ff', // $c-blue-b-100
+	PINK_P_200: '#ee92da', // $c-pink-p-200
+	RED_R_200: '#ff9b7a', // $c-red-r-200
 } as const;
+
+/**
+ * The colors for the donut charts in the PDF report, in slice order.
+ *
+ * Each donut slice and its legend row use the same color from this list, so
+ * they always match. The list is the same as the dashboard's donut colors, so
+ * each donut looks the same in the dashboard and the PDF.
+ *
+ * @since n.e.x.t
+ */
+export const PIE_CHART_COLORS = [
+	PDF_COLORS.YELLOW_Y_100,
+	PDF_COLORS.VIOLET_V_200,
+	PDF_COLORS.BLUE_B_100,
+	PDF_COLORS.PINK_P_200,
+	PDF_COLORS.RED_R_200,
+];
 
 /**
  * The typography in pixels, before the page scale.

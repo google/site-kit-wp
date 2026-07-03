@@ -32,7 +32,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
-import { PIE_CHART_COLORS } from '@/js/components/pdf-export/pie-chart-colors';
+import { PIE_CHART_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFCard from '@/js/components/pdf-export/shared-react-pdf-components/PDFCard';
 import PDFMetricTile from '@/js/components/pdf-export/shared-react-pdf-components/PDFMetricTile';
 import PDFPieChartTile from '@/js/components/pdf-export/shared-react-pdf-components/PDFPieChartTile';

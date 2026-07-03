@@ -363,9 +363,9 @@ function renderMetricChart( {
 	color: string;
 	signal: AbortSignal;
 } ): Promise< string > {
-	// A tick per day, dropping the first so a tick sits at the range start,
-	// matching the dashboard's overview chart. The leading column is always
-	// the day `Date`.
+	// One tick per day, except the first day, matching the ticks of the
+	// dashboard's overview chart. The leading column is always the day
+	// `Date`.
 	const [ , ...ticks ] = dataRows.map( ( row ) => row[ 0 ] as Date );
 	const hasData = dataRows.some(
 		( row ) => Number( row[ 2 ] ) > 0 || Number( row[ 3 ] ) > 0

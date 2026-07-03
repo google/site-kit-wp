@@ -58,15 +58,6 @@ import {
 } from './reportOptions';
 
 /**
- * Per-metric line colors matching the dashboard's Search Funnel widget. The
- * PDF widget reads them too, so each legend swatch matches its chart line.
- */
-export const IMPRESSIONS_COLOR = '#6380b8';
-export const CLICKS_COLOR = '#4bbbbb';
-export const UNIQUE_VISITORS_COLOR = '#3c7251';
-export const KEY_EVENTS_COLOR = '#8e68cb';
-
-/**
  * The chart draws at 506 by 133, and the tile displays the image in a
  * box of the same size, so the image never stretches and no empty
  * space appears around it.
@@ -696,7 +687,7 @@ export default async function getPDFData( {
 				reportError: searchConsole.error,
 				metricKey: 'impressions',
 				currentLabel: __( 'Impressions', 'google-site-kit' ),
-				color: IMPRESSIONS_COLOR,
+				color: PDF_COLORS.BLUE_B_400,
 				dateRangeLength,
 				signal,
 			} ),
@@ -705,7 +696,7 @@ export default async function getPDFData( {
 				reportError: searchConsole.error,
 				metricKey: 'clicks',
 				currentLabel: __( 'Clicks', 'google-site-kit' ),
-				color: CLICKS_COLOR,
+				color: PDF_COLORS.TEAL_T_300,
 				dateRangeLength,
 				signal,
 			} ),
@@ -718,7 +709,7 @@ export default async function getPDFData( {
 				dataLabels: [ __( 'Unique visitors', 'google-site-kit' ) ],
 				tooltipDataFormats: [ numericTooltipFormatter ],
 				chartDataFormats: [ identity ],
-				color: UNIQUE_VISITORS_COLOR,
+				color: PDF_COLORS.SITE_KIT_SK_500,
 				dateRangeLength,
 				referenceDate,
 				signal,
@@ -738,7 +729,7 @@ export default async function getPDFData( {
 					percentageTooltipFormatter,
 				],
 				chartDataFormats: [ identity, ( x ) => x * 100 ],
-				color: KEY_EVENTS_COLOR,
+				color: PDF_COLORS.VIOLET_V_300,
 				dateRangeLength,
 				referenceDate,
 				signal,

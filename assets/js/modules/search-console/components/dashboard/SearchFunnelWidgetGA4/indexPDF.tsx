@@ -31,17 +31,11 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFMetricChartTile from '@/js/components/pdf-export/shared-react-pdf-components/PDFMetricChartTile';
 import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
 import { numFmt } from '@/js/util';
-import {
-	CLICKS_COLOR,
-	IMPRESSIONS_COLOR,
-	KEY_EVENTS_COLOR,
-	SearchFunnelMetric,
-	SearchFunnelPDFData,
-	UNIQUE_VISITORS_COLOR,
-} from './getPDFData';
+import { SearchFunnelMetric, SearchFunnelPDFData } from './getPDFData';
 
 const styles = createPDFStyles( {
 	heading: {
@@ -75,25 +69,25 @@ const CARDS: CardDefinition[] = [
 		key: 'impressions',
 		title: __( 'Total impressions', 'google-site-kit' ),
 		currentLabel: __( 'Impressions', 'google-site-kit' ),
-		color: IMPRESSIONS_COLOR,
+		color: PDF_COLORS.BLUE_B_400,
 	},
 	{
 		key: 'clicks',
 		title: __( 'Total clicks', 'google-site-kit' ),
 		currentLabel: __( 'Clicks', 'google-site-kit' ),
-		color: CLICKS_COLOR,
+		color: PDF_COLORS.TEAL_T_300,
 	},
 	{
 		key: 'uniqueVisitors',
 		title: __( 'Unique visitors from Search', 'google-site-kit' ),
 		currentLabel: __( 'Unique visitors', 'google-site-kit' ),
-		color: UNIQUE_VISITORS_COLOR,
+		color: PDF_COLORS.SITE_KIT_SK_500,
 	},
 	{
 		key: 'keyEvents',
 		title: __( 'Key events', 'google-site-kit' ),
 		currentLabel: __( 'Key events', 'google-site-kit' ),
-		color: KEY_EVENTS_COLOR,
+		color: PDF_COLORS.VIOLET_V_300,
 	},
 ];
 
