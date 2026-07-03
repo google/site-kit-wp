@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Link, Path, Svg, Text, View } from '@react-pdf/renderer';
+import { Path, View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
@@ -30,71 +30,43 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import {
-	createPDFStyles,
-	scalePDFValue,
-} from '@/js/components/pdf-export/pdf-scale';
-import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import PDFButton from './PDFButton';
+import PDFSvg from './PDFSvg';
+import PDFTypography from './PDFTypography';
 
-const COLORS = {
-	background: '#e3d1ff',
-	text: '#462083',
-	buttonBackground: '#462083',
-	buttonText: '#ffffff',
-};
-
-// The star path from `assets/svg/icons/star-fill.svg`. Importing the SVG
-// file produces a DOM component, which @react-pdf cannot render in a PDF.
-// So the path data is inlined here and rendered with @react-pdf's own
-// <Svg> and <Path> components.
+/**
+ * The star path from `assets/svg/icons/star-fill.svg`. Importing the SVG
+ * file produces a DOM component, which @react-pdf cannot render in a PDF.
+ * So the path data is inlined here and rendered with @react-pdf's own
+ * <Svg> and <Path> components.
+ */
 const STAR_ICON_PATH =
 	'M5.825 22L8.15 14.4L2 10H9.6L12 2L14.4 10H22L15.85 14.4L18.175 22L12 17.3L5.825 22Z';
 
-const baseTextStyle = {
-	fontFamily: PDF_FONT_FAMILY_TEXT,
-	fontSize: 14,
-	lineHeight: 1.43,
-	color: COLORS.text,
-};
+const noticeTextColor = { color: PDF_COLORS.VIOLET_V_600 };
 
 const styles = createPDFStyles( {
 	container: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		backgroundColor: COLORS.background,
+		// The notice renders outside the report body's `gap` spacing, so it
+		// sets its own top margin.
+		marginTop: 59,
+		backgroundColor: PDF_COLORS.VIOLET_V_50,
 		borderRadius: 16,
 		paddingVertical: 14,
 		paddingHorizontal: 24,
-		marginBottom: 44,
 	},
 	textColumn: {
 		flexGrow: 1,
 		flexShrink: 1,
 		marginLeft: 16,
-		marginRight: 110,
-	},
-	title: {
-		...baseTextStyle,
-		fontWeight: 500,
-	},
-	body: {
-		...baseTextStyle,
-		letterSpacing: 0.25,
+		marginRight: 60,
 	},
 	button: {
 		flexShrink: 0,
-		backgroundColor: COLORS.buttonBackground,
-		borderRadius: 16,
-		paddingVertical: 6,
-		paddingHorizontal: 16,
-	},
-	buttonLink: {
-		textDecoration: 'none',
-	},
-	buttonText: {
-		...baseTextStyle,
-		fontWeight: 500,
-		color: COLORS.buttonText,
 	},
 } );
 
@@ -108,42 +80,37 @@ const PDFEmailReportingNotice: FC< PDFEmailReportingNoticeProps > = ( {
 } ) => {
 	return (
 		<View style={ styles.container }>
-			<Svg
-				width={ scalePDFValue( 24 ) }
-				height={ scalePDFValue( 24 ) }
-				viewBox="0 0 24 24"
-			>
-				<Path d={ STAR_ICON_PATH } fill={ COLORS.text } />
-			</Svg>
+			<PDFSvg width={ 24 } height={ 24 } viewBox="0 0 24 24">
+				<Path d={ STAR_ICON_PATH } fill={ PDF_COLORS.VIOLET_V_600 } />
+			</PDFSvg>
 			<View style={ styles.textColumn }>
-				<Text style={ styles.title }>
+				<PDFTypography type="label" style={ noticeTextColor }>
 					{ __(
 						'Get your site’s most important insights delivered to your inbox',
 						'google-site-kit'
 					) }
-				</Text>
-				<Text style={ styles.body }>
+				</PDFTypography>
+				<PDFTypography style={ noticeTextColor }>
 					{ __(
 						'Stay updated with a summary of your site’s performance, key trends, and tailored metrics sent directly to your inbox.',
 						'google-site-kit'
 					) }
-				</Text>
-				<Text style={ styles.body }>
+				</PDFTypography>
+				<PDFTypography style={ noticeTextColor }>
 					{ __(
 						'This feature is available exclusively to Site Kit users.',
 						'google-site-kit'
 					) }
-				</Text>
+				</PDFTypography>
 			</View>
 			<View style={ styles.button }>
-				<Link
-					src={ emailReportingSetupURL }
-					style={ styles.buttonLink }
+				<PDFButton
+					href={ emailReportingSetupURL }
+					backgroundColor={ PDF_COLORS.VIOLET_V_600 }
+					labelColor={ PDF_COLORS.SURFACES_SURFACE }
 				>
-					<Text style={ styles.buttonText }>
-						{ __( 'Set up email reports', 'google-site-kit' ) }
-					</Text>
-				</Link>
+					{ __( 'Set up email reports', 'google-site-kit' ) }
+				</PDFButton>
 			</View>
 		</View>
 	);

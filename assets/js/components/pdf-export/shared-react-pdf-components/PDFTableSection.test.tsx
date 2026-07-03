@@ -30,7 +30,9 @@ import { PDFTableColumn } from './PDFTable';
 import PDFTableSection from './PDFTableSection';
 
 interface TestRow {
+	/** The text of the row's "Name" cell. */
 	name: string;
+	/** The text of the row's "Count" cell. */
 	count: string;
 }
 
@@ -96,8 +98,9 @@ describe( 'PDFTableSection', () => {
 		expect( json ).toContain( `"columnGap":${ 40 * PDF_SCALE }` );
 	} );
 
-	it( 'renders the empty state instead of the table when there are no rows', () => {
-		const json = renderJSON(
+	it( 'returns null when there are no rows', () => {
+		// The section returns null, and no placeholder takes its place.
+		const renderer = TestRenderer.create(
 			<PDFTableSection
 				heading="Top pages"
 				columns={ columns }
@@ -105,7 +108,6 @@ describe( 'PDFTableSection', () => {
 			/>
 		);
 
-		expect( json ).toContain( 'No data available.' );
-		expect( json ).not.toContain( 'Name' );
+		expect( renderer.toJSON() ).toBeNull();
 	} );
 } );

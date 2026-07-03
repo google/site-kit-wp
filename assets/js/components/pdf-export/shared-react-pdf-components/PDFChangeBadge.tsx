@@ -1,5 +1,5 @@
 /**
- * PDFWidgetSection: widget heading + white card wrapper for the PDF report.
+ * A badge that shows a metric's change, colored for a rise or a fall.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -20,44 +20,48 @@
  * External dependencies
  */
 import { View } from '@react-pdf/renderer';
-import type { Style } from '@react-pdf/stylesheet';
 import { FC } from 'react';
 
 /**
  * Internal dependencies
  */
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
-import PDFCard from './PDFCard';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFTypography from './PDFTypography';
 
 const styles = createPDFStyles( {
-	heading: {
-		marginBottom: 15,
+	badge: {
+		borderRadius: 100,
+		paddingVertical: 4,
+		paddingHorizontal: 8,
 	},
 } );
 
-export interface PDFWidgetSectionProps {
-	/** Optional widget heading rendered on the page above the card. */
-	heading?: string;
-	/** Optional style merged onto the card. */
-	cardStyle?: Style;
+export interface PDFChangeBadgeProps {
+	/** The formatted, signed change string, e.g. "+5.1%". */
+	change: string;
+	/** Whether the change is negative. Controls the badge colors. */
+	isNegative?: boolean;
 }
 
-const PDFWidgetSection: FC< PDFWidgetSectionProps > = ( {
-	heading,
-	cardStyle,
-	children,
+const PDFChangeBadge: FC< PDFChangeBadgeProps > = ( {
+	change,
+	isNegative = false,
 } ) => {
+	const backgroundColor = isNegative
+		? PDF_COLORS.UTILITY_ERROR_CONTAINER
+		: PDF_COLORS.GREEN_G_50;
+	const color = isNegative
+		? PDF_COLORS.UTILITY_ON_ERROR_CONTAINER
+		: PDF_COLORS.UTILITY_ON_SUCCESS_CONTAINER;
+
 	return (
-		<View>
-			{ !! heading && (
-				<PDFTypography size="large" style={ styles.heading }>
-					{ heading }
-				</PDFTypography>
-			) }
-			<PDFCard style={ cardStyle }>{ children }</PDFCard>
+		<View style={ [ styles.badge, { backgroundColor } ] }>
+			<PDFTypography type="label" size="small" style={ { color } }>
+				{ change }
+			</PDFTypography>
 		</View>
 	);
 };
 
-export default PDFWidgetSection;
+export default PDFChangeBadge;

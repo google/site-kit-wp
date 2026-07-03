@@ -1,5 +1,5 @@
 /**
- * PDFWidgetSection: widget heading + white card wrapper for the PDF report.
+ * A white card that holds one section of the PDF report.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -27,37 +27,30 @@ import { FC } from 'react';
  * Internal dependencies
  */
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
-import PDFCard from './PDFCard';
-import PDFTypography from './PDFTypography';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 
 const styles = createPDFStyles( {
-	heading: {
-		marginBottom: 15,
+	card: {
+		backgroundColor: PDF_COLORS.SURFACES_SURFACE,
+		borderRadius: 16,
+		paddingVertical: 18,
+		paddingHorizontal: 24,
 	},
 } );
 
-export interface PDFWidgetSectionProps {
-	/** Optional widget heading rendered on the page above the card. */
-	heading?: string;
-	/** Optional style merged onto the card. */
-	cardStyle?: Style;
+export interface PDFCardProps {
+	/** Style merged over the card surface, radius, and padding. */
+	style?: Style | Style[];
 }
 
-const PDFWidgetSection: FC< PDFWidgetSectionProps > = ( {
-	heading,
-	cardStyle,
-	children,
-} ) => {
+const PDFCard: FC< PDFCardProps > = ( { style, children } ) => {
+	const baseStyles: Style[] = [ styles.card ];
+
 	return (
-		<View>
-			{ !! heading && (
-				<PDFTypography size="large" style={ styles.heading }>
-					{ heading }
-				</PDFTypography>
-			) }
-			<PDFCard style={ cardStyle }>{ children }</PDFCard>
+		<View style={ style ? baseStyles.concat( style ) : styles.card }>
+			{ children }
 		</View>
 	);
 };
 
-export default PDFWidgetSection;
+export default PDFCard;

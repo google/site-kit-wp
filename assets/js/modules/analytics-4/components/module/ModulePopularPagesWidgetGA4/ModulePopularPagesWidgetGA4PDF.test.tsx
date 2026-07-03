@@ -213,18 +213,21 @@ describe( 'ModulePopularPagesWidgetGA4PDF', () => {
 		expect( json ).toContain( '51s' );
 	} );
 
-	it( 'renders the No data available placeholder when there are no rows', () => {
-		const json = renderJSON( { data: { rows: [], titles: {} } } );
+	it( 'returns null when there are no rows', () => {
+		// The whole section returns null, heading and card included.
+		const renderer = TestRenderer.create(
+			<ModulePopularPagesWidgetGA4PDF data={ { rows: [], titles: {} } } />
+		);
 
-		expect( json ).toContain( 'No data available' );
-		expect( json ).not.toContain( 'Pageviews' );
+		expect( renderer.toJSON() ).toBeNull();
 	} );
 
-	it( 'renders the No data available placeholder when data is null', () => {
-		const json = renderJSON( { data: null } );
+	it( 'returns null when data is null', () => {
+		const renderer = TestRenderer.create(
+			<ModulePopularPagesWidgetGA4PDF data={ null } />
+		);
 
-		expect( json ).toContain( 'No data available' );
-		expect( json ).not.toContain( 'Pageviews' );
+		expect( renderer.toJSON() ).toBeNull();
 	} );
 
 	it( 'scales the cell font size', () => {

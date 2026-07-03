@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { ComponentProps } from 'react';
+import { ComponentProps } from 'react';
 import TestRenderer from 'react-test-renderer';
 
 /**

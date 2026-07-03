@@ -25,13 +25,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import { PIE_CHART_COLORS } from '@/js/components/pdf-export/pie-chart-colors';
 import renderGoogleChartToDataURI, {
 	getVisualization,
 } from '@/js/components/pdf-export/render-google-chart-to-data-uri';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import type {
+import {
 	Report,
 	ReportOptions,
 } from '@/js/modules/analytics-4/datastore/types';
@@ -50,13 +51,18 @@ import {
  * The same color as the dashboard's All Visitors line, the default graph color.
  */
 const LINE_CHART_COLOR = '#3c7251';
-const LINE_CHART_WIDTH = 540;
-const LINE_CHART_HEIGHT = 200;
+/**
+ * The chart draws at 506 by 133, and the tile displays the image in a
+ * box of the same size, so the image never stretches and no empty
+ * space appears around it.
+ */
+const LINE_CHART_WIDTH = 506;
+const LINE_CHART_HEIGHT = 133;
 
 /**
  * The size of the hole in the middle of each breakdown donut, from 0 to 1.
  */
-const BREAKDOWN_PIE_HOLE = 0.56;
+const BREAKDOWN_PIE_HOLE = 0.542;
 
 /**
  * The width and height of each breakdown donut, in PDF points.
@@ -90,18 +96,24 @@ const BREAKDOWNS = [
 ] as const;
 
 export interface GetPDFDataParams {
+	/** WordPress data registry. */
 	registry: {
+		/** Returns the given store's action creators. */
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Registry actions are loosely typed in this codebase.
 		dispatch: ( storeName: string ) => any;
+		/** Returns the given store's selectors, where each selector resolves once its data has loaded. */
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Registry selectors are loosely typed in this codebase.
 		resolveSelect: ( storeName: string ) => any;
+		/** Returns the given store's selectors. */
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Registry selectors are loosely typed in this codebase.
 		select: ( storeName: string ) => any;
 	};
+	/** Report date range. */
 	dates: Pick<
 		ReportOptions,
 		'startDate' | 'endDate' | 'compareStartDate' | 'compareEndDate'
 	>;
+	/** Signal that cancels the export. */
 	signal: AbortSignal;
 }
 
@@ -110,33 +122,50 @@ export interface GetPDFDataParams {
  * total, as a fraction between 0 and 1.
  */
 export interface BreakdownRow {
+	/** Name of the donut segment, like a channel, country, or device. */
 	label: string;
+	/** The segment's share of the total, as a fraction between 0 and 1. */
 	percentage: number;
 }
 
 export interface AllTrafficPDFData {
+	/** Loaded reports and breakdown legend rows, or `null` when the export is canceled. */
 	data: {
+		/** GA4 totals report with the current and comparison range totals. */
 		totalsReport: Report;
+		/** GA4 report with one row per day, which the line chart is drawn from. */
 		graphReport: Report;
+		/** Legend rows for the channels donut, or `null` on a missing report, empty data, or a failed render. */
 		channelBreakdown: BreakdownRow[] | null;
+		/** Legend rows for the locations donut, or `null` on a missing report, empty data, or a failed render. */
 		locationBreakdown: BreakdownRow[] | null;
+		/** Legend rows for the devices donut, or `null` on a missing report, empty data, or a failed render. */
 		deviceBreakdown: BreakdownRow[] | null;
 	} | null;
+	/** Rendered chart images as JPEG data URIs. */
 	chartImages?: {
+		/** The All visitors line chart image. */
 		lineChart: string;
+		/** The channels donut image, absent when `channelBreakdown` is `null`. */
 		channelChart?: string;
+		/** The locations donut image, absent when `locationBreakdown` is `null`. */
 		locationChart?: string;
+		/** The devices donut image, absent when `deviceBreakdown` is `null`. */
 		deviceChart?: string;
 	};
 }
 
 interface LineChartPoint {
+	/** Day the point covers, parsed from the row's date dimension. */
 	date: Date;
+	/** Total users on that day, `0` when the row has no value. */
 	value: number;
 }
 
 interface BreakdownChart {
+	/** Legend rows for the donut, or `null` on a missing report, empty data, or a failed render. */
 	rows: BreakdownRow[] | null;
+	/** The donut as a JPEG data URI, absent when `rows` is `null`. */
 	chartImage?: string;
 }
 
@@ -148,8 +177,8 @@ interface BreakdownChart {
  *
  * @since 1.182.0
  *
- * @param {Object} graphReport Date-dimension GA4 report.
- * @return {Array<Object>} Points of `{ date, value }`, ordered as returned.
+ * @param graphReport Date-dimension GA4 report.
+ * @return Points of `{ date, value }`, ordered as returned.
  */
 function getLineChartPoints( graphReport: Report ): LineChartPoint[] {
 	return ( graphReport?.rows || [] ).reduce< LineChartPoint[] >(
@@ -180,8 +209,8 @@ function getLineChartPoints( graphReport: Report ): LineChartPoint[] {
  *
  * @since 1.182.0
  *
- * @param {Array<Object>} points Parsed chart points.
- * @return {Object} A `google.visualization.DataTable` instance.
+ * @param points Parsed chart points.
+ * @return A `google.visualization.DataTable` instance.
  */
 function buildLineChartDataTable( points: LineChartPoint[] ): object {
 	const visualization = getVisualization();
@@ -204,8 +233,8 @@ function buildLineChartDataTable( points: LineChartPoint[] ): object {
  *
  * @since 1.182.0
  *
- * @param {Array<Object>} points Parsed chart points.
- * @return {Object} Google Charts options object.
+ * @param points Parsed chart points.
+ * @return Google Charts options object.
  */
 function getLineChartOptions( points: LineChartPoint[] ): object {
 	// A tick per day, dropping the first so a tick sits at the range start,
@@ -227,32 +256,32 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 			position: 'none',
 		},
 		hAxis: {
-			// Result of placing `rgba(26, 115, 232, 0.08)` over a white background.
-			backgroundColor: '#eef4fd',
 			format: 'MMM d',
 			gridlines: {
-				color: '#ffffff',
+				color: PDF_COLORS.SURFACES_SURFACE,
 			},
 			textPosition: 'out',
 			textStyle: {
-				color: '#616161',
-				fontSize: 12,
+				color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
+				fontName: 'Google Sans Text',
+				fontSize: 14,
 			},
 			ticks,
 		},
 		vAxis: {
 			gridlines: {
-				color: '#ece9f1',
+				color: PDF_COLORS.SURFACES_SURFACE_1,
 			},
 			lineWidth: 3,
 			minorGridlines: {
-				color: '#ffffff',
+				color: PDF_COLORS.SURFACES_SURFACE,
 			},
 			minValue: 0,
 			textPosition: 'out',
 			textStyle: {
-				color: '#616161',
-				fontSize: 12,
+				color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
+				fontName: 'Google Sans Text',
+				fontSize: 14,
 			},
 			viewWindow: {
 				min: 0,
@@ -263,7 +292,7 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 		series: {
 			0: {
 				color: LINE_CHART_COLOR,
-				lineWidth: 5,
+				lineWidth: 4,
 				targetAxisIndex: 1,
 			},
 		},
@@ -280,8 +309,8 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
  *
  * @since n.e.x.t
  *
- * @param {Array<Object>} rows Legend rows of `{ label, percentage }`.
- * @return {Object} A `google.visualization.DataTable` instance.
+ * @param rows Legend rows of `{ label, percentage }`.
+ * @return A `google.visualization.DataTable` instance.
  */
 function buildBreakdownChartDataTable( rows: BreakdownRow[] ): object {
 	const visualization = getVisualization();
@@ -310,15 +339,18 @@ function buildBreakdownChartDataTable( rows: BreakdownRow[] ): object {
  *
  * @since n.e.x.t
  *
- * @return {Object} Google Charts options object.
+ * @return Google Charts options object.
  */
 function getBreakdownChartOptions(): object {
 	return {
 		pieHole: BREAKDOWN_PIE_HOLE,
 		colors: PIE_CHART_COLORS,
+		// Google Charts draws a white border between slices by default. A
+		// transparent border makes the segments touch.
+		pieSliceBorderColor: 'transparent',
 		// JPEG output has no transparency, so a transparent background turns
 		// black. Fill it white to match the card behind the donut.
-		backgroundColor: '#ffffff',
+		backgroundColor: PDF_COLORS.SURFACES_SURFACE,
 		chartArea: {
 			left: 0,
 			top: 0,
@@ -338,14 +370,14 @@ function getBreakdownChartOptions(): object {
  *
  * Uses the dashboard's helper, so the slices and their order match the
  * dashboard: the top slices plus an "Others" slice. Returns `{ rows: null }`
- * on a missing report, empty data, or a failed or cancelled render, so that
- * tile shows its "Data unavailable" placeholder while the other tiles render.
+ * on a missing report, empty data, or a failed or canceled render, so the
+ * widget skips that tile while the other tiles render.
  *
  * @since n.e.x.t
  *
- * @param {Object|null} report The breakdown report, or `null` when its fetch failed.
- * @param {Object}      signal Cancellation signal forwarded to the renderer.
- * @return {Promise<Object>} The breakdown's legend rows and donut image.
+ * @param report The breakdown report, or `null` when its fetch failed.
+ * @param signal Cancellation signal forwarded to the renderer.
+ * @return The breakdown's legend rows and donut image.
  */
 async function loadBreakdownChart(
 	report: Report | null,
@@ -396,17 +428,17 @@ async function loadBreakdownChart(
  * Fetches the totals, graph, and three breakdown reports (channels, locations,
  * and devices) at the same time, and stops early when the signal is aborted.
  * Then it draws the line chart and the three donuts as JPEG data URIs for the
- * PDF. If one breakdown's report or render fails, its tile falls back to a
- * placeholder and the other tiles still render.
+ * PDF. If one breakdown's report or render fails, the widget skips that tile
+ * and the other tiles still render.
  *
  * @since 1.181.0
  * @since n.e.x.t Also loads the channel, location, and device breakdown donuts.
  *
- * @param {Object}      params          Loader parameters.
- * @param {Object}      params.registry WordPress data registry.
- * @param {Object}      params.dates    Report date range.
- * @param {AbortSignal} params.signal   Cancellation signal.
- * @return {Promise<Object>} Resolved report data and chart images.
+ * @param params          Loader parameters.
+ * @param params.registry WordPress data registry.
+ * @param params.dates    Report date range.
+ * @param params.signal   Cancellation signal.
+ * @return Resolved report data and chart images.
  */
 export default async function getPDFData( {
 	registry,
@@ -448,7 +480,7 @@ export default async function getPDFData( {
 	);
 
 	// The registry remembers each `getReport` call by its arguments, and
-	// every abort signal looks the same to it. After a cancelled or failed
+	// every abort signal looks the same to it. After a canceled or failed
 	// run, the registry would treat the calls below as already done and
 	// return `undefined` reports without fetching. Invalidate the earlier
 	// calls, so this run fetches the reports again. A report that already
@@ -469,9 +501,8 @@ export default async function getPDFData( {
 			registry
 				.resolveSelect( MODULES_ANALYTICS_4 )
 				.getReport( graphArgs, { signal } ),
-			// A breakdown report that fails is caught here, so the rest of the
-			// widget still renders and that one tile falls back to its
-			// placeholder.
+			// A breakdown report that fails is caught here, so the rest of
+			// the widget still renders and nothing renders for that tile.
 			...breakdownArgsList.map( ( args ) =>
 				registry
 					.resolveSelect( MODULES_ANALYTICS_4 )
@@ -486,7 +517,7 @@ export default async function getPDFData( {
 
 	await ensureGoogleChartsLoaded();
 
-	// Cancelling during loading stops here, before any chart is drawn.
+	// Canceling during loading stops here, before any chart is drawn.
 	if ( signal.aborted ) {
 		return { data: null };
 	}

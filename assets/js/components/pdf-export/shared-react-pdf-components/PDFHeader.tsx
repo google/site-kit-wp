@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Link, Path, Svg, Text, View } from '@react-pdf/renderer';
+import { Path, View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
@@ -33,20 +33,22 @@ import { __ } from '@wordpress/i18n';
 import {
 	PDF_PAGE_PADDING,
 	createPDFStyles,
-	scalePDFValue,
 } from '@/js/components/pdf-export/pdf-scale';
-import {
-	PDF_FONT_FAMILY_DISPLAY,
-	PDF_FONT_FAMILY_TEXT,
-	PDF_HEADER_COLORS,
-} from '@/js/components/pdf-export/pdf-theme';
-import type { PDFHeaderSection } from '@/js/components/pdf-export/types';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import { PDFHeaderSection } from '@/js/components/pdf-export/types';
 import { getLocale, isValidDateString, stringToDate } from '@/js/util';
-import PDFHeaderSectionChip from './PDFHeaderSectionChip';
+import PDFChip from './PDFChip';
+import PDFLink from './PDFLink';
 import PDFSiteKitLogo from './PDFSiteKitLogo';
+import PDFSvg from './PDFSvg';
+import PDFTypography from './PDFTypography';
 
-// Material "chevron_right" geometry (viewBox 0 0 24 24).
-const CHEVRON_RIGHT_PATH = 'M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z';
+/**
+ * `@react-pdf` can't render the app's imported SVG components, so the
+ * chevron icon's path data is inline.
+ */
+const CHEVRON_RIGHT_PATH =
+	'M3.34374 9.16666L2.60416 8.42708L6.03124 5L2.60416 1.57291L3.34374 0.833328L7.51041 5L3.34374 9.16666Z';
 
 /**
  * Extracts the host (e.g. "www.example.com") from the reference site URL for
@@ -54,8 +56,8 @@ const CHEVRON_RIGHT_PATH = 'M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z';
  *
  * @since 1.182.0
  *
- * @param {string} siteURL The reference site URL.
- * @return {string} The host, or the original value when it cannot be parsed.
+ * @param siteURL The reference site URL.
+ * @return The host, or the original value when it cannot be parsed.
  */
 function getSiteHost( siteURL: string ): string {
 	try {
@@ -73,8 +75,8 @@ function getSiteHost( siteURL: string ): string {
  *
  * @since 1.182.0
  *
- * @param {string} dateString The date in `YYYY-MM-DD` format.
- * @return {string} The localized date, or an empty string.
+ * @param dateString The date in `YYYY-MM-DD` format.
+ * @return The localized date, or an empty string.
  */
 function formatHeaderDate( dateString: string ): string {
 	if ( ! isValidDateString( dateString ) ) {
@@ -101,60 +103,34 @@ const headerFullWidthOffsets = {
 
 const styles = createPDFStyles( {
 	header: {
-		backgroundColor: '#FFFFFF',
+		backgroundColor: PDF_COLORS.SURFACES_SURFACE,
 		marginBottom: 24,
 		paddingTop: 16,
-		paddingBottom: 6,
+		paddingBottom: 11,
 	},
 	topRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		marginBottom: 16,
+		marginBottom: 29,
 	},
 	divider: {
 		width: 1,
-		height: 28,
-		backgroundColor: PDF_HEADER_COLORS.chipBorder,
-		marginHorizontal: 12,
+		height: 39,
+		backgroundColor: PDF_COLORS.SURFACES_SURFACE_1,
+		marginHorizontal: 22,
 	},
 	titleBlock: {
 		flexGrow: 1,
 		flexShrink: 1,
-	},
-	title: {
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 14,
-		lineHeight: 20 / 14,
-		letterSpacing: 0.25,
-		color: PDF_HEADER_COLORS.subtitle,
-		marginBottom: 2,
-	},
-	dateRange: {
-		fontFamily: PDF_FONT_FAMILY_DISPLAY,
-		fontSize: 22,
-		fontWeight: 400,
-		lineHeight: 28 / 22,
-		color: PDF_HEADER_COLORS.title,
 	},
 	siteBlock: {
 		flexShrink: 0,
 		marginLeft: 16,
 		alignItems: 'flex-end',
 	},
-	siteLink: {
-		textDecoration: 'none',
-	},
-	siteURL: {
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 14,
-		fontWeight: 400,
-		lineHeight: 20 / 14,
-		letterSpacing: 0.25,
-		color: PDF_HEADER_COLORS.siteURL,
-	},
 	chipRow: {
 		flexDirection: 'row',
-		alignItems: 'flex-start',
+		alignItems: 'center',
 		justifyContent: 'space-between',
 	},
 	chips: {
@@ -162,36 +138,34 @@ const styles = createPDFStyles( {
 		flexWrap: 'wrap',
 		flexGrow: 1,
 		flexShrink: 1,
+		rowGap: 8,
 	},
 	chipWrapper: {
-		marginRight: 8,
-		marginBottom: 8,
+		marginRight: 24,
 	},
 	viewDashboard: {
 		flexShrink: 0,
-		flexDirection: 'row',
-		alignItems: 'center',
 		marginLeft: 8,
-		textDecoration: 'none',
 	},
-	viewDashboardText: {
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 14,
-		fontWeight: 500,
-		lineHeight: 20 / 14,
-		letterSpacing: 0,
-		color: PDF_HEADER_COLORS.link,
-		marginRight: 2,
+	viewDashboardLink: {
+		// Gap between the "View dashboard in Site Kit" text and its chevron icon.
+		marginRight: 4,
 	},
 } );
 
 export interface PDFHeaderProps {
+	/** The site URL. The header shows its host. */
 	siteURL: string;
+	/** Golink URL opening the Site Kit dashboard. The host and the "View dashboard in Site Kit" link open it. */
 	dashboardURL?: string;
+	/** The report date range, shown under the header title. */
 	dateRange: {
+		/** The first day of the range, as `YYYY-MM-DD`. */
 		startDate: string;
+		/** The last day of the range, as `YYYY-MM-DD`. */
 		endDate: string;
 	};
+	/** The sections rendered as chips, in order. */
 	sections: PDFHeaderSection[];
 }
 
@@ -203,7 +177,7 @@ const PDFHeader: FC< PDFHeaderProps > = ( {
 } ) => {
 	const startDate = formatHeaderDate( dateRange.startDate );
 	const endDate = formatHeaderDate( dateRange.endDate );
-	// Avoid a dangling " - " when one (or both) of the dates is invalid.
+	/** Avoid a dangling " - " when one (or both) of the dates is invalid. */
 	const formattedDateRange =
 		startDate && endDate
 			? `${ startDate } - ${ endDate }`
@@ -215,24 +189,35 @@ const PDFHeader: FC< PDFHeaderProps > = ( {
 				<PDFSiteKitLogo />
 				<View style={ styles.divider } />
 				<View style={ styles.titleBlock }>
-					<Text style={ styles.title }>
+					<PDFTypography
+						style={ {
+							color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
+						} }
+					>
 						{ __( "Your site's performance", 'google-site-kit' ) }
-					</Text>
-					<Text style={ styles.dateRange }>
+					</PDFTypography>
+					<PDFTypography type="headline" size="small">
 						{ formattedDateRange }
-					</Text>
+					</PDFTypography>
 				</View>
 				<View style={ styles.siteBlock }>
 					{ dashboardURL ? (
-						<Link src={ dashboardURL } style={ styles.siteLink }>
-							<Text style={ styles.siteURL }>
-								{ getSiteHost( siteURL ) }
-							</Text>
-						</Link>
-					) : (
-						<Text style={ styles.siteURL }>
+						<PDFLink
+							href={ dashboardURL }
+							style={ {
+								color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
+							} }
+						>
 							{ getSiteHost( siteURL ) }
-						</Text>
+						</PDFLink>
+					) : (
+						<PDFTypography
+							style={ {
+								color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
+							} }
+						>
+							{ getSiteHost( siteURL ) }
+						</PDFTypography>
 					) }
 				</View>
 			</View>
@@ -240,31 +225,34 @@ const PDFHeader: FC< PDFHeaderProps > = ( {
 				<View style={ styles.chips }>
 					{ sections.map( ( { slug, label, Icon } ) => (
 						<View key={ slug } style={ styles.chipWrapper }>
-							<PDFHeaderSectionChip
-								label={ label }
-								Icon={ Icon }
-							/>
+							<PDFChip label={ label } Icon={ Icon } />
 						</View>
 					) ) }
 				</View>
-				<Link src={ dashboardURL } style={ styles.viewDashboard }>
-					<Text style={ styles.viewDashboardText }>
+				<View style={ styles.viewDashboard }>
+					<PDFLink
+						href={ dashboardURL }
+						type="label"
+						style={ styles.viewDashboardLink }
+						trailingIcon={
+							<PDFSvg
+								width={ 10 }
+								height={ 10 }
+								viewBox="0 0 10 10"
+							>
+								<Path
+									d={ CHEVRON_RIGHT_PATH }
+									fill={ PDF_COLORS.CONTENT_SECONDARY }
+								/>
+							</PDFSvg>
+						}
+					>
 						{ __(
 							'View dashboard in Site Kit',
 							'google-site-kit'
 						) }
-					</Text>
-					<Svg
-						width={ scalePDFValue( 10 ) }
-						height={ scalePDFValue( 10 ) }
-						viewBox="0 0 24 24"
-					>
-						<Path
-							d={ CHEVRON_RIGHT_PATH }
-							fill={ PDF_HEADER_COLORS.link }
-						/>
-					</Svg>
-				</Link>
+					</PDFLink>
+				</View>
 			</View>
 		</View>
 	);

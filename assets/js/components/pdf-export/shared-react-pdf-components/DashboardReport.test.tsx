@@ -28,9 +28,10 @@ import TestRenderer from 'react-test-renderer';
 import {
 	PDF_PAGE_PADDING,
 	PDF_PAGE_WIDTH,
+	scalePDFValue,
 } from '@/js/components/pdf-export/pdf-scale';
 import { SECTION_ICONS } from '@/js/components/pdf-export/section-icons';
-import type { PDFWidgetComponentProps } from '@/js/components/pdf-export/types';
+import { PDFWidgetComponentProps } from '@/js/components/pdf-export/types';
 import { CONTEXT_MAIN_DASHBOARD_TRAFFIC } from '@/js/googlesitekit/widgets/default-contexts';
 import { render } from '@tests/js/test-utils';
 import DashboardReport, { DashboardReportProps } from './DashboardReport';
@@ -39,23 +40,44 @@ function FakeWidget( { data }: PDFWidgetComponentProps ) {
 	return <Text>{ `widget:${ String( data ) }` }</Text>;
 }
 
-const footerProps = {
+const defaultReportProps: DashboardReportProps = {
+	siteName: 'Example Site',
+	siteURL: 'https://www.example.com/',
+	dateRange: { startDate: '2021-01-01', endDate: '2021-01-28' },
+	sections: [],
+	areas: [],
 	dashboardURL: 'http://example.com/wp-admin/index.php?to=dashboard',
 	helpCenterURL: 'https://sitekit.withgoogle.com/support/?doc=get-support',
 	privacyPolicyURL: 'https://policies.google.com/privacy',
 };
 
+/**
+ * Renders the report into the test DOM for content assertions.
+ *
+ * @since n.e.x.t
+ *
+ * @param props Props that override the defaults.
+ * @return Render result with queries like `getByText`.
+ */
 function renderDashboardReport( props: Partial< DashboardReportProps > = {} ) {
-	return render(
-		<DashboardReport
-			siteName="Example Site"
-			siteURL="https://www.example.com/"
-			dateRange={ { startDate: '2021-01-01', endDate: '2021-01-28' } }
-			sections={ [] }
-			areas={ [] }
-			{ ...footerProps }
-			{ ...props }
-		/>
+	return render( <DashboardReport { ...defaultReportProps } { ...props } /> );
+}
+
+/**
+ * Renders the report to a JSON string for content and style assertions.
+ *
+ * @since n.e.x.t
+ *
+ * @param props Props that override the defaults.
+ * @return JSON string of the rendered tree.
+ */
+function renderDashboardReportJSON(
+	props: Partial< DashboardReportProps > = {}
+) {
+	return JSON.stringify(
+		TestRenderer.create(
+			<DashboardReport { ...defaultReportProps } { ...props } />
+		).toJSON()
 	);
 }
 
@@ -82,7 +104,109 @@ describe( 'DashboardReport', () => {
 		expect( getByText( 'widget:visitors' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should render a placeholder for a widget without a resolved component', () => {
+	it( 'skips a widget without a component and keeps the rest of its area', () => {
+		const areas = [
+			{
+				areaSlug: 'mainDashboardTrafficPrimary',
+				areaTitle: 'Traffic',
+				widgets: [
+					{
+						slug: 'searchFunnelGA4',
+						Component: null,
+						data: null,
+					},
+					{
+						slug: 'analyticsAllTrafficGA4',
+						Component: FakeWidget,
+						data: 'visitors',
+					},
+				],
+			},
+		];
+
+		const { getByText, queryByText } = renderDashboardReport( { areas } );
+
+		// The report skips the failed widget and shows no placeholder text.
+		expect( getByText( 'Traffic' ) ).toBeInTheDocument();
+		expect( getByText( 'widget:visitors' ) ).toBeInTheDocument();
+		expect( queryByText( 'Data unavailable.' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'skips an area whose widgets have no component or no data', () => {
+		const areas = [
+			{
+				areaSlug: 'mainDashboardTrafficPrimary',
+				areaTitle: 'Traffic',
+				widgets: [
+					{
+						slug: 'analyticsAllTrafficGA4',
+						Component: null,
+						data: null,
+					},
+					{
+						slug: 'searchFunnelGA4',
+						Component: FakeWidget,
+						data: null,
+					},
+				],
+			},
+		];
+
+		const { queryByText } = renderDashboardReport( { areas } );
+
+		// The report skips the whole area: no title, no widget, and no
+		// placeholder text.
+		expect( queryByText( 'Traffic' ) ).not.toBeInTheDocument();
+		expect( queryByText( 'Data unavailable.' ) ).not.toBeInTheDocument();
+		expect( queryByText( 'widget:null' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'shows a header chip only for an area with content', () => {
+		const sections = [
+			{ slug: 'mainDashboardTrafficPrimary', label: 'Traffic chip' },
+			{ slug: 'mainDashboardContentPrimary', label: 'Content chip' },
+		];
+		const areas = [
+			{
+				areaSlug: 'mainDashboardTrafficPrimary',
+				areaTitle: 'Traffic',
+				widgets: [
+					{
+						slug: 'analyticsAllTrafficGA4',
+						Component: FakeWidget,
+						data: 'visitors',
+					},
+				],
+			},
+			{
+				areaSlug: 'mainDashboardContentPrimary',
+				areaTitle: 'Content',
+				widgets: [
+					{
+						slug: 'analyticsPopularPagesGA4',
+						Component: FakeWidget,
+						data: null,
+					},
+				],
+			},
+		];
+
+		const { getByText, queryByText } = renderDashboardReport( {
+			sections,
+			areas,
+		} );
+
+		expect( getByText( 'Traffic chip' ) ).toBeInTheDocument();
+		expect( queryByText( 'Content chip' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'renders the "No report data available." message when there are no areas', () => {
+		const { getByText } = renderDashboardReport();
+
+		expect( getByText( 'No report data available.' ) ).toBeInTheDocument();
+	} );
+
+	it( 'renders the "No report data available." message when no area has content to render', () => {
 		const areas = [
 			{
 				areaSlug: 'mainDashboardTrafficPrimary',
@@ -98,12 +222,6 @@ describe( 'DashboardReport', () => {
 		];
 
 		const { getByText } = renderDashboardReport( { areas } );
-
-		expect( getByText( 'Data unavailable.' ) ).toBeInTheDocument();
-	} );
-
-	it( 'should render gracefully when there are no areas', () => {
-		const { getByText } = renderDashboardReport();
 
 		expect( getByText( 'No report data available.' ) ).toBeInTheDocument();
 	} );
@@ -129,7 +247,7 @@ describe( 'DashboardReport', () => {
 		).toHaveAttribute( 'src', 'https://example.com/golink' );
 	} );
 
-	it( 'renders the header with the forwarded props', () => {
+	it( 'renders the header with the site URL, dashboard URL, date range, and sections', () => {
 		const { getByText } = renderDashboardReport( {
 			dashboardURL: 'https://example.com/go-dashboard',
 			sections: [
@@ -137,6 +255,21 @@ describe( 'DashboardReport', () => {
 					slug: 'mainDashboardTrafficPrimary',
 					label: 'Traffic',
 					Icon: SECTION_ICONS[ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+				},
+			],
+			// The chip only renders while its area has content, so the area
+			// holds a widget with data.
+			areas: [
+				{
+					areaSlug: 'mainDashboardTrafficPrimary',
+					areaTitle: 'Traffic area',
+					widgets: [
+						{
+							slug: 'analyticsAllTrafficGA4',
+							Component: FakeWidget,
+							data: 'visitors',
+						},
+					],
 				},
 			],
 		} );
@@ -155,23 +288,54 @@ describe( 'DashboardReport', () => {
 	} );
 
 	it( 'sets the page width and padding to fixed point values', () => {
-		const json = JSON.stringify(
-			TestRenderer.create(
-				<DashboardReport
-					siteName="Example Site"
-					siteURL="https://www.example.com/"
-					dateRange={ {
-						startDate: '2021-01-01',
-						endDate: '2021-01-28',
-					} }
-					sections={ [] }
-					areas={ [] }
-					{ ...footerProps }
-				/>
-			).toJSON()
-		);
+		const reportJSON = renderDashboardReportJSON();
 
-		expect( json ).toContain( `"padding":${ PDF_PAGE_PADDING }` );
-		expect( json ).toContain( `"size":[${ PDF_PAGE_WIDTH },` );
+		expect( reportJSON ).toContain( `"padding":${ PDF_PAGE_PADDING }` );
+		expect( reportJSON ).toContain( `"size":[${ PDF_PAGE_WIDTH },` );
+	} );
+
+	it( 'scales the gap between an area title and its first widget', () => {
+		const areas = [
+			{
+				areaSlug: 'mainDashboardTrafficPrimary',
+				areaTitle: 'Traffic',
+				widgets: [
+					{
+						slug: 'analyticsAllTrafficGA4',
+						Component: FakeWidget,
+						data: 'visitors',
+					},
+				],
+			},
+		];
+
+		const reportJSON = renderDashboardReportJSON( { areas } );
+
+		expect( reportJSON ).toContain(
+			`"marginBottom":${ scalePDFValue( 20 ) }`
+		);
+	} );
+
+	it( 'scales the gaps between areas and between widgets', () => {
+		const areas = [
+			{
+				areaSlug: 'mainDashboardTrafficPrimary',
+				areaTitle: 'Traffic',
+				widgets: [
+					{
+						slug: 'analyticsAllTrafficGA4',
+						Component: FakeWidget,
+						data: 'visitors',
+					},
+				],
+			},
+		];
+
+		const reportJSON = renderDashboardReportJSON( { areas } );
+
+		// The body adds a gap of 50 between areas, and the widget container a
+		// gap of 30 between widgets. Both scale to the page.
+		expect( reportJSON ).toContain( `"gap":${ scalePDFValue( 50 ) }` );
+		expect( reportJSON ).toContain( `"gap":${ scalePDFValue( 30 ) }` );
 	} );
 } );

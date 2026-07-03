@@ -1,4 +1,6 @@
 /**
+ * SearchFunnelWidgetGA4 PDF data loader.
+ *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,20 +24,21 @@ import { identity } from 'lodash';
 /**
  * WordPress dependencies
  */
-import type { WPDataRegistry } from '@wordpress/data/build-types/registry';
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import renderGoogleChartToDataURI, {
 	getVisualization,
 } from '@/js/components/pdf-export/render-google-chart-to-data-uri';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import type { Report } from '@/js/modules/analytics-4/datastore/types';
+import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { extractAnalytics4DashboardData } from '@/js/modules/analytics-4/utils';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import {
@@ -54,19 +57,29 @@ import {
 	getSearchConsoleReportOptions,
 } from './reportOptions';
 
-// Per-metric line colors matching the dashboard's Search Funnel widget.
-const IMPRESSIONS_COLOR = '#6380b8';
-const CLICKS_COLOR = '#4bbbbb';
-const UNIQUE_VISITORS_COLOR = '#3c7251';
-const KEY_EVENTS_COLOR = '#8e68cb';
+/**
+ * Per-metric line colors matching the dashboard's Search Funnel widget. The
+ * PDF widget reads them too, so each legend swatch matches its chart line.
+ */
+export const IMPRESSIONS_COLOR = '#6380b8';
+export const CLICKS_COLOR = '#4bbbbb';
+export const UNIQUE_VISITORS_COLOR = '#3c7251';
+export const KEY_EVENTS_COLOR = '#8e68cb';
 
-const LINE_CHART_WIDTH = 240;
-const LINE_CHART_HEIGHT = 120;
+/**
+ * The chart draws at 506 by 133, and the tile displays the image in a
+ * box of the same size, so the image never stretches and no empty
+ * space appears around it.
+ */
+const LINE_CHART_WIDTH = 506;
+const LINE_CHART_HEIGHT = 133;
+
 /**
  * PDFs show each chart as an image. The chart renders at 4 times its
  * display size, so the lines stay sharp when the PDF shrinks the image to fit.
  */
 const LINE_CHART_SCALE_FACTOR = 4;
+
 /**
  * `getLineChartOptions` sets the line widths, dash lengths, font sizes, and
  * chart margins in pixels of the rendered chart. The values were chosen at the
@@ -77,7 +90,7 @@ const LINE_CHART_OPTION_SCALE = LINE_CHART_SCALE_FACTOR / 2;
 
 type Registry = WPDataRegistry & {
 	// `resolveSelect` exists on the runtime registry but is absent from the
-	// `@wordpress/data` registry types; alias it to the same loose shape as
+	// `@wordpress/data` registry types. Alias it to the same loose shape as
 	// `select` until those upstream types include it.
 	resolveSelect: WPDataRegistry[ 'select' ];
 };
@@ -91,13 +104,15 @@ type Registry = WPDataRegistry & {
  */
 type ChartRow = Array< Date | number | string | null >;
 
-// The chart/report utilities below are still untyped JS modules whose JSDoc
-// types are looser than their runtime contracts. We alias each to the shape
-// this loader relies on so the rest of the file stays type-checked. Their
-// `report` inputs are typed `unknown` because we don't yet have a shared
-// Search Console report type; the per-value format callbacks stay `any` because
-// their inputs genuinely vary per metric. Replace these aliases with the real
-// types once the underlying modules are migrated to TypeScript.
+/**
+ * The chart and report utilities below are still untyped JS modules whose JSDoc
+ * types are looser than their runtime contracts. We alias each to the shape
+ * this loader relies on so the rest of the file stays type-checked. Their
+ * `report` inputs are typed `unknown` because we don't yet have a shared
+ * Search Console report type. The per-value format callbacks stay `any` because
+ * their inputs genuinely vary per metric. Replace these aliases with the real
+ * types once the underlying modules are migrated to TypeScript.
+ */
 const partitionReportRows = partitionReport as unknown as (
 	report: unknown,
 	options: { dateRangeLength: number }
@@ -127,43 +142,64 @@ const getMetricDatapointAndChange = getDatapointAndChange as unknown as (
 ) => { datapoint: number; change: number | null };
 
 export interface GetPDFDataParams {
+	/** WordPress data registry. */
 	registry: Registry;
+	/** Report date range. */
 	dates: {
+		/** First day of the current period (YYYY-MM-DD). */
 		startDate: string;
+		/** Last day of the current period (YYYY-MM-DD). */
 		endDate: string;
+		/** First day of the previous period (YYYY-MM-DD). */
 		compareStartDate: string;
+		/** Last day of the previous period (YYYY-MM-DD). */
 		compareEndDate: string;
 	};
+	/** Cancellation signal. */
 	signal: AbortSignal;
 }
 
 export interface SearchFunnelMetric {
 	/** Total for the current period. */
 	total: number;
-	/** Period-over-period change ratio, or `null` when it cannot be computed. */
+	/** Period-over-period change ratio, or `null` when it can't be computed. */
 	change: number | null;
 }
 
 export interface SearchFunnelPDFData {
+	/** Metric data for the widget, or `null` when the export is canceled. */
 	data: {
+		/** Number of days in the date range. */
 		dateRangeLength: number;
+		/** Total and change for each metric. */
 		metrics: {
+			/** Search Console impressions, or `null` when the metric failed. */
 			impressions: SearchFunnelMetric | null;
+			/** Search Console clicks, or `null` when the metric failed. */
 			clicks: SearchFunnelMetric | null;
+			/** GA4 unique visitors, or `null` when the metric failed. */
 			uniqueVisitors: SearchFunnelMetric | null;
+			/** GA4 key events, or `null` when the metric failed. */
 			keyEvents: SearchFunnelMetric | null;
 		};
 	} | null;
+	/** Rendered line chart data URIs, absent when the export is canceled. */
 	chartImages?: {
+		/** Impressions chart image, or `null` when the metric failed. */
 		impressions: string | null;
+		/** Clicks chart image, or `null` when the metric failed. */
 		clicks: string | null;
+		/** Unique visitors chart image, or `null` when the metric failed. */
 		uniqueVisitors: string | null;
+		/** Key events chart image, or `null` when the metric failed. */
 		keyEvents: string | null;
 	};
 }
 
 interface MetricCardResult {
+	/** Total and change for the metric, or `null` when the card failed. */
 	metric: SearchFunnelMetric | null;
+	/** Rendered chart image as a data URI, or `null` when the card failed. */
 	chartImage: string | null;
 }
 
@@ -176,11 +212,11 @@ interface MetricCardResult {
  *
  * @since n.e.x.t
  *
- * @param {Object}  options         Options.
- * @param {string}  options.color   Series color for both lines.
- * @param {Array}   options.ticks   Date ticks for the horizontal axis.
- * @param {boolean} options.hasData Whether any data point is greater than zero.
- * @return {Object} Google Charts options object.
+ * @param options         Options.
+ * @param options.color   Series color for both lines.
+ * @param options.ticks   Date ticks for the horizontal axis.
+ * @param options.hasData Whether any data point is greater than zero.
+ * @return Google Charts options object.
  */
 function getLineChartOptions( {
 	color,
@@ -195,8 +231,8 @@ function getLineChartOptions( {
 		curveType: 'function',
 		colors: [ color ],
 		chartArea: {
-			left: 32 * LINE_CHART_OPTION_SCALE,
-			right: 16 * LINE_CHART_OPTION_SCALE,
+			left: 8 * LINE_CHART_OPTION_SCALE,
+			right: 40 * LINE_CHART_OPTION_SCALE,
 			top: 12 * LINE_CHART_OPTION_SCALE,
 			bottom: 22 * LINE_CHART_OPTION_SCALE,
 		},
@@ -206,24 +242,26 @@ function getLineChartOptions( {
 		hAxis: {
 			format: 'MMM d',
 			gridlines: {
-				color: '#ffffff',
+				color: PDF_COLORS.SURFACES_SURFACE,
 			},
 			textStyle: {
-				color: '#6c726e',
-				fontSize: 10 * LINE_CHART_OPTION_SCALE,
+				color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
+				fontName: 'Google Sans Text',
+				fontSize: 14 * LINE_CHART_OPTION_SCALE,
 			},
 			ticks,
 		},
 		vAxis: {
 			gridlines: {
-				color: '#ebeef0',
+				color: PDF_COLORS.SURFACES_SURFACE_1,
 			},
 			minorGridlines: {
-				color: '#ffffff',
+				color: PDF_COLORS.SURFACES_SURFACE,
 			},
 			textStyle: {
-				color: '#6c726e',
-				fontSize: 10 * LINE_CHART_OPTION_SCALE,
+				color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
+				fontName: 'Google Sans Text',
+				fontSize: 14 * LINE_CHART_OPTION_SCALE,
 			},
 			viewWindow: {
 				min: 0,
@@ -234,17 +272,19 @@ function getLineChartOptions( {
 		series: {
 			0: {
 				color,
-				lineWidth: 2 * LINE_CHART_OPTION_SCALE,
-				targetAxisIndex: 0,
+				lineWidth: 4 * LINE_CHART_OPTION_SCALE,
+				// Index 1 renders the y-axis on the right, matching the All Traffic
+				// chart, so every report chart keeps the axis on the same side.
+				targetAxisIndex: 1,
 			},
 			1: {
 				color,
-				lineWidth: 1 * LINE_CHART_OPTION_SCALE,
+				lineWidth: 4 * LINE_CHART_OPTION_SCALE,
 				lineDashStyle: [
-					3 * LINE_CHART_OPTION_SCALE,
-					3 * LINE_CHART_OPTION_SCALE,
+					2 * LINE_CHART_OPTION_SCALE,
+					10 * LINE_CHART_OPTION_SCALE,
 				],
-				targetAxisIndex: 0,
+				targetAxisIndex: 1,
 			},
 		},
 		focusTarget: 'category',
@@ -259,9 +299,9 @@ function getLineChartOptions( {
  *
  * @since n.e.x.t
  *
- * @param {Array}  dataRows     Chart data rows (without the header row).
- * @param {string} currentLabel Column label for the current-period series.
- * @return {Object} A `google.visualization.DataTable` instance.
+ * @param dataRows     Chart data rows (without the header row).
+ * @param currentLabel Column label for the current-period series.
+ * @return A `google.visualization.DataTable` instance.
  */
 function buildChartDataTable(
 	dataRows: ChartRow[],
@@ -290,18 +330,18 @@ function buildChartDataTable(
 }
 
 /**
- * Rasterises a metric's current/previous line chart to a JPEG data URI.
+ * Renders a metric's current and previous line chart to a JPEG data URI.
  *
  * @since n.e.x.t
  *
- * @param {Object}      options              Options.
- * @param {Array}       options.dataRows     Chart data rows (without the header row).
- * @param {string}      options.currentLabel Column label for the current-period series.
- * @param {string}      options.color        Series color for both lines.
- * @param {AbortSignal} options.signal       Cancellation signal.
- * @return {Promise<string>} The rendered chart image as a data URI.
+ * @param options              Options.
+ * @param options.dataRows     Chart data rows (without the header row).
+ * @param options.currentLabel Column label for the current-period series.
+ * @param options.color        Series color for both lines.
+ * @param options.signal       Cancellation signal.
+ * @return The rendered chart image as a data URI.
  */
-function rasterizeChart( {
+function renderMetricChart( {
 	dataRows,
 	currentLabel,
 	color,
@@ -336,11 +376,11 @@ function rasterizeChart( {
  *
  * @since n.e.x.t
  *
- * @param {Object}      registry  WordPress data registry.
- * @param {string}      storeName Datastore name to query.
- * @param {Object}      args      Report args.
- * @param {AbortSignal} signal    Cancellation signal.
- * @return {Promise<Object>} The resolved report and any error.
+ * @param registry  WordPress data registry.
+ * @param storeName Datastore name to query.
+ * @param args      Report args.
+ * @param signal    Cancellation signal.
+ * @return The resolved report and any error.
  */
 async function resolveReport< T = unknown >(
 	registry: Registry,
@@ -359,22 +399,22 @@ async function resolveReport< T = unknown >(
 }
 
 /**
- * Builds a Search Console metric card (total, delta and rasterised chart).
+ * Builds a Search Console metric card with its total, change, and rendered chart.
  *
  * Failures are isolated to the card: the returned `metric` and `chartImage` are
- * both `null` so the component can render a per-card "Data unavailable" placeholder.
+ * both `null`, so the widget skips that card.
  *
  * @since n.e.x.t
  *
- * @param {Object}      options                 Options for building the card.
- * @param {Object}      options.report          Resolved Search Console report.
- * @param {Object}      options.reportError     Selector error for the report, if any.
- * @param {string}      options.metricKey       Which metric the card represents.
- * @param {string}      options.currentLabel    Current-period series label.
- * @param {string}      options.color           Series color for the chart.
- * @param {number}      options.dateRangeLength Number of days in the date range.
- * @param {AbortSignal} options.signal          Cancellation signal.
- * @return {Promise<Object>} The metric card result.
+ * @param options                 Options for building the card.
+ * @param options.report          Resolved Search Console report.
+ * @param options.reportError     Selector error for the report, if any.
+ * @param options.metricKey       Which metric the card represents.
+ * @param options.currentLabel    Current-period series label.
+ * @param options.color           Series color for the chart.
+ * @param options.dateRangeLength Number of days in the date range.
+ * @param options.signal          Cancellation signal.
+ * @return The metric card result.
  */
 async function buildSearchConsoleCard( {
 	report,
@@ -385,9 +425,9 @@ async function buildSearchConsoleCard( {
 	dateRangeLength,
 	signal,
 }: {
-	// The Search Console report has no shared type yet, so it is `unknown` and
-	// narrowed via `Array.isArray` below; adjust this type once that store is
-	// typed.
+	// The Search Console report has no shared type yet, so it stays `unknown`
+	// and `Array.isArray` narrows it below. Adjust this type once that store
+	// is typed.
 	report: unknown;
 	reportError: unknown;
 	metricKey: 'impressions' | 'clicks';
@@ -426,7 +466,7 @@ async function buildSearchConsoleCard( {
 			dateRangeLength
 		);
 
-		const chartImage = await rasterizeChart( {
+		const chartImage = await renderMetricChart( {
 			dataRows: chartData.slice( 1 ),
 			currentLabel,
 			color,
@@ -440,27 +480,27 @@ async function buildSearchConsoleCard( {
 }
 
 /**
- * Builds an Analytics 4 metric card (total, delta and rasterised chart).
+ * Builds an Analytics 4 metric card with its total, change, and rendered chart.
  *
  * Failures are isolated to the card: the returned `metric` and `chartImage` are
- * both `null` so the component can render a per-card "Data unavailable" placeholder.
+ * both `null`, so the widget skips that card.
  *
  * @since n.e.x.t
  *
- * @param {Object}      options                    Options for building the card.
- * @param {Object}      options.statsReport        Resolved date-series report.
- * @param {Object}      options.statsError         Selector error for the series report, if any.
- * @param {Object}      options.totalsReport       Resolved totals report.
- * @param {Object}      options.totalsError        Selector error for the totals report, if any.
- * @param {string}      options.currentLabel       Current-period series label.
- * @param {Array}       options.dataLabels         Data labels passed to the extractor.
- * @param {Array}       options.tooltipDataFormats Tooltip formatters passed to the extractor.
- * @param {Array}       options.chartDataFormats   Chart value formatters passed to the extractor.
- * @param {string}      options.color              Series color for the chart.
- * @param {number}      options.dateRangeLength    Number of days in the date range.
- * @param {string}      options.referenceDate      Reference date for padding empty series.
- * @param {AbortSignal} options.signal             Cancellation signal.
- * @return {Promise<Object>} The metric card result.
+ * @param options                    Options for building the card.
+ * @param options.statsReport        Resolved date-series report.
+ * @param options.statsError         Selector error for the series report, if any.
+ * @param options.totalsReport       Resolved totals report.
+ * @param options.totalsError        Selector error for the totals report, if any.
+ * @param options.currentLabel       Current-period series label.
+ * @param options.dataLabels         Data labels passed to the extractor.
+ * @param options.tooltipDataFormats Tooltip formatters passed to the extractor.
+ * @param options.chartDataFormats   Chart value formatters passed to the extractor.
+ * @param options.color              Series color for the chart.
+ * @param options.dateRangeLength    Number of days in the date range.
+ * @param options.referenceDate      Reference date for padding empty series.
+ * @param options.signal             Cancellation signal.
+ * @return The metric card result.
  */
 async function buildAnalyticsCard( {
 	statsReport,
@@ -489,7 +529,7 @@ async function buildAnalyticsCard( {
 	referenceDate: string;
 	signal: AbortSignal;
 } ): Promise< MetricCardResult > {
-	// The Key Events report exposes its metric in the first column; the Unique
+	// The Key Events report exposes its metric in the first column. The Unique
 	// Visitors report uses a single metric in the same position.
 	const selectedStats = 0;
 
@@ -518,7 +558,7 @@ async function buildAnalyticsCard( {
 			chartDataFormats
 		);
 
-		const chartImage = await rasterizeChart( {
+		const chartImage = await renderMetricChart( {
 			dataRows: chartData.slice( 1 ),
 			currentLabel,
 			color,
@@ -532,26 +572,25 @@ async function buildAnalyticsCard( {
 }
 
 /**
- * Loads the reports and rasterised line charts for the Search traffic over time PDF widget.
+ * Loads the reports and renders the line charts for the Search traffic over time PDF widget.
  *
- * Resolves the four reports (Search Console impressions/clicks, GA4 Key Events
- * overview and series, GA4 Unique Visitors) in parallel, cancelling incomplete and
- * yet-to-have-started resolutions when the supplied signal is aborted.
+ * Resolves the four reports (Search Console impressions and clicks, GA4 Key
+ * Events overview and series, and GA4 Unique Visitors) in parallel, canceling
+ * resolutions that are incomplete or not yet started when the signal aborts.
  *
- * Once the reports resolve, loads Google Charts offscreen and rasterises a
- * current/previous line chart per metric.
+ * Once the reports resolve, loads Google Charts offscreen and renders a line
+ * chart per metric with its current and previous period.
  *
- * Per-metric report or rasterization failures are isolated so the component can
- * render a per-card "Data unavailable" placeholder; the loader only throws when
- * all four metrics fail.
+ * A failed report or chart render is isolated to its own metric, and the
+ * widget skips that card. The loader only throws when all four metrics fail.
  *
  * @since n.e.x.t
  *
- * @param {Object}      params          Loader parameters.
- * @param {Object}      params.registry WordPress data registry.
- * @param {Object}      params.dates    Report date range.
- * @param {AbortSignal} params.signal   Cancellation signal.
- * @return {Promise<Object>} Resolved metric data and chart images.
+ * @param params          Loader parameters.
+ * @param params.registry WordPress data registry.
+ * @param params.dates    Report date range.
+ * @param params.signal   Cancellation signal.
+ * @return Resolved metric data and chart images.
  */
 export default async function getPDFData( {
 	registry,
@@ -627,8 +666,8 @@ export default async function getPDFData( {
 
 	await ensureGoogleChartsLoaded();
 
-	// Cancelling during the report fetch or chart load aborts before any of the
-	// four line charts are rasterised.
+	// Canceling during the report fetch or chart load aborts before any of the
+	// four line charts render.
 	if ( signal.aborted ) {
 		return { data: null };
 	}
@@ -717,8 +756,8 @@ export default async function getPDFData( {
 		keyEvents: keyEvents.chartImage,
 	};
 
-	// Only fail the whole widget when every metric failed; otherwise the
-	// surviving cards still render alongside per-card placeholders.
+	// Only fail the whole widget when every metric failed. Otherwise the
+	// surviving cards still render, and the failed cards render nothing.
 	if ( Object.values( chartImages ).every( ( image ) => image === null ) ) {
 		throw new Error(
 			'Site Kit: all Search traffic over time metrics failed to load for the PDF export.'

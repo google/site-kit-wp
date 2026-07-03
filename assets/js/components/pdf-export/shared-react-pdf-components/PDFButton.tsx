@@ -1,5 +1,5 @@
 /**
- * PDFWidgetSection: widget heading + white card wrapper for the PDF report.
+ * A button for the PDF report, wrapped in a link so it works in the PDF.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -19,45 +19,50 @@
 /**
  * External dependencies
  */
-import { View } from '@react-pdf/renderer';
-import type { Style } from '@react-pdf/stylesheet';
+import { Link, View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
  * Internal dependencies
  */
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
-import PDFCard from './PDFCard';
 import PDFTypography from './PDFTypography';
 
 const styles = createPDFStyles( {
-	heading: {
-		marginBottom: 15,
+	link: {
+		textDecoration: 'none',
+	},
+	button: {
+		borderRadius: 100,
+		paddingVertical: 6,
+		paddingHorizontal: 16,
 	},
 } );
 
-export interface PDFWidgetSectionProps {
-	/** Optional widget heading rendered on the page above the card. */
-	heading?: string;
-	/** Optional style merged onto the card. */
-	cardStyle?: Style;
+export interface PDFButtonProps {
+	/** Link target URL the button opens. */
+	href?: string;
+	/** Background color of the button. */
+	backgroundColor: string;
+	/** Color of the button label. */
+	labelColor: string;
 }
 
-const PDFWidgetSection: FC< PDFWidgetSectionProps > = ( {
-	heading,
-	cardStyle,
+const PDFButton: FC< PDFButtonProps > = ( {
+	href,
+	backgroundColor,
+	labelColor,
 	children,
 } ) => {
 	return (
-		<View>
-			{ !! heading && (
-				<PDFTypography size="large" style={ styles.heading }>
-					{ heading }
+		<Link src={ href } style={ styles.link }>
+			<View style={ [ styles.button, { backgroundColor } ] }>
+				<PDFTypography type="label" style={ { color: labelColor } }>
+					{ children }
 				</PDFTypography>
-			) }
-			<PDFCard style={ cardStyle }>{ children }</PDFCard>
-		</View>
+			</View>
+		</Link>
 	);
 };
 
-export default PDFWidgetSection;
+export default PDFButton;
