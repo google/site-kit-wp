@@ -40,8 +40,10 @@ import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './AudienceSelectionPanel/co
 
 describe( 'AudienceSegmentationBackNotice', () => {
 	let registry: WPDataRegistry;
-	let dismissItemSpy: jest.SpyInstance;
-	let setValueSpy: jest.SpyInstance;
+
+	const dismissItemEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismiss-item'
+	);
 
 	const WidgetWithComponentProps = withWidgetComponentProps(
 		'analyticsAudienceSegmentationBackNotice'
@@ -49,34 +51,51 @@ describe( 'AudienceSegmentationBackNotice', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		dismissItemSpy = jest
-			.spyOn( registry.dispatch( CORE_USER ), 'dismissItem' )
-			.mockImplementation( () => Promise.resolve() );
-		setValueSpy = jest.spyOn( registry.dispatch( CORE_UI ), 'setValue' );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
-	afterEach( () => {
-		dismissItemSpy.mockReset();
-		setValueSpy.mockReset();
-	} );
+	it( 'should dismiss notice when clicking on Got it', async () => {
+		fetchMock.postOnce( dismissItemEndpoint, {
+			body: [ AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG ],
+			status: 200,
+		} );
 
-	it( 'should dismiss notice when clicking on Got it', () => {
 		const { getByRole } = render( <WidgetWithComponentProps />, {
 			registry,
 		} );
 
 		fireEvent.click( getByRole( 'button', { name: /got it/i } ) );
 
-		expect( dismissItemSpy ).toHaveBeenCalledWith(
-			AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG
-		);
-		expect( setValueSpy ).not.toHaveBeenCalledWith(
-			AUDIENCE_SELECTION_PANEL_OPENED_KEY,
-			true
-		);
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+				body: {
+					data: {
+						slug: AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG,
+						expiration: 0,
+					},
+				},
+			} );
+
+			expect(
+				registry
+					.select( CORE_USER )
+					.isItemDismissed( AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG )
+			).toBe( true );
+
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+			).not.toBe( true );
+		} );
 	} );
 
 	it( 'should dismiss notice and open audience selection panel when clicking on Select groups', async () => {
+		fetchMock.postOnce( dismissItemEndpoint, {
+			body: [ AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG ],
+			status: 200,
+		} );
+
 		const { getByRole } = render( <WidgetWithComponentProps />, {
 			registry,
 		} );
@@ -84,13 +103,26 @@ describe( 'AudienceSegmentationBackNotice', () => {
 		fireEvent.click( getByRole( 'button', { name: /select groups/i } ) );
 
 		await waitFor( () => {
-			expect( dismissItemSpy ).toHaveBeenCalledWith(
-				AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG
-			);
-			expect( setValueSpy ).toHaveBeenCalledWith(
-				AUDIENCE_SELECTION_PANEL_OPENED_KEY,
-				true
-			);
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+				body: {
+					data: {
+						slug: AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG,
+						expiration: 0,
+					},
+				},
+			} );
+
+			expect(
+				registry
+					.select( CORE_USER )
+					.isItemDismissed( AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG )
+			).toBe( true );
+
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
+			).toBe( true );
 		} );
 	} );
 } );

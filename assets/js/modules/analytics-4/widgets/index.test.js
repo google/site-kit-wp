@@ -27,6 +27,7 @@ import {
 } from '@/js/googlesitekit/widgets';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
+import { AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationBackNotice';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { createTestRegistry } from '../../../../../tests/js/utils';
 import { registerWidgets } from './index';
@@ -47,16 +48,15 @@ describe( 'Analytics 4 widget registrations', () => {
 		enabledFeatures.delete( 'setupFlowRefresh' );
 	} );
 
-	describe( 'Audience segmentation back notice widget', () => {
-		it( 'should be registered but inactive when setupFlowRefresh is disabled', () => {
+	describe( 'Audience Segmentation back notice widget', () => {
+		it( 'should not register back notice widget when setupFlowRefresh is disabled', () => {
 			registerWidgets( widgets );
 
-			const widget = registry
-				.select( CORE_WIDGETS )
-				.getWidget( 'analyticsAudienceSegmentationBackNotice' );
-
-			expect( widget ).toBeDefined();
-			expect( widget.isActive( registry.select ) ).toBe( false );
+			expect(
+				registry
+					.select( CORE_WIDGETS )
+					.getWidget( 'analyticsAudienceSegmentationBackNotice' )
+			).toBeNull();
 		} );
 
 		it( 'should register back notice widget when setupFlowRefresh is enabled', () => {
@@ -89,15 +89,15 @@ describe( 'Analytics 4 widget registrations', () => {
 			expect( widget.isActive( registry.select ) ).toBe( true );
 
 			registry
-
 				.dispatch( CORE_USER )
 				.receiveGetDismissedItems( [
-					'audience-segmentation-back-notice',
+					AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG,
 				] );
 
 			expect( widget.isActive( registry.select ) ).toBe( false );
 
 			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+			// Even without dismissal, the widget must remain inactive if the raw hidden setting is false.
 			registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 				configuredAudiences: [ 'audienceA' ],
 				isAudienceSegmentationWidgetHidden: false,

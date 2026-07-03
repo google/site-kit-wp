@@ -328,7 +328,7 @@ const baseSelectors = {
 	/**
 	 * Gets the raw audience segmentation widget visibility from the audience settings.
 	 *
-	 * @since 1.186.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} Whether or not the audience segmentation widget is hidden; `undefined` if not loaded.
@@ -346,6 +346,7 @@ const baseSelectors = {
 	 * Gets the audience segmentation widget visibility from the audience settings.
 	 *
 	 * @since 1.124.0
+	 * @since n.e.x.t Hardwire to return `true` for the Setup Flow Refresh feature.
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} Whether or not the audience segmentation widget is hidden; `undefined` if not loaded.

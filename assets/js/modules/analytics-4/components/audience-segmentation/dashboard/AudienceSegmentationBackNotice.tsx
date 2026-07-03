@@ -62,7 +62,7 @@ const AudienceSegmentationBackNotice: FC<
 	return (
 		<Widget noPadding>
 			<Notice
-				type={ NOTICE_TYPES.INFO }
+				type={ NOTICE_TYPES.INFO_CIRCLE }
 				title={ __(
 					'Visitor groups are back on your dashboard',
 					'google-site-kit'

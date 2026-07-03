@@ -438,6 +438,60 @@ describe( 'modules/analytics-4 audience settings', () => {
 		} );
 
 		describe( 'getRawAudienceSegmentationWidgetHidden', () => {
+			it( 'should return undefined while audience settings are loading', async () => {
+				freezeFetch( audienceSettingsEndpoint );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getRawAudienceSegmentationWidgetHidden()
+				).toBeUndefined();
+
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should use a resolver to make a network request if data is not available', async () => {
+				fetchMock.getOnce( audienceSettingsEndpoint, {
+					body: audienceSettingsResponse,
+					status: 200,
+				} );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getRawAudienceSegmentationWidgetHidden()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getUserAudienceSettings();
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getRawAudienceSegmentationWidgetHidden()
+				).toEqual(
+					audienceSettingsResponse.isAudienceSegmentationWidgetHidden
+				);
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should return the audience segmentation widget visibility from the audience settings', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetUserAudienceSettings( audienceSettingsResponse );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getRawAudienceSegmentationWidgetHidden()
+				).toEqual(
+					audienceSettingsResponse.isAudienceSegmentationWidgetHidden
+				);
+			} );
+
 			it( 'should always return the stored value when setupFlowRefresh is enabled', () => {
 				enabledFeatures.add( 'setupFlowRefresh' );
 
