@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import memize from 'memize';
 
 /**
  * Internal dependencies
@@ -124,6 +125,40 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 
 export const resolvers = {};
 
+/**
+ * Computes date range dates for the given inputs.
+ *
+ * Memoized to return a stable object reference when inputs are unchanged.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string}  dateRange     Date range slug.
+ * @param {string}  referenceDate Reference date string as YYYY-MM-DD.
+ * @param {boolean} compare       Whether to include compare dates.
+ * @return {DateRangeReturnObj}   Object containing dates for date ranges.
+ */
+const getDateRangeDatesForRange = memize(
+	( dateRange, referenceDate, compare ) => {
+		const endDate = getPreviousDate( referenceDate, 0 );
+		const matches = dateRange.match( '-(.*)-' );
+		const numberOfDays = Number( matches ? matches[ 1 ] : 28 );
+		const startDate = getPreviousDate( endDate, numberOfDays - 1 );
+		const dates = { startDate, endDate };
+
+		if ( compare ) {
+			const compareEndDate = getPreviousDate( startDate, 1 );
+			const compareStartDate = getPreviousDate(
+				compareEndDate,
+				numberOfDays - 1
+			);
+			dates.compareStartDate = compareStartDate;
+			dates.compareEndDate = compareEndDate;
+		}
+
+		return dates;
+	}
+);
+
 export const selectors = {
 	/**
 	 * Returns the current date range.
@@ -154,23 +189,8 @@ export const selectors = {
 		{ compare = false, referenceDate = state.referenceDate } = {}
 	) {
 		const dateRange = selectors.getDateRange( state );
-		const endDate = getPreviousDate( referenceDate, 0 );
-		const matches = dateRange.match( '-(.*)-' );
-		const numberOfDays = Number( matches ? matches[ 1 ] : 28 );
-		const startDate = getPreviousDate( endDate, numberOfDays - 1 );
-		const dates = { startDate, endDate };
 
-		if ( compare ) {
-			const compareEndDate = getPreviousDate( startDate, 1 );
-			const compareStartDate = getPreviousDate(
-				compareEndDate,
-				numberOfDays - 1
-			);
-			dates.compareStartDate = compareStartDate;
-			dates.compareEndDate = compareEndDate;
-		}
-
-		return dates;
+		return getDateRangeDatesForRange( dateRange, referenceDate, compare );
 	},
 
 	/**
