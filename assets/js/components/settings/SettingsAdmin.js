@@ -31,6 +31,7 @@ import PreviewBlock from '@/js/components/PreviewBlock';
 import ResetButton from '@/js/components/ResetButton';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { useFeature } from '@/js/hooks/useFeature';
 import { Cell, Grid, Row } from '@/js/material-components';
 import SettingsCardAudiences from '@/js/modules/analytics-4/components/audience-segmentation/settings/SettingsCardAudiences';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -43,6 +44,8 @@ import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 import SettingsPlugin from './SettingsPlugin';
 
 export default function SettingsAdmin() {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
 	const configuredAudiences = useSelect( ( select ) =>
 		select( CORE_USER ).getConfiguredAudiences()
 	);
@@ -149,11 +152,12 @@ export default function SettingsAdmin() {
 				</Cell>
 			) }
 
-			{ ( isAnalyticsConnected || !! configuredAudiences ) && (
-				<Cell size={ 12 }>
-					<SettingsCardAudiences />
-				</Cell>
-			) }
+			{ ! setupFlowRefreshEnabled &&
+				( isAnalyticsConnected || !! configuredAudiences ) && (
+					<Cell size={ 12 }>
+						<SettingsCardAudiences />
+					</Cell>
+				) }
 
 			<Cell size={ 12 }>
 				<SettingsCardEmailReporting />
