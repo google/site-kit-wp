@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Image, StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Image, Text, View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
 
 const COLORS = {
@@ -39,15 +40,15 @@ const COLORS = {
 	noData: '#646464',
 };
 
-const tileStyles = StyleSheet.create( {
+const tileStyles = createPDFStyles( {
 	title: {
 		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 7,
+		fontSize: 14,
 		fontWeight: 500,
-		letterSpacing: -0.05,
+		letterSpacing: -0.1,
 		lineHeight: 1.143,
 		color: COLORS.title,
-		marginBottom: 12,
+		marginBottom: 24,
 	},
 	body: {
 		flexDirection: 'row',
@@ -56,46 +57,46 @@ const tileStyles = StyleSheet.create( {
 	},
 	legend: {
 		flexDirection: 'column',
-		width: 87,
+		width: 174,
 	},
 	legendRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		marginBottom: 6.5,
+		marginBottom: 13,
 	},
 	swatch: {
-		width: 6,
-		height: 6,
-		borderRadius: 3,
-		marginRight: 3,
+		width: 12,
+		height: 12,
+		borderRadius: 6,
+		marginRight: 6,
 	},
 	label: {
 		flexGrow: 1,
 		flexShrink: 1,
 		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 6,
-		letterSpacing: 0.1,
+		fontSize: 12,
+		letterSpacing: 0.2,
 		lineHeight: 1.333,
 		color: COLORS.label,
 	},
 	percentage: {
 		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 6,
+		fontSize: 12,
 		fontWeight: 500,
-		letterSpacing: 0.1,
+		letterSpacing: 0.2,
 		lineHeight: 1.333,
 		color: COLORS.value,
-		marginLeft: 8,
+		marginLeft: 16,
 		textAlign: 'right',
 	},
 	chart: {
-		width: 72.85,
-		height: 72.85,
-		marginRight: 12,
+		width: 145.7,
+		height: 145.7,
+		marginRight: 24,
 	},
 	noData: {
 		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 6,
+		fontSize: 12,
 		color: COLORS.noData,
 	},
 } );

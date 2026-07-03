@@ -1,0 +1,184 @@
+/**
+ * DashboardPageSpeedWidget PDF SpeedMetricSections component.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import { Text, View } from '@react-pdf/renderer';
+
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import type { StrategyData } from './getPDFData';
+import MetricRow from './MetricRow';
+import MetricSection from './MetricSection';
+import { styles } from './pdfStyles';
+
+interface SpeedMetricSectionsProps {
+	mobile: StrategyData | null;
+	desktop: StrategyData | null;
+}
+
+export default function SpeedMetricSections( {
+	mobile,
+	desktop,
+}: SpeedMetricSectionsProps ) {
+	const hasField =
+		mobile?.field !== null && mobile?.field !== undefined
+			? true
+			: desktop?.field !== null && desktop?.field !== undefined;
+
+	const labCardStyle = hasField
+		? styles.sectionWidgetCard
+		: [ styles.sectionWidgetCard, styles.sectionWidgetCardLast ];
+
+	return (
+		<Fragment>
+			<View style={ labCardStyle }>
+				<MetricSection title={ __( 'Lab data', 'google-site-kit' ) }>
+					{ ! mobile && ! desktop ? (
+						<Text style={ styles.unavailableSection }>
+							{ __( 'Data unavailable.', 'google-site-kit' ) }
+						</Text>
+					) : (
+						<Fragment>
+							<MetricRow
+								title={ _x(
+									'Largest Contentful Paint',
+									'core web vitals name',
+									'google-site-kit'
+								) }
+								description={ __(
+									'Time it takes for the page to load',
+									'google-site-kit'
+								) }
+								mobileMetric={
+									mobile?.lab.largestContentfulPaint
+								}
+								desktopMetric={
+									desktop?.lab.largestContentfulPaint
+								}
+							/>
+							<MetricRow
+								title={ _x(
+									'Cumulative Layout Shift',
+									'core web vitals name',
+									'google-site-kit'
+								) }
+								description={ __(
+									'How stable the elements on the page are',
+									'google-site-kit'
+								) }
+								mobileMetric={
+									mobile?.lab.cumulativeLayoutShift
+								}
+								desktopMetric={
+									desktop?.lab.cumulativeLayoutShift
+								}
+							/>
+							<MetricRow
+								title={ __(
+									'Total Blocking Time',
+									'google-site-kit'
+								) }
+								description={ __(
+									'How long people had to wait after the page loaded before they could click something',
+									'google-site-kit'
+								) }
+								mobileMetric={ mobile?.lab.totalBlockingTime }
+								desktopMetric={ desktop?.lab.totalBlockingTime }
+								isLast
+							/>
+						</Fragment>
+					) }
+				</MetricSection>
+			</View>
+			{ hasField && (
+				<View
+					style={ [
+						styles.sectionWidgetCard,
+						styles.sectionWidgetCardLast,
+					] }
+				>
+					<MetricSection
+						title={ __( 'Real user data', 'google-site-kit' ) }
+					>
+						<MetricRow
+							title={ _x(
+								'Largest Contentful Paint',
+								'core web vitals name',
+								'google-site-kit'
+							) }
+							description={ __(
+								'Time it takes for the page to load',
+								'google-site-kit'
+							) }
+							mobileMetric={
+								mobile?.field?.largestContentfulPaint
+							}
+							desktopMetric={
+								desktop?.field?.largestContentfulPaint
+							}
+						/>
+						<MetricRow
+							title={ _x(
+								'Cumulative Layout Shift',
+								'core web vitals name',
+								'google-site-kit'
+							) }
+							description={ __(
+								'How stable the elements on the page are',
+								'google-site-kit'
+							) }
+							mobileMetric={
+								mobile?.field?.cumulativeLayoutShift
+							}
+							desktopMetric={
+								desktop?.field?.cumulativeLayoutShift
+							}
+						/>
+						<MetricRow
+							title={ _x(
+								'Interaction to Next Paint',
+								'core web vitals name',
+								'google-site-kit'
+							) }
+							description={ __(
+								'How quickly your page responds when people interact with it',
+								'google-site-kit'
+							) }
+							mobileMetric={
+								mobile?.field?.interactionToNextPaint
+							}
+							desktopMetric={
+								desktop?.field?.interactionToNextPaint
+							}
+							isLast
+						/>
+					</MetricSection>
+				</View>
+			) }
+		</Fragment>
+	);
+}

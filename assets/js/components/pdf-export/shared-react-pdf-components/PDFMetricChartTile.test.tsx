@@ -25,6 +25,7 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { PDF_SCALE, scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
 import PDFMetricChartTile from './PDFMetricChartTile';
 
 const CHART_DATA_URI = 'data:image/jpeg;base64,TU9DS0NIQVJU';
@@ -130,5 +131,23 @@ describe( 'PDFMetricChartTile', () => {
 		// The metric value and chart are suppressed in the placeholder state.
 		expect( json ).not.toContain( '9.2K' );
 		expect( json ).not.toContain( 'data:image' );
+	} );
+
+	it( 'scales the tile font sizes and the arrow width', () => {
+		const json = renderTile( {
+			title: 'Total Clicks',
+			value: '3.6K',
+			change: '12.5%',
+			changeDirection: 'up',
+			currentLabel: 'Clicks',
+			color: '#4bbbbb',
+			chartImage: CHART_DATA_URI,
+		} );
+
+		// The font sizes of the title and value scale with the page.
+		expect( json ).toContain( `"fontSize":${ 14 * PDF_SCALE }` );
+		expect( json ).toContain( `"fontSize":${ 28 * PDF_SCALE }` );
+		// The change arrow width scales with the page.
+		expect( json ).toContain( `"width":${ scalePDFValue( 16 ) }` );
 	} );
 } );

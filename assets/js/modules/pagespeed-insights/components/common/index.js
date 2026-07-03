@@ -24,3 +24,4 @@ export { default as Recommendation } from './Recommendation';
 export { default as Recommendations } from './Recommendations';
 export { default as ReportDetailsLink } from './ReportDetailsLink';
 export { default as ReportMetric } from './ReportMetric';
+export * as reportMetrics from './reportMetrics';

@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Link, StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Link, Text, View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
 import { PDFTableColumn } from '@/js/components/pdf-export/shared-react-pdf-components/PDFTable';
 import PDFTableSection from '@/js/components/pdf-export/shared-react-pdf-components/PDFTableSection';
@@ -39,9 +40,9 @@ import { PopularPagesPDFData } from './getPDFData';
 
 const bodyTextStyles = {
 	fontFamily: PDF_FONT_FAMILY_TEXT,
-	fontSize: 7,
+	fontSize: 14,
 	lineHeight: 1.43,
-	letterSpacing: 0.125,
+	letterSpacing: 0.25,
 };
 
 const PAGE_LINK_COLOR = '#108080';
@@ -49,15 +50,15 @@ const PAGE_LINK_COLOR = '#108080';
 // Maximum URL characters shown in the Title column before the ellipsis.
 const MAX_URL_LENGTH = 70;
 
-const styles = StyleSheet.create( {
+const styles = createPDFStyles( {
 	titleCell: {
 		flexDirection: 'row',
 	},
 	rank: {
 		...bodyTextStyles,
 		color: '#161b18',
-		minWidth: 10,
-		marginRight: 4,
+		minWidth: 20,
+		marginRight: 8,
 	},
 	titleGroup: {
 		flex: 1,
@@ -69,9 +70,9 @@ const styles = StyleSheet.create( {
 	},
 	url: {
 		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 6,
+		fontSize: 12,
 		lineHeight: 1.33,
-		letterSpacing: 0.1,
+		letterSpacing: 0.2,
 		color: PAGE_LINK_COLOR,
 		textDecoration: 'none',
 	},
