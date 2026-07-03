@@ -63,7 +63,7 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 			onDismiss: jest.fn(),
 			expectedTitle: 'Creating visitor groups failed',
 			expectedDescription:
-				'It seems that you don’t have the required permissions to create visitor groups. You can contact your administrator and ask for Analytics write permissions and then retry. Learn more',
+				'It seems that you don’t have the required permissions to create visitor groups.You can contact your administrator and ask for Analytics write permissions and then retry. Learn more',
 		},
 		{
 			testName: 'audience creation general error',
