@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Link, StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Link, Text, View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import {
 	PDF_COLOR_LINK,
 	PDF_COLOR_TEXT_PRIMARY,
@@ -43,20 +44,20 @@ import { PopularKeywordsPDFData } from './getPDFData';
 
 const bodyTextStyles = {
 	fontFamily: PDF_FONT_FAMILY_TEXT,
-	fontSize: 7,
+	fontSize: 14,
 	lineHeight: 1.43,
-	letterSpacing: 0.125,
+	letterSpacing: 0.25,
 };
 
-const styles = StyleSheet.create( {
+const styles = createPDFStyles( {
 	queryCell: {
 		flexDirection: 'row',
 	},
 	rank: {
 		...bodyTextStyles,
 		color: PDF_COLOR_TEXT_PRIMARY,
-		minWidth: 10,
-		marginRight: 4,
+		minWidth: 20,
+		marginRight: 8,
 	},
 	query: {
 		...bodyTextStyles,
@@ -132,7 +133,7 @@ const DashboardPopularKeywordsWidgetPDF: FC< PDFWidgetComponentProps > = ( {
 			heading={ heading }
 			columns={ columns }
 			rows={ tableRows }
-			columnGap={ 4 }
+			columnGap={ 8 }
 		/>
 	);
 };

@@ -19,26 +19,27 @@
 /**
  * External dependencies
  */
-import { StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Text, View } from '@react-pdf/renderer';
 import type { Style } from '@react-pdf/stylesheet';
 import { FC, ReactNode } from 'react';
 
 /**
  * Internal dependencies
  */
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
 
-const styles = StyleSheet.create( {
+const styles = createPDFStyles( {
 	heading: {
 		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 13,
+		fontSize: 16,
 		color: '#6c726e',
 		marginBottom: 8,
 	},
 	card: {
 		backgroundColor: '#ffffff',
-		borderRadius: 14,
-		padding: 20,
+		borderRadius: 16,
+		padding: 24,
 		marginBottom: 20,
 	},
 } );

@@ -19,12 +19,13 @@
 /**
  * External dependencies
  */
-import { StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Text, View } from '@react-pdf/renderer';
 import type { FC } from 'react';
 
 /**
  * Internal dependencies
  */
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import {
 	PDF_FONT_FAMILY_DISPLAY,
 	PDF_FONT_FAMILY_TEXT,
@@ -39,7 +40,7 @@ const COLORS = {
 	negativeText: '#7a1e00',
 };
 
-const tileStyles = StyleSheet.create( {
+const tileStyles = createPDFStyles( {
 	container: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
@@ -50,16 +51,16 @@ const tileStyles = StyleSheet.create( {
 	},
 	title: {
 		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 7,
+		fontSize: 14,
 		fontWeight: 500,
-		letterSpacing: -0.05,
+		letterSpacing: -0.1,
 		lineHeight: 1.143,
 		color: COLORS.text,
 		marginBottom: 0,
 	},
 	value: {
 		fontFamily: PDF_FONT_FAMILY_DISPLAY,
-		fontSize: 14,
+		fontSize: 28,
 		fontWeight: 400,
 		lineHeight: 1.286,
 		color: COLORS.text,
@@ -69,24 +70,24 @@ const tileStyles = StyleSheet.create( {
 		alignItems: 'flex-end',
 	},
 	chip: {
-		borderRadius: 6,
-		paddingVertical: 2,
-		paddingHorizontal: 4,
+		borderRadius: 100,
+		paddingVertical: 4,
+		paddingHorizontal: 8,
 	},
 	chipText: {
 		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 6,
+		fontSize: 12,
 		fontWeight: 500,
-		letterSpacing: 0.1,
+		letterSpacing: 0.2,
 		lineHeight: 1.333,
 	},
 	changeLabel: {
 		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 6,
-		letterSpacing: 0.1,
+		fontSize: 12,
+		letterSpacing: 0.2,
 		lineHeight: 1.333,
 		color: COLORS.secondary,
-		marginTop: 4,
+		marginTop: 8,
 	},
 } );
 

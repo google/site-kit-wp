@@ -24,6 +24,7 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import PDFNoData from './PDFNoData';
 
 describe( 'PDFNoData', () => {
@@ -41,5 +42,13 @@ describe( 'PDFNoData', () => {
 		);
 
 		expect( json ).toContain( '#646464' );
+	} );
+
+	it( 'renders the message at the scaled font size', () => {
+		const json = JSON.stringify(
+			TestRenderer.create( <PDFNoData /> ).toJSON()
+		);
+
+		expect( json ).toContain( `"fontSize":${ 12 * PDF_SCALE }` );
 	} );
 } );

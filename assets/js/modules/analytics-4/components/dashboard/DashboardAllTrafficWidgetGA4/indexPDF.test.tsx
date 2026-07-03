@@ -25,6 +25,7 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import DashboardAllTrafficWidgetGA4PDF from './indexPDF';
 
 const LINE_CHART_DATA_URI = 'data:image/jpeg;base64,TU9DS0NIQVJU';
@@ -239,5 +240,22 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		// The other two tiles still render their donuts.
 		expect( json ).toContain( LOCATION_CHART_DATA_URI );
 		expect( json ).toContain( DEVICE_CHART_DATA_URI );
+	} );
+
+	it( 'scales the widget heading font size', () => {
+		const data = buildReports( {
+			currentUsers: '1234',
+			previousUsers: '1000',
+			rowCount: 28,
+		} );
+
+		const json = JSON.stringify(
+			renderTree( {
+				data,
+				chartImages: { lineChart: LINE_CHART_DATA_URI },
+			} )
+		);
+
+		expect( json ).toContain( `"fontSize":${ 16 * PDF_SCALE }` );
 	} );
 } );

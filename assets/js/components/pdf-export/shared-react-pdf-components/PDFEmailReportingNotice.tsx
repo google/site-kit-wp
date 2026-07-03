@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Link, Path, StyleSheet, Svg, Text, View } from '@react-pdf/renderer';
+import { Link, Path, Svg, Text, View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
@@ -30,6 +30,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import {
+	createPDFStyles,
+	scalePDFValue,
+} from '@/js/components/pdf-export/pdf-scale';
 import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
 
 const COLORS = {
@@ -48,26 +52,26 @@ const STAR_ICON_PATH =
 
 const baseTextStyle = {
 	fontFamily: PDF_FONT_FAMILY_TEXT,
-	fontSize: 7,
+	fontSize: 14,
 	lineHeight: 1.43,
 	color: COLORS.text,
 };
 
-const styles = StyleSheet.create( {
+const styles = createPDFStyles( {
 	container: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		backgroundColor: COLORS.background,
-		borderRadius: 8,
-		paddingVertical: 7,
-		paddingHorizontal: 12,
-		marginBottom: 22,
+		borderRadius: 16,
+		paddingVertical: 14,
+		paddingHorizontal: 24,
+		marginBottom: 44,
 	},
 	textColumn: {
 		flexGrow: 1,
 		flexShrink: 1,
-		marginLeft: 8,
-		marginRight: 55,
+		marginLeft: 16,
+		marginRight: 110,
 	},
 	title: {
 		...baseTextStyle,
@@ -75,14 +79,14 @@ const styles = StyleSheet.create( {
 	},
 	body: {
 		...baseTextStyle,
-		letterSpacing: 0.125,
+		letterSpacing: 0.25,
 	},
 	button: {
 		flexShrink: 0,
 		backgroundColor: COLORS.buttonBackground,
-		borderRadius: 8,
-		paddingVertical: 3,
-		paddingHorizontal: 8,
+		borderRadius: 16,
+		paddingVertical: 6,
+		paddingHorizontal: 16,
 	},
 	buttonLink: {
 		textDecoration: 'none',
@@ -104,7 +108,11 @@ const PDFEmailReportingNotice: FC< PDFEmailReportingNoticeProps > = ( {
 } ) => {
 	return (
 		<View style={ styles.container }>
-			<Svg width={ 12 } height={ 12 } viewBox="0 0 24 24">
+			<Svg
+				width={ scalePDFValue( 24 ) }
+				height={ scalePDFValue( 24 ) }
+				viewBox="0 0 24 24"
+			>
 				<Path d={ STAR_ICON_PATH } fill={ COLORS.text } />
 			</Svg>
 			<View style={ styles.textColumn }>

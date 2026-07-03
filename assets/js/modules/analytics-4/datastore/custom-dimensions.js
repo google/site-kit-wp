@@ -244,6 +244,19 @@ const baseActions = {
 		 * itself, not from the saved `availableCustomDimensions`, which only
 		 * holds the dimensions of the property saved in settings.
 		 */
+		// A finished resolver won't refetch, so a retry would reuse the stale
+		// error (e.g. missing GA4 permission). Invalidate first to force a
+		// fresh fetch that clears it.
+		const hasLoadError = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getCustomDimensionsError( propertyID );
+
+		if ( hasLoadError ) {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.invalidateResolution( 'getCustomDimensions', [ propertyID ] );
+		}
+
 		const propertyCustomDimensions = yield commonActions.await(
 			registry
 				.resolveSelect( MODULES_ANALYTICS_4 )
@@ -564,6 +577,28 @@ const baseSelectors = {
 			return select( MODULES_ANALYTICS_4 ).getErrorForAction(
 				'createCustomDimension',
 				[ propertyID, CUSTOM_DIMENSION_DEFINITIONS[ customDimension ] ]
+			);
+		}
+	),
+
+	/**
+	 * Returns the error encountered while loading the property's custom dimensions.
+	 *
+	 * Custom dimension creation aborts early when this load fails (e.g. the user
+	 * lacks permission on the GA4 property), before any create error is recorded,
+	 * so this exposes that earlier failure.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} propertyID GA4 property ID to obtain the load error for.
+	 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
+	 */
+	getCustomDimensionsError: createRegistrySelector(
+		( select ) => ( state, propertyID ) => {
+			return select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+				'getCustomDimensions',
+				[ propertyID ]
 			);
 		}
 	),

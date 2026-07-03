@@ -22,7 +22,13 @@ import { FC, ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
-import { Fragment, createInterpolateElement } from '@wordpress/element';
+import {
+	Fragment,
+	createInterpolateElement,
+	useCallback,
+	useEffect,
+	useState,
+} from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -34,6 +40,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import useViewContext from '@/js/hooks/useViewContext';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import BreakdownTabs, {
 	BreakdownTab,
@@ -59,13 +66,14 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { useSiteGoalsBreakdown } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsBreakdown';
+import { useSiteGoalsWidgetViewAction } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsWidgetViewAction';
 import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { FormMetadata } from '@/js/modules/analytics-4/datastore/site-goals-breakdown';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
-import { untrailingslashit } from '@/js/util';
+import { trackEvent, untrailingslashit } from '@/js/util';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import WidgetFeedbackPrompt from './WidgetFeedbackPrompt';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
@@ -73,6 +81,20 @@ type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 interface LeadGenerationPerformanceWidgetProps extends WidgetComponentProps {
 	selectedGoalDriverIDs?: GoalDriverID[];
 }
+
+// Maps a lead-form event provider slug (the `googlesitekit_event_provider`
+// dimension value carried on every form conversion event) to its plugin's
+// display name, so the form tooltip can name the source from the report alone.
+// Keep this in sync with the lead-form providers in `assets/js/event-providers/`:
+// a slug missing here silently omits the form tab's source tooltip.
+const LEAD_PROVIDER_LABELS: Record< string, string > = {
+	'contact-form-7': 'Contact Form 7',
+	'ninja-forms': 'Ninja Forms',
+	wpforms: 'WPForms',
+	mailchimp: 'Mailchimp for WordPress',
+	'popup-maker': 'Popup Maker',
+	'optin-monster': 'OptinMonster',
+};
 
 // Builds the info-tooltip for a form tab. Has three variants depending on how
 // many pages the form was seen on, and falls back to the plugin-only variant
@@ -147,7 +169,7 @@ function getFormTabTooltip(
 function getFormBreakdownTabs(
 	breakdownValues: string[] | undefined,
 	formTitles: Record< string, string > | undefined,
-	formMetadata: Record< string, FormMetadata > | undefined,
+	formProviders: Record< string, string > | undefined,
 	formPagePaths: Record< string, string[] > | undefined,
 	referenceSiteURL: string,
 	learnMoreURL: string
@@ -158,16 +180,26 @@ function getFormBreakdownTabs(
 		return undefined;
 	}
 
-	return breakdownValues.map( ( formID ) => ( {
-		id: formID,
-		label: formTitles[ formID ],
-		tooltip: getFormTabTooltip(
-			formMetadata?.[ formID ]?.plugin,
-			formPagePaths?.[ formID ],
-			referenceSiteURL,
-			learnMoreURL
-		),
-	} ) );
+	return breakdownValues.map( ( formID ) => {
+		// The provider slug comes straight off the event's
+		// `googlesitekit_event_provider` dimension; map it to the plugin's
+		// display name for the tooltip.
+		const providerSlug = formProviders?.[ formID ];
+		const plugin = providerSlug
+			? LEAD_PROVIDER_LABELS[ providerSlug ]
+			: undefined;
+
+		return {
+			id: formID,
+			label: formTitles[ formID ],
+			tooltip: getFormTabTooltip(
+				plugin,
+				formPagePaths?.[ formID ],
+				referenceSiteURL,
+				learnMoreURL
+			),
+		};
+	} );
 }
 
 // The single/plural subtitle for the Total form completions tile.
@@ -244,12 +276,48 @@ const LeadGenerationPerformanceWidget: FC<
 		Header?: unknown;
 		headerContents?: ReactNode;
 		collapsible?: boolean;
+		onToggleCollapsed?: ( isCollapsed: boolean ) => void;
 	} >;
 	const WidgetNullComponent = WidgetNull as FC;
 	const WidgetReportErrorComponent = WidgetReportError as FC< {
 		moduleSlug: string;
 		error: unknown;
+		onRetry?: () => void;
+		onRequestAccess?: () => void;
 	} >;
+
+	const WidgetComponentWithIntersectionObserver =
+		withIntersectionObserver( WidgetComponent );
+
+	const viewContext = useViewContext();
+	const widgetEventCategory = `${ viewContext }_site-goals-widget`;
+
+	const handleToggleCollapsed = useCallback(
+		( isCollapsed: boolean ) => {
+			trackEvent(
+				widgetEventCategory,
+				isCollapsed ? 'collapse_widget' : 'expand_widget',
+				GOAL_TYPES.LEAD
+			);
+		},
+		[ widgetEventCategory ]
+	);
+
+	const handleRetryError = useCallback( () => {
+		trackEvent(
+			widgetEventCategory,
+			'data_loading_error_retry',
+			GOAL_TYPES.LEAD
+		);
+	}, [ widgetEventCategory ] );
+
+	const handleRequestAccess = useCallback( () => {
+		trackEvent(
+			widgetEventCategory,
+			'insufficient_permissions_error_request_access',
+			GOAL_TYPES.LEAD
+		);
+	}, [ widgetEventCategory ] );
 
 	// TODO: Update the link to the relevant support URL once it's created.
 	// See: https://github.com/google/site-kit-wp/issues/12727
@@ -316,6 +384,39 @@ const LeadGenerationPerformanceWidget: FC<
 		<PartialDataBadge customDimensionSlug={ breakdownDimension } />
 	) : undefined;
 
+	const handleTabChange = useCallback(
+		( tabID: string ) => {
+			trackEvent( widgetEventCategory, 'breakdown_tab_select', tabID );
+			setSelectedTab( tabID );
+		},
+		[ widgetEventCategory, setSelectedTab ]
+	);
+
+	// The widget's header/tabs area is always in exactly one of four mutually
+	// exclusive states; `viewAction` resolves which one, so only a single
+	// `view_widget*` event fires per widget view.
+	const viewAction = useSiteGoalsWidgetViewAction( {
+		breakdownDimension,
+		hasBreakdownTabs,
+	} );
+	// Repeating this logic from the withIntersectionObserver HOC because
+	// the `viewAction` relies on several async selectors, so we need to ensure
+	// it is resolved before tracking the event. So simply calling `trackEvent`
+	// in the HOC's `onInView` callback would be too early.
+	const [ isWidgetInView, setIsWidgetInView ] = useState( false );
+	const [ hasTrackedView, setHasTrackedView ] = useState( false );
+
+	const handleViewWidget = useCallback( () => {
+		setIsWidgetInView( true );
+	}, [] );
+
+	useEffect( () => {
+		if ( isWidgetInView && ! hasTrackedView && viewAction ) {
+			trackEvent( widgetEventCategory, viewAction, GOAL_TYPES.LEAD );
+			setHasTrackedView( true );
+		}
+	}, [ isWidgetInView, hasTrackedView, viewAction, widgetEventCategory ] );
+
 	const formTitles = useSelect(
 		( select: Select ) =>
 			breakdownValues
@@ -323,15 +424,17 @@ const LeadGenerationPerformanceWidget: FC<
 				: undefined,
 		[ breakdownValues ]
 	) as Record< string, string > | undefined;
-	const formMetadata = useSelect(
+
+	const formProviders = useInViewSelect(
 		( select: Select ) =>
-			breakdownValues
-				? select( MODULES_ANALYTICS_4 ).getFormMetadata(
+			breakdownValues?.length
+				? select( MODULES_ANALYTICS_4 ).getFormProviders(
+						breakdownDimension,
 						breakdownValues
 				  )
 				: undefined,
-		[ breakdownValues ]
-	) as Record< string, FormMetadata > | undefined;
+		[ breakdownDimension, breakdownValues ]
+	) as Record< string, string > | undefined;
 
 	// Which pages each form appears on, used to pick the tooltip variant.
 	const formPagePaths = useInViewSelect(
@@ -353,7 +456,7 @@ const LeadGenerationPerformanceWidget: FC<
 	const breakdownTabs = getFormBreakdownTabs(
 		breakdownValues,
 		formTitles,
-		formMetadata,
+		formProviders,
 		formPagePaths,
 		referenceSiteURL,
 		keyActionSupportURL
@@ -410,6 +513,16 @@ const LeadGenerationPerformanceWidget: FC<
 		[ leadEventsReportOptions, engagementReportOptions ]
 	);
 
+	useEffect( () => {
+		if ( error ) {
+			trackEvent(
+				widgetEventCategory,
+				'data_loading_error',
+				GOAL_TYPES.LEAD
+			);
+		}
+	}, [ error, widgetEventCategory ] );
+
 	if ( ! hasLeadEvents ) {
 		return <WidgetNullComponent />;
 	}
@@ -420,6 +533,8 @@ const LeadGenerationPerformanceWidget: FC<
 				<WidgetReportErrorComponent
 					moduleSlug="analytics-4"
 					error={ error }
+					onRetry={ handleRetryError }
+					onRequestAccess={ handleRequestAccess }
 				/>
 			</WidgetComponent>
 		);
@@ -436,7 +551,9 @@ const LeadGenerationPerformanceWidget: FC<
 	} );
 
 	return (
-		<WidgetComponent
+		<WidgetComponentWithIntersectionObserver
+			onInView={ handleViewWidget }
+			onToggleCollapsed={ handleToggleCollapsed }
 			Header={ WidgetHeaderTitle }
 			headerContents={
 				<Fragment>
@@ -458,7 +575,7 @@ const LeadGenerationPerformanceWidget: FC<
 				<BreakdownTabs
 					tabs={ breakdownTabs }
 					activeTabID={ activeTabID }
-					onTabChange={ setSelectedTab }
+					onTabChange={ handleTabChange }
 					showOtherSources={ hasOtherSources }
 					otherSourcesLabel={ __(
 						'Other form completions',
@@ -531,7 +648,11 @@ const LeadGenerationPerformanceWidget: FC<
 							'What’s helping you reach your goals?',
 							'google-site-kit'
 						) }
-						headerCTA={ <ChangeGoalDriversLink /> }
+						headerCTA={
+							<ChangeGoalDriversLink
+								goalType={ GOAL_TYPES.LEAD }
+							/>
+						}
 						badge={ partialDataBadge }
 					>
 						<GoalDriverTiles
@@ -546,8 +667,9 @@ const LeadGenerationPerformanceWidget: FC<
 
 			<WidgetFeedbackPrompt
 				voteID={ SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION }
+				goalType={ GOAL_TYPES.LEAD }
 			/>
-		</WidgetComponent>
+		</WidgetComponentWithIntersectionObserver>
 	);
 };
 

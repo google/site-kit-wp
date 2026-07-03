@@ -47,7 +47,6 @@ import {
 	CONTEXT_ENTITY_DASHBOARD_SPEED,
 	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
-import { useFeature } from '@/js/hooks/useFeature';
 import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { Cell, Grid, Row } from '@/js/material-components';
@@ -68,8 +67,6 @@ import VisuallyHidden from './VisuallyHidden';
 
 function DashboardEntityApp() {
 	const viewOnlyDashboard = useViewOnly();
-
-	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
 
 	const viewableModules = useSelect( ( select ) => {
 		if ( ! viewOnlyDashboard ) {
@@ -263,7 +260,7 @@ function DashboardEntityApp() {
 				<OfflineNotification />
 			</div>
 
-			{ emailReportingEnabled && <UserSettingsSelectionPanel /> }
+			<UserSettingsSelectionPanel />
 		</Fragment>
 	);
 }

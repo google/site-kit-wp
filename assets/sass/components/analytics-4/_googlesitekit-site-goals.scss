@@ -315,6 +315,10 @@
 
 			.googlesitekit-change-badge {
 				margin: 0;
+
+				&.googlesitekit-change-badge--zero {
+					color: $c-surfaces-on-surface-variant;
+				}
 			}
 		}
 
@@ -354,6 +358,17 @@
 
 			&.googlesitekit-site-goals-tile--primary__negative {
 				background: $c-red-r-10;
+				border-left: none;
+
+				.googlesitekit-site-goals-tile__title {
+					&::before {
+						display: none;
+					}
+				}
+			}
+
+			&.googlesitekit-site-goals-tile--primary__neutral {
+				background: $c-neutral-n-10;
 				border-left: none;
 
 				.googlesitekit-site-goals-tile__title {

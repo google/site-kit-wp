@@ -139,6 +139,9 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 	}
 
 	public function test_set_settings_subscribe_schedules_subscription_confirmation_batch() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
+
 		$this->controller->register();
 		$this->register_rest_routes();
 

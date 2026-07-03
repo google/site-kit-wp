@@ -24,6 +24,7 @@ import { ReactElement } from 'react';
 /**
  * Internal dependencies
  */
+import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
 import PDFNoData from './PDFNoData';
 import PDFTable, { PDFTableColumn } from './PDFTable';
 import PDFWidgetSection from './PDFWidgetSection';
@@ -49,13 +50,12 @@ export default function PDFTableSection< Row >( {
 }: PDFTableSectionProps< Row > ): ReactElement {
 	const hasRows = rows.length > 0;
 
-	// The card drops its horizontal padding when it has rows, so the table
-	// fills the width. It adds padding around the empty-state text when
-	// there are no rows.
+	// When the table has rows, the card drops its horizontal padding, so the
+	// table fills the width. When there are no rows, the card adds padding
+	// around the empty-state text.
 	const cardStyle = {
-		borderRadius: 8,
-		paddingVertical: 8,
-		paddingHorizontal: hasRows ? 0 : 12,
+		paddingVertical: scalePDFValue( 16 ),
+		paddingHorizontal: hasRows ? 0 : scalePDFValue( 24 ),
 	};
 
 	return (

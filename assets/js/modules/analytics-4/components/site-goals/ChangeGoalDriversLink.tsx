@@ -32,17 +32,23 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import { SITE_GOALS_SELECTION_PANEL_OPENED_KEY } from '@/js/modules/analytics-4/components/site-goals/constants';
+import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { trackEvent } from '@/js/util';
 import PencilIcon from '@/svg/icons/pencil-alt.svg';
 
 interface ChangeGoalDriversLinkProps {
 	className?: string;
+	goalType: GoalType;
 }
 
 export default function ChangeGoalDriversLink( {
 	className,
+	goalType,
 }: ChangeGoalDriversLinkProps ) {
 	const { setValue } = useDispatch( CORE_UI );
+	const viewContext = useViewContext();
 
 	return (
 		<Link
@@ -50,9 +56,14 @@ export default function ChangeGoalDriversLink( {
 				'googlesitekit-site-goals-change-drivers-cta',
 				className
 			) }
-			onClick={ () =>
-				setValue( SITE_GOALS_SELECTION_PANEL_OPENED_KEY, true )
-			}
+			onClick={ () => {
+				trackEvent(
+					`${ viewContext }_site-goals-sidebar`,
+					'change_goal_drivers',
+					goalType
+				);
+				setValue( SITE_GOALS_SELECTION_PANEL_OPENED_KEY, true );
+			} }
 			leadingIcon={ <PencilIcon width={ 20 } height={ 20 } /> }
 			secondary
 			linkButton

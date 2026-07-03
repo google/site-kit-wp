@@ -19,12 +19,16 @@
 /**
  * External dependencies
  */
-import { Path, StyleSheet, Svg, Text, View } from '@react-pdf/renderer';
+import { Path, Svg, Text, View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
  * Internal dependencies
  */
+import {
+	createPDFStyles,
+	scalePDFValue,
+} from '@/js/components/pdf-export/pdf-scale';
 import {
 	PDF_COLOR_TEXT_PRIMARY,
 	PDF_FONT_FAMILY_DISPLAY,
@@ -54,7 +58,7 @@ const G_PATHS = [
 	},
 ];
 
-const styles = StyleSheet.create( {
+const styles = createPDFStyles( {
 	logo: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -73,7 +77,11 @@ const styles = StyleSheet.create( {
 const PDFSiteKitLogo: FC = () => {
 	return (
 		<View style={ styles.logo }>
-			<Svg width={ 21 } height={ 22 } viewBox="0 0 43 44">
+			<Svg
+				width={ scalePDFValue( 21 ) }
+				height={ scalePDFValue( 22 ) }
+				viewBox="0 0 43 44"
+			>
 				{ G_PATHS.map( ( { d, fill }, index ) => (
 					<Path key={ index } d={ d } fill={ fill } />
 				) ) }
