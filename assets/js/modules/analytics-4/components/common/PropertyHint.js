@@ -37,7 +37,7 @@ export default function PropertyHint() {
 	const viewContext = useViewContext();
 
 	const learnMoreLink = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL( 'ga4-property' )
+		select( CORE_SITE ).getDocumentationLinkURL( 'what-is-ga4-property' )
 	);
 
 	const [ showProgress ] = useQueryArg( 'showProgress' );
