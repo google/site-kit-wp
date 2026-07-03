@@ -343,7 +343,7 @@ class ModuleTest extends TestCase {
 		$data = $error->get_error_data();
 
 		$this->assertEquals( 401, $data['status'], 'Proxy code exception should report auth failure status.' );
-		$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v3/site-management/setup/', $data['reconnectURL'], 'Proxy code exception should include reconnect URL.' );
+		$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v2/site-management/setup/', $data['reconnectURL'], 'Proxy code exception should include reconnect URL.' );
 	}
 
 	public function test_parse_string_list() {

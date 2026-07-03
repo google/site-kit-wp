@@ -359,7 +359,7 @@ class Setup_Test extends TestCase {
 			$this->fail( 'Expected redirection to proxy setup URL!' );
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();
-			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v3/site-management/setup/', $location, 'Redirect location should start with proxy setup URL.' );
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v2/site-management/setup/', $location, 'Redirect location should start with proxy setup URL.' );
 			$this->assertStringContainsString( '?step=test-step', $location, 'Redirect location should contain step parameter.' );
 			$this->assertStringContainsString( '&verify=true', $location, 'Redirect location should contain verify parameter.' );
 			$this->assertStringContainsString( '&verification_method=FILE', $location, 'Redirect location should contain verification method parameter.' );
@@ -410,7 +410,7 @@ class Setup_Test extends TestCase {
 			$this->fail( 'Expected redirection to proxy setup URL!' );
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();
-			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v3/site-management/setup/', $location, 'Redirect location should start with proxy setup URL.' );
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v2/site-management/setup/', $location, 'Redirect location should start with proxy setup URL.' );
 		}
 
 		$this->assertSame( 1, did_action( 'googlesitekit_verify_site_ownership' ), 'Site ownership verification action should be triggered once.' );
@@ -463,7 +463,7 @@ class Setup_Test extends TestCase {
 			$this->assertTrue( $no_code ?: $no_site_code, 'At least one of code or site_code should be missing for invalid request.' );
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();
-			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v3/site-management/setup/', $location, 'Redirect location should start with proxy setup URL.' );
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v2/site-management/setup/', $location, 'Redirect location should start with proxy setup URL.' );
 			$this->assertStringContainsString( '&step=test-step', $location, 'Redirect location should contain step parameter.' );
 			$this->assertArrayHasKey( $sync_url, $http_requests, 'HTTP requests should contain sync URL.' );
 			$sync_request = $http_requests[ $sync_url ];
