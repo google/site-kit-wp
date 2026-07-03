@@ -116,10 +116,12 @@ function getChangeProps( metric: SearchFunnelMetric | null ): {
 	}
 
 	return {
-		change: numFmt( Math.abs( change ), {
-			style: 'percent',
-			maximumFractionDigits: 1,
-		} ),
+		change:
+			( change > 0 ? '+' : '' ) +
+			numFmt( change, {
+				style: 'percent',
+				maximumFractionDigits: 1,
+			} ),
 		changeDirection: change >= 0 ? 'up' : 'down',
 	};
 }
