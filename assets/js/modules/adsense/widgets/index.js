@@ -17,8 +17,14 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
+import lazyWithPreload from '@/js/components/pdf-export/lazy-with-preload';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
@@ -34,10 +40,21 @@ import {
 	DashboardTopEarningPagesWidgetGA4,
 } from '@/js/modules/adsense/components/dashboard';
 import { ModuleOverviewWidget } from '@/js/modules/adsense/components/module';
+import getModuleOverviewPDFData from '@/js/modules/adsense/components/module/ModuleOverviewWidget/getPDFData';
 import { TopEarningContentWidget } from '@/js/modules/adsense/components/widgets';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+
+/**
+ * Lazy-loaded PDF component for the Earning performance over time widget.
+ */
+const ModuleOverviewWidgetPDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/adsense/components/module/ModuleOverviewWidget/ModuleOverviewWidgetPDF'
+	)
+);
 
 export function registerWidgets( widgets ) {
 	widgets.registerWidget(
@@ -107,6 +124,11 @@ export function registerWidgets( widgets ) {
 			priority: 2,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ADSENSE ],
+			pdf: {
+				Component: ModuleOverviewWidgetPDF,
+				getData: getModuleOverviewPDFData,
+				label: __( 'Earning performance over time', 'google-site-kit' ),
+			},
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
