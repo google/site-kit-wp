@@ -19,75 +19,36 @@
 /**
  * External dependencies
  */
-import { Text, View } from '@react-pdf/renderer';
-import type { FC } from 'react';
+import { View } from '@react-pdf/renderer';
+import { FC } from 'react';
 
 /**
  * Internal dependencies
  */
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
-import {
-	PDF_FONT_FAMILY_DISPLAY,
-	PDF_FONT_FAMILY_TEXT,
-} from '@/js/components/pdf-export/pdf-theme';
-
-const COLORS = {
-	text: '#161b18',
-	secondary: '#6c726e',
-	positiveBackground: '#d8ffc0',
-	positiveText: '#1f4c04',
-	negativeBackground: '#ffded3',
-	negativeText: '#7a1e00',
-};
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import PDFChangeBadge from './PDFChangeBadge';
+import PDFTypography from './PDFTypography';
 
 const tileStyles = createPDFStyles( {
 	container: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
-		alignItems: 'flex-start',
+		alignItems: 'flex-end',
 	},
 	metric: {
 		flexDirection: 'column',
 	},
 	title: {
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 14,
-		fontWeight: 500,
-		letterSpacing: -0.1,
-		lineHeight: 1.143,
-		color: COLORS.text,
-		marginBottom: 0,
-	},
-	value: {
-		fontFamily: PDF_FONT_FAMILY_DISPLAY,
-		fontSize: 28,
-		fontWeight: 400,
-		lineHeight: 1.286,
-		color: COLORS.text,
+		marginBottom: 1,
 	},
 	aside: {
 		flexDirection: 'column',
 		alignItems: 'flex-end',
 	},
-	chip: {
-		borderRadius: 100,
-		paddingVertical: 4,
-		paddingHorizontal: 8,
-	},
-	chipText: {
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 12,
-		fontWeight: 500,
-		letterSpacing: 0.2,
-		lineHeight: 1.333,
-	},
 	changeLabel: {
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 12,
-		letterSpacing: 0.2,
-		lineHeight: 1.333,
-		color: COLORS.secondary,
-		marginTop: 8,
+		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
+		marginTop: 4,
 	},
 } );
 
@@ -96,11 +57,11 @@ export interface PDFMetricTileProps {
 	title: string;
 	/** Pre-formatted metric value to display prominently, e.g. "32.6K". */
 	value: string;
-	/** Pre-formatted, signed change string for the chip, e.g. "+5.1%". Hides the chip when omitted. */
+	/** Pre-formatted, signed change string for the badge, e.g. "+5.1%". Hides the badge when omitted. */
 	change?: string;
-	/** Whether the change is negative; controls the chip color. */
+	/** Whether the change is negative. Controls the badge color. */
 	isNegative?: boolean;
-	/** Optional caption rendered below the chip, e.g. "Vs. prev. 28 days". */
+	/** Optional caption rendered below the badge, e.g. "Vs. prev. 28 days". */
 	changeLabel?: string;
 }
 
@@ -111,39 +72,32 @@ const PDFMetricTile: FC< PDFMetricTileProps > = ( {
 	isNegative = false,
 	changeLabel,
 } ) => {
-	const chipBackground = isNegative
-		? COLORS.negativeBackground
-		: COLORS.positiveBackground;
-	const chipColor = isNegative ? COLORS.negativeText : COLORS.positiveText;
-
 	return (
 		<View style={ tileStyles.container }>
 			<View style={ tileStyles.metric }>
-				<Text style={ tileStyles.title }>{ title }</Text>
-				<Text style={ tileStyles.value }>{ value }</Text>
+				<PDFTypography
+					type="title"
+					size="small"
+					style={ tileStyles.title }
+				>
+					{ title }
+				</PDFTypography>
+				<PDFTypography type="headline">{ value }</PDFTypography>
 			</View>
 			<View style={ tileStyles.aside }>
 				{ !! change && (
-					<View
-						style={ [
-							tileStyles.chip,
-							{ backgroundColor: chipBackground },
-						] }
-					>
-						<Text
-							style={ [
-								tileStyles.chipText,
-								{ color: chipColor },
-							] }
-						>
-							{ change }
-						</Text>
-					</View>
+					<PDFChangeBadge
+						change={ change }
+						isNegative={ isNegative }
+					/>
 				) }
 				{ !! changeLabel && (
-					<Text style={ tileStyles.changeLabel }>
+					<PDFTypography
+						size="small"
+						style={ tileStyles.changeLabel }
+					>
 						{ changeLabel }
-					</Text>
+					</PDFTypography>
 				) }
 			</View>
 		</View>
