@@ -24,6 +24,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
 	provideModules,
+	provideUserAuthentication,
 	render,
 } from '@tests/js/test-utils';
 import SettingsAdmin from './SettingsAdmin';
@@ -48,6 +49,9 @@ describe( 'SettingsAdmin', () => {
 			body: {},
 			status: 200,
 		} );
+
+		provideUserAuthentication( registry );
+		registry.dispatch( CORE_USER ).receiveCapabilities( {} );
 
 		provideModules( registry, [
 			{
