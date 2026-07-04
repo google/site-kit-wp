@@ -181,4 +181,23 @@ class Email_Template_FormatterTest extends TestCase {
 			)
 		);
 	}
+
+	public function test_parse_change_value_handles_decimal_comma_locale() {
+		global $wp_locale;
+		$original_locale = $wp_locale;
+		$wp_locale       = (object) array(
+			'number_format' => array(
+				'decimal_point' => ',',
+				'thousands_sep' => '.',
+			),
+		);
+
+		$method = new \ReflectionMethod( $this->formatter, 'parse_change_value' );
+		$method->setAccessible( true );
+
+		$this->assertSame( 6.52, $method->invoke( $this->formatter, '6,52%' ) );
+		$this->assertSame( 1234.56, $method->invoke( $this->formatter, '1.234,56%' ) );
+
+		$wp_locale = $original_locale;
+	}
 }
