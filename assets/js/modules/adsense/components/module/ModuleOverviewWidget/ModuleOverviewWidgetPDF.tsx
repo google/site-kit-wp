@@ -193,6 +193,7 @@ const ModuleOverviewWidgetPDF: FC< ModuleOverviewWidgetPDFProps > = ( {
 									metric?.total || 0,
 									currencyCode
 								) }
+								valueSize="large"
 								changeLabel={ changeLabel }
 								currentLabel={ title }
 								color={ color }
