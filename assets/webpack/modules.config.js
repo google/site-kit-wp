@@ -1,0 +1,194 @@
+/**
+ * Main modules config webpack partial.
+ *
+ * Site Kit by Google, Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+const CreateFileWebpack = require( 'create-file-webpack' );
+const ESLintPlugin = require( 'eslint-webpack-plugin' );
+const path = require( 'path' );
+const { DefinePlugin, ProvidePlugin, ProgressPlugin } = require( 'webpack' );
+const { WebpackManifestPlugin } = require( 'webpack-manifest-plugin' );
+
+/**
+ * Internal dependencies
+ */
+const {
+	formattedFeaturesToPHPArray,
+	rootDir,
+	configTemplate,
+	manifestArgs,
+	externals,
+	GOOGLESITEKIT_VERSION,
+	resolve,
+} = require( '../../webpack/common' );
+const { createMinimizerRules } = require( './common' );
+
+module.exports = function ( mode, rules ) {
+	const isProduction = mode === 'production';
+
+	return {
+		name: 'Module Entry Points',
+		entry: {
+			// New Modules (Post-JSR).
+			'googlesitekit-api': './js/googlesitekit-api.ts',
+			'googlesitekit-data': './js/googlesitekit-data.ts',
+			'googlesitekit-datastore-site':
+				'./js/googlesitekit-datastore-site.ts',
+			'googlesitekit-datastore-user':
+				'./js/googlesitekit-datastore-user.ts',
+			'googlesitekit-datastore-forms':
+				'./js/googlesitekit-datastore-forms.ts',
+			'googlesitekit-datastore-location':
+				'./js/googlesitekit-datastore-location.ts',
+			'googlesitekit-datastore-ui': './js/googlesitekit-datastore-ui.ts',
+			'googlesitekit-datastore-pdf':
+				'./js/googlesitekit-datastore-pdf.ts',
+			'googlesitekit-modules': './js/googlesitekit-modules.ts',
+			'googlesitekit-notifications':
+				'./js/googlesitekit-notifications.ts',
+			'googlesitekit-widgets': './js/googlesitekit-widgets.ts',
+			'googlesitekit-modules-ads': './js/googlesitekit-modules-ads.ts',
+			'googlesitekit-modules-adsense':
+				'./js/googlesitekit-modules-adsense.ts',
+			'googlesitekit-modules-analytics-4':
+				'./js/googlesitekit-modules-analytics-4.ts',
+			'googlesitekit-modules-pagespeed-insights':
+				'js/googlesitekit-modules-pagespeed-insights.ts',
+			'googlesitekit-modules-reader-revenue-manager':
+				'./js/googlesitekit-modules-reader-revenue-manager.ts',
+			'googlesitekit-modules-search-console':
+				'./js/googlesitekit-modules-search-console.ts',
+			'googlesitekit-modules-sign-in-with-google':
+				'./js/googlesitekit-modules-sign-in-with-google.ts',
+			'googlesitekit-modules-tagmanager':
+				'./js/googlesitekit-modules-tagmanager.ts',
+			'googlesitekit-user-input': './js/googlesitekit-user-input.tsx',
+			'googlesitekit-ad-blocking-recovery':
+				'./js/googlesitekit-ad-blocking-recovery.tsx',
+			'googlesitekit-block-tracking':
+				'./js/googlesitekit-block-tracking.ts',
+			'googlesitekit-polyfills': './js/googlesitekit-polyfills.ts',
+			'googlesitekit-components': './js/googlesitekit-components.ts',
+			'googlesitekit-metric-selection':
+				'./js/googlesitekit-metric-selection.tsx',
+			'googlesitekit-key-metrics-setup':
+				'./js/googlesitekit-key-metrics-setup.tsx',
+			// Old Modules
+			'googlesitekit-activation': './js/googlesitekit-activation.tsx',
+			'googlesitekit-adminbar': './js/googlesitekit-adminbar.tsx',
+			'googlesitekit-admin-pointers-tracking':
+				'./js/googlesitekit-admin-pointers-tracking.ts',
+			'googlesitekit-settings': './js/googlesitekit-settings.tsx',
+			'googlesitekit-main-dashboard':
+				'./js/googlesitekit-main-dashboard.tsx',
+			'googlesitekit-entity-dashboard':
+				'./js/googlesitekit-entity-dashboard.tsx',
+			'googlesitekit-splash': './js/googlesitekit-splash.tsx',
+			'googlesitekit-wp-dashboard': './js/googlesitekit-wp-dashboard.tsx',
+		},
+		externals,
+		output: {
+			filename: isProduction ? '[name]-[contenthash].js' : '[name].js',
+			path: path.join( rootDir, 'dist/assets/js' ),
+			chunkFilename: isProduction ? '[name]-[chunkhash].js' : '[name].js',
+			publicPath: '',
+			// If multiple webpack runtimes (from different compilations) are used on the
+			// same webpage, there is a risk of conflicts of on-demand chunks in the global
+			// namespace.
+			// See: https://webpack.js.org/configuration/output/#outputchunkloadingglobal
+			chunkLoadingGlobal: '__googlesitekit_webpackJsonp',
+		},
+		amd: false,
+		performance: {
+			maxEntrypointSize: 175000,
+		},
+		module: {
+			rules: [ ...rules ],
+		},
+		plugins: [
+			new ProvidePlugin( {
+				React: '@wordpress/element',
+			} ),
+			new ProgressPlugin(),
+			new CreateFileWebpack( {
+				path: rootDir + '/dist',
+				fileName: 'config.php',
+				content: configTemplate.replace(
+					'{{features}}',
+					`array( ${ formattedFeaturesToPHPArray } )`
+				),
+			} ),
+			new WebpackManifestPlugin( {
+				...manifestArgs( mode ),
+				filter( file ) {
+					return ( file.name || '' ).match( /\.js$/ );
+				},
+			} ),
+			new DefinePlugin( {
+				'global.GOOGLESITEKIT_VERSION': JSON.stringify(
+					GOOGLESITEKIT_VERSION
+				),
+			} ),
+			new ESLintPlugin( {
+				emitError: true,
+				emitWarning: true,
+				failOnError: true,
+			} ),
+		],
+		optimization: {
+			minimizer: createMinimizerRules(),
+			// The runtimeChunk value 'single' creates a runtime file to be shared for all generated chunks.
+			// Without this, imported modules are initialized for each runtime chunk separately which
+			// results in duplicate module initialization when a shared module is imported by separate entries
+			// on the same page.
+			// See: https://v4.webpack.js.org/configuration/optimization/#optimizationruntimechunk
+			runtimeChunk: 'single',
+			splitChunks: {
+				cacheGroups: {
+					vendor: {
+						chunks: 'initial',
+						name: 'googlesitekit-vendor',
+						filename: isProduction
+							? 'googlesitekit-vendor-[contenthash].js'
+							: 'googlesitekit-vendor.js',
+						enforce: true,
+						test: ( module ) => {
+							return /[\\/]node_modules[\\/]/.test(
+								module.resource
+							);
+						},
+					},
+				},
+			},
+		},
+		resolve: {
+			...resolve,
+			alias: {
+				...resolve.alias,
+				// Webpack 5 requires file extensions in ESM imports.
+				// `@react-pdf/renderer` omits them, so we alias the
+				// two paths it needs.
+				'react/jsx-runtime': require.resolve( 'react/jsx-runtime' ),
+				'react/jsx-dev-runtime': require.resolve(
+					'react/jsx-dev-runtime'
+				),
+			},
+		},
+	};
+};

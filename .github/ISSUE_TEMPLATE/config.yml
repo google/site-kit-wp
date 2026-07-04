@@ -1,0 +1,7 @@
+contact_links:
+  - name: ❓ Official Support Forum
+    url: https://wordpress.org/support/plugin/google-site-kit/
+    about: For plugin usage questions, please use the plugin's support forum. Before opening a new topic, please search the forum for existing topics as someone else has likely reported the issue already.
+  - name: ℹ️ Documentation
+    url: https://sitekit.withgoogle.com/documentation/
+    about: We have several guides which can be found on the documentation on the Site Kit website, including guides for troubleshooting issues related to setup, errors that appear on the plugin dashboard, Analytics, and AdSense. We’re continuing to add new documentation, so continue to check the website for updates.

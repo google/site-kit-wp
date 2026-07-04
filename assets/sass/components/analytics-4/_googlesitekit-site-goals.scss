@@ -1,0 +1,629 @@
+/**
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-widget--analyticsOnlineStorePerformance,
+	.googlesitekit-widget--analyticsLeadGenerationPerformance {
+
+		.googlesitekit-widget__header {
+			border-bottom: 0;
+		}
+
+		.googlesitekit-widget__body {
+			padding-top: 6px;
+		}
+
+		// When the whole widget fails, its report error notice needs the
+		// standard top space, not the tight 6px the tiles use.
+		.googlesitekit-widget__body:has(> .googlesitekit-cta--error) {
+			padding-top: $grid-gap-phone;
+
+			@media (min-width: $bp-tablet) {
+				padding-top: $grid-gap-desktop;
+			}
+		}
+
+		.googlesitekit-widget__header-inner {
+
+			@media (min-width: $bp-tablet) {
+				align-items: center;
+				display: flex;
+				gap: 10px;
+			}
+
+			.googlesitekit-badge {
+				margin-top: 10px;
+
+				@media (min-width: $bp-tablet) {
+					margin-top: 0;
+				}
+			}
+		}
+	}
+
+	.googlesitekit-site-goals-tiles-group {
+
+		@media (min-width: $bp-tablet) {
+			padding: 0 0 0 $grid-gap-desktop;
+		}
+
+		.googlesitekit-site-goals-tiles-group__header {
+			align-items: flex-start;
+			display: flex;
+			gap: 12px;
+			justify-content: space-between;
+			margin-bottom: 14px;
+
+			@media (min-width: $bp-desktop) {
+				margin-bottom: 18px;
+			}
+		}
+
+		.googlesitekit-site-goals-tiles-group__title {
+			color: $c-surfaces-on-surface;
+			font-size: $fs-title-md;
+			font-weight: $fw-medium;
+			letter-spacing: $ls-xxs;
+			line-height: $lh-title-md;
+			margin: 0;
+		}
+
+		.googlesitekit-site-goals-tiles-group__cta {
+			flex-shrink: 0;
+		}
+
+		.googlesitekit-site-goals-change-drivers-cta {
+			white-space: nowrap;
+		}
+
+		.googlesitekit-site-goals-change-drivers-cta.googlesitekit-cta-link.googlesitekit-cta-link--link-button {
+			color: $c-content-secondary;
+			padding: 0 4px 0 2px;
+
+			.googlesitekit-icon-wrapper {
+				margin-right: 0 !important; // To override the inline set margin.
+			}
+		}
+	}
+
+	.googlesitekit-site-goals-tiles-group + .googlesitekit-site-goals-tiles-group,
+	.googlesitekit-preview-block + .googlesitekit-site-goals-tiles-group {
+		margin-top: 34px;
+	}
+
+	.googlesitekit-notice-container:has(
+			.googlesitekit-site-goals-breakdown-notice
+		) {
+		margin: 34px 0;
+
+		@media (min-width: $bp-tablet) {
+			padding-left: $grid-gap-desktop;
+		}
+	}
+
+	.googlesitekit-site-goals-breakdown-notice {
+			padding: $grid-gap-phone $grid-gap-desktop;
+
+			@media (min-width: $bp-tablet) {
+				padding: 14px $grid-gap-desktop;
+			}
+	}
+
+	.googlesitekit-site-goals-breakdown-notice .googlesitekit-notice__content {
+		font-size: $fs-label-md;
+		line-height: $lh-label-md;
+	}
+
+	.googlesitekit-site-goals-other-sources-notice {
+		margin-bottom: 24px;
+		padding: 0 0 0 24px;
+	}
+
+	.googlesitekit-site-goals-breakdown-tabs {
+		position: relative;
+
+		@media (min-width: $bp-tablet) {
+			margin-bottom: 34px;
+		}
+
+		&::after {
+			border-bottom: 1px solid $c-utility-divider;
+    		bottom: 0.5px;
+			content: " ";
+			display: block;
+    		left: 0;
+			position: absolute;
+    		width: 100%;
+			z-index: 0;
+		}
+
+		.mdc-tab-bar {
+			position: relative;
+    		z-index: 1;
+		}
+
+		.mdc-tab {
+			border-radius: 8px 8px 0 0;
+			color: $c-surfaces-on-background-variant;
+			font-size: $fs-body-md;
+			letter-spacing: 0.25px;
+			line-height: 20px;
+
+			// Drop pointer events on the tab itself so the info tooltip inside can
+			// be hovered (the tab button/ripple would otherwise capture them);
+			// re-enabled on the content below, mirroring the audience tiles tabs.
+			pointer-events: none;
+			transition: background-color 0.2s ease-in-out;
+
+			&:hover {
+				background-color: $c-site-kit-sk-10;
+			}
+
+			.mdc-tab__ripple::before,
+			.mdc-tab__ripple::after {
+				background-color: transparent;
+			}
+
+			.mdc-tab__content {
+				pointer-events: auto;
+			}
+
+			.googlesitekit-info-tooltip {
+				color: $c-neutral-n-500;
+				height: 16px;
+				margin-left: 4px;
+			}
+		}
+	}
+
+	.googlesitekit-site-goals-tiles-group__tiles {
+		align-items: stretch;
+		display: grid;
+		gap: 8px;
+		grid-template-columns: 1fr;
+
+		@media (min-width: $bp-nonMobile) {
+			gap: 36px 42px;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		@media (min-width: $bp-desktop) {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+	}
+
+	.googlesitekit-site-goals-tiles-group__badge {
+		margin: -10px 0 12px;
+
+		// The badge component renders nothing outside partial-data state; hide
+		// the wrapper too so its margins don't shift the layout.
+		&:empty {
+			display: none;
+		}
+	}
+
+	.googlesitekit-site-goals-tile {
+		border-left: 2px solid $c-surfaces-surface-1;
+		display: flex;
+		flex-direction: column;
+		margin-left: 0;
+		padding: 14px 0;
+
+		.googlesitekit-site-goals-tile__inner {
+			padding-left: 14px;
+		}
+
+		.googlesitekit-site-goals-tile__header {
+			align-items: center;
+			display: flex;
+			margin-bottom: 6px;
+
+			.googlesitekit-info-tooltip {
+				color: $c-neutral-n-500;
+				height: 16px;
+			}
+		}
+
+		.googlesitekit-site-goals-tile__title {
+			color: $c-surfaces-on-surface;
+			font-size: $fs-body-md;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-s;
+			line-height: 20px;
+			margin: 0 8px 0 0;
+			position: relative;
+
+			&::before {
+				background-color: $c-surfaces-surface-1;
+				border-radius: 50%;
+				content: "";
+				display: block;
+				height: 9px;
+				left: -19.5px;
+				position: absolute;
+				top: 50%;
+				transform: translateY(-50%);
+				width: 9px;
+			}
+		}
+
+		.googlesitekit-site-goals-tile__title.googlesitekit-typography {
+			font-weight: $fw-normal;
+			letter-spacing: $ls-s;
+			line-height: 20px;
+			margin: 0 8px 0 0;
+		}
+
+		.googlesitekit-site-goals-tile__header-label.googlesitekit-typography {
+			color: $c-surfaces-on-background-variant;
+			letter-spacing: $ls-s;
+			line-height: 20px;
+			margin: 0;
+		}
+
+		.googlesitekit-site-goals-tile__body {
+			display: flex;
+			flex: 1;
+		}
+
+		.googlesitekit-site-goals-tile__metric-container {
+			flex: 1;
+		}
+
+		.googlesitekit-site-goals-tile__loading {
+			display: grid;
+			flex: 1;
+			gap: 8px;
+		}
+
+		.googlesitekit-site-goals-tile__metric {
+			color: $c-surfaces-on-surface;
+			font-family: $f-secondary;
+			font-size: $fs-headline-sm;
+			font-weight: $fw-normal;
+			line-height: 28px;
+		}
+
+		.googlesitekit-site-goals-tile__subtext {
+			color: $c-surfaces-on-background-variant;
+			font-size: $fs-label-sm;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-xs;
+			line-height: 16px;
+			margin: 1px 0 0;
+		}
+
+		.googlesitekit-site-goals-tile__change-container {
+			align-items: flex-end;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+
+			.googlesitekit-change-badge {
+				margin: 0;
+			}
+		}
+
+		.googlesitekit-site-goals-tile__comparison-label {
+			color: $c-surfaces-on-background-variant;
+			font-size: $fs-label-sm;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-xs;
+			line-height: 16px;
+			margin: 2px 0 0;
+			text-align: right;
+		}
+
+		&.googlesitekit-site-goals-tile--primary {
+			padding: 18px;
+
+			.googlesitekit-site-goals-tile__inner {
+				padding: 0;
+			}
+
+			.googlesitekit-site-goals-tile__title {
+				&::before {
+					left: -23.5px;
+				}
+			}
+
+			&.googlesitekit-site-goals-tile--primary__positive {
+				background: $c-green-g-10;
+				border-left: none;
+
+				.googlesitekit-site-goals-tile__title {
+					&::before {
+						display: none;
+					}
+				}
+			}
+
+			&.googlesitekit-site-goals-tile--primary__negative {
+				background: $c-red-r-10;
+				border-left: none;
+
+				.googlesitekit-site-goals-tile__title {
+					&::before {
+						display: none;
+					}
+				}
+			}
+		}
+	}
+
+	.googlesitekit-site-goals-goal-drivers-group {
+		.googlesitekit-site-goals-tiles-group__tiles {
+			display: block;
+		}
+
+		.googlesitekit-site-goals-goal-drivers-section__tiles {
+			display: grid;
+			gap: 8px;
+			grid-template-columns: 1fr;
+
+			@media (min-width: $bp-nonMobile) {
+				align-items: start;
+				gap: 36px 42px;
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+			}
+
+			@media (min-width: $bp-desktop) {
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+			}
+		}
+
+		.googlesitekit-site-goals-goal-drivers-section__tile {
+			min-height: 81px;
+			min-width: 0;
+			padding: 8px 0 8px 19px;
+			position: relative;
+
+			@media (min-width: $bp-tablet) {
+				height: 100%;
+				padding: 8px 0 8px 24px;
+			}
+
+			&::before {
+				background: $c-utility-divider;
+				bottom: 0;
+				content: "";
+				left: 0;
+				position: absolute;
+				top: 0;
+				width: 2px;
+			}
+
+			&::after {
+				background: $c-utility-divider;
+				border-radius: 50%;
+				content: "";
+				height: 9px;
+				left: -3.5px;
+				position: absolute;
+				top: 12px;
+				width: 9px;
+			}
+
+			&.googlesitekit-site-goals-goal-drivers-section__tile--empty {
+				display: none;
+				padding: 0;
+
+				@media (min-width: $bp-tablet) {
+					display: block;
+				}
+
+				&::before,
+				&::after {
+					display: none;
+				}
+			}
+		}
+
+		.googlesitekit-site-goals-goal-drivers-section__show-more.googlesitekit-cta-link {
+			color: $c-content-secondary;
+			display: block;
+			font-size: $fs-label-sm;
+			font-weight: $fw-medium;
+			letter-spacing: $ls-xs;
+			line-height: 16px;
+			margin-top: 18px;
+			width: fit-content;
+		}
+
+		.googlesitekit-site-goals-goal-drivers-section__show-more.googlesitekit-cta-link.googlesitekit-cta-link--link-button {
+			padding-left: 0;
+			padding-right: 0;
+
+			&:focus,
+			&:focus-visible {
+				background-color: transparent;
+			}
+		}
+
+		.googlesitekit-site-goals-tiles-group__footer-cta {
+			margin-top: 10px;
+		}
+	}
+
+	.googlesitekit-site-goals-widget__feedback {
+		align-items: center;
+		display: flex;
+		gap: 6px;
+		margin-top: 20px;
+
+		@media (min-width: $bp-tablet) {
+			justify-content: flex-end;
+			margin-top: 14px;
+		}
+
+		@media (min-width: $bp-desktop) {
+			margin-top: 28px;
+		}
+	}
+
+	.googlesitekit-site-goals-widget__feedback-prompt {
+		color: $c-surfaces-on-background-variant;
+	}
+
+	.googlesitekit-table-tile {
+		min-height: auto;
+		padding: 0;
+
+		.googlesitekit-table-tile__header {
+			align-items: start;
+			column-gap: 8px;
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) auto;
+			min-width: 0;
+		}
+
+		.googlesitekit-table-tile__title.googlesitekit-typography {
+			color: $c-surfaces-on-surface;
+			font-size: $fs-title-sm;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-s;
+			line-height: $lh-title-sm;
+			margin: 0 0 8px;
+			min-width: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: normal;
+		}
+
+		.googlesitekit-table-tile__header-label.googlesitekit-typography {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-md;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-sm;
+			margin: 0 0 8px;
+		}
+
+		.googlesitekit-table-tile__body {
+			display: block;
+			margin-top: 6px;
+		}
+
+		.googlesitekit-table-tile__rows {
+			display: block;
+		}
+
+		.googlesitekit-table-tile__row {
+			column-gap: 8px;
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) auto;
+			min-width: 0;
+		}
+
+		.googlesitekit-table-tile__row + .googlesitekit-table-tile__row {
+			margin-top: 8px;
+		}
+
+		.googlesitekit-table-tile__loading {
+			display: grid;
+			gap: 8px;
+		}
+
+		.googlesitekit-table-tile__zero-state,
+		.googlesitekit-table-tile__error {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
+		}
+
+		.googlesitekit-table-tile__custom-dimensions-missing-title {
+			color: $c-surfaces-on-surface;
+			font-size: $fs-title-md;
+			line-height: $lh-title-md;
+			margin: 0 0 8px;
+		}
+
+		.googlesitekit-table-tile__custom-dimensions-missing-description {
+			color: $c-surfaces-on-surface;
+			font-size: $fs-title-sm;
+			line-height: $lh-title-sm;
+			margin: 0 0 16px;
+		}
+
+		.googlesitekit-table-tile__custom-dimensions-missing-button {
+			background-color: $c-utility-error;
+			color: $c-white;
+			font-size: $fs-label-md;
+			font-weight: $fw-medium;
+			line-height: $lh-label-md;
+			padding: 6px 16px;
+
+			&:hover,
+			&:focus {
+				background-color: $c-utility-error;
+				color: $c-white;
+			}
+
+			&:disabled {
+				cursor: default;
+				opacity: 0.6;
+			}
+		}
+
+		.googlesitekit-table-tile__error {
+			height: 100%;
+
+			.googlesitekit-error-retry-text {
+				margin-left: 0;
+			}
+		}
+
+		.googlesitekit-table-tile__cell--label,
+		.googlesitekit-table-tile__cell--value {
+			color: $c-surfaces-on-surface;
+			font-size: $fs-body-md;
+			letter-spacing: 0;
+		}
+
+		.googlesitekit-table-tile__cell--label {
+			font-weight: $fw-medium;
+			min-width: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+
+			.googlesitekit-cta-link {
+				display: block;
+				font-weight: $fw-normal;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+			.googlesitekit-cta-link__contents {
+				display: block;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+		}
+
+		.googlesitekit-table-tile__cell--value {
+			font-weight: $fw-normal;
+			justify-self: end;
+			padding-left: 8px;
+			text-align: right;
+			white-space: nowrap;
+		}
+	}
+}

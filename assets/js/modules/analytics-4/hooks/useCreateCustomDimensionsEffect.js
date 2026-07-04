@@ -1,0 +1,95 @@
+/**
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * WordPress dependencies
+ */
+import { useEffect } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	EDIT_SCOPE,
+	FORM_CUSTOM_DIMENSIONS_CREATE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+
+export default function useCreateCustomDimensionsEffect() {
+	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
+		select( CORE_SITE ).isKeyMetricsSetupCompleted()
+	);
+
+	const isGA4Connected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
+	);
+
+	const hasAnalyticsEditScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( EDIT_SCOPE )
+	);
+
+	const [ autoSubmit, setAutoSubmit ] = useFormValue(
+		FORM_CUSTOM_DIMENSIONS_CREATE,
+		'autoSubmit'
+	);
+	const [ customDimensions ] = useFormValue(
+		FORM_CUSTOM_DIMENSIONS_CREATE,
+		'customDimensions'
+	);
+	const [ , setIsAutoCreatingCustomDimensions ] = useFormValue(
+		FORM_CUSTOM_DIMENSIONS_CREATE,
+		'isAutoCreatingCustomDimensions'
+	);
+
+	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
+	useEffect( () => {
+		async function createDimensionsAndUpdateForm() {
+			await createCustomDimensions( customDimensions );
+			setIsAutoCreatingCustomDimensions( false );
+		}
+
+		const hasExplicitCustomDimensions =
+			Array.isArray( customDimensions ) && customDimensions.length > 0;
+
+		if (
+			( isKeyMetricsSetupCompleted || hasExplicitCustomDimensions ) &&
+			isGA4Connected &&
+			hasAnalyticsEditScope &&
+			autoSubmit
+		) {
+			setAutoSubmit( false );
+			setIsAutoCreatingCustomDimensions( true );
+			createDimensionsAndUpdateForm();
+		}
+	}, [
+		autoSubmit,
+		createCustomDimensions,
+		customDimensions,
+		hasAnalyticsEditScope,
+		isKeyMetricsSetupCompleted,
+		isGA4Connected,
+		setAutoSubmit,
+		setIsAutoCreatingCustomDimensions,
+	] );
+
+	return null;
+}

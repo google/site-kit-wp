@@ -1,0 +1,42 @@
+[
+  {
+    "name": "accounts/pub-2833782679114991/adclients/ca-pub-2833782679114991",
+    "reportingDimensionId": "ca-pub-2833782679114991",
+    "productCode": "AFC",
+    "_id": "ca-pub-2833782679114991",
+    "_accountID": "pub-2833782679114991",
+    "state": "READY"
+  },
+  {
+    "name": "accounts/pub-3772192679115193/adclients/ca-pub-3772192679115193",
+    "reportingDimensionId": "ca-pub-3772192679115193",
+    "productCode": "AFC",
+    "_id": "ca-pub-3772192679115193",
+    "_accountID": "pub-3772192679115193",
+    "state": "READY"
+  },
+  {
+    "name": "accounts/pub-3772192679115194/adclients/ca-pub-3772192679115194",
+    "reportingDimensionId": "ca-pub-3772192679115194",
+    "productCode": "AFC",
+    "_id": "ca-pub-3772192679115194",
+    "_accountID": "pub-3772192679115194",
+    "state": "GETTING_READY"
+  },
+  {
+    "name": "accounts/pub-3772192679115194/adclients/ca-pub-3772192679115195",
+    "reportingDimensionId": "ca-pub-3772192679115195",
+    "productCode": "AFC",
+    "_id": "ca-pub-3772192679115195",
+    "_accountID": "pub-3772192679115195",
+    "state": "REQUIRES_REVIEW"
+  },
+  {
+    "name": "accounts/pub-3772192679115194/adclients/ca-pub-3772192679115196",
+    "reportingDimensionId": "ca-pub-3772192679115196",
+    "productCode": "AFC",
+    "_id": "ca-pub-3772192679115196",
+    "_accountID": "pub-3772192679115196",
+    "state": "STATE_UNSPECIFIED"
+  }
+]

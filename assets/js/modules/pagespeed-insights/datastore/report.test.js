@@ -1,0 +1,349 @@
+/**
+ * `modules/pagespeed-insights` data store: report tests.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import { setUsingCache } from 'googlesitekit-api';
+import {
+	createTestRegistry,
+	subscribeUntil,
+	untilResolved,
+	waitForDefaultTimeouts,
+} from '@tests/js/utils';
+import * as fixtures from './__fixtures__';
+import { MODULES_PAGESPEED_INSIGHTS } from './constants';
+
+describe( 'modules/pagespeed-insights report', () => {
+	let registry;
+
+	beforeAll( () => {
+		setUsingCache( false );
+	} );
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+	} );
+
+	afterAll( () => {
+		setUsingCache( true );
+	} );
+
+	describe( 'actions', () => {
+		describe( 'fetchGetReport', () => {
+			it( 'fetches and returns a report as response', async () => {
+				const strategy = 'desktop';
+				const url = 'http://example.com/';
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
+					{ body: fixtures.pagespeedDesktop, status: 200 }
+				);
+
+				const { response } = await registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.fetchGetReport( url, strategy );
+
+				expect( response ).toEqual( fixtures.pagespeedDesktop );
+			} );
+
+			it( 'forwards the abort signal from the fetch options to the report request', async () => {
+				const strategy = 'desktop';
+				const url = 'http://example.com/';
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
+					{ body: fixtures.pagespeedDesktop, status: 200 }
+				);
+
+				const { signal } = new AbortController();
+
+				await registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.fetchGetReport( url, strategy, { signal } );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBe( signal );
+			} );
+
+			it( 'sends no abort signal to the report request when the call has no fetch options', async () => {
+				const strategy = 'desktop';
+				const url = 'http://example.com/';
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
+					{ body: fixtures.pagespeedDesktop, status: 200 }
+				);
+
+				await registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.fetchGetReport( url, strategy );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBeUndefined();
+			} );
+		} );
+	} );
+
+	describe( 'selectors', () => {
+		describe( 'getReport', () => {
+			it( 'uses a resolver to make a network request', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
+					{ body: fixtures.pagespeedDesktop, status: 200 }
+				);
+				const strategy = 'mobile';
+				const url = 'http://example.com/';
+
+				const initialReport = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getReport( url, strategy );
+
+				await untilResolved(
+					registry,
+					MODULES_PAGESPEED_INSIGHTS
+				).getReport( url, strategy );
+
+				expect( initialReport ).toEqual( undefined );
+
+				// Ensure the proper parameters were passed.
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
+					{
+						query: {
+							url,
+							strategy,
+						},
+					}
+				);
+
+				const report = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getReport( url, strategy );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( report ).toEqual( fixtures.pagespeedDesktop );
+			} );
+
+			it( 'dispatches an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
+					{ body: response, status: 500 }
+				);
+
+				const strategy = 'mobile';
+				const url = 'http://example.com/';
+
+				registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getReport( url, strategy );
+				await subscribeUntil( registry, () =>
+					registry
+						.select( MODULES_PAGESPEED_INSIGHTS )
+						.hasFinishedResolution( 'getReport', [ url, strategy ] )
+				);
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				const report = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getReport( url, strategy );
+				expect( report ).toEqual( undefined );
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'forwards the abort signal from a getReport call to the report request', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
+					{ body: fixtures.pagespeedDesktop, status: 200 }
+				);
+
+				const strategy = 'mobile';
+				const url = 'http://example.com/';
+				const { signal } = new AbortController();
+
+				await registry
+					.resolveSelect( MODULES_PAGESPEED_INSIGHTS )
+					.getReport( url, strategy, { signal } );
+
+				// The registry starts resolver runs from a timeout. Wait for
+				// those timeouts to finish, so a second run with the same
+				// arguments would send its request inside this test and make
+				// the test fail.
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBe( signal );
+			} );
+
+			it( 'sends one request and no abort signal when a getReport call has no fetch options', async () => {
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
+					{ body: fixtures.pagespeedDesktop, status: 200 }
+				);
+
+				const strategy = 'mobile';
+				const url = 'http://example.com/';
+
+				await registry
+					.resolveSelect( MODULES_PAGESPEED_INSIGHTS )
+					.getReport( url, strategy );
+
+				// The registry starts resolver runs from a timeout. Wait for
+				// those timeouts to finish, so a second run with the same
+				// arguments would send its request inside this test and make
+				// the test fail.
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBeUndefined();
+			} );
+
+			it( 'stores the error under the URL and strategy when a getReport call with an abort signal fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
+					{ body: response, status: 500 }
+				);
+
+				const strategy = 'mobile';
+				const url = 'http://example.com/';
+				const { signal } = new AbortController();
+
+				await registry
+					.resolveSelect( MODULES_PAGESPEED_INSIGHTS )
+					.getReport( url, strategy, { signal } );
+
+				// The registry starts resolver runs from a timeout. Wait for
+				// those timeouts to finish, so a second run with the same
+				// arguments would send its request inside this test and make
+				// the test fail.
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				// The store saves the error under the URL and strategy only,
+				// so the same arguments that read the report also find the
+				// error.
+				expect(
+					registry
+						.select( MODULES_PAGESPEED_INSIGHTS )
+						.getErrorForSelector( 'getReport', [ url, strategy ] )
+				).toEqual( response );
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getAudits', () => {
+			it( 'should return audits object', () => {
+				const strategy = 'desktop';
+				const url = 'http://example.com/';
+
+				registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.receiveGetReport( fixtures.pagespeedDesktop, {
+						url,
+						strategy,
+					} );
+				registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.finishResolution( 'getReport', [ url, strategy ] );
+
+				const audits = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getAudits( url, strategy );
+				expect( audits ).toEqual(
+					fixtures.pagespeedDesktop.lighthouseResult.audits
+				);
+			} );
+		} );
+
+		describe( 'getStackPackDescription', () => {
+			const strategy = 'desktop';
+			const url = 'http://example.com/';
+
+			const usesTextCompressionDescription =
+				'You can enable text compression in your web server configuration.';
+
+			const report = fixtures.pagespeedDesktop;
+
+			beforeEach( () => {
+				registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.receiveGetReport( report, { url, strategy } );
+				registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.finishResolution( 'getReport', [ url, strategy ] );
+			} );
+
+			it( 'should return a stack pack with correct data for an available audit', () => {
+				const stackPack = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getStackPackDescription(
+						url,
+						strategy,
+						'uses-text-compression',
+						'wordpress'
+					);
+				expect( stackPack.id ).toBe( 'wordpress' );
+				expect( stackPack.description ).toBe(
+					usesTextCompressionDescription
+				);
+			} );
+
+			it( 'should return an empty array for non-existing audit', () => {
+				const stackPack = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getStackPackDescription(
+						url,
+						strategy,
+						'dom-size',
+						'wordpress'
+					);
+				expect( stackPack ).toBeNull();
+			} );
+		} );
+	} );
+} );

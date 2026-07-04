@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+
+const Docker = require( 'dockerode' );
+
+// This tests the connection that is used in tests/e2e/config/wordpress-debug-log/index.js
+const docker = new Docker();
+
+async function testConnectivity() {
+	try {
+		await docker.listContainers();
+	} catch ( error ) {
+		global.console.error(
+			`Failed to connect to Docker from Node with message: "${ error.message }"`
+		);
+		process.exit( 1 );
+	}
+}
+testConnectivity();

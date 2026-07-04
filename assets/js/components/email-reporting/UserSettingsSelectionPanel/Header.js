@@ -1,0 +1,103 @@
+/**
+ * User Settings Selection Panel Header
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import {
+	Fragment,
+	createInterpolateElement,
+	useCallback,
+} from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import { SelectionPanelHeader } from '@/js/components/SelectionPanel';
+import P from '@/js/components/Typography/P';
+import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import useViewOnly from '@/js/hooks/useViewOnly';
+
+export default function Header( { closePanel, isLoading } ) {
+	const viewContext = useViewContext();
+	const isViewOnly = useViewOnly();
+
+	const isEmailReportingEnabled = useSelect( ( select ) =>
+		select( CORE_SITE ).isEmailReportingEnabled()
+	);
+
+	const adminSettingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getSiteKitAdminSettingsURL( {
+			scrollTo: 'email-reporting',
+		} )
+	);
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
+	const onSettingsClick = useCallback( () => {
+		if ( VIEW_CONTEXT_SETTINGS === viewContext ) {
+			closePanel();
+		}
+		navigateTo( adminSettingsURL );
+	}, [ adminSettingsURL, navigateTo, closePanel, viewContext ] );
+
+	return (
+		<SelectionPanelHeader
+			title={ __( 'Email reports subscription', 'google-site-kit' ) }
+			onCloseClick={ closePanel }
+		>
+			{ isLoading && (
+				<Fragment>
+					<PreviewBlock width="100%" height="16px" />
+					<br />
+				</Fragment>
+			) }
+			{ ! isLoading && ! isViewOnly && isEmailReportingEnabled && (
+				<P>
+					{ createInterpolateElement(
+						__(
+							'You can always deactivate this feature in <link>Settings</link>',
+							'google-site-kit'
+						),
+						{
+							link: (
+								<Link onClick={ onSettingsClick } secondary />
+							),
+						}
+					) }
+				</P>
+			) }
+		</SelectionPanelHeader>
+	);
+}
+
+Header.propTypes = {
+	closePanel: PropTypes.func.isRequired,
+	isLoading: PropTypes.bool,
+};

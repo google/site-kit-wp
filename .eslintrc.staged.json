@@ -1,0 +1,6 @@
+{
+	"extends": [ "./.eslintrc.json" ],
+	"rules": {
+		"sitekit/no-storybook-scenario-label": "error"
+	}
+}

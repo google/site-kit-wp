@@ -1,0 +1,177 @@
+/**
+ * Activation App component.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * WordPress dependencies
+ */
+import { useCallback, useEffect, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { Button, Checkbox } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Logo from '@/js/components/Logo';
+import Typography from '@/js/components/Typography';
+import { isFeatureEnabled } from '@/js/features';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	CORE_USER,
+	PERMISSION_VIEW_DASHBOARD,
+} from '@/js/googlesitekit/datastore/user/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { trackEvent } from '@/js/util';
+
+export function ActivationApp() {
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { enableAutoUpdate } = useDispatch( CORE_SITE );
+	const viewContext = useViewContext();
+	const setupFlowRefreshPhase4Enabled = isFeatureEnabled(
+		'setupFlowRefreshPhase4'
+	);
+
+	const dashboardURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+	);
+	const splashURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-splash' )
+	);
+	const canViewDashboard = useSelect( ( select ) =>
+		select( CORE_USER ).hasCapability( PERMISSION_VIEW_DASHBOARD )
+	);
+	const siteKitAutoUpdatesEnabled = useSelect( ( select ) =>
+		select( CORE_SITE ).getSiteKitAutoUpdatesEnabled()
+	);
+
+	const [ viewNotificationSent, setViewNotificationSent ] = useState( false );
+	const [ autoUpdatesEnabled, setAutoUpdatesEnabled ] = useState( false );
+
+	const buttonURL = canViewDashboard ? dashboardURL : splashURL;
+	const buttonLabel = canViewDashboard
+		? __( 'Go to dashboard', 'google-site-kit' )
+		: __( 'Start setup', 'google-site-kit' );
+
+	useEffect( () => {
+		// Only trigger the view event if the notification is visible and we haven't
+		// already sent this notification.
+		if ( ! viewNotificationSent && buttonURL ) {
+			trackEvent( viewContext, 'view_notification' );
+			// Don't send the view event again.
+			setViewNotificationSent( true );
+		}
+	}, [ viewContext, buttonURL, viewNotificationSent ] );
+
+	const toggleAutoUpdates = useCallback(
+		( event ) => {
+			const checked = !! event.target.checked;
+
+			setAutoUpdatesEnabled( checked );
+		},
+		[ setAutoUpdatesEnabled ]
+	);
+
+	const onButtonClick = useCallback(
+		async ( event ) => {
+			event.preventDefault();
+			const eventLabel = canViewDashboard ? 'dashboard' : 'splash';
+			await trackEvent( viewContext, 'confirm_notification', eventLabel );
+
+			if ( setupFlowRefreshPhase4Enabled && autoUpdatesEnabled ) {
+				await enableAutoUpdate();
+			}
+
+			navigateTo( buttonURL );
+		},
+		[
+			autoUpdatesEnabled,
+			buttonURL,
+			canViewDashboard,
+			enableAutoUpdate,
+			navigateTo,
+			setupFlowRefreshPhase4Enabled,
+			viewContext,
+		]
+	);
+
+	const showAutoUpdatesCheckbox =
+		setupFlowRefreshPhase4Enabled && siteKitAutoUpdatesEnabled === false;
+
+	useEffect( () => {
+		const noticeElement = document.getElementById(
+			'googlesitekit-notice-activated'
+		);
+		if ( noticeElement ) {
+			noticeElement.classList.toggle(
+				'googlesitekit-notice-activated--with-auto-updates-checkbox',
+				showAutoUpdatesCheckbox
+			);
+		}
+	}, [ showAutoUpdatesCheckbox ] );
+
+	if ( ! buttonURL ) {
+		return null;
+	}
+
+	return (
+		<Grid>
+			<Row>
+				<Cell size={ 12 }>
+					<Logo />
+					<Typography
+						as="h3"
+						size="small"
+						type="headline"
+						className="googlesitekit-activation__title"
+					>
+						{ __(
+							'Congratulations, the Site Kit plugin is now activated',
+							'google-site-kit'
+						) }
+					</Typography>
+					{ showAutoUpdatesCheckbox && (
+						<div className="googlesitekit-activation__auto-updates">
+							<Checkbox
+								id="googlesitekit-activation-auto-updates"
+								name="googlesitekit-activation-auto-updates"
+								checked={ autoUpdatesEnabled }
+								onChange={ toggleAutoUpdates }
+							>
+								<span className="googlesitekit-activation__auto-updates-label">
+									{ __(
+										"Enable auto-update and stay up-to-date with Site Kit's latest features",
+										'google-site-kit'
+									) }
+								</span>
+							</Checkbox>
+						</div>
+					) }
+					<Button
+						id="start-setup-link"
+						className="googlesitekit-start-setup"
+						onClick={ onButtonClick }
+					>
+						{ buttonLabel }
+					</Button>
+				</Cell>
+			</Row>
+		</Grid>
+	);
+}

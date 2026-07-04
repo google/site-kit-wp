@@ -1,0 +1,110 @@
+/**
+ * Frequency selector styles.
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+h3.googlesitekit-frequency-selector-title {
+	color: $c-surfaces-on-surface-variant;
+}
+
+.googlesitekit-frequency-selector__badge-row {
+	display: grid;
+	gap: $grid-gap-phone;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	margin-bottom: 8px;
+}
+
+.googlesitekit-frequency-selector__current-subscription {
+	background-color: $c-surfaces-surface;
+	border-radius: 4px;
+	color: $c-surfaces-on-surface-variant;
+	margin-bottom: $grid-gap-phone;
+	padding: 4px 0;
+	text-align: center;
+	width: 100%;
+
+	@media (min-width: $bp-nonMobile) {
+		background-color: $c-blue-b-50;
+		color: $c-blue-b-500;
+		margin: 0;
+	}
+}
+
+.googlesitekit-frequency-selector__current-subscription--selected {
+	background-color: $c-site-kit-sk-10;
+	color: $c-site-kit-sk-500;
+}
+
+.googlesitekit-frequency-selector {
+	display: grid;
+	gap: 10px;
+	grid-template-columns: 1fr;
+
+	@media (min-width: $bp-nonMobile) {
+		gap: $grid-gap-phone;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.googlesitekit-frequency-selector__card {
+		background: $c-surfaces-surface-1;
+		border-radius: 8px;
+		color: $c-surfaces-on-surface;
+		cursor: pointer;
+		padding: $grid-gap-phone - 4px $grid-gap-phone;
+
+		// Apply system default focus styles for accessibility.
+		&:focus-visible {
+			outline: medium auto currentColor;
+			outline: medium auto invert;
+			outline: 5px auto -webkit-focus-ring-color;
+		}
+	}
+
+	.googlesitekit-frequency-selector__label {
+		min-width: 75px;
+	}
+
+	.googlesitekit-frequency-selector__content {
+		display: flex;
+		gap: 12px;
+
+		@media (min-width: $bp-nonMobile) {
+			flex-direction: column;
+			gap: 4px;
+		}
+	}
+
+	.googlesitekit-frequency-selector__period {
+		@media (min-width: $bp-nonMobile) {
+			border-bottom: 1px solid $c-utility-divider-1;
+			padding: 8px 0;
+		}
+	}
+
+	.googlesitekit-frequency-selector__description {
+		@media (min-width: $bp-nonMobile) {
+			padding: 8px 0;
+		}
+	}
+
+	.googlesitekit-frequency-selector__card--selected {
+		background: $c-content-primary-container;
+
+		.googlesitekit-frequency-selector__period {
+			border-color: $c-site-kit-sk-200;
+		}
+	}
+}

@@ -1,0 +1,330 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PrimaryUserSetupWidget should display the audiences that failed to be created 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--keyMetricsAddMetric googlesitekit-widget--no-padding googlesitekit-audience-segmentation-error-widget"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="mdc-layout-grid googlesitekit-audience-segmentation-error__widget-primary-cell mdc-layout-grid--collapsed"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-7-desktop mdc-layout-grid__cell--span-8-tablet"
+          >
+            <h3
+              class="googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--large"
+            >
+              Your visitor groups data loading failed
+            </h3>
+            <div
+              class="googlesitekit-widget-audience-segmentation-error__actions"
+            >
+              <div>
+                <p
+                  class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+                >
+                  Failed to create the following audiences:
+                </p>
+                <ul
+                  class="googlesitekit-widget-audience-segmentation-error__failed-audiences"
+                >
+                  <li>
+                    new-visitors
+                  </li>
+                  <li>
+                    returning-visitors
+                  </li>
+                </ul>
+                <button
+                  class="mdc-button mdc-button--raised mdc-button--danger"
+                  target="_self"
+                >
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Retry
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            class="googlesitekit-widget-audience-segmentation-error__svg-wrapper mdc-layout-grid__cell mdc-layout-grid__cell--span-5-desktop mdc-layout-grid__cell--span-3-tablet"
+          >
+            <svg />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`PrimaryUserSetupWidget should handle generic errors and display a retry button 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--keyMetricsAddMetric googlesitekit-widget--no-padding googlesitekit-audience-segmentation-error-widget"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="mdc-layout-grid googlesitekit-audience-segmentation-error__widget-primary-cell mdc-layout-grid--collapsed"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-7-desktop mdc-layout-grid__cell--span-8-tablet"
+          >
+            <h3
+              class="googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--large"
+            >
+              Your visitor groups data loading failed
+            </h3>
+            <div
+              class="googlesitekit-widget-audience-segmentation-error__actions"
+            >
+              <button
+                class="mdc-button mdc-button--raised mdc-button--danger"
+                target="_self"
+              >
+                <span
+                  class="mdc-button__label"
+                >
+                  Retry
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="googlesitekit-widget-audience-segmentation-error__svg-wrapper mdc-layout-grid__cell mdc-layout-grid__cell--span-5-desktop mdc-layout-grid__cell--span-3-tablet"
+          >
+            <svg />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`PrimaryUserSetupWidget should handle the insufficient permissions error 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--keyMetricsAddMetric googlesitekit-widget--no-padding googlesitekit-audience-segmentation-error-widget"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="mdc-layout-grid googlesitekit-audience-segmentation-error__widget-primary-cell mdc-layout-grid--collapsed"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-7-desktop mdc-layout-grid__cell--span-8-tablet"
+          >
+            <h3
+              class="googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--large"
+            >
+              Insufficient permissions
+            </h3>
+            <div
+              class="googlesitekit-widget-audience-segmentation-error__actions"
+            >
+              <div
+                class="googlesitekit-report-error-actions"
+              >
+                <div
+                  class="googlesitekit-error-retry-text"
+                >
+                  Contact your administrator. Trouble getting access? 
+                  <a
+                    aria-label="Get help (opens in a new tab)"
+                    class="googlesitekit-cta-link"
+                    href="undefined?error_id=analytics-4_insufficient_permissions"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Get help
+                    </span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="googlesitekit-widget-audience-segmentation-error__svg-wrapper mdc-layout-grid__cell mdc-layout-grid__cell--span-5-desktop mdc-layout-grid__cell--span-3-tablet"
+          >
+            <svg />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`PrimaryUserSetupWidget should start audiences creation on mount 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--keyMetricsAddMetric googlesitekit-widget--no-padding googlesitekit-widget-audience-tiles"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-widget-audience-tiles__body"
+      >
+        <div
+          class="googlesitekit-widget googlesitekit-widget--keyMetricsAddMetric googlesitekit-widget--no-padding"
+        >
+          <div
+            class="googlesitekit-widget__body"
+          >
+            <div
+              class="googlesitekit-audience-segmentation-tile-loading"
+            >
+              <div
+                class="googlesitekit-preview-block"
+                style="width: 100%; height: 20px;"
+              >
+                <div
+                  class="googlesitekit-preview-block__wrapper"
+                />
+              </div>
+              <div
+                class="googlesitekit-preview-block"
+                style="width: 100%; height: 52px;"
+              >
+                <div
+                  class="googlesitekit-preview-block__wrapper"
+                />
+              </div>
+              <div
+                class="googlesitekit-preview-block"
+                style="width: 100%; height: 52px;"
+              >
+                <div
+                  class="googlesitekit-preview-block__wrapper"
+                />
+              </div>
+              <div
+                class="googlesitekit-preview-block"
+                style="width: 100%; height: 52px;"
+              >
+                <div
+                  class="googlesitekit-preview-block__wrapper"
+                />
+              </div>
+              <div
+                class="googlesitekit-preview-block"
+                style="width: 100%; height: 52px;"
+              >
+                <div
+                  class="googlesitekit-preview-block__wrapper"
+                />
+              </div>
+              <div
+                class="googlesitekit-preview-block"
+                style="width: 100%; height: 52px;"
+              >
+                <div
+                  class="googlesitekit-preview-block__wrapper"
+                />
+              </div>
+              <div
+                class="googlesitekit-preview-block"
+                style="width: 100%; height: 52px;"
+              >
+                <div
+                  class="googlesitekit-preview-block__wrapper"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="googlesitekit-widget googlesitekit-widget--keyMetricsAddMetric googlesitekit-widget--no-padding"
+        >
+          <div
+            class="googlesitekit-widget__body"
+          >
+            <div
+              class="googlesitekit-audience-segmentation-tile-loading"
+            >
+              <div
+                class="googlesitekit-preview-block"
+                style="width: 100%; height: 20px;"
+              >
+                <div
+                  class="googlesitekit-preview-block__wrapper"
+                />
+              </div>
+              <div
+                class="googlesitekit-preview-block"
+                style="width: 100%; height: 52px;"
+              >
+                <div
+                  class="googlesitekit-preview-block__wrapper"
+                />
+              </div>
+              <div
+                class="googlesitekit-preview-block"
+                style="width: 100%; height: 52px;"
+              >
+                <div
+                  class="googlesitekit-preview-block__wrapper"
+                />
+              </div>
+              <div
+                class="googlesitekit-preview-block"
+                style="width: 100%; height: 52px;"
+              >
+                <div
+                  class="googlesitekit-preview-block__wrapper"
+                />
+              </div>
+              <div
+                class="googlesitekit-preview-block"
+                style="width: 100%; height: 52px;"
+              >
+                <div
+                  class="googlesitekit-preview-block__wrapper"
+                />
+              </div>
+              <div
+                class="googlesitekit-preview-block"
+                style="width: 100%; height: 52px;"
+              >
+                <div
+                  class="googlesitekit-preview-block__wrapper"
+                />
+              </div>
+              <div
+                class="googlesitekit-preview-block"
+                style="width: 100%; height: 52px;"
+              >
+                <div
+                  class="googlesitekit-preview-block__wrapper"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

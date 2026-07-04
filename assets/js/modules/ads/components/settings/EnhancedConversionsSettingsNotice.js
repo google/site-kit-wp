@@ -1,0 +1,141 @@
+/**
+ * Ads EnhancedConversionsSettingsNotice component.
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import {
+	createInterpolateElement,
+	useCallback,
+	useEffect,
+	useState,
+} from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import { useInView } from '@/js/hooks/useInView';
+import {
+	ECEE_ADS_SURVEY_TRIGGER_ID,
+	ENHANCED_CONVERSIONS_NOTIFICATION_ADS,
+} from '@/js/modules/ads/components/notifications/EnhancedConversionsNotification';
+import { DAY_IN_SECONDS } from '@/js/util';
+
+export default function EnhancedConversionsSettingsNotice( {
+	type = NOTICE_TYPES.INFO,
+} ) {
+	const id = ENHANCED_CONVERSIONS_NOTIFICATION_ADS;
+
+	const inView = useInView();
+	const trackEvents = useNotificationEvents( id );
+
+	const [ isViewedOnce, setIsViewedOnce ] = useState( false );
+
+	const documentationURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'enhanced-conversions-ads'
+		)
+	);
+	const isDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed( id )
+	);
+
+	const { dismissItem, triggerSurvey } = useDispatch( CORE_USER );
+
+	const handleCTAClick = useCallback( async () => {
+		// Dismiss the notice when the CTA is clicked.
+		await dismissItem( id );
+
+		trackEvents.confirm();
+	}, [ dismissItem, id, trackEvents ] );
+
+	const handleDismiss = useCallback( async () => {
+		await dismissItem( id );
+
+		trackEvents.dismiss();
+	}, [ dismissItem, id, trackEvents ] );
+
+	// Track view event and fire survey trigger when notice comes into view.
+	useEffect( () => {
+		if ( ! isViewedOnce && inView ) {
+			trackEvents.view();
+			triggerSurvey( ECEE_ADS_SURVEY_TRIGGER_ID, {
+				ttl: DAY_IN_SECONDS,
+			} );
+
+			setIsViewedOnce( true );
+		}
+	}, [ inView, trackEvents, isViewedOnce, triggerSurvey ] );
+
+	if ( isDismissed ) {
+		return null;
+	}
+
+	return (
+		<Notice
+			type={ type }
+			title={ __(
+				'Improve your measurement with enhanced conversions',
+				'google-site-kit'
+			) }
+			description={ createInterpolateElement(
+				__(
+					'Site Kit now supports enhanced conversions, which improves the accuracy of your conversion measurement by sending first-party data from your website to Google in a privacy-safe way. Accept the terms of service in your Google Ads account to get started. If you’ve already done this, no further action is required. <a />',
+					'google-site-kit'
+				),
+				{
+					a: (
+						<LearnMoreLink
+							id={ id }
+							label={ __( 'Learn more', 'google-site-kit' ) }
+							url={ documentationURL }
+						/>
+					),
+				}
+			) }
+			dismissButton={ {
+				label: __( 'No thanks', 'google-site-kit' ),
+				onClick: handleDismiss,
+			} }
+			ctaButton={ {
+				label: __( 'Go to Ads', 'google-site-kit' ),
+				href: 'https://ads.google.com/aw/conversions/customersettings',
+				onClick: handleCTAClick,
+				external: true,
+				hideExternalIndicator: true,
+			} }
+		/>
+	);
+}
+
+EnhancedConversionsSettingsNotice.propTypes = {
+	type: PropTypes.oneOf( Object.values( NOTICE_TYPES ) ),
+};

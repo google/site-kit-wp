@@ -1,0 +1,133 @@
+<?php
+/**
+ * Class Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider
+ *
+ * @package   Google\Site_Kit\Core\Conversion_Tracking
+ * @copyright 2024 Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
+
+namespace Google\Site_Kit\Core\Conversion_Tracking;
+
+use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Assets\Script;
+
+/**
+ * Base class for conversion events provider.
+ *
+ * @since 1.125.0
+ * @since 1.126.0 Changed from interface to abstract class.
+ * @access private
+ * @ignore
+ */
+abstract class Conversion_Events_Provider {
+
+	const CATEGORY_LEAD      = 'lead';
+	const CATEGORY_ECOMMERCE = 'ecommerce';
+
+	/**
+	 * Plugin context.
+	 *
+	 * @since 1.126.0
+	 * @var Context
+	 */
+	protected $context;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since 1.126.0
+	 *
+	 * @param Context $context Plugin context.
+	 */
+	public function __construct( Context $context ) {
+		$this->context = $context;
+	}
+
+	/**
+	 * Checks if the provider is active.
+	 *
+	 * @since 1.125.0
+	 *
+	 * @return bool True if the provider is active, false otherwise.
+	 */
+	public function is_active() {
+		return false;
+	}
+
+	/**
+	 * Gets the conversion event names that are tracked by this provider.
+	 *
+	 * @since 1.154.0
+	 *
+	 * @return string Comma separated list of event names.
+	 */
+	public function get_debug_data() {
+		return implode( ', ', $this->get_event_names() );
+	}
+
+	/**
+	 * Gets the provider category.
+	 *
+	 * @since 1.181.0
+	 *
+	 * @return string Provider category, one of CATEGORY_LEAD or CATEGORY_ECOMMERCE.
+	 */
+	abstract public function get_category();
+
+	/**
+	 * Gets the event names.
+	 *
+	 * @since 1.125.0
+	 *
+	 * @return array List of event names.
+	 */
+	abstract public function get_event_names();
+
+	/**
+	 * Gets the conversion event names directly tracked by Site Kit's Plugin Conversion Reporting feature.
+	 *
+	 * By default this returns the same result as get_event_names(). Providers that delegate some
+	 * events to a third-party add-on (e.g. Google Analytics for WooCommerce) should override this
+	 * method to return only the events that Site Kit itself will track, so that internal feature
+	 * metrics accurately reflect Site Kit's own tracking rather than the add-on's coverage.
+	 *
+	 * @since 1.182.0
+	 *
+	 * @return array List of event names.
+	 */
+	public function get_site_kit_event_names() {
+		return $this->get_event_names();
+	}
+
+	/**
+	 * Gets the enhanced conversion event names.
+	 *
+	 * @since 1.165.0
+	 *
+	 * @return array List of enhanced conversion event names. Default empty array.
+	 */
+	public function get_enhanced_event_names() {
+		return array();
+	}
+
+	/**
+	 * Registers any actions/hooks for this provider.
+	 *
+	 * @since 1.129.0
+	 */
+	public function register_hooks() {
+		// No-op by default, but left here so subclasses can implement
+		// their own `add_action`/hook calls.
+	}
+
+	/**
+	 * Registers the script for the provider.
+	 *
+	 * @since 1.125.0
+	 *
+	 * @return Script|null Script instance, or null if no script is registered.
+	 */
+	abstract public function register_script();
+}

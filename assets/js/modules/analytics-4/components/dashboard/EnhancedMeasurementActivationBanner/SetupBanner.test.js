@@ -1,0 +1,96 @@
+/**
+ * EnhancedMeasurementActivationBanner > SetupBanner component tests.
+ *
+ * Site Kit by Google, Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { EDIT_SCOPE } from '@/js/modules/analytics-4/datastore/constants';
+import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
+import {
+	createTestRegistry,
+	provideSiteInfo,
+	provideUserAuthentication,
+	render,
+	waitFor,
+} from '@tests/js/test-utils';
+import { getViewportWidth, setViewportWidth } from '@tests/js/viewport-utils';
+import SetupBanner from './SetupBanner';
+
+describe( 'SetupBanner', () => {
+	const SetupBannerComponent = withNotificationComponentProps(
+		'enhanced-measurement-notification'
+	)( SetupBanner );
+
+	let registry;
+	let originalViewportWidth;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+
+		provideUserAuthentication( registry );
+
+		// Test survey triggering.
+		provideSiteInfo( registry, {
+			usingProxy: true,
+		} );
+		mockSurveyEndpoints();
+
+		// Test that the SVG image is not rendered within JS snapshots in the below tests.
+		originalViewportWidth = getViewportWidth();
+		setViewportWidth( 450 );
+	} );
+
+	afterEach( () => {
+		setViewportWidth( originalViewportWidth );
+	} );
+
+	it( 'should render correctly when the user does have the edit scope granted', async () => {
+		provideUserAuthentication( registry, {
+			grantedScopes: [ EDIT_SCOPE ],
+		} );
+
+		const { container, getByText } = render( <SetupBannerComponent />, {
+			registry,
+		} );
+
+		await waitFor( () => expect( container ).toMatchSnapshot() );
+
+		await waitFor( () =>
+			expect(
+				getByText(
+					'Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required.'
+				)
+			).toBeInTheDocument()
+		);
+	} );
+
+	it( 'should render correctly when the user does not have the edit scope granted', () => {
+		const { container, getByText } = render( <SetupBannerComponent />, {
+			registry,
+		} );
+
+		expect( container ).toMatchSnapshot();
+
+		expect(
+			getByText(
+				'Enable enhanced measurement in Analytics to automatically track metrics like file downloads, video plays, form interactions, etc. No extra code required — you’ll be redirected to give permission for Site Kit to enable it on your behalf.'
+			)
+		).toBeInTheDocument();
+	} );
+} );

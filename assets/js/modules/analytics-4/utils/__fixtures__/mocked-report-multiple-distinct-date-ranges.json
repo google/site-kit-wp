@@ -1,0 +1,130 @@
+{
+	"dimensionHeaders": [ { "name": "date" }, { "name": "dateRange" } ],
+	"metricHeaders": [
+		{ "name": "totalUsers", "type": "TYPE_INTEGER" },
+		{ "name": "averageSessionDuration", "type": "TYPE_SECONDS" }
+	],
+	"rowCount": 10,
+	"rows": [
+		{
+			"dimensionValues": [
+				{ "value": "20201201" },
+				{ "value": "date_range_0" }
+			],
+			"metricValues": [ { "value": "55" }, { "value": "8" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201201" },
+				{ "value": "date_range_1" }
+			],
+			"metricValues": [ { "value": "3" }, { "value": "8" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201202" },
+				{ "value": "date_range_0" }
+			],
+			"metricValues": [ { "value": "17" }, { "value": "23" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201202" },
+				{ "value": "date_range_1" }
+			],
+			"metricValues": [ { "value": "10" }, { "value": "44" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201203" },
+				{ "value": "date_range_0" }
+			],
+			"metricValues": [ { "value": "89" }, { "value": "37" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201203" },
+				{ "value": "date_range_1" }
+			],
+			"metricValues": [ { "value": "98" }, { "value": "4" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201206" },
+				{ "value": "date_range_0" }
+			],
+			"metricValues": [ { "value": "27" }, { "value": "55" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201206" },
+				{ "value": "date_range_1" }
+			],
+			"metricValues": [ { "value": "86" }, { "value": "32" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201207" },
+				{ "value": "date_range_0" }
+			],
+			"metricValues": [ { "value": "38" }, { "value": "43" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201207" },
+				{ "value": "date_range_1" }
+			],
+			"metricValues": [ { "value": "21" }, { "value": "45" } ]
+		}
+	],
+	"totals": [
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_TOTAL" },
+				{ "value": "date_range_0" }
+			],
+			"metricValues": [ { "value": "38" }, { "value": "43" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_TOTAL" },
+				{ "value": "date_range_1" }
+			],
+			"metricValues": [ { "value": "21" }, { "value": "45" } ]
+		}
+	],
+	"minimums": [
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_MIN" },
+				{ "value": "date_range_0" }
+			],
+			"metricValues": [ { "value": "55" }, { "value": "8" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_MIN" },
+				{ "value": "date_range_1" }
+			],
+			"metricValues": [ { "value": "3" }, { "value": "8" } ]
+		}
+	],
+	"maximums": [
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_MAX" },
+				{ "value": "date_range_0" }
+			],
+			"metricValues": [ { "value": "38" }, { "value": "43" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_MAX" },
+				{ "value": "date_range_1" }
+			],
+			"metricValues": [ { "value": "21" }, { "value": "45" } ]
+		}
+	],
+	"metadata": { "currencyCode": "USD", "timeZone": "America/Los_Angeles" },
+	"kind": "analyticsData#runReport"
+}

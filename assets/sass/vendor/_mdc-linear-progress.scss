@@ -1,0 +1,26 @@
+// Overrides for .mdc-linear-progress
+.googlesitekit-plugin {
+	.mdc-linear-progress {
+
+		@include mdc-linear-progress-bar-color($c-content-primary);
+		margin: ($grid-gap-phone * 2) 0;
+
+		@media (min-width: $bp-desktop) {
+			margin: ($grid-gap-desktop * 2) 0;
+		}
+	}
+
+	.mdc-linear-progress--small {
+		max-width: 150px;
+	}
+
+	.mdc-linear-progress--compress {
+		margin: 0;
+	}
+
+	// Animate width on the primary bar so determinate progress fills smoothly.
+	// Uses MDC's sharp curve (matches the 250ms transform/opacity transitions MDC already applies to .mdc-linear-progress).
+	.mdc-linear-progress:not(.mdc-linear-progress--indeterminate) .mdc-linear-progress__primary-bar {
+		transition: width 250ms cubic-bezier(0.4, 0, 0.6, 1);
+	}
+}

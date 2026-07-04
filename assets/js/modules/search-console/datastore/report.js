@@ -1,0 +1,246 @@
+/**
+ * `modules/search-console` data store: report.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import invariant from 'invariant';
+import { isPlainObject } from 'lodash';
+
+/**
+ * Internal dependencies
+ */
+import { get } from 'googlesitekit-api';
+import {
+	combineStores,
+	createReducer,
+	createRegistrySelector,
+} from 'googlesitekit-data';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createGetReportResolver } from '@/js/googlesitekit/data/create-get-report-resolver';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createGatheringDataStore } from '@/js/googlesitekit/modules/create-gathering-data-store';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { isZeroReport } from '@/js/modules/search-console/util';
+import {
+	getCacheableReportOptions,
+	getReportCacheKey,
+} from '@/js/util/report-options';
+import {
+	isValidDateRange,
+	isValidStringularItems,
+} from '@/js/util/report-validation';
+import { MODULES_SEARCH_CONSOLE } from './constants';
+
+const fetchGetReportStore = createFetchStore( {
+	baseName: 'getReport',
+	storeName: MODULES_SEARCH_CONSOLE,
+	controlCallback: ( { options }, { signal } = {} ) => {
+		return get(
+			'modules',
+			MODULE_SLUG_SEARCH_CONSOLE,
+			'searchanalytics',
+			options,
+			{ signal }
+		);
+	},
+	reducerCallback: createReducer( ( state, report, { options } ) => {
+		state.reports[ getReportCacheKey( options ) ] = report;
+	} ),
+	argsToParams: ( options ) => {
+		return { options: getCacheableReportOptions( options ) };
+	},
+	validateParams: ( { options } = {} ) => {
+		invariant(
+			isPlainObject( options ),
+			'Options for Search Console report must be an object.'
+		);
+		invariant(
+			isValidDateRange( options ),
+			'Either date range or start/end dates must be provided for Search Console report.'
+		);
+
+		const { dimensions } = options;
+		if ( dimensions ) {
+			invariant(
+				isValidStringularItems( dimensions ),
+				'Dimensions for Search Console report must be either a string or an array of strings'
+			);
+		}
+	},
+} );
+
+const gatheringDataStore = createGatheringDataStore(
+	MODULE_SLUG_SEARCH_CONSOLE,
+	{
+		storeName: MODULES_SEARCH_CONSOLE,
+		dataAvailable:
+			global._googlesitekitModulesData?.[
+				'data_available_search-console'
+			],
+		selectDataAvailability: createRegistrySelector( ( select ) => () => {
+			const args = select( MODULES_SEARCH_CONSOLE ).getSampleReportArgs();
+			// Disable reason: select needs to be called here or it will never run.
+			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+			const report = select( MODULES_SEARCH_CONSOLE ).getReport( args );
+			const hasResolvedReport = select(
+				MODULES_SEARCH_CONSOLE
+			).hasFinishedResolution( 'getReport', [ args ] );
+
+			if ( ! hasResolvedReport ) {
+				return undefined;
+			}
+
+			const hasReportError = select(
+				MODULES_SEARCH_CONSOLE
+			).getErrorForSelector( 'getReport', [ args ] );
+
+			// If there is an error, return `null` since we don't know if there is data or not.
+			if ( hasReportError || ! Array.isArray( report ) ) {
+				return null;
+			}
+
+			if ( report.length ) {
+				return true;
+			}
+
+			return false;
+		} ),
+	}
+);
+
+const baseInitialState = {
+	reports: {},
+};
+
+const baseResolvers = {
+	getReport: createGetReportResolver( MODULES_SEARCH_CONSOLE ),
+};
+
+const baseSelectors = {
+	/**
+	 * Gets a Search Console report for the given options.
+	 *
+	 * @since 1.15.0
+	 * @since 1.182.0 Accept optional fetch options as a second argument, such as `{ signal }` to cancel the report request.
+	 * @since n.e.x.t Treat report options that differ only in `reportID` as one report.
+	 *
+	 * @param {Object}         state                Data store's state.
+	 * @param {Object}         options              Options for generating the report.
+	 * @param {string}         options.startDate    Required. Start date to query report data for as YYYY-mm-dd.
+	 * @param {string}         options.endDate      Required. End date to query report data for as YYYY-mm-dd.
+	 * @param {Array.<string>} [options.dimensions] Optional. List of {@link https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query#dimensionFilterGroups.filters.dimension|dimensions} to group results by. Default an empty array.
+	 * @param {string}         [options.url]        Optional. URL to get a report for only this URL. Default an empty string.
+	 * @param {number}         [options.limit]      Optional. Maximum number of entries to return. Default 1000.
+	 * @param {Object}         [fetchOptions]       Optional. Fetch options that change how the request runs, such as `{ signal }` to cancel it.
+	 * @return {(Array.<Object>|undefined)} A Search Console report; `undefined` if not loaded.
+	 */
+	// eslint-disable-next-line no-unused-vars -- The fetch options only change how the request runs, so the selector does not read them.
+	getReport( state, options, fetchOptions ) {
+		const { reports } = state;
+
+		return reports[ getReportCacheKey( options ) ];
+	},
+
+	/**
+	 * Determines whether the Search Console has zero data or not.
+	 *
+	 * @since 1.68.0
+	 *
+	 * @return {boolean|undefined} Returns FALSE if not gathering data and the report is not zero, otherwise TRUE. If the request is still being resolved, returns undefined.
+	 */
+	hasZeroData: createRegistrySelector( ( select ) => () => {
+		const isGatheringData = select(
+			MODULES_SEARCH_CONSOLE
+		).isGatheringData();
+
+		if ( isGatheringData === undefined ) {
+			return undefined;
+		}
+
+		if ( isGatheringData === true ) {
+			return true;
+		}
+
+		const args = select( MODULES_SEARCH_CONSOLE ).getSampleReportArgs();
+
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+		const report = select( MODULES_SEARCH_CONSOLE ).getReport( args );
+
+		const hasResolvedReport = select(
+			MODULES_SEARCH_CONSOLE
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport ) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( report ) ) {
+			return false;
+		}
+
+		return isZeroReport( report );
+	} ),
+
+	/**
+	 * Returns report args for a sample report.
+	 *
+	 * @since 1.107.0
+	 * @since 1.136.0 Updated the function to be a selector.
+	 *
+	 * @param {Function} select The select function of the registry.
+	 * @return {Object} Report args.
+	 */
+	getSampleReportArgs: createRegistrySelector( ( select ) => () => {
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		const { compareStartDate: startDate, endDate } = select(
+			CORE_USER
+		).getDateRangeDates( {
+			compare: true,
+		} );
+
+		const args = {
+			startDate,
+			endDate,
+			dimensions: 'date',
+		};
+
+		if ( url ) {
+			args.url = url;
+		}
+
+		return args;
+	} ),
+};
+
+const store = combineStores( fetchGetReportStore, gatheringDataStore, {
+	initialState: baseInitialState,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
+
+export const initialState = store.initialState;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;

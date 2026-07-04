@@ -1,0 +1,113 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EmailReportingErrorNotices should render the permissions error notice when email reporting is enabled, user is not view-only, and there is a permissions_error category ID and a module slug 1`] = `
+<div>
+  <div
+    class="googlesitekit-notice-container"
+  >
+    <div
+      class="googlesitekit-notice googlesitekit-notice--error googlesitekit-email-reporting__admin-settings-notice"
+      role="status"
+    >
+      <div
+        class="googlesitekit-notice__icon"
+      >
+        <svg />
+      </div>
+      <div
+        class="googlesitekit-notice__content"
+      >
+        <p
+          class="googlesitekit-notice__title"
+        >
+          Email reports are failing to send
+        </p>
+        <p
+          class="googlesitekit-notice__description"
+        >
+          We were unable to generate your report due to insufficient permissions in Analytics. To fix this, contact your administrator or get help. Report delivery will automatically resume once the issue is resolved.
+        </p>
+      </div>
+      <div
+        class="googlesitekit-notice__action"
+      >
+        <a
+          aria-label="Get help (opens in a new tab)"
+          class="mdc-button mdc-button--tertiary"
+          href="undefined?error_id=analytics-4_insufficient_permissions"
+          role="button"
+          target="_blank"
+        >
+          <span
+            class="mdc-button__label"
+          >
+            Get help
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`EmailReportingErrorNotices should render the report error notice when email reporting is enabled, user is not view-only, and there is a report_error category ID and a module slug 1`] = `
+<div>
+  <div
+    class="googlesitekit-notice-container"
+  >
+    <div
+      class="googlesitekit-notice googlesitekit-notice--error googlesitekit-email-reporting__admin-settings-notice"
+      role="status"
+    >
+      <div
+        class="googlesitekit-notice__icon"
+      >
+        <svg />
+      </div>
+      <div
+        class="googlesitekit-notice__content"
+      >
+        <p
+          class="googlesitekit-notice__title"
+        >
+          Email reports are failing to send
+        </p>
+        <p
+          class="googlesitekit-notice__description"
+        >
+          We were unable to generate your report because data loading failed for Search Console. To fix this, go to Search Console settings in Site Kit or get help. Report delivery will automatically resume once the issue is resolved.
+        </p>
+      </div>
+      <div
+        class="googlesitekit-notice__action"
+      >
+        <a
+          aria-label="Get help (opens in a new tab)"
+          class="mdc-button mdc-button--tertiary"
+          href="undefined?doc=email-reporting-module-issues"
+          role="button"
+          target="_blank"
+        >
+          <span
+            class="mdc-button__label"
+          >
+            Get help
+          </span>
+        </a>
+        <a
+          class="mdc-button googlesitekit-notice__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+          href="undefined#connected-services/search-console"
+          role="button"
+          target="_self"
+        >
+          <span
+            class="mdc-button__label"
+          >
+            Go to settings
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;

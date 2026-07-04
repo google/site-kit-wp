@@ -1,0 +1,272 @@
+/**
+ * WPDashboardWidgets component tests.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import { mocked } from 'jest-mock';
+import { useIntersection as mockUseIntersection } from 'react-use';
+
+/**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
+ * Internal dependencies
+ */
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { ANALYTICS_SETUP_ERROR } from '@/js/modules/analytics-4/constants';
+import * as tracking from '@/js/util/tracking';
+import {
+	createTestRegistry,
+	fireEvent,
+	muteFetch,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserCapabilities,
+	render,
+	waitFor,
+} from '@tests/js/test-utils';
+import WPDashboardWidgets from './WPDashboardWidgets';
+
+const dismissItemEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/dismiss-item'
+);
+
+const activateEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/modules/data/activation'
+);
+
+jest.mock( 'react-use', () => ( {
+	...( jest.requireActual( 'react-use' ) as Record< string, unknown > ),
+	useIntersection: jest.fn(),
+} ) );
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+describe( 'WPDashboardWidgets', () => {
+	let registry: WPDataRegistry;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+
+		provideModules( registry );
+		provideUserAuthentication( registry, { authenticated: false } );
+		provideUserCapabilities( registry, {
+			'googlesitekit_read_shared_module_data::["search-console"]': false,
+		} );
+		provideSiteInfo( registry );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		fetchMock.post( dismissItemEndpoint, {
+			body: [ 'analytics-setup-cta-wp-dashboard' ],
+			status: 200,
+		} );
+
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			adminURL: 'http://example.com/wp-admin/',
+		} );
+
+		muteFetch(
+			new RegExp(
+				'^/google-site-kit/v1/modules/search-console/data/data-available'
+			)
+		);
+	} );
+
+	afterEach( () => {
+		jest.resetAllMocks();
+	} );
+
+	it( 'should track the `view_cta` event when the Activate Analytics CTA is viewed', async () => {
+		const { waitForRegistry, rerender } = render( <WPDashboardWidgets />, {
+			registry,
+			features: [ 'setupFlowRefresh' ],
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		// Should not be called with `view_cta` event until the CTA banner is in view.
+		expect( mockTrackEvent ).not.toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+			'view_cta',
+			'wp_dashboard'
+		);
+
+		mocked( mockUseIntersection ).mockImplementation(
+			() =>
+				( {
+					isIntersecting: true,
+					intersectionRatio: 1,
+				} as unknown as IntersectionObserverEntry )
+		);
+
+		rerender( <WPDashboardWidgets /> );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+			'view_cta',
+			'wp_dashboard'
+		);
+	} );
+
+	it( 'should track the `dismiss_cta` event when the "Maybe later" button is clicked in the Activate Analytics CTA', async () => {
+		const { getByRole, waitForRegistry } = render( <WPDashboardWidgets />, {
+			registry,
+			features: [ 'setupFlowRefresh' ],
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+			'dismiss_cta',
+			'wp_dashboard'
+		);
+	} );
+
+	it( 'should track the `confirm_cta` event when the "Set up Analytics" button is clicked in the Activate Analytics CTA', async () => {
+		const { getByRole, waitForRegistry } = render( <WPDashboardWidgets />, {
+			registry,
+			features: [ 'setupFlowRefresh' ],
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		fireEvent.click( getByRole( 'button', { name: 'Set up Analytics' } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+			'confirm_cta',
+			'wp_dashboard'
+		);
+	} );
+
+	it( 'should track the `click_learn_more_link` event when the "Learn more" link is clicked in the Activate Analytics CTA', async () => {
+		const { getByRole, waitForRegistry } = render( <WPDashboardWidgets />, {
+			registry,
+			features: [ 'setupFlowRefresh' ],
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+			'click_learn_more_link',
+			'wp_dashboard'
+		);
+	} );
+
+	it( 'should render normal CTA again when "Got it" is clicked from activation error state', async () => {
+		registry.dispatch( CORE_SITE ).setInternalServerError( {
+			id: ANALYTICS_SETUP_ERROR,
+			description: 'This is an error',
+		} );
+
+		const { getByText, getByRole, queryByText, waitForRegistry } = render(
+			<WPDashboardWidgets />,
+			{
+				registry,
+				features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( getByText( 'Analytics setup failed' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Something went wrong, please try again' )
+		).toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'button', { name: 'Got it' } ) );
+
+		await waitFor( () => {
+			expect(
+				registry.select( CORE_SITE ).getInternalServerError()
+			).toBeUndefined();
+			expect(
+				registry
+					.select( CORE_USER )
+					.isItemDismissed( 'analytics-setup-cta-wp-dashboard' )
+			).toBe( false );
+			expect(
+				queryByText( 'Analytics setup failed' )
+			).not.toBeInTheDocument();
+			expect(
+				getByRole( 'button', { name: 'Set up Analytics' } )
+			).toBeInTheDocument();
+		} );
+	} );
+
+	it( 'should retry activation when "Retry Analytics setup" is clicked', async () => {
+		registry.dispatch( CORE_SITE ).setInternalServerError( {
+			id: ANALYTICS_SETUP_ERROR,
+			description: 'This is an error',
+		} );
+
+		fetchMock.postOnce( activateEndpoint, {
+			body: { message: 'Retry failed' },
+			status: 500,
+		} );
+
+		const { getByRole, waitForRegistry } = render( <WPDashboardWidgets />, {
+			registry,
+			features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+		} );
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			getByRole( 'button', { name: 'Retry Analytics setup' } )
+		);
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( activateEndpoint );
+		} );
+	} );
+} );

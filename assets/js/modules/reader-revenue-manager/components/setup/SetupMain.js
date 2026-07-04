@@ -1,0 +1,168 @@
+/**
+ * Reader Revenue Manager SetupMain component.
+ *
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { usePrevious } from '@wordpress/compose';
+import { useCallback, useEffect } from '@wordpress/element';
+import { _x } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { ProgressBar } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Typography from '@/js/components/Typography';
+import useFormValue from '@/js/hooks/useFormValue';
+import { useRefocus } from '@/js/hooks/useRefocus';
+import { PublicationCreate } from '@/js/modules/reader-revenue-manager/components/common';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_SETUP_FORM,
+	RESET_PUBLICATIONS,
+	SHOW_PUBLICATION_CREATE,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import ReaderRevenueManagerIcon from '@/svg/graphics/reader-revenue-manager.svg';
+import SetupForm from './SetupForm';
+
+export default function SetupMain( { finishSetup = () => {} } ) {
+	const publications = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getPublications()
+	);
+	const hasResolvedPublications = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
+			'getPublications'
+		)
+	);
+	const [ publicationCreateShown, setPublicationCreateShown ] = useFormValue(
+		READER_REVENUE_MANAGER_SETUP_FORM,
+		SHOW_PUBLICATION_CREATE
+	);
+	const [ shouldResetPublications, setShouldResetPublications ] =
+		useFormValue( READER_REVENUE_MANAGER_SETUP_FORM, RESET_PUBLICATIONS );
+	const publicationID = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
+	);
+
+	const { resetPublications, submitChanges } = useDispatch(
+		MODULES_READER_REVENUE_MANAGER
+	);
+
+	const reset = useCallback( () => {
+		if ( ! shouldResetPublications ) {
+			return;
+		}
+
+		resetPublications();
+	}, [ resetPublications, shouldResetPublications ] );
+
+	// Reset publication data when user re-focuses window.
+	useRefocus( reset, 15000 );
+
+	// Show the publication create form if no publications exist.
+	useEffect( () => {
+		if (
+			! publicationCreateShown &&
+			hasResolvedPublications &&
+			undefined !== publications &&
+			! publications.length
+		) {
+			setPublicationCreateShown( true );
+		}
+	}, [
+		hasResolvedPublications,
+		publicationCreateShown,
+		publications,
+		setPublicationCreateShown,
+	] );
+
+	const previousPublicationID = usePrevious( publicationID );
+
+	// Do not attempt to reset publication data again once the publication
+	// selection changes.
+	useEffect( () => {
+		if (
+			previousPublicationID !== publicationID &&
+			shouldResetPublications
+		) {
+			setShouldResetPublications( false );
+		}
+	}, [
+		previousPublicationID,
+		publicationID,
+		setShouldResetPublications,
+		shouldResetPublications,
+	] );
+
+	const onCompleteSetup = useCallback( async () => {
+		const { error } = await submitChanges();
+
+		if ( ! error ) {
+			finishSetup();
+		}
+	}, [ finishSetup, submitChanges ] );
+
+	let viewComponent;
+
+	if ( ! hasResolvedPublications ) {
+		viewComponent = <ProgressBar />;
+	} else if ( publicationCreateShown ) {
+		viewComponent = (
+			<PublicationCreate onCompleteSetup={ onCompleteSetup } />
+		);
+	} else {
+		viewComponent = <SetupForm onCompleteSetup={ onCompleteSetup } />;
+	}
+
+	return (
+		<div className="googlesitekit-setup-module googlesitekit-setup-module--reader-revenue-manager">
+			<div className="googlesitekit-setup-module__step">
+				<div className="googlesitekit-setup-module__logo">
+					<ReaderRevenueManagerIcon width="40" height="40" />
+				</div>
+
+				<Typography
+					as="h3"
+					className="googlesitekit-setup-module__title"
+					size="small"
+					type="headline"
+				>
+					{ _x(
+						'Reader Revenue Manager',
+						'Service name',
+						'google-site-kit'
+					) }
+				</Typography>
+			</div>
+
+			<div className="googlesitekit-setup-module__step">
+				{ viewComponent }
+			</div>
+		</div>
+	);
+}
+
+SetupMain.propTypes = {
+	finishSetup: PropTypes.func,
+};

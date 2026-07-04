@@ -1,0 +1,231 @@
+/**
+ * Color tokens stories stylesheet.
+ *
+ * Site Kit by Google, Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import "../../../../assets/sass/config/variables";
+
+.googlesitekit-story--tokens {
+	background: #fff;
+
+	.googlesitekit-color-token-row {
+		display: flex;
+	}
+
+	.googlesitekit-color-token-column {
+		flex: 1;
+	}
+
+	.googlesitekit-color-token {
+		background-color: var(--token-color);
+		color: var(--token-text-color, #000);
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		padding: 12px;
+
+		p {
+			margin: 0;
+		}
+	}
+
+	.googlesitekit-color-token--reference {
+		align-self: flex-end;
+	}
+
+	/**
+	 * Surfaces tokens
+	 */
+	.googlesitekit-color-token--surfaces-on-background {
+		--token-color: #{$c-surfaces-on-background};
+		--token-text-color: #fff;
+	}
+
+	.googlesitekit-color-token--surfaces-on-background-variant {
+		--token-color: #{$c-surfaces-on-background-variant};
+		--token-text-color: #fff;
+	}
+	.googlesitekit-color-token--surfaces-background {
+		--token-color: #{$c-surfaces-background};
+	}
+	.googlesitekit-color-token--surfaces-on-surface {
+		--token-color: #{$c-surfaces-on-surface};
+		--token-text-color: #fff;
+	}
+	.googlesitekit-color-token--surfaces-on-surface-variant {
+		--token-color: #{$c-surfaces-on-surface-variant};
+		--token-text-color: #fff;
+	}
+	.googlesitekit-color-token--surfaces-surface {
+		--token-color: #{$c-surfaces-surface};
+	}
+	.googlesitekit-color-token--surfaces-surface-1 {
+		--token-color: #{$c-surfaces-surface-1};
+	}
+	.googlesitekit-color-token--surfaces-surface-2 {
+		--token-color: #{$c-surfaces-surface-2};
+	}
+	.googlesitekit-color-token--surfaces-inverse-on-surface {
+		--token-color: #{$c-surfaces-inverse-on-surface};
+	}
+	.googlesitekit-color-token--surfaces-inverse-surface {
+		--token-color: #{$c-surfaces-inverse-surface};
+		--token-text-color: #fff;
+	}
+
+	/**
+	 * Content tokens
+	 */
+	.googlesitekit-color-token--content-on-primary {
+		--token-color: #{$c-content-on-primary};
+	}
+	.googlesitekit-color-token--content-primary {
+		--token-color: #{$c-content-primary};
+		--token-text-color: #fff;
+	}
+	.googlesitekit-color-token--content-on-primary-container {
+		--token-color: #{$c-content-on-primary-container};
+		--token-text-color: #fff;
+	}
+	.googlesitekit-color-token--content-primary-container {
+		--token-color: #{$c-content-primary-container};
+	}
+
+	/**
+	 * Content secondary tokens
+	 */
+	.googlesitekit-color-token--content-on-secondary {
+		--token-color: #{$c-content-on-secondary};
+	}
+	.googlesitekit-color-token--content-secondary {
+		--token-color: #{$c-content-secondary};
+		--token-text-color: #fff;
+	}
+	.googlesitekit-color-token--content-on-secondary-container {
+		--token-color: #{$c-content-on-secondary-container};
+		--token-text-color: #fff;
+	}
+	.googlesitekit-color-token--content-secondary-container {
+		--token-color: #{$c-content-secondary-container};
+	}
+
+	/**
+	 * Utility error tokens
+	 */
+	.googlesitekit-color-token--utility-on-error {
+		--token-color: #{$c-utility-on-error};
+	}
+	.googlesitekit-color-token--utility-error {
+		--token-color: #{$c-utility-error};
+		--token-text-color: #fff;
+	}
+	.googlesitekit-color-token--utility-on-error-container {
+		--token-color: #{$c-utility-on-error-container};
+		--token-text-color: #fff;
+	}
+	.googlesitekit-color-token--utility-error-container {
+		--token-color: #{$c-utility-error-container};
+		--token-text-color: #{$c-utility-on-error-container};
+	}
+
+	/**
+	 * Utility success tokens
+	 */
+	.googlesitekit-color-token--utility-on-success {
+		--token-color: #{$c-utility-on-success};
+	}
+	.googlesitekit-color-token--utility-success {
+		--token-color: #{$c-utility-success};
+		--token-text-color: #fff;
+	}
+	.googlesitekit-color-token--utility-on-success-container {
+		--token-color: #{$c-utility-on-success-container};
+		--token-text-color: #fff;
+	}
+	.googlesitekit-color-token--utility-success-container {
+		--token-color: #{$c-utility-success-container};
+		--token-text-color: #{$c-utility-on-success-container};
+	}
+
+	/**
+	 * Utility warning tokens
+	 */
+	.googlesitekit-color-token--utility-on-warning {
+		--token-color: #{$c-utility-on-warning};
+	}
+	.googlesitekit-color-token--utility-warning {
+		--token-color: #{$c-utility-warning};
+		--token-text-color: #fff;
+	}
+	.googlesitekit-color-token--utility-on-warning-container {
+		--token-color: #{$c-utility-on-warning-container};
+		--token-text-color: #fff;
+	}
+	.googlesitekit-color-token--utility-warning-container {
+		--token-color: #{$c-utility-warning-container};
+		--token-text-color: #{$c-utility-on-warning-container};
+	}
+
+	/**
+	 * Interactive tokens
+	 */
+	.googlesitekit-color-token--interactive-primary-hover {
+		--token-color: #{$c-interactive-primary-hover};
+	}
+	.googlesitekit-color-token--interactive-primary-focus {
+		--token-color: #{$c-interactive-primary-focus};
+	}
+	.googlesitekit-color-token--interactive-primary-press {
+		--token-color: #{$c-interactive-primary-press};
+	}
+	.googlesitekit-color-token--interactive-secondary-hover {
+		--token-color: #{$c-interactive-secondary-hover};
+	}
+	.googlesitekit-color-token--interactive-secondary-focus {
+		--token-color: #{$c-interactive-secondary-focus};
+	}
+	.googlesitekit-color-token--interactive-secondary-press {
+		--token-color: #{$c-interactive-secondary-press};
+	}
+	.googlesitekit-color-token--interactive-tertiary-hover {
+		--token-color: #{$c-interactive-tertiary-hover};
+	}
+	.googlesitekit-color-token--interactive-tertiary-focus {
+		--token-color: #{$c-interactive-tertiary-focus};
+	}
+	.googlesitekit-color-token--interactive-tertiary-press {
+		--token-color: #{$c-interactive-tertiary-press};
+	}
+	.googlesitekit-color-token--interactive-on-disable-container {
+		--token-color: #{$c-interactive-on-disable-container};
+	}
+	.googlesitekit-color-token--interactive-disable-container {
+		--token-color: #{$c-interactive-disable-container};
+	}
+	.googlesitekit-color-token--interactive-inverse-on-disable-container {
+		--token-color: #{$c-interactive-inverse-on-disable-container};
+	}
+	.googlesitekit-color-token--interactive-inverse-disable-container {
+		--token-color: #{$c-interactive-inverse-disable-container};
+	}
+	.googlesitekit-color-token--interactive-focus {
+		--token-color: #{$c-interactive-focus};
+		--token-text-color: #fff;
+	}
+	.googlesitekit-color-token--interactive-inverse-focus {
+		--token-color: #{$c-interactive-inverse-focus};
+	}
+}

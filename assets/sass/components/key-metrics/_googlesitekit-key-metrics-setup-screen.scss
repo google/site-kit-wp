@@ -1,0 +1,120 @@
+/**
+ * Key Metrics Setup styles.
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-key-metrics-setup {
+		margin-bottom: 30px;
+
+		.googlesitekit-user-input__select-options-wrapper {
+
+			@media (min-width: $bp-xxxlarge) {
+				padding-left: unset;
+			}
+
+			.googlesitekit-user-input__select-option {
+				border-bottom: 1px solid $c-mercury;
+			}
+
+			.googlesitekit-user-input__select-option:first-child {
+				border-top: 1px solid $c-mercury;
+			}
+		}
+
+		.googlesitekit-key-metrics-setup__footer {
+			column-gap: 16px;
+			flex-direction: row;
+			justify-content: flex-start;
+			padding-left: 42px;
+
+			@media (min-width: $bp-desktop) {
+				padding-left: 56px;
+			}
+		}
+
+		.googlesitekit-key-metrics-setup__content--footer-inline {
+
+			.googlesitekit-key-metrics-setup__footer {
+				border-top: none;
+				bottom: auto;
+				left: auto;
+				margin: 73px 0 0;
+				padding: 0;
+				position: relative;
+				right: auto;
+				z-index: auto;
+			}
+		}
+
+		.googlesitekit-key-metrics-setup__error {
+			padding: 1px 0;
+			z-index: 2;
+			@media (min-width: $bp-desktop) {
+				bottom: 86px;
+			}
+		}
+
+		.googlesitekit-key-metrics-setup__error--inline {
+			border-radius: $br-sm;
+			position: initial;
+
+			& + .googlesitekit-key-metrics-setup__footer {
+				margin-top: $grid-gap-phone;
+
+				@media (min-width: $bp-nonTablet) {
+					margin-top: $grid-gap-desktop;
+				}
+			}
+		}
+	}
+
+	.googlesitekit-key-metrics-setup__title {
+		margin-top: 0;
+	}
+
+	.googlesitekit-key-metrics-setup__heading {
+		margin-bottom: 20px;
+
+		h2 {
+			margin: 0 0 6px;
+		}
+
+		p {
+			color: $c-surfaces-on-background-variant;
+		}
+	}
+
+	.googlesitekit-key-metrics-initial-setup {
+		display: flex;
+		min-height: calc(100vh - 195px); // 46px admin bar + 72px header + 77px footer
+
+		@media (min-width: $bp-wpAdminBarTablet) {
+			min-height: calc(100vh - 207px); // 32px admin bar + 88px header + 87px footer
+		}
+
+		.googlesitekit-module-page {
+			display: flex;
+			flex-grow: 1;
+			padding: 0;
+		}
+
+		.googlesitekit-layout {
+			flex-grow: 1;
+		}
+	}
+}
