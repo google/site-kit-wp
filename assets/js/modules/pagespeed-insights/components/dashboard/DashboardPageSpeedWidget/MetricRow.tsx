@@ -19,23 +19,51 @@
 /**
  * External dependencies
  */
-import { Text, View } from '@react-pdf/renderer';
+import { View } from '@react-pdf/renderer';
 
 /**
  * Internal dependencies
  */
-import type {
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
+import {
 	FieldMetric,
 	ScoredMetric,
 } from '@/js/modules/pagespeed-insights/components/common/reportMetrics';
 import MetricValueCell from './MetricValueCell';
-import { styles } from './pdfStyles';
+
+const styles = createPDFStyles( {
+	metricRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		columnGap: 24,
+		paddingVertical: 12,
+		borderBottomWidth: 1,
+		borderBottomColor: PDF_COLORS.SURFACES_SURFACE_1,
+	},
+	metricRowLast: {
+		borderBottomWidth: 0,
+	},
+	metricLabelGroup: {
+		flex: 1,
+	},
+	metricDescription: {
+		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
+		marginTop: 6,
+	},
+} );
 
 interface MetricRowProps {
+	/** The metric's name, like "Total Blocking Time". */
 	title: string;
+	/** The line under the title that says what the metric measures. */
 	description: string;
+	/** The metric's mobile value. Without one, the Mobile cell renders empty. */
 	mobileMetric: ScoredMetric | FieldMetric | null | undefined;
+	/** The metric's desktop value. Without one, the Desktop cell renders empty. */
 	desktopMetric: ScoredMetric | FieldMetric | null | undefined;
+	/** Whether this row is the section's last, which renders no bottom divider. */
 	isLast?: boolean;
 }
 
@@ -55,8 +83,10 @@ export default function MetricRow( {
 			}
 		>
 			<View style={ styles.metricLabelGroup }>
-				<Text style={ styles.metricTitle }>{ title }</Text>
-				<Text style={ styles.metricDescription }>{ description }</Text>
+				<PDFTypography type="title">{ title }</PDFTypography>
+				<PDFTypography size="small" style={ styles.metricDescription }>
+					{ description }
+				</PDFTypography>
 			</View>
 			<MetricValueCell metric={ mobileMetric } />
 			<MetricValueCell metric={ desktopMetric } />

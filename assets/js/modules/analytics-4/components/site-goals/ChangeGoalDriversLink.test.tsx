@@ -32,7 +32,10 @@ describe( 'ChangeGoalDriversLink', () => {
 			.dispatch( CORE_UI )
 			.setValue( SITE_GOALS_SELECTION_PANEL_OPENED_KEY, false );
 
-		const { getByRole } = render( <ChangeGoalDriversLink />, { registry } );
+		const { getByRole } = render(
+			<ChangeGoalDriversLink goalType="ecommerce" />,
+			{ registry }
+		);
 
 		fireEvent.click( getByRole( 'button', { name: 'Select metrics' } ) );
 

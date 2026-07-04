@@ -17,8 +17,14 @@
  */
 
 /**
+ * External dependencies
+ */
+import TestRenderer from 'react-test-renderer';
+
+/**
  * Internal dependencies
  */
+import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
 import { render } from '@tests/js/test-utils';
 import PDFSiteKitLogo from './PDFSiteKitLogo';
 
@@ -54,5 +60,13 @@ describe( 'PDFSiteKitLogo', () => {
 			'#34A853',
 			'#4285F4',
 		] );
+	} );
+
+	it( 'scales the gap between the wordmark and the icon', () => {
+		const logoJSON = JSON.stringify(
+			TestRenderer.create( <PDFSiteKitLogo /> ).toJSON()
+		);
+
+		expect( logoJSON ).toContain( `"marginLeft":${ scalePDFValue( 7 ) }` );
 	} );
 } );

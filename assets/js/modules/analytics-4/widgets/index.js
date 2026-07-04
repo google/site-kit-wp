@@ -66,12 +66,14 @@ import {
 	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
 } from '@/js/googlesitekit/widgets/default-areas';
 import {
+	AudienceSegmentationBackNotice,
 	AudienceTilesWidget,
 	ConnectAnalyticsCTAWidget,
 	InfoNoticeWidget,
 	PrimaryUserSetupWidget,
 	SecondaryUserSetupWidget,
 } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
+import { AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationBackNotice';
 import { AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSelectionPanel/constants';
 import {
 	DashboardAllTrafficWidgetGA4,
@@ -154,6 +156,31 @@ export function registerWidgets( widgets ) {
 			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 		]
 	);
+
+	if ( isFeatureEnabled( 'setupFlowRefresh' ) ) {
+		widgets.registerWidget(
+			'analyticsAudienceSegmentationBackNotice',
+			{
+				Component: AudienceSegmentationBackNotice,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 0,
+				wrapWidget: false,
+				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+				isActive: ( select ) => {
+					const isWidgetHidden =
+						select(
+							CORE_USER
+						).getRawAudienceSegmentationWidgetHidden();
+					const isDismissed = select( CORE_USER ).isItemDismissed(
+						AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG
+					);
+
+					return isWidgetHidden === true && isDismissed === false;
+				},
+			},
+			[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
+		);
+	}
 
 	widgets.registerWidget(
 		'analyticsAudienceTiles',

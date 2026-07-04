@@ -98,8 +98,17 @@ const keyEventsOverviewArgs = getGA4KeyEventsOverviewReportOptions( DATES );
 const keyEventsStatsArgs = getGA4KeyEventsReportOptions( DATES );
 const visitorsArgs = getGA4VisitorsReportOptions( DATES );
 
-// 7 previous days (impressions 10, clicks 5) followed by 7 current days
-// (impressions 20, clicks 10), so partitioning yields a clean +100% change.
+/**
+ * Builds a 14-day Search Console report fixture.
+ *
+ * The 7 previous days (impressions 10, clicks 5) are followed by 7 current
+ * days (impressions 20, clicks 10), so partitioning yields a clean +100%
+ * change.
+ *
+ * @since n.e.x.t
+ *
+ * @return The report rows.
+ */
 function buildSearchConsoleReport() {
 	return Array.from( { length: 14 }, ( _unused, index ) => {
 		const isCurrent = index >= 7;
@@ -131,10 +140,27 @@ const keyEventsOverviewReport = {
 
 const keyEventsStatsReport = { rows: [] };
 
+/**
+ * Sets the global `google` object the loader reads to build chart data tables.
+ *
+ * @since n.e.x.t
+ *
+ * @param  value The new `google` global, or `undefined` to remove it.
+ * @return {void}
+ */
 function setGoogle( value: unknown ) {
 	( global as unknown as { google?: unknown } ).google = value;
 }
 
+/**
+ * Dispatches the four report fixtures into the registry, so the loader
+ * resolves them without fetching.
+ *
+ * @since n.e.x.t
+ *
+ * @param  registry Test registry that receives the reports.
+ * @return {void}
+ */
 function provideReports( registry: Registry ) {
 	registry
 		.dispatch( MODULES_SEARCH_CONSOLE )
@@ -215,7 +241,7 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 		expect( fetchMock ).not.toHaveFetched( searchConsoleReportEndpoint );
 	} );
 
-	it( 'should rasterise four line charts (smoothed, dotted previous series) with the per-metric color and signal', async () => {
+	it( 'should render the four line charts with the per-metric color, a smoothed current line, a dotted previous line, and the abort signal', async () => {
 		provideReports( registry );
 
 		const signal = new AbortController().signal;
@@ -230,15 +256,23 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 				mockRenderGoogleChartToDataURI.mock.calls[ index ][ 0 ];
 			expect( args.chartType ).toBe( 'LineChart' );
 			expect( args.signal ).toBe( signal );
-			expect( args.width ).toBe( 240 );
-			expect( args.height ).toBe( 120 );
+			expect( args.width ).toBe( 506 );
+			expect( args.height ).toBe( 133 );
+			// The chart renders at 4x so the line stays sharp.
+			expect( args.scaleFactor ).toBe( 4 );
+			// The line widths and dash lengths are in pixels of the rendered
+			// chart, so they grow with the render size.
 			expect( args.options ).toMatchObject( {
 				curveType: 'function',
 				colors: [ color ],
 				legend: { position: 'none' },
+				hAxis: {
+					textStyle: { fontName: 'Google Sans Text' },
+				},
+				vAxis: { textStyle: { fontName: 'Google Sans Text' } },
 				series: {
-					0: { color, lineWidth: 2 },
-					1: { color, lineWidth: 1, lineDashStyle: [ 3, 3 ] },
+					0: { color, lineWidth: 8 },
+					1: { color, lineWidth: 8, lineDashStyle: [ 4, 20 ] },
 				},
 			} );
 		} );
@@ -327,7 +361,7 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 		expect( console ).toHaveErrored();
 	} );
 
-	it( 'should short-circuit without loading charts when the signal is already aborted', async () => {
+	it( 'should stop early without loading charts when the signal is already aborted', async () => {
 		provideReports( registry );
 
 		const controller = new AbortController();
@@ -344,7 +378,7 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 		expect( mockRenderGoogleChartToDataURI ).not.toHaveBeenCalled();
 	} );
 
-	it( 'should bail out before rasterising any chart when the signal aborts after the reports are dispatched', async () => {
+	it( 'should stop before rendering any chart when the signal aborts after the reports are dispatched', async () => {
 		const controller = new AbortController();
 		const deferredResolvers: Array< () => void > = [];
 

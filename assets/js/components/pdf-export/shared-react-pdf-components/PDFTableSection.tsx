@@ -1,5 +1,5 @@
 /**
- * PDFTableSection: a heading, a card, and a table (or empty state) for a PDF widget.
+ * PDFTableSection: a heading, a card, and a table for a PDF widget.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -24,18 +24,27 @@ import { ReactElement } from 'react';
 /**
  * Internal dependencies
  */
-import PDFNoData from './PDFNoData';
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import PDFTable, { PDFTableColumn } from './PDFTable';
 import PDFWidgetSection from './PDFWidgetSection';
+
+const styles = createPDFStyles( {
+	// The card removes its horizontal padding so the table fills the width,
+	// and keeps the vertical padding.
+	card: {
+		paddingVertical: 16,
+		paddingHorizontal: 0,
+	},
+} );
 
 export interface PDFTableSectionProps< Row > {
 	/** Heading rendered above the card. */
 	heading?: string;
 	/** Column definitions passed to the table. */
 	columns: Array< PDFTableColumn< Row > >;
-	/** The rows of data. The section shows the empty state when this is empty. */
+	/** The rows of data. The section returns null when this is empty. */
 	rows: Row[];
-	/** Horizontal gap in points (pt) between the cells of a row. When unset, the table uses its default gap. */
+	/** Horizontal gap between the cells of a row, before scalePDFValue scales it. When unset, the table uses its default gap. */
 	columnGap?: number;
 }
 
@@ -46,29 +55,20 @@ export default function PDFTableSection< Row >( {
 	columns,
 	rows,
 	columnGap,
-}: PDFTableSectionProps< Row > ): ReactElement {
-	const hasRows = rows.length > 0;
-
-	// The card drops its horizontal padding when it has rows, so the table
-	// fills the width. It adds padding around the empty-state text when
-	// there are no rows.
-	const cardStyle = {
-		borderRadius: 8,
-		paddingVertical: 8,
-		paddingHorizontal: hasRows ? 0 : 12,
-	};
+}: PDFTableSectionProps< Row > ): ReactElement | null {
+	// Without rows the section returns null, and no placeholder takes its
+	// place.
+	if ( rows.length === 0 ) {
+		return null;
+	}
 
 	return (
-		<PDFWidgetSection heading={ heading } cardStyle={ cardStyle }>
-			{ hasRows ? (
-				<PDFTable
-					columns={ columns }
-					rows={ rows }
-					columnGap={ columnGap }
-				/>
-			) : (
-				<PDFNoData />
-			) }
+		<PDFWidgetSection heading={ heading } cardStyle={ styles.card }>
+			<PDFTable
+				columns={ columns }
+				rows={ rows }
+				columnGap={ columnGap }
+			/>
 		</PDFWidgetSection>
 	);
 }

@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { Text, View } from '@react-pdf/renderer';
-
-/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -30,13 +25,28 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import type { StrategyData } from './getPDFData';
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
+import PDFCard from '@/js/components/pdf-export/shared-react-pdf-components/PDFCard';
+import { StrategyData } from './getPDFData';
 import MetricRow from './MetricRow';
 import MetricSection from './MetricSection';
-import { styles } from './pdfStyles';
+
+const styles = createPDFStyles( {
+	// The section header and the metric rows own the padding, so the card
+	// sets none and its radius wraps both.
+	card: {
+		padding: 0,
+	},
+	secondCard: {
+		padding: 0,
+		marginTop: 15,
+	},
+} );
 
 interface SpeedMetricSectionsProps {
+	/** The mobile strategy's metrics, or null when the mobile report failed. */
 	mobile: StrategyData | null;
+	/** The desktop strategy's metrics, or null when the desktop report failed. */
 	desktop: StrategyData | null;
 }
 
@@ -49,78 +59,50 @@ export default function SpeedMetricSections( {
 			? true
 			: desktop?.field !== null && desktop?.field !== undefined;
 
-	const labCardStyle = hasField
-		? styles.sectionWidgetCard
-		: [ styles.sectionWidgetCard, styles.sectionWidgetCardLast ];
-
 	return (
 		<Fragment>
-			<View style={ labCardStyle }>
+			<PDFCard style={ styles.card }>
 				<MetricSection title={ __( 'Lab data', 'google-site-kit' ) }>
-					{ ! mobile && ! desktop ? (
-						<Text style={ styles.unavailableSection }>
-							{ __( 'Data unavailable.', 'google-site-kit' ) }
-						</Text>
-					) : (
-						<Fragment>
-							<MetricRow
-								title={ _x(
-									'Largest Contentful Paint',
-									'core web vitals name',
-									'google-site-kit'
-								) }
-								description={ __(
-									'Time it takes for the page to load',
-									'google-site-kit'
-								) }
-								mobileMetric={
-									mobile?.lab.largestContentfulPaint
-								}
-								desktopMetric={
-									desktop?.lab.largestContentfulPaint
-								}
-							/>
-							<MetricRow
-								title={ _x(
-									'Cumulative Layout Shift',
-									'core web vitals name',
-									'google-site-kit'
-								) }
-								description={ __(
-									'How stable the elements on the page are',
-									'google-site-kit'
-								) }
-								mobileMetric={
-									mobile?.lab.cumulativeLayoutShift
-								}
-								desktopMetric={
-									desktop?.lab.cumulativeLayoutShift
-								}
-							/>
-							<MetricRow
-								title={ __(
-									'Total Blocking Time',
-									'google-site-kit'
-								) }
-								description={ __(
-									'How long people had to wait after the page loaded before they could click something',
-									'google-site-kit'
-								) }
-								mobileMetric={ mobile?.lab.totalBlockingTime }
-								desktopMetric={ desktop?.lab.totalBlockingTime }
-								isLast
-							/>
-						</Fragment>
-					) }
+					<MetricRow
+						title={ _x(
+							'Largest Contentful Paint',
+							'core web vitals name',
+							'google-site-kit'
+						) }
+						description={ __(
+							'Time it takes for the page to load',
+							'google-site-kit'
+						) }
+						mobileMetric={ mobile?.lab.largestContentfulPaint }
+						desktopMetric={ desktop?.lab.largestContentfulPaint }
+					/>
+					<MetricRow
+						title={ _x(
+							'Cumulative Layout Shift',
+							'core web vitals name',
+							'google-site-kit'
+						) }
+						description={ __(
+							'How stable the elements on the page are',
+							'google-site-kit'
+						) }
+						mobileMetric={ mobile?.lab.cumulativeLayoutShift }
+						desktopMetric={ desktop?.lab.cumulativeLayoutShift }
+					/>
+					<MetricRow
+						title={ __( 'Total Blocking Time', 'google-site-kit' ) }
+						description={ __(
+							'How long people had to wait after the page loaded before they could click something',
+							'google-site-kit'
+						) }
+						mobileMetric={ mobile?.lab.totalBlockingTime }
+						desktopMetric={ desktop?.lab.totalBlockingTime }
+						isLast
+					/>
 				</MetricSection>
-			</View>
+			</PDFCard>
 			{ hasField && (
-				<View
-					style={ [
-						styles.sectionWidgetCard,
-						styles.sectionWidgetCardLast,
-					] }
-				>
+				<PDFCard style={ styles.secondCard }>
 					<MetricSection
 						title={ __( 'Real user data', 'google-site-kit' ) }
 					>
@@ -177,7 +159,7 @@ export default function SpeedMetricSections( {
 							isLast
 						/>
 					</MetricSection>
-				</View>
+				</PDFCard>
 			) }
 		</Fragment>
 	);

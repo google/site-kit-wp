@@ -20,26 +20,43 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
+import { FC } from 'react';
 
 /**
  * Internal dependencies
  */
 import { calculateChange, numFmt } from '@/js/util';
 
-export default function ChangeBadge( props ) {
-	const { previousValue, currentValue, isAbsolute } = props;
+export interface ChangeBadgeProps {
+	previousValue: number;
+	currentValue: number;
+	isAbsolute?: boolean;
+	zeroChangeLabel?: string;
+}
 
+const ChangeBadge: FC< ChangeBadgeProps > = ( {
+	previousValue,
+	currentValue,
+	isAbsolute = false,
+	zeroChangeLabel,
+} ) => {
 	const change = isAbsolute
 		? currentValue - previousValue
 		: calculateChange( previousValue, currentValue );
-	const isNegative = change < 0;
-	const isZero = change === 0;
 
 	// Do not display the change badge if the change value can't be calculated.
 	if ( change === null ) {
 		return null;
 	}
+
+	const isNegative = change < 0;
+	const isZero = change === 0;
+
+	const formattedChange = numFmt( change, {
+		style: 'percent',
+		signDisplay: 'exceptZero',
+		maximumFractionDigits: 1,
+	} );
 
 	return (
 		<div
@@ -48,17 +65,9 @@ export default function ChangeBadge( props ) {
 				'googlesitekit-change-badge--zero': isZero,
 			} ) }
 		>
-			{ numFmt( change, {
-				style: 'percent',
-				signDisplay: 'exceptZero',
-				maximumFractionDigits: 1,
-			} ) }
+			{ isZero && zeroChangeLabel ? zeroChangeLabel : formattedChange }
 		</div>
 	);
-}
-
-ChangeBadge.propTypes = {
-	isAbsolute: PropTypes.bool,
-	previousValue: PropTypes.number.isRequired,
-	currentValue: PropTypes.number.isRequired,
 };
+
+export default ChangeBadge;

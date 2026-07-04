@@ -28,6 +28,7 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch, useInViewSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { trackEvent } from '@/js/util';
@@ -36,6 +37,7 @@ import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './AudienceSelectionPanel/co
 
 export default function ChangeGroupsLink() {
 	const viewContext = useViewContext();
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
 	const availableAudiences = useInViewSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getConfigurableAudiences(),
@@ -65,7 +67,9 @@ export default function ChangeGroupsLink() {
 			secondary
 			linkButton
 		>
-			{ __( 'Change groups', 'google-site-kit' ) }
+			{ setupFlowRefreshEnabled
+				? __( 'Select groups', 'google-site-kit' )
+				: __( 'Change groups', 'google-site-kit' ) }
 		</Link>
 	);
 }

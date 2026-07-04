@@ -168,6 +168,24 @@ describe( 'core/user initial setup settings', () => {
 				).toBe( true );
 			} );
 		} );
+
+		describe( 'setHasSitePurposeAnswer', () => {
+			it( 'should throw when value is not a boolean', () => {
+				expect( () =>
+					registry
+						.dispatch( CORE_USER )
+						.setHasSitePurposeAnswer( 'yes' )
+				).toThrow( 'Site purpose answer status should be a boolean.' );
+			} );
+
+			it( 'should set the value in the store', () => {
+				registry.dispatch( CORE_USER ).setHasSitePurposeAnswer( true );
+
+				expect(
+					store.getState().initialSetupSettings.hasSitePurposeAnswer
+				).toBe( true );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -266,6 +284,18 @@ describe( 'core/user initial setup settings', () => {
 				expect(
 					registry.select( CORE_USER ).isAnalyticsSetupComplete()
 				).toBe( true );
+			} );
+		} );
+
+		describe( 'hasSitePurposeAnswer', () => {
+			it( 'should return the stored value when settings are available', () => {
+				registry.dispatch( CORE_USER ).receiveGetInitialSetupSettings( {
+					hasSitePurposeAnswer: false,
+				} );
+
+				expect(
+					registry.select( CORE_USER ).hasSitePurposeAnswer()
+				).toBe( false );
 			} );
 		} );
 	} );
