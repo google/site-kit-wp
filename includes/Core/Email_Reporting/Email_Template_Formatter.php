@@ -233,6 +233,23 @@ class Email_Template_Formatter {
 
 		if ( is_string( $change ) ) {
 			$change = str_replace( '%', '', $change );
+
+			// Reverse locale number formatting (for example "6,52" in a
+			// decimal-comma locale) back to a machine-parseable float before
+			// validating, so is_numeric() does not reject a legitimate value.
+			global $wp_locale;
+			if ( isset( $wp_locale ) && is_array( $wp_locale->number_format ) ) {
+				$thousands_sep = $wp_locale->number_format['thousands_sep'] ?? '';
+				$decimal_point = $wp_locale->number_format['decimal_point'] ?? '.';
+				if ( '' !== $thousands_sep ) {
+					$change = str_replace( $thousands_sep, '', $change );
+				}
+				if ( '.' !== $decimal_point ) {
+					$change = str_replace( $decimal_point, '.', $change );
+				}
+			}
+
+			$change = trim( $change );
 		}
 
 		if ( ! is_numeric( $change ) ) {
