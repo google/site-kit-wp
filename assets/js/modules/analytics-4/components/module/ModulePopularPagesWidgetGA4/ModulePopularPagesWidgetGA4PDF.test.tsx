@@ -25,6 +25,7 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import ModulePopularPagesWidgetGA4PDF from './ModulePopularPagesWidgetGA4PDF';
 
 /**
@@ -55,12 +56,12 @@ const DATA = {
 	links: {
 		'/home-page': {
 			detailsURL:
-				'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=dashboard&permaLink=http%3A%2F%2Fexample.com%2Fhome-page',
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=http%3A%2F%2Fexample.com%2Fhome-page',
 			permaLink: 'http://example.com/home-page',
 		},
 		'/about-page': {
 			detailsURL:
-				'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=dashboard&permaLink=http%3A%2F%2Fexample.com%2Fabout-page',
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=http%3A%2F%2Fexample.com%2Fabout-page',
 			permaLink: 'http://example.com/about-page',
 		},
 	},
@@ -125,12 +126,12 @@ describe( 'ModulePopularPagesWidgetGA4PDF', () => {
 		);
 	} );
 
-	it( 'links each title to its entity dashboard golink and each URL to its page', () => {
+	it( 'links each title to its entity dashboard and each URL to its page', () => {
 		const json = renderJSON( { data: DATA } );
 
-		// The title links to the entity dashboard golink.
+		// The title links to the entity dashboard.
 		expect( json ).toContain(
-			'http://example.com/wp-admin/index.php?action=googlesitekit_go&to=dashboard&permaLink=http%3A%2F%2Fexample.com%2Fhome-page'
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=http%3A%2F%2Fexample.com%2Fhome-page'
 		);
 		// The URL line links to the page itself.
 		expect( json ).toContain( 'http://example.com/home-page' );
@@ -140,7 +141,7 @@ describe( 'ModulePopularPagesWidgetGA4PDF', () => {
 	it( 'renders the title and URL links without an underline', () => {
 		const json = renderJSON( { data: DATA } );
 
-		// @react-pdf underlines links by default, the PDF report removes it.
+		// @react-pdf underlines links by default, so the PDF report removes it.
 		expect( json ).toContain( '"textDecoration":"none"' );
 	} );
 
@@ -212,17 +213,26 @@ describe( 'ModulePopularPagesWidgetGA4PDF', () => {
 		expect( json ).toContain( '51s' );
 	} );
 
-	it( 'renders the No data available placeholder when there are no rows', () => {
-		const json = renderJSON( { data: { rows: [], titles: {} } } );
+	it( 'returns null when there are no rows', () => {
+		// The whole section returns null, heading and card included.
+		const renderer = TestRenderer.create(
+			<ModulePopularPagesWidgetGA4PDF data={ { rows: [], titles: {} } } />
+		);
 
-		expect( json ).toContain( 'No data available' );
-		expect( json ).not.toContain( 'Pageviews' );
+		expect( renderer.toJSON() ).toBeNull();
 	} );
 
-	it( 'renders the No data available placeholder when data is null', () => {
-		const json = renderJSON( { data: null } );
+	it( 'returns null when data is null', () => {
+		const renderer = TestRenderer.create(
+			<ModulePopularPagesWidgetGA4PDF data={ null } />
+		);
 
-		expect( json ).toContain( 'No data available' );
-		expect( json ).not.toContain( 'Pageviews' );
+		expect( renderer.toJSON() ).toBeNull();
+	} );
+
+	it( 'scales the cell font size', () => {
+		const json = renderJSON( { data: DATA } );
+
+		expect( json ).toContain( `"fontSize":${ 14 * PDF_SCALE }` );
 	} );
 } );

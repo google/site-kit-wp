@@ -26,6 +26,7 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import PDFTable, { PDFTableColumn } from './PDFTable';
 
 interface TestRow {
@@ -133,7 +134,7 @@ describe( 'PDFTable', () => {
 		expect( json ).toContain( '"flex":1' );
 	} );
 
-	it( 'puts a column gap between the cells', () => {
+	it( 'applies the scaled default column gap between the cells', () => {
 		const columns: Array< PDFTableColumn< TestRow > > = [
 			{ header: 'Name', format: ( row ) => row.name },
 		];
@@ -142,7 +143,20 @@ describe( 'PDFTable', () => {
 			<PDFTable columns={ columns } rows={ rows } />
 		);
 
-		expect( json ).toContain( '"columnGap":20' );
+		expect( json ).toContain( `"columnGap":${ 40 * PDF_SCALE }` );
+	} );
+
+	it( 'uses the columnGap prop instead of the default when it is set', () => {
+		const columns: Array< PDFTableColumn< TestRow > > = [
+			{ header: 'Name', format: ( row ) => row.name },
+		];
+
+		const json = renderJSON(
+			<PDFTable columns={ columns } rows={ rows } columnGap={ 4 } />
+		);
+
+		expect( json ).toContain( `"columnGap":${ 4 * PDF_SCALE }` );
+		expect( json ).not.toContain( `"columnGap":${ 40 * PDF_SCALE }` );
 	} );
 
 	it( 'right-aligns the header and cell text when a column sets align to right', () => {
@@ -171,7 +185,7 @@ describe( 'PDFTable', () => {
 		expect( json ).toContain( 'name:About' );
 	} );
 
-	it( 'adds horizontal padding to the row content', () => {
+	it( 'adds the scaled horizontal padding to the row content', () => {
 		const columns: Array< PDFTableColumn< TestRow > > = [
 			{ header: 'Name', format: ( row ) => row.name },
 		];
@@ -180,7 +194,19 @@ describe( 'PDFTable', () => {
 			<PDFTable columns={ columns } rows={ rows } />
 		);
 
-		expect( json ).toContain( '"paddingHorizontal":12' );
+		expect( json ).toContain( `"paddingHorizontal":${ 24 * PDF_SCALE }` );
+	} );
+
+	it( 'scales the cell font size', () => {
+		const columns: Array< PDFTableColumn< TestRow > > = [
+			{ header: 'Name', format: ( row ) => row.name },
+		];
+
+		const json = renderJSON(
+			<PDFTable columns={ columns } rows={ rows } />
+		);
+
+		expect( json ).toContain( `"fontSize":${ 14 * PDF_SCALE }` );
 	} );
 
 	it( 'removes the bottom border from the last body row', () => {

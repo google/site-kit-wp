@@ -22,6 +22,11 @@
 import type { ComponentType } from 'react';
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Date range passed to a PDF widget's `getData`, adjusted to exclude the current day.
  *
  * @since 1.181.0
@@ -31,6 +36,25 @@ export interface PDFReportDates {
 	endDate: string;
 	compareStartDate: string;
 	compareEndDate: string;
+}
+
+/**
+ * Parameters a PDF widget's `getData` loader receives.
+ *
+ * @since n.e.x.t
+ */
+export interface GetPDFDataParams {
+	/** WordPress data registry, with `resolveSelect` added. */
+	registry: WPDataRegistry & {
+		// `resolveSelect` is on the registry at runtime but missing from the
+		// upstream `WPDataRegistry` type, so add it here with the same type as
+		// `select`.
+		resolveSelect: WPDataRegistry[ 'select' ];
+	};
+	/** Report date range. */
+	dates: PDFReportDates;
+	/** Signal that cancels the export. */
+	signal: AbortSignal;
 }
 
 /**
@@ -81,6 +105,8 @@ export interface WidgetPDFConfig {
 		signal: AbortSignal;
 	} ) => Promise< WidgetPDFData >;
 	label?: string;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The registry `select` is loosely typed, so `isActive` predicates can read store selectors without casting.
+	isActive?: ( select: ( storeName: string ) => any ) => boolean;
 }
 
 /**

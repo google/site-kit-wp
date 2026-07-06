@@ -51,7 +51,7 @@ exports[`AudienceTilesWidget should not render audiences that are not available 
                   />
                 </span>
                 <div
-                  class="mdc-tab__ripple mdc-ripple-upgraded--background-focused"
+                  class="mdc-tab__ripple"
                 />
               </button>
             </div>
@@ -413,7 +413,7 @@ exports[`AudienceTilesWidget should render correctly when there is partial data 
                   />
                 </span>
                 <div
-                  class="mdc-tab__ripple mdc-ripple-upgraded--background-focused"
+                  class="mdc-tab__ripple"
                 />
               </button>
               <button
@@ -958,7 +958,7 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                   />
                 </span>
                 <div
-                  class="mdc-tab__ripple mdc-ripple-upgraded--background-focused"
+                  class="mdc-tab__ripple"
                 />
               </button>
               <button
@@ -1350,7 +1350,7 @@ exports[`AudienceTilesWidget should render when configured audience is matching 
                   />
                 </span>
                 <div
-                  class="mdc-tab__ripple mdc-ripple-upgraded--background-focused"
+                  class="mdc-tab__ripple"
                 />
               </button>
             </div>
@@ -1712,7 +1712,7 @@ exports[`AudienceTilesWidget should render with no data in the comparison date r
                   />
                 </span>
                 <div
-                  class="mdc-tab__ripple mdc-ripple-upgraded--background-focused"
+                  class="mdc-tab__ripple"
                 />
               </button>
               <button
@@ -2080,7 +2080,7 @@ exports[`AudienceTilesWidget should render with no data in the comparison date r
                   />
                 </span>
                 <div
-                  class="mdc-tab__ripple mdc-ripple-upgraded--background-focused"
+                  class="mdc-tab__ripple"
                 />
               </button>
               <button

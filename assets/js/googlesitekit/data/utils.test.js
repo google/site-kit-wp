@@ -36,6 +36,7 @@ import {
 	combineStores,
 	createStrictSelect,
 	createValidatedAction,
+	getGlobalData,
 } from './utils';
 
 describe( 'data utils', () => {
@@ -973,5 +974,46 @@ describe( 'data utils', () => {
 
 			expect( actionCreator ).toHaveBeenCalledTimes( 0 );
 		} );
+	} );
+
+	describe( 'getGlobalData', () => {
+		let mockGlobal;
+
+		beforeEach( () => {
+			mockGlobal = {
+				_googlesitekitTestData: {
+					foo: 'bar',
+					baz: { qux: { quuz: 'quuq' } },
+				},
+			};
+		} );
+
+		it.each( [ 'invalidKey', 'invalidKey.invalidKey' ] )(
+			'should throw an error when the global data property name is not found',
+			( path ) => {
+				expect( () => getGlobalData( path, mockGlobal ) ).toThrow(
+					`Global data value not found at path ${ path }.`
+				);
+			}
+		);
+
+		it.each( [
+			{
+				path: '_googlesitekitTestData',
+				expectedValue: { foo: 'bar', baz: { qux: { quuz: 'quuq' } } },
+			},
+			{
+				path: '_googlesitekitTestData.baz.qux',
+				expectedValue: { quuz: 'quuq' },
+			},
+		] )(
+			'should return the deep cloned value at the path of the global data object',
+			( { path, expectedValue } ) => {
+				const data = getGlobalData( path, mockGlobal );
+
+				expect( data ).toEqual( expectedValue );
+				expect( data ).not.toBe( expectedValue );
+			}
+		);
 	} );
 } );

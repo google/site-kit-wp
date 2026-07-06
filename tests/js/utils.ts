@@ -697,7 +697,7 @@ export function registerAllStoresOn( registry: WPDataRegistry ) {
 export function untilResolved(
 	registry: WPDataRegistry,
 	storeName: string
-): Record< string, () => Promise< unknown > > {
+): Record< string, ( ...args: unknown[] ) => Promise< unknown > > {
 	return mapValues(
 		// @ts-expect-error `stores` property is not typed in WPDataRegistry, but
 		// it exists on the actual registry instance.

@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  *
  * @since 1.96.0
  *
- * @param {Array}    report                    The report data.
+ * @param {Object}   report                    The report data.
  * @param {Object}   [options]                 Optional. Data extraction options.
  * @param {number}   [options.keyColumnIndex]  Optional. The number of a column to extract metrics data from.
  * @param {number}   [options.maxSlices]       Optional. Limit the number of slices to display.

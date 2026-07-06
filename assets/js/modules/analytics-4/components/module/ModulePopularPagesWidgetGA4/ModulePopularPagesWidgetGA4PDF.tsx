@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Link, StyleSheet, Text, View } from '@react-pdf/renderer';
+import { View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
@@ -30,69 +30,49 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
-import PDFTable, {
-	PDFTableColumn,
-} from '@/js/components/pdf-export/shared-react-pdf-components/PDFTable';
-import PDFWidgetSection from '@/js/components/pdf-export/shared-react-pdf-components/PDFWidgetSection';
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
+import PDFLink from '@/js/components/pdf-export/shared-react-pdf-components/PDFLink';
+import { PDFTableColumn } from '@/js/components/pdf-export/shared-react-pdf-components/PDFTable';
+import PDFTableSection from '@/js/components/pdf-export/shared-react-pdf-components/PDFTableSection';
+import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
 import { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
 import { numFmt } from '@/js/util';
 import { PopularPagesPDFData } from './getPDFData';
 
-const bodyTextStyles = {
-	fontFamily: PDF_FONT_FAMILY_TEXT,
-	fontSize: 7,
-	lineHeight: 1.43,
-	letterSpacing: 0.125,
-};
-
-const PAGE_LINK_COLOR = '#108080';
-
 // Maximum URL characters shown in the Title column before the ellipsis.
 const MAX_URL_LENGTH = 70;
 
-const styles = StyleSheet.create( {
+const styles = createPDFStyles( {
 	titleCell: {
 		flexDirection: 'row',
 	},
 	rank: {
-		...bodyTextStyles,
-		color: '#161b18',
-		minWidth: 10,
-		marginRight: 4,
+		minWidth: 20,
+		marginRight: 8,
 	},
 	titleGroup: {
 		flex: 1,
 	},
-	title: {
-		...bodyTextStyles,
-		color: PAGE_LINK_COLOR,
-		textDecoration: 'none',
-	},
-	url: {
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 6,
-		lineHeight: 1.33,
-		letterSpacing: 0.1,
-		color: PAGE_LINK_COLOR,
-		textDecoration: 'none',
-	},
-	noData: {
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 9,
-		color: '#646464',
-	},
 } );
 
 interface PopularPageRow {
+	/** Position of the page in the table, starting at 1. */
 	rank: number;
+	/** Page title shown in the Title cell. */
 	title: string;
+	/** Page path shown under the title, shortened with an ellipsis when longer than `MAX_URL_LENGTH`. */
 	displayURL: string;
+	/** URL of the page's entity dashboard, which the title links to. */
 	detailsURL: string;
+	/** The page's own public URL, which the URL line links to. */
 	permaLink: string;
+	/** Pageviews count, as the report's raw string. */
 	pageviews: string;
+	/** Sessions count, as the report's raw string. */
 	sessions: string;
+	/** Engagement rate as the report's raw string, a fraction between 0 and 1. */
 	engagementRate: string;
+	/** Average session duration in seconds, as the report's raw string. */
 	sessionDuration: string;
 }
 
@@ -136,14 +116,14 @@ const ModulePopularPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 			// and the URL links to the page itself.
 			cell: ( row ) => (
 				<View style={ styles.titleCell }>
-					<Text style={ styles.rank }>{ `${ row.rank }.` }</Text>
+					<PDFTypography style={ styles.rank }>
+						{ `${ row.rank }.` }
+					</PDFTypography>
 					<View style={ styles.titleGroup }>
-						<Link src={ row.detailsURL } style={ styles.title }>
-							{ row.title }
-						</Link>
-						<Link src={ row.permaLink } style={ styles.url }>
+						<PDFLink href={ row.detailsURL }>{ row.title }</PDFLink>
+						<PDFLink href={ row.permaLink } size="small">
 							{ row.displayURL }
-						</Link>
+						</PDFLink>
 					</View>
 				</View>
 			),
@@ -182,23 +162,12 @@ const ModulePopularPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 		},
 	];
 
-	const hasRows = tableRows.length > 0;
-	const cardStyle = {
-		borderRadius: 8,
-		paddingVertical: 8,
-		paddingHorizontal: hasRows ? 0 : 12,
-	};
-
 	return (
-		<PDFWidgetSection heading={ heading } cardStyle={ cardStyle }>
-			{ hasRows ? (
-				<PDFTable columns={ columns } rows={ tableRows } />
-			) : (
-				<Text style={ styles.noData }>
-					{ __( 'No data available.', 'google-site-kit' ) }
-				</Text>
-			) }
-		</PDFWidgetSection>
+		<PDFTableSection
+			heading={ heading }
+			columns={ columns }
+			rows={ tableRows }
+		/>
 	);
 };
 

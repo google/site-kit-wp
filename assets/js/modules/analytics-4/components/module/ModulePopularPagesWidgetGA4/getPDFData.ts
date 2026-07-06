@@ -19,14 +19,13 @@
 /**
  * WordPress dependencies
  */
-import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { PDFReportDates } from '@/js/googlesitekit/widgets/types';
+import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	Report,
@@ -37,27 +36,13 @@ import { getFullURL } from '@/js/util';
 import { getPopularPagesReportArgs } from './reportOptions';
 
 /**
- * Parameters for the Top content over time PDF data loader.
- */
-export interface GetPDFDataParams {
-	/** WordPress data registry, with `resolveSelect` added. */
-	registry: WPDataRegistry & {
-		// `resolveSelect` exists on the registry at runtime but is missing from
-		// the upstream `WPDataRegistry` type, so add it here, matching `select`.
-		resolveSelect: WPDataRegistry[ 'select' ];
-	};
-	/** Report date range. */
-	dates: PDFReportDates;
-	/** Signal that cancels the export. */
-	signal: AbortSignal;
-}
-
-/**
- * Links for one page row: the entity dashboard golink for the title, and the
+ * Links for one page row: the entity dashboard URL for the title, and the
  * page's own public URL for the URL line.
  */
 export interface PopularPageLinks {
+	/** URL of the page's entity dashboard, which the page title links to. */
 	detailsURL: string;
+	/** The page's own public URL, which the URL line links to. */
 	permaLink: string;
 }
 
@@ -65,10 +50,13 @@ export interface PopularPageLinks {
  * Data the Top content over time PDF widget renders.
  */
 export interface PopularPagesPDFData {
-	/** Report rows, the page titles, and the per-page links, or `null` when cancelled. */
+	/** Report rows, the page titles, and the per-page links, or `null` when the export is canceled or the report has no rows. */
 	data: {
+		/** Rows of the Most popular pages report. */
 		rows: ReportRow[];
+		/** Map of page path to page title. */
 		titles: Record< string, string >;
+		/** Map of page path to its entity dashboard URL and public URL. */
 		links: Record< string, PopularPageLinks >;
 	} | null;
 }
@@ -181,17 +169,16 @@ function getTitleMap(
 }
 
 /**
- * Maps each page path to its entity dashboard golink and public URL.
+ * Maps each page path to its entity dashboard URL and public URL.
  *
- * The title links to the page's Site Kit detail view through the golink, which
- * keeps working if Site Kit's internal URL changes after the PDF is saved. The
- * URL line links to the page itself.
+ * The title links to the page's Site Kit detail view, the same entity dashboard
+ * link the dashboard builds for a page. The URL line links to the page itself.
  *
  * @since 1.182.0
  *
  * @param registry  WordPress data registry.
  * @param pagePaths Page paths from the main report rows.
- * @return Map of page path to its golink and public URL.
+ * @return Map of page path to its entity dashboard URL and public URL.
  */
 function getPopularPageLinkMap(
 	registry: GetPDFDataParams[ 'registry' ],
@@ -206,7 +193,9 @@ function getPopularPageLinkMap(
 		const permaLink = getFullURL( siteURL, pagePath );
 		links[ pagePath ] = {
 			detailsURL:
-				coreSite.getGoLinkURL( 'dashboard', { permaLink } ) ?? '',
+				coreSite.getAdminURL( 'googlesitekit-dashboard', {
+					permaLink,
+				} ) ?? '',
 			permaLink,
 		};
 	} );
@@ -218,11 +207,12 @@ function getPopularPageLinkMap(
  * Loads the report rows and page titles for the Top content over time PDF widget.
  *
  * Loads the Most popular pages report, then a second report that matches each
- * page path to its title. Passes the abort signal to both requests and returns
- * `{ data: null }` as soon as the signal aborts, so cancelling the export stops
- * the work and the widget renders its empty state.
+ * page path to its title. Passes the abort signal to both requests. Returns
+ * `{ data: null }` when the signal aborts or the report has no rows, so the
+ * report document skips this widget.
  *
  * @since 1.182.0
+ * @since n.e.x.t Returns null data when the report has no rows.
  *
  * @param params          Loader parameters.
  * @param params.registry WordPress data registry.
@@ -256,6 +246,13 @@ export default async function getPDFData( {
 	}
 
 	const rows = report?.rows ?? [];
+
+	// With no rows the widget has nothing to render. `data: null` lets the
+	// report document skip the widget, so the PDF holds no empty section.
+	if ( rows.length === 0 ) {
+		return { data: null };
+	}
+
 	const pagePaths = getPagePaths( report );
 	const links = getPopularPageLinkMap( registry, pagePaths );
 

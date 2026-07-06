@@ -48,7 +48,7 @@ import IntroModalEcommerceAndLead from './IntroModalEcommerceAndLead';
 import IntroModalLead from './IntroModalLead';
 import { IntroModalVariantProps } from './types';
 
-export const SITE_GOALS_INTRO_MODAL_BANNER = 'site_goals_intro_modal_banner';
+export const SITE_GOALS_INTRO_MODAL_BANNER = 'site-goals-intro-modal-banner';
 
 export const INTRO_MODAL_VARIANTS = {
 	ECOMMERCE: 'ecommerce',

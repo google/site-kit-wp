@@ -34,7 +34,6 @@ class Email_ReportingTest extends TestCase {
 	private $user_options;
 	private $authentication;
 	private $modules;
-	private $reset_feature_flag;
 
 	public function set_up() {
 		parent::set_up();
@@ -47,8 +46,6 @@ class Email_ReportingTest extends TestCase {
 
 		$this->set_site_kit_credentials();
 		$this->clear_scheduled_events();
-		$this->reset_feature_flag = $this->enable_feature( 'proactiveUserEngagement' );
-
 		delete_option( Email_Reporting_Settings::OPTION );
 
 		( new Email_Reporting_Settings( $this->options ) )->register();
@@ -61,10 +58,6 @@ class Email_ReportingTest extends TestCase {
 		delete_option( Credentials::OPTION );
 		remove_filter( 'googlesitekit_setup_complete', '__return_true' );
 		remove_filter( 'googlesitekit_oauth_secret', array( $this, 'filter_oauth_secret' ) );
-
-		if ( is_callable( $this->reset_feature_flag ) ) {
-			call_user_func( $this->reset_feature_flag );
-		}
 
 		parent::tear_down();
 	}

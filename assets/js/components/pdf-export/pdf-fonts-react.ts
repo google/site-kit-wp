@@ -24,6 +24,7 @@ import { Font } from '@react-pdf/renderer';
 /**
  * Internal dependencies
  */
+import googleSansDisplayMedium from './fonts/google-sans-display-medium.ttf';
 import googleSansDisplayRegular from './fonts/google-sans-display-regular.ttf';
 import googleSansTextMedium from './fonts/google-sans-text-medium.ttf';
 import googleSansTextRegular from './fonts/google-sans-text-regular.ttf';
@@ -34,8 +35,8 @@ let fontsRegistered = false;
 /**
  * Registers Site Kit's brand fonts with @react-pdf/renderer.
  *
- * Embeds Google Sans Display (400) and Google Sans Text (400, 500) so the
- * generated PDF renders in the dashboard's typography. The font binaries are
+ * Embeds Google Sans Display (400, 500) and Google Sans Text (400, 500) so
+ * the generated PDF renders in the dashboard's typography. The font binaries are
  * emitted as hashed static assets by webpack and fetched by @react-pdf at
  * render time (not when this function runs), so the dashboard's page load is
  * unaffected. Registration is idempotent for the lifetime of the session.
@@ -45,8 +46,9 @@ let fontsRegistered = false;
  * typeface.
  *
  * @since 1.182.0
+ * @since n.e.x.t Added the Google Sans Display medium (500) weight.
  *
- * @return {string} The display font family name.
+ * @return The display font family name.
  */
 export function registerPDFFonts() {
 	if ( fontsRegistered ) {
@@ -55,7 +57,10 @@ export function registerPDFFonts() {
 
 	Font.register( {
 		family: PDF_FONT_FAMILY_DISPLAY,
-		fonts: [ { src: googleSansDisplayRegular, fontWeight: 400 } ],
+		fonts: [
+			{ src: googleSansDisplayRegular, fontWeight: 400 },
+			{ src: googleSansDisplayMedium, fontWeight: 500 },
+		],
 	} );
 
 	Font.register( {

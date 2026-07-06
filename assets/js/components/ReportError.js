@@ -45,7 +45,12 @@ import ErrorNotice from './ErrorNotice';
 import CTA from './notifications/CTA';
 import ReportErrorActions from './ReportErrorActions';
 
-export default function ReportError( { moduleSlug, error } ) {
+export default function ReportError( {
+	moduleSlug,
+	error,
+	onRetry,
+	onRequestAccess,
+} ) {
 	const isViewOnly = useViewOnly();
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
@@ -148,7 +153,12 @@ export default function ReportError( { moduleSlug, error } ) {
 
 	return (
 		<CTA title={ title } description={ description } error>
-			<ReportErrorActions moduleSlug={ moduleSlug } error={ error } />
+			<ReportErrorActions
+				moduleSlug={ moduleSlug }
+				error={ error }
+				onRetry={ onRetry }
+				onRequestAccess={ onRequestAccess }
+			/>
 		</CTA>
 	);
 }
@@ -159,4 +169,6 @@ ReportError.propTypes = {
 		PropTypes.arrayOf( PropTypes.object ),
 		PropTypes.object,
 	] ).isRequired,
+	onRetry: PropTypes.func,
+	onRequestAccess: PropTypes.func,
 };

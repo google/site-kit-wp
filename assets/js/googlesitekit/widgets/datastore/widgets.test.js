@@ -849,6 +849,37 @@ describe( 'core/widgets Widgets', () => {
 						.pdf
 				).toBe( pdf );
 			} );
+
+			it( 'exposes pdf.isActive unchanged via getWidget', () => {
+				function PDFComponent() {
+					return null;
+				}
+				function getData() {
+					return { data: {} };
+				}
+				const isActive = jest.fn( () => true );
+				const pdf = {
+					Component: PDFComponent,
+					getData,
+					label: 'Test Widget',
+					isActive,
+				};
+
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidget( 'TestWidgetWithIsActive', {
+						Component() {
+							return <div>Hello test.</div>;
+						},
+						pdf,
+					} );
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.getWidget( 'TestWidgetWithIsActive' ).pdf.isActive
+				).toBe( isActive );
+			} );
 		} );
 	} );
 } );
