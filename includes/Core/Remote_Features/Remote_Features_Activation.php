@@ -56,7 +56,7 @@ class Remote_Features_Activation {
 		add_filter(
 			'googlesitekit_is_feature_enabled',
 			$this->get_method_proxy( 'enable_features' ),
-			10,
+			5,
 			2
 		);
 	}
