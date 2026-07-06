@@ -91,8 +91,6 @@ class PluginTest extends TestCase {
 		$this->assertEquals( 0, did_action( 'googlesitekit_init' ), 'googlesitekit_init action should not have been triggered yet' );
 		do_action( 'init' );
 		$this->assertEquals( 1, did_action( 'googlesitekit_init' ), 'googlesitekit_init action should be triggered exactly once after init' );
-
-		$this->remove_setup_flow_refresh_filter( $plugin );
 	}
 
 	public function test_register__init_keyMetrics() {
@@ -106,32 +104,6 @@ class PluginTest extends TestCase {
 
 		$routes = rest_get_server()->get_routes();
 		$this->assertArrayHasKey( '/' . REST_Routes::REST_ROOT . '/core/user/data/user-input-settings', $routes, 'REST API should register the user-input-settings endpoint' );
-
-		$this->remove_setup_flow_refresh_filter( $plugin );
-	}
-
-	public function test_register__does_not_force_setup_flow_refresh_feature_enabled_in_tests() {
-		$plugin = new Plugin( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$plugin->register();
-
-		$this->assertFalse(
-			apply_filters( 'googlesitekit_is_feature_enabled', false, 'setupFlowRefresh' ),
-			'setupFlowRefresh should not be force-enabled in test mode'
-		);
-
-		$this->remove_setup_flow_refresh_filter( $plugin );
-	}
-
-	public function test_register__setup_flow_refresh_override_does_not_affect_other_flags() {
-		$plugin = new Plugin( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$plugin->register();
-
-		$this->assertFalse(
-			apply_filters( 'googlesitekit_is_feature_enabled', false, 'someOtherFeature' ),
-			'Non-target feature flags should retain their original value'
-		);
-
-		$this->remove_setup_flow_refresh_filter( $plugin );
 	}
 
 	protected function assertActionRendersGeneratorTag( $action ) {
@@ -170,21 +142,6 @@ class PluginTest extends TestCase {
 			'#<div class="notice notice-warning.*?not yet offer.*?</div>#is',
 			$network_admin_notices,
 			'Network admin notices should contain a warning about network mode'
-		);
-
-		$this->remove_setup_flow_refresh_filter( $plugin );
-	}
-
-	/**
-	 * Removes the setupFlowRefresh force-enable filter for a test plugin instance.
-	 *
-	 * @param Plugin $plugin Plugin instance used in a test.
-	 */
-	private function remove_setup_flow_refresh_filter( Plugin $plugin ) {
-		remove_filter(
-			'googlesitekit_is_feature_enabled',
-			array( $plugin, 'force_setup_flow_refresh_feature_enabled' ),
-			20
 		);
 	}
 
