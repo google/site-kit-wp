@@ -627,6 +627,38 @@ export default async function getPDFData( {
 		url,
 	};
 
+	let searchConsoleReportsToIncludeWhenAnalyticsIsActive: Promise< {
+		report: Report | undefined;
+		error: unknown;
+	} >[] = [
+		Promise.resolve( { report: undefined, error: null } ),
+		Promise.resolve( { report: undefined, error: null } ),
+		Promise.resolve( { report: undefined, error: null } ),
+	];
+
+	if ( includeGA4Reports ) {
+		searchConsoleReportsToIncludeWhenAnalyticsIsActive = [
+			resolveReport< Report >(
+				registry,
+				MODULES_ANALYTICS_4,
+				getGA4KeyEventsOverviewReportOptions( ga4ReportArgs ),
+				signal
+			),
+			resolveReport< Report >(
+				registry,
+				MODULES_ANALYTICS_4,
+				getGA4KeyEventsReportOptions( ga4ReportArgs ),
+				signal
+			),
+			resolveReport< Report >(
+				registry,
+				MODULES_ANALYTICS_4,
+				getGA4VisitorsReportOptions( ga4ReportArgs ),
+				signal
+			),
+		];
+	}
+
 	const [ searchConsole, keyEventsOverview, keyEventsStats, visitors ] =
 		await Promise.all( [
 			resolveReport(
@@ -635,30 +667,7 @@ export default async function getPDFData( {
 				searchConsoleArgs,
 				signal
 			),
-			includeGA4Reports
-				? resolveReport< Report >(
-						registry,
-						MODULES_ANALYTICS_4,
-						getGA4KeyEventsOverviewReportOptions( ga4ReportArgs ),
-						signal
-				  )
-				: Promise.resolve( { report: undefined, error: null } ),
-			includeGA4Reports
-				? resolveReport< Report >(
-						registry,
-						MODULES_ANALYTICS_4,
-						getGA4KeyEventsReportOptions( ga4ReportArgs ),
-						signal
-				  )
-				: Promise.resolve( { report: undefined, error: null } ),
-			includeGA4Reports
-				? resolveReport< Report >(
-						registry,
-						MODULES_ANALYTICS_4,
-						getGA4VisitorsReportOptions( ga4ReportArgs ),
-						signal
-				  )
-				: Promise.resolve( { report: undefined, error: null } ),
+			...searchConsoleReportsToIncludeWhenAnalyticsIsActive,
 		] );
 
 	if ( signal.aborted ) {
@@ -690,6 +699,58 @@ export default async function getPDFData( {
 		} );
 	}
 
+	const extraCardsToBuild: Promise< MetricCardResult >[] = [];
+
+	if ( visitors.report ) {
+		extraCardsToBuild.push(
+			buildAnalyticsCard( {
+				statsReport: visitors.report,
+				statsError: visitors.error,
+				totalsReport: visitors.report,
+				totalsError: visitors.error,
+				currentLabel: __( 'Unique visitors', 'google-site-kit' ),
+				dataLabels: [ __( 'Unique visitors', 'google-site-kit' ) ],
+				tooltipDataFormats: [ numericTooltipFormatter ],
+				chartDataFormats: [ identity ],
+				color: UNIQUE_VISITORS_COLOR,
+				dateRangeLength,
+				referenceDate,
+				signal,
+			} )
+		);
+	} else {
+		extraCardsToBuild.push(
+			Promise.resolve( { metric: null, chartImage: null } )
+		);
+	}
+
+	if ( keyEventsStats.report && keyEventsOverview.report ) {
+		buildAnalyticsCard( {
+			statsReport: keyEventsStats.report,
+			statsError: keyEventsStats.error,
+			totalsReport: keyEventsOverview.report,
+			totalsError: keyEventsOverview.error,
+			currentLabel: __( 'Key events', 'google-site-kit' ),
+			dataLabels: [
+				__( 'Key events', 'google-site-kit' ),
+				__( 'Engagement Rate %', 'google-site-kit' ),
+			],
+			tooltipDataFormats: [
+				numericTooltipFormatter,
+				percentageTooltipFormatter,
+			],
+			chartDataFormats: [ identity, ( x ) => x * 100 ],
+			color: KEY_EVENTS_COLOR,
+			dateRangeLength,
+			referenceDate,
+			signal,
+		} );
+	} else {
+		extraCardsToBuild.push(
+			Promise.resolve( { metric: null, chartImage: null } )
+		);
+	}
+
 	const [ impressions, clicks, uniqueVisitors, keyEvents ] =
 		await Promise.all( [
 			buildSearchConsoleCard( {
@@ -710,49 +771,7 @@ export default async function getPDFData( {
 				dateRangeLength,
 				signal,
 			} ),
-			visitors.report
-				? buildAnalyticsCard( {
-						statsReport: visitors.report,
-						statsError: visitors.error,
-						totalsReport: visitors.report,
-						totalsError: visitors.error,
-						currentLabel: __(
-							'Unique visitors',
-							'google-site-kit'
-						),
-						dataLabels: [
-							__( 'Unique visitors', 'google-site-kit' ),
-						],
-						tooltipDataFormats: [ numericTooltipFormatter ],
-						chartDataFormats: [ identity ],
-						color: UNIQUE_VISITORS_COLOR,
-						dateRangeLength,
-						referenceDate,
-						signal,
-				  } )
-				: Promise.resolve( { metric: null, chartImage: null } ),
-			keyEventsStats.report && keyEventsOverview.report
-				? buildAnalyticsCard( {
-						statsReport: keyEventsStats.report,
-						statsError: keyEventsStats.error,
-						totalsReport: keyEventsOverview.report,
-						totalsError: keyEventsOverview.error,
-						currentLabel: __( 'Key events', 'google-site-kit' ),
-						dataLabels: [
-							__( 'Key events', 'google-site-kit' ),
-							__( 'Engagement Rate %', 'google-site-kit' ),
-						],
-						tooltipDataFormats: [
-							numericTooltipFormatter,
-							percentageTooltipFormatter,
-						],
-						chartDataFormats: [ identity, ( x ) => x * 100 ],
-						color: KEY_EVENTS_COLOR,
-						dateRangeLength,
-						referenceDate,
-						signal,
-				  } )
-				: Promise.resolve( { metric: null, chartImage: null } ),
+			...extraCardsToBuild,
 		] );
 
 	if ( signal.aborted ) {
