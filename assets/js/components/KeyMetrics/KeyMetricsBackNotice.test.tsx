@@ -17,6 +17,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import { mocked } from 'jest-mock';
+import { useIntersection as mockUseIntersection } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -24,18 +30,35 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
+import * as tracking from '@/js/util/tracking';
+import {
+	createTestRegistry,
+	fireEvent,
+	render,
+	waitFor,
+} from '@tests/js/test-utils';
 import {
 	KEY_METRICS_BACK_NOTICE_SLUG,
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
 import KeyMetricsBackNotice from './KeyMetricsBackNotice';
 
+jest.mock( 'react-use', () => ( {
+	...jest.requireActual( 'react-use' ),
+	useIntersection: jest.fn(),
+} ) );
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
 describe( 'KeyMetricsBackNotice', () => {
 	let registry: WPDataRegistry;
+
+	const viewContext = VIEW_CONTEXT_MAIN_DASHBOARD;
 
 	const { Widget } = getWidgetComponentProps( 'keyMetricsBackNotice' );
 
@@ -46,6 +69,10 @@ describe( 'KeyMetricsBackNotice', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+	} );
+
+	afterEach( () => {
+		jest.resetAllMocks();
 	} );
 
 	it( 'should render the notice with the expected copy and buttons', () => {
@@ -74,7 +101,7 @@ describe( 'KeyMetricsBackNotice', () => {
 
 		const { getByRole, waitForRegistry } = render(
 			<KeyMetricsBackNotice Widget={ Widget } />,
-			{ registry }
+			{ registry, viewContext }
 		);
 
 		fireEvent.click( getByRole( 'button', { name: 'Got it' } ) );
@@ -86,6 +113,11 @@ describe( 'KeyMetricsBackNotice', () => {
 				.select( CORE_USER )
 				.isItemDismissed( KEY_METRICS_BACK_NOTICE_SLUG )
 		).toBe( true );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ viewContext }_kmw-reshown`,
+			'dismiss_notice'
+		);
 	} );
 
 	it( 'should dismiss the notice and open the selection panel when "Select metrics" is clicked', async () => {
@@ -96,7 +128,7 @@ describe( 'KeyMetricsBackNotice', () => {
 
 		const { getByRole, waitForRegistry } = render(
 			<KeyMetricsBackNotice Widget={ Widget } />,
-			{ registry }
+			{ registry, viewContext }
 		);
 
 		fireEvent.click( getByRole( 'button', { name: 'Select metrics' } ) );
@@ -113,5 +145,47 @@ describe( 'KeyMetricsBackNotice', () => {
 				.select( CORE_USER )
 				.isItemDismissed( KEY_METRICS_BACK_NOTICE_SLUG )
 		).toBe( true );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ viewContext }_kmw-reshown`,
+			'confirm_notice'
+		);
+		expect( mockTrackEvent ).not.toHaveBeenCalledWith(
+			`${ viewContext }_kmw-reshown`,
+			'dismiss_notice'
+		);
+	} );
+
+	it( 'should track the view_notice event when the notice is viewed', async () => {
+		mocked( mockUseIntersection ).mockImplementation(
+			() =>
+				( {
+					isIntersecting: false,
+					intersectionRatio: 0,
+				} as IntersectionObserverEntry )
+		);
+
+		const { rerender } = render(
+			<KeyMetricsBackNotice Widget={ Widget } />,
+			{ registry, viewContext }
+		);
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
+
+		mocked( mockUseIntersection ).mockImplementation(
+			() =>
+				( {
+					isIntersecting: true,
+					intersectionRatio: 1,
+				} as IntersectionObserverEntry )
+		);
+
+		rerender( <KeyMetricsBackNotice Widget={ Widget } /> );
+
+		await waitFor( () => {
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ viewContext }_kmw-reshown`,
+				'view_notice'
+			);
+		} );
 	} );
 } );

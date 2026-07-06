@@ -17,6 +17,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import { mocked } from 'jest-mock';
+import { useIntersection as mockUseIntersection } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -24,9 +30,11 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import * as tracking from '@/js/util/tracking';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -38,12 +46,22 @@ import AudienceSegmentationBackNotice, {
 } from './AudienceSegmentationBackNotice';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './AudienceSelectionPanel/constants';
 
+jest.mock( 'react-use', () => ( {
+	...jest.requireActual( 'react-use' ),
+	useIntersection: jest.fn(),
+} ) );
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
 describe( 'AudienceSegmentationBackNotice', () => {
 	let registry: WPDataRegistry;
 
 	const dismissItemEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
 	);
+
+	const viewContext = VIEW_CONTEXT_MAIN_DASHBOARD;
 
 	const WidgetWithComponentProps = withWidgetComponentProps(
 		'analyticsAudienceSegmentationBackNotice'
@@ -54,6 +72,10 @@ describe( 'AudienceSegmentationBackNotice', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
+	afterEach( () => {
+		jest.clearAllMocks();
+	} );
+
 	it( 'should dismiss notice when clicking on Got it', async () => {
 		fetchMock.postOnce( dismissItemEndpoint, {
 			body: [ AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG ],
@@ -62,6 +84,7 @@ describe( 'AudienceSegmentationBackNotice', () => {
 
 		const { getByRole } = render( <WidgetWithComponentProps />, {
 			registry,
+			viewContext,
 		} );
 
 		fireEvent.click( getByRole( 'button', { name: /got it/i } ) );
@@ -87,6 +110,11 @@ describe( 'AudienceSegmentationBackNotice', () => {
 					.select( CORE_UI )
 					.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
 			).not.toBe( true );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ viewContext }_audiences-reshown`,
+				'dismiss_notice'
+			);
 		} );
 	} );
 
@@ -98,6 +126,7 @@ describe( 'AudienceSegmentationBackNotice', () => {
 
 		const { getByRole } = render( <WidgetWithComponentProps />, {
 			registry,
+			viewContext,
 		} );
 
 		fireEvent.click( getByRole( 'button', { name: /select groups/i } ) );
@@ -123,6 +152,49 @@ describe( 'AudienceSegmentationBackNotice', () => {
 					.select( CORE_UI )
 					.getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
 			).toBe( true );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ viewContext }_audiences-reshown`,
+				'confirm_notice'
+			);
+			expect( mockTrackEvent ).not.toHaveBeenCalledWith(
+				`${ viewContext }_audiences-reshown`,
+				'dismiss_notice'
+			);
+		} );
+	} );
+
+	it( 'should track the view_notice event when the notice is viewed', async () => {
+		mocked( mockUseIntersection ).mockImplementation(
+			() =>
+				( {
+					isIntersecting: false,
+					intersectionRatio: 0,
+				} as IntersectionObserverEntry )
+		);
+
+		const { rerender } = render( <WidgetWithComponentProps />, {
+			registry,
+			viewContext,
+		} );
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
+
+		mocked( mockUseIntersection ).mockImplementation(
+			() =>
+				( {
+					isIntersecting: true,
+					intersectionRatio: 1,
+				} as IntersectionObserverEntry )
+		);
+
+		rerender( <WidgetWithComponentProps /> );
+
+		await waitFor( () => {
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ viewContext }_audiences-reshown`,
+				'view_notice'
+			);
 		} );
 	} );
 } );
