@@ -19,17 +19,33 @@
 /**
  * External dependencies
  */
-import type { ComponentProps } from 'react';
+import { ComponentProps } from 'react';
 import TestRenderer from 'react-test-renderer';
 
 /**
  * Internal dependencies
  */
 import { PDF_SCALE, scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFMetricChartTile from './PDFMetricChartTile';
 
 const CHART_DATA_URI = 'data:image/jpeg;base64,TU9DS0NIQVJU';
 
+/**
+ * Arrow paths the tile must not render, because the change badge draws
+ * no direction arrow.
+ */
+const UP_ARROW_PATH = 'M4,0 L8,8 L0,8 Z';
+const DOWN_ARROW_PATH = 'M0,0 L8,0 L4,8 Z';
+
+/**
+ * Renders the tile and returns the rendered tree as a JSON string.
+ *
+ * @since n.e.x.t
+ *
+ * @param props Props for the tile.
+ * @return JSON string of the rendered tree.
+ */
 function renderTile( props: ComponentProps< typeof PDFMetricChartTile > ) {
 	const renderer = TestRenderer.create( <PDFMetricChartTile { ...props } /> );
 	return JSON.stringify( renderer.toJSON() );
@@ -71,7 +87,7 @@ describe( 'PDFMetricChartTile', () => {
 		expect( json ).toContain( '3 2' );
 	} );
 
-	it( 'should render the up arrow and success color for a positive change', () => {
+	it( 'uses the positive colors and no arrow for a rising change', () => {
 		const json = renderTile( {
 			title: 'Total Clicks',
 			value: '3.6K',
@@ -83,11 +99,12 @@ describe( 'PDFMetricChartTile', () => {
 		} );
 
 		expect( json ).toContain( '12.5%' );
-		expect( json ).toContain( 'M4,0 L8,8 L0,8 Z' );
-		expect( json ).toContain( '#34a853' );
+		expect( json ).toContain( PDF_COLORS.GREEN_G_50 );
+		expect( json ).toContain( PDF_COLORS.UTILITY_ON_SUCCESS_CONTAINER );
+		expect( json ).not.toContain( UP_ARROW_PATH );
 	} );
 
-	it( 'should render the down arrow and error color for a negative change', () => {
+	it( 'uses the negative colors and no arrow for a falling change', () => {
 		const json = renderTile( {
 			title: 'Total Impressions',
 			value: '9.2K',
@@ -99,11 +116,12 @@ describe( 'PDFMetricChartTile', () => {
 		} );
 
 		expect( json ).toContain( '5.2%' );
-		expect( json ).toContain( 'M0,0 L8,0 L4,8 Z' );
-		expect( json ).toContain( '#ea4335' );
+		expect( json ).toContain( PDF_COLORS.UTILITY_ERROR_CONTAINER );
+		expect( json ).toContain( PDF_COLORS.UTILITY_ON_ERROR_CONTAINER );
+		expect( json ).not.toContain( DOWN_ARROW_PATH );
 	} );
 
-	it( 'should omit the change chip when no change is provided', () => {
+	it( 'hides the change badge when the metric has no change', () => {
 		const json = renderTile( {
 			title: 'Total Impressions',
 			value: '9.2K',
@@ -112,25 +130,25 @@ describe( 'PDFMetricChartTile', () => {
 			chartImage: CHART_DATA_URI,
 		} );
 
-		expect( json ).not.toContain( '#34a853' );
-		expect( json ).not.toContain( '#ea4335' );
+		expect( json ).not.toContain( PDF_COLORS.GREEN_G_50 );
+		expect( json ).not.toContain( PDF_COLORS.UTILITY_ERROR_CONTAINER );
 	} );
 
-	it( 'should render the Data unavailable placeholder when the chart image is null', () => {
-		const json = renderTile( {
-			title: 'Total Impressions',
-			value: '9.2K',
-			change: '5.2%',
-			changeDirection: 'down',
-			currentLabel: 'Impressions',
-			color: '#6380b8',
-			chartImage: null,
-		} );
+	it( 'returns null when the chart image is null', () => {
+		// The tile returns null, and no placeholder takes its place.
+		const renderer = TestRenderer.create(
+			<PDFMetricChartTile
+				title="Total Impressions"
+				value="9.2K"
+				change="5.2%"
+				changeDirection="down"
+				currentLabel="Impressions"
+				color="#6380b8"
+				chartImage={ null }
+			/>
+		);
 
-		expect( json ).toContain( 'Data unavailable' );
-		// The metric value and chart are suppressed in the placeholder state.
-		expect( json ).not.toContain( '9.2K' );
-		expect( json ).not.toContain( 'data:image' );
+		expect( renderer.toJSON() ).toBeNull();
 	} );
 
 	it( 'scales the tile font sizes and the arrow width', () => {
@@ -148,6 +166,6 @@ describe( 'PDFMetricChartTile', () => {
 		expect( json ).toContain( `"fontSize":${ 14 * PDF_SCALE }` );
 		expect( json ).toContain( `"fontSize":${ 28 * PDF_SCALE }` );
 		// The change arrow width scales with the page.
-		expect( json ).toContain( `"width":${ scalePDFValue( 16 ) }` );
+		expect( json ).toContain( `"width":${ scalePDFValue( 24 ) }` );
 	} );
 } );

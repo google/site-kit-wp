@@ -47,6 +47,7 @@ class Initial_Setup_Settings extends User_Setting {
 	protected function get_default() {
 		return array(
 			'isAnalyticsSetupComplete' => null,
+			'hasSitePurposeAnswer'     => null,
 		);
 	}
 
@@ -69,6 +70,7 @@ class Initial_Setup_Settings extends User_Setting {
 
 		$allowed_settings = array(
 			'isAnalyticsSetupComplete' => true,
+			'hasSitePurposeAnswer'     => true,
 		);
 
 		$updated = array_intersect_key( $partial, $allowed_settings );
@@ -91,6 +93,10 @@ class Initial_Setup_Settings extends User_Setting {
 
 			if ( isset( $settings['isAnalyticsSetupComplete'] ) ) {
 				$settings['isAnalyticsSetupComplete'] = (bool) $settings['isAnalyticsSetupComplete'];
+			}
+
+			if ( isset( $settings['hasSitePurposeAnswer'] ) ) {
+				$settings['hasSitePurposeAnswer'] = (bool) $settings['hasSitePurposeAnswer'];
 			}
 
 			return $settings;

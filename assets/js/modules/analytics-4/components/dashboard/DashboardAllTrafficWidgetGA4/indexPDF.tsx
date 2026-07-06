@@ -19,7 +19,8 @@
 /**
  * External dependencies
  */
-import { Image, Text, View } from '@react-pdf/renderer';
+import { Image, View } from '@react-pdf/renderer';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -31,23 +32,18 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
-import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
 import { PIE_CHART_COLORS } from '@/js/components/pdf-export/pie-chart-colors';
+import PDFCard from '@/js/components/pdf-export/shared-react-pdf-components/PDFCard';
 import PDFMetricTile from '@/js/components/pdf-export/shared-react-pdf-components/PDFMetricTile';
-import PDFNoData from '@/js/components/pdf-export/shared-react-pdf-components/PDFNoData';
 import PDFPieChartTile from '@/js/components/pdf-export/shared-react-pdf-components/PDFPieChartTile';
-import type { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
+import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
+import { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
 import { calculateChange, numFmt } from '@/js/util';
-import type { AllTrafficPDFData, BreakdownRow } from './getPDFData';
+import { AllTrafficPDFData, BreakdownRow } from './getPDFData';
 
 const styles = createPDFStyles( {
 	heading: {
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 16,
-		letterSpacing: 0.5,
-		lineHeight: 1.5,
-		color: '#161b18',
-		marginBottom: 16,
+		marginBottom: 15,
 	},
 	row: {
 		flexDirection: 'row',
@@ -60,9 +56,6 @@ const styles = createPDFStyles( {
 		flexGrow: 1,
 		flexShrink: 1,
 		flexBasis: 0,
-		backgroundColor: '#ffffff',
-		borderRadius: 16,
-		padding: 24,
 	},
 	cardGap: {
 		width: 24,
@@ -70,9 +63,9 @@ const styles = createPDFStyles( {
 	chart: {
 		width: '100%',
 		// Fit the line chart to the card width without stretching it.
-		height: 176,
+		height: 133,
 		objectFit: 'contain',
-		marginTop: 24,
+		marginTop: 7,
 	},
 } );
 
@@ -85,8 +78,8 @@ const styles = createPDFStyles( {
  *
  * @since n.e.x.t
  *
- * @param {Array<Object>|null} breakdown Ordered `{ label, percentage }` rows, or `null`.
- * @return {Array<Object>} Legend rows of `{ label, percentage, color }`.
+ * @param breakdown Ordered `{ label, percentage }` rows, or `null`.
+ * @return Legend rows of `{ label, percentage, color }`.
  */
 function buildLegendRows( breakdown: BreakdownRow[] | null | undefined ) {
 	return ( breakdown || [] ).map( ( { label, percentage }, index ) => ( {
@@ -100,121 +93,148 @@ function buildLegendRows( breakdown: BreakdownRow[] | null | undefined ) {
 	} ) );
 }
 
-export default function DashboardAllTrafficWidgetGA4PDF( {
+const DashboardAllTrafficWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 	data,
 	chartImages,
-}: PDFWidgetComponentProps ) {
-	const trafficData = data as AllTrafficPDFData[ 'data' ];
+} ) => {
+	const trafficData = data as AllTrafficPDFData[ 'data' ] | undefined;
+	const trafficChartImages =
+		chartImages as AllTrafficPDFData[ 'chartImages' ];
 
-	let body;
-
+	// Without data the widget returns null, and no placeholder takes its place.
 	if ( ! trafficData ) {
-		body = (
-			<View style={ styles.card }>
-				<PDFNoData />
-			</View>
-		);
-	} else {
-		const {
-			totalsReport,
-			graphReport,
-			channelBreakdown,
-			locationBreakdown,
-			deviceBreakdown,
-		} = trafficData;
+		return null;
+	}
 
-		const [ current, previous ] = totalsReport?.totals || [];
-		const currentValue = Number( current?.metricValues?.[ 0 ]?.value );
-		const previousValue = Number( previous?.metricValues?.[ 0 ]?.value );
+	const {
+		totalsReport,
+		graphReport,
+		channelBreakdown,
+		locationBreakdown,
+		deviceBreakdown,
+	} = trafficData;
 
-		const change = calculateChange( previousValue, currentValue );
-		const changeText =
-			typeof change === 'number'
-				? numFmt( change, {
-						style: 'percent',
-						signDisplay: 'exceptZero',
-						maximumFractionDigits: 1,
-				  } )
-				: undefined;
+	const [ current, previous ] = totalsReport?.totals || [];
+	const currentValue = Number( current?.metricValues?.[ 0 ]?.value );
+	const previousValue = Number( previous?.metricValues?.[ 0 ]?.value );
 
-		const graphRowCount = graphReport?.rows?.length || 0;
-		const comparisonLabel =
-			graphRowCount > 0
-				? sprintf(
-						/* translators: %d: number of days in the comparison period */
-						__( 'Vs. prev. %d days', 'google-site-kit' ),
-						graphRowCount
-				  )
-				: undefined;
+	const change = calculateChange( previousValue, currentValue );
+	const changeText =
+		typeof change === 'number'
+			? numFmt( change, {
+					style: 'percent',
+					signDisplay: 'exceptZero',
+					maximumFractionDigits: 1,
+			  } )
+			: undefined;
 
-		const formattedValue = numFmt( currentValue || 0 );
+	const graphRowCount = graphReport?.rows?.length || 0;
+	const comparisonLabel =
+		graphRowCount > 0
+			? sprintf(
+					/* translators: %d: number of days in the comparison period */
+					__( 'Vs. prev. %d days', 'google-site-kit' ),
+					graphRowCount
+			  )
+			: undefined;
 
-		const lineChart = chartImages?.lineChart;
+	const formattedValue = numFmt( currentValue || 0 );
 
-		body = (
-			<Fragment>
-				<View style={ styles.row }>
-					<View style={ styles.card }>
-						<PDFMetricTile
-							title={ __( 'All visitors', 'google-site-kit' ) }
-							value={ formattedValue }
-							change={ changeText }
-							isNegative={
-								typeof change === 'number' && change < 0
-							}
-							changeLabel={ comparisonLabel }
-						/>
-						{ lineChart ? (
-							<Image src={ lineChart } style={ styles.chart } />
-						) : (
-							<PDFNoData />
-						) }
-					</View>
-					<View style={ styles.cardGap } />
-					<View style={ styles.card }>
-						<PDFPieChartTile
-							title={ __(
-								'Visitors by channels',
-								'google-site-kit'
-							) }
-							rows={ buildLegendRows( channelBreakdown ) }
-							chartImage={ chartImages?.channelChart }
-						/>
-					</View>
-				</View>
-				<View style={ [ styles.row, styles.rowSpacing ] }>
-					<View style={ styles.card }>
-						<PDFPieChartTile
-							title={ __(
-								'Visitors by locations',
-								'google-site-kit'
-							) }
-							rows={ buildLegendRows( locationBreakdown ) }
-							chartImage={ chartImages?.locationChart }
-						/>
-					</View>
-					<View style={ styles.cardGap } />
-					<View style={ styles.card }>
-						<PDFPieChartTile
-							title={ __(
-								'Visitors by devices',
-								'google-site-kit'
-							) }
-							rows={ buildLegendRows( deviceBreakdown ) }
-							chartImage={ chartImages?.deviceChart }
-						/>
-					</View>
-				</View>
-			</Fragment>
-		);
+	const lineChartImage = trafficChartImages?.lineChart;
+
+	// A breakdown whose report or donut render failed adds no card, and no
+	// placeholder takes its place.
+	const breakdownTiles = [
+		{
+			key: 'channels',
+			title: __( 'Visitors by channels', 'google-site-kit' ),
+			rows: channelBreakdown,
+			chartImage: trafficChartImages?.channelChart,
+		},
+		{
+			key: 'locations',
+			title: __( 'Visitors by locations', 'google-site-kit' ),
+			rows: locationBreakdown,
+			chartImage: trafficChartImages?.locationChart,
+		},
+		{
+			key: 'devices',
+			title: __( 'Visitors by devices', 'google-site-kit' ),
+			rows: deviceBreakdown,
+			chartImage: trafficChartImages?.deviceChart,
+		},
+	].filter( ( { rows, chartImage } ) => !! ( rows?.length && chartImage ) );
+
+	// Every card that renders, in dashboard order: the All visitors tile
+	// first, then the surviving breakdown donuts.
+	const cards = [
+		{
+			key: 'all-visitors',
+			content: (
+				<Fragment>
+					<PDFMetricTile
+						title={ __( 'All visitors', 'google-site-kit' ) }
+						value={ formattedValue }
+						change={ changeText }
+						isNegative={ typeof change === 'number' && change < 0 }
+						changeLabel={ comparisonLabel }
+					/>
+					{ lineChartImage && (
+						<Image src={ lineChartImage } style={ styles.chart } />
+					) }
+				</Fragment>
+			),
+		},
+		...breakdownTiles.map( ( { key, title, rows, chartImage } ) => ( {
+			key,
+			content: (
+				<PDFPieChartTile
+					title={ title }
+					rows={ buildLegendRows( rows ) }
+					chartImage={ chartImage }
+				/>
+			),
+		} ) ),
+	];
+
+	// Pair the cards into rows of two, so the grid fills row by row with the
+	// cards that have data instead of leaving holes where the others were.
+	const cardRows: Array< typeof cards > = [];
+	for ( let index = 0; index < cards.length; index += 2 ) {
+		cardRows.push( cards.slice( index, index + 2 ) );
 	}
 
 	return (
 		<View>
-			<Text style={ styles.heading }>
+			<PDFTypography size="large" style={ styles.heading }>
 				{ __( 'Your site traffic over time', 'google-site-kit' ) }
-			</Text>
-			{ body }
+			</PDFTypography>
+			{ cardRows.map( ( [ leftCard, rightCard ], rowIndex ) => (
+				<View
+					key={ leftCard.key }
+					style={
+						rowIndex === 0
+							? styles.row
+							: [ styles.row, styles.rowSpacing ]
+					}
+				>
+					<PDFCard style={ styles.card }>
+						{ leftCard.content }
+					</PDFCard>
+					<View style={ styles.cardGap } />
+					{ rightCard ? (
+						<PDFCard style={ styles.card }>
+							{ rightCard.content }
+						</PDFCard>
+					) : (
+						// An invisible spacer holds a lone card at its half
+						// width, so the card keeps the two-column size.
+						<View style={ styles.card } />
+					) }
+				</View>
+			) ) }
 		</View>
 	);
-}
+};
+
+export default DashboardAllTrafficWidgetGA4PDF;

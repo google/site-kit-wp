@@ -126,6 +126,15 @@ describe( 'PDFHeader', () => {
 			'src',
 			'https://example.com/wp-admin/go-dashboard'
 		);
+
+		// The trailing icon draws the view-dashboard chevron path.
+		const arrowPath = link
+			.closest( 'pdf-link' )
+			?.querySelector( 'pdf-path' );
+		expect( arrowPath ).toHaveAttribute(
+			'd',
+			'M3.34374 9.16666L2.60416 8.42708L6.03124 5L2.60416 1.57291L3.34374 0.833328L7.51041 5L3.34374 9.16666Z'
+		);
 	} );
 
 	it( 'collapses the chip row when there are no sections', () => {
@@ -189,8 +198,10 @@ describe( 'PDFHeader', () => {
 		// The header's own padding and margin scale with the page.
 		expect( json ).toContain( `"marginBottom":${ 24 * PDF_SCALE }` );
 		expect( json ).toContain( `"paddingTop":${ 16 * PDF_SCALE }` );
-		expect( json ).toContain( `"paddingBottom":${ 6 * PDF_SCALE }` );
+		expect( json ).toContain( `"paddingBottom":${ 11 * PDF_SCALE }` );
 		// The chevron icon width scales with the page.
 		expect( json ).toContain( `"width":${ scalePDFValue( 10 ) }` );
+		// The gap before the chevron icon scales with the page.
+		expect( json ).toContain( `"marginRight":${ scalePDFValue( 4 ) }` );
 	} );
 } );

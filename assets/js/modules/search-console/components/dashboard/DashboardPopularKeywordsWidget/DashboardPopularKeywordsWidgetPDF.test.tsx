@@ -133,17 +133,20 @@ describe( 'DashboardPopularKeywordsWidgetPDF', () => {
 		expect( json ).toContain( `"columnGap":${ 8 * PDF_SCALE }` );
 	} );
 
-	it( 'renders the "No data available." message when there are no rows', () => {
-		const json = renderJSON( { data: { rows: [] } } );
+	it( 'returns null when there are no rows', () => {
+		// The whole section returns null, heading and card included.
+		const renderer = TestRenderer.create(
+			<DashboardPopularKeywordsWidgetPDF data={ { rows: [] } } />
+		);
 
-		expect( json ).toContain( 'No data available' );
-		expect( json ).not.toContain( 'Impressions' );
+		expect( renderer.toJSON() ).toBeNull();
 	} );
 
-	it( 'renders the "No data available." message when data is null', () => {
-		const json = renderJSON( { data: null } );
+	it( 'returns null when data is null', () => {
+		const renderer = TestRenderer.create(
+			<DashboardPopularKeywordsWidgetPDF data={ null } />
+		);
 
-		expect( json ).toContain( 'No data available' );
-		expect( json ).not.toContain( 'Impressions' );
+		expect( renderer.toJSON() ).toBeNull();
 	} );
 } );
