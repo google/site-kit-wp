@@ -49,6 +49,11 @@ export default function SettingsAdmin() {
 	const configuredAudiences = useSelect( ( select ) =>
 		select( CORE_USER ).getConfiguredAudiences()
 	);
+	const hasSitePurposeAnswer = useSelect(
+		( select ) =>
+			!! select( CORE_USER ).getUserInputSettings()?.purpose?.values
+				?.length
+	);
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
@@ -64,7 +69,7 @@ export default function SettingsAdmin() {
 	} );
 
 	const showKeyMetricsSettings =
-		isAnalyticsConnected &&
+		( isAnalyticsConnected || hasSitePurposeAnswer ) &&
 		isSearchConsoleGatheringData === false &&
 		isAnalyticsGatheringData === false;
 
@@ -90,9 +95,10 @@ export default function SettingsAdmin() {
 			! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
 				'isGatheringData'
 			) ||
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'isGatheringData'
-			)
+			( isAnalyticsConnected &&
+				! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'isGatheringData'
+				) )
 		) {
 			return true;
 		}

@@ -1,4 +1,6 @@
 /**
+ * PDFFooter: the footer links of the PDF report.
+ *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +19,8 @@
 /**
  * External dependencies
  */
-import { Link, View } from '@react-pdf/renderer';
-import type { FC } from 'react';
+import { View } from '@react-pdf/renderer';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -29,11 +31,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
-import {
-	colors,
-	fontSizes,
-	spacing,
-} from '@/js/components/pdf-export/pdf-theme';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import PDFLink from './PDFLink';
 
 const styles = createPDFStyles( {
 	footer: {
@@ -41,16 +40,14 @@ const styles = createPDFStyles( {
 		flexWrap: 'wrap',
 		justifyContent: 'center',
 		alignItems: 'flex-start',
-		columnGap: spacing.footerLinkGap,
-		rowGap: spacing.footerLinkRowGap,
-		marginTop: spacing.footerMarginTop,
+		columnGap: 49.5,
+		rowGap: 4,
+		// The footer renders outside the report body's `gap` spacing, so it
+		// sets its own top margin.
+		marginTop: 44,
 	},
 	link: {
-		fontSize: fontSizes.small,
-		lineHeight: 1.333,
-		letterSpacing: 0.2,
-		color: colors.onSurfaceVariant,
-		textDecoration: 'none',
+		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
 	},
 } );
 
@@ -69,15 +66,30 @@ const PDFFooter: FC< PDFFooterProps > = ( {
 	privacyPolicyURL,
 } ) => (
 	<View style={ styles.footer }>
-		<Link src={ dashboardURL } style={ styles.link }>
+		<PDFLink
+			href={ dashboardURL }
+			type="label"
+			size="small"
+			style={ styles.link }
+		>
 			{ __( 'View dashboard', 'google-site-kit' ) }
-		</Link>
-		<Link src={ helpCenterURL } style={ styles.link }>
+		</PDFLink>
+		<PDFLink
+			href={ helpCenterURL }
+			type="label"
+			size="small"
+			style={ styles.link }
+		>
 			{ __( 'Help center', 'google-site-kit' ) }
-		</Link>
-		<Link src={ privacyPolicyURL } style={ styles.link }>
+		</PDFLink>
+		<PDFLink
+			href={ privacyPolicyURL }
+			type="label"
+			size="small"
+			style={ styles.link }
+		>
 			{ __( 'Privacy Policy', 'google-site-kit' ) }
-		</Link>
+		</PDFLink>
 	</View>
 );
 

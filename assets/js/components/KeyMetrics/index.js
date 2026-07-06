@@ -16,6 +16,7 @@
 
 export { default as ChangeMetricsLink } from './ChangeMetricsLink';
 export { default as InsufficientPermissionsError } from './InsufficientPermissionsError';
+export { default as KeyMetricsBackNotice } from './KeyMetricsBackNotice';
 export { default as KeyMetricsSetupCTAWidget } from './KeyMetricsSetupCTAWidget';
 export { default as MetricTileNumeric } from './MetricTileNumeric';
 export { default as MetricTileTable } from './MetricTileTable';

@@ -23,6 +23,8 @@ import { __ } from '@wordpress/i18n';
 
 export const KEY_METRICS_SETUP_CTA_WIDGET_SLUG = 'key-metrics-setup-cta-widget';
 
+export const KEY_METRICS_BACK_NOTICE_SLUG = 'key-metrics-back-notice';
+
 export const KEY_METRICS_SELECTION_PANEL_OPENED_KEY =
 	'googlesitekit-key-metrics-selection-panel-opened';
 export const KEY_METRICS_SELECTION_FORM = 'key-metrics-selection-form';

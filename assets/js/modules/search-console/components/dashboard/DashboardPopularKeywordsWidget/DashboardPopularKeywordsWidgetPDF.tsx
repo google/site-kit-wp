@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Link, Text, View } from '@react-pdf/renderer';
+import { View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
@@ -31,46 +31,34 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
-import {
-	PDF_COLOR_LINK,
-	PDF_COLOR_TEXT_PRIMARY,
-	PDF_FONT_FAMILY_TEXT,
-} from '@/js/components/pdf-export/pdf-theme';
+import PDFLink from '@/js/components/pdf-export/shared-react-pdf-components/PDFLink';
 import { PDFTableColumn } from '@/js/components/pdf-export/shared-react-pdf-components/PDFTable';
 import PDFTableSection from '@/js/components/pdf-export/shared-react-pdf-components/PDFTableSection';
+import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
 import { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
 import { numFmt } from '@/js/util';
 import { PopularKeywordsPDFData } from './getPDFData';
-
-const bodyTextStyles = {
-	fontFamily: PDF_FONT_FAMILY_TEXT,
-	fontSize: 14,
-	lineHeight: 1.43,
-	letterSpacing: 0.25,
-};
 
 const styles = createPDFStyles( {
 	queryCell: {
 		flexDirection: 'row',
 	},
 	rank: {
-		...bodyTextStyles,
-		color: PDF_COLOR_TEXT_PRIMARY,
 		minWidth: 20,
 		marginRight: 8,
-	},
-	query: {
-		...bodyTextStyles,
-		color: PDF_COLOR_LINK,
-		textDecoration: 'none',
 	},
 } );
 
 interface SearchQueryRow {
+	/** Position of the query in the table, starting at 1. */
 	rank: number;
+	/** The search query text. */
 	query: string;
+	/** Search Console report link for the query. */
 	queryURL: string;
+	/** Number of clicks for the query. */
 	clicks: number;
+	/** Number of impressions for the query. */
 	impressions: number;
 }
 
@@ -105,10 +93,10 @@ const DashboardPopularKeywordsWidgetPDF: FC< PDFWidgetComponentProps > = ( {
 			// Search Console report, like the dashboard widget.
 			cell: ( row ) => (
 				<View style={ styles.queryCell }>
-					<Text style={ styles.rank }>{ `${ row.rank }.` }</Text>
-					<Link src={ row.queryURL } style={ styles.query }>
-						{ row.query }
-					</Link>
+					<PDFTypography style={ styles.rank }>
+						{ `${ row.rank }.` }
+					</PDFTypography>
+					<PDFLink href={ row.queryURL }>{ row.query }</PDFLink>
 				</View>
 			),
 		},

@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Text, View } from '@react-pdf/renderer';
+import { View } from '@react-pdf/renderer';
 import { ReactElement, ReactNode } from 'react';
 
 /**
@@ -29,38 +29,17 @@ import {
 	createPDFStyles,
 	scalePDFValue,
 } from '@/js/components/pdf-export/pdf-scale';
-import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
-
-const COLORS = {
-	text: '#161b18',
-	divider: '#ebeef0',
-};
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import PDFTypography from './PDFTypography';
 
 const ROW_PADDING_HORIZONTAL = 24;
 const DEFAULT_COLUMN_GAP = 40;
-
-const headerTextStyles = {
-	fontFamily: PDF_FONT_FAMILY_TEXT,
-	color: COLORS.text,
-	fontSize: 14,
-	fontWeight: 500,
-	lineHeight: 1.14,
-	letterSpacing: -0.1,
-};
-
-const bodyTextStyles = {
-	fontFamily: PDF_FONT_FAMILY_TEXT,
-	color: COLORS.text,
-	fontSize: 14,
-	lineHeight: 1.43,
-	letterSpacing: 0.25,
-};
 
 const styles = createPDFStyles( {
 	headerRow: {
 		flexDirection: 'row',
 		borderBottomWidth: 1,
-		borderBottomColor: COLORS.divider,
+		borderBottomColor: PDF_COLORS.SURFACES_SURFACE_1,
 		paddingBottom: 16,
 		paddingHorizontal: ROW_PADDING_HORIZONTAL,
 	},
@@ -71,24 +50,13 @@ const styles = createPDFStyles( {
 		flexDirection: 'row',
 		alignItems: 'flex-start',
 		borderBottomWidth: 1,
-		borderBottomColor: COLORS.divider,
+		borderBottomColor: PDF_COLORS.SURFACES_SURFACE_1,
 		paddingVertical: 8,
 	},
 	bodyRowContentLast: {
 		borderBottomWidth: 0,
 	},
-	headerText: {
-		...headerTextStyles,
-	},
-	headerTextRight: {
-		...headerTextStyles,
-		textAlign: 'right',
-	},
-	bodyText: {
-		...bodyTextStyles,
-	},
-	bodyTextRight: {
-		...bodyTextStyles,
+	rightAlign: {
 		textAlign: 'right',
 	},
 } );
@@ -146,15 +114,17 @@ export default function PDFTable< Row >( {
 			>
 				{ columns.map( ( column, columnIndex ) => (
 					<View key={ columnIndex } style={ getCellStyle( column ) }>
-						<Text
+						<PDFTypography
+							type="title"
+							size="small"
 							style={
 								column.align === 'right'
-									? styles.headerTextRight
-									: styles.headerText
+									? styles.rightAlign
+									: undefined
 							}
 						>
 							{ column.header }
-						</Text>
+						</PDFTypography>
 					</View>
 				) ) }
 			</View>
@@ -185,17 +155,17 @@ export default function PDFTable< Row >( {
 									{ column.cell ? (
 										column.cell( row )
 									) : (
-										<Text
+										<PDFTypography
 											style={
 												column.align === 'right'
-													? styles.bodyTextRight
-													: styles.bodyText
+													? styles.rightAlign
+													: undefined
 											}
 										>
 											{ column.format
 												? column.format( row )
 												: '' }
-										</Text>
+										</PDFTypography>
 									) }
 								</View>
 							) ) }

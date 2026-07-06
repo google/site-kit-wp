@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import { Text, View } from '@react-pdf/renderer';
-import type { FC } from 'react';
+import { View } from '@react-pdf/renderer';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -30,38 +30,37 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import type { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
-import type { SpeedPDFData } from './getPDFData';
-import { styles } from './pdfStyles';
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
+import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
+import { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
+import { SpeedPDFData } from './getPDFData';
 import SpeedMetricSections from './SpeedMetricSections';
+
+const styles = createPDFStyles( {
+	heading: {
+		marginBottom: 15,
+	},
+} );
 
 const DashboardPageSpeedWidgetPDF: FC< PDFWidgetComponentProps > = ( {
 	data,
 } ) => {
-	const speedData = data as SpeedPDFData[ 'data' ] | null | undefined;
+	const speedData = data as SpeedPDFData[ 'data' ] | undefined;
+
+	// Without data the widget returns null, and no placeholder takes its place.
+	if ( ! speedData || ( ! speedData.mobile && ! speedData.desktop ) ) {
+		return null;
+	}
 
 	return (
 		<View>
-			<Text style={ styles.widgetHeading }>
+			<PDFTypography size="large" style={ styles.heading }>
 				{ __( 'Your site performance', 'google-site-kit' ) }
-			</Text>
-			{ ! speedData || ( ! speedData.mobile && ! speedData.desktop ) ? (
-				<View
-					style={ [
-						styles.sectionWidgetCard,
-						styles.sectionWidgetCardLast,
-					] }
-				>
-					<Text style={ styles.unavailableSection }>
-						{ __( 'Data unavailable.', 'google-site-kit' ) }
-					</Text>
-				</View>
-			) : (
-				<SpeedMetricSections
-					mobile={ speedData.mobile }
-					desktop={ speedData.desktop }
-				/>
-			) }
+			</PDFTypography>
+			<SpeedMetricSections
+				mobile={ speedData.mobile }
+				desktop={ speedData.desktop }
+			/>
 		</View>
 	);
 };
