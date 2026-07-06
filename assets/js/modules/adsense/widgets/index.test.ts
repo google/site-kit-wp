@@ -31,7 +31,7 @@ import {
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
 import getModuleOverviewPDFData from '@/js/modules/adsense/components/module/ModuleOverviewWidget/getPDFData';
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import { createTestRegistry } from '@tests/js/utils';
 import { registerWidgets } from './index';
 
 describe( 'AdSense widget registrations', () => {
