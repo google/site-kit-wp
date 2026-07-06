@@ -26,6 +26,29 @@
 	z-index: $z-index-sk-popper;
 }
 
+// The caret has no shadow of its own: consumers that need one should apply
+// `filter: drop-shadow()` to the popper content wrapper, which shadows the
+// caret and the content as a single shape.
+.googlesitekit-popper__arrow {
+	border-inline-end: 16px solid transparent;
+	border-inline-start: 16px solid transparent;
+	color: $c-surfaces-on-surface;
+	height: 0;
+	pointer-events: none;
+	position: absolute;
+	width: 0;
+}
+
+.googlesitekit-popper-root[x-placement^="bottom"] .googlesitekit-popper__arrow {
+	border-bottom: 16px solid currentcolor;
+	top: -16px;
+}
+
+.googlesitekit-popper-root[x-placement^="top"] .googlesitekit-popper__arrow {
+	border-top: 16px solid currentcolor;
+	bottom: -16px;
+}
+
 .googlesitekit-popper {
 	background-color: $c-surfaces-on-surface;
 	border-radius: 4px;
