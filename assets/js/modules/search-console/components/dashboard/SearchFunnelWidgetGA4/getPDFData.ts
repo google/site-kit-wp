@@ -725,26 +725,28 @@ export default async function getPDFData( {
 	}
 
 	if ( keyEventsStats.report && keyEventsOverview.report ) {
-		buildAnalyticsCard( {
-			statsReport: keyEventsStats.report,
-			statsError: keyEventsStats.error,
-			totalsReport: keyEventsOverview.report,
-			totalsError: keyEventsOverview.error,
-			currentLabel: __( 'Key events', 'google-site-kit' ),
-			dataLabels: [
-				__( 'Key events', 'google-site-kit' ),
-				__( 'Engagement Rate %', 'google-site-kit' ),
-			],
-			tooltipDataFormats: [
-				numericTooltipFormatter,
-				percentageTooltipFormatter,
-			],
-			chartDataFormats: [ identity, ( x ) => x * 100 ],
-			color: KEY_EVENTS_COLOR,
-			dateRangeLength,
-			referenceDate,
-			signal,
-		} );
+		extraCardsToBuild.push(
+			buildAnalyticsCard( {
+				statsReport: keyEventsStats.report,
+				statsError: keyEventsStats.error,
+				totalsReport: keyEventsOverview.report,
+				totalsError: keyEventsOverview.error,
+				currentLabel: __( 'Key events', 'google-site-kit' ),
+				dataLabels: [
+					__( 'Key events', 'google-site-kit' ),
+					__( 'Engagement Rate %', 'google-site-kit' ),
+				],
+				tooltipDataFormats: [
+					numericTooltipFormatter,
+					percentageTooltipFormatter,
+				],
+				chartDataFormats: [ identity, ( x ) => x * 100 ],
+				color: KEY_EVENTS_COLOR,
+				dateRangeLength,
+				referenceDate,
+				signal,
+			} )
+		);
 	} else {
 		extraCardsToBuild.push(
 			Promise.resolve( { metric: null, chartImage: null } )
