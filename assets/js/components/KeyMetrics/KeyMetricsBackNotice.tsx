@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { ElementType } from 'react';
+import type { ElementType } from 'react';
 
 /**
  * WordPress dependencies
@@ -35,10 +35,15 @@ import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import {
 	KEY_METRICS_BACK_NOTICE_SLUG,
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
+
+const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
 
 interface KeyMetricsBackNoticeProps {
 	Widget: ElementType;
@@ -49,19 +54,28 @@ export default function KeyMetricsBackNotice( {
 }: KeyMetricsBackNoticeProps ) {
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { setValue } = useDispatch( CORE_UI );
+	const viewContext = useViewContext();
 
-	const onSelectMetrics = useCallback( () => {
-		dismissItem( KEY_METRICS_BACK_NOTICE_SLUG );
-		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
-	}, [ dismissItem, setValue ] );
+	const trackEventCategory = `${ viewContext }_kmw-reshown`;
 
 	const onDismiss = useCallback( () => {
+		trackEvent( trackEventCategory, 'dismiss_notice' );
 		dismissItem( KEY_METRICS_BACK_NOTICE_SLUG );
-	}, [ dismissItem ] );
+	}, [ dismissItem, trackEventCategory ] );
+
+	const onInView = useCallback( () => {
+		trackEvent( trackEventCategory, 'view_notice' );
+	}, [ trackEventCategory ] );
+
+	const onSelectMetrics = useCallback( () => {
+		trackEvent( trackEventCategory, 'confirm_notice' );
+		dismissItem( KEY_METRICS_BACK_NOTICE_SLUG );
+		setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+	}, [ dismissItem, trackEventCategory, setValue ] );
 
 	return (
 		<Widget noPadding>
-			<Notice
+			<NoticeWithIntersectionObserver
 				className="googlesitekit-key-metrics-back-notice"
 				type={ NOTICE_TYPES.INFO_CIRCLE }
 				title={ __(
@@ -80,6 +94,7 @@ export default function KeyMetricsBackNotice( {
 					label: __( 'Got it', 'google-site-kit' ),
 					onClick: onDismiss,
 				} }
+				onInView={ onInView }
 			/>
 		</Widget>
 	);
