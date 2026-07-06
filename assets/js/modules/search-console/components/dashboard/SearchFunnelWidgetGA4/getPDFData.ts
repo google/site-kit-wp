@@ -699,10 +699,29 @@ export default async function getPDFData( {
 		} );
 	}
 
-	const extraCardsToBuild: Promise< MetricCardResult >[] = [];
+	const cardsToBuild: Promise< MetricCardResult >[] = [
+		buildSearchConsoleCard( {
+			report: searchConsole.report,
+			reportError: searchConsole.error,
+			metricKey: 'impressions',
+			currentLabel: __( 'Impressions', 'google-site-kit' ),
+			color: IMPRESSIONS_COLOR,
+			dateRangeLength,
+			signal,
+		} ),
+		buildSearchConsoleCard( {
+			report: searchConsole.report,
+			reportError: searchConsole.error,
+			metricKey: 'clicks',
+			currentLabel: __( 'Clicks', 'google-site-kit' ),
+			color: CLICKS_COLOR,
+			dateRangeLength,
+			signal,
+		} ),
+	];
 
 	if ( visitors.report ) {
-		extraCardsToBuild.push(
+		cardsToBuild.push(
 			buildAnalyticsCard( {
 				statsReport: visitors.report,
 				statsError: visitors.error,
@@ -719,13 +738,13 @@ export default async function getPDFData( {
 			} )
 		);
 	} else {
-		extraCardsToBuild.push(
+		cardsToBuild.push(
 			Promise.resolve( { metric: null, chartImage: null } )
 		);
 	}
 
 	if ( keyEventsStats.report && keyEventsOverview.report ) {
-		extraCardsToBuild.push(
+		cardsToBuild.push(
 			buildAnalyticsCard( {
 				statsReport: keyEventsStats.report,
 				statsError: keyEventsStats.error,
@@ -748,33 +767,13 @@ export default async function getPDFData( {
 			} )
 		);
 	} else {
-		extraCardsToBuild.push(
+		cardsToBuild.push(
 			Promise.resolve( { metric: null, chartImage: null } )
 		);
 	}
 
 	const [ impressions, clicks, uniqueVisitors, keyEvents ] =
-		await Promise.all( [
-			buildSearchConsoleCard( {
-				report: searchConsole.report,
-				reportError: searchConsole.error,
-				metricKey: 'impressions',
-				currentLabel: __( 'Impressions', 'google-site-kit' ),
-				color: IMPRESSIONS_COLOR,
-				dateRangeLength,
-				signal,
-			} ),
-			buildSearchConsoleCard( {
-				report: searchConsole.report,
-				reportError: searchConsole.error,
-				metricKey: 'clicks',
-				currentLabel: __( 'Clicks', 'google-site-kit' ),
-				color: CLICKS_COLOR,
-				dateRangeLength,
-				signal,
-			} ),
-			...extraCardsToBuild,
-		] );
+		await Promise.all( cardsToBuild );
 
 	if ( signal.aborted ) {
 		return { data: null };
