@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { StyleSheet, Text, View } from '@react-pdf/renderer';
+import { View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
@@ -30,38 +30,38 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import {
-	PDF_COLOR_LINK,
-	PDF_COLOR_TEXT_PRIMARY,
-	PDF_FONT_FAMILY_TEXT,
-} from '@/js/components/pdf-export/pdf-theme';
-import { PDFTableColumn } from '@/js/components/pdf-export/shared-react-pdf-components/PDFTable';
-import PDFTableSection from '@/js/components/pdf-export/shared-react-pdf-components/PDFTableSection';
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import PDFTable, {
+	PDFTableColumn,
+} from '@/js/components/pdf-export/shared-react-pdf-components/PDFTable';
+import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
+import PDFWidgetSection from '@/js/components/pdf-export/shared-react-pdf-components/PDFWidgetSection';
 import { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
 import { numFmt } from '@/js/util';
 import { TopEarningPagesPDFData } from './getPDFData';
 
-const bodyTextStyles = {
-	fontFamily: PDF_FONT_FAMILY_TEXT,
-	fontSize: 7,
-	lineHeight: 1.43,
-	letterSpacing: 0.125,
-};
-
-const styles = StyleSheet.create( {
+const styles = createPDFStyles( {
+	// The table owns the row padding, so the card drops its horizontal padding
+	// and keeps the vertical padding, matching PDFTableSection.
+	card: {
+		paddingVertical: 16,
+		paddingHorizontal: 0,
+	},
 	pageCell: {
 		flexDirection: 'row',
+		columnGap: 4,
 	},
 	rank: {
-		...bodyTextStyles,
-		color: PDF_COLOR_TEXT_PRIMARY,
-		minWidth: 10,
-		marginRight: 4,
+		color: PDF_COLORS.SURFACES_ON_SURFACE,
 	},
 	pageTitle: {
-		...bodyTextStyles,
 		flex: 1,
-		color: PDF_COLOR_LINK,
+		color: PDF_COLORS.CONTENT_SECONDARY,
+	},
+	noData: {
+		paddingHorizontal: 24,
+		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
 	},
 } );
 
@@ -99,8 +99,12 @@ const DashboardTopEarningPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 			// Shows the page title with the row rank to its left.
 			cell: ( row ) => (
 				<View style={ styles.pageCell }>
-					<Text style={ styles.rank }>{ `${ row.rank }.` }</Text>
-					<Text style={ styles.pageTitle }>{ row.title }</Text>
+					<PDFTypography style={ styles.rank }>
+						{ `${ row.rank }.` }
+					</PDFTypography>
+					<PDFTypography style={ styles.pageTitle }>
+						{ row.title }
+					</PDFTypography>
 				</View>
 			),
 		},
@@ -117,13 +121,22 @@ const DashboardTopEarningPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 		},
 	];
 
+	// The report already limits the rows; an empty set renders a placeholder
+	// inside the card rather than dropping the whole section.
 	return (
-		<PDFTableSection
-			heading={ heading }
-			columns={ columns }
-			rows={ tableRows }
-			columnGap={ 4 }
-		/>
+		<PDFWidgetSection heading={ heading } cardStyle={ styles.card }>
+			{ tableRows.length > 0 ? (
+				<PDFTable
+					columns={ columns }
+					rows={ tableRows }
+					columnGap={ 4 }
+				/>
+			) : (
+				<PDFTypography style={ styles.noData }>
+					{ __( 'No data available', 'google-site-kit' ) }
+				</PDFTypography>
+			) }
+		</PDFWidgetSection>
 	);
 };
 
