@@ -80,6 +80,10 @@ export const Tile: FC< TileProps > = ( {
 					primary && currentValue > previousValue,
 				'googlesitekit-site-goals-tile--primary__negative':
 					primary && currentValue < previousValue,
+				'googlesitekit-site-goals-tile--primary__neutral':
+					primary &&
+					currentValue === previousValue &&
+					previousValue !== 0,
 			} ) }
 			title={ title }
 			infoTooltip={ infoTooltip }
@@ -112,6 +116,10 @@ export const Tile: FC< TileProps > = ( {
 							<ChangeBadge
 								previousValue={ previousValue }
 								currentValue={ currentValue }
+								zeroChangeLabel={ __(
+									'No change',
+									'google-site-kit'
+								) }
 							/>
 							{ comparisonDays && (
 								<p className="googlesitekit-site-goals-tile__comparison-label">

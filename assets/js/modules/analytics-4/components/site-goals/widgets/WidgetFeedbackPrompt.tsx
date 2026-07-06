@@ -29,13 +29,19 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ThumbsSurveyTrigger from '@/js/components/surveys/ThumbsSurveyTrigger';
+import ThumbsSurveyTrigger, {
+	VoteDirection,
+} from '@/js/components/surveys/ThumbsSurveyTrigger';
 import Typography from '@/js/components/Typography';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
+import useViewContext from '@/js/hooks/useViewContext';
 import { SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL } from '@/js/modules/analytics-4/components/site-goals/constants';
+import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { trackEvent } from '@/js/util';
 
 interface WidgetFeedbackPromptProps {
 	voteID: string;
+	goalType: GoalType;
 }
 
 /**
@@ -44,18 +50,29 @@ interface WidgetFeedbackPromptProps {
  *
  * @since 1.182.0
  *
- * @param props        Component props.
- * @param props.voteID Identifier used to build the survey trigger string.
+ * @param props          Component props.
+ * @param props.voteID   Identifier used to build the survey trigger string.
+ * @param props.goalType Goal type (`ecommerce` or `lead`), used for tracking.
  * @return React element.
  */
 const WidgetFeedbackPrompt: FC< WidgetFeedbackPromptProps > = ( {
 	voteID,
+	goalType,
 } ) => {
 	const breakpoint = useBreakpoint();
+	const viewContext = useViewContext();
 	// On mobile the feedback row isn't right-aligned, so `top-end` pushes the
 	// popper past the card edge. Center it above the thumbs instead and let
 	// Popper shift it to fit.
 	const popperPlacement = breakpoint === BREAKPOINT_SMALL ? 'top' : 'top-end';
+
+	function handleVote( direction: VoteDirection ) {
+		trackEvent(
+			`${ viewContext }_site-goals-widget-survey`,
+			direction === 'up' ? 'vote_up' : 'vote_down',
+			goalType
+		);
+	}
 
 	return (
 		<div className="googlesitekit-site-goals-widget__feedback">
@@ -68,6 +85,7 @@ const WidgetFeedbackPrompt: FC< WidgetFeedbackPromptProps > = ( {
 			</Typography>
 			<ThumbsSurveyTrigger
 				voteID={ voteID }
+				onVote={ handleVote }
 				downvoteFormURL={ SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL }
 				popperPlacement={ popperPlacement }
 			/>

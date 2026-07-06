@@ -22,7 +22,13 @@ import { FC, ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
-import { Fragment, createInterpolateElement } from '@wordpress/element';
+import {
+	Fragment,
+	createInterpolateElement,
+	useCallback,
+	useEffect,
+	useState,
+} from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -34,6 +40,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import useViewContext from '@/js/hooks/useViewContext';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import BreakdownTabs, {
 	BreakdownTab,
@@ -59,12 +66,14 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { useSiteGoalsBreakdown } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsBreakdown';
+import { useSiteGoalsWidgetViewAction } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsWidgetViewAction';
 import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
-import { untrailingslashit } from '@/js/util';
+import { trackEvent, untrailingslashit } from '@/js/util';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import WidgetFeedbackPrompt from './WidgetFeedbackPrompt';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
@@ -267,12 +276,48 @@ const LeadGenerationPerformanceWidget: FC<
 		Header?: unknown;
 		headerContents?: ReactNode;
 		collapsible?: boolean;
+		onToggleCollapsed?: ( isCollapsed: boolean ) => void;
 	} >;
 	const WidgetNullComponent = WidgetNull as FC;
 	const WidgetReportErrorComponent = WidgetReportError as FC< {
 		moduleSlug: string;
 		error: unknown;
+		onRetry?: () => void;
+		onRequestAccess?: () => void;
 	} >;
+
+	const WidgetComponentWithIntersectionObserver =
+		withIntersectionObserver( WidgetComponent );
+
+	const viewContext = useViewContext();
+	const widgetEventCategory = `${ viewContext }_site-goals-widget`;
+
+	const handleToggleCollapsed = useCallback(
+		( isCollapsed: boolean ) => {
+			trackEvent(
+				widgetEventCategory,
+				isCollapsed ? 'collapse_widget' : 'expand_widget',
+				GOAL_TYPES.LEAD
+			);
+		},
+		[ widgetEventCategory ]
+	);
+
+	const handleRetryError = useCallback( () => {
+		trackEvent(
+			widgetEventCategory,
+			'data_loading_error_retry',
+			GOAL_TYPES.LEAD
+		);
+	}, [ widgetEventCategory ] );
+
+	const handleRequestAccess = useCallback( () => {
+		trackEvent(
+			widgetEventCategory,
+			'insufficient_permissions_error_request_access',
+			GOAL_TYPES.LEAD
+		);
+	}, [ widgetEventCategory ] );
 
 	// TODO: Update the link to the relevant support URL once it's created.
 	// See: https://github.com/google/site-kit-wp/issues/12727
@@ -338,6 +383,39 @@ const LeadGenerationPerformanceWidget: FC<
 	const partialDataBadge = hasBreakdownTabs ? (
 		<PartialDataBadge customDimensionSlug={ breakdownDimension } />
 	) : undefined;
+
+	const handleTabChange = useCallback(
+		( tabID: string ) => {
+			trackEvent( widgetEventCategory, 'breakdown_tab_select', tabID );
+			setSelectedTab( tabID );
+		},
+		[ widgetEventCategory, setSelectedTab ]
+	);
+
+	// The widget's header/tabs area is always in exactly one of four mutually
+	// exclusive states; `viewAction` resolves which one, so only a single
+	// `view_widget*` event fires per widget view.
+	const viewAction = useSiteGoalsWidgetViewAction( {
+		breakdownDimension,
+		hasBreakdownTabs,
+	} );
+	// Repeating this logic from the withIntersectionObserver HOC because
+	// the `viewAction` relies on several async selectors, so we need to ensure
+	// it is resolved before tracking the event. So simply calling `trackEvent`
+	// in the HOC's `onInView` callback would be too early.
+	const [ isWidgetInView, setIsWidgetInView ] = useState( false );
+	const [ hasTrackedView, setHasTrackedView ] = useState( false );
+
+	const handleViewWidget = useCallback( () => {
+		setIsWidgetInView( true );
+	}, [] );
+
+	useEffect( () => {
+		if ( isWidgetInView && ! hasTrackedView && viewAction ) {
+			trackEvent( widgetEventCategory, viewAction, GOAL_TYPES.LEAD );
+			setHasTrackedView( true );
+		}
+	}, [ isWidgetInView, hasTrackedView, viewAction, widgetEventCategory ] );
 
 	const formTitles = useSelect(
 		( select: Select ) =>
@@ -435,6 +513,16 @@ const LeadGenerationPerformanceWidget: FC<
 		[ leadEventsReportOptions, engagementReportOptions ]
 	);
 
+	useEffect( () => {
+		if ( error ) {
+			trackEvent(
+				widgetEventCategory,
+				'data_loading_error',
+				GOAL_TYPES.LEAD
+			);
+		}
+	}, [ error, widgetEventCategory ] );
+
 	if ( ! hasLeadEvents ) {
 		return <WidgetNullComponent />;
 	}
@@ -445,6 +533,8 @@ const LeadGenerationPerformanceWidget: FC<
 				<WidgetReportErrorComponent
 					moduleSlug="analytics-4"
 					error={ error }
+					onRetry={ handleRetryError }
+					onRequestAccess={ handleRequestAccess }
 				/>
 			</WidgetComponent>
 		);
@@ -461,7 +551,9 @@ const LeadGenerationPerformanceWidget: FC<
 	} );
 
 	return (
-		<WidgetComponent
+		<WidgetComponentWithIntersectionObserver
+			onInView={ handleViewWidget }
+			onToggleCollapsed={ handleToggleCollapsed }
 			Header={ WidgetHeaderTitle }
 			headerContents={
 				<Fragment>
@@ -483,7 +575,7 @@ const LeadGenerationPerformanceWidget: FC<
 				<BreakdownTabs
 					tabs={ breakdownTabs }
 					activeTabID={ activeTabID }
-					onTabChange={ setSelectedTab }
+					onTabChange={ handleTabChange }
 					showOtherSources={ hasOtherSources }
 					otherSourcesLabel={ __(
 						'Other form completions',
@@ -556,7 +648,11 @@ const LeadGenerationPerformanceWidget: FC<
 							'What’s helping you reach your goals?',
 							'google-site-kit'
 						) }
-						headerCTA={ <ChangeGoalDriversLink /> }
+						headerCTA={
+							<ChangeGoalDriversLink
+								goalType={ GOAL_TYPES.LEAD }
+							/>
+						}
 						badge={ partialDataBadge }
 					>
 						<GoalDriverTiles
@@ -571,8 +667,9 @@ const LeadGenerationPerformanceWidget: FC<
 
 			<WidgetFeedbackPrompt
 				voteID={ SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION }
+				goalType={ GOAL_TYPES.LEAD }
 			/>
-		</WidgetComponent>
+		</WidgetComponentWithIntersectionObserver>
 	);
 };
 

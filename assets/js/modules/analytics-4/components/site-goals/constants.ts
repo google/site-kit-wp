@@ -33,7 +33,7 @@ export const SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT =
 export const SITE_GOALS_MIN_SELECTED_DRIVERS = 1;
 export const SITE_GOALS_MAX_SELECTED_DRIVERS = 6;
 
-export const SITE_GOALS_BREAKDOWN_NOTICE = 'site_goals_breakdown_notice';
+export const SITE_GOALS_BREAKDOWN_NOTICE = 'site-goals-breakdown-notice';
 
 export const SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE: Record<
 	string,

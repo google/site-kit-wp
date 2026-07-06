@@ -201,6 +201,11 @@ const SettingsAdvancedDataBreakdowns: FC<
 	] );
 
 	function handleEnable() {
+		trackEvent(
+			`${ viewContext }_analytics-custom-dimensions-setting`,
+			'enable_custom_dimensions'
+		);
+
 		if ( hasEditScope === false ) {
 			setAutoSubmit( true );
 

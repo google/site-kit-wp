@@ -17,8 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import TestRenderer from 'react-test-renderer';
+
+/**
  * Internal dependencies
  */
+import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import { render } from '@tests/js/test-utils';
 import PDFEmailReportingNotice from './PDFEmailReportingNotice';
 
@@ -46,7 +53,7 @@ describe( 'PDFEmailReportingNotice', () => {
 		expect( getByText( 'Set up email reports' ) ).toBeInTheDocument();
 	} );
 
-	it( 'renders the star icon as a single SVG path with a dark purple fill', () => {
+	it( 'renders the star icon in the notice text color', () => {
 		const { container } = render(
 			<PDFEmailReportingNotice emailReportingSetupURL="https://example.com/golink" />
 		);
@@ -57,7 +64,10 @@ describe( 'PDFEmailReportingNotice', () => {
 			'd',
 			'M5.825 22L8.15 14.4L2 10H9.6L12 2L14.4 10H22L15.85 14.4L18.175 22L12 17.3L5.825 22Z'
 		);
-		expect( starPaths[ 0 ] ).toHaveAttribute( 'fill', '#462083' );
+		expect( starPaths[ 0 ] ).toHaveAttribute(
+			'fill',
+			PDF_COLORS.VIOLET_V_600
+		);
 	} );
 
 	it( 'links the "Set up email reports" button to the given email reporting setup URL', () => {
@@ -71,39 +81,37 @@ describe( 'PDFEmailReportingNotice', () => {
 		);
 	} );
 
-	it( 'renders the light purple background, the dark purple title and body text, and the dark purple button with white text', () => {
-		const { container, getByText } = render(
+	it( 'renders the notice background, text, and button in the theme colors', () => {
+		// The notice background is a single style object on the container, so
+		// the rendered element shows it.
+		const { container } = render(
+			<PDFEmailReportingNotice emailReportingSetupURL="https://example.com/golink" />
+		);
+		expect( container.querySelector( 'pdf-view' ) ).toHaveStyle( {
+			backgroundColor: PDF_COLORS.VIOLET_V_50,
+		} );
+
+		// The title, body, and button text hold arrays of styles, which never
+		// reach the rendered elements' CSS, so the color assertions read the
+		// test renderer's JSON tree instead.
+		const noticeJSON = JSON.stringify(
+			TestRenderer.create(
+				<PDFEmailReportingNotice emailReportingSetupURL="https://example.com/golink" />
+			).toJSON()
+		);
+		expect( noticeJSON ).toContain( PDF_COLORS.VIOLET_V_600 );
+		expect( noticeJSON ).toContain( PDF_COLORS.SURFACES_SURFACE );
+	} );
+
+	it( 'sets its own gap above the notice', () => {
+		// The notice sits outside the body container, so it owns the gap above
+		// it, the same way the footer owns its top gap.
+		const { container } = render(
 			<PDFEmailReportingNotice emailReportingSetupURL="https://example.com/golink" />
 		);
 
-		// The notice background is light purple.
 		expect( container.querySelector( 'pdf-view' ) ).toHaveStyle( {
-			backgroundColor: '#e3d1ff',
-		} );
-		// The title text is dark purple.
-		expect(
-			getByText(
-				'Get your site’s most important insights delivered to your inbox'
-			)
-		).toHaveStyle( { color: '#462083' } );
-		// The body text is dark purple.
-		expect(
-			getByText(
-				'Stay updated with a summary of your site’s performance, key trends, and tailored metrics sent directly to your inbox.'
-			)
-		).toHaveStyle( { color: '#462083' } );
-		expect(
-			getByText(
-				'This feature is available exclusively to Site Kit users.'
-			)
-		).toHaveStyle( { color: '#462083' } );
-		// The button background is dark purple.
-		expect(
-			getByText( 'Set up email reports' ).closest( 'pdf-view' )
-		).toHaveStyle( { backgroundColor: '#462083' } );
-		// The button text is white.
-		expect( getByText( 'Set up email reports' ) ).toHaveStyle( {
-			color: '#ffffff',
+			marginTop: scalePDFValue( 59 ),
 		} );
 	} );
 

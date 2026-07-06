@@ -19,22 +19,23 @@
 /**
  * External dependencies
  */
-import { Path, StyleSheet, Svg, Text, View } from '@react-pdf/renderer';
+import { Path, View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
  * Internal dependencies
  */
-import {
-	PDF_COLOR_TEXT_PRIMARY,
-	PDF_FONT_FAMILY_DISPLAY,
-} from '@/js/components/pdf-export/pdf-theme';
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
+import PDFSvg from './PDFSvg';
+import PDFTypography from './PDFTypography';
 
-// Mirrors the `Logo` component (`assets/js/components/Logo.js`): the colour
-// Google "G" (`assets/svg/graphics/logo-g.svg`) next to the "Site Kit" wordmark
-// (`assets/svg/graphics/logo-sitekit.svg`). The geometry is inlined because the
-// webpack SVG import yields a DOM component @react-pdf cannot render in a PDF;
-// it is drawn here with @react-pdf's own <Svg>/<Path> primitives.
+/**
+ * Mirrors the `Logo` component (`assets/js/components/Logo.js`): the colour
+ * Google "G" (`assets/svg/graphics/logo-g.svg`) next to the "Site Kit" wordmark
+ * (`assets/svg/graphics/logo-sitekit.svg`). The geometry is inlined because the
+ * webpack SVG import yields a DOM component @react-pdf cannot render in a PDF;
+ * it is drawn here with @react-pdf's own <Svg>/<Path> primitives.
+ */
 const G_PATHS = [
 	{
 		d: 'M2.25253805,12.2519409 L9.65186195,17.9102474 C9.228777,19.1952969 9,20.5700374 9,22 C9,23.4299626 9.228777,24.8047031 9.65186195,26.0897526 L2.25253805,31.7480591 C0.809393905,28.8140208 0,25.5061199 0,22 C0,18.4938801 0.809393905,15.1859792 2.25253805,12.2519409 Z',
@@ -54,18 +55,14 @@ const G_PATHS = [
 	},
 ];
 
-const styles = StyleSheet.create( {
+const styles = createPDFStyles( {
 	logo: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		flexShrink: 0,
 	},
 	wordmark: {
-		fontFamily: PDF_FONT_FAMILY_DISPLAY,
-		fontSize: 22,
-		fontWeight: 400,
-		color: PDF_COLOR_TEXT_PRIMARY,
-		lineHeight: 28 / 22,
+		// Gap between the "G" mark and the "Site Kit" wordmark.
 		marginLeft: 7,
 	},
 } );
@@ -73,12 +70,18 @@ const styles = StyleSheet.create( {
 const PDFSiteKitLogo: FC = () => {
 	return (
 		<View style={ styles.logo }>
-			<Svg width={ 21 } height={ 22 } viewBox="0 0 43 44">
+			<PDFSvg width={ 24 } height={ 24 } viewBox="0 0 43 44">
 				{ G_PATHS.map( ( { d, fill }, index ) => (
 					<Path key={ index } d={ d } fill={ fill } />
 				) ) }
-			</Svg>
-			<Text style={ styles.wordmark }>Site Kit</Text>
+			</PDFSvg>
+			<PDFTypography
+				type="headline"
+				size="small"
+				style={ styles.wordmark }
+			>
+				Site Kit
+			</PDFTypography>
 		</View>
 	);
 };

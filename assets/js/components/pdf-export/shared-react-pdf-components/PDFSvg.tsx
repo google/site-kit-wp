@@ -1,5 +1,5 @@
 /**
- * PDFNoData tests.
+ * Shared SVG wrapper for the PDF report.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -19,27 +19,31 @@
 /**
  * External dependencies
  */
-import TestRenderer from 'react-test-renderer';
+import { Svg } from '@react-pdf/renderer';
+import { FC } from 'react';
 
 /**
  * Internal dependencies
  */
-import PDFNoData from './PDFNoData';
+import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
 
-describe( 'PDFNoData', () => {
-	it( 'renders the "No data available." message', () => {
-		const json = JSON.stringify(
-			TestRenderer.create( <PDFNoData /> ).toJSON()
-		);
+export interface PDFSvgProps {
+	/** Width in pixels. The component scales it to page points. */
+	width: number;
+	/** Height in pixels. The component scales it to page points. */
+	height: number;
+	/** The `viewBox` for the SVG's own coordinate system. */
+	viewBox: string;
+}
 
-		expect( json ).toContain( 'No data available.' );
-	} );
+const PDFSvg: FC< PDFSvgProps > = ( { width, height, viewBox, children } ) => (
+	<Svg
+		width={ scalePDFValue( width ) }
+		height={ scalePDFValue( height ) }
+		viewBox={ viewBox }
+	>
+		{ children }
+	</Svg>
+);
 
-	it( 'renders the message in gray', () => {
-		const json = JSON.stringify(
-			TestRenderer.create( <PDFNoData /> ).toJSON()
-		);
-
-		expect( json ).toContain( '#646464' );
-	} );
-} );
+export default PDFSvg;

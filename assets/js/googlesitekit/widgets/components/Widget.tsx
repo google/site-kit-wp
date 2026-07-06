@@ -41,6 +41,7 @@ export interface WidgetProps {
 	collapsible?: boolean;
 	defaultCollapsed?: boolean;
 	isCollapsed?: boolean;
+	onToggleCollapsed?: ( isCollapsed: boolean ) => void;
 	Header?: ElementType;
 	headerContents?: ReactNode;
 	Footer?: ElementType;
@@ -56,6 +57,7 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 			collapsible = false,
 			defaultCollapsed,
 			isCollapsed: isCollapsedProp,
+			onToggleCollapsed,
 			Header,
 			headerContents,
 			Footer,
@@ -80,7 +82,11 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 
 		function toggleIsCollapsed() {
 			if ( collapsible ) {
-				setIsCollapsed( ( prevState ) => ! prevState );
+				setIsCollapsed( ( prevState ) => {
+					onToggleCollapsed?.( ! prevState );
+
+					return ! prevState;
+				} );
 			}
 		}
 
