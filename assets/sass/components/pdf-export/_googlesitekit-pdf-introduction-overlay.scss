@@ -1,0 +1,45 @@
+/**
+ * PDF introduction overlay notification styles.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// On small screens the mobile graphic renders without the `__graphic`
+// wrapper, so it needs its own scaling and background.
+.googlesitekit-pdf-introduction-overlay > svg {
+	// The build strips the SVG's width/height attributes, so the artwork's
+	// intrinsic ratio (viewBox 296x182) has to be restated for CSS sizing.
+	aspect-ratio: 296 / 182;
+	background: linear-gradient(180deg, #bae6cb 0%, #f0fff6 100%);
+	border-radius: 0 0 $br-sm $br-sm;
+	box-sizing: border-box;
+	display: block;
+	height: auto;
+	padding: 12px 26px 0;
+	width: 100%;
+}
+
+.googlesitekit-pdf-introduction-overlay .googlesitekit-overlay-card__graphic {
+	background: linear-gradient(180deg, #bae6cb 0%, #f0fff6 100%);
+	border-radius: 0 0 $br-sm $br-sm;
+	order: 1;
+	padding: 12px 26px 0;
+}
+
+.googlesitekit-pdf-introduction-overlay .googlesitekit-overlay-card__graphic svg {
+	aspect-ratio: 296 / 182;
+	height: auto;
+	width: 100%;
+}
