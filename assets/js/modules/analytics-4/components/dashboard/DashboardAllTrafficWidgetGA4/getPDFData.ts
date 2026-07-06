@@ -243,7 +243,7 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 
 	return {
 		curveType: 'function',
-		// The dashboard's All Visitors line color.
+		// Matches the dashboard's All Visitors line color.
 		colors: [ PDF_COLORS.SITE_KIT_SK_500 ],
 		chartArea: {
 			left: 8,

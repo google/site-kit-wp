@@ -27,8 +27,8 @@ import {
 	getPreviousRangeChartArgs,
 } from './reportOptions';
 
-// The builders must keep producing the exact report args the dashboard relied
-// on when they were inlined, so the dashboard and PDF report cannot drift.
+// The builders must return the same report args the dashboard used when the
+// args were inlined, so the dashboard and PDF report stay in sync.
 describe( 'ModuleOverviewWidget report options', () => {
 	const dates = {
 		startDate: '2025-01-08',
@@ -37,7 +37,7 @@ describe( 'ModuleOverviewWidget report options', () => {
 		compareEndDate: '2025-01-07',
 	};
 
-	it( 'should map each metric identifier to its card label in report column order', () => {
+	it( 'should map each metric ID to its card label in report column order', () => {
 		expect( MODULE_OVERVIEW_METRICS ).toEqual( {
 			ESTIMATED_EARNINGS: 'Earnings',
 			PAGE_VIEWS_RPM: 'Page RPM',

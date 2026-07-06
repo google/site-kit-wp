@@ -78,11 +78,11 @@ export const PDF_COLORS = {
 } as const;
 
 /**
- * The colors for the donut charts in the PDF report, in slice order.
+ * Donut chart colors for the PDF report, in slice order.
  *
- * Each donut slice and its legend row use the same color from this list, so
- * they always match. The list is the same as the dashboard's donut colors, so
- * each donut looks the same in the dashboard and the PDF.
+ * Each slice and its legend row read the same color from this list, so they
+ * always match. The list matches the dashboard's donut colors, so each donut
+ * looks the same in the dashboard and the PDF.
  *
  * @since n.e.x.t
  */

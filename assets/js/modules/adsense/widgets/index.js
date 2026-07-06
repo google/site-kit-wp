@@ -47,7 +47,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 /**
- * Lazy-loaded PDF component for the Earning performance over time widget.
+ * The Earning performance over time PDF component, loaded on demand.
  */
 const ModuleOverviewWidgetPDF = lazyWithPreload( () =>
 	import(

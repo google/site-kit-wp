@@ -68,7 +68,7 @@ function buildChartImages() {
 }
 
 /**
- * Renders the widget to a JSON string for content and style assertions.
+ * Renders the widget to a JSON string so tests can assert on content and style.
  *
  * @since n.e.x.t
  *
@@ -83,7 +83,7 @@ function renderTree( props: ComponentProps< typeof ModuleOverviewWidgetPDF > ) {
 }
 
 describe( 'ModuleOverviewWidgetPDF', () => {
-	it( 'should render its own sub-section heading and the four metric cards', () => {
+	it( 'should render the "Earning performance over time" heading and the four metric cards', () => {
 		const json = renderTree( {
 			data: buildData(),
 			chartImages: buildChartImages(),
@@ -97,7 +97,7 @@ describe( 'ModuleOverviewWidgetPDF', () => {
 		expect( json ).toContain( 'Impressions' );
 		expect( json ).toContain( 'Page CTR' );
 
-		// The shared comparison sub-text reflects the selected date range.
+		// The shared comparison sub-text shows the selected date range.
 		expect( json ).toContain( 'Vs. prev. 28 days' );
 
 		// Each card embeds its rendered chart image.
@@ -181,7 +181,7 @@ describe( 'ModuleOverviewWidgetPDF', () => {
 		expect( renderer.toJSON() ).toBeNull();
 	} );
 
-	it( 'scales the sub-section heading font size', () => {
+	it( 'should scale the sub-section heading font size', () => {
 		const json = renderTree( {
 			data: buildData(),
 			chartImages: buildChartImages(),

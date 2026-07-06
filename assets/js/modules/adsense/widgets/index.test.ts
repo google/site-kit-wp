@@ -1,5 +1,5 @@
 /**
- * AdSense module widget registration tests.
+ * AdSense widget registration tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -53,12 +53,12 @@ describe( 'AdSense widget registrations', () => {
 
 		expect( widget.pdf.label ).toBe( 'Earning performance over time' );
 		expect( widget.pdf.getData ).toBe( getModuleOverviewPDFData );
-		// The PDF component loads lazily and exposes `preload` so the
-		// orchestrator can resolve its chunk before rendering.
+		// The PDF component loads on demand and exposes `preload`, so the
+		// orchestrator can load its chunk before it renders.
 		expect( typeof widget.pdf.Component.preload ).toBe( 'function' );
 	} );
 
-	it( 'should title the Monetization PDF section through the area pdfTitle', () => {
+	it( 'should set the Monetization PDF section title through the area pdfTitle', () => {
 		const area = registry
 			.select( CORE_WIDGETS )
 			.getWidgetArea( AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY );

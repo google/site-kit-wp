@@ -57,9 +57,9 @@ const styles = createPDFStyles( {
 } );
 
 /**
- * Formats a currency metric total from the report's currency code.
+ * Formats a currency metric total with the report's currency code.
  *
- * Without a currency code the value falls back to a plain grouped number, so
+ * With no currency code, the value falls back to a plain grouped number, so
  * the card never shows the wrong currency.
  *
  * @since n.e.x.t
@@ -69,11 +69,9 @@ const styles = createPDFStyles( {
  * @return The formatted value.
  */
 function formatCurrencyValue( total: number, currencyCode?: string ): string {
-	if ( ! currencyCode ) {
-		return numFmt( total, { style: 'decimal' } );
-	}
-
-	return numFmt( total, currencyCode );
+	return currencyCode
+		? numFmt( total, currencyCode )
+		: numFmt( total, { style: 'decimal' } );
 }
 
 interface CardDefinition {
@@ -81,7 +79,7 @@ interface CardDefinition {
 	key: ModuleOverviewMetricKey;
 	/** Card title, also the current-period legend label, like "Earnings". */
 	title: string;
-	/** Series color for the legend swatch, matching the chart lines. */
+	/** Legend swatch color, matching the chart lines. */
 	color: string;
 	/** Formats the card's headline value. */
 	formatValue: ( total: number, currencyCode?: string ) => string;
@@ -116,12 +114,12 @@ const CARDS: CardDefinition[] = [
 ];
 
 /**
- * Derives the change chip props from a metric's period-over-period change ratio.
+ * Builds the change badge props from a metric's period-over-period change ratio.
  *
  * @since n.e.x.t
  *
  * @param metric The metric data, if any.
- * @return Props for the change chip (empty when the change is unavailable).
+ * @return Props for the change badge, empty when there's no change to show.
  */
 function getChangeProps( metric: ModuleOverviewMetric | null ): {
 	change?: string;
@@ -153,7 +151,7 @@ const ModuleOverviewWidgetPDF: FC< ModuleOverviewWidgetPDFProps > = ( {
 	data,
 	chartImages,
 } ) => {
-	// Without data the widget returns null, and no placeholder takes its place.
+	// With no data the widget returns null, and nothing renders in its place.
 	if ( ! data ) {
 		return null;
 	}
@@ -178,9 +176,9 @@ const ModuleOverviewWidgetPDF: FC< ModuleOverviewWidgetPDFProps > = ( {
 					const metric = metrics[ key ];
 					const chartImage = chartImages?.[ key ];
 
-					// The widget skips a card whose metric has no data or
-					// failed. The loader returns null data when every card is
-					// empty, so the heading never renders above an empty grid.
+					// The widget skips a card whose metric has no data or failed
+					// to render. The loader returns null data when every card is
+					// empty, so the heading never sits above an empty grid.
 					if ( ! chartImage ) {
 						return null;
 					}

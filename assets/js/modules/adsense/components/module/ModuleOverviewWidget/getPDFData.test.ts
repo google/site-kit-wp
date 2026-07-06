@@ -51,8 +51,8 @@ jest.mock( '@/js/components/pdf-export/ensure-google-charts-loaded', () => ( {
 jest.mock(
 	'@/js/components/pdf-export/render-google-chart-to-data-uri',
 	() => ( {
-		// Keep the real `getVisualization` (used to build the DataTable); only the
-		// default rasterizer export is mocked.
+		// Keep the real `getVisualization`, which builds the DataTable. Mock
+		// only the default export that renders the chart to an image.
 		...jest.requireActual(
 			'@/js/components/pdf-export/render-google-chart-to-data-uri'
 		),
@@ -344,7 +344,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 		expect( fetchMock ).not.toHaveFetched( adsenseReportEndpoint );
 	} );
 
-	it( 'should render the four line charts with the per-metric dashboard color, a dotted previous line, and the abort signal', async () => {
+	it( 'should render the four line charts with the dashboard color for each metric, a dotted previous line, and the abort signal', async () => {
 		provideReportsWithData();
 
 		const signal = new AbortController().signal;
@@ -361,7 +361,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 			expect( args.signal ).toBe( signal );
 			expect( args.width ).toBe( 506 );
 			expect( args.height ).toBe( 133 );
-			// The chart renders at 4x so the line stays sharp.
+			// The chart renders at 4 times its size, so the line stays sharp.
 			expect( args.scaleFactor ).toBe( 4 );
 			// The line widths and dash lengths are in pixels of the rendered
 			// chart, so they grow with the render size.
@@ -382,7 +382,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 	} );
 
 	it( 'should drop a metric with no data in either period, like its dashboard card', async () => {
-		// Page CTR is zero across both periods; the other metrics keep data.
+		// Page CTR is zero across both periods. The other metrics keep their data.
 		provideReports( {
 			currentTotals: buildTotalsReport( {
 				startDate: DATES.startDate,
@@ -419,7 +419,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 		expect( result.data?.metrics.pageRPM ).not.toBeNull();
 		expect( result.data?.metrics.impressions ).not.toBeNull();
 
-		// Only the three remaining cards are rasterized.
+		// Only the three remaining cards render a chart image.
 		expect( mockRenderGoogleChartToDataURI ).toHaveBeenCalledTimes( 3 );
 	} );
 
@@ -460,8 +460,8 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 	} );
 
 	it( 'should throw when a report fails to load, because all four cards read the same reports', async () => {
-		// Pre-populate every report except the current daily series, which
-		// fails to fetch.
+		// Fill in every report except the current daily series, which fails
+		// to fetch.
 		registry.dispatch( MODULES_ADSENSE ).receiveGetReport(
 			buildTotalsReport( {
 				startDate: DATES.startDate,
@@ -506,7 +506,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 			/Earning performance over time reports failed to load/
 		);
 
-		// No chart is rasterized when a report fails.
+		// No chart renders when a report fails.
 		expect( mockRenderGoogleChartToDataURI ).not.toHaveBeenCalled();
 
 		// The failing report logs an API error.
@@ -516,7 +516,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 	it( 'should isolate a chart render failure to its own card', async () => {
 		provideReportsWithData();
 
-		// The first card (Earnings) fails to rasterize; the rest succeed.
+		// The first card (Earnings) fails to render its chart. The rest succeed.
 		mockRenderGoogleChartToDataURI
 			.mockRejectedValueOnce(
 				new Error( 'Site Kit: Google Charts failed to render.' )
@@ -554,7 +554,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 				signal: new AbortController().signal,
 			} )
 		).rejects.toThrow(
-			/all Earning performance over time metrics failed to load/
+			/all Earning performance over time charts failed to render/
 		);
 	} );
 
@@ -608,7 +608,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 		const result = await pdfPromise;
 
 		expect( result ).toEqual( { data: null } );
-		// The post-fetch abort check runs before Google Charts is loaded.
+		// The abort check after the fetch runs before Google Charts loads.
 		expect( mockEnsureGoogleChartsLoaded ).not.toHaveBeenCalled();
 		expect( mockRenderGoogleChartToDataURI ).not.toHaveBeenCalled();
 	} );

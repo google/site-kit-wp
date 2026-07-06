@@ -196,9 +196,9 @@ describe( 'ModuleOverviewWidget', () => {
 		);
 	} );
 
-	// Regression coverage for the reportOptions.ts extraction: the dashboard
-	// widget must keep requesting the same four reports it did when the args
-	// were inlined, so the dashboard and PDF report cannot drift.
+	// This test guards the move of the report args into `reportOptions.ts`.
+	// The dashboard widget must keep requesting the same four reports it did
+	// when the args were inlined, so the dashboard and PDF report stay in sync.
 	it( 'should render the four metric cards from the reports the extracted builders request', async () => {
 		const dates = registry
 			.select( CORE_USER )
@@ -244,8 +244,9 @@ describe( 'ModuleOverviewWidget', () => {
 
 		await waitForRegistry();
 
-		// The pre-populated reports satisfy the widget's selectors, so the
-		// four overview cards render instead of the loading previews.
+		// The reports are already in the store, so the widget's selectors
+		// resolve and the four overview cards render instead of the loading
+		// previews.
 		expect( getByText( 'Earnings' ) ).toBeInTheDocument();
 		expect( getByText( 'Page RPM' ) ).toBeInTheDocument();
 		expect( getByText( 'Impressions' ) ).toBeInTheDocument();

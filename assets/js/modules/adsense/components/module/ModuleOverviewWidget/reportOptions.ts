@@ -1,5 +1,5 @@
 /**
- * ModuleOverviewWidget report options.
+ * Report option builders for the AdSense overview widget.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -33,8 +33,8 @@ const PREVIOUS_RANGE_CHART_REPORT_ID =
 /**
  * The widget's four report metrics, in report column order.
  *
- * Each key is the AdSense metric identifier sent to `getReport`, and each
- * value is the card label the dashboard and the PDF report render for it.
+ * Each key is the AdSense metric ID sent to `getReport`. Each value is the
+ * card label the dashboard and the PDF report show for that metric.
  *
  * @since n.e.x.t
  */
@@ -46,7 +46,7 @@ export const MODULE_OVERVIEW_METRICS: Record< string, string > = {
 };
 
 /**
- * Report date range for the widget's report builders.
+ * The date range the widget's report builders read.
  *
  * @since n.e.x.t
  */
@@ -62,12 +62,12 @@ export interface AdSenseReportDates {
 }
 
 /**
- * AdSense report options.
+ * Args for one AdSense `getReport` call.
  *
  * @since n.e.x.t
  */
 export interface AdSenseReportOptions {
-	/** The metric identifiers to report on, in column order. */
+	/** The metric IDs to report on, in column order. */
 	metrics: string[];
 	/** First day of the report (YYYY-MM-DD). */
 	startDate: string;
@@ -75,7 +75,7 @@ export interface AdSenseReportOptions {
 	endDate: string;
 	/** The report dimensions, like `[ 'DATE' ]` for a daily series. */
 	dimensions?: string[];
-	/** Identifier that keeps this report distinct in the datastore cache. */
+	/** ID that keeps this report separate in the datastore cache. */
 	reportID: string;
 }
 

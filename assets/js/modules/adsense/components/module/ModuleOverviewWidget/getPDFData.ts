@@ -1,5 +1,5 @@
 /**
- * ModuleOverviewWidget PDF data loader.
+ * PDF data loader for the AdSense overview widget.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -62,14 +62,14 @@ const LINE_CHART_SCALE_FACTOR = 4;
 
 /**
  * `getLineChartOptions` sets the line widths, dash lengths, font sizes, and
- * chart margins in pixels of the rendered chart. The values were chosen at the
- * renderer's default scale factor of 2, so this ratio grows them to keep the
- * chart's proportions at the larger render size.
+ * chart margins in pixels of the rendered chart. Those values fit the
+ * renderer's default scale factor of 2, so this ratio scales them up to keep
+ * the chart's proportions at the larger render size.
  */
 const LINE_CHART_OPTION_SCALE = LINE_CHART_SCALE_FACTOR / 2;
 
 /**
- * One key per report metric, exposed to the PDF component and its tests.
+ * One key per report metric, shared with the PDF component and its tests.
  *
  * @since n.e.x.t
  */
@@ -80,8 +80,8 @@ export type ModuleOverviewMetricKey =
 	| 'pageCTR';
 
 /**
- * The four metrics in report column order, each with its dashboard chart
- * series color.
+ * The four metrics in report column order, each with its chart line color
+ * from the dashboard.
  */
 const METRIC_DEFINITIONS: Array< {
 	key: ModuleOverviewMetricKey;
@@ -94,7 +94,7 @@ const METRIC_DEFINITIONS: Array< {
 ];
 
 /**
- * A single cell of an AdSense report row.
+ * One cell of an AdSense report row.
  */
 interface AdSenseReportCell {
 	/** The cell's metric or dimension value, as the API returns it. */
@@ -102,10 +102,10 @@ interface AdSenseReportCell {
 }
 
 /**
- * A single column header of an AdSense report.
+ * One column header of an AdSense report.
  */
 interface AdSenseReportHeader {
-	/** The metric or dimension identifier, like `ESTIMATED_EARNINGS`. */
+	/** The metric or dimension ID, like `ESTIMATED_EARNINGS`. */
 	name?: string;
 	/** The column's value type, like `METRIC_CURRENCY` or `METRIC_RATIO`. */
 	type?: string;
@@ -114,7 +114,8 @@ interface AdSenseReportHeader {
 }
 
 /**
- * A report boundary date, split into its parts as the AdSense API returns it.
+ * A report start or end date, split into parts the way the AdSense API
+ * returns it.
  */
 interface AdSenseReportDate {
 	/** The four-digit year. */
@@ -126,11 +127,11 @@ interface AdSenseReportDate {
 }
 
 /**
- * The slice of an AdSense report this loader reads.
+ * The part of an AdSense report this loader reads.
  *
- * The AdSense datastore is untyped JavaScript, so this local shape covers
- * only the fields the loader touches. Replace it with the store's own type
- * once that module is migrated to TypeScript.
+ * The AdSense datastore is untyped JavaScript, so this local type covers only
+ * the fields the loader reads. Replace it with the store's own type once that
+ * module moves to TypeScript.
  */
 interface AdSenseReport {
 	/** First day of the report. */
@@ -146,18 +147,18 @@ interface AdSenseReport {
 }
 
 /**
- * A single row of Google Charts data.
+ * One row of Google Charts data.
  *
- * Rows hold a leading `Date` for the day column, an HTML tooltip string, and
- * the current and previous metric numbers the AdSense chart utility produces.
+ * Each row holds a leading `Date` for the day, an HTML tooltip string, and the
+ * current and previous metric numbers from the AdSense chart utility.
  */
 type ChartRow = Array< Date | number | string | null >;
 
 /**
- * The chart and report utilities below are still untyped JS modules. We alias
- * each to the shape this loader relies on so the rest of the file stays
- * type-checked. Replace these aliases with the real types once the underlying
- * modules are migrated to TypeScript.
+ * The chart and report utilities below are still untyped JS modules. Each
+ * alias gives them the shape this loader needs, so the rest of the file stays
+ * type-checked. Replace the aliases with the real types once those modules
+ * move to TypeScript.
  */
 const getAdSenseChartData = getSiteStatsDataForGoogleChart as unknown as (
 	current: AdSenseReport,
@@ -190,7 +191,7 @@ export interface ModuleOverviewMetric {
 }
 
 /**
- * Resolved output of the loader.
+ * The loader's resolved result.
  *
  * @since n.e.x.t
  */
@@ -216,10 +217,10 @@ interface MetricCardResult {
 }
 
 /**
- * Builds Google Charts options matching the PDF report's line charts.
+ * Builds the Google Charts options for a metric's line chart in the PDF report.
  *
- * The current period draws as a solid smoothed line and the previous period as
- * a dotted line of the same color, mirroring the dashboard.
+ * The current period is a solid smooth line. The previous period is a dotted
+ * line of the same color, matching the dashboard.
  *
  * @since n.e.x.t
  *
@@ -276,7 +277,8 @@ function getLineChartOptions( {
 			},
 			viewWindow: {
 				min: 0,
-				// Cap the empty-data axis so a flat zero line still reads well.
+				// Limit the axis when there's no data, so a flat zero line
+				// still reads well.
 				...( hasData ? {} : { max: 1 } ),
 			},
 		},
@@ -284,8 +286,8 @@ function getLineChartOptions( {
 			0: {
 				color,
 				lineWidth: 4 * LINE_CHART_OPTION_SCALE,
-				// Index 1 renders the y-axis on the right, matching the All Traffic
-				// chart, so every report chart keeps the axis on the same side.
+				// Axis index 1 draws the y-axis on the right, like the All Traffic
+				// chart, so every report chart keeps its y-axis on the same side.
 				targetAxisIndex: 1,
 			},
 			1: {
@@ -303,9 +305,10 @@ function getLineChartOptions( {
 }
 
 /**
- * Builds the Google Charts `DataTable` for a metric's current/previous line chart.
+ * Builds the Google Charts `DataTable` for a metric's current and previous
+ * line chart.
  *
- * Accepts the dashboard's chart-data rows (a date, a tooltip, the current value
+ * Reads the dashboard's chart-data rows (a date, a tooltip, the current value,
  * and the previous value) and keeps only the columns the PDF chart needs.
  *
  * @since n.e.x.t
@@ -321,7 +324,7 @@ function buildChartDataTable(
 	const visualization = getVisualization();
 	if ( ! visualization?.DataTable ) {
 		throw new Error(
-			'Site Kit: Google Charts DataTable is unavailable after loading the library.'
+			'Site Kit: Google Charts DataTable is missing after the library loaded.'
 		);
 	}
 
@@ -363,9 +366,8 @@ function renderMetricChart( {
 	color: string;
 	signal: AbortSignal;
 } ): Promise< string > {
-	// One tick per day, except the first day, matching the ticks of the
-	// dashboard's overview chart. The leading column is always the day
-	// `Date`.
+	// One tick per day after the first day, matching the dashboard's
+	// overview chart. The first column is always the day `Date`.
 	const [ , ...ticks ] = dataRows.map( ( row ) => row[ 0 ] as Date );
 	const hasData = dataRows.some(
 		( row ) => Number( row[ 2 ] ) > 0 || Number( row[ 3 ] ) > 0
@@ -383,7 +385,7 @@ function renderMetricChart( {
 }
 
 /**
- * Resolves an AdSense report and reads its resolved value plus any selector error.
+ * Resolves an AdSense report, then reads its value and any selector error.
  *
  * @since n.e.x.t
  *
@@ -412,8 +414,8 @@ async function resolveReport(
 /**
  * Builds one metric card with its total, change, and rendered chart.
  *
- * Failures are isolated to the card: the returned `metric` and `chartImage`
- * are both `null`, so the widget skips that card.
+ * When the card fails, both `metric` and `chartImage` come back `null`, and
+ * the widget skips that card.
  *
  * @since n.e.x.t
  *
@@ -454,8 +456,9 @@ async function buildMetricCard( {
 			Number( previousTotals.totals?.cells?.[ index ]?.value ) || 0;
 		const change = calculateMetricChange( previousTotal, total );
 
-		// The DATE dimension is the first column of the daily series reports,
-		// so the metric sits one column to the right of its totals position.
+		// The DATE dimension fills the first column of the daily series
+		// reports, so each metric sits one column right of its position in the
+		// totals report.
 		const chartData = getAdSenseChartData(
 			currentChart,
 			previousChart,
@@ -478,18 +481,14 @@ async function buildMetricCard( {
 }
 
 /**
- * Loads the reports and renders the line charts for the Earning performance over time PDF widget.
+ * Loads the four AdSense reports and renders one line chart per metric for the
+ * Earning performance over time PDF widget.
  *
- * Resolves the four AdSense reports (current and previous totals, current and
- * previous daily series) in parallel, canceling resolutions that are incomplete
- * or not yet started when the signal aborts. Any report failure fails the whole
- * widget, because all four cards read the same reports.
- *
- * Once the reports resolve, a metric with no data in either period is dropped,
- * matching the dashboard's zero-report definition, so its card is not rendered.
- * When every metric is empty, `data` is `null` and the report skips the whole
- * section. Otherwise Google Charts loads offscreen and renders a line chart per
- * remaining metric with its current and previous period.
+ * Fetches the current and previous totals and daily series at the same time,
+ * and stops when the signal aborts. One failed report fails the whole widget,
+ * because all four cards read the same reports. A metric with no data in either
+ * period is dropped. When every metric is empty, `data` is `null` and the
+ * report skips the section.
  *
  * @since n.e.x.t
  *
@@ -543,8 +542,8 @@ export default async function getPDFData( {
 		);
 	}
 
-	// A metric with no data in either period is not rendered, matching the
-	// dashboard's zero-report definition for the selected stat.
+	// The widget skips a metric with no data in either period, matching how
+	// the dashboard treats a zero report for the selected stat.
 	const metricHasData = METRIC_DEFINITIONS.map(
 		( _, index ) =>
 			! (
@@ -554,16 +553,16 @@ export default async function getPDFData( {
 			)
 	);
 
-	// With no data in any metric the report skips the whole section, so no
-	// chart work is needed.
+	// When no metric has data, the report skips the whole section, so there's
+	// no chart work to do.
 	if ( ! metricHasData.some( Boolean ) ) {
 		return { data: null };
 	}
 
 	await ensureGoogleChartsLoaded();
 
-	// Canceling during the report fetch or chart load aborts before any of the
-	// four line charts render.
+	// If the export is canceled while the reports fetch or the charts load, it
+	// stops before any of the four line charts render.
 	if ( signal.aborted ) {
 		return { data: null };
 	}
@@ -605,12 +604,12 @@ export default async function getPDFData( {
 		pageCTR: pageCTR.chartImage,
 	};
 
-	// Reaching here means at least one metric has data, so an empty image map
-	// can only come from render failures. Fail the whole widget then, and the
+	// At this point at least one metric has data, so an empty image map can
+	// only mean every chart render failed. Fail the whole widget then, and the
 	// report skips it.
 	if ( Object.values( chartImages ).every( ( image ) => image === null ) ) {
 		throw new Error(
-			'Site Kit: all Earning performance over time metrics failed to load for the PDF export.'
+			'Site Kit: all Earning performance over time charts failed to render for the PDF export.'
 		);
 	}
 
