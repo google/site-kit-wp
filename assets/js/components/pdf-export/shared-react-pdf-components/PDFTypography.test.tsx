@@ -29,21 +29,10 @@ import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import {
 	PDF_COLORS,
 	PDF_FONT_FAMILY_ARABIC,
-	PDF_FONT_FAMILY_CYRILLIC,
 	PDF_FONT_FAMILY_DISPLAY,
 	PDF_FONT_FAMILY_TEXT,
 } from '@/js/components/pdf-export/pdf-theme';
 import PDFTypography from './PDFTypography';
-
-// `getLocale` reads the Site Kit locale from the legacy global data, so drive
-// the rendered locale by setting it rather than mocking the module.
-function setSiteKitLocale( locale?: string ) {
-	(
-		global as unknown as {
-			_googlesitekitLegacyData?: { locale?: string };
-		}
-	 )._googlesitekitLegacyData = locale ? { locale } : undefined;
-}
 
 /**
  * Merges a style array into one object, so assertions read one flat style.
@@ -159,44 +148,67 @@ describe( 'PDFTypography', () => {
 		} );
 	} );
 
-	describe( 'non-Latin font fallback', () => {
-		afterEach( () => {
-			setSiteKitLocale( undefined );
-		} );
-
-		it( 'stacks the Cyrillic fallback after the display family for a Cyrillic locale', () => {
-			setSiteKitLocale( 'ru_RU' );
-
+	describe( 'complex-script handling', () => {
+		it( 'keeps the brand family for Cyrillic content, which the brand fonts cover', () => {
 			const style = renderTextStyle( {
 				type: 'headline',
 				size: 'medium',
 				children: 'Заголовок',
 			} );
 
-			expect( style.fontFamily ).toEqual( [
-				PDF_FONT_FAMILY_DISPLAY,
-				PDF_FONT_FAMILY_CYRILLIC,
-			] );
+			expect( style.fontFamily ).toBe( PDF_FONT_FAMILY_DISPLAY );
 		} );
 
-		it( 'stacks the Arabic fallback after the text family for an Arabic locale', () => {
-			setSiteKitLocale( 'fa_IR' );
+		it( 'shapes Arabic content and draws it with the Arabic font alone', () => {
+			const tree = TestRenderer.create(
+				<PDFTypography type="body" size="medium">
+					أداء موقعك
+				</PDFTypography>
+			).toJSON();
+			if ( ! tree || Array.isArray( tree ) ) {
+				throw new Error( 'Unexpected render output.' );
+			}
 
-			const style = renderTextStyle( {
-				type: 'body',
-				size: 'medium',
-				children: 'متن',
-			} );
+			const style = flattenStyle(
+				tree.props.style as
+					| Record< string, unknown >
+					| Array< Record< string, unknown > >
+			);
+			// The single Arabic font, not the `[brand, fallback]` stack, which
+			// crashes @react-pdf's reordering.
+			expect( style.fontFamily ).toBe( PDF_FONT_FAMILY_ARABIC );
 
-			expect( style.fontFamily ).toEqual( [
-				PDF_FONT_FAMILY_TEXT,
-				PDF_FONT_FAMILY_ARABIC,
-			] );
+			// The rendered text is shaped, not the raw logical-order input.
+			const rendered = Array.isArray( tree.children )
+				? tree.children.join( '' )
+				: String( tree.children );
+			expect( rendered ).not.toBe( 'أداء موقعك' );
 		} );
 
-		it( 'keeps the brand family for a Latin locale', () => {
-			setSiteKitLocale( 'en_US' );
+		it( 'shapes Persian content and draws it with the Arabic font alone', () => {
+			const tree = TestRenderer.create(
+				<PDFTypography type="body" size="medium">
+					عملکرد سایت شما
+				</PDFTypography>
+			).toJSON();
+			if ( ! tree || Array.isArray( tree ) ) {
+				throw new Error( 'Unexpected render output.' );
+			}
 
+			const style = flattenStyle(
+				tree.props.style as
+					| Record< string, unknown >
+					| Array< Record< string, unknown > >
+			);
+			expect( style.fontFamily ).toBe( PDF_FONT_FAMILY_ARABIC );
+
+			const rendered = Array.isArray( tree.children )
+				? tree.children.join( '' )
+				: String( tree.children );
+			expect( rendered ).not.toBe( 'عملکرد سایت شما' );
+		} );
+
+		it( 'keeps the brand family for Latin content', () => {
 			const style = renderTextStyle( {
 				type: 'body',
 				size: 'medium',

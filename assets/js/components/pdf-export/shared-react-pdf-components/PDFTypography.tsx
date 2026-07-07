@@ -27,12 +27,11 @@ import { FC } from 'react';
 /**
  * Internal dependencies
  */
+import { getComplexScript } from '@/js/components/pdf-export/pdf-text-shaping';
 import {
 	PDF_COLORS,
 	PDF_TYPOGRAPHY,
-	getPDFFontFamily,
 } from '@/js/components/pdf-export/pdf-theme';
-import { getLocale } from '@/js/util';
 
 export type PDFTypographyType = keyof typeof PDF_TYPOGRAPHY;
 export type PDFTypographySize = keyof typeof PDF_TYPOGRAPHY[ 'body' ];
@@ -53,18 +52,28 @@ const PDFTypography: FC< PDFTypographyProps > = ( {
 	children,
 } ) => {
 	const typeStyle = PDF_TYPOGRAPHY[ type ][ size ];
+
+	// @react-pdf cannot shape or reorder complex scripts, so a matching handler
+	// shapes the text to visual order and overrides the family with that script's
+	// single font (its font-stack fallback crashes @react-pdf's reordering). The
+	// brand family from `typeStyle` covers Latin and Cyrillic directly. Every
+	// report text renders through this component, so this is the single place the
+	// handling needs to apply.
+	const text = typeof children === 'string' ? children : undefined;
+	const script = text !== undefined ? getComplexScript( text ) : undefined;
+
 	const baseStyles: Style[] = [
 		typeStyle,
 		{ color: PDF_COLORS.SURFACES_ON_SURFACE },
-		// Append the locale's script fallback to the family so non-Latin text
-		// renders legibly. Every report text renders through this component, so
-		// this is the single place the fallback needs to apply.
-		{ fontFamily: getPDFFontFamily( typeStyle.fontFamily, getLocale() ) },
 	];
+
+	if ( script ) {
+		baseStyles.push( { fontFamily: script.fontFamily } );
+	}
 
 	return (
 		<Text style={ style ? baseStyles.concat( style ) : baseStyles }>
-			{ children }
+			{ script && text !== undefined ? script.shape( text ) : children }
 		</Text>
 	);
 };
