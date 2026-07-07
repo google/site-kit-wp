@@ -48,6 +48,7 @@ import {
 	createTestRegistry,
 	fireEvent,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 	render,
 	waitFor,
@@ -107,6 +108,7 @@ describe( 'IntroModal', () => {
 			dismiss: jest.fn(),
 		} );
 
+		provideSiteInfo( registry );
 		provideModules( registry, [
 			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
 		] );
