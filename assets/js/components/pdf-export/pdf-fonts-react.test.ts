@@ -21,7 +21,6 @@
  */
 import {
 	PDF_FONT_FAMILY_ARABIC,
-	PDF_FONT_FAMILY_CYRILLIC,
 	PDF_FONT_FAMILY_DISPLAY,
 	PDF_FONT_FAMILY_TEXT,
 } from './pdf-theme';
@@ -64,7 +63,7 @@ describe( 'registerPDFFonts', () => {
 		const family = registerPDFFonts();
 
 		expect( family ).toBe( PDF_FONT_FAMILY_DISPLAY );
-		expect( Font.register ).toHaveBeenCalledTimes( 4 );
+		expect( Font.register ).toHaveBeenCalledTimes( 3 );
 
 		const calls = jest.mocked( Font.register ).mock.calls as Array<
 			[ FontConfig ]
@@ -78,9 +77,6 @@ describe( 'registerPDFFonts', () => {
 		expect( weightsFor( PDF_FONT_FAMILY_DISPLAY ) ).toEqual( [ 400, 500 ] );
 		expect( weightsFor( PDF_FONT_FAMILY_TEXT ) ).toEqual( [ 400, 500 ] );
 		expect( weightsFor( PDF_FONT_FAMILY_ARABIC ) ).toEqual( [ 400, 500 ] );
-		expect( weightsFor( PDF_FONT_FAMILY_CYRILLIC ) ).toEqual( [
-			400, 500,
-		] );
 	} );
 
 	it( 'registers URL strings (not data URIs) as the font src', async () => {
@@ -95,14 +91,14 @@ describe( 'registerPDFFonts', () => {
 			.flatMap( ( [ config ] ) => config.fonts )
 			.map( ( { src } ) => src );
 
-		expect( sources ).toHaveLength( 8 );
+		expect( sources ).toHaveLength( 6 );
 		sources.forEach( ( src ) => {
 			expect( typeof src ).toBe( 'string' );
 			expect( src.startsWith( 'data:' ) ).toBe( false );
 		} );
 	} );
 
-	it( 'registers the Arabic and Cyrillic fallbacks from local self-hosted assets, not a remote URL', async () => {
+	it( 'registers the Arabic fallback from local self-hosted assets, not a remote URL', async () => {
 		const { Font, registerPDFFonts } = await setup();
 
 		registerPDFFonts();
@@ -112,14 +108,12 @@ describe( 'registerPDFFonts', () => {
 		>;
 		const fallbackSources = calls
 			.filter(
-				( [ config ] ) =>
-					config.family === PDF_FONT_FAMILY_ARABIC ||
-					config.family === PDF_FONT_FAMILY_CYRILLIC
+				( [ config ] ) => config.family === PDF_FONT_FAMILY_ARABIC
 			)
 			.flatMap( ( [ config ] ) => config.fonts )
 			.map( ( { src } ) => src );
 
-		expect( fallbackSources ).toHaveLength( 4 );
+		expect( fallbackSources ).toHaveLength( 2 );
 		fallbackSources.forEach( ( src ) => {
 			expect( typeof src ).toBe( 'string' );
 			// The fallbacks are bundled webpack assets, not a remote font host,

@@ -18,37 +18,34 @@ so the binaries' internal names do not need to match those labels.
 Source: the Flutter gallery-assets font set
 (`https://flutter.googlesource.com/gallery-assets/+/refs/heads/master/lib/fonts/`).
 
-# Non-Latin fallback fonts
+# Arabic fallback font
 
-`registerPDFFonts()` also embeds these Noto binaries as script fallbacks so the
-report renders Cyrillic and Arabic text legibly. They follow the brand family in
-a font stack (`../pdf-theme.ts`, `getPDFFontFamily`), so Latin keeps the brand
-typeface and non-Latin glyphs come from Noto.
+`registerPDFFonts()` also embeds this Noto binary so the report renders
+Arabic-script text (Arabic and Persian) legibly. The complex-script registry
+(`../pdf-text-shaping.ts`, `getComplexScript`) applies it as the sole family for
+that text, because `@react-pdf` cannot shape or reorder Arabic within a font
+stack. The brand fonts already cover Latin and Cyrillic, so no Cyrillic fallback
+is bundled.
 
 | File | Internal family | Weight | Script |
 | --- | --- | --- | --- |
-| `noto-sans-cyrillic-regular.ttf` | Noto Sans | 400 | Cyrillic |
-| `noto-sans-cyrillic-medium.ttf` | Noto Sans | 500 | Cyrillic |
 | `noto-sans-arabic-regular.ttf` | Noto Sans Arabic | 400 | Arabic |
 | `noto-sans-arabic-medium.ttf` | Noto Sans Arabic | 500 | Arabic |
 
 Like the brand fonts, these are webpack `asset/resource` files (emitted under
 `dist/fonts/`, never inlined) and `@react-pdf` fetches one only when a rendered
-text node references its family, so a Latin PDF never loads them and each
-non-Latin PDF loads only its script.
+text node references its family, so a Latin or Cyrillic PDF never loads them and
+only an Arabic-script PDF does.
 
-Source: the Google Fonts published static subsets, retrieved 2026-07-03:
+Source: the Google Fonts published static subset, retrieved 2026-07-03:
 
-- Noto Sans, `cyrillic` subset (v42):
-  `https://fonts.gstatic.com/s/notosans/v42/<hash>.ttf`
 - Noto Sans Arabic, `arabic` subset (v33):
   `https://fonts.gstatic.com/s/notosansarabic/v33/<hash>.ttf`
 
-These are the per-script subsets Google serves for the legacy CSS API, so they
-retain the `GSUB`/`GPOS` layout tables needed for Arabic shaping. To regenerate
-from the upstream Noto releases instead, subset with `pyftsubset` keeping
-`--layout-features='*'` over the Cyrillic ranges (`U+0400-04FF`, `U+0500-052F`,
-`U+2DE0-2DFF`, `U+A640-A69F`) and the Arabic ranges (`U+0600-06FF`, `U+0750-077F`,
+This is the per-script subset Google serves for the legacy CSS API, so it retains
+the `GSUB`/`GPOS` layout tables needed for Arabic shaping. To regenerate from the
+upstream Noto release instead, subset with `pyftsubset` keeping
+`--layout-features='*'` over the Arabic ranges (`U+0600-06FF`, `U+0750-077F`,
 `U+08A0-08FF`, `U+FB50-FDFF`, `U+FE70-FEFF`).
 
 License: the Noto fonts are licensed under the SIL Open Font License, Version
