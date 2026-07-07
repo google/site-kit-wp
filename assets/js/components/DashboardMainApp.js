@@ -71,6 +71,7 @@ import useViewOnly from '@/js/hooks/useViewOnly';
 import { AudienceSelectionPanel } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
 import SiteGoalsIntroModalBanner from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import SiteGoalsSelectionPanel from '@/js/modules/analytics-4/components/site-goals/selection-panel';
+import SiteGoalsSurveyTriggers from '@/js/modules/analytics-4/components/site-goals/SiteGoalsSurveyTriggers';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { DAY_IN_SECONDS } from '@/js/util';
 import { getNavigationalScrollTop } from '@/js/util/scroll';
@@ -477,6 +478,7 @@ export default function DashboardMainApp() {
 				<Fragment>
 					<SiteGoalsSelectionPanel />
 					<SiteGoalsIntroModalBanner />
+					<SiteGoalsSurveyTriggers />
 				</Fragment>
 			) }
 
