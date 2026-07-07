@@ -66,7 +66,7 @@ class Get_Form_MetadataTest extends TestCase {
 		);
 	}
 
-	public function test_create_request__returns_metadata_with_plugin_for_known_post_type() {
+	public function test_create_request__returns_title_for_known_post_type() {
 		$form_id = self::factory()->post->create(
 			array(
 				'post_title' => 'Contact',
@@ -79,12 +79,11 @@ class Get_Form_MetadataTest extends TestCase {
 		$this->assertSame(
 			array(
 				$form_id => array(
-					'title'  => 'Contact',
-					'plugin' => 'WPForms',
+					'title' => 'Contact',
 				),
 			),
 			$request(),
-			'A known form CPT should resolve its title and plugin name.'
+			'A known form CPT should resolve its title.'
 		);
 	}
 
@@ -99,10 +98,6 @@ class Get_Form_MetadataTest extends TestCase {
 		$this->assertNull(
 			$result[ $form_id ]['title'],
 			'A non-form post type must not have its title disclosed.'
-		);
-		$this->assertNull(
-			$result[ $form_id ]['plugin'],
-			'A non-form post type should resolve no plugin name.'
 		);
 	}
 
@@ -132,8 +127,7 @@ class Get_Form_MetadataTest extends TestCase {
 		$this->assertSame(
 			array(
 				$missing_id => array(
-					'title'  => null,
-					'plugin' => null,
+					'title' => null,
 				),
 			),
 			$request(),

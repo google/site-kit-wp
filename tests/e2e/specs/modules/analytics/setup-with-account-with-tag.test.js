@@ -20,15 +20,17 @@ import {
 } from '../../../utils';
 
 async function proceedToSetUpAnalytics() {
-	await Promise.all( [
-		expect( page ).toClick( '.googlesitekit-cta-link', {
-			text: /set up analytics/i,
-		} ),
-		page.waitForSelector( '.googlesitekit-setup-module--analytics' ),
-		page.waitForResponse( ( res ) =>
-			res.url().match( 'analytics-4/data/account-summaries' )
-		),
-	] );
+	await step( 'proceed to set up Analytics', async () => {
+		await Promise.all( [
+			expect( page ).toClick( '.googlesitekit-cta-link', {
+				text: /set up analytics/i,
+			} ),
+			page.waitForSelector( '.googlesitekit-setup-module--analytics' ),
+			page.waitForResponse( ( res ) =>
+				res.url().match( 'analytics-4/data/account-summaries' )
+			),
+		] );
+	} );
 }
 
 async function assertSetupSuccessful() {
@@ -182,31 +184,48 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await setAnalyticsExistingPropertyID( existingTag.propertyID );
 		await proceedToSetUpAnalytics();
 
-		await expect( page ).toMatchElement(
-			'.googlesitekit-setup-module--analytics p',
-			{
-				text: new RegExp(
-					`A tag ${ existingTag.propertyID } for the selected property already exists on the site`,
-					'i'
-				),
+		await step( 'see existing tag notice', async () => {
+			await expect( page ).toMatchElement(
+				'.googlesitekit-setup-module--analytics p',
+				{
+					text: new RegExp(
+						`A tag ${ existingTag.propertyID } for the selected property already exists on the site`,
+						'i'
+					),
+				}
+			);
+		} );
+
+		await step(
+			'see selected account, property and web data stream',
+			async () => {
+				await expect( page ).toMatchElement(
+					'.googlesitekit-analytics__select-account .mdc-select__selected-text',
+					{ text: /example com/i }
+				);
+				await expect( page ).toMatchElement(
+					'.googlesitekit-analytics-4__select-property .mdc-select__selected-text',
+					{ text: /example property/i }
+				);
+				await expect( page ).toMatchElement(
+					'.googlesitekit-analytics-4__select-webdatastream .mdc-select__selected-text',
+					{ text: /test ga4 webdatastream/i }
+				);
 			}
 		);
 
-		await expect( page ).toMatchElement(
-			'.googlesitekit-analytics__select-account .mdc-select__selected-text',
-			{ text: /example com/i }
-		);
-		await expect( page ).toMatchElement(
-			'.googlesitekit-analytics-4__select-property .mdc-select__selected-text',
-			{ text: /example property/i }
-		);
-		await expect( page ).toMatchElement(
-			'.googlesitekit-analytics-4__select-webdatastream .mdc-select__selected-text',
-			{ text: /test ga4 webdatastream/i }
-		);
+		await step( 'complete setup', async () => {
+			// Wait for the enhanced measurement switch to finish loading before
+			// clicking. While it loads it renders a short progress bar that is
+			// later replaced by a taller switch, which shifts the "Complete
+			// setup" button down and can cause the click to miss.
+			await page.waitForSelector(
+				'.googlesitekit-analytics-enable-enhanced-measurement:not(.googlesitekit-analytics-enable-enhanced-measurement--loading)'
+			);
 
-		await expect( page ).toClick( 'button:not([disabled])', {
-			text: /complete setup/i,
+			await expect( page ).toClick( 'button:not([disabled])', {
+				text: /complete setup/i,
+			} );
 		} );
 
 		await assertSetupSuccessful();
@@ -221,8 +240,18 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await setAnalyticsExistingPropertyID( existingTag.propertyID );
 		await proceedToSetUpAnalytics();
 
-		await expect( page ).toClick( 'button:not([disabled])', {
-			text: /complete setup/i,
+		await step( 'complete setup', async () => {
+			// Wait for the enhanced measurement switch to finish loading before
+			// clicking. While it loads it renders a short progress bar that is
+			// later replaced by a taller switch, which shifts the "Complete
+			// setup" button down and can cause the click to miss.
+			await page.waitForSelector(
+				'.googlesitekit-analytics-enable-enhanced-measurement:not(.googlesitekit-analytics-enable-enhanced-measurement--loading)'
+			);
+
+			await expect( page ).toClick( 'button:not([disabled])', {
+				text: /complete setup/i,
+			} );
 		} );
 
 		await assertSetupSuccessful();

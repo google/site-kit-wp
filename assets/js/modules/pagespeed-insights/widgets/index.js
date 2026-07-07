@@ -24,6 +24,8 @@ import {
 	AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
 } from '@/js/googlesitekit/widgets/default-areas';
 import DashboardPageSpeedWidget from '@/js/modules/pagespeed-insights/components/dashboard/DashboardPageSpeedWidget';
+import getPDFData from '@/js/modules/pagespeed-insights/components/dashboard/DashboardPageSpeedWidget/getPDFData';
+import DashboardPageSpeedWidgetPDF from '@/js/modules/pagespeed-insights/components/dashboard/DashboardPageSpeedWidget/indexPDF';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 
 export function registerWidgets( widgets ) {
@@ -34,6 +36,12 @@ export function registerWidgets( widgets ) {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_PAGESPEED_INSIGHTS ],
+			// Speed is a single-widget area; the sub-section heading is
+			// suppressed so `pdf.label` is intentionally omitted.
+			pdf: {
+				Component: DashboardPageSpeedWidgetPDF,
+				getData: getPDFData,
+			},
 		},
 		[
 			AREA_MAIN_DASHBOARD_SPEED_PRIMARY,

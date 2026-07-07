@@ -247,7 +247,7 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 		expect( signals[ 1 ] ).toBe( signal );
 	} );
 
-	it( 'returns empty data without fetching the titles report when the main report has no rows', async () => {
+	it( 'returns null data without fetching the titles report when the main report has no rows', async () => {
 		fetchMock.get( reportEndpoint, { body: { rows: [] }, status: 200 } );
 
 		const result = await getPDFData( {
@@ -258,9 +258,9 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 
 		await waitForDefaultTimeouts();
 
-		expect( result ).toEqual( {
-			data: { rows: [], titles: {}, links: {} },
-		} );
+		// Null data tells the report document to skip the widget, so the PDF
+		// holds no empty section.
+		expect( result ).toEqual( { data: null } );
 		expect( fetchMock.calls( reportEndpoint ) ).toHaveLength( 1 );
 	} );
 

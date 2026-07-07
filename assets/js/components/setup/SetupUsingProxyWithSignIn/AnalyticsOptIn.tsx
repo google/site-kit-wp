@@ -63,9 +63,7 @@ export default function AnalyticsOptIn() {
 	);
 
 	const learnMoreLink = useSelect( ( select: Select ) => {
-		return select( CORE_SITE ).getDocumentationLinkURL(
-			'setup-update-ga4-account'
-		);
+		return select( CORE_SITE ).getDocumentationLinkURL( 'why-set-up-ga4' );
 	}, [] );
 
 	return (

@@ -66,10 +66,7 @@ class User {
 	public function __construct( User_Options $user_options ) {
 		$this->audience_segmentation = new Audience_Segmentation( $user_options );
 		$this->conversion_reporting  = new Conversion_Reporting( $user_options );
-
-		if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) ) {
-			$this->email_reporting = new Email_Reporting( $user_options );
-		}
+		$this->email_reporting       = new Email_Reporting( $user_options );
 
 		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
 			$this->initial_setup = new Initial_Setup( $user_options );
@@ -86,10 +83,7 @@ class User {
 	public function register() {
 		$this->audience_segmentation->register();
 		$this->conversion_reporting->register();
-
-		if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) && $this->email_reporting ) {
-			$this->email_reporting->register();
-		}
+		$this->email_reporting->register();
 
 		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
 			$this->initial_setup->register();

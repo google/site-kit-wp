@@ -42,6 +42,7 @@ import {
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import {
+	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
@@ -258,6 +259,86 @@ describe( 'BreakdownNoticeArea', () => {
 		} );
 	} );
 
+	it( 'clears the loading state and shows the success notice when the required dimensions already exist on the property', async () => {
+		// Edit scope granted, so the CTA creates directly instead of redirecting
+		// to OAuth.
+		provideUserAuthentication( registry, {
+			grantedScopes: [ EDIT_SCOPE ],
+		} );
+		// The saved setting lacks the breakdown dimension, so the "New" notice
+		// shows; the property itself already has every required dimension.
+		seedAvailableCustomDimensions( [] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetCustomDimensions( ALL_CUSTOM_DIMENSIONS, {
+				propertyID: '12345',
+			} );
+
+		// Nothing is created; the "already exists" path syncs the available
+		// dimensions, and the synced list includes the lead breakdown dimension.
+		fetchMock.postOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+			),
+			{ body: ALL_CUSTOM_DIMENSIONS, status: 200 }
+		);
+
+		const { getByRole, findByText } = render(
+			<BreakdownNoticeArea
+				origin={ BREAKDOWN_ORIGIN_WIDGET }
+				goalTypes={ [ GOAL_TYPES.LEAD ] }
+			/>,
+			{ registry }
+		);
+
+		fireEvent.click( getByRole( 'button', { name: 'Get breakdown' } ) );
+
+		// The CTA resolves to the success notice instead of spinning forever.
+		expect(
+			await findByText( /Individual form tracking is now active/ )
+		).toBeInTheDocument();
+	} );
+
+	it( 'returns to the "New" notice (not a stuck spinner or a vanished notice) when the confirming sync fails on the already-exists path', async () => {
+		provideUserAuthentication( registry, {
+			grantedScopes: [ EDIT_SCOPE ],
+		} );
+		seedAvailableCustomDimensions( [] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetCustomDimensions( ALL_CUSTOM_DIMENSIONS, {
+				propertyID: '12345',
+			} );
+
+		// The confirming sync fails, so `availableCustomDimensions` stays stale
+		// and the success notice cannot render.
+		fetchMock.postOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+			),
+			{ body: { code: 'error', message: 'Sync failed' }, status: 500 }
+		);
+
+		const { getByRole } = render(
+			<BreakdownNoticeArea
+				origin={ BREAKDOWN_ORIGIN_WIDGET }
+				goalTypes={ [ GOAL_TYPES.LEAD ] }
+			/>,
+			{ registry }
+		);
+
+		fireEvent.click( getByRole( 'button', { name: 'Get breakdown' } ) );
+
+		// The attempt resets, so the CTA settles back to the enabled "New"
+		// notice — a retry path — instead of spinning forever or disappearing.
+		await waitFor( () => {
+			expect(
+				getByRole( 'button', { name: 'Get breakdown' } )
+			).toBeEnabled();
+		} );
+		expect( console ).toHaveErrored();
+	} );
+
 	it( 'renders the success notice at the triggering instance once the breakdown dimensions exist', () => {
 		seedAvailableCustomDimensions( ALL_CUSTOM_DIMENSIONS );
 		registry
@@ -438,6 +519,44 @@ describe( 'BreakdownNoticeArea', () => {
 				unmount();
 			}
 		);
+	} );
+
+	it( 'renders the permissions error notice and clears the loading state when the property custom dimensions load fails', () => {
+		seedAvailableCustomDimensions( [] );
+
+		const propertyID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyID();
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'insufficient_permissions',
+				message: 'Insufficient permissions',
+				data: { status: 403, reason: 'insufficientPermissions' },
+			},
+			'getCustomDimensions',
+			[ propertyID ]
+		);
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: GOAL_TYPES.LEAD,
+			} );
+
+		const { getByText, getByRole } = render(
+			<BreakdownNoticeArea
+				origin={ BREAKDOWN_ORIGIN_WIDGET }
+				goalTypes={ [ GOAL_TYPES.LEAD ] }
+			/>,
+			{ registry }
+		);
+
+		// The permissions error notice replaces the otherwise-stuck loading state.
+		expect(
+			getByText( 'Individual form tracking setup failed' )
+		).toBeInTheDocument();
+		// Retry and dismiss are available, so the CTA is not stuck loading.
+		expect( getByRole( 'button', { name: 'Retry' } ) ).toBeInTheDocument();
+		expect( getByRole( 'button', { name: 'Got it' } ) ).toBeInTheDocument();
 	} );
 
 	it( 'renders "Event breakdown setup failed" title for ECOMMERCE permissions error in widget and panel', () => {

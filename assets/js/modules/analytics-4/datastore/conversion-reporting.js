@@ -535,6 +535,28 @@ export const selectors = {
 	),
 
 	/**
+	 * Returns the event slug backing the Site Goals side panel Primary Action row.
+	 *
+	 * For ecommerce, returns the primary event (`purchase` or `add_to_cart`).
+	 * For lead, returns the first detected lead event.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}               state    Data store's state.
+	 * @param {('ecommerce'|'lead')} goalType Goal type.
+	 * @return {(string|undefined)} Event slug, or `undefined` if not yet resolved.
+	 */
+	getPrimaryActionEventSlug: createRegistrySelector(
+		( select ) => ( state, goalType ) => {
+			if ( goalType === 'ecommerce' ) {
+				return select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent();
+			}
+
+			return select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents()?.[ 0 ];
+		}
+	),
+
+	/**
 	 * Checks if there are new conversion events after initial events were detected. Regardless of how KM were setup.
 	 *
 	 * @since 1.142.0

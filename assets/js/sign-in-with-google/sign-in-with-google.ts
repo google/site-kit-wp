@@ -165,6 +165,8 @@ export function setupSignInWithGoogle(
 			'googlesitekit-sign-in-with-google__frontend-output-button'
 		);
 
+		button.dataset.googlesitekitSiwgWidth = '320';
+
 		login.insertBefore( button, loginForm );
 	}
 
@@ -182,9 +184,17 @@ export function setupSignInWithGoogle(
 				googlesitekitSiwgShape: shape = defaultButtonOptions.shape,
 				googlesitekitSiwgText: text = defaultButtonOptions.text,
 				googlesitekitSiwgTheme: theme = defaultButtonOptions.theme,
+				googlesitekitSiwgWidth,
 			} = element.dataset;
 
 			const buttonOptions = { shape, text, theme } as ButtonConfiguration;
+
+			const width = Number( googlesitekitSiwgWidth );
+
+			if ( ! isNaN( width ) && width > 0 ) {
+				buttonOptions.width = width;
+				element.style.maxInlineSize = `${ width }px`;
+			}
 
 			renderButton( element, buttonOptions );
 		} );

@@ -44,9 +44,7 @@ import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 import SettingsPlugin from './SettingsPlugin';
 
 export default function SettingsAdmin() {
-	const proactiveUserEngagementEnabled = useFeature(
-		'proactiveUserEngagement'
-	);
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
 	const configuredAudiences = useSelect( ( select ) =>
 		select( CORE_USER ).getConfiguredAudiences()
@@ -89,7 +87,7 @@ export default function SettingsAdmin() {
 		// so if it's disconnected, return early.
 		//
 		// Because they're never called nothing else can be loading.
-		if ( isAnalyticsConnected === false && ! hasSitePurposeAnswer ) {
+		if ( isAnalyticsConnected === false ) {
 			return false;
 		}
 
@@ -160,17 +158,16 @@ export default function SettingsAdmin() {
 				</Cell>
 			) }
 
-			{ ( isAnalyticsConnected || !! configuredAudiences ) && (
-				<Cell size={ 12 }>
-					<SettingsCardAudiences />
-				</Cell>
-			) }
+			{ ! setupFlowRefreshEnabled &&
+				( isAnalyticsConnected || !! configuredAudiences ) && (
+					<Cell size={ 12 }>
+						<SettingsCardAudiences />
+					</Cell>
+				) }
 
-			{ proactiveUserEngagementEnabled && (
-				<Cell size={ 12 }>
-					<SettingsCardEmailReporting />
-				</Cell>
-			) }
+			<Cell size={ 12 }>
+				<SettingsCardEmailReporting />
+			</Cell>
 
 			<Cell size={ 12 }>
 				<Layout

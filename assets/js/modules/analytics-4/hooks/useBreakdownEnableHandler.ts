@@ -59,7 +59,7 @@ export const ALL_CUSTOM_DIMENSIONS = Object.keys(
 );
 
 export interface BreakdownEnableHandler {
-	onEnable: () => Promise< void >;
+	onEnable: () => Promise< boolean >;
 	inProgress: boolean;
 	disabled: boolean;
 }
@@ -145,12 +145,30 @@ export function useBreakdownEnableHandler(
 				},
 			} );
 
-			return;
+			// Deferred to OAuth; the redirect keeps the busy state.
+			return false;
 		}
 
 		setValues( FORM_CUSTOM_DIMENSIONS_CREATE, breakdownValues );
 
-		createCustomDimensions( ALL_CUSTOM_DIMENSIONS );
+		// Await so `onEnable` resolves only once the action settles, including
+		// the path where nothing is created (all dimensions already exist), so
+		// the caller can clear its loading state.
+		const { error } =
+			( await createCustomDimensions( ALL_CUSTOM_DIMENSIONS ) ) ?? {};
+
+		// The confirming sync can fail even when the dimensions exist, leaving
+		// `availableCustomDimensions` stale and the notice unrendered. Reset the
+		// attempt so the "New" CTA returns for a retry rather than the section
+		// vanishing.
+		if ( error ) {
+			setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+				[ BREAKDOWN_ORIGIN_FORM_KEY ]: undefined,
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: undefined,
+			} );
+		}
+
+		return true;
 	}, [
 		createCustomDimensions,
 		scope,
