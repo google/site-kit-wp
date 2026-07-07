@@ -184,6 +184,25 @@ const svgRule = {
 					options: {
 						// strip width & height to allow manual override using props
 						dimensions: false,
+						// Restates SVGR's default SVGO config (`removeViewBox: false`
+						// and `prefixIds`), which a custom `svgoConfig` replaces
+						// rather than extends.
+						svgoConfig: {
+							plugins: [
+								{
+									name: 'preset-default',
+									params: {
+										overrides: {
+											removeViewBox: false,
+											// Curve-to-arc conversion is lossy and visibly
+											// distorts precisely overlapping shapes.
+											convertPathData: false,
+										},
+									},
+								},
+								'prefixIds',
+							],
+						},
 					},
 				},
 			],
