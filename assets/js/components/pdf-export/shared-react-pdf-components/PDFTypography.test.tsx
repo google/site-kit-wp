@@ -32,6 +32,7 @@ import {
 	PDF_FONT_FAMILY_DISPLAY,
 	PDF_FONT_FAMILY_TEXT,
 } from '@/js/components/pdf-export/pdf-theme';
+import { PDFWidthContext } from '@/js/components/pdf-export/pdf-width-context';
 import PDFTypography from './PDFTypography';
 
 /**
@@ -175,14 +176,46 @@ describe( 'PDFTypography', () => {
 					| Array< Record< string, unknown > >
 			);
 			// The single Arabic font, not the `[brand, fallback]` stack, which
-			// crashes @react-pdf's reordering.
+			// crashes @react-pdf's reordering, and right-aligned.
 			expect( style.fontFamily ).toBe( PDF_FONT_FAMILY_ARABIC );
+			expect( style.textAlign ).toBe( 'right' );
 
 			// The rendered text is shaped, not the raw logical-order input.
 			const rendered = Array.isArray( tree.children )
 				? tree.children.join( '' )
 				: String( tree.children );
 			expect( rendered ).not.toBe( 'أداء موقعك' );
+		} );
+
+		it( 'wraps long Arabic into multiple right-aligned lines in a narrow width', () => {
+			const long =
+				'أداء موقعك على مدار الثلاثين يوما الماضية يظهر زيادة كبيرة في عدد الزيارات';
+			const tree = TestRenderer.create(
+				<PDFWidthContext.Provider value={ 40 }>
+					<PDFTypography type="body" size="medium">
+						{ long }
+					</PDFTypography>
+				</PDFWidthContext.Provider>
+			).toJSON();
+			if ( ! tree || Array.isArray( tree ) ) {
+				throw new Error( 'Unexpected render output.' );
+			}
+
+			// A View stacking more than one Text line.
+			expect( tree.type ).toBe( 'pdf-view' );
+			const lineNodes = ( tree.children ?? [] ) as unknown as Array< {
+				props: {
+					style:
+						| Record< string, unknown >
+						| Array< Record< string, unknown > >;
+				};
+			} >;
+			expect( lineNodes.length ).toBeGreaterThan( 1 );
+			lineNodes.forEach( ( node ) => {
+				const lineStyle = flattenStyle( node.props.style );
+				expect( lineStyle.fontFamily ).toBe( PDF_FONT_FAMILY_ARABIC );
+				expect( lineStyle.textAlign ).toBe( 'right' );
+			} );
 		} );
 
 		it( 'shapes Persian content and draws it with the Arabic font alone', () => {

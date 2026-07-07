@@ -1,0 +1,18 @@
+diff --git a/node_modules/@react-pdf/textkit/lib/textkit.js b/node_modules/@react-pdf/textkit/lib/textkit.js
+index 0b8b6fa..d4e9c3e 100644
+--- a/node_modules/@react-pdf/textkit/lib/textkit.js
++++ b/node_modules/@react-pdf/textkit/lib/textkit.js
+@@ -1010,6 +1010,13 @@ const getItemAtIndex = (runs, objectName, index) => {
+     throw new Error(`index ${index} out of range`);
+ };
+ const reorderLine = (line) => {
++    // Site Kit patch (patches/@react-pdf+textkit+6.3.0.patch): @react-pdf's
++    // per-line bidi reorder crashes ("reading 'id'") on wrapped or mixed-
++    // direction complex-script text. The PDF report reshapes and reorders
++    // complex scripts itself (assets/js/components/pdf-export/pdf-text-shaping.ts),
++    // so skip this engine reorder; it is a no-op for the Latin/LTR text it
++    // would otherwise handle.
++    return line;
+     const levels = getBidiLevels$1(line.runs);
+     const direction = line.runs[0]?.attributes.direction;
+     const level = direction === 'rtl' ? 1 : 0;

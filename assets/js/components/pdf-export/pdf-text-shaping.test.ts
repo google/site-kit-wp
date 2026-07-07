@@ -1,5 +1,5 @@
 /**
- * Tests for PDF complex-script text shaping.
+ * Tests for PDF complex-script text shaping and line layout.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -20,7 +20,9 @@
  * Internal dependencies
  */
 import { PDF_FONT_FAMILY_ARABIC } from '@/js/components/pdf-export/pdf-theme';
-import { getComplexScript } from './pdf-text-shaping';
+import { getComplexScript, layoutComplexScriptLines } from './pdf-text-shaping';
+
+const NON_BREAKING_SPACE = String.fromCharCode( 0x00a0 );
 
 /**
  * Reports whether text contains an Arabic presentation-form glyph (the joined
@@ -70,29 +72,80 @@ describe( 'getComplexScript', () => {
 		expect( getComplexScript( text ) ).toBeUndefined();
 	} );
 
-	describe( 'the Arabic handler shape', () => {
-		it( 'converts Arabic to visual-order presentation forms', () => {
+	describe( 'the Arabic handler reshape', () => {
+		it( 'converts Arabic to presentation forms', () => {
 			const output =
-				getComplexScript( 'أداء موقعك' )?.shape( 'أداء موقعك' );
+				getComplexScript( 'أداء موقعك' )?.reshape( 'أداء موقعك' );
 
 			expect( output ).not.toBe( 'أداء موقعك' );
 			expect( hasPresentationForm( output ?? '' ) ).toBe( true );
 		} );
 
-		it( 'shapes Persian letterforms, including the gaf letter', () => {
+		it( 'reshapes Persian letterforms, including the gaf letter', () => {
 			const input = 'گزارش پروژه';
-			const output = getComplexScript( input )?.shape( input );
+			const output = getComplexScript( input )?.reshape( input );
 
 			expect( output ).not.toBe( input );
 			expect( hasPresentationForm( output ?? '' ) ).toBe( true );
 		} );
+	} );
+} );
 
-		it( 'keeps embedded Latin runs intact in mixed text', () => {
-			const input = 'المقاييس الرئيسية Site Kit';
-			const output = getComplexScript( input )?.shape( input );
+describe( 'layoutComplexScriptLines', () => {
+	const arabic = getComplexScript( 'أداء موقعك' );
 
-			expect( output ).toContain( 'Site Kit' );
-			expect( hasPresentationForm( output ?? '' ) ).toBe( true );
-		} );
+	if ( ! arabic ) {
+		throw new Error( 'Expected an Arabic handler.' );
+	}
+
+	const long =
+		'أداء موقعك على مدار الثلاثين يوما الماضية يظهر زيادة كبيرة في عدد الزيارات من محركات البحث والشبكات الاجتماعية';
+
+	it( 'returns a single line when the text fits the width', () => {
+		const lines = layoutComplexScriptLines(
+			'أداء موقعك',
+			arabic,
+			12,
+			10000
+		);
+
+		expect( lines ).toHaveLength( 1 );
+		expect( hasPresentationForm( lines[ 0 ] ) ).toBe( true );
+	} );
+
+	it( 'wraps into multiple lines when the text exceeds the width', () => {
+		const lines = layoutComplexScriptLines( long, arabic, 12, 80 );
+
+		expect( lines.length ).toBeGreaterThan( 1 );
+		lines.forEach( ( line ) =>
+			expect( hasPresentationForm( line ) ).toBe( true )
+		);
+	} );
+
+	it( 'joins each line with non-breaking spaces so @react-pdf cannot re-wrap it', () => {
+		const [ line ] = layoutComplexScriptLines(
+			'أداء موقعك',
+			arabic,
+			12,
+			10000
+		);
+
+		// A multi-word line uses non-breaking spaces and contains no ordinary
+		// space, which is what stops @react-pdf from breaking (and crashing) it.
+		expect( line ).toContain( NON_BREAKING_SPACE );
+		expect( line ).not.toContain( ' ' );
+	} );
+
+	it( 'keeps embedded Latin runs intact in mixed text', () => {
+		const lines = layoutComplexScriptLines(
+			'المقاييس الرئيسية Site Kit',
+			arabic,
+			12,
+			10000
+		);
+		const joined = lines.join( '' );
+
+		expect( joined ).toContain( 'Site' );
+		expect( joined ).toContain( 'Kit' );
 	} );
 } );

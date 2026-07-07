@@ -20,18 +20,22 @@
 /**
  * External dependencies
  */
-import { Text } from '@react-pdf/renderer';
+import { Text, View } from '@react-pdf/renderer';
 import type { Style } from '@react-pdf/stylesheet';
 import { FC } from 'react';
 
 /**
  * Internal dependencies
  */
-import { getComplexScript } from '@/js/components/pdf-export/pdf-text-shaping';
+import {
+	getComplexScript,
+	layoutComplexScriptLines,
+} from '@/js/components/pdf-export/pdf-text-shaping';
 import {
 	PDF_COLORS,
 	PDF_TYPOGRAPHY,
 } from '@/js/components/pdf-export/pdf-theme';
+import { usePDFTextWidth } from '@/js/components/pdf-export/pdf-width-context';
 
 export type PDFTypographyType = keyof typeof PDF_TYPOGRAPHY;
 export type PDFTypographySize = keyof typeof PDF_TYPOGRAPHY[ 'body' ];
@@ -52,29 +56,54 @@ const PDFTypography: FC< PDFTypographyProps > = ( {
 	children,
 } ) => {
 	const typeStyle = PDF_TYPOGRAPHY[ type ][ size ];
-
-	// @react-pdf cannot shape or reorder complex scripts, so a matching handler
-	// shapes the text to visual order and overrides the family with that script's
-	// single font (its font-stack fallback crashes @react-pdf's reordering). The
-	// brand family from `typeStyle` covers Latin and Cyrillic directly. Every
-	// report text renders through this component, so this is the single place the
-	// handling needs to apply.
-	const text = typeof children === 'string' ? children : undefined;
-	const script = text !== undefined ? getComplexScript( text ) : undefined;
+	const maxWidth = usePDFTextWidth();
 
 	const baseStyles: Style[] = [
 		typeStyle,
 		{ color: PDF_COLORS.SURFACES_ON_SURFACE },
 	];
 
-	if ( script ) {
-		baseStyles.push( { fontFamily: script.fontFamily } );
+	const text = typeof children === 'string' ? children : undefined;
+	const script = text !== undefined ? getComplexScript( text ) : undefined;
+
+	// Latin, Cyrillic, digits, and non-string children render as-is; the brand
+	// family from `typeStyle` covers them.
+	if ( ! script || text === undefined ) {
+		return (
+			<Text style={ style ? baseStyles.concat( style ) : baseStyles }>
+				{ children }
+			</Text>
+		);
+	}
+
+	// @react-pdf cannot shape, reorder, or wrap complex scripts and crashes when
+	// it wraps them, so the text is laid out here into visual-order,
+	// non-wrapping lines drawn in the script's single font and right-aligned.
+	// Every report text renders through this component, so this is the single
+	// place the handling applies.
+	const fontSize =
+		typeof typeStyle.fontSize === 'number' ? typeStyle.fontSize : 12;
+	const lines = layoutComplexScriptLines( text, script, fontSize, maxWidth );
+	const lineStyles: Style[] = baseStyles.concat( {
+		fontFamily: script.fontFamily,
+		textAlign: 'right',
+	} );
+	const mergedLineStyles = style ? lineStyles.concat( style ) : lineStyles;
+
+	// A single line keeps the plain `<Text>` shape so inline usages are
+	// unchanged; multiple lines stack in a `<View>`.
+	if ( lines.length === 1 ) {
+		return <Text style={ mergedLineStyles }>{ lines[ 0 ] }</Text>;
 	}
 
 	return (
-		<Text style={ style ? baseStyles.concat( style ) : baseStyles }>
-			{ script && text !== undefined ? script.shape( text ) : children }
-		</Text>
+		<View>
+			{ lines.map( ( line, index ) => (
+				<Text key={ index } style={ mergedLineStyles }>
+					{ line }
+				</Text>
+			) ) }
+		</View>
 	);
 };
 
