@@ -441,11 +441,27 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 	// `inProgress` nor `disabled` is true yet). Cleared once a real busy signal
 	// takes over, and reset on reload.
 	const [ isEnabling, setIsEnabling ] = useState( false );
-	const handleEnable = useCallback( () => {
+	const handleEnable = useCallback( async () => {
 		setIsEnabling( true );
-		onEnable();
+		try {
+			const completedLocally = await onEnable();
+			// Clear once the enable settles locally — covers early-return paths (e.g.
+			// dimensions already exist) where neither `inProgress` nor `disabled`
+			// toggles. On the OAuth path the redirect holds busy state, so let
+			// `disabled`/reload clear `isEnabling`.
+			if ( completedLocally ) {
+				setIsEnabling( false );
+			}
+		} catch {
+			// An unexpected failure means no OAuth redirect took over, so don't
+			// leave the CTA spinning.
+			setIsEnabling( false );
+		}
 	}, [ onEnable ] );
 	useEffect( () => {
+		// Clears while the action is still underway on the create and
+		// OAuth-redirect paths, where `inProgress`/`disabled` carry the busy
+		// state after this resets.
 		if ( isEnabling && ( inProgress || disabled ) ) {
 			setIsEnabling( false );
 		}

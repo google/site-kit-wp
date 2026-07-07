@@ -76,15 +76,13 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'should call global.history.back when the Go to Analytics button is clicked', () => {
-			const backSpy = jest
-				.spyOn( global.history, 'back' )
-				.mockImplementation( () => {} );
+		it( 'should call onRetry when the Go to Analytics button is clicked', () => {
+			const onRetry = jest.fn();
 
 			const { getByRole } = render(
 				<AnalyticsAccountCreationErrorNotice
 					errorCode="user_cancel"
-					onRetry={ () => {} }
+					onRetry={ onRetry }
 				/>,
 				{ registry }
 			);
@@ -93,9 +91,7 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 				getByRole( 'button', { name: /go to analytics/i } )
 			);
 
-			expect( backSpy ).toHaveBeenCalled();
-
-			backSpy.mockRestore();
+			expect( onRetry ).toHaveBeenCalled();
 		} );
 	} );
 

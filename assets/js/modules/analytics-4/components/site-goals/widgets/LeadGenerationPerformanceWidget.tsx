@@ -319,13 +319,27 @@ const LeadGenerationPerformanceWidget: FC<
 		);
 	}, [ widgetEventCategory ] );
 
-	// TODO: Update the link to the relevant support URL once it's created.
-	// See: https://github.com/google/site-kit-wp/issues/12727
-	const keyActionSupportURL = useSelect(
+	const keyActionDocumentationURL = useSelect(
 		( select: Select ) =>
-			select( CORE_SITE ).getGoogleSupportURL( {
-				path: '/TODO-SUPPORT-PATH',
-			} ),
+			select( CORE_SITE ).getDocumentationLinkURL(
+				'site-goals-lead-generation-key-action'
+			),
+		[]
+	);
+
+	const otherFormCompletionsDocumentationURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getDocumentationLinkURL(
+				'site-goals-other-form-completions'
+			),
+		[]
+	);
+
+	const pluginConversionTrackingDocumentationURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getDocumentationLinkURL(
+				'plugin-conversion-tracking'
+			),
 		[]
 	);
 
@@ -459,7 +473,7 @@ const LeadGenerationPerformanceWidget: FC<
 		formProviders,
 		formPagePaths,
 		referenceSiteURL,
-		keyActionSupportURL
+		pluginConversionTrackingDocumentationURL
 	);
 
 	const { leadEventsReportOptions, engagementReportOptions } =
@@ -585,7 +599,9 @@ const LeadGenerationPerformanceWidget: FC<
 			) }
 
 			{ isOtherSourcesTab && (
-				<OtherSourcesNotice learnMoreURL={ keyActionSupportURL } />
+				<OtherSourcesNotice
+					learnMoreURL={ otherFormCompletionsDocumentationURL }
+				/>
 			) }
 
 			{ loading ? (
@@ -598,7 +614,7 @@ const LeadGenerationPerformanceWidget: FC<
 				>
 					<KeyActionTiles
 						isOtherSourcesTab={ isOtherSourcesTab }
-						supportURL={ keyActionSupportURL }
+						supportURL={ keyActionDocumentationURL }
 						rateTitle={ __(
 							'Form completion rate',
 							'google-site-kit'

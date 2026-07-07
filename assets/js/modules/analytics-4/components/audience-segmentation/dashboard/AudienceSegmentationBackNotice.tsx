@@ -35,10 +35,15 @@ import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './AudienceSelectionPanel/constants';
 
 export const AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG =
 	'audience-segmentation-back-notice';
+
+const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
 
 interface AudienceSegmentationBackNoticeProps {
 	Widget: ElementType;
@@ -49,19 +54,28 @@ const AudienceSegmentationBackNotice: FC<
 > = ( { Widget } ) => {
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { setValue } = useDispatch( CORE_UI );
+	const viewContext = useViewContext();
 
-	const handleDismiss = useCallback( async () => {
-		await dismissItem( AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG );
-	}, [ dismissItem ] );
+	const trackEventCategory = `${ viewContext }_audiences-reshown`;
 
-	const handleSelectGroups = useCallback( async () => {
-		await handleDismiss();
+	const onDismiss = useCallback( () => {
+		trackEvent( trackEventCategory, 'dismiss_notice' );
+		dismissItem( AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG );
+	}, [ dismissItem, trackEventCategory ] );
+
+	const onInView = useCallback( () => {
+		trackEvent( trackEventCategory, 'view_notice' );
+	}, [ trackEventCategory ] );
+
+	const onSelectGroups = useCallback( () => {
+		trackEvent( trackEventCategory, 'confirm_notice' );
+		dismissItem( AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG );
 		setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
-	}, [ handleDismiss, setValue ] );
+	}, [ dismissItem, setValue, trackEventCategory ] );
 
 	return (
 		<Widget noPadding>
-			<Notice
+			<NoticeWithIntersectionObserver
 				type={ NOTICE_TYPES.INFO_CIRCLE }
 				title={ __(
 					'Visitor groups are back on your dashboard',
@@ -73,12 +87,13 @@ const AudienceSegmentationBackNotice: FC<
 				) }
 				dismissButton={ {
 					label: __( 'Got it', 'google-site-kit' ),
-					onClick: handleDismiss,
+					onClick: onDismiss,
 				} }
 				ctaButton={ {
 					label: __( 'Select groups', 'google-site-kit' ),
-					onClick: handleSelectGroups,
+					onClick: onSelectGroups,
 				} }
+				onInView={ onInView }
 			/>
 		</Widget>
 	);

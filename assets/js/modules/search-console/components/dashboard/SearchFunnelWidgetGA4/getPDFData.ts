@@ -37,6 +37,8 @@ import renderGoogleChartToDataURI, {
 } from '@/js/components/pdf-export/render-google-chart-to-data-uri';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { extractAnalytics4DashboardData } from '@/js/modules/analytics-4/utils';
@@ -379,10 +381,12 @@ async function resolveReport< T = unknown >(
 	args: SearchConsoleReportOptions | Analytics4ReportOptions,
 	signal: AbortSignal
 ): Promise< { report: T | undefined; error: unknown } > {
-	await registry.resolveSelect( storeName ).getReport( args, { signal } );
+	const report = await registry
+		.resolveSelect( storeName )
+		.getReport( args, { signal } );
 
 	return {
-		report: registry.select( storeName ).getReport( args ),
+		report,
 		error: registry
 			.select( storeName )
 			.getErrorForSelector( 'getReport', [ args ] ),
@@ -596,32 +600,55 @@ export default async function getPDFData( {
 
 	const url = registry.select( CORE_SITE ).getCurrentEntityURL() || undefined;
 
+	const includeGA4Reports = await registry
+		.resolveSelect( CORE_MODULES )
+		.isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+
 	const searchConsoleArgs = getSearchConsoleReportOptions( {
 		compareStartDate,
 		endDate,
 		url,
 	} );
-	const keyEventsOverviewArgs = getGA4KeyEventsOverviewReportOptions( {
+
+	const ga4ReportArgs = {
 		startDate,
 		endDate,
 		compareStartDate,
 		compareEndDate,
 		url,
-	} );
-	const keyEventsStatsArgs = getGA4KeyEventsReportOptions( {
-		startDate,
-		endDate,
-		compareStartDate,
-		compareEndDate,
-		url,
-	} );
-	const visitorsArgs = getGA4VisitorsReportOptions( {
-		startDate,
-		endDate,
-		compareStartDate,
-		compareEndDate,
-		url,
-	} );
+	};
+
+	let searchConsoleReportsToIncludeWhenAnalyticsIsActive: Promise< {
+		report: Report | undefined;
+		error: unknown;
+	} >[] = [
+		Promise.resolve( { report: undefined, error: null } ),
+		Promise.resolve( { report: undefined, error: null } ),
+		Promise.resolve( { report: undefined, error: null } ),
+	];
+
+	if ( includeGA4Reports ) {
+		searchConsoleReportsToIncludeWhenAnalyticsIsActive = [
+			resolveReport< Report >(
+				registry,
+				MODULES_ANALYTICS_4,
+				getGA4KeyEventsOverviewReportOptions( ga4ReportArgs ),
+				signal
+			),
+			resolveReport< Report >(
+				registry,
+				MODULES_ANALYTICS_4,
+				getGA4KeyEventsReportOptions( ga4ReportArgs ),
+				signal
+			),
+			resolveReport< Report >(
+				registry,
+				MODULES_ANALYTICS_4,
+				getGA4VisitorsReportOptions( ga4ReportArgs ),
+				signal
+			),
+		];
+	}
 
 	const [ searchConsole, keyEventsOverview, keyEventsStats, visitors ] =
 		await Promise.all( [
@@ -631,24 +658,7 @@ export default async function getPDFData( {
 				searchConsoleArgs,
 				signal
 			),
-			resolveReport< Report >(
-				registry,
-				MODULES_ANALYTICS_4,
-				keyEventsOverviewArgs,
-				signal
-			),
-			resolveReport< Report >(
-				registry,
-				MODULES_ANALYTICS_4,
-				keyEventsStatsArgs,
-				signal
-			),
-			resolveReport< Report >(
-				registry,
-				MODULES_ANALYTICS_4,
-				visitorsArgs,
-				signal
-			),
+			...searchConsoleReportsToIncludeWhenAnalyticsIsActive,
 		] );
 
 	if ( signal.aborted ) {
@@ -680,26 +690,29 @@ export default async function getPDFData( {
 		} );
 	}
 
-	const [ impressions, clicks, uniqueVisitors, keyEvents ] =
-		await Promise.all( [
-			buildSearchConsoleCard( {
-				report: searchConsole.report,
-				reportError: searchConsole.error,
-				metricKey: 'impressions',
-				currentLabel: __( 'Impressions', 'google-site-kit' ),
-				color: PDF_COLORS.BLUE_B_400,
-				dateRangeLength,
-				signal,
-			} ),
-			buildSearchConsoleCard( {
-				report: searchConsole.report,
-				reportError: searchConsole.error,
-				metricKey: 'clicks',
-				currentLabel: __( 'Clicks', 'google-site-kit' ),
-				color: PDF_COLORS.TEAL_T_300,
-				dateRangeLength,
-				signal,
-			} ),
+	const cardsToBuild: Promise< MetricCardResult >[] = [
+		buildSearchConsoleCard( {
+			report: searchConsole.report,
+			reportError: searchConsole.error,
+			metricKey: 'impressions',
+			currentLabel: __( 'Impressions', 'google-site-kit' ),
+			color: PDF_COLORS.BLUE_B_400,
+			dateRangeLength,
+			signal,
+		} ),
+		buildSearchConsoleCard( {
+			report: searchConsole.report,
+			reportError: searchConsole.error,
+			metricKey: 'clicks',
+			currentLabel: __( 'Clicks', 'google-site-kit' ),
+			color: PDF_COLORS.TEAL_T_300,
+			dateRangeLength,
+			signal,
+		} ),
+	];
+
+	if ( visitors.report ) {
+		cardsToBuild.push(
 			buildAnalyticsCard( {
 				statsReport: visitors.report,
 				statsError: visitors.error,
@@ -713,7 +726,16 @@ export default async function getPDFData( {
 				dateRangeLength,
 				referenceDate,
 				signal,
-			} ),
+			} )
+		);
+	} else {
+		cardsToBuild.push(
+			Promise.resolve( { metric: null, chartImage: null } )
+		);
+	}
+
+	if ( keyEventsStats.report && keyEventsOverview.report ) {
+		cardsToBuild.push(
 			buildAnalyticsCard( {
 				statsReport: keyEventsStats.report,
 				statsError: keyEventsStats.error,
@@ -733,8 +755,16 @@ export default async function getPDFData( {
 				dateRangeLength,
 				referenceDate,
 				signal,
-			} ),
-		] );
+			} )
+		);
+	} else {
+		cardsToBuild.push(
+			Promise.resolve( { metric: null, chartImage: null } )
+		);
+	}
+
+	const [ impressions, clicks, uniqueVisitors, keyEvents ] =
+		await Promise.all( cardsToBuild );
 
 	if ( signal.aborted ) {
 		return { data: null };

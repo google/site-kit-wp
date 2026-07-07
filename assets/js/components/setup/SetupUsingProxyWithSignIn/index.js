@@ -72,8 +72,11 @@ export default function SetupUsingProxyWithSignIn() {
 	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { activateModule } = useDispatch( CORE_MODULES );
-	const { saveInitialSetupSettings, setIsAnalyticsSetupComplete } =
-		useDispatch( CORE_USER );
+	const {
+		saveInitialSetupSettings,
+		setIsAnalyticsSetupComplete,
+		setHasSitePurposeAnswer,
+	} = useDispatch( CORE_USER );
 	const { registerNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const proxySetupURL = useSelect( ( select ) =>
@@ -108,47 +111,60 @@ export default function SetupUsingProxyWithSignIn() {
 		}
 	}, [ registerNotification, showResetNotice, viewContext ] );
 
-	const setupAnalytics = useCallback( async () => {
+	const setup = useCallback( async () => {
 		let moduleReauthURL;
+		let shouldSaveInitialSetupSettings = false;
 
-		const { error, response } = await activateModule(
-			MODULE_SLUG_ANALYTICS_4
-		);
+		if ( connectAnalytics ) {
+			const { error, response } = await activateModule(
+				MODULE_SLUG_ANALYTICS_4
+			);
 
-		if ( error ) {
-			throw error;
+			if ( error ) {
+				throw error;
+			}
+
+			await trackEvent(
+				`${ viewContext }_setup`,
+				setupFlowRefreshEnabled
+					? 'setup_flow_v3_start_with_analytics'
+					: 'start_setup_with_analytics'
+			);
+
+			moduleReauthURL = response.moduleReauthURL;
+
+			if ( setupFlowRefreshEnabled ) {
+				moduleReauthURL = addQueryArgs( moduleReauthURL, {
+					showProgress: true,
+				} );
+
+				setIsAnalyticsSetupComplete( false );
+				shouldSaveInitialSetupSettings = true;
+			}
 		}
 
-		await trackEvent(
-			`${ viewContext }_setup`,
-			setupFlowRefreshEnabled
-				? 'setup_flow_v3_start_with_analytics'
-				: 'start_setup_with_analytics'
-		);
+		if ( setupFlowRefreshPhase4Enabled ) {
+			setHasSitePurposeAnswer( false );
+			shouldSaveInitialSetupSettings = true;
+		}
 
-		moduleReauthURL = response.moduleReauthURL;
+		if ( shouldSaveInitialSetupSettings ) {
+			const { error } = await saveInitialSetupSettings();
 
-		if ( setupFlowRefreshEnabled ) {
-			moduleReauthURL = addQueryArgs( moduleReauthURL, {
-				showProgress: true,
-			} );
-
-			setIsAnalyticsSetupComplete( false );
-
-			const { error: saveInitialSetupSettingsError } =
-				await saveInitialSetupSettings();
-
-			if ( saveInitialSetupSettingsError ) {
-				throw saveInitialSetupSettingsError;
+			if ( error ) {
+				throw error;
 			}
 		}
 
 		return moduleReauthURL;
 	}, [
 		activateModule,
+		connectAnalytics,
 		saveInitialSetupSettings,
+		setHasSitePurposeAnswer,
 		setIsAnalyticsSetupComplete,
 		setupFlowRefreshEnabled,
+		setupFlowRefreshPhase4Enabled,
 		viewContext,
 	] );
 
@@ -158,30 +174,27 @@ export default function SetupUsingProxyWithSignIn() {
 
 			let moduleReauthURL;
 
-			if ( connectAnalytics ) {
-				try {
-					moduleReauthURL = await setupAnalytics();
-				} catch {
-					if ( setupFlowRefreshPhase4Enabled ) {
-						registerNotification(
-							ANALYTICS_ACTIVATION_ERROR_NOTIFICATION,
-							{
-								Component: () => (
-									<AnalyticsActivationErrorNotification
-										onRetry={ onButtonClick }
-									/>
-								),
-								priority: PRIORITY.ERROR_HIGH,
-								areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
-								viewContexts: [ viewContext ],
-								isDismissible: false,
-								featureFlag: 'setupFlowRefreshPhase4',
-							}
-						);
-
-						return;
-					}
+			try {
+				moduleReauthURL = await setup();
+			} catch {
+				if ( ! setupFlowRefreshPhase4Enabled ) {
+					return;
 				}
+
+				registerNotification( ANALYTICS_ACTIVATION_ERROR_NOTIFICATION, {
+					Component: () => (
+						<AnalyticsActivationErrorNotification
+							onRetry={ onButtonClick }
+						/>
+					),
+					priority: PRIORITY.ERROR_HIGH,
+					areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
+					viewContexts: [ viewContext ],
+					isDismissible: false,
+					featureFlag: 'setupFlowRefreshPhase4',
+				} );
+
+				return;
 			}
 
 			if ( proxySetupURL ) {
@@ -236,17 +249,16 @@ export default function SetupUsingProxyWithSignIn() {
 			}
 		},
 		[
-			connectAnalytics,
-			proxySetupURL,
-			postAuthDashboardURL,
-			isConnected,
-			setupAnalytics,
 			forwardableParams,
-			viewContext,
+			isConnected,
+			navigateTo,
+			postAuthDashboardURL,
+			proxySetupURL,
 			registerNotification,
+			setup,
 			setupFlowRefreshEnabled,
 			setupFlowRefreshPhase4Enabled,
-			navigateTo,
+			viewContext,
 		]
 	);
 

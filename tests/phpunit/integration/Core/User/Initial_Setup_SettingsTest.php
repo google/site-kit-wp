@@ -44,6 +44,7 @@ class Initial_Setup_SettingsTest extends TestCase {
 		$this->assertEquals(
 			array(
 				'isAnalyticsSetupComplete' => null,
+				'hasSitePurposeAnswer'     => null,
 			),
 			$this->initial_setup_settings->get(),
 			'Expected initial setup settings to return default values when no user meta exists'
@@ -52,33 +53,41 @@ class Initial_Setup_SettingsTest extends TestCase {
 
 	public function data_initial_setup_settings() {
 		return array(
-			'empty by default'   => array(
+			'empty by default'              => array(
 				null,
 				array(),
 			),
-			'non-array bool'     => array(
+			'non-array bool'                => array(
 				false,
 				array(),
 			),
-			'non-array int'      => array(
+			'non-array int'                 => array(
 				123,
 				array(),
 			),
-			'boolean true flag'  => array(
+			'boolean true flag'             => array(
 				array( 'isAnalyticsSetupComplete' => true ),
 				array( 'isAnalyticsSetupComplete' => true ),
 			),
-			'boolean false flag' => array(
+			'boolean false flag'            => array(
 				array( 'isAnalyticsSetupComplete' => false ),
 				array( 'isAnalyticsSetupComplete' => false ),
 			),
-			'string flag'        => array(
+			'string flag'                   => array(
 				array( 'isAnalyticsSetupComplete' => 'some string' ),
 				array( 'isAnalyticsSetupComplete' => true ),
 			),
-			'string zero flag'   => array(
+			'string zero flag'              => array(
 				array( 'isAnalyticsSetupComplete' => '0' ),
 				array( 'isAnalyticsSetupComplete' => false ),
+			),
+			'site purpose true flag'        => array(
+				array( 'hasSitePurposeAnswer' => true ),
+				array( 'hasSitePurposeAnswer' => true ),
+			),
+			'site purpose string zero flag' => array(
+				array( 'hasSitePurposeAnswer' => '0' ),
+				array( 'hasSitePurposeAnswer' => false ),
 			),
 		);
 	}
@@ -102,30 +111,52 @@ class Initial_Setup_SettingsTest extends TestCase {
 	public function test_merge() {
 		$this->initial_setup_settings->merge( array( 'isAnalyticsSetupComplete' => 1 ) );
 		$this->assertEqualSetsWithIndex(
-			array( 'isAnalyticsSetupComplete' => true ),
+			array(
+				'isAnalyticsSetupComplete' => true,
+				'hasSitePurposeAnswer'     => null,
+			),
 			$this->initial_setup_settings->get(),
 			'Expected merge to coerce truthy values to boolean true'
 		);
 
 		$this->initial_setup_settings->merge( array( 'test_key' => 'test_value' ) );
 		$this->assertEqualSetsWithIndex(
-			array( 'isAnalyticsSetupComplete' => true ),
+			array(
+				'isAnalyticsSetupComplete' => true,
+				'hasSitePurposeAnswer'     => null,
+			),
 			$this->initial_setup_settings->get(),
 			'Expected merge to ignore unsupported settings keys'
 		);
 
 		$this->initial_setup_settings->merge( array( 'isAnalyticsSetupComplete' => false ) );
 		$this->assertEqualSetsWithIndex(
-			array( 'isAnalyticsSetupComplete' => false ),
+			array(
+				'isAnalyticsSetupComplete' => false,
+				'hasSitePurposeAnswer'     => null,
+			),
 			$this->initial_setup_settings->get(),
 			'Expected merge to update the analytics setup completion flag'
 		);
 
 		$this->initial_setup_settings->merge( array( 'isAnalyticsSetupComplete' => null ) );
 		$this->assertEqualSetsWithIndex(
-			array( 'isAnalyticsSetupComplete' => false ),
+			array(
+				'isAnalyticsSetupComplete' => false,
+				'hasSitePurposeAnswer'     => null,
+			),
 			$this->initial_setup_settings->get(),
 			'Expected merge to ignore null values when updating settings'
+		);
+
+		$this->initial_setup_settings->merge( array( 'hasSitePurposeAnswer' => 1 ) );
+		$this->assertEqualSetsWithIndex(
+			array(
+				'isAnalyticsSetupComplete' => false,
+				'hasSitePurposeAnswer'     => true,
+			),
+			$this->initial_setup_settings->get(),
+			'Expected merge to update the site purpose answer flag'
 		);
 	}
 }

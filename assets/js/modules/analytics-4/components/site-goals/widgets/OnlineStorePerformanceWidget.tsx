@@ -207,13 +207,19 @@ const OnlineStorePerformanceWidget: FC<
 		);
 	}, [ widgetEventCategory ] );
 
-	// TODO: Update the link to the relevant support URL once it's created.
-	// See: https://github.com/google/site-kit-wp/issues/12727
-	const keyActionSupportURL = useSelect(
+	const keyActionDocumentationURL = useSelect(
 		( select: Select ) =>
-			select( CORE_SITE ).getGoogleSupportURL( {
-				path: '/TODO-SUPPORT-PATH',
-			} ),
+			select( CORE_SITE ).getDocumentationLinkURL(
+				'site-goals-online-store-key-action'
+			),
+		[]
+	);
+
+	const otherSourcesDocumentationURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getDocumentationLinkURL(
+				'site-goals-other-sources'
+			),
 		[]
 	);
 
@@ -459,7 +465,9 @@ const OnlineStorePerformanceWidget: FC<
 			) }
 
 			{ isOtherSourcesTab && (
-				<OtherSourcesNotice learnMoreURL={ keyActionSupportURL } />
+				<OtherSourcesNotice
+					learnMoreURL={ otherSourcesDocumentationURL }
+				/>
 			) }
 
 			{ loading ? (
@@ -476,7 +484,7 @@ const OnlineStorePerformanceWidget: FC<
 				>
 					<KeyActionTiles
 						isOtherSourcesTab={ isOtherSourcesTab }
-						supportURL={ keyActionSupportURL }
+						supportURL={ keyActionDocumentationURL }
 						rateTitle={ EVENT_RATE_LABELS[ primaryEvent ] }
 						totalTitle={ EVENT_TOTAL_LABELS[ primaryEvent ] }
 						totalSubtitle={ sprintf(
