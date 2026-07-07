@@ -100,6 +100,22 @@ describe( 'ChangeMetricsLink', () => {
 		expect( button ).toHaveTextContent( 'Change metrics' );
 	} );
 
+	it( 'should render "Select metrics" when the `setupFlowRefresh` feature flag is enabled', () => {
+		provideKeyMetrics( registry, {
+			widgetSlugs: [
+				KM_ANALYTICS_LEAST_ENGAGING_PAGES,
+				KM_ANALYTICS_MOST_ENGAGING_PAGES,
+			],
+		} );
+
+		const { getByRole } = render( <ChangeMetricsLink />, {
+			registry,
+			features: [ 'setupFlowRefresh' ],
+		} );
+
+		expect( getByRole( 'button' ) ).toHaveTextContent( 'Select metrics' );
+	} );
+
 	it( 'should set UI store key correctly when button is clicked', () => {
 		provideKeyMetrics( registry, {
 			widgetSlugs: [

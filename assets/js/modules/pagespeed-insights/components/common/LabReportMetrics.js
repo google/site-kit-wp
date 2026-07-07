@@ -33,18 +33,14 @@ import { __, _x } from '@wordpress/i18n';
 import ErrorNotice from '@/js/components/ErrorNotice';
 import ReportErrorActions from '@/js/components/ReportErrorActions';
 import P from '@/js/components/Typography/P';
-import { getScoreCategory } from '@/js/modules/pagespeed-insights/util';
 import { getReportErrorMessage } from '@/js/util/errors';
 import MetricsLearnMoreLink from './MetricsLearnMoreLink';
 import ReportMetric from './ReportMetric';
+import { extractLabMetrics } from './reportMetrics';
 
 export default function LabReportMetrics( { data, error } ) {
-	const largestContentfulPaint =
-		data?.lighthouseResult?.audits?.[ 'largest-contentful-paint' ];
-	const cumulativeLayoutShift =
-		data?.lighthouseResult?.audits?.[ 'cumulative-layout-shift' ];
-	const totalBlockingTime =
-		data?.lighthouseResult?.audits?.[ 'total-blocking-time' ];
+	const { largestContentfulPaint, cumulativeLayoutShift, totalBlockingTime } =
+		extractLabMetrics( data );
 
 	if ( error ) {
 		const errorMessage = getReportErrorMessage( error );
@@ -99,12 +95,8 @@ export default function LabReportMetrics( { data, error } ) {
 							'Time it takes for the page to load',
 							'google-site-kit'
 						) }
-						displayValue={
-							largestContentfulPaint?.displayValue || '0'
-						}
-						category={ getScoreCategory(
-							largestContentfulPaint?.score || 0
-						) }
+						displayValue={ largestContentfulPaint.displayValue }
+						category={ largestContentfulPaint.category }
 					/>
 					<ReportMetric
 						title={ _x(
@@ -116,12 +108,8 @@ export default function LabReportMetrics( { data, error } ) {
 							'How stable the elements on the page are',
 							'google-site-kit'
 						) }
-						displayValue={
-							cumulativeLayoutShift?.displayValue || '0'
-						}
-						category={ getScoreCategory(
-							cumulativeLayoutShift?.score || 0
-						) }
+						displayValue={ cumulativeLayoutShift.displayValue }
+						category={ cumulativeLayoutShift.category }
 					/>
 					<ReportMetric
 						title={ __( 'Total Blocking Time', 'google-site-kit' ) }
@@ -129,10 +117,8 @@ export default function LabReportMetrics( { data, error } ) {
 							'How long people had to wait after the page loaded before they could click something',
 							'google-site-kit'
 						) }
-						displayValue={ totalBlockingTime?.displayValue || '0' }
-						category={ getScoreCategory(
-							totalBlockingTime?.score || 0
-						) }
+						displayValue={ totalBlockingTime.displayValue }
+						category={ totalBlockingTime.category }
 						hintText={ <br /> }
 						isLast
 					/>

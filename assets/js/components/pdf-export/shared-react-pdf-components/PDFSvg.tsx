@@ -1,5 +1,5 @@
 /**
- * PDFNoData: the shared empty-state message for PDF report widgets.
+ * Shared SVG wrapper for the PDF report.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -19,31 +19,31 @@
 /**
  * External dependencies
  */
-import { StyleSheet, Text } from '@react-pdf/renderer';
+import { Svg } from '@react-pdf/renderer';
 import { FC } from 'react';
-
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
+import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
 
-const styles = StyleSheet.create( {
-	noData: {
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 9,
-		color: '#646464',
-	},
-} );
+export interface PDFSvgProps {
+	/** Width in pixels. The component scales it to page points. */
+	width: number;
+	/** Height in pixels. The component scales it to page points. */
+	height: number;
+	/** The `viewBox` for the SVG's own coordinate system. */
+	viewBox: string;
+}
 
-const PDFNoData: FC = () => (
-	<Text style={ styles.noData }>
-		{ __( 'No data available.', 'google-site-kit' ) }
-	</Text>
+const PDFSvg: FC< PDFSvgProps > = ( { width, height, viewBox, children } ) => (
+	<Svg
+		width={ scalePDFValue( width ) }
+		height={ scalePDFValue( height ) }
+		viewBox={ viewBox }
+	>
+		{ children }
+	</Svg>
 );
 
-export default PDFNoData;
+export default PDFSvg;

@@ -17,8 +17,14 @@
  */
 
 /**
+ * External dependencies
+ */
+import TestRenderer from 'react-test-renderer';
+
+/**
  * Internal dependencies
  */
+import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import { render } from '@tests/js/test-utils';
 import PDFPieChartTile from './PDFPieChartTile';
 
@@ -91,19 +97,23 @@ describe( 'PDFPieChartTile', () => {
 	} );
 
 	it( 'right-aligns each percentage', () => {
-		const { getByText } = render(
-			<PDFPieChartTile
-				title="Visitors by channels"
-				rows={ ROWS }
-				chartImage={ CHART_DATA_URI }
-			/>
+		// The percentage text holds an array of styles, which only the test
+		// renderer's JSON tree keeps, so the assertion reads the JSON.
+		const pieChartTileJSON = JSON.stringify(
+			TestRenderer.create(
+				<PDFPieChartTile
+					title="Visitors by channels"
+					rows={ ROWS }
+					chartImage={ CHART_DATA_URI }
+				/>
+			).toJSON()
 		);
 
-		expect( getByText( '79.2%' ) ).toHaveStyle( { textAlign: 'right' } );
+		expect( pieChartTileJSON ).toContain( '"textAlign":"right"' );
 	} );
 
-	it( 'renders the Data unavailable placeholder when chartImage is null', () => {
-		const { container, getByText, queryByText } = render(
+	it( 'returns null when the chart image is not set', () => {
+		const renderer = TestRenderer.create(
 			<PDFPieChartTile
 				title="Visitors by channels"
 				rows={ ROWS }
@@ -111,12 +121,23 @@ describe( 'PDFPieChartTile', () => {
 			/>
 		);
 
-		expect( getByText( 'Visitors by channels' ) ).toBeInTheDocument();
-		expect( getByText( 'Data unavailable' ) ).toBeInTheDocument();
-		// The legend and donut are dropped while the placeholder shows.
-		expect( queryByText( 'Organic Search' ) ).not.toBeInTheDocument();
-		expect(
-			container.querySelector( 'pdf-image' )
-		).not.toBeInTheDocument();
+		expect( renderer.toJSON() ).toBeNull();
+	} );
+
+	it( 'scales the title font size and the donut image', () => {
+		const json = JSON.stringify(
+			TestRenderer.create(
+				<PDFPieChartTile
+					title="Visitors by channels"
+					rows={ ROWS }
+					chartImage={ CHART_DATA_URI }
+				/>
+			).toJSON()
+		);
+
+		// The title font size scales with the page.
+		expect( json ).toContain( `"fontSize":${ 14 * PDF_SCALE }` );
+		// The donut image width scales with the page.
+		expect( json ).toContain( `"width":${ 145.7 * PDF_SCALE }` );
 	} );
 } );

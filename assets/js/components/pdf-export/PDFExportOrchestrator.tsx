@@ -40,20 +40,20 @@ import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
-import type {
+import {
 	PDFReportDates,
 	Widget,
 	WidgetArea,
-	WidgetPDFConfig,
 } from '@/js/googlesitekit/widgets/types';
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { getPreviousDate, trackEvent } from '@/js/util';
 import { registerPDFFonts } from './pdf-fonts-react';
 import { getPDFFilename, triggerDownload } from './pdf-utils';
+import { WidgetWithPDF, isActivePDFWidget } from './pdf-widget-eligibility';
 import { SECTION_ICONS } from './section-icons';
 import DashboardReport from './shared-react-pdf-components/DashboardReport';
-import type { PDFHeaderSection, PDFReportArea, PDFReportWidget } from './types';
+import { PDFHeaderSection, PDFReportArea, PDFReportWidget } from './types';
 
 const STAGE_IDLE = 'IDLE' as const;
 const STAGE_LOADING = 'LOADING' as const;
@@ -83,21 +83,8 @@ const BLOB_REVOKE_DELAY_MS = 30 * 1000;
 // Progress budget reserved for the data-loading stage; BUILDING fills the rest.
 const LOADING_PROGRESS_MAX = 90;
 
-type WidgetWithPDF = Widget & { pdf: WidgetPDFConfig };
-
-/**
- * Determines whether a registry widget declares a PDF export configuration.
- *
- * @since 1.181.0
- *
- * @param widget Registry widget.
- * @return `true` when the widget has a `pdf` config.
- */
-function hasPDFConfig( widget: Widget ): widget is WidgetWithPDF {
-	return !! widget.pdf;
-}
-
 interface State {
+	/** The current stage of the export state machine. */
 	stage: Stage;
 }
 
@@ -138,9 +125,18 @@ function isAbortError( error: unknown ): boolean {
 	return error instanceof DOMException && error.name === 'AbortError';
 }
 
-// Throws an `AbortError` when the signal has been aborted. `getData` swallows
-// abort and resolves normally, so the orchestrator cannot rely on its return
-// value to detect cancellation: it must check the signal after every await.
+/**
+ * Throws an `AbortError` when the signal has been aborted.
+ *
+ * `getData` swallows abort and resolves normally, so the orchestrator cannot
+ * rely on its return value to detect cancellation: it must check the signal
+ * after every await.
+ *
+ * @since 1.181.0
+ *
+ * @param  signal The abort signal to check.
+ * @return {void}
+ */
 function throwIfAborted( signal: AbortSignal ): void {
 	if ( signal.aborted ) {
 		throw new DOMException( 'Aborted', 'AbortError' );
@@ -178,6 +174,7 @@ function nextFrame( signal: AbortSignal ): Promise< void > {
 }
 
 export interface PDFExportOrchestratorProps {
+	/** Called when the export finishes, cancels, or fails, so the parent can unmount the orchestrator. */
 	onComplete: () => void;
 }
 
@@ -362,19 +359,17 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				// PDF-aware selector). `selectedContextSlugs`,
 				// `selectedWidgetSlugs`, `dates` and `viewableModules` are
 				// snapshotted once above. Nothing below re-reads reactive state.
-				const widgetsSelect = (
-					registry as unknown as {
-						select: ( storeName: string ) => {
-							getWidgetAreas: (
-								contextSlug: string
-							) => WidgetArea[];
-							getWidgets: (
-								areaSlug: string,
-								options?: { modules?: string[] }
-							) => Widget[];
-						};
-					}
-				 ).select( CORE_WIDGETS );
+				const { select } = registry as unknown as {
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The registry `select` is loosely typed, so `isActive` predicates can read store selectors without casting.
+					select: ( storeName: string ) => any;
+				};
+				const widgetsSelect = select( CORE_WIDGETS ) as {
+					getWidgetAreas: ( contextSlug: string ) => WidgetArea[];
+					getWidgets: (
+						areaSlug: string,
+						options?: { modules?: string[] }
+					) => Widget[];
+				};
 				const discoveredAreas: Array< {
 					areaSlug: string;
 					areaContextSlug: string;
@@ -402,7 +397,9 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 							.getWidgets( area.slug, {
 								modules: viewableModules || undefined,
 							} )
-							.filter( hasPDFConfig )
+							.filter( ( widget ): widget is WidgetWithPDF =>
+								isActivePDFWidget( widget, select )
+							)
 							.filter( ( widget ) =>
 								selectedWidgetSlugSet.has( widget.slug )
 							);
@@ -429,9 +426,11 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 					throw new Error( 'No PDF-capable widgets to export.' );
 				}
 
-				// Loading: resolve each widget's data sequentially. A failing
-				// widget is isolated and renders a placeholder; the export only
-				// errors when every widget fails.
+				/**
+				 * Loading: resolve each widget's data sequentially. The report
+				 * skips a failing widget, and the export only errors when
+				 * every widget fails.
+				 */
 				const loaded = new Map<
 					string,
 					Pick<

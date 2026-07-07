@@ -211,7 +211,8 @@
 	}
 
 	&.googlesitekit-notice--info,
-	&.googlesitekit-notice--info-alt {
+	&.googlesitekit-notice--info-alt,
+	&.googlesitekit-notice--info-circle {
 
 		.googlesitekit-notice__content {
 			color: $c-surfaces-on-surface;
@@ -238,7 +239,8 @@
 		}
 	}
 
-	&.googlesitekit-notice--info-alt {
+	&.googlesitekit-notice--info-alt,
+	&.googlesitekit-notice--info-circle {
 		background-color: $c-surfaces-surface;
 
 		.googlesitekit-notice__icon {

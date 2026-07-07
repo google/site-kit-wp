@@ -79,7 +79,11 @@ export default function ReportTable( props ) {
 					handleActiveIndexUpdate={ setActiveColumnIndex }
 				>
 					{ tabColumns.map( ( { title, badge } ) => (
-						<Tab key={ title } aria-label={ title }>
+						<Tab
+							key={ title }
+							aria-label={ title }
+							focusOnActivate={ false }
+						>
 							{ title }
 							{ badge }
 						</Tab>

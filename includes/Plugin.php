@@ -94,6 +94,17 @@ final class Plugin {
 		// Set up remote features before anything else.
 		( new Remote_Features_Provider( $this->context, $options ) )->register();
 
+		if ( ! defined( 'GOOGLESITEKIT_TESTS' ) ) {
+			// TODO: Remove this filter once `setupFlowRefresh` is fully rolled out
+			// and we no longer need to force it on for all users.
+			add_filter(
+				'googlesitekit_is_feature_enabled',
+				array( $this, 'force_setup_flow_refresh_feature_enabled' ),
+				10,
+				2
+			);
+		}
+
 		// REST route to set up a temporary tag to verify meta tag output works reliably.
 		add_filter(
 			'googlesitekit_rest_routes',
@@ -239,16 +250,14 @@ final class Plugin {
 				$conversion_tracking = new Core\Conversion_Tracking\Conversion_Tracking( $this->context, $options );
 				$conversion_tracking->register();
 
-				if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) ) {
-					$data_requests = new Core\Email_Reporting\Email_Reporting_Data_Requests(
-						$this->context,
-						$modules,
-						$transients,
-						$user_options,
-					);
+				$data_requests = new Core\Email_Reporting\Email_Reporting_Data_Requests(
+					$this->context,
+					$modules,
+					$transients,
+					$user_options,
+				);
 
-					( new Core\Email_Reporting\Email_Reporting( $this->context, $modules, $data_requests, $golinks, $authentication, $options, $user_options ) )->register();
-				}
+				( new Core\Email_Reporting\Email_Reporting( $this->context, $modules, $data_requests, $golinks, $authentication, $options, $user_options ) )->register();
 
 				if ( Feature_Flags::enabled( 'googleTagGateway' ) ) {
 					( new Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway( $this->context, $options ) )->register();
@@ -308,6 +317,23 @@ final class Plugin {
 	 */
 	public static function instance() {
 		return self::$instance;
+	}
+
+	/**
+	 * Forces the Setup Flow Refresh feature flag to be enabled.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param bool   $feature_enabled The current status of this feature flag.
+	 * @param string $feature_name    The feature name.
+	 * @return bool True for setupFlowRefresh, otherwise the original value.
+	 */
+	public function force_setup_flow_refresh_feature_enabled( $feature_enabled, $feature_name ) {
+		if ( 'setupFlowRefresh' === $feature_name ) {
+			return true;
+		}
+
+		return $feature_enabled;
 	}
 
 	/**

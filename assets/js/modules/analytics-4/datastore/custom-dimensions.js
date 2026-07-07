@@ -170,6 +170,7 @@ const baseActions = {
 	 * @since 1.182.0 Created the missing custom dimensions on the selected property, and added the Site Goals dimensions only when advanced data breakdowns is enabled for that property.
 	 *
 	 * @param {Array<string>} customDimensions Optional additional custom dimensions to create.
+	 * @return {Object} Object whose `error` property holds the available-dimensions sync error when the required dimensions already existed and that sync failed; otherwise an empty object.
 	 */
 	*createCustomDimensions( customDimensions = [] ) {
 		const registry = yield commonActions.getRegistry();
@@ -190,7 +191,7 @@ const baseActions = {
 		// Custom dimensions are created on the selected property, so there's
 		// nothing to create until a valid property is selected.
 		if ( ! isValidPropertyID( propertyID ) ) {
-			return;
+			return {};
 		}
 
 		const selectedMetricTiles = registry
@@ -236,7 +237,7 @@ const baseActions = {
 
 		// If no custom dimensions are required, there's nothing to create.
 		if ( ! uniqueRequiredCustomDimensions.length ) {
-			return;
+			return {};
 		}
 
 		/**
@@ -244,6 +245,19 @@ const baseActions = {
 		 * itself, not from the saved `availableCustomDimensions`, which only
 		 * holds the dimensions of the property saved in settings.
 		 */
+		// A finished resolver won't refetch, so a retry would reuse the stale
+		// error (e.g. missing GA4 permission). Invalidate first to force a
+		// fresh fetch that clears it.
+		const hasLoadError = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getCustomDimensionsError( propertyID );
+
+		if ( hasLoadError ) {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.invalidateResolution( 'getCustomDimensions', [ propertyID ] );
+		}
+
 		const propertyCustomDimensions = yield commonActions.await(
 			registry
 				.resolveSelect( MODULES_ANALYTICS_4 )
@@ -254,7 +268,7 @@ const baseActions = {
 		// can't tell which are missing, so creating them could add ones that
 		// already exist.
 		if ( ! Array.isArray( propertyCustomDimensions ) ) {
-			return;
+			return {};
 		}
 
 		// Find out the missing custom dimensions.
@@ -262,9 +276,14 @@ const baseActions = {
 			( dimension ) => ! propertyCustomDimensions.includes( dimension )
 		);
 
-		// If there are no missing custom dimensions, bail.
+		// No missing dimensions: the required ones already exist. Sync the saved
+		// `availableCustomDimensions` (which drives the success notice, not the
+		// property read) and return any sync error — a failed sync leaves the
+		// setting stale, so the notice can't render.
 		if ( ! missingCustomDimensions.length ) {
-			return;
+			const { error } =
+				yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions();
+			return { error };
 		}
 
 		yield {
@@ -304,6 +323,8 @@ const baseActions = {
 			type: SET_CUSTOM_DIMENSIONS_BEING_CREATED,
 			payload: { customDimensions: [] },
 		};
+
+		return {};
 	},
 
 	/**
@@ -564,6 +585,28 @@ const baseSelectors = {
 			return select( MODULES_ANALYTICS_4 ).getErrorForAction(
 				'createCustomDimension',
 				[ propertyID, CUSTOM_DIMENSION_DEFINITIONS[ customDimension ] ]
+			);
+		}
+	),
+
+	/**
+	 * Returns the error encountered while loading the property's custom dimensions.
+	 *
+	 * Custom dimension creation aborts early when this load fails (e.g. the user
+	 * lacks permission on the GA4 property), before any create error is recorded,
+	 * so this exposes that earlier failure.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} propertyID GA4 property ID to obtain the load error for.
+	 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
+	 */
+	getCustomDimensionsError: createRegistrySelector(
+		( select ) => ( state, propertyID ) => {
+			return select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+				'getCustomDimensions',
+				[ propertyID ]
 			);
 		}
 	),

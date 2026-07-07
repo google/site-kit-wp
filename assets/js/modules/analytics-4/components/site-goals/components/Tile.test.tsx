@@ -65,8 +65,8 @@ describe( 'Tile', () => {
 		expect( getByText( /Vs\. prev\./ ) ).toBeInTheDocument();
 	} );
 
-	it( 'shows a 0% change badge when the previous value is above zero and the values are equal', () => {
-		const { getByText } = render(
+	it( 'renders the "No change" badge instead of "0%" when the current value equals the previous value and the previous value is above zero', () => {
+		const { getByText, queryByText } = render(
 			<Tile
 				{ ...baseProps }
 				currentValue={ 1000 }
@@ -74,7 +74,58 @@ describe( 'Tile', () => {
 			/>
 		);
 
-		expect( getByText( '0%' ) ).toBeInTheDocument();
+		expect( getByText( 'No change' ) ).toBeInTheDocument();
+		expect( queryByText( '0%' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'gives the primary tile the neutral background when the current value equals the previous value and the previous value is above zero', () => {
+		const { container } = render(
+			<Tile
+				{ ...baseProps }
+				currentValue={ 1000 }
+				previousValue={ 1000 }
+				primary
+			/>
+		);
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-tile--primary__neutral'
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'keeps the neutral background off a non-primary tile when the current value equals the previous value', () => {
+		const { container } = render(
+			<Tile
+				{ ...baseProps }
+				currentValue={ 1000 }
+				previousValue={ 1000 }
+			/>
+		);
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-tile--primary__neutral'
+			)
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'keeps the neutral background off a primary tile when the previous value is zero', () => {
+		const { container } = render(
+			<Tile
+				{ ...baseProps }
+				currentValue={ 0 }
+				previousValue={ 0 }
+				primary
+			/>
+		);
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-tile--primary__neutral'
+			)
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'shows a -100% change badge when the previous value is above zero and the current value is zero', () => {
