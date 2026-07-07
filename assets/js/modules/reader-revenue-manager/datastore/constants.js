@@ -20,6 +20,11 @@ export const ERROR_CODE_NON_HTTPS_SITE = 'non_https_site';
 
 export const MODULES_READER_REVENUE_MANAGER = 'modules/reader-revenue-manager';
 
+export const READONLY_SCOPE =
+	'https://www.googleapis.com/auth/subscribewithgoogle.publications.readonly';
+export const MANAGE_SCOPE =
+	'https://www.googleapis.com/auth/subscribewithgoogle.publications.entitlements.manage';
+
 export const PUBLICATION_ONBOARDING_STATES = {
 	ONBOARDING_COMPLETE: 'ONBOARDING_COMPLETE',
 	ONBOARDING_ACTION_REQUIRED: 'ONBOARDING_ACTION_REQUIRED',

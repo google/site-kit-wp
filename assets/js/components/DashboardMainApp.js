@@ -30,6 +30,7 @@ import { Fragment, useEffect, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
 import { WELCOME_TOUR } from '@/js/feature-tours/constants';
 import {
@@ -61,6 +62,7 @@ import {
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
@@ -72,6 +74,8 @@ import { AudienceSelectionPanel } from '@/js/modules/analytics-4/components/audi
 import SiteGoalsIntroModalBanner from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import SiteGoalsSelectionPanel from '@/js/modules/analytics-4/components/site-goals/selection-panel';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { MANAGE_SCOPE } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { DAY_IN_SECONDS } from '@/js/util';
 import { getNavigationalScrollTop } from '@/js/util/scroll';
 import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
@@ -361,6 +365,17 @@ export default function DashboardMainApp() {
 		isKeyMetricsActive,
 	} );
 
+	const onSetupActivate = useActivateModuleCallback(
+		MODULE_SLUG_READER_REVENUE_MANAGER,
+		{
+			redirectQueryArgs: {
+				expressSetup: true,
+				cta: 'newsletter-signup',
+			},
+			additionalScopes: [ MANAGE_SCOPE ],
+		}
+	);
+
 	return (
 		<Fragment>
 			<CoreDashboardEffects />
@@ -377,6 +392,7 @@ export default function DashboardMainApp() {
 			</Header>
 
 			<div className="googlesitekit-page-content">
+				<Button onClick={ onSetupActivate }>RRM Express Setup</Button>
 				{ /*
 					These notifications are rendered at the top of the dashboard,
 					but are not attached to the header. The first component renders the
