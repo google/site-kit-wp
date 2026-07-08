@@ -391,3 +391,16 @@ Visual regression tests run through BackstopJS against Storybook stories
 (`*.stories.js`, increasingly `.tsx`). Run `npm run test:visualtest` to compare
 against reference images and `npm run test:visualapprove` to accept new
 screenshots as the reference.
+
+To scope a run to a single scenario (preferred over the full suite while iterating),
+call the backstop binary directly with `--filter` — the `npm run test:visualtest` /
+`test:visualapprove` scripts wrap nested `npm run` calls and do not forward extra CLI
+args:
+
+```bash
+./tests/backstop/bin/backstop test --filter="<scenario label>"
+./tests/backstop/bin/backstop approve --filter="<scenario label>"
+```
+
+Scenario labels are generated from the Storybook story's title/name — check
+`tests/backstop/scenarios.js` or the HTML report for the exact label.

@@ -59,9 +59,14 @@ the file + section when flagging a violation.
 
 ## 4. Verification
 
-- Lint passes (`npm run lint:js` / `composer lint`).
+- Lint passes — for the full suite: `npm run lint:js` / `composer lint`; scoped to the
+  changed files: `npm run lint:js:files -- <path...>` / `composer lint -- <path...>`.
 - Relevant tests were **actually executed** and pass.
 - Build succeeds for non-trivial asset changes (`npm run build:dev`).
+- For UI changes, add/update Storybook stories and the corresponding VRT reference (run
+  `./tests/backstop/bin/backstop test --filter="<scenario label>"` to check just that
+  scenario, or the same with `approve` to accept it — `npm run test:visualtest` does not
+  forward extra CLI args, so call the script directly).
 
 ---
 

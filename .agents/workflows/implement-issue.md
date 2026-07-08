@@ -12,7 +12,8 @@ The full procedure is the shared, tool-agnostic playbook
 project's AI tools). Follow it exactly. Summary of the steps:
 
 1. **Fetch & parse** the issue from `google/site-kit-wp` and extract the Acceptance criteria,
-   Implementation Brief, Test Coverage, QA Brief, and Changelog entry. Stop and ask if the
+   Implementation Brief, Test Coverage, and QA Brief (the Changelog entry section is filled
+   in later by the merge reviewer, so it's typically empty at this point). Stop and ask if the
    issue is missing/empty or the brief is ambiguous.
 2. **Determine scope** (JS-only / PHP-only / full-stack) and the affected module.
 3. **Load only** the relevant `docs/context/{js,php}` convention docs (use the map in the

@@ -32,5 +32,9 @@ playbook, which is the single source of truth shared with the other AI tools.
 - **Local only**: never commit, push, or open a PR unless the user explicitly asks.
 - Run only the **specific** test files you touched (`npm -w tests/js run test:js -- <path>`),
   not the whole suite.
+- Lint only the files you touched (`npm run lint:js:files -- <path>` / `composer lint --
+  <path>`), and if you touched a Storybook story, check just that VRT scenario
+  (`./tests/backstop/bin/backstop test --filter="<scenario label>"`) rather than the full
+  suite.
 - The convention details are in `docs/context/{js,php}/` — read what the issue touches, not
   everything.

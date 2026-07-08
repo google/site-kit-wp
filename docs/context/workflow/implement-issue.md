@@ -25,7 +25,9 @@ verbatim:
   technical checkboxes; this is your primary spec).
 - **Test Coverage** — between `### Test Coverage` and `## QA Brief`.
 - **QA Brief** — between `## QA Brief` and `## Changelog entry`.
-- **Changelog entry** — the one-sentence summary under `## Changelog entry`.
+
+Note: the **Changelog entry** section is filled in by the merge reviewer at PR-merge time,
+not when the issue is created — expect it to be empty and don't rely on it.
 
 **Stop and ask the user** if: the issue can't be found, the body is empty, the section
 markers are missing, or the Implementation Brief is ambiguous/contradictory. Do not guess
@@ -105,18 +107,24 @@ written and passing.
 
 Run, and fix anything that fails:
 
-- **Lint** — `npm run lint:js` (JS) and/or `composer lint` (PHP). Auto-fix with
-  `npm run lint:js-fix` / `composer lint-fix`.
+- **Lint** — prefer scoping to the files you touched over the whole codebase:
+  - JS: `npm run lint:js:files -- <path/to/file.js>` (auto-fix the full codebase with
+    `npm run lint:js-fix`, or just your files with
+    `npm run lint:js:files -- --fix <path/to/file.js>`).
+  - PHP: `composer lint -- <path/to/File.php>` (auto-fix with `composer lint-fix`).
 - **Build** — `npm run build:dev` when JS/asset changes are non-trivial.
 - **Tests** — run the **specific** test files you touched, not the whole suite:
   - JS: `npm -w tests/js run test:js -- <path/to/file.test.js>`
   - PHP: `composer test -- --filter <TestClassName>`
+- **VRT** — if you added/changed a Storybook story, check just that scenario rather than
+  the full suite (`npm run test:visualtest` wraps nested `npm run` calls and won't forward
+  extra CLI args, so call the script directly):
+  `./tests/backstop/bin/backstop test --filter="<scenario label>"`.
 
 ## Step 7 — Wrap up
 
-- Surface the **Changelog entry** sentence from the issue for the eventual PR description.
-- Summarize what changed: files created/modified/deleted, how acceptance criteria are met,
-  and verification results.
+Summarize what changed: files created/modified/deleted, how acceptance criteria are met,
+and verification results.
 
 ---
 

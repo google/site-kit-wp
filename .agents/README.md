@@ -6,8 +6,8 @@ natively for always-on context.
 
 - `workflows/implement-issue.md` — an on-demand workflow, run with `/implement-issue` in the
   Agent chat.
-- `rules/implement-issue.md` — a rule meant to run in **Model Decision** mode so it
-  auto-applies when the user asks to implement an issue.
+- `skills/implement-issue/SKILL.md` — a skill Antigravity can pick automatically when the
+  user asks to implement an issue.
 - `workflows/review-pr.md` — an on-demand workflow, run with `/review-pr` in the Agent chat.
-- `rules/review-pr.md` — a rule meant to run in **Model Decision** mode so it auto-applies
-  when the user asks to review a pull request.
+- `skills/review-pr/SKILL.md` — a skill Antigravity can pick automatically when the user
+  asks to review a pull request.
