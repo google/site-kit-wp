@@ -317,4 +317,31 @@ describe( 'ModuleSetup', () => {
 
 		expect( container ).toMatchSnapshot();
 	} );
+
+	it( 'should render the registered SetupLayout when provided', () => {
+		function CustomSetupLayout( { moduleSlug } ) {
+			return <div>Custom setup layout for { moduleSlug }</div>;
+		}
+
+		provideModules( registry, [
+			{ slug: 'custom-module', name: 'Custom Module' },
+		] );
+
+		registry.dispatch( CORE_MODULES ).registerModule( 'custom-module', {
+			storeName: 'modules/custom-module',
+			SetupLayout: CustomSetupLayout,
+		} );
+
+		const { getByText } = render(
+			<ModuleSetup moduleSlug="custom-module" />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MODULE_SETUP,
+			}
+		);
+
+		expect(
+			getByText( 'Custom setup layout for custom-module' )
+		).toBeInTheDocument();
+	} );
 } );
