@@ -228,20 +228,11 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 			VIEW_CONTEXT_SETTINGS,
-			VIEW_CONTEXT_SPLASH,
+			...( isFeatureEnabled( 'setupFlowRefreshPhase4' )
+				? []
+				: [ VIEW_CONTEXT_SPLASH ] ),
 		],
-		checkRequirements: async ( { select, resolveSelect }, viewContext ) => {
-			const setupFlowRefreshPhase4Enabled = isFeatureEnabled(
-				'setupFlowRefreshPhase4'
-			);
-
-			if (
-				setupFlowRefreshPhase4Enabled &&
-				viewContext === VIEW_CONTEXT_SPLASH
-			) {
-				return false;
-			}
-
+		checkRequirements: async ( { select, resolveSelect } ) => {
 			await resolveSelect( CORE_SITE ).getSiteInfo();
 
 			const temporaryPersistedPermissionsError = select(
