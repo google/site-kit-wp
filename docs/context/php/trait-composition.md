@@ -17,7 +17,7 @@ Traits are a mechanism for code reuse in PHP that enables a class to use methods
 
 ### Method_Proxy_Trait
 
-**Location**: `includes/Core/Util/Method_Proxy_Trait.php:1-50`
+**Location**: `includes/Core/Util/Method_Proxy_Trait.php`
 
 Provides method proxies for clean WordPress hook registration.
 
@@ -140,7 +140,7 @@ final class User_Options implements User_Options_Interface {
 
 ### Module_With_Settings_Trait
 
-**Location**: `includes/Core/Modules/Module_With_Settings_Trait.php:1-57`
+**Location**: `includes/Core/Modules/Module_With_Settings_Trait.php`
 
 Provides lazy-loaded settings management for modules.
 
@@ -231,7 +231,7 @@ final class Analytics_4 extends Module implements Module_With_Scopes {
 
 ### Module_With_Owner_Trait
 
-**Location**: `includes/Core/Modules/Module_With_Owner_Trait.php:1-80`
+**Location**: `includes/Core/Modules/Module_With_Owner_Trait.php`
 
 Manages module ownership and provides owner-specific OAuth client.
 

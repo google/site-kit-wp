@@ -479,7 +479,7 @@ protected function setup_info() {
 
 Modules can depend on other modules. The Modules registry handles dependency resolution.
 
-**Location**: `includes/Core/Modules/Modules.php:454-473`
+**Location**: `includes/Core/Modules/Modules.php`
 
 ```php
 // Set up dependency maps
@@ -545,7 +545,7 @@ foreach ( $module_classes as $module_class ) {
 
 ### 2. Activation
 
-**Location**: `includes/Core/Modules/Modules.php:644-726`
+**Location**: `includes/Core/Modules/Modules.php`
 
 ```php
 public function activate_module( $slug ) {
@@ -584,7 +584,7 @@ public function activate_module( $slug ) {
 
 ### 3. Module Registration (Hook Setup)
 
-**Location**: `includes/Core/Modules/Modules.php:350-380`
+**Location**: `includes/Core/Modules/Modules.php`
 
 ```php
 private function register_modules() {
@@ -601,7 +601,7 @@ private function register_modules() {
 
 ### 4. Deactivation
 
-**Location**: `includes/Core/Modules/Modules.php:728-800`
+**Location**: `includes/Core/Modules/Modules.php`
 
 ```php
 public function deactivate_module( $slug ) {
@@ -637,7 +637,7 @@ public function deactivate_module( $slug ) {
 
 ## Complete Module Example
 
-**Location**: `includes/Modules/Analytics_4.php:119-400`
+**Location**: `includes/Modules/Analytics_4.php`
 
 ```php
 use Google\Site_Kit\Core\Modules\Module;
@@ -737,7 +737,7 @@ final class Analytics_4 extends Module implements
 
 Modules provide data through the datapoint pattern.
 
-**Location**: `includes/Core/Modules/Module.php:240-278`
+**Location**: `includes/Core/Modules/Module.php`
 
 ```php
 final public function get_data( $datapoint, $data = array() ) {
@@ -806,7 +806,7 @@ if ( $module->is_active() ) {
 
 ### Activation Status
 
-**Location**: `includes/Core/Modules/Modules.php:569-590`
+**Location**: `includes/Core/Modules/Modules.php`
 
 ```php
 public function is_module_active( $slug ) {

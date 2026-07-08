@@ -76,7 +76,7 @@ $script_url = $context->url( 'dist/assets/js/googlesitekit-dashboard.js' );
 // Result: https://example.com/wp-content/plugins/google-site-kit/dist/assets/js/googlesitekit-dashboard.js
 ```
 
-**Location**: `path()` at `includes/Context.php:94-96`, `url()` at `includes/Context.php:105-107`
+**Location**: `path()` at `includes/Context.php`, `url()` at `includes/Context.php`
 
 #### Admin URLs
 
@@ -108,7 +108,7 @@ $settings_url = $context->admin_url( 'settings', array(
 
 The `page` query arg is always derived from the slug (`Core\Admin\Screens::PREFIX . $slug`, i.e. `googlesitekit-{slug}`); any `page` key passed in `$query_args` is ignored. In network mode the base URL is `network_admin_url( 'admin.php' )` instead of `admin_url( 'admin.php' )`.
 
-**Location**: `includes/Context.php:129-145`
+**Location**: `includes/Context.php`
 
 ### 2. Environment Detection
 
@@ -149,7 +149,7 @@ if ( Context::AMP_MODE_PRIMARY === $amp_mode ) {
 }
 ```
 
-**Location**: `is_amp()` at `includes/Context.php:308-314`, `get_amp_mode()` at `includes/Context.php:326-338`
+**Location**: `is_amp()` at `includes/Context.php`, `get_amp_mode()` at `includes/Context.php`
 
 #### Network Mode Detection
 
@@ -187,7 +187,7 @@ if ( $context->is_network_active() ) {
 
 Note: `is_network_mode()` returns the value of the `googlesitekit_is_network_mode` filter (added in 1.86.0), which defaults to `false` because Site Kit does not yet support a network mode. It always returns `false` when the plugin is not network active.
 
-**Location**: `is_network_mode()` at `includes/Context.php:154-170`, `is_network_active()` at `includes/Context.php:414-429`
+**Location**: `is_network_mode()` at `includes/Context.php`, `is_network_active()` at `includes/Context.php`
 
 ### 3. Site Information
 
@@ -214,9 +214,9 @@ $site_url = $context->get_reference_site_url();
 // This URL is sent to Google Analytics for entity-specific data
 ```
 
-**Location**: `includes/Context.php:203-205`
+**Location**: `includes/Context.php`
 
-**Implementation**: `includes/Context.php:466-498`
+**Implementation**: `includes/Context.php`
 
 ```php
 private function filter_reference_url( $url = '' ) {
@@ -270,7 +270,7 @@ $home_url = $context->get_canonical_home_url();
 
 Returns the value of the `googlesitekit_canonical_home_url` filter (added in 1.18.0), which defaults to `home_url()`. Plugins that dynamically modify `home_url()` per context (e.g. multilingual plugins) can use this filter to keep the URL considered by Site Kit stable.
 
-**Location**: `includes/Context.php:181-194`
+**Location**: `includes/Context.php`
 
 #### Reference Entity
 
@@ -299,7 +299,7 @@ if ( $entity ) {
 
 To resolve an entity from an arbitrary URL instead of the current context, use `get_reference_entity_from_url( $url )`.
 
-**Location**: `includes/Context.php:219-230`
+**Location**: `includes/Context.php`
 
 ### 4. Localization
 
@@ -338,7 +338,7 @@ $user_locale = $context->get_locale( 'user' );
 // Result: es_ES (if user has Spanish preference)
 ```
 
-**Location**: `includes/Context.php:509-530`
+**Location**: `includes/Context.php`
 
 ### 5. Input Access
 
@@ -374,7 +374,7 @@ $id = $context->input()->filter( INPUT_GET, 'id', FILTER_VALIDATE_INT );
 
 `filter()` is a method of the `Input` class, reached via `$context->input()`. `Input::filter()` wraps PHP's `filter_input()` and adds a fallback for `INPUT_ENV`/`INPUT_SERVER` in environments where `filter_input()` does not work for those types.
 
-**Location**: `input()` (Context method) at `includes/Context.php:116-118`; `filter()` (Input class) at `includes/Core/Util/Input.php:64-80`
+**Location**: `input()` (Context method) at `includes/Context.php`; `filter()` (Input class) at `includes/Core/Util/Input.php`
 
 ## Common Usage Patterns
 
@@ -504,7 +504,7 @@ class Analytics_4 extends Module {
 
 The Context object is created once by the main `Plugin` class and passed throughout the application. It is constructed from the plugin main file in `Plugin::__construct()` and exposed via `Plugin::context()`.
 
-**Location**: `includes/Plugin.php` (`__construct()` at lines 48-50, `register()` from line 68)
+**Location**: `includes/Plugin.php` (`__construct()`, `register()`)
 
 ```php
 final class Plugin {

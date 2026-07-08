@@ -18,7 +18,7 @@ The asset management system provides:
 
 ### Asset Base Class
 
-**Location**: `includes/Core/Assets/Asset.php:1-132`
+**Location**: `includes/Core/Assets/Asset.php`
 
 Abstract base class for all assets.
 
@@ -79,7 +79,7 @@ final public function before_print(): void
 
 ### Script Class
 
-**Location**: `includes/Core/Assets/Script.php:1-178`
+**Location**: `includes/Core/Assets/Script.php`
 
 Handles JavaScript registration and enqueueing.
 
@@ -108,7 +108,7 @@ class Script extends Asset {
 
 #### Registration Process
 
-**Location**: `includes/Core/Assets/Script.php:65-115`
+**Location**: `includes/Core/Assets/Script.php`
 
 ```php
 public function register( Context $context ) {
@@ -167,7 +167,7 @@ public function register( Context $context ) {
 
 #### Automatic Localization
 
-**Location**: `includes/Core/Assets/Script.php:155-173`
+**Location**: `includes/Core/Assets/Script.php`
 
 ```php
 private function set_locale_data() {
@@ -192,7 +192,7 @@ JS;
 
 ### Stylesheet Class
 
-**Location**: `includes/Core/Assets/Stylesheet.php:1-91`
+**Location**: `includes/Core/Assets/Stylesheet.php`
 
 Handles CSS registration and enqueueing.
 
@@ -242,7 +242,7 @@ final class Stylesheet extends Asset {
 
 ### Script_Data Class
 
-**Location**: `includes/Core/Assets/Script_Data.php:1-80`
+**Location**: `includes/Core/Assets/Script_Data.php`
 
 Virtual "data-only" script for injecting inline JavaScript data without a physical file.
 
@@ -318,7 +318,7 @@ This outputs:
 
 ## Assets Manager
 
-**Location**: `includes/Core/Assets/Assets.php:1-1152`
+**Location**: `includes/Core/Assets/Assets.php`
 
 Central manager responsible for registering, enqueueing, and coordinating all plugin assets.
 
@@ -350,7 +350,7 @@ final class Assets {
 
 ### Asset Definition
 
-**Location**: `includes/Core/Assets/Assets.php:360-782`
+**Location**: `includes/Core/Assets/Assets.php`
 
 Assets are built as a flat array, then indexed by handle at the end. Below is an abbreviated
 representative sample of the actual assets registered (not every entry — the real method has
@@ -436,7 +436,7 @@ private function get_assets() {
 
 ### WordPress Hook Integration
 
-**Location**: `includes/Core/Assets/Assets.php:74-172`
+**Location**: `includes/Core/Assets/Assets.php`
 
 ```php
 public function register() {
@@ -547,7 +547,7 @@ add_action(
 
 #### Base Data
 
-**Location**: `includes/Core/Assets/Assets.php:793-830`
+**Location**: `includes/Core/Assets/Assets.php`
 
 ```php
 private function get_inline_base_data() {
@@ -583,7 +583,7 @@ private function get_inline_base_data() {
 
 #### Entity Data
 
-**Location**: `includes/Core/Assets/Assets.php:883-892`
+**Location**: `includes/Core/Assets/Assets.php`
 
 ```php
 private function get_inline_entity_data() {
@@ -600,7 +600,7 @@ private function get_inline_entity_data() {
 
 #### User Data
 
-**Location**: `includes/Core/Assets/Assets.php:901-924`
+**Location**: `includes/Core/Assets/Assets.php`
 
 ```php
 private function get_inline_user_data() {
@@ -622,7 +622,7 @@ private function get_inline_user_data() {
 
 #### Module Data
 
-**Location**: `includes/Core/Assets/Assets.php:1037-1047`
+**Location**: `includes/Core/Assets/Assets.php`
 
 ```php
 private function get_inline_modules_data() {
@@ -651,7 +651,7 @@ public function enqueue_asset( $handle ) {
 
 ### Module_With_Assets Interface
 
-**Location**: `includes/Core/Modules/Module_With_Assets.php:1-42`
+**Location**: `includes/Core/Modules/Module_With_Assets.php`
 
 Modules implement this interface to provide assets.
 
@@ -675,7 +675,7 @@ interface Module_With_Assets {
 
 ### Module_With_Assets_Trait
 
-**Location**: `includes/Core/Modules/Module_With_Assets_Trait.php:1-79`
+**Location**: `includes/Core/Modules/Module_With_Assets_Trait.php`
 
 Provides default implementation.
 
@@ -721,7 +721,7 @@ trait Module_With_Assets_Trait {
 
 ### Module Asset Registration
 
-**Location**: `includes/Core/Modules/Modules.php:244-254`
+**Location**: `includes/Core/Modules/Modules.php`
 
 The Modules registry collects assets from all modules:
 
@@ -741,7 +741,7 @@ add_filter(
 
 ### Module_With_Inline_Data Interface
 
-**Location**: `includes/Core/Modules/Module_With_Inline_Data.php:1-31`
+**Location**: `includes/Core/Modules/Module_With_Inline_Data.php`
 
 Modules implement this to provide inline data to JavaScript.
 
@@ -937,7 +937,7 @@ new Script(
 
 ### Manifest Class
 
-**Location**: `includes/Core/Assets/Manifest.php:1-66`
+**Location**: `includes/Core/Assets/Manifest.php`
 
 Maps asset handles to filenames and content hashes for cache busting.
 
@@ -1018,7 +1018,7 @@ new Script(
 
 ### Async and Defer Script Loading
 
-**Location**: `includes/Core/Assets/Assets.php:1028-1051`
+**Location**: `includes/Core/Assets/Assets.php`
 
 ```php
 new Script(
@@ -1070,7 +1070,7 @@ new Script(
 
 ### AMP Compatibility
 
-**Location**: `includes/Core/Assets/Assets.php:274-299`
+**Location**: `includes/Core/Assets/Assets.php`
 
 Assets automatically receive AMP dev mode attributes when in AMP context:
 
@@ -1235,7 +1235,7 @@ Assets automatically receive AMP dev mode attributes when in AMP context:
 
 ### Getting Standard Dependencies
 
-**Location**: `includes/Core/Assets/Assets.php:319-349`
+**Location**: `includes/Core/Assets/Assets.php`
 
 ```php
 private function get_asset_dependencies( $context = '' ) {

@@ -56,7 +56,7 @@ Prompts (orchestrator)
 
 ### Dismissed_Prompts Class
 
-**Location**: `includes/Core/Prompts/Dismissed_Prompts.php:22-138`
+**Location**: `includes/Core/Prompts/Dismissed_Prompts.php`
 
 Storage layer extending `User_Setting`. Note that `add()`, `remove()` and the
 sanitize callback are `void` — they call `$this->set()` but do not return its result.
@@ -177,7 +177,7 @@ route's `callback` is an inline closure (there are no named `get_dismissed_promp
 
 Returns full prompts object with counts and expiration.
 
-**Location**: `includes/Core/Prompts/REST_Prompts_Controller.php:88-97`
+**Location**: `includes/Core/Prompts/REST_Prompts_Controller.php`
 
 ```php
 new REST_Route(
@@ -213,7 +213,7 @@ Dismiss a prompt with optional expiration. A missing/empty `slug` returns a
 `missing_required_param` `WP_Error` (HTTP 400). Only a positive integer `expiration` is
 used; otherwise the dismissal is permanent.
 
-**Location**: `includes/Core/Prompts/REST_Prompts_Controller.php:98-131`
+**Location**: `includes/Core/Prompts/REST_Prompts_Controller.php`
 
 ```php
 new REST_Route(
@@ -274,7 +274,7 @@ new REST_Route(
 
 #### PHP: Reset Prompt with Display Limit
 
-**Location**: `includes/Modules/AdSense.php:1151-1159`
+**Location**: `includes/Modules/AdSense.php`
 
 ```php
 public function reset_ad_blocking_recovery_notification() {
@@ -290,7 +290,7 @@ public function reset_ad_blocking_recovery_notification() {
 
 #### JavaScript: Check Dismissal Status
 
-**Location**: `assets/js/modules/adsense/components/dashboard/AdBlockingRecoverySetupCTAWidget.js:79-94`
+**Location**: `assets/js/modules/adsense/components/dashboard/AdBlockingRecoverySetupCTAWidget.js`
 
 ```javascript
 import { useSelect, useDispatch } from 'googlesitekit-data';
@@ -434,7 +434,7 @@ function MyComponent() {
 
 #### Expiration Filtering
 
-**Location**: `assets/js/googlesitekit/datastore/user/prompts.js:158-176`
+**Location**: `assets/js/googlesitekit/datastore/user/prompts.js`
 
 Prompts are filtered client-side in selectors:
 
@@ -485,7 +485,7 @@ Dismissals (orchestrator)
 
 ### Dismissed_Items Class
 
-**Location**: `includes/Core/Dismissals/Dismissed_Items.php:1-185`
+**Location**: `includes/Core/Dismissals/Dismissed_Items.php`
 
 Storage layer extending `User_Setting`.
 
@@ -624,7 +624,7 @@ final class Dismissed_Items extends User_Setting {
 
 Returns array of active (non-expired) item slugs.
 
-**Location**: `includes/Core/Dismissals/REST_Dismissals_Controller.php:51-75`
+**Location**: `includes/Core/Dismissals/REST_Dismissals_Controller.php`
 
 ```php
 public function get_dismissed_items( WP_REST_Request $request ) {
@@ -644,7 +644,7 @@ public function get_dismissed_items( WP_REST_Request $request ) {
 
 Dismiss an item with optional expiration.
 
-**Location**: `includes/Core/Dismissals/REST_Dismissals_Controller.php:84-120`
+**Location**: `includes/Core/Dismissals/REST_Dismissals_Controller.php`
 
 ```php
 public function dismiss_item( WP_REST_Request $request ) {
@@ -677,7 +677,7 @@ public function dismiss_item( WP_REST_Request $request ) {
 
 Remove multiple dismissed items.
 
-**Location**: `includes/Core/Dismissals/REST_Dismissals_Controller.php:129-165`
+**Location**: `includes/Core/Dismissals/REST_Dismissals_Controller.php`
 
 ```php
 public function remove_dismissed_items( WP_REST_Request $request ) {
@@ -708,7 +708,7 @@ public function remove_dismissed_items( WP_REST_Request $request ) {
 
 #### PHP: Check Dismissal Status
 
-**Location**: `includes/Core/Email_Reporting/Email_Reporting_Pointer.php:92-157`
+**Location**: `includes/Core/Email_Reporting/Email_Reporting_Pointer.php`
 
 ```php
 final class Email_Reporting_Pointer {
@@ -765,7 +765,7 @@ final class Email_Reporting_Pointer {
 
 #### PHP: Bulk Remove with Wildcard Matching
 
-**Location**: `includes/Modules/Analytics_4/Reset_Audiences.php:60-130`
+**Location**: `includes/Modules/Analytics_4/Reset_Audiences.php`
 
 ```php
 const AUDIENCE_SEGMENTATION_DISMISSED_ITEMS = array(

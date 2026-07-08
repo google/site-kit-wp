@@ -12,7 +12,7 @@ Dependency Injection (DI) is a design pattern where a class receives its depende
 
 All dependencies are passed through the constructor, making requirements explicit and immutable.
 
-**Location**: `includes/Plugin.php` (the `init` action closure, around lines 155-279)
+**Location**: `includes/Plugin.php` (the `init` action closure)
 
 ```php
 add_action(
@@ -40,7 +40,7 @@ add_action(
 
 Dependencies can be optional, with default instances created if not provided. This pattern is used extensively in modules.
 
-**Location**: `includes/Core/Modules/Module.php:145-159`
+**Location**: `includes/Core/Modules/Module.php`
 
 ```php
 public function __construct(
@@ -245,7 +245,7 @@ final class Modules implements Provides_Feature_Metrics {
 
 Some dependencies are created lazily when first needed, but still injected through the constructor.
 
-**Location**: `includes/Core/Modules/Module_With_Owner_Trait.php:25-80`
+**Location**: `includes/Core/Modules/Module_With_Owner_Trait.php`
 
 ```php
 trait Module_With_Owner_Trait {

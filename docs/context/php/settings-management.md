@@ -263,7 +263,7 @@ abstract class Module_Settings extends Setting {
 
 ## Concrete Settings Implementation
 
-**Location**: `includes/Modules/Analytics_4/Settings.php:1-150+`
+**Location**: `includes/Modules/Analytics_4/Settings.php`
 
 ### Example: Analytics 4 Settings
 
@@ -488,7 +488,7 @@ final class Settings extends Module_Settings implements Setting_With_ViewOnly_Ke
 
 The `on_change` method allows subscribing to setting changes.
 
-**Location**: `includes/Core/Storage/Setting.php:72-89`
+**Location**: `includes/Core/Storage/Setting.php`
 
 ```php
 public function on_change( callable $callback ) {
@@ -516,7 +516,7 @@ public function on_change( callable $callback ) {
 
 ### Usage Example
 
-**Location**: `includes/Modules/Analytics_4.php:277-301`
+**Location**: `includes/Modules/Analytics_4.php`
 
 ```php
 // In module registration
