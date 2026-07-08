@@ -86,7 +86,7 @@ type RenderableWidget = PDFReportWidget & {
  * A widget without a component failed to load, and a widget without data has
  * an empty or failed report behind it. The report skips both.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param widget A loaded report widget entry.
  * @return `true` when the widget has content to render.

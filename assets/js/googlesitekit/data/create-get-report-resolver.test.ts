@@ -65,7 +65,7 @@ interface TestReportState {
  * a fetch store, an error store, and a selector that reads each report by its
  * cache key.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @return The combined report store the test registers.
  */

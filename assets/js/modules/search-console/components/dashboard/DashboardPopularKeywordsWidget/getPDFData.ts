@@ -55,7 +55,7 @@ export interface PopularKeywordsPDFData {
  * Builds the same Search Console report link the dashboard widget shows for each
  * query. The PDF component renders each query as this link.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param registry WordPress data registry.
  * @param dates    Report date range.
@@ -94,7 +94,7 @@ function getQueryLinkMap(
  * dashboard widget shows. Returns `{ data: null }` when the signal aborts or the
  * report has no rows, so the report document skips this widget.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param params          Loader parameters.
  * @param params.registry WordPress data registry.
