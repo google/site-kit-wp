@@ -17,6 +17,7 @@
 /**
  * External dependencies
  */
+import { intersectionObserver } from '@shopify/jest-dom-mocks';
 import fetchMock from 'fetch-mock';
 
 /**
@@ -1810,5 +1811,57 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			queryByText( 'What’s helping you reach your goals?' )
 		).not.toBeInTheDocument();
+	} );
+
+	it( 'keeps the same widget element across re-renders', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		seedReadyReports();
+
+		const { container, rerender, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		const widgetElement = container.querySelector(
+			'.googlesitekit-widget--analyticsOnlineStorePerformance'
+		);
+		expect( widgetElement ).toBeInTheDocument();
+
+		rerender( <OnlineStorePerformanceWidget { ...widgetProps } /> );
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-widget--analyticsOnlineStorePerformance'
+			)
+		).toBe( widgetElement );
+	} );
+
+	it( 'observes the widget element after it renders', async () => {
+		intersectionObserver.mock();
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		seedReadyReports();
+
+		const { container, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		const observedTargets = intersectionObserver.observers.map(
+			( observer ) => observer.target
+		);
+		expect( observedTargets ).toContain(
+			container.querySelector(
+				'.googlesitekit-widget--analyticsOnlineStorePerformance'
+			)
+		);
+
+		intersectionObserver.restore();
 	} );
 } );
