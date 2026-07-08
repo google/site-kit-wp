@@ -79,11 +79,13 @@ const mockWelcomeTour = getWelcomeTour( {
 
 jest.mock( '@/js/feature-tours/hooks/useWelcomeTour' );
 
-// The modal graphic is wrapped in `withIntersectionObserver`, which observes
-// its element with the native `IntersectionObserver`. jsdom has none, so use a
-// stub that reports the element as in view the moment it observes it. This
-// makes the modal send its `view_notice` event on render, as these tests
-// expect.
+/**
+ * The modal graphic is wrapped in `withIntersectionObserver`, which observes
+ * its element with the native `IntersectionObserver`. jsdom has none, so use a
+ * stub that reports the element as in view the moment it observes it. This
+ * makes the modal send its `view_notice` event on render, as these tests
+ * expect.
+ */
 class InViewIntersectionObserver {
 	callback: IntersectionObserverCallback;
 
