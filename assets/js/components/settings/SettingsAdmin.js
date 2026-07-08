@@ -76,7 +76,7 @@ export default function SettingsAdmin() {
 
 	const showKeyMetricsSettings =
 		( isAnalyticsConnected && hasAvailableKeyMetricsData ) ||
-		( isAnalyticsConnected && setupFlowRefreshPhase4Enabled ) ||
+		( isAnalyticsConnected && setupFlowRefreshEnabled ) ||
 		( hasSitePurposeAnswer && setupFlowRefreshPhase4Enabled );
 
 	const showKeyMetricsSettingsLoading = useSelect( ( select ) => {
