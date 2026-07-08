@@ -47,28 +47,6 @@ import useViewContext from '@/js/hooks/useViewContext';
 import { Cell, Grid, Row } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
-export default function SetupLayout( { moduleSlug }: ModuleSetupLayoutProps ) {
-	const viewContext = useViewContext();
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-	const [ showProgress ] = useQueryArg( 'showProgress' );
-
-	const isInitialSetupFlow =
-		setupFlowRefreshEnabled &&
-		moduleSlug === MODULE_SLUG_ANALYTICS_4 &&
-		showProgress === 'true';
-
-	if ( ! isInitialSetupFlow ) {
-		return <DefaultModuleSetup moduleSlug={ moduleSlug } />;
-	}
-
-	return (
-		<InitialSetupLayout
-			moduleSlug={ moduleSlug }
-			viewContext={ viewContext }
-		/>
-	);
-}
-
 interface InitialSetupLayoutProps {
 	moduleSlug: string;
 	viewContext: string;
@@ -136,5 +114,27 @@ function InitialSetupLayout( {
 				</section>
 			</div>
 		</Fragment>
+	);
+}
+
+export default function SetupLayout( { moduleSlug }: ModuleSetupLayoutProps ) {
+	const viewContext = useViewContext();
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const [ showProgress ] = useQueryArg( 'showProgress' );
+
+	const isInitialSetupFlow =
+		setupFlowRefreshEnabled &&
+		moduleSlug === MODULE_SLUG_ANALYTICS_4 &&
+		showProgress === 'true';
+
+	if ( ! isInitialSetupFlow ) {
+		return <DefaultModuleSetup moduleSlug={ moduleSlug } />;
+	}
+
+	return (
+		<InitialSetupLayout
+			moduleSlug={ moduleSlug }
+			viewContext={ viewContext }
+		/>
 	);
 }
