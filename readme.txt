@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      7.0
 Requires PHP:      7.4
-Stable tag:        1.182.0
+Stable tag:        1.183.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -111,6 +111,39 @@ There are a number of third-party plugins that allow you to block Google Analyti
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.183.0 =
+
+**Enhanced**
+
+* Add GA event tracking for the notices displayed when the Key Metrics and Audience Segmentation widgets are re-shown. See [#12972](https://github.com/google/site-kit-wp/issues/12972).
+* Launch the Setup Flow Refresh feature by force-enabling the feature flag in the plugin. See [#12966](https://github.com/google/site-kit-wp/issues/12966).
+* Update PDF scaling to be consistent throughout plugin. See [#12954](https://github.com/google/site-kit-wp/issues/12954).
+* Update targets for "Learn more" links in the new setup flow. See [#12930](https://github.com/google/site-kit-wp/issues/12930).
+* Re-show hidden Audience Segmentation widgets, with an explanatory notice. See [#12917](https://github.com/google/site-kit-wp/issues/12917).
+* Add survey triggers for enhanced conversions notifications. See [#12914](https://github.com/google/site-kit-wp/issues/12914).
+* Fix Analytics account creation errors to redirect back to the Settings screen when initiated from there. See [#12876](https://github.com/google/site-kit-wp/issues/12876).
+* Ensure that tooltips in the dashboard tour are fully visible in all viewports. See [#12873](https://github.com/google/site-kit-wp/issues/12873).
+* Re-show hidden Key Metrics widgets, with an explanatory notice. See [#12872](https://github.com/google/site-kit-wp/issues/12872).
+* Update the copy on the splash screen for secondary admins in the new setup flow. See [#12871](https://github.com/google/site-kit-wp/issues/12871).
+* Remove feature flag for the email reporting feature, now that it is fully-deployed to all users. See [#12863](https://github.com/google/site-kit-wp/issues/12863).
+* Ask the site purpose question in the new Search Console-only setup flow. See [#12817](https://github.com/google/site-kit-wp/issues/12817).
+* Add opt-in tracking events to Site Goals interactions. See [#12602](https://github.com/google/site-kit-wp/issues/12602).
+* Implement PDF Widgets for "Speed" section. See [#12549](https://github.com/google/site-kit-wp/issues/12549).
+* Implement the `Top search queries for your site` PDF widget. See [#12547](https://github.com/google/site-kit-wp/issues/12547).
+* Add support for "Search traffic over time" in PDF reports. See [#12545](https://github.com/google/site-kit-wp/issues/12545).
+* Implementing the "Your site traffic over time" PDF widget. See [#12544](https://github.com/google/site-kit-wp/issues/12544).
+* Add the Audience Segmentation setup error widget to Storybook. See [#12380](https://github.com/google/site-kit-wp/issues/12380).
+* Add the splash screen setup error notification to Storybook. See [#12374](https://github.com/google/site-kit-wp/issues/12374).
+* Handle Analytics activation errors on the new splash screen. See [#12373](https://github.com/google/site-kit-wp/issues/12373).
+* Extract inline Sign in with Google frontend JS to external script. See [#11950](https://github.com/google/site-kit-wp/issues/11950).
+* Allow per-instance width for Sign In with Google buttons, and update the width of the button shown on the WordPress login form to match the rest of the form below it. See [#11949](https://github.com/google/site-kit-wp/issues/11949).
+
+**Fixed**
+
+* When metrics in Site Goals haven't changed, show a "No change" badge instead of a "0%" badge. See [#13002](https://github.com/google/site-kit-wp/issues/13002).
+* Update casing of Site Goals heading. See [#12981](https://github.com/google/site-kit-wp/issues/12981).
+* Fix bug that could cause report calls to be issued twice for the same arguments. See [#12806](https://github.com/google/site-kit-wp/issues/12806).
 
 = 1.182.0 =
 

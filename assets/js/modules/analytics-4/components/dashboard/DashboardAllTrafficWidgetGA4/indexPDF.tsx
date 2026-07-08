@@ -76,7 +76,7 @@ const styles = createPDFStyles( {
  * percentage. The color order matches the donut, because both read
  * `PIE_CHART_COLORS` in the same slice order.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param breakdown Ordered `{ label, percentage }` rows, or `null`.
  * @return Legend rows of `{ label, percentage, color }`.

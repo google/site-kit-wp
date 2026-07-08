@@ -112,7 +112,7 @@ const devicesArgs = getBreakdownReportArgs( {
  * Builds a breakdown report with the comparison-range dimension the dashboard's
  * `extractAnalyticsDataForPieChart` helper expects.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param entries Ordered `[ label, users ]` pairs for the current range.
  * @return A GA4 report with current-range rows.

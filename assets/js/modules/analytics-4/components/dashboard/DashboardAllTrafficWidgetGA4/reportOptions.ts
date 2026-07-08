@@ -197,7 +197,7 @@ export function getGraphReportArgs( {
  * slices. The PDF loader calls this once for each dimension (channels,
  * locations, devices).
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param {Object} options                    Options.
  * @param {string} options.dimensionName      GA4 dimension to break down by.

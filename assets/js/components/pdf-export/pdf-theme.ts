@@ -49,7 +49,7 @@ export const PDF_FONT_FAMILY_TEXT = 'GoogleSansText';
  * token name from `assets/sass/config/_variables-mui3.scss`, and the value
  * is that token's hex.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  */
 export const PDF_COLORS = {
 	SURFACES_ON_SURFACE: '#161b18', // $c-surfaces-on-surface
@@ -204,7 +204,7 @@ const UNSCALED_TYPOGRAPHY = {
  * points. The line height is a ratio and the weight is a keyword, so both
  * apply as they are.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  */
 export const PDF_TYPOGRAPHY = {
 	display: createPDFStyles( UNSCALED_TYPOGRAPHY.display ),

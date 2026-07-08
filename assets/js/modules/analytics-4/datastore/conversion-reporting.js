@@ -540,7 +540,7 @@ export const selectors = {
 	 * For ecommerce, returns the primary event (`purchase` or `add_to_cart`).
 	 * For lead, returns the first detected lead event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.183.0
 	 *
 	 * @param {Object}               state    Data store's state.
 	 * @param {('ecommerce'|'lead')} goalType Goal type.

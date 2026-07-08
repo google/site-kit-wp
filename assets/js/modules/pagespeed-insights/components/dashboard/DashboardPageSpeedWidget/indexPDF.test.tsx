@@ -39,7 +39,7 @@ import DashboardPageSpeedWidgetPDF from './indexPDF';
  * Collects every text string from a rendered test tree, walking nested
  * children.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param tree The rendered tree, a child node, or an empty leaf.
  * @return The text strings inside the tree, in render order.
@@ -66,7 +66,7 @@ function findTextStrings(
  * Extracts the lab and field metrics from a fixture report, shaped as one
  * strategy's entry in the widget data.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param report A PageSpeed Insights report fixture.
  * @return The lab and field metrics for one strategy.
@@ -82,7 +82,7 @@ function buildStrategyData( report: object ): StrategyData {
  * Builds widget data from the fixture reports. A null report sets that
  * strategy's entry to null, like a failed report in production.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param params               Report overrides per strategy.
  * @param params.mobileReport  The mobile report, or null to omit mobile data.
@@ -105,7 +105,7 @@ function buildData( {
 /**
  * Renders the widget with the given data and collects its visible text.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param data The widget data to render.
  * @return The rendered text as one space-joined string.
@@ -123,7 +123,7 @@ function renderText( data: SpeedPDFData[ 'data' ] | null ): string {
  * Renders the widget with the given data and returns the whole test tree as
  * a JSON string, so a test can search it for style values like colors.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param data The widget data to render.
  * @return The rendered tree as a JSON string.

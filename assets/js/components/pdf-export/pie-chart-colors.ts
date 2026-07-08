@@ -26,7 +26,7 @@
  * in the dashboard and the PDF. Keep this list the same as the dashboard colors
  * in `usePieChartSlices`.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  */
 export const PIE_CHART_COLORS = [
 	'#fece72',

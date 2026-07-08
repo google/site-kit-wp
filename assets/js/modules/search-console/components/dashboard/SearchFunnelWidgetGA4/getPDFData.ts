@@ -212,7 +212,7 @@ interface MetricCardResult {
  * The current period draws as a solid smoothed line and the previous period as a
  * dotted line of the same color, mirroring the dashboard.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param options         Options.
  * @param options.color   Series color for both lines.
@@ -299,7 +299,7 @@ function getLineChartOptions( {
  * Accepts the dashboard's chart-data rows (a date, a tooltip, the current value
  * and the previous value) and keeps only the columns the PDF chart needs.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param dataRows     Chart data rows (without the header row).
  * @param currentLabel Column label for the current-period series.
@@ -334,7 +334,7 @@ function buildChartDataTable(
 /**
  * Renders a metric's current and previous line chart to a JPEG data URI.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param options              Options.
  * @param options.dataRows     Chart data rows (without the header row).
@@ -376,7 +376,7 @@ function renderMetricChart( {
 /**
  * Resolves a report and reads its resolved value plus any selector error.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param registry  WordPress data registry.
  * @param storeName Datastore name to query.
@@ -408,7 +408,7 @@ async function resolveReport< T = unknown >(
  * Failures are isolated to the card: the returned `metric` and `chartImage` are
  * both `null`, so the widget skips that card.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param options                 Options for building the card.
  * @param options.report          Resolved Search Console report.
@@ -489,7 +489,7 @@ async function buildSearchConsoleCard( {
  * Failures are isolated to the card: the returned `metric` and `chartImage` are
  * both `null`, so the widget skips that card.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param options                    Options for building the card.
  * @param options.statsReport        Resolved date-series report.
@@ -588,7 +588,7 @@ async function buildAnalyticsCard( {
  * A failed report or chart render is isolated to its own metric, and the
  * widget skips that card. The loader only throws when all four metrics fail.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param params          Loader parameters.
  * @param params.registry WordPress data registry.

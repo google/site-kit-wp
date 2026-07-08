@@ -100,7 +100,7 @@ const CARDS: CardDefinition[] = [
 /**
  * Derives the change chip props from a metric's period-over-period change ratio.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param metric The metric data, if any.
  * @return Props for the change chip (empty when the change is unavailable).

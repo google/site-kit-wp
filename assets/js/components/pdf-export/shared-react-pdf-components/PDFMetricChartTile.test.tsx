@@ -41,7 +41,7 @@ const DOWN_ARROW_PATH = 'M0,0 L8,0 L4,8 Z';
 /**
  * Renders the tile and returns the rendered tree as a JSON string.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param props Props for the tile.
  * @return JSON string of the rendered tree.
