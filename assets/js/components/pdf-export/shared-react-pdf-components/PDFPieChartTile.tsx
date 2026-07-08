@@ -19,84 +19,51 @@
 /**
  * External dependencies
  */
-import { Image, StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Image, View } from '@react-pdf/renderer';
 import { FC } from 'react';
-
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
+import PDFTypography from './PDFTypography';
 
-const COLORS = {
-	title: '#161b18',
-	label: '#161b18',
-	value: '#161b18',
-	noData: '#646464',
-};
-
-const tileStyles = StyleSheet.create( {
+const tileStyles = createPDFStyles( {
 	title: {
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 7,
-		fontWeight: 500,
-		letterSpacing: -0.05,
-		lineHeight: 1.143,
-		color: COLORS.title,
-		marginBottom: 12,
+		marginBottom: 16,
 	},
 	body: {
 		flexDirection: 'row',
-		alignItems: 'flex-start',
+		alignItems: 'center',
 		justifyContent: 'space-between',
 	},
 	legend: {
 		flexDirection: 'column',
-		width: 87,
+		width: 184,
 	},
 	legendRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		marginBottom: 6.5,
+		marginBottom: 13,
 	},
 	swatch: {
-		width: 6,
-		height: 6,
-		borderRadius: 3,
-		marginRight: 3,
+		width: 12,
+		height: 12,
+		borderRadius: 6,
+		marginRight: 6,
 	},
 	label: {
 		flexGrow: 1,
 		flexShrink: 1,
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 6,
-		letterSpacing: 0.1,
-		lineHeight: 1.333,
-		color: COLORS.label,
 	},
 	percentage: {
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 6,
-		fontWeight: 500,
-		letterSpacing: 0.1,
-		lineHeight: 1.333,
-		color: COLORS.value,
-		marginLeft: 8,
+		marginLeft: 6,
 		textAlign: 'right',
 	},
 	chart: {
-		width: 72.85,
-		height: 72.85,
-		marginRight: 12,
-	},
-	noData: {
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 6,
-		color: COLORS.noData,
+		width: 145.7,
+		height: 145.7,
+		marginRight: 24,
 	},
 } );
 
@@ -114,7 +81,7 @@ export interface PDFPieChartTileProps {
 	title: string;
 	/** The legend rows, in the same order as the donut segments. */
 	rows: PDFPieChartTileRow[];
-	/** The donut chart as a JPEG data URI. When it's not set, the tile shows the placeholder instead. */
+	/** The donut chart as a JPEG data URI. When it's not set, the tile returns null. */
 	chartImage?: string;
 }
 
@@ -123,36 +90,45 @@ const PDFPieChartTile: FC< PDFPieChartTileProps > = ( {
 	rows,
 	chartImage,
 } ) => {
+	// Without a donut image the tile returns null, and no placeholder takes
+	// its place.
+	if ( ! chartImage ) {
+		return null;
+	}
+
 	return (
 		<View>
-			<Text style={ tileStyles.title }>{ title }</Text>
-			{ chartImage ? (
-				<View style={ tileStyles.body }>
-					<View style={ tileStyles.legend }>
-						{ rows.map( ( { label, percentage, color } ) => (
-							<View key={ label } style={ tileStyles.legendRow }>
-								<View
-									style={ {
-										...tileStyles.swatch,
-										backgroundColor: color,
-									} }
-								/>
-								<Text style={ tileStyles.label }>
-									{ label }
-								</Text>
-								<Text style={ tileStyles.percentage }>
-									{ percentage }
-								</Text>
-							</View>
-						) ) }
-					</View>
-					<Image src={ chartImage } style={ tileStyles.chart } />
+			<PDFTypography type="title" size="small" style={ tileStyles.title }>
+				{ title }
+			</PDFTypography>
+			<View style={ tileStyles.body }>
+				<View style={ tileStyles.legend }>
+					{ rows.map( ( { label, percentage, color } ) => (
+						<View key={ label } style={ tileStyles.legendRow }>
+							<View
+								style={ {
+									...tileStyles.swatch,
+									backgroundColor: color,
+								} }
+							/>
+							<PDFTypography
+								size="small"
+								style={ tileStyles.label }
+							>
+								{ label }
+							</PDFTypography>
+							<PDFTypography
+								type="label"
+								size="small"
+								style={ tileStyles.percentage }
+							>
+								{ percentage }
+							</PDFTypography>
+						</View>
+					) ) }
 				</View>
-			) : (
-				<Text style={ tileStyles.noData }>
-					{ __( 'Data unavailable', 'google-site-kit' ) }
-				</Text>
-			) }
+				<Image src={ chartImage } style={ tileStyles.chart } />
+			</View>
 		</View>
 	);
 };

@@ -31,7 +31,7 @@ import Body from './Body';
 import { buttonProps } from './DismissButton';
 
 export default function OverlayCard( props ) {
-	const { visible, className, ...cardProps } = props;
+	const { visible, className, disableAnimation, ...cardProps } = props;
 
 	const breakpoint = useBreakpoint();
 
@@ -47,7 +47,7 @@ export default function OverlayCard( props ) {
 		</div>
 	);
 
-	if ( breakpoint === BREAKPOINT_SMALL ) {
+	if ( breakpoint === BREAKPOINT_SMALL || disableAnimation ) {
 		return body;
 	}
 
@@ -73,6 +73,7 @@ OverlayCard.propTypes = {
 	GraphicMobile: PropTypes.elementType,
 	newBadge: PropTypes.bool,
 	visible: PropTypes.bool,
+	disableAnimation: PropTypes.bool,
 };
 
 OverlayCard.defaultProps = {

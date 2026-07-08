@@ -26,6 +26,11 @@ export const enum NOTICE_TYPES {
 	 */
 	INFO = 'info',
 	/**
+	 * White background alternative for `'info'` notices, using the info-circle
+	 * icon in place of the default warning icon.
+	 */
+	INFO_CIRCLE = 'info-circle',
+	/**
 	 * White background alternative for `'info'` notices.
 	 */
 	INFO_ALT = 'info-alt',

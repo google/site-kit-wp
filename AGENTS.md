@@ -60,6 +60,7 @@ workflow.)
 ### JavaScript Conventions  
 - WordPress ESLint preset + custom rules
 - Function components, React Hooks patterns
+- **One component per file**: never define more than one React component in a single file. Extract each additional component (including small sub-components) into its own file and import it. Shared, non-component code (styles, constants, helpers) may live in a separate non-component module (e.g. `pdfStyles.ts`).
 - **Details**: See `.eslintrc.json` and custom ESLint plugin
 
 ## Testing Strategy

@@ -18,6 +18,9 @@
 
 export const PDF_DOWNLOAD_PANEL_OPENED_KEY = 'pdfDownloadPanelOpened';
 
+export const PDF_INTRODUCTION_OVERLAY_NOTIFICATION =
+	'pdf_introduction_overlay_notification';
+
 export interface PDFSectionWidget {
 	slug: string;
 	label: string;

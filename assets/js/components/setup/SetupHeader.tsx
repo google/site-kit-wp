@@ -1,5 +1,5 @@
 /**
- * PDFNoData: the shared empty-state message for PDF report widgets.
+ * Module setup SetupHeader component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -19,31 +19,20 @@
 /**
  * External dependencies
  */
-import { StyleSheet, Text } from '@react-pdf/renderer';
-import { FC } from 'react';
-
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
+import type { ReactNodeLike } from 'prop-types';
 
 /**
  * Internal dependencies
  */
-import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
+import Header from '@/js/components/Header';
+import HelpMenu from '@/js/components/help/HelpMenu';
+import type { SetupHeaderProps } from './types';
 
-const styles = StyleSheet.create( {
-	noData: {
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 9,
-		color: '#646464',
-	},
-} );
-
-const PDFNoData: FC = () => (
-	<Text style={ styles.noData }>
-		{ __( 'No data available.', 'google-site-kit' ) }
-	</Text>
-);
-
-export default PDFNoData;
+export default function SetupHeader( { children }: SetupHeaderProps ) {
+	return (
+		<Header>
+			{ children as ReactNodeLike }
+			<HelpMenu />
+		</Header>
+	);
+}

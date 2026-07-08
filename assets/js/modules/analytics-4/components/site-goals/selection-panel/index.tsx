@@ -34,6 +34,7 @@ import SelectionPanel from '@/js/components/SelectionPanel';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import useFormValue from '@/js/hooks/useFormValue';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
@@ -57,8 +58,11 @@ import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { trackEvent } from '@/js/util';
 
 const SiteGoalsSelectionPanel: FC = () => {
+	const viewContext = useViewContext();
+
 	const isOpen = useSelect(
 		( select: Select ) =>
 			select( CORE_UI ).getValue( SITE_GOALS_SELECTION_PANEL_OPENED_KEY ),
@@ -150,7 +154,12 @@ const SiteGoalsSelectionPanel: FC = () => {
 			[ SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT ]:
 				normalizedEffectiveVisitorEngagement,
 		} );
-	}, [ setValues ] );
+
+		trackEvent(
+			`${ viewContext }_site-goals-sidebar`,
+			'site_goals_sidebar_view'
+		);
+	}, [ setValues, viewContext ] );
 
 	const closePanel = useCallback( () => {
 		if ( isOpen ) {

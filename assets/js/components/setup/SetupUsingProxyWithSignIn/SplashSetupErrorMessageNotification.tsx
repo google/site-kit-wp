@@ -103,7 +103,13 @@ export default function SplashSetupErrorMessageNotification( {
 					href: setupErrorRedoURL,
 				} }
 				description={ createInterpolateElement( description, {
-					a: <Link href={ errorTroubleshootingLinkURL } external />,
+					a: (
+						<Link
+							href={ errorTroubleshootingLinkURL }
+							external
+							hideExternalIndicator
+						/>
+					),
 				} ) }
 				title={ title }
 				type={ NOTICE_TYPES.ERROR }

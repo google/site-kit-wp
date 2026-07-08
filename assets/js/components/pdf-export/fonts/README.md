@@ -6,6 +6,7 @@ into the generated PDF. Only the weights the PDF design uses are bundled.
 | File | Internal family | Weight |
 | --- | --- | --- |
 | `google-sans-display-regular.ttf` | Google Sans Display | 400 |
+| `google-sans-display-medium.ttf` | Google Sans Display | 500 |
 | `google-sans-text-regular.ttf` | Google Sans | 400 |
 | `google-sans-text-medium.ttf` | Google Sans | 500 |
 
