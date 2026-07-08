@@ -1,5 +1,5 @@
 /**
- * SearchFunnelWidgetGA4 PDF component for @react-pdf/renderer.
+ * ModuleOverviewWidgetPDF component for @react-pdf/renderer.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -35,7 +35,11 @@ import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFMetricChartTile from '@/js/components/pdf-export/shared-react-pdf-components/PDFMetricChartTile';
 import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
 import { numFmt } from '@/js/util';
-import { SearchFunnelMetric, SearchFunnelPDFData } from './getPDFData';
+import {
+	ModuleOverviewMetric,
+	ModuleOverviewMetricKey,
+	ModuleOverviewPDFData,
+} from './getPDFData';
 
 const styles = createPDFStyles( {
 	heading: {
@@ -52,54 +56,72 @@ const styles = createPDFStyles( {
 	},
 } );
 
+/**
+ * Formats a currency metric total with the report's currency code.
+ *
+ * With no currency code, the value falls back to a plain grouped number, so
+ * the card never shows the wrong currency.
+ *
+ * @since n.e.x.t
+ *
+ * @param total        The metric total.
+ * @param currencyCode Currency code from the AdSense report, if any.
+ * @return The formatted value.
+ */
+function formatCurrencyValue( total: number, currencyCode?: string ): string {
+	return currencyCode
+		? numFmt( total, currencyCode )
+		: numFmt( total, { style: 'decimal' } );
+}
+
 interface CardDefinition {
 	/** Metric key that selects the card's data and chart image. */
-	key: 'impressions' | 'clicks' | 'uniqueVisitors' | 'keyEvents';
-	/** Card title, like "Total impressions". */
+	key: ModuleOverviewMetricKey;
+	/** Card title, also the current-period legend label, like "Earnings". */
 	title: string;
-	/** Current-period series label. */
-	currentLabel: string;
-	/** Series color for the legend swatch, matching the chart lines. */
+	/** Legend swatch color, matching the chart lines. */
 	color: string;
+	/** Formats the card's headline value. */
+	formatValue: ( total: number, currencyCode?: string ) => string;
 }
 
 /** The cards render in the 2x2 grid in this order. */
 const CARDS: CardDefinition[] = [
 	{
-		key: 'impressions',
-		title: __( 'Total impressions', 'google-site-kit' ),
-		currentLabel: __( 'Impressions', 'google-site-kit' ),
+		key: 'estimatedEarnings',
+		title: __( 'Earnings', 'google-site-kit' ),
 		color: PDF_COLORS.BLUE_B_400,
+		formatValue: formatCurrencyValue,
 	},
 	{
-		key: 'clicks',
-		title: __( 'Total clicks', 'google-site-kit' ),
-		currentLabel: __( 'Clicks', 'google-site-kit' ),
+		key: 'pageRPM',
+		title: __( 'Page RPM', 'google-site-kit' ),
 		color: PDF_COLORS.TEAL_T_300,
+		formatValue: formatCurrencyValue,
 	},
 	{
-		key: 'uniqueVisitors',
-		title: __( 'Unique visitors from Search', 'google-site-kit' ),
-		currentLabel: __( 'Unique visitors', 'google-site-kit' ),
+		key: 'impressions',
+		title: __( 'Impressions', 'google-site-kit' ),
 		color: PDF_COLORS.SITE_KIT_SK_500,
+		formatValue: ( total ) => numFmt( total, { style: 'decimal' } ),
 	},
 	{
-		key: 'keyEvents',
-		title: __( 'Key events', 'google-site-kit' ),
-		currentLabel: __( 'Key events', 'google-site-kit' ),
+		key: 'pageCTR',
+		title: __( 'Page CTR', 'google-site-kit' ),
 		color: PDF_COLORS.VIOLET_V_300,
+		formatValue: ( total ) => numFmt( total, '%' ),
 	},
 ];
 
 /**
- * Derives the change chip props from a metric's period-over-period change ratio.
+ * Builds the change badge props from a metric's period-over-period change ratio.
  *
  * @since n.e.x.t
  *
  * @param metric The metric data, if any.
- * @return Props for the change chip (empty when the change is unavailable).
+ * @return Props for the change badge, empty when there's no change to show.
  */
-function getChangeProps( metric: SearchFunnelMetric | null ): {
+function getChangeProps( metric: ModuleOverviewMetric | null ): {
 	change?: string;
 	changeDirection?: 'up' | 'down';
 } {
@@ -110,33 +132,31 @@ function getChangeProps( metric: SearchFunnelMetric | null ): {
 	}
 
 	return {
-		change:
-			( change > 0 ? '+' : '' ) +
-			numFmt( change, {
-				style: 'percent',
-				maximumFractionDigits: 1,
-			} ),
+		change: numFmt( Math.abs( change ), {
+			style: 'percent',
+			maximumFractionDigits: 1,
+		} ),
 		changeDirection: change >= 0 ? 'up' : 'down',
 	};
 }
 
-export interface SearchFunnelWidgetGA4PDFProps {
+export interface ModuleOverviewWidgetPDFProps {
 	/** Metric totals and changes from `getPDFData`. */
-	data?: SearchFunnelPDFData[ 'data' ];
+	data?: ModuleOverviewPDFData[ 'data' ];
 	/** Rendered line chart images from `getPDFData`, one per metric. */
-	chartImages?: SearchFunnelPDFData[ 'chartImages' ];
+	chartImages?: ModuleOverviewPDFData[ 'chartImages' ];
 }
 
-const SearchFunnelWidgetGA4PDF: FC< SearchFunnelWidgetGA4PDFProps > = ( {
+const ModuleOverviewWidgetPDF: FC< ModuleOverviewWidgetPDFProps > = ( {
 	data,
 	chartImages,
 } ) => {
-	// Without data the widget returns null, and no placeholder takes its place.
+	// With no data the widget returns null, and nothing renders in its place.
 	if ( ! data ) {
 		return null;
 	}
 
-	const { dateRangeLength, metrics } = data;
+	const { dateRangeLength, currencyCode, metrics } = data;
 
 	const changeLabel = sprintf(
 		/* translators: %d: number of days in the comparison period */
@@ -146,19 +166,19 @@ const SearchFunnelWidgetGA4PDF: FC< SearchFunnelWidgetGA4PDFProps > = ( {
 
 	return (
 		<View>
-			{ /* This widget shares the Traffic area with the All Visitors widget, so it
-			     renders its own heading. */ }
+			{ /* This widget shares the Monetization area with the Top earning
+			     pages widget, so it renders its own heading. */ }
 			<PDFTypography size="large" style={ styles.heading }>
-				{ __( 'Search traffic over time', 'google-site-kit' ) }
+				{ __( 'Earning performance over time', 'google-site-kit' ) }
 			</PDFTypography>
 			<View style={ styles.grid }>
-				{ CARDS.map( ( { key, title, currentLabel, color } ) => {
+				{ CARDS.map( ( { key, title, color, formatValue } ) => {
 					const metric = metrics[ key ];
 					const chartImage = chartImages?.[ key ];
 
-					// The widget skips a card whose metric failed. The loader
-					// fails the whole widget when every card fails, so the
-					// heading never renders above an empty grid.
+					// The widget skips a card whose metric has no data or failed
+					// to render. The loader returns null data when every card is
+					// empty, so the heading never sits above an empty grid.
 					if ( ! chartImage ) {
 						return null;
 					}
@@ -167,9 +187,13 @@ const SearchFunnelWidgetGA4PDF: FC< SearchFunnelWidgetGA4PDFProps > = ( {
 						<View key={ key } style={ styles.cell }>
 							<PDFMetricChartTile
 								title={ title }
-								value={ numFmt( metric?.total || 0 ) }
+								value={ formatValue(
+									metric?.total || 0,
+									currencyCode
+								) }
+								valueSize="large"
 								changeLabel={ changeLabel }
-								currentLabel={ currentLabel }
+								currentLabel={ title }
 								color={ color }
 								chartImage={ chartImage }
 								{ ...getChangeProps( metric ) }
@@ -182,4 +206,4 @@ const SearchFunnelWidgetGA4PDF: FC< SearchFunnelWidgetGA4PDFProps > = ( {
 	);
 };
 
-export default SearchFunnelWidgetGA4PDF;
+export default ModuleOverviewWidgetPDF;

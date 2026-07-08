@@ -25,8 +25,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
-import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
-import { PIE_CHART_COLORS } from '@/js/components/pdf-export/pie-chart-colors';
+import {
+	PDF_COLORS,
+	PIE_CHART_COLORS,
+} from '@/js/components/pdf-export/pdf-theme';
 import renderGoogleChartToDataURI, {
 	getVisualization,
 } from '@/js/components/pdf-export/render-google-chart-to-data-uri';
@@ -47,10 +49,6 @@ import {
 	getTotalsReportArgs,
 } from './reportOptions';
 
-/**
- * The same color as the dashboard's All Visitors line, the default graph color.
- */
-const LINE_CHART_COLOR = '#3c7251';
 /**
  * The chart draws at 506 by 133, and the tile displays the image in a
  * box of the same size, so the image never stretches and no empty
@@ -245,7 +243,8 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 
 	return {
 		curveType: 'function',
-		colors: [ LINE_CHART_COLOR ],
+		// Matches the dashboard's All Visitors line color.
+		colors: [ PDF_COLORS.SITE_KIT_SK_500 ],
 		chartArea: {
 			left: 8,
 			right: 40,
@@ -291,7 +290,7 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 		},
 		series: {
 			0: {
-				color: LINE_CHART_COLOR,
+				color: PDF_COLORS.SITE_KIT_SK_500,
 				lineWidth: 4,
 				targetAxisIndex: 1,
 			},
