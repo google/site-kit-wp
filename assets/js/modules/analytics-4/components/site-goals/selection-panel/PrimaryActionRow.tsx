@@ -30,14 +30,18 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
-import ThumbsSurveyTrigger from '@/js/components/surveys/ThumbsSurveyTrigger';
+import ThumbsSurveyTrigger, {
+	VoteDirection,
+} from '@/js/components/surveys/ThumbsSurveyTrigger';
 import Typography from '@/js/components/Typography';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
 	SITE_GOALS_PANEL_VOTE_IDS_BY_GOAL_TYPE,
 	SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { trackEvent } from '@/js/util';
 
 interface PrimaryActionRowProps {
 	goalType: GoalType;
@@ -54,6 +58,8 @@ interface PrimaryActionRowProps {
  * @return React element, or null when no primary action applies.
  */
 const PrimaryActionRow: FC< PrimaryActionRowProps > = ( { goalType } ) => {
+	const viewContext = useViewContext();
+
 	const primaryActionLabel = useSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getPrimaryActionPanelLabel(
@@ -62,11 +68,25 @@ const PrimaryActionRow: FC< PrimaryActionRowProps > = ( { goalType } ) => {
 		[ goalType ]
 	) as string | undefined;
 
+	const primaryEventSlug = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getPrimaryActionEventSlug( goalType ),
+		[ goalType ]
+	) as string | undefined;
+
 	if ( ! primaryActionLabel ) {
 		return null;
 	}
 
 	const voteID = SITE_GOALS_PANEL_VOTE_IDS_BY_GOAL_TYPE[ goalType ];
+
+	function handleVote( direction: VoteDirection ) {
+		trackEvent(
+			`${ viewContext }_site-goals-key-action-survey`,
+			direction === 'up' ? 'vote_up' : 'vote_down',
+			primaryEventSlug
+		);
+	}
 
 	return (
 		<div className="googlesitekit-site-goals-selection-panel__primary-action-row">
@@ -96,6 +116,7 @@ const PrimaryActionRow: FC< PrimaryActionRowProps > = ( { goalType } ) => {
 				</Typography>
 				<ThumbsSurveyTrigger
 					voteID={ voteID }
+					onVote={ handleVote }
 					downvoteFormURL={ SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL }
 					ariaLabel={ __(
 						'Is this a key action?',

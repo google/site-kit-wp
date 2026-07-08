@@ -20,12 +20,14 @@
  * Internal dependencies
  */
 import { enabledFeatures } from '@/js/features';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	createWidgets,
 	registerWidgets as registerDefaultWidgets,
 } from '@/js/googlesitekit/widgets';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
+import { AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationBackNotice';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { createTestRegistry } from '../../../../../tests/js/utils';
 import { registerWidgets } from './index';
@@ -43,6 +45,67 @@ describe( 'Analytics 4 widget registrations', () => {
 
 	afterEach( () => {
 		enabledFeatures.delete( 'siteGoals' );
+		enabledFeatures.delete( 'setupFlowRefresh' );
+	} );
+
+	describe( 'Audience Segmentation back notice widget', () => {
+		it( 'should not register back notice widget when setupFlowRefresh is disabled', () => {
+			registerWidgets( widgets );
+
+			expect(
+				registry
+					.select( CORE_WIDGETS )
+					.getWidget( 'analyticsAudienceSegmentationBackNotice' )
+			).toBeNull();
+		} );
+
+		it( 'should register back notice widget when setupFlowRefresh is enabled', () => {
+			enabledFeatures.add( 'setupFlowRefresh' );
+
+			registerWidgets( widgets );
+
+			expect(
+				registry
+					.select( CORE_WIDGETS )
+					.getWidget( 'analyticsAudienceSegmentationBackNotice' )
+			).toBeDefined();
+		} );
+
+		it( 'should only be active when raw hidden is true and notice is not dismissed', () => {
+			enabledFeatures.add( 'setupFlowRefresh' );
+			registerWidgets( widgets );
+
+			const widget = registry
+				.select( CORE_WIDGETS )
+				.getWidget( 'analyticsAudienceSegmentationBackNotice' );
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+			registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+				configuredAudiences: [ 'audienceA' ],
+				isAudienceSegmentationWidgetHidden: true,
+				didSetAudiences: true,
+			} );
+
+			expect( widget.isActive( registry.select ) ).toBe( true );
+
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG,
+				] );
+
+			expect( widget.isActive( registry.select ) ).toBe( false );
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+			// Even without dismissal, the widget must remain inactive if the raw hidden setting is false.
+			registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+				configuredAudiences: [ 'audienceA' ],
+				isAudienceSegmentationWidgetHidden: false,
+				didSetAudiences: true,
+			} );
+
+			expect( widget.isActive( registry.select ) ).toBe( false );
+		} );
 	} );
 
 	describe( 'Site Goals widgets', () => {

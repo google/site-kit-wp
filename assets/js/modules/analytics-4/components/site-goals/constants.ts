@@ -33,7 +33,7 @@ export const SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT =
 export const SITE_GOALS_MIN_SELECTED_DRIVERS = 1;
 export const SITE_GOALS_MAX_SELECTED_DRIVERS = 6;
 
-export const SITE_GOALS_BREAKDOWN_NOTICE = 'site_goals_breakdown_notice';
+export const SITE_GOALS_BREAKDOWN_NOTICE = 'site-goals-breakdown-notice';
 
 export const SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE: Record<
 	string,
@@ -89,6 +89,13 @@ export const SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT = {
 	[ GOAL_TYPES.ECOMMERCE ]: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
 	[ GOAL_TYPES.LEAD ]: [],
 };
+
+export const SITE_GOALS_SURVEY_TRIGGER_NON_INTERACTED =
+	'view_site_goals_non_interacted';
+export const SITE_GOALS_SURVEY_TRIGGER_NO_BREAKDOWN =
+	'view_site_goals_no_breakdown';
+export const SITE_GOALS_SURVEY_TRIGGER_BREAKDOWN_ENABLED =
+	'view_site_goals_breakdown_enabled';
 
 export const SITE_GOALS_VOTE_ID_WIDGET_ONLINE_STORE =
 	'site_goals_widget_online_store';

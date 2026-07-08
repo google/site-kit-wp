@@ -22,12 +22,18 @@
 import { FC } from 'react';
 
 /**
+ * WordPress dependencies
+ */
+import { useCallback } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { SelectionPanelFooter } from '@/js/components/SelectionPanel';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import useFormValue from '@/js/hooks/useFormValue';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
 	SITE_GOALS_MAX_SELECTED_DRIVERS,
 	SITE_GOALS_MIN_SELECTED_DRIVERS,
@@ -46,6 +52,7 @@ import {
 import { getSelectedDriverIDs } from '@/js/modules/analytics-4/components/site-goals/utils/selectedDrivers';
 import { resolveVisitorEngagementSelectionState } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { trackEvent } from '@/js/util';
 
 interface FooterProps {
 	isOpen: boolean;
@@ -96,6 +103,8 @@ const Footer: FC< FooterProps > = ( {
 	hasEcommerceGoalDrivers,
 	hasLeadGoalDrivers,
 } ) => {
+	const viewContext = useViewContext();
+
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { saveSiteGoalsSettings } = useDispatch( MODULES_ANALYTICS_4 );
 
@@ -160,11 +169,43 @@ const Footer: FC< FooterProps > = ( {
 		return { error };
 	}
 
+	const onSaveSuccess = useCallback( () => {
+		const visitorEngagementState = ( selectedVisitorEngagement || {
+			[ GOAL_TYPES.ECOMMERCE ]: [],
+			[ GOAL_TYPES.LEAD ]: [],
+		} ) as Record< GoalType, string[] >;
+		const selectedVisitorEngagementSlugs = [
+			GOAL_TYPES.ECOMMERCE,
+			GOAL_TYPES.LEAD,
+		].flatMap( ( goalType ) =>
+			( visitorEngagementState[ goalType ] || [] ).map(
+				( eventSlug ) => `${ goalType }:${ eventSlug }`
+			)
+		);
+
+		trackEvent(
+			`${ viewContext }_site-goals-sidebar`,
+			'site_goals_sidebar_save',
+			[ ...selectedDriverSlugs, ...selectedVisitorEngagementSlugs ].join(
+				','
+			)
+		);
+	}, [ viewContext, selectedDriverSlugs, selectedVisitorEngagement ] );
+
+	const onCancel = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_site-goals-sidebar`,
+			'site_goals_sidebar_cancel'
+		);
+	}, [ viewContext ] );
+
 	return (
 		<SelectionPanelFooter
 			isOpen={ isOpen }
 			closePanel={ closePanel }
 			saveSettings={ saveSettings }
+			onSaveSuccess={ onSaveSuccess }
+			onCancel={ onCancel }
 			isBusy={ isSavingSiteGoalsSettings }
 			// @ts-expect-error - `SelectionPanelFooter` prop typing is currently incomplete.
 			savedItemSlugs={

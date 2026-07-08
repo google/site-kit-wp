@@ -19,27 +19,20 @@
 /**
  * External dependencies
  */
-import { StyleSheet, Text, View } from '@react-pdf/renderer';
+import { View } from '@react-pdf/renderer';
 import type { Style } from '@react-pdf/stylesheet';
-import { FC, ReactNode } from 'react';
+import { FC } from 'react';
 
 /**
  * Internal dependencies
  */
-import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
+import PDFCard from './PDFCard';
+import PDFTypography from './PDFTypography';
 
-const styles = StyleSheet.create( {
+const styles = createPDFStyles( {
 	heading: {
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 13,
-		color: '#6c726e',
-		marginBottom: 8,
-	},
-	card: {
-		backgroundColor: '#ffffff',
-		borderRadius: 14,
-		padding: 20,
-		marginBottom: 20,
+		marginBottom: 15,
 	},
 } );
 
@@ -48,7 +41,6 @@ export interface PDFWidgetSectionProps {
 	heading?: string;
 	/** Optional style merged onto the card. */
 	cardStyle?: Style;
-	children: ReactNode;
 }
 
 const PDFWidgetSection: FC< PDFWidgetSectionProps > = ( {
@@ -58,12 +50,12 @@ const PDFWidgetSection: FC< PDFWidgetSectionProps > = ( {
 } ) => {
 	return (
 		<View>
-			{ !! heading && <Text style={ styles.heading }>{ heading }</Text> }
-			<View
-				style={ cardStyle ? [ styles.card, cardStyle ] : styles.card }
-			>
-				{ children }
-			</View>
+			{ !! heading && (
+				<PDFTypography size="large" style={ styles.heading }>
+					{ heading }
+				</PDFTypography>
+			) }
+			<PDFCard style={ cardStyle }>{ children }</PDFCard>
 		</View>
 	);
 };

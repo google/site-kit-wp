@@ -95,6 +95,7 @@ MultipleTiles.args = {
 		/>,
 	],
 };
+MultipleTiles.scenario = {};
 
 export const NegativeChanges = Template.bind( {} ) as Story< TilesGroupProps >;
 NegativeChanges.storyName = 'Negative Changes';

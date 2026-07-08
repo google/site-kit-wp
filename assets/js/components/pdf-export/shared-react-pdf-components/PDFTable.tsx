@@ -19,45 +19,28 @@
 /**
  * External dependencies
  */
-import { StyleSheet, Text, View } from '@react-pdf/renderer';
+import { View } from '@react-pdf/renderer';
 import { ReactElement, ReactNode } from 'react';
 
 /**
  * Internal dependencies
  */
-import { PDF_FONT_FAMILY_TEXT } from '@/js/components/pdf-export/pdf-theme';
+import {
+	createPDFStyles,
+	scalePDFValue,
+} from '@/js/components/pdf-export/pdf-scale';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import PDFTypography from './PDFTypography';
 
-const COLORS = {
-	text: '#161b18',
-	divider: '#ebeef0',
-};
+const ROW_PADDING_HORIZONTAL = 24;
+const DEFAULT_COLUMN_GAP = 40;
 
-const ROW_PADDING_HORIZONTAL = 12;
-const DEFAULT_COLUMN_GAP = 20;
-
-const headerTextStyles = {
-	fontFamily: PDF_FONT_FAMILY_TEXT,
-	color: COLORS.text,
-	fontSize: 7,
-	fontWeight: 500,
-	lineHeight: 1.14,
-	letterSpacing: -0.05,
-};
-
-const bodyTextStyles = {
-	fontFamily: PDF_FONT_FAMILY_TEXT,
-	color: COLORS.text,
-	fontSize: 7,
-	lineHeight: 1.43,
-	letterSpacing: 0.125,
-};
-
-const styles = StyleSheet.create( {
+const styles = createPDFStyles( {
 	headerRow: {
 		flexDirection: 'row',
 		borderBottomWidth: 1,
-		borderBottomColor: COLORS.divider,
-		paddingBottom: 8,
+		borderBottomColor: PDF_COLORS.SURFACES_SURFACE_1,
+		paddingBottom: 16,
 		paddingHorizontal: ROW_PADDING_HORIZONTAL,
 	},
 	bodyRow: {
@@ -67,24 +50,13 @@ const styles = StyleSheet.create( {
 		flexDirection: 'row',
 		alignItems: 'flex-start',
 		borderBottomWidth: 1,
-		borderBottomColor: COLORS.divider,
-		paddingVertical: 4,
+		borderBottomColor: PDF_COLORS.SURFACES_SURFACE_1,
+		paddingVertical: 8,
 	},
 	bodyRowContentLast: {
 		borderBottomWidth: 0,
 	},
-	headerText: {
-		...headerTextStyles,
-	},
-	headerTextRight: {
-		...headerTextStyles,
-		textAlign: 'right',
-	},
-	bodyText: {
-		...bodyTextStyles,
-	},
-	bodyTextRight: {
-		...bodyTextStyles,
+	rightAlign: {
 		textAlign: 'right',
 	},
 } );
@@ -107,7 +79,7 @@ export interface PDFTableProps< Row > {
 	columns: Array< PDFTableColumn< Row > >;
 	/** The rows of data. Each row renders one cell per column, from the column's `cell` or `format`. */
 	rows: Row[];
-	/** Horizontal gap in points (pt) between the cells of a row. Defaults to 20. */
+	/** Horizontal gap between the cells of a row, in Figma frame pixels. `scalePDFValue` converts it to points. Defaults to 40. */
 	columnGap?: number;
 }
 
@@ -133,20 +105,26 @@ export default function PDFTable< Row >( {
 	rows,
 	columnGap = DEFAULT_COLUMN_GAP,
 }: PDFTableProps< Row > ): ReactElement {
+	const scaledColumnGap = scalePDFValue( columnGap );
+
 	return (
 		<View>
-			<View style={ [ styles.headerRow, { columnGap } ] }>
+			<View
+				style={ [ styles.headerRow, { columnGap: scaledColumnGap } ] }
+			>
 				{ columns.map( ( column, columnIndex ) => (
 					<View key={ columnIndex } style={ getCellStyle( column ) }>
-						<Text
+						<PDFTypography
+							type="title"
+							size="small"
 							style={
 								column.align === 'right'
-									? styles.headerTextRight
-									: styles.headerText
+									? styles.rightAlign
+									: undefined
 							}
 						>
 							{ column.header }
-						</Text>
+						</PDFTypography>
 					</View>
 				) ) }
 			</View>
@@ -160,10 +138,13 @@ export default function PDFTable< Row >( {
 								isLastRow
 									? [
 											styles.bodyRowContent,
-											{ columnGap },
+											{ columnGap: scaledColumnGap },
 											styles.bodyRowContentLast,
 									  ]
-									: [ styles.bodyRowContent, { columnGap } ]
+									: [
+											styles.bodyRowContent,
+											{ columnGap: scaledColumnGap },
+									  ]
 							}
 						>
 							{ columns.map( ( column, columnIndex ) => (
@@ -174,17 +155,17 @@ export default function PDFTable< Row >( {
 									{ column.cell ? (
 										column.cell( row )
 									) : (
-										<Text
+										<PDFTypography
 											style={
 												column.align === 'right'
-													? styles.bodyTextRight
-													: styles.bodyText
+													? styles.rightAlign
+													: undefined
 											}
 										>
 											{ column.format
 												? column.format( row )
 												: '' }
-										</Text>
+										</PDFTypography>
 									) }
 								</View>
 							) ) }

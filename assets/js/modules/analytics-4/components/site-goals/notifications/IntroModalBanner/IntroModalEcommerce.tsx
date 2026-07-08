@@ -30,8 +30,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Select, useSelect } from 'googlesitekit-data';
 import BannerModal from '@/js/components/BannerModal/index';
 import Link from '@/js/components/Link';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import SiteGoalsIntroModalEcommerceGraphic from '@/svg/graphics/site-goals-intro-modal-ecommerce.svg';
 import type { IntroModalVariantProps } from './types';
 
@@ -41,6 +43,12 @@ const IntroModalEcommerce: FC< IntroModalVariantProps > = ( {
 	onClickLearnMore,
 	onDismiss,
 } ) => {
+	const documentationURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getDocumentationLinkURL( 'site-goals' ),
+		[]
+	);
+
 	return (
 		<BannerModal
 			className="googlesitekit-banner-modal--site-goals-intro"
@@ -56,7 +64,7 @@ const IntroModalEcommerce: FC< IntroModalVariantProps > = ( {
 				{
 					a: (
 						<Link
-							href="#site-goals" // TODO: Update with actual link to site goal's documentation.
+							href={ documentationURL }
 							aria-label={ __(
 								'Learn more about site goals',
 								'google-site-kit'
