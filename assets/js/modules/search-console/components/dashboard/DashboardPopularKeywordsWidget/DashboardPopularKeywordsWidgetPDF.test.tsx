@@ -25,6 +25,7 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import DashboardPopularKeywordsWidgetPDF from './DashboardPopularKeywordsWidgetPDF';
 
 /**
@@ -123,26 +124,29 @@ describe( 'DashboardPopularKeywordsWidgetPDF', () => {
 		expect( json ).toContain( '4,500' );
 	} );
 
-	it( 'applies the column widths and a 4pt (8px) column gap', () => {
+	it( 'applies the column widths and the scaled column gap', () => {
 		const json = renderJSON( { data: DATA } );
 
 		expect( json ).toContain( '66.7%' );
 		expect( json ).toContain( '3.69%' );
 		expect( json ).toContain( '28.87%' );
-		expect( json ).toContain( '"columnGap":4' );
+		expect( json ).toContain( `"columnGap":${ 8 * PDF_SCALE }` );
 	} );
 
-	it( 'renders the "No data available." message when there are no rows', () => {
-		const json = renderJSON( { data: { rows: [] } } );
+	it( 'returns null when there are no rows', () => {
+		// The whole section returns null, heading and card included.
+		const renderer = TestRenderer.create(
+			<DashboardPopularKeywordsWidgetPDF data={ { rows: [] } } />
+		);
 
-		expect( json ).toContain( 'No data available' );
-		expect( json ).not.toContain( 'Impressions' );
+		expect( renderer.toJSON() ).toBeNull();
 	} );
 
-	it( 'renders the "No data available." message when data is null', () => {
-		const json = renderJSON( { data: null } );
+	it( 'returns null when data is null', () => {
+		const renderer = TestRenderer.create(
+			<DashboardPopularKeywordsWidgetPDF data={ null } />
+		);
 
-		expect( json ).toContain( 'No data available' );
-		expect( json ).not.toContain( 'Impressions' );
+		expect( renderer.toJSON() ).toBeNull();
 	} );
 } );

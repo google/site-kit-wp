@@ -127,6 +127,17 @@ NegativeChange.args = {
 	format: { style: 'decimal' },
 };
 
+export const NoChange = Template.bind( {} ) as Story< TileProps >;
+NoChange.storyName = 'No Change';
+NoChange.args = {
+	title: 'Form Submissions',
+	subtitle: 'Total submissions',
+	currentValue: 980,
+	previousValue: 980,
+	format: { style: 'decimal' },
+};
+NoChange.scenario = {};
+
 export const ZeroDataPreviousRange = Template.bind( {} ) as Story< TileProps >;
 ZeroDataPreviousRange.storyName = 'Zero Data (Previous Range)';
 ZeroDataPreviousRange.args = {

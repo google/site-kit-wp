@@ -31,7 +31,9 @@ import { __ } from '@wordpress/i18n';
  */
 import { Tab, TabBar } from 'googlesitekit-components';
 import InfoTooltip from '@/js/components/InfoTooltip';
+import useViewContext from '@/js/hooks/useViewContext';
 import { SITE_GOALS_BREAKDOWN_OTHER_SOURCES_TAB_ID } from '@/js/modules/analytics-4/components/site-goals/constants';
+import { trackEvent } from '@/js/util';
 
 export interface BreakdownTab {
 	id: string;
@@ -54,6 +56,8 @@ const BreakdownTabs: FC< BreakdownTabsProps > = ( {
 	showOtherSources = true,
 	otherSourcesLabel,
 } ) => {
+	const viewContext = useViewContext();
+
 	// The trailing "Other sources" tab aggregates every event without a value
 	// for the breakdown dimension; only appended when such events exist.
 	const allTabs: BreakdownTab[] = [
@@ -93,7 +97,18 @@ const BreakdownTabs: FC< BreakdownTabsProps > = ( {
 						<span className="mdc-tab__text-label">
 							{ tab.label }
 						</span>
-						{ tab.tooltip && <InfoTooltip title={ tab.tooltip } /> }
+						{ tab.tooltip && (
+							<InfoTooltip
+								title={ tab.tooltip }
+								onOpen={ () =>
+									trackEvent(
+										`${ viewContext }_site-goals-widget`,
+										'view_tab_tooltip',
+										tab.id
+									)
+								}
+							/>
+						) }
 					</Tab>
 				) ) }
 			</TabBar>

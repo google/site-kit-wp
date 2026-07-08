@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
+import { Document, Page, View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
@@ -31,62 +31,95 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
-	PDF_COLOR_TEXT_PRIMARY,
-	PDF_COLOR_TEXT_SECONDARY,
-	PDF_FONT_FAMILY_DISPLAY,
+	PDF_PAGE_PADDING,
+	PDF_PAGE_WIDTH,
+	createPDFStyles,
+} from '@/js/components/pdf-export/pdf-scale';
+import {
+	PDF_COLORS,
 	PDF_FONT_FAMILY_TEXT,
 } from '@/js/components/pdf-export/pdf-theme';
 import PDFFooter from '@/js/components/pdf-export/shared-react-pdf-components/PDFFooter';
-import type {
+import {
 	PDFHeaderSection,
 	PDFReportArea,
+	PDFReportWidget,
 } from '@/js/components/pdf-export/types';
 import PDFEmailReportingNotice from './PDFEmailReportingNotice';
 import PDFHeader from './PDFHeader';
+import PDFTypography from './PDFTypography';
 
 const DEFAULT_PAGE_HEIGHT = 792;
 
-const styles = StyleSheet.create( {
+const styles = createPDFStyles( {
 	page: {
-		paddingTop: 24,
-		paddingBottom: 24,
-		paddingHorizontal: 24,
 		fontFamily: PDF_FONT_FAMILY_TEXT,
 		fontSize: 12,
-		backgroundColor: '#f3f5f7',
+		backgroundColor: PDF_COLORS.SURFACES_BACKGROUND,
 	},
 	body: {
 		flexGrow: 1,
+		// The report body owns the spacing between areas, so no area or widget
+		// sets its own outer margin.
+		gap: 50,
 	},
-	section: {
-		marginBottom: 24,
+	// Gap between the widgets inside one area.
+	widgets: {
+		gap: 30,
 	},
-	sectionTitle: {
-		fontFamily: PDF_FONT_FAMILY_DISPLAY,
-		fontSize: 24,
-		fontWeight: 'normal',
-		color: PDF_COLOR_TEXT_PRIMARY,
-		marginBottom: 12,
-	},
-	emptyText: {
-		fontFamily: PDF_FONT_FAMILY_TEXT,
-		fontSize: 11,
-		color: PDF_COLOR_TEXT_SECONDARY,
+	// Gap below an area title and above its first widget.
+	areaTitle: {
+		marginBottom: 20,
 	},
 } );
 
+/**
+ * A report widget whose component chunk loaded, ready to render.
+ */
+type RenderableWidget = PDFReportWidget & {
+	Component: NonNullable< PDFReportWidget[ 'Component' ] >;
+};
+
+/**
+ * Determines whether a report widget has content to render.
+ *
+ * A widget without a component failed to load, and a widget without data has
+ * an empty or failed report behind it. The report skips both.
+ *
+ * @since n.e.x.t
+ *
+ * @param widget A loaded report widget entry.
+ * @return `true` when the widget has content to render.
+ */
+function isRenderableWidget(
+	widget: PDFReportWidget
+): widget is RenderableWidget {
+	return Boolean( widget.Component && widget.data );
+}
+
 export interface DashboardReportProps {
+	/** The site name, shown in the PDF document title. */
 	siteName: string;
+	/** The site URL. The header shows its host. */
 	siteURL: string;
+	/** Golink URL opening the Site Kit dashboard. The header links to it. */
 	dashboardURL: string;
+	/** The report date range, shown in the header. */
 	dateRange: {
+		/** The first day of the range, as `YYYY-MM-DD`. */
 		startDate: string;
+		/** The last day of the range, as `YYYY-MM-DD`. */
 		endDate: string;
 	};
+	/** The header chip sections. The report keeps only the chips of areas with content. */
 	sections: PDFHeaderSection[];
+	/** Golink URL opening the Site Kit help center, for the footer. */
 	helpCenterURL: string;
+	/** Golink URL opening the Google privacy policy, for the footer. */
 	privacyPolicyURL: string;
+	/** The page height in points. Defaults to the US letter height. */
 	pageHeight?: number;
+	/** The report areas, each holding its widgets. */
 	areas?: PDFReportArea[];
 	/** Golink URL for the "Set up email reports" button in the email reporting notice. */
 	emailReportingSetupURL?: string;
@@ -104,6 +137,25 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 	areas = [],
 	emailReportingSetupURL,
 } ) => {
+	/**
+	 * An area renders only the widgets with content. The report skips an area
+	 * where no widget has content, and the header shows no chip for it, so
+	 * the report holds no empty section.
+	 */
+	const renderableAreas = areas
+		.map( ( area ) => ( {
+			...area,
+			widgets: area.widgets.filter( isRenderableWidget ),
+		} ) )
+		.filter( ( { widgets } ) => widgets.length > 0 );
+
+	const renderableAreaSlugs = new Set(
+		renderableAreas.map( ( { areaSlug } ) => areaSlug )
+	);
+	const renderableSections = sections.filter( ( { slug } ) =>
+		renderableAreaSlugs.has( slug )
+	);
+
 	return (
 		<Document
 			title={
@@ -118,60 +170,58 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 			author="Site Kit by Google"
 		>
 			<Page
-				size={ [ 612, pageHeight ] }
-				style={ styles.page }
+				size={ [ PDF_PAGE_WIDTH, pageHeight ] }
+				style={ [ styles.page, { padding: PDF_PAGE_PADDING } ] }
 				wrap={ false }
 			>
 				<PDFHeader
 					siteURL={ siteURL }
 					dashboardURL={ dashboardURL }
 					dateRange={ dateRange }
-					sections={ sections }
+					sections={ renderableSections }
 				/>
 				<View style={ styles.body }>
-					{ areas.length === 0 && (
-						<Text style={ styles.emptyText }>
+					{ renderableAreas.length === 0 && (
+						<PDFTypography
+							size="small"
+							style={ {
+								color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
+							} }
+						>
 							{ __(
 								'No report data available.',
 								'google-site-kit'
 							) }
-						</Text>
+						</PDFTypography>
 					) }
-					{ areas.map( ( { areaSlug, areaTitle, widgets } ) => (
-						<View
-							key={ `section-${ areaSlug }` }
-							style={ styles.section }
-						>
-							<Text style={ styles.sectionTitle }>
-								{ areaTitle }
-							</Text>
-							{ widgets.map(
-								( { slug, Component, data, chartImages } ) => {
-									if ( ! Component ) {
-										return (
-											<Text
+					{ renderableAreas.map(
+						( { areaSlug, areaTitle, widgets } ) => (
+							<View key={ `section-${ areaSlug }` }>
+								<PDFTypography
+									type="headline"
+									style={ styles.areaTitle }
+								>
+									{ areaTitle }
+								</PDFTypography>
+								<View style={ styles.widgets }>
+									{ widgets.map(
+										( {
+											slug,
+											Component,
+											data,
+											chartImages,
+										} ) => (
+											<Component
 												key={ slug }
-												style={ styles.emptyText }
-											>
-												{ __(
-													'Data unavailable.',
-													'google-site-kit'
-												) }
-											</Text>
-										);
-									}
-
-									return (
-										<Component
-											key={ slug }
-											data={ data }
-											chartImages={ chartImages }
-										/>
-									);
-								}
-							) }
-						</View>
-					) ) }
+												data={ data }
+												chartImages={ chartImages }
+											/>
+										)
+									) }
+								</View>
+							</View>
+						)
+					) }
 				</View>
 				<PDFEmailReportingNotice
 					emailReportingSetupURL={ emailReportingSetupURL }

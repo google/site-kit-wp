@@ -1,4 +1,6 @@
 /**
+ * PDFMetricChartTile: a metric tile with a line chart image for the PDF report.
+ *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,16 +19,8 @@
 /**
  * External dependencies
  */
-import {
-	Image,
-	Line,
-	Path,
-	StyleSheet,
-	Svg,
-	Text,
-	View,
-} from '@react-pdf/renderer';
-import type { FC } from 'react';
+import { Image, Line, View } from '@react-pdf/renderer';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -34,38 +28,20 @@ import type { FC } from 'react';
 import { __ } from '@wordpress/i18n';
 
 /**
- * Color tokens sourced from the PDF report Figma design.
- *
- * See: https://www.figma.com/design/fwNvz1r40HJk2FpqBUhDme/PDF-report-generation.
+ * Internal dependencies
  */
-const COLORS = {
-	// surfaces/on-surface
-	text: '#161b18',
-	// surfaces/on-surface-variant
-	secondary: '#6c726e',
-	success: '#34a853',
-	error: '#ea4335',
-	successBg: '#e6f4ea',
-	errorBg: '#fce8e6',
-	cardBg: '#ffffff',
-	// utility/divider
-	border: '#ebeef0',
-	placeholderBg: '#f8f9fa',
-};
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import PDFCard from './PDFCard';
+import PDFChangeBadge from './PDFChangeBadge';
+import PDFSvg from './PDFSvg';
+import PDFTypography, { PDFTypographySize } from './PDFTypography';
 
-const styles = StyleSheet.create( {
-	card: {
-		backgroundColor: COLORS.cardBg,
-		borderRadius: 8,
-		borderWidth: 1,
-		borderColor: COLORS.border,
-		borderStyle: 'solid',
-		padding: 12,
-	},
+const styles = createPDFStyles( {
 	headerRow: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
-		alignItems: 'flex-start',
+		alignItems: 'flex-end',
 	},
 	headerLeft: {
 		flexGrow: 1,
@@ -73,93 +49,49 @@ const styles = StyleSheet.create( {
 	},
 	headerRight: {
 		alignItems: 'flex-end',
-		marginLeft: 8,
 	},
 	title: {
-		fontSize: 9,
-		color: COLORS.text,
-		marginBottom: 2,
-	},
-	value: {
-		fontSize: 22,
-		color: COLORS.text,
-	},
-	chip: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 3,
-		borderRadius: 100,
-		paddingVertical: 2,
-		paddingHorizontal: 6,
-	},
-	chipText: {
-		fontSize: 9,
+		marginBottom: 1,
 	},
 	changeLabel: {
-		fontSize: 8,
-		color: COLORS.secondary,
-		marginTop: 3,
+		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
+		marginTop: 4,
 		textAlign: 'right',
 	},
 	legendRow: {
 		flexDirection: 'row',
-		gap: 14,
-		marginTop: 8,
-		marginBottom: 2,
+		gap: 18,
+		marginTop: 7,
+		marginBottom: 0,
 	},
 	legendItem: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 4,
+		gap: 8,
 	},
 	legendLabel: {
-		fontSize: 8,
-		color: COLORS.secondary,
+		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
 	},
 	chart: {
 		width: '100%',
-		height: 120,
-		marginTop: 4,
-	},
-	placeholder: {
-		minHeight: 150,
-		alignItems: 'center',
-		justifyContent: 'center',
-		backgroundColor: COLORS.placeholderBg,
-		borderRadius: 4,
-	},
-	placeholderText: {
-		fontSize: 9,
-		color: COLORS.secondary,
+		height: 133,
+		// Keep the chart at its drawn aspect ratio, 506 by 133, so it never
+		// stretches when the card width rounds off.
+		objectFit: 'contain',
+		marginTop: 7,
 	},
 } );
 
-interface ChangeArrowProps {
-	direction: 'up' | 'down';
-	color: string;
-}
-
-const ChangeArrow: FC< ChangeArrowProps > = ( { direction, color } ) => {
-	return (
-		<Svg width={ 8 } height={ 8 } viewBox="0 0 8 8">
-			<Path
-				d={
-					direction === 'up' ? 'M4,0 L8,8 L0,8 Z' : 'M0,0 L8,0 L4,8 Z'
-				}
-				fill={ color }
-			/>
-		</Svg>
-	);
-};
-
 interface LegendSwatchProps {
+	/** The swatch line color, the same as its chart series. */
 	color: string;
+	/** Whether the line is dashed, which marks the previous period series. */
 	dashed?: boolean;
 }
 
 const LegendSwatch: FC< LegendSwatchProps > = ( { color, dashed = false } ) => {
 	return (
-		<Svg width={ 16 } height={ 2 } viewBox="0 0 16 2">
+		<PDFSvg width={ 24 } height={ 2 } viewBox="0 0 16 2">
 			<Line
 				x1="0"
 				y1="1"
@@ -169,7 +101,7 @@ const LegendSwatch: FC< LegendSwatchProps > = ( { color, dashed = false } ) => {
 				strokeWidth={ 2 }
 				{ ...( dashed ? { strokeDasharray: '3 2' } : {} ) }
 			/>
-		</Svg>
+		</PDFSvg>
 	);
 };
 export interface PDFMetricChartTileProps {
@@ -177,11 +109,13 @@ export interface PDFMetricChartTileProps {
 	title: string;
 	/** Pre-formatted metric value to display prominently, e.g. "9.2K". */
 	value: string;
-	/** Pre-formatted change chip text, e.g. "5.2%". Hides the chip when omitted. */
+	/** Typography size for the metric value. Defaults to `'medium'`. */
+	valueSize?: PDFTypographySize;
+	/** Pre-formatted change badge text, e.g. "5.2%". Hides the badge when omitted. */
 	change?: string;
-	/** Direction the change chip points; controls the arrow and color. */
+	/** Direction the change badge points. Controls the badge color. */
 	changeDirection?: 'up' | 'down';
-	/** Caption rendered below the chip, e.g. "Vs. prev. 28 days". */
+	/** Caption rendered below the badge, e.g. "Vs. prev. 28 days". */
 	changeLabel?: string;
 	/** Legend label for the current-period series, e.g. "Impressions". */
 	currentLabel: string;
@@ -189,13 +123,14 @@ export interface PDFMetricChartTileProps {
 	previousLabel?: string;
 	/** Series color used for the legend swatches, matching the chart. */
 	color: string;
-	/** JPEG data URI for the rasterised line chart. */
+	/** JPEG data URI for the rendered line chart. When it's not set, the tile returns null. */
 	chartImage?: string | null;
 }
 
 const PDFMetricChartTile: FC< PDFMetricChartTileProps > = ( {
 	title,
 	value,
+	valueSize = 'medium',
 	change,
 	changeDirection,
 	changeLabel,
@@ -204,60 +139,43 @@ const PDFMetricChartTile: FC< PDFMetricChartTileProps > = ( {
 	color,
 	chartImage,
 } ) => {
-	// A missing chart image means the metric's report or rasterisation failed,
-	// so the whole card falls back to a "Data unavailable" placeholder.
+	// Without a chart image the tile returns null, and no placeholder takes
+	// its place.
 	if ( ! chartImage ) {
-		return (
-			<View style={ styles.card }>
-				<View style={ styles.placeholder }>
-					<Text style={ styles.placeholderText }>
-						{ __( 'Data unavailable', 'google-site-kit' ) }
-					</Text>
-				</View>
-			</View>
-		);
+		return null;
 	}
 
-	const changeColor =
-		changeDirection === 'up' ? COLORS.success : COLORS.error;
-	const chipBackground =
-		changeDirection === 'up' ? COLORS.successBg : COLORS.errorBg;
-
 	return (
-		<View style={ styles.card }>
+		<PDFCard>
 			<View style={ styles.headerRow }>
 				<View style={ styles.headerLeft }>
-					<Text style={ styles.title }>{ title }</Text>
-					<Text style={ styles.value }>{ value }</Text>
+					<PDFTypography
+						type="title"
+						size="small"
+						style={ styles.title }
+					>
+						{ title }
+					</PDFTypography>
+					<PDFTypography type="headline" size={ valueSize }>
+						{ value }
+					</PDFTypography>
 				</View>
 				<View style={ styles.headerRight }>
 					{ change !== undefined &&
 						change !== null &&
 						changeDirection && (
-							<View
-								style={ [
-									styles.chip,
-									{ backgroundColor: chipBackground },
-								] }
-							>
-								<ChangeArrow
-									direction={ changeDirection }
-									color={ changeColor }
-								/>
-								<Text
-									style={ [
-										styles.chipText,
-										{ color: changeColor },
-									] }
-								>
-									{ change }
-								</Text>
-							</View>
+							<PDFChangeBadge
+								change={ change }
+								isNegative={ changeDirection === 'down' }
+							/>
 						) }
 					{ changeLabel && (
-						<Text style={ styles.changeLabel }>
+						<PDFTypography
+							size="small"
+							style={ styles.changeLabel }
+						>
 							{ changeLabel }
-						</Text>
+						</PDFTypography>
 					) }
 				</View>
 			</View>
@@ -265,16 +183,20 @@ const PDFMetricChartTile: FC< PDFMetricChartTileProps > = ( {
 			<View style={ styles.legendRow }>
 				<View style={ styles.legendItem }>
 					<LegendSwatch color={ color } />
-					<Text style={ styles.legendLabel }>{ currentLabel }</Text>
+					<PDFTypography size="small" style={ styles.legendLabel }>
+						{ currentLabel }
+					</PDFTypography>
 				</View>
 				<View style={ styles.legendItem }>
 					<LegendSwatch color={ color } dashed />
-					<Text style={ styles.legendLabel }>{ previousLabel }</Text>
+					<PDFTypography size="small" style={ styles.legendLabel }>
+						{ previousLabel }
+					</PDFTypography>
 				</View>
 			</View>
 
 			<Image src={ chartImage } style={ styles.chart } />
-		</View>
+		</PDFCard>
 	);
 };
 

@@ -44,6 +44,7 @@ import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 import SettingsPlugin from './SettingsPlugin';
 
 export default function SettingsAdmin() {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const setupFlowRefreshPhase4Enabled = useFeature(
 		'setupFlowRefreshPhase4'
 	);
@@ -163,11 +164,12 @@ export default function SettingsAdmin() {
 				</Cell>
 			) }
 
-			{ ( isAnalyticsConnected || !! configuredAudiences ) && (
-				<Cell size={ 12 }>
-					<SettingsCardAudiences />
-				</Cell>
-			) }
+			{ ! setupFlowRefreshEnabled &&
+				( isAnalyticsConnected || !! configuredAudiences ) && (
+					<Cell size={ 12 }>
+						<SettingsCardAudiences />
+					</Cell>
+				) }
 
 			<Cell size={ 12 }>
 				<SettingsCardEmailReporting />

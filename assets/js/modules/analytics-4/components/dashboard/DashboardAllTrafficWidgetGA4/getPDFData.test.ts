@@ -35,7 +35,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
-import { PIE_CHART_COLORS } from '@/js/components/pdf-export/pie-chart-colors';
+import { PIE_CHART_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import renderGoogleChartToDataURI from '@/js/components/pdf-export/render-google-chart-to-data-uri';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import getPDFData, { GetPDFDataParams } from './getPDFData';
@@ -114,8 +114,8 @@ const devicesArgs = getBreakdownReportArgs( {
  *
  * @since n.e.x.t
  *
- * @param {Array<Array>} entries Ordered `[ label, users ]` pairs for the current range.
- * @return {Object} A GA4 report with current-range rows.
+ * @param entries Ordered `[ label, users ]` pairs for the current range.
+ * @return A GA4 report with current-range rows.
  */
 function buildBreakdownReport( entries: Array< [ string, number ] > ) {
 	return {
@@ -240,8 +240,8 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			deviceChart: DEVICE_CHART_DATA_URI,
 		} );
 
-		// The resolver short-circuits when data is already present, so no
-		// network request should have been made.
+		// The resolver returns early when data is already present, so it makes
+		// no network request.
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
@@ -318,16 +318,20 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		expect( mockRenderGoogleChartToDataURI ).toHaveBeenCalledTimes( 1 );
 		const renderArgs = mockRenderGoogleChartToDataURI.mock.calls[ 0 ][ 0 ];
 		expect( renderArgs.chartType ).toBe( 'LineChart' );
-		expect( renderArgs.width ).toBe( 540 );
-		expect( renderArgs.height ).toBe( 200 );
+		expect( renderArgs.width ).toBe( 506 );
+		expect( renderArgs.height ).toBe( 133 );
 		expect( renderArgs.signal ).toBe( signal );
 		expect( renderArgs.dataTable ).toBe( dataTable );
 		expect( renderArgs.options ).toMatchObject( {
 			curveType: 'function',
 			colors: [ '#3c7251' ],
 			legend: { position: 'none' },
-			hAxis: { format: 'MMM d' },
-			series: { 0: { color: '#3c7251', lineWidth: 5 } },
+			hAxis: {
+				format: 'MMM d',
+				textStyle: { fontName: 'Google Sans Text' },
+			},
+			vAxis: { textStyle: { fontName: 'Google Sans Text' } },
+			series: { 0: { color: '#3c7251', lineWidth: 4 } },
 		} );
 
 		expect( result.chartImages?.lineChart ).toBe( LINE_CHART_DATA_URI );
@@ -439,8 +443,10 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		expect( pieCalls ).toHaveLength( 3 );
 		pieCalls.forEach( ( [ args ] ) => {
 			expect( args.options ).toMatchObject( {
-				pieHole: 0.56,
+				pieHole: 0.542,
 				colors: PIE_CHART_COLORS,
+				// The donut segments touch, with no white separator.
+				pieSliceBorderColor: 'transparent',
 			} );
 			// The donut renders at 4x its display size so its edges stay sharp.
 			expect( args.scaleFactor ).toBe( 4 );
@@ -715,7 +721,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 				options: devicesArgs,
 			} );
 
-		// The export is cancelled while Google Charts loads, so the abort
+		// The export is canceled while Google Charts loads, so the abort
 		// check after it stops the run before the line chart or any donut.
 		mockEnsureGoogleChartsLoaded.mockReset().mockImplementation( () => {
 			controller.abort();

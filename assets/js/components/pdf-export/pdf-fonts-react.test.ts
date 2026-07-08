@@ -21,17 +21,27 @@
  */
 import { PDF_FONT_FAMILY_DISPLAY, PDF_FONT_FAMILY_TEXT } from './pdf-theme';
 
-// `@react-pdf/renderer` is auto-mocked via `__mocks__/@react-pdf/renderer.js`.
-// The module under test holds a session-scoped registration latch, so each test
-// reloads it (and the mocked renderer) with `jest.resetModules()`.
+/**
+ * Imports fresh copies of the mocked renderer and the module under test.
+ *
+ * `@react-pdf/renderer` is auto-mocked via `__mocks__/@react-pdf/renderer.js`.
+ * The module under test holds a session-scoped registration latch, so each
+ * test reloads it (and the mocked renderer) with `jest.resetModules()`.
+ *
+ * @since 1.182.0
+ *
+ * @return The mocked `Font` API and the `registerPDFFonts` function.
+ */
 async function setup() {
 	const { Font } = await import( '@react-pdf/renderer' );
 	const { registerPDFFonts } = await import( './pdf-fonts-react' );
 	return { Font, registerPDFFonts };
 }
 
-// The bundled (multi-weight) shape we always register with; narrows the
-// `SingleLoad | BulkLoad` union the typings expose for `Font.register`.
+/**
+ * The bundled multi-weight shape registered for each family. It narrows the
+ * `SingleLoad | BulkLoad` union the typings expose for `Font.register`.
+ */
 type FontConfig = {
 	family: string;
 	fonts: Array< { src: string; fontWeight: number } >;
@@ -62,7 +72,7 @@ describe( 'registerPDFFonts', () => {
 		)?.[ 0 ];
 
 		expect( displayConfig?.fonts.map( ( f ) => f.fontWeight ) ).toEqual( [
-			400,
+			400, 500,
 		] );
 		expect( textConfig?.fonts.map( ( f ) => f.fontWeight ) ).toEqual( [
 			400, 500,
@@ -81,7 +91,7 @@ describe( 'registerPDFFonts', () => {
 			.flatMap( ( [ config ] ) => config.fonts )
 			.map( ( { src } ) => src );
 
-		expect( sources ).toHaveLength( 3 );
+		expect( sources ).toHaveLength( 4 );
 		sources.forEach( ( src ) => {
 			expect( typeof src ).toBe( 'string' );
 			expect( src.startsWith( 'data:' ) ).toBe( false );

@@ -27,6 +27,7 @@ import { createHashHistory } from 'history';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { mockCreateComponent } from '@tests/js/mock-component-utils';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -35,10 +36,7 @@ import {
 } from '@tests/js/test-utils';
 import SettingsModules from './SettingsModules';
 
-jest.mock( './SettingsAdmin', () => {
-	const { mockCreateComponent } = require( '@tests/js/mock-component-utils' );
-	return mockCreateComponent( 'SettingsAdmin' );
-} );
+jest.mock( './SettingsAdmin', () => mockCreateComponent( 'SettingsAdmin' ) );
 
 describe( 'SettingsModules', () => {
 	// Create hash history to interact with HashRouter using `history.push`

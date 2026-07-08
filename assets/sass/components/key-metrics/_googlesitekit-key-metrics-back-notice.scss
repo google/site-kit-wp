@@ -1,5 +1,5 @@
 /**
- * PDFNoData tests.
+ * Key Metrics Back Notice styles.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -16,30 +16,16 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import TestRenderer from 'react-test-renderer';
+.googlesitekit-plugin {
+	// The Key Metrics widget area lays out its tiles using a subgrid, which
+	// squeezes this full-width notice into a single column. Restore block
+	// layout on the widget body so the notice spans the full width.
+	.googlesitekit-widget-area--mainDashboardKeyMetricsPrimary
+		.googlesitekit-widget-area-widgets {
 
-/**
- * Internal dependencies
- */
-import PDFNoData from './PDFNoData';
-
-describe( 'PDFNoData', () => {
-	it( 'renders the "No data available." message', () => {
-		const json = JSON.stringify(
-			TestRenderer.create( <PDFNoData /> ).toJSON()
-		);
-
-		expect( json ).toContain( 'No data available.' );
-	} );
-
-	it( 'renders the message in gray', () => {
-		const json = JSON.stringify(
-			TestRenderer.create( <PDFNoData /> ).toJSON()
-		);
-
-		expect( json ).toContain( '#646464' );
-	} );
-} );
+		.googlesitekit-widget--keyMetricsBackNotice
+			.googlesitekit-widget__body {
+			display: block;
+		}
+	}
+}
