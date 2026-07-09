@@ -94,6 +94,15 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 				const areas: WidgetArea[] =
 					select( CORE_WIDGETS ).getWidgetAreas( contextSlug );
 
+				// Merge the context's areas into one section, so a multi-area
+				// context shows one section, not one per area. Traffic is the
+				// case, since it holds the traffic charts and the audience tiles.
+				// The areas of a context share the same `pdfTitle`, so the label
+				// comes from the first area that has one.
+				let label = '';
+				const widgets: PDFSection[ 'widgets' ] = [];
+				const widgetSlugs: string[] = [];
+
 				areas.forEach( ( area ) => {
 					const pdfWidgets: Widget[] = select( CORE_WIDGETS )
 						.getWidgets( area.slug, { modules } )
@@ -105,20 +114,31 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 						return;
 					}
 
-					sections.push( {
-						slug: area.slug,
-						label: area.pdfTitle || area.title || area.slug,
-						contextSlug,
-						widgets: pdfWidgets
-							.filter( ( widget ) => !! widget.pdf?.label )
-							.map( ( widget ) => ( {
+					if ( ! label ) {
+						label = area.pdfTitle || area.title || '';
+					}
+
+					pdfWidgets.forEach( ( widget ) => {
+						if ( widget.pdf?.label ) {
+							widgets.push( {
 								slug: widget.slug,
-								label: widget.pdf?.label as string,
-							} ) ),
-						widgetSlugs: pdfWidgets.map(
-							( widget ) => widget.slug
-						),
+								label: widget.pdf.label as string,
+							} );
+						}
+						widgetSlugs.push( widget.slug );
 					} );
+				} );
+
+				if ( widgetSlugs.length === 0 ) {
+					return;
+				}
+
+				sections.push( {
+					slug: contextSlug,
+					label: label || contextSlug,
+					contextSlug,
+					widgets,
+					widgetSlugs,
 				} );
 			} );
 
@@ -164,21 +184,38 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 		[ setSelection ]
 	);
 
-	// Seed the selection with every available widget the first time they resolve.
-	// Subsequent toggles (including deselecting everything) persist via `core/pdf`
-	// for the rest of the session.
-	const seededRef = useRef( false );
+	// Select every widget the first time it appears, so a late-resolving
+	// widget is on by default. The audience tiles are the case, since they
+	// wait on the configured audiences. Once seen, a widget the user clears
+	// stays cleared.
+	const seenWidgetsRef = useRef( new Set< string >() );
 	useEffect( () => {
-		if ( seededRef.current || availableSections.length === 0 ) {
+		const newWidgetSlugs = availableSections
+			.flatMap( ( section ) => section.widgetSlugs )
+			.filter( ( slug ) => ! seenWidgetsRef.current.has( slug ) );
+
+		if ( newWidgetSlugs.length === 0 ) {
 			return;
 		}
 
-		seededRef.current = true;
-		const allWidgetSlugs = availableSections.flatMap(
-			( section ) => section.widgetSlugs
+		newWidgetSlugs.forEach( ( slug ) =>
+			seenWidgetsRef.current.add( slug )
 		);
-		commitSelection( allWidgetSlugs, widgetContext );
-	}, [ availableSections, commitSelection, widgetContext ] );
+		commitSelection(
+			Array.from(
+				new Set( [
+					...( selectedWidgetSlugs || [] ),
+					...newWidgetSlugs,
+				] )
+			),
+			widgetContext
+		);
+	}, [
+		availableSections,
+		selectedWidgetSlugs,
+		commitSelection,
+		widgetContext,
+	] );
 
 	const toggleWidget = useCallback(
 		( widgetSlug: string ) => {

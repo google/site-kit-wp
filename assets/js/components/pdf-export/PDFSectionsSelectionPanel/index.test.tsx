@@ -190,6 +190,127 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		).toEqual( [ 'pdfAllTraffic', 'pdfSearchTraffic' ] );
 	} );
 
+	it( 'merges two areas in one context into a single section', async () => {
+		const dispatch = registry.dispatch( CORE_WIDGETS );
+
+		// A second Traffic area with its own PDF widget, like the audience
+		// segmentation area. It repeats the "Traffic" title, as the real
+		// registration does, so the merged section keeps one label.
+		dispatch.registerWidgetArea( 'pdfAudienceArea', {
+			title: 'Find out who your visitors are',
+			pdfTitle: 'Traffic',
+			style: 'boxes',
+			priority: 2,
+		} );
+		dispatch.assignWidgetArea(
+			'pdfAudienceArea',
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+		);
+		dispatch.registerWidget( 'pdfAudienceTiles', {
+			Component: NullComponent,
+			pdf: {
+				Component: NullComponent,
+				getData: () => Promise.resolve( { data: null } ),
+				label: 'Your visitor groups',
+			},
+		} );
+		dispatch.assignWidget( 'pdfAudienceTiles', 'pdfAudienceArea' );
+
+		const { findByRole, getAllByRole, getByRole } = render(
+			<PDFSectionsSelectionPanel />,
+			{ registry }
+		);
+
+		openPanel();
+
+		await findByRole( 'checkbox', { name: /^Your visitor groups$/ } );
+
+		// One Traffic parent checkbox, not one per area.
+		expect(
+			getAllByRole( 'checkbox', { name: /^Traffic$/ } )
+		).toHaveLength( 1 );
+		expect(
+			(
+				getByRole( 'checkbox', {
+					name: /^Your visitor groups$/,
+				} ) as HTMLInputElement
+			 ).checked
+		).toBe( true );
+		expect(
+			[ ...registry.select( CORE_PDF ).getSelectedWidgetSlugs() ].sort()
+		).toEqual( [
+			'pdfAllTraffic',
+			'pdfAudienceTiles',
+			'pdfSearchTraffic',
+		] );
+	} );
+
+	it( 'selects a widget when it first appears, and keeps a cleared widget cleared', async () => {
+		const dispatch = registry.dispatch( CORE_WIDGETS );
+
+		// A widget that appears late, like the audience tiles waiting on the
+		// configured audiences to resolve.
+		dispatch.registerWidget( 'pdfLateWidget', {
+			Component: NullComponent,
+			pdf: {
+				Component: NullComponent,
+				getData: () => Promise.resolve( { data: null } ),
+				label: 'Late widget',
+				isActive: (
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The registry `select` is loosely typed.
+					select: ( storeName: string ) => any
+				) =>
+					select( CORE_UI ).getValue( 'pdfLateWidgetReady' ) === true,
+			},
+		} );
+		dispatch.assignWidget( 'pdfLateWidget', 'pdfTrafficArea' );
+
+		const { findByRole, getByRole, queryByRole } = render(
+			<PDFSectionsSelectionPanel />,
+			{ registry }
+		);
+
+		openPanel();
+
+		// Clear a selected widget before the late widget appears.
+		fireEvent.click(
+			await findByRole( 'checkbox', { name: /^Search traffic$/ } )
+		);
+
+		await waitFor( () => {
+			expect(
+				registry.select( CORE_PDF ).getSelectedWidgetSlugs()
+			).toEqual( [ 'pdfAllTraffic' ] );
+		} );
+		expect(
+			queryByRole( 'checkbox', { name: /^Late widget$/ } )
+		).not.toBeInTheDocument();
+
+		act( () => {
+			registry.dispatch( CORE_UI ).setValue( 'pdfLateWidgetReady', true );
+		} );
+
+		// The late widget is selected on its first appearance, and the widget
+		// the user cleared stays cleared.
+		expect(
+			(
+				( await findByRole( 'checkbox', {
+					name: /^Late widget$/,
+				} ) ) as HTMLInputElement
+			 ).checked
+		).toBe( true );
+		expect(
+			(
+				getByRole( 'checkbox', {
+					name: /^Search traffic$/,
+				} ) as HTMLInputElement
+			 ).checked
+		).toBe( false );
+		expect(
+			[ ...registry.select( CORE_PDF ).getSelectedWidgetSlugs() ].sort()
+		).toEqual( [ 'pdfAllTraffic', 'pdfLateWidget' ] );
+	} );
+
 	it( 'shows the parent as indeterminate when one child is deselected', async () => {
 		const { findByRole, getByRole } = render(
 			<PDFSectionsSelectionPanel />,
