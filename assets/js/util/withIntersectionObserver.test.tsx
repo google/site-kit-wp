@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { intersectionObserver } from '@shopify/jest-dom-mocks';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -35,18 +36,17 @@ import withIntersectionObserver from './withIntersectionObserver';
 interface TestComponentProps {
 	/** Set by `withIntersectionObserver` once this component is in view. */
 	hasBeenInView?: boolean;
-	/** A caller prop, so a test can check `withIntersectionObserver` forwards it. */
-	title?: string;
 }
 
-const TestComponent = forwardRef< HTMLDivElement, TestComponentProps >(
-	( { hasBeenInView, title }, ref ) => (
-		<div ref={ ref }>
-			{ title }
-			{ hasBeenInView ? 'Has been in view' : 'Not yet in view' }
-		</div>
-	)
-);
+const TestComponent: FC< TestComponentProps > = forwardRef<
+	HTMLDivElement,
+	TestComponentProps
+>( ( { hasBeenInView, children }, ref ) => (
+	<div ref={ ref }>
+		{ children }
+		{ hasBeenInView ? 'Has been in view' : 'Not yet in view' }
+	</div>
+) );
 TestComponent.displayName = 'TestComponent';
 
 const TestComponentWithIntersectionObserver =
@@ -85,10 +85,9 @@ describe( 'withIntersectionObserver', () => {
 
 	it( 'renders the wrapped component with its own props', () => {
 		const { getByText } = render(
-			<TestComponentWithIntersectionObserver
-				title="Wrapped content"
-				onInView={ () => {} }
-			/>
+			<TestComponentWithIntersectionObserver onInView={ () => {} }>
+				Wrapped content
+			</TestComponentWithIntersectionObserver>
 		);
 
 		expect( getByText( /Wrapped content/ ) ).toBeInTheDocument();

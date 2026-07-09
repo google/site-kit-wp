@@ -58,7 +58,7 @@ interface WithIntersectionObserverOptions {
 export default function withIntersectionObserver< P >(
 	WrappedComponent: ComponentType< P >,
 	{ threshold = 0.45 }: WithIntersectionObserverOptions = {}
-) {
+): ComponentType< P & WithIntersectionObserverProps > {
 	// Besides its own props, the wrapped component receives the ref of the
 	// element to observe and the `hasBeenInView` prop.
 	const ObservedComponent = WrappedComponent as ComponentType<
