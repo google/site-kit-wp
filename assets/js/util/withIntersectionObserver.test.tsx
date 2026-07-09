@@ -94,7 +94,7 @@ describe( 'withIntersectionObserver', () => {
 		expect( getByText( /Wrapped content/ ) ).toBeInTheDocument();
 	} );
 
-	it( 'observes the wrapped component element with the 0.45 threshold', () => {
+	it( 'observes the wrapped component element with the default 0.45 threshold', () => {
 		const { container } = render(
 			<TestComponentWithIntersectionObserver onInView={ () => {} } />
 		);
@@ -105,6 +105,19 @@ describe( 'withIntersectionObserver', () => {
 		);
 		expect( intersectionObserver.observers[ 0 ].options ).toEqual( {
 			threshold: 0.45,
+		} );
+	} );
+
+	it( 'observes with a custom threshold when the caller gives one', () => {
+		const TestComponentWithCustomThreshold = withIntersectionObserver(
+			TestComponent,
+			{ threshold: 0.9 }
+		);
+
+		render( <TestComponentWithCustomThreshold onInView={ () => {} } /> );
+
+		expect( intersectionObserver.observers[ 0 ].options ).toEqual( {
+			threshold: 0.9,
 		} );
 	} );
 

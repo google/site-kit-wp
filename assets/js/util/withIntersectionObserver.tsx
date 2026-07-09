@@ -31,22 +31,33 @@ interface WithIntersectionObserverProps {
 	onInView?: () => void;
 }
 
+interface WithIntersectionObserverOptions {
+	/**
+	 * Fraction of the element that must be visible for it to count as in view,
+	 * from `0` to `1`. Defaults to `0.45`.
+	 */
+	threshold?: number;
+}
+
 /**
  * Higher-Order Component that tells a wrapped component when it is in view.
  *
  * Observes the wrapped component's element with an `IntersectionObserver`. The
- * first time at least 45% of the element is visible, it calls `onInView`, sets
- * the `hasBeenInView` prop to `true`, and disconnects the observer, so it
- * observes only until that first time.
+ * first time at least `threshold` of the element is visible (`0.45` by
+ * default), it calls `onInView`, sets the `hasBeenInView` prop to `true`, and
+ * disconnects the observer, so it reports only that first time.
  *
  * @since 1.125.0
- * @since n.e.x.t Replaces the `react-use` `useIntersection` hook, which kept observing after the first time in view. Adds the `hasBeenInView` prop and makes `onInView` optional.
+ * @since n.e.x.t Replaces the `react-use` `useIntersection` hook. Adds the `hasBeenInView` prop and a configurable `threshold`, and makes `onInView` optional.
  *
- * @param WrappedComponent Component to wrap. It must attach the ref it receives to the element to observe.
+ * @param WrappedComponent  Component to wrap. It must attach the ref it receives to the element to observe.
+ * @param options           Observer options.
+ * @param options.threshold Fraction of the element that must be visible for it to count as in view, from `0` to `1`. Defaults to `0.45`.
  * @return The component that observes its element and renders the wrapped component.
  */
-export default function withIntersectionObserver< P extends object >(
-	WrappedComponent: ComponentType< P >
+export default function withIntersectionObserver< P >(
+	WrappedComponent: ComponentType< P >,
+	{ threshold = 0.45 }: WithIntersectionObserverOptions = {}
 ) {
 	// Besides its own props, the wrapped component receives the ref of the
 	// element to observe and the `hasBeenInView` prop.
@@ -106,7 +117,7 @@ export default function withIntersectionObserver< P extends object >(
 					onInViewRef.current?.();
 					setHasBeenInView( true );
 				},
-				{ threshold: 0.45 }
+				{ threshold }
 			);
 
 			observer.observe( element );
