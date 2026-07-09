@@ -39,13 +39,30 @@ const PSI_ENDPOINT = new RegExp(
 	'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 );
 
-// Function matchers so mobile and desktop can return different fixtures.
+/**
+ * Matches a mobile-strategy PageSpeed request, so the fetch mock can serve
+ * mobile and desktop different fixtures.
+ *
+ * @since 1.183.0
+ *
+ * @param url The request URL the fetch mock checks.
+ * @return Whether the URL requests the mobile report.
+ */
 function MOBILE_ENDPOINT( url: string ) {
 	return (
 		url.includes( '/data/pagespeed' ) &&
 		url.includes( `strategy=${ STRATEGY_MOBILE }` )
 	);
 }
+/**
+ * Matches a desktop-strategy PageSpeed request, so the fetch mock can serve
+ * mobile and desktop different fixtures.
+ *
+ * @since 1.183.0
+ *
+ * @param url The request URL the fetch mock checks.
+ * @return Whether the URL requests the desktop report.
+ */
 function DESKTOP_ENDPOINT( url: string ) {
 	return (
 		url.includes( '/data/pagespeed' ) &&
@@ -59,6 +76,14 @@ const API_ERROR_BODY = {
 	data: { status: 500 },
 };
 
+/**
+ * Creates a test registry with site info and modules provided, typed as the
+ * registry shape `getPDFData` expects.
+ *
+ * @since 1.183.0
+ *
+ * @return The test registry to pass to `getPDFData`.
+ */
 function buildRegistry(): GetPDFDataParams[ 'registry' ] {
 	const registry = createTestRegistry();
 	provideSiteInfo( registry, { referenceSiteURL: REFERENCE_URL } );
@@ -102,20 +127,21 @@ describe( 'getPDFData', () => {
 			signal: new AbortController().signal,
 		} );
 
-		expect( result.data.mobile ).not.toBeNull();
-		expect( result.data.desktop ).not.toBeNull();
+		expect( result.data ).not.toBeNull();
+		expect( result.data?.mobile ).not.toBeNull();
+		expect( result.data?.desktop ).not.toBeNull();
 		// Lab: LCP display value from fixture.
 		// Lighthouse uses U+00A0 (no-break space) between the number and unit.
 		expect(
-			result.data.mobile?.lab.largestContentfulPaint.displayValue
+			result.data?.mobile?.lab.largestContentfulPaint.displayValue
 		).toBe( '1.5\xa0s' );
 		// Field: LCP converted from percentile in ms (regular space, not NBSP).
 		expect(
-			result.data.mobile?.field?.largestContentfulPaint?.displayValue
+			result.data?.mobile?.field?.largestContentfulPaint?.displayValue
 		).toBe( '2.6 s' );
 		// Field: INP percentile in ms.
 		expect(
-			result.data.mobile?.field?.interactionToNextPaint?.displayValue
+			result.data?.mobile?.field?.interactionToNextPaint?.displayValue
 		).toBe( '295 ms' );
 	} );
 
@@ -136,8 +162,9 @@ describe( 'getPDFData', () => {
 			signal: new AbortController().signal,
 		} );
 
-		expect( result.data.mobile ).toBeNull();
-		expect( result.data.desktop ).not.toBeNull();
+		expect( result.data ).not.toBeNull();
+		expect( result.data?.mobile ).toBeNull();
+		expect( result.data?.desktop ).not.toBeNull();
 		// The API layer logs an error when a fetch fails.
 		expect( console ).toHaveErrored();
 	} );
@@ -184,8 +211,9 @@ describe( 'getPDFData', () => {
 			signal: new AbortController().signal,
 		} );
 
-		expect( result.data.mobile ).not.toBeNull();
-		expect( result.data.desktop ).not.toBeNull();
+		expect( result.data ).not.toBeNull();
+		expect( result.data?.mobile ).not.toBeNull();
+		expect( result.data?.desktop ).not.toBeNull();
 	} );
 
 	it( 'returns early without fetching when signal is already aborted', async () => {
@@ -199,6 +227,8 @@ describe( 'getPDFData', () => {
 			signal: controller.signal,
 		} );
 
-		expect( result ).toEqual( { data: { mobile: null, desktop: null } } );
+		// Null data tells the report document to skip the widget, so the PDF
+		// holds no empty section.
+		expect( result ).toEqual( { data: null } );
 	} );
 } );

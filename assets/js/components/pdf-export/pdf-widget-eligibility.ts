@@ -24,14 +24,14 @@ import type { Widget, WidgetPDFConfig } from '@/js/googlesitekit/widgets/types';
 /**
  * A registry widget that declares a PDF export configuration.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  */
 export type WidgetWithPDF = Widget & { pdf: WidgetPDFConfig };
 
 /**
  * Determines whether a registry widget declares a PDF export configuration.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param widget Registry widget.
  * @return `true` when the widget has a `pdf` config.
@@ -49,7 +49,7 @@ function hasPDFConfig( widget: Widget ): widget is WidgetWithPDF {
  * (which offers selectable sections) and the orchestrator (which builds the
  * document), so the two cannot drift on which widgets are PDF-eligible.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param widget Registry widget.
  * @param select Registry `select` function, forwarded to `pdf.isActive`.

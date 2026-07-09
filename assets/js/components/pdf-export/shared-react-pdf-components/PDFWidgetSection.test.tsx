@@ -20,13 +20,27 @@
  * External dependencies
  */
 import { Text } from '@react-pdf/renderer';
+import { ReactElement } from 'react';
 import TestRenderer from 'react-test-renderer';
 
 /**
  * Internal dependencies
  */
+import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import { render } from '@tests/js/test-utils';
 import PDFWidgetSection from './PDFWidgetSection';
+
+/**
+ * Renders a PDF element to a JSON string for content and style assertions.
+ *
+ * @since 1.183.0
+ *
+ * @param element PDF element to render.
+ * @return JSON string of the rendered tree.
+ */
+function renderJSON( element: ReactElement ) {
+	return JSON.stringify( TestRenderer.create( element ).toJSON() );
+}
 
 describe( 'PDFWidgetSection', () => {
 	it( 'renders the heading and children', () => {
@@ -55,31 +69,64 @@ describe( 'PDFWidgetSection', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'uses the shared card padding and radius by default', () => {
-		const json = JSON.stringify(
-			TestRenderer.create(
-				<PDFWidgetSection>
-					<Text>child</Text>
-				</PDFWidgetSection>
-			).toJSON()
+	it( 'uses the scaled shared card padding and radius by default', () => {
+		const widgetSectionJSON = renderJSON(
+			<PDFWidgetSection>
+				<Text>child</Text>
+			</PDFWidgetSection>
 		);
 
-		expect( json ).toContain( '"padding":20' );
-		expect( json ).toContain( '"borderRadius":14' );
+		expect( widgetSectionJSON ).toContain(
+			`"paddingVertical":${ 18 * PDF_SCALE }`
+		);
+		expect( widgetSectionJSON ).toContain(
+			`"paddingHorizontal":${ 24 * PDF_SCALE }`
+		);
+		expect( widgetSectionJSON ).toContain(
+			`"borderRadius":${ 16 * PDF_SCALE }`
+		);
+	} );
+
+	it( 'scales the heading font size', () => {
+		const widgetSectionJSON = renderJSON(
+			<PDFWidgetSection heading="Top content over time">
+				<Text>child</Text>
+			</PDFWidgetSection>
+		);
+
+		expect( widgetSectionJSON ).toContain(
+			`"fontSize":${ 16 * PDF_SCALE }`
+		);
 	} );
 
 	it( 'merges cardStyle onto the card when a widget passes it', () => {
-		const json = JSON.stringify(
-			TestRenderer.create(
-				<PDFWidgetSection
-					cardStyle={ { borderRadius: 8, paddingHorizontal: 0 } }
-				>
-					<Text>child</Text>
-				</PDFWidgetSection>
-			).toJSON()
+		const widgetSectionJSON = renderJSON(
+			<PDFWidgetSection
+				cardStyle={ { borderRadius: 8, paddingHorizontal: 0 } }
+			>
+				<Text>child</Text>
+			</PDFWidgetSection>
 		);
 
-		expect( json ).toContain( '"borderRadius":8' );
-		expect( json ).toContain( '"paddingHorizontal":0' );
+		expect( widgetSectionJSON ).toContain( '"borderRadius":8' );
+		expect( widgetSectionJSON ).toContain( '"paddingHorizontal":0' );
+	} );
+
+	it( 'scales the heading gap and adds no outer margin', () => {
+		const widgetSectionJSON = renderJSON(
+			<PDFWidgetSection heading="Top content over time">
+				<Text>child</Text>
+			</PDFWidgetSection>
+		);
+
+		// The heading keeps its scaled gap to the card.
+		expect( widgetSectionJSON ).toContain(
+			`"marginBottom":${ 15 * PDF_SCALE }`
+		);
+		// The widget has no outer margin. The report's widget container owns
+		// the gap between widgets.
+		expect( widgetSectionJSON ).not.toContain(
+			`"marginBottom":${ 30 * PDF_SCALE }`
+		);
 	} );
 } );

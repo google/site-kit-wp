@@ -40,8 +40,9 @@ export interface PopularKeywordRow {
  * Data the Top search queries PDF widget renders.
  */
 export interface PopularKeywordsPDFData {
-	/** Report rows and the per-query links, or `null` when cancelled. */
+	/** Report rows and the per-query links, or `null` when the export is canceled or the report has no rows. */
 	data: {
+		/** The Top search queries report rows. */
 		rows: PopularKeywordRow[];
 		/** Map of search query to its Search Console report link. */
 		links: Record< string, string >;
@@ -54,7 +55,7 @@ export interface PopularKeywordsPDFData {
  * Builds the same Search Console report link the dashboard widget shows for each
  * query. The PDF component renders each query as this link.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param registry WordPress data registry.
  * @param dates    Report date range.
@@ -90,10 +91,10 @@ function getQueryLinkMap(
  *
  * Loads the Top search queries report and passes the abort signal to the
  * request. Builds a Search Console report link for each query, the same link the
- * dashboard widget shows. Returns `{ data: null }` as soon as the signal aborts,
- * so cancelling the export stops the work and the widget renders its empty state.
+ * dashboard widget shows. Returns `{ data: null }` when the signal aborts or the
+ * report has no rows, so the report document skips this widget.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param params          Loader parameters.
  * @param params.registry WordPress data registry.
@@ -129,6 +130,12 @@ export default async function getPDFData( {
 	}
 
 	const rows = report ?? [];
+
+	// With no rows the widget has nothing to render. `data: null` lets the
+	// report document skip the widget, so the PDF holds no empty section.
+	if ( rows.length === 0 ) {
+		return { data: null };
+	}
 
 	return { data: { rows, links: getQueryLinkMap( registry, dates, rows ) } };
 }

@@ -221,7 +221,10 @@
 		display: flex;
 		flex-direction: column;
 		margin-left: 0;
-		padding: 14px 0;
+
+		// Match the primary tile's 18px padding, so the badge and the
+		// comparison label sit at the same height in every tile of a row.
+		padding: 18px 0;
 
 		.googlesitekit-site-goals-tile__inner {
 			padding-left: 14px;
@@ -315,6 +318,10 @@
 
 			.googlesitekit-change-badge {
 				margin: 0;
+
+				&.googlesitekit-change-badge--zero {
+					color: $c-surfaces-on-surface-variant;
+				}
 			}
 		}
 
@@ -354,6 +361,17 @@
 
 			&.googlesitekit-site-goals-tile--primary__negative {
 				background: $c-red-r-10;
+				border-left: none;
+
+				.googlesitekit-site-goals-tile__title {
+					&::before {
+						display: none;
+					}
+				}
+			}
+
+			&.googlesitekit-site-goals-tile--primary__neutral {
+				background: $c-neutral-n-10;
 				border-left: none;
 
 				.googlesitekit-site-goals-tile__title {

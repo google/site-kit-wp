@@ -115,6 +115,9 @@ class REST_Initial_Setup_Controller {
 										'minProperties' => 1,
 										'additionalProperties' => false,
 										'properties'    => array(
+											'hasSitePurposeAnswer'     => array(
+												'type' => 'boolean',
+											),
 											'isAnalyticsSetupComplete' => array(
 												'type' => 'boolean',
 											),

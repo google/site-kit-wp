@@ -72,7 +72,7 @@ const REPORT = [
 /**
  * Reads the query args from a report request URL.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param requestURL Report request URL.
  * @return The request's URL search params.
@@ -191,7 +191,7 @@ describe( 'DashboardPopularKeywordsWidget getPDFData', () => {
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
-	it( 'returns an empty row list when the report has no rows', async () => {
+	it( 'returns null data when the report has no rows', async () => {
 		fetchMock.getOnce( reportEndpoint, { body: [], status: 200 } );
 
 		const result = await getPDFData( {
@@ -200,7 +200,9 @@ describe( 'DashboardPopularKeywordsWidget getPDFData', () => {
 			signal: new AbortController().signal,
 		} );
 
-		expect( result.data?.rows ).toEqual( [] );
+		// Null data tells the report document to skip the widget, so the PDF
+		// holds no empty section.
+		expect( result ).toEqual( { data: null } );
 	} );
 
 	it( 'returns null data when the signal aborts after the report request is sent', async () => {

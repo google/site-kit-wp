@@ -385,6 +385,58 @@ final class Screens {
 	}
 
 	/**
+	 * Redirects dashboard to provide a site purpose answer.
+	 *
+	 * @since 1.183.0
+	 */
+	private function no_site_purpose_answer_redirect_dashboard_to_setup() {
+		wp_safe_redirect(
+			$this->context->admin_url(
+				'key-metrics-setup',
+				array(
+					'showProgress' => 'true',
+				)
+			)
+		);
+
+		exit;
+	}
+
+	/**
+	 * Redirects dashboard to complete analytics setup.
+	 *
+	 * @since 1.183.0
+	 */
+	private function analytics_setup_incomplete_redirect_dashboard_to_setup() {
+		$slug          = $this->context->input()->filter( INPUT_GET, 'slug' );
+		$show_progress = $this->context->input()->filter( INPUT_GET, 'showProgress', FILTER_VALIDATE_BOOLEAN );
+		$re_auth       = $this->context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
+
+		if ( 'analytics-4' === $slug && $re_auth && $show_progress ) {
+			return;
+		}
+
+		$is_analytics_connected = $this->modules->is_module_connected( 'analytics-4' );
+
+		if ( $is_analytics_connected ) {
+			$this->no_site_purpose_answer_redirect_dashboard_to_setup();
+		}
+
+		wp_safe_redirect(
+			$this->context->admin_url(
+				'dashboard',
+				array(
+					'slug'         => 'analytics-4',
+					'showProgress' => 'true',
+					'reAuth'       => 'true',
+				)
+			)
+		);
+
+		exit;
+	}
+
+	/**
 	 * Gets available admin screens.
 	 *
 	 * @since 1.0.0
@@ -407,7 +459,7 @@ final class Screens {
 							$assets->enqueue_asset( 'googlesitekit-main-dashboard' );
 						}
 					},
-					'initialize_callback' => function ( Context $context ) {
+					'initialize_callback' => function () {
 						if ( ! Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
 							return;
 						}
@@ -416,44 +468,17 @@ final class Screens {
 
 						if ( ! $is_view_only ) {
 							$initial_setup_settings      = ( new Initial_Setup_Settings( $this->user_options ) )->get();
-							$is_analytics_setup_complete = $initial_setup_settings['isAnalyticsSetupComplete'];
+							$is_analytics_setup_complete = $initial_setup_settings['isAnalyticsSetupComplete'] ?? null;
+							$has_site_purpose_answer     = $initial_setup_settings['hasSitePurposeAnswer'] ?? null;
 
 							if ( false === $is_analytics_setup_complete ) {
-								$slug = $context->input()->filter( INPUT_GET, 'slug' );
-								$show_progress = $context->input()->filter( INPUT_GET, 'showProgress', FILTER_VALIDATE_BOOLEAN );
-								$re_auth = $context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
+								$this->analytics_setup_incomplete_redirect_dashboard_to_setup();
+								return;
+							}
 
-								if ( 'analytics-4' === $slug && $re_auth && $show_progress ) {
-									return;
-								}
-
-								$is_analytics_connected = $this->modules->is_module_connected( 'analytics-4' );
-
-								if ( $is_analytics_connected ) {
-									wp_safe_redirect(
-										$context->admin_url(
-											'key-metrics-setup',
-											array(
-												'showProgress' => 'true',
-											)
-										)
-									);
-
-									exit;
-								} else {
-									wp_safe_redirect(
-										$context->admin_url(
-											'dashboard',
-											array(
-												'slug'   => 'analytics-4',
-												'showProgress' => 'true',
-												'reAuth' => 'true',
-											)
-										)
-									);
-
-									exit;
-								}
+							if ( false === $has_site_purpose_answer ) {
+								$this->no_site_purpose_answer_redirect_dashboard_to_setup();
+								return;
 							}
 						}
 					},

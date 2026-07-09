@@ -37,7 +37,7 @@ export default function WebDataStreamHint() {
 	const viewContext = useViewContext();
 
 	const learnMoreLink = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL( 'ga4-data-stream' )
+		select( CORE_SITE ).getDocumentationLinkURL( 'what-is-ga4-data-stream' )
 	);
 
 	const [ showProgress ] = useQueryArg( 'showProgress' );

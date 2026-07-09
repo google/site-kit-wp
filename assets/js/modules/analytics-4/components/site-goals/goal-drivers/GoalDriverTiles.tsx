@@ -32,6 +32,8 @@ import { __ } from '@wordpress/i18n';
  */
 import Link from '@/js/components/Link';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import {
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
@@ -70,14 +72,25 @@ const GoalDriverTiles: FC< GoalDriverTilesProps > = ( {
 } ) => {
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
+	const viewContext = useViewContext();
 	const [ isExpanded, setIsExpanded ] = useState( false );
 	const [ expandableDrivers, setExpandableDrivers ] = useState<
 		Record< string, boolean >
 	>( {} );
 
 	const onShowMoreClick = useCallback( () => {
-		setIsExpanded( ( currentState ) => ! currentState );
-	}, [] );
+		setIsExpanded( ( currentState ) => {
+			const nextState = ! currentState;
+
+			trackEvent(
+				`${ viewContext }_site-goals-sidebar`,
+				'toggle_extended_view',
+				nextState ? 'on' : 'off'
+			);
+
+			return nextState;
+		} );
+	}, [ viewContext ] );
 	const onExpandableRowsChange = useCallback(
 		( driverID: string, canExpand: boolean ) => {
 			setExpandableDrivers( ( currentState ) => {

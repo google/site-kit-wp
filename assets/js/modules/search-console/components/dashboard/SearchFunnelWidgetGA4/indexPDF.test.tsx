@@ -19,16 +19,25 @@
 /**
  * External dependencies
  */
-import type { ComponentProps } from 'react';
+import { ComponentProps } from 'react';
 import TestRenderer from 'react-test-renderer';
 
 /**
  * Internal dependencies
  */
+import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import SearchFunnelWidgetGA4PDF from './indexPDF';
 
 const CHART_DATA_URI = 'data:image/jpeg;base64,TU9DS0NIQVJU';
 
+/**
+ * Builds the widget data fixture with a total and change for each metric.
+ *
+ * @since 1.183.0
+ *
+ * @return The widget data fixture.
+ */
 function buildData() {
 	return {
 		dateRangeLength: 28,
@@ -41,6 +50,13 @@ function buildData() {
 	};
 }
 
+/**
+ * Builds the chart image fixture with the same data URI for each metric.
+ *
+ * @since 1.183.0
+ *
+ * @return Map of metric key to chart image data URI.
+ */
 function buildChartImages() {
 	return {
 		impressions: CHART_DATA_URI,
@@ -50,6 +66,14 @@ function buildChartImages() {
 	};
 }
 
+/**
+ * Renders the widget to a JSON string for content and style assertions.
+ *
+ * @since 1.183.0
+ *
+ * @param props Props passed to the widget.
+ * @return JSON string of the rendered tree.
+ */
 function renderTree(
 	props: ComponentProps< typeof SearchFunnelWidgetGA4PDF >
 ) {
@@ -68,11 +92,11 @@ describe( 'SearchFunnelWidgetGA4 PDF', () => {
 
 		expect( json ).toContain( 'Search traffic over time' );
 
-		// All four card titles.
-		expect( json ).toContain( 'Total Impressions' );
-		expect( json ).toContain( 'Total Clicks' );
-		expect( json ).toContain( 'Unique Visitors from Search' );
-		expect( json ).toContain( 'Key Events' );
+		// The four card titles render in sentence case.
+		expect( json ).toContain( 'Total impressions' );
+		expect( json ).toContain( 'Total clicks' );
+		expect( json ).toContain( 'Unique visitors from Search' );
+		expect( json ).toContain( 'Key events' );
 
 		// Formatted headline values.
 		expect( json ).toContain( '9.2K' );
@@ -82,28 +106,30 @@ describe( 'SearchFunnelWidgetGA4 PDF', () => {
 		// The shared comparison sub-text reflects the selected date range.
 		expect( json ).toContain( 'Vs. prev. 28 days' );
 
-		// Each card embeds its rasterised chart image.
+		// Each card embeds its rendered chart image.
 		const chartImageCount = json.split( CHART_DATA_URI ).length - 1;
 		expect( chartImageCount ).toBe( 4 );
 
 		expect( json ).not.toContain( 'Data unavailable' );
 	} );
 
-	it( 'should color the change chips green for positive and red for negative changes', () => {
+	it( 'should show rising changes in the positive colors and falling changes in the negative colors', () => {
 		const json = renderTree( {
 			data: buildData(),
 			chartImages: buildChartImages(),
 		} );
 
-		// Total Clicks (+10%) and Unique Visitors (+20%) are positive (green).
-		expect( json ).toContain( '#34a853' );
+		// Total Clicks at +10% and Unique Visitors at +20% are positive.
+		expect( json ).toContain( PDF_COLORS.GREEN_G_50 );
+		expect( json ).toContain( PDF_COLORS.UTILITY_ON_SUCCESS_CONTAINER );
 		expect( json ).toContain( '10%' );
-		// Total Impressions (-5.2%) is negative (red).
-		expect( json ).toContain( '#ea4335' );
+		// Total Impressions at -5.2% and Key Events at -5% are negative.
+		expect( json ).toContain( PDF_COLORS.UTILITY_ERROR_CONTAINER );
+		expect( json ).toContain( PDF_COLORS.UTILITY_ON_ERROR_CONTAINER );
 		expect( json ).toContain( '5.2%' );
 	} );
 
-	it( 'should render a per-card Data unavailable placeholder when a single chart image is null', () => {
+	it( 'should render nothing for a card whose chart image is null', () => {
 		const json = renderTree( {
 			data: buildData(),
 			chartImages: {
@@ -112,18 +138,33 @@ describe( 'SearchFunnelWidgetGA4 PDF', () => {
 			},
 		} );
 
-		expect( json ).toContain( 'Data unavailable' );
+		// The widget skips the card without a chart, and no placeholder
+		// takes its place.
+		expect( json ).not.toContain( 'Unique visitors from Search' );
+		expect( json ).not.toContain( 'Data unavailable' );
+
 		// The other three cards still render their titles and charts.
-		expect( json ).toContain( 'Total Impressions' );
-		expect( json ).toContain( 'Total Clicks' );
-		expect( json ).toContain( 'Key Events' );
+		expect( json ).toContain( 'Total impressions' );
+		expect( json ).toContain( 'Total clicks' );
+		expect( json ).toContain( 'Key events' );
+		const chartImageCount = json.split( CHART_DATA_URI ).length - 1;
+		expect( chartImageCount ).toBe( 3 );
 	} );
 
-	it( 'should render the whole-widget fallback when data is null', () => {
-		const json = renderTree( { data: null } );
+	it( 'should render nothing when the widget has no data', () => {
+		const renderer = TestRenderer.create(
+			<SearchFunnelWidgetGA4PDF data={ null } />
+		);
 
-		expect( json ).toContain( 'Search traffic over time' );
-		expect( json ).toContain( 'Data unavailable' );
-		expect( json ).not.toContain( 'Total Impressions' );
+		expect( renderer.toJSON() ).toBeNull();
+	} );
+
+	it( 'scales the sub-section heading font size', () => {
+		const json = renderTree( {
+			data: buildData(),
+			chartImages: buildChartImages(),
+		} );
+
+		expect( json ).toContain( `"fontSize":${ 16 * PDF_SCALE }` );
 	} );
 } );

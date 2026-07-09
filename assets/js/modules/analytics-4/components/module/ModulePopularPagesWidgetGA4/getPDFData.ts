@@ -40,7 +40,9 @@ import { getPopularPagesReportArgs } from './reportOptions';
  * page's own public URL for the URL line.
  */
 export interface PopularPageLinks {
+	/** URL of the page's entity dashboard, which the page title links to. */
 	detailsURL: string;
+	/** The page's own public URL, which the URL line links to. */
 	permaLink: string;
 }
 
@@ -48,10 +50,13 @@ export interface PopularPageLinks {
  * Data the Top content over time PDF widget renders.
  */
 export interface PopularPagesPDFData {
-	/** Report rows, the page titles, and the per-page links, or `null` when cancelled. */
+	/** Report rows, the page titles, and the per-page links, or `null` when the export is canceled or the report has no rows. */
 	data: {
+		/** Rows of the Most popular pages report. */
 		rows: ReportRow[];
+		/** Map of page path to page title. */
 		titles: Record< string, string >;
+		/** Map of page path to its entity dashboard URL and public URL. */
 		links: Record< string, PopularPageLinks >;
 	} | null;
 }
@@ -202,11 +207,12 @@ function getPopularPageLinkMap(
  * Loads the report rows and page titles for the Top content over time PDF widget.
  *
  * Loads the Most popular pages report, then a second report that matches each
- * page path to its title. Passes the abort signal to both requests and returns
- * `{ data: null }` as soon as the signal aborts, so cancelling the export stops
- * the work and the widget renders its empty state.
+ * page path to its title. Passes the abort signal to both requests. Returns
+ * `{ data: null }` when the signal aborts or the report has no rows, so the
+ * report document skips this widget.
  *
  * @since 1.182.0
+ * @since 1.183.0 Returns null data when the report has no rows.
  *
  * @param params          Loader parameters.
  * @param params.registry WordPress data registry.
@@ -240,6 +246,13 @@ export default async function getPDFData( {
 	}
 
 	const rows = report?.rows ?? [];
+
+	// With no rows the widget has nothing to render. `data: null` lets the
+	// report document skip the widget, so the PDF holds no empty section.
+	if ( rows.length === 0 ) {
+		return { data: null };
+	}
+
 	const pagePaths = getPagePaths( report );
 	const links = getPopularPageLinkMap( registry, pagePaths );
 

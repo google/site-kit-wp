@@ -28,7 +28,7 @@ import * as analyticsFixtures from '@/js/modules/analytics-4/datastore/__fixture
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
 import { mockLocation } from '@tests/js/mock-browser-utils';
-import { act, fireEvent, render, waitFor } from '@tests/js/test-utils';
+import { act, fireEvent, render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
@@ -215,7 +215,9 @@ describe( 'ModuleSetup', () => {
 			it( 'tracks only the initial setup analytics view event', () => {
 				expect( mockTrackEvent ).toHaveBeenCalledWith(
 					`${ VIEW_CONTEXT_MODULE_SETUP }_setup`,
-					'setup_flow_v3_view_analytics_step'
+					'setup_flow_v3_view_analytics_step',
+					undefined,
+					undefined
 				);
 
 				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
@@ -272,7 +274,8 @@ describe( 'ModuleSetup', () => {
 				expect( mockTrackEvent ).toHaveBeenCalledWith(
 					'moduleSetup',
 					'view_module_setup',
-					MODULE_SLUG_ANALYTICS_4
+					MODULE_SLUG_ANALYTICS_4,
+					undefined
 				);
 
 				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
@@ -315,180 +318,30 @@ describe( 'ModuleSetup', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	describe( 'forwardable params', () => {
-		const customRedirectURL =
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true';
-
-		function registerFinishSetupModule( moduleSlug, setupHandler ) {
-			registry.dispatch( CORE_MODULES ).registerModule( moduleSlug, {
-				slug: moduleSlug,
-				storeName: `modules/${ moduleSlug }`,
-				SetupComponent: ( { finishSetup } ) => (
-					<button
-						onClick={ () => setupHandler( finishSetup ) }
-						type="button"
-					>
-						Trigger finish setup
-					</button>
-				),
-			} );
-
-			provideModules( registry, [
-				{
-					slug: moduleSlug,
-					active: false,
-					connected: false,
-				},
-			] );
+	it( 'should render the registered SetupLayout when provided', () => {
+		function CustomSetupLayout( { moduleSlug } ) {
+			return <div>Custom setup layout for { moduleSlug }</div>;
 		}
 
-		it( 'should not override existing params in redirect URL with forwarded params', async () => {
-			const moduleSlug = 'test-module';
+		provideModules( registry, [
+			{ slug: 'custom-module', name: 'Custom Module' },
+		] );
 
-			global.location.href =
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&panel=email-reporting&notification=authentication_success';
-
-			const customRedirectURLWithNotification =
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=ads&notification=ads_success';
-
-			registerFinishSetupModule( moduleSlug, ( finishSetup ) =>
-				finishSetup( customRedirectURLWithNotification )
-			);
-
-			const { getByRole, waitForRegistry } = render(
-				<ModuleSetup moduleSlug={ moduleSlug } />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MODULE_SETUP,
-				}
-			);
-
-			await waitForRegistry();
-
-			await act( () => {
-				fireEvent.click(
-					getByRole( 'button', { name: 'Trigger finish setup' } )
-				);
-			} );
-
-			await waitFor( () =>
-				expect( global.location.assign ).toHaveBeenCalled()
-			);
-
-			const redirectURL = new URL(
-				global.location.assign.mock.calls[ 0 ][ 0 ]
-			);
-			expect( redirectURL.searchParams.get( 'notification' ) ).toEqual(
-				'ads_success'
-			);
+		registry.dispatch( CORE_MODULES ).registerModule( 'custom-module', {
+			storeName: 'modules/custom-module',
+			SetupLayout: CustomSetupLayout,
 		} );
 
-		it( 'should preserve forwarded params for custom redirect URL', async () => {
-			const moduleSlug = 'test-module';
+		const { getByText } = render(
+			<ModuleSetup moduleSlug="custom-module" />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MODULE_SETUP,
+			}
+		);
 
-			global.location.href =
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&panel=email-reporting';
-
-			registerFinishSetupModule( moduleSlug, ( finishSetup ) =>
-				finishSetup( customRedirectURL )
-			);
-
-			const { getByRole, waitForRegistry } = render(
-				<ModuleSetup moduleSlug={ moduleSlug } />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MODULE_SETUP,
-				}
-			);
-
-			await waitForRegistry();
-			await waitFor( () =>
-				expect(
-					getByRole( 'button', { name: 'Trigger finish setup' } )
-				).toBeInTheDocument()
-			);
-
-			await act( () => {
-				fireEvent.click(
-					getByRole( 'button', { name: 'Trigger finish setup' } )
-				);
-			} );
-
-			await act( async () => {
-				await waitFor( () =>
-					expect( global.location.assign ).toHaveBeenCalled()
-				);
-			} );
-
-			const redirectURL = new URL(
-				global.location.assign.mock.calls[ 0 ][ 0 ]
-			);
-			expect( redirectURL.searchParams.get( 'page' ) ).toEqual(
-				'googlesitekit-dashboard'
-			);
-			expect( redirectURL.searchParams.get( 'slug' ) ).toEqual(
-				'analytics-4'
-			);
-			expect( redirectURL.searchParams.get( 'reAuth' ) ).toEqual(
-				'true'
-			);
-			expect( redirectURL.searchParams.get( 'panel' ) ).toEqual(
-				'email-reporting'
-			);
-		} );
-
-		it( 'should preserve forwarded params for default dashboard redirect URL', async () => {
-			const moduleSlug = 'test-module';
-
-			global.location.href =
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&panel=email-reporting';
-
-			registerFinishSetupModule( moduleSlug, ( finishSetup ) =>
-				finishSetup()
-			);
-
-			const { getByRole, waitForRegistry } = render(
-				<ModuleSetup moduleSlug={ moduleSlug } />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MODULE_SETUP,
-				}
-			);
-
-			await waitForRegistry();
-			await waitFor( () =>
-				expect(
-					getByRole( 'button', { name: 'Trigger finish setup' } )
-				).toBeInTheDocument()
-			);
-
-			await act( () => {
-				fireEvent.click(
-					getByRole( 'button', { name: 'Trigger finish setup' } )
-				);
-			} );
-
-			await act( async () => {
-				await waitFor( () =>
-					expect( global.location.assign ).toHaveBeenCalled()
-				);
-			} );
-
-			const redirectURL = new URL(
-				global.location.assign.mock.calls[ 0 ][ 0 ]
-			);
-			expect( redirectURL.searchParams.get( 'page' ) ).toEqual(
-				'googlesitekit-dashboard'
-			);
-			expect( redirectURL.searchParams.get( 'notification' ) ).toEqual(
-				'authentication_success'
-			);
-			expect( redirectURL.searchParams.get( 'slug' ) ).toEqual(
-				moduleSlug
-			);
-			expect( redirectURL.searchParams.get( 'panel' ) ).toEqual(
-				'email-reporting'
-			);
-		} );
+		expect(
+			getByText( 'Custom setup layout for custom-module' )
+		).toBeInTheDocument();
 	} );
 } );

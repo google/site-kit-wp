@@ -75,6 +75,9 @@ import WebDataStreamField from './WebDataStreamField';
 
 export default function AccountCreate( { className } ) {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const setupFlowRefreshPhase4Enabled = useFeature(
+		'setupFlowRefreshPhase4'
+	);
 
 	const [ isNavigating, setIsNavigating ] = useState( false );
 	const accounts = useSelect( ( select ) =>
@@ -127,6 +130,9 @@ export default function AccountCreate( { className } ) {
 	} );
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+	);
+	const sitePurposeSetupURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-key-metrics-setup' )
 	);
 
 	const viewContext = useViewContext();
@@ -269,20 +275,26 @@ export default function AccountCreate( { className } ) {
 		rollbackSettings();
 	}, [ rollbackSettings, setAccountCreationErrorCode ] );
 
-	// Navigate the user directly to the dashboard without setting up Analytics.
+	// Navigate the user directly to the next step without setting up Analytics.
 	// `isAnalyticsSetupComplete` is persisted to `true` so the dashboard's
 	// initial-setup-flow redirect (in `Screens.php`) doesn't bounce the user
 	// back to the Analytics setup screen.
 	const handleContinueWithoutAnalytics = useCallback( async () => {
+		const nextURL = setupFlowRefreshPhase4Enabled
+			? sitePurposeSetupURL
+			: dashboardURL;
+
 		setIsAnalyticsSetupComplete( true );
 		setIsNavigating( true );
 		await saveInitialSetupSettings();
-		navigateTo( dashboardURL );
+		navigateTo( nextURL );
 	}, [
 		navigateTo,
 		dashboardURL,
+		sitePurposeSetupURL,
 		saveInitialSetupSettings,
 		setIsAnalyticsSetupComplete,
+		setupFlowRefreshPhase4Enabled,
 	] );
 
 	if (

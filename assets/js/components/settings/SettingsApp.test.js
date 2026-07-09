@@ -34,6 +34,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+import { mockCreateComponent } from '@tests/js/mock-component-utils';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -50,14 +51,13 @@ const coreUserTrackingSettingsEndpointRegExp = new RegExp(
 );
 const coreUserTrackingResponse = { status: 200, body: { enabled: false } };
 
-jest.mock( '@/js/components/email-reporting/UserSettingsSelectionPanel', () => {
-	const { mockCreateComponent } = require( '@tests/js/mock-component-utils' );
-	return mockCreateComponent( 'UserSettingsSelectionPanel' );
-} );
-jest.mock( './SettingsModules', () => {
-	const { mockCreateComponent } = require( '@tests/js/mock-component-utils' );
-	return mockCreateComponent( 'SettingsModules' );
-} );
+jest.mock( '@/js/components/email-reporting/UserSettingsSelectionPanel', () =>
+	mockCreateComponent( 'UserSettingsSelectionPanel' )
+);
+
+jest.mock( '@/js/components/settings/SettingsModules', () =>
+	mockCreateComponent( 'SettingsModules' )
+);
 
 describe( 'SettingsApp', () => {
 	// Create hash history to interact with HashRouter using `history.push`

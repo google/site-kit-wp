@@ -211,7 +211,22 @@ class ScreensTest extends TestCase {
 	private function set_analytics_setup_complete( $is_complete ) {
 		global $wpdb;
 		$meta_key = $wpdb->get_blog_prefix() . 'googlesitekit_initial_setup';
-		update_user_meta( get_current_user_id(), $meta_key, array( 'isAnalyticsSetupComplete' => $is_complete ) );
+		$settings = get_user_meta( get_current_user_id(), $meta_key, true );
+		$settings = is_array( $settings ) ? $settings : array();
+		update_user_meta( get_current_user_id(), $meta_key, array_merge( $settings, array( 'isAnalyticsSetupComplete' => $is_complete ) ) );
+	}
+
+	/**
+	 * Set the `hasSitePurposeAnswer` flag for the current user.
+	 *
+	 * @param bool|null $has_answer Value for hasSitePurposeAnswer (true/false/null).
+	 */
+	private function set_has_site_purpose_answer( $has_answer ) {
+		global $wpdb;
+		$meta_key = $wpdb->get_blog_prefix() . 'googlesitekit_initial_setup';
+		$settings = get_user_meta( get_current_user_id(), $meta_key, true );
+		$settings = is_array( $settings ) ? $settings : array();
+		update_user_meta( get_current_user_id(), $meta_key, array_merge( $settings, array( 'hasSitePurposeAnswer' => $has_answer ) ) );
 	}
 
 	/**
@@ -251,6 +266,28 @@ class ScreensTest extends TestCase {
 		$redirect = $this->load_dashboard_screen();
 
 		$this->assertNull( $redirect, 'Should not redirect when Analytics setup is complete.' );
+	}
+
+	public function test_dashboard_initialize__redirect_to_key_metrics_setup_when_site_purpose_is_unanswered() {
+		$this->enable_feature( 'setupFlowRefresh' );
+		$this->set_analytics_setup_complete( true );
+		$this->set_has_site_purpose_answer( false );
+
+		$redirect = $this->load_dashboard_screen();
+
+		$this->assertNotNull( $redirect, 'Should redirect when the site purpose question is unanswered.' );
+		$this->assertStringContainsString( 'page=googlesitekit-key-metrics-setup', $redirect->get_location(), 'Redirect should include key-metrics-setup page.' );
+		$this->assertStringContainsString( 'showProgress=true', $redirect->get_location(), 'Redirect should include showProgress param.' );
+	}
+
+	public function test_dashboard_initialize__no_redirect_when_site_purpose_is_answered() {
+		$this->enable_feature( 'setupFlowRefresh' );
+		$this->set_analytics_setup_complete( true );
+		$this->set_has_site_purpose_answer( true );
+
+		$redirect = $this->load_dashboard_screen();
+
+		$this->assertNull( $redirect, 'Should not redirect when the site purpose question is answered.' );
 	}
 
 	public function test_dashboard_initialize__redirect_to_analytics_setup_screen_when_setup_incomplete_and_ga4_not_connected_with_setupFlowRefresh_enabled() {

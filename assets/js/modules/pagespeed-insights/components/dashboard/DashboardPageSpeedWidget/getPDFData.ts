@@ -36,11 +36,15 @@ import {
 /** The two strategies fetched in parallel for the PDF Speed section. */
 const PDF_PAGESPEED_STRATEGIES = [ STRATEGY_MOBILE, STRATEGY_DESKTOP ] as const;
 
-// Minimal registry shape — only the stores and selectors this loader actually
-// calls. Typed structurally (store: string) following the same pattern as
-// other Site Kit data loaders (e.g. site-goals-settings.ts).
+/**
+ * Minimal registry shape — only the stores and selectors this loader actually
+ * calls. Typed structurally (store: string) following the same pattern as
+ * other Site Kit data loaders (e.g. site-goals-settings.ts).
+ */
 interface SpeedPDFRegistry {
+	/** Returns the selectors that read the store without starting a fetch. */
 	select: ( storeName: string ) => {
+		/** Returns the report already in the store, or undefined before one is fetched. */
 		getReport: ( url: string, strategy: string ) => PSIReport | undefined;
 	};
 	resolveSelect: ( storeName: string ) => {
@@ -57,22 +61,29 @@ interface SpeedPDFRegistry {
 }
 
 export interface GetPDFDataParams {
+	/** The Site Kit data registry the loader reads reports through. */
 	registry: SpeedPDFRegistry;
 	// PageSpeed reports are point-in-time; dates from the orchestrator are unused.
 	dates: unknown;
+	/** The export's abort signal. When it aborts, the loader resolves with null data. */
 	signal: AbortSignal;
 }
 
 export interface StrategyData {
+	/** The lab metrics from the report's Lighthouse audits. */
 	lab: LabMetrics;
+	/** The field metrics from real user data, or null when the report has none. */
 	field: FieldMetrics | null;
 }
 
 export interface SpeedPDFData {
+	/** Per-strategy metrics, or `null` when the export is canceled. */
 	data: {
+		/** The mobile strategy's metrics, or null when the mobile report failed. */
 		mobile: StrategyData | null;
+		/** The desktop strategy's metrics, or null when the desktop report failed. */
 		desktop: StrategyData | null;
-	};
+	} | null;
 }
 
 /**
@@ -84,11 +95,11 @@ export interface SpeedPDFData {
  * only when both strategies fail so the orchestrator can transition the whole
  * widget to its error state.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param params          Loader parameters from the PDF orchestrator.
  * @param params.registry Registry with resolveSelect and dispatch for Site Kit stores.
- * @param params.signal   Abort signal for cancelling in-flight requests.
+ * @param params.signal   Abort signal for canceling in-flight requests.
  * @return Resolved speed data with lab and field metrics per strategy.
  */
 export default async function getPDFData( {
@@ -96,7 +107,7 @@ export default async function getPDFData( {
 	signal,
 }: GetPDFDataParams ): Promise< SpeedPDFData > {
 	if ( signal.aborted ) {
-		return { data: { mobile: null, desktop: null } };
+		return { data: null };
 	}
 
 	const referenceURL = await registry
@@ -104,7 +115,7 @@ export default async function getPDFData( {
 		.getCurrentReferenceURL();
 
 	// Invalidate any stale resolver-completion state left over from a previous
-	// aborted or failed export. AbortSignals serialise identically in the
+	// aborted or failed export. AbortSignals serialize identically in the
 	// registry, so { signal } always resolves to the same cache key and the
 	// invalidation reliably clears any previously poisoned resolution.
 	const { invalidateResolution } = registry.dispatch(
@@ -141,7 +152,7 @@ export default async function getPDFData( {
 	);
 
 	if ( signal.aborted ) {
-		return { data: { mobile: null, desktop: null } };
+		return { data: null };
 	}
 
 	const mobile = mobileReport
