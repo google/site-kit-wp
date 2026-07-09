@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { TestDetails, WordPressFixture, expect, test } from '../playwright';
-import { asUser, withPlugins } from '../wordpress';
+import { TestDetails, WordPressFixture, expect, test } from '../../playwright';
+import { asUser, withPlugins } from '../../wordpress';
 
 /**
  * Creates a test that checks for a setup screen with the given name.
