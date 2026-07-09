@@ -36,8 +36,11 @@ test.describe(
 	() => {
 		// The cases share one WordPress instance and drive the same in-app export, so
 		// run them one at a time to avoid cross-test interference on the report and
-		// download state.
-		test.describe.configure( { mode: 'serial' } );
+		// download state. Generating the PDF (rendering charts to images, then
+		// assembling the document) is heavy, and on slower CI runners it pushes past
+		// the default 30s test timeout — especially on the mobile project — so the
+		// timeout is raised to keep the download-driven cases from flaking.
+		test.describe.configure( { mode: 'serial', timeout: 90_000 } );
 
 		test(
 			'generates a report and downloads a PDF (golden path)',
