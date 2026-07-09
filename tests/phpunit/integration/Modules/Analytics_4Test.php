@@ -17,6 +17,7 @@ use Closure;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Is_Widget_Area_Hidden;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Data_Available_State;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
@@ -190,6 +191,17 @@ class Analytics_4Test extends TestCase {
 		$this->assertTrue( has_action( 'wp_head' ), 'Analytics 4 should add tracking opt-out action to wp_head' );
 		$this->assertTrue( has_action( 'web_stories_story_head' ), 'Analytics 4 should add tracking opt-out action to web_stories_story_head' );
 		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
+	}
+
+	public function test_register__sets_key_metrics_setup_is_widget_area_hidden_to_false_when_connected() {
+		$key_metrics_setup_is_widget_area_hidden = new Key_Metrics_Setup_Is_Widget_Area_Hidden( $this->options );
+		$key_metrics_setup_is_widget_area_hidden->register();
+		$key_metrics_setup_is_widget_area_hidden->set( true );
+
+		$this->analytics->register();
+		$this->connect_analytics_module( $this->analytics );
+
+		$this->assertFalse( $key_metrics_setup_is_widget_area_hidden->get(), 'Key Metrics setup widget area hidden state should be set to false when Analytics is connected.' );
 	}
 
 	public function test_register__reset_adsense_link_settings() {
