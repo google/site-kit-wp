@@ -120,123 +120,66 @@ function expectHashedUserData( userData: ExtractedUserData | null ): void {
 }
 
 test.describe( 'Enhanced Conversions', { annotation: [ plugins ] }, () => {
-	test(
-		'should emit hashed user_data when Ads is connected and the feature flag is enabled',
-		{ annotation: [ fullUser, withUserDataFlag, adsConnected ] },
-		async ( { wp } ) => {
-			await wp.visitFrontend( '/' );
-			const userData = await getFrontendUserData( wp.page );
-			expectHashedUserData( userData );
-		}
-	);
+	test.beforeEach( ( { wp } ) => wp.visitFrontend( '/' ) );
 
-	test(
-		'should emit hashed user_data when Analytics 4 is connected and the feature flag is enabled',
-		{ annotation: [ fullUser, withUserDataFlag, analytics4Connected ] },
-		async ( { wp } ) => {
-			await wp.visitFrontend( '/' );
-			const userData = await getFrontendUserData( wp.page );
-			expectHashedUserData( userData );
-		}
-	);
+	[
+		{ moduleName: 'Ads', annotation: adsConnected },
+		{ moduleName: 'Analytics 4', annotation: analytics4Connected },
+		{ moduleName: 'Tag Manager', annotation: tagManagerConnected },
+	].forEach( ( { moduleName, annotation } ) => {
+		test(
+			`should emit hashed user_data when ${ moduleName } is connected and the feature flag is enabled`,
+			{ annotation: [ fullUser, withUserDataFlag, annotation ] },
+			async ( { wp } ) => {
+				const userData = await getFrontendUserData( wp.page );
+				expectHashedUserData( userData );
+			}
+		);
+	} );
 
-	test(
-		'should emit hashed user_data when Tag Manager is connected and the feature flag is enabled',
-		{ annotation: [ fullUser, withUserDataFlag, tagManagerConnected ] },
-		async ( { wp } ) => {
-			await wp.visitFrontend( '/' );
-			const userData = await getFrontendUserData( wp.page );
-			expectHashedUserData( userData );
-		}
-	);
-
-	test(
-		'should not emit user_data when Ads is connected and the feature flag is disabled',
-		{ annotation: [ fullUser, adsConnected ] },
-		async ( { wp } ) => {
-			await wp.visitFrontend( '/' );
-			const userData = await getFrontendUserData( wp.page );
-			expect( userData ).toBeNull();
-		}
-	);
-
-	test(
-		'should not emit user_data when Analytics 4 is connected and the feature flag is disabled',
-		{ annotation: [ fullUser, analytics4Connected ] },
-		async ( { wp } ) => {
-			await wp.visitFrontend( '/' );
-			const userData = await getFrontendUserData( wp.page );
-			expect( userData ).toBeNull();
-		}
-	);
-
-	test(
-		'should not emit user_data when Tag Manager is connected and the feature flag is disabled',
-		{ annotation: [ fullUser, tagManagerConnected ] },
-		async ( { wp } ) => {
-			await wp.visitFrontend( '/' );
-			const userData = await getFrontendUserData( wp.page );
-			expect( userData ).toBeNull();
-		}
-	);
+	[
+		{ moduleName: 'Ads', annotation: adsConnected },
+		{ moduleName: 'Analytics 4', annotation: analytics4Connected },
+		{ moduleName: 'Tag Manager', annotation: tagManagerConnected },
+	].forEach( ( { moduleName, annotation } ) => {
+		test(
+			`should not emit user_data when ${ moduleName } is connected and the feature flag is disabled`,
+			{ annotation: [ fullUser, annotation ] },
+			async ( { wp } ) => {
+				const userData = await getFrontendUserData( wp.page );
+				expect( userData ).toBeNull();
+			}
+		);
+	} );
 
 	test(
 		'should not emit user_data when the feature flag is enabled and no GTag module is connected',
 		{ annotation: [ fullUser, withUserDataFlag ] },
 		async ( { wp } ) => {
-			await wp.visitFrontend( '/' );
 			const userData = await getFrontendUserData( wp.page );
 			expect( userData ).toBeNull();
 		}
 	);
 
-	test(
-		'should not emit user_data for an anonymous user when Ads is connected and the feature flag is enabled',
-		{ annotation: [ anonymousUser, withUserDataFlag, adsConnected ] },
-		async ( { wp } ) => {
-			await wp.visitFrontend( '/' );
-			const userData = await getFrontendUserData( wp.page );
-			expect( userData ).toBeNull();
-		}
-	);
-
-	test(
-		'should not emit user_data for an anonymous user when Analytics 4 is connected and the feature flag is enabled',
-		{
-			annotation: [
-				anonymousUser,
-				withUserDataFlag,
-				analytics4Connected,
-			],
-		},
-		async ( { wp } ) => {
-			await wp.visitFrontend( '/' );
-			const userData = await getFrontendUserData( wp.page );
-			expect( userData ).toBeNull();
-		}
-	);
-
-	test(
-		'should not emit user_data for an anonymous user when Tag Manager is connected and the feature flag is enabled',
-		{
-			annotation: [
-				anonymousUser,
-				withUserDataFlag,
-				tagManagerConnected,
-			],
-		},
-		async ( { wp } ) => {
-			await wp.visitFrontend( '/' );
-			const userData = await getFrontendUserData( wp.page );
-			expect( userData ).toBeNull();
-		}
-	);
+	[
+		{ moduleName: 'Ads', annotation: adsConnected },
+		{ moduleName: 'Analytics 4', annotation: analytics4Connected },
+		{ moduleName: 'Tag Manager', annotation: tagManagerConnected },
+	].forEach( ( { moduleName, annotation } ) => {
+		test(
+			`should not emit user_data for an anonymous user when ${ moduleName } is connected and the feature flag is enabled`,
+			{ annotation: [ anonymousUser, withUserDataFlag, annotation ] },
+			async ( { wp } ) => {
+				const userData = await getFrontendUserData( wp.page );
+				expect( userData ).toBeNull();
+			}
+		);
+	} );
 
 	test(
 		'should emit only the email hash when only email data is available',
 		{ annotation: [ emailOnlyUser, withUserDataFlag, adsConnected ] },
 		async ( { wp } ) => {
-			await wp.visitFrontend( '/' );
 			const userData = await getFrontendUserData( wp.page );
 
 			expect( userData ).toBeTruthy();
@@ -250,7 +193,6 @@ test.describe( 'Enhanced Conversions', { annotation: [ plugins ] }, () => {
 		'should emit only the name hashes when email data is empty',
 		{ annotation: [ nameOnlyUser, withUserDataFlag, adsConnected ] },
 		async ( { wp } ) => {
-			await wp.visitFrontend( '/' );
 			const userData = await getFrontendUserData( wp.page );
 
 			expect( userData ).toBeTruthy();
