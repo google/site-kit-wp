@@ -28,11 +28,13 @@ import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as tracking from '@/js/util/tracking';
 import {
 	act,
 	createTestRegistry,
 	fireEvent,
+	provideModules,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -101,6 +103,9 @@ describe( 'PDFSectionsSelectionPanel', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		// The panel waits for module connection state before it lists sections,
+		// so every test needs modules in the store.
+		provideModules( registry );
 		registerSections( registry );
 	} );
 
@@ -151,6 +156,79 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		expect(
 			queryByRole( 'checkbox', { name: /^Inactive$/ } )
 		).not.toBeInTheDocument();
+	} );
+
+	/**
+	 * Registers a Traffic-context area with one pdf widget that depends on
+	 * Analytics 4, so a test can check a module-dependent section.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {void}
+	 */
+	function registerAnalyticsSection() {
+		const dispatch = registry.dispatch( CORE_WIDGETS );
+		dispatch.registerWidgetArea( 'analyticsArea', {
+			title: 'Analytics',
+			pdfTitle: 'Analytics',
+			style: 'boxes',
+			priority: 2,
+		} );
+		dispatch.assignWidgetArea(
+			'analyticsArea',
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+		);
+		dispatch.registerWidget( 'analyticsWidget', {
+			Component: NullComponent,
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			pdf: {
+				Component: NullComponent,
+				getData: () => Promise.resolve( { data: null } ),
+				label: 'Analytics widget',
+			},
+		} );
+		dispatch.assignWidget( 'analyticsWidget', 'analyticsArea' );
+	}
+
+	it( 'omits a section whose pdf widget requires a disconnected module', async () => {
+		provideModules( registry, [
+			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: false },
+		] );
+		registerAnalyticsSection();
+
+		const { findByRole, queryByRole } = render(
+			<PDFSectionsSelectionPanel />,
+			{ registry }
+		);
+
+		openPanel();
+
+		// Wait for the module-less Traffic section. Its presence proves the
+		// list has loaded before the test checks that the Analytics section
+		// is absent.
+		await findByRole( 'checkbox', { name: /^Traffic$/ } );
+
+		expect(
+			queryByRole( 'checkbox', { name: /^Analytics$/ } )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'lists a section whose pdf widget requires a connected module, and selects it by default', async () => {
+		provideModules( registry, [
+			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
+		] );
+		registerAnalyticsSection();
+
+		const { findByRole } = render( <PDFSectionsSelectionPanel />, {
+			registry,
+		} );
+
+		openPanel();
+
+		const analyticsSection = ( await findByRole( 'checkbox', {
+			name: /^Analytics$/,
+		} ) ) as HTMLInputElement;
+		expect( analyticsSection.checked ).toBe( true );
 	} );
 
 	it( 'renders a Traffic section with its labelled widgets, all selected by default', async () => {

@@ -45,6 +45,7 @@ import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelN
 import Typography from '@/js/components/Typography';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
@@ -85,6 +86,13 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 			// Wait for the viewable modules to resolve before deriving sections so
 			// a view-only dashboard never briefly shows a section it cannot fill.
 			if ( viewOnly && modules === undefined ) {
+				return [];
+			}
+
+			// Wait for modules to load. Before they load, `isModuleConnected`
+			// returns `undefined`, so the panel would treat a connected module
+			// as disconnected and leave its section out of the default selection.
+			if ( select( CORE_MODULES ).getModules() === undefined ) {
 				return [];
 			}
 
