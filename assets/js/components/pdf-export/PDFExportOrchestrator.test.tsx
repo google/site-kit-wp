@@ -719,8 +719,9 @@ describe( 'PDFExportOrchestrator', () => {
 		const topEarningGetData = jest.fn( () =>
 			Promise.resolve( { data: null } )
 		);
-		// The Top earning pages widget gates PDF inclusion on the AdSense link,
-		// the same predicate registered on `adsenseTopEarningPagesGA4`.
+		// The Top earning pages widget only appears in the PDF when AdSense is
+		// linked to Analytics 4, using the same predicate registered on
+		// `adsenseTopEarningPagesGA4`.
 		registry.dispatch( CORE_WIDGETS ).registerWidget( 'topEarningPages', {
 			Component: NullComponent,
 			pdf: {

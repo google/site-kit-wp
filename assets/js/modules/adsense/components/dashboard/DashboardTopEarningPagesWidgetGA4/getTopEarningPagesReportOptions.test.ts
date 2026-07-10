@@ -1,5 +1,5 @@
 /**
- * DashboardTopEarningPagesWidgetGA4 reportOptions tests.
+ * DashboardTopEarningPagesWidgetGA4 getTopEarningPagesReportOptions tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -22,7 +22,7 @@
 import {
 	TOP_EARNING_PAGES_REPORT_ID,
 	getTopEarningPagesReportOptions,
-} from './reportOptions';
+} from './getTopEarningPagesReportOptions';
 
 describe( 'getTopEarningPagesReportOptions', () => {
 	it( 'builds the report args with the AdSense account filter, ordering, and limit', () => {

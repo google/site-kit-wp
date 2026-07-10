@@ -28,18 +28,23 @@ import {
 	getPageTitleMap,
 	getPageTitlesReportOptions,
 } from '@/js/modules/analytics-4/utils/page-titles-report';
-import { getTopEarningPagesReportOptions } from './reportOptions';
+import { getTopEarningPagesReportOptions } from './getTopEarningPagesReportOptions';
+
+export interface TopEarningPagesPDFData {
+	rows: ReportRow[];
+	currencyCode: string;
+	titles: Record< string, string >;
+}
 
 /**
- * Data the Top earning pages PDF widget renders.
+ * What `getPDFData` returns.
+ *
+ * The shared PDF `getData` contract wraps a widget's payload in a `data` key,
+ * which the report mapper hands to the widget's `Component` as its `data` prop.
+ * The payload is `null` when the export is cancelled.
  */
-export interface TopEarningPagesPDFData {
-	/** Report rows, the currency code, and the page titles, or `null` when cancelled. */
-	data: {
-		rows: ReportRow[];
-		currencyCode: string;
-		titles: Record< string, string >;
-	} | null;
+interface GetPDFDataResult {
+	data: TopEarningPagesPDFData | null;
 }
 
 /**
@@ -64,7 +69,7 @@ export default async function getPDFData( {
 	registry,
 	dates,
 	signal,
-}: GetPDFDataParams ): Promise< TopEarningPagesPDFData > {
+}: GetPDFDataParams ): Promise< GetPDFDataResult > {
 	if ( signal.aborted ) {
 		return { data: null };
 	}

@@ -23,18 +23,15 @@ import fetchMock from 'fetch-mock-jest';
 import { createTestRegistry, waitForDefaultTimeouts } from 'tests/js/utils';
 
 /**
- * WordPress dependencies
- */
-import { WPDataRegistry } from '@wordpress/data/build-types/registry';
-
-/**
  * Internal dependencies
  */
 import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import getPDFData from './getPDFData';
 
-type Registry = WPDataRegistry & GetPDFDataParams[ 'registry' ];
+// The registry `getPDFData` receives: the WordPress data registry with
+// `resolveSelect` added.
+type Registry = GetPDFDataParams[ 'registry' ];
 
 /**
  * Matches the GA4 report REST endpoint.
@@ -108,7 +105,7 @@ const TITLES_REPORT = {
 function provideReports( {
 	main = MAIN_REPORT,
 	titles = TITLES_REPORT,
-}: { main?: unknown; titles?: unknown } = {} ) {
+}: { main?: typeof MAIN_REPORT; titles?: typeof TITLES_REPORT } = {} ) {
 	fetchMock.get( reportEndpoint, ( requestURL ) => ( {
 		body: requestURL.includes( 'pageTitle' ) ? titles : main,
 		status: 200,

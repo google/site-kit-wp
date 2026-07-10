@@ -54,7 +54,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { generateDateRangeArgs } from '@/js/modules/analytics-4/utils/report-date-range-args';
 import { numFmt, trackEvent } from '@/js/util';
 import whenActive from '@/js/util/when-active';
-import { getTopEarningPagesReportOptions } from './reportOptions';
+import { getTopEarningPagesReportOptions } from './getTopEarningPagesReportOptions';
 
 function DashboardTopEarningPagesWidgetGA4( {
 	WidgetNull,

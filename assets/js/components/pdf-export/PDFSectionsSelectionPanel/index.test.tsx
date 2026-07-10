@@ -185,9 +185,15 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		expect( registry.select( CORE_PDF ).getSelectedContextSlugs() ).toEqual(
 			[ CONTEXT_MAIN_DASHBOARD_TRAFFIC ]
 		);
-		expect(
-			[ ...registry.select( CORE_PDF ).getSelectedWidgetSlugs() ].sort()
-		).toEqual( [ 'pdfAllTraffic', 'pdfSearchTraffic' ] );
+		// Copy before sorting: the selector returns the store's array by
+		// reference, so sorting it in place would mutate the store.
+		const selectedWidgetSlugs = [
+			...registry.select( CORE_PDF ).getSelectedWidgetSlugs(),
+		].sort();
+		expect( selectedWidgetSlugs ).toEqual( [
+			'pdfAllTraffic',
+			'pdfSearchTraffic',
+		] );
 	} );
 
 	it( 'shows the parent as indeterminate when one child is deselected', async () => {
@@ -247,9 +253,11 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		);
 	} );
 
-	it( 'selects a widget whose eligibility resolves after the initial seeding, without re-seeding deselected ones', async () => {
-		// A widget gated on a store value that is not available when the panel
-		// opens, like a `pdf.isActive` that reads a not-yet-resolved setting.
+	it( 'auto-selects a widget that appears after the panel opens, without re-selecting ones the user cleared', async () => {
+		// This Revenue widget only appears once AdSense is linked. Its
+		// `pdf.isActive` reads `adSenseLinked` from the store, which has no
+		// value when the panel first opens, so the widget is hidden at first
+		// and shows up later once `adSenseLinked` becomes true.
 		const dispatch = registry.dispatch( CORE_WIDGETS );
 		dispatch.registerWidgetArea( 'pdfRevenueArea', {
 			title: 'Find out how much you’re earning from your content',
@@ -281,13 +289,16 @@ describe( 'PDFSectionsSelectionPanel', () => {
 
 		openPanel();
 
-		// The initial seeding runs with the gated widget still ineligible.
+		// When the panel opens, the Revenue widget is still hidden because
+		// `adSenseLinked` has no value yet, so only Traffic appears. Its
+		// widgets are auto-selected by default.
 		await findByRole( 'checkbox', { name: /^Traffic$/ } );
 		expect(
 			queryByRole( 'checkbox', { name: /^Revenue$/ } )
 		).not.toBeInTheDocument();
 
-		// The user deselects a seeded widget before the gate resolves.
+		// The user clears one of the auto-selected Traffic widgets, before the
+		// Revenue widget appears.
 		fireEvent.click(
 			await findByRole( 'checkbox', { name: /^Search traffic$/ } )
 		);
@@ -297,22 +308,29 @@ describe( 'PDFSectionsSelectionPanel', () => {
 			).toEqual( [ 'pdfAllTraffic' ] );
 		} );
 
-		// The gate resolves to eligible after the initial seeding.
+		// AdSense becomes linked, so the Revenue widget now appears.
 		act( () => {
 			registry.dispatch( CORE_UI ).setValue( 'adSenseLinked', true );
 		} );
 
-		// The late widget appears checked; the deselected one is not re-seeded.
-		const lateCheckbox = ( await findByRole( 'checkbox', {
+		// The newly appeared widget is auto-selected by default, while the
+		// widget the user cleared stays cleared (it is not re-selected).
+		const revenueCheckbox = ( await findByRole( 'checkbox', {
 			name: /^Earning performance$/,
 		} ) ) as HTMLInputElement;
 
 		await waitFor( () => {
-			expect( lateCheckbox.checked ).toBe( true );
+			expect( revenueCheckbox.checked ).toBe( true );
 		} );
-		expect(
-			[ ...registry.select( CORE_PDF ).getSelectedWidgetSlugs() ].sort()
-		).toEqual( [ 'pdfAllTraffic', 'pdfEarnings' ] );
+		// Copy before sorting: the selector returns the store's array by
+		// reference, so sorting it in place would mutate the store.
+		const selectedWidgetSlugs = [
+			...registry.select( CORE_PDF ).getSelectedWidgetSlugs(),
+		].sort();
+		expect( selectedWidgetSlugs ).toEqual( [
+			'pdfAllTraffic',
+			'pdfEarnings',
+		] );
 	} );
 
 	it( 'starts the export and closes the panel when Download is clicked', async () => {

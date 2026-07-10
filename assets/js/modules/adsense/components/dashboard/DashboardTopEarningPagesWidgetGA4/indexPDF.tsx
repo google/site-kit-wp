@@ -75,7 +75,7 @@ const DashboardTopEarningPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 	data,
 } ) => {
 	const heading = __( 'Top earning pages', 'google-site-kit' );
-	const topEarningPagesData = data as TopEarningPagesPDFData[ 'data' ];
+	const topEarningPagesData = data as TopEarningPagesPDFData | null;
 	const rows = topEarningPagesData?.rows ?? [];
 	const titles = topEarningPagesData?.titles ?? {};
 	const currencyCode = topEarningPagesData?.currencyCode ?? '';
