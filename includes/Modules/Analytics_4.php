@@ -331,6 +331,9 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		// Analytics 4 tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 
+		// Increase the steps parameter in the proxy setup URL query params.
+		add_filter( 'googlesitekit_proxy_setup_url_params', $this->get_method_proxy( 'set_setup_url_steps_param' ) );
+
 		$this->audience_settings->on_change(
 			function ( $old_value, $new_value ) {
 				// Ensure that the resource data availability dates for `availableAudiences` that no longer exist are reset.
@@ -577,6 +580,22 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		}
 
 		return parent::is_connected();
+	}
+
+	/**
+	 * Sets the steps query parameter for the proxy setup URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $query_params Query parameters.
+	 * @return array
+	 */
+	protected function set_setup_url_steps_param( $query_params ) {
+		if ( Feature_Flags::enabled( 'setupFlowRefreshPhase4' ) ) {
+			$query_params['steps'] = 6;
+		}
+
+		return $query_params;
 	}
 
 	/**

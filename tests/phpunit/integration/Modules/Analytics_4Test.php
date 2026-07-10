@@ -193,6 +193,26 @@ class Analytics_4Test extends TestCase {
 		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
 	}
 
+	public function test_register__sets_setup_url_steps_param_with_setup_flow_refresh_phase_4_feature_flag_enabled() {
+		$this->enable_feature( 'setupFlowRefresh' );
+		$this->enable_feature( 'setupFlowRefreshPhase4' );
+
+		$this->analytics->register();
+
+		$url = $this->authentication->get_google_proxy()->setup_url(
+			array(
+				'code'    => 'code-123',
+				'site_id' => 'site_id-456',
+			)
+		);
+
+		$this->assertEquals(
+			$url,
+			'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&steps=6',
+			'Setup URL should include the steps query parameter as 6 when Analytics is active.'
+		);
+	}
+
 	public function test_register__sets_key_metrics_setup_is_widget_area_hidden_to_false_when_connected() {
 		$key_metrics_setup_is_widget_area_hidden = new Key_Metrics_Setup_Is_Widget_Area_Hidden( $this->options );
 		$key_metrics_setup_is_widget_area_hidden->register();
