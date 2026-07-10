@@ -38,8 +38,8 @@ export const PDF_INTRODUCTION_OVERLAY_NOTIFICATION =
  *
  * The PDF report renders one section per selected context, in this order.
  * Both the selection panel and the export orchestrator read this list, so the
- * exported section order always follows the dashboard, whatever order the user
- * selected the widgets in.
+ * exported section order always follows the dashboard's order, whatever order
+ * the user selected the widgets in.
  *
  * @since n.e.x.t
  */

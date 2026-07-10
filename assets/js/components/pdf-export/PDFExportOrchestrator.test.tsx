@@ -465,7 +465,7 @@ describe( 'PDFExportOrchestrator', () => {
 		expect( props.sections[ 0 ].slug ).toBe( 'sharedArea' );
 	} );
 
-	it( 'orders the sections by the dashboard, not by the stored selection', async () => {
+	it( "derives the sections in the dashboard's order, not the stored order", async () => {
 		registerPDFWidgetInContext(
 			CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 			'trafficArea',

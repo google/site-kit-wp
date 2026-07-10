@@ -386,7 +386,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				const selectedWidgetSlugSet = new Set( selectedWidgetSlugs );
 
 				// Reorder the selected contexts into the dashboard's order, so
-				// the report follows the dashboard, not the stored order.
+				// the report's sections follow that order, not the stored order.
 				const selectedContextSlugSet = new Set( selectedContextSlugs );
 				const orderedSelectedContextSlugs =
 					ORDERED_MAIN_DASHBOARD_CONTEXTS.filter( ( contextSlug ) =>

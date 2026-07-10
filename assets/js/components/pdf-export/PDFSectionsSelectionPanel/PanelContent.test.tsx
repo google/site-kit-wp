@@ -92,8 +92,9 @@ function registerSection(
 }
 
 /**
- * Registers the three test sections out of order, Speed first, so a test can
- * prove the stored order follows the dashboard, not the registration order.
+ * Registers the three test sections out of order, Speed first, so a test
+ * can prove the stored order follows the dashboard's order, not the
+ * registration order.
  *
  * @since n.e.x.t
  *
@@ -186,8 +187,8 @@ describe( 'PanelContent', () => {
 			] );
 		} );
 
-		// Toggle it back on. Its context returns to its dashboard position,
-		// not the end of the stored order.
+		// Toggle the section back on. Its context returns to its dashboard
+		// position, not the end of the stored order.
 		fireEvent.click(
 			await findByRole( 'checkbox', { name: /^Traffic$/ } )
 		);
