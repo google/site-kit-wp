@@ -100,7 +100,7 @@ tests/playwright/
 │   ├── database.ts                     # Per-test DB create/drop and error log retrieval
 │   ├── cookies.ts                      # Test routing cookies
 │   ├── plugins.ts                      # Plugin activation via DB
-│   ├── options.ts                      # Annotation helpers (withPlugins, asUser, withFeatureFlags, withFixtures)
+│   ├── options.ts                      # Annotation helpers (withPlugins, asUser, withFeatureFlags, withFixtures, withConnectedModules)
 │   ├── mailpit.ts                      # Mailpit email client
 │   └── error-log-ignore-list.ts        # Known PHP errors to ignore per WP version
 ├── docker-compose.yml
@@ -243,13 +243,13 @@ Every test automatically records a screencast of the browser session. The record
 
 ```typescript
 test( 'my test', async ( { wp } ) => {
-    await wp.step( 'Navigate to dashboard', async () => {
-        await wp.visitDashboard();
-    } );
+	await wp.step( 'Navigate to dashboard', async () => {
+		await wp.visitDashboard();
+	} );
 
-    await wp.step( 'Check widget heading', async () => {
-        await expect( wp.page.locator( 'h3' ) ).toBeVisible();
-    } );
+	await wp.step( 'Check widget heading', async () => {
+		await expect( wp.page.locator( 'h3' ) ).toBeVisible();
+	} );
 } );
 ```
 
@@ -294,19 +294,19 @@ npm run -w tests/playwright setup
 
 The following environment variables configure how tests connect to the running environment:
 
-| Variable                   | Default                 | Description                             |
-| -------------------------- | ----------------------- | --------------------------------------- |
-| `PLAYWRIGHT_WP_URL`        | `http://localhost:9002` | WordPress base URL                      |
-| `PLAYWRIGHT_DB_HOST`       | `localhost`             | MariaDB host                            |
-| `PLAYWRIGHT_DB_PORT`       | `9306`                  | MariaDB port                            |
-| `PLAYWRIGHT_DB_USER`       | `root`                  | MariaDB user                            |
-| `PLAYWRIGHT_DB_PASSWORD`   | `example`               | MariaDB password                        |
-| `PLAYWRIGHT_MAILPIT_URL`   | `http://localhost:8025` | Mailpit API base URL                    |
-| `PLUGIN_PATH`              | `../../`                | Path to the plugin directory to mount   |
-| `WP_VERSION`               | `5.2.21`                | WordPress version to use in Docker      |
-| `FORBID_ONLY`              | _(unset)_               | Fail if `test.only` is present (CI use) |
-| `RETRIES`                  | `0`                     | Number of retries per failing test      |
-| `WORKERS`                  | _(Playwright default)_  | Number of parallel workers              |
+| Variable                 | Default                 | Description                             |
+| ------------------------ | ----------------------- | --------------------------------------- |
+| `PLAYWRIGHT_WP_URL`      | `http://localhost:9002` | WordPress base URL                      |
+| `PLAYWRIGHT_DB_HOST`     | `localhost`             | MariaDB host                            |
+| `PLAYWRIGHT_DB_PORT`     | `9306`                  | MariaDB port                            |
+| `PLAYWRIGHT_DB_USER`     | `root`                  | MariaDB user                            |
+| `PLAYWRIGHT_DB_PASSWORD` | `example`               | MariaDB password                        |
+| `PLAYWRIGHT_MAILPIT_URL` | `http://localhost:8025` | Mailpit API base URL                    |
+| `PLUGIN_PATH`            | `../../`                | Path to the plugin directory to mount   |
+| `WP_VERSION`             | `5.2.21`                | WordPress version to use in Docker      |
+| `FORBID_ONLY`            | _(unset)_               | Fail if `test.only` is present (CI use) |
+| `RETRIES`                | `0`                     | Number of retries per failing test      |
+| `WORKERS`                | _(Playwright default)_  | Number of parallel workers              |
 
 ---
 
@@ -330,19 +330,19 @@ test( 'my test', async ( { wp } ) => {
 
 The `wp` fixture is a `WordPress` instance automatically set up and torn down for each test. It provides:
 
-| Member                      | Type       | Description                                        |
-| --------------------------- | ---------- | -------------------------------------------------- |
-| `wp.page`                   | `Page`     | The Playwright page                                |
-| `wp.baseURL`                | `string`   | The WordPress base URL                             |
-| `wp.mailpit`                | `Mailpit`  | Email client scoped to the current test            |
-| `wp.goto(path)`             | method     | Navigate to an absolute path on the WordPress host |
-| `wp.visitDashboard(hash?)`  | method     | Navigate to the Site Kit dashboard (`/wp-admin/admin.php?page=googlesitekit-dashboard`) |
-| `wp.visitAdmin(path?)`      | method     | Navigate to `/wp-admin/{path}`                     |
-| `wp.visitFrontend(path?)`   | method     | Navigate to `/{path}` (default: `/`)               |
-| `wp.activatePlugin(file)`   | method     | Activate a plugin by its file path                 |
-| `wp.deactivatePlugin(file)` | method     | Deactivate a plugin by its file path               |
-| `wp.restRequest(...)`       | method     | Issue a WordPress REST API request via the browser |
-| `wp.step(title, body)`      | method     | Run a named test step and insert a chapter marker into the screencast |
+| Member                      | Type      | Description                                                                             |
+| --------------------------- | --------- | --------------------------------------------------------------------------------------- |
+| `wp.page`                   | `Page`    | The Playwright page                                                                     |
+| `wp.baseURL`                | `string`  | The WordPress base URL                                                                  |
+| `wp.mailpit`                | `Mailpit` | Email client scoped to the current test                                                 |
+| `wp.goto(path)`             | method    | Navigate to an absolute path on the WordPress host                                      |
+| `wp.visitDashboard(hash?)`  | method    | Navigate to the Site Kit dashboard (`/wp-admin/admin.php?page=googlesitekit-dashboard`) |
+| `wp.visitAdmin(path?)`      | method    | Navigate to `/wp-admin/{path}`                                                          |
+| `wp.visitFrontend(path?)`   | method    | Navigate to `/{path}` (default: `/`)                                                    |
+| `wp.activatePlugin(file)`   | method    | Activate a plugin by its file path                                                      |
+| `wp.deactivatePlugin(file)` | method    | Deactivate a plugin by its file path                                                    |
+| `wp.restRequest(...)`       | method    | Issue a WordPress REST API request via the browser                                      |
+| `wp.step(title, body)`      | method    | Run a named test step and insert a chapter marker into the screencast                   |
 
 ### Test Annotations
 
@@ -406,6 +406,28 @@ test(
 );
 ```
 
+**`withConnectedModules(...modules)`** — Mark one or more Site Kit modules as connected for the duration of the test. Module slugs are passed as arguments and handled by the `e2e-module-activation.php` must-use plugin:
+
+```typescript
+import { withConnectedModules } from '../wordpress';
+
+test(
+    'test with Ads module connected',
+    { annotation: withConnectedModules( 'ads' ) },
+    async ( { wp } ) => { ... }
+);
+```
+
+Available module slugs match the Site Kit module registry, for example: `ads`, `analytics-4`, `tagmanager`, `adsense`, `search-console`, `pagespeed-insights`.
+
+Multiple modules can be connected at once:
+
+```typescript
+{
+	annotation: withConnectedModules( 'ads', 'analytics-4' );
+}
+```
+
 Annotations can be applied at both the `test.describe` (suite) level and the individual `test` level. Test-level annotations are merged with suite-level annotations.
 
 ### Navigation Helpers
@@ -450,9 +472,13 @@ test( 'my test', async ( { wp } ) => {
 
 ```typescript
 test( 'my test', async ( { wp } ) => {
-	const response = await wp.restRequest( 'POST', '/google-site-kit/v1/e2e/email-reporting/trigger-cron', {
-		body: JSON.stringify( { frequency: 'weekly' } ),
-	} );
+	const response = await wp.restRequest(
+		'POST',
+		'/google-site-kit/v1/e2e/email-reporting/trigger-cron',
+		{
+			body: JSON.stringify( { frequency: 'weekly' } ),
+		}
+	);
 } );
 ```
 
@@ -462,35 +488,35 @@ Use `wp.mailpit` to wait for and inspect emails sent during a test. Email captur
 
 ```typescript
 test(
-    'sends a welcome email',
-    { annotation: withPlugins( 'mailpit.php' ) },
-    async ( { wp } ) => {
-        // ... trigger an action that sends email ...
+	'sends a welcome email',
+	{ annotation: withPlugins( 'mailpit.php' ) },
+	async ( { wp } ) => {
+		// ... trigger an action that sends email ...
 
-        // Wait for an email to arrive (polls until timeout)
-        const message = await wp.mailpit.waitForMessage();
+		// Wait for an email to arrive (polls until timeout)
+		const message = await wp.mailpit.waitForMessage();
 
-        // Fetch full message details (including body)
-        const detail = await wp.mailpit.getMessage( message.ID );
+		// Fetch full message details (including body)
+		const detail = await wp.mailpit.getMessage( message.ID );
 
-        expect( detail.Subject ).toBe( 'Welcome!' );
-        expect( detail.HTML ).toContain( 'Hello' );
+		expect( detail.Subject ).toBe( 'Welcome!' );
+		expect( detail.HTML ).toContain( 'Hello' );
 
-        // Check if any emails arrived matching an optional search query
-        const found = await wp.mailpit.hasMessage( 'subject:Weekly' );
-    }
+		// Check if any emails arrived matching an optional search query
+		const found = await wp.mailpit.hasMessage( 'subject:Weekly' );
+	}
 );
 ```
 
 **`Mailpit` API:**
 
-| Method                          | Description                                                         |
-| ------------------------------- | ------------------------------------------------------------------- |
-| `getMessages(query?)`           | Fetch all messages, optionally filtered by a search query           |
-| `getMessage(id)`                | Fetch full message detail (body, attachments) for a given ID        |
-| `waitForMessage(options?)`      | Poll until at least one message arrives (default timeout: 2500ms)   |
-| `hasMessage(query?)`            | Return `true` if any messages match the optional query              |
-| `deleteMessages()`              | Delete all messages sent by this test                               |
+| Method                     | Description                                                       |
+| -------------------------- | ----------------------------------------------------------------- |
+| `getMessages(query?)`      | Fetch all messages, optionally filtered by a search query         |
+| `getMessage(id)`           | Fetch full message detail (body, attachments) for a given ID      |
+| `waitForMessage(options?)` | Poll until at least one message arrives (default timeout: 2500ms) |
+| `hasMessage(query?)`       | Return `true` if any messages match the optional query            |
+| `deleteMessages()`         | Delete all messages sent by this test                             |
 
 Mailpit automatically scopes queries to the current test's sender address (`<database-name>@example.com`), so concurrent tests never see each other's emails.
 
@@ -554,6 +580,9 @@ Disables SSL certificate verification so WordPress can reach the local fixtures 
 
 **`e2e-reference-date.php`**
 Fixes the Site Kit reference date to `2026-01-01 00:00:00` so that date-dependent calculations in reports are deterministic across test runs.
+
+**`e2e-module-activation.php`**
+Hooks into `googlesitekit_is_module_connected` at priority 999. Reads the `_wp_test_connected_modules` cookie (a comma-separated list of module slugs) and forces those modules to return `true` for the connection check. This enables tests to exercise code paths that require specific modules to be connected without setting up a full OAuth flow. Use the `withConnectedModules()` annotation to configure which modules are connected for a test.
 
 ### Test Helper Plugins
 
@@ -620,10 +649,10 @@ npm run generate-backup
 
 Test outputs are saved to `artifacts/` (not committed to version control).
 
-| Path                           | Contents                                                                                                               |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| Path                           | Contents                                                                                                                |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
 | `artifacts/playwright-html/`   | Interactive HTML report (`index.html`) — open in browser to view test results with screenshots and attached screencasts |
-| `artifacts/playwright-output/` | Per-test directories containing `screencast.webm` (always), screenshots (always), and trace files (on first retry)    |
+| `artifacts/playwright-output/` | Per-test directories containing `screencast.webm` (always), screenshots (always), and trace files (on first retry)      |
 
 **View the HTML report:**
 
