@@ -20,7 +20,11 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock-jest';
-import { createTestRegistry, provideSiteInfo } from 'tests/js/utils';
+import {
+	createTestRegistry,
+	provideModules,
+	provideSiteInfo,
+} from 'tests/js/utils';
 
 /**
  * WordPress dependencies
@@ -33,6 +37,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
 import renderGoogleChartToDataURI from '@/js/components/pdf-export/render-google-chart-to-data-uri';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { calculateChange } from '@/js/util';
@@ -105,7 +110,7 @@ const visitorsArgs = getGA4VisitorsReportOptions( DATES );
  * days (impressions 20, clicks 10), so partitioning yields a clean +100%
  * change.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @return The report rows.
  */
@@ -143,7 +148,7 @@ const keyEventsStatsReport = { rows: [] };
 /**
  * Sets the global `google` object the loader reads to build chart data tables.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param  value The new `google` global, or `undefined` to remove it.
  * @return {void}
@@ -156,7 +161,7 @@ function setGoogle( value: unknown ) {
  * Dispatches the four report fixtures into the registry, so the loader
  * resolves them without fetching.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param  registry Test registry that receives the reports.
  * @return {void}
@@ -189,6 +194,9 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
 		provideSiteInfo( registry );
+		provideModules( registry, [
+			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
+		] );
 		registry.dispatch( CORE_USER ).setDateRange( 'last-7-days' );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-01-14' );
 

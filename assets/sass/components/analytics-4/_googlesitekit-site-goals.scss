@@ -221,7 +221,10 @@
 		display: flex;
 		flex-direction: column;
 		margin-left: 0;
-		padding: 14px 0;
+
+		// Match the primary tile's 18px padding, so the badge and the
+		// comparison label sit at the same height in every tile of a row.
+		padding: 18px 0;
 
 		.googlesitekit-site-goals-tile__inner {
 			padding-left: 14px;

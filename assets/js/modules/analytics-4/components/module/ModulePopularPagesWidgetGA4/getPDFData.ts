@@ -101,7 +101,7 @@ function getPopularPageLinkMap(
  * report document skips this widget.
  *
  * @since 1.182.0
- * @since n.e.x.t Returns null data when the report has no rows.
+ * @since 1.183.0 Returns null data when the report has no rows.
  *
  * @param params          Loader parameters.
  * @param params.registry WordPress data registry.

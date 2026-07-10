@@ -87,9 +87,7 @@ const AnalyticsAccountCreationErrorNotice: FC<
 		);
 		ctaButton = {
 			label: __( 'Go to Analytics', 'google-site-kit' ),
-			onClick: () => {
-				global.history.back();
-			},
+			onClick: onRetry,
 		};
 	} else {
 		description = createInterpolateElement(

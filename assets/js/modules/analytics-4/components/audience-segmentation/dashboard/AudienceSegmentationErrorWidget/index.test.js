@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useIntersection as mockUseIntersection } from 'react-use';
+import { intersectionObserver } from '@shopify/jest-dom-mocks';
 
 /**
  * Internal dependencies
@@ -43,11 +43,6 @@ import {
 import { getViewportWidth, setViewportWidth } from '@tests/js/viewport-utils';
 import AudienceSegmentationErrorWidget from '.';
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
-} ) );
-
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
@@ -56,10 +51,7 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 	let originalViewportWidth;
 
 	beforeEach( () => {
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: false,
-			intersectionRatio: 0,
-		} ) );
+		intersectionObserver.mock();
 
 		registry = createTestRegistry();
 		provideModules( registry, [
@@ -78,6 +70,7 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 	} );
 
 	afterEach( () => {
+		intersectionObserver.restore();
 		mockTrackEvent.mockClear();
 		setViewportWidth( originalViewportWidth );
 	} );
@@ -87,12 +80,7 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 	)( AudienceSegmentationErrorWidget );
 
 	describe( 'default error state', () => {
-		let container,
-			getByText,
-			getByRole,
-			queryByText,
-			rerender,
-			waitForRegistry;
+		let container, getByText, getByRole, queryByText, waitForRegistry;
 
 		beforeEach( async () => {
 			await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
@@ -129,7 +117,6 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 				getByText,
 				getByRole,
 				queryByText,
-				rerender,
 				waitForRegistry,
 			} = render( <WidgetWithComponentProps errors={ errors } />, {
 				registry,
@@ -158,17 +145,15 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 		} );
 
 		it( 'should track an event when the widget is viewed', () => {
-			const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
-
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			// Simulate the CTA becoming visible.
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} ) );
-
-			rerender( <WidgetWithComponentProps errors={ errors } /> );
+			act( () => {
+				intersectionObserver.simulate( {
+					isIntersecting: true,
+					intersectionRatio: 1,
+				} );
+			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				'mainDashboard_audiences-all-tiles',
@@ -192,12 +177,7 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 	} );
 
 	describe( 'insufficient permissions error state', () => {
-		let container,
-			getByText,
-			getByRole,
-			queryByText,
-			rerender,
-			waitForRegistry;
+		let container, getByText, getByRole, queryByText, waitForRegistry;
 
 		beforeEach( async () => {
 			const [ accountID, propertyID, measurementID, webDataStreamID ] = [
@@ -237,7 +217,6 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 				getByText,
 				getByRole,
 				queryByText,
-				rerender,
 				waitForRegistry,
 			} = render( <WidgetWithComponentProps errors={ errors } />, {
 				registry,
@@ -272,17 +251,15 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 		} );
 
 		it( 'should track an event when the widget is viewed', () => {
-			const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
-
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			// Simulate the CTA becoming visible.
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} ) );
-
-			rerender( <WidgetWithComponentProps errors={ errors } /> );
+			act( () => {
+				intersectionObserver.simulate( {
+					isIntersecting: true,
+					intersectionRatio: 1,
+				} );
+			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				'mainDashboard_audiences-all-tiles',

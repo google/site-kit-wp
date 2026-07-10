@@ -36,6 +36,8 @@ interface PopperWrapperProps {
 	autoDismissMs?: number;
 	resetKey?: number | string;
 	className?: string;
+	arrow?: boolean;
+	positionFixed?: boolean;
 }
 
 // Set the anchor element after mount so the popper opens right away.
@@ -43,6 +45,8 @@ const PopperWrapper: FC< PopperWrapperProps > = ( {
 	autoDismissMs,
 	resetKey,
 	className,
+	arrow,
+	positionFixed,
 } ) => {
 	const anchorRef = useRef< HTMLButtonElement | null >( null );
 	const [ anchorElement, setAnchorElement ] =
@@ -64,6 +68,8 @@ const PopperWrapper: FC< PopperWrapperProps > = ( {
 				autoDismissMs={ autoDismissMs }
 				resetKey={ resetKey }
 				className={ className }
+				arrow={ arrow }
+				positionFixed={ positionFixed }
 			>
 				<button type="button">Inside</button>
 			</Popper>
@@ -123,6 +129,48 @@ describe( 'Popper', () => {
 		expect(
 			queryByRole( 'button', { name: 'Inside' } )
 		).not.toBeInTheDocument();
+	} );
+
+	it( 'does not render an arrow by default', async () => {
+		const { container, findByRole } = render( <PopperWrapper /> );
+
+		await findByRole( 'button', { name: 'Inside' } );
+
+		expect(
+			container.querySelector( '.googlesitekit-popper__arrow' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders an arrow when the `arrow` prop is set', async () => {
+		const { container, findByRole } = render( <PopperWrapper arrow /> );
+
+		await findByRole( 'button', { name: 'Inside' } );
+
+		expect(
+			container.querySelector( '.googlesitekit-popper__arrow' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'positions the popper root absolutely by default', async () => {
+		const { container, findByRole } = render( <PopperWrapper /> );
+
+		await findByRole( 'button', { name: 'Inside' } );
+
+		expect(
+			container.querySelector( '.googlesitekit-popper-root' )
+		).toHaveStyle( { position: 'absolute' } );
+	} );
+
+	it( 'positions the popper root as fixed when `positionFixed` is set', async () => {
+		const { container, findByRole } = render(
+			<PopperWrapper positionFixed />
+		);
+
+		await findByRole( 'button', { name: 'Inside' } );
+
+		expect(
+			container.querySelector( '.googlesitekit-popper-root' )
+		).toHaveStyle( { position: 'fixed' } );
 	} );
 
 	it( 'renders content inline so it shares a parent with the anchor', async () => {

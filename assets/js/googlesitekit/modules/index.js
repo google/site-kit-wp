@@ -84,6 +84,7 @@ export function createModules( { dispatch } ) {
 		 * @param {WPComponent} [settings.SettingsEditComponent]          Optional. React component to render the settings edit panel. Default none.
 		 * @param {WPComponent} [settings.SettingsViewComponent]          Optional. React component to render the settings view panel. Default none.
 		 * @param {WPComponent} [settings.SetupComponent]                 Optional. React component to render the setup panel. Default none.
+		 * @param {WPComponent} [settings.SetupLayout]                    Optional. React component to render the module setup screen layout. Default none.
 		 * @param {WPComponent} [settings.DashboardMainEffectComponent]   Optional. React component to render the effects on main dashboard. Default none.
 		 * @param {WPComponent} [settings.DashboardEntityEffectComponent] Optional. React component to render the effects on entity dashboard. Default none.
 		 * @return {Promise} The dispatched action.

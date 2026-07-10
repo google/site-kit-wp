@@ -72,7 +72,7 @@ const REPORT = [
 /**
  * Reads the query args from a report request URL.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param requestURL Report request URL.
  * @return The request's URL search params.

@@ -27,11 +27,14 @@ import { __ } from '@wordpress/i18n';
  */
 import {
 	ChangeMetricsLink,
+	KeyMetricsBackNotice,
 	KeyMetricsSetupCTAWidget,
 } from '@/js/components/KeyMetrics';
 import AddMetricCTATile from '@/js/components/KeyMetrics/AddMetricCTATile';
+import { KEY_METRICS_BACK_NOTICE_SLUG } from '@/js/components/KeyMetrics/constants';
 import KeyMetricsNewBadge from '@/js/components/KeyMetrics/KeyMetricsNewBadge';
 import MetricsWidgetSubtitle from '@/js/components/KeyMetrics/MetricsWidgetSubtitle';
+import { isFeatureEnabled } from '@/js/features';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
@@ -318,6 +321,28 @@ export function registerDefaults( widgetsAPI ) {
 		},
 		CONTEXT_ENTITY_DASHBOARD_MONETIZATION
 	);
+
+	// Notice re-informing users that the Key Metrics widget area, which they had
+	// previously hidden, is now shown by default. Only registered under the
+	// `setupFlowRefresh` flag, and renders above the metric tiles.
+	if ( isFeatureEnabled( 'setupFlowRefresh' ) ) {
+		widgetsAPI.registerWidget(
+			'keyMetricsBackNotice',
+			{
+				Component: KeyMetricsBackNotice,
+				width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
+				priority: 0,
+				wrapWidget: false,
+				isActive: ( select ) =>
+					select( CORE_USER ).getRawKeyMetricsWidgetHidden() ===
+						true &&
+					select( CORE_USER ).isItemDismissed(
+						KEY_METRICS_BACK_NOTICE_SLUG
+					) === false,
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+	}
 
 	widgetsAPI.registerWidget(
 		'keyMetricsSetupCTA',

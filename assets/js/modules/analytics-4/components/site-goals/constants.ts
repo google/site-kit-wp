@@ -90,6 +90,13 @@ export const SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT = {
 	[ GOAL_TYPES.LEAD ]: [],
 };
 
+export const SITE_GOALS_SURVEY_TRIGGER_NON_INTERACTED =
+	'view_site_goals_non_interacted';
+export const SITE_GOALS_SURVEY_TRIGGER_NO_BREAKDOWN =
+	'view_site_goals_no_breakdown';
+export const SITE_GOALS_SURVEY_TRIGGER_BREAKDOWN_ENABLED =
+	'view_site_goals_breakdown_enabled';
+
 export const SITE_GOALS_VOTE_ID_WIDGET_ONLINE_STORE =
 	'site_goals_widget_online_store';
 export const SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION =
