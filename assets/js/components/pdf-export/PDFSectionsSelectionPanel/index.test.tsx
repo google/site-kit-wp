@@ -23,6 +23,7 @@ import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/consta
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
@@ -151,6 +152,17 @@ describe( 'PDFSectionsSelectionPanel', () => {
 
 		openPanel();
 
+		// The `getModules` resolver finishes after the first render and
+		// re-renders the panel. Wait for it inside `act`, so the panel
+		// doesn't re-render after the test has ended.
+		await waitFor( () => {
+			expect(
+				registry
+					.select( CORE_MODULES )
+					.hasFinishedResolution( 'getModules', [] )
+			).toBe( true );
+		} );
+
 		await findByRole( 'checkbox', { name: /^Traffic$/ } );
 
 		expect(
@@ -203,6 +215,17 @@ describe( 'PDFSectionsSelectionPanel', () => {
 
 		openPanel();
 
+		// The `getModules` resolver finishes after the first render and
+		// re-renders the panel. Wait for it inside `act`, so the panel
+		// doesn't re-render after the test has ended.
+		await waitFor( () => {
+			expect(
+				registry
+					.select( CORE_MODULES )
+					.hasFinishedResolution( 'getModules', [] )
+			).toBe( true );
+		} );
+
 		// Wait for the module-less Traffic section. Its presence proves the
 		// list has loaded before the test checks that the Analytics section
 		// is absent.
@@ -224,6 +247,17 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		} );
 
 		openPanel();
+
+		// The `getModules` resolver finishes after the first render and
+		// re-renders the panel. Wait for it inside `act`, so the panel
+		// doesn't re-render after the test has ended.
+		await waitFor( () => {
+			expect(
+				registry
+					.select( CORE_MODULES )
+					.hasFinishedResolution( 'getModules', [] )
+			).toBe( true );
+		} );
 
 		const analyticsSection = ( await findByRole( 'checkbox', {
 			name: /^Analytics$/,

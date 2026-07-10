@@ -78,7 +78,7 @@ export function isActivePDFWidget(
 
 	// `isModuleConnected` returns `undefined` while modules load and `null`
 	// for an unknown module, so only `true` counts as connected.
-	return normalizeWidgetModules( widget.modules ).every(
+	return normalizeWidgetModules( widget.modules ?? [] ).every(
 		( slug ) => select( CORE_MODULES ).isModuleConnected( slug ) === true
 	);
 }

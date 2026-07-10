@@ -737,12 +737,9 @@ describe( 'PDFExportOrchestrator', () => {
 		const analyticsGetData: jest.Mock = jest.fn( () =>
 			Promise.resolve( { data: { totalUsers: 100 } } )
 		);
-		registerPDFWidget(
-			'trafficArea',
-			'analyticsWidget',
-			analyticsGetData,
-			[ MODULE_SLUG_ANALYTICS_4 ]
-		);
+		registerPDFWidget( 'trafficArea', 'analyticsWidget', analyticsGetData, [
+			MODULE_SLUG_ANALYTICS_4,
+		] );
 		registry.dispatch( CORE_PDF ).setSelection( {
 			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
 			widgetSlugs: [ 'analyticsWidget' ],
