@@ -38,7 +38,10 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
-import { PDFSection } from '@/js/components/pdf-export/constants';
+import {
+	ORDERED_MAIN_DASHBOARD_CONTEXTS,
+	PDFSection,
+} from '@/js/components/pdf-export/constants';
 import { isActivePDFWidget } from '@/js/components/pdf-export/pdf-widget-eligibility';
 import { SelectionPanelContent } from '@/js/components/SelectionPanel';
 import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
@@ -46,28 +49,11 @@ import Typography from '@/js/components/Typography';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
-import {
-	CONTEXT_MAIN_DASHBOARD_CONTENT,
-	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
-	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
-	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
-	CONTEXT_MAIN_DASHBOARD_SPEED,
-	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
-} from '@/js/googlesitekit/widgets/default-contexts';
 import type { Widget, WidgetArea } from '@/js/googlesitekit/widgets/types';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import Footer from './Footer';
 import Header from './Header';
 import PDFSectionCheckboxes from './PDFSectionCheckboxes';
-
-const MAIN_DASHBOARD_CONTEXTS = [
-	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
-	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
-	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
-	CONTEXT_MAIN_DASHBOARD_CONTENT,
-	CONTEXT_MAIN_DASHBOARD_SPEED,
-	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
-];
 
 interface PanelContentProps {
 	closePanel: () => void;
@@ -90,7 +76,7 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 
 			const sections: PDFSection[] = [];
 
-			MAIN_DASHBOARD_CONTEXTS.forEach( ( contextSlug ) => {
+			ORDERED_MAIN_DASHBOARD_CONTEXTS.forEach( ( contextSlug ) => {
 				const areas: WidgetArea[] =
 					select( CORE_WIDGETS ).getWidgetAreas( contextSlug );
 
@@ -151,12 +137,17 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 			widgetSlugs: string[],
 			widgetContextMap: Record< string, string >
 		) => {
-			const contextSlugs = Array.from(
-				new Set(
-					widgetSlugs
-						.map( ( slug ) => widgetContextMap[ slug ] )
-						.filter( Boolean )
-				)
+			const selectedContexts = new Set(
+				widgetSlugs
+					.map( ( slug ) => widgetContextMap[ slug ] )
+					.filter( Boolean )
+			);
+
+			// Store the contexts in the dashboard's order, not the selection
+			// order, so the report's section order stays fixed across
+			// re-exports and toggles.
+			const contextSlugs = ORDERED_MAIN_DASHBOARD_CONTEXTS.filter(
+				( contextSlug ) => selectedContexts.has( contextSlug )
 			);
 
 			setSelection( { contextSlugs, widgetSlugs } );
