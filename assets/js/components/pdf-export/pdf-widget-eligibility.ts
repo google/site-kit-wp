@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
+import type { Select } from 'googlesitekit-data';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import type { Widget, WidgetPDFConfig } from '@/js/googlesitekit/widgets/types';
+import { normalizeWidgetModules } from '@/js/googlesitekit/widgets/util/widget-modules';
 
 /**
  * A registry widget that declares a PDF export configuration.
@@ -43,25 +46,39 @@ function hasPDFConfig( widget: Widget ): widget is WidgetWithPDF {
 /**
  * Determines whether a widget should be included in the PDF export.
  *
- * A widget is eligible when it declares a `pdf` config and either omits
- * `pdf.isActive` or its `pdf.isActive` predicate returns `true` for the current
- * store state. This is the single source of truth shared by the sidesheet
- * (which offers selectable sections) and the orchestrator (which builds the
- * document), so the two cannot drift on which widgets are PDF-eligible.
+ * A widget is eligible when it declares a `pdf` config, every module it
+ * needs is connected, and its optional `pdf.isActive` returns `true`.
+ * The sections selection panel and the orchestrator both use this
+ * function, so the panel and the report always show the same widgets.
+ *
+ * On the Site Kit dashboard, the `whenActive` HOC keeps a disconnected
+ * module's widgets off the screen. The PDF export skips that HOC, so this
+ * function checks the modules instead. Without that check, `getData` would
+ * run for a disconnected module, and the API would reject the request with
+ * the "Module must be active to request data" error.
  *
  * @since 1.183.0
+ * @since n.e.x.t Require every module in `widget.modules` to be connected.
  *
  * @param widget Registry widget.
- * @param select Registry `select` function, forwarded to `pdf.isActive`.
+ * @param select Registry `select` function.
  * @return `true` when the widget should appear in the PDF.
  */
 export function isActivePDFWidget(
 	widget: Widget,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The registry `select` is loosely typed, so `isActive` predicates can read store selectors without casting.
-	select: ( storeName: string ) => any
+	select: Select
 ): widget is WidgetWithPDF {
-	return (
-		hasPDFConfig( widget ) &&
-		( ! widget.pdf.isActive || widget.pdf.isActive( select ) )
+	if ( ! hasPDFConfig( widget ) ) {
+		return false;
+	}
+
+	if ( widget.pdf.isActive && ! widget.pdf.isActive( select ) ) {
+		return false;
+	}
+
+	// `isModuleConnected` returns `undefined` while modules load and `null`
+	// for an unknown module, so only `true` counts as connected.
+	return normalizeWidgetModules( widget.modules ).every(
+		( slug ) => select( CORE_MODULES ).isModuleConnected( slug ) === true
 	);
 }
