@@ -31,6 +31,7 @@ import { useCallback, useEffect, useReducer, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import {
+	Registry,
 	Select,
 	useDispatch,
 	useRegistry,
@@ -39,6 +40,7 @@ import {
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
 	PDFReportDates,
@@ -48,6 +50,7 @@ import {
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { getPreviousDate, trackEvent } from '@/js/util';
+import { ORDERED_MAIN_DASHBOARD_CONTEXTS } from './constants';
 import { registerPDFFonts } from './pdf-fonts-react';
 import { getPDFFilename, triggerDownload } from './pdf-utils';
 import { WidgetWithPDF, isActivePDFWidget } from './pdf-widget-eligibility';
@@ -182,7 +185,10 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 	onComplete,
 } ) => {
 	const [ , dispatch ] = useReducer( reducer, initialState );
-	const registry = useRegistry();
+	// `@wordpress/data` types `useRegistry()` as `Function`, which does not
+	// overlap with Site Kit's `Registry` type, so TypeScript needs the
+	// `unknown` step between the two.
+	const registry = useRegistry() as unknown as Registry;
 	const { setStatus, setProgress, setBlob, clearExport, clearCancelRequest } =
 		useDispatch( CORE_PDF );
 
@@ -359,10 +365,17 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				// PDF-aware selector). `selectedContextSlugs`,
 				// `selectedWidgetSlugs`, `dates` and `viewableModules` are
 				// snapshotted once above. Nothing below re-reads reactive state.
-				const { select } = registry as unknown as {
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The registry `select` is loosely typed, so `isActive` predicates can read store selectors without casting.
-					select: ( storeName: string ) => any;
-				};
+				const { resolveSelect } = registry;
+				// `Registry` types `select` as `Function`. Narrow it to
+				// `Select` so `isActivePDFWidget` can take it.
+				const select = registry.select as Select;
+
+				// Wait for modules to load, or `isModuleConnected` returns
+				// `undefined` and `isActivePDFWidget` drops every widget
+				// that needs a module from the report.
+				await resolveSelect( CORE_MODULES ).getModules();
+				throwIfAborted( signal );
+
 				const widgetsSelect = select( CORE_WIDGETS ) as {
 					getWidgetAreas: ( contextSlug: string ) => WidgetArea[];
 					getWidgets: (
@@ -384,7 +397,15 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				// user kept checked, not every widget in the area.
 				const selectedWidgetSlugSet = new Set( selectedWidgetSlugs );
 
-				selectedContextSlugs.forEach( ( contextSlug: string ) => {
+				// Reorder the selected contexts into the dashboard's order, so
+				// the report's sections follow that order, not the stored order.
+				const selectedContextSlugSet = new Set( selectedContextSlugs );
+				const orderedSelectedContextSlugs =
+					ORDERED_MAIN_DASHBOARD_CONTEXTS.filter( ( contextSlug ) =>
+						selectedContextSlugSet.has( contextSlug )
+					);
+
+				orderedSelectedContextSlugs.forEach( ( contextSlug ) => {
 					const contextAreas: WidgetArea[] =
 						widgetsSelect.getWidgetAreas( contextSlug ) || [];
 
