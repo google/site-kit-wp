@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { intersectionObserver } from '@shopify/jest-dom-mocks';
+
+/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -47,7 +52,8 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { ALL_CUSTOM_DIMENSIONS } from '@/js/modules/analytics-4/hooks/useBreakdownEnableHandler';
 import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
-import { fireEvent, render, waitFor } from '@tests/js/test-utils';
+import * as tracking from '@/js/util/tracking';
+import { act, fireEvent, render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
@@ -721,6 +727,117 @@ describe( 'BreakdownNoticeArea', () => {
 			);
 
 			expect( container ).toBeEmptyDOMElement();
+		} );
+	} );
+
+	describe( '"view_notification" tracking', () => {
+		let mockTrackEvent: jest.SpiedFunction< typeof tracking.trackEvent >;
+
+		beforeEach( () => {
+			mockTrackEvent = jest
+				.spyOn( tracking, 'trackEvent' )
+				.mockImplementation( () => Promise.resolve() );
+			intersectionObserver.mock();
+		} );
+
+		afterEach( () => {
+			mockTrackEvent.mockRestore();
+			intersectionObserver.restore();
+		} );
+
+		function simulateInView() {
+			act( () => {
+				intersectionObserver.simulate( {
+					isIntersecting: true,
+					intersectionRatio: 1,
+				} );
+			} );
+		}
+
+		it( 'does not track the "New" notice view until it is scrolled into view, and not again once it moves into a loading state', async () => {
+			// No edit scope, so the CTA starts the OAuth redirect rather than
+			// creating dimensions directly, keeping the notice in a loading
+			// state without unmounting it.
+			provideUserAuthentication( registry, { grantedScopes: [] } );
+			seedAvailableCustomDimensions( [] );
+
+			const { getByRole } = render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_WIDGET }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
+				/>,
+				{ registry }
+			);
+
+			// Rendering (mounting) alone must not fire the view event.
+			expect( mockTrackEvent ).not.toHaveBeenCalledWith(
+				expect.stringContaining( '_site-goals-breakdown-notice' ),
+				'view_notification',
+				expect.anything()
+			);
+
+			simulateInView();
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				expect.stringContaining( '_site-goals-breakdown-notice' ),
+				'view_notification',
+				'widget_lead'
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Get breakdown' } ) );
+
+			await waitFor( () => {
+				expect(
+					getByRole( 'button', { name: 'Get breakdown' } )
+				).toBeDisabled();
+			} );
+
+			// The "loading" state reuses the same mounted notice instance (and
+			// its already-disconnected observer), so it must not track a
+			// second "view" once the CTA starts the OAuth flow.
+			const viewNotificationCalls = mockTrackEvent.mock.calls.filter(
+				( [ , action ] ) => action === 'view_notification'
+			);
+			expect( viewNotificationCalls ).toHaveLength( 1 );
+		} );
+
+		it( 'does not track the error notice view until it is scrolled into view', () => {
+			seedAvailableCustomDimensions( [] );
+			provideCustomDimensionError( registry, {
+				customDimension: ALL_CUSTOM_DIMENSIONS[ 0 ],
+				error: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+			} );
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+					[ BREAKDOWN_SCOPE_FORM_KEY ]: GOAL_TYPES.LEAD,
+				} );
+
+			render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_WIDGET }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
+				/>,
+				{ registry }
+			);
+
+			expect( mockTrackEvent ).not.toHaveBeenCalledWith(
+				expect.stringContaining( '_site-goals-breakdown-error-notice' ),
+				'view_notification',
+				expect.anything()
+			);
+
+			simulateInView();
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				expect.stringContaining( '_site-goals-breakdown-error-notice' ),
+				'view_notification',
+				'setup_error'
+			);
 		} );
 	} );
 } );
