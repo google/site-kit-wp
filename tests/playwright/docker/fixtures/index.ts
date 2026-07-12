@@ -177,6 +177,15 @@ function handler( req: IncomingMessage, res: ServerResponse ) {
 
 	const jsonContentType = { 'Content-Type': 'application/json' };
 
+	// Requests to the Site Kit proxy service (e.g. core/site notifications)
+	// are made with plain WP HTTP requests that never carry the fixtures
+	// header, so respond with an empty array to keep them from erroring.
+	if ( host === 'sitekit.withgoogle.com' ) {
+		res.writeHead( 200, jsonContentType );
+		res.end( '[]' );
+		return;
+	}
+
 	const fixturesHeader = req.headers[ 'x-wp-test-fixtures' ];
 	const fixtures = Array.isArray( fixturesHeader )
 		? fixturesHeader[ 0 ]
@@ -232,7 +241,7 @@ function generateSelfSignedCert(): { key: string; cert: string } {
 	const certPath = join( dir, 'cert.pem' );
 
 	execSync(
-		`openssl req -x509 -newkey rsa:2048 -keyout ${ keyPath } -out ${ certPath } -days 365 -nodes -subj "/CN=googleapis.com" -addext "subjectAltName=DNS:*.googleapis.com,DNS:googleapis.com"`,
+		`openssl req -x509 -newkey rsa:2048 -keyout ${ keyPath } -out ${ certPath } -days 365 -nodes -subj "/CN=googleapis.com" -addext "subjectAltName=DNS:*.googleapis.com,DNS:googleapis.com,DNS:sitekit.withgoogle.com"`,
 		{ stdio: 'pipe' }
 	);
 
