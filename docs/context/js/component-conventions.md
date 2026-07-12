@@ -1,5 +1,9 @@
 # Site Kit React Component Conventions
 
+## TypeScript Is Required for New Components
+
+**All new components must be written in TypeScript** (`.tsx`, or `.ts` for non-JSX modules) — see the [TypeScript Components](#typescript-components) section for the patterns to follow. The JavaScript (`.js`/`.jsx`) conventions in this document (function declarations, PropTypes, etc.) apply only when modifying existing legacy JavaScript components; do not create new `.js`/`.jsx` components.
+
 ## Import Structure
 
 All imports must be organized in the following order with comment separators:
@@ -206,7 +210,7 @@ export default Badge;
 
 ## TypeScript Components
 
-Site Kit is progressively migrating to TypeScript. TypeScript components follow similar conventions with type-safe patterns.
+Site Kit is progressively migrating to TypeScript, and **all new components must be written in TypeScript**. TypeScript components follow similar conventions with type-safe patterns.
 
 ### TypeScript Import Structure
 
@@ -341,13 +345,14 @@ When migrating from JavaScript to TypeScript:
 
 ## Key Guidelines
 
-1. **Always include the file header** with the correct license information
-2. **Group imports** in the specified order with comment separators
-3. **Component definition style depends on the file type:**
+1. **Write all new components in TypeScript** (`.tsx`/`.ts`) — the JavaScript patterns below apply only to existing legacy components
+2. **Always include the file header** with the correct license information
+3. **Group imports** in the specified order with comment separators
+4. **Component definition style depends on the file type:**
    - In `.js`/`.jsx` files, use **function declarations** for named components — the `react/function-component-definition` ESLint rule enforces this (`namedComponents: "function-declaration"`).
    - In `.ts`/`.tsx` files, that rule is turned off, so the documented `const Component: FC<Props> = ( ... ) => { ... }` arrow form is preferred (see the TypeScript Components section).
-4. **Type your props for every component:**
+5. **Type your props for every component:**
    - In `.js`/`.jsx` files, **always include PropTypes** for all props, marking required ones appropriately.
    - In `.ts`/`.tsx` files, define a props **interface** instead of PropTypes.
-5. **Use descriptive prop names** that clearly indicate their purpose
-6. **Follow consistent naming conventions** throughout the codebase
+6. **Use descriptive prop names** that clearly indicate their purpose
+7. **Follow consistent naming conventions** throughout the codebase
