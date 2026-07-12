@@ -267,6 +267,19 @@ export class WordPress {
 	}
 
 	/**
+	 * Navigates to the Site Kit settings page.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Promise<Response|null>} A promise that resolves when the page is navigated to.
+	 */
+	visitSettings(): Promise< Response | null > {
+		return test.step( 'Visit Settings', () =>
+			this.visitAdmin( 'admin.php?page=googlesitekit-settings' )
+		);
+	}
+
+	/**
 	 * Navigates to the given path in the admin area.
 	 *
 	 * @since 1.175.0
