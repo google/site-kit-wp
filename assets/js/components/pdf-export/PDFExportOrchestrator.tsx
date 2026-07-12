@@ -48,6 +48,7 @@ import {
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { getPreviousDate, trackEvent } from '@/js/util';
+import { ORDERED_MAIN_DASHBOARD_CONTEXTS } from './constants';
 import { registerPDFFonts } from './pdf-fonts-react';
 import { getPDFFilename, triggerDownload } from './pdf-utils';
 import { WidgetWithPDF, isActivePDFWidget } from './pdf-widget-eligibility';
@@ -384,7 +385,15 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				// user kept checked, not every widget in the area.
 				const selectedWidgetSlugSet = new Set( selectedWidgetSlugs );
 
-				selectedContextSlugs.forEach( ( contextSlug: string ) => {
+				// Reorder the selected contexts into the dashboard's order, so
+				// the report's sections follow that order, not the stored order.
+				const selectedContextSlugSet = new Set( selectedContextSlugs );
+				const orderedSelectedContextSlugs =
+					ORDERED_MAIN_DASHBOARD_CONTEXTS.filter( ( contextSlug ) =>
+						selectedContextSlugSet.has( contextSlug )
+					);
+
+				orderedSelectedContextSlugs.forEach( ( contextSlug ) => {
 					const contextAreas: WidgetArea[] =
 						widgetsSelect.getWidgetAreas( contextSlug ) || [];
 

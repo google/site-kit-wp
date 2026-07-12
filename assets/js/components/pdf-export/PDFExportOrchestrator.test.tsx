@@ -31,6 +31,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
+	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
 import * as tracking from '@/js/util/tracking';
@@ -45,6 +46,7 @@ import {
 import { registerPDFFonts } from './pdf-fonts-react';
 import PDFExportOrchestrator from './PDFExportOrchestrator';
 import { SECTION_ICONS } from './section-icons';
+import { PDFHeaderSection, PDFReportArea } from './types';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -124,6 +126,43 @@ describe( 'PDFExportOrchestrator', () => {
 		dispatch.registerWidget( widgetSlug, {
 			Component: NullComponent,
 			pdf: { Component: NullComponent, getData },
+		} );
+		dispatch.assignWidget( widgetSlug, areaSlug );
+	}
+
+	/**
+	 * Registers a PDF widget and its area in a dashboard context.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  contextSlug The dashboard context the area belongs to.
+	 * @param  areaSlug    The widget area to register in that context.
+	 * @param  widgetSlug  The widget to register in that area.
+	 * @param  pdfTitle    The area's PDF title, shown as the report section heading.
+	 * @return {void}
+	 */
+	function registerPDFWidgetInContext(
+		contextSlug: string,
+		areaSlug: string,
+		widgetSlug: string,
+		pdfTitle: string
+	) {
+		const dispatch = registry.dispatch( CORE_WIDGETS );
+		dispatch.registerWidgetArea( areaSlug, {
+			title: 'Area',
+			pdfTitle,
+			style: 'boxes',
+			priority: 1,
+		} );
+		dispatch.assignWidgetArea( areaSlug, contextSlug );
+		dispatch.registerWidget( widgetSlug, {
+			Component: NullComponent,
+			pdf: {
+				Component: NullComponent,
+				getData: jest.fn( () =>
+					Promise.resolve( { data: { totalUsers: 100 } } )
+				),
+			},
 		} );
 		dispatch.assignWidget( widgetSlug, areaSlug );
 	}
@@ -424,6 +463,56 @@ describe( 'PDFExportOrchestrator', () => {
 		const { props } = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
 		expect( props.sections ).toHaveLength( 1 );
 		expect( props.sections[ 0 ].slug ).toBe( 'sharedArea' );
+	} );
+
+	it( "derives the sections in the dashboard's order, not the stored order", async () => {
+		registerPDFWidgetInContext(
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+			'trafficArea',
+			'trafficWidget',
+			'Traffic'
+		);
+		registerPDFWidgetInContext(
+			CONTEXT_MAIN_DASHBOARD_CONTENT,
+			'contentArea',
+			'contentWidget',
+			'Content'
+		);
+		registerPDFWidgetInContext(
+			CONTEXT_MAIN_DASHBOARD_SPEED,
+			'speedArea',
+			'speedWidget',
+			'Speed'
+		);
+
+		// Store the selection in reverse dashboard order. The report must
+		// still render Traffic, then Content, then Speed.
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [
+				CONTEXT_MAIN_DASHBOARD_SPEED,
+				CONTEXT_MAIN_DASHBOARD_CONTENT,
+				CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+			],
+			widgetSlugs: [ 'speedWidget', 'contentWidget', 'trafficWidget' ],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		const { props } = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
+
+		// Sections and areas follow the dashboard's order, not the stored
+		// order.
+		const expectedAreaOrder = [ 'trafficArea', 'contentArea', 'speedArea' ];
+		expect(
+			props.sections.map( ( section: PDFHeaderSection ) => section.slug )
+		).toEqual( expectedAreaOrder );
+		expect(
+			props.areas.map( ( area: PDFReportArea ) => area.areaSlug )
+		).toEqual( expectedAreaOrder );
 	} );
 
 	it( 'should register the PDF fonts before rendering the document', async () => {
