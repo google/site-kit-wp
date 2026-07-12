@@ -68,7 +68,7 @@ import {
 	ALL_CUSTOM_DIMENSIONS,
 	useBreakdownEnableHandler,
 } from '@/js/modules/analytics-4/hooks/useBreakdownEnableHandler';
-import { DAY_IN_SECONDS, trackEvent } from '@/js/util';
+import { DAY_IN_SECONDS, trackEvent, trackEventOnce } from '@/js/util';
 import { isInsufficientPermissionsError } from '@/js/util/errors';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 
@@ -326,13 +326,15 @@ function useBreakdownNoticeTracking( {
 			: 'setup_error';
 
 	// `view_notification` should fire only once the notice is actually scrolled
-	// into view, not as soon as it mounts. These are passed as the `onInView`
-	// callback to a `withIntersectionObserver`-wrapped notice, which calls them
-	// at most once per mounted instance, so no extra "already tracked" guard is
-	// needed here (unlike "new" -> "loading", which reuses the same mounted
-	// "New" notice instance and its `onInView`).
+	// into view, not as soon as it mounts, AND only once per page load overall.
+	// The `withIntersectionObserver`-wrapped notice's `onInView` only guards the
+	// "once per *mounted instance*" case — the wrapping widget can legitimately
+	// remount this notice while the page stays open (e.g. its data briefly
+	// re-resolves to a loading/error/null branch and back), which would reset
+	// that per-instance guard. `trackEventOnce` dedupes at the module level, so
+	// it stays correct across any such remount.
 	const handleNewNoticeView = useCallback( () => {
-		trackEvent(
+		trackEventOnce(
 			`${ viewContext }_site-goals-breakdown-notice`,
 			'view_notification',
 			noticeLabel
@@ -340,14 +342,14 @@ function useBreakdownNoticeTracking( {
 	}, [ viewContext, noticeLabel ] );
 
 	const handleSuccessView = useCallback( () => {
-		trackEvent(
+		trackEventOnce(
 			`${ viewContext }_site-goals-breakdown-success-notice`,
 			'view_notification'
 		);
 	}, [ viewContext ] );
 
 	const handleErrorView = useCallback( () => {
-		trackEvent(
+		trackEventOnce(
 			`${ viewContext }_site-goals-breakdown-error-notice`,
 			'view_notification',
 			errorLabel
