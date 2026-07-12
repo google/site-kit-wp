@@ -107,7 +107,7 @@ export const PDF_SCALED_PROPERTIES = new Set< string >( [
  * Use it for a length that a widget sets outside a style object, such as an
  * `Svg` width or height.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param {number} value The length, in Figma frame pixels.
  * @return {number} The length, in page points.
@@ -124,7 +124,7 @@ export function scalePDFValue( value: number ): number {
  * `PDF_SCALE`. A non-numeric value (such as `'100%'`) and every other property
  * keep their values. The scaled styles are passed to `StyleSheet.create`.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param {Object} styles Named styles with sizes from the Figma frame.
  * @return {Object} The named styles with each length scaled to points.

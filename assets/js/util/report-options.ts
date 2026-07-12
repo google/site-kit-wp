@@ -35,7 +35,7 @@ import { stringifyObject } from './stringify';
  * no `metrics`, which `ReportOptions` requires, and AdSense uses a different
  * `orderby`.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  */
 export type ReportRequestOptions = {
 	reportID?: string;
@@ -50,7 +50,7 @@ export type ReportRequestOptions = {
  * one cache entry. Returns the value unchanged when it is not a plain object,
  * so option validation still sees the original input.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param options Report options as the caller passed them.
  * @return Report options without `reportID`.
@@ -72,7 +72,7 @@ export function getCacheableReportOptions(
  * string. So two calls that differ only in `reportID` get the same key, and
  * they share one saved report and one request.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param options Report options as the caller passed them.
  * @return Cache key for the saved report and the running request map.

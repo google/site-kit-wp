@@ -79,13 +79,37 @@ const mockWelcomeTour = getWelcomeTour( {
 
 jest.mock( '@/js/feature-tours/hooks/useWelcomeTour' );
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: () => ( {
-		isIntersecting: true,
-		intersectionRatio: 1,
-	} ),
-} ) );
+/**
+ * The modal graphic is wrapped in `withIntersectionObserver`, which observes
+ * its element with the native `IntersectionObserver`. jsdom has none, so use a
+ * stub that reports the element as in view the moment it observes it. This
+ * makes the modal send its `view_notice` event on render, as these tests
+ * expect.
+ */
+class InViewIntersectionObserver {
+	callback: IntersectionObserverCallback;
+
+	constructor( callback: IntersectionObserverCallback ) {
+		this.callback = callback;
+	}
+
+	observe( element: Element ) {
+		this.callback(
+			[
+				{
+					isIntersecting: true,
+					intersectionRatio: 1,
+					target: element,
+				} as IntersectionObserverEntry,
+			],
+			this as unknown as IntersectionObserver
+		);
+	}
+
+	unobserve() {}
+
+	disconnect() {}
+}
 
 describe( 'WelcomeModal', () => {
 	let registry: WPDataRegistry;
@@ -183,7 +207,12 @@ describe( 'WelcomeModal', () => {
 			] );
 	}
 
+	const originalIntersectionObserver = global.IntersectionObserver;
+
 	beforeEach( () => {
+		global.IntersectionObserver =
+			InViewIntersectionObserver as unknown as typeof IntersectionObserver;
+
 		registry = createTestRegistry();
 
 		fetchMock.post( dismissItemEndpoint, {
@@ -201,6 +230,7 @@ describe( 'WelcomeModal', () => {
 	} );
 
 	afterEach( () => {
+		global.IntersectionObserver = originalIntersectionObserver;
 		mockTrackEvent.mockClear();
 	} );
 

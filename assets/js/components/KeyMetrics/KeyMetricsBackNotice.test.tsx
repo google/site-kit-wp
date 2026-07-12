@@ -19,8 +19,7 @@
 /**
  * External dependencies
  */
-import { mocked } from 'jest-mock';
-import { useIntersection as mockUseIntersection } from 'react-use';
+import { intersectionObserver } from '@shopify/jest-dom-mocks';
 
 /**
  * WordPress dependencies
@@ -36,6 +35,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import * as tracking from '@/js/util/tracking';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	render,
@@ -46,11 +46,6 @@ import {
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
 import KeyMetricsBackNotice from './KeyMetricsBackNotice';
-
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
-} ) );
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -67,12 +62,15 @@ describe( 'KeyMetricsBackNotice', () => {
 	);
 
 	beforeEach( () => {
+		intersectionObserver.mock();
+
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	afterEach( () => {
-		jest.resetAllMocks();
+		intersectionObserver.restore();
+		mockTrackEvent.mockClear();
 	} );
 
 	it( 'should render the notice with the expected copy and buttons', () => {
@@ -156,30 +154,20 @@ describe( 'KeyMetricsBackNotice', () => {
 	} );
 
 	it( 'should track the view_notice event when the notice is viewed', async () => {
-		mocked( mockUseIntersection ).mockImplementation(
-			() =>
-				( {
-					isIntersecting: false,
-					intersectionRatio: 0,
-				} as IntersectionObserverEntry )
-		);
-
-		const { rerender } = render(
-			<KeyMetricsBackNotice Widget={ Widget } />,
-			{ registry, viewContext }
-		);
+		render( <KeyMetricsBackNotice Widget={ Widget } />, {
+			registry,
+			viewContext,
+		} );
 
 		expect( mockTrackEvent ).not.toHaveBeenCalled();
 
-		mocked( mockUseIntersection ).mockImplementation(
-			() =>
-				( {
-					isIntersecting: true,
-					intersectionRatio: 1,
-				} as IntersectionObserverEntry )
-		);
-
-		rerender( <KeyMetricsBackNotice Widget={ Widget } /> );
+		// Simulate the notice coming into view.
+		act( () => {
+			intersectionObserver.simulate( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} );
+		} );
 
 		await waitFor( () => {
 			expect( mockTrackEvent ).toHaveBeenCalledWith(

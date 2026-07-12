@@ -36,7 +36,7 @@ import PDFChip from './PDFChip';
 /**
  * Renders the chip and returns the test renderer's JSON tree.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param props Props for the chip.
  * @return The rendered tree.

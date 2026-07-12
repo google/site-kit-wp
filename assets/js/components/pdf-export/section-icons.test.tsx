@@ -38,7 +38,7 @@ import { SECTION_ICONS } from './section-icons';
 /**
  * Renders a PDF element to a JSON string for content and style assertions.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param element PDF element to render.
  * @return JSON string of the rendered tree.
