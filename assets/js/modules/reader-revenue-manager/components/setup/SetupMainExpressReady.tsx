@@ -38,11 +38,7 @@ export default function SetupMainExpressReady( {
 }: SetupMainExpressReadyProps ) {
 	const [ expressSetup ] = useQueryArg( 'expressSetup' );
 
-	if ( ! isFeatureEnabled( 'rrmExpressSetup' ) ) {
-		return <SetupMain finishSetup={ finishSetup } />;
-	}
-
-	if ( expressSetup === 'true' ) {
+	if ( isFeatureEnabled( 'rrmExpressSetup' ) && expressSetup === 'true' ) {
 		return <SetupMainExpress />;
 	}
 
