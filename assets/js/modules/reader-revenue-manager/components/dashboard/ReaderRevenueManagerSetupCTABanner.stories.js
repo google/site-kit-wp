@@ -49,6 +49,7 @@ ExpressSetup.storyName = 'Express Setup';
 ExpressSetup.parameters = {
 	features: [ 'rrmExpressSetup' ],
 };
+ExpressSetup.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Components/Dashboard/ReaderRevenueManagerSetupCTABanner',
