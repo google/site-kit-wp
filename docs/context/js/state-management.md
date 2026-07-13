@@ -375,8 +375,8 @@ actions.fetchGetSettings = function* ( ...args ) {
     // Start fetch (sets loading state)
     yield { type: 'START_FETCH_GET_SETTINGS', payload: { params } };
     
-    // Clear any previous errors
-    yield clearError( 'getSettings', args );
+    // Clear any previous selector errors
+    yield clearSelectorError( 'getSettings', args );
     
     try {
         // Call the control to make API request
@@ -388,8 +388,8 @@ actions.fetchGetSettings = function* ( ...args ) {
         // Finish fetch (clear loading state)
         yield { type: 'FINISH_FETCH_GET_SETTINGS', payload: { params } };
     } catch ( error ) {
-        // Handle error
-        yield receiveError( error, 'getSettings', args );
+        // Handle error (selectors by default; use setErrorForAction for action errors)
+        yield setErrorForSelector( error, 'getSettings', args );
         yield { type: 'CATCH_FETCH_GET_SETTINGS', payload: { params } };
     }
     
@@ -562,16 +562,25 @@ const store = combineStores(
 
 **Actions:**
 ```javascript
-const { receiveError, clearError, clearErrors } = useDispatch( STORE_NAME );
+const { setErrorForSelector, setErrorForAction, clearSelectorError, clearActionError, clearSelectorErrors, clearActionErrors } = useDispatch( STORE_NAME );
 
-// Store an error for a specific selector/action
-receiveError( error, 'getSettings', [] );
+// Store an error for a specific selector
+setErrorForSelector( error, 'getSettings', [] );
 
-// Clear specific error
-clearError( 'getSettings', [] );
+// Store an error for a specific action
+setErrorForAction( error, 'saveSettings', [ values ] );
 
-// Clear all errors for a base name
-clearErrors( 'getSettings' );
+// Clear selector error
+clearSelectorError( 'getSettings', [] );
+
+// Clear action error
+clearActionError( 'saveSettings', [ values ] );
+
+// Clear all selector errors for a base name
+clearSelectorErrors( 'getSettings' );
+
+// Clear all action errors for a base name
+clearActionErrors( 'saveSettings' );
 ```
 
 **Selectors:**
@@ -596,9 +605,9 @@ const hasErrors = useSelect( ( select ) =>
     select( STORE_NAME ).hasErrors()
 );
 
-// Get metadata for an error (baseName and args)
-const errorMeta = useSelect( ( select ) =>
-    select( STORE_NAME ).getMetaDataForError( error )
+// Get metadata for a selector error (baseName and args)
+const selectorErrorMeta = useSelect( ( select ) =>
+    select( STORE_NAME ).getMetaDataForSelectorError( error )
 );
 
 // Get selector data for error retry functionality
@@ -898,7 +907,7 @@ function AnalyticsSettingsComponent() {
         select( MODULES_ANALYTICS_4 ).getErrorForAction( 'saveSettings', [] )
     );
     
-    const { clearError } = useDispatch( MODULES_ANALYTICS_4 );
+    const { clearSelectorError } = useDispatch( MODULES_ANALYTICS_4 );
     
     // Notifications store selectors
     const notifications = useSelect( ( select ) =>
@@ -920,7 +929,7 @@ function AnalyticsSettingsComponent() {
             {saveError && (
                 <div>
                     Error: {saveError.message}
-                    <button onClick={() => clearError( 'saveSettings', [] )}>
+                    <button onClick={() => clearSelectorError( 'saveSettings', [] )}>
                         Dismiss
                     </button>
                 </div>
@@ -1039,13 +1048,13 @@ function ComponentWithErrorHandling() {
         select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [ args ] )
     );
     
-    const { clearError } = useDispatch( MODULES_ANALYTICS_4 );
+    const { clearSelectorError } = useDispatch( MODULES_ANALYTICS_4 );
     
     if ( error ) {
         return (
             <div>
                 Error: {error.message}
-                <button onClick={() => clearError( 'getReport', [ args ] )}>
+                <button onClick={() => clearSelectorError( 'getReport', [ args ] )}>
                     Retry
                 </button>
             </div>
