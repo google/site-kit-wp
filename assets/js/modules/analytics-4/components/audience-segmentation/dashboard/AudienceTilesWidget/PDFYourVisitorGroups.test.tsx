@@ -1,5 +1,5 @@
 /**
- * AudienceTilesWidget PDF component tests.
+ * PDFYourVisitorGroups tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -25,7 +25,7 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
-import AudienceTilesWidgetPDF from './AudienceTilesWidgetPDF';
+import PDFYourVisitorGroups from './PDFYourVisitorGroups';
 
 /**
  * Builds a loaded audience card fixture with the given name.
@@ -33,7 +33,7 @@ import AudienceTilesWidgetPDF from './AudienceTilesWidgetPDF';
  * @since n.e.x.t
  *
  * @param name The audience name, used for the resource name and display name.
- * @return A fully-loaded audience card object.
+ * @return A fully loaded audience card object.
  */
 function buildAudience( name: string ) {
 	return {
@@ -55,18 +55,16 @@ function buildAudience( name: string ) {
 }
 
 /**
- * Renders `AudienceTilesWidgetPDF` with the given props to its JSON tree.
+ * Renders `PDFYourVisitorGroups` with the given props to its JSON tree.
  *
  * @since n.e.x.t
  *
  * @param props The widget props.
  * @return The rendered tree, or `null` when the widget renders nothing.
  */
-function renderWidget(
-	props: ComponentProps< typeof AudienceTilesWidgetPDF >
-) {
+function renderWidget( props: ComponentProps< typeof PDFYourVisitorGroups > ) {
 	return TestRenderer.create(
-		<AudienceTilesWidgetPDF { ...props } />
+		<PDFYourVisitorGroups { ...props } />
 	).toJSON();
 }
 

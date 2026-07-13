@@ -35,7 +35,7 @@ import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
 import { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
 import type { AudienceTilesPDFData } from './getPDFData';
-import PDFAudienceTile from './PDFAudienceTile';
+import PDFYourVisitorGroupsTile from './PDFYourVisitorGroupsTile';
 
 const styles = createPDFStyles( {
 	heading: {
@@ -58,7 +58,7 @@ const styles = createPDFStyles( {
 	},
 } );
 
-const AudienceTilesWidgetPDF: FC< PDFWidgetComponentProps > = ( { data } ) => {
+const PDFYourVisitorGroups: FC< PDFWidgetComponentProps > = ( { data } ) => {
 	const audienceData = data as AudienceTilesPDFData[ 'data' ] | undefined;
 	const audiences = audienceData?.audiences || [];
 
@@ -77,7 +77,7 @@ const AudienceTilesWidgetPDF: FC< PDFWidgetComponentProps > = ( { data } ) => {
 					<Fragment key={ audience.audienceResourceName }>
 						{ index > 0 && <View style={ styles.cardGap } /> }
 						<View style={ styles.card }>
-							<PDFAudienceTile
+							<PDFYourVisitorGroupsTile
 								audienceName={ audience.audienceName }
 								metrics={ audience.metrics }
 								topCities={ audience.topCities }
@@ -91,4 +91,4 @@ const AudienceTilesWidgetPDF: FC< PDFWidgetComponentProps > = ( { data } ) => {
 	);
 };
 
-export default AudienceTilesWidgetPDF;
+export default PDFYourVisitorGroups;

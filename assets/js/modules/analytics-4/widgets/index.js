@@ -121,10 +121,10 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 /**
  * Lazy-loaded PDF component for the Your visitor groups widget.
  */
-const AudienceTilesWidgetPDF = lazyWithPreload( () =>
+const PDFYourVisitorGroups = lazyWithPreload( () =>
 	import(
 		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
-		'@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTilesWidgetPDF'
+		'@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/PDFYourVisitorGroups'
 	)
 );
 
@@ -214,12 +214,12 @@ export function registerWidgets( widgets ) {
 				return !! configuredAudiences;
 			},
 			pdf: {
-				Component: AudienceTilesWidgetPDF,
+				Component: PDFYourVisitorGroups,
 				getData: getAudienceTilesPDFData,
 				label: __( 'Your visitor groups', 'google-site-kit' ),
-				// The dashboard gate above stays as is. This `isActive`
-				// limits the PDF to two-or-more audiences, since the row needs
-				// two cards.
+				// The PDF row needs two cards, so it renders only for two or
+				// more audiences. The dashboard tile keeps its own `isActive`,
+				// which allows a single audience.
 				isActive: ( select ) =>
 					( select( CORE_USER ).getConfiguredAudiences()?.length ??
 						0 ) >= 2,

@@ -1,5 +1,5 @@
 /**
- * AudienceTilesWidget getPDFData tests.
+ * Your visitor groups getPDFData tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -20,10 +20,8 @@
  * Internal dependencies
  */
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
-import getPDFData, {
-	AudienceTilePDFData,
-	AudienceTilesPDFData,
-} from './getPDFData';
+import type { AudienceTilePDFData } from './buildPDFAudienceCard';
+import getPDFData, { AudienceTilesPDFData } from './getPDFData';
 
 type PDFRegistry = Parameters< typeof getPDFData >[ 0 ][ 'registry' ];
 
@@ -200,7 +198,10 @@ function buildRegistry( {
 		},
 	};
 
-	const registry: PDFRegistry = {
+	// The loader reads only `resolveSelect`, `select`, and `dispatch`. The mock
+	// stubs those three, then casts to the full registry type the loader's
+	// parameters declare.
+	const registry = {
 		resolveSelect: () => ( {
 			getConfiguredAudiences: () =>
 				Promise.resolve( configuredAudiences ),
@@ -211,7 +212,7 @@ function buildRegistry( {
 		} ),
 		select: () => analytics4Selectors,
 		dispatch: () => ( { fetchGetReport } ),
-	};
+	} as unknown as PDFRegistry;
 
 	return { registry, fetchGetReport };
 }

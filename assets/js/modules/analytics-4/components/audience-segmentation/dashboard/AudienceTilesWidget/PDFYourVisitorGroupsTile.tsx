@@ -1,6 +1,8 @@
 /**
  * Audience card for the Your visitor groups PDF widget.
  *
+ * `PDFYourVisitorGroups` renders one card per configured GA4 audience.
+ *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,27 +32,25 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import {
+	PDFAudienceMetricIconCities,
+	PDFAudienceMetricIconPagesPerVisit,
+	PDFAudienceMetricIconPageviews,
+	PDFAudienceMetricIconTopContent,
+	PDFAudienceMetricIconVisitors,
+	PDFAudienceMetricIconVisitsPerVisitor,
+} from '@/js/components/pdf-export/pdf-icons';
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFCard from '@/js/components/pdf-export/shared-react-pdf-components/PDFCard';
-import PDFChangeBadge from '@/js/components/pdf-export/shared-react-pdf-components/PDFChangeBadge';
 import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
-import { PDFIcon } from '@/js/components/pdf-export/types';
-import { calculateChange, numFmt } from '@/js/util';
-import {
-	AudienceMetricCitiesIcon,
-	AudienceMetricPagesPerVisitIcon,
-	AudienceMetricPageviewsIcon,
-	AudienceMetricTopContentIcon,
-	AudienceMetricVisitorsIcon,
-	AudienceMetricVisitsPerVisitorIcon,
-} from './audienceMetricPDFIcons';
+import { numFmt } from '@/js/util';
 import type {
-	AudienceTileMetric,
 	AudienceTilePDFData,
 	AudienceTileTopCity,
 	AudienceTileTopContent,
-} from './getPDFData';
+} from './buildPDFAudienceCard';
+import PDFAudienceMetricRow from './PDFAudienceMetricRow';
 
 const styles = createPDFStyles( {
 	// The dashboard tile gives the card no padding, so the header sets its own
@@ -68,8 +68,7 @@ const styles = createPDFStyles( {
 		borderBottomWidth: 1,
 		borderBottomColor: PDF_COLORS.SURFACES_SURFACE_1,
 	},
-	// Each metric row and each section is inset from the card edges and draws a
-	// divider below it.
+	// Each section is inset from the card edges and draws a divider below it.
 	row: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -89,12 +88,6 @@ const styles = createPDFStyles( {
 	},
 	body: {
 		flex: 1,
-	},
-	metricValue: {
-		lineHeight: 32 / 28,
-	},
-	metricLabel: {
-		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
 	},
 	sectionTitle: {
 		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
@@ -128,78 +121,7 @@ const styles = createPDFStyles( {
 	},
 } );
 
-/**
- * Builds the delta chip's props from a metric's period-over-period change.
- *
- * It matches the dashboard's `ChangeBadge`: no chip when the change can't be
- * calculated, and a sign on every non-zero value.
- *
- * @since n.e.x.t
- *
- * @param metric The metric with its current and previous value.
- * @return Props for the change chip, or `null` to hide it.
- */
-function getChangeChip(
-	metric: AudienceTileMetric
-): { change: string; isNegative: boolean } | null {
-	const change = calculateChange( metric.previous, metric.current );
-
-	if ( change === null ) {
-		return null;
-	}
-
-	return {
-		change: numFmt( change, {
-			style: 'percent',
-			signDisplay: 'exceptZero',
-			maximumFractionDigits: 1,
-		} ),
-		isNegative: change < 0,
-	};
-}
-
-interface MetricRowProps {
-	/** The metric's icon. */
-	Icon: PDFIcon;
-	/** The metric's label, shown below the value. */
-	label: string;
-	/** The pre-formatted metric value. */
-	value: string;
-	/** The metric's current and previous value, for the delta chip. */
-	metric: AudienceTileMetric;
-}
-
-const MetricRow: FC< MetricRowProps > = ( { Icon, label, value, metric } ) => {
-	const chip = getChangeChip( metric );
-
-	return (
-		<View style={ styles.row }>
-			<View style={ styles.iconColumn }>
-				<Icon />
-			</View>
-			<View style={ styles.body }>
-				<PDFTypography
-					type="headline"
-					size="medium"
-					style={ styles.metricValue }
-				>
-					{ value }
-				</PDFTypography>
-				<PDFTypography size="medium" style={ styles.metricLabel }>
-					{ label }
-				</PDFTypography>
-			</View>
-			{ chip && (
-				<PDFChangeBadge
-					change={ chip.change }
-					isNegative={ chip.isNegative }
-				/>
-			) }
-		</View>
-	);
-};
-
-interface PDFAudienceTileProps {
+interface PDFYourVisitorGroupsTileProps {
 	/** The audience display name, shown in the card header. */
 	audienceName: string;
 	/** The four period-over-period metrics. */
@@ -210,7 +132,7 @@ interface PDFAudienceTileProps {
 	topContent: AudienceTileTopContent[];
 }
 
-const PDFAudienceTile: FC< PDFAudienceTileProps > = ( {
+const PDFYourVisitorGroupsTile: FC< PDFYourVisitorGroupsTileProps > = ( {
 	audienceName,
 	metrics,
 	topCities,
@@ -218,19 +140,19 @@ const PDFAudienceTile: FC< PDFAudienceTileProps > = ( {
 } ) => {
 	const metricRows = [
 		{
-			Icon: AudienceMetricVisitorsIcon,
+			Icon: PDFAudienceMetricIconVisitors,
 			label: __( 'Visitors', 'google-site-kit' ),
 			value: numFmt( metrics.visitors.current ),
 			metric: metrics.visitors,
 		},
 		{
-			Icon: AudienceMetricVisitsPerVisitorIcon,
+			Icon: PDFAudienceMetricIconVisitsPerVisitor,
 			label: __( 'Visits per visitor', 'google-site-kit' ),
 			value: numFmt( metrics.visitsPerVisitor.current ),
 			metric: metrics.visitsPerVisitor,
 		},
 		{
-			Icon: AudienceMetricPagesPerVisitIcon,
+			Icon: PDFAudienceMetricIconPagesPerVisit,
 			label: __( 'Pages per visit', 'google-site-kit' ),
 			value: numFmt( metrics.pagesPerVisit.current, {
 				style: 'decimal',
@@ -239,9 +161,9 @@ const PDFAudienceTile: FC< PDFAudienceTileProps > = ( {
 			metric: metrics.pagesPerVisit,
 		},
 		{
-			Icon: AudienceMetricPageviewsIcon,
+			Icon: PDFAudienceMetricIconPageviews,
 			label: sprintf(
-				/* translators: %s: a percentage value such as 33.3%. */
+				/* translators: %s: a percentage value such as "33.3%". */
 				__( '%s of total pageviews', 'google-site-kit' ),
 				numFmt( metrics.pageviews.percentageOfTotalPageViews, {
 					style: 'percent',
@@ -262,7 +184,7 @@ const PDFAudienceTile: FC< PDFAudienceTileProps > = ( {
 			</View>
 
 			{ metricRows.map( ( row ) => (
-				<MetricRow
+				<PDFAudienceMetricRow
 					key={ row.label }
 					Icon={ row.Icon }
 					label={ row.label }
@@ -273,7 +195,7 @@ const PDFAudienceTile: FC< PDFAudienceTileProps > = ( {
 
 			<View style={ styles.row }>
 				<View style={ styles.iconColumn }>
-					<AudienceMetricCitiesIcon />
+					<PDFAudienceMetricIconCities />
 				</View>
 				<View style={ styles.body }>
 					<PDFTypography size="medium" style={ styles.sectionTitle }>
@@ -305,7 +227,7 @@ const PDFAudienceTile: FC< PDFAudienceTileProps > = ( {
 
 			<View style={ [ styles.row, styles.lastRow ] }>
 				<View style={ styles.iconColumn }>
-					<AudienceMetricTopContentIcon />
+					<PDFAudienceMetricIconTopContent />
 				</View>
 				<View style={ styles.body }>
 					<PDFTypography
@@ -336,4 +258,4 @@ const PDFAudienceTile: FC< PDFAudienceTileProps > = ( {
 	);
 };
 
-export default PDFAudienceTile;
+export default PDFYourVisitorGroupsTile;

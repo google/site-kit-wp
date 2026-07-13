@@ -1,5 +1,5 @@
 /**
- * PDFAudienceTile tests.
+ * PDFYourVisitorGroupsTile tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -26,7 +26,7 @@ import TestRenderer from 'react-test-renderer';
  * Internal dependencies
  */
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
-import PDFAudienceTile from './PDFAudienceTile';
+import PDFYourVisitorGroupsTile from './PDFYourVisitorGroupsTile';
 
 const METRICS = {
 	visitors: { current: 24200, previous: 22000 },
@@ -51,7 +51,7 @@ const TOP_CONTENT = [
 ];
 
 /**
- * Renders `PDFAudienceTile` with default props, as a JSON tree string.
+ * Renders `PDFYourVisitorGroupsTile` with default props, as a JSON tree string.
  *
  * @since n.e.x.t
  *
@@ -59,10 +59,10 @@ const TOP_CONTENT = [
  * @return The rendered tree serialized to a string.
  */
 function renderTile(
-	props: Partial< ComponentProps< typeof PDFAudienceTile > > = {}
+	props: Partial< ComponentProps< typeof PDFYourVisitorGroupsTile > > = {}
 ) {
 	const renderer = TestRenderer.create(
-		<PDFAudienceTile
+		<PDFYourVisitorGroupsTile
 			audienceName="New visitors"
 			metrics={ METRICS }
 			topCities={ TOP_CITIES }
@@ -73,7 +73,7 @@ function renderTile(
 	return JSON.stringify( renderer.toJSON() );
 }
 
-describe( 'PDFAudienceTile', () => {
+describe( 'PDFYourVisitorGroupsTile', () => {
 	it( 'renders the audience name header', () => {
 		expect( renderTile() ).toContain( 'New visitors' );
 	} );
