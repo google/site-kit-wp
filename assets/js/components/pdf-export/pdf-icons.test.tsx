@@ -1,5 +1,5 @@
 /**
- * Audience metric PDF icon tests.
+ * PDF icon tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -25,16 +25,25 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
-import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
-import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import {
-	AudienceMetricCitiesIcon,
-	AudienceMetricPagesPerVisitIcon,
-	AudienceMetricPageviewsIcon,
-	AudienceMetricTopContentIcon,
-	AudienceMetricVisitorsIcon,
-	AudienceMetricVisitsPerVisitorIcon,
-} from './audienceMetricPDFIcons';
+	PDFAudienceMetricIconCities,
+	PDFAudienceMetricIconPagesPerVisit,
+	PDFAudienceMetricIconPageviews,
+	PDFAudienceMetricIconTopContent,
+	PDFAudienceMetricIconVisitors,
+	PDFAudienceMetricIconVisitsPerVisitor,
+} from './pdf-icons';
+import { scalePDFValue } from './pdf-scale';
+import { PDF_COLORS } from './pdf-theme';
+
+const ALL_ICONS = [
+	[ 'visitors', PDFAudienceMetricIconVisitors ],
+	[ 'visits per visitor', PDFAudienceMetricIconVisitsPerVisitor ],
+	[ 'pages per visit', PDFAudienceMetricIconPagesPerVisit ],
+	[ 'pageviews', PDFAudienceMetricIconPageviews ],
+	[ 'cities', PDFAudienceMetricIconCities ],
+	[ 'top content', PDFAudienceMetricIconTopContent ],
+] as const;
 
 /**
  * Renders a PDF element to its JSON tree string.
@@ -48,9 +57,21 @@ function renderJSON( element: ReactElement ) {
 	return JSON.stringify( TestRenderer.create( element ).toJSON() );
 }
 
-describe( 'audience metric PDF icons', () => {
+describe( 'PDF icons', () => {
+	it.each( ALL_ICONS )(
+		'draws the %s icon from its source SVG file',
+		( _name, Icon ) => {
+			// Each icon imports its source file with `?pdf`, and every `?pdf`
+			// import resolves through the same mock, so every icon draws the
+			// mock's placeholder path.
+			expect( renderJSON( <Icon /> ) ).toContain(
+				'M 0 0 L 20 0 L 20 20 L 0 20 Z'
+			);
+		}
+	);
+
 	it( 'renders at the scaled default size, in the muted variant color', () => {
-		const json = renderJSON( <AudienceMetricVisitorsIcon /> );
+		const json = renderJSON( <PDFAudienceMetricIconVisitors /> );
 
 		expect( json ).toContain( `"width":${ scalePDFValue( 20 ) }` );
 		expect( json ).toContain( `"height":${ scalePDFValue( 20 ) }` );
@@ -58,23 +79,18 @@ describe( 'audience metric PDF icons', () => {
 	} );
 
 	it( 'scales the icon to the size the caller sets', () => {
-		const json = renderJSON( <AudienceMetricVisitorsIcon size={ 10 } /> );
+		const json = renderJSON(
+			<PDFAudienceMetricIconVisitors size={ 10 } />
+		);
 
 		expect( json ).toContain( `"width":${ scalePDFValue( 10 ) }` );
 	} );
 
-	it( 'draws each metric with its own glyph path', () => {
-		const pathStarts = [
-			[ AudienceMetricVisitorsIcon, 'M0.833008 16.6668V14.3335C' ],
-			[ AudienceMetricVisitsPerVisitorIcon, 'M10 17.5C8.95833' ],
-			[ AudienceMetricPagesPerVisitIcon, 'M13.1253 16.6668H3.33366C' ],
-			[ AudienceMetricPageviewsIcon, 'M4.16667 17.5C3.70833' ],
-			[ AudienceMetricCitiesIcon, 'M10.0003 18.3332C9.80588' ],
-			[ AudienceMetricTopContentIcon, 'M3.33366 16.6668C2.87533' ],
-		] as const;
+	it( 'draws the icon in the color the caller sets', () => {
+		const json = renderJSON(
+			<PDFAudienceMetricIconVisitors color={ PDF_COLORS.GREEN_G_50 } />
+		);
 
-		pathStarts.forEach( ( [ Icon, start ] ) => {
-			expect( renderJSON( <Icon /> ) ).toContain( start );
-		} );
+		expect( json ).toContain( PDF_COLORS.GREEN_G_50 );
 	} );
 } );
