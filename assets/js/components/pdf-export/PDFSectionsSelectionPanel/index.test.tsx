@@ -207,7 +207,7 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		dispatch.assignWidget( 'analyticsWidget', 'analyticsArea' );
 	}
 
-	it( 'omits a section whose pdf widget requires a disconnected module', async () => {
+	it( 'omits a widget that requires a disconnected module', async () => {
 		provideModules( registry, [
 			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: false },
 		] );
@@ -231,17 +231,17 @@ describe( 'PDFSectionsSelectionPanel', () => {
 			).toBe( true );
 		} );
 
-		// Wait for the module-less Traffic section. Its presence proves the
-		// list has loaded before the test checks that the Analytics section
-		// is absent.
+		// The Analytics area sits in the Traffic context, so its widget lists
+		// under the Traffic section. Waiting for that section proves the list
+		// has loaded before the test checks that the widget is absent.
 		await findByRole( 'checkbox', { name: /^Traffic$/ } );
 
 		expect(
-			queryByRole( 'checkbox', { name: /^Analytics$/ } )
+			queryByRole( 'checkbox', { name: /^Analytics widget$/ } )
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'lists a section whose pdf widget requires a connected module, and selects it by default', async () => {
+	it( 'lists a widget that requires a connected module, and selects it by default', async () => {
 		provideModules( registry, [
 			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
 		] );
@@ -264,10 +264,10 @@ describe( 'PDFSectionsSelectionPanel', () => {
 			).toBe( true );
 		} );
 
-		const analyticsSection = ( await findByRole( 'checkbox', {
-			name: /^Analytics$/,
+		const analyticsWidget = ( await findByRole( 'checkbox', {
+			name: /^Analytics widget$/,
 		} ) ) as HTMLInputElement;
-		expect( analyticsSection.checked ).toBe( true );
+		expect( analyticsWidget.checked ).toBe( true );
 	} );
 
 	it( 'renders a Traffic section with its labelled widgets, all selected by default', async () => {

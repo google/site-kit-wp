@@ -610,15 +610,20 @@ describe( 'PDFExportOrchestrator', () => {
 
 		const { props } = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
 
-		// Sections and areas follow the dashboard's order, not the stored
-		// order.
-		const expectedAreaOrder = [ 'trafficArea', 'contentArea', 'speedArea' ];
+		// A section covers one dashboard context, so each one is keyed by its
+		// context slug. Sections and areas follow the dashboard's order, not
+		// the stored order.
+		const expectedContextOrder = [
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+			CONTEXT_MAIN_DASHBOARD_CONTENT,
+			CONTEXT_MAIN_DASHBOARD_SPEED,
+		];
 		expect(
 			props.sections.map( ( section: PDFHeaderSection ) => section.slug )
-		).toEqual( expectedAreaOrder );
+		).toEqual( expectedContextOrder );
 		expect(
 			props.areas.map( ( area: PDFReportArea ) => area.areaSlug )
-		).toEqual( expectedAreaOrder );
+		).toEqual( expectedContextOrder );
 	} );
 
 	it( 'should register the PDF fonts before rendering the document', async () => {
