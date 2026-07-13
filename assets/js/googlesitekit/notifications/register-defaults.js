@@ -48,6 +48,8 @@ import UnsatisfiedScopesAlertGTE from '@/js/components/notifications/Unsatisfied
 import ZeroDataNotification from '@/js/components/notifications/ZeroDataNotification';
 import { PDF_INTRODUCTION_OVERLAY_NOTIFICATION } from '@/js/components/pdf-export/constants';
 import PDFIntroductionOverlayNotification from '@/js/components/pdf-export/PDFIntroductionOverlayNotification';
+import SplashSetupErrorMessageNotification from '@/js/components/setup/SetupUsingProxyWithSignIn/SplashSetupErrorMessageNotification';
+import { isFeatureEnabled } from '@/js/features';
 import {
 	SITE_KIT_VIEW_ONLY_CONTEXTS,
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
@@ -226,7 +228,9 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 			VIEW_CONTEXT_SETTINGS,
-			VIEW_CONTEXT_SPLASH,
+			...( isFeatureEnabled( 'setupFlowRefreshPhase4' )
+				? []
+				: [ VIEW_CONTEXT_SPLASH ] ),
 		],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			await resolveSelect( CORE_SITE ).getSiteInfo();
@@ -251,6 +255,22 @@ export const DEFAULT_NOTIFICATIONS = {
 			return !! setupErrorMessage;
 		},
 		isDismissible: false,
+	},
+	'splash-setup-plugin-error': {
+		Component: SplashSetupErrorMessageNotification,
+		priority: PRIORITY.ERROR_HIGH,
+		areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
+		viewContexts: [ VIEW_CONTEXT_SPLASH ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await resolveSelect( CORE_SITE ).getSiteInfo();
+
+			const setupErrorMessage =
+				select( CORE_SITE ).getSetupErrorMessage();
+
+			return !! setupErrorMessage;
+		},
+		isDismissible: false,
+		featureFlag: 'setupFlowRefreshPhase4',
 	},
 	'auth-error': {
 		Component: AuthError,

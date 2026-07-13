@@ -32,7 +32,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
-import { PIE_CHART_COLORS } from '@/js/components/pdf-export/pie-chart-colors';
+import { PIE_CHART_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFCard from '@/js/components/pdf-export/shared-react-pdf-components/PDFCard';
 import PDFMetricTile from '@/js/components/pdf-export/shared-react-pdf-components/PDFMetricTile';
 import PDFPieChartTile from '@/js/components/pdf-export/shared-react-pdf-components/PDFPieChartTile';
@@ -76,7 +76,7 @@ const styles = createPDFStyles( {
  * percentage. The color order matches the donut, because both read
  * `PIE_CHART_COLORS` in the same slice order.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param breakdown Ordered `{ label, percentage }` rows, or `null`.
  * @return Legend rows of `{ label, percentage, color }`.

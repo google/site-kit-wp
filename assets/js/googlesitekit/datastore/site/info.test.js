@@ -528,6 +528,10 @@ describe( 'core/site site info', () => {
 				'hasMultipleActiveEcommerceEventProviders',
 				'hasMultipleActiveEcommerceEventProviders',
 			],
+			[
+				'getKeyMetricsSetupIsWidgetAreaHidden',
+				'keyMetricsSetupIsWidgetAreaHidden',
+			],
 		] )( '%s', ( selector, infoKey ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
 				global[ baseInfoVar ] = baseInfo;
@@ -865,6 +869,26 @@ describe( 'core/site site info', () => {
 					registry
 						.select( CORE_SITE )
 						.hasMinimumWordPressVersion( '5.1' )
+				).toBe( true );
+			} );
+		} );
+
+		describe( 'isKeyMetricsWidgetAreaHidden', () => {
+			it( 'should return `false` by default', () => {
+				provideSiteInfo( registry );
+
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsWidgetAreaHidden()
+				).toBe( false );
+			} );
+
+			it( 'should return `true` if `keyMetricsSetupIsWidgetAreaHidden` is true', () => {
+				provideSiteInfo( registry, {
+					keyMetricsSetupIsWidgetAreaHidden: true,
+				} );
+
+				expect(
+					registry.select( CORE_SITE ).isKeyMetricsWidgetAreaHidden()
 				).toBe( true );
 			} );
 		} );

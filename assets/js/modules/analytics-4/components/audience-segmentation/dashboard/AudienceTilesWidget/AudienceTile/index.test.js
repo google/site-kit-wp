@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
+import { intersectionObserver } from '@shopify/jest-dom-mocks';
 import { getByText as domGetByText } from '@testing-library/dom';
-import { useIntersection as mockUseIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -54,11 +54,6 @@ import {
 } from '@tests/js/utils';
 import { getViewportWidth, setViewportWidth } from '@tests/js/viewport-utils';
 import AudienceTile from '.';
-
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
-} ) );
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -160,10 +155,7 @@ describe( 'AudienceTile', () => {
 		// Ensure the viewport is wide enough to render the tooltips.
 		setViewportWidth( 1024 );
 
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: false,
-			intersectionRatio: 0,
-		} ) );
+		intersectionObserver.mock();
 
 		registry = createTestRegistry();
 		provideModules( registry, [
@@ -226,6 +218,7 @@ describe( 'AudienceTile', () => {
 	} );
 
 	afterEach( () => {
+		intersectionObserver.restore();
 		mockTrackEvent.mockClear();
 		setViewportWidth( originalViewportWidth );
 	} );
@@ -269,7 +262,7 @@ describe( 'AudienceTile', () => {
 
 	describe( 'Top content metric', () => {
 		it( 'should track an event when the create custom dimension CTA is viewed', () => {
-			const { getByRole, rerender } = render(
+			const { getByRole } = render(
 				<WidgetWithComponentProps { ...props } />,
 				{
 					registry,
@@ -284,12 +277,12 @@ describe( 'AudienceTile', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			// Simulate the CTA becoming visible.
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} ) );
-
-			rerender( <WidgetWithComponentProps { ...props } /> );
+			act( () => {
+				intersectionObserver.simulate( {
+					isIntersecting: true,
+					intersectionRatio: 1,
+				} );
+			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -477,10 +470,10 @@ describe( 'AudienceTile', () => {
 	} );
 
 	describe( 'with zero data, in the partial data state', () => {
-		let container, getByRole, getByText, rerender;
+		let container, getByRole, getByText;
 
 		beforeEach( () => {
-			( { container, getByRole, getByText, rerender } = render(
+			( { container, getByRole, getByText } = render(
 				<WidgetWithComponentProps
 					{ ...props }
 					isPartialData
@@ -505,20 +498,13 @@ describe( 'AudienceTile', () => {
 		it( 'should track an event when the tile is viewed', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
-			// Simulate the CTA becoming visible.
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} ) );
-
-			rerender(
-				<WidgetWithComponentProps
-					{ ...props }
-					isPartialData
-					isZeroData
-					isTileHideable
-				/>
-			);
+			// Simulate the tile coming into view.
+			act( () => {
+				intersectionObserver.simulate( {
+					isIntersecting: true,
+					intersectionRatio: 1,
+				} );
+			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			expect( mockTrackEvent ).toHaveBeenCalledWith(

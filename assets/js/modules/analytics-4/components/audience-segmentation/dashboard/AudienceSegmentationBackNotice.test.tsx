@@ -19,8 +19,7 @@
 /**
  * External dependencies
  */
-import { mocked } from 'jest-mock';
-import { useIntersection as mockUseIntersection } from 'react-use';
+import { intersectionObserver } from '@shopify/jest-dom-mocks';
 
 /**
  * WordPress dependencies
@@ -36,6 +35,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import * as tracking from '@/js/util/tracking';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	render,
@@ -45,11 +45,6 @@ import AudienceSegmentationBackNotice, {
 	AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG,
 } from './AudienceSegmentationBackNotice';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './AudienceSelectionPanel/constants';
-
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
-} ) );
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -68,11 +63,14 @@ describe( 'AudienceSegmentationBackNotice', () => {
 	)( AudienceSegmentationBackNotice );
 
 	beforeEach( () => {
+		intersectionObserver.mock();
+
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	afterEach( () => {
+		intersectionObserver.restore();
 		jest.clearAllMocks();
 	} );
 
@@ -165,30 +163,20 @@ describe( 'AudienceSegmentationBackNotice', () => {
 	} );
 
 	it( 'should track the view_notice event when the notice is viewed', async () => {
-		mocked( mockUseIntersection ).mockImplementation(
-			() =>
-				( {
-					isIntersecting: false,
-					intersectionRatio: 0,
-				} as IntersectionObserverEntry )
-		);
-
-		const { rerender } = render( <WidgetWithComponentProps />, {
+		render( <WidgetWithComponentProps />, {
 			registry,
 			viewContext,
 		} );
 
 		expect( mockTrackEvent ).not.toHaveBeenCalled();
 
-		mocked( mockUseIntersection ).mockImplementation(
-			() =>
-				( {
-					isIntersecting: true,
-					intersectionRatio: 1,
-				} as IntersectionObserverEntry )
-		);
-
-		rerender( <WidgetWithComponentProps /> );
+		// Simulate the notice coming into view.
+		act( () => {
+			intersectionObserver.simulate( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} );
+		} );
 
 		await waitFor( () => {
 			expect( mockTrackEvent ).toHaveBeenCalledWith(

@@ -25,19 +25,22 @@ import type { Style } from '@react-pdf/stylesheet';
 /** Width of the PDF page, in points. */
 export const PDF_PAGE_WIDTH = 612;
 
-/** Width of the Figma frame the report is designed in, in pixels. */
-export const PDF_FIGMA_FRAME_WIDTH = 1180;
-
-/**
- * Scale from a Figma frame pixel to a page point.
- *
- * The frame is wider than the page, so every frame size is multiplied by this
- * scale to fit the page.
- */
-export const PDF_SCALE = PDF_PAGE_WIDTH / PDF_FIGMA_FRAME_WIDTH;
-
 /** Padding from the page edge to the report content, in points. */
 export const PDF_PAGE_PADDING = 24;
+
+/** Width of the report content in the Figma design, in pixels. */
+export const PDF_FIGMA_CONTENT_WIDTH = 1133;
+
+/**
+ * Scale from a Figma content pixel to a PDF page content point.
+ *
+ * The Figma content is wider than the PDF page, so multiplying a Figma length
+ * by this scale gives its length on the PDF page. The scale is the PDF page
+ * content width (`PDF_PAGE_WIDTH - 2 * PDF_PAGE_PADDING`) divided by the Figma
+ * content width.
+ */
+export const PDF_SCALE =
+	( PDF_PAGE_WIDTH - 2 * PDF_PAGE_PADDING ) / PDF_FIGMA_CONTENT_WIDTH;
 
 /**
  * Style properties whose numeric value is a length.
@@ -104,7 +107,7 @@ export const PDF_SCALED_PROPERTIES = new Set< string >( [
  * Use it for a length that a widget sets outside a style object, such as an
  * `Svg` width or height.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param {number} value The length, in Figma frame pixels.
  * @return {number} The length, in page points.
@@ -121,7 +124,7 @@ export function scalePDFValue( value: number ): number {
  * `PDF_SCALE`. A non-numeric value (such as `'100%'`) and every other property
  * keep their values. The scaled styles are passed to `StyleSheet.create`.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param {Object} styles Named styles with sizes from the Figma frame.
  * @return {Object} The named styles with each length scaled to points.
