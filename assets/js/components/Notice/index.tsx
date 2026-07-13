@@ -18,7 +18,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { ForwardRefExoticComponent, ReactNode, RefAttributes } from 'react';
+import { ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -62,9 +62,7 @@ export interface NoticeProps {
 	children?: ReactNode;
 }
 
-const Notice: ForwardRefExoticComponent<
-	NoticeProps & RefAttributes< HTMLDivElement >
-> = forwardRef< HTMLDivElement, NoticeProps >(
+const Notice = forwardRef< HTMLDivElement, NoticeProps >(
 	(
 		{
 			actionContent,
