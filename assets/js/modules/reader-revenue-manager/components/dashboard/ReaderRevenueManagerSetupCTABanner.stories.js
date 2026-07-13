@@ -44,6 +44,12 @@ export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {};
 
+export const ExpressSetup = Template.bind( {} );
+ExpressSetup.storyName = 'Express Setup';
+ExpressSetup.parameters = {
+	features: [ 'rrmExpressSetup' ],
+};
+
 export default {
 	title: 'Modules/ReaderRevenueManager/Components/Dashboard/ReaderRevenueManagerSetupCTABanner',
 	decorators: [
@@ -62,7 +68,7 @@ export default {
 					.dispatch( CORE_USER )
 					.finishResolution( 'getDismissedPrompts', [] );
 
-				fetchMock.postOnce(
+				fetchMock.post(
 					new RegExp(
 						'^/google-site-kit/v1/core/user/data/dismiss-prompt'
 					),
@@ -74,7 +80,8 @@ export default {
 							},
 						},
 						status: 200,
-					}
+					},
+					{ overwriteRoutes: true }
 				);
 			}
 

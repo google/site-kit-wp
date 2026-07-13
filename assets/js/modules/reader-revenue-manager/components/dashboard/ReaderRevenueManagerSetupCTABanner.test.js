@@ -25,6 +25,7 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
@@ -54,6 +55,17 @@ import {
 } from '@tests/js/test-utils';
 import ReaderRevenueManagerSetupCTABanner from './ReaderRevenueManagerSetupCTABanner';
 
+let mockBreakpoint = 'desktop';
+
+jest.mock( '@/js/hooks/useBreakpoint', () => {
+	const actual = jest.requireActual( '@/js/hooks/useBreakpoint' );
+
+	return {
+		...actual,
+		useBreakpoint: () => mockBreakpoint,
+	};
+} );
+
 jest.mock( '../../../../hooks/useActivateModuleCallback' );
 
 describe( 'ReaderRevenueManagerSetupCTABanner', () => {
@@ -70,6 +82,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		mockBreakpoint = 'desktop';
 		activateModuleCallbackMock = jest.fn();
 		activateModuleMock = jest.fn( () => activateModuleCallbackMock );
 
@@ -113,6 +126,35 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should render express setup copy when the feature flag is enabled', async () => {
+		mockSurveyEndpoints();
+
+		const { getByText, getByRole, waitForRegistry } = render(
+			<ReaderRevenueManagerSetupCTABannerComponent />,
+			{
+				registry,
+				features: [ 'rrmExpressSetup' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByText( /Turn casual visitors into loyal readers/ )
+		).toBeInTheDocument();
+		expect(
+			getByRole( 'button', { name: /Set up a sign-up form/i } )
+		).toBeInTheDocument();
+		expect(
+			getByRole( 'link', { name: /Explore other features/i } )
+		).toHaveAttribute(
+			'href',
+			expect.stringContaining(
+				'page=googlesitekit-dashboard&slug=reader-revenue-manager&reAuth=true'
+			)
+		);
+	} );
+
 	it( 'should call the "useActivateModuleCallback" hook and dismiss the notification when the setup CTA is clicked', async () => {
 		mockSurveyEndpoints();
 
@@ -150,6 +192,105 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 		expect( activateModuleCallbackMock ).toHaveBeenCalledTimes( 1 );
 		expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
+	} );
+
+	it( 'should navigate to express setup when the feature flag is enabled', async () => {
+		mockSurveyEndpoints();
+
+		fetchMock.postOnce( dismissPromptEndpoint, {
+			body: {
+				'rrm-setup-notification': { expires: 0, count: 1 },
+			},
+		} );
+
+		const navigateToSpy = jest.spyOn(
+			registry.dispatch( CORE_LOCATION ),
+			'navigateTo'
+		);
+		navigateToSpy.mockImplementation( () => {} );
+
+		const { getByRole, waitForRegistry } = render(
+			<ReaderRevenueManagerSetupCTABannerComponent />,
+			{
+				registry,
+				features: [ 'rrmExpressSetup' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click(
+				getByRole( 'button', {
+					name: /Set up a sign-up form/i,
+				} )
+			);
+		} );
+
+		expect( activateModuleCallbackMock ).not.toHaveBeenCalled();
+		expect( navigateToSpy ).toHaveBeenCalledWith(
+			expect.stringContaining( 'expressSetup=true&cta=newsletter' )
+		);
+		expect( navigateToSpy ).toHaveBeenCalledWith(
+			expect.stringContaining( 'slug=reader-revenue-manager&reAuth=true' )
+		);
+		expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
+	} );
+
+	it( 'should render legacy desktop banner graphic when the feature flag is disabled', async () => {
+		mockSurveyEndpoints();
+
+		const { container, waitForRegistry } = render(
+			<ReaderRevenueManagerSetupCTABannerComponent />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-banner__svg-wrapper' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should render express tablet banner graphic when the feature flag is enabled at tablet width', async () => {
+		mockSurveyEndpoints();
+		mockBreakpoint = 'tablet';
+
+		const { container, waitForRegistry } = render(
+			<ReaderRevenueManagerSetupCTABannerComponent />,
+			{
+				registry,
+				features: [ 'rrmExpressSetup' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-banner__svg-wrapper' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should render express mobile banner graphic when the feature flag is enabled at mobile width', async () => {
+		mockSurveyEndpoints();
+		mockBreakpoint = 'small';
+
+		const { container, waitForRegistry } = render(
+			<ReaderRevenueManagerSetupCTABannerComponent />,
+			{
+				registry,
+				features: [ 'rrmExpressSetup' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-banner__svg-wrapper' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'should call the dismiss item endpoint when the banner is dismissed', async () => {
