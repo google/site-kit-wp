@@ -32,7 +32,7 @@ import {
 	SettingsStatus,
 	SettingsView,
 } from './components/settings';
-import { SetupMain } from './components/setup';
+import { SetupMainExpressReady } from './components/setup';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from './constants';
 import {
 	ERROR_CODE_NON_HTTPS_SITE,
@@ -48,7 +48,7 @@ export function registerModule( modules ) {
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		SettingsStatusComponent: SettingsStatus,
-		SetupComponent: SetupMain,
+		SetupComponent: SetupMainExpressReady,
 		Icon: ReaderRevenueManagerIcon,
 		features: [
 			__(
