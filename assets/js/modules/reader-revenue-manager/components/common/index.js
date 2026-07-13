@@ -21,5 +21,6 @@ export { default as PublicationOnboardingStateNotice } from './PublicationOnboar
 export { default as PublicationCreate } from './PublicationCreate';
 export { default as PublicationSelect } from './PublicationSelect';
 export { default as PostTypesSelect } from './PostTypesSelect';
+export { default as PoweredByReaderRevenueManager } from './PoweredByReaderRevenueManager';
 export { default as ProductIDSelect } from './ProductIDSelect';
 export { default as SnippetModeSelect } from './SnippetModeSelect';

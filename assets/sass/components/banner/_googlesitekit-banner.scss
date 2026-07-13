@@ -200,3 +200,47 @@
 .googlesitekit-widget-context--with-progress-bar {
 	padding-top: 0;
 }
+
+.googlesitekit-banner--rrm-setup {
+	background: linear-gradient(180deg, #FFF 9.13%, #D0FBE1 76.44%) center bottom / auto 146px no-repeat;
+
+	.googlesitekit-widget & {
+		border-radius: 0;
+	}
+
+	p.googlesitekit-banner__title {
+		@include googlesitekit-typography(title, medium);
+		margin-block-end: 10px;
+	}
+
+	.googlesitekit-banner__description p:first-child {
+		margin-block-end: 4px;
+	}
+
+	.googlesitekit-notice__action {
+		margin-block-end: 0;
+
+		> .mdc-button {
+			margin-block-start: 16px;
+		}
+	}
+
+	@media (min-width: $width-tablet + 1 + px) {
+		p.googlesitekit-banner__title {
+			@include googlesitekit-typography(headline, small);
+		}
+	}
+
+	@media (min-width: $width-desktop + 1 + px) {
+		background: linear-gradient(90deg, #FFF 40.36%, #D0FBE1 88.55%);
+
+		.googlesitekit-banner__title,
+		.googlesitekit-banner__description p:first-child {
+			margin-block-end: 7px;
+		}
+
+		p.googlesitekit-banner__title {
+			@include googlesitekit-typography(headline, medium);
+		}
+	}
+}

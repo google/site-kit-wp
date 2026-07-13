@@ -26,12 +26,12 @@ import { SpinnerButton } from 'googlesitekit-components';
 import ExternalIcon from '@/svg/icons/external.svg';
 
 export default function CTAButton( {
-	label,
-	ariaLabel,
-	disabled,
-	inProgress,
-	onClick,
-	href,
+	label = '',
+	ariaLabel = '',
+	disabled = false,
+	inProgress = false,
+	onClick = () => {},
+	href = null,
 	external = false,
 	hideExternalIndicator = false,
 } ) {

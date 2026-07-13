@@ -1,7 +1,7 @@
 /**
- * Reader Revenue Manager module entrypoint.
+ * Reader Revenue Manager Setup styles.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,17 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Data from 'googlesitekit-data';
-import Modules from 'googlesitekit-modules';
-import Notifications from 'googlesitekit-notifications';
-import Widgets from 'googlesitekit-widgets';
-import {
-	registerModule,
-	registerNotifications,
-	registerStore,
-	registerWidgets,
-} from './modules/reader-revenue-manager';
+.googlesitekit-powered-by {
+	align-items: center;
+	display: flex;
 
-registerStore( Data );
-registerModule( Modules );
-registerWidgets( Widgets );
-registerNotifications( Notifications );
+	svg {
+		display: block;
+		inline-size: 36px;
+		padding: 6px;
+	}
+
+	.googlesitekit-powered-by__text {
+		padding: 10px;
+	}
+}

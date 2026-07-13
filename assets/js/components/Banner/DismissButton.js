@@ -30,10 +30,10 @@ import { __ } from '@wordpress/i18n';
 import { Button } from 'googlesitekit-components';
 
 export default function DismissButton( {
-	className,
-	label = __( 'Maybe later', 'google-site-kit' ),
-	onClick,
-	disabled,
+	className = '',
+	label = String( __( 'Maybe later', 'google-site-kit' ) ),
+	onClick = () => {},
+	disabled = false,
 	tertiary = true,
 } ) {
 	if ( ! onClick ) {
