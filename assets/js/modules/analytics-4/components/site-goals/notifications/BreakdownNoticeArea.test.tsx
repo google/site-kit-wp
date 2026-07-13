@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { intersectionObserver } from '@shopify/jest-dom-mocks';
+
+/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -47,7 +52,8 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { ALL_CUSTOM_DIMENSIONS } from '@/js/modules/analytics-4/hooks/useBreakdownEnableHandler';
 import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
-import { fireEvent, render, waitFor } from '@tests/js/test-utils';
+import * as tracking from '@/js/util/tracking';
+import { act, fireEvent, render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
@@ -721,6 +727,167 @@ describe( 'BreakdownNoticeArea', () => {
 			);
 
 			expect( container ).toBeEmptyDOMElement();
+		} );
+	} );
+
+	describe( '"view_notification" tracking', () => {
+		// Spying on `trackEventOnce` (not `trackEvent`) matters here: it is the
+		// one routed to `handleNewNoticeView`/`handleSuccessView`/
+		// `handleErrorView`, and it dedupes on the full call signature at the
+		// module level. That module-level dedup is what makes the "once ever"
+		// guarantee survive the wrapping widget remounting this notice (e.g. its
+		// data briefly resolves to a loading/error/null branch and back) — the
+		// `withIntersectionObserver` HOC's own once-per-mount guard cannot do
+		// that on its own, since a remount gives it a fresh instance.
+		let mockTrackEventOnce: jest.SpiedFunction<
+			typeof tracking.trackEventOnce
+		>;
+
+		beforeEach( () => {
+			mockTrackEventOnce = jest.spyOn( tracking, 'trackEventOnce' );
+			intersectionObserver.mock();
+		} );
+
+		afterEach( () => {
+			mockTrackEventOnce.mockRestore();
+			intersectionObserver.restore();
+		} );
+
+		function simulateInView() {
+			act( () => {
+				intersectionObserver.simulate( {
+					isIntersecting: true,
+					intersectionRatio: 1,
+				} );
+			} );
+		}
+
+		it( 'does not track the "New" notice view until it is scrolled into view, and not again once it moves into a loading state', async () => {
+			// No edit scope, so the CTA starts the OAuth redirect rather than
+			// creating dimensions directly, keeping the notice in a loading
+			// state without unmounting it.
+			provideUserAuthentication( registry, { grantedScopes: [] } );
+			seedAvailableCustomDimensions( [] );
+
+			const { getByRole } = render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_WIDGET }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
+				/>,
+				{ registry }
+			);
+
+			// Rendering (mounting) alone must not fire the view event.
+			expect( mockTrackEventOnce ).not.toHaveBeenCalledWith(
+				expect.stringContaining( '_site-goals-breakdown-notice' ),
+				'view_notification',
+				expect.anything()
+			);
+
+			simulateInView();
+
+			expect( mockTrackEventOnce ).toHaveBeenCalledWith(
+				expect.stringContaining( '_site-goals-breakdown-notice' ),
+				'view_notification',
+				'widget_lead'
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Get breakdown' } ) );
+
+			await waitFor( () => {
+				expect(
+					getByRole( 'button', { name: 'Get breakdown' } )
+				).toBeDisabled();
+			} );
+
+			// The "loading" state reuses the same mounted notice instance (and
+			// its already-disconnected observer), so it must not track a
+			// second "view" once the CTA starts the OAuth flow.
+			const viewNotificationCalls = mockTrackEventOnce.mock.calls.filter(
+				( [ , action ] ) => action === 'view_notification'
+			);
+			expect( viewNotificationCalls ).toHaveLength( 1 );
+		} );
+
+		it( 'does not track the error notice view until it is scrolled into view', () => {
+			seedAvailableCustomDimensions( [] );
+			provideCustomDimensionError( registry, {
+				customDimension: ALL_CUSTOM_DIMENSIONS[ 0 ],
+				error: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+			} );
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+					[ BREAKDOWN_SCOPE_FORM_KEY ]: GOAL_TYPES.LEAD,
+				} );
+
+			render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_WIDGET }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
+				/>,
+				{ registry }
+			);
+
+			expect( mockTrackEventOnce ).not.toHaveBeenCalledWith(
+				expect.stringContaining( '_site-goals-breakdown-error-notice' ),
+				'view_notification',
+				expect.anything()
+			);
+
+			simulateInView();
+
+			expect( mockTrackEventOnce ).toHaveBeenCalledWith(
+				expect.stringContaining( '_site-goals-breakdown-error-notice' ),
+				'view_notification',
+				'setup_error'
+			);
+		} );
+
+		it( 'routes the view through `trackEventOnce` with the same arguments even if the wrapping widget remounts the notice', () => {
+			// Regression test: the notice can legitimately remount while the
+			// page stays open (its containing widget's data can briefly
+			// resolve to a different branch and back), which resets the
+			// `withIntersectionObserver` HOC's own per-mount "already viewed"
+			// guard. Relying on that guard alone would re-track the view on
+			// every such remount; routing through `trackEventOnce` keeps the
+			// call signature identical across remounts so its own module-level
+			// dedup — not this component — is what prevents a second real
+			// analytics ping.
+			seedAvailableCustomDimensions( [] );
+
+			const { unmount } = render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_WIDGET }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
+				/>,
+				{ registry }
+			);
+
+			simulateInView();
+			unmount();
+
+			render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_WIDGET }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
+				/>,
+				{ registry }
+			);
+
+			simulateInView();
+
+			const viewNotificationCalls = mockTrackEventOnce.mock.calls.filter(
+				( [ , action ] ) => action === 'view_notification'
+			);
+			expect( viewNotificationCalls ).toHaveLength( 2 );
+			expect( viewNotificationCalls[ 0 ] ).toEqual(
+				viewNotificationCalls[ 1 ]
+			);
 		} );
 	} );
 } );

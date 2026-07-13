@@ -68,11 +68,22 @@ import {
 	ALL_CUSTOM_DIMENSIONS,
 	useBreakdownEnableHandler,
 } from '@/js/modules/analytics-4/hooks/useBreakdownEnableHandler';
-import { DAY_IN_SECONDS, trackEvent } from '@/js/util';
+import { DAY_IN_SECONDS, trackEvent, trackEventOnce } from '@/js/util';
 import { isInsufficientPermissionsError } from '@/js/util/errors';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 
 export const AVAILABILITY_SYNC_CACHE_KEY =
 	'analytics4_site-goals_breakdown_availability-synced';
+
+// `view_notification` should only fire once a notice is actually scrolled
+// into view, so each variant is wrapped to receive an `onInView` prop.
+const BreakdownNoticeWithIntersectionObserver =
+	withIntersectionObserver( BreakdownNotice );
+const BreakdownErrorNoticeWithIntersectionObserver =
+	withIntersectionObserver( BreakdownErrorNotice );
+const BreakdownSuccessNoticeWithIntersectionObserver = withIntersectionObserver(
+	BreakdownSuccessNotice
+);
 
 interface BreakdownNoticeAreaProps {
 	origin: string;
@@ -271,7 +282,6 @@ interface UseBreakdownNoticeTrackingArgs {
 	origin: string;
 	goalTypes: GoalType[];
 	creationError: unknown;
-	noticeState: BreakdownNoticeState;
 	handleEnable: () => void;
 	onDismissComplete: () => void;
 	dismissBreakdownResult: () => void;
@@ -289,7 +299,6 @@ interface UseBreakdownNoticeTrackingArgs {
  * @param {string}   args.origin                 Notice origin, either the widget or the Side Panel.
  * @param {Array}    args.goalTypes              Goal types the notice area covers.
  * @param {*}        args.creationError          Custom dimension creation error, if any.
- * @param {?string}  args.noticeState            Resolved notice state being displayed.
  * @param {Function} args.handleEnable           Triggers the breakdown "enable" action.
  * @param {Function} args.onDismissComplete      Called once the "New" notice's dismissal is persisted.
  * @param {Function} args.dismissBreakdownResult Persists dismissal of the success/error notice.
@@ -299,7 +308,6 @@ function useBreakdownNoticeTracking( {
 	origin,
 	goalTypes,
 	creationError,
-	noticeState,
 	handleEnable,
 	onDismissComplete,
 	dismissBreakdownResult,
@@ -317,26 +325,36 @@ function useBreakdownNoticeTracking( {
 			? 'insufficient_permissions'
 			: 'setup_error';
 
-	useEffect( () => {
-		if ( noticeState === 'new' || noticeState === 'loading' ) {
-			trackEvent(
-				`${ viewContext }_site-goals-breakdown-notice`,
-				'view_notification',
-				noticeLabel
-			);
-		} else if ( noticeState === 'success' ) {
-			trackEvent(
-				`${ viewContext }_site-goals-breakdown-success-notice`,
-				'view_notification'
-			);
-		} else if ( noticeState === 'error' ) {
-			trackEvent(
-				`${ viewContext }_site-goals-breakdown-error-notice`,
-				'view_notification',
-				errorLabel
-			);
-		}
-	}, [ noticeState, viewContext, noticeLabel, errorLabel ] );
+	// `view_notification` should fire only once the notice is actually scrolled
+	// into view, not as soon as it mounts, AND only once per page load overall.
+	// The `withIntersectionObserver`-wrapped notice's `onInView` only guards the
+	// "once per *mounted instance*" case — the wrapping widget can legitimately
+	// remount this notice while the page stays open (e.g. its data briefly
+	// re-resolves to a loading/error/null branch and back), which would reset
+	// that per-instance guard. `trackEventOnce` dedupes at the module level, so
+	// it stays correct across any such remount.
+	const handleNewNoticeView = useCallback( () => {
+		trackEventOnce(
+			`${ viewContext }_site-goals-breakdown-notice`,
+			'view_notification',
+			noticeLabel
+		);
+	}, [ viewContext, noticeLabel ] );
+
+	const handleSuccessView = useCallback( () => {
+		trackEventOnce(
+			`${ viewContext }_site-goals-breakdown-success-notice`,
+			'view_notification'
+		);
+	}, [ viewContext ] );
+
+	const handleErrorView = useCallback( () => {
+		trackEventOnce(
+			`${ viewContext }_site-goals-breakdown-error-notice`,
+			'view_notification',
+			errorLabel
+		);
+	}, [ viewContext, errorLabel ] );
 
 	const handleNewNoticeConfirm = useCallback( () => {
 		trackEvent(
@@ -383,6 +401,9 @@ function useBreakdownNoticeTracking( {
 	}, [ viewContext, errorLabel, dismissBreakdownResult ] );
 
 	return {
+		handleNewNoticeView,
+		handleSuccessView,
+		handleErrorView,
 		handleNewNoticeConfirm,
 		handleNewNoticeDismiss,
 		handleSuccessDismiss,
@@ -607,6 +628,9 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 	} );
 
 	const {
+		handleNewNoticeView,
+		handleSuccessView,
+		handleErrorView,
 		handleNewNoticeConfirm,
 		handleNewNoticeDismiss,
 		handleSuccessDismiss,
@@ -616,7 +640,6 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 		origin,
 		goalTypes,
 		creationError,
-		noticeState,
 		handleEnable,
 		onDismissComplete,
 		dismissBreakdownResult,
@@ -624,23 +647,25 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 
 	if ( noticeState === 'error' ) {
 		return (
-			<BreakdownErrorNotice
+			<BreakdownErrorNoticeWithIntersectionObserver
 				className={ className }
 				error={ creationError }
 				permissionsTitle={ permissionsErrorTitle }
 				onRetry={ handleErrorRetry }
 				onDismiss={ handleErrorDismiss }
+				onInView={ handleErrorView }
 			/>
 		);
 	}
 
 	if ( noticeState === 'success' ) {
 		return (
-			<BreakdownSuccessNotice
+			<BreakdownSuccessNoticeWithIntersectionObserver
 				className={ className }
 				title={ successTitle }
 				description={ successDescription }
 				onDismiss={ handleSuccessDismiss }
+				onInView={ handleSuccessView }
 			/>
 		);
 	}
@@ -652,13 +677,14 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 		const ctaBusy = noticeState === 'loading';
 
 		return (
-			<BreakdownNotice
+			<BreakdownNoticeWithIntersectionObserver
 				className={ className }
 				{ ...noticeCopy }
 				onCTAClick={ handleNewNoticeConfirm }
 				ctaInProgress={ ctaBusy }
 				ctaDisabled={ ctaBusy }
 				onDismissComplete={ handleNewNoticeDismiss }
+				onInView={ handleNewNoticeView }
 			/>
 		);
 	}
