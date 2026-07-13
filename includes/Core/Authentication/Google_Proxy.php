@@ -140,6 +140,22 @@ class Google_Proxy {
 			throw new Exception( __( 'Missing site_id or site_code parameter for setup URL.', 'google-site-kit' ) );
 		}
 
+		if ( Feature_Flags::enabled( 'setupFlowRefreshPhase4' ) ) {
+			$query_params['steps'] = 5;
+
+			/**
+			 * Filters parameters included in the proxy setup URL.
+			 *
+			 * @since n.e.x.t
+			 *
+			 * @param array $query_params Query parameters.
+			 */
+			$query_params = apply_filters(
+				'googlesitekit_proxy_setup_url_params',
+				$query_params,
+			);
+		}
+
 		return add_query_arg(
 			$query_params,
 			$this->url(
