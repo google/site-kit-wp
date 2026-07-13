@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
@@ -256,10 +261,7 @@ describe( 'PDFSectionsSelectionPanel', () => {
 				Component: NullComponent,
 				getData: () => Promise.resolve( { data: null } ),
 				label: 'Late widget',
-				isActive: (
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The registry `select` is loosely typed.
-					select: ( storeName: string ) => any
-				) =>
+				isActive: ( select: WPDataRegistry[ 'select' ] ) =>
 					select( CORE_UI ).getValue( 'pdfLateWidgetReady' ) === true,
 			},
 		} );

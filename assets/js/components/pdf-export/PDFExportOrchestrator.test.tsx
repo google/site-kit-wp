@@ -22,6 +22,11 @@
 import { pdf } from '@react-pdf/renderer';
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
@@ -789,7 +794,8 @@ describe( 'PDFExportOrchestrator', () => {
 	describe( 'pdf.isActive on the analytics audience tiles widget', () => {
 		/**
 		 * Registers the analytics audience tiles widget in a titled Traffic
-		 * area, with the `pdf.isActive` gate.
+		 * area, with the `pdf.isActive` check that limits the PDF row to two or
+		 * more audiences.
 		 *
 		 * @since n.e.x.t
 		 *
@@ -813,10 +819,7 @@ describe( 'PDFExportOrchestrator', () => {
 				pdf: {
 					Component: NullComponent,
 					getData,
-					isActive: (
-						// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The registry `select` is loosely typed.
-						select: ( storeName: string ) => any
-					) =>
+					isActive: ( select: WPDataRegistry[ 'select' ] ) =>
 						( select( CORE_USER ).getConfiguredAudiences()
 							?.length ?? 0 ) >= 2,
 				},
