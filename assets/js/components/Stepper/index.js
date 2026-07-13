@@ -31,11 +31,19 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Success from '@/svg/icons/success.svg';
 import Tick from '@/svg/icons/tick.svg';
 import { STEP_STATUS } from './constants';
 
-export default function Stepper( { children, activeStep, className } ) {
+export default function Stepper( {
+	children,
+	activeStep,
+	className,
+	variant,
+} ) {
 	const childCount = Children.count( children );
+
+	const Icon = variant === 'rail' ? Success : Tick;
 
 	function getStepStatus( index = -1 ) {
 		if ( index < activeStep ) {
@@ -78,11 +86,18 @@ export default function Stepper( { children, activeStep, className } ) {
 	}
 
 	return (
-		<ol className={ classnames( 'googlesitekit-stepper', className ) }>
+		<ol
+			className={ classnames(
+				'googlesitekit-stepper',
+				variant && `googlesitekit-stepper--${ variant }`,
+				className
+			) }
+		>
 			{ Children.map( children, ( child, childIndex ) => {
 				const stepStatus = getStepStatus( childIndex, activeStep );
 
 				const childNumber = childIndex + 1;
+				const numberTitle = getNumberTitle( childNumber, stepStatus );
 
 				return (
 					<li
@@ -94,23 +109,21 @@ export default function Stepper( { children, activeStep, className } ) {
 					>
 						<div className="googlesitekit-stepper__step-progress">
 							<span
+								aria-label={ numberTitle }
 								className="googlesitekit-stepper__step-number"
-								title={ getNumberTitle(
-									childNumber,
-									stepStatus
-								) }
+								title={ numberTitle }
 							>
 								{ stepStatus === STEP_STATUS.COMPLETED ? (
-									<Tick />
+									<Icon />
 								) : (
-									childNumber
+									variant !== 'rail' && childNumber
 								) }
 							</span>
 							{ childNumber < childCount && (
 								<div className="googlesitekit-stepper__step-progress-line"></div>
 							) }
 						</div>
-						{ cloneElement( child, { stepStatus } ) }
+						{ cloneElement( child, { stepStatus, variant } ) }
 					</li>
 				);
 			} ) }
@@ -123,4 +136,5 @@ Stepper.propTypes = {
 	// The zero-based index of the active step. If omitted or negative, all steps are in the upcoming state. If greater than the number of steps - 1, all steps are complete.
 	activeStep: PropTypes.number,
 	className: PropTypes.string,
+	variant: PropTypes.string,
 };

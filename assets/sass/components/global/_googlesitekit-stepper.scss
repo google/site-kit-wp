@@ -126,4 +126,112 @@
 			margin-bottom: 0;
 		}
 	}
+
+	.googlesitekit-stepper--rail {
+		--googlesitekit-stepper-size: 18px;
+		--googlesitekit-stepper-small-size: 10px;
+
+		align-items: center;
+		box-sizing: content-box;
+		display: flex;
+
+		@media (min-width: $bp-tablet) {
+			align-items: stretch;
+			column-gap: 14px;
+			display: grid;
+			grid-auto-rows: 1fr;
+		}
+
+		.googlesitekit-stepper__step {
+			flex: 2 1 0;
+
+			@media (min-width: $bp-tablet) {
+				display: grid;
+				flex-grow: 1;
+				grid-template-columns: var(--googlesitekit-stepper-size) auto;
+				min-block-size: 36px;
+			}
+		}
+
+		.googlesitekit-stepper__step:first-child,
+		.googlesitekit-stepper__step:last-child {
+			flex-grow: 1;
+		}
+
+		.googlesitekit-stepper__step-info {
+			display: none;
+
+			@media (min-width: $bp-tablet) {
+				align-self: center;
+				display: block;
+			}
+		}
+
+		.googlesitekit-stepper__step-title {
+			block-size: auto;
+		}
+
+		.googlesitekit-stepper__step-progress {
+			display: flex;
+			flex-direction: row;
+			place-items: center;
+
+			@media (min-width: $bp-tablet) {
+				flex-direction: column;
+			}
+
+			&::after,
+			&::before {
+				background-color: $c-surfaces-surface-2;
+				block-size: 1px;
+				content: "";
+				display: block;
+				flex: 1 1 0;
+
+				@media (min-width: $bp-tablet) {
+					block-size: auto;
+					inline-size: 1px;
+				}
+			}
+		}
+
+		.googlesitekit-stepper__step:first-child .googlesitekit-stepper__step-progress::before,
+		.googlesitekit-stepper__step:last-child .googlesitekit-stepper__step-progress::after {
+			display: none;
+
+			@media (min-width: $bp-tablet) {
+				display: block;
+				visibility: hidden;
+			}
+		}
+
+		.googlesitekit-stepper__step-number {
+			aspect-ratio: 1 / 1;
+			background-color: $c-site-kit-sk-600;
+			block-size: auto;
+			inline-size: var(--googlesitekit-stepper-size);
+		}
+
+		.googlesitekit-stepper__step--active {
+
+			.googlesitekit-stepper__step-number {
+				background-clip: content-box;
+				box-shadow: inset 0 0 0 1px $c-site-kit-sk-600;
+				padding: calc((var(--googlesitekit-stepper-size) - var(--googlesitekit-stepper-small-size)) / 2);
+			}
+
+			.googlesitekit-stepper__step-title {
+				font-weight: $fw-medium;
+			}
+		}
+
+		.googlesitekit-stepper__step--upcoming .googlesitekit-stepper__step-number {
+			background-color: $c-site-kit-sk-200;
+			inline-size: var(--googlesitekit-stepper-small-size);
+		}
+
+		.googlesitekit-stepper__step-progress-line {
+			display: none;
+		}
+	}
 }
