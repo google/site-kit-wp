@@ -42,6 +42,7 @@ import useRetriableNotificationDismissButtonLabel from '@/js/components/notifica
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
@@ -82,25 +83,8 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-
-	const expressSetupURL = useSelect( ( select ) => {
-		const adminURL = select( CORE_SITE ).getAdminURL(
-			'googlesitekit-dashboard',
-			{
-				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
-				reAuth: true,
-			}
-		);
-
-		if ( ! adminURL ) {
-			return null;
-		}
-
-		return addQueryArgs( adminURL, {
-			expressSetup: true,
-			cta: 'newsletter',
-		} );
-	} );
+	const { activateModule } = useDispatch( CORE_MODULES );
+	const { setInternalServerError } = useDispatch( CORE_SITE );
 
 	const existingSetupURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
@@ -121,11 +105,31 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 	}, [ triggerSurvey ] );
 
 	const onExpressSetupCallback = useCallback( () => {
-		setIsSaving( true );
-		if ( expressSetupURL ) {
-			navigateTo( expressSetupURL );
+		async function navigateToExpressSetup() {
+			setIsSaving( true );
+
+			const { error, response } = await activateModule(
+				MODULE_SLUG_READER_REVENUE_MANAGER
+			);
+
+			if ( ! error ) {
+				navigateTo(
+					addQueryArgs( response.moduleReauthURL, {
+						expressSetup: true,
+						cta: 'newsletter',
+					} )
+				);
+			} else {
+				setInternalServerError( {
+					id: `${ MODULE_SLUG_READER_REVENUE_MANAGER }-setup-error`,
+					description: error.message,
+				} );
+				setIsSaving( false );
+			}
 		}
-	}, [ expressSetupURL, navigateTo ] );
+
+		navigateToExpressSetup();
+	}, [ activateModule, navigateTo, setInternalServerError ] );
 
 	const title = rrmExpressSetupEnabled
 		? __( 'Turn casual visitors into loyal readers', 'google-site-kit' )

@@ -209,6 +209,18 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		);
 		navigateToSpy.mockImplementation( () => {} );
 
+		const activateModuleSpy = jest.spyOn(
+			registry.dispatch( CORE_MODULES ),
+			'activateModule'
+		);
+		activateModuleSpy.mockResolvedValue( {
+			error: null,
+			response: {
+				moduleReauthURL:
+					'http://test.test/wp-admin/admin.php?page=googlesitekit-dashboard&slug=reader-revenue-manager&reAuth=true',
+			},
+		} );
+
 		const { getByRole, waitForRegistry } = render(
 			<ReaderRevenueManagerSetupCTABannerComponent />,
 			{
@@ -229,6 +241,9 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		} );
 
 		expect( activateModuleCallbackMock ).not.toHaveBeenCalled();
+		expect( activateModuleSpy ).toHaveBeenCalledWith(
+			MODULE_SLUG_READER_REVENUE_MANAGER
+		);
 		expect( navigateToSpy ).toHaveBeenCalledWith(
 			expect.stringContaining( 'expressSetup=true&cta=newsletter' )
 		);
