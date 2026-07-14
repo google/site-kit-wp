@@ -216,11 +216,11 @@ export function registerWidgets( widgets ) {
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) => {
-				if (
-					! select( CORE_USER ).hasAccessToShareableModule(
-						MODULE_SLUG_ANALYTICS_4
-					)
-				) {
+				const hasAccessToShareableModule = select(
+					CORE_USER
+				).hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 );
+
+				if ( ! hasAccessToShareableModule ) {
 					return false;
 				}
 
@@ -232,11 +232,11 @@ export function registerWidgets( widgets ) {
 					return false;
 				}
 
-				if (
-					select( CORE_USER ).isItemDismissed(
-						AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG
-					)
-				) {
+				const isItemDismissed = select( CORE_USER ).isItemDismissed(
+					AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG
+				);
+
+				if ( isItemDismissed !== false ) {
 					return false;
 				}
 
@@ -274,11 +274,11 @@ export function registerWidgets( widgets ) {
 					return false;
 				}
 
-				if (
-					! select( CORE_USER ).hasAccessToShareableModule(
-						MODULE_SLUG_ANALYTICS_4
-					)
-				) {
+				const hasAccessToShareableModule = select(
+					CORE_USER
+				).hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 );
+
+				if ( ! hasAccessToShareableModule ) {
 					return false;
 				}
 
@@ -290,11 +290,11 @@ export function registerWidgets( widgets ) {
 					return false;
 				}
 
-				if (
-					select( CORE_USER ).isItemDismissed(
-						AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG
-					)
-				) {
+				const isItemDismissed = select( CORE_USER ).isItemDismissed(
+					AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG
+				);
+
+				if ( isItemDismissed !== false ) {
 					return false;
 				}
 

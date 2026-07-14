@@ -80,7 +80,6 @@ export default function SecondaryUserSetupWidget( { Widget } ) {
 					Widget={ Widget }
 					errors={ setupError }
 					onRetry={ handleRetry }
-					isAudienceCreationVariant={ false }
 					onDismiss={ () =>
 						dismissItem(
 							AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG

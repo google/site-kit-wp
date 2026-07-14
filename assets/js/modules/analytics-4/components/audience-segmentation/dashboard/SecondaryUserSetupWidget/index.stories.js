@@ -113,6 +113,8 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			async function setupRegistry( registry ) {
+				fetchMock.reset();
+
 				provideModules( registry, [
 					{
 						active: true,
