@@ -37,10 +37,5 @@ export const errorLogIgnoreList: Record< string, string[] > = {
 	ALL: [
 		// See: https://core.trac.wordpress.org/ticket/62462
 		'Function _load_textdomain_just_in_time was called',
-
-		// WordPress phones home to WordPress.org for update checks, which is
-		// unreachable from the offline E2E network; the failed connection is not
-		// a Site Kit error.
-		'WordPress could not establish a secure connection to WordPress.org',
 	],
 };
