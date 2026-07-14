@@ -17,8 +17,9 @@
 /**
  * External dependencies
  */
-import { Download, Locator, Page, expect } from '@playwright/test';
+import { Download, Locator, Page, TestInfo, expect } from '@playwright/test';
 import { statSync } from 'node:fs';
+import { pdfToPng } from 'pdf-to-png-converter';
 
 /**
  * Page object for the in-app PDF generation export flow: opening the export
@@ -168,8 +169,8 @@ export class PDFGenerationPage {
 	 * Clicks "Download report" and asserts a PDF file is produced.
 	 *
 	 * Waits for the browser download, then asserts the suggested filename ends in
-	 * `.pdf` and the saved file is non-empty. It does not inspect the PDF's visual
-	 * content — that is covered by the VRT suite (#12957).
+	 * `.pdf` and the saved file is non-empty. Visual verification of the rendered
+	 * document is handled separately by `verifyPDF()`.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -187,6 +188,48 @@ export class PDFGenerationPage {
 		expect( statSync( path as string ).size ).toBeGreaterThan( 0 );
 
 		return download;
+	}
+
+	/**
+	 * Attaches the downloaded PDF to the test report and screenshots its pages.
+	 *
+	 * Attaches the file so it is downloadable from the Playwright report, then
+	 * rasterises each PDF page to a PNG and renders them in the page so a
+	 * `toHaveScreenshot` VRT baseline catches a blank or broken document.
+	 * Playwright's bundled Chromium has no PDF viewer, so the PDF is rendered to
+	 * images with `pdf-to-png-converter` (pdf.js) rather than shown in the
+	 * browser directly.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  download The completed download from `download()`.
+	 * @param  testInfo The current test's info, used to attach the file.
+	 * @return {Promise<void>} Resolves once the screenshot is taken.
+	 */
+	async verifyPDF( download: Download, testInfo: TestInfo ) {
+		const path = ( await download.path() ) as string;
+
+		await testInfo.attach( download.suggestedFilename(), {
+			path,
+			contentType: 'application/pdf',
+		} );
+
+		const pages = await pdfToPng( path, { viewportScale: 2.0 } );
+		const images = pages
+			.map( ( page ) =>
+				page.content
+					? `<img src="data:image/png;base64,${ page.content.toString(
+							'base64'
+					  ) }" style="display:block">`
+					: ''
+			)
+			.join( '' );
+
+		await this.page.setContent(
+			`<style>html,body{margin:0}</style>${ images }`
+		);
+
+		await expect( this.page ).toHaveScreenshot( { fullPage: true } );
 	}
 
 	/**
