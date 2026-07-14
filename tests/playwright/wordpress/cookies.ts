@@ -128,7 +128,7 @@ export class WordPressCookies {
 			cookies.push( {
 				...defaults,
 				name: '_wp_test_connected_modules',
-				// Encoded because the value may be JSON when modules carry settings.
+				// Encoded because the value is JSON.
 				value: encodeURIComponent( connectedModules ),
 			} );
 		}

@@ -88,10 +88,9 @@ export function withFeatureFlags( ...flags: string[] ): TestDetailsAnnotation {
 /**
  * Sets the connected modules for the test.
  *
- * Each module is either a bare slug or a `{ slug, settings }` object. When any
- * module carries settings, the whole set is encoded as JSON so the WordPress
- * side can both connect the modules and seed their settings; otherwise the
- * legacy comma-separated slug list is used.
+ * Each module is either a bare slug or a `{ slug, settings }` object; a bare
+ * slug is normalised to `{ slug }`. A module with settings is both connected and
+ * seeded with those settings on the WordPress side.
  *
  * @since 1.177.0
  * @since n.e.x.t Accepts per-module settings via `{ slug, settings }` entries.
@@ -102,25 +101,13 @@ export function withFeatureFlags( ...flags: string[] ): TestDetailsAnnotation {
 export function withConnectedModules(
 	...modules: ConnectedModule[]
 ): TestDetailsAnnotation {
-	const hasSettings = modules.some(
-		( module ) => typeof module !== 'string' && module.settings
+	const normalized = modules.map( ( module ) =>
+		typeof module === 'string' ? { slug: module } : module
 	);
-
-	const description = hasSettings
-		? JSON.stringify(
-				modules.map( ( module ) =>
-					typeof module === 'string' ? { slug: module } : module
-				)
-		  )
-		: modules
-				.map( ( module ) =>
-					typeof module === 'string' ? module : module.slug
-				)
-				.join( ANNOTATION_SEPARATOR );
 
 	return {
 		type: '_wp:connected-modules',
-		description,
+		description: JSON.stringify( normalized ),
 	};
 }
 
