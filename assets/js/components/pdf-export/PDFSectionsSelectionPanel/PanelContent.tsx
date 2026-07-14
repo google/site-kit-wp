@@ -163,12 +163,14 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 		[ setSelection ]
 	);
 
-	// Holds every widget slug that has already been selected by default. A
-	// widget is selected the first time it appears, and its slug is recorded
-	// here so that a widget which appears later (because its `pdf.isActive`
-	// reads a module setting that resolves after the panel opens) is still
-	// selected by default, while a widget the user has since deselected is not
-	// selected again. Deselections persist in `core/pdf` for the session.
+	/**
+	 * Holds every widget slug that has already been selected by default. A
+	 * widget is selected the first time it appears, and its slug is recorded
+	 * here so that a widget which appears later (because its `pdf.isActive`
+	 * reads a module setting that resolves after the panel opens) is still
+	 * selected by default, while a widget the user has since deselected is not
+	 * selected again. Deselections persist in `core/pdf` for the session.
+	 */
 	const defaultSelectedSlugsRef = useRef< Set< string > >( new Set() );
 	useEffect( () => {
 		const newWidgetSlugs = availableSections
