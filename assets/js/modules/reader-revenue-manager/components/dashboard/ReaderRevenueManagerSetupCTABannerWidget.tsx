@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
@@ -50,6 +50,8 @@ export default function ReaderRevenueManagerSetupCTABannerWidget( {
 	Widget,
 	WidgetNull,
 }: WidgetComponentProps ) {
+	const [ isInProgress, setIsInProgress ] = useState( false );
+
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { dismissPrompt } = useDispatch( CORE_USER );
@@ -69,27 +71,18 @@ export default function ReaderRevenueManagerSetupCTABannerWidget( {
 		[]
 	);
 
-	const isFetchingSetModuleActivation = useSelect(
-		( select: Select ) =>
-			select( CORE_MODULES ).isFetchingSetModuleActivation(
-				MODULE_SLUG_READER_REVENUE_MANAGER,
-				true
-			),
-		[]
-	);
+	const isFetchingSetModuleActivation = useSelect( ( select: Select ) => {
+		return select( CORE_MODULES ).isFetchingSetModuleActivation(
+			MODULE_SLUG_READER_REVENUE_MANAGER,
+			true
+		);
+	}, [] );
 
 	const isModuleConnected = useSelect(
 		( select: Select ) =>
 			select( CORE_MODULES ).isModuleConnected(
 				MODULE_SLUG_READER_REVENUE_MANAGER
 			),
-		[]
-	);
-
-	const isNavigatingToDocumentationLinkURL = useSelect(
-		( select: Select ) =>
-			documentationLinkURL &&
-			select( CORE_LOCATION ).isNavigatingTo( documentationLinkURL ),
 		[]
 	);
 
@@ -103,10 +96,8 @@ export default function ReaderRevenueManagerSetupCTABannerWidget( {
 
 	const viewOnlyDashboard = useViewOnly();
 
-	const isBusy = isFetchingSetModuleActivation || isDismissingPrompt;
-
-	const isInProgress =
-		isFetchingSetModuleActivation || isNavigatingToDocumentationLinkURL;
+	const isBusy =
+		isDismissingPrompt || isFetchingSetModuleActivation || isInProgress;
 
 	const shouldShowWidget =
 		isModuleConnected === false &&
@@ -114,11 +105,15 @@ export default function ReaderRevenueManagerSetupCTABannerWidget( {
 		viewOnlyDashboard === false;
 
 	async function handleCTAClick() {
+		setIsInProgress( true );
+
 		const { error, response } = await activateModule(
 			MODULE_SLUG_READER_REVENUE_MANAGER
 		);
 
 		if ( error ) {
+			setIsInProgress( false );
+
 			setInternalServerError( {
 				id: `${ MODULE_SLUG_READER_REVENUE_MANAGER }-setup-error`,
 				description: error.message,
