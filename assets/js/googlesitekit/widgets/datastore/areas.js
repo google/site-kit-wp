@@ -80,11 +80,13 @@ export const actions = {
 	 * @since 1.107.0 Extended to support an optional CTA component.
 	 * @since 1.110.0 Extended to support an optional filterActiveWidgets function.
 	 * @since 1.128.0 Extended to make title optional, support an optional Footer component, and added support for an optional `hasNewBadge` parameter.
+	 * @since n.e.x.t Extended to support an optional pdfReportTitle - generated PDF section title.
 	 *
 	 * @param {string}      slug                           Widget Area's slug.
 	 * @param {Object}      settings                       Widget Area's settings.
 	 * @param {string}      [settings.title]               Optional. Title for this widget area.
 	 * @param {string}      [settings.pdfTitle]            Optional. Short title used for this area's PDF export section and side-sheet checkbox.
+	 * @param {string}      [settings.pdfReportTitle]      Optional. Section title used in the generated PDF report. Falls back to `pdfTitle`, then `title`.
 	 * @param {string}      [settings.subtitle]            Optional. Subtitle for this widget area.
 	 * @param {WPComponent} [settings.Icon]                Optional. React component to render icon for this widget area.
 	 * @param {string}      [settings.style]               Optional. Widget area style (one of "boxes", "composite"). Default: "boxes".
@@ -102,6 +104,7 @@ export const actions = {
 			style = WIDGET_AREA_STYLES.BOXES,
 			title,
 			pdfTitle,
+			pdfReportTitle,
 			subtitle,
 			Icon,
 			hasNewBadge = false,
@@ -124,6 +127,7 @@ export const actions = {
 					style,
 					title,
 					pdfTitle,
+					pdfReportTitle,
 					subtitle,
 					Icon,
 					hasNewBadge,
