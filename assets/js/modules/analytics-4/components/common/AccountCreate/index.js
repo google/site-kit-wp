@@ -32,7 +32,7 @@ import {
 	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { addQueryArgs, getQueryArg } from '@wordpress/url';
+import { addQueryArgs, getQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -74,6 +74,11 @@ import TimezoneSelect from './TimezoneSelect';
 import WebDataStreamField from './WebDataStreamField';
 
 export default function AccountCreate( { className } ) {
+	const { accountCreationErrorCode, showProgress } = getQueryArgs(
+		location.href,
+		'showProgress'
+	);
+
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const setupFlowRefreshPhase4Enabled = useFeature(
 		'setupFlowRefreshPhase4'
@@ -114,7 +119,6 @@ export default function AccountCreate( { className } ) {
 	const [ , setAccountCreationErrorCode ] = useQueryArg(
 		'accountCreationErrorCode'
 	);
-	const [ showProgress ] = useQueryArg( 'showProgress' );
 	const siteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
@@ -186,10 +190,6 @@ export default function AccountCreate( { className } ) {
 
 	const isInitialSetupFlow = !! showProgress && setupFlowRefreshEnabled;
 
-	const accountCreationErrorCode = getQueryArg(
-		location.href,
-		'accountCreationErrorCode'
-	);
 	const hasAccountCreationError =
 		setupFlowRefreshEnabled && !! accountCreationErrorCode;
 
