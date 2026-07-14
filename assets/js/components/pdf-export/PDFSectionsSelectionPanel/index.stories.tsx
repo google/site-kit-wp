@@ -35,6 +35,7 @@ import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { CONTEXT_MAIN_DASHBOARD_TRAFFIC } from '@/js/googlesitekit/widgets/default-contexts';
+import { provideModules } from '@tests/js/test-utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import PDFSectionsSelectionPanel from './index';
 
@@ -79,6 +80,10 @@ export default {
 				registry
 					.dispatch( CORE_UI )
 					.setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, true );
+
+				// The panel lists a section only when its widgets' modules are
+				// connected, so provide module state for the story.
+				provideModules( registry );
 
 				const widgets = registry.dispatch( CORE_WIDGETS );
 				widgets.registerWidgetArea( 'pdfTrafficArea', {
