@@ -130,6 +130,63 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertArrayHasKey( 'popular_content', $payload[ Analytics_4::MODULE_SLUG ], 'Popular content payload should be included.' );
 	}
 
+	public function test_search_console_batch_wp_error_returns_categorized_error() {
+		$admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->authenticate_and_grant_required_scopes_for_user( $admin_id );
+
+		$this->activate_modules( Search_Console::MODULE_SLUG );
+		$this->set_active_modules( array( Search_Console::MODULE_SLUG ) );
+
+		$settings = new Search_Console_Settings( $this->options );
+		$settings->merge(
+			array(
+				'propertyID' => home_url( '/' ),
+				'ownerID'    => $admin_id,
+			)
+		);
+
+		$search_console = $this->modules->get_module( Search_Console::MODULE_SLUG );
+		$search_console->register();
+
+		FakeHttp::fake_google_http_handler(
+			$this->authentication->get_oauth_client()->get_client(),
+			function ( Request $request ) {
+				if ( 'searchconsole.googleapis.com' !== $request->getUri()->getHost() ) {
+					return new FulfilledPromise( new Response( 200 ) );
+				}
+
+				return new FulfilledPromise(
+					new Response(
+						403,
+						array( 'Content-Type' => 'application/json' ),
+						json_encode(
+							array(
+								'error' => array(
+									'code'    => 403,
+									'message' => 'Request had insufficient authentication scopes.',
+									'errors'  => array(
+										array(
+											'message' => 'Insufficient Permission',
+											'domain'  => 'global',
+											'reason'  => 'insufficientPermissions',
+										),
+									),
+								),
+							)
+						)
+					)
+				);
+			}
+		);
+
+		$data_requests = $this->create_data_requests();
+		$payload       = $data_requests->get_user_payload( $admin_id, $this->date_range );
+
+		$this->assertWPError( $payload, 'Whole-batch Search Console failure should surface as WP_Error instead of fataling.' );
+		$this->assertEquals( 'permissions_error', $payload->get_error_data()['category_id'], '403 batch failure should be categorized as a permissions error.' );
+		$this->assertEquals( Search_Console::MODULE_SLUG, $payload->get_error_data()['module_slug'], 'Categorized error should carry the Search Console module slug.' );
+	}
+
 	public function test_user_without_shared_roles_gets_empty_payload() {
 		$viewer_id = self::factory()->user->create( array( 'role' => 'editor' ) );
 
