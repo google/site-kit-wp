@@ -30,6 +30,7 @@ import {
 import {
 	createTestRegistry,
 	fireEvent,
+	provideModules,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -133,6 +134,7 @@ describe( 'PanelContent', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		provideModules( registry );
 		registerSections( registry );
 	} );
 
