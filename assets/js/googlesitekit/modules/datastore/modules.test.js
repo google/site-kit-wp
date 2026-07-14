@@ -900,6 +900,20 @@ describe( 'core/modules modules', () => {
 				).toEqual( SettingsStatusComponent );
 			} );
 
+			it( 'accepts SetupLayout for the module', () => {
+				function SetupLayout() {
+					return 'layout';
+				}
+
+				registry.dispatch( CORE_MODULES ).registerModule( moduleSlug, {
+					SetupLayout,
+				} );
+
+				expect(
+					store.getState().clientDefinitions[ moduleSlug ].SetupLayout
+				).toEqual( SetupLayout );
+			} );
+
 			it( 'accepts DashboardMainEffectComponent and DashboardEntityEffectComponent components for the module', () => {
 				function DashboardMainEffectComponent() {
 					return 'main';

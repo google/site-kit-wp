@@ -59,7 +59,7 @@ exports[`IntroModal renders ecommerce-and-lead variant when both conversion even
               <a
                 aria-label="Learn more about site goals (opens in a new tab)"
                 class="googlesitekit-cta-link"
-                href="#site-goals"
+                href="https://sitekit.withgoogle.com/support/?doc=site-goals"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -156,7 +156,7 @@ exports[`IntroModal renders ecommerce-only variant when only ecommerce conversio
               <a
                 aria-label="Learn more about site goals (opens in a new tab)"
                 class="googlesitekit-cta-link"
-                href="#site-goals"
+                href="https://sitekit.withgoogle.com/support/?doc=site-goals"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -253,7 +253,7 @@ exports[`IntroModal renders lead-only variant when only lead conversion events e
               <a
                 aria-label="Learn more about site goals (opens in a new tab)"
                 class="googlesitekit-cta-link"
-                href="#site-goals"
+                href="https://sitekit.withgoogle.com/support/?doc=site-goals"
                 rel="noopener noreferrer"
                 target="_blank"
               >

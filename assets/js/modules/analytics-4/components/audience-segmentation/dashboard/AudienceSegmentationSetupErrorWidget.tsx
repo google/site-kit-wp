@@ -84,7 +84,7 @@ const AudienceSegmentationSetupErrorWidget: FC<
 		title = __( 'Creating visitor groups failed', 'google-site-kit' );
 		descriptionText = isPermissionsError
 			? __(
-					'It seems that you don’t have the required permissions to create visitor groups. You can contact your administrator and ask for Analytics write permissions and then retry. <a>Learn more</a>',
+					'It seems that you don’t have the required permissions to create visitor groups. <br />You can contact your administrator and ask for Analytics write permissions and then retry. <a>Learn more</a>',
 					'google-site-kit'
 			  )
 			: __(

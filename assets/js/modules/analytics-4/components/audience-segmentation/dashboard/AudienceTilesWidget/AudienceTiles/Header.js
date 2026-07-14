@@ -75,6 +75,7 @@ export default function Header( {
 						// and the wrong tab will be selected when switching between audiences.
 						key={ index }
 						aria-label={ audienceName }
+						focusOnActivate={ false }
 					>
 						{ audienceName }
 						<InfoTooltip

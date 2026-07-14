@@ -16,7 +16,41 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import {
+	CONTEXT_MAIN_DASHBOARD_CONTENT,
+	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
+	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
+	CONTEXT_MAIN_DASHBOARD_SPEED,
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+} from '@/js/googlesitekit/widgets/default-contexts';
+
 export const PDF_DOWNLOAD_PANEL_OPENED_KEY = 'pdfDownloadPanelOpened';
+
+export const PDF_INTRODUCTION_OVERLAY_NOTIFICATION =
+	'pdf_introduction_overlay_notification';
+
+/**
+ * Main-dashboard context slugs in the dashboard's own order.
+ *
+ * The PDF report renders one section per selected context, in this order.
+ * Both the selection panel and the export orchestrator read this list, so the
+ * exported section order always follows the dashboard's order, whatever order
+ * the user selected the widgets in.
+ *
+ * @since n.e.x.t
+ */
+export const ORDERED_MAIN_DASHBOARD_CONTEXTS = [
+	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
+	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+	CONTEXT_MAIN_DASHBOARD_CONTENT,
+	CONTEXT_MAIN_DASHBOARD_SPEED,
+	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+];
 
 export interface PDFSectionWidget {
 	slug: string;

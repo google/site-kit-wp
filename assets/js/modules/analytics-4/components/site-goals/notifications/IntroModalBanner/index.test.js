@@ -48,11 +48,15 @@ import {
 	createTestRegistry,
 	fireEvent,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
-import IntroModal from './index';
+import IntroModal, {
+	SITE_GOALS_INTRO_MODAL_BANNER,
+	SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED,
+} from './index';
 
 jest.mock( '@/js/googlesitekit/notifications/hooks/useNotificationEvents' );
 
@@ -107,6 +111,7 @@ describe( 'IntroModal', () => {
 			dismiss: jest.fn(),
 		} );
 
+		provideSiteInfo( registry );
 		provideModules( registry, [
 			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
 		] );
@@ -335,6 +340,74 @@ describe( 'IntroModal', () => {
 		expect( scrollToSpy ).toHaveBeenCalledWith( {
 			top: 12345,
 			behavior: 'smooth',
+		} );
+	} );
+
+	it( 'saves the confirmed dismissal item before the shared dismissal item when the user clicks "Show me"', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		appendTourTarget();
+
+		const { getByRole } = render( <IntroModal />, {
+			registry,
+		} );
+
+		await waitForIntroModalToShow( getByRole );
+
+		// The click also dismisses the modal and starts the tour. The async
+		// act call lets the dismissal requests finish inside the test.
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByRole( 'button', { name: /show me/i } ) );
+		} );
+
+		// The confirmed slug must save before the shared slug. Two parallel
+		// saves can drop one, and a dropped confirmed slug makes the survey
+		// triggers read the wrong segment.
+		const dismissedSlugs = fetchMock
+			.calls( dismissItemEndpoint )
+			.map( ( [ , request ] ) => JSON.parse( request.body ).data.slug );
+		expect( dismissedSlugs ).toEqual( [
+			SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED,
+			SITE_GOALS_INTRO_MODAL_BANNER,
+		] );
+	} );
+
+	it( 'does not save the confirmed dismissal item when the user clicks "Maybe later"', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		appendTourTarget();
+
+		const { getByRole } = render( <IntroModal />, {
+			registry,
+		} );
+
+		await waitForIntroModalToShow( getByRole );
+
+		// The async act call lets the dismissal request finish inside the
+		// test.
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByRole( 'button', { name: /maybe later/i } ) );
+		} );
+
+		expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+			body: {
+				data: {
+					slug: SITE_GOALS_INTRO_MODAL_BANNER,
+					expiration: 0,
+				},
+			},
+		} );
+		expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint, {
+			body: {
+				data: {
+					slug: SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED,
+					expiration: 0,
+				},
+			},
 		} );
 	} );
 

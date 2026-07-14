@@ -49,6 +49,14 @@ import IntroModalLead from './IntroModalLead';
 import { IntroModalVariantProps } from './types';
 
 export const SITE_GOALS_INTRO_MODAL_BANNER = 'site-goals-intro-modal-banner';
+/**
+ * Dismissed-item slug that the Site Goals intro modal saves when the user
+ * clicks "Show me". Closing the modal any other way saves only
+ * `SITE_GOALS_INTRO_MODAL_BANNER`, so the survey triggers compare the two
+ * slugs to tell a user who confirmed the modal from one who dismissed it.
+ */
+export const SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED =
+	'site-goals-intro-modal-banner-confirmed';
 
 export const INTRO_MODAL_VARIANTS = {
 	ECOMMERCE: 'ecommerce',
@@ -78,7 +86,9 @@ function createModalHandlers(
 		},
 		onConfirm: () => {
 			trackEvent.confirm( label );
-			onClose();
+			// The "Show me" path saves its dismissed items inside
+			// `onShowMeCTAClicked`, so don't also call `onClose`. A second
+			// save running in parallel can drop one of the dismissed items.
 			onShowMeCTAClicked();
 		},
 		onClickLearnMore: () => {
@@ -187,7 +197,19 @@ export default function IntroModal() {
 		dismissItem( SITE_GOALS_INTRO_MODAL_BANNER );
 	}
 
+	// Save the confirmed slug before the shared slug. Each save replaces the
+	// whole dismissed-items list with the server's copy, so two in parallel
+	// can overwrite each other and drop a slug. A dropped confirmed slug
+	// makes the survey triggers read the wrong segment.
+	async function dismissConfirmedThenShared() {
+		await dismissItem( SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED );
+		dismissItem( SITE_GOALS_INTRO_MODAL_BANNER );
+	}
+
 	function handleShowMe() {
+		setIsOpen( false );
+		dismissConfirmedThenShared();
+
 		triggerOnDemandTour(
 			getSiteGoalsTour( {
 				isEcommerceOnly: !! hasEcommerceConversionReportingEventsOnly,

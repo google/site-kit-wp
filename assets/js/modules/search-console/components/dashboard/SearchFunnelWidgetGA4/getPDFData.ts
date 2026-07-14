@@ -37,6 +37,8 @@ import renderGoogleChartToDataURI, {
 } from '@/js/components/pdf-export/render-google-chart-to-data-uri';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { extractAnalytics4DashboardData } from '@/js/modules/analytics-4/utils';
@@ -56,15 +58,6 @@ import {
 	getGA4VisitorsReportOptions,
 	getSearchConsoleReportOptions,
 } from './reportOptions';
-
-/**
- * Per-metric line colors matching the dashboard's Search Funnel widget. The
- * PDF widget reads them too, so each legend swatch matches its chart line.
- */
-export const IMPRESSIONS_COLOR = '#6380b8';
-export const CLICKS_COLOR = '#4bbbbb';
-export const UNIQUE_VISITORS_COLOR = '#3c7251';
-export const KEY_EVENTS_COLOR = '#8e68cb';
 
 /**
  * The chart draws at 506 by 133, and the tile displays the image in a
@@ -210,7 +203,7 @@ interface MetricCardResult {
  * The current period draws as a solid smoothed line and the previous period as a
  * dotted line of the same color, mirroring the dashboard.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param options         Options.
  * @param options.color   Series color for both lines.
@@ -297,7 +290,7 @@ function getLineChartOptions( {
  * Accepts the dashboard's chart-data rows (a date, a tooltip, the current value
  * and the previous value) and keeps only the columns the PDF chart needs.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param dataRows     Chart data rows (without the header row).
  * @param currentLabel Column label for the current-period series.
@@ -332,7 +325,7 @@ function buildChartDataTable(
 /**
  * Renders a metric's current and previous line chart to a JPEG data URI.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param options              Options.
  * @param options.dataRows     Chart data rows (without the header row).
@@ -374,7 +367,7 @@ function renderMetricChart( {
 /**
  * Resolves a report and reads its resolved value plus any selector error.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param registry  WordPress data registry.
  * @param storeName Datastore name to query.
@@ -388,10 +381,12 @@ async function resolveReport< T = unknown >(
 	args: SearchConsoleReportOptions | Analytics4ReportOptions,
 	signal: AbortSignal
 ): Promise< { report: T | undefined; error: unknown } > {
-	await registry.resolveSelect( storeName ).getReport( args, { signal } );
+	const report = await registry
+		.resolveSelect( storeName )
+		.getReport( args, { signal } );
 
 	return {
-		report: registry.select( storeName ).getReport( args ),
+		report,
 		error: registry
 			.select( storeName )
 			.getErrorForSelector( 'getReport', [ args ] ),
@@ -404,7 +399,7 @@ async function resolveReport< T = unknown >(
  * Failures are isolated to the card: the returned `metric` and `chartImage` are
  * both `null`, so the widget skips that card.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param options                 Options for building the card.
  * @param options.report          Resolved Search Console report.
@@ -485,7 +480,7 @@ async function buildSearchConsoleCard( {
  * Failures are isolated to the card: the returned `metric` and `chartImage` are
  * both `null`, so the widget skips that card.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param options                    Options for building the card.
  * @param options.statsReport        Resolved date-series report.
@@ -584,7 +579,7 @@ async function buildAnalyticsCard( {
  * A failed report or chart render is isolated to its own metric, and the
  * widget skips that card. The loader only throws when all four metrics fail.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param params          Loader parameters.
  * @param params.registry WordPress data registry.
@@ -605,32 +600,55 @@ export default async function getPDFData( {
 
 	const url = registry.select( CORE_SITE ).getCurrentEntityURL() || undefined;
 
+	const includeGA4Reports = await registry
+		.resolveSelect( CORE_MODULES )
+		.isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+
 	const searchConsoleArgs = getSearchConsoleReportOptions( {
 		compareStartDate,
 		endDate,
 		url,
 	} );
-	const keyEventsOverviewArgs = getGA4KeyEventsOverviewReportOptions( {
+
+	const ga4ReportArgs = {
 		startDate,
 		endDate,
 		compareStartDate,
 		compareEndDate,
 		url,
-	} );
-	const keyEventsStatsArgs = getGA4KeyEventsReportOptions( {
-		startDate,
-		endDate,
-		compareStartDate,
-		compareEndDate,
-		url,
-	} );
-	const visitorsArgs = getGA4VisitorsReportOptions( {
-		startDate,
-		endDate,
-		compareStartDate,
-		compareEndDate,
-		url,
-	} );
+	};
+
+	let searchConsoleReportsToIncludeWhenAnalyticsIsActive: Promise< {
+		report: Report | undefined;
+		error: unknown;
+	} >[] = [
+		Promise.resolve( { report: undefined, error: null } ),
+		Promise.resolve( { report: undefined, error: null } ),
+		Promise.resolve( { report: undefined, error: null } ),
+	];
+
+	if ( includeGA4Reports ) {
+		searchConsoleReportsToIncludeWhenAnalyticsIsActive = [
+			resolveReport< Report >(
+				registry,
+				MODULES_ANALYTICS_4,
+				getGA4KeyEventsOverviewReportOptions( ga4ReportArgs ),
+				signal
+			),
+			resolveReport< Report >(
+				registry,
+				MODULES_ANALYTICS_4,
+				getGA4KeyEventsReportOptions( ga4ReportArgs ),
+				signal
+			),
+			resolveReport< Report >(
+				registry,
+				MODULES_ANALYTICS_4,
+				getGA4VisitorsReportOptions( ga4ReportArgs ),
+				signal
+			),
+		];
+	}
 
 	const [ searchConsole, keyEventsOverview, keyEventsStats, visitors ] =
 		await Promise.all( [
@@ -640,24 +658,7 @@ export default async function getPDFData( {
 				searchConsoleArgs,
 				signal
 			),
-			resolveReport< Report >(
-				registry,
-				MODULES_ANALYTICS_4,
-				keyEventsOverviewArgs,
-				signal
-			),
-			resolveReport< Report >(
-				registry,
-				MODULES_ANALYTICS_4,
-				keyEventsStatsArgs,
-				signal
-			),
-			resolveReport< Report >(
-				registry,
-				MODULES_ANALYTICS_4,
-				visitorsArgs,
-				signal
-			),
+			...searchConsoleReportsToIncludeWhenAnalyticsIsActive,
 		] );
 
 	if ( signal.aborted ) {
@@ -689,26 +690,29 @@ export default async function getPDFData( {
 		} );
 	}
 
-	const [ impressions, clicks, uniqueVisitors, keyEvents ] =
-		await Promise.all( [
-			buildSearchConsoleCard( {
-				report: searchConsole.report,
-				reportError: searchConsole.error,
-				metricKey: 'impressions',
-				currentLabel: __( 'Impressions', 'google-site-kit' ),
-				color: IMPRESSIONS_COLOR,
-				dateRangeLength,
-				signal,
-			} ),
-			buildSearchConsoleCard( {
-				report: searchConsole.report,
-				reportError: searchConsole.error,
-				metricKey: 'clicks',
-				currentLabel: __( 'Clicks', 'google-site-kit' ),
-				color: CLICKS_COLOR,
-				dateRangeLength,
-				signal,
-			} ),
+	const cardsToBuild: Promise< MetricCardResult >[] = [
+		buildSearchConsoleCard( {
+			report: searchConsole.report,
+			reportError: searchConsole.error,
+			metricKey: 'impressions',
+			currentLabel: __( 'Impressions', 'google-site-kit' ),
+			color: PDF_COLORS.BLUE_B_400,
+			dateRangeLength,
+			signal,
+		} ),
+		buildSearchConsoleCard( {
+			report: searchConsole.report,
+			reportError: searchConsole.error,
+			metricKey: 'clicks',
+			currentLabel: __( 'Clicks', 'google-site-kit' ),
+			color: PDF_COLORS.TEAL_T_300,
+			dateRangeLength,
+			signal,
+		} ),
+	];
+
+	if ( visitors.report ) {
+		cardsToBuild.push(
 			buildAnalyticsCard( {
 				statsReport: visitors.report,
 				statsError: visitors.error,
@@ -718,11 +722,20 @@ export default async function getPDFData( {
 				dataLabels: [ __( 'Unique visitors', 'google-site-kit' ) ],
 				tooltipDataFormats: [ numericTooltipFormatter ],
 				chartDataFormats: [ identity ],
-				color: UNIQUE_VISITORS_COLOR,
+				color: PDF_COLORS.SITE_KIT_SK_500,
 				dateRangeLength,
 				referenceDate,
 				signal,
-			} ),
+			} )
+		);
+	} else {
+		cardsToBuild.push(
+			Promise.resolve( { metric: null, chartImage: null } )
+		);
+	}
+
+	if ( keyEventsStats.report && keyEventsOverview.report ) {
+		cardsToBuild.push(
 			buildAnalyticsCard( {
 				statsReport: keyEventsStats.report,
 				statsError: keyEventsStats.error,
@@ -738,12 +751,20 @@ export default async function getPDFData( {
 					percentageTooltipFormatter,
 				],
 				chartDataFormats: [ identity, ( x ) => x * 100 ],
-				color: KEY_EVENTS_COLOR,
+				color: PDF_COLORS.VIOLET_V_300,
 				dateRangeLength,
 				referenceDate,
 				signal,
-			} ),
-		] );
+			} )
+		);
+	} else {
+		cardsToBuild.push(
+			Promise.resolve( { metric: null, chartImage: null } )
+		);
+	}
+
+	const [ impressions, clicks, uniqueVisitors, keyEvents ] =
+		await Promise.all( cardsToBuild );
 
 	if ( signal.aborted ) {
 		return { data: null };

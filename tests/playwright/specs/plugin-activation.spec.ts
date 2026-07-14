@@ -77,7 +77,7 @@ test.describe( 'plugin activation', details, () => {
 
 	test(
 		'should lead to the splash screen',
-		makeSetupTest( 'Set up Site Kit' )
+		makeSetupTest( 'Let’s get started!' )
 	);
 
 	test(

@@ -185,7 +185,7 @@ type BreakdownReportOptions = ReturnType< typeof getBreakdownReportOptions >;
  * per form independently: a combined report's first row per form would be the
  * busiest provider-and-page pair, not the busiest of each.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param {Object}        dates               Date range with `startDate` and `endDate`.
  * @param {string}        customDimensionSlug Form ID custom dimension slug.
@@ -254,7 +254,7 @@ type FormPagePathsMap = Record< string, string[] >;
  * with its originating provider slug (e.g. `wpforms`, `optin-monster`) without
  * any server-side plugin detection.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param {Object}        dates               Date range with `startDate` and `endDate`.
  * @param {string}        customDimensionSlug Form ID custom dimension slug.
@@ -397,7 +397,7 @@ const baseInitialState: State = {
  * report shape over the same events and date range; only the options builder
  * (and therefore the second dimension) differs.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param {Object}        registry            WordPress data registry.
  * @param {Function}      optionsBuilder      Builds the report options to resolve.
@@ -720,7 +720,7 @@ const baseSelectors = {
 	 * (e.g. `wpforms`, `optin-monster`). This needs no server-side plugin
 	 * detection: the source is already attached to the event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.183.0
 	 *
 	 * @param {Object}        state               Data store's state.
 	 * @param {string}        customDimensionSlug Form ID custom dimension slug.
