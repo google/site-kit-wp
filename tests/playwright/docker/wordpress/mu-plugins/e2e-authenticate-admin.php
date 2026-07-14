@@ -32,6 +32,12 @@ if ( ! empty( $_COOKIE['_wp_test_user'] ) ) {
 		if ( isset( $decoded['lastName'] ) && is_string( $decoded['lastName'] ) ) {
 			$e2e_test_user['lastName'] = sanitize_text_field( $decoded['lastName'] );
 		}
+
+		if ( isset( $decoded['dismissedItems'] ) && is_array( $decoded['dismissedItems'] ) ) {
+			$e2e_test_user['dismissedItems'] = array_values(
+				array_filter( array_map( 'sanitize_key', $decoded['dismissedItems'] ) )
+			);
+		}
 	} else {
 		$e2e_test_user['login'] = sanitize_user( $raw_user, true );
 	}
@@ -90,6 +96,38 @@ add_action(
 		if ( isset( $user->data ) && is_object( $user->data ) ) {
 			$user->data->user_email = $sanitized_email;
 		}
+	},
+	1
+);
+
+// Mark the requested items as dismissed for the current user, so a test can
+// land past interstitials (e.g. the shared-dashboard splash) without clicking
+// through them.
+add_action(
+	'init',
+	function () use ( $e2e_test_user ) {
+		if ( empty( $e2e_test_user['dismissedItems'] ) ) {
+			return;
+		}
+
+		$user = wp_get_current_user();
+		if ( ! $user || ! $user->ID ) {
+			return;
+		}
+
+		$items = get_user_option( 'googlesitekitpersistent_dismissed_items', $user->ID );
+		$items = is_array( $items ) ? $items : array();
+
+		// `0` never expires, matching a permanently dismissed item.
+		foreach ( $e2e_test_user['dismissedItems'] as $slug ) {
+			$items[ $slug ] = 0;
+		}
+
+		update_user_option(
+			$user->ID,
+			'googlesitekitpersistent_dismissed_items',
+			$items
+		);
 	},
 	1
 );
