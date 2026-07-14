@@ -21,7 +21,7 @@ Manages site-wide settings and information:
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 // Using selectors in components
 function MyComponent() {
@@ -42,7 +42,7 @@ Manages user-specific data and authentication:
 
 ```javascript
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 function AuthenticatedComponent() {
     const isAuthenticated = useSelect( ( select ) =>
@@ -53,7 +53,7 @@ function AuthenticatedComponent() {
         select( CORE_USER ).getKeyMetrics()
     );
     
-    const { setKeyMetrics } = useDispatch( CORE_USER );
+    const { setKeyMetricsSetting } = useDispatch( CORE_USER );
     
     if ( !isAuthenticated ) {
         return <div>Please authenticate</div>;
@@ -62,8 +62,8 @@ function AuthenticatedComponent() {
     return (
         <div>
             User metrics: {keyMetrics?.length} items
-            <button onClick={() => setKeyMetrics([])}>
-                Reset Metrics
+            <button onClick={() => setKeyMetricsSetting( 'isWidgetHidden', true )}>
+                Hide Metrics
             </button>
         </div>
     );
@@ -78,9 +78,13 @@ Each Google service module has its own datastore following a consistent pattern:
 ```javascript
 // modules/analytics-4/datastore/base.js
 import Modules from 'googlesitekit-modules';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
 
 const baseModuleStore = Modules.createModuleStore( MODULE_SLUG_ANALYTICS_4, {
+    // Explicit store name. Defaults to `modules/{slug}` if omitted.
+    storeName: MODULES_ANALYTICS_4,
+
     // Settings managed by this module
     settingSlugs: [
         'accountID',
@@ -109,7 +113,7 @@ const baseModuleStore = Modules.createModuleStore( MODULE_SLUG_ANALYTICS_4, {
 #### Using Module Datastores in Components
 ```javascript
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 function AnalyticsSettings() {
     // Selectors: Reading data from the store
@@ -158,7 +162,7 @@ function AnalyticsSettings() {
 Settings stores are created using the `createSettingsStore` factory:
 
 ```javascript
-import { createSettingsStore } from '../../../googlesitekit/data/create-settings-store';
+import { createSettingsStore } from '@/js/googlesitekit/data/create-settings-store';
 
 const settingsStore = createSettingsStore(
     'modules',        // type: 'core' or 'modules'
@@ -321,7 +325,7 @@ const measurementID = useSelect( ( select ) =>
 Fetch stores handle asynchronous API operations and are created using the `createFetchStore` factory:
 
 ```javascript
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 
 const fetchGetSettingsStore = createFetchStore( {
     baseName: 'getSettings',
@@ -375,8 +379,9 @@ actions.fetchGetSettings = function* ( ...args ) {
     // Start fetch (sets loading state)
     yield { type: 'START_FETCH_GET_SETTINGS', payload: { params } };
     
-    // Clear any previous errors
-    yield clearError( 'getSettings', args );
+    // Clear any previous errors. Fetch stores clear an action or selector
+    // error depending on the base name; here getSettings is a selector.
+    yield clearSelectorError( 'getSettings', args );
     
     try {
         // Call the control to make API request
@@ -545,7 +550,7 @@ const isLoading = select( STORE_NAME ).isFetchingGetReport(
 The `createErrorStore` factory provides centralized error handling for any datastore:
 
 ```javascript
-import { createErrorStore } from '../../../googlesitekit/data/create-error-store';
+import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
 
 // Create error store for a specific store
 const errorStore = createErrorStore( STORE_NAME );
@@ -560,18 +565,35 @@ const store = combineStores(
 
 #### Error Store API
 
+Errors are tracked in two separate slices: one for selectors and one for
+actions. Each slice has its own set/clear actions, keyed by base name and args.
+(Most components never dispatch these directly — fetch stores set selector/action
+errors automatically, and components read them via the selectors below.)
+
 **Actions:**
 ```javascript
-const { receiveError, clearError, clearErrors } = useDispatch( STORE_NAME );
+const {
+    setErrorForSelector,
+    setErrorForAction,
+    clearSelectorError,
+    clearActionError,
+    clearSelectorErrors,
+    clearActionErrors,
+} = useDispatch( STORE_NAME );
 
-// Store an error for a specific selector/action
-receiveError( error, 'getSettings', [] );
+// Store an error for a specific selector (args default to `[]`)
+setErrorForSelector( error, 'getSettings', [] );
 
-// Clear specific error
-clearError( 'getSettings', [] );
+// Store an error for a specific action
+setErrorForAction( error, 'saveSettings', [ values ] );
 
-// Clear all errors for a base name
-clearErrors( 'getSettings' );
+// Clear the error for a specific selector / action and args
+clearSelectorError( 'getSettings', [] );
+clearActionError( 'saveSettings', [ values ] );
+
+// Clear all selector / action errors (optionally filtered by base name)
+clearSelectorErrors( 'getSettings' );
+clearActionErrors();
 ```
 
 **Selectors:**
@@ -596,9 +618,9 @@ const hasErrors = useSelect( ( select ) =>
     select( STORE_NAME ).hasErrors()
 );
 
-// Get metadata for an error (baseName and args)
+// Get metadata for a selector error (baseName and args)
 const errorMeta = useSelect( ( select ) =>
-    select( STORE_NAME ).getMetaDataForError( error )
+    select( STORE_NAME ).getMetaDataForSelectorError( error )
 );
 
 // Get selector data for error retry functionality
@@ -621,7 +643,7 @@ const key = generateErrorKey( 'getReport', [ startDate, endDate, metrics ] );
 The `createExistingTagStore` factory detects existing tracking tags on a website:
 
 ```javascript
-import { createExistingTagStore } from '../../../googlesitekit/data/create-existing-tag-store';
+import { createExistingTagStore } from '@/js/googlesitekit/data/create-existing-tag-store';
 
 const existingTagStore = createExistingTagStore( {
     storeName: STORE_NAME,
@@ -674,7 +696,7 @@ const hasExistingTag = useSelect( ( select ) =>
 The `createNotificationsStore` factory manages server-side notifications:
 
 ```javascript
-import { createNotificationsStore } from '../../../googlesitekit/data/create-notifications-store';
+import { createNotificationsStore } from '@/js/googlesitekit/data/create-notifications-store';
 
 const notificationsStore = createNotificationsStore(
     'modules',           // type: 'core' or 'modules'
@@ -717,7 +739,7 @@ const notifications = Object.values( state.serverNotifications );
 The `createSnapshotStore` factory provides state persistence across page reloads:
 
 ```javascript
-import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
+import { createSnapshotStore } from '@/js/googlesitekit/data/create-snapshot-store';
 
 const snapshotStore = createSnapshotStore( STORE_NAME );
 
@@ -763,7 +785,7 @@ import {
     snapshotAllStores, 
     restoreAllSnapshots, 
     getStoresWithSnapshots 
-} from '../../../googlesitekit/data/create-snapshot-store';
+} from '@/js/googlesitekit/data/create-snapshot-store';
 
 // Create snapshots for all supporting stores
 await snapshotAllStores();
@@ -780,7 +802,7 @@ const storesWithSnapshots = getStoresWithSnapshots();
 The `createReducer` utility enables immutable state updates using Immer:
 
 ```javascript
-import { createReducer } from '../../../googlesitekit/data/create-reducer';
+import { createReducer } from 'googlesitekit-data';
 
 // Create an Immer-enabled reducer
 const reducer = createReducer( ( state, { type, payload } ) => {
@@ -853,10 +875,10 @@ Most Site Kit datastores combine several factories:
 
 ```javascript
 import { combineStores } from 'googlesitekit-data';
-import { createSettingsStore } from '../../../googlesitekit/data/create-settings-store';
-import { createErrorStore } from '../../../googlesitekit/data/create-error-store';
-import { createNotificationsStore } from '../../../googlesitekit/data/create-notifications-store';
-import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
+import { createSettingsStore } from '@/js/googlesitekit/data/create-settings-store';
+import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
+import { createNotificationsStore } from '@/js/googlesitekit/data/create-notifications-store';
+import { createSnapshotStore } from '@/js/googlesitekit/data/create-snapshot-store';
 
 const settingsStore = createSettingsStore( 'modules', 'analytics-4', 'settings', {
     settingSlugs: [ 'accountID', 'propertyID' ]
@@ -898,7 +920,7 @@ function AnalyticsSettingsComponent() {
         select( MODULES_ANALYTICS_4 ).getErrorForAction( 'saveSettings', [] )
     );
     
-    const { clearError } = useDispatch( MODULES_ANALYTICS_4 );
+    const { clearActionError } = useDispatch( MODULES_ANALYTICS_4 );
     
     // Notifications store selectors
     const notifications = useSelect( ( select ) =>
@@ -920,7 +942,7 @@ function AnalyticsSettingsComponent() {
             {saveError && (
                 <div>
                     Error: {saveError.message}
-                    <button onClick={() => clearError( 'saveSettings', [] )}>
+                    <button onClick={() => clearActionError( 'saveSettings', [] )}>
                         Dismiss
                     </button>
                 </div>
@@ -1039,13 +1061,13 @@ function ComponentWithErrorHandling() {
         select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [ args ] )
     );
     
-    const { clearError } = useDispatch( MODULES_ANALYTICS_4 );
+    const { clearSelectorError } = useDispatch( MODULES_ANALYTICS_4 );
     
     if ( error ) {
         return (
             <div>
                 Error: {error.message}
-                <button onClick={() => clearError( 'getReport', [ args ] )}>
+                <button onClick={() => clearSelectorError( 'getReport', [ args ] )}>
                     Retry
                 </button>
             </div>
