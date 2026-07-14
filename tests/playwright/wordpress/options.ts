@@ -30,6 +30,27 @@ type TestUserProfile = {
 	email?: string;
 	firstName?: string;
 	lastName?: string;
+	dismissedItems?: string[];
+};
+
+/**
+ * A connected module for a test: either a bare slug, or a slug paired with the
+ * module settings to seed (e.g. an AdSense account ID).
+ *
+ * @since n.e.x.t
+ */
+export type ConnectedModule =
+	| string
+	| { slug: string; settings?: Record< string, unknown > };
+
+/**
+ * Dashboard-sharing settings for one module.
+ *
+ * @since n.e.x.t
+ */
+export type SharedModuleSettings = {
+	sharedRoles: string[];
+	management: 'all_admins' | 'owner';
 };
 
 /**
@@ -67,17 +88,60 @@ export function withFeatureFlags( ...flags: string[] ): TestDetailsAnnotation {
 /**
  * Sets the connected modules for the test.
  *
- * @since 1.177.0
+ * Each module is either a bare slug or a `{ slug, settings }` object. When any
+ * module carries settings, the whole set is encoded as JSON so the WordPress
+ * side can both connect the modules and seed their settings; otherwise the
+ * legacy comma-separated slug list is used.
  *
- * @param {string[]} modules Connected module slugs.
+ * @since 1.177.0
+ * @since n.e.x.t Accepts per-module settings via `{ slug, settings }` entries.
+ *
+ * @param {...ConnectedModule} modules Connected modules (slug or `{ slug, settings }`).
  * @return {TestDetailsAnnotation} The annotation to use for the test.
  */
 export function withConnectedModules(
-	...modules: string[]
+	...modules: ConnectedModule[]
 ): TestDetailsAnnotation {
+	const hasSettings = modules.some(
+		( module ) => typeof module !== 'string' && module.settings
+	);
+
+	const description = hasSettings
+		? JSON.stringify(
+				modules.map( ( module ) =>
+					typeof module === 'string' ? { slug: module } : module
+				)
+		  )
+		: modules
+				.map( ( module ) =>
+					typeof module === 'string' ? module : module.slug
+				)
+				.join( ANNOTATION_SEPARATOR );
+
 	return {
 		type: '_wp:connected-modules',
-		description: modules.join( ANNOTATION_SEPARATOR ),
+		description,
+	};
+}
+
+/**
+ * Sets the dashboard-sharing settings for the test.
+ *
+ * Forces the sharing settings on read so a module is shared without the
+ * save-time sanitize dropping it, letting a view-only test list a shared
+ * module's sections.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Record<string, SharedModuleSettings>} sharing Sharing settings keyed by module slug.
+ * @return {TestDetailsAnnotation} The annotation to use for the test.
+ */
+export function withSharedModules(
+	sharing: Record< string, SharedModuleSettings >
+): TestDetailsAnnotation {
+	return {
+		type: '_wp:shared-modules',
+		description: JSON.stringify( sharing ),
 	};
 }
 
