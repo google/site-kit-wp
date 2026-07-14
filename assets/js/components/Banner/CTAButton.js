@@ -47,7 +47,7 @@ export default function CTAButton( {
 	return (
 		<SpinnerButton
 			className="googlesitekit-banner__cta"
-			aria-label={ ariaLabel }
+			aria-label={ ariaLabel || null }
 			disabled={ disabled || inProgress }
 			isSaving={ inProgress }
 			onClick={ onClick }
