@@ -58,6 +58,13 @@ test.describe(
 	'PDF Generation',
 	{ annotation: [ user, featureFlags, plugins, adsenseConnected ] },
 	() => {
+		// Generating the PDF (rendering charts to images, then assembling the
+		// document) is heavy, and on slower CI runners it pushes past the default
+		// 30s test timeout — especially on the mobile project — so the download
+		// event never arrives in time. Raise the timeout to keep the
+		// download-driven cases from flaking.
+		test.describe.configure( { timeout: 90_000 } );
+
 		test(
 			'generates a report and downloads a PDF (golden path)',
 			{ annotation: [ withFixtures( 'pdf-generation/full' ) ] },
