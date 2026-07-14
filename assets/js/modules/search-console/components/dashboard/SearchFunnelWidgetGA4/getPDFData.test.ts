@@ -110,7 +110,7 @@ const visitorsArgs = getGA4VisitorsReportOptions( DATES );
  * days (impressions 20, clicks 10), so partitioning yields a clean +100%
  * change.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @return The report rows.
  */
@@ -148,7 +148,7 @@ const keyEventsStatsReport = { rows: [] };
 /**
  * Sets the global `google` object the loader reads to build chart data tables.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param  value The new `google` global, or `undefined` to remove it.
  * @return {void}
@@ -161,7 +161,7 @@ function setGoogle( value: unknown ) {
  * Dispatches the four report fixtures into the registry, so the loader
  * resolves them without fetching.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param  registry Test registry that receives the reports.
  * @return {void}

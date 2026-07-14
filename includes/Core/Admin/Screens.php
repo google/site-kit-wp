@@ -387,7 +387,7 @@ final class Screens {
 	/**
 	 * Redirects dashboard to provide a site purpose answer.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.183.0
 	 */
 	private function no_site_purpose_answer_redirect_dashboard_to_setup() {
 		wp_safe_redirect(
@@ -405,7 +405,7 @@ final class Screens {
 	/**
 	 * Redirects dashboard to complete analytics setup.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.183.0
 	 */
 	private function analytics_setup_incomplete_redirect_dashboard_to_setup() {
 		$slug          = $this->context->input()->filter( INPUT_GET, 'slug' );

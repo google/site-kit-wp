@@ -42,7 +42,7 @@ import {
  * Fires a view event on mount. Returns a `trackCancel` callback for setup
  * cancellation tracking.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param moduleSlug                        Module slug.
  * @param options                           Hook options.

@@ -1001,6 +1001,21 @@ describe( 'core/user key metrics', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
+			it( 'should return true when the key metrics widget area is hidden, regardless of user settings', () => {
+				provideSiteInfo( registry, {
+					keyMetricsSetupIsWidgetAreaHidden: true,
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+					...coreKeyMetricsExpectedResponse,
+					isWidgetHidden: false,
+				} );
+
+				expect(
+					registry.select( CORE_USER ).isKeyMetricsWidgetHidden()
+				).toBe( true );
+			} );
+
 			it( 'should return the stored value when the `setupFlowRefresh` feature flag is disabled', () => {
 				registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 					...coreKeyMetricsExpectedResponse,

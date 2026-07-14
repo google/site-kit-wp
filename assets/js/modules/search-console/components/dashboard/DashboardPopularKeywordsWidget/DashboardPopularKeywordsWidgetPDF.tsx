@@ -85,8 +85,7 @@ const DashboardPopularKeywordsWidgetPDF: FC< PDFWidgetComponentProps > = ( {
 
 	const columns: Array< PDFTableColumn< SearchQueryRow > > = [
 		{
-			// The query column has no header.
-			header: '',
+			header: __( 'Search query', 'google-site-kit' ),
 			// 66.7% of the 1084px row (723px).
 			width: '66.7%',
 			// Show the rank number before the query. The query links to its

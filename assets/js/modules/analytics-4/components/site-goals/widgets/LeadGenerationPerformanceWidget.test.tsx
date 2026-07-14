@@ -17,6 +17,7 @@
 /**
  * External dependencies
  */
+import { intersectionObserver } from '@shopify/jest-dom-mocks';
 import fetchMock from 'fetch-mock';
 
 /**
@@ -1684,5 +1685,57 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		expect(
 			queryByRole( 'tab', { name: 'Other form completions' } )
 		).not.toBeInTheDocument();
+	} );
+
+	it( 'keeps the same widget element across re-renders', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedReadyReports();
+
+		const { container, rerender, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		const widgetElement = container.querySelector(
+			'.googlesitekit-widget--analyticsLeadGenerationPerformance'
+		);
+		expect( widgetElement ).toBeInTheDocument();
+
+		rerender( <LeadGenerationPerformanceWidget { ...widgetProps } /> );
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-widget--analyticsLeadGenerationPerformance'
+			)
+		).toBe( widgetElement );
+	} );
+
+	it( 'observes the widget element after it renders', async () => {
+		intersectionObserver.mock();
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedReadyReports();
+
+		const { container, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		const observedTargets = intersectionObserver.observers.map(
+			( observer ) => observer.target
+		);
+		expect( observedTargets ).toContain(
+			container.querySelector(
+				'.googlesitekit-widget--analyticsLeadGenerationPerformance'
+			)
+		);
+
+		intersectionObserver.restore();
 	} );
 } );
