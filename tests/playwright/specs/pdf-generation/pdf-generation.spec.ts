@@ -15,37 +15,53 @@
  */
 
 /**
+ * External dependencies
+ */
+import type { Download } from '@playwright/test';
+
+/**
  * Internal dependencies
  */
 import { expect, test } from '../../playwright';
 import {
 	asUser,
+	withConnectedModules,
 	withFeatureFlags,
 	withFixtures,
 	withPlugins,
+	withSharedModules,
 } from '../../wordpress';
 import { PDFGenerationPage } from './pdf-generation-page';
 
 const user = asUser( 'admin' );
 const featureFlags = withFeatureFlags( 'pdfGeneration' );
-const plugins = withPlugins( 'proxy-auth.php', 'pdf-generation-adsense.php' );
+const plugins = withPlugins( 'proxy-auth.php' );
+
+// Connect AdSense so the export includes the Monetization section. The admin's
+// OAuth token comes from proxy-auth.php, so the AdSense reports resolve against
+// the fixtures container.
+const adsenseConnected = withConnectedModules( {
+	slug: 'adsense',
+	settings: {
+		ownerID: 1,
+		accountID: 'pub-123456789',
+		clientID: 'ca-pub-123456789',
+		accountStatus: 'approved',
+		siteStatus: 'added',
+		accountSetupComplete: true,
+		siteSetupComplete: true,
+		useSnippet: true,
+	},
+} );
 
 test.describe(
 	'PDF Generation',
-	{ annotation: [ user, featureFlags, plugins ] },
+	{ annotation: [ user, featureFlags, plugins, adsenseConnected ] },
 	() => {
-		// The cases share one WordPress instance and drive the same in-app export, so
-		// run them one at a time to avoid cross-test interference on the report and
-		// download state. Generating the PDF (rendering charts to images, then
-		// assembling the document) is heavy, and on slower CI runners it pushes past
-		// the default 30s test timeout — especially on the mobile project — so the
-		// timeout is raised to keep the download-driven cases from flaking.
-		test.describe.configure( { mode: 'serial', timeout: 90_000 } );
-
 		test(
 			'generates a report and downloads a PDF (golden path)',
 			{ annotation: [ withFixtures( 'pdf-generation/full' ) ] },
-			async ( { wp } ) => {
+			async ( { wp }, testInfo ) => {
 				await wp.visitDashboard();
 
 				const pageObject = new PDFGenerationPage( wp.page );
@@ -61,8 +77,9 @@ test.describe(
 					).toBeVisible();
 				} );
 
+				let download!: Download;
 				await wp.step( 'Download the report', async () => {
-					await pageObject.download();
+					download = await pageObject.download();
 				} );
 
 				await wp.step( 'Verify progress and success', async () => {
@@ -73,13 +90,17 @@ test.describe(
 					} );
 					await expect( pageObject.errorSnackbar ).toBeHidden();
 				} );
+
+				await wp.step( 'Verify the downloaded PDF', async () => {
+					await pageObject.verifyPDF( download, testInfo );
+				} );
 			}
 		);
 
 		test(
 			'downloads the AdSense monetization section on its own',
 			{ annotation: [ withFixtures( 'pdf-generation/full' ) ] },
-			async ( { wp } ) => {
+			async ( { wp }, testInfo ) => {
 				await wp.visitDashboard();
 
 				const pageObject = new PDFGenerationPage( wp.page );
@@ -93,11 +114,13 @@ test.describe(
 				await pageObject.deselectAllExcept( [
 					'mainDashboardMonetizationPrimary',
 				] );
-				await pageObject.download();
+				const download = await pageObject.download();
 				await expect( pageObject.successSnackbar ).toBeVisible( {
 					timeout: 30_000,
 				} );
 				await expect( pageObject.errorSnackbar ).toBeHidden();
+
+				await pageObject.verifyPDF( download, testInfo );
 			}
 		);
 
@@ -108,7 +131,7 @@ test.describe(
 					withFixtures( 'pdf-generation/single-section-failure' ),
 				],
 			},
-			async ( { wp } ) => {
+			async ( { wp }, testInfo ) => {
 				await wp.visitDashboard();
 
 				const pageObject = new PDFGenerationPage( wp.page );
@@ -117,10 +140,12 @@ test.describe(
 
 				// One section's report fails, but the export still completes and a file
 				// still downloads.
-				await pageObject.download();
+				const download = await pageObject.download();
 				await expect( pageObject.successSnackbar ).toBeVisible( {
 					timeout: 30_000,
 				} );
+
+				await pageObject.verifyPDF( download, testInfo );
 			}
 		);
 
@@ -132,7 +157,7 @@ test.describe(
 
 				const pageObject = new PDFGenerationPage( wp.page );
 
-				// Guard: no browser download should fire in the all-fail case.
+				// Track browser downloads to assert none fire in the all-fail case.
 				let downloadFired = false;
 				wp.page.on( 'download', () => {
 					downloadFired = true;
@@ -187,17 +212,33 @@ test.describe(
 	}
 );
 
-// A separate block runs as a non-authenticated editor with its own setup plugin
-// (no `proxy-auth.php`), so the dashboard is view-only. The setup plugin has the
-// admin own a connected Search Console shared with the editor role, while
-// PageSpeed stays unshared.
+// A separate block runs as a non-authenticated editor with only site-level proxy
+// credentials (no `proxy-auth.php`), so the dashboard is view-only. Search
+// Console is connected (owned by the admin, ID 1) and shared with the editor
+// role, while PageSpeed stays unshared. The editor has the shared-dashboard
+// splash pre-dismissed so it lands on the view-only dashboard directly.
 test.describe(
 	'PDF Generation (view-only)',
 	{
 		annotation: [
-			asUser( 'editor' ),
+			asUser( 'editor', {
+				dismissedItems: [ 'shared_dashboard_splash' ],
+			} ),
 			featureFlags,
-			withPlugins( 'pdf-generation-view-only.php' ),
+			withPlugins( 'proxy-credentials.php' ),
+			withConnectedModules( {
+				slug: 'search-console',
+				settings: {
+					propertyID: 'http://localhost:9002',
+					ownerID: 1,
+				},
+			} ),
+			withSharedModules( {
+				'search-console': {
+					sharedRoles: [ 'editor' ],
+					management: 'owner',
+				},
+			} ),
 		],
 	},
 	() => {
