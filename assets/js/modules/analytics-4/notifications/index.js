@@ -277,16 +277,19 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 					).hasLeadConversionReportingEvents()
 				);
 			},
-			// The signed-in user must have sufficient Analytics access. The
-			// check only works for signed-in users; it is skipped for view-only
-			// users, whose access the shared dashboard already limits.
 			async ( { select, resolveSelect } ) => {
 				await resolveSelect( CORE_USER ).getAuthentication();
 
+				// If the user is not signed in, the check is skipped.
+				//
+				// The shared dashboard already limits view-only users appropriately,
+				// we don't need to check their access here.
 				if ( ! select( CORE_USER ).isAuthenticated() ) {
 					return true;
 				}
 
+				// Make sure the user has access to the Analytics 4 module,
+				// which is required to view the Site Goals modal.
 				return (
 					( await resolveSelect( CORE_MODULES ).hasModuleAccess(
 						MODULE_SLUG_ANALYTICS_4
