@@ -515,7 +515,10 @@ const baseActions = {
 			} );
 
 			if ( insufficientPermissionsError ) {
-				return { error: insufficientPermissionsError };
+				return {
+					error: insufficientPermissionsError,
+					isAudienceCreationError: true,
+				};
 			}
 
 			yield commonActions.await(
@@ -580,7 +583,7 @@ const baseActions = {
 			);
 
 			if ( error ) {
-				return { error };
+				return { error, isAudienceCreationError: true };
 			}
 
 			// If the custom dimension was created successfully, mark it as gathering
