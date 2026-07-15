@@ -50,6 +50,17 @@ WithReconnectURL.args = {
 	},
 };
 
+export const WithTitle = Template.bind( {} );
+WithTitle.storyName = 'With Title, No Prefix, and No Retry';
+WithTitle.args = {
+	title: 'Insufficient permissions',
+	message:
+		'Your Google account does not have sufficient permissions for this Analytics property, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "admin", you can contact them for more information.',
+	noPrefix: true,
+	skipRetryMessage: true,
+};
+WithTitle.scenario = {};
+
 export default {
 	title: 'Components/ErrorNotice',
 	component: ErrorNotice,

@@ -22,10 +22,16 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { useFeature } from '@/js/hooks/useFeature';
 import { isInsufficientPermissionsError } from '@/js/util/errors';
 import { getInsufficientPermissionsErrorDescription } from '@/js/util/insufficient-permissions-error-description';
 import ErrorNotice from './ErrorNotice';
@@ -35,6 +41,10 @@ export default function StoreErrorNotices( {
 	moduleSlug,
 	storeName,
 } ) {
+	const setupFlowRefreshPhase4Enabled = useFeature(
+		'setupFlowRefreshPhase4'
+	);
+
 	const errors = useSelect( ( select ) => select( storeName ).getErrors() );
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
@@ -57,14 +67,22 @@ export default function StoreErrorNotices( {
 		} )
 
 		.map( ( error, key ) => {
-			let { message } = error;
+			const isInsufficientPermissions =
+				isInsufficientPermissionsError( error );
 
-			if ( isInsufficientPermissionsError( error ) ) {
-				message = getInsufficientPermissionsErrorDescription(
-					message,
-					module
-				);
-			}
+			const hasTitle =
+				isInsufficientPermissions && setupFlowRefreshPhase4Enabled;
+
+			const message = isInsufficientPermissions
+				? getInsufficientPermissionsErrorDescription(
+						error.message,
+						module
+				  )
+				: error.message;
+
+			const title = hasTitle
+				? __( 'Insufficient permissions', 'google-site-kit' )
+				: undefined;
 
 			return (
 				<ErrorNotice
@@ -73,6 +91,9 @@ export default function StoreErrorNotices( {
 					hasButton={ hasButton }
 					storeName={ storeName }
 					message={ message }
+					title={ title }
+					noPrefix={ hasTitle }
+					skipRetryMessage={ hasTitle }
 				/>
 			);
 		} );

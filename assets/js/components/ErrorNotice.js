@@ -43,6 +43,7 @@ export default function ErrorNotice( {
 	hasButton = false,
 	storeName,
 	message = error.message,
+	title,
 	noPrefix = false,
 	skipRetryMessage,
 	hideIcon = false,
@@ -129,6 +130,7 @@ export default function ErrorNotice( {
 		<Notice
 			className={ className }
 			type={ NOTICE_TYPES.ERROR }
+			title={ title }
 			description={
 				// The error messages that come from the server/API can contain
 				// HTML (eg. links), so we use `dangerouslySetInnerHTML` and sanitize
@@ -164,6 +166,7 @@ ErrorNotice.propTypes = {
 	hasButton: PropTypes.bool,
 	storeName: PropTypes.string,
 	message: PropTypes.string,
+	title: PropTypes.string,
 	noPrefix: PropTypes.bool,
 	skipRetryMessage: PropTypes.bool,
 	hideIcon: PropTypes.bool,
