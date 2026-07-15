@@ -7,8 +7,9 @@
 # This script:
 # 1. Starts Docker services with WP 5.2.21 (oldest supported version)
 # 2. Installs WordPress and configures it via WP-CLI
-# 3. Exports the database to backup.sql
-# 4. Tears down the containers
+# 3. Sets up WooCommerce and imports its bundled sample product data
+# 4. Exports the database to backup.sql
+# 5. Tears down the containers
 
 set -euo pipefail
 
@@ -76,12 +77,33 @@ wp post create --post_status=publish --post_title="Hello Milky Way!" --quiet
 wp post create --post_status=publish --post_title="Hello Universe!" --quiet
 wp post create --post_status=publish --post_title="Hello Spéçïåł čhāràćtęrß!" --quiet
 
-echo "Activating theme and plugin..."
+echo "Activating theme and plugins..."
 wp theme activate twentynineteen --quiet
 wp plugin activate google-site-kit --quiet
+wp plugin activate woocommerce --quiet
 
 echo "Setting permalink structure..."
 wp rewrite structure '%postname%' --hard --quiet
+
+echo "Setting up the WooCommerce store..."
+wp option update woocommerce_store_address "60 29th Street" --quiet
+wp option update woocommerce_store_city "San Francisco" --quiet
+wp option update woocommerce_default_country "US:CA" --quiet
+wp option update woocommerce_store_postcode "94110" --quiet
+wp option update woocommerce_currency "USD" --quiet
+wp option update woocommerce_allow_tracking "no" --quiet
+# Remove the redirect set on activation so a fresh test run doesn't land on the setup wizard.
+wp transient delete _wc_activation_redirect --quiet
+
+echo "Importing WooCommerce sample product data..."
+# The WordPress Importer plugin is only needed to parse the WXR file below; it's
+# removed again immediately after so it doesn't end up in the exported database
+# (it isn't bundled in the Playwright WordPress image).
+wp plugin install wordpress-importer --activate --quiet
+# Skip attachments: the sample file references images on a third-party host, and
+# fetching them would make this script slow and dependent on that host staying up.
+wp import wp-content/plugins/woocommerce/sample-data/sample_products.xml --authors=create --skip=attachment --quiet
+wp plugin uninstall wordpress-importer --deactivate --quiet
 
 # Normalize the database so the dump is deterministic across runs.
 echo "Normalizing database for deterministic output..."
