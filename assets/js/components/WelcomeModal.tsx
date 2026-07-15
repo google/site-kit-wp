@@ -47,6 +47,7 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { useFeature } from '@/js/hooks/useFeature';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
@@ -225,6 +226,13 @@ export default function WelcomeModal( {
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 	const [ , setNotification ] = useQueryArg( 'notification' );
 
+	// Pass null for the category to use the default category
+	// that is built from the view context and the notification slug.
+	const trackEvents = useNotificationEvents( id, null, {
+		confirmAction: 'confirm_notice',
+		dismissAction: 'dismiss_notice',
+	} );
+
 	useEffect( () => {
 		if (
 			modalVariant === MODAL_VARIANT.GATHERING_DATA ||
@@ -326,20 +334,12 @@ export default function WelcomeModal( {
 	}, [ viewContext ] );
 
 	const trackConfirmation = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_welcome-modal`,
-			'confirm_notice',
-			VARIANT_TRACKING_LABELS[ modalVariant ]
-		);
-	}, [ viewContext, modalVariant ] );
+		trackEvents.confirm( VARIANT_TRACKING_LABELS[ modalVariant ] );
+	}, [ trackEvents, modalVariant ] );
 
 	const trackDismissal = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_welcome-modal`,
-			'dismiss_notice',
-			VARIANT_TRACKING_LABELS[ modalVariant ]
-		);
-	}, [ viewContext, modalVariant ] );
+		trackEvents.dismiss( VARIANT_TRACKING_LABELS[ modalVariant ] );
+	}, [ trackEvents, modalVariant ] );
 
 	const handleClose = useCallback( () => {
 		trackDismissal();
