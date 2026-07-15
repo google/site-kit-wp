@@ -239,7 +239,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			// overlay above. `shouldNotificationBeAddedToQueue` already filters
 			// dismissed/still-deferred notifications out before
 			// `checkRequirements` runs, so once the 72-hour dismissal is set
-			// this branch won't run again until it expires — no separate
+			// this code won't run again until it expires. This way: no separate
 			// "already dismissed" check is needed.
 			( { select, dispatch } ) => {
 				if (
