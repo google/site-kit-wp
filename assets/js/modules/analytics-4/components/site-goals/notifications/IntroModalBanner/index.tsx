@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { ElementType } from 'react';
+import { ElementType, FC } from 'react';
 
 /**
  * Internal dependencies
@@ -103,7 +103,7 @@ interface IntroModalProps {
 	Notification: ElementType;
 }
 
-export default function IntroModal( { id, Notification }: IntroModalProps ) {
+const IntroModal: FC< IntroModalProps > = ( { id, Notification } ) => {
 	const { dismissItem, triggerOnDemandTour } = useDispatch( CORE_USER );
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 	const { setValue } = useDispatch( CORE_UI );
@@ -298,4 +298,6 @@ export default function IntroModal( { id, Notification }: IntroModalProps ) {
 	}
 
 	return null;
-}
+};
+
+export default IntroModal;
