@@ -37,11 +37,25 @@ class Authenticator implements Authenticator_Interface {
 	const ERROR_SIGNIN_FAILED   = 'googlesitekit_auth_failed';
 
 	/**
+	 * Error code used when the email-matched user has two-factor authentication enabled.
+	 *
+	 * @since n.e.x.t
+	 */
+	const ERROR_TWO_FACTOR_ENABLED = 'googlesitekit_auth_two_factor_enabled';
+
+	/**
 	 * User meta key marking users created via Sign in with Google.
 	 *
 	 * @note This option is prefixed differently so that it will persist across disconnect/reset.
 	 */
 	const CREATED_BY_META_KEY = 'googlesitekitpersistent_created_by';
+
+	/**
+	 * User meta key holding the two-factor providers the Two-Factor plugin has enabled for a user.
+	 *
+	 * @since n.e.x.t
+	 */
+	const TWO_FACTOR_ENABLED_PROVIDERS_META_KEY = '_two_factor_enabled_providers';
 
 	/**
 	 * Nonce action used by the existing-user link flow.
@@ -96,6 +110,9 @@ class Authenticator implements Authenticator_Interface {
 		$payload = $this->profile_reader->get_profile_data( $credential );
 		if ( ! is_wp_error( $payload ) ) {
 			$user = $this->find_user( $payload );
+			if ( is_wp_error( $user ) ) {
+				return $this->get_error_redirect_url( $user->get_error_code() );
+			}
 			if ( ! $user instanceof WP_User ) {
 				// We haven't found the user using their Google user id and email. Thus we need to create
 				// a new user. But if the registration is closed, we need to return an error to identify
@@ -213,9 +230,10 @@ class Authenticator implements Authenticator_Interface {
 	 * Finds an existing user using the Google user ID and email.
 	 *
 	 * @since 1.145.0
+	 * @since n.e.x.t Returns a WP_Error when the email-matched user has two-factor authentication enabled.
 	 *
 	 * @param array $payload Google auth payload.
-	 * @return WP_User|null User object if found, null otherwise.
+	 * @return WP_User|WP_Error|null User object if found, WP_Error if the email-matched user has two-factor authentication enabled, null otherwise.
 	 */
 	protected function find_user( $payload ) {
 		// Check if there are any existing WordPress users connected to this Google account.
@@ -238,6 +256,12 @@ class Authenticator implements Authenticator_Interface {
 		// Find an existing user that matches the email and link to their Google account by store their user ID in user meta.
 		$user = get_user_by( 'email', $payload['email'] );
 		if ( $user ) {
+			// Don't link an account that has two-factor authentication enabled,
+			// as signing in with Google would bypass the account's two-factor challenge.
+			if ( $this->user_has_two_factor( $user->ID ) ) {
+				return new WP_Error( self::ERROR_TWO_FACTOR_ENABLED );
+			}
+
 			$user_options = clone $this->user_options;
 			$user_options->switch_user( $user->ID );
 			$user_options->set( Hashed_User_ID::OPTION, $google_user_hashed_id );
@@ -252,6 +276,7 @@ class Authenticator implements Authenticator_Interface {
 	 * Create a new user using the Google auth payload.
 	 *
 	 * @since 1.145.0
+	 * @since n.e.x.t Disables two-factor authentication for the new user when the Two-Factor plugin is active.
 	 *
 	 * @param array $payload Google auth payload.
 	 * @return WP_User|WP_Error User object if found or created, WP_Error otherwise.
@@ -285,6 +310,8 @@ class Authenticator implements Authenticator_Interface {
 		$user_options->set( Hashed_User_ID::OPTION, $google_user_hashed_id );
 		$user_options->set( self::CREATED_BY_META_KEY, Sign_In_With_Google::MODULE_SLUG );
 
+		$this->disable_two_factor_for_new_user( $user_id );
+
 		// Add the user to the current site if it is a multisite.
 		if ( is_multisite() ) {
 			add_user_to_blog( get_current_blog_id(), $user_id, $default_role );
@@ -294,6 +321,56 @@ class Authenticator implements Authenticator_Interface {
 		wp_send_new_user_notifications( $user_id );
 
 		return get_user_by( 'id', $user_id );
+	}
+
+	/**
+	 * Checks whether the Two-Factor plugin is active.
+	 *
+	 * Detects the plugin by its Two_Factor_Core class, so any way of loading
+	 * it (a plugin, an mu-plugin, or a Composer package) counts as active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if the Two-Factor plugin is active, false otherwise.
+	 */
+	protected function is_two_factor_plugin_active(): bool {
+		return class_exists( 'Two_Factor_Core' );
+	}
+
+	/**
+	 * Checks whether the given user has two-factor authentication enabled.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id User ID.
+	 * @return bool True if the Two-Factor plugin is active and the user has two-factor authentication enabled, false otherwise.
+	 */
+	protected function user_has_two_factor( int $user_id ): bool {
+		if ( ! $this->is_two_factor_plugin_active() ) {
+			return false;
+		}
+
+		return \Two_Factor_Core::is_user_using_two_factor( $user_id ); // @phpstan-ignore class.notFound (Two_Factor_Core comes from the optional Two-Factor plugin; is_two_factor_plugin_active() confirms it exists.)
+	}
+
+	/**
+	 * Disables two-factor authentication for a newly created user.
+	 *
+	 * Accounts created by Sign in with Google rely on the two-factor
+	 * authentication of the user's Google Account, so the WordPress-level
+	 * challenge stays off to keep the Sign in with Google flow working.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id User ID.
+	 */
+	protected function disable_two_factor_for_new_user( int $user_id ): void {
+		if ( ! $this->is_two_factor_plugin_active() ) {
+			return;
+		}
+
+		// An empty provider list turns off two-factor authentication in the Two-Factor plugin.
+		update_user_meta( $user_id, self::TWO_FACTOR_ENABLED_PROVIDERS_META_KEY, array() );
 	}
 
 	/**
