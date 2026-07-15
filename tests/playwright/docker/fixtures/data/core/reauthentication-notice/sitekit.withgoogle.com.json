@@ -1,0 +1,10 @@
+{
+	"/o/oauth2/token/": {
+		"POST": {
+			"status": 200,
+			"body": {
+				"access_token": "test-access-token"
+			}
+		}
+	}
+}

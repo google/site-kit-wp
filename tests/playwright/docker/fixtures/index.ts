@@ -162,7 +162,10 @@ function lookupFixture(
 		key += '::' + body.toLowerCase();
 	}
 
-	const response = data[ url ]?.[ key ];
+	// Fall back to a method-only match when no exact body match exists, so
+	// fixtures for requests with opaque/dynamic bodies (e.g. an OAuth token
+	// exchange) don't need to replicate the request body byte-for-byte.
+	const response = data[ url ]?.[ key ] ?? data[ url ]?.[ method ];
 	if ( ! response ) {
 		global.console.log( 'Missing fixture for:\n    %s', body );
 	}
@@ -177,19 +180,20 @@ function handler( req: IncomingMessage, res: ServerResponse ) {
 
 	const jsonContentType = { 'Content-Type': 'application/json' };
 
-	// Requests to the Site Kit proxy service (e.g. core/site notifications)
-	// are made with plain WP HTTP requests that never carry the fixtures
-	// header, so respond with an empty array to keep them from erroring.
-	if ( host === 'sitekit.withgoogle.com' ) {
-		res.writeHead( 200, jsonContentType );
-		res.end( '[]' );
-		return;
-	}
-
 	const fixturesHeader = req.headers[ 'x-wp-test-fixtures' ];
 	const fixtures = Array.isArray( fixturesHeader )
 		? fixturesHeader[ 0 ]
 		: fixturesHeader;
+
+	// Requests to the Site Kit proxy service (e.g. core/site notifications)
+	// are made with plain WP HTTP requests that never carry the fixtures
+	// header, so respond with an empty array to keep them from erroring,
+	// unless a test has explicitly opted into fixtures for this host.
+	if ( host === 'sitekit.withgoogle.com' && ! fixtures ) {
+		res.writeHead( 200, jsonContentType );
+		res.end( '[]' );
+		return;
+	}
 
 	// If no fixtures are specified, return an empty response.
 	if ( ! fixtures ) {
@@ -215,6 +219,16 @@ function handler( req: IncomingMessage, res: ServerResponse ) {
 
 			const response = lookupFixture( data, host, method, url, body );
 			if ( ! response ) {
+				// Fall back to an empty array for unrecognized
+				// sitekit.withgoogle.com paths so opting into fixtures for
+				// one request doesn't break other, unrelated proxy calls
+				// made during the same test.
+				if ( host === 'sitekit.withgoogle.com' ) {
+					res.writeHead( 200, jsonContentType );
+					res.end( '[]' );
+					return;
+				}
+
 				res.writeHead( 404, jsonContentType );
 				res.end( JSON.stringify( { error: 'Fixture not found' } ) );
 				return;

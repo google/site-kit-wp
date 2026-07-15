@@ -52,7 +52,7 @@ const details: TestDetails = {
 	annotation: [ asUser( 'admin' ) ],
 };
 
-test.describe( 'plugin activation', details, () => {
+test.describe( 'Plugin activation', details, () => {
 	test.beforeEach( async ( { wp } ) => {
 		await wp.deactivatePlugin( 'google-site-kit/google-site-kit.php' );
 
