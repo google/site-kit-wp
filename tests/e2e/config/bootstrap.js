@@ -171,6 +171,21 @@ const IGNORE_CONSOLE_MESSAGES = [
 		matcher: 'match',
 		pattern: /^twenty[a-z-]+ was added to the iframe incorrectly/,
 	},
+	// Recent WordPress/Gutenberg versions add core's global styles (CSS custom
+	// properties) stylesheet to the editor iframe, logging this warning. It
+	// originates from WordPress core, not Site Kit (whose handles use the
+	// `googlesitekit-` prefix and would still surface here if misconfigured).
+	{
+		matcher: 'startsWith',
+		pattern:
+			'global-styles-css-custom-properties-inline-css was added to the iframe incorrectly',
+	},
+	// Gutenberg's api-fetch preloading middleware logs any preloaded paths that
+	// were not consumed while loading the block editor. Unrelated to Site Kit.
+	{
+		matcher: 'includes',
+		pattern: '[api-fetch][preload] Some preloads were never consumed',
+	},
 	// WordPress 6.6 logs when loading the block editor which causes console error.
 	{
 		matcher: 'startsWith',
