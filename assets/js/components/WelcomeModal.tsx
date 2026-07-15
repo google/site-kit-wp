@@ -302,12 +302,6 @@ export default function WelcomeModal( {
 	}, [ closeAndDismissModal, triggerOnDemandTour, welcomeTour ] );
 
 	const handleView = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_welcome-modal`,
-			'view_notice',
-			VARIANT_TRACKING_LABELS[ modalVariant ]
-		);
-
 		async function trackSetupEventsOnce() {
 			const startSiteSetup = await getItem( 'start_site_setup' );
 			const startUserSetup = await getItem( 'start_user_setup' );
@@ -329,7 +323,7 @@ export default function WelcomeModal( {
 		}
 
 		trackSetupEventsOnce();
-	}, [ viewContext, modalVariant ] );
+	}, [ viewContext ] );
 
 	const trackConfirmation = useCallback( () => {
 		trackEvent(
@@ -417,7 +411,12 @@ export default function WelcomeModal( {
 			: undefined;
 
 	return (
-		<Notification>
+		<Notification
+			gaTrackingEventArgs={ {
+				viewAction: 'view_notice',
+				label: VARIANT_TRACKING_LABELS[ modalVariant ],
+			} }
+		>
 			<BannerModal
 				className="googlesitekit-banner-modal--welcome-modal"
 				Graphic={ Graphic }
