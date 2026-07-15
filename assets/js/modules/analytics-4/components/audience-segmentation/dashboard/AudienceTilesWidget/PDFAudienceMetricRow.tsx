@@ -65,8 +65,9 @@ const styles = createPDFStyles( {
  * Builds the change chip's props from a metric's period-over-period change.
  *
  * The chip matches the dashboard's `ChangeBadge`. There's no chip when the
- * change can't be calculated, and `signDisplay: 'exceptZero'` adds a leading
- * `+` or `-` sign to every non-zero change.
+ * change can't be calculated. `signDisplay: 'exceptZero'` adds a leading
+ * `+` or `-` sign to every non-zero change, based on the difference between
+ * the current and previous values.
  *
  * @since n.e.x.t
  *
