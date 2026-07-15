@@ -34,7 +34,7 @@ import {
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
 import {
 	act,
@@ -455,6 +455,45 @@ describe( 'PDFExportOrchestrator', () => {
 		] );
 	} );
 
+	it( 'titles the report section from pdfReportTitle when set, overriding pdfTitle', async () => {
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		const dispatch = registry.dispatch( CORE_WIDGETS );
+		dispatch.registerWidgetArea( 'monetizationArea', {
+			title: 'Area',
+			pdfTitle: 'Revenue',
+			pdfReportTitle: 'Monetization',
+			style: 'boxes',
+			priority: 1,
+		} );
+		dispatch.assignWidgetArea(
+			'monetizationArea',
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+		);
+		dispatch.registerWidget( 'monetizationWidget', {
+			Component: NullComponent,
+			pdf: { Component: NullComponent, getData },
+		} );
+		dispatch.assignWidget( 'monetizationWidget', 'monetizationArea' );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [ 'monetizationWidget' ],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		const { props } = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
+
+		// The header chip and the body section title both read the report title.
+		expect( props.sections[ 0 ].label ).toBe( 'Monetization' );
+		expect( props.areas[ 0 ].areaTitle ).toBe( 'Monetization' );
+	} );
+
 	it( 'derives a single section for an area shared across multiple selected contexts', async () => {
 		const getData: jest.Mock = jest.fn( () =>
 			Promise.resolve( { data: { totalUsers: 100 } } )
@@ -778,9 +817,54 @@ describe( 'PDFExportOrchestrator', () => {
 		expect( activeGetData ).toHaveBeenCalledTimes( 1 );
 	} );
 
+	it( 'excludes the Top earning pages widget when AdSense is not linked to Analytics 4', async () => {
+		const getData = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+
+		const topEarningGetData = jest.fn( () =>
+			Promise.resolve( { data: null } )
+		);
+		// The Top earning pages widget only appears in the PDF when AdSense is
+		// linked to Analytics 4, using the same predicate registered on
+		// `adsenseTopEarningPagesGA4`.
+		registry.dispatch( CORE_WIDGETS ).registerWidget( 'topEarningPages', {
+			Component: NullComponent,
+			pdf: {
+				Component: NullComponent,
+				getData: topEarningGetData,
+				isActive: (
+					select: ( storeName: string ) => {
+						getAdSenseLinked: () => boolean;
+					}
+				) => select( MODULES_ANALYTICS_4 ).getAdSenseLinked() === true,
+			},
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( 'topEarningPages', 'trafficArea' );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( { adSenseLinked: false } );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [ 'trafficWidget', 'topEarningPages' ],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		expect( getData ).toHaveBeenCalledTimes( 1 );
+		expect( topEarningGetData ).not.toHaveBeenCalled();
+	} );
+
 	it( 'does not request data for a widget whose required module is disconnected', async () => {
 		provideModules( registry, [
-			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: false },
+			{ slug: MODULES_ANALYTICS_4, active: true, connected: false },
 		] );
 
 		const connectedGetData: jest.Mock = jest.fn( () =>
@@ -793,7 +877,7 @@ describe( 'PDFExportOrchestrator', () => {
 		);
 		registry.dispatch( CORE_WIDGETS ).registerWidget( 'analyticsWidget', {
 			Component: NullComponent,
-			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			modules: [ MODULES_ANALYTICS_4 ],
 			pdf: { Component: NullComponent, getData: disconnectedGetData },
 		} );
 		registry
@@ -818,16 +902,58 @@ describe( 'PDFExportOrchestrator', () => {
 		expect( connectedGetData ).toHaveBeenCalledTimes( 1 );
 	} );
 
+	it( 'includes the Top earning pages widget when AdSense is linked to Analytics 4', async () => {
+		const getData = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+
+		const topEarningGetData = jest.fn( () =>
+			Promise.resolve( { data: null } )
+		);
+		registry.dispatch( CORE_WIDGETS ).registerWidget( 'topEarningPages', {
+			Component: NullComponent,
+			pdf: {
+				Component: NullComponent,
+				getData: topEarningGetData,
+				isActive: (
+					select: ( storeName: string ) => {
+						getAdSenseLinked: () => boolean;
+					}
+				) => select( MODULES_ANALYTICS_4 ).getAdSenseLinked() === true,
+			},
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( 'topEarningPages', 'trafficArea' );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( { adSenseLinked: true } );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [ 'trafficWidget', 'topEarningPages' ],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		expect( getData ).toHaveBeenCalledTimes( 1 );
+		expect( topEarningGetData ).toHaveBeenCalledTimes( 1 );
+	} );
+
 	it( 'requests data for a widget whose required module is connected', async () => {
 		provideModules( registry, [
-			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
+			{ slug: MODULES_ANALYTICS_4, active: true, connected: true },
 		] );
 
 		const analyticsGetData: jest.Mock = jest.fn( () =>
 			Promise.resolve( { data: { totalUsers: 100 } } )
 		);
 		registerPDFWidget( 'trafficArea', 'analyticsWidget', analyticsGetData, [
-			MODULE_SLUG_ANALYTICS_4,
+			MODULES_ANALYTICS_4,
 		] );
 		registry.dispatch( CORE_PDF ).setSelection( {
 			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],

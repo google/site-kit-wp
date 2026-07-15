@@ -177,7 +177,7 @@ export default function SettingsAdmin() {
 
 			<Cell size={ 12 }>
 				<Layout
-					title={ __( 'Plugin Status', 'google-site-kit' ) }
+					title={ __( 'Plugin status', 'google-site-kit' ) }
 					header
 					rounded
 				>

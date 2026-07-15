@@ -163,21 +163,39 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 		[ setSelection ]
 	);
 
-	// Seed the selection with every available widget the first time they resolve.
-	// Subsequent toggles (including deselecting everything) persist via `core/pdf`
-	// for the rest of the session.
-	const seededRef = useRef( false );
+	/**
+	 * Holds every widget slug that has already been selected by default. A
+	 * widget is selected the first time it appears, and its slug is recorded
+	 * here so that a widget which appears later (because its `pdf.isActive`
+	 * reads a module setting that resolves after the panel opens) is still
+	 * selected by default, while a widget the user has since deselected is not
+	 * selected again. Deselections persist in `core/pdf` for the session.
+	 */
+	const defaultSelectedSlugsRef = useRef< Set< string > >( new Set() );
 	useEffect( () => {
-		if ( seededRef.current || availableSections.length === 0 ) {
+		const newWidgetSlugs = availableSections
+			.flatMap( ( section ) => section.widgetSlugs )
+			.filter(
+				( slug ) => ! defaultSelectedSlugsRef.current.has( slug )
+			);
+
+		if ( newWidgetSlugs.length === 0 ) {
 			return;
 		}
 
-		seededRef.current = true;
-		const allWidgetSlugs = availableSections.flatMap(
-			( section ) => section.widgetSlugs
+		newWidgetSlugs.forEach( ( slug ) =>
+			defaultSelectedSlugsRef.current.add( slug )
 		);
-		commitSelection( allWidgetSlugs, widgetContext );
-	}, [ availableSections, commitSelection, widgetContext ] );
+		commitSelection(
+			[ ...selectedWidgetSlugs, ...newWidgetSlugs ],
+			widgetContext
+		);
+	}, [
+		availableSections,
+		selectedWidgetSlugs,
+		commitSelection,
+		widgetContext,
+	] );
 
 	const toggleWidget = useCallback(
 		( widgetSlug: string ) => {
