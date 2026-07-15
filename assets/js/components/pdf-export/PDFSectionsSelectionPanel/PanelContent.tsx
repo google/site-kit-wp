@@ -89,8 +89,9 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 					select( CORE_WIDGETS ).getWidgetAreas( contextSlug );
 
 				// Merge the context's areas into one section, so a multi-area
-				// context shows one section, not one per area. Traffic is the
-				// case, since it holds the traffic charts and the audience tiles.
+				// context shows one section, not one per area.
+				// For instance, the "Traffic" context area holds
+				// traffic charts and the audience tiles.
 				// The areas of a context share the same `pdfTitle`, so the label
 				// comes from the first area that has one.
 				let label = '';
