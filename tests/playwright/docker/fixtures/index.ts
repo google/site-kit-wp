@@ -180,6 +180,25 @@ function handler( req: IncomingMessage, res: ServerResponse ) {
 
 	const jsonContentType = { 'Content-Type': 'application/json' };
 
+	// WordPress core update checks (version, plugins, themes, translations)
+	// resolve here on the offline network. Return a well-formed "no updates"
+	// payload with every key `wp-includes/update.php` iterates, so it does not
+	// emit `foreach()` / undefined-index warnings on an empty response.
+	if ( host === 'api.wordpress.org' ) {
+		req.resume(); // Drain the request body before responding.
+		res.writeHead( 200, jsonContentType );
+		res.end(
+			JSON.stringify( {
+				offers: [],
+				translations: [],
+				plugins: {},
+				themes: {},
+				no_update: {},
+			} )
+		);
+		return;
+	}
+
 	const fixturesHeader = req.headers[ 'x-wp-test-fixtures' ];
 	const fixtures = Array.isArray( fixturesHeader )
 		? fixturesHeader[ 0 ]

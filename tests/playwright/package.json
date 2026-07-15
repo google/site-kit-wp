@@ -17,6 +17,7 @@
 		"mysql2": "^3.22.6"
 	},
 	"devDependencies": {
-		"@types/node": "^24.0.0"
+		"@types/node": "^24.0.0",
+		"pdf-to-png-converter": "^4.1.1"
 	}
 }
