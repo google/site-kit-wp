@@ -75,15 +75,26 @@ class AuthenticatorTest extends TestCase {
 		$_POST   = $this->post_data;
 	}
 
-	private function do_authenticate_user( $profile_reader_data = array() ) {
-		$user_options        = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	private function create_mock_profile_reader( $profile_reader_data ) {
 		$mock_profile_reader = $this->getMockBuilder( Profile_Reader_Interface::class )
 									->setMethods( array( 'get_profile_data' ) )
 									->getMock();
 		$mock_profile_reader->method( 'get_profile_data' )->willReturn( $profile_reader_data );
-		$authenticator = new Authenticator( $user_options, $mock_profile_reader );
+
+		return $mock_profile_reader;
+	}
+
+	private function do_authenticate_user( $profile_reader_data = array() ) {
+		$user_options  = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$authenticator = new Authenticator( $user_options, $this->create_mock_profile_reader( $profile_reader_data ) );
 
 		return $authenticator->authenticate_user( new MutableInput() );
+	}
+
+	private function create_two_factor_authenticator( $profile_reader_data ) {
+		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		return new FakeTwoFactorAuthenticator( $user_options, $this->create_mock_profile_reader( $profile_reader_data ) );
 	}
 
 	public function test_authenticate_user_fails_when_profile_reader_returns_error() {
@@ -169,6 +180,98 @@ class AuthenticatorTest extends TestCase {
 			md5( self::$new_user_payload['sub'] ),
 			$user_options->get( Hashed_User_ID::OPTION ),
 			'Newly created user should have the hashed Google user ID persisted.'
+		);
+	}
+
+	public function test_authenticate_user__errors_when_email_matched_user_has_two_factor() {
+		$user = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
+
+		$authenticator                              = $this->create_two_factor_authenticator( self::$existing_user_payload );
+		$authenticator->is_two_factor_plugin_active = true;
+		$authenticator->user_ids_with_two_factor    = array( $user->ID );
+
+		$expected = add_query_arg( 'error', 'googlesitekit_auth_two_factor_enabled', wp_login_url() );
+		$actual   = $authenticator->authenticate_user( new MutableInput() );
+
+		$this->assertEquals( $expected, $actual, 'Should redirect to login with the two-factor error when the email-matched user has two-factor authentication enabled.' );
+
+		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
+		$this->assertFalse(
+			metadata_exists( 'user', $user->ID, $user_options->get_meta_key( Hashed_User_ID::OPTION ) ),
+			'The Google account should not be linked to the user.'
+		);
+		$this->assertEquals( 0, get_current_user_id(), 'The user should not be signed in.' );
+	}
+
+	public function test_authenticate_user__links_email_matched_user_without_two_factor() {
+		$user = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
+
+		$authenticator                              = $this->create_two_factor_authenticator( self::$existing_user_payload );
+		$authenticator->is_two_factor_plugin_active = true;
+		$authenticator->user_ids_with_two_factor    = array();
+
+		$expected = admin_url( '/profile.php' );
+		$actual   = $authenticator->authenticate_user( new MutableInput() );
+
+		$this->assertEquals( $expected, $actual, 'Should redirect to profile when the email-matched user has no two-factor authentication.' );
+		$this->assertEquals( $user->ID, get_current_user_id(), 'Authenticated user ID should match the email-matched user.' );
+
+		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
+		$this->assertEquals(
+			md5( self::$existing_user_payload['sub'] ),
+			$user_options->get( Hashed_User_ID::OPTION ),
+			'The Google account should be linked to the user.'
+		);
+	}
+
+	public function test_authenticate_user__links_email_matched_user_when_two_factor_plugin_is_inactive() {
+		$user = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
+		update_user_meta( $user->ID, '_two_factor_enabled_providers', array( 'Two_Factor_Email' ) );
+
+		// The plugin-active flag stays false, and no two-factor users are
+		// faked, so the real user_has_two_factor() runs.
+		$authenticator = $this->create_two_factor_authenticator( self::$existing_user_payload );
+
+		$expected = admin_url( '/profile.php' );
+		$actual   = $authenticator->authenticate_user( new MutableInput() );
+
+		$this->assertEquals( $expected, $actual, 'Should redirect to profile when the Two-Factor plugin is inactive.' );
+		$this->assertEquals( $user->ID, get_current_user_id(), 'Authenticated user ID should match the email-matched user.' );
+	}
+
+	public function test_authenticate_user__disables_two_factor_for_new_user() {
+		add_filter( 'option_users_can_register', '__return_true' );
+
+		$authenticator                              = $this->create_two_factor_authenticator( self::$new_user_payload );
+		$authenticator->is_two_factor_plugin_active = true;
+
+		$authenticator->authenticate_user( new MutableInput() );
+
+		$user_id = get_current_user_id();
+		$this->assertNotEmpty( $user_id, 'A new user should be created and signed in.' );
+		$this->assertTrue(
+			metadata_exists( 'user', $user_id, '_two_factor_enabled_providers' ),
+			'The two-factor providers meta should be written for the new user.'
+		);
+		$this->assertEquals(
+			array(),
+			get_user_meta( $user_id, '_two_factor_enabled_providers', true ),
+			'The new user should have two-factor authentication disabled.'
+		);
+	}
+
+	public function test_authenticate_user__does_not_write_two_factor_meta_when_plugin_is_inactive() {
+		add_filter( 'option_users_can_register', '__return_true' );
+
+		$authenticator = $this->create_two_factor_authenticator( self::$new_user_payload );
+
+		$authenticator->authenticate_user( new MutableInput() );
+
+		$user_id = get_current_user_id();
+		$this->assertNotEmpty( $user_id, 'A new user should be created and signed in.' );
+		$this->assertFalse(
+			metadata_exists( 'user', $user_id, '_two_factor_enabled_providers' ),
+			'No two-factor providers meta should be written when the Two-Factor plugin is inactive.'
 		);
 	}
 
