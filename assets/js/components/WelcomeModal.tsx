@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { ElementType, ReactElement } from 'react';
+import { ElementType, FC, ReactElement } from 'react';
 
 /**
  * WordPress dependencies
@@ -168,10 +168,7 @@ interface WelcomeModalProps {
 	Notification: ElementType;
 }
 
-export default function WelcomeModal( {
-	id,
-	Notification,
-}: WelcomeModalProps ) {
+const WelcomeModal: FC< WelcomeModalProps > = ( { id, Notification } ) => {
 	const setupFlowRefreshPhase4Enabled = useFeature(
 		'setupFlowRefreshPhase4'
 	);
@@ -429,4 +426,6 @@ export default function WelcomeModal( {
 			/>
 		</Notification>
 	);
-}
+};
+
+export default WelcomeModal;
