@@ -75,7 +75,6 @@ import SiteGoalsSurveyTriggers from '@/js/modules/analytics-4/components/site-go
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { DAY_IN_SECONDS } from '@/js/util';
 import { getNavigationalScrollTop } from '@/js/util/scroll';
-import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 import { AdminScreenTooltip } from './AdminScreenTooltip';
 import CoreDashboardEffects from './CoreDashboardEffects';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
@@ -95,7 +94,6 @@ import PDFExportRoot from './pdf-export/PDFExportRoot';
 import PDFSectionsSelectionPanel from './pdf-export/PDFSectionsSelectionPanel';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
-import WelcomeModal from './WelcomeModal';
 
 function getLastWidgetAnchor( {
 	isMonetizationActive,
@@ -306,17 +304,6 @@ export default function DashboardMainApp() {
 		select( CORE_USER ).hasAccessToFeatureTour()
 	);
 
-	const showWelcomeModal = useSelect( ( select ) => {
-		if ( ! setupFlowRefreshEnabled || ! hasAccessToFeatureTour ) {
-			return false;
-		}
-
-		return (
-			select( CORE_USER ).isDataGatheringCompleteModalActive() ||
-			isInitialWelcomeModalActive()
-		);
-	} );
-
 	const hideSetupCTAs = useSelect( ( select ) => {
 		if ( ! setupFlowRefreshEnabled ) {
 			return false;
@@ -481,8 +468,6 @@ export default function DashboardMainApp() {
 					<SiteGoalsSurveyTriggers />
 				</Fragment>
 			) }
-
-			{ showWelcomeModal && <WelcomeModal /> }
 
 			<OfflineNotification />
 		</Fragment>
