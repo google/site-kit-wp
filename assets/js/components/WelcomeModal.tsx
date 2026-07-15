@@ -58,6 +58,8 @@ import { WEEK_IN_SECONDS, trackEvent } from '@/js/util';
 import WelcomeModalDataGatheringCompleteGraphic from '@/svg/graphics/welcome-modal-data-gathering-complete-graphic.svg';
 import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
 
+export const WELCOME_MODAL_NOTIFICATION = 'welcome-modal';
+
 enum MODAL_VARIANT {
 	DATA_AVAILABLE,
 	GATHERING_DATA,
