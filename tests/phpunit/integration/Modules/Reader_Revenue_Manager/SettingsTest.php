@@ -59,6 +59,7 @@ class SettingsTest extends SettingsTestCase {
 				'contentPolicyState'                => '',
 				'policyInfoLink'                    => '',
 				'ownerID'                           => 0,
+				'organizationID'                    => '',
 				'publicationID'                     => '',
 				'publicationOnboardingState'        => '',
 				'publicationOnboardingStateChanged' => false,
@@ -67,6 +68,7 @@ class SettingsTest extends SettingsTestCase {
 				'productID'                         => 'openaccess',
 				'productIDs'                        => array(),
 				'paymentOption'                     => '',
+				'configuredCTAs'                    => array(),
 			),
 			get_option( Settings::OPTION ),
 			'RRM Settings should match the default values.'
@@ -172,6 +174,41 @@ class SettingsTest extends SettingsTestCase {
 				'policyInfoLink',
 				true,
 				'',
+			),
+
+			// Validate organizationID.
+			'organizationID with valid string'             => array( 'organizationID', 'ABCD1234', 'ABCD1234' ),
+			'organizationID with empty string'             => array( 'organizationID', '', '' ),
+			'organizationID with number'                   => array( 'organizationID', 123, '' ),
+			'organizationID with boolean'                  => array( 'organizationID', true, '' ),
+			'organizationID with array'                    => array( 'organizationID', array(), '' ),
+
+			// Validate configuredCTAs.
+			'configuredCTAs with valid entries'            => array(
+				'configuredCTAs',
+				array(
+					'Reader registration' => 'newsletter-signup',
+					'Reader survey'       => 'survey',
+				),
+				array(
+					'Reader registration' => 'newsletter-signup',
+					'Reader survey'       => 'survey',
+				),
+			),
+			'configuredCTAs with empty array'              => array( 'configuredCTAs', array(), array() ),
+			'configuredCTAs with invalid type'             => array( 'configuredCTAs', 'not-an-array', array() ),
+			'configuredCTAs with number'                   => array( 'configuredCTAs', 123, array() ),
+			'configuredCTAs with invalid entries dropped'  => array(
+				'configuredCTAs',
+				array(
+					'Reader registration' => 'newsletter-signup',
+					'invalid value'       => 123,
+					'another invalid'     => array( 'survey' ),
+					0                     => 'numeric-key',
+				),
+				array(
+					'Reader registration' => 'newsletter-signup',
+				),
 			),
 		);
 	}
