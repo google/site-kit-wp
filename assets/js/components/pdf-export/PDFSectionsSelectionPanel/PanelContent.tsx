@@ -183,30 +183,31 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 		[ setSelection ]
 	);
 
-	// Select every widget the first time it appears, so a late-resolving
-	// widget is on by default. The audience tiles are the case, since they
-	// wait on the configured audiences. Once seen, a widget the user clears
-	// stays cleared.
-	const seenWidgetsRef = useRef( new Set< string >() );
+	/**
+	 * Holds every widget slug that has already been selected by default. A
+	 * widget is selected the first time it appears, and its slug is recorded
+	 * here so that a widget which appears later (because its `pdf.isActive`
+	 * reads a module setting that resolves after the panel opens) is still
+	 * selected by default, while a widget the user has since deselected is not
+	 * selected again. Deselections persist in `core/pdf` for the session.
+	 */
+	const defaultSelectedSlugsRef = useRef< Set< string > >( new Set() );
 	useEffect( () => {
 		const newWidgetSlugs = availableSections
 			.flatMap( ( section ) => section.widgetSlugs )
-			.filter( ( slug ) => ! seenWidgetsRef.current.has( slug ) );
+			.filter(
+				( slug ) => ! defaultSelectedSlugsRef.current.has( slug )
+			);
 
 		if ( newWidgetSlugs.length === 0 ) {
 			return;
 		}
 
 		newWidgetSlugs.forEach( ( slug ) =>
-			seenWidgetsRef.current.add( slug )
+			defaultSelectedSlugsRef.current.add( slug )
 		);
 		commitSelection(
-			Array.from(
-				new Set( [
-					...( selectedWidgetSlugs || [] ),
-					...newWidgetSlugs,
-				] )
-			),
+			[ ...selectedWidgetSlugs, ...newWidgetSlugs ],
 			widgetContext
 		);
 	}, [

@@ -12,31 +12,39 @@ All application-wide utility functions are stored in the **`/assets/js/util/`** 
 
 ```
 assets/js/util/
-├── index.js                          // Main utility exports
-├── api.js                            // API interaction utilities
+├── index.js                          // Main utility exports (also defines calculateChange, validateJSON, decodeHTMLEntity)
+├── api.js                            // API error tracking utilities
 ├── dates.js                          // Date manipulation functions
 ├── chart.js                          // Chart and visualization utilities
 ├── sanitize.js                       // Data sanitization functions
 ├── stringify.js                      // String formatting utilities
 ├── storage.js                        // Browser storage utilities
-├── i18n.js                          // Internationalization helpers
+├── i18n.js                           // Internationalization / number formatting helpers
 ├── markdown.js                       // Markdown processing
 ├── convert-time.js                   // Time conversion utilities
-├── urls.js                          // URL manipulation functions
+├── urls.js                           // URL manipulation functions
+├── escape-uri.ts                     // `escapeURI` tagged-template helper (TypeScript)
 ├── when-active.js                    // HOC for module activation
 ├── when-inactive.js                  // HOC for inactive states
-├── whenInViewContext.js              // Viewport intersection utilities
-├── whenScopesGranted.js              // Permission-based HOCs
+├── whenInViewContext.js              // Viewport intersection HOC
+├── whenScopesGranted.js              // Permission-based HOC
 ├── tracking/                         // Event tracking utilities
-│   ├── index.js                     // Tracking exports
-│   ├── createTrackEvent.js          // Event tracking functions
-│   ├── createTracking.js            // Tracking system setup
-│   └── constants.js                 // Tracking constants
-└── test/                            // Legacy test utilities
+│   ├── index.js                      // Tracking exports
+│   ├── createTrackEvent.js           // Event tracking functions
+│   ├── createTracking.js             // Tracking system setup
+│   ├── createDataLayerPush.js        // dataLayer push helper
+│   ├── createInitializeSnippet.js    // Snippet initialization
+│   └── constants.js                  // Tracking constants
+└── test/                             // Legacy co-located tests (Jest matches assets/**/test/*)
     ├── calculateChange.js
     ├── numFmt.js
-    └── validateJSON.js
+    ├── validateJSON.js
+    └── …                             // (and more — newer tests use co-located *.test.js)
 ```
+
+> Note: `assets/js/util/` mixes `.js` and `.ts` files as the codebase migrates to TypeScript
+> (e.g. `escape-uri.ts`, `welcome-modal.ts`). New or migrated utilities are written in TypeScript;
+> both forms are imported the same way.
 
 ### Module-Specific Utilities Location
 
@@ -53,9 +61,12 @@ assets/js/modules/{module-name}/util/
 
 **Examples**:
 - `/assets/js/modules/adsense/util/` - AdSense-specific utilities
-- `/assets/js/modules/analytics-4/util/` - Analytics 4 utilities  
+- `/assets/js/modules/analytics-4/utils/` - Analytics 4 utilities (note: this module uses the plural `utils/`)
 - `/assets/js/modules/search-console/util/` - Search Console utilities
 - `/assets/js/modules/tagmanager/util/` - Tag Manager utilities
+
+> The directory name is not perfectly consistent across modules: most use `util/`, but
+> `analytics-4` uses `utils/`. Check the specific module before assuming the path.
 
 ### Component-Specific Utilities Location
 
@@ -91,19 +102,21 @@ export {
     dateSub
 } from './dates';
 
-// Array and object utilities
+// Array and object utilities (defined directly in index.js)
 export {
     calculateChange,
     decodeHTMLEntity,
     validateJSON
 } from './index';
 
-// String utilities
-export { 
-    sanitizeHTML,
-    escapeURI,
-    stringify
-} from './sanitize';
+// HTML sanitization
+export { sanitizeHTML } from './sanitize';
+
+// String/object stringification
+export { stringifyObject } from './stringify';
+
+// URI escaping (TypeScript, imported directly — not re-exported via index.js)
+export { escapeURI } from './escape-uri';
 ```
 
 #### 2. **React Higher-Order Components** (`/assets/js/util/`)
@@ -191,24 +204,27 @@ Each module typically includes validation utilities:
 ```javascript
 // /assets/js/modules/adsense/util/validation.js
 export function isValidAccountID( accountID ) {
-    return /^pub-\d+$/.test( accountID );
+    return typeof accountID === 'string' && /^pub-\d+$/.test( accountID );
 }
 
-export function isValidAdClientID( adClientID ) {
-    return /^ca-pub-\d+$/.test( adClientID );
+export function isValidClientID( clientID ) {
+    return typeof clientID === 'string' && /^ca-pub-\d+$/.test( clientID );
 }
 
-// Module exports all validations
+// Module exports all validations via the barrel index
 // /assets/js/modules/adsense/util/index.js
-export * from './validation';
-export * from './parsing';
 export * from './is-zero-report';
+export * from './parsing';
+export * from './site-stats-data';
+export * from './status';
+export * from './validation';
+export * from './url';
 ```
 
 #### Module Data Processing Utilities
 
 ```javascript
-// /assets/js/modules/adsense/util/parsing.js
+// /assets/js/modules/adsense/util/index.js
 export function reduceAdSenseData( rows ) {
     const dataMap = [
         [
@@ -258,6 +274,10 @@ export * from './convert-time';
 export * from './dates';
 export * from './chart';
 export * from './urls';
+export * from './is-valid-numeric-id';
+export * from './isnumeric';
+export * from './safely-sort';
+export * from './partition-report';
 
 // Direct utility functions
 export function calculateChange( previous, current ) {
@@ -273,6 +293,10 @@ export function decodeHTMLEntity( str ) {
 }
 ```
 
+Note that not every utility file is re-exported through `index.js` (for example
+`escape-uri.ts` and the HOCs are imported directly), so import from the specific file
+when a helper is not available from the barrel.
+
 ### Module Utility Exports
 
 Module utilities follow a consistent export pattern:
@@ -284,9 +308,12 @@ Module utilities follow a consistent export pattern:
  */
 export * from './is-zero-report';
 export * from './parsing';
+export * from './site-stats-data';
+export * from './status';
 export * from './validation';
+export * from './url';
 
-// Module-specific functions
+// Module-specific functions defined directly in index.js
 export function reduceAdSenseData( rows ) {
     // Implementation...
 }
@@ -298,63 +325,73 @@ Component-specific utilities are typically smaller and focused:
 
 ```javascript
 // /assets/js/googlesitekit/widgets/util/index.js
-export { default as combineWidgets } from './combine-widgets';
-export { default as isInactiveWidgetState } from './is-inactive-widget-state';
-export { default as withWidgetComponentProps } from './with-widget-component-props';
-
-// Constants export
+export * from './get-widget-layout';
+export * from './combine-widgets';            // exports combineWidgets
+export * from './get-widget-component-props'; // exports withWidgetComponentProps
 export * from './constants';
+export * from './widget-modules';
+export * from './is-inactive-widget-state';   // exports isInactiveWidgetState
 ```
+
+These are named exports (e.g. `export function combineWidgets( … )`,
+`export function withWidgetComponentProps( … )`), re-exported via `export *`.
 
 ## Import and Usage Patterns
 
 ### Importing Global Utilities
 
 ```javascript
-// Import from main utility index
-import { 
-    trackEvent, 
-    calculateChange, 
+// Import from the main utility barrel (index.js) via the `@/` alias
+import {
+    trackEvent,
+    calculateChange,
     getDateString,
-    sanitizeHTML 
-} from 'googlesitekit-util';
+    sanitizeHTML
+} from '@/js/util';
 
-// Import specific utility modules
-import { getChartDifferenceArrow } from '../../../util/chart';
-import { whenActive } from '../../../util/when-active';
+// Import specific utility modules / files directly
+import { getChartDifferenceArrow } from '@/js/util/chart';
+import whenActive from '@/js/util/when-active'; // default export
+import { escapeURI } from '@/js/util/escape-uri';
 ```
 
 ### Importing Module Utilities
 
 ```javascript
-// Import module-specific utilities
-import { 
-    isValidAccountID, 
-    reduceAdSenseData 
+// Import module-specific utilities from the module's barrel
+import {
+    isValidAccountID,
+    reduceAdSenseData
 } from '../util';
 
 // Import from specific utility files
 import { isZeroReport } from '../util/is-zero-report';
-import { parseAdSenseData } from '../util/parsing';
+import { parseAccountID } from '../util/parsing';
 ```
 
 ### Import Aliases and Path Mapping
 
-Site Kit uses webpack aliases for clean imports:
+Site Kit uses a path alias for clean imports. The primary alias is `@`, which maps to the
+`assets/` directory (so utilities are imported from `@/js/util`). It is defined in
+`webpack/common.js` and mirrored in `tsconfig.json` (`"@/*": ["./assets/*"]`):
 
 ```javascript
-// Configured aliases in webpack
-resolve: {
-    alias: {
-        'googlesitekit-util': path.resolve( __dirname, 'assets/js/util' ),
-        'googlesitekit-modules': path.resolve( __dirname, 'assets/js/modules' ),
-    }
+// webpack/common.js (resolve.alias)
+alias: {
+    '@': path.resolve( rootDir, 'assets' ),
+    // …
 }
 
-// Usage with aliases
-import { trackEvent } from 'googlesitekit-util';
-import { MODULES_ANALYTICS_4 } from 'googlesitekit-modules';
+// Usage with the `@` alias
+import { trackEvent } from '@/js/util';
+import { getChartDifferenceArrow } from '@/js/util/chart';
 ```
+
+There is no `googlesitekit-util` alias. A small set of `googlesitekit-*` entry-point aliases
+does exist (e.g. `googlesitekit-api`, `googlesitekit-data`, `googlesitekit-modules`,
+`googlesitekit-widgets`, `googlesitekit-components`, `googlesitekit-notifications`) — these
+are shared webpack chunks / externals, not directory aliases — but the general-purpose
+utilities are imported via `@/js/util`.
 
 ## Best Practices for Utility Organization
 
@@ -368,7 +405,7 @@ import { MODULES_ANALYTICS_4 } from 'googlesitekit-modules';
 2. **Consistent Naming**: Follow established patterns
    - HOCs start with `when` or `with` (e.g., `whenActive`, `withWidgetComponentProps`)
    - Validation functions start with `is` (e.g., `isValidAccountID`, `isZeroReport`)
-   - Processing functions use descriptive verbs (e.g., `reduceAdSenseData`, `parseAnalyticsReport`)
+   - Processing functions use descriptive verbs (e.g., `reduceAdSenseData`, `parseAccountID`)
 
 ### Organization Guidelines
 
@@ -388,7 +425,11 @@ import { MODULES_ANALYTICS_4 } from 'googlesitekit-modules';
 
 ### Testing Utilities
 
-All utilities should have corresponding test files:
+Utilities should have corresponding tests. New tests are co-located next to the source file
+as `*.test.js` / `*.test.ts` (TypeScript utilities use `.test.ts`, e.g. `escape-uri.test.ts`).
+A legacy convention also places some tests in a `test/` subdirectory; Jest matches both via
+its `testMatch` patterns. `it`/`test` titles start with "should …"; `describe` titles stay
+plain.
 
 ```javascript
 // /assets/js/util/dates.test.js
@@ -402,6 +443,12 @@ describe( 'dates utilities', () => {
         } );
     } );
 } );
+```
+
+Run a single utility's tests with:
+
+```bash
+npm -w tests/js run test:js -- assets/js/util/dates.test.js
 ```
 
 ### Documentation Standards
