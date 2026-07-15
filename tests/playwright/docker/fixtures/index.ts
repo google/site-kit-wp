@@ -184,9 +184,31 @@ function handler( req: IncomingMessage, res: ServerResponse ) {
 	// resolve here on the offline network. Return a well-formed "no updates"
 	// payload with every key `wp-includes/update.php` iterates, so it does not
 	// emit `foreach()` / undefined-index warnings on an empty response.
+	//
+	// `core/browse-happy` is a separate endpoint (queried by
+	// `wp_check_browser_version()` for the dashboard's browser-nag widget)
+	// with its own response shape, so it needs its own well-formed payload
+	// rather than the version/plugin/theme update-check shape above.
 	if ( host === 'api.wordpress.org' ) {
 		req.resume(); // Drain the request body before responding.
 		res.writeHead( 200, jsonContentType );
+
+		if ( url.includes( '/core/browse-happy/' ) ) {
+			res.end(
+				JSON.stringify( {
+					upgrade: false,
+					insecure: false,
+					current_version: '',
+					version: '',
+					platform: '',
+					update_url: '',
+					img_src: '',
+					img_src_ssl: '',
+				} )
+			);
+			return;
+		}
+
 		res.end(
 			JSON.stringify( {
 				offers: [],
