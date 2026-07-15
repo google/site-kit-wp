@@ -17,9 +17,9 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
-import { useState } from '@wordpress/element';
+import { ElementType } from 'react';
 
 /**
  * Internal dependencies
@@ -32,6 +32,7 @@ import {
 } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 import {
@@ -68,7 +69,6 @@ type IntroModalVariantLabel =
 	typeof INTRO_MODAL_VARIANTS[ keyof typeof INTRO_MODAL_VARIANTS ];
 
 interface IntroModalTrackingEvents {
-	view: ( label: IntroModalVariantLabel ) => void;
 	confirm: ( label: IntroModalVariantLabel ) => void;
 	clickLearnMore: ( label: IntroModalVariantLabel ) => void;
 	dismiss: ( label: IntroModalVariantLabel ) => void;
@@ -81,9 +81,6 @@ function createModalHandlers(
 	onShowMeCTAClicked: () => void
 ): IntroModalVariantProps {
 	return {
-		onView: () => {
-			trackEvent.view( label );
-		},
 		onConfirm: () => {
 			trackEvent.confirm( label );
 			// The "Show me" path saves its dismissed items inside
@@ -101,10 +98,14 @@ function createModalHandlers(
 	};
 }
 
-export default function IntroModal() {
-	const [ isOpen, setIsOpen ] = useState( true );
+interface IntroModalProps {
+	id: string;
+	Notification: ElementType;
+}
 
+export default function IntroModal( { id, Notification }: IntroModalProps ) {
 	const { dismissItem, triggerOnDemandTour } = useDispatch( CORE_USER );
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 	const { setValue } = useDispatch( CORE_UI );
 
 	const breakpoint = useBreakpoint();
@@ -135,13 +136,6 @@ export default function IntroModal() {
 		[]
 	);
 
-	const isIntroModalDismissed = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).isItemDismissed(
-				SITE_GOALS_INTRO_MODAL_BANNER
-			),
-		[]
-	);
 	const hasBreakdownDimensions = useSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
@@ -176,14 +170,16 @@ export default function IntroModal() {
 	// It needs at least one detected event type. If there is none, the
 	// modal never shows, so the hook below should not load the widget
 	// areas or wait.
+	//
+	// The dismissed-item check is intentionally omitted here: `isDismissible`
+	// on the notification registration keeps the framework from mounting this
+	// component while the modal is dismissed.
 	const canShowSiteGoalsIntroModal =
 		hasEcommerceConversionReportingEvents !== undefined &&
 		hasLeadConversionReportingEvents !== undefined &&
 		( hasEcommerceConversionReportingEvents ||
 			hasLeadConversionReportingEvents ) &&
-		isIntroModalDismissed === false &&
-		! hasInsufficientAnalyticsAccess &&
-		isOpen;
+		! hasInsufficientAnalyticsAccess;
 
 	// While the modal can show, the hook loads the widget areas above and
 	// including the Site Goals section, and reports ready once the section
@@ -193,8 +189,7 @@ export default function IntroModal() {
 	);
 
 	function handleClose() {
-		setIsOpen( false );
-		dismissItem( SITE_GOALS_INTRO_MODAL_BANNER );
+		dismissNotification( id );
 	}
 
 	// Save the confirmed slug before the shared slug. Each save replaces the
@@ -203,11 +198,10 @@ export default function IntroModal() {
 	// makes the survey triggers read the wrong segment.
 	async function dismissConfirmedThenShared() {
 		await dismissItem( SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED );
-		dismissItem( SITE_GOALS_INTRO_MODAL_BANNER );
+		dismissNotification( id );
 	}
 
 	function handleShowMe() {
-		setIsOpen( false );
 		dismissConfirmedThenShared();
 
 		triggerOnDemandTour(
@@ -268,15 +262,39 @@ export default function IntroModal() {
 		hasEcommerceConversionReportingEvents &&
 		hasLeadConversionReportingEvents
 	) {
-		return <IntroModalEcommerceAndLead { ...ecommerceAndLeadHandlers } />;
+		return (
+			<Notification
+				gaTrackingEventArgs={ {
+					label: INTRO_MODAL_VARIANTS.ECOMMERCE_AND_LEAD,
+				} }
+			>
+				<IntroModalEcommerceAndLead { ...ecommerceAndLeadHandlers } />
+			</Notification>
+		);
 	}
 
 	if ( hasEcommerceConversionReportingEvents ) {
-		return <IntroModalEcommerce { ...ecommerceHandlers } />;
+		return (
+			<Notification
+				gaTrackingEventArgs={ {
+					label: INTRO_MODAL_VARIANTS.ECOMMERCE,
+				} }
+			>
+				<IntroModalEcommerce { ...ecommerceHandlers } />
+			</Notification>
+		);
 	}
 
 	if ( hasLeadConversionReportingEvents ) {
-		return <IntroModalLead { ...leadHandlers } />;
+		return (
+			<Notification
+				gaTrackingEventArgs={ {
+					label: INTRO_MODAL_VARIANTS.LEAD,
+				} }
+			>
+				<IntroModalLead { ...leadHandlers } />
+			</Notification>
+		);
 	}
 
 	return null;
