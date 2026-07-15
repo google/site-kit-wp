@@ -66,6 +66,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Gets the default value.
 	 *
 	 * @since 1.132.0
+	 * @since n.e.x.t Added the `organizationID` and `configuredCTAs` settings.
 	 *
 	 * @return array
 	 */
@@ -74,6 +75,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'contentPolicyState'                => '',
 			'policyInfoLink'                    => '',
 			'ownerID'                           => 0,
+			'organizationID'                    => '',
 			'publicationID'                     => '',
 			'publicationOnboardingState'        => '',
 			'publicationOnboardingStateChanged' => false,
@@ -82,6 +84,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'snippetMode'                       => 'post_types',
 			'postTypes'                         => array( 'post' ),
 			'productID'                         => 'openaccess',
+			'configuredCTAs'                    => array(),
 		);
 	}
 
@@ -107,6 +110,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
 	 * @since 1.132.0
+	 * @since n.e.x.t Added sanitization for the `organizationID` and `configuredCTAs` settings.
 	 *
 	 * @return callable|null
 	 */
@@ -193,7 +197,37 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				$option['policyInfoLink'] = '';
 			}
 
-			return $option;
+			return $this->sanitize_express_setup_settings( $option );
 		};
+	}
+
+	/**
+	 * Sanitizes the express setup settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $option Settings array.
+	 * @return array Sanitized settings array.
+	 */
+	private function sanitize_express_setup_settings( $option ) {
+		if ( isset( $option['organizationID'] ) && ! is_string( $option['organizationID'] ) ) {
+			$option['organizationID'] = '';
+		}
+
+		if ( isset( $option['configuredCTAs'] ) ) {
+			if ( ! is_array( $option['configuredCTAs'] ) ) {
+				$option['configuredCTAs'] = array();
+			} else {
+				$option['configuredCTAs'] = array_filter(
+					$option['configuredCTAs'],
+					function ( $value, $key ) {
+						return is_string( $key ) && is_string( $value );
+					},
+					ARRAY_FILTER_USE_BOTH
+				);
+			}
+		}
+
+		return $option;
 	}
 }
