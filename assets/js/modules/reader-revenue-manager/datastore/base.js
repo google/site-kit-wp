@@ -33,6 +33,7 @@ export default Modules.createModuleStore( MODULE_SLUG_READER_REVENUE_MANAGER, {
 		'contentPolicyState',
 		'policyInfoLink',
 		'ownerID',
+		'organizationID',
 		'publicationID',
 		'publicationOnboardingState',
 		'publicationOnboardingStateChanged',
@@ -41,5 +42,6 @@ export default Modules.createModuleStore( MODULE_SLUG_READER_REVENUE_MANAGER, {
 		'productID',
 		'productIDs',
 		'paymentOption',
+		'configuredCTAs',
 	],
 } );
