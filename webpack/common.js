@@ -249,7 +249,8 @@ const svgRule = {
 				{
 					loader: '@svgr/webpack',
 					options: {
-						// strip width & height to allow manual override using props
+						// Strip width & height attributes in SVGs to allow
+						// manual override using props.
 						dimensions: false,
 						svgoConfig,
 					},
