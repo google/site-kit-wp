@@ -170,9 +170,11 @@ exports.siteKitExternals = siteKitExternals;
 
 exports.externals = { ...siteKitExternals };
 
-// SVGR replaces its default SVGO configuration with a custom one rather than
-// merging the two. So this object sets SVGR's own defaults, `removeViewBox:
-// false` and `prefixIds`, next to the override below.
+/**
+ * SVGR replaces its default SVGO configuration with a custom one rather than
+ * merging the two. So this object sets SVGR's own defaults,
+ * `removeViewBox: false` and `prefixIds`, next to the override below.
+ */
 const svgoConfig = {
 	plugins: [
 		{
