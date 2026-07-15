@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { ReactElement } from 'react';
+import { ElementType, ReactElement } from 'react';
 
 /**
  * WordPress dependencies
@@ -28,7 +28,6 @@ import {
 	createInterpolateElement,
 	useCallback,
 	useEffect,
-	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -47,6 +46,7 @@ import {
 	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { useFeature } from '@/js/hooks/useFeature';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
@@ -162,14 +162,20 @@ function getModalDescription( {
 	}
 }
 
-export default function WelcomeModal() {
+interface WelcomeModalProps {
+	id: string;
+	Notification: ElementType;
+}
+
+export default function WelcomeModal( {
+	id,
+	Notification,
+}: WelcomeModalProps ) {
 	const setupFlowRefreshPhase4Enabled = useFeature(
 		'setupFlowRefreshPhase4'
 	);
 	const isViewOnly = useViewOnly();
 	const viewContext = useViewContext();
-
-	const [ isOpen, setIsOpen ] = useState( true );
 
 	const analyticsConnected = useSelect(
 		( select: Select ) =>
@@ -216,6 +222,7 @@ export default function WelcomeModal() {
 	}
 
 	const { dismissItem, triggerOnDemandTour } = useDispatch( CORE_USER );
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 	const [ , setNotification ] = useQueryArg( 'notification' );
 
 	useEffect( () => {
@@ -251,7 +258,12 @@ export default function WelcomeModal() {
 	const showTooltip = useShowTooltip( tooltipSettings );
 
 	const closeAndDismissModal = useCallback( async () => {
-		setIsOpen( false );
+		// Remove the modal from the notification queue so it stops rendering.
+		// The notification isn't dismissible, so this only updates the queue
+		// and doesn't persist the notification's own id as a dismissed item —
+		// the dismissed state is persisted via the slugs below, exactly as
+		// before.
+		dismissNotification( id );
 
 		if ( modalVariant !== MODAL_VARIANT.GATHERING_DATA ) {
 			await dismissItem( WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG );
@@ -266,7 +278,13 @@ export default function WelcomeModal() {
 
 		// Ensure the setup success notification won't be shown on page reload.
 		setNotification( undefined );
-	}, [ modalVariant, setNotification, dismissItem ] );
+	}, [
+		id,
+		dismissNotification,
+		modalVariant,
+		setNotification,
+		dismissItem,
+	] );
 
 	const closeAndDismissModalWithTooltip = useCallback( () => {
 		closeAndDismissModal();
@@ -354,10 +372,6 @@ export default function WelcomeModal() {
 		return null;
 	}
 
-	if ( ! isOpen ) {
-		return null;
-	}
-
 	const title =
 		modalVariant === MODAL_VARIANT.DATA_GATHERING_COMPLETE
 			? __( 'Data gathering complete!', 'google-site-kit' )
@@ -403,15 +417,17 @@ export default function WelcomeModal() {
 			: undefined;
 
 	return (
-		<BannerModal
-			className="googlesitekit-banner-modal--welcome-modal"
-			Graphic={ Graphic }
-			onView={ handleView }
-			onClose={ handleClose }
-			title={ title }
-			description={ description }
-			ctaButton={ ctaButton }
-			dismissButton={ dismissButton }
-		/>
+		<Notification>
+			<BannerModal
+				className="googlesitekit-banner-modal--welcome-modal"
+				Graphic={ Graphic }
+				onView={ handleView }
+				onClose={ handleClose }
+				title={ title }
+				description={ description }
+				ctaButton={ ctaButton }
+				dismissButton={ dismissButton }
+			/>
+		</Notification>
 	);
 }
