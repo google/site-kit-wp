@@ -33,10 +33,15 @@ import {
 	CORE_USER,
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { Story } from '@/js/types/Story';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
-import WelcomeModal from './WelcomeModal';
+import WelcomeModal, { WELCOME_MODAL_NOTIFICATION } from './WelcomeModal';
+
+const NotificationWithComponentProps = withNotificationComponentProps(
+	WELCOME_MODAL_NOTIFICATION
+)( WelcomeModal );
 
 function Template( {
 	setupRegistry,
@@ -48,7 +53,7 @@ function Template( {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
 			<ViewContextProvider value={ viewContext }>
-				<WelcomeModal />
+				<NotificationWithComponentProps />
 			</ViewContextProvider>
 		</WithRegistrySetup>
 	);
