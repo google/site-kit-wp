@@ -677,8 +677,8 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$error = $this->module->handle_login_errors( new WP_Error() );
 
-		$this->assertStringContainsString(
-			'two-factor authentication',
+		$this->assertEquals(
+			'An existing account using two-factor authentication was detected with that email address. To connect an account using Sign in with Google, two-factor auth must be disabled for your user account.',
 			$error->get_error_message( Sign_In_With_Google::MODULE_SLUG ),
 			'The two-factor error message should be added for the two-factor error code.'
 		);
