@@ -23,6 +23,7 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use WP_Error;
 use WP_User;
 use WPDieException;
 
@@ -669,6 +670,26 @@ class Sign_In_With_GoogleTest extends TestCase {
 		} catch ( RedirectException $e ) {
 			$this->assertEquals( $redirect_uri, $e->get_location(), 'POST auth callback should redirect to provided URI.' );
 		}
+	}
+
+	public function test_handle_login_errors__adds_two_factor_error_message() {
+		$_GET['error'] = Authenticator::ERROR_TWO_FACTOR_ENABLED;
+
+		$error = $this->module->handle_login_errors( new WP_Error() );
+
+		$this->assertStringContainsString(
+			'two-factor authentication',
+			$error->get_error_message( Sign_In_With_Google::MODULE_SLUG ),
+			'The two-factor error message should be added for the two-factor error code.'
+		);
+	}
+
+	public function test_handle_login_errors__ignores_unrecognized_error_code() {
+		$_GET['error'] = 'unrecognized_error_code';
+
+		$error = $this->module->handle_login_errors( new WP_Error() );
+
+		$this->assertFalse( $error->has_errors(), 'An unrecognized error code should leave the error object untouched.' );
 	}
 
 	protected function create_disconnect_nonce( $user_id ) {
