@@ -4,19 +4,19 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6e2649f533d97c37cbdebaddd187004a",
+    "content-hash": "40a16846955da00db03fac59cf695be9",
     "packages": [
         {
             "name": "firebase/php-jwt",
             "version": "v6.10.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/firebase/php-jwt.git",
+                "url": "https://github.com/googleapis/php-jwt.git",
                 "reference": "a49db6f0a5033aef5143295342f1c95521b075ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/a49db6f0a5033aef5143295342f1c95521b075ff",
+                "url": "https://api.github.com/repos/googleapis/php-jwt/zipball/a49db6f0a5033aef5143295342f1c95521b075ff",
                 "reference": "a49db6f0a5033aef5143295342f1c95521b075ff",
                 "shasum": ""
             },
@@ -311,6 +311,24 @@
             "type": "library",
             "extra": {
                 "identifier": "a88ea608334d76b4412e61bc886eb914:4152583d88e5adcc6454220f6063f82b2ae650b6"
+            },
+            "description": "This package is @generated automatically",
+            "transport-options": {
+                "symlink": false,
+                "relative": true
+            }
+        },
+        {
+            "name": "google/apiclient-services-webcontentpublisher",
+            "version": "dev-latest",
+            "dist": {
+                "type": "path",
+                "url": "packages/apiclient-services-webcontentpublisher",
+                "reference": "a674706122dd4b3f9ded5912c2a2d8b95c30b4ef"
+            },
+            "type": "library",
+            "extra": {
+                "identifier": "caa48b64607f0cc0e0adaef59946f69b:4152583d88e5adcc6454220f6063f82b2ae650b6"
             },
             "description": "This package is @generated automatically",
             "transport-options": {
@@ -4627,7 +4645,8 @@
         "google/apiclient-services-searchconsole.v1": 20,
         "google/apiclient-services-siteverification.v1": 20,
         "google/apiclient-services-subscribewithgoogle": 20,
-        "google/apiclient-services-tagmanager.v2": 20
+        "google/apiclient-services-tagmanager.v2": 20,
+        "google/apiclient-services-webcontentpublisher": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
