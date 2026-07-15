@@ -50,4 +50,9 @@ export const NOTIFICATION_AREAS = {
 export const NOTIFICATION_GROUPS = {
 	DEFAULT: 'default',
 	SETUP_CTAS: 'setup-ctas',
+	// Overlay modals shown during the initial setup flow (the Welcome modal and
+	// the Site Goals intro modal). Kept in their own group so they render even
+	// when the setup CTAs / feature-introduction overlays are suppressed on the
+	// first dashboard landing.
+	SETUP_MODALS: 'setup-modals',
 };

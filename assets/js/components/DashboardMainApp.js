@@ -326,18 +326,27 @@ export default function DashboardMainApp() {
 
 	useMonitorInternetConnection();
 
-	const showSetupOverlays = useSelect( ( select ) => {
-		if ( hideSetupCTAs ) {
-			return false;
-		}
-
+	// The welcome tour renders its own overlay, so any queued overlays are
+	// hidden while it runs.
+	const isWelcomeTourActive = useSelect( ( select ) => {
 		const currentTour = select( CORE_USER ).getCurrentTour();
 
-		return ! [
+		return [
 			WELCOME_TOUR.WITHOUT_ANALYTICS,
 			WELCOME_TOUR.WITH_ANALYTICS,
 		].includes( currentTour?.slug );
 	} );
+
+	// The setup modals (Welcome and Site Goals intro) are intentionally
+	// decoupled from `hideSetupCTAs`: unlike the feature-introduction overlays,
+	// they are meant to appear during the initial setup flow (that's when the
+	// Welcome modal shows). They're only hidden while the welcome tour runs.
+	const showSetupModals = ! isWelcomeTourActive;
+
+	// The feature-introduction overlays (PDF, email reporting, audience
+	// segmentation) stay suppressed on the first dashboard landing to avoid
+	// stacking with the setup CTAs.
+	const showSetupOverlays = ! hideSetupCTAs && ! isWelcomeTourActive;
 
 	const lastWidgetAnchor = getLastWidgetAnchor( {
 		isMonetizationActive,
@@ -375,6 +384,13 @@ export default function DashboardMainApp() {
 					<Notifications
 						areaSlug={ NOTIFICATION_AREAS.DASHBOARD_TOP }
 						groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+					/>
+				) }
+
+				{ showSetupModals && (
+					<Notifications
+						areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+						groupID={ NOTIFICATION_GROUPS.SETUP_MODALS }
 					/>
 				) }
 
