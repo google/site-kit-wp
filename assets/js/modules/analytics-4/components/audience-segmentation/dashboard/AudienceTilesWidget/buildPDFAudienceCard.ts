@@ -163,7 +163,7 @@ export function readAudienceMetrics(
 }
 
 /**
- * Builds an audience's top three cities, dropping `(not set)`.
+ * Builds an audience's top three cities, removing `(not set)`.
  *
  * Each percentage is the city's share of the audience's visitors, like the
  * dashboard.
@@ -243,21 +243,6 @@ export function siteKitAudienceDimensionValue(
 	return audienceSlug === 'new-visitors' ? 'new' : 'returning';
 }
 
-/**
- * Decides whether a report failure should drop its audience.
- *
- * A missing custom dimension on the top content report is not blocking. The
- * dashboard does the same: the card still renders with an empty content list.
- *
- * @since n.e.x.t
- *
- * @param result The report fetch result.
- * @return `true` when the failure should exclude the audience.
- */
-function isBlockingError( result: FetchReportResult ): boolean {
-	return !! result.error && ! isInvalidCustomDimensionError( result.error );
-}
-
 /** The reports and context for one audience card. */
 export interface AudienceCardInput {
 	/** The audience resource name. */
@@ -301,13 +286,18 @@ export function buildPDFAudienceCard(
 		totalPageviews,
 	} = input;
 
-	// Drop the audience on a failed metrics or cities report, or a top content
-	// failure that is not a missing custom dimension.
+	// Don't render when a metrics or cities report has any error, or when
+	// a top content failure is anything other than a missing/invalid custom
+	// dimension error.
 	if (
 		metricsResult.error ||
 		topCitiesResult.error ||
-		isBlockingError( topContentResult ) ||
-		isBlockingError( topContentPageTitlesResult )
+		( topContentResult.error &&
+			! isInvalidCustomDimensionError( topContentResult.error ) ) ||
+		( topContentPageTitlesResult.error &&
+			! isInvalidCustomDimensionError(
+				topContentPageTitlesResult.error
+			) )
 	) {
 		return null;
 	}
