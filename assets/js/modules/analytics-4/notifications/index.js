@@ -35,6 +35,7 @@ import {
 	requireScope,
 } from '@/js/googlesitekit/data-requirements';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
@@ -57,6 +58,9 @@ import {
 import EnhancedConversionsNotification, {
 	ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS,
 } from '@/js/modules/analytics-4/components/notifications/EnhancedConversionsNotification';
+import IntroModal, {
+	SITE_GOALS_INTRO_MODAL_BANNER,
+} from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import {
 	LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY as LEGACY_ENHANCED_MEASUREMENT_SETUP_CTA_DISMISSED_ITEM_KEY,
 	MODULE_SLUG_ANALYTICS_4,
@@ -69,7 +73,11 @@ import {
 	requireMismatchedGoogleTag,
 	requireWebDataStreamUnavailable,
 } from '@/js/modules/analytics-4/data-requirements';
-import { GTM_SCOPE } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	GTM_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { HOUR_IN_SECONDS } from '@/js/util';
 import {
 	asyncRequire,
 	asyncRequireAll,
@@ -210,6 +218,82 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		),
 		isDismissible: true,
 		featureFlag: 'gtagUserData',
+	},
+	[ SITE_GOALS_INTRO_MODAL_BANNER ]: {
+		Component: IntroModal,
+		// Shown after the welcome modal, which has a higher priority (lower
+		// number), so the two modals never appear at the same time.
+		priority: PRIORITY.SETUP_CTA_SITE_GOALS_INTRO_MODAL,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		],
+		isDismissible: true,
+		featureFlag: 'siteGoals',
+		checkRequirements: asyncRequireAll(
+			// The welcome modal takes precedence. When it is active, defer the
+			// Site Goals intro modal for 72 hours so the two are never shown at
+			// the same time. Modeled on the audience segmentation introductory
+			// overlay above. `shouldNotificationBeAddedToQueue` already filters
+			// dismissed/still-deferred notifications out before
+			// `checkRequirements` runs, so once the 72-hour dismissal is set
+			// this branch won't run again until it expires — no separate
+			// "already dismissed" check is needed.
+			( { select, dispatch } ) => {
+				if (
+					! isFeatureEnabled( 'setupFlowRefresh' ) ||
+					! isInitialWelcomeModalActive()
+				) {
+					return true;
+				}
+
+				const isDismissing = select( CORE_USER ).isDismissingItem(
+					SITE_GOALS_INTRO_MODAL_BANNER
+				);
+
+				if ( ! isDismissing ) {
+					dispatch( CORE_NOTIFICATIONS ).dismissNotification(
+						SITE_GOALS_INTRO_MODAL_BANNER,
+						{
+							expiresInSeconds: 72 * HOUR_IN_SECONDS,
+						}
+					);
+				}
+
+				return false;
+			},
+			// At least one conversion event type must be detected.
+			async ( { select, resolveSelect } ) => {
+				await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+
+				return (
+					select(
+						MODULES_ANALYTICS_4
+					).hasEcommerceConversionReportingEvents() ||
+					select(
+						MODULES_ANALYTICS_4
+					).hasLeadConversionReportingEvents()
+				);
+			},
+			// The signed-in user must have sufficient Analytics access. The
+			// check only works for signed-in users; it is skipped for view-only
+			// users, whose access the shared dashboard already limits.
+			async ( { select, resolveSelect } ) => {
+				await resolveSelect( CORE_USER ).getAuthentication();
+
+				if ( ! select( CORE_USER ).isAuthenticated() ) {
+					return true;
+				}
+
+				return (
+					( await resolveSelect( CORE_MODULES ).hasModuleAccess(
+						MODULE_SLUG_ANALYTICS_4
+					) ) === true
+				);
+			}
+		),
 	},
 };
 
