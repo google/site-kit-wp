@@ -13,7 +13,7 @@ All application-wide custom hooks are stored in the **`/assets/js/hooks/`** dire
 ```
 assets/js/hooks/
 ├── useActivateModuleCallback.js     # Module activation logic
-├── useBreakpoint.js                 # Responsive breakpoint detection
+├── useBreakpoint.ts                 # Responsive breakpoint detection
 ├── useChecks.js                     # System checks and validations
 ├── useDashboardType.js              # Dashboard type detection
 ├── useDebounce.js                   # Debouncing utilities
@@ -25,9 +25,17 @@ assets/js/hooks/
 ├── useQueryArg.js                   # URL query parameter management
 ├── useViewContext.js                # Application view context
 ├── useViewOnly.js                   # View-only mode detection
-├── useWindowSize.js                 # Window size tracking
+├── useWindowSize.ts                 # Window size tracking
 └── useRefocus.js                    # Focus management
 ```
+
+> **TypeScript note**: Hooks are increasingly authored in TypeScript. Several
+> global hooks have already migrated to `.ts` (for example `useBreakpoint.ts`
+> and `useWindowSize.ts`), and new hooks should be written in TypeScript. The
+> `.js` and `.ts`/`.tsx` forms coexist and import paths are unchanged (omit the
+> extension when importing). For TypeScript-specific conventions, see
+> `docs/context/js/component-conventions.md`; the hook-flavoured guidance is
+> summarized in the "TypeScript Hooks" section below.
 
 ### Module-Specific Hooks
 
@@ -35,9 +43,9 @@ Module-specific hooks are stored within each module's directory structure:
 
 ```
 assets/js/modules/[module-name]/hooks/
-├── useExistingTagEffect.js          # Module-specific tag detection
-├── useCustomDimensionsData.js       # Module-specific data hooks
-└── useCreateCustomDimensionEffect.js # Module-specific effects
+├── useExistingTagEffect.js           # Module-specific tag detection
+├── useCustomDimensionsData.js        # Module-specific data hooks
+└── useCreateCustomDimensionsEffect.js # Module-specific effects
 ```
 
 ### Component-Specific Hooks
@@ -115,8 +123,7 @@ function FilterableList() {
 #### Viewport-Based Loading
 
 ```javascript
-import { useInViewSelect } from '../hooks/useInViewSelect';
-import { useSelect } from 'googlesitekit-data';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 
 function ExpensiveWidget() {
     // Only fetch data when component is in viewport
@@ -292,6 +299,7 @@ function ModuleConnectCTA({ moduleSlug }) {
 // In analytics-4/hooks/useExistingTagEffect.js
 import { useEffect, useRef } from '@wordpress/element';
 import { useSelect, useDispatch } from 'googlesitekit-data';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 export default function useExistingTagEffect() {
     const { setUseSnippet } = useDispatch(MODULES_ANALYTICS_4);
@@ -410,7 +418,7 @@ All custom hooks follow this standardized structure:
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
 import { useCallback, useEffect } from '@wordpress/element';
 
@@ -434,10 +442,55 @@ export default function useCustomHook(parameter) {
 }
 ```
 
-### 2. Error Handling in Hooks
+### 2. TypeScript Hooks
+
+New and migrated hooks are authored in TypeScript. A hook is a plain typed
+function (no `FC` — that's for components only): annotate the parameters and the
+return value, and declare any object shapes (options or return objects) with an
+`interface` colocated in the same file. Use standard `import` statements and the
+`Select` type from `googlesitekit-data` when typing selector callbacks. Defer to
+`docs/context/js/component-conventions.md` for the broader TypeScript
+conventions.
+
+```typescript
+/**
+ * WordPress dependencies
+ */
+import { useState } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { Select, useSelect } from 'googlesitekit-data';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+
+interface UseExampleReturn {
+    isConnected: boolean;
+    setExpanded: ( value: boolean ) => void;
+}
+
+/**
+ * Custom hook description.
+ *
+ * \@since n.e.x.t
+ *
+ * \@return {Object} Description of return value.
+ */
+export default function useExample(): UseExampleReturn {
+    const [ expanded, setExpanded ] = useState( false );
+
+    const isConnected = useSelect( ( select: Select ) =>
+        select( MODULES_ANALYTICS_4 ).isConnected()
+    );
+
+    return { isConnected, setExpanded };
+}
+```
+
+### 3. Error Handling in Hooks
 
 ```javascript
-import { useState, useEffect } from '@wordpress/element';
+import { useState, useCallback } from '@wordpress/element';
 
 export default function useAsyncOperation(operation) {
     const [data, setData] = useState(null);
@@ -473,7 +526,7 @@ export default function useAsyncOperation(operation) {
 }
 ```
 
-### 3. Datastore Integration Patterns
+### 4. Datastore Integration Patterns
 
 ```javascript
 import { useSelect, useDispatch } from 'googlesitekit-data';
@@ -517,7 +570,7 @@ export default function useModuleSettings(moduleSlug) {
 }
 ```
 
-### 4. Complex State Management
+### 5. Complex State Management
 
 ```javascript
 import { useReducer, useCallback } from '@wordpress/element';
@@ -722,27 +775,35 @@ function ComponentWithPreviousValue({ currentValue }) {
 
 ### 1. Basic Hook Testing
 
+Use the project's `renderHook` (and `actHook`) from `@tests/js/test-utils`
+rather than importing them directly from `@testing-library/react-hooks`. The
+wrapper sets up the data registry and accepts options such as `registry`,
+`features`, and `viewContext`. Test files are co-located and may be `.test.ts` /
+`.test.tsx`. Test titles start with "should …".
+
 ```javascript
-import { renderHook, act } from '@testing-library/react-hooks';
-import { useDebounce } from '../useDebounce';
+import { actHook as act, renderHook } from '@tests/js/test-utils';
+import { useDebounce } from './useDebounce';
 
 describe('useDebounce', () => {
-    it('should debounce function calls', async () => {
+    beforeEach(() => {
+        jest.useFakeTimers();
+    });
+
+    it('should debounce function calls', () => {
         const mockFn = jest.fn();
         const { result } = renderHook(() => useDebounce(mockFn, 100));
-        
+
         act(() => {
             result.current();
             result.current();
             result.current();
         });
-        
+
         expect(mockFn).not.toHaveBeenCalled();
-        
-        await act(async () => {
-            await new Promise(resolve => setTimeout(resolve, 150));
-        });
-        
+
+        act(() => jest.advanceTimersByTime(150));
+
         expect(mockFn).toHaveBeenCalledTimes(1);
     });
 });
@@ -750,24 +811,19 @@ describe('useDebounce', () => {
 
 ### 2. Hook Testing with Context
 
-```javascript
-import { renderHook } from '@testing-library/react-hooks';
-import { useFeature } from '../useFeature';
-import FeaturesProvider from '../components/FeaturesProvider';
+The custom `renderHook` accepts a `features` option, so there's no need to wrap
+the hook in `FeaturesProvider` manually:
 
-const wrapper = ({ children }) => (
-    <FeaturesProvider value={['newFeature']}>
-        {children}
-    </FeaturesProvider>
-);
+```javascript
+import { renderHook } from '@tests/js/test-utils';
+import { useFeature } from './useFeature';
 
 describe('useFeature', () => {
     it('should return true for enabled features', () => {
-        const { result } = renderHook(
-            () => useFeature('newFeature'),
-            { wrapper }
-        );
-        
+        const { result } = renderHook(() => useFeature('newFeature'), {
+            features: ['newFeature'],
+        });
+
         expect(result.current).toBe(true);
     });
 });
