@@ -842,7 +842,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		featureFlag: 'setupFlowRefresh',
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			// The `hasAccessToFeatureTour` selector depends on the modules,
-			// authentication and capabilities being resolved, while
+			// authentication, and capabilities being resolved, while
 			// `isDataGatheringCompleteModalActive` depends on the dismissed
 			// items.
 			await Promise.all( [
