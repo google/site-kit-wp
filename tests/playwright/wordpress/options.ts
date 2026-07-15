@@ -35,7 +35,7 @@ type TestUserProfile = {
 
 /**
  * A connected module for a test: either a bare slug, or a slug paired with the
- * module settings to seed (e.g. an AdSense account ID).
+ * module settings to apply (e.g. an AdSense account ID).
  *
  * @since n.e.x.t
  */
@@ -90,7 +90,7 @@ export function withFeatureFlags( ...flags: string[] ): TestDetailsAnnotation {
  *
  * Each module is either a bare slug or a `{ slug, settings }` object; a bare
  * slug is normalised to `{ slug }`. A module with settings is both connected and
- * seeded with those settings on the WordPress side.
+ * configured with those settings on the WordPress side.
  *
  * @since 1.177.0
  * @since n.e.x.t Accepts per-module settings via `{ slug, settings }` entries.

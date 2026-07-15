@@ -145,7 +145,7 @@ export class PDFGenerationPage {
 
 	/**
 	 * Selects only the given sections, deselecting every other section. The panel
-	 * seeds all sections as selected, so this leaves the passed slugs checked.
+	 * selects all sections by default, so this leaves the passed slugs checked.
 	 *
 	 * @since n.e.x.t
 	 *

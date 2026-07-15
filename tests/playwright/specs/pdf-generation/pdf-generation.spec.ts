@@ -65,12 +65,14 @@ test.describe(
 		// download-driven cases from flaking.
 		test.describe.configure( { timeout: 90_000 } );
 
+		test.beforeEach( async ( { wp } ) => {
+			await wp.visitDashboard();
+		} );
+
 		test(
 			'generates a report and downloads a PDF (golden path)',
 			{ annotation: [ withFixtures( 'pdf-generation/full' ) ] },
 			async ( { wp }, testInfo ) => {
-				await wp.visitDashboard();
-
 				const pageObject = new PDFGenerationPage( wp.page );
 
 				await wp.step( 'Open the export panel', async () => {
@@ -108,8 +110,6 @@ test.describe(
 			'downloads the AdSense monetization section on its own',
 			{ annotation: [ withFixtures( 'pdf-generation/full' ) ] },
 			async ( { wp }, testInfo ) => {
-				await wp.visitDashboard();
-
 				const pageObject = new PDFGenerationPage( wp.page );
 
 				await pageObject.openPanel();
@@ -139,8 +139,6 @@ test.describe(
 				],
 			},
 			async ( { wp }, testInfo ) => {
-				await wp.visitDashboard();
-
 				const pageObject = new PDFGenerationPage( wp.page );
 
 				await pageObject.openPanel();
@@ -160,8 +158,6 @@ test.describe(
 			'shows the error snackbar and downloads nothing when every section fails',
 			{ annotation: [ withFixtures( 'pdf-generation/all-failure' ) ] },
 			async ( { wp } ) => {
-				await wp.visitDashboard();
-
 				const pageObject = new PDFGenerationPage( wp.page );
 
 				// Track browser downloads to assert none fire in the all-fail case.
@@ -193,8 +189,6 @@ test.describe(
 			'cancels mid-export and returns to idle without downloading',
 			{ annotation: [ withFixtures( 'pdf-generation/full' ) ] },
 			async ( { wp } ) => {
-				await wp.visitDashboard();
-
 				const pageObject = new PDFGenerationPage( wp.page );
 
 				let downloadFired = false;
@@ -249,12 +243,14 @@ test.describe(
 		],
 	},
 	() => {
+		test.beforeEach( async ( { wp } ) => {
+			await wp.visitDashboard();
+		} );
+
 		test(
 			'lists only shared-module sections on a view-only dashboard',
 			{ annotation: [ withFixtures( 'pdf-generation/view-only' ) ] },
 			async ( { wp } ) => {
-				await wp.visitDashboard();
-
 				const pageObject = new PDFGenerationPage( wp.page );
 
 				await pageObject.openPanel();

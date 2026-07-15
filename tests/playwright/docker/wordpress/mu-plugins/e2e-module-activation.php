@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: E2E Module Activation
- * Description: Connects modules for E2E tests based on a cookie set by the Playwright fixture, and seeds their settings when provided.
+ * Description: Connects modules for E2E tests based on a cookie set by the Playwright fixture, and applies their settings when provided.
  *
  * @package   Google\Site_Kit
  * @copyright 2026 Google LLC
@@ -10,7 +10,6 @@
  */
 
 use Google\Site_Kit\Core\Modules\Modules;
-use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Plugin;
 
 const E2E_CONNECTED_MODULES_COOKIE = '_wp_test_connected_modules';
@@ -79,46 +78,47 @@ add_filter(
 
 // Modules that carry settings must be active and genuinely connected so the
 // client (which reads the REST modules list, not the connectivity filter above)
-// sees them connected. Runs at an early `init` priority so the module is
-// connected before Site Kit computes the user's capabilities and enqueues the
-// dashboard assets: a view-only viewer's access depends on a shared module being
-// connected, and seeding it later leaves the base data (and the dashboard) off
-// the page.
+// sees them connected.
+$e2e_modules_with_settings = array_filter( e2e_get_connected_modules_config() );
+
+// Provide each module's settings on read (no database writes) so `is_connected()`
+// passes. `pre_option_` short-circuits `get_option`, so it works even for an
+// unset settings option and is always active — the module is connected before
+// Site Kit computes capabilities, which a view-only viewer's dashboard access
+// depends on.
+foreach ( $e2e_modules_with_settings as $e2e_slug => $e2e_settings ) {
+	add_filter(
+		"pre_option_googlesitekit_{$e2e_slug}_settings",
+		function () use ( $e2e_settings ) {
+			return $e2e_settings;
+		}
+	);
+}
+
+// Activate non-force-active modules so `is_module_active()` (and thus the REST
+// `connected` field) reports them as active. Unlike the settings above, the
+// active-modules option is unset in the test database, so an `option_` filter
+// would not fire; `activate_module()` preserves the modules active by default
+// and only writes the first time (it is idempotent).
 add_action(
 	'init',
-	function () {
-		$config = array_filter( e2e_get_connected_modules_config() );
-
-		if ( empty( $config ) ) {
+	function () use ( $e2e_modules_with_settings ) {
+		if ( empty( $e2e_modules_with_settings ) ) {
 			return;
 		}
 
 		$modules = new Modules( Plugin::instance()->context() );
 
-		foreach ( $config as $slug => $settings ) {
+		foreach ( array_keys( $e2e_modules_with_settings ) as $slug ) {
 			try {
 				$module = $modules->get_module( $slug );
 			} catch ( Exception $e ) {
 				continue;
 			}
 
-			// Activate non-force-active modules through the registry, which
-			// preserves the modules active by default. `is_module_active()` (and
-			// thus the REST `connected` field) then reports it as active. Skip
-			// force-active modules: they are already active, and writing the
-			// active-modules option for them triggers a re-sanitize that can
-			// disrupt other forced settings (e.g. dashboard sharing).
 			if ( ! $module->force_active ) {
 				$modules->activate_module( $slug );
 			}
-
-			// Seed the module's settings so `is_connected()` passes. `merge()`
-			// only writes when the value changes, so re-running per request is
-			// cheap.
-			if ( $module instanceof Module_With_Settings ) {
-				$module->get_settings()->merge( $settings );
-			}
 		}
-	},
-	1
+	}
 );

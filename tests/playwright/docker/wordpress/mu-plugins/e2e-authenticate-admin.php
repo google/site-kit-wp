@@ -100,36 +100,36 @@ add_action(
 	1
 );
 
-// Mark the requested items as dismissed for the current user, so a test can
-// land past interstitials (e.g. the shared-dashboard splash) without clicking
-// through them.
-add_action(
-	'init',
-	function () use ( $e2e_test_user ) {
+// Mark the requested items as dismissed for the current user on read (no
+// database writes), so a test can land past interstitials (e.g. the
+// shared-dashboard splash) without clicking through them. Site Kit reads
+// dismissed items through the user-meta layer, so this hooks `get_user_metadata`
+// rather than `get_user_option` (whose filter is never invoked for this read).
+// Returning `array( $items )` is how the metadata layer expects a short-circuit
+// value: for a single read it is unwrapped to `$items` (its first element).
+add_filter(
+	'get_user_metadata',
+	function ( $value, $object_id, $meta_key ) use ( $e2e_test_user ) {
 		if ( empty( $e2e_test_user['dismissedItems'] ) ) {
-			return;
+			return $value;
 		}
 
-		$user = wp_get_current_user();
-		if ( ! $user || ! $user->ID ) {
-			return;
+		// The key is blog-prefixed (e.g. `wp_googlesitekitpersistent_dismissed_items`).
+		if ( false === strpos( (string) $meta_key, 'googlesitekitpersistent_dismissed_items' ) ) {
+			return $value;
 		}
 
-		$items = get_user_option( 'googlesitekitpersistent_dismissed_items', $user->ID );
-		$items = is_array( $items ) ? $items : array();
+		$items = array();
 
 		// `0` never expires, matching a permanently dismissed item.
 		foreach ( $e2e_test_user['dismissedItems'] as $slug ) {
 			$items[ $slug ] = 0;
 		}
 
-		update_user_option(
-			$user->ID,
-			'googlesitekitpersistent_dismissed_items',
-			$items
-		);
+		return array( $items );
 	},
-	1
+	10,
+	3
 );
 
 // Set a persistent auth cookie so wp-admin pages (which check for a real cookie

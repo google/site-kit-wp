@@ -82,7 +82,7 @@ tests/playwright/
 │       │   ├── e2e-authenticate-admin.php  # Authenticates user via cookie, applies dismissed items
 │       │   ├── e2e-feature-flags.php       # Enables feature flags via cookie
 │       │   ├── e2e-fixtures.php            # Disables SSL verification, forwards fixture header
-│       │   ├── e2e-module-activation.php   # Connects modules (and seeds settings) via cookie
+│       │   ├── e2e-module-activation.php   # Connects modules (and applies settings) via cookie
 │       │   ├── e2e-module-sharing.php      # Forces dashboard-sharing settings via cookie
 │       │   └── e2e-reference-date.php      # Fixes reference date to 2026-01-01
 │       └── plugins/                    # Test helper plugins (auto-mounted)
@@ -438,7 +438,7 @@ Multiple modules can be connected at once:
 }
 ```
 
-A bare slug only forces the connection check. To also make a module read as connected on the client (which reads the REST modules list, not the connection filter), pass a `{ slug, settings }` object — the plugin then activates the module and seeds its settings:
+A bare slug only forces the connection check. To also make a module read as connected on the client (which reads the REST modules list, not the connection filter), pass a `{ slug, settings }` object — the plugin then activates the module and applies its settings:
 
 ```typescript
 withConnectedModules( {
