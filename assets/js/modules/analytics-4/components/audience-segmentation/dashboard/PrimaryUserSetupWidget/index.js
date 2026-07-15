@@ -37,8 +37,13 @@ import useEnableAudienceGroup from '@/js/modules/analytics-4/hooks/useEnableAudi
 import { isInsufficientPermissionsError } from '@/js/util/errors';
 
 export default function PrimaryUserSetupWidget( { Widget } ) {
-	const { apiErrors, isSaving, failedAudiences, onEnableGroups } =
-		useEnableAudienceGroup();
+	const {
+		apiErrors,
+		isSaving,
+		failedAudiences,
+		isAudienceCreationError,
+		onEnableGroups,
+	} = useEnableAudienceGroup();
 	const setupFlowRefreshPhase4Enabled = useFeature(
 		'setupFlowRefreshPhase4'
 	);
@@ -63,7 +68,7 @@ export default function PrimaryUserSetupWidget( { Widget } ) {
 					Widget={ Widget }
 					errors={ apiErrors }
 					onRetry={ onEnableGroups }
-					isAudienceCreationVariant={ failedAudiences.length > 0 }
+					isAudienceCreationVariant={ isAudienceCreationError }
 					onDismiss={ () =>
 						dismissItem(
 							AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG
