@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { intersectionObserver } from '@shopify/jest-dom-mocks';
+
+/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -42,12 +47,14 @@ import {
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import {
+	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { ALL_CUSTOM_DIMENSIONS } from '@/js/modules/analytics-4/hooks/useBreakdownEnableHandler';
 import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
-import { fireEvent, render, waitFor } from '@tests/js/test-utils';
+import * as tracking from '@/js/util/tracking';
+import { act, fireEvent, render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
@@ -256,6 +263,86 @@ describe( 'BreakdownNoticeArea', () => {
 					.isSyncingAvailableCustomDimensions()
 			).toBe( false );
 		} );
+	} );
+
+	it( 'clears the loading state and shows the success notice when the required dimensions already exist on the property', async () => {
+		// Edit scope granted, so the CTA creates directly instead of redirecting
+		// to OAuth.
+		provideUserAuthentication( registry, {
+			grantedScopes: [ EDIT_SCOPE ],
+		} );
+		// The saved setting lacks the breakdown dimension, so the "New" notice
+		// shows; the property itself already has every required dimension.
+		seedAvailableCustomDimensions( [] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetCustomDimensions( ALL_CUSTOM_DIMENSIONS, {
+				propertyID: '12345',
+			} );
+
+		// Nothing is created; the "already exists" path syncs the available
+		// dimensions, and the synced list includes the lead breakdown dimension.
+		fetchMock.postOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+			),
+			{ body: ALL_CUSTOM_DIMENSIONS, status: 200 }
+		);
+
+		const { getByRole, findByText } = render(
+			<BreakdownNoticeArea
+				origin={ BREAKDOWN_ORIGIN_WIDGET }
+				goalTypes={ [ GOAL_TYPES.LEAD ] }
+			/>,
+			{ registry }
+		);
+
+		fireEvent.click( getByRole( 'button', { name: 'Get breakdown' } ) );
+
+		// The CTA resolves to the success notice instead of spinning forever.
+		expect(
+			await findByText( /Individual form tracking is now active/ )
+		).toBeInTheDocument();
+	} );
+
+	it( 'returns to the "New" notice (not a stuck spinner or a vanished notice) when the confirming sync fails on the already-exists path', async () => {
+		provideUserAuthentication( registry, {
+			grantedScopes: [ EDIT_SCOPE ],
+		} );
+		seedAvailableCustomDimensions( [] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetCustomDimensions( ALL_CUSTOM_DIMENSIONS, {
+				propertyID: '12345',
+			} );
+
+		// The confirming sync fails, so `availableCustomDimensions` stays stale
+		// and the success notice cannot render.
+		fetchMock.postOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+			),
+			{ body: { code: 'error', message: 'Sync failed' }, status: 500 }
+		);
+
+		const { getByRole } = render(
+			<BreakdownNoticeArea
+				origin={ BREAKDOWN_ORIGIN_WIDGET }
+				goalTypes={ [ GOAL_TYPES.LEAD ] }
+			/>,
+			{ registry }
+		);
+
+		fireEvent.click( getByRole( 'button', { name: 'Get breakdown' } ) );
+
+		// The attempt resets, so the CTA settles back to the enabled "New"
+		// notice — a retry path — instead of spinning forever or disappearing.
+		await waitFor( () => {
+			expect(
+				getByRole( 'button', { name: 'Get breakdown' } )
+			).toBeEnabled();
+		} );
+		expect( console ).toHaveErrored();
 	} );
 
 	it( 'renders the success notice at the triggering instance once the breakdown dimensions exist', () => {
@@ -721,6 +808,167 @@ describe( 'BreakdownNoticeArea', () => {
 			);
 
 			expect( container ).toBeEmptyDOMElement();
+		} );
+	} );
+
+	describe( '"view_notification" tracking', () => {
+		// Spying on `trackEventOnce` (not `trackEvent`) matters here: it is the
+		// one routed to `handleNewNoticeView`/`handleSuccessView`/
+		// `handleErrorView`, and it dedupes on the full call signature at the
+		// module level. That module-level dedup is what makes the "once ever"
+		// guarantee survive the wrapping widget remounting this notice (e.g. its
+		// data briefly resolves to a loading/error/null branch and back) — the
+		// `withIntersectionObserver` HOC's own once-per-mount guard cannot do
+		// that on its own, since a remount gives it a fresh instance.
+		let mockTrackEventOnce: jest.SpiedFunction<
+			typeof tracking.trackEventOnce
+		>;
+
+		beforeEach( () => {
+			mockTrackEventOnce = jest.spyOn( tracking, 'trackEventOnce' );
+			intersectionObserver.mock();
+		} );
+
+		afterEach( () => {
+			mockTrackEventOnce.mockRestore();
+			intersectionObserver.restore();
+		} );
+
+		function simulateInView() {
+			act( () => {
+				intersectionObserver.simulate( {
+					isIntersecting: true,
+					intersectionRatio: 1,
+				} );
+			} );
+		}
+
+		it( 'does not track the "New" notice view until it is scrolled into view, and not again once it moves into a loading state', async () => {
+			// No edit scope, so the CTA starts the OAuth redirect rather than
+			// creating dimensions directly, keeping the notice in a loading
+			// state without unmounting it.
+			provideUserAuthentication( registry, { grantedScopes: [] } );
+			seedAvailableCustomDimensions( [] );
+
+			const { getByRole } = render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_WIDGET }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
+				/>,
+				{ registry }
+			);
+
+			// Rendering (mounting) alone must not fire the view event.
+			expect( mockTrackEventOnce ).not.toHaveBeenCalledWith(
+				expect.stringContaining( '_site-goals-breakdown-notice' ),
+				'view_notification',
+				expect.anything()
+			);
+
+			simulateInView();
+
+			expect( mockTrackEventOnce ).toHaveBeenCalledWith(
+				expect.stringContaining( '_site-goals-breakdown-notice' ),
+				'view_notification',
+				'widget_lead'
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Get breakdown' } ) );
+
+			await waitFor( () => {
+				expect(
+					getByRole( 'button', { name: 'Get breakdown' } )
+				).toBeDisabled();
+			} );
+
+			// The "loading" state reuses the same mounted notice instance (and
+			// its already-disconnected observer), so it must not track a
+			// second "view" once the CTA starts the OAuth flow.
+			const viewNotificationCalls = mockTrackEventOnce.mock.calls.filter(
+				( [ , action ] ) => action === 'view_notification'
+			);
+			expect( viewNotificationCalls ).toHaveLength( 1 );
+		} );
+
+		it( 'does not track the error notice view until it is scrolled into view', () => {
+			seedAvailableCustomDimensions( [] );
+			provideCustomDimensionError( registry, {
+				customDimension: ALL_CUSTOM_DIMENSIONS[ 0 ],
+				error: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+			} );
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+					[ BREAKDOWN_SCOPE_FORM_KEY ]: GOAL_TYPES.LEAD,
+				} );
+
+			render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_WIDGET }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
+				/>,
+				{ registry }
+			);
+
+			expect( mockTrackEventOnce ).not.toHaveBeenCalledWith(
+				expect.stringContaining( '_site-goals-breakdown-error-notice' ),
+				'view_notification',
+				expect.anything()
+			);
+
+			simulateInView();
+
+			expect( mockTrackEventOnce ).toHaveBeenCalledWith(
+				expect.stringContaining( '_site-goals-breakdown-error-notice' ),
+				'view_notification',
+				'setup_error'
+			);
+		} );
+
+		it( 'routes the view through `trackEventOnce` with the same arguments even if the wrapping widget remounts the notice', () => {
+			// Regression test: the notice can legitimately remount while the
+			// page stays open (its containing widget's data can briefly
+			// resolve to a different branch and back), which resets the
+			// `withIntersectionObserver` HOC's own per-mount "already viewed"
+			// guard. Relying on that guard alone would re-track the view on
+			// every such remount; routing through `trackEventOnce` keeps the
+			// call signature identical across remounts so its own module-level
+			// dedup — not this component — is what prevents a second real
+			// analytics ping.
+			seedAvailableCustomDimensions( [] );
+
+			const { unmount } = render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_WIDGET }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
+				/>,
+				{ registry }
+			);
+
+			simulateInView();
+			unmount();
+
+			render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_WIDGET }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
+				/>,
+				{ registry }
+			);
+
+			simulateInView();
+
+			const viewNotificationCalls = mockTrackEventOnce.mock.calls.filter(
+				( [ , action ] ) => action === 'view_notification'
+			);
+			expect( viewNotificationCalls ).toHaveLength( 2 );
+			expect( viewNotificationCalls[ 0 ] ).toEqual(
+				viewNotificationCalls[ 1 ]
+			);
 		} );
 	} );
 } );

@@ -69,12 +69,11 @@ import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { AudienceSelectionPanel } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
-import SiteGoalsIntroModalBanner from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import SiteGoalsSelectionPanel from '@/js/modules/analytics-4/components/site-goals/selection-panel';
+import SiteGoalsSurveyTriggers from '@/js/modules/analytics-4/components/site-goals/SiteGoalsSurveyTriggers';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { DAY_IN_SECONDS } from '@/js/util';
 import { getNavigationalScrollTop } from '@/js/util/scroll';
-import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 import { AdminScreenTooltip } from './AdminScreenTooltip';
 import CoreDashboardEffects from './CoreDashboardEffects';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
@@ -94,7 +93,6 @@ import PDFExportRoot from './pdf-export/PDFExportRoot';
 import PDFSectionsSelectionPanel from './pdf-export/PDFSectionsSelectionPanel';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
-import WelcomeModal from './WelcomeModal';
 
 function getLastWidgetAnchor( {
 	isMonetizationActive,
@@ -305,17 +303,6 @@ export default function DashboardMainApp() {
 		select( CORE_USER ).hasAccessToFeatureTour()
 	);
 
-	const showWelcomeModal = useSelect( ( select ) => {
-		if ( ! setupFlowRefreshEnabled || ! hasAccessToFeatureTour ) {
-			return false;
-		}
-
-		return (
-			select( CORE_USER ).isDataGatheringCompleteModalActive() ||
-			isInitialWelcomeModalActive()
-		);
-	} );
-
 	const hideSetupCTAs = useSelect( ( select ) => {
 		if ( ! setupFlowRefreshEnabled ) {
 			return false;
@@ -339,18 +326,27 @@ export default function DashboardMainApp() {
 
 	useMonitorInternetConnection();
 
-	const showSetupOverlays = useSelect( ( select ) => {
-		if ( hideSetupCTAs ) {
-			return false;
-		}
-
+	// The welcome tour renders its own overlay, so any queued overlays are
+	// hidden while it runs.
+	const isWelcomeTourActive = useSelect( ( select ) => {
 		const currentTour = select( CORE_USER ).getCurrentTour();
 
-		return ! [
+		return [
 			WELCOME_TOUR.WITHOUT_ANALYTICS,
 			WELCOME_TOUR.WITH_ANALYTICS,
 		].includes( currentTour?.slug );
 	} );
+
+	// The setup modals (Welcome and Site Goals intro) are intentionally
+	// decoupled from `hideSetupCTAs`: unlike the feature-introduction overlays,
+	// they are meant to appear during the initial setup flow (that's when the
+	// Welcome modal shows). They're only hidden while the welcome tour runs.
+	const showSetupModals = ! isWelcomeTourActive;
+
+	// The feature-introduction overlays (PDF, email reporting, audience
+	// segmentation) stay suppressed on the first dashboard landing to avoid
+	// stacking with the setup CTAs.
+	const showSetupOverlays = ! hideSetupCTAs && ! isWelcomeTourActive;
 
 	const lastWidgetAnchor = getLastWidgetAnchor( {
 		isMonetizationActive,
@@ -388,6 +384,13 @@ export default function DashboardMainApp() {
 					<Notifications
 						areaSlug={ NOTIFICATION_AREAS.DASHBOARD_TOP }
 						groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+					/>
+				) }
+
+				{ showSetupModals && (
+					<Notifications
+						areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+						groupID={ NOTIFICATION_GROUPS.SETUP_MODALS }
 					/>
 				) }
 
@@ -476,11 +479,9 @@ export default function DashboardMainApp() {
 			{ siteGoalsEnabled && hasAnalyticsAccess && (
 				<Fragment>
 					<SiteGoalsSelectionPanel />
-					<SiteGoalsIntroModalBanner />
+					<SiteGoalsSurveyTriggers />
 				</Fragment>
 			) }
-
-			{ showWelcomeModal && <WelcomeModal /> }
 
 			<OfflineNotification />
 		</Fragment>

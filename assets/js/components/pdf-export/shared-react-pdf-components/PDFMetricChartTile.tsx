@@ -35,7 +35,7 @@ import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFCard from './PDFCard';
 import PDFChangeBadge from './PDFChangeBadge';
 import PDFSvg from './PDFSvg';
-import PDFTypography from './PDFTypography';
+import PDFTypography, { PDFTypographySize } from './PDFTypography';
 
 const styles = createPDFStyles( {
 	headerRow: {
@@ -109,6 +109,8 @@ export interface PDFMetricChartTileProps {
 	title: string;
 	/** Pre-formatted metric value to display prominently, e.g. "9.2K". */
 	value: string;
+	/** Typography size for the metric value. Defaults to `'medium'`. */
+	valueSize?: PDFTypographySize;
 	/** Pre-formatted change badge text, e.g. "5.2%". Hides the badge when omitted. */
 	change?: string;
 	/** Direction the change badge points. Controls the badge color. */
@@ -128,6 +130,7 @@ export interface PDFMetricChartTileProps {
 const PDFMetricChartTile: FC< PDFMetricChartTileProps > = ( {
 	title,
 	value,
+	valueSize = 'medium',
 	change,
 	changeDirection,
 	changeLabel,
@@ -153,7 +156,9 @@ const PDFMetricChartTile: FC< PDFMetricChartTileProps > = ( {
 					>
 						{ title }
 					</PDFTypography>
-					<PDFTypography type="headline">{ value }</PDFTypography>
+					<PDFTypography type="headline" size={ valueSize }>
+						{ value }
+					</PDFTypography>
 				</View>
 				<View style={ styles.headerRight }>
 					{ change !== undefined &&

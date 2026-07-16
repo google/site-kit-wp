@@ -6,25 +6,29 @@ Site Kit includes a comprehensive feature tours system that guides users through
 
 ### Feature Tours Structure
 
-Feature tours are defined as objects with specific properties and stored in `/assets/js/feature-tours/` directory:
+Feature tours are defined as objects with specific properties and stored in the `/assets/js/feature-tours/` directory. New tours should be authored in TypeScript (e.g. `welcome.ts`):
 
 ```javascript
 const myFeatureTour = {
 	slug: 'myFeatureTour', // Unique identifier
-	version: '1.25.0', // Site Kit version when tour was added
+	version: '1.25.0', // Site Kit version when tour was added (used by view-triggered tours)
 	contexts: [
 		// Where tour can be shown
 		VIEW_CONTEXT_MAIN_DASHBOARD,
 		VIEW_CONTEXT_ENTITY_DASHBOARD,
 	],
 	gaEventCategory: 'main_dashboard_tour', // Analytics category (string or function)
+	isRepeatable: false, // Optional; if true, the tour can be shown again after being dismissed
+	preloadWidgetAreas: [], // Optional; widget areas to force in-view so step targets render
 	steps: [
 		// Array of tour steps
 		{
+			slug: 'my-step', // Optional; used to build per-step CSS classes
 			target: '.my-feature-selector', // CSS selector for target element
 			title: 'New Feature Available', // Step title
 			content: 'This is how to use...', // Step content (can be JSX)
 			placement: 'bottom', // Tooltip placement
+			isResponsive: true, // Optional; enables small-breakpoint scroll handling
 			cta: <CustomCTAButton />, // Optional custom CTA component
 		},
 	],
@@ -42,21 +46,31 @@ const myFeatureTour = {
 };
 ```
 
+> The `version` field is only consulted for tours triggered by view context (see [Tour Qualification Logic](#tour-qualification-logic)). On-demand tours (triggered via `triggerOnDemandTour`) skip the version check, so tours like the welcome tour omit it.
+
+> **TypeScript:** When a tour or step is authored in a `.ts` file, colocate its types in the same file (for example `welcome.ts` defines a `WelcomeTourStep` interface for its step objects). See `docs/context/js/component-conventions.md` for the project-wide TypeScript conventions.
+
 ### Feature Tours Registration
 
-Tours are imported and exported from the main tours index:
+View-triggered tours are imported and exported from the main tours index. These are the tours that `triggerTourForView` iterates over on each dashboard view:
 
 ```javascript
 // /assets/js/feature-tours/index.js
 import sharedKeyMetrics from './shared-key-metrics';
 import myNewTour from './my-new-tour';
 
+// Ordered tours.
 export default [
 	sharedKeyMetrics,
 	myNewTour,
 	// Additional tours...
 ];
 ```
+
+> The index currently exports an empty array (`export default []`) — there are no view-triggered tours registered at present. The remaining tours are **on-demand** tours that are triggered explicitly rather than from the index, for example:
+>
+> - `shared-key-metrics.js`, triggered via `useChangeMetricsFeatureTourEffect` (see [On-Demand Tours](#on-demand-tours)).
+> - `welcome.ts`, which exports a `getWelcomeTour()` factory consumed by the `useWelcomeTour` hook (`assets/js/feature-tours/hooks/useWelcomeTour.ts`).
 
 ## State Management
 
@@ -80,13 +94,13 @@ const initialState = {
 
 ```javascript
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 const {
 	dismissTour, // Dismiss a tour by slug
 	triggerTourForView, // Trigger tour for specific view context
 	triggerOnDemandTour, // Trigger tour on demand (manual)
-	triggerTour, // Set current tour
+	triggerTour, // Set current tour (and preload its widget areas)
 } = useDispatch( CORE_USER );
 
 // Dismiss a tour permanently
@@ -103,7 +117,7 @@ await triggerOnDemandTour( myTourObject );
 
 ```javascript
 import { useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 // Get currently active tour
 const currentTour = useSelect( ( select ) =>
@@ -131,25 +145,17 @@ const shownTour = useSelect( ( select ) => select( CORE_USER ).getShownTour() );
 
 ### Tour Qualification Logic
 
-Tours must fulfil several requirements to be shown:
+View-triggered tours (those returned from `index.js` and evaluated by `triggerTourForView`) must fulfil several requirements to be shown:
 
 1. **View Context Match**: The current view context should match the feature tour's supplied view context(s)
-2. **Version Check**: Tour version must be newer than user's initial Site Kit version (eg. don't show users tours for features that were introduced before/when they started using Site Kit). The version comparison is done with `semver` standards.
+2. **Version Check**: Tour version must be newer than the user's initial Site Kit version (eg. don't show users tours for features that were introduced before/when they started using Site Kit). The comparison uses the `compare-versions` library against `getInitialSiteKitVersion()`.
 3. **Dismissal Check**: Tour must not have been previously dismissed
 4. **Custom Requirements**: Optional `checkRequirements` function must return `true`
-5. **Cooldown Check**: Don't show any tours that were dismissed within last 2 hours
+5. **Cooldown Check**: Don't show any tours that were dismissed within the last 2 hours
 
-```javascript
-// Example tour qualification checking
-const tourQualifies = await checkTourRequirements( {
-	tour,
-	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-} );
+On-demand tours (`triggerOnDemandTour`) run a lighter check (`CHECK_ON_DEMAND_TOUR_REQUIREMENTS`): they skip the view-context, version, and cooldown checks. They only run the dismissal check when the tour is **not** `isRepeatable`, then evaluate any `checkRequirements`.
 
-if ( tourQualifies ) {
-	triggerTour( tour );
-}
-```
+To trigger qualification for view-triggered tours, call `triggerTourForView( viewContext )` — it iterates the tours index and runs all five checks internally via the `CHECK_TOUR_REQUIREMENTS` redux control. For on-demand tours, call `triggerOnDemandTour( tour )`, which runs the lighter `CHECK_ON_DEMAND_TOUR_REQUIREMENTS` control. There is no public `checkTourRequirements` helper; the qualification logic is entirely internal.
 
 ## Tour Components
 
@@ -158,7 +164,7 @@ if ( tourQualifies ) {
 This component manages tour rendering and lifecycle—it operates as a "side-effect component". It needs to be rendered in the component tree for feature tours to appear.
 
 ```javascript
-import FeatureTours from '../components/FeatureTours';
+import FeatureTours from '@/js/components/FeatureTours';
 
 // Usage in main application
 function App() {
@@ -171,13 +177,15 @@ function App() {
 }
 ```
 
+In practice, `<FeatureTours />` is rendered once near the application root (`assets/js/components/Root/index.js`).
+
 #### FeatureTours Implementation Pattern
 
 ```javascript
 import { useMount } from 'react-use';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import useViewContext from '../hooks/useViewContext';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import TourTooltips from './TourTooltips';
 
 export default function FeatureTours() {
@@ -203,18 +211,21 @@ export default function FeatureTours() {
 			tourID={ tour.slug }
 			steps={ tour.steps }
 			gaEventCategory={ tour.gaEventCategory }
+			isRepeatable={ tour.isRepeatable }
 			callback={ tour.callback }
 		/>
 	);
 }
 ```
 
+> The real component additionally registers a `ResizeObserver` on the dashboard element while a tour is active so the tooltip repositions on layout changes.
+
 ### TourTooltips Component
 
 Renders the actual tour using `react-joyride`:
 
 ```javascript
-import TourTooltips from '../components/TourTooltips';
+import TourTooltips from '@/js/components/TourTooltips';
 
 <TourTooltips
 	tourID="myTourSlug" // Unique tour identifier
@@ -227,7 +238,8 @@ import TourTooltips from '../components/TourTooltips';
 			placement: 'bottom', // Tooltip placement
 		},
 	] }
-	gaEventCategory="dashboard_tour" // Analytics category
+	gaEventCategory="dashboard_tour" // Analytics category (string or function)
+	isRepeatable={ false } // Optional; when true the tour ends without being dismissed
 	callback={ ( data, registry ) => {
 		// Optional callback
 		// Handle tour events
@@ -259,7 +271,7 @@ trackEvent( gaEventCategory, GA_ACTIONS.COMPLETE, stepNumber );
 Custom tooltip component for individual tour steps:
 
 ```javascript
-import TourTooltip from '../components/TourTooltip';
+import TourTooltip from '@/js/components/TourTooltip';
 
 // Used internally by TourTooltips
 function MyCustomTooltip( props ) {
@@ -288,7 +300,7 @@ function MyCustomTooltip( props ) {
 Alternative tooltip component for single-step tours:
 
 ```javascript
-import JoyrideTooltip from '../components/JoyrideTooltip';
+import JoyrideTooltip from '@/js/components/JoyrideTooltip';
 
 function SimpleTooltip() {
 	return (
@@ -304,6 +316,8 @@ function SimpleTooltip() {
 }
 ```
 
+`JoyrideTooltip` supports additional optional props including `slug`, `className`, `styles`, `floaterProps`, and the lifecycle callbacks `onTourStart`, `onTourEnd`, `onView`, and `onDismiss`. It only renders once its `target` exists in the DOM (it polls for the element), and it reuses the shared `joyrideStyles`/`floaterProps` exported from `TourTooltips`.
+
 ## Tour Implementation Patterns
 
 ### Basic Tour Definition
@@ -314,7 +328,7 @@ import { __ } from '@wordpress/i18n';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
-} from '../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 
 const myNewFeatureTour = {
 	slug: 'myNewFeature',
@@ -366,19 +380,17 @@ const conditionalTour = {
 		},
 	],
 	checkRequirements: async ( registry ) => {
-		// Only show if Analytics is connected and has data
+		// Only show if Analytics is connected.
 		const isAnalyticsConnected = await registry
-			.resolveSelect( MODULES_ANALYTICS_4 )
-			.isConnected();
+			.resolveSelect( CORE_MODULES )
+			.isModuleConnected( 'analytics-4' );
 
-		const hasData = await registry
-			.resolveSelect( MODULES_ANALYTICS_4 )
-			.hasDataForLastMonth();
-
-		return isAnalyticsConnected && hasData;
+		return isAnalyticsConnected;
 	},
 };
 ```
+
+> `checkRequirements` receives the data store `registry`. Resolve any selectors you depend on with `registry.resolveSelect( … )` so their data is loaded before you read it.
 
 ### Tour with Custom Callback
 
@@ -405,8 +417,8 @@ const trackableTour = {
 		// Custom tracking for specific interactions
 		if ( action === 'next' && index === 0 ) {
 			registry
-				.dispatch( CORE_USER )
-				.setUserProperty( 'completed_special_tour_step_1', true );
+				.dispatch( CORE_UI )
+				.setValue( 'special-feature-tour-step-1-advanced', true );
 		}
 
 		// Custom completion logic
@@ -419,11 +431,13 @@ const trackableTour = {
 };
 ```
 
+> The `action`/`status` string values (`'next'`, `'prev'`, `'finished'`, etc.) come from `react-joyride`'s `ACTIONS` and `STATUS` constants. Prefer importing those constants over hard-coding the strings.
+
 ### On-Demand Tours
 
 ```javascript
 // Hook for triggering on-demand tours
-import { useChangeMetricsFeatureTourEffect } from '../components/KeyMetrics/hooks/useChangeMetricsFeatureTourEffect';
+import { useChangeMetricsFeatureTourEffect } from '@/js/components/KeyMetrics/hooks/useChangeMetricsFeatureTourEffect';
 
 function KeyMetricsComponent() {
 	const renderChangeMetricLink = useSelect( ( select ) => {
@@ -445,8 +459,9 @@ function KeyMetricsComponent() {
 ```javascript
 import { useEffect } from '@wordpress/element';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import sharedKeyMetrics from '../feature-tours/shared-key-metrics';
+import sharedKeyMetrics from '@/js/feature-tours/shared-key-metrics';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 export function useChangeMetricsFeatureTourEffect( {
 	renderChangeMetricLink,
@@ -475,23 +490,25 @@ export function useChangeMetricsFeatureTourEffect( {
 }
 ```
 
+> This is a simplified illustration. The real hook also gates on the `setupFlowRefresh` feature flag and dismisses the tour while the initial welcome modal is active — see `assets/js/components/KeyMetrics/hooks/useChangeMetricsFeatureTourEffect.js`.
+
 ## Tour Styling and Configuration
 
 ### Joyride Styling
 
-Default styles for tours are configured in TourTooltips:
+Default styles for tours are exported from `TourTooltips`. The exact values for `overlayColor` and the spotlight `border` are conditional on the `setupFlowRefresh` feature flag; the simplified shape is:
 
 ```javascript
 export const joyrideStyles = {
 	options: {
-		arrowColor: '#3c7251', // Primary green color
-		backgroundColor: '#3c7251', // Primary green color
+		arrowColor: '#3c7251', // $c-content-primary
+		backgroundColor: '#3c7251', // $c-content-primary
 		overlayColor: 'rgba(0, 0, 0, 0.6)', // Dark overlay
-		textColor: '#fff', // White text
+		textColor: '#fff', // $c-content-on-primary
 		zIndex: 20000, // High z-index
 	},
 	spotlight: {
-		border: '2px solid #3c7251', // Green border
+		border: '2px solid #3c7251', // $c-content-primary
 		backgroundColor: '#fff', // White background
 	},
 };
@@ -687,7 +704,7 @@ const complexTour = {
             target: '.workflow-start',
             title: __('New Workflow Available', 'google-site-kit'),
             content: __(
-                'We'll guide you through the new workflow in 4 steps.',
+                'We will guide you through the new workflow in 4 steps.',
                 'google-site-kit'
             ),
             placement: 'bottom'
@@ -740,7 +757,7 @@ const complexTour = {
         // Track completion of each major step
         if (action === 'next') {
             const stepNames = ['intro', 'configure', 'review', 'save'];
-            registry.dispatch(CORE_USER).setUserProperty(
+            registry.dispatch(CORE_UI).setValue(
                 `workflow_tour_${stepNames[index]}_completed`,
                 true
             );
@@ -764,6 +781,8 @@ const complexTour = {
 ```
 
 ## Testing Tours
+
+Tests are colocated with the code they cover and may be `.test.js` or `.test.ts` (TypeScript tours such as `welcome.ts` ship a `welcome.test.ts`). `it`/`test` titles start with "should …". Run a single file with `npm -w tests/js run test:js -- <path>`. See `docs/context/js/tests.md` for the full testing conventions.
 
 ### Tour Testing Utilities
 

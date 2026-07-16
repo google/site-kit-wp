@@ -38,36 +38,23 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
-import { PDFSection } from '@/js/components/pdf-export/constants';
+import {
+	ORDERED_MAIN_DASHBOARD_CONTEXTS,
+	PDFSection,
+} from '@/js/components/pdf-export/constants';
 import { isActivePDFWidget } from '@/js/components/pdf-export/pdf-widget-eligibility';
 import { SelectionPanelContent } from '@/js/components/SelectionPanel';
 import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
 import Typography from '@/js/components/Typography';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
-import {
-	CONTEXT_MAIN_DASHBOARD_CONTENT,
-	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
-	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
-	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
-	CONTEXT_MAIN_DASHBOARD_SPEED,
-	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
-} from '@/js/googlesitekit/widgets/default-contexts';
 import type { Widget, WidgetArea } from '@/js/googlesitekit/widgets/types';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import Footer from './Footer';
 import Header from './Header';
 import PDFSectionCheckboxes from './PDFSectionCheckboxes';
-
-const MAIN_DASHBOARD_CONTEXTS = [
-	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
-	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
-	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
-	CONTEXT_MAIN_DASHBOARD_CONTENT,
-	CONTEXT_MAIN_DASHBOARD_SPEED,
-	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
-];
 
 interface PanelContentProps {
 	closePanel: () => void;
@@ -88,11 +75,28 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 				return [];
 			}
 
+			// Wait for modules to load. Before they load, `isModuleConnected`
+			// returns `undefined`, so the panel would treat a connected module
+			// as disconnected and leave its section out of the default selection.
+			if ( select( CORE_MODULES ).getModules() === undefined ) {
+				return [];
+			}
+
 			const sections: PDFSection[] = [];
 
-			MAIN_DASHBOARD_CONTEXTS.forEach( ( contextSlug ) => {
+			ORDERED_MAIN_DASHBOARD_CONTEXTS.forEach( ( contextSlug ) => {
 				const areas: WidgetArea[] =
 					select( CORE_WIDGETS ).getWidgetAreas( contextSlug );
+
+				// Merge the context's areas into one section, so a multi-area
+				// context shows one section, not one per area.
+				// For instance, the "Traffic" context area holds
+				// traffic charts and the audience tiles.
+				// The areas of a context share the same `pdfTitle`, so the label
+				// comes from the first area that has one.
+				let label = '';
+				const widgets: PDFSection[ 'widgets' ] = [];
+				const widgetSlugs: string[] = [];
 
 				areas.forEach( ( area ) => {
 					const pdfWidgets: Widget[] = select( CORE_WIDGETS )
@@ -105,20 +109,31 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 						return;
 					}
 
-					sections.push( {
-						slug: area.slug,
-						label: area.pdfTitle || area.title || area.slug,
-						contextSlug,
-						widgets: pdfWidgets
-							.filter( ( widget ) => !! widget.pdf?.label )
-							.map( ( widget ) => ( {
+					if ( ! label ) {
+						label = area.pdfTitle || area.title || '';
+					}
+
+					pdfWidgets.forEach( ( widget ) => {
+						if ( widget.pdf?.label ) {
+							widgets.push( {
 								slug: widget.slug,
-								label: widget.pdf?.label as string,
-							} ) ),
-						widgetSlugs: pdfWidgets.map(
-							( widget ) => widget.slug
-						),
+								label: widget.pdf.label as string,
+							} );
+						}
+						widgetSlugs.push( widget.slug );
 					} );
+				} );
+
+				if ( widgetSlugs.length === 0 ) {
+					return;
+				}
+
+				sections.push( {
+					slug: contextSlug,
+					label: label || contextSlug,
+					contextSlug,
+					widgets,
+					widgetSlugs,
 				} );
 			} );
 
@@ -151,12 +166,17 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 			widgetSlugs: string[],
 			widgetContextMap: Record< string, string >
 		) => {
-			const contextSlugs = Array.from(
-				new Set(
-					widgetSlugs
-						.map( ( slug ) => widgetContextMap[ slug ] )
-						.filter( Boolean )
-				)
+			const selectedContexts = new Set(
+				widgetSlugs
+					.map( ( slug ) => widgetContextMap[ slug ] )
+					.filter( Boolean )
+			);
+
+			// Store the contexts in the dashboard's order, not the selection
+			// order, so the report's section order stays fixed across
+			// re-exports and toggles.
+			const contextSlugs = ORDERED_MAIN_DASHBOARD_CONTEXTS.filter(
+				( contextSlug ) => selectedContexts.has( contextSlug )
 			);
 
 			setSelection( { contextSlugs, widgetSlugs } );
@@ -164,21 +184,39 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 		[ setSelection ]
 	);
 
-	// Seed the selection with every available widget the first time they resolve.
-	// Subsequent toggles (including deselecting everything) persist via `core/pdf`
-	// for the rest of the session.
-	const seededRef = useRef( false );
+	/**
+	 * Holds every widget slug that has already been selected by default. A
+	 * widget is selected the first time it appears, and its slug is recorded
+	 * here so that a widget which appears later (because its `pdf.isActive`
+	 * reads a module setting that resolves after the panel opens) is still
+	 * selected by default, while a widget the user has since deselected is not
+	 * selected again. Deselections persist in `core/pdf` for the session.
+	 */
+	const defaultSelectedSlugsRef = useRef< Set< string > >( new Set() );
 	useEffect( () => {
-		if ( seededRef.current || availableSections.length === 0 ) {
+		const newWidgetSlugs = availableSections
+			.flatMap( ( section ) => section.widgetSlugs )
+			.filter(
+				( slug ) => ! defaultSelectedSlugsRef.current.has( slug )
+			);
+
+		if ( newWidgetSlugs.length === 0 ) {
 			return;
 		}
 
-		seededRef.current = true;
-		const allWidgetSlugs = availableSections.flatMap(
-			( section ) => section.widgetSlugs
+		newWidgetSlugs.forEach( ( slug ) =>
+			defaultSelectedSlugsRef.current.add( slug )
 		);
-		commitSelection( allWidgetSlugs, widgetContext );
-	}, [ availableSections, commitSelection, widgetContext ] );
+		commitSelection(
+			[ ...selectedWidgetSlugs, ...newWidgetSlugs ],
+			widgetContext
+		);
+	}, [
+		availableSections,
+		selectedWidgetSlugs,
+		commitSelection,
+		widgetContext,
+	] );
 
 	const toggleWidget = useCallback(
 		( widgetSlug: string ) => {

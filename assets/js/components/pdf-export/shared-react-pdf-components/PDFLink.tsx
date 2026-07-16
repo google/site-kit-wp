@@ -19,20 +19,21 @@
 /**
  * External dependencies
  */
-import { Link, StyleSheet } from '@react-pdf/renderer';
+import { Link } from '@react-pdf/renderer';
 import type { Style } from '@react-pdf/stylesheet';
 import { FC, ReactNode } from 'react';
 
 /**
  * Internal dependencies
  */
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFTypography, {
 	PDFTypographySize,
 	PDFTypographyType,
 } from './PDFTypography';
 
-const styles = StyleSheet.create( {
+const styles = createPDFStyles( {
 	link: {
 		flexDirection: 'row',
 		alignItems: 'center',

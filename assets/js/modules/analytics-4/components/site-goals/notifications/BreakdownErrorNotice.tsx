@@ -17,14 +17,9 @@
  */
 
 /**
- * External dependencies
- */
-import { FC } from 'react';
-
-/**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, forwardRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -48,13 +43,10 @@ interface BreakdownErrorNoticeProps {
 	className?: string;
 }
 
-const BreakdownErrorNotice: FC< BreakdownErrorNoticeProps > = ( {
-	error,
-	permissionsTitle,
-	onRetry,
-	onDismiss,
-	className,
-} ) => {
+const BreakdownErrorNotice = forwardRef<
+	HTMLDivElement,
+	BreakdownErrorNoticeProps
+>( ( { error, permissionsTitle, onRetry, onDismiss, className }, ref ) => {
 	const troubleshootingURL = useSelect(
 		( select: Select ) =>
 			select( CORE_SITE ).getErrorTroubleshootingLinkURL( error ),
@@ -79,6 +71,7 @@ const BreakdownErrorNotice: FC< BreakdownErrorNoticeProps > = ( {
 
 	return (
 		<Notice
+			ref={ ref }
 			className={ className }
 			type={ NOTICE_TYPES.ERROR }
 			title={ title }
@@ -95,6 +88,6 @@ const BreakdownErrorNotice: FC< BreakdownErrorNoticeProps > = ( {
 			} }
 		/>
 	);
-};
+} );
 
 export default BreakdownErrorNotice;

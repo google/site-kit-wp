@@ -34,6 +34,7 @@
 		"lint": "npm run lint:js && npm run lint:css",
 		"lint:js": "eslint --no-eslintrc --config .eslintrc.json --ignore-path .eslintignore --ext js,jsx,ts,tsx .",
 		"lint:js-fix": "eslint --no-eslintrc --config .eslintrc.json --ignore-path .eslintignore --ext js,jsx,ts,tsx --fix \"**/*.{js,jsx,ts,tsx,.yml,.yaml}\"",
+		"lint:js:files": "eslint --no-eslintrc --config .eslintrc.json --ignore-path .eslintignore",
 		"lint:css": "stylelint ./assets/sass ./storybook/assets/sass",
 		"lint:css-fix": "stylelint ./assets/sass ./storybook/assets/sass --fix",
 		"env:start": "npm run -w tests/e2e start",

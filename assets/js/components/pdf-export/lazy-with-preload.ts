@@ -43,7 +43,7 @@ export type PreloadableLazyComponent< P > = LazyExoticComponent<
  * orchestrator skip the resolution step and hand the Suspense wrapper straight
  * to `@react-pdf`, which throws while rendering and rejects the export.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param factory Dynamic import factory returning `{ default }`.
  * @return Lazy component with a `preload` method.

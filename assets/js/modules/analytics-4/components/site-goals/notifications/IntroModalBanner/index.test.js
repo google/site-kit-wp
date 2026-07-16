@@ -31,7 +31,9 @@ import {
 } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import {
 	SITE_GOALS_TOUR_PRELOAD_WIDGET_AREAS,
 	getSiteGoalsTour,
@@ -41,6 +43,7 @@ import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4/notifications';
 import * as scrollUtils from '@/js/util/scroll';
 import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
 import {
@@ -48,13 +51,21 @@ import {
 	createTestRegistry,
 	fireEvent,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
-import IntroModal from './index';
+import IntroModal, {
+	SITE_GOALS_INTRO_MODAL_BANNER,
+	SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED,
+} from './index';
 
 jest.mock( '@/js/googlesitekit/notifications/hooks/useNotificationEvents' );
+
+const IntroModalComponent = withNotificationComponentProps(
+	SITE_GOALS_INTRO_MODAL_BANNER
+)( IntroModal );
 
 const getNavigationalScrollTopSpy = jest.spyOn(
 	scrollUtils,
@@ -107,6 +118,7 @@ describe( 'IntroModal', () => {
 			dismiss: jest.fn(),
 		} );
 
+		provideSiteInfo( registry );
 		provideModules( registry, [
 			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
 		] );
@@ -124,7 +136,18 @@ describe( 'IntroModal', () => {
 			.receiveGetSettings( { availableCustomDimensions: [] } );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+
+		// Register the notification so the framework's `dismissNotification`
+		// action (dispatched when the modal closes) can find it and persist
+		// its dismissal.
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				SITE_GOALS_INTRO_MODAL_BANNER,
+				ANALYTICS_4_NOTIFICATIONS[ SITE_GOALS_INTRO_MODAL_BANNER ]
+			);
 	} );
 
 	afterEach( () => {
@@ -142,7 +165,7 @@ describe( 'IntroModal', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 		appendTourTarget();
 
-		const { container, getByRole } = render( <IntroModal />, {
+		const { container, getByRole } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
@@ -157,7 +180,7 @@ describe( 'IntroModal', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
 		appendTourTarget();
 
-		const { container, getByRole } = render( <IntroModal />, {
+		const { container, getByRole } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
@@ -175,7 +198,7 @@ describe( 'IntroModal', () => {
 			] );
 		appendTourTarget();
 
-		const { container, getByRole } = render( <IntroModal />, {
+		const { container, getByRole } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
@@ -191,7 +214,7 @@ describe( 'IntroModal', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
-		const { container } = render( <IntroModal />, {
+		const { container } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
@@ -213,7 +236,7 @@ describe( 'IntroModal', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
-		const { getByRole } = render( <IntroModal />, {
+		const { getByRole } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
@@ -234,13 +257,13 @@ describe( 'IntroModal', () => {
 		jest.useRealTimers();
 	} );
 
-	it( 'sets the widget areas to load while waiting, then clears them when the modal is dismissed', async () => {
+	it( 'sets the widget areas to load while waiting, then clears them when the modal unmounts', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 		appendTourTarget();
 
-		const { getByRole } = render( <IntroModal />, {
+		const { getByRole, unmount } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
@@ -251,12 +274,27 @@ describe( 'IntroModal', () => {
 
 		await waitForIntroModalToShow( getByRole );
 
-		// The dismissal also saves the dismissed item. The async act call
-		// lets that request finish inside the test.
+		// Dismissing removes the modal from the notification queue, which
+		// saves the dismissed item. The async act call lets that request
+		// finish inside the test.
 		// eslint-disable-next-line require-await
 		await act( async () => {
 			fireEvent.click( getByRole( 'button', { name: /maybe later/i } ) );
 		} );
+
+		// The dismissal persists the shared slug via `dismissNotification`.
+		expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+			body: {
+				data: {
+					slug: SITE_GOALS_INTRO_MODAL_BANNER,
+					expiration: 0,
+				},
+			},
+		} );
+
+		// The framework unmounts the dismissed notification. Unmounting runs
+		// the section-ready hook's cleanup, which clears the widget areas.
+		unmount();
 
 		expect(
 			registry.select( CORE_UI ).getValue( FORCED_IN_VIEW_WIDGET_AREAS )
@@ -269,13 +307,24 @@ describe( 'IntroModal', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 		appendTourTarget();
 
-		const { getByRole } = render( <IntroModal />, {
+		const { getByRole, unmount } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
 		await waitForIntroModalToShow( getByRole );
 
-		fireEvent.click( getByRole( 'button', { name: /show me/i } ) );
+		// "Show me" starts the tour and removes the modal from the notification
+		// queue. The async act call lets the dismissal requests finish inside
+		// the test.
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByRole( 'button', { name: /show me/i } ) );
+		} );
+
+		// The framework unmounts the modal once it leaves the queue. Unmount
+		// here to mirror that; the tour itself runs in the store and keeps
+		// going after the modal is gone.
+		unmount();
 
 		// The tour waits for the section again before it starts.
 		await waitFor( () => {
@@ -311,7 +360,7 @@ describe( 'IntroModal', () => {
 			return 0;
 		} );
 
-		const { getByRole } = render( <IntroModal />, {
+		const { getByRole } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
@@ -338,6 +387,82 @@ describe( 'IntroModal', () => {
 		} );
 	} );
 
+	it( 'saves the confirmed dismissal item before the shared dismissal item when the user clicks "Show me"', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		appendTourTarget();
+
+		const { getByRole } = render( <IntroModalComponent />, {
+			registry,
+		} );
+
+		await waitForIntroModalToShow( getByRole );
+
+		// The click also dismisses the modal and starts the tour. The async
+		// act call lets the dismissal requests finish inside the test.
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByRole( 'button', { name: /show me/i } ) );
+		} );
+
+		// The confirmed slug must save before the shared slug. Two parallel
+		// saves can drop one, and a dropped confirmed slug makes the survey
+		// triggers read the wrong segment. Removing the modal from the queue
+		// re-persists the shared slug via the framework, so it may appear more
+		// than once — the ordering relative to the confirmed slug is what
+		// matters.
+		const dismissedSlugs = fetchMock
+			.calls( dismissItemEndpoint )
+			.map( ( [ , request ] ) => JSON.parse( request.body ).data.slug );
+		expect( dismissedSlugs[ 0 ] ).toBe(
+			SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED
+		);
+		expect( dismissedSlugs ).toContain( SITE_GOALS_INTRO_MODAL_BANNER );
+		expect(
+			dismissedSlugs.indexOf( SITE_GOALS_INTRO_MODAL_BANNER )
+		).toBeGreaterThan(
+			dismissedSlugs.indexOf( SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED )
+		);
+	} );
+
+	it( 'does not save the confirmed dismissal item when the user clicks "Maybe later"', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		appendTourTarget();
+
+		const { getByRole } = render( <IntroModalComponent />, {
+			registry,
+		} );
+
+		await waitForIntroModalToShow( getByRole );
+
+		// The async act call lets the dismissal request finish inside the
+		// test.
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByRole( 'button', { name: /maybe later/i } ) );
+		} );
+
+		expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+			body: {
+				data: {
+					slug: SITE_GOALS_INTRO_MODAL_BANNER,
+					expiration: 0,
+				},
+			},
+		} );
+		expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint, {
+			body: {
+				data: {
+					slug: SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED,
+					expiration: 0,
+				},
+			},
+		} );
+	} );
+
 	it( 'does not render for an authenticated user without access to Analytics', () => {
 		registry
 			.dispatch( CORE_MODULES )
@@ -349,7 +474,7 @@ describe( 'IntroModal', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
-		const { container } = render( <IntroModal />, {
+		const { container } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
@@ -363,7 +488,7 @@ describe( 'IntroModal', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 		appendTourTarget();
 
-		const { getByRole } = render( <IntroModal />, {
+		const { getByRole } = render( <IntroModalComponent />, {
 			registry,
 		} );
 

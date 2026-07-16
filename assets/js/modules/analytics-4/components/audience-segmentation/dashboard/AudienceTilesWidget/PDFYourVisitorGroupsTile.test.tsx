@@ -1,0 +1,151 @@
+/**
+ * PDFYourVisitorGroupsTile tests.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import { ComponentProps } from 'react';
+import TestRenderer from 'react-test-renderer';
+
+/**
+ * Internal dependencies
+ */
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import PDFYourVisitorGroupsTile from './PDFYourVisitorGroupsTile';
+
+const METRICS = {
+	visitors: { current: 24200, previous: 22000 },
+	visitsPerVisitor: { current: 3, previous: 3 },
+	pagesPerVisit: { current: 2, previous: 2.5 },
+	pageviews: {
+		current: 1565,
+		previous: 1500,
+		percentageOfTotalPageViews: 0.33,
+	},
+};
+
+const TOP_CITIES = [
+	{ name: 'Dublin', percentage: 0.388 },
+	{ name: 'London', percentage: 0.126 },
+	{ name: 'New York', percentage: 0.094 },
+];
+
+const TOP_CONTENT = [
+	{ title: 'First post title', pageviews: 847 },
+	{ title: 'Second post title', pageviews: 596 },
+];
+
+/**
+ * Renders `PDFYourVisitorGroupsTile` with default props, as a JSON tree string.
+ *
+ * @since n.e.x.t
+ *
+ * @param props Props that override the defaults.
+ * @return The rendered tree serialized to a string.
+ */
+function renderTile(
+	props: Partial< ComponentProps< typeof PDFYourVisitorGroupsTile > > = {}
+) {
+	const renderer = TestRenderer.create(
+		<PDFYourVisitorGroupsTile
+			audienceName="New visitors"
+			metrics={ METRICS }
+			topCities={ TOP_CITIES }
+			topContent={ TOP_CONTENT }
+			{ ...props }
+		/>
+	);
+	return JSON.stringify( renderer.toJSON() );
+}
+
+describe( 'PDFYourVisitorGroupsTile', () => {
+	it( 'renders the audience name header', () => {
+		expect( renderTile() ).toContain( 'New visitors' );
+	} );
+
+	it( 'renders the four metric tiles in order, with the pageviews share label', () => {
+		const json = renderTile();
+
+		expect( json ).toContain( 'Visitors' );
+		expect( json ).toContain( 'Visits per visitor' );
+		expect( json ).toContain( 'Pages per visit' );
+		expect( json ).toContain( '33% of total pageviews' );
+
+		expect( json.indexOf( 'Visitors' ) ).toBeLessThan(
+			json.indexOf( 'Visits per visitor' )
+		);
+		expect( json.indexOf( 'Visits per visitor' ) ).toBeLessThan(
+			json.indexOf( 'Pages per visit' )
+		);
+		expect( json.indexOf( 'Pages per visit' ) ).toBeLessThan(
+			json.indexOf( '33% of total pageviews' )
+		);
+	} );
+
+	it( 'colors the delta chip green when rising and red when falling', () => {
+		const json = renderTile();
+
+		// Visitors rose from 22000 to 24200.
+		expect( json ).toContain( '+10%' );
+		expect( json ).toContain( PDF_COLORS.GREEN_G_50 );
+
+		// Pages per visit fell from 2.5 to 2.
+		expect( json ).toContain( '-20%' );
+		expect( json ).toContain( PDF_COLORS.UTILITY_ERROR_CONTAINER );
+	} );
+
+	it( 'renders each top city with its name and percentage', () => {
+		const json = renderTile();
+
+		expect( json ).toContain( 'Cities with the most visitors' );
+		expect( json ).toContain( 'Dublin' );
+		expect( json ).toContain( '38.8%' );
+		expect( json ).toContain( 'London' );
+		expect( json ).toContain( 'New York' );
+	} );
+
+	it( 'renders each top content row with its title and pageviews', () => {
+		const json = renderTile();
+
+		expect( json ).toContain( 'Top content by pageviews' );
+		expect( json ).toContain( 'First post title' );
+		expect( json ).toContain( '847' );
+		expect( json ).toContain( 'Second post title' );
+		expect( json ).toContain( '596' );
+	} );
+
+	it( "hides the delta chip when the change can't be calculated", () => {
+		// A zero previous value leaves no calculable change for any metric.
+		const json = renderTile( {
+			metrics: {
+				visitors: { current: 100, previous: 0 },
+				visitsPerVisitor: { current: 3, previous: 0 },
+				pagesPerVisit: { current: 2, previous: 0 },
+				pageviews: {
+					current: 1565,
+					previous: 0,
+					percentageOfTotalPageViews: 0.33,
+				},
+			},
+		} );
+
+		// No calculable change means no chip in either color.
+		expect( json ).not.toContain( PDF_COLORS.GREEN_G_50 );
+		expect( json ).not.toContain( PDF_COLORS.UTILITY_ERROR_CONTAINER );
+	} );
+} );

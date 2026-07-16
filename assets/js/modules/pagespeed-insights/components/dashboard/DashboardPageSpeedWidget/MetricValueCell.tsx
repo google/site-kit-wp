@@ -79,7 +79,7 @@ const styles = createPDFStyles( {
  * Maps a score category to the pill's colors. Fast maps to the green pair,
  * slow to the red pair, and any other category to the yellow pair.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param category The metric's score category from the report.
  * @return The pill's background and text colors.
@@ -99,7 +99,7 @@ function getBadgeColors( category: string ) {
  * Maps a score category to the pill's translated label. Fast reads "Good",
  * slow reads "Poor", and any other category reads "Needs improvement".
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param category The metric's score category from the report.
  * @return The pill's translated label.
