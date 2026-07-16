@@ -170,11 +170,11 @@ class Report_Request_Assembler {
 	 * Maps batch responses back to section payloads.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Returns the response early when it is a WP_Error.
+	 * @since n.e.x.t Returns the response unchanged when it is a WP_Error.
 	 *
 	 * @param array|WP_Error $responses   Batch responses keyed by identifier, or WP_Error on batch failure.
 	 * @param array          $request_map Request metadata map.
-	 * @return array|WP_Error Section payloads keyed by section slug.
+	 * @return array|WP_Error Section payloads keyed by section slug, or WP_Error on failure.
 	 */
 	public function map_responses( $responses, $request_map ) {
 		if ( is_wp_error( $responses ) ) {

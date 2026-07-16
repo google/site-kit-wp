@@ -130,20 +130,13 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertArrayHasKey( 'popular_content', $payload[ Analytics_4::MODULE_SLUG ], 'Popular content payload should be included.' );
 	}
 
-	public function test_search_console_batch_wp_error_returns_categorized_error() {
+	public function test_get_user_payload__search_console_batch_wp_error_returns_categorized_error() {
 		$admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$this->authenticate_and_grant_required_scopes_for_user( $admin_id );
 
 		$this->activate_modules( Search_Console::MODULE_SLUG );
 		$this->set_active_modules( array( Search_Console::MODULE_SLUG ) );
-
-		$settings = new Search_Console_Settings( $this->options );
-		$settings->merge(
-			array(
-				'propertyID' => home_url( '/' ),
-				'ownerID'    => $admin_id,
-			)
-		);
+		$this->set_search_console_settings_connected( array( 'ownerID' => $admin_id ) );
 
 		$search_console = $this->modules->get_module( Search_Console::MODULE_SLUG );
 		$search_console->register();
@@ -182,9 +175,9 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$data_requests = $this->create_data_requests();
 		$payload       = $data_requests->get_user_payload( $admin_id, $this->date_range );
 
-		$this->assertWPError( $payload, 'Whole-batch Search Console failure should surface as WP_Error instead of fataling.' );
+		$this->assertWPError( $payload, 'Whole-batch Search Console failure should surface as WP_Error instead of causing a fatal error.' );
 		$this->assertEquals( 'permissions_error', $payload->get_error_data()['category_id'], '403 batch failure should be categorized as a permissions error.' );
-		$this->assertEquals( Search_Console::MODULE_SLUG, $payload->get_error_data()['module_slug'], 'Categorized error should carry the Search Console module slug.' );
+		$this->assertEquals( 'search-console', $payload->get_error_data()['module_slug'], 'Categorized error should carry the Search Console module slug.' );
 	}
 
 	public function test_user_without_shared_roles_gets_empty_payload() {
@@ -540,9 +533,14 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		);
 	}
 
-	private function set_search_console_settings_connected() {
+	private function set_search_console_settings_connected( array $overrides = array() ) {
 		$settings = new Search_Console_Settings( $this->options );
-		$settings->merge( array( 'propertyID' => home_url( '/' ) ) );
+		$settings->merge(
+			wp_parse_args(
+				$overrides,
+				array( 'propertyID' => home_url( '/' ) )
+			)
+		);
 	}
 
 	private function set_active_modules( array $slugs ) {

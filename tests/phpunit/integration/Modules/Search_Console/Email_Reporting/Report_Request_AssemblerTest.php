@@ -20,7 +20,7 @@ use WP_Error;
  */
 class Report_Request_AssemblerTest extends TestCase {
 
-	public function test_map_responses_returns_wp_error_unchanged() {
+	public function test_map_responses__returns_wp_error_unchanged() {
 		$assembler = new Report_Request_Assembler( new Report_Options( $this->get_date_range_payload() ) );
 
 		list( , $request_map ) = $assembler->build_requests();
@@ -35,7 +35,7 @@ class Report_Request_AssemblerTest extends TestCase {
 		$this->assertSame( $error, $result, 'A whole-batch WP_Error should be returned unchanged.' );
 	}
 
-	public function test_map_responses_maps_batch_response_to_section_payloads() {
+	public function test_map_responses__maps_batch_responses_to_section_payloads() {
 		$assembler = new Report_Request_Assembler( new Report_Options( $this->get_date_range_payload() ) );
 
 		list( , $request_map ) = $assembler->build_requests();
