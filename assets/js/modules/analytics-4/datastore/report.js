@@ -45,6 +45,7 @@ import {
 	isZeroReport,
 	normalizeReportOptions,
 } from '@/js/modules/analytics-4/utils';
+import { getPageTitlesReportOptions } from '@/js/modules/analytics-4/utils/page-titles-report';
 import { validateReport } from '@/js/modules/analytics-4/utils/validation';
 import { DAY_IN_SECONDS, dateSub } from '@/js/util';
 import {
@@ -197,7 +198,6 @@ const baseSelectors = {
 				}
 
 				const pagePaths = [];
-				const REQUEST_MULTIPLIER = 5;
 
 				/*
 				 * Iterate over the report rows, finding the dimension containing the
@@ -229,22 +229,10 @@ const baseSelectors = {
 					return urlTitleMap;
 				}
 
-				const options = {
-					startDate,
-					endDate,
-					dimensions: [ 'pagePath', 'pageTitle' ],
-					dimensionFilters: { pagePath: pagePaths.sort() },
-					metrics: [ { name: 'screenPageViews' } ],
-					orderby: [
-						{
-							metric: { metricName: 'screenPageViews' },
-							desc: true,
-						},
-					],
-					limit: REQUEST_MULTIPLIER * pagePaths.length,
-					reportID:
-						'analytics-4_get-page-titles_store:selector_options',
-				};
+				const options = getPageTitlesReportOptions(
+					{ startDate, endDate },
+					pagePaths
+				);
 
 				const pageTitlesReport =
 					select( MODULES_ANALYTICS_4 ).getReport( options );
