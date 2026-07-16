@@ -30,7 +30,7 @@ import {
 import StoreErrorNotices from './StoreErrorNotices';
 
 describe( 'StoreErrorNotices', () => {
-	let registry;
+	let registry: ReturnType< typeof createTestRegistry >;
 
 	const error = {
 		code: 'test-error-code',
