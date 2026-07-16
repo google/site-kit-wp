@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Is_Widget_Area_Hidden;
 use Google\Site_Kit\Core\Modules\Analytics_4\Tag_Matchers;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
@@ -330,6 +331,9 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		// Analytics 4 tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 
+		// Increase the steps parameter in the proxy setup URL query params.
+		add_filter( 'googlesitekit_proxy_setup_url_params', $this->get_method_proxy( 'set_setup_url_steps_param' ) );
+
 		$this->audience_settings->on_change(
 			function ( $old_value, $new_value ) {
 				// Ensure that the resource data availability dates for `availableAudiences` that no longer exist are reset.
@@ -408,6 +412,11 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 					// Reset audience specific settings.
 					$this->reset_audiences->reset_audience_data();
+				}
+
+				if ( $this->is_connected() ) {
+					$key_metrics_setup_is_widget_area_hidden = new Key_Metrics_Setup_Is_Widget_Area_Hidden( $this->options );
+					$key_metrics_setup_is_widget_area_hidden->delete();
 				}
 			}
 		);
@@ -571,6 +580,22 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		}
 
 		return parent::is_connected();
+	}
+
+	/**
+	 * Sets the steps query parameter for the proxy setup URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $query_params Query parameters.
+	 * @return array
+	 */
+	protected function set_setup_url_steps_param( $query_params ) {
+		if ( Feature_Flags::enabled( 'setupFlowRefreshPhase4' ) ) {
+			$query_params['steps'] = 6;
+		}
+
+		return $query_params;
 	}
 
 	/**

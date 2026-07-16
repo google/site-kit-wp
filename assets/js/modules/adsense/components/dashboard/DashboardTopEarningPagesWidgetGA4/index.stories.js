@@ -38,7 +38,7 @@ import {
 import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import { provideModuleRegistrations, provideModules } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
-import DashboardTopEarningPagesWidgetGA4 from './DashboardTopEarningPagesWidgetGA4';
+import DashboardTopEarningPagesWidgetGA4 from '.';
 
 const adSenseAccountID = 'pub-1234567890';
 

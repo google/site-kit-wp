@@ -47,7 +47,7 @@ const DATA = {
 /**
  * Renders the widget to a JSON string for content and style assertions.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param props Props passed to the widget.
  * @return JSON string of the rendered tree.
@@ -69,18 +69,17 @@ describe( 'DashboardPopularKeywordsWidgetPDF', () => {
 		expect( json ).toContain( 'Top search queries for your site' );
 	} );
 
-	it( 'renders the Clicks and Impressions headers in order, with no header on the query column', () => {
+	it( 'renders the Search query, Clicks, and Impressions headers in order', () => {
 		const json = renderJSON( { data: DATA } );
 
-		// The query column has no header.
-		expect( json ).not.toContain( 'Search query' );
+		expect( json ).toContain( 'Search query' );
 
-		const headerPositions = [ 'Clicks', 'Impressions' ].map( ( header ) =>
-			json.indexOf( header )
+		const headerPositions = [ 'Search query', 'Clicks', 'Impressions' ].map(
+			( header ) => json.indexOf( header )
 		);
 
-		// The Clicks and Impressions headers both appear, with Clicks before
-		// Impressions.
+		// All three headers appear, in the order Search query, then Clicks,
+		// then Impressions.
 		expect( headerPositions ).not.toContain( -1 );
 		expect( headerPositions ).toEqual(
 			[ ...headerPositions ].sort(

@@ -25,8 +25,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
-import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
-import { PIE_CHART_COLORS } from '@/js/components/pdf-export/pie-chart-colors';
+import {
+	PDF_COLORS,
+	PIE_CHART_COLORS,
+} from '@/js/components/pdf-export/pdf-theme';
 import renderGoogleChartToDataURI, {
 	getVisualization,
 } from '@/js/components/pdf-export/render-google-chart-to-data-uri';
@@ -47,10 +49,6 @@ import {
 	getTotalsReportArgs,
 } from './reportOptions';
 
-/**
- * The same color as the dashboard's All Visitors line, the default graph color.
- */
-const LINE_CHART_COLOR = '#3c7251';
 /**
  * The chart draws at 506 by 133, and the tile displays the image in a
  * box of the same size, so the image never stretches and no empty
@@ -245,7 +243,8 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 
 	return {
 		curveType: 'function',
-		colors: [ LINE_CHART_COLOR ],
+		// Matches the dashboard's All Visitors line color.
+		colors: [ PDF_COLORS.SITE_KIT_SK_500 ],
 		chartArea: {
 			left: 8,
 			right: 40,
@@ -291,7 +290,7 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 		},
 		series: {
 			0: {
-				color: LINE_CHART_COLOR,
+				color: PDF_COLORS.SITE_KIT_SK_500,
 				lineWidth: 4,
 				targetAxisIndex: 1,
 			},
@@ -307,7 +306,7 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
  * The shares are proportions, so the donut draws the same slices whether the
  * values are fractions or whole counts.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param rows Legend rows of `{ label, percentage }`.
  * @return A `google.visualization.DataTable` instance.
@@ -337,7 +336,7 @@ function buildBreakdownChartDataTable( rows: BreakdownRow[] ): object {
  * the slice labels, legend, and clicks removed, so the rendered image is a
  * clean donut.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @return Google Charts options object.
  */
@@ -373,7 +372,7 @@ function getBreakdownChartOptions(): object {
  * on a missing report, empty data, or a failed or canceled render, so the
  * widget skips that tile while the other tiles render.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param report The breakdown report, or `null` when its fetch failed.
  * @param signal Cancellation signal forwarded to the renderer.
@@ -432,7 +431,7 @@ async function loadBreakdownChart(
  * and the other tiles still render.
  *
  * @since 1.181.0
- * @since n.e.x.t Also loads the channel, location, and device breakdown donuts.
+ * @since 1.183.0 Also loads the channel, location, and device breakdown donuts.
  *
  * @param params          Loader parameters.
  * @param params.registry WordPress data registry.

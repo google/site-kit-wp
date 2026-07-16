@@ -146,7 +146,7 @@ const baseActions = {
 	/**
 	 * Sets whether the user has answered the site purpose question.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.183.0
 	 *
 	 * @param {boolean} hasSitePurposeAnswer Whether or not the user has answered the site purpose question.
 	 * @return {Object} Redux-style action.
@@ -239,7 +239,7 @@ const baseSelectors = {
 	/**
 	 * Returns whether the user has answered the site purpose question.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.183.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|null|undefined)} Whether the site purpose question has been answered; `undefined` if not loaded or `null` if not set yet.

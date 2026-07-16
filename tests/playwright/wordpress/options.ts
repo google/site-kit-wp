@@ -26,6 +26,33 @@ import { TestDetailsAnnotation } from '@playwright/test';
  */
 export const ANNOTATION_SEPARATOR = ',';
 
+type TestUserProfile = {
+	email?: string;
+	firstName?: string;
+	lastName?: string;
+	dismissedItems?: string[];
+};
+
+/**
+ * A connected module for a test: either a bare slug, or a slug paired with the
+ * module settings to apply (e.g. an AdSense account ID).
+ *
+ * @since n.e.x.t
+ */
+export type ConnectedModule =
+	| string
+	| { slug: string; settings?: Record< string, unknown > };
+
+/**
+ * Dashboard-sharing settings for one module.
+ *
+ * @since n.e.x.t
+ */
+export type SharedModuleSettings = {
+	sharedRoles: string[];
+	management: 'all_admins' | 'owner';
+};
+
 /**
  * Sets the plugins to activate for the test.
  *
@@ -59,6 +86,53 @@ export function withFeatureFlags( ...flags: string[] ): TestDetailsAnnotation {
 }
 
 /**
+ * Sets the connected modules for the test.
+ *
+ * Each module is either a bare slug or a `{ slug, settings }` object; a bare
+ * slug is normalised to `{ slug }`. A module with settings is both connected and
+ * configured with those settings on the WordPress side.
+ *
+ * @since 1.177.0
+ * @since n.e.x.t Accepts per-module settings via `{ slug, settings }` entries.
+ *
+ * @param {...ConnectedModule} modules Connected modules (slug or `{ slug, settings }`).
+ * @return {TestDetailsAnnotation} The annotation to use for the test.
+ */
+export function withConnectedModules(
+	...modules: ConnectedModule[]
+): TestDetailsAnnotation {
+	const normalized = modules.map( ( module ) =>
+		typeof module === 'string' ? { slug: module } : module
+	);
+
+	return {
+		type: '_wp:connected-modules',
+		description: JSON.stringify( normalized ),
+	};
+}
+
+/**
+ * Sets the dashboard-sharing settings for the test.
+ *
+ * Forces the sharing settings on read so a module is shared without the
+ * save-time sanitize dropping it, letting a view-only test list a shared
+ * module's sections.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Record<string, SharedModuleSettings>} sharing Sharing settings keyed by module slug.
+ * @return {TestDetailsAnnotation} The annotation to use for the test.
+ */
+export function withSharedModules(
+	sharing: Record< string, SharedModuleSettings >
+): TestDetailsAnnotation {
+	return {
+		type: '_wp:shared-modules',
+		description: JSON.stringify( sharing ),
+	};
+}
+
+/**
  * Sets the fixtures to use for the test.
  *
  * @since 1.177.0
@@ -78,12 +152,24 @@ export function withFixtures( fixtures: string ): TestDetailsAnnotation {
  *
  * @since 1.175.0
  *
- * @param {string} user The user to use for the test.
- * @return {TestDetailsAnnotation} The annotation to use for the test.
+ * @param {string}           user    The user to use for the test.
+ * @param {TestUserProfile=} profile Optional profile overrides for the user.
+ * @return {TestDetailsAnnotation}   The annotation to use for the test.
  */
-export function asUser( user: string ): TestDetailsAnnotation {
+
+export function asUser(
+	user: string,
+	profile?: TestUserProfile
+): TestDetailsAnnotation {
+	const description = profile
+		? JSON.stringify( {
+				login: user,
+				...profile,
+		  } )
+		: user;
+
 	return {
 		type: '_wp:as-user',
-		description: user,
+		description,
 	};
 }

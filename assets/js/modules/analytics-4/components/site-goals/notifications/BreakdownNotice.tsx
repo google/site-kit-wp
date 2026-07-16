@@ -19,11 +19,12 @@
 /**
  * External dependencies
  */
-import { FC, ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 /**
  * WordPress dependencies
  */
+import { forwardRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -46,43 +47,49 @@ interface BreakdownNoticeProps {
 	onDismissComplete?: () => void;
 }
 
-const BreakdownNotice: FC< BreakdownNoticeProps > = ( {
-	title,
-	description,
-	ctaLabel,
-	onCTAClick,
-	className,
-	ctaInProgress,
-	ctaDisabled,
-	onDismissComplete,
-} ) => {
-	const { dismissItem } = useDispatch( CORE_USER );
+const BreakdownNotice = forwardRef< HTMLDivElement, BreakdownNoticeProps >(
+	(
+		{
+			title,
+			description,
+			ctaLabel,
+			onCTAClick,
+			className,
+			ctaInProgress,
+			ctaDisabled,
+			onDismissComplete,
+		},
+		ref
+	) => {
+		const { dismissItem } = useDispatch( CORE_USER );
 
-	async function handleDismiss() {
-		// Wait for the dismissal to persist (which hides the notice) before
-		// triggering the tooltip, so they don't briefly overlap.
-		await dismissItem( SITE_GOALS_BREAKDOWN_NOTICE );
-		onDismissComplete?.();
+		async function handleDismiss() {
+			// Wait for the dismissal to persist (which hides the notice) before
+			// triggering the tooltip, so they don't briefly overlap.
+			await dismissItem( SITE_GOALS_BREAKDOWN_NOTICE );
+			onDismissComplete?.();
+		}
+
+		return (
+			<Notice
+				ref={ ref }
+				className={ className }
+				type={ NOTICE_TYPES.NEW }
+				title={ title }
+				description={ description }
+				ctaButton={ {
+					label: ctaLabel,
+					onClick: onCTAClick,
+					inProgress: ctaInProgress,
+					disabled: ctaDisabled,
+				} }
+				dismissButton={ {
+					label: __( 'No thanks', 'google-site-kit' ),
+					onClick: handleDismiss,
+				} }
+			/>
+		);
 	}
-
-	return (
-		<Notice
-			className={ className }
-			type={ NOTICE_TYPES.NEW }
-			title={ title }
-			description={ description }
-			ctaButton={ {
-				label: ctaLabel,
-				onClick: onCTAClick,
-				inProgress: ctaInProgress,
-				disabled: ctaDisabled,
-			} }
-			dismissButton={ {
-				label: __( 'No thanks', 'google-site-kit' ),
-				onClick: handleDismiss,
-			} }
-		/>
-	);
-};
+);
 
 export default BreakdownNotice;

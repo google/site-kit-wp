@@ -17,21 +17,17 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
 import {
-	Report,
-	ReportOptions,
-	ReportRow,
-} from '@/js/modules/analytics-4/datastore/types';
+	getPagePaths,
+	getPageTitleMap,
+	getPageTitlesReportOptions,
+} from '@/js/modules/analytics-4/utils/page-titles-report';
 import { getFullURL } from '@/js/util';
 import { getPopularPagesReportArgs } from './reportOptions';
 
@@ -59,113 +55,6 @@ export interface PopularPagesPDFData {
 		/** Map of page path to its entity dashboard URL and public URL. */
 		links: Record< string, PopularPageLinks >;
 	} | null;
-}
-
-/**
- * How many rows the page titles report requests for each page path. Matches
- * the `getPageTitles` selector, so the PDF gives each page the same title the
- * dashboard shows.
- */
-const PAGE_TITLES_REQUEST_MULTIPLIER = 5;
-
-/**
- * Report ID (cache key) for the page titles report.
- */
-const PAGE_TITLES_REPORT_ID =
-	'analytics-4_get-page-titles_store:selector_options';
-
-/**
- * Collects the unique page paths from the report rows.
- *
- * The report has one dimension, `pagePath`, so each row's first dimension value
- * is its page path.
- *
- * @since 1.182.0
- *
- * @param [report] Most popular pages report.
- * @return Unique page paths in row order.
- */
-function getPagePaths( report?: Report ): string[] {
-	const pagePaths: string[] = [];
-
-	( report?.rows ?? [] ).forEach( ( row ) => {
-		const pagePath = row.dimensionValues?.[ 0 ]?.value;
-		if ( pagePath && ! pagePaths.includes( pagePath ) ) {
-			pagePaths.push( pagePath );
-		}
-	} );
-
-	return pagePaths;
-}
-
-/**
- * Builds the page titles report args for the given page paths.
- *
- * Matches the options the `getPageTitles` selector builds, so the PDF requests
- * the report the dashboard uses for its titles.
- *
- * @since 1.182.0
- *
- * @param dates           Report date range.
- * @param dates.startDate Report start date (YYYY-MM-DD).
- * @param dates.endDate   Report end date (YYYY-MM-DD).
- * @param pagePaths       Page paths from the main report rows.
- * @return GA4 getReport args for the page titles report.
- */
-function getPageTitlesReportArgs(
-	{ startDate, endDate }: Pick< ReportOptions, 'startDate' | 'endDate' >,
-	pagePaths: string[]
-): ReportOptions {
-	return {
-		startDate,
-		endDate,
-		dimensions: [ 'pagePath', 'pageTitle' ],
-		dimensionFilters: { pagePath: [ ...pagePaths ].sort() },
-		metrics: [ { name: 'screenPageViews' } ],
-		orderby: [
-			{
-				metric: { metricName: 'screenPageViews' },
-				desc: true,
-			},
-		],
-		limit: PAGE_TITLES_REQUEST_MULTIPLIER * pagePaths.length,
-		reportID: PAGE_TITLES_REPORT_ID,
-	};
-}
-
-/**
- * Maps each page path to its title.
- *
- * Keeps the first title found for each path and falls back to `(unknown)` for
- * any path the titles report missed, matching the dashboard's `getPageTitles`.
- *
- * @since 1.182.0
- *
- * @param pagePaths      Page paths from the main report rows.
- * @param [titlesReport] Page titles report.
- * @return Map of page path to page title.
- */
-function getTitleMap(
-	pagePaths: string[],
-	titlesReport?: Report
-): Record< string, string > {
-	const titles: Record< string, string > = {};
-
-	( titlesReport?.rows ?? [] ).forEach( ( row ) => {
-		const pagePath = row.dimensionValues?.[ 0 ]?.value;
-		const pageTitle = row.dimensionValues?.[ 1 ]?.value;
-		if ( pagePath && ! titles[ pagePath ] ) {
-			titles[ pagePath ] = pageTitle ?? '';
-		}
-	} );
-
-	pagePaths.forEach( ( pagePath ) => {
-		if ( ! titles[ pagePath ] ) {
-			titles[ pagePath ] = __( '(unknown)', 'google-site-kit' );
-		}
-	} );
-
-	return titles;
 }
 
 /**
@@ -212,7 +101,7 @@ function getPopularPageLinkMap(
  * report document skips this widget.
  *
  * @since 1.182.0
- * @since n.e.x.t Returns null data when the report has no rows.
+ * @since 1.183.0 Returns null data when the report has no rows.
  *
  * @param params          Loader parameters.
  * @param params.registry WordPress data registry.
@@ -260,7 +149,7 @@ export default async function getPDFData( {
 		return { data: { rows, titles: {}, links } };
 	}
 
-	const titlesArgs = getPageTitlesReportArgs( dates, pagePaths );
+	const titlesArgs = getPageTitlesReportOptions( dates, pagePaths );
 	invalidateResolution( 'getReport', [ titlesArgs, { signal } ] );
 
 	const titlesReport: Report | undefined = await registry
@@ -274,7 +163,7 @@ export default async function getPDFData( {
 	return {
 		data: {
 			rows,
-			titles: getTitleMap( pagePaths, titlesReport ),
+			titles: getPageTitleMap( pagePaths, titlesReport ),
 			links,
 		},
 	};

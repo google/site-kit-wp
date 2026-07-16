@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useIntersection as mockUseIntersection } from 'react-use';
+import { intersectionObserver } from '@shopify/jest-dom-mocks';
 
 /**
  * Internal dependencies
@@ -37,7 +37,7 @@ import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixture
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
 import { mockLocation } from '@tests/js/mock-browser-utils';
-import { fireEvent, render } from '@tests/js/test-utils';
+import { act, fireEvent, render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -47,11 +47,6 @@ import {
 	waitForDefaultTimeouts,
 } from '@tests/js/utils';
 import NoAudienceBannerWidget from '.';
-
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
-} ) );
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -70,10 +65,7 @@ describe( 'NoAudienceBannerWidget', () => {
 	);
 
 	beforeEach( () => {
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: false,
-			intersectionRatio: 0,
-		} ) );
+		intersectionObserver.mock();
 
 		registry = createTestRegistry();
 		provideModules( registry, [
@@ -88,6 +80,7 @@ describe( 'NoAudienceBannerWidget', () => {
 	} );
 
 	afterEach( () => {
+		intersectionObserver.restore();
 		jest.clearAllMocks();
 	} );
 
@@ -180,7 +173,7 @@ describe( 'NoAudienceBannerWidget', () => {
 	} );
 
 	describe( "with an authenticated user who's never populated their audience selection", () => {
-		let container, getByRole, getByText, rerender;
+		let container, getByRole, getByText;
 
 		beforeEach( () => {
 			provideSiteInfo( registry );
@@ -194,7 +187,7 @@ describe( 'NoAudienceBannerWidget', () => {
 				didSetAudiences: false,
 			} );
 
-			( { container, getByRole, getByText, rerender } = render(
+			( { container, getByRole, getByText } = render(
 				<WidgetWithComponentProps />,
 				{
 					registry,
@@ -247,12 +240,12 @@ describe( 'NoAudienceBannerWidget', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			// Simulate the CTA becoming visible.
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} ) );
-
-			rerender( <WidgetWithComponentProps /> );
+			act( () => {
+				intersectionObserver.simulate( {
+					isIntersecting: true,
+					intersectionRatio: 1,
+				} );
+			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -292,7 +285,7 @@ describe( 'NoAudienceBannerWidget', () => {
 	} );
 
 	describe( "with an authenticated user who's previously populated their audience selection", () => {
-		let container, getByRole, getByText, rerender;
+		let container, getByRole, getByText;
 
 		beforeEach( () => {
 			provideSiteInfo( registry );
@@ -306,7 +299,7 @@ describe( 'NoAudienceBannerWidget', () => {
 				didSetAudiences: true,
 			} );
 
-			( { container, getByRole, getByText, rerender } = render(
+			( { container, getByRole, getByText } = render(
 				<WidgetWithComponentProps />,
 				{
 					registry,
@@ -363,12 +356,12 @@ describe( 'NoAudienceBannerWidget', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			// Simulate the CTA becoming visible.
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} ) );
-
-			rerender( <WidgetWithComponentProps /> );
+			act( () => {
+				intersectionObserver.simulate( {
+					isIntersecting: true,
+					intersectionRatio: 1,
+				} );
+			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -410,7 +403,7 @@ describe( 'NoAudienceBannerWidget', () => {
 	} );
 
 	describe( "with a view-only user who's never populated their audience selection", () => {
-		let container, getByRole, getByText, rerender;
+		let container, getByRole, getByText;
 
 		beforeEach( () => {
 			registry
@@ -422,7 +415,7 @@ describe( 'NoAudienceBannerWidget', () => {
 				didSetAudiences: false,
 			} );
 
-			( { container, getByRole, getByText, rerender } = render(
+			( { container, getByRole, getByText } = render(
 				<WidgetWithComponentProps />,
 				{
 					registry,
@@ -462,12 +455,12 @@ describe( 'NoAudienceBannerWidget', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			// Simulate the CTA becoming visible.
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} ) );
-
-			rerender( <WidgetWithComponentProps /> );
+			act( () => {
+				intersectionObserver.simulate( {
+					isIntersecting: true,
+					intersectionRatio: 1,
+				} );
+			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -493,7 +486,7 @@ describe( 'NoAudienceBannerWidget', () => {
 	} );
 
 	describe( "with a view-only user who's previously populated their audience selection", () => {
-		let container, getByRole, getByText, rerender;
+		let container, getByRole, getByText;
 
 		beforeEach( () => {
 			registry
@@ -505,7 +498,7 @@ describe( 'NoAudienceBannerWidget', () => {
 				didSetAudiences: true,
 			} );
 
-			( { container, getByRole, getByText, rerender } = render(
+			( { container, getByRole, getByText } = render(
 				<WidgetWithComponentProps />,
 				{
 					registry,
@@ -549,12 +542,12 @@ describe( 'NoAudienceBannerWidget', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			// Simulate the CTA becoming visible.
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} ) );
-
-			rerender( <WidgetWithComponentProps /> );
+			act( () => {
+				intersectionObserver.simulate( {
+					isIntersecting: true,
+					intersectionRatio: 1,
+				} );
+			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			expect( mockTrackEvent ).toHaveBeenCalledWith(

@@ -23,20 +23,15 @@ You will receive a list of violations from a code review. Your job is to:
 4. Re-run lint and tests to verify fixes
 5. Return an updated implementation summary
 
-## Context Documentation
-
-If you need to understand the conventions behind a violation, load the relevant context docs from:
-- **JS**: `docs/context/js/`
-- **PHP**: `docs/context/php/`
-
 ## Fix Process
 
-1. Read each violation carefully — note the affected files, the principle violated, and the fix required
-2. Read the affected files to understand the current code
-3. Apply targeted fixes — do NOT rewrite or refactor code beyond what is needed to resolve the violation
-4. After all fixes, run verification:
-   - **Lint**: `npm run lint:js` (JS) or `composer run lint` (PHP). Fix all errors.
-   - **Tests**: `npm run test:js` (JS) or `composer run test` (PHP). ALL tests must pass.
+1. Read each violation carefully — note the affected files, the principle violated, and the
+   fix required. Consult the relevant `docs/context/{js,php}` doc (and
+   `docs/context/workflow/review-checklist.md`) to understand the convention behind it.
+2. Read the affected files to understand the current code.
+3. Apply **targeted** fixes — do NOT rewrite or refactor beyond what resolves the violation.
+4. After all fixes, re-verify (lint, targeted tests, build) using the exact commands in
+   **`docs/context/workflow/implement-issue.md`** (Step 7).
 
 ## Output Format
 

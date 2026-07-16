@@ -1,5 +1,5 @@
 /**
- * AdBlockerWarningWidget component.
+ * DashboardTopEarningPagesWidgetGA4 component.
  *
  * Site Kit by Google, Copyright 2023 Google LLC
  *
@@ -54,6 +54,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { generateDateRangeArgs } from '@/js/modules/analytics-4/utils/report-date-range-args';
 import { numFmt, trackEvent } from '@/js/util';
 import whenActive from '@/js/util/when-active';
+import { getTopEarningPagesReportOptions } from './getTopEarningPagesReportOptions';
 
 function DashboardTopEarningPagesWidgetGA4( {
 	WidgetNull,
@@ -74,18 +75,10 @@ function DashboardTopEarningPagesWidgetGA4( {
 		select( MODULES_ADSENSE ).getAccountID()
 	);
 
-	const args = {
-		startDate,
-		endDate,
-		dimensions: [ 'pagePath', 'adSourceName' ],
-		metrics: [ { name: 'totalAdRevenue' } ],
-		dimensionFilters: {
-			adSourceName: `Google AdSense account (${ adSenseAccountID })`,
-		},
-		orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
-		limit: 5,
-		reportID: 'adsense_top-earning-pages-widget-ga4_widget_args',
-	};
+	const args = getTopEarningPagesReportOptions(
+		{ startDate, endDate },
+		{ adSenseAccountID }
+	);
 
 	const data = useInViewSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getReport( args ),
