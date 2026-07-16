@@ -20,13 +20,18 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock-jest';
-import { createTestRegistry, waitForDefaultTimeouts } from 'tests/js/utils';
+import {
+	createTestRegistry,
+	provideUserInfo,
+	waitForDefaultTimeouts,
+} from 'tests/js/utils';
 
 /**
  * Internal dependencies
  */
 import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import getPDFData from './getPDFData';
 
 // The registry `getPDFData` receives: the WordPress data registry with
@@ -41,9 +46,14 @@ const reportEndpoint = new RegExp(
 );
 
 /**
- * AdSense account ID seeded into the registry.
+ * AdSense account ID the registry settings hold.
  */
 const ACCOUNT_ID = 'pub-1234567890';
+
+/**
+ * Analytics property ID the registry settings hold, for the page links.
+ */
+const PROPERTY_ID = '123456789';
 
 /**
  * Date range fixture passed to the loader.
@@ -112,17 +122,44 @@ function provideReports( {
 	} ) );
 }
 
+/**
+ * Builds the Analytics report link the loader resolves for a page path.
+ *
+ * The link comes from the same selector the loader uses, so a test checks the
+ * page filter and date range, not the URL format.
+ *
+ * @since n.e.x.t
+ *
+ * @param registry Registry that holds the Analytics property.
+ * @param pagePath Page path from a report row.
+ * @return The All pages and screens report link for the page.
+ */
+function getExpectedPageLink( registry: Registry, pagePath: string ): string {
+	return registry
+		.select( MODULES_ANALYTICS_4 )
+		.getServiceReportURL( 'all-pages-and-screens', {
+			filters: { unifiedPagePathScreen: pagePath },
+			dates: { startDate: DATES.startDate, endDate: DATES.endDate },
+		} );
+}
+
 describe( 'DashboardTopEarningPagesWidgetGA4 getPDFData', () => {
 	let registry: Registry;
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
+		provideUserInfo( registry );
 		registry
 			.dispatch( MODULES_ADSENSE )
 			.receiveGetSettings( { accountID: ACCOUNT_ID } );
+		// Receive the Analytics property so each page link builds without
+		// fetching the module settings, which these report tests don't mock.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( { propertyID: PROPERTY_ID } );
 	} );
 
-	it( 'returns rows, currency code, and page titles from the two reports', async () => {
+	it( 'returns rows, currency code, page titles, and page links from the two reports', async () => {
 		const requestedReports: string[] = [];
 
 		fetchMock.get( reportEndpoint, ( requestURL ) => {
@@ -142,18 +179,48 @@ describe( 'DashboardTopEarningPagesWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		// The loader requests the main report first, then the page titles report.
 		expect( requestedReports ).toEqual( [ 'main', 'page-titles' ] );
+
+		// An unset Analytics property would make the expected link and the
+		// loader's link both empty, so check the link holds a URL first.
+		const homeLink = getExpectedPageLink( registry, '/' );
+		expect( homeLink ).toBeTruthy();
 
 		expect( result ).toEqual( {
 			data: {
 				rows: MAIN_REPORT.rows,
 				currencyCode: 'EUR',
 				titles: { '/': 'Home', '/about': 'About' },
+				links: {
+					'/': homeLink,
+					'/about': getExpectedPageLink( registry, '/about' ),
+				},
 			},
 		} );
+	} );
+
+	it( 'builds no page links on a view-only dashboard', async () => {
+		provideReports();
+
+		const result = await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+			viewOnly: true,
+		} );
+
+		// The dashboard widget shows a view-only user each page title as plain
+		// text, so the PDF gets the rows and titles with no link to render.
+		expect( result.data?.rows ).toEqual( MAIN_REPORT.rows );
+		expect( result.data?.titles ).toEqual( {
+			'/': 'Home',
+			'/about': 'About',
+		} );
+		expect( result.data?.links ).toEqual( {} );
 	} );
 
 	it( 'requests the main report with the expected options', async () => {
@@ -163,6 +230,7 @@ describe( 'DashboardTopEarningPagesWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		// The first report request is the main Top earning pages report.
@@ -181,9 +249,15 @@ describe( 'DashboardTopEarningPagesWidgetGA4 getPDFData', () => {
 	} );
 
 	it( 'resolves the AdSense settings before building the report when they are not loaded yet', async () => {
-		// Fresh registry without the settings seeded in `beforeEach`, matching
-		// an export that starts before the AdSense store has loaded them.
+		// Fresh registry without the AdSense settings from `beforeEach`,
+		// matching an export that starts before the AdSense store has loaded
+		// them. The user info and the Analytics property go back in, so the
+		// page links build without their own settings fetch.
 		registry = createTestRegistry() as Registry;
+		provideUserInfo( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( { propertyID: PROPERTY_ID } );
 
 		fetchMock.getOnce(
 			new RegExp( '^/google-site-kit/v1/modules/adsense/data/settings' ),
@@ -195,6 +269,7 @@ describe( 'DashboardTopEarningPagesWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		// The report filter targets the fetched account, not `(undefined)`.
@@ -245,6 +320,7 @@ describe( 'DashboardTopEarningPagesWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		expect( result.data?.titles ).toEqual( {
@@ -259,7 +335,12 @@ describe( 'DashboardTopEarningPagesWidgetGA4 getPDFData', () => {
 
 		const { signal } = new AbortController();
 
-		await getPDFData( { registry, dates: DATES, signal } );
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal,
+			viewOnly: false,
+		} );
 
 		// The registry starts resolver runs from a timeout. Wait for those
 		// timeouts, so an extra run would add its request to the calls this test
@@ -288,12 +369,13 @@ describe( 'DashboardTopEarningPagesWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		await waitForDefaultTimeouts();
 
 		expect( result ).toEqual( {
-			data: { rows: [], currencyCode: 'EUR', titles: {} },
+			data: { rows: [], currencyCode: 'EUR', titles: {}, links: {} },
 		} );
 		expect( fetchMock.calls( reportEndpoint ) ).toHaveLength( 1 );
 	} );
@@ -306,6 +388,7 @@ describe( 'DashboardTopEarningPagesWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: controller.signal,
+			viewOnly: false,
 		} );
 
 		expect( result ).toEqual( { data: null } );
@@ -332,6 +415,7 @@ describe( 'DashboardTopEarningPagesWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: controller.signal,
+			viewOnly: false,
 		} );
 
 		// Wait for the main report request to dispatch before aborting.

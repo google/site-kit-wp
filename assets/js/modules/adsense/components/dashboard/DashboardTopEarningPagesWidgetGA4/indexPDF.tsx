@@ -32,6 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import PDFLink from '@/js/components/pdf-export/shared-react-pdf-components/PDFLink';
 import PDFTable, {
 	PDFTableColumn,
 } from '@/js/components/pdf-export/shared-react-pdf-components/PDFTable';
@@ -55,9 +56,10 @@ const styles = createPDFStyles( {
 	rank: {
 		color: PDF_COLORS.SURFACES_ON_SURFACE,
 	},
-	pageTitle: {
+	// The group fills the row remainder after the rank, so a long page title
+	// wraps inside the cell.
+	titleGroup: {
 		flex: 1,
-		color: PDF_COLORS.CONTENT_SECONDARY,
 	},
 	noData: {
 		paddingHorizontal: 24,
@@ -66,8 +68,13 @@ const styles = createPDFStyles( {
 } );
 
 interface TopEarningPageRow {
+	/** Position of the page in the table, starting at 1. */
 	rank: number;
+	/** Page title shown in the first cell. */
 	title: string;
+	/** Analytics report link for the page, which the title links to. Empty when the page has no link, so the title renders as plain text. */
+	serviceURL: string;
+	/** Earnings amount, as the report's raw string. */
 	earnings: string;
 }
 
@@ -78,6 +85,7 @@ const DashboardTopEarningPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 	const topEarningPagesData = data as TopEarningPagesPDFData | null;
 	const rows = topEarningPagesData?.rows ?? [];
 	const titles = topEarningPagesData?.titles ?? {};
+	const links = topEarningPagesData?.links ?? {};
 	const currencyCode = topEarningPagesData?.currencyCode ?? '';
 
 	// The report's first dimension is `pagePath`, so the first dimension value is
@@ -88,6 +96,7 @@ const DashboardTopEarningPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 		return {
 			rank: index + 1,
 			title: titles[ pagePath ] ?? '',
+			serviceURL: links[ pagePath ] ?? '',
 			earnings: row.metricValues?.[ 0 ]?.value ?? '',
 		};
 	} );
@@ -96,15 +105,18 @@ const DashboardTopEarningPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 		{
 			// The page title column has no header, matching the dashboard widget.
 			header: '',
-			// Shows the page title with the row rank to its left.
+			// Shows the page title with the row rank to its left. The title
+			// links to the page's Analytics report, like the dashboard widget.
+			// When the page has no link, `PDFLink` renders the title as plain
+			// text instead of as a link.
 			cell: ( row ) => (
 				<View style={ styles.pageCell }>
 					<PDFTypography style={ styles.rank }>
 						{ `${ row.rank }.` }
 					</PDFTypography>
-					<PDFTypography style={ styles.pageTitle }>
-						{ row.title }
-					</PDFTypography>
+					<View style={ styles.titleGroup }>
+						<PDFLink href={ row.serviceURL }>{ row.title }</PDFLink>
+					</View>
 				</View>
 			),
 		},
