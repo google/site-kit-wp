@@ -172,16 +172,20 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 					.filter( Boolean )
 			);
 
-			// Store the contexts in the dashboard's order, not the selection
-			// order, so the report's section order stays fixed across
-			// re-exports and toggles.
-			const contextSlugs = ORDERED_MAIN_DASHBOARD_CONTEXTS.filter(
-				( contextSlug ) => selectedContexts.has( contextSlug )
-			);
+			// Order the report's sections to match the panel, which lists them
+			// in the dashboard's order. Deriving the order from
+			// `availableSections` (rather than a static context list) keeps a
+			// late-resolving section like Key Metrics in its dashboard position
+			// rather than last, and stays fixed across re-exports and toggles.
+			const contextSlugs = availableSections
+				.map( ( section ) => section.contextSlug )
+				.filter( ( contextSlug ) =>
+					selectedContexts.has( contextSlug )
+				);
 
 			setSelection( { contextSlugs, widgetSlugs } );
 		},
-		[ setSelection ]
+		[ setSelection, availableSections ]
 	);
 
 	/**
