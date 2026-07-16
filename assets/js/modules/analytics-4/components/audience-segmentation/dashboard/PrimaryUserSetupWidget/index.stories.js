@@ -92,6 +92,42 @@ InsufficientPermissionError.args = {
 	},
 };
 
+export const InsufficientPermissionErrorSetupFlowRefreshPhase4 = Template.bind(
+	{}
+);
+InsufficientPermissionErrorSetupFlowRefreshPhase4.storyName =
+	'Insufficient permission error, setupFlowRefreshPhase4 enabled';
+InsufficientPermissionErrorSetupFlowRefreshPhase4.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry, {
+			grantedScopes: EDIT_SCOPE,
+		} );
+		fetchMock.post( syncAvailableAudiencesEndpoint, {
+			body: availableAudiences.slice( 0, 2 ),
+			status: 200,
+		} );
+
+		fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
+			body: [ 'googlesitekit_post_author' ],
+			status: 200,
+		} );
+
+		const errorResponse = {
+			code: 'test_error',
+			message: 'Error message.',
+			data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+		};
+
+		fetchMock.post( createAudienceEndpoint, {
+			body: errorResponse,
+			status: 403,
+		} );
+	},
+};
+InsufficientPermissionErrorSetupFlowRefreshPhase4.parameters = {
+	features: [ 'setupFlowRefreshPhase4' ],
+};
+
 export const SetupError = Template.bind( {} );
 SetupError.storyName = 'Setup error';
 SetupError.args = {
@@ -158,41 +194,6 @@ FailedAudienceSetupFlowRefreshPhase4.parameters = {
 	features: [ 'setupFlowRefreshPhase4' ],
 };
 FailedAudienceSetupFlowRefreshPhase4.scenario = {};
-
-export const FailedAudiencePermissionsErrorSetupFlowRefreshPhase4 =
-	Template.bind( {} );
-FailedAudiencePermissionsErrorSetupFlowRefreshPhase4.storyName =
-	'Failed audience permissions error, setupFlowRefreshPhase4 enabled';
-FailedAudiencePermissionsErrorSetupFlowRefreshPhase4.args = {
-	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry, {
-			grantedScopes: EDIT_SCOPE,
-		} );
-		fetchMock.post( syncAvailableAudiencesEndpoint, {
-			body: availableAudiences.slice( 0, 2 ),
-			status: 200,
-		} );
-
-		fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
-			body: [ 'googlesitekit_post_author' ],
-			status: 200,
-		} );
-
-		const errorResponse = {
-			code: 'test_error',
-			message: 'Error message.',
-			data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
-		};
-
-		fetchMock.post( createAudienceEndpoint, {
-			body: errorResponse,
-			status: 403,
-		} );
-	},
-};
-FailedAudiencePermissionsErrorSetupFlowRefreshPhase4.parameters = {
-	features: [ 'setupFlowRefreshPhase4' ],
-};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/PrimaryUserSetupWidget',

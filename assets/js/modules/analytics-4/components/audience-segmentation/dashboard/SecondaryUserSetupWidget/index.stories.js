@@ -80,6 +80,31 @@ InsufficientPermissionError.args = {
 	},
 };
 
+export const InsufficientPermissionErrorSetupFlowRefreshPhase4 = Template.bind(
+	{}
+);
+InsufficientPermissionErrorSetupFlowRefreshPhase4.storyName =
+	'Insufficient permission error, setupFlowRefreshPhase4 enabled';
+InsufficientPermissionErrorSetupFlowRefreshPhase4.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+
+		const errorResponse = {
+			code: 'test_error',
+			message: 'Error message.',
+			data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+		};
+
+		fetchMock.post( syncAvailableAudiencesEndpoint, {
+			body: errorResponse,
+			status: 403,
+		} );
+	},
+};
+InsufficientPermissionErrorSetupFlowRefreshPhase4.parameters = {
+	features: [ 'setupFlowRefreshPhase4' ],
+};
+
 export const SetupError = Template.bind( {} );
 SetupError.storyName = 'Setup error';
 SetupError.args = {
