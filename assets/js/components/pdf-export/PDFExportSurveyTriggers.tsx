@@ -38,15 +38,6 @@ import {
 	PDF_EXPORT_SUCCESS_SURVEY_TRIGGER_ID,
 } from './constants';
 
-/**
- * Fires one survey for each PDF export that finishes: the error survey when the
- * export fails, and the success survey when the report download starts. Each
- * survey fires once, on the move into that status.
- *
- * @since n.e.x.t
- *
- * @return Nothing. The component renders no markup.
- */
 const PDFExportSurveyTriggers: FC = () => {
 	const status = useSelect(
 		( select: Select ) => select( CORE_PDF ).getStatus(),
