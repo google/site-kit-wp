@@ -58,6 +58,8 @@ export interface AudienceTileTopContent {
 	title: string;
 	/** The page's pageviews. */
 	pageviews: number;
+	/** Analytics report link for the page, which the title links to. Empty when the page has no link, so the title renders as plain text. */
+	serviceURL: string;
 }
 
 /** One audience card's fully loaded data. */
@@ -191,17 +193,20 @@ export function buildTopCities(
 }
 
 /**
- * Builds an audience's top content, resolving each page path to its page title.
+ * Builds an audience's top content, resolving each page path to its page title
+ * and to its Analytics report link.
  *
  * @since n.e.x.t
  *
- * @param report       The top content report, or `undefined`.
- * @param titlesReport The page titles report used to resolve a path to its title, or `undefined`.
+ * @param report               The top content report, or `undefined`.
+ * @param titlesReport         The page titles report used to resolve a path to its title, or `undefined`.
+ * @param getContentServiceURL Maps a page path to its Analytics report link, or to an empty string when the page has no link.
  * @return Up to three top content pages.
  */
 export function buildTopContent(
 	report: Report | undefined,
-	titlesReport: Report | undefined
+	titlesReport: Report | undefined,
+	getContentServiceURL: ( pagePath: string ) => string
 ): AudienceTileTopContent[] {
 	const titlesByPath = ( titlesReport?.rows || [] ).reduce(
 		( titles: Record< string, string >, row: ReportRow ) => {
@@ -225,6 +230,7 @@ export function buildTopContent(
 			return {
 				title: titlesByPath[ pagePath ] || pagePath,
 				pageviews: Number( row.metricValues?.[ 0 ]?.value || 0 ),
+				serviceURL: getContentServiceURL( pagePath ),
 			};
 		} );
 }
@@ -261,6 +267,8 @@ export interface AudienceCardInput {
 	topContentPageTitlesResult: FetchReportResult;
 	/** The site's total pageviews, the percentage denominator. */
 	totalPageviews: number;
+	/** Maps a top content page path to its Analytics report link, or to an empty string when the page has no link. */
+	getContentServiceURL: ( pagePath: string ) => string;
 }
 
 /**
@@ -284,6 +292,7 @@ export function buildPDFAudienceCard(
 		topContentResult,
 		topContentPageTitlesResult,
 		totalPageviews,
+		getContentServiceURL,
 	} = input;
 
 	// Don't render when a metrics or cities report has any error, or when
@@ -324,7 +333,8 @@ export function buildPDFAudienceCard(
 		),
 		topContent: buildTopContent(
 			topContentResult.response,
-			topContentPageTitlesResult.response
+			topContentPageTitlesResult.response,
+			getContentServiceURL
 		),
 	};
 }

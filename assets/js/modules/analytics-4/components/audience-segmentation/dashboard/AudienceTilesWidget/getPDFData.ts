@@ -230,6 +230,8 @@ async function fetchAudienceReports(
  * fetches their reports in parallel, and builds a card from each. It drops any
  * audience whose reports failed, and returns `{ data: null }` when fewer than
  * two cards remain, so a single-card row never appears. It captures no charts.
+ * For a view-only user, the loader builds no top content links, because the
+ * dashboard tile shows each page title as plain text.
  *
  * @since n.e.x.t
  *
@@ -237,12 +239,14 @@ async function fetchAudienceReports(
  * @param params.registry WordPress data registry.
  * @param params.dates    Report date range, with the current day excluded.
  * @param params.signal   Cancellation signal.
+ * @param params.viewOnly Whether the export runs on a view-only dashboard.
  * @return The loaded audience cards, or `{ data: null }` when the section is omitted or canceled.
  */
 export default async function getPDFData( {
 	registry,
 	dates,
 	signal,
+	viewOnly,
 }: GetPDFDataParams ): Promise< AudienceTilesPDFData > {
 	if ( signal.aborted ) {
 		return { data: null };
@@ -355,6 +359,36 @@ export default async function getPDFData( {
 				?.value
 		) || 0;
 
+	/**
+	 * Maps a top content page path to its Analytics report link.
+	 *
+	 * Each page title links to the same All pages and screens report the
+	 * dashboard tile links to. For a view-only user, this function resolves no
+	 * link, so each page title renders as plain text, matching how the
+	 * dashboard tile shows it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param pagePath Page path of a top content row.
+	 * @return The page's Analytics report link, or an empty string for a view-only user.
+	 */
+	function getContentServiceURL( pagePath: string ): string {
+		if ( viewOnly ) {
+			return '';
+		}
+
+		const { startDate, endDate } = dates;
+
+		return (
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getServiceReportURL( 'all-pages-and-screens', {
+					filters: { unifiedPagePathScreen: pagePath },
+					dates: { startDate, endDate },
+				} ) ?? ''
+		);
+	}
+
 	const audiences = audienceResourceNames
 		.map( ( audienceResourceName: string, index: number ) => {
 			const audience = findAvailableAudience( audienceResourceName );
@@ -372,6 +406,7 @@ export default async function getPDFData( {
 				topContentResult: cardResults[ offset + 1 ],
 				topContentPageTitlesResult: cardResults[ offset + 2 ],
 				totalPageviews,
+				getContentServiceURL,
 			} );
 		} )
 		.filter( ( audience ): audience is AudienceTilePDFData => !! audience );
