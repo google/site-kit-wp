@@ -437,7 +437,7 @@ export function createValidatedAction( validate, actionCreator ) {
  *
  * Returns a deep clone to avoid mutating the original object.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param {string} path      Path to a value in the global object.
  * @param {Object} [_global] Optional. The global object to use. Default is `global`.

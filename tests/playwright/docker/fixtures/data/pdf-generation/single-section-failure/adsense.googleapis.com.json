@@ -1,0 +1,1334 @@
+{
+	"/v2/accounts/pub-123456789/reports:generate?dateRange=CUSTOM&startDate.year=2025&startDate.month=12&startDate.day=4&endDate.year=2025&endDate.month=12&endDate.day=31&languageCode=en&metrics=ESTIMATED_EARNINGS&metrics=PAGE_VIEWS_RPM&metrics=IMPRESSIONS&metrics=PAGE_VIEWS_CTR&dimensions=DATE&filters=DOMAIN_NAME%3D%3Dlocalhost%2CDOMAIN_NAME%3D%3Dwww.localhost": {
+		"GET": {
+			"status": 200,
+			"body": {
+				"startDate": {
+					"year": 2025,
+					"month": 12,
+					"day": 4
+				},
+				"endDate": {
+					"year": 2025,
+					"month": 12,
+					"day": 31
+				},
+				"totalMatchedRows": "28",
+				"headers": [
+					{
+						"name": "DATE",
+						"type": "DIMENSION"
+					},
+					{
+						"name": "ESTIMATED_EARNINGS",
+						"type": "METRIC_CURRENCY"
+					},
+					{
+						"name": "PAGE_VIEWS_RPM",
+						"type": "METRIC_CURRENCY"
+					},
+					{
+						"name": "IMPRESSIONS",
+						"type": "METRIC_TALLY"
+					},
+					{
+						"name": "PAGE_VIEWS_CTR",
+						"type": "METRIC_CURRENCY"
+					}
+				],
+				"rows": [
+					{
+						"cells": [
+							{
+								"value": "2025-12-04"
+							},
+							{
+								"value": "0.60"
+							},
+							{
+								"value": "2.40"
+							},
+							{
+								"value": "900"
+							},
+							{
+								"value": "0.0120"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-05"
+							},
+							{
+								"value": "0.75"
+							},
+							{
+								"value": "2.60"
+							},
+							{
+								"value": "970"
+							},
+							{
+								"value": "0.0140"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-06"
+							},
+							{
+								"value": "0.90"
+							},
+							{
+								"value": "2.80"
+							},
+							{
+								"value": "1040"
+							},
+							{
+								"value": "0.0160"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-07"
+							},
+							{
+								"value": "1.05"
+							},
+							{
+								"value": "3.00"
+							},
+							{
+								"value": "1110"
+							},
+							{
+								"value": "0.0180"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-08"
+							},
+							{
+								"value": "1.20"
+							},
+							{
+								"value": "3.20"
+							},
+							{
+								"value": "1180"
+							},
+							{
+								"value": "0.0200"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-09"
+							},
+							{
+								"value": "1.35"
+							},
+							{
+								"value": "2.40"
+							},
+							{
+								"value": "1250"
+							},
+							{
+								"value": "0.0220"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-10"
+							},
+							{
+								"value": "1.50"
+							},
+							{
+								"value": "2.60"
+							},
+							{
+								"value": "1320"
+							},
+							{
+								"value": "0.0120"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-11"
+							},
+							{
+								"value": "0.60"
+							},
+							{
+								"value": "2.80"
+							},
+							{
+								"value": "1390"
+							},
+							{
+								"value": "0.0140"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-12"
+							},
+							{
+								"value": "0.75"
+							},
+							{
+								"value": "3.00"
+							},
+							{
+								"value": "1460"
+							},
+							{
+								"value": "0.0160"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-13"
+							},
+							{
+								"value": "0.90"
+							},
+							{
+								"value": "3.20"
+							},
+							{
+								"value": "900"
+							},
+							{
+								"value": "0.0180"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-14"
+							},
+							{
+								"value": "1.05"
+							},
+							{
+								"value": "2.40"
+							},
+							{
+								"value": "970"
+							},
+							{
+								"value": "0.0200"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-15"
+							},
+							{
+								"value": "1.20"
+							},
+							{
+								"value": "2.60"
+							},
+							{
+								"value": "1040"
+							},
+							{
+								"value": "0.0220"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-16"
+							},
+							{
+								"value": "1.35"
+							},
+							{
+								"value": "2.80"
+							},
+							{
+								"value": "1110"
+							},
+							{
+								"value": "0.0120"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-17"
+							},
+							{
+								"value": "1.50"
+							},
+							{
+								"value": "3.00"
+							},
+							{
+								"value": "1180"
+							},
+							{
+								"value": "0.0140"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-18"
+							},
+							{
+								"value": "0.60"
+							},
+							{
+								"value": "3.20"
+							},
+							{
+								"value": "1250"
+							},
+							{
+								"value": "0.0160"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-19"
+							},
+							{
+								"value": "0.75"
+							},
+							{
+								"value": "2.40"
+							},
+							{
+								"value": "1320"
+							},
+							{
+								"value": "0.0180"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-20"
+							},
+							{
+								"value": "0.90"
+							},
+							{
+								"value": "2.60"
+							},
+							{
+								"value": "1390"
+							},
+							{
+								"value": "0.0200"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-21"
+							},
+							{
+								"value": "1.05"
+							},
+							{
+								"value": "2.80"
+							},
+							{
+								"value": "1460"
+							},
+							{
+								"value": "0.0220"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-22"
+							},
+							{
+								"value": "1.20"
+							},
+							{
+								"value": "3.00"
+							},
+							{
+								"value": "900"
+							},
+							{
+								"value": "0.0120"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-23"
+							},
+							{
+								"value": "1.35"
+							},
+							{
+								"value": "3.20"
+							},
+							{
+								"value": "970"
+							},
+							{
+								"value": "0.0140"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-24"
+							},
+							{
+								"value": "1.50"
+							},
+							{
+								"value": "2.40"
+							},
+							{
+								"value": "1040"
+							},
+							{
+								"value": "0.0160"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-25"
+							},
+							{
+								"value": "0.60"
+							},
+							{
+								"value": "2.60"
+							},
+							{
+								"value": "1110"
+							},
+							{
+								"value": "0.0180"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-26"
+							},
+							{
+								"value": "0.75"
+							},
+							{
+								"value": "2.80"
+							},
+							{
+								"value": "1180"
+							},
+							{
+								"value": "0.0200"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-27"
+							},
+							{
+								"value": "0.90"
+							},
+							{
+								"value": "3.00"
+							},
+							{
+								"value": "1250"
+							},
+							{
+								"value": "0.0220"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-28"
+							},
+							{
+								"value": "1.05"
+							},
+							{
+								"value": "3.20"
+							},
+							{
+								"value": "1320"
+							},
+							{
+								"value": "0.0120"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-29"
+							},
+							{
+								"value": "1.20"
+							},
+							{
+								"value": "2.40"
+							},
+							{
+								"value": "1390"
+							},
+							{
+								"value": "0.0140"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-30"
+							},
+							{
+								"value": "1.35"
+							},
+							{
+								"value": "2.60"
+							},
+							{
+								"value": "1460"
+							},
+							{
+								"value": "0.0160"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-31"
+							},
+							{
+								"value": "1.50"
+							},
+							{
+								"value": "2.80"
+							},
+							{
+								"value": "900"
+							},
+							{
+								"value": "0.0180"
+							}
+						]
+					}
+				],
+				"totals": {
+					"cells": [
+						{
+							"value": ""
+						},
+						{
+							"value": "29.40"
+						},
+						{
+							"value": "2.78"
+						},
+						{
+							"value": "32760"
+						},
+						{
+							"value": "0.0167"
+						}
+					]
+				}
+			}
+		}
+	},
+	"/v2/accounts/pub-123456789/reports:generate?dateRange=CUSTOM&startDate.year=2025&startDate.month=12&startDate.day=4&endDate.year=2025&endDate.month=12&endDate.day=31&languageCode=en&metrics=ESTIMATED_EARNINGS&metrics=PAGE_VIEWS_RPM&metrics=IMPRESSIONS&metrics=PAGE_VIEWS_CTR&filters=DOMAIN_NAME%3D%3Dlocalhost%2CDOMAIN_NAME%3D%3Dwww.localhost": {
+		"GET": {
+			"status": 200,
+			"body": {
+				"startDate": {
+					"year": 2025,
+					"month": 12,
+					"day": 4
+				},
+				"endDate": {
+					"year": 2025,
+					"month": 12,
+					"day": 31
+				},
+				"totalMatchedRows": "1",
+				"headers": [
+					{
+						"name": "ESTIMATED_EARNINGS",
+						"type": "METRIC_CURRENCY"
+					},
+					{
+						"name": "PAGE_VIEWS_RPM",
+						"type": "METRIC_CURRENCY"
+					},
+					{
+						"name": "IMPRESSIONS",
+						"type": "METRIC_TALLY"
+					},
+					{
+						"name": "PAGE_VIEWS_CTR",
+						"type": "METRIC_CURRENCY"
+					}
+				],
+				"rows": [
+					{
+						"cells": [
+							{
+								"value": "29.40"
+							},
+							{
+								"value": "2.78"
+							},
+							{
+								"value": "32760"
+							},
+							{
+								"value": "0.0167"
+							}
+						]
+					}
+				],
+				"totals": {
+					"cells": [
+						{
+							"value": "29.40"
+						},
+						{
+							"value": "2.78"
+						},
+						{
+							"value": "32760"
+						},
+						{
+							"value": "0.0167"
+						}
+					]
+				}
+			}
+		}
+	},
+	"/v2/accounts/pub-123456789/reports:generate?dateRange=CUSTOM&startDate.year=2025&startDate.month=11&startDate.day=6&endDate.year=2025&endDate.month=12&endDate.day=3&languageCode=en&metrics=ESTIMATED_EARNINGS&metrics=PAGE_VIEWS_RPM&metrics=IMPRESSIONS&metrics=PAGE_VIEWS_CTR&dimensions=DATE&filters=DOMAIN_NAME%3D%3Dlocalhost%2CDOMAIN_NAME%3D%3Dwww.localhost": {
+		"GET": {
+			"status": 200,
+			"body": {
+				"startDate": {
+					"year": 2025,
+					"month": 11,
+					"day": 6
+				},
+				"endDate": {
+					"year": 2025,
+					"month": 12,
+					"day": 3
+				},
+				"totalMatchedRows": "28",
+				"headers": [
+					{
+						"name": "DATE",
+						"type": "DIMENSION"
+					},
+					{
+						"name": "ESTIMATED_EARNINGS",
+						"type": "METRIC_CURRENCY"
+					},
+					{
+						"name": "PAGE_VIEWS_RPM",
+						"type": "METRIC_CURRENCY"
+					},
+					{
+						"name": "IMPRESSIONS",
+						"type": "METRIC_TALLY"
+					},
+					{
+						"name": "PAGE_VIEWS_CTR",
+						"type": "METRIC_CURRENCY"
+					}
+				],
+				"rows": [
+					{
+						"cells": [
+							{
+								"value": "2025-11-06"
+							},
+							{
+								"value": "0.60"
+							},
+							{
+								"value": "2.40"
+							},
+							{
+								"value": "900"
+							},
+							{
+								"value": "0.0120"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-07"
+							},
+							{
+								"value": "0.75"
+							},
+							{
+								"value": "2.60"
+							},
+							{
+								"value": "970"
+							},
+							{
+								"value": "0.0140"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-08"
+							},
+							{
+								"value": "0.90"
+							},
+							{
+								"value": "2.80"
+							},
+							{
+								"value": "1040"
+							},
+							{
+								"value": "0.0160"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-09"
+							},
+							{
+								"value": "1.05"
+							},
+							{
+								"value": "3.00"
+							},
+							{
+								"value": "1110"
+							},
+							{
+								"value": "0.0180"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-10"
+							},
+							{
+								"value": "1.20"
+							},
+							{
+								"value": "3.20"
+							},
+							{
+								"value": "1180"
+							},
+							{
+								"value": "0.0200"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-11"
+							},
+							{
+								"value": "1.35"
+							},
+							{
+								"value": "2.40"
+							},
+							{
+								"value": "1250"
+							},
+							{
+								"value": "0.0220"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-12"
+							},
+							{
+								"value": "1.50"
+							},
+							{
+								"value": "2.60"
+							},
+							{
+								"value": "1320"
+							},
+							{
+								"value": "0.0120"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-13"
+							},
+							{
+								"value": "0.60"
+							},
+							{
+								"value": "2.80"
+							},
+							{
+								"value": "1390"
+							},
+							{
+								"value": "0.0140"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-14"
+							},
+							{
+								"value": "0.75"
+							},
+							{
+								"value": "3.00"
+							},
+							{
+								"value": "1460"
+							},
+							{
+								"value": "0.0160"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-15"
+							},
+							{
+								"value": "0.90"
+							},
+							{
+								"value": "3.20"
+							},
+							{
+								"value": "900"
+							},
+							{
+								"value": "0.0180"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-16"
+							},
+							{
+								"value": "1.05"
+							},
+							{
+								"value": "2.40"
+							},
+							{
+								"value": "970"
+							},
+							{
+								"value": "0.0200"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-17"
+							},
+							{
+								"value": "1.20"
+							},
+							{
+								"value": "2.60"
+							},
+							{
+								"value": "1040"
+							},
+							{
+								"value": "0.0220"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-18"
+							},
+							{
+								"value": "1.35"
+							},
+							{
+								"value": "2.80"
+							},
+							{
+								"value": "1110"
+							},
+							{
+								"value": "0.0120"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-19"
+							},
+							{
+								"value": "1.50"
+							},
+							{
+								"value": "3.00"
+							},
+							{
+								"value": "1180"
+							},
+							{
+								"value": "0.0140"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-20"
+							},
+							{
+								"value": "0.60"
+							},
+							{
+								"value": "3.20"
+							},
+							{
+								"value": "1250"
+							},
+							{
+								"value": "0.0160"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-21"
+							},
+							{
+								"value": "0.75"
+							},
+							{
+								"value": "2.40"
+							},
+							{
+								"value": "1320"
+							},
+							{
+								"value": "0.0180"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-22"
+							},
+							{
+								"value": "0.90"
+							},
+							{
+								"value": "2.60"
+							},
+							{
+								"value": "1390"
+							},
+							{
+								"value": "0.0200"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-23"
+							},
+							{
+								"value": "1.05"
+							},
+							{
+								"value": "2.80"
+							},
+							{
+								"value": "1460"
+							},
+							{
+								"value": "0.0220"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-24"
+							},
+							{
+								"value": "1.20"
+							},
+							{
+								"value": "3.00"
+							},
+							{
+								"value": "900"
+							},
+							{
+								"value": "0.0120"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-25"
+							},
+							{
+								"value": "1.35"
+							},
+							{
+								"value": "3.20"
+							},
+							{
+								"value": "970"
+							},
+							{
+								"value": "0.0140"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-26"
+							},
+							{
+								"value": "1.50"
+							},
+							{
+								"value": "2.40"
+							},
+							{
+								"value": "1040"
+							},
+							{
+								"value": "0.0160"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-27"
+							},
+							{
+								"value": "0.60"
+							},
+							{
+								"value": "2.60"
+							},
+							{
+								"value": "1110"
+							},
+							{
+								"value": "0.0180"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-28"
+							},
+							{
+								"value": "0.75"
+							},
+							{
+								"value": "2.80"
+							},
+							{
+								"value": "1180"
+							},
+							{
+								"value": "0.0200"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-29"
+							},
+							{
+								"value": "0.90"
+							},
+							{
+								"value": "3.00"
+							},
+							{
+								"value": "1250"
+							},
+							{
+								"value": "0.0220"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-11-30"
+							},
+							{
+								"value": "1.05"
+							},
+							{
+								"value": "3.20"
+							},
+							{
+								"value": "1320"
+							},
+							{
+								"value": "0.0120"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-01"
+							},
+							{
+								"value": "1.20"
+							},
+							{
+								"value": "2.40"
+							},
+							{
+								"value": "1390"
+							},
+							{
+								"value": "0.0140"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-02"
+							},
+							{
+								"value": "1.35"
+							},
+							{
+								"value": "2.60"
+							},
+							{
+								"value": "1460"
+							},
+							{
+								"value": "0.0160"
+							}
+						]
+					},
+					{
+						"cells": [
+							{
+								"value": "2025-12-03"
+							},
+							{
+								"value": "1.50"
+							},
+							{
+								"value": "2.80"
+							},
+							{
+								"value": "900"
+							},
+							{
+								"value": "0.0180"
+							}
+						]
+					}
+				],
+				"totals": {
+					"cells": [
+						{
+							"value": ""
+						},
+						{
+							"value": "29.40"
+						},
+						{
+							"value": "2.78"
+						},
+						{
+							"value": "32760"
+						},
+						{
+							"value": "0.0167"
+						}
+					]
+				}
+			}
+		}
+	},
+	"/v2/accounts/pub-123456789/reports:generate?dateRange=CUSTOM&startDate.year=2025&startDate.month=11&startDate.day=6&endDate.year=2025&endDate.month=12&endDate.day=3&languageCode=en&metrics=ESTIMATED_EARNINGS&metrics=PAGE_VIEWS_RPM&metrics=IMPRESSIONS&metrics=PAGE_VIEWS_CTR&filters=DOMAIN_NAME%3D%3Dlocalhost%2CDOMAIN_NAME%3D%3Dwww.localhost": {
+		"GET": {
+			"status": 200,
+			"body": {
+				"startDate": {
+					"year": 2025,
+					"month": 11,
+					"day": 6
+				},
+				"endDate": {
+					"year": 2025,
+					"month": 12,
+					"day": 3
+				},
+				"totalMatchedRows": "1",
+				"headers": [
+					{
+						"name": "ESTIMATED_EARNINGS",
+						"type": "METRIC_CURRENCY"
+					},
+					{
+						"name": "PAGE_VIEWS_RPM",
+						"type": "METRIC_CURRENCY"
+					},
+					{
+						"name": "IMPRESSIONS",
+						"type": "METRIC_TALLY"
+					},
+					{
+						"name": "PAGE_VIEWS_CTR",
+						"type": "METRIC_CURRENCY"
+					}
+				],
+				"rows": [
+					{
+						"cells": [
+							{
+								"value": "29.40"
+							},
+							{
+								"value": "2.78"
+							},
+							{
+								"value": "32760"
+							},
+							{
+								"value": "0.0167"
+							}
+						]
+					}
+				],
+				"totals": {
+					"cells": [
+						{
+							"value": "29.40"
+						},
+						{
+							"value": "2.78"
+						},
+						{
+							"value": "32760"
+						},
+						{
+							"value": "0.0167"
+						}
+					]
+				}
+			}
+		}
+	},
+	"/v2/accounts/pub-123456789/alerts": {
+		"GET": {
+			"status": 200,
+			"body": {}
+		}
+	}
+}

@@ -6,7 +6,7 @@ Site Kit maintains comprehensive JSDoc documentation for utility functions, hook
 
 ### File-Level Documentation
 
-Every JavaScript file must include the standardized header format (same as component header):
+Every JavaScript and TypeScript file (`.js`, `.jsx`, `.ts`, `.tsx`) must include the standardized header format (same as component header):
 
 ```javascript
 /**
@@ -53,13 +53,13 @@ function myFunction( paramName, optionalParam = defaultValue ) {
 
 #### \@since Tag
 
-**Always required** - Documents when the feature was introduced, always use `1.173.0` value which will be replaced with the actual version later on.
+**Always required** - Documents when the feature was introduced. Use the `n.e.x.t` placeholder label for unreleased code; it is automatically replaced with the actual version number when a release is cut. (The custom `jsdoc-requires-since` ESLint rule accepts only a valid semver value or the `n.e.x.t` label.)
 
 ```javascript
 /**
  * Returns a callback to activate a module.
  *
- * \@since 1.173.0
+ * \@since n.e.x.t
  *
  * \@param {string} moduleSlug Module slug.
  * \@return {Function|null} Callback to activate module.
@@ -98,7 +98,7 @@ function myFunction( paramName, optionalParam = defaultValue ) {
 
 #### \@typedef for Complex Data Structures
 
-Use `\@typedef` to define complex object structures:
+In JavaScript files, use `\@typedef` to define complex object structures:
 
 ```javascript
 /**
@@ -112,13 +112,16 @@ Use `\@typedef` to define complex object structures:
  * \@property {number}         total           Total count for the metric.
  * \@property {number}         change          Monthly change for the metric.
  *
- * \@param {Object} report Raw Analytics report data.
- * \@return {OverallPageMetricsData} Processed metrics data.
+ * \@param {Object} report    Raw Analytics report data.
+ * \@param {string} startDate Start date for the report.
+ * \@return {Array.<OverallPageMetricsData>} Processed metrics data.
  */
-function parseReportData( report ) {
+function calculateOverallPageMetricsData( report, startDate ) {
 	// implementation
 }
 ```
+
+In TypeScript files, define an `interface` (or `type`) for the shape instead of a `\@typedef`, and annotate the function with it — see `docs/context/js/component-conventions.md`. The JSDoc block stays (description, `\@since`, `\@param`, `\@return`), and `\@param`/`\@return` still carry their `{type}` annotations as in JS — only `\@typedef`/`\@property` are dropped in favour of the TypeScript type.
 
 #### Hook Documentation
 
@@ -156,14 +159,14 @@ Utility functions require detailed documentation with examples for complex cases
  * \@param {Function} [args.reducerCallback] Optional reducer to modify state.
  * \@param {Function} [args.argsToParams]    Function that reduces argument list to params.
  * \@param {Function} [args.validateParams]  Function that validates params before request.
- * \@return {Object} Partial store object with properties 'actions', 'controls', and 'reducer'.
+ * \@return {Object} Partial store object with properties 'actions', 'controls', 'reducer', 'resolvers', and 'selectors'.
  */
-export default function createFetchStore( {
+export function createFetchStore( {
 	baseName,
 	controlCallback,
 	reducerCallback,
-	argsToParams = ( ...args ) => args[ 0 ] || {},
-	validateParams = () => {},
+	argsToParams,
+	validateParams,
 } ) {
 	// implementation
 }
@@ -181,12 +184,12 @@ export default function createFetchStore( {
 
 ### Conditionally Document
 
-2. **Event handlers** - Document complex callback functions
-3. **Internal helpers** - Document if logic is non-obvious
+1. **Event handlers** - Document complex callback functions
+2. **Internal helpers** - Document if logic is non-obvious
 
-### Never Document (Use PropTypes Instead)
+### Never Document (Use Types Instead)
 
-1. **Component props** - Use PropTypes for type checking
+1. **Component props** - Type-check via component props, not JSDoc. In TypeScript files use a props `interface` (see `docs/context/js/component-conventions.md`); in JS files not yet migrated to TypeScript use PropTypes.
 2. **Simple getters/setters** - Self-explanatory functions
 3. **Trivial functions** - One-line utility functions
 
@@ -204,11 +207,11 @@ export default function createFetchStore( {
 1. **Use specific types** instead of generic `Object` when possible
 2. **Document array contents**: `Array.<string>` instead of `Array`
 3. **Use union types**: `{Function|null}` for multiple possible types
-4. **Create typedefs** for complex recurring data structures
+4. **Create typedefs** for complex recurring data structures in JS files (in TS files, use an `interface`/`type` instead)
 
 ### Version Tracking
 
-1. **Always include \@since** for new functions and significant changes using `1.173.0` value
+1. **Always include \@since** for new functions and significant changes using the `n.e.x.t` placeholder label
 2. **Document breaking changes** in function descriptions
 
 ### Consistency Rules

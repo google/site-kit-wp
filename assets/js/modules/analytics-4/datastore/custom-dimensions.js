@@ -596,7 +596,7 @@ const baseSelectors = {
 	 * lacks permission on the GA4 property), before any create error is recorded,
 	 * so this exposes that earlier failure.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.183.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID GA4 property ID to obtain the load error for.

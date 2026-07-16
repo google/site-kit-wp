@@ -36,7 +36,7 @@ import PDFTypography from './PDFTypography';
 /**
  * Merges a style array into one object, so assertions read one flat style.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param style A style object, or the style array `@react-pdf` renders.
  * @return One object holding every style property.
@@ -50,7 +50,7 @@ function flattenStyle(
 /**
  * Renders the text and returns its flattened style object.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param props Props for the text.
  * @return One object holding every style property of the text.

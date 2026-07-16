@@ -191,6 +191,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				pluginBasename,
 				productPostType,
 				keyMetricsSetupCompletedBy,
+				keyMetricsSetupIsWidgetAreaHidden,
 				keyMetricsSetupNew,
 				consentModeRegions,
 				anyoneCanRegister,
@@ -230,6 +231,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				pluginBasename,
 				productPostType,
 				keyMetricsSetupCompletedBy,
+				keyMetricsSetupIsWidgetAreaHidden,
 				keyMetricsSetupNew,
 				consentModeRegions,
 				anyoneCanRegister,
@@ -325,6 +327,7 @@ export const resolvers = {
 			pluginBasename,
 			productPostType,
 			keyMetricsSetupCompletedBy,
+			keyMetricsSetupIsWidgetAreaHidden,
 			keyMetricsSetupNew,
 			consentModeRegions,
 			anyoneCanRegister,
@@ -371,6 +374,7 @@ export const resolvers = {
 			pluginBasename,
 			productPostType,
 			keyMetricsSetupCompletedBy,
+			keyMetricsSetupIsWidgetAreaHidden,
 			keyMetricsSetupNew,
 			consentModeRegions,
 			anyoneCanRegister,
@@ -1038,6 +1042,30 @@ export const selectors = {
 	hasMultipleActiveEcommerceEventProviders: getSiteInfoProperty(
 		'hasMultipleActiveEcommerceEventProviders'
 	),
+
+	/**
+	 * Gets value of the setting for whether the key metrics widget area is
+	 * hidden.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean|undefined} Whether the widget area is hidden.
+	 */
+	getKeyMetricsSetupIsWidgetAreaHidden: getSiteInfoProperty(
+		'keyMetricsSetupIsWidgetAreaHidden'
+	),
+
+	/**
+	 * Checks whether setup has hidden the key metrics widget area.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} Whether the widget area is hidden.
+	 */
+	isKeyMetricsWidgetAreaHidden: ( state ) => {
+		return !! selectors.getKeyMetricsSetupIsWidgetAreaHidden( state );
+	},
 };
 
 export default {

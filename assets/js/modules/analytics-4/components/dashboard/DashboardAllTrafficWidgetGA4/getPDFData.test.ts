@@ -35,7 +35,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
-import { PIE_CHART_COLORS } from '@/js/components/pdf-export/pie-chart-colors';
+import { PIE_CHART_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import renderGoogleChartToDataURI from '@/js/components/pdf-export/render-google-chart-to-data-uri';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import getPDFData, { GetPDFDataParams } from './getPDFData';
@@ -112,7 +112,7 @@ const devicesArgs = getBreakdownReportArgs( {
  * Builds a breakdown report with the comparison-range dimension the dashboard's
  * `extractAnalyticsDataForPieChart` helper expects.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param entries Ordered `[ label, users ]` pairs for the current range.
  * @return A GA4 report with current-range rows.

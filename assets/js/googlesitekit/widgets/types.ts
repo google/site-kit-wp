@@ -41,7 +41,7 @@ export interface PDFReportDates {
 /**
  * Parameters a PDF widget's `getData` loader receives.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  */
 export interface GetPDFDataParams {
 	/** WordPress data registry, with `resolveSelect` added. */
@@ -143,6 +143,7 @@ export interface WidgetArea {
 	title?: string;
 	subtitle?: string;
 	pdfTitle?: string;
+	pdfReportTitle?: string;
 	priority?: number;
 	style?: string;
 	Icon?: ComponentType;

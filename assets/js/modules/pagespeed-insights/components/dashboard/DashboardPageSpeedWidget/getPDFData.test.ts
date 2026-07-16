@@ -43,7 +43,7 @@ const PSI_ENDPOINT = new RegExp(
  * Matches a mobile-strategy PageSpeed request, so the fetch mock can serve
  * mobile and desktop different fixtures.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param url The request URL the fetch mock checks.
  * @return Whether the URL requests the mobile report.
@@ -58,7 +58,7 @@ function MOBILE_ENDPOINT( url: string ) {
  * Matches a desktop-strategy PageSpeed request, so the fetch mock can serve
  * mobile and desktop different fixtures.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param url The request URL the fetch mock checks.
  * @return Whether the URL requests the desktop report.
@@ -80,7 +80,7 @@ const API_ERROR_BODY = {
  * Creates a test registry with site info and modules provided, typed as the
  * registry shape `getPDFData` expects.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @return The test registry to pass to `getPDFData`.
  */

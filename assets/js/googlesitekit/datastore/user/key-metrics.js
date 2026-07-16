@@ -587,11 +587,18 @@ const baseSelectors = {
 	 * Gets whether the key metrics widget is hidden.
 	 *
 	 * @since 1.103.0
-	 * @since n.e.x.t Returns `false` when the `setupFlowRefresh` feature flag is enabled, as the widget is now an integral part of the dashboard.
+	 * @since 1.183.0 Returns `false` when the `setupFlowRefresh` feature flag is enabled, as the widget is now an integral part of the dashboard.
 	 *
 	 * @return {boolean|undefined} True if the key metrics widget is hidden, false if it is not, or undefined if the key metrics settings are not loaded.
 	 */
 	isKeyMetricsWidgetHidden: createRegistrySelector( ( select ) => () => {
+		const isWidgetAreaHidden =
+			select( CORE_SITE ).isKeyMetricsWidgetAreaHidden();
+
+		if ( isWidgetAreaHidden ) {
+			return true;
+		}
+
 		if ( isFeatureEnabled( 'setupFlowRefresh' ) ) {
 			return false;
 		}
@@ -602,7 +609,7 @@ const baseSelectors = {
 	/**
 	 * Gets the stored value of whether the key metrics widget is hidden, without the `setupFlowRefresh` feature flag override.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.183.0
 	 *
 	 * @return {boolean|undefined} True if the key metrics widget is hidden, false if it is not, or undefined if the key metrics settings are not loaded.
 	 */
