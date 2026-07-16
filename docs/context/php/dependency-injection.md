@@ -12,7 +12,7 @@ Dependency Injection (DI) is a design pattern where a class receives its depende
 
 All dependencies are passed through the constructor, making requirements explicit and immutable.
 
-**Location**: `includes/Plugin.php:153-268`
+**Location**: `includes/Plugin.php` (the `init` action closure)
 
 ```php
 add_action(
@@ -22,22 +22,15 @@ add_action(
         $user_options = new Core\Storage\User_Options( $this->context, get_current_user_id() );
         $assets       = new Core\Assets\Assets( $this->context );
 
-        $authentication = new Core\Authentication\Authentication(
-            $this->context,
-            $options,
-            $user_options,
-            $transients,
-            $user_input
-        );
+        $survey_queue = new Core\User_Surveys\Survey_Queue( $user_options );
+        $survey_queue->register();
+
+        $user_input = new Core\User_Input\User_Input( $this->context, $options, $user_options, $survey_queue );
+
+        $authentication = new Core\Authentication\Authentication( $this->context, $options, $user_options, $transients, $user_input );
         $authentication->register();
 
-        $modules = new Core\Modules\Modules(
-            $this->context,
-            $options,
-            $user_options,
-            $authentication,
-            $assets
-        );
+        $modules = new Core\Modules\Modules( $this->context, $options, $user_options, $authentication, $assets );
         $modules->register();
     }
 );
@@ -47,7 +40,7 @@ add_action(
 
 Dependencies can be optional, with default instances created if not provided. This pattern is used extensively in modules.
 
-**Location**: `includes/Core/Modules/Module.php:135-149`
+**Location**: `includes/Core/Modules/Module.php`
 
 ```php
 public function __construct(
@@ -55,17 +48,21 @@ public function __construct(
     ?Options $options = null,
     ?User_Options $user_options = null,
     ?Authentication $authentication = null,
-    ?Assets $assets = null,
-    ?Transients $transients = null
+    ?Assets $assets = null
 ) {
     $this->context        = $context;
     $this->options        = $options ?: new Options( $this->context );
     $this->user_options   = $user_options ?: new User_Options( $this->context );
     $this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
     $this->assets         = $assets ?: new Assets( $this->context );
-    $this->transients     = $transients ?: new Transients( $this->context );
+    $this->transients     = new Transients( $this->context );
+    $this->info           = $this->parse_info( (array) $this->setup_info() );
 }
 ```
+
+Note that `$transients` is **not** a constructor parameter: the base `Module` always
+constructs its own `Transients` instance internally from the context. Only `$options`,
+`$user_options`, `$authentication`, and `$assets` are injectable (optional with defaults).
 
 **Why this pattern is used**:
 
@@ -94,7 +91,7 @@ public function __construct(
 
 Almost every class in Site Kit receives the `Context` object as its first dependency.
 
-**Location**: `includes/Context.php:1-530`
+**Location**: `includes/Context.php`
 
 ```php
 class SomeClass {
@@ -128,30 +125,33 @@ Classes that need to read/write settings depend on `Options` and `User_Options`.
 **Location**: `includes/Core/Authentication/Authentication.php`
 
 ```php
-final class Authentication {
+final class Authentication implements Provides_Feature_Metrics {
     private $context;
     private $options;
     private $user_options;
 
     public function __construct(
         Context $context,
-        Options $options,
-        User_Options $user_options,
-        Transients $transients,
-        User_Input $user_input
+        ?Options $options = null,
+        ?User_Options $user_options = null,
+        ?Transients $transients = null,
+        ?User_Input $user_input = null
     ) {
         $this->context      = $context;
-        $this->options      = $options;
-        $this->user_options = $user_options;
-        $this->transients   = $transients;
-        $this->user_input   = $user_input;
+        $this->options      = $options ?: new Options( $this->context );
+        $this->user_options = $user_options ?: new User_Options( $this->context );
+        $this->transients   = $transients ?: new Transients( $this->context );
+        $this->user_input   = $user_input ?: new User_Input( $context, $this->options, $this->user_options );
     }
 }
 ```
 
-### Pattern 3: Transients Dependency
+### Pattern 3: Internally Constructed Dependencies
 
-Classes that need to cache temporary data depend on `Transients`. This is a standard dependency for all Module classes.
+Not every collaborator is injected. Some dependencies that have no meaningful test
+substitution, or that are always built from another already-available dependency, are
+constructed inside the constructor. The base `Module` class does this with `Transients`:
+it is always built from the context rather than passed in.
 
 **Location**: `includes/Core/Modules/Module.php`
 
@@ -167,35 +167,33 @@ abstract class Module {
         ?Options $options = null,
         ?User_Options $user_options = null,
         ?Authentication $authentication = null,
-        ?Assets $assets = null,
-        ?Transients $transients = null
+        ?Assets $assets = null
     ) {
         $this->context      = $context;
         $this->options      = $options ?: new Options( $this->context );
         $this->user_options = $user_options ?: new User_Options( $this->context );
-        $this->transients   = $transients ?: new Transients( $this->context );
+        // Transients is built internally, not injected.
+        $this->transients   = new Transients( $this->context );
         // ...
-    }
-
-    protected function get_cached_data( $key, $callback ) {
-        // Check cache first
-        $cached = $this->transients->get( $key );
-        if ( false !== $cached ) {
-            return $cached;
-        }
-
-        // Fetch fresh data
-        $data = $callback();
-
-        // Cache for 1 hour
-        $this->transients->set( $key, $data, HOUR_IN_SECONDS );
-
-        return $data;
     }
 }
 ```
 
-**Note**: All Module classes automatically receive Transients as a dependency. This enables modules to cache API responses and temporary data consistently across the plugin.
+Subclasses then read and write the cache through the internally-built `$this->transients`,
+which exposes `get( $transient )` and `set( $transient, $value, $expiration )`:
+
+```php
+$cached = $this->transients->get( 'some_cache_key' );
+if ( false === $cached ) {
+    $cached = $this->fetch_fresh_data();
+    $this->transients->set( 'some_cache_key', $cached, HOUR_IN_SECONDS );
+}
+```
+
+**Note**: Because `Transients` is constructed internally in `Module`, subclasses cannot swap
+it through the constructor. Prefer injecting dependencies you need to mock in tests; reserve
+the internal-construction pattern for collaborators (like `Transients`) that are cheap to
+build from the context and do not need substitution.
 
 ### Pattern 4: Service Dependencies
 
@@ -204,7 +202,7 @@ Complex services depend on other services to build hierarchies.
 **Location**: `includes/Core/Modules/Modules.php`
 
 ```php
-final class Modules {
+final class Modules implements Provides_Feature_Metrics {
     private $context;
     private $options;
     private $user_options;
@@ -213,22 +211,22 @@ final class Modules {
 
     public function __construct(
         Context $context,
-        Options $options,
-        User_Options $user_options,
-        Authentication $authentication,
-        Assets $assets
+        ?Options $options = null,
+        ?User_Options $user_options = null,
+        ?Authentication $authentication = null,
+        ?Assets $assets = null
     ) {
         $this->context        = $context;
-        $this->options        = $options;
-        $this->user_options   = $user_options;
-        $this->authentication = $authentication;
-        $this->assets         = $assets;
+        $this->options        = $options ?: new Options( $this->context );
+        $this->user_options   = $user_options ?: new User_Options( $this->context );
+        $this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
+        $this->assets         = $assets ?: new Assets( $this->context );
     }
 
     public function get_available_modules() {
         $module_classes = $this->get_registry()->get_all();
         foreach ( $module_classes as $module_class ) {
-            // Pass dependencies to each module
+            // Pass dependencies to each module.
             $instance = new $module_class(
                 $this->context,
                 $this->options,
@@ -247,7 +245,7 @@ final class Modules {
 
 Some dependencies are created lazily when first needed, but still injected through the constructor.
 
-**Location**: `includes/Core/Modules/Module_With_Owner_Trait.php:40-81`
+**Location**: `includes/Core/Modules/Module_With_Owner_Trait.php`
 
 ```php
 trait Module_With_Owner_Trait {
@@ -258,7 +256,7 @@ trait Module_With_Owner_Trait {
             return $this->owner_oauth_client;
         }
 
-        // Lazy initialization using already-injected dependencies
+        // Build using already-injected dependencies plus the owner's user options.
         $user_options = new User_Options( $this->context, $this->get_owner_id() );
 
         $this->owner_oauth_client = new OAuth_Client(
@@ -294,7 +292,7 @@ Transients
 ### Complex Dependency Chain
 
 ```
-Modules
+Modules (constructor-injected)
     ├── Context
     ├── Options
     │   └── Context
@@ -304,23 +302,22 @@ Modules
     │   ├── Context
     │   ├── Options
     │   ├── User_Options
-    │   └── Transients
-    ├── Assets
-    │   └── Context
-    └── Transients
+    │   ├── Transients
+    │   └── User_Input
+    └── Assets
         └── Context
 
 Module (base class)
-    ├── Context
-    ├── Options
+    ├── Context              (injected)
+    ├── Options              (injected, default if omitted)
     │   └── Context
-    ├── User_Options
+    ├── User_Options         (injected, default if omitted)
     │   └── Context
-    ├── Authentication
+    ├── Authentication       (injected, default if omitted)
     │   └── (see above)
-    ├── Assets
+    ├── Assets               (injected, default if omitted)
     │   └── Context
-    └── Transients
+    └── Transients           (built internally from Context, not injected)
         └── Context
 ```
 
@@ -339,20 +336,19 @@ class Module_Test extends TestCase {
         $user_options   = $this->createMock( User_Options::class );
         $authentication = $this->createMock( Authentication::class );
         $assets         = $this->createMock( Assets::class );
-        $transients     = $this->createMock( Transients::class );
 
         // Configure mock behavior
         $context->method( 'is_network_mode' )->willReturn( false );
-        $transients->method( 'get' )->willReturn( false ); // No cached data
 
-        // Inject mocks into the class under test
+        // Inject mocks into the class under test. Module subclasses such as
+        // Analytics_4 accept five constructor arguments (Transients is built
+        // internally, so it is not passed here).
         $module = new Analytics_4(
             $context,
             $options,
             $user_options,
             $authentication,
-            $assets,
-            $transients
+            $assets
         );
 
         // Test module behavior
@@ -421,10 +417,10 @@ class MyClass {
  *
  * \@since 1.0.0
  *
- * \@param Context          $context        Plugin context instance.
- * \@param Options          $options        Optional. Options instance. Default is a new instance.
- * \@param User_Options     $user_options   Optional. User options instance. Default is a new instance.
- * \@param Authentication   $authentication Optional. Authentication instance. Default is a new instance.
+ * \@param Context        $context        Plugin context.
+ * \@param Options        $options        Optional. Option API instance. Default is a new instance.
+ * \@param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
+ * \@param Authentication $authentication Optional. Authentication instance. Default is a new instance.
  */
 public function __construct(
     Context $context,

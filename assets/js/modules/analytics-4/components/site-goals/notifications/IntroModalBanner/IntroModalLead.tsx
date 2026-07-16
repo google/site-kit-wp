@@ -38,7 +38,6 @@ import SiteGoalsIntroModalLeadGraphic from '@/svg/graphics/site-goals-intro-moda
 import type { IntroModalVariantProps } from './types';
 
 const IntroModalLead: FC< IntroModalVariantProps > = ( {
-	onView,
 	onConfirm,
 	onClickLearnMore,
 	onDismiss,
@@ -53,7 +52,6 @@ const IntroModalLead: FC< IntroModalVariantProps > = ( {
 		<BannerModal
 			className="googlesitekit-banner-modal--site-goals-intro"
 			Graphic={ SiteGoalsIntroModalLeadGraphic }
-			onView={ onView }
 			onClose={ onDismiss }
 			title={ __( 'See what brings in new leads', 'google-site-kit' ) }
 			description={ createInterpolateElement(
