@@ -336,6 +336,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				registry,
 				dates,
 				signal,
+				viewOnly,
 			} );
 
 			throwIfAborted( signal );

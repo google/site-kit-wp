@@ -29,7 +29,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -46,6 +49,7 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
+	provideUserCapabilities,
 	provideUserInfo,
 	render,
 	waitFor,
@@ -191,10 +195,21 @@ describe( 'PDFExportOrchestrator', () => {
 		dispatch.assignWidget( widgetSlug, areaSlug );
 	}
 
-	function renderOrchestrator() {
+	/**
+	 * Renders the orchestrator under a dashboard view context.
+	 *
+	 * @since 1.181.0
+	 * @since n.e.x.t Added the `viewContext` parameter.
+	 *
+	 * @param viewContext The dashboard view context to render under.
+	 * @return The render result for the orchestrator.
+	 */
+	function renderOrchestrator(
+		viewContext: string = VIEW_CONTEXT_MAIN_DASHBOARD
+	) {
 		return render( <PDFExportOrchestrator onComplete={ () => {} } />, {
 			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			viewContext,
 		} );
 	}
 
@@ -290,13 +305,43 @@ describe( 'PDFExportOrchestrator', () => {
 
 		expect( getData ).toHaveBeenCalledTimes( 1 );
 
-		const { dates, signal } = getData.mock.calls[ 0 ][ 0 ];
-		// End date is shifted back one day from the reference date.
+		const { dates, signal, viewOnly } = getData.mock.calls[ 0 ][ 0 ];
+		// The end date shifts back one day from the reference date.
 		expect( dates.endDate ).toBe( '2021-01-09' );
 		expect( dates.compareStartDate ).toBeDefined();
 		expect( signal ).toBeInstanceOf( AbortSignal );
+		// The main dashboard isn't view-only, so `viewOnly` is false and each
+		// widget's `getData` loader resolves the links the PDF shows.
+		expect( viewOnly ).toBe( false );
 
 		expect( pdf ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	it( 'should pass viewOnly as true to each widget loader on a view-only dashboard', async () => {
+		// On a view-only dashboard, the orchestrator reads the viewable
+		// modules, and that read needs the user's capabilities in the store.
+		provideUserCapabilities( registry );
+
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [ 'trafficWidget' ],
+		} );
+
+		renderOrchestrator( VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY );
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		expect( getData ).toHaveBeenCalledTimes( 1 );
+
+		// Each widget's `getData` loader reads `viewOnly` and leaves out the
+		// links a view-only dashboard doesn't show.
+		expect( getData.mock.calls[ 0 ][ 0 ].viewOnly ).toBe( true );
 	} );
 
 	it( 'should transition to error and not build a PDF when the only widget fails', async () => {
