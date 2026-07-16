@@ -222,6 +222,7 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		expect( result.data ).toEqual( {
@@ -253,7 +254,12 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 		provideReports( registry );
 
 		const signal = new AbortController().signal;
-		await getPDFData( { registry, dates: DATES, signal } );
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal,
+			viewOnly: false,
+		} );
 
 		expect( mockEnsureGoogleChartsLoaded ).toHaveBeenCalledTimes( 1 );
 		expect( mockRenderGoogleChartToDataURI ).toHaveBeenCalledTimes( 4 );
@@ -317,6 +323,7 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		expect( result.data?.metrics.impressions ).not.toBeNull();
@@ -359,6 +366,7 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 				registry,
 				dates: DATES,
 				signal: new AbortController().signal,
+				viewOnly: false,
 			} )
 		).rejects.toThrow( /all Search traffic over time metrics failed/ );
 
@@ -379,6 +387,7 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: controller.signal,
+			viewOnly: false,
 		} );
 
 		expect( result ).toEqual( { data: null } );
@@ -407,6 +416,7 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: controller.signal,
+			viewOnly: false,
 		} );
 
 		// Wait for all four report fetches to dispatch before aborting.

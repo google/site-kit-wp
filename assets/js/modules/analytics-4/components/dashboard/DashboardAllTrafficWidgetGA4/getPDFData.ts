@@ -113,6 +113,8 @@ export interface GetPDFDataParams {
 	>;
 	/** Signal that cancels the export. */
 	signal: AbortSignal;
+	/** Whether the export runs on a view-only dashboard. This widget has no links to leave out, so the loader doesn't read it. */
+	viewOnly: boolean;
 }
 
 /**
