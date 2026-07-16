@@ -107,4 +107,30 @@ describe( 'PDFLink', () => {
 
 		expect( linkJSON ).toContain( '#6c726e' );
 	} );
+
+	it( 'renders plain text in the default color when the href is empty', () => {
+		// An empty `href` is how a caller passes a row that has no link, so
+		// the text renders plain instead of as a link.
+		const tree = renderLink( { href: '', children: 'View dashboard' } );
+
+		expect( tree.type ).toBe( 'pdf-text' );
+
+		const treeJSON = JSON.stringify( tree );
+		expect( treeJSON ).toContain( 'View dashboard' );
+		expect( treeJSON ).not.toContain( PDF_COLORS.CONTENT_SECONDARY );
+	} );
+
+	it( 'leaves out the trailing icon when the href is empty', () => {
+		const tree = renderLink( {
+			href: '',
+			trailingIcon: (
+				<Svg>
+					<Path d="M1 2 3 4" />
+				</Svg>
+			),
+			children: 'View dashboard',
+		} );
+
+		expect( JSON.stringify( tree ) ).not.toContain( 'M1 2 3 4' );
+	} );
 } );
