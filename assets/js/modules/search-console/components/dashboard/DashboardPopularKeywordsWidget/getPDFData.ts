@@ -40,11 +40,11 @@ export interface PopularKeywordRow {
  * Data the Top search queries PDF widget renders.
  */
 export interface PopularKeywordsPDFData {
-	/** Report rows and the per-query links, or `null` when the export is canceled or the report has no rows. */
+	/** Report rows and the per-query links, or `null` when the user cancels the export or the report has no rows. */
 	data: {
 		/** The Top search queries report rows. */
 		rows: PopularKeywordRow[];
-		/** Map of search query to its Search Console report link. */
+		/** Map of search query to its Search Console report link. Empty on a view-only dashboard, where each query shows as plain text. */
 		links: Record< string, string >;
 	} | null;
 }
@@ -91,21 +91,26 @@ function getQueryLinkMap(
  *
  * Loads the Top search queries report and passes the abort signal to the
  * request. Builds a Search Console report link for each query, the same link the
- * dashboard widget shows. Returns `{ data: null }` when the signal aborts or the
- * report has no rows, so the report document skips this widget.
+ * dashboard widget shows. For a view-only user, the loader builds no links,
+ * because the dashboard widget shows the query as plain text. Returns
+ * `{ data: null }` when the signal aborts or the report has no rows, so the
+ * report document skips this widget.
  *
  * @since 1.183.0
+ * @since n.e.x.t Leaves out the query links on a view-only dashboard.
  *
  * @param params          Loader parameters.
  * @param params.registry WordPress data registry.
  * @param params.dates    Report date range.
  * @param params.signal   Cancellation signal.
+ * @param params.viewOnly Whether the export runs on a view-only dashboard.
  * @return The report rows and the per-query links.
  */
 export default async function getPDFData( {
 	registry,
 	dates,
 	signal,
+	viewOnly,
 }: GetPDFDataParams ): Promise< PopularKeywordsPDFData > {
 	if ( signal.aborted ) {
 		return { data: null };
@@ -137,5 +142,10 @@ export default async function getPDFData( {
 		return { data: null };
 	}
 
-	return { data: { rows, links: getQueryLinkMap( registry, dates, rows ) } };
+	// A view-only user has no access to the Search Console report, so the
+	// dashboard widget shows them the query as plain text. Resolve no link, and
+	// the PDF renders the query as plain text too.
+	const links = viewOnly ? {} : getQueryLinkMap( registry, dates, rows );
+
+	return { data: { rows, links } };
 }
