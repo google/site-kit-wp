@@ -32,12 +32,12 @@ import { getFullURL } from '@/js/util';
 import { getPopularPagesReportArgs } from './reportOptions';
 
 /**
- * Links for one page row: the entity dashboard URL for the title, and the
+ * Links for one page row: the Analytics report link for the title, and the
  * page's own public URL for the URL line.
  */
 export interface PopularPageLinks {
-	/** URL of the page's entity dashboard, which the page title links to. */
-	detailsURL: string;
+	/** Analytics report link for the page, which the page title links to. */
+	serviceURL: string;
 	/** The page's own public URL, which the URL line links to. */
 	permaLink: string;
 }
@@ -46,46 +46,50 @@ export interface PopularPageLinks {
  * Data the Top content over time PDF widget renders.
  */
 export interface PopularPagesPDFData {
-	/** Report rows, the page titles, and the per-page links, or `null` when the export is canceled or the report has no rows. */
+	/** Report rows, the page titles, and the per-page links, or `null` when the user cancels the export or the report has no rows. */
 	data: {
 		/** Rows of the Most popular pages report. */
 		rows: ReportRow[];
 		/** Map of page path to page title. */
 		titles: Record< string, string >;
-		/** Map of page path to its entity dashboard URL and public URL. */
+		/** Map of page path to its Analytics report link and public URL. Empty on a view-only dashboard, where each title and URL show as plain text. */
 		links: Record< string, PopularPageLinks >;
 	} | null;
 }
 
 /**
- * Maps each page path to its entity dashboard URL and public URL.
+ * Maps each page path to its Analytics report link and public URL.
  *
- * The title links to the page's Site Kit detail view, the same entity dashboard
- * link the dashboard builds for a page. The URL line links to the page itself.
+ * The title links to the same All pages and screens report the dashboard
+ * widget links to for an administrator. The URL line links to the page itself.
  *
  * @since 1.182.0
+ * @since n.e.x.t Links the title to the page's Analytics report instead of its entity dashboard.
  *
  * @param registry  WordPress data registry.
+ * @param dates     Report date range.
  * @param pagePaths Page paths from the main report rows.
- * @return Map of page path to its entity dashboard URL and public URL.
+ * @return Map of page path to its Analytics report link and public URL.
  */
 function getPopularPageLinkMap(
 	registry: GetPDFDataParams[ 'registry' ],
+	dates: GetPDFDataParams[ 'dates' ],
 	pagePaths: string[]
 ): Record< string, PopularPageLinks > {
-	const coreSite = registry.select( CORE_SITE );
-	const siteURL = coreSite.getReferenceSiteURL();
+	const siteURL = registry.select( CORE_SITE ).getReferenceSiteURL();
+	const analytics = registry.select( MODULES_ANALYTICS_4 );
+	const { startDate, endDate } = dates;
 
 	const links: Record< string, PopularPageLinks > = {};
 
 	pagePaths.forEach( ( pagePath ) => {
-		const permaLink = getFullURL( siteURL, pagePath );
 		links[ pagePath ] = {
-			detailsURL:
-				coreSite.getAdminURL( 'googlesitekit-dashboard', {
-					permaLink,
+			serviceURL:
+				analytics.getServiceReportURL( 'all-pages-and-screens', {
+					filters: { unifiedPagePathScreen: pagePath },
+					dates: { startDate, endDate },
 				} ) ?? '',
-			permaLink,
+			permaLink: getFullURL( siteURL, pagePath ),
 		};
 	} );
 
@@ -102,17 +106,20 @@ function getPopularPageLinkMap(
  *
  * @since 1.182.0
  * @since 1.183.0 Returns null data when the report has no rows.
+ * @since n.e.x.t Links each title to its Analytics report, and leaves out the page links on a view-only dashboard.
  *
  * @param params          Loader parameters.
  * @param params.registry WordPress data registry.
  * @param params.dates    Report date range.
  * @param params.signal   Cancellation signal.
+ * @param params.viewOnly Whether the export runs on a view-only dashboard.
  * @return The report rows and the page-path-to-title map.
  */
 export default async function getPDFData( {
 	registry,
 	dates,
 	signal,
+	viewOnly,
 }: GetPDFDataParams ): Promise< PopularPagesPDFData > {
 	if ( signal.aborted ) {
 		return { data: null };
@@ -143,7 +150,11 @@ export default async function getPDFData( {
 	}
 
 	const pagePaths = getPagePaths( report );
-	const links = getPopularPageLinkMap( registry, pagePaths );
+	// For a view-only user, the loader builds no page links, so the title and
+	// the URL both render as plain text.
+	const links = viewOnly
+		? {}
+		: getPopularPageLinkMap( registry, dates, pagePaths );
 
 	if ( pagePaths.length === 0 ) {
 		return { data: { rows, titles: {}, links } };
