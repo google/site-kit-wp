@@ -18,7 +18,7 @@ The asset management system provides:
 
 ### Asset Base Class
 
-**Location**: `includes/Core/Assets/Asset.php:1-132`
+**Location**: `includes/Core/Assets/Asset.php`
 
 Abstract base class for all assets.
 
@@ -31,9 +31,9 @@ abstract class Asset {
     const CONTEXT_ADMIN_SITEKIT      = 'admin-sitekit';  // Default
 
     protected $handle;
-    protected $args;
+    protected $args = array();
 
-    public function __construct( $handle, array $args = array() ) {
+    public function __construct( $handle, array $args ) {
         $this->handle = $handle;
         $this->args   = wp_parse_args(
             $args,
@@ -73,27 +73,26 @@ public function get_handle(): string
 // Check if asset loads in given context
 public function has_context( $context ): bool
 
-// Execute before-print callback
-public function before_print(): void
+// Execute before-print callback (final)
+final public function before_print(): void
 ```
 
 ### Script Class
 
-**Location**: `includes/Core/Assets/Script.php:1-174`
+**Location**: `includes/Core/Assets/Script.php`
 
 Handles JavaScript registration and enqueueing.
 
 ```php
-final class Script extends Asset {
-    public function __construct( $handle, array $args = array() ) {
-        parent::__construct(
-            $handle,
-            wp_parse_args(
-                $args,
-                array(
-                    'in_footer' => true,
-                    'execution' => '',  // 'defer' or 'async'
-                )
+class Script extends Asset {
+    public function __construct( $handle, array $args ) {
+        parent::__construct( $handle, $args );
+
+        $this->args = wp_parse_args(
+            $this->args,
+            array(
+                'in_footer' => true,
+                'execution' => '',  // 'defer' or 'async'
             )
         );
     }
@@ -109,7 +108,7 @@ final class Script extends Asset {
 
 #### Registration Process
 
-**Location**: `includes/Core/Assets/Script.php:63-111`
+**Location**: `includes/Core/Assets/Script.php`
 
 ```php
 public function register( Context $context ) {
@@ -121,12 +120,28 @@ public function register( Context $context ) {
     $src     = $this->args['src'];
     $version = $this->args['version'];
 
-    // Get manifest entry for versioning
-    list( $filename, $hash ) = Manifest::get( $this->handle );
+    if ( $src ) {
+        // Get manifest entry for versioning; supports both single and multi-entry format.
+        $entry = Manifest::get( $this->handle );
+        list( $filename, $hash ) = array( null, null );
 
-    if ( $filename ) {
-        $src     = $context->url( 'dist/assets/js/' . $filename );
-        $version = $hash;
+        if ( is_array( $entry[0] ) ) {
+            // Multi-entry: match by basename of $src
+            $src_filename = basename( $src );
+            foreach ( $entry as $entry_pair ) {
+                if ( $this->is_matching_manifest_entry( $entry_pair, $src_filename ) ) {
+                    list( $filename, $hash ) = $entry_pair;
+                    break;
+                }
+            }
+        } else {
+            list( $filename, $hash ) = $entry;
+        }
+
+        if ( $filename ) {
+            $src     = $context->url( 'dist/assets/js/' . $filename );
+            $version = $hash;
+        }
     }
 
     // Register with WordPress
@@ -144,7 +159,7 @@ public function register( Context $context ) {
     }
 
     // Set up localization data
-    if ( $src ) {
+    if ( ! empty( $src ) ) {
         $this->set_locale_data();
     }
 }
@@ -152,7 +167,7 @@ public function register( Context $context ) {
 
 #### Automatic Localization
 
-**Location**: `includes/Core/Assets/Script.php:155-173`
+**Location**: `includes/Core/Assets/Script.php`
 
 ```php
 private function set_locale_data() {
@@ -177,7 +192,7 @@ JS;
 
 ### Stylesheet Class
 
-**Location**: `includes/Core/Assets/Stylesheet.php:1-91`
+**Location**: `includes/Core/Assets/Stylesheet.php`
 
 Handles CSS registration and enqueueing.
 
@@ -227,20 +242,22 @@ final class Stylesheet extends Asset {
 
 ### Script_Data Class
 
-**Location**: `includes/Core/Assets/Script_Data.php:1-80`
+**Location**: `includes/Core/Assets/Script_Data.php`
 
 Virtual "data-only" script for injecting inline JavaScript data without a physical file.
 
 ```php
-final class Script_Data extends Script {
-    public function __construct( $handle, array $args = array() ) {
-        $this->args = wp_parse_args(
-            $args,
-            array(
-                'global'        => '',
-                'data_callback' => null,
-            )
+class Script_Data extends Script {
+    public function __construct( $handle, array $args ) {
+        // Ensure required keys are always set.
+        $args = $args + array(
+            'data_callback' => null,
+            'global'        => '',
         );
+        // SRC will always be false (no physical file).
+        $args['src'] = false;
+
+        parent::__construct( $handle, $args );
 
         // Lazy-load data via before_print callback
         $this->args['before_print'] = function ( $handle ) {
@@ -250,13 +267,11 @@ final class Script_Data extends Script {
             $data = call_user_func( $this->args['data_callback'], $handle );
             $this->add_script_data( $data );
         };
-
-        parent::__construct( $handle, $this->args );
     }
 
     private function add_script_data( $data ) {
         $script_data = wp_scripts()->get_data( $this->handle, 'data' ) ?: '';
-        $js = sprintf(
+        $js          = sprintf(
             'var %s = %s;',
             preg_replace( '[^\w\d_-]', '', $this->args['global'] ),
             wp_json_encode( $data )
@@ -303,7 +318,7 @@ This outputs:
 
 ## Assets Manager
 
-**Location**: `includes/Core/Assets/Assets.php:1-1152`
+**Location**: `includes/Core/Assets/Assets.php`
 
 Central manager responsible for registering, enqueueing, and coordinating all plugin assets.
 
@@ -321,21 +336,30 @@ Central manager responsible for registering, enqueueing, and coordinating all pl
 final class Assets {
     private $context;
     private $assets = array();
-    private $assets_registered = false;
+    private $print_callbacks_done = array();
 
     public function __construct( Context $context ) {
         $this->context = $context;
     }
 
     public function register() {
-        $this->setup_hooks();
+        // Sets up all WordPress hooks (see below).
     }
 }
 ```
 
 ### Asset Definition
 
-**Location**: `includes/Core/Assets/Assets.php:346-751`
+**Location**: `includes/Core/Assets/Assets.php`
+
+Assets are built as a flat array, then indexed by handle at the end. Below is an abbreviated
+representative sample of the actual assets registered (not every entry — the real method has
+~30+ assets).
+
+> **Note on TypeScript entrypoints**: Many JS entrypoints have migrated from `.js` to `.ts`
+> or `.tsx` source files (e.g. `assets/js/googlesitekit-main-dashboard.tsx`). The PHP asset
+> system always registers the compiled `.js` output path under `dist/assets/js/` — the
+> source extension is irrelevant here.
 
 ```php
 private function get_assets() {
@@ -345,29 +369,9 @@ private function get_assets() {
 
     $base_url = $this->context->url( 'dist/assets/' );
 
-    $this->assets = array(
-        // Core runtime
-        'googlesitekit-runtime' => new Script(
-            'googlesitekit-runtime',
-            array(
-                'src' => $base_url . 'js/runtime.js',
-            )
-        ),
-
-        // Vendor libraries
-        'googlesitekit-vendor' => new Script(
-            'googlesitekit-vendor',
-            array(
-                'src'          => $base_url . 'js/googlesitekit-vendor.js',
-                'dependencies' => array(
-                    'googlesitekit-i18n',
-                    'googlesitekit-runtime',
-                ),
-            )
-        ),
-
-        // Inline data scripts
-        'googlesitekit-base-data' => new Script_Data(
+    $assets = array(
+        // Inline data scripts (Script_Data — no physical file)
+        new Script_Data(
             'googlesitekit-base-data',
             array(
                 'global'        => '_googlesitekitBaseData',
@@ -377,17 +381,38 @@ private function get_assets() {
             )
         ),
 
-        // Dashboard script
-        'googlesitekit-dashboard' => new Script(
-            'googlesitekit-dashboard',
+        // Core runtime
+        new Script(
+            'googlesitekit-runtime',
             array(
-                'src'          => $base_url . 'js/googlesitekit-dashboard.js',
-                'dependencies' => $this->get_asset_dependencies( 'dashboard' ),
+                'src' => $base_url . 'js/runtime.js',
+            )
+        ),
+
+        // Vendor libraries (depends on polyfills too)
+        new Script(
+            'googlesitekit-vendor',
+            array(
+                'src'          => $base_url . 'js/googlesitekit-vendor.js',
+                'dependencies' => array(
+                    'googlesitekit-i18n',
+                    'googlesitekit-runtime',
+                    'googlesitekit-polyfills',
+                ),
+            )
+        ),
+
+        // Main dashboard (entrypoint is googlesitekit-main-dashboard.tsx)
+        new Script(
+            'googlesitekit-main-dashboard',
+            array(
+                'src'          => $base_url . 'js/googlesitekit-main-dashboard.js',
+                'dependencies' => $this->get_asset_dependencies( 'dashboard-sharing' ),
             )
         ),
 
         // Stylesheets
-        'googlesitekit-fonts' => new Stylesheet(
+        new Stylesheet(
             'googlesitekit-fonts',
             array(
                 'src'     => $this->get_fonts_src(),
@@ -397,7 +422,13 @@ private function get_assets() {
     );
 
     // Allow modules to add their assets
-    $this->assets = apply_filters( 'googlesitekit_assets', $this->assets );
+    $assets = apply_filters( 'googlesitekit_assets', $assets );
+
+    // Index by handle
+    $this->assets = array();
+    foreach ( $assets as $asset ) {
+        $this->assets[ $asset->get_handle() ] = $asset;
+    }
 
     return $this->assets;
 }
@@ -405,21 +436,15 @@ private function get_assets() {
 
 ### WordPress Hook Integration
 
-**Location**: `includes/Core/Assets/Assets.php:79-183`
+**Location**: `includes/Core/Assets/Assets.php`
 
 ```php
 public function register() {
-    // Register assets on enqueue hooks
+    // Register assets on enqueue hooks (deduplication is handled by has_registered_assets())
     $register_callback = function () {
         if ( ! is_admin() ) {
             return;
         }
-
-        if ( $this->assets_registered ) {
-            return;
-        }
-
-        $this->assets_registered = true;
         $this->register_assets();
     };
 
@@ -436,127 +461,168 @@ public function register() {
         2
     );
 
-    // Context-specific hooks
-    $this->register_context_hooks();
+    // Permission gate: remaining hooks only for users with VIEW_SPLASH or VIEW_DASHBOARD
+    if ( ! ( current_user_can( Permissions::VIEW_SPLASH ) || current_user_can( Permissions::VIEW_DASHBOARD ) ) ) {
+        return;
+    }
 
-    // Before-print callbacks
-    $this->register_print_hooks();
+    $this->add_amp_dev_mode_attributes( $this->get_assets() );
+
+    // Context-specific enqueue hooks (inline, not extracted to a separate method)
+    add_action( 'admin_print_scripts-edit.php', function () { /* CONTEXT_ADMIN_POSTS */ } );
+    add_action( 'enqueue_block_assets',          function () { /* CONTEXT_ADMIN_BLOCK_EDITOR (admin only) */ } );
+    add_action( 'enqueue_block_editor_assets',   function () { /* CONTEXT_ADMIN_POST_EDITOR */ } );
+
+    // Before-print callbacks for scripts and styles
+    add_action( 'wp_print_scripts',    function () { $this->run_before_print_callbacks( wp_scripts(), wp_scripts()->queue ); } );
+    add_action( 'admin_print_scripts', function () { $this->run_before_print_callbacks( wp_scripts(), wp_scripts()->queue ); } );
+    add_action( 'wp_print_styles',     function () { $this->run_before_print_callbacks( wp_styles(), wp_styles()->queue ); } );
+    add_action( 'admin_print_styles',  function () { $this->run_before_print_callbacks( wp_styles(), wp_styles()->queue ); } );
 }
 ```
 
 ### Context-Specific Loading
 
+Context-aware enqueueing is wired up inline inside `register()` (there is no separate
+`register_context_hooks()` or `enqueue_assets_for_context()` method). The actual pattern
+used for each context:
+
 ```php
-private function register_context_hooks() {
-    // CONTEXT_ADMIN_POSTS - Post list view
-    add_action(
-        'admin_print_scripts-edit.php',
-        function () {
-            global $post_type;
-            if ( 'post' !== $post_type ) {
-                return;
-            }
-
-            $this->enqueue_assets_for_context( Asset::CONTEXT_ADMIN_POSTS );
+// CONTEXT_ADMIN_POSTS - Post list view (inside register())
+add_action(
+    'admin_print_scripts-edit.php',
+    function () {
+        global $post_type;
+        if ( 'post' !== $post_type ) {
+            return;
         }
-    );
+        $assets = $this->get_assets();
+        array_walk(
+            $assets,
+            function ( Asset $asset ) {
+                if ( $asset->has_context( Asset::CONTEXT_ADMIN_POSTS ) ) {
+                    $this->enqueue_asset( $asset->get_handle() );
+                }
+            }
+        );
+    }
+);
 
-    // CONTEXT_ADMIN_BLOCK_EDITOR - Block editor
+// CONTEXT_ADMIN_BLOCK_EDITOR (admin only)
+if ( is_admin() ) {
     add_action(
         'enqueue_block_assets',
         function () {
-            $this->enqueue_assets_for_context( Asset::CONTEXT_ADMIN_BLOCK_EDITOR );
-        }
-    );
-
-    // CONTEXT_ADMIN_POST_EDITOR - Post editor
-    add_action(
-        'enqueue_block_editor_assets',
-        function () {
-            $this->enqueue_assets_for_context( Asset::CONTEXT_ADMIN_POST_EDITOR );
+            $assets = $this->get_assets();
+            array_walk(
+                $assets,
+                function ( $asset ) {
+                    if ( $asset->has_context( Asset::CONTEXT_ADMIN_BLOCK_EDITOR ) ) {
+                        $this->enqueue_asset( $asset->get_handle() );
+                    }
+                }
+            );
         }
     );
 }
 
-private function enqueue_assets_for_context( $context ) {
-    $assets = $this->get_assets();
-
-    array_walk(
-        $assets,
-        function ( Asset $asset ) use ( $context ) {
-            if ( $asset->has_context( $context ) ) {
-                $this->enqueue_asset( $asset->get_handle() );
+// CONTEXT_ADMIN_POST_EDITOR
+add_action(
+    'enqueue_block_editor_assets',
+    function () {
+        $assets = $this->get_assets();
+        array_walk(
+            $assets,
+            function ( $asset ) {
+                if ( $asset->has_context( Asset::CONTEXT_ADMIN_POST_EDITOR ) ) {
+                    $this->enqueue_asset( $asset->get_handle() );
+                }
             }
-        }
-    );
-}
+        );
+    }
+);
 ```
 
 ### Inline Data Methods
 
 #### Base Data
 
-**Location**: `includes/Core/Assets/Assets.php:763-800`
+**Location**: `includes/Core/Assets/Assets.php`
 
 ```php
 private function get_inline_base_data() {
-    return array(
-        'homeURL'              => home_url( '/' ),
-        'referenceSiteURL'     => $this->context->get_reference_site_url(),
-        'userIDHash'           => md5( $this->context->get_reference_site_url() . get_current_user_id() ),
-        'adminURL'             => admin_url(),
-        'assetsURL'            => $this->context->url( 'dist/assets/' ),
-        'ampMode'              => $this->context->get_amp_mode(),
-        'isNetworkMode'        => $this->context->is_network_mode(),
-        'timezone'             => get_option( 'timezone_string' ),
-        'siteName'             => get_bloginfo( 'name' ),
-        'enabledFeatures'      => $this->get_enabled_features(),
-        'postTypes'            => $this->get_post_types(),
-        'storagePrefix'        => $this->get_storage_prefix(),
-        'userRoles'            => $this->get_user_roles(),
-        'splashURL'            => $this->context->admin_url( 'splash' ),
+    global $wpdb;
+    $site_url = $this->context->get_reference_site_url();
+
+    $inline_data = array(
+        'homeURL'           => trailingslashit( $this->context->get_canonical_home_url() ),
+        'referenceSiteURL'  => esc_url_raw( trailingslashit( $site_url ) ),
+        'adminURL'          => esc_url_raw( trailingslashit( admin_url() ) ),
+        'assetsURL'         => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
+        'widgetsAdminURL'   => esc_url_raw( $this->get_widgets_admin_url() ),
+        'blogPrefix'        => $wpdb->get_blog_prefix(),
+        'ampMode'           => $this->context->get_amp_mode(),
+        'isNetworkMode'     => $this->context->is_network_mode(),
+        'timezone'          => get_option( 'timezone_string' ),
+        'startOfWeek'       => (int) get_option( 'start_of_week' ),
+        'siteName'          => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
+        'siteLocale'        => $this->context->get_locale(),
+        'enabledFeatures'   => Feature_Flags::get_enabled_features(),
+        'webStoriesActive'  => defined( 'WEBSTORIES_VERSION' ),
+        'postTypes'         => $this->get_post_types(),
+        'storagePrefix'     => $this->get_storage_prefix(),
+        'referenceDate'     => Date::reference_date(),
+        'productPostType'   => $this->get_product_post_type(),
+        'anyoneCanRegister' => (bool) get_option( 'users_can_register' ),
+        'isMultisite'       => is_multisite(),
     );
+
+    return apply_filters( 'googlesitekit_inline_base_data', $inline_data );
 }
 ```
 
 #### Entity Data
 
-**Location**: `includes/Core/Assets/Assets.php:853-862`
+**Location**: `includes/Core/Assets/Assets.php`
 
 ```php
 private function get_inline_entity_data() {
-    $reference_url = $this->context->get_reference_site_url();
-    $entity        = $this->context->get_reference_entity();
+    $current_entity = $this->context->get_reference_entity();
 
     return array(
-        'currentEntityURL'   => $reference_url,
-        'currentEntityType'  => $entity['type'] ?? null,
-        'currentEntityTitle' => $entity['title'] ?? null,
-        'currentEntityID'    => $entity['id'] ?? null,
+        'currentEntityURL'   => $current_entity ? $current_entity->get_url()   : null,
+        'currentEntityType'  => $current_entity ? $current_entity->get_type()  : null,
+        'currentEntityTitle' => $current_entity ? $current_entity->get_title() : null,
+        'currentEntityID'    => $current_entity ? $current_entity->get_id()    : null,
     );
 }
 ```
 
 #### User Data
 
-**Location**: `includes/Core/Assets/Assets.php:871-894`
+**Location**: `includes/Core/Assets/Assets.php`
 
 ```php
 private function get_inline_user_data() {
     $current_user = wp_get_current_user();
 
-    return array(
-        'id'      => $current_user->ID,
-        'email'   => $current_user->user_email,
-        'name'    => $current_user->display_name,
-        'picture' => get_avatar_url( $current_user->user_email ),
+    $inline_data = array(
+        'user' => array(
+            'id'      => $current_user->ID,
+            'email'   => $current_user->user_email,
+            'wpEmail' => $current_user->user_email,
+            'name'    => $current_user->display_name,
+            'picture' => get_avatar_url( $current_user->user_email ),
+        ),
     );
+
+    return apply_filters( 'googlesitekit_user_data', $inline_data );
 }
 ```
 
 #### Module Data
 
-**Location**: `includes/Core/Assets/Assets.php:1007-1017`
+**Location**: `includes/Core/Assets/Assets.php`
 
 ```php
 private function get_inline_modules_data() {
@@ -569,11 +635,8 @@ private function get_inline_modules_data() {
 
 ```php
 public function enqueue_asset( $handle ) {
-    // Register assets if not already done
-    if ( ! $this->assets_registered ) {
-        $this->assets_registered = true;
-        $this->register_assets();
-    }
+    // Ensures assets are registered (deduplication is handled inside register_assets())
+    $this->register_assets();
 
     $assets = $this->get_assets();
     if ( empty( $assets[ $handle ] ) ) {
@@ -588,7 +651,7 @@ public function enqueue_asset( $handle ) {
 
 ### Module_With_Assets Interface
 
-**Location**: `includes/Core/Modules/Module_With_Assets.php:1-42`
+**Location**: `includes/Core/Modules/Module_With_Assets.php`
 
 Modules implement this interface to provide assets.
 
@@ -612,7 +675,7 @@ interface Module_With_Assets {
 
 ### Module_With_Assets_Trait
 
-**Location**: `includes/Core/Modules/Module_With_Assets_Trait.php:1-79`
+**Location**: `includes/Core/Modules/Module_With_Assets_Trait.php`
 
 Provides default implementation.
 
@@ -658,7 +721,7 @@ trait Module_With_Assets_Trait {
 
 ### Module Asset Registration
 
-**Location**: `includes/Core/Modules/Modules.php:233-243`
+**Location**: `includes/Core/Modules/Modules.php`
 
 The Modules registry collects assets from all modules:
 
@@ -678,7 +741,7 @@ add_filter(
 
 ### Module_With_Inline_Data Interface
 
-**Location**: `includes/Core/Modules/Module_With_Inline_Data.php:1-31`
+**Location**: `includes/Core/Modules/Module_With_Inline_Data.php`
 
 Modules implement this to provide inline data to JavaScript.
 
@@ -717,8 +780,12 @@ final class Analytics_4 extends Module implements
                         'googlesitekit-api',
                         'googlesitekit-data',
                         'googlesitekit-modules',
+                        'googlesitekit-notifications',
                         'googlesitekit-datastore-site',
                         'googlesitekit-datastore-user',
+                        'googlesitekit-datastore-forms',
+                        'googlesitekit-components',
+                        'googlesitekit-modules-data',
                     ),
                 )
             ),
@@ -730,12 +797,11 @@ final class Analytics_4 extends Module implements
             return array();
         }
 
-        $inline_data = array(
-            'propertyID'      => $this->get_settings()->get()['propertyID'],
-            'webDataStreamID' => $this->get_settings()->get()['webDataStreamID'],
+        // Actual implementation collects various analytics state;
+        // simplified for illustration purposes.
+        return array(
+            'isWebDataStreamUnavailable' => false,
         );
-
-        return $inline_data;
     }
 }
 ```
@@ -871,13 +937,18 @@ new Script(
 
 ### Manifest Class
 
-**Location**: `includes/Core/Assets/Manifest.php:1-66`
+**Location**: `includes/Core/Assets/Manifest.php`
 
 Maps asset handles to filenames and content hashes for cache busting.
 
 ```php
-final class Manifest {
-    private static $data = null;
+class Manifest {
+    /**
+     * Entries as $handle => [ $filename, $hash ] map.
+     *
+     * @var array
+     */
+    private static $data;
 
     /**
      * Get manifest entry for asset handle.
@@ -898,12 +969,11 @@ final class Manifest {
     }
 
     private static function load() {
-        $manifest_path = GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/manifest.php';
+        // Resolves path via Plugin context, not a bare constant.
+        $path = Plugin::instance()->context()->path( 'dist/manifest.php' );
 
-        if ( file_exists( $manifest_path ) ) {
-            self::$data = require $manifest_path;
-        } else {
-            self::$data = array();
+        if ( file_exists( $path ) ) {
+            self::$data = include $path;
         }
     }
 }
@@ -948,7 +1018,7 @@ new Script(
 
 ### Async and Defer Script Loading
 
-**Location**: `includes/Core/Assets/Assets.php:1028-1051`
+**Location**: `includes/Core/Assets/Assets.php`
 
 ```php
 new Script(
@@ -1000,7 +1070,7 @@ new Script(
 
 ### AMP Compatibility
 
-**Location**: `includes/Core/Assets/Assets.php:274-299`
+**Location**: `includes/Core/Assets/Assets.php`
 
 Assets automatically receive AMP dev mode attributes when in AMP context:
 
@@ -1165,7 +1235,7 @@ Assets automatically receive AMP dev mode attributes when in AMP context:
 
 ### Getting Standard Dependencies
 
-**Location**: `includes/Core/Assets/Assets.php:309-335`
+**Location**: `includes/Core/Assets/Assets.php`
 
 ```php
 private function get_asset_dependencies( $context = '' ) {
@@ -1185,8 +1255,19 @@ private function get_asset_dependencies( $context = '' ) {
         'googlesitekit-notifications',
     );
 
-    if ( 'dashboard' === $context ) {
+    // Conditional: PDF datastore when feature flag is enabled
+    if ( Feature_Flags::enabled( 'pdfGeneration' ) ) {
+        array_push( $dependencies, 'googlesitekit-datastore-pdf' );
+    }
+
+    // Components needed for dashboard and dashboard-sharing contexts
+    if ( 'dashboard' === $context || 'dashboard-sharing' === $context ) {
         array_push( $dependencies, 'googlesitekit-components' );
+    }
+
+    // Dashboard sharing data for dashboard-sharing context
+    if ( 'dashboard-sharing' === $context ) {
+        array_push( $dependencies, 'googlesitekit-dashboard-sharing-data' );
     }
 
     return $dependencies;
