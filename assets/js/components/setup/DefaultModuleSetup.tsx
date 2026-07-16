@@ -46,6 +46,7 @@ export default function DefaultModuleSetup( {
 
 	const { trackCancel: onCancelButtonClick } =
 		useModuleSetupTracking( moduleSlug );
+
 	if ( ! module?.SetupComponent ) {
 		return null;
 	}

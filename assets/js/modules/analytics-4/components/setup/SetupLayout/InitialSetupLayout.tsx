@@ -1,5 +1,5 @@
 /**
- * Analytics setup layout component.
+ * Analytics InitialSetupLayout component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -32,30 +32,22 @@ import { Fragment } from '@wordpress/element';
 import { type Select, useSelect } from 'googlesitekit-data';
 import ProgressIndicator from '@/js/components/ProgressIndicator';
 import {
-	DefaultModuleSetup,
-	type ModuleSetupLayoutProps,
-	type ModuleWithSetupComponent,
+	ModuleSetupLayoutProps,
+	ModuleWithSetupComponent,
 	SetupHeader,
 	useFinishSetup,
 	useModuleSetupTracking,
 } from '@/js/components/setup';
 import ExitSetup from '@/js/components/setup/ExitSetup';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { useFeature } from '@/js/hooks/useFeature';
-import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
 import { Cell, Grid, Row } from '@/js/material-components';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
-interface InitialSetupLayoutProps {
-	moduleSlug: string;
-	viewContext: string;
-}
-
-function InitialSetupLayout( {
+export default function InitialSetupLayout( {
 	moduleSlug,
-	viewContext,
-}: InitialSetupLayoutProps ) {
+}: ModuleSetupLayoutProps ) {
+	const viewContext = useViewContext();
+
 	const module = useSelect(
 		( select: Select ): ModuleWithSetupComponent | undefined =>
 			select( CORE_MODULES ).getModule( moduleSlug ),
@@ -114,27 +106,5 @@ function InitialSetupLayout( {
 				</section>
 			</div>
 		</Fragment>
-	);
-}
-
-export default function SetupLayout( { moduleSlug }: ModuleSetupLayoutProps ) {
-	const viewContext = useViewContext();
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-	const [ showProgress ] = useQueryArg( 'showProgress' );
-
-	const isInitialSetupFlow =
-		setupFlowRefreshEnabled &&
-		moduleSlug === MODULE_SLUG_ANALYTICS_4 &&
-		showProgress === 'true';
-
-	if ( ! isInitialSetupFlow ) {
-		return <DefaultModuleSetup moduleSlug={ moduleSlug } />;
-	}
-
-	return (
-		<InitialSetupLayout
-			moduleSlug={ moduleSlug }
-			viewContext={ viewContext }
-		/>
 	);
 }

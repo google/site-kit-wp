@@ -36,7 +36,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '@tests/js/utils';
-import SetupLayout from './SetupLayout';
+import SetupLayout from '.';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -176,6 +176,7 @@ describe( 'Analytics SetupLayout', () => {
 			expect( global.document.body ).toHaveClass(
 				'googlesitekit-setup-flow'
 			);
+			expect( container ).toMatchSnapshot();
 		} );
 
 		it( 'tracks initial setup view and exit events', async () => {
@@ -244,5 +245,6 @@ describe( 'Analytics SetupLayout', () => {
 			MODULE_SLUG_ANALYTICS_4,
 			undefined
 		);
+		expect( container ).toMatchSnapshot();
 	} );
 } );
