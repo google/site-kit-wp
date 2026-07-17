@@ -75,8 +75,7 @@ import WebDataStreamField from './WebDataStreamField';
 
 export default function AccountCreate( { className } ) {
 	const { accountCreationErrorCode, showProgress } = getQueryArgs(
-		location.href,
-		'showProgress'
+		location.href
 	);
 
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
