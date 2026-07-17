@@ -45,21 +45,6 @@ const styles = createPDFStyles( {
 	},
 } );
 
-/**
- * Renders the user's configured Key Metrics tiles as a four-column PDF grid.
- *
- * Each tile renders its own `TileComponent` from the data the aggregate loader
- * resolved, in the user's configured order. A tile whose data failed to load
- * (`data: null`) is dropped rather than shown as a placeholder, matching how the
- * rest of the report omits empty content; the remaining tiles reflow to fill the
- * grid.
- *
- * @since n.e.x.t
- *
- * @param props      Component props.
- * @param props.data The aggregate loader output, `{ tiles }`.
- * @return The Key Metrics PDF grid.
- */
 const KeyMetricsPDF: FC< PDFWidgetComponentProps > = ( { data } ) => {
 	const { tiles = [] } = ( data as { tiles?: KeyMetricsPDFTile[] } ) || {};
 

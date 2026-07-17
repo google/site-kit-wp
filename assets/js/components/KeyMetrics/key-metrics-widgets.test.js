@@ -30,8 +30,15 @@ const DATES = {
 	compareEndDate: '2025-01-07',
 };
 
-// Builds a registry whose `fetchGetReport` resolves with the given report, so
-// the New Visitors `getTileData` can be exercised against a report fixture.
+/**
+ * Builds a registry whose `fetchGetReport` resolves with the given report, so
+ * the New Visitors `getTileData` can be exercised against a report fixture.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} report The report response to resolve.
+ * @return {Object} A mock registry.
+ */
 function registryReturning( report ) {
 	const fetchGetReport = jest.fn( () =>
 		Promise.resolve( { response: report } )
@@ -39,6 +46,14 @@ function registryReturning( report ) {
 	return { dispatch: jest.fn( () => ( { fetchGetReport } ) ) };
 }
 
+/**
+ * Loads the New Visitors tile data against the given report fixture.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} report The report response the tile fetches.
+ * @return {Promise<Object|null>} The resolved tile data.
+ */
 function loadNewVisitorsTile( report ) {
 	return KEY_METRICS_WIDGETS[ KM_ANALYTICS_NEW_VISITORS ].pdfTile.getTileData(
 		{

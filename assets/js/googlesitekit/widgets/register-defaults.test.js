@@ -30,6 +30,14 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from './default-areas';
 import { registerDefaults } from './register-defaults';
 
+/**
+ * Builds a mock widgets API that records `registerWidget`/`registerWidgetArea`
+ * calls so a test can inspect what `registerDefaults` registered.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Object} The mock widgets API.
+ */
 function createWidgetsAPI() {
 	return {
 		registerWidget: jest.fn(),
@@ -38,6 +46,15 @@ function createWidgetsAPI() {
 	};
 }
 
+/**
+ * Finds the `registerWidget` call for the given slug on a mock widgets API.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} widgetsAPI The mock widgets API.
+ * @param {string} slug       The widget slug to find.
+ * @return {Object|undefined} The registered `{ settings, areas }`, or `undefined`.
+ */
 function findWidgetRegistration( widgetsAPI, slug ) {
 	const call = widgetsAPI.registerWidget.mock.calls.find(
 		( [ registeredSlug ] ) => registeredSlug === slug
@@ -46,6 +63,15 @@ function findWidgetRegistration( widgetsAPI, slug ) {
 	return call ? { settings: call[ 1 ], areas: call[ 2 ] } : undefined;
 }
 
+/**
+ * Finds the `registerWidgetArea` call for the given slug on a mock widgets API.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} widgetsAPI The mock widgets API.
+ * @param {string} slug       The widget area slug to find.
+ * @return {Object|undefined} The registered `{ settings, context }`, or `undefined`.
+ */
 function findWidgetAreaRegistration( widgetsAPI, slug ) {
 	const call = widgetsAPI.registerWidgetArea.mock.calls.find(
 		( [ registeredSlug ] ) => registeredSlug === slug
@@ -54,7 +80,14 @@ function findWidgetAreaRegistration( widgetsAPI, slug ) {
 	return call ? { settings: call[ 1 ], context: call[ 2 ] } : undefined;
 }
 
-// Builds a `select` stand-in whose `getKeyMetrics()` returns the given slugs.
+/**
+ * Builds a `select` stand-in whose `getKeyMetrics()` returns the given slugs.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string[]} keyMetrics The key metric slugs to return.
+ * @return {Function} A `select` stand-in.
+ */
 function selectWithKeyMetrics( keyMetrics ) {
 	return () => ( {
 		getKeyMetrics: () => keyMetrics,

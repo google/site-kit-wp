@@ -66,25 +66,6 @@ export interface PDFNumericMetricTileProps {
 	isNegative?: boolean;
 }
 
-/**
- * Renders a numeric metric tile as a white card: a heading, a large value, an
- * optional caption, and a change badge below.
- *
- * This mirrors the dashboard's numeric metric tile. Unlike the more compact
- * `PDFMetricTile` (card-less, with the value and badge on one row), this is the
- * full card tile the Key Metrics report grid uses, with a caption line under the
- * value and the badge stacked below.
- *
- * @since n.e.x.t
- *
- * @param props            Component props.
- * @param props.title      The tile heading.
- * @param props.value      The pre-formatted prominent value.
- * @param props.subtext    Optional caption below the value.
- * @param props.change     Pre-formatted, signed change for the badge.
- * @param props.isNegative Whether the change is negative.
- * @return The numeric metric tile.
- */
 const PDFNumericMetricTile: FC< PDFNumericMetricTileProps > = ( {
 	title,
 	value,

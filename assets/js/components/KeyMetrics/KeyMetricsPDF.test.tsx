@@ -29,6 +29,16 @@ import TestRenderer from 'react-test-renderer';
 import { KeyMetricsPDFTile } from './getPDFData';
 import KeyMetricsPDF from './KeyMetricsPDF';
 
+/**
+ * Collects every text string rendered in a react-test-renderer tree, so a test
+ * can assert on the tile copy without walking the tree itself.
+ *
+ * @since n.e.x.t
+ *
+ * @param node   The current tree node.
+ * @param output The strings collected so far.
+ * @return The collected text strings.
+ */
 function findTextStrings(
 	node:
 		| string
@@ -55,6 +65,14 @@ function findTextStrings(
 	return output;
 }
 
+/**
+ * Renders `KeyMetricsPDF` with the given tiles and returns its JSON tree.
+ *
+ * @since n.e.x.t
+ *
+ * @param tiles The tiles to render.
+ * @return The rendered tree.
+ */
 function render(
 	tiles: KeyMetricsPDFTile[]
 ): TestRenderer.ReactTestRendererJSON | null {

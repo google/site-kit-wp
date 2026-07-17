@@ -28,6 +28,16 @@ import TestRenderer from 'react-test-renderer';
 import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import PDFNumericMetricTile from './PDFNumericMetricTile';
 
+/**
+ * Collects every text string rendered in a react-test-renderer tree, so a test
+ * can assert on the tile copy without walking the tree itself.
+ *
+ * @since n.e.x.t
+ *
+ * @param node   The current tree node.
+ * @param output The strings collected so far.
+ * @return The collected text strings.
+ */
 function findTextStrings(
 	node:
 		| string
@@ -54,6 +64,14 @@ function findTextStrings(
 	return output;
 }
 
+/**
+ * Renders `PDFNumericMetricTile` with the given props and returns its JSON tree.
+ *
+ * @since n.e.x.t
+ *
+ * @param props The tile props.
+ * @return The rendered tree.
+ */
 function renderTile(
 	props: ComponentProps< typeof PDFNumericMetricTile >
 ): TestRenderer.ReactTestRendererJSON {

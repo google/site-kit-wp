@@ -25,8 +25,7 @@ import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 
 jest.mock( './key-metrics-widgets', () => ( { KEY_METRICS_WIDGETS: {} } ) );
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The mock map holds arbitrary test entries.
-const widgets = KEY_METRICS_WIDGETS as Record< string, any >;
+const widgets = KEY_METRICS_WIDGETS as Record< string, unknown >;
 
 const DATES = {
 	startDate: '2025-01-08',
