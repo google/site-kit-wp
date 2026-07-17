@@ -23,16 +23,9 @@ import { View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
-import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
-import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
 import { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
 import { KeyMetricsPDFTile } from './getPDFData';
 
@@ -50,10 +43,6 @@ const styles = createPDFStyles( {
 		// A small gutter between the grid columns.
 		marginRight: 24,
 	},
-	placeholderLabel: {
-		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
-		marginTop: 1,
-	},
 } );
 
 /**
@@ -61,8 +50,9 @@ const styles = createPDFStyles( {
  *
  * Each tile renders its own `TileComponent` from the data the aggregate loader
  * resolved, in the user's configured order. A tile whose data failed to load
- * (`data: null`) renders a "Data unavailable" placeholder in its place so the
- * remaining tiles still render.
+ * (`data: null`) is dropped rather than shown as a placeholder, matching how the
+ * rest of the report omits empty content; the remaining tiles reflow to fill the
+ * grid.
  *
  * @since n.e.x.t
  *
@@ -75,13 +65,14 @@ const KeyMetricsPDF: FC< PDFWidgetComponentProps > = ( { data } ) => {
 
 	return (
 		<View style={ styles.container }>
-			{ tiles.map( ( tile ) => {
-				const TileComponent = tile.TileComponent;
+			{ tiles
+				.filter( ( tile ) => tile.data )
+				.map( ( tile ) => {
+					const TileComponent = tile.TileComponent;
 
-				return (
-					<View key={ tile.slug } style={ styles.tile }>
-						<View style={ styles.tileInner }>
-							{ tile.data ? (
+					return (
+						<View key={ tile.slug } style={ styles.tile }>
+							<View style={ styles.tileInner }>
 								<TileComponent
 									title={ tile.title }
 									{ ...( tile.data as Record<
@@ -89,26 +80,10 @@ const KeyMetricsPDF: FC< PDFWidgetComponentProps > = ( { data } ) => {
 										unknown
 									> ) }
 								/>
-							) : (
-								<View>
-									<PDFTypography type="title" size="small">
-										{ tile.title }
-									</PDFTypography>
-									<PDFTypography
-										size="small"
-										style={ styles.placeholderLabel }
-									>
-										{ __(
-											'Data unavailable',
-											'google-site-kit'
-										) }
-									</PDFTypography>
-								</View>
-							) }
+							</View>
 						</View>
-					</View>
-				);
-			} ) }
+					);
+				} ) }
 		</View>
 	);
 };

@@ -170,9 +170,15 @@ export default async function getPDFData( {
 		return { data: null };
 	}
 
-	// Every tile failing means the whole section has no data, so surface it as an
+	// With no tiles to render, omit the section rather than render an empty one,
+	// matching how the report drops a widget with no data.
+	if ( tiles.length === 0 ) {
+		return { data: null };
+	}
+
+	// Every tile failing leaves the section with no data, so surface it as an
 	// error rather than an empty section.
-	if ( tiles.length > 0 && failureCount === tiles.length ) {
+	if ( failureCount === tiles.length ) {
 		throw new Error( 'All Key Metrics PDF tiles failed to load.' );
 	}
 

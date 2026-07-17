@@ -34,8 +34,7 @@ export interface TileReportRequest {
 	/** The module datastore name, e.g. `MODULES_ANALYTICS_4`. */
 	moduleStore: string;
 	/** The report options passed to the store's `fetchGetReport` action. */
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Report options differ per module and are validated by each store.
-	options: any;
+	options: unknown;
 }
 
 /** The result of one `fetchGetReport` dispatch. */
@@ -52,10 +51,9 @@ interface FetchReportResult {
  * The returned loader fetches every report from `buildReports` in parallel,
  * threading the export's abort `signal` through each request, then hands the
  * resolved report responses (in the same order) to `extract`, which normalises
- * them into the shape the tile's `TileComponent` consumes. It short-circuits to
- * `null` when the export is canceled, and throws when any report fails so the
- * aggregate loader can render a "Data unavailable" placeholder for just that
- * tile.
+ * them into the shape the tile's `TileComponent` consumes. It returns `null`
+ * early when the export is canceled, and throws when any report fails so the
+ * aggregate loader can skip just that tile.
  *
  * @since n.e.x.t
  *

@@ -125,7 +125,7 @@ describe( 'KeyMetricsPDF', () => {
 		} );
 	} );
 
-	it( 'renders a "Data unavailable" placeholder for a tile whose data is null', () => {
+	it( 'drops a tile whose data is null rather than showing a placeholder', () => {
 		const TileComponent = jest.fn( () => null );
 
 		const tree = render( [
@@ -133,15 +133,21 @@ describe( 'KeyMetricsPDF', () => {
 				slug: 'metricA',
 				title: 'New visitors',
 				TileComponent,
+				data: { value: '42' },
+			},
+			{
+				slug: 'metricB',
+				title: 'Returning visitors',
+				TileComponent,
 				data: null,
 			},
 		] );
 
 		const text = findTextStrings( tree ).join( ' ' );
-		expect( text ).toContain( 'New visitors' );
-		expect( text ).toContain( 'Data unavailable' );
-		// The tile component is not rendered for a failed tile.
-		expect( TileComponent ).not.toHaveBeenCalled();
+		// No placeholder copy is ever rendered.
+		expect( text ).not.toContain( 'Data unavailable' );
+		// The failed tile is dropped; only the tile with data renders.
+		expect( TileComponent ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	it( 'renders no tiles when the tile list is empty', () => {

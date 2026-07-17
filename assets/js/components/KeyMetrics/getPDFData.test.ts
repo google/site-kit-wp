@@ -181,6 +181,21 @@ describe( 'Key Metrics getPDFData', () => {
 		).rejects.toThrow( 'All Key Metrics PDF tiles failed to load.' );
 	} );
 
+	it( 'returns null data when no configured metric has a pdfTile, so the section is omitted', async () => {
+		// No `pdfTile`, so no tiles are composed.
+		widgets.metricNoPDF = { title: 'No PDF' };
+
+		const registry = createRegistry( [ 'metricNoPDF' ] );
+
+		const result = await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+		} );
+
+		expect( result ).toEqual( { data: null } );
+	} );
+
 	it( 'returns null data without loading tiles when the signal is already aborted', async () => {
 		const getTileData = jest.fn();
 		widgets.metricA = {

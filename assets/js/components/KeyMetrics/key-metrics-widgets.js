@@ -381,7 +381,7 @@ const KEY_METRICS_WIDGETS = {
 					return {
 						value: numFmt( newVisitors ),
 						subtext: sprintf(
-							/* translators: %s: total number of visitors. */
+							/* translators: %s: total number of visitors, such as "1,234". */
 							__( 'of %s total visitors', 'google-site-kit' ),
 							numFmt( currentValue, { style: 'decimal' } )
 						),
