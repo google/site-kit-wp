@@ -38,7 +38,6 @@ import SiteGoalsIntroModalGraphic from '@/svg/graphics/site-goals-intro-modal.sv
 import type { IntroModalVariantProps } from './types';
 
 const IntroModalEcommerceAndLead: FC< IntroModalVariantProps > = ( {
-	onView,
 	onConfirm,
 	onClickLearnMore,
 	onDismiss,
@@ -53,7 +52,6 @@ const IntroModalEcommerceAndLead: FC< IntroModalVariantProps > = ( {
 		<BannerModal
 			className="googlesitekit-banner-modal--site-goals-intro"
 			Graphic={ SiteGoalsIntroModalGraphic }
-			onView={ onView }
 			onClose={ onDismiss }
 			title={ __( 'Track your most valuable goals', 'google-site-kit' ) }
 			description={ createInterpolateElement(

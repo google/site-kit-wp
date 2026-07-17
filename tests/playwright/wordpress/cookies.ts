@@ -128,7 +128,17 @@ export class WordPressCookies {
 			cookies.push( {
 				...defaults,
 				name: '_wp_test_connected_modules',
-				value: connectedModules,
+				// Encoded because the value is JSON.
+				value: encodeURIComponent( connectedModules ),
+			} );
+		}
+
+		const sharedModules = this.getAnnotation( '_wp:shared-modules' );
+		if ( sharedModules ) {
+			cookies.push( {
+				...defaults,
+				name: '_wp_test_shared_modules',
+				value: encodeURIComponent( sharedModules ),
 			} );
 		}
 
