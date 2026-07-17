@@ -31,6 +31,10 @@ permissions:
   contents: read
   packages: write
 
+env:
+  # Update this date suffix (YYYYMMDD) whenever the bundled plugins in the playwright-wp Dockerfile change.
+  PLAYWRIGHT_WP_DATE_SUFFIX: '20260715'
+
 jobs:
   changes:
     name: Detect Changed Files
@@ -123,8 +127,7 @@ jobs:
         uses: ./.github/actions/build-push-docker-image
         with:
           context: tests/playwright/docker/wordpress
-          # Update the date suffix (YYYYMMDD) here whenever the bundled plugins in the Dockerfile change.
-          tags: ghcr.io/google/site-kit-wp/playwright-wp:5.2.21-20260715
+          tags: ghcr.io/google/site-kit-wp/playwright-wp:5.2.21-${{ env.PLAYWRIGHT_WP_DATE_SUFFIX }}
           build-args: WP_VERSION=5.2.21
           labels: org.opencontainers.image.description=WordPress 5.2.21 Docker image (with bundled test plugins, e.g. WooCommerce) for Site Kit Playwright tests.
           registry-username: "github-actions[bot]"
@@ -152,10 +155,10 @@ jobs:
         with:
           context: tests/playwright/docker/wordpress
           tags: |
-            ghcr.io/google/site-kit-wp/playwright-wp:${{ steps.wp_version.outputs.version }}
+            ghcr.io/google/site-kit-wp/playwright-wp:${{ steps.wp_version.outputs.version }}-${{ env.PLAYWRIGHT_WP_DATE_SUFFIX }}
             ghcr.io/google/site-kit-wp/playwright-wp:latest
           build-args: WP_VERSION=latest
-          skip-if-exists-tag: ghcr.io/google/site-kit-wp/playwright-wp:${{ steps.wp_version.outputs.version }}
+          skip-if-exists-tag: ghcr.io/google/site-kit-wp/playwright-wp:${{ steps.wp_version.outputs.version }}-${{ env.PLAYWRIGHT_WP_DATE_SUFFIX }}
           labels: org.opencontainers.image.description=WordPress latest Docker image for Site Kit Playwright tests.
           registry-username: "github-actions[bot]"
           registry-password: ${{ secrets.GITHUB_TOKEN }}
