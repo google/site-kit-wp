@@ -116,6 +116,18 @@ Run, and fix anything that fails:
 - **Tests** — run the **specific** test files you touched, not the whole suite:
   - JS: `npm -w tests/js run test:js -- <path/to/file.test.js>`
   - PHP: `composer test -- --filter <TestClassName>`
+- **Visual check (any change that affects rendering)** — for SCSS, layout, spacing,
+  alignment, or responsive rules, **render the change and look at it** before declaring it
+  done. Lint and build passing do **not** prove visual correctness, and a change that looks
+  like a trivial value tweak in the brief can still be visually wrong. Prefer the Storybook
+  story at the affected viewport(s); if no dev server is running, build a throwaway HTML
+  reproduction using the **real computed values** (typography from
+  `assets/sass/components/global/_googlesitekit-typography.scss`, breakpoints/sizes from
+  `assets/sass/config/`) and open it in the browser. For responsive / `@media` changes,
+  check **both sides** of every breakpoint you touch (`$bp-tablet` = 600px): a mobile-only
+  rule is invisible at desktop width, and the default VRT run is desktop-only so it will
+  not exercise it. Re-check the exact state described in the issue (e.g. the badge *next to
+  the title*, not just the component in isolation).
 - **VRT** — if you added/changed a Storybook story, check just that scenario rather than
   the full suite (`npm run test:visualtest` wraps nested `npm run` calls and won't forward
   extra CLI args, so call the script directly):
