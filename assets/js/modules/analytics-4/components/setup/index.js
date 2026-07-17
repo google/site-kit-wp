@@ -20,4 +20,5 @@ export { default as SetupEnhancedMeasurementSwitch } from './SetupEnhancedMeasur
 export { default as SetupUseSnippetSwitch } from './SetupUseSnippetSwitch';
 export { default as SetupFormFields } from './SetupFormFields';
 export { default as SetupForm } from './SetupForm';
+export { default as SetupLayout } from './SetupLayout';
 export { default as SetupMain } from './SetupMain';

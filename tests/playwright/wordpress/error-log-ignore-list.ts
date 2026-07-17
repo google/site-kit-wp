@@ -32,10 +32,6 @@ export const errorLogIgnoreList: Record< string, string[] > = {
 		// These are guarded against in later WP versions.
 		'Trying to access array offset on value of type bool',
 		'Trying to access array offset on value of type null',
-
-		// Triggered by the dashboard's "WordPress Events and News" widget,
-		// which uses SimplePie's now-static-incompatible feed cache API.
-		'Non-static method WP_Feed_Cache::create() should not be called statically',
 	],
 	// Entries that should be ignored in all versions.
 	ALL: [

@@ -1,8 +1,0 @@
-{
-	"/v1/people/me?personFields=emailAddresses%2Cphotos%2Cnames": {
-		"GET": {
-			"status": 200,
-			"body": {}
-		}
-	}
-}

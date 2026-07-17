@@ -17,8 +17,8 @@
 /**
  * Internal dependencies
  */
-import { expect, test } from '../../playwright';
-import { asUser, withPlugins } from '../../wordpress';
+import { expect, test } from '../playwright';
+import { asUser, withPlugins } from '../wordpress';
 
 const user = asUser( 'admin' );
 const plugins = withPlugins( 'proxy-auth.php' );

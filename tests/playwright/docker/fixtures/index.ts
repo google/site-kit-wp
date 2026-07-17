@@ -162,10 +162,7 @@ function lookupFixture(
 		key += '::' + body.toLowerCase();
 	}
 
-	// Fall back to a method-only match when no exact body match exists, so
-	// fixtures for requests with opaque/dynamic bodies (e.g. an OAuth token
-	// exchange) don't need to replicate the request body byte-for-byte.
-	const response = data[ url ]?.[ key ] ?? data[ url ]?.[ method ];
+	const response = data[ url ]?.[ key ];
 	if ( ! response ) {
 		global.console.log( 'Missing fixture for:\n    %s', body );
 	}
@@ -184,31 +181,9 @@ function handler( req: IncomingMessage, res: ServerResponse ) {
 	// resolve here on the offline network. Return a well-formed "no updates"
 	// payload with every key `wp-includes/update.php` iterates, so it does not
 	// emit `foreach()` / undefined-index warnings on an empty response.
-	//
-	// `core/browse-happy` is a separate endpoint (queried by
-	// `wp_check_browser_version()` for the dashboard's browser-nag widget)
-	// with its own response shape, so it needs its own well-formed payload
-	// rather than the version/plugin/theme update-check shape above.
 	if ( host === 'api.wordpress.org' ) {
 		req.resume(); // Drain the request body before responding.
 		res.writeHead( 200, jsonContentType );
-
-		if ( url.includes( '/core/browse-happy/' ) ) {
-			res.end(
-				JSON.stringify( {
-					upgrade: false,
-					insecure: false,
-					current_version: '',
-					version: '',
-					platform: '',
-					update_url: '',
-					img_src: '',
-					img_src_ssl: '',
-				} )
-			);
-			return;
-		}
-
 		res.end(
 			JSON.stringify( {
 				offers: [],
@@ -225,16 +200,6 @@ function handler( req: IncomingMessage, res: ServerResponse ) {
 	const fixtures = Array.isArray( fixturesHeader )
 		? fixturesHeader[ 0 ]
 		: fixturesHeader;
-
-	// Requests to the Site Kit proxy service (e.g. core/site notifications)
-	// are made with plain WP HTTP requests that never carry the fixtures
-	// header, so respond with an empty array to keep them from erroring,
-	// unless a test has explicitly opted into fixtures for this host.
-	if ( host === 'sitekit.withgoogle.com' && ! fixtures ) {
-		res.writeHead( 200, jsonContentType );
-		res.end( '[]' );
-		return;
-	}
 
 	// If no fixtures are specified, return an empty response.
 	if ( ! fixtures ) {
@@ -260,16 +225,6 @@ function handler( req: IncomingMessage, res: ServerResponse ) {
 
 			const response = lookupFixture( data, host, method, url, body );
 			if ( ! response ) {
-				// Fall back to an empty array for unrecognized
-				// sitekit.withgoogle.com paths so opting into fixtures for
-				// one request doesn't break other, unrelated proxy calls
-				// made during the same test.
-				if ( host === 'sitekit.withgoogle.com' ) {
-					res.writeHead( 200, jsonContentType );
-					res.end( '[]' );
-					return;
-				}
-
 				res.writeHead( 404, jsonContentType );
 				res.end( JSON.stringify( { error: 'Fixture not found' } ) );
 				return;
@@ -296,7 +251,7 @@ function generateSelfSignedCert(): { key: string; cert: string } {
 	const certPath = join( dir, 'cert.pem' );
 
 	execSync(
-		`openssl req -x509 -newkey rsa:2048 -keyout ${ keyPath } -out ${ certPath } -days 365 -nodes -subj "/CN=googleapis.com" -addext "subjectAltName=DNS:*.googleapis.com,DNS:googleapis.com,DNS:sitekit.withgoogle.com"`,
+		`openssl req -x509 -newkey rsa:2048 -keyout ${ keyPath } -out ${ certPath } -days 365 -nodes -subj "/CN=googleapis.com" -addext "subjectAltName=DNS:*.googleapis.com,DNS:googleapis.com"`,
 		{ stdio: 'pipe' }
 	);
 
