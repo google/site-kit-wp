@@ -34,13 +34,8 @@ import {
 type Registry = ReturnType< typeof createTestRegistry >;
 
 /**
- * Sets a test registry up to fire a PDF export survey trigger.
- *
- * `triggerSurvey` reads the site data and the user data, so the registry holds
- * both. A survey timeout stops a trigger, so the registry holds an empty
- * timeout list. The endpoint mock answers every call, because one test fires a
- * survey for each of two exports in a single page load. `mockSurveyEndpoints`
- * answers one call, so it can't stand in here.
+ * Provides the site info, user authentication, and empty survey timeout list a
+ * survey trigger needs, and mocks the trigger endpoint.
  *
  * @since n.e.x.t
  *
@@ -56,10 +51,7 @@ export function setupSurveyTriggerTest( registry: Registry ) {
 }
 
 /**
- * Sets the PDF export status on a test registry.
- *
- * The dispatch runs inside `act()`, so React finishes the re-render before
- * the test reads the result.
+ * Sets the PDF export status on the given registry, inside `act()`.
  *
  * @since n.e.x.t
  *
@@ -74,7 +66,8 @@ export function setPDFExportStatus( registry: Registry, status: PDFStatus ) {
 }
 
 /**
- * Waits for the survey trigger endpoint to receive one request for a survey.
+ * Waits for the survey trigger endpoint to receive a request for the given
+ * trigger ID.
  *
  * @since n.e.x.t
  *
