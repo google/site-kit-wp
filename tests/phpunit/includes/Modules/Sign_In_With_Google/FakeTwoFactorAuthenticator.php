@@ -23,7 +23,7 @@ class FakeTwoFactorAuthenticator extends Authenticator {
 	 *
 	 * @var bool
 	 */
-	public $is_two_factor_plugin_active = false;
+	public bool $is_two_factor_plugin_active = false;
 
 	/**
 	 * IDs of users treated as having two-factor authentication enabled, or
@@ -31,7 +31,7 @@ class FakeTwoFactorAuthenticator extends Authenticator {
 	 *
 	 * @var int[]|null
 	 */
-	public $user_ids_with_two_factor;
+	public ?array $user_ids_with_two_factor = null;
 
 	/**
 	 * @inheritDoc
@@ -44,10 +44,8 @@ class FakeTwoFactorAuthenticator extends Authenticator {
 	 * @inheritDoc
 	 */
 	protected function user_has_two_factor( int $user_id ): bool {
-		if ( ! is_array( $this->user_ids_with_two_factor ) ) {
-			return parent::user_has_two_factor( $user_id );
-		}
-
-		return in_array( $user_id, $this->user_ids_with_two_factor, true );
+		return is_array( $this->user_ids_with_two_factor )
+			? in_array( $user_id, $this->user_ids_with_two_factor, true )
+			: parent::user_has_two_factor( $user_id );
 	}
 }

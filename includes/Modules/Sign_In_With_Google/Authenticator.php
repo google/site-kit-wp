@@ -103,25 +103,22 @@ class Authenticator implements Authenticator_Interface {
 	 * @param Input $input Input instance.
 	 * @return string Redirect URL.
 	 */
-	public function authenticate_user( Input $input ) {
+	public function authenticate_user( Input $input ): string {
 		$credential = $input->filter( INPUT_POST, 'credential' );
 
 		$user    = null;
 		$payload = $this->profile_reader->get_profile_data( $credential );
 		if ( ! is_wp_error( $payload ) ) {
 			$user = $this->find_user( $payload );
-			if ( is_wp_error( $user ) ) {
-				return $this->get_error_redirect_url( $user->get_error_code() );
-			}
-			if ( ! $user instanceof WP_User ) {
+			if ( null === $user ) {
 				// We haven't found the user using their Google user id and email. Thus we need to create
 				// a new user. But if the registration is closed, we need to return an error to identify
 				// that the sign in process failed.
 				if ( ! $this->is_registration_open() ) {
 					return $this->get_error_redirect_url( self::ERROR_SIGNIN_FAILED );
-				} else {
-					$user = $this->create_user( $payload );
 				}
+
+				$user = $this->create_user( $payload );
 			}
 		}
 
@@ -346,11 +343,7 @@ class Authenticator implements Authenticator_Interface {
 	 * @return bool True if the Two-Factor plugin is active and the user has two-factor authentication enabled, false otherwise.
 	 */
 	protected function user_has_two_factor( int $user_id ): bool {
-		if ( ! $this->is_two_factor_plugin_active() ) {
-			return false;
-		}
-
-		return \Two_Factor_Core::is_user_using_two_factor( $user_id ); // @phpstan-ignore class.notFound (Two_Factor_Core comes from the optional Two-Factor plugin; is_two_factor_plugin_active() confirms it exists.)
+		return $this->is_two_factor_plugin_active() && \Two_Factor_Core::is_user_using_two_factor( $user_id ); // @phpstan-ignore class.notFound (Two_Factor_Core comes from the optional Two-Factor plugin, and is_two_factor_plugin_active() confirms it exists.)
 	}
 
 	/**
