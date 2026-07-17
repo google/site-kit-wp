@@ -54,8 +54,8 @@ interface GetPDFDataResult {
  * Resolves the linked AdSense account ID, loads the Top earning pages report,
  * then a second report that matches each page path to its title. Passes the
  * abort signal to both requests and returns `{ data: null }` as soon as the
- * signal aborts, so cancelling the export stops the work and the widget renders
- * its empty state.
+ * signal aborts, or when the report has no rows, so cancelling the export stops
+ * the work and the orchestrator omits the widget.
  *
  * @since n.e.x.t
  *
@@ -104,6 +104,11 @@ export default async function getPDFData( {
 	}
 
 	const rows = report?.rows ?? [];
+
+	if ( rows.length === 0 ) {
+		return { data: null };
+	}
+
 	const currencyCode = report?.metadata?.currencyCode ?? '';
 	const pagePaths = getPagePaths( report );
 
