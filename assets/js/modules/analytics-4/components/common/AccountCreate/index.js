@@ -32,7 +32,7 @@ import {
 	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { getQueryArg } from '@wordpress/url';
+import { addQueryArgs, getQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -74,6 +74,10 @@ import TimezoneSelect from './TimezoneSelect';
 import WebDataStreamField from './WebDataStreamField';
 
 export default function AccountCreate( { className } ) {
+	const { accountCreationErrorCode, showProgress } = getQueryArgs(
+		location.href
+	);
+
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const setupFlowRefreshPhase4Enabled = useFeature(
 		'setupFlowRefreshPhase4'
@@ -131,9 +135,13 @@ export default function AccountCreate( { className } ) {
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
-	const sitePurposeSetupURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-key-metrics-setup' )
-	);
+	const sitePurposeSetupURL = useSelect( ( select ) => {
+		const url = select( CORE_SITE ).getAdminURL(
+			'googlesitekit-key-metrics-setup'
+		);
+
+		return addQueryArgs( url, { showProgress } );
+	} );
 
 	const viewContext = useViewContext();
 	const { setValues, createSnapshot } = useDispatch( CORE_FORMS );
@@ -179,13 +187,8 @@ export default function AccountCreate( { className } ) {
 		}
 	}, [ hasAccountCreateForm, siteName, siteURL, timezone, setValues ] );
 
-	const showProgress = getQueryArg( location.href, 'showProgress' );
 	const isInitialSetupFlow = !! showProgress && setupFlowRefreshEnabled;
 
-	const accountCreationErrorCode = getQueryArg(
-		location.href,
-		'accountCreationErrorCode'
-	);
 	const hasAccountCreationError =
 		setupFlowRefreshEnabled && !! accountCreationErrorCode;
 
