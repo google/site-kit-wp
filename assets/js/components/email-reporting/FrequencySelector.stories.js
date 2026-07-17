@@ -41,6 +41,7 @@ export default {
 	},
 	args: {
 		isUserSubscribed: false,
+		referenceDate: '2026-07-14',
 		savedSettings: {},
 		clientSettings: {
 			frequency: 'weekly',
@@ -50,7 +51,12 @@ export default {
 	},
 };
 
-function Template( { isUserSubscribed, savedSettings, clientSettings } ) {
+function Template( {
+	isUserSubscribed,
+	savedSettings,
+	clientSettings,
+	referenceDate,
+} ) {
 	function setupRegistry( registry ) {
 		provideSiteInfo( registry, {
 			startOfWeek: savedSettings?.startOfWeek,
@@ -63,6 +69,8 @@ function Template( { isUserSubscribed, savedSettings, clientSettings } ) {
 		registry
 			.dispatch( CORE_USER )
 			.setEmailReportingSettings( clientSettings );
+
+		registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
 	}
 
 	return (
@@ -113,6 +121,7 @@ WeeklySelectedSundayStartOfTheWeek.scenario = {};
 export const PreviouslySavedFrequency = Template.bind( {} );
 PreviouslySavedFrequency.args = {
 	isUserSubscribed: true,
+	referenceDate: '2026-07-14',
 	savedSettings: {
 		frequency: 'monthly',
 	},

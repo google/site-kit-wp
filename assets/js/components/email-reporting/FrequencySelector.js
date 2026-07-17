@@ -43,6 +43,8 @@ import {
 	EMAIL_REPORT_FREQUENCIES,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
+import { getLocale } from '@/js/util';
+import getNextReportDate from './getNextReportDate';
 
 export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 	const breakpoint = useBreakpoint();
@@ -82,8 +84,29 @@ export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 	const savedFrequency = useSelect( ( select ) =>
 		select( CORE_USER ).getEmailReportingSavedFrequency()
 	);
+	const referenceDate = useSelect( ( select ) =>
+		select( CORE_USER ).getReferenceDate()
+	);
 
 	const { setEmailReportingFrequency } = useDispatch( CORE_USER );
+
+	const formattedNextReportDate = useMemo( () => {
+		if ( ! savedFrequency || ! referenceDate ) {
+			return null;
+		}
+
+		const nextReportDate = getNextReportDate(
+			savedFrequency,
+			referenceDate,
+			startOfWeek
+		);
+
+		return nextReportDate.toLocaleDateString( getLocale(), {
+			month: 'short',
+			day: 'numeric',
+			year: 'numeric',
+		} );
+	}, [ savedFrequency, referenceDate, startOfWeek ] );
 
 	const weeklyDescription = sprintf(
 		/* translators: %s: localized day-of-week name (e.g. Monday). */
@@ -128,6 +151,37 @@ export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 		}
 	}
 
+	function renderCurrentSubscriptionPill( selected = false ) {
+		return (
+			<div
+				className={ classnames(
+					'googlesitekit-frequency-selector__current-subscription',
+					{
+						'googlesitekit-frequency-selector__current-subscription--selected':
+							selected,
+					}
+				) }
+			>
+				<Typography type={ TYPE_BODY } size={ SIZE_SMALL }>
+					{ __( 'Current subscription', 'google-site-kit' ) }
+				</Typography>
+				{ formattedNextReportDate && (
+					<Typography
+						type={ TYPE_BODY }
+						size={ SIZE_SMALL }
+						className="googlesitekit-frequency-selector__next-report"
+					>
+						{ sprintf(
+							/* translators: %s: formatted date, e.g. Jul 14, 2026. */
+							__( 'Next report: %s', 'google-site-kit' ),
+							formattedNextReportDate
+						) }
+					</Typography>
+				) }
+			</div>
+		);
+	}
+
 	if ( isLoading ) {
 		return (
 			<Fragment>
@@ -166,20 +220,9 @@ export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 							className="googlesitekit-frequency-selector__badge-cell"
 						>
 							{ reportFrequency === savedFrequency && (
-								<div
-									key={ reportFrequency }
-									className="googlesitekit-frequency-selector__current-subscription"
-								>
-									<Typography
-										type={ TYPE_BODY }
-										size={ SIZE_SMALL }
-									>
-										{ __(
-											'Current subscription',
-											'google-site-kit'
-										) }
-									</Typography>
-								</div>
+								<Fragment>
+									{ renderCurrentSubscriptionPill() }
+								</Fragment>
 							) }
 						</div>
 					) ) }
@@ -219,27 +262,8 @@ export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 							{ isUserSubscribed &&
 								savedFrequency &&
 								isMobileBreakpoint &&
-								reportFrequency === savedFrequency && (
-									<div
-										className={ classnames(
-											'googlesitekit-frequency-selector__current-subscription',
-											{
-												'googlesitekit-frequency-selector__current-subscription--selected':
-													isSelected,
-											}
-										) }
-									>
-										<Typography
-											type={ TYPE_BODY }
-											size={ SIZE_SMALL }
-										>
-											{ __(
-												'Current subscription',
-												'google-site-kit'
-											) }
-										</Typography>
-									</div>
-								) }
+								reportFrequency === savedFrequency &&
+								renderCurrentSubscriptionPill( isSelected ) }
 
 							<div className="googlesitekit-frequency-selector__content">
 								<div className="googlesitekit-frequency-selector__label">

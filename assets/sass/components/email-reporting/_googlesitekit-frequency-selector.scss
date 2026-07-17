@@ -31,8 +31,11 @@ h3.googlesitekit-frequency-selector-title {
 	background-color: $c-surfaces-surface;
 	border-radius: 4px;
 	color: $c-surfaces-on-surface-variant;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
 	margin-bottom: $grid-gap-phone;
-	padding: 4px 0;
+	padding: 8px 4px;
 	text-align: center;
 	width: 100%;
 
@@ -41,6 +44,11 @@ h3.googlesitekit-frequency-selector-title {
 		color: $c-blue-b-500;
 		margin: 0;
 	}
+}
+
+// Increase specificity to override body-small typography letter spacing.
+.googlesitekit-typography.googlesitekit-typography--body.googlesitekit-typography--small.googlesitekit-frequency-selector__next-report {
+	letter-spacing: initial;
 }
 
 .googlesitekit-frequency-selector__current-subscription--selected {

@@ -27,7 +27,7 @@ import FrequencySelector from './FrequencySelector';
 
 function setupRegistry(
 	registry,
-	{ startOfWeek = 1, frequency, savedFrequency } = {}
+	{ startOfWeek = 1, frequency, savedFrequency, referenceDate } = {}
 ) {
 	provideSiteInfo( registry, { startOfWeek } );
 
@@ -43,6 +43,10 @@ function setupRegistry(
 
 	if ( frequency ) {
 		registry.dispatch( CORE_USER ).setEmailReportingFrequency( frequency );
+	}
+
+	if ( referenceDate ) {
+		registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
 	}
 }
 
@@ -66,6 +70,7 @@ describe( 'FrequencySelector', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		global.innerWidth = 1024;
 	} );
 
 	describe( 'Story states (visual + DOM)', () => {
@@ -114,6 +119,7 @@ describe( 'FrequencySelector', () => {
 				startOfWeek: 1,
 				frequency: 'weekly',
 				savedFrequency: 'monthly',
+				referenceDate: '2026-07-14',
 			} );
 
 			const { container, containerElement, getByText } = renderSelector(
@@ -142,6 +148,9 @@ describe( 'FrequencySelector', () => {
 
 			// Check that the pill text is correct.
 			expect( getByText( 'Current subscription' ) ).toBeInTheDocument();
+			expect(
+				getByText( 'Next report: Aug 1, 2026' )
+			).toBeInTheDocument();
 
 			expect( containerElement ).toMatchSnapshot();
 		} );
@@ -151,6 +160,7 @@ describe( 'FrequencySelector', () => {
 				startOfWeek: 1,
 				frequency: 'monthly',
 				savedFrequency: 'monthly',
+				referenceDate: '2026-07-14',
 			} );
 
 			const { container, containerElement, getByText } = renderSelector(
@@ -182,8 +192,40 @@ describe( 'FrequencySelector', () => {
 				)
 			).toBe( true );
 			expect( monthlyCard.getAttribute( 'aria-checked' ) ).toBe( 'true' );
+			expect(
+				getByText( 'Next report: Aug 1, 2026' )
+			).toBeInTheDocument();
 
 			expect( containerElement ).toMatchSnapshot();
+		} );
+
+		it( 'Renders next report date in the mobile current subscription pill', () => {
+			global.innerWidth = 500;
+
+			setupRegistry( registry, {
+				startOfWeek: 1,
+				frequency: 'weekly',
+				savedFrequency: 'monthly',
+				referenceDate: '2026-07-14',
+			} );
+
+			const { container, getByText } = renderSelector( registry, {
+				isUserSubscribed: true,
+			} );
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-frequency-selector__badge-row'
+				)
+			).not.toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-frequency-selector__current-subscription'
+				)
+			).toBeInTheDocument();
+			expect(
+				getByText( 'Next report: Aug 1, 2026' )
+			).toBeInTheDocument();
 		} );
 	} );
 
