@@ -19,77 +19,33 @@
 /**
  * Internal dependencies
  */
-import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
-import { PDFStatus } from '@/js/googlesitekit/datastore/pdf/pdf';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
-import {
-	act,
-	createTestRegistry,
-	provideSiteInfo,
-	provideUserAuthentication,
-	render,
-	waitFor,
-} from '@tests/js/test-utils';
+import { createTestRegistry, render } from '@tests/js/test-utils';
 import {
 	PDF_EXPORT_ERROR_SURVEY_TRIGGER_ID,
 	PDF_EXPORT_SUCCESS_SURVEY_TRIGGER_ID,
 } from './constants';
 import PDFExportRoot from './PDFExportRoot';
+import {
+	expectSurveyTriggerFetch,
+	setPDFExportStatus,
+	setupSurveyTriggerTest,
+} from './test-utils';
 
 describe( 'PDFExportRoot', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
 
-	/**
-	 * Sets the PDF export status on the test registry.
-	 *
-	 * The dispatch runs inside `act()`, so React finishes the re-render before
-	 * the test reads the result.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param  status The PDF export status to set, such as `'progress'` or `'success'`.
-	 * @return {void}
-	 */
-	function setStatus( status: PDFStatus ) {
-		act( () => {
-			registry.dispatch( CORE_PDF ).setStatus( status );
-		} );
-	}
-
-	/**
-	 * Waits for the survey trigger endpoint to receive one request for a survey.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param triggerID The survey trigger ID the request body holds, such as `'pdf_export_success'`.
-	 * @return A promise that resolves once the request lands, and rejects on timeout.
-	 */
-	function expectSurveyTriggerFetch( triggerID: string ) {
-		return waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
-				body: { data: { triggerID } },
-			} )
-		);
-	}
-
 	beforeEach( () => {
 		registry = createTestRegistry();
-		provideSiteInfo( registry );
-		provideUserAuthentication( registry );
-		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
-
-		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+		setupSurveyTriggerTest( registry );
 	} );
 
-	// The root is the always-mounted host for the survey triggers. The
-	// orchestrator that runs the PDF export unmounts once the export finishes,
-	// so only the root is still mounted when the export reaches its outcome.
+	// The orchestrator that runs the PDF export unmounts once the export
+	// finishes, so the root hosts the survey triggers instead.
 	it( 'fires the download-success survey trigger when an export completes and the download starts', async () => {
 		render( <PDFExportRoot />, { registry } );
 
-		setStatus( 'progress' );
-		setStatus( 'success' );
+		setPDFExportStatus( registry, 'progress' );
+		setPDFExportStatus( registry, 'success' );
 
 		await expectSurveyTriggerFetch( PDF_EXPORT_SUCCESS_SURVEY_TRIGGER_ID );
 	} );
@@ -97,8 +53,8 @@ describe( 'PDFExportRoot', () => {
 	it( 'fires the export-error survey trigger when an export fails', async () => {
 		render( <PDFExportRoot />, { registry } );
 
-		setStatus( 'progress' );
-		setStatus( 'error' );
+		setPDFExportStatus( registry, 'progress' );
+		setPDFExportStatus( registry, 'error' );
 
 		await expectSurveyTriggerFetch( PDF_EXPORT_ERROR_SURVEY_TRIGGER_ID );
 	} );

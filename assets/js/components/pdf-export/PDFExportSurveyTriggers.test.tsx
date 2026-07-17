@@ -20,47 +20,29 @@
  * Internal dependencies
  */
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
-import { PDFStatus } from '@/js/googlesitekit/datastore/pdf/pdf';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
-import {
-	act,
-	createTestRegistry,
-	provideSiteInfo,
-	provideUserAuthentication,
-	render,
-	waitFor,
-} from '@tests/js/test-utils';
+import { act, createTestRegistry, render, waitFor } from '@tests/js/test-utils';
 import {
 	PDF_EXPORT_ERROR_SURVEY_TRIGGER_ID,
 	PDF_EXPORT_SUCCESS_SURVEY_TRIGGER_ID,
 } from './constants';
 import PDFExportSurveyTriggers from './PDFExportSurveyTriggers';
+import {
+	expectSurveyTriggerFetch,
+	setPDFExportStatus,
+	setupSurveyTriggerTest,
+} from './test-utils';
 
 describe( 'PDFExportSurveyTriggers', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
 
 	/**
-	 * Sets the PDF export status on the test registry.
-	 *
-	 * The dispatch runs inside `act()`, so React finishes the re-render before
-	 * the test reads the result.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param  status The PDF export status to set, such as `'progress'` or `'error'`.
-	 * @return {void}
-	 */
-	function setStatus( status: PDFStatus ) {
-		act( () => {
-			registry.dispatch( CORE_PDF ).setStatus( status );
-		} );
-	}
-
-	/**
 	 * Clears the PDF export on the test registry, which returns the status to
-	 * `'idle'`. The dashboard runs the same action when the user cancels an
-	 * export, and when the success snackbar dismisses itself.
+	 * `'idle'`.
+	 *
+	 * The dashboard runs the same action when the user cancels an export, and
+	 * when the success snackbar dismisses itself.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -73,27 +55,11 @@ describe( 'PDFExportSurveyTriggers', () => {
 	}
 
 	/**
-	 * Waits for the survey trigger endpoint to receive one request for a survey.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param triggerID The survey trigger ID the request body holds, such as `'pdf_export_error'`.
-	 * @return A promise that resolves once the request lands, and rejects on timeout.
-	 */
-	function expectSurveyTriggerFetch( triggerID: string ) {
-		return waitFor( () =>
-			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
-				body: { data: { triggerID } },
-			} )
-		);
-	}
-
-	/**
 	 * Waits for a survey trigger's lock to clear.
 	 *
 	 * `triggerSurvey` locks a trigger ID while its request is in flight, and
-	 * drops any dispatch made while the lock is held. Waiting for the lock first
-	 * proves the transition check stopped the second survey, and not the lock.
+	 * drops any dispatch for a locked ID. Waiting for the lock first proves the
+	 * transition check stopped the second survey, and not the lock.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -110,18 +76,14 @@ describe( 'PDFExportSurveyTriggers', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		provideSiteInfo( registry );
-		provideUserAuthentication( registry );
-		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
-
-		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+		setupSurveyTriggerTest( registry );
 	} );
 
 	it( 'fires the export-error survey trigger when the export fails', async () => {
 		render( <PDFExportSurveyTriggers />, { registry } );
 
-		setStatus( 'progress' );
-		setStatus( 'error' );
+		setPDFExportStatus( registry, 'progress' );
+		setPDFExportStatus( registry, 'error' );
 
 		await expectSurveyTriggerFetch( PDF_EXPORT_ERROR_SURVEY_TRIGGER_ID );
 
@@ -131,8 +93,8 @@ describe( 'PDFExportSurveyTriggers', () => {
 	it( 'fires the download-success survey trigger when the export completes and the download starts', async () => {
 		render( <PDFExportSurveyTriggers />, { registry } );
 
-		setStatus( 'progress' );
-		setStatus( 'success' );
+		setPDFExportStatus( registry, 'progress' );
+		setPDFExportStatus( registry, 'success' );
 
 		await expectSurveyTriggerFetch( PDF_EXPORT_SUCCESS_SURVEY_TRIGGER_ID );
 
@@ -146,7 +108,7 @@ describe( 'PDFExportSurveyTriggers', () => {
 
 		// A cancelled PDF export never reaches the error status: the orchestrator
 		// returns to its idle stage and clears the export instead.
-		setStatus( 'progress' );
+		setPDFExportStatus( registry, 'progress' );
 		clearExport();
 
 		await waitForRegistry();
@@ -161,7 +123,7 @@ describe( 'PDFExportSurveyTriggers', () => {
 
 		expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'idle' );
 
-		setStatus( 'progress' );
+		setPDFExportStatus( registry, 'progress' );
 
 		await waitForRegistry();
 
@@ -174,8 +136,8 @@ describe( 'PDFExportSurveyTriggers', () => {
 			{ registry }
 		);
 
-		setStatus( 'progress' );
-		setStatus( 'success' );
+		setPDFExportStatus( registry, 'progress' );
+		setPDFExportStatus( registry, 'success' );
 
 		await expectSurveyTriggerFetch( PDF_EXPORT_SUCCESS_SURVEY_TRIGGER_ID );
 		await waitForSurveyTriggerLockToClear(
@@ -198,8 +160,8 @@ describe( 'PDFExportSurveyTriggers', () => {
 	it( 'fires the survey trigger again for a second export in the same page load', async () => {
 		render( <PDFExportSurveyTriggers />, { registry } );
 
-		setStatus( 'progress' );
-		setStatus( 'success' );
+		setPDFExportStatus( registry, 'progress' );
+		setPDFExportStatus( registry, 'success' );
 
 		await expectSurveyTriggerFetch( PDF_EXPORT_SUCCESS_SURVEY_TRIGGER_ID );
 		await waitForSurveyTriggerLockToClear(
@@ -211,8 +173,8 @@ describe( 'PDFExportSurveyTriggers', () => {
 		// The success snackbar dismisses itself, which returns the status to
 		// `'idle'` and leaves the component ready for the next export.
 		clearExport();
-		setStatus( 'progress' );
-		setStatus( 'success' );
+		setPDFExportStatus( registry, 'progress' );
+		setPDFExportStatus( registry, 'success' );
 
 		await waitFor( () =>
 			expect( fetchMock ).toHaveFetchedTimes( 2, surveyTriggerEndpoint )
