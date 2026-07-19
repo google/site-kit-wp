@@ -18,7 +18,7 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_DIR"
 
 # Use the oldest supported WordPress version for maximum forward-compatibility.
-export WP_VERSION=5.2.21
+export WP_IMAGE_TAG=5.2.21-20260715
 
 BACKUP_DIR="$PROJECT_DIR/docker/mariadb"
 BACKUP_FILE="$BACKUP_DIR/backup.sql"
@@ -32,7 +32,7 @@ docker compose --profile test down -v
 mkdir -p "$BACKUP_DIR"
 rm -f "$BACKUP_FILE"
 
-echo "Starting Docker services with WP_VERSION=$WP_VERSION..."
+echo "Starting Docker services with WP_IMAGE_TAG=$WP_IMAGE_TAG..."
 WP_DEBUG=0 docker compose --profile generate up -d
 
 echo "Waiting for WordPress container to be healthy..."
@@ -95,6 +95,16 @@ wp option update woocommerce_allow_tracking "no" --quiet
 # Remove the redirect set on activation so a fresh test run doesn't land on the setup wizard.
 wp transient delete _wc_activation_redirect --quiet
 
+echo "Creating global product attributes referenced by the sample data..."
+# The sample data assigns products to the global "Color" (pa_color) and "Size" (pa_size)
+# attribute taxonomies. WooCommerce only registers those taxonomies when matching rows
+# exist in wp_woocommerce_attribute_taxonomies, so they must be created before the import
+# runs. Otherwise the importer can't find the taxonomies and reports "Failed to import
+# pa_color Blue", "Failed to import pa_size Large", etc., leaving products without their
+# attributes.
+wp wc product_attribute create --name="Color" --slug="color" --type="select" --user=admin --quiet
+wp wc product_attribute create --name="Size" --slug="size" --type="select" --user=admin --quiet
+
 echo "Importing WooCommerce sample product data..."
 # The WordPress Importer plugin is only needed to parse the WXR file below; it's
 # removed again immediately after so it doesn't end up in the exported database
@@ -102,8 +112,12 @@ echo "Importing WooCommerce sample product data..."
 wp plugin install wordpress-importer --activate --quiet
 # Skip attachments: the sample file references images on a third-party host, and
 # fetching them would make this script slow and dependent on that host staying up.
+# NOTE: with attachment fetching disabled the importer prints "Failed to import Media
+# <file>.jpg" for each skipped image. That wording is misleading — it's the expected
+# result of --skip=attachment, not a real error, so those lines can be ignored.
 wp import wp-content/plugins/woocommerce/sample-data/sample_products.xml --authors=create --skip=attachment --quiet
 wp plugin uninstall wordpress-importer --deactivate --quiet
+wp plugin deactivate woocommerce --quiet
 
 # Normalize the database so the dump is deterministic across runs.
 echo "Normalizing database for deterministic output..."
