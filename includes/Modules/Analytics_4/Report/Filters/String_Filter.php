@@ -36,12 +36,12 @@ class String_Filter implements Filter {
 	 */
 	public function parse_filter_expression( $name, $value ) {
 		$match_type = isset( $value['matchType'] )
-			? $value['matchType']
-			: 'EXACT';
+		? $value['matchType']
+		: 'EXACT';
 
 		$filter_value = isset( $value['value'] )
-			? $value['value']
-			: $value;
+		? $value['value']
+		: $value;
 
 		// If there are many values for this filter, then it means that we want to find
 		// rows where values are included in the list of provided values. In this case,

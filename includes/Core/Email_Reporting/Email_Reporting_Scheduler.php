@@ -177,8 +177,8 @@ class Email_Reporting_Scheduler {
 
 			foreach ( $hooks[ self::ACTION_INITIATOR ] as $event ) {
 				$args = isset( $event['args'] ) && is_array( $event['args'] )
-					? $event['args']
-					: array();
+				? $event['args']
+				: array();
 
 				if ( isset( $args[0] ) && $frequency === $args[0] ) {
 					$events[] = array(

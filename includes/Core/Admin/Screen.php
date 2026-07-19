@@ -230,10 +230,10 @@ final class Screen {
 		$assets->enqueue_asset( 'googlesitekit-admin-css' );
 
 		$cb = is_callable( $this->args['enqueue_callback'] )
-			? $this->args['enqueue_callback']
-			: function ( Assets $assets ) {
-				$assets->enqueue_asset( $this->slug );
-			};
+		? $this->args['enqueue_callback']
+		: function ( Assets $assets ) {
+			$assets->enqueue_asset( $this->slug );
+		};
 
 		call_user_func( $cb, $assets );
 	}
@@ -247,14 +247,14 @@ final class Screen {
 	 */
 	private function render( Context $context ) {
 		$cb = is_callable( $this->args['render_callback'] )
-			? $this->args['render_callback']
-			: function () {
-				printf( '<div id="js-%s" class="googlesitekit-page"></div>', esc_attr( $this->slug ) );
-			};
+		? $this->args['render_callback']
+		: function () {
+			printf( '<div id="js-%s" class="googlesitekit-page"></div>', esc_attr( $this->slug ) );
+		};
 
 		echo '<div class="googlesitekit-plugin">';
-			$this->render_noscript_html();
-			call_user_func( $cb, $context );
+		$this->render_noscript_html();
+		call_user_func( $cb, $context );
 		echo '</div>';
 	}
 }

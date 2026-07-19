@@ -63,8 +63,8 @@ class Get_Advanced_Data_Breakdowns_Settings extends Shareable_Datapoint implemen
 			$settings = $advanced_data_breakdowns_settings->get();
 
 			return current_user_can( Permissions::MANAGE_OPTIONS )
-				? $settings
-				: array_intersect_key( $settings, array_flip( $advanced_data_breakdowns_settings->get_view_only_keys() ) );
+			? $settings
+			: array_intersect_key( $settings, array_flip( $advanced_data_breakdowns_settings->get_view_only_keys() ) );
 		};
 	}
 

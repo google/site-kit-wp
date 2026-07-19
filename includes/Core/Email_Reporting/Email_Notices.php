@@ -351,8 +351,8 @@ class Email_Notices {
 		$dismissal_slug = $notice->get_dismissal_slug();
 
 		return ( isset( $prompts[ $dismissal_slug ] ) && is_array( $prompts[ $dismissal_slug ] ) )
-			? $prompts[ $dismissal_slug ]
-			: array();
+		? $prompts[ $dismissal_slug ]
+		: array();
 	}
 
 	/**

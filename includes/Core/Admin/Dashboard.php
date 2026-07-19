@@ -176,30 +176,30 @@ final class Dashboard {
 		?>
 		<div id="js-googlesitekit-wp-dashboard" data-view-only="<?php echo esc_attr( $is_view_only ); ?>" class="googlesitekit-plugin <?php echo esc_attr( $class_names ); ?>">
 			<div class="googlesitekit-wp-dashboard googlesitekit-wp-dashboard-loading">
-			<?php
+		<?php
 
-				$this->render_loading_container( 'googlesitekit-wp-dashboard__cta' );
-			?>
+		$this->render_loading_container( 'googlesitekit-wp-dashboard__cta' );
+		?>
 
 				<div class="googlesitekit-wp-dashboard-stats">
-				<?php
-				if ( $display_analytics_data ) {
-					$this->render_loading_container( 'googlesitekit-wp-dashboard-loading__can_view_analytics' );
-				}
+		<?php
+		if ( $display_analytics_data ) {
+			$this->render_loading_container( 'googlesitekit-wp-dashboard-loading__can_view_analytics' );
+		}
 
-				if ( $display_search_console_data ) {
-					$this->render_loading_container( 'googlesitekit-wp-dashboard-loading__search_console_active_and_connected' );
-				}
+		if ( $display_search_console_data ) {
+			$this->render_loading_container( 'googlesitekit-wp-dashboard-loading__search_console_active_and_connected' );
+		}
 
-				if ( $display_analytics_cta ) {
-					$this->render_loading_container( 'googlesitekit-wp-dashboard-stats__cta' );
-				}
+		if ( $display_analytics_cta ) {
+			$this->render_loading_container( 'googlesitekit-wp-dashboard-stats__cta' );
+		}
 
-				if ( $display_analytics_data ) {
-					$this->render_loading_container( 'googlesitekit-unique-visitors-chart-widget' );
-					$this->render_loading_container( 'googlesitekit-search-console-widget' );
-				}
-				?>
+		if ( $display_analytics_data ) {
+			$this->render_loading_container( 'googlesitekit-unique-visitors-chart-widget' );
+			$this->render_loading_container( 'googlesitekit-search-console-widget' );
+		}
+		?>
 				</div>
 			</div>
 		</div>

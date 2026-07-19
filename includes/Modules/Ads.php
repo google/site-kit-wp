@@ -345,8 +345,8 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 		}
 
 		$tag = $this->context->is_amp()
-			? new AMP_Tag( $ads_conversion_id, self::MODULE_SLUG )
-			: new Web_Tag( $ads_conversion_id, self::MODULE_SLUG );
+		? new AMP_Tag( $ads_conversion_id, self::MODULE_SLUG )
+		: new Web_Tag( $ads_conversion_id, self::MODULE_SLUG );
 
 		if ( $tag->is_tag_blocked() ) {
 			return;

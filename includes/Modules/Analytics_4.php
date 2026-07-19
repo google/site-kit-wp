@@ -1192,8 +1192,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 <?php else : ?>
 <!-- <?php esc_html_e( 'Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
 	<?php
-			// Opt-out should always use the measurement ID, even when using a GT tag.
-			$tag_id = $this->get_measurement_id();
+	// Opt-out should always use the measurement ID, even when using a GT tag.
+	$tag_id = $this->get_measurement_id();
 	if ( ! empty( $tag_id ) ) {
 		BC_Functions::wp_print_inline_script_tag( sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $tag_id ) ) );
 	}
@@ -1626,8 +1626,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 */
 	public function register_tag() {
 		$tag = $this->context->is_amp()
-			? new AMP_Tag( $this->get_measurement_id(), self::MODULE_SLUG ) // AMP currently only works with the measurement ID.
-			: new Web_Tag( $this->get_tag_id(), self::MODULE_SLUG );
+		? new AMP_Tag( $this->get_measurement_id(), self::MODULE_SLUG ) // AMP currently only works with the measurement ID.
+		: new Web_Tag( $this->get_tag_id(), self::MODULE_SLUG );
 
 		if ( $tag->is_tag_blocked() ) {
 			return;

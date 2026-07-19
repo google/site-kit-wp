@@ -94,11 +94,11 @@ class Report_Data_Processor {
 			}
 
 			$dimension_values[ $dimension_value ] = isset( $dimensions[1], $row['dimensions'][ $dimensions[1] ] )
-				? array(
-					'label' => $dimension_value,
-					'url'   => $row['dimensions'][ $dimensions[1] ],
-				)
-				: $dimension_value;
+			? array(
+				'label' => $dimension_value,
+				'url'   => $row['dimensions'][ $dimensions[1] ],
+			)
+			: $dimension_value;
 
 			foreach ( $metric_names as $metric_name ) {
 				if ( ! isset( $row['metrics'][ $metric_name ] ) ) {

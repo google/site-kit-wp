@@ -611,8 +611,8 @@ final class OAuth_Client extends OAuth_Client_Base {
 		}
 
 		return current_user_can( Permissions::VIEW_DASHBOARD )
-			? $this->context->admin_url( 'dashboard' )
-			: $this->context->admin_url( 'splash' );
+		? $this->context->admin_url( 'dashboard' )
+		: $this->context->admin_url( 'splash' );
 	}
 
 	/**

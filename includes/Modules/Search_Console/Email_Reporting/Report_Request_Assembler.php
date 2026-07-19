@@ -185,11 +185,11 @@ class Report_Request_Assembler {
 
 		foreach ( $request_map as $identifier => $metadata ) {
 			$result = isset( $responses[ $identifier ] )
-				? $responses[ $identifier ]
-				: new WP_Error(
-					'email_report_search_console_missing_result',
-					__( 'Search Console data could not be retrieved.', 'google-site-kit' )
-				);
+			? $responses[ $identifier ]
+			: new WP_Error(
+				'email_report_search_console_missing_result',
+				__( 'Search Console data could not be retrieved.', 'google-site-kit' )
+			);
 			$result = $this->normalize_response_result( $result, $identifier );
 
 			if ( 'compare' === $metadata['context'] || 'current' === $metadata['context'] ) {

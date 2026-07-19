@@ -58,12 +58,12 @@ $subtitle        = $first_data_item['change_context'] ?? '';
 				<tr>
 					<td class="text-secondary" style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; padding-bottom:8px;">
 						<div style="width: 160px;">
-							<?php echo esc_html( $part_label ); ?>
+				<?php echo esc_html( $part_label ); ?>
 						</div>
 					</td>
 					<td class="text-secondary"
 						style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; text-align:right; padding-bottom:8px; text-align:right; width: 110px;">
-						<?php echo esc_html( $change_context ); ?>
+				<?php echo esc_html( $change_context ); ?>
 					</td>
 				</tr>
 				<?php
@@ -81,15 +81,15 @@ $subtitle        = $first_data_item['change_context'] ?? '';
 				<tr>
 					<td class="border" colspan="2"
 						style="border-bottom: <?php echo esc_attr( $border_style ); ?>; padding: 5px 0; <?php echo $is_last && ! $is_last_section_part ? 'padding-bottom: 16px;' : ''; ?>">
-						<?php // Nested table required to ensure truncation works correctly for longer labels. ?>
+					<?php // Nested table required to ensure truncation works correctly for longer labels. ?>
 						<table role="presentation" width="100%">
 							<tr>
 								<td class="text-primary"
 									style="font-size:14px; line-height:20px; font-weight:500; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-									<?php if ( $has_url ) : ?>
+					<?php if ( $has_url ) : ?>
 									<a class="text-primary" href="<?php echo esc_url( $entity_url ); ?>"
 										style="color:#161B18; text-decoration:underline;">
-										<?php echo esc_html( $item['label'] ); ?>
+						<?php echo esc_html( $item['label'] ); ?>
 									</a>
 									<?php else : ?>
 										<?php echo esc_html( $item ); ?>
@@ -97,17 +97,17 @@ $subtitle        = $first_data_item['change_context'] ?? '';
 								</td>
 								<td class="text-primary"
 									style="font-size:14px; line-height:20px; font-weight:500; text-align:right; width:80px;">
-									<?php echo esc_html( $data['values'][ $index ] ?? 0 ); ?>
+					<?php echo esc_html( $data['values'][ $index ] ?? 0 ); ?>
 								</td>
 								<td style="text-align:right; width:80px;">
-									<?php
-										$render_shared_part(
-											'change-badge',
-											array(
-												'value' => $data['changes'][ $index ] ?? 0,
-											)
-										);
-									?>
+					<?php
+					$render_shared_part(
+						'change-badge',
+						array(
+							'value' => $data['changes'][ $index ] ?? 0,
+						)
+					);
+					?>
 								</td>
 							</tr>
 						</table>

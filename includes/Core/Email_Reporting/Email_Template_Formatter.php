@@ -193,8 +193,8 @@ class Email_Template_Formatter {
 			$first_dimension_value = '';
 			if ( isset( $dimension_values[0] ) ) {
 				$first_dimension_value = is_array( $dimension_values[0] )
-					? ( $dimension_values[0]['label'] ?? '' )
-					: $dimension_values[0];
+				? ( $dimension_values[0]['label'] ?? '' )
+				: $dimension_values[0];
 			}
 
 			$section_key = $section->get_section_key();

@@ -98,7 +98,7 @@ $render_shared_part = $data['render_shared_part'];
 									<tr>
 										<td style="text-align: left;">
 											<p class="text-secondary" style="font-size: 12px; line-height: 16px; font-weight: 500; color: #6C726E; margin: 0;">
-												<?php echo esc_html( $footer['copy'] ?? '' ); ?>
+								<?php echo esc_html( $footer['copy'] ?? '' ); ?>
 											</p>
 										</td>
 									</tr>

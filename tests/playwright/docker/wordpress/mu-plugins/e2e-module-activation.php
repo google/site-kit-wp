@@ -45,8 +45,8 @@ function e2e_get_connected_modules_config() {
 
 		$slug            = sanitize_key( $entry['slug'] );
 		$config[ $slug ] = isset( $entry['settings'] ) && is_array( $entry['settings'] )
-			? $entry['settings']
-			: array();
+		? $entry['settings']
+		: array();
 	}
 
 	return $config;

@@ -51,7 +51,7 @@ if ( empty( $notice_title ) && empty( $notice_body ) ) {
 						<a href="<?php echo esc_url( $cta_url ); ?>"
 							style="display:inline-block; background:#462083; color:#FFFFFF; font-size:14px; line-height:20px; font-weight:500; text-decoration:none; padding:6px 16px; border-radius:999px;"
 							rel="noopener" target="_blank">
-							<?php echo esc_html( $cta_label ); ?>
+				<?php echo esc_html( $cta_label ); ?>
 						</a>
 					</td>
 				</tr>

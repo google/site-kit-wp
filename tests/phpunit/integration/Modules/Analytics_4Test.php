@@ -3634,8 +3634,8 @@ class Analytics_4Test extends TestCase {
 		// Set the current user (can be 0 for no user)
 		$role = $is_content_creator ? 'administrator' : 'subscriber';
 		$user = $logged_in ?
-			$this->factory()->user->create( array( 'role' => $role ) )
-			: 0;
+		$this->factory()->user->create( array( 'role' => $role ) )
+		: 0;
 		wp_set_current_user( $user );
 
 		$this->analytics->get_settings()->set( $settings );
@@ -4757,7 +4757,7 @@ class Analytics_4Test extends TestCase {
 			$this->assertEquals( 'New visitors, Returning visitors', $audience_field['value'], 'Audience field value should show available audiences when authenticated.' );
 			$this->assertEquals( 'New visitors, Returning visitors', $audience_field['debug'], 'Audience field debug should show available audiences when authenticated.' );
 		} else {
-					$this->assertEquals( 'None', $audience_field['value'], 'Audience field value should be None when no audiences exist.' );
+			$this->assertEquals( 'None', $audience_field['value'], 'Audience field value should be None when no audiences exist.' );
 			$this->assertEquals( 'none', $audience_field['debug'], 'Audience field debug should be none when no audiences exist.' );
 		}
 	}

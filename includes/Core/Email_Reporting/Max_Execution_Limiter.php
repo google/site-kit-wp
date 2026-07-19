@@ -39,8 +39,8 @@ class Max_Execution_Limiter {
 	 */
 	public function __construct( $max_execution_time ) {
 		$this->max_execution_time = ( $max_execution_time && $max_execution_time > 0 )
-			? (int) $max_execution_time
-			: self::DEFAULT_LIMIT;
+		? (int) $max_execution_time
+		: self::DEFAULT_LIMIT;
 	}
 
 	/**

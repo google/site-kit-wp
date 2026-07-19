@@ -65,11 +65,11 @@ $card_bottom_pad    = $has_bottom_graphic ? '0' : '12px';
 
 			<?php
 			/*
-			 * Body paragraphs from Content_Map.
-			 * Uses wp_kses() for all templates to safely render inline HTML
-			 * (e.g. strong tags in subscription-confirmation, anchor tags in error-email).
-			 * Plain text body content passes through wp_kses() unchanged.
-			 */
+			* Body paragraphs from Content_Map.
+			* Uses wp_kses() for all templates to safely render inline HTML
+			* (e.g. strong tags in subscription-confirmation, anchor tags in error-email).
+			* Plain text body content passes through wp_kses() unchanged.
+			*/
 			?>
 			<?php foreach ( $body as $index => $paragraph ) : ?>
 			<p class="text-primary" style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 <?php echo $has_bottom_graphic && count( $body ) - 1 === $index ? '20px' : '16px'; ?> 0;">
@@ -102,15 +102,15 @@ $card_bottom_pad    = $has_bottom_graphic ? '0' : '12px';
 			<table role="presentation" cellpadding="0" cellspacing="0" border="0">
 				<tr>
 					<td style="padding: <?php echo esc_attr( $cta_padding_top ); ?> 0 <?php echo esc_attr( $cta_padding_bottom ); ?> 0;">
-						<?php
-						$render_shared_part(
-							'dashboard-link',
-							array(
-								'url'   => $cta['url'],
-								'label' => isset( $cta['label'] ) ? $cta['label'] : __( 'Get your report', 'google-site-kit' ),
-							)
-						);
-						?>
+				<?php
+				$render_shared_part(
+					'dashboard-link',
+					array(
+						'url'   => $cta['url'],
+						'label' => isset( $cta['label'] ) ? $cta['label'] : __( 'Get your report', 'google-site-kit' ),
+					)
+				);
+				?>
 					</td>
 				</tr>
 			</table>

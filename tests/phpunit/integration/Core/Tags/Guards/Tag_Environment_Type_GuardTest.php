@@ -10,8 +10,8 @@
 
 namespace Google\Site_Kit\Tests\Core\Tags\Guards;
 
-	use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
-	use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
+use Google\Site_Kit\Tests\TestCase;
 
 class Tag_Environment_Type_GuardTest extends TestCase {
 

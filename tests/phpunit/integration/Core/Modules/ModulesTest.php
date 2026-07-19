@@ -1157,10 +1157,10 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_list_shared_modules__no_shared_roles() {
-			$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-			// By default, no modules have shared roles, so list_shared_modules should return an empty array.
-			$this->assertEquals( array(), $modules->list_shared_modules(), 'Shared module list should be empty when no roles are shared.' );
+		// By default, no modules have shared roles, so list_shared_modules should return an empty array.
+		$this->assertEquals( array(), $modules->list_shared_modules(), 'Shared module list should be empty when no roles are shared.' );
 	}
 
 	public function test_list_shared_modules__single_module_has_shared_roles() {

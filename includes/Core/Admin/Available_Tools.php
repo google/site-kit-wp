@@ -46,19 +46,19 @@ class Available_Tools {
 		<div class="card">
 			<h2 class="title"><?php esc_html_e( 'Reset Site Kit', 'google-site-kit' ); ?></h2>
 			<p>
-				<?php
-				esc_html_e(
-					'Resetting will disconnect all users and remove all Site Kit settings and data within WordPress. You and any other users who wish to use Site Kit will need to reconnect to restore access.',
-					'google-site-kit'
-				)
-				?>
+		<?php
+		esc_html_e(
+			'Resetting will disconnect all users and remove all Site Kit settings and data within WordPress. You and any other users who wish to use Site Kit will need to reconnect to restore access.',
+			'google-site-kit'
+		)
+		?>
 			</p>
 			<p>
 				<a
 					class="button button-primary"
 					href="<?php echo esc_url( Reset::url() ); ?>"
 				>
-					<?php esc_html_e( 'Reset Site Kit', 'google-site-kit' ); ?>
+		<?php esc_html_e( 'Reset Site Kit', 'google-site-kit' ); ?>
 				</a>
 			</p>
 		</div>

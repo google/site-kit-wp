@@ -927,8 +927,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	public function has_placed_tag_in_content( $content ) {
 		$search_string              = 'Sign in with Google button added by Site Kit';
 		$search_translatable_string =
-			/* translators: %s: Sign in with Google service name */
-			sprintf( __( '%s button added by Site Kit', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) );
+		/* translators: %s: Sign in with Google service name */
+		sprintf( __( '%s button added by Site Kit', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ) );
 
 		if ( strpos( $content, $search_string ) !== false || strpos( $content, $search_translatable_string ) !== false ) {
 			return Module_Tag_Matchers::TAG_EXISTS_WITH_COMMENTS;

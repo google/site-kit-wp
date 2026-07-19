@@ -174,8 +174,8 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 						)
 					);
 					$option['postTypes'] = ! empty( $filtered_post_types )
-						? $filtered_post_types
-						: array( 'post' );
+					? $filtered_post_types
+					: array( 'post' );
 				}
 			}
 

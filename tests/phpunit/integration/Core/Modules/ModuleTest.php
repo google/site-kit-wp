@@ -355,8 +355,8 @@ class ModuleTest extends TestCase {
 		$empty_values = array( array(), '', 5 );
 		foreach ( $empty_values as $empty_value ) {
 			$result = $reflected_parse_string_list_method->invoke( $module, $empty_value );
-				$this->assertTrue( is_array( $result ), 'Parser should always return an array for empty values.' );
-				$this->assertEmpty( $result, 'Parser should return empty list for empty values.' );
+			$this->assertTrue( is_array( $result ), 'Parser should always return an array for empty values.' );
+			$this->assertEmpty( $result, 'Parser should return empty list for empty values.' );
 		}
 
 		$result = $reflected_parse_string_list_method->invoke( $module, 'one,two,, , three' );

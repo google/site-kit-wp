@@ -292,29 +292,29 @@ final class Admin_Bar {
 
 		?>
 		<div class="googlesitekit-plugin ab-sub-wrapper">
-			<?php $this->render_noscript_html(); ?>
+		<?php $this->render_noscript_html(); ?>
 
 			<div id="js-googlesitekit-adminbar" data-view-only="<?php echo esc_attr( $is_view_only ); ?>" class="googlesitekit-adminbar">
 
-				<?php
-				/**
-				 * Display server rendered content before JS-based adminbar modules.
-				 *
-				 * @since 1.0.0
-				 */
-				do_action( 'googlesitekit_adminbar_modules_before' );
-				?>
+		<?php
+		/**
+		 * Display server rendered content before JS-based adminbar modules.
+		 *
+		 * @since 1.0.0
+		 */
+		do_action( 'googlesitekit_adminbar_modules_before' );
+		?>
 
 				<section id="js-googlesitekit-adminbar-modules" class="googlesitekit-adminbar-modules"></section>
 
-				<?php
-				/**
-				 * Display server rendered content after JS-based adminbar modules.
-				 *
-				 * @since 1.0.0
-				 */
-				do_action( 'googlesitekit_adminbar_modules_after' );
-				?>
+		<?php
+		/**
+		 * Display server rendered content after JS-based adminbar modules.
+		 *
+		 * @since 1.0.0
+		 */
+		do_action( 'googlesitekit_adminbar_modules_after' );
+		?>
 			</div>
 		</div>
 		<?php
