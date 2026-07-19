@@ -20,15 +20,9 @@
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import * as analyticsFixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '@tests/js/mock-browser-utils';
-import { act, fireEvent, render } from '@tests/js/test-utils';
+import { render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
@@ -38,14 +32,9 @@ import {
 } from '@tests/js/utils';
 import ModuleSetup from './ModuleSetup';
 
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
-mockTrackEvent.mockImplementation( () => Promise.resolve() );
-
 jest.mock( '@/js/components/notifications/Notifications', () => () => null );
 
 describe( 'ModuleSetup', () => {
-	mockLocation();
-
 	let registry;
 
 	beforeEach( () => {
@@ -53,234 +42,10 @@ describe( 'ModuleSetup', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry.dispatch( CORE_USER ).receiveGetCapabilities( {} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetAudienceSettings( {} );
 
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		provideModuleRegistrations( registry );
-	} );
-
-	afterEach( () => {
-		mockTrackEvent.mockClear();
-		jest.resetAllMocks();
-	} );
-
-	describe( 'Analytics 4', () => {
-		beforeEach( () => {
-			provideModules( registry, [
-				{
-					slug: MODULE_SLUG_ANALYTICS_4,
-					active: false,
-					connected: false,
-				},
-			] );
-
-			const {
-				accountSummaries,
-				webDataStreamsBatch,
-				defaultEnhancedMeasurementSettings,
-			} = analyticsFixtures;
-
-			const accounts = accountSummaries.accountSummaries;
-			const properties = accounts[ 1 ].propertySummaries;
-			const accountID = accounts[ 1 ]._id;
-			const propertyID = properties[ 0 ]._id;
-			const webDataStreamID = webDataStreamsBatch[ propertyID ][ 0 ]._id;
-
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetExistingTag( null );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetAccountSummaries( accountSummaries );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.finishResolution( 'getAccountSummaries', [] );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetProperty( properties[ 0 ], {
-					propertyID,
-				} );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetWebDataStreamsBatch( webDataStreamsBatch, {
-					propertyIDs: [ propertyID ],
-				} );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.finishResolution( 'getWebDataStreams', [ propertyID ] );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetEnhancedMeasurementSettings(
-					{
-						...defaultEnhancedMeasurementSettings,
-						streamEnabled: false,
-					},
-					{
-						propertyID,
-						webDataStreamID,
-					}
-				);
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.finishResolution(
-					'isEnhancedMeasurementStreamAlreadyEnabled',
-					[ propertyID, webDataStreamID ]
-				);
-
-			registry.dispatch( MODULES_ANALYTICS_4 ).selectAccount( accountID );
-
-			registry
-				.dispatch( CORE_SITE )
-				.receiveGetConversionTrackingSettings( {
-					enabled: false,
-				} );
-		} );
-
-		describe( 'initial setup flow', () => {
-			let container, waitForRegistry, queryByText, getByText;
-
-			beforeEach( async () => {
-				global.location.href =
-					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true';
-
-				( { container, waitForRegistry, queryByText, getByText } =
-					render(
-						<ModuleSetup moduleSlug={ MODULE_SLUG_ANALYTICS_4 } />,
-						{
-							registry,
-							viewContext: VIEW_CONTEXT_MODULE_SETUP,
-							features: [ 'setupFlowRefresh' ],
-						}
-					) );
-
-				await waitForRegistry();
-			} );
-
-			it( 'should match the snapshot', () => {
-				expect( container ).toMatchSnapshot();
-			} );
-
-			it( 'should display the progress indicator', () => {
-				expect(
-					container.querySelector(
-						'.googlesitekit-progress-indicator'
-					)
-				).toBeInTheDocument();
-			} );
-
-			it( 'should not display the "Connect Service" text', () => {
-				expect(
-					queryByText( 'Connect Service' )
-				).not.toBeInTheDocument();
-			} );
-
-			it( 'should not display the setup footer', () => {
-				expect(
-					container.querySelector( '.googlesitekit-setup__footer' )
-				).not.toBeInTheDocument();
-			} );
-
-			it( 'should display an exit button', () => {
-				expect( getByText( 'Exit setup' ) ).toBeInTheDocument();
-			} );
-
-			it( 'should track an event when the user clicks the exit button', async () => {
-				// Clear the mock, as there is a tracked event on mount.
-				mockTrackEvent.mockClear();
-
-				await act( () => {
-					fireEvent.click( getByText( 'Exit setup' ) );
-
-					return Promise.resolve();
-				} );
-
-				expect( mockTrackEvent ).toHaveBeenCalledWith(
-					`${ VIEW_CONTEXT_MODULE_SETUP }_setup`,
-					'setup_flow_v3_exit_setup',
-					MODULE_SLUG_ANALYTICS_4
-				);
-
-				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-			} );
-
-			it( 'tracks only the initial setup analytics view event', () => {
-				expect( mockTrackEvent ).toHaveBeenCalledWith(
-					`${ VIEW_CONTEXT_MODULE_SETUP }_setup`,
-					'setup_flow_v3_view_analytics_step',
-					undefined,
-					undefined
-				);
-
-				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-			} );
-		} );
-
-		describe( 'not initial setup flow', () => {
-			let container, waitForRegistry, queryByText, getByText;
-
-			beforeEach( async () => {
-				global.location.href =
-					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true';
-
-				( { container, waitForRegistry, queryByText, getByText } =
-					render(
-						<ModuleSetup moduleSlug={ MODULE_SLUG_ANALYTICS_4 } />,
-						{
-							registry,
-							viewContext: VIEW_CONTEXT_MODULE_SETUP,
-							features: [],
-						}
-					) );
-
-				await waitForRegistry();
-			} );
-
-			it( 'should not display an exit button', () => {
-				expect( queryByText( 'Exit setup' ) ).not.toBeInTheDocument();
-			} );
-
-			it( 'should not display the progress indicator', () => {
-				expect(
-					container.querySelector(
-						'.googlesitekit-progress-indicator'
-					)
-				).not.toBeInTheDocument();
-			} );
-
-			it( 'should display the "Connect Service" text', () => {
-				expect( getByText( 'Connect Service' ) ).toBeInTheDocument();
-			} );
-
-			it( 'should display the setup footer', () => {
-				expect(
-					container.querySelector( '.googlesitekit-setup__footer' )
-				).toBeInTheDocument();
-			} );
-
-			it( 'should match the snapshot', () => {
-				expect( container ).toMatchSnapshot();
-			} );
-
-			it( 'tracks only the generic module setup view event', () => {
-				expect( mockTrackEvent ).toHaveBeenCalledWith(
-					'moduleSetup',
-					'view_module_setup',
-					MODULE_SLUG_ANALYTICS_4,
-					undefined
-				);
-
-				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-			} );
-		} );
 	} );
 
 	it( 'renders all elements correctly', () => {

@@ -119,19 +119,21 @@ describe( 'DashboardTopEarningPagesWidgetGA4PDF', () => {
 		expect( json ).toContain( '€0.05' );
 	} );
 
-	it( 'renders the No data available placeholder when there are no rows', () => {
-		const json = renderJSON( {
-			data: { rows: [], currencyCode: 'EUR', titles: {} },
-		} );
+	it( 'renders nothing when there are no rows', () => {
+		const tree = TestRenderer.create(
+			<DashboardTopEarningPagesWidgetGA4PDF
+				data={ { rows: [], currencyCode: 'EUR', titles: {} } }
+			/>
+		).toJSON();
 
-		expect( json ).toContain( 'No data available' );
-		expect( json ).not.toContain( 'Earnings' );
+		expect( tree ).toBeNull();
 	} );
 
-	it( 'renders the No data available placeholder when data is null', () => {
-		const json = renderJSON( { data: null } );
+	it( 'renders nothing when data is null', () => {
+		const tree = TestRenderer.create(
+			<DashboardTopEarningPagesWidgetGA4PDF data={ null } />
+		).toJSON();
 
-		expect( json ).toContain( 'No data available' );
-		expect( json ).not.toContain( 'Earnings' );
+		expect( tree ).toBeNull();
 	} );
 } );
