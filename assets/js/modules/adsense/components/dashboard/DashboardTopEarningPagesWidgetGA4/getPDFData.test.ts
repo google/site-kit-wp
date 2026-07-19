@@ -278,7 +278,7 @@ describe( 'DashboardTopEarningPagesWidgetGA4 getPDFData', () => {
 		expect( signals[ 1 ] ).toBe( signal );
 	} );
 
-	it( 'returns the currency code and empty titles without fetching the titles report when the main report has no rows', async () => {
+	it( 'returns null data without fetching the titles report when the main report has no rows', async () => {
 		fetchMock.get( reportEndpoint, {
 			body: { metadata: { currencyCode: 'EUR' }, rows: [] },
 			status: 200,
@@ -292,9 +292,7 @@ describe( 'DashboardTopEarningPagesWidgetGA4 getPDFData', () => {
 
 		await waitForDefaultTimeouts();
 
-		expect( result ).toEqual( {
-			data: { rows: [], currencyCode: 'EUR', titles: {} },
-		} );
+		expect( result ).toEqual( { data: null } );
 		expect( fetchMock.calls( reportEndpoint ) ).toHaveLength( 1 );
 	} );
 
