@@ -20,6 +20,7 @@
  *
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createTestRegistry } from '@tests/js/utils';
 import { MODULES_PAGESPEED_INSIGHTS } from './constants';
@@ -95,6 +96,31 @@ describe( 'module/pagespeed-insights service store', () => {
 				expect( serviceURL ).toMatchQueryParameters( {
 					utm_source: 'sitekit',
 				} );
+			} );
+		} );
+
+		describe( 'getDetailsLinkURL', () => {
+			it( 'should return the service report URL for the reference site', () => {
+				const referenceSiteURL = 'https://example.com/';
+
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					referenceSiteURL,
+				} );
+
+				const detailsLinkURL = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getDetailsLinkURL();
+
+				const expectedURL = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getServiceURL( {
+						path: 'report',
+						query: { url: referenceSiteURL },
+					} );
+
+				expect( new URL( detailsLinkURL ) ).toEqual(
+					new URL( expectedURL )
+				);
 			} );
 		} );
 	} );
