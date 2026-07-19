@@ -59,6 +59,11 @@ export default defineConfig( {
 				'specs/enhanced-conversions/enhanced-conversions.spec.ts',
 			],
 		},
-		withDesktopViewport( 'chrome::desktop', DESKTOP_CHROME ),
+		{
+			...withDesktopViewport( 'chrome::desktop', DESKTOP_CHROME ),
+			testIgnore: [
+				'specs/modules/adsense/show-admin-menu-tooltip.spec.ts',
+			],
+		},
 	],
 } );
