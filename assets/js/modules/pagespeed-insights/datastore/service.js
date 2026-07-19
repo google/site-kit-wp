@@ -21,6 +21,13 @@
  */
 import { addQueryArgs } from '@wordpress/url';
 
+/**
+ * Internal dependencies
+ */
+import { createRegistrySelector } from 'googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_PAGESPEED_INSIGHTS } from './constants';
+
 export const selectors = {
 	/**
 	 * Gets a URL to the service.
@@ -47,6 +54,24 @@ export const selectors = {
 			utm_source: 'sitekit',
 		} );
 	},
+
+	/**
+	 * Gets the details link URL for the module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {string} Details link URL.
+	 */
+	getDetailsLinkURL: createRegistrySelector( ( select ) => () => {
+		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
+
+		return select( MODULES_PAGESPEED_INSIGHTS ).getServiceURL( {
+			path: 'report',
+			query: {
+				url: siteURL,
+			},
+		} );
+	} ),
 };
 
 const store = {
