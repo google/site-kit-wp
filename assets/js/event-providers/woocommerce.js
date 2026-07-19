@@ -21,6 +21,7 @@
 
 	const {
 		currency: globalCurrency,
+		currency_minor_unit: globalCurrencyMinorUnit = 2,
 		products: globalProducts,
 		purchase,
 		add_to_cart: addToCart,
@@ -32,7 +33,15 @@
 	if ( addToCart && canTrackAddToCart ) {
 		const { price } = addToCart;
 
-		const eventData = formatEventData( price, globalCurrency, addToCart );
+		const eventData = formatEventData(
+			price,
+			globalCurrency,
+			addToCart,
+			null,
+			null,
+			null,
+			globalCurrencyMinorUnit
+		);
 
 		global._googlesitekit?.gtagEvent?.( 'add_to_cart', eventData );
 	}
@@ -46,7 +55,8 @@
 			items,
 			id,
 			totals.shipping_total,
-			totals.tax_total
+			totals.tax_total,
+			globalCurrencyMinorUnit
 		);
 
 		// User data is already normalized from WooCommerce.php.
@@ -82,7 +92,11 @@
 			const eventData = formatEventData(
 				price,
 				globalCurrency,
-				productData
+				productData,
+				null,
+				null,
+				null,
+				globalCurrencyMinorUnit
 			);
 			global._googlesitekit?.gtagEvent?.( 'add_to_cart', eventData );
 		} );
@@ -126,7 +140,11 @@
 				const eventData = formatEventData(
 					price,
 					globalCurrency,
-					productData
+					productData,
+					null,
+					null,
+					null,
+					globalCurrencyMinorUnit
 				);
 
 				global._googlesitekit?.gtagEvent?.( 'add_to_cart', eventData );
@@ -140,10 +158,11 @@
 		products,
 		transactionID = null,
 		shipping = null,
-		tax = null
+		tax = null,
+		currencyMinorUnit = 2
 	) {
 		const formattedData = {
-			value: formatPrice( value ),
+			value: formatPrice( value, currencyMinorUnit ),
 			currency,
 			items: [],
 			googlesitekit_event_provider: 'woocommerce',
@@ -167,22 +186,26 @@
 
 		if ( products && products.length ) {
 			for ( const product of products ) {
-				formattedData.items.push( formatProductData( product ) );
+				formattedData.items.push(
+					formatProductData( product, currencyMinorUnit )
+				);
 			}
 		} else if ( products && products.id ) {
-			formattedData.items = [ formatProductData( products ) ];
+			formattedData.items = [
+				formatProductData( products, currencyMinorUnit ),
+			];
 		}
 
 		return formattedData;
 	}
 
-	function formatProductData( product ) {
+	function formatProductData( product, currencyMinorUnit = 2 ) {
 		const { id, name, price, variation, quantity, categories } = product;
 
 		const mappedItem = {
 			item_id: id,
 			item_name: name,
-			price: formatPrice( price ),
+			price: formatPrice( price, currencyMinorUnit ),
 		};
 
 		if ( quantity ) {
@@ -213,9 +236,10 @@
 	 * Returns the price of a product formatted with decimal places if necessary.
 	 *
 	 * @since 1.158.0
+	 * @since n.e.x.t Added the `currencyMinorUnit` parameter.
 	 *
 	 * @param {string} price                 The price to parse.
-	 * @param {number} [currencyMinorUnit=2] The number decimals to show in the currency.
+	 * @param {number} [currencyMinorUnit=2] The number of decimals used by the store currency, as configured in WooCommerce settings.
 	 * @return {number} The price of the product with decimals.
 	 */
 	function formatPrice( price, currencyMinorUnit = 2 ) {

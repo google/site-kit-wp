@@ -492,4 +492,86 @@ class WooCommerceTest extends TestCase {
 		// Enhanced_Conversions normalizes to lowercase and trims, but keeps other chars.
 		$this->assertEquals( '+94771770589', $result, 'Normalized phone should fall back when country is empty.' );
 	}
+
+	/**
+	 * @dataProvider formatted_price_decimals_provider
+	 * @runInSeparateProcess
+	 */
+	public function test_get_formatted_price_returns_correct_minor_units( $decimals, $value, $expected ) {
+		require_once $this->wc_functions_stub_path();
+
+		update_option( 'woocommerce_price_decimals', $decimals );
+
+		$reflection = new \ReflectionClass( $this->woocommerce );
+		$method     = $reflection->getMethod( 'get_formatted_price' );
+		$method->setAccessible( true );
+
+		$this->assertSame(
+			$expected,
+			$method->invoke( $this->woocommerce, $value ),
+			"get_formatted_price with {$decimals} decimals should produce the expected minor-unit count."
+		);
+
+		delete_option( 'woocommerce_price_decimals' );
+	}
+
+	public function formatted_price_decimals_provider() {
+		return array(
+			'2 decimals (USD) - whole units'      => array( 2, 10, 1000 ),
+			'2 decimals (USD) - fractional units' => array( 2, '10.50', 1050 ),
+			'2 decimals (USD) - 4-decimal input'  => array( 2, '10.5050', 1051 ),
+			'4 decimals (BHD) - fractional units' => array( 4, '1.2345', 12345 ),
+			'0 decimals (JPY) - whole units'      => array( 0, 500, 500 ),
+			'0 decimals (JPY) - decimal input'    => array( 0, '500.99', 501 ),
+		);
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 * @expectedDeprecated the_block_template_skip_link
+	 */
+	public function test_inline_script_emits_currency_minor_unit() {
+		require_once $this->wc_functions_stub_path();
+
+		update_option( 'woocommerce_price_decimals', 4 );
+
+		// Register a stub for the `woocommerce` dependency so the WP test
+		// environment's strict enqueue checks do not flag the provider script.
+		wp_register_script( 'woocommerce', false, array(), '0.0.0', true );
+
+		// Register the script + hooks, then enqueue so the inline data added
+		// by `wp_add_inline_script()` lands in the WP_Scripts store.
+		$this->woocommerce->register_script();
+		$this->woocommerce->register_hooks();
+		wp_enqueue_script( 'googlesitekit-events-provider-woocommerce' );
+
+		// Capture the wp_footer output (which also emits block-theme deprecations,
+		// declared above as `@expectedDeprecated`).
+		ob_start();
+		do_action( 'wp_footer' );
+		$footer = ob_get_clean();
+
+		// The inline data added by `wp_add_inline_script( ..., 'before' )` lives
+		// under the "{$handle}_before" key in `WP_Scripts::$data`. Read it
+		// directly so the test does not need to render the full page.
+		$wp_scripts  = wp_scripts();
+		$inline_data = $wp_scripts->get_data( 'googlesitekit-events-provider-woocommerce', 'before' );
+		$footer     .= is_array( $inline_data ) ? implode( "\n", $inline_data ) : '';
+
+		$this->assertStringContainsString(
+			'wcdata.currency_minor_unit = 4;',
+			$footer,
+			'wp_footer inline script should expose currency_minor_unit to the WC event provider JS.'
+		);
+
+		delete_option( 'woocommerce_price_decimals' );
+	}
+
+	/**
+	 * Path to the WooCommerce function stubs used when WooCommerce is not
+	 * active in the test environment.
+	 */
+	private function wc_functions_stub_path() {
+		return dirname( __DIR__, 4 ) . '/includes/wc-functions-stub.php';
+	}
 }
