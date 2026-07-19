@@ -1,5 +1,5 @@
 /**
- * SetupUsingProxyWithSignIn AnalyticsActivationErrorNotification component.
+ * SetupUsingProxyWithSignIn InitialSetupErrorNotification component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -32,19 +32,19 @@ import { __ } from '@wordpress/i18n';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
-interface AnalyticsActivationErrorNotificationProps {
+interface InitialSetupErrorNotificationProps {
 	onRetry?: () => void;
 }
 
-export const ANALYTICS_ACTIVATION_ERROR_NOTIFICATION =
-	'analytics-activation-error-notification';
+export const INITIAL_SETUP_ERROR_NOTIFICATION =
+	'initial-setup-error-notification';
 
-const AnalyticsActivationErrorNotification: FC<
-	AnalyticsActivationErrorNotificationProps
-> = ( { onRetry }: AnalyticsActivationErrorNotificationProps ) => {
+const InitialSetupErrorNotification: FC<
+	InitialSetupErrorNotificationProps
+> = ( { onRetry }: InitialSetupErrorNotificationProps ) => {
 	return (
 		<Notice
-			className="googlesitekit-setup__analytics-activation-error-notification"
+			className="googlesitekit-setup__initial-setup-error-notification"
 			title={ __( 'Connecting Site Kit failed', 'google-site-kit' ) }
 			description={ __(
 				'Something went wrong while connecting Site Kit to your site. Please try again.',
@@ -59,4 +59,4 @@ const AnalyticsActivationErrorNotification: FC<
 	);
 };
 
-export default AnalyticsActivationErrorNotification;
+export default InitialSetupErrorNotification;

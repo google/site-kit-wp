@@ -26,9 +26,9 @@ import { withQuery } from '@storybook/addon-queryparams';
  */
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import SetupUsingProxyWithSignIn from '@/js/components/setup/SetupUsingProxyWithSignIn';
-import AnalyticsActivationErrorNotification, {
-	ANALYTICS_ACTIVATION_ERROR_NOTIFICATION,
-} from '@/js/components/setup/SetupUsingProxyWithSignIn/AnalyticsActivationErrorNotification';
+import InitialSetupErrorNotification, {
+	INITIAL_SETUP_ERROR_NOTIFICATION,
+} from '@/js/components/setup/SetupUsingProxyWithSignIn/InitialSetupErrorNotification';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
@@ -343,9 +343,9 @@ SecondaryAdminWithSharedServices.parameters = {
 };
 SecondaryAdminWithSharedServices.scenario = {};
 
-export const AnalyticsActivationError = Template.bind( {} );
-AnalyticsActivationError.storyName = 'Analytics activation error';
-AnalyticsActivationError.args = {
+export const InitialSetupError = Template.bind( {} );
+InitialSetupError.storyName = 'Initial setup error';
+InitialSetupError.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteConnection( registry, {
 			hasConnectedAdmins: false,
@@ -362,11 +362,9 @@ AnalyticsActivationError.args = {
 
 		registry
 			.dispatch( CORE_NOTIFICATIONS )
-			.registerNotification( ANALYTICS_ACTIVATION_ERROR_NOTIFICATION, {
+			.registerNotification( INITIAL_SETUP_ERROR_NOTIFICATION, {
 				Component: () => (
-					<AnalyticsActivationErrorNotification
-						onRetry={ () => null }
-					/>
+					<InitialSetupErrorNotification onRetry={ () => null } />
 				),
 				priority: PRIORITY.ERROR_HIGH,
 				areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
@@ -377,11 +375,11 @@ AnalyticsActivationError.args = {
 	},
 };
 
-AnalyticsActivationError.parameters = {
+InitialSetupError.parameters = {
 	features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
 };
 
-AnalyticsActivationError.scenario = {};
+InitialSetupError.scenario = {};
 
 export default {
 	title: 'Setup / Using Proxy With Sign-in and setupFlowRefresh enabled',
