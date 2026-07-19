@@ -153,6 +153,11 @@ export function registerDefaults( widgetsAPI ) {
 	widgetsAPI.registerWidgetArea(
 		AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
 		{
+			// This is a second area of the Traffic PDF section. It repeats the
+			// "Traffic" title, so the section chip and heading keep that label
+			// when the report includes only this area's widget, not the primary
+			// traffic area.
+			pdfTitle: __( 'Traffic', 'google-site-kit' ),
 			subtitle: __(
 				'Understand how different visitor groups interact with your site',
 				'google-site-kit'
@@ -249,7 +254,8 @@ export function registerDefaults( widgetsAPI ) {
 				'Find out how much you’re earning from your content',
 				'google-site-kit'
 			),
-			pdfTitle: __( 'Monetization', 'google-site-kit' ),
+			pdfTitle: __( 'Revenue', 'google-site-kit' ),
+			pdfReportTitle: __( 'Monetization', 'google-site-kit' ),
 			subtitle: __(
 				'Track your AdSense revenue over time',
 				'google-site-kit'

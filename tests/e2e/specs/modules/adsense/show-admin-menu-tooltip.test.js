@@ -29,6 +29,19 @@ describe( 'Site Kit dashboard post search', () => {
 					)
 			) {
 				request.respond( { status: 200, body: JSON.stringify( [] ) } );
+			} else if (
+				request
+					.url()
+					.match(
+						'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					)
+			) {
+				// The Speed widget area is rendered on the dashboard and its
+				// PageSpeed Insights widget fetches a report when scrolled into
+				// view. Mock the response so the request isn't made over HTTP
+				// (which WordPress blocks in the test environment, logging a
+				// console error that would otherwise fail this test).
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else {
 				request.continue();
 			}

@@ -74,6 +74,7 @@ import {
 	SecondaryUserSetupWidget,
 } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
 import { AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationBackNotice';
+import getAudienceTilesPDFData from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/getPDFData';
 import {
 	DashboardAllTrafficWidgetGA4,
 	DashboardOverallPageMetricsWidgetGA4,
@@ -116,6 +117,16 @@ import {
 import ConversionReportingNotificationCTAWidget from '@/js/modules/analytics-4/components/widgets/ConversionReportingNotificationCTAWidget';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+
+/**
+ * Lazy-loaded PDF component for the Your visitor groups widget.
+ */
+const PDFYourVisitorGroups = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/PDFYourVisitorGroups'
+	)
+);
 
 const DashboardAllTrafficWidgetGA4PDF = lazyWithPreload( () =>
 	import(
@@ -201,6 +212,17 @@ export function registerWidgets( widgets ) {
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();
 				return !! configuredAudiences;
+			},
+			pdf: {
+				Component: PDFYourVisitorGroups,
+				getData: getAudienceTilesPDFData,
+				label: __( 'Your visitor groups', 'google-site-kit' ),
+				// The PDF row needs two cards, so it renders only for two or
+				// more audiences. The dashboard tile keeps its own `isActive`,
+				// which allows a single audience.
+				isActive: ( select ) =>
+					( select( CORE_USER ).getConfiguredAudiences()?.length ??
+						0 ) >= 2,
 			},
 		},
 		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
