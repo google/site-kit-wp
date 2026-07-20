@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import { isFeatureEnabled } from '@/js/features';
 import { Select } from '@/js/googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
@@ -41,9 +40,6 @@ export function registerWidgets( widgets ) {
 			priority: 1,
 			wrapWidget: false,
 			isActive: ( select: Select ) => {
-				const rrmExpressSetupEnabled =
-					isFeatureEnabled( 'rrmExpressSetup' );
-
 				const canActivateModule = select(
 					CORE_MODULES
 				).canActivateModule( MODULE_SLUG_READER_REVENUE_MANAGER );
@@ -56,9 +52,11 @@ export function registerWidgets( widgets ) {
 					RRM_EXPRESS_SETUP_TRAFFIC_CTA_DISMISSED_KEY
 				);
 
+				const isViewOnly = ! select( CORE_USER ).isAuthenticated();
+
 				return (
+					! isViewOnly &&
 					canActivateModule &&
-					rrmExpressSetupEnabled &&
 					isModuleConnected === false &&
 					isPromptDismissed === false
 				);

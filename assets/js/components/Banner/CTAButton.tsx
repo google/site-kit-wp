@@ -17,7 +17,7 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import { MouseEvent } from 'react';
 
 /**
  * Internal dependencies
@@ -25,16 +25,37 @@ import PropTypes from 'prop-types';
 import { SpinnerButton } from 'googlesitekit-components';
 import ExternalIcon from '@/svg/icons/external.svg';
 
-export default function CTAButton( {
-	label = '',
-	ariaLabel = '',
-	disabled = false,
-	inProgress = false,
-	onClick = () => {},
-	href = null,
-	external = false,
-	hideExternalIndicator = false,
-} ) {
+// eslint-disable-next-line sitekit/acronym-case
+export interface CTAButtonProps {
+	ariaLabel?: string;
+	disabled?: boolean;
+	dismissOnClick?: boolean;
+	dismissOptions?: {
+		expiresInSeconds: number;
+		skipHidingFromQueue: boolean;
+	};
+	external?: boolean;
+	hideExternalIndicator?: boolean;
+	href?: string;
+	inProgress?: boolean;
+	label?: string;
+	onClick?: (
+		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
+	) => void;
+}
+
+export default function Button(
+	{
+		ariaLabel,
+		disabled = false,
+		external = false,
+		hideExternalIndicator = false,
+		href,
+		inProgress = false,
+		label,
+		onClick = () => {},
+	}: CTAButtonProps /* eslint-disable-line sitekit/acronym-case */
+) {
 	if ( ! label || ( ! onClick && ! href ) ) {
 		return null;
 	}
@@ -45,9 +66,10 @@ export default function CTAButton( {
 	}
 
 	return (
+		// @ts-expect-error `SpinnerButton` component is not yet typed.
 		<SpinnerButton
 			className="googlesitekit-banner__cta"
-			aria-label={ ariaLabel || null }
+			aria-label={ ariaLabel }
 			disabled={ disabled || inProgress }
 			isSaving={ inProgress }
 			onClick={ onClick }
@@ -59,17 +81,3 @@ export default function CTAButton( {
 		</SpinnerButton>
 	);
 }
-
-CTAButton.propTypes = {
-	label: PropTypes.string,
-	ariaLabel: PropTypes.string,
-	disabled: PropTypes.bool,
-	inProgress: PropTypes.bool,
-	onClick: PropTypes.func,
-	href: PropTypes.string,
-	dismissOnClick: PropTypes.bool,
-	dismissOptions: PropTypes.shape( {
-		expiresInSeconds: PropTypes.number,
-		skipHidingFromQueue: PropTypes.bool,
-	} ),
-};

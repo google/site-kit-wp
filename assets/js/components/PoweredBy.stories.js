@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager styles.
+ * Preview Block Component Stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -16,5 +16,24 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-rrm-settings-module";
-@import "googlesitekit-rrm-setup-module";
+/**
+ * Internal dependencies
+ */
+import PoweredBy from '@/js/components/PoweredBy';
+import ReaderRevenueManagerIcon from '@/svg/graphics/reader-revenue-manager.svg';
+
+function Template( args ) {
+	return <PoweredBy { ...args } />;
+}
+
+export const ReaderRevenueManager = Template.bind( {} );
+ReaderRevenueManager.storyName = 'Powered by Reader Revenue Manager';
+ReaderRevenueManager.args = {
+	Icon: ReaderRevenueManagerIcon,
+	text: 'Powered by Reader Revenue Manager',
+};
+
+export default {
+	title: 'Components/PoweredBy',
+	component: PoweredBy,
+};

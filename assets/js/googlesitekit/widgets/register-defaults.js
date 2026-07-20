@@ -208,14 +208,16 @@ export function registerDefaults( widgetsAPI ) {
 		CONTEXT_MAIN_DASHBOARD_TRAFFIC
 	);
 
-	widgetsAPI.registerWidgetArea(
-		AREA_MAIN_DASHBOARD_TRAFFIC_READER_REVENUE_MANAGER,
-		{
-			style: WIDGET_AREA_STYLES.BOXES,
-			priority: 3,
-		},
-		CONTEXT_MAIN_DASHBOARD_TRAFFIC
-	);
+	if ( isFeatureEnabled( 'setupFlowRefresh' ) ) {
+		widgetsAPI.registerWidgetArea(
+			AREA_MAIN_DASHBOARD_TRAFFIC_READER_REVENUE_MANAGER,
+			{
+				style: WIDGET_AREA_STYLES.BOXES,
+				priority: 3,
+			},
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+		);
+	}
 
 	widgetsAPI.registerWidgetArea(
 		AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY,

@@ -18,7 +18,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { ComponentProps, FC, ReactChild } from 'react';
+import { FC, ReactChild } from 'react';
 
 /**
  * WordPress dependencies
@@ -35,12 +35,12 @@ import {
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
-import CTAButton from './CTAButton';
+import CTAButton, { CTAButtonProps } from './CTAButton';
 import Description from './Description';
-import DismissButton from './DismissButton';
+import DismissButton, { DismissButtonProps } from './DismissButton';
 import Footer from './Footer';
 import HelpText from './HelpText';
-import LearnMoreLink from './LearnMoreLink';
+import { LearnMoreLinkProps } from './LearnMoreLink';
 import Title from './Title';
 import TitleIcon from './TitleIcon';
 
@@ -52,9 +52,9 @@ export interface BannerProps {
 	additionalDescription?: ReactChild;
 	errorText?: string;
 	helpText?: string;
-	learnMoreLink?: ComponentProps< typeof LearnMoreLink >;
-	dismissButton?: ComponentProps< typeof DismissButton >;
-	ctaButton?: ComponentProps< typeof CTAButton >;
+	learnMoreLink?: LearnMoreLinkProps;
+	dismissButton?: DismissButtonProps;
+	ctaButton?: CTAButtonProps;
 	svg?: {
 		desktop?: string;
 		mobile?: string;

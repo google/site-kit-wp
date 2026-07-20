@@ -17,21 +17,25 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { FC } from 'react';
 
 /**
  * Internal dependencies
  */
 import Typography from '@/js/components/Typography';
 import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
-import ReaderRevenueManagerIcon from '@/svg/graphics/reader-revenue-manager.svg';
 
-export default function PoweredByReaderRevenueManager() {
+export interface PoweredByProps {
+	Icon: FC< React.SVGAttributes< SVGElement > >;
+	text: string;
+}
+
+export default function PoweredBy( { Icon, text }: PoweredByProps ) {
 	return (
 		<div className="googlesitekit-powered-by googlesitekit-powered-by--reader-revenue-manager">
-			<ReaderRevenueManagerIcon
+			<Icon
 				aria-hidden="true"
 				className="googlesitekit-powered-by__icon"
 			/>
@@ -41,7 +45,7 @@ export default function PoweredByReaderRevenueManager() {
 				size={ SIZE_SMALL }
 				type={ TYPE_BODY }
 			>
-				{ __( 'Powered by Reader Revenue Manager', 'google-site-kit' ) }
+				{ text }
 			</Typography>
 		</div>
 	);

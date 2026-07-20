@@ -17,7 +17,7 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import { MouseEvent, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -29,18 +29,29 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 
+export interface DismissButtonProps {
+	className?: string;
+	disabled?: boolean;
+	label?: ReactNode;
+	onClick?: (
+		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
+	) => void;
+	tertiary?: boolean;
+}
+
 export default function DismissButton( {
-	className = '',
+	className,
 	label = String( __( 'Maybe later', 'google-site-kit' ) ),
-	onClick = () => {},
-	disabled = false,
+	onClick,
+	disabled,
 	tertiary = true,
-} ) {
+}: DismissButtonProps ) {
 	if ( ! onClick ) {
 		return null;
 	}
 
 	return (
+		// @ts-expect-error `Button` component is not yet typed.
 		<Button
 			className={ className }
 			onClick={ onClick }
@@ -51,15 +62,3 @@ export default function DismissButton( {
 		</Button>
 	);
 }
-
-DismissButton.propTypes = {
-	className: PropTypes.string,
-	label: PropTypes.string,
-	onClick: PropTypes.func,
-	disabled: PropTypes.bool,
-	tertiary: PropTypes.bool,
-	dismissOptions: PropTypes.shape( {
-		expiresInSeconds: PropTypes.number,
-		skipHidingFromQueue: PropTypes.bool,
-	} ),
-};

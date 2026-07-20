@@ -21,7 +21,7 @@
 	display: grid;
 	grid-template-columns: 1fr;
 
-	@media (min-width: $width-desktop + 1 + px) {
+	@media (min-width: $bp-nonTablet) {
 		grid-template-columns: 1fr 40%;
 	}
 
@@ -33,7 +33,7 @@
 	.googlesitekit-banner__content {
 		padding: $grid-gap-phone;
 
-		@media (min-width: $width-tablet + 1 + px) {
+		@media (min-width: $bp-nonMobile) {
 			min-height: 188px;
 			padding: $grid-gap-desktop;
 		}
@@ -66,7 +66,7 @@
 		line-height: $lh-title-md;
 		margin: 0 0 10px;
 
-		@media (min-width: $width-tablet + 1 + px) {
+		@media (min-width: $bp-nonMobile) {
 			font-family: $f-secondary;
 			font-size: $fs-headline-sm;
 			font-weight: $fw-normal;
@@ -75,7 +75,7 @@
 			margin: 0 0 8px;
 		}
 
-		@media (min-width: $width-desktop + 1 + px) {
+		@media (min-width: $bp-nonTablet) {
 			font-size: $fs-headline-md;
 			line-height: $lh-headline-md;
 		}
@@ -91,13 +91,13 @@
 
 		margin: 0;
 
-		@media (min-width: $width-tablet + 1 + px) {
+		@media (min-width: $bp-nonMobile) {
 			font-size: $fs-body-md;
 			letter-spacing: $ls-s;
 			line-height: $lh-body-md;
 		}
 
-		@media (min-width: $width-desktop + 1 + px) {
+		@media (min-width: $bp-nonTablet) {
 			font-size: $fs-body-lg;
 			letter-spacing: $ls-m;
 			line-height: $lh-body-lg;
@@ -130,7 +130,7 @@
 	}
 
 	.googlesitekit-banner__notice--content-width {
-		@media (min-width: $width-tablet + 1 + px) and (max-width: $width-desktop + px) {
+		@media (min-width: $bp-nonMobile) and (max-width: $bp-desktop) {
 			margin-right: auto;
 			max-width: 100%;
 			width: fit-content;
@@ -152,7 +152,7 @@
 		margin: 0 auto;
 		width: 90%;
 
-		@media (min-width: $width-desktop + 1 + px) {
+		@media (min-width: $bp-nonTablet) {
 			// y axis positioning is set below based on the dynamic class added in the Banner component.
 			background-position-x: right;
 			background-repeat: no-repeat;
@@ -162,7 +162,7 @@
 		}
 	}
 
-	@media (min-width: $width-desktop + 1 + px) {
+	@media (min-width: $bp-nonTablet) {
 		.googlesitekit-notice__action {
 			margin-bottom: 10px;
 		}
@@ -225,16 +225,16 @@
 		}
 	}
 
-	@media (min-width: $width-tablet + 1 + px) {
+	@media (min-width: $bp-nonMobile) {
 		p.googlesitekit-banner__title {
 			@include googlesitekit-typography(headline, small);
 		}
 	}
 
-	@media (min-width: $width-desktop + 1 + px) {
+	@media (min-width: $bp-nonTablet) {
 		background: linear-gradient(90deg, #FFF 40.36%, #D0FBE1 88.55%);
 
-		.googlesitekit-banner__title,
+		p.googlesitekit-banner__title,
 		.googlesitekit-banner__description p:first-child {
 			margin-block-end: 7px;
 		}

@@ -24,7 +24,6 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { isFeatureEnabled } from '@/js/features';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { requireModuleConnected } from '@/js/googlesitekit/data-requirements';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -130,10 +129,6 @@ export const NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
-			if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
-				return false;
-			}
-
 			await Promise.all( [
 				// The isPromptDismissed selector relies on the resolution
 				// of the getDismissedPrompts() resolver.

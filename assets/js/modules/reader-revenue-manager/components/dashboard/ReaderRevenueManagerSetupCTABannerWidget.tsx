@@ -19,9 +19,12 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useState } from '@wordpress/element';
+import {
+	Fragment,
+	createInterpolateElement,
+	useState,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -29,33 +32,38 @@ import { addQueryArgs } from '@wordpress/url';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import Banner from '@/js/components/Banner';
 import Link from '@/js/components/Link';
+import PoweredBy from '@/js/components/PoweredBy';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
-import { setItem } from '@/js/googlesitekit/api/cache';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import type { WidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
-import useViewOnly from '@/js/hooks/useViewOnly';
-import { PoweredByReaderRevenueManager } from '@/js/modules/reader-revenue-manager/components/common';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import {
 	MODULE_SLUG_READER_REVENUE_MANAGER,
 	RRM_EXPRESS_SETUP_TRAFFIC_CTA_DISMISSED_KEY,
 } from '@/js/modules/reader-revenue-manager/constants';
 import BannerSVGMobile from '@/svg/graphics/banner-rrm-setup-cta-widget-mobile.svg?url';
 import BannerSVGDesktop from '@/svg/graphics/banner-rrm-setup-cta-widget.svg?url';
+import ReaderRevenueManagerIcon from '@/svg/graphics/reader-revenue-manager.svg';
 
 export default function ReaderRevenueManagerSetupCTABannerWidget( {
 	Widget,
-	WidgetNull,
 }: WidgetComponentProps ) {
+	const activateReaderRevenueManager = useActivateModuleCallback(
+		MODULE_SLUG_READER_REVENUE_MANAGER,
+		{
+			redirectQueryArgs: {
+				expressSetup: 'true',
+				cta: 'newsletter-signup',
+			},
+		}
+	);
+
 	const [ isInProgress, setIsInProgress ] = useState( false );
 
-	const { activateModule } = useDispatch( CORE_MODULES );
-	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const { dismissPrompt } = useDispatch( CORE_USER );
-	const { setInternalServerError } = useDispatch( CORE_SITE );
+	const { dismissItem } = useDispatch( CORE_USER );
 
 	const documentationLinkURL = useSelect(
 		( select: Select ) =>
@@ -78,70 +86,20 @@ export default function ReaderRevenueManagerSetupCTABannerWidget( {
 		);
 	}, [] );
 
-	const isModuleConnected = useSelect(
-		( select: Select ) =>
-			select( CORE_MODULES ).isModuleConnected(
-				MODULE_SLUG_READER_REVENUE_MANAGER
-			),
-		[]
-	);
-
-	const isPromptDismissed = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).isPromptDismissed(
-				RRM_EXPRESS_SETUP_TRAFFIC_CTA_DISMISSED_KEY
-			),
-		[]
-	);
-
-	const viewOnlyDashboard = useViewOnly();
-
 	const isBusy =
 		isDismissingPrompt || isFetchingSetModuleActivation || isInProgress;
 
-	const shouldShowWidget =
-		isModuleConnected === false &&
-		isPromptDismissed === false &&
-		viewOnlyDashboard === false;
-
-	async function handleCTAClick() {
-		setIsInProgress( true );
-
-		const { error, response } = await activateModule(
-			MODULE_SLUG_READER_REVENUE_MANAGER
-		);
-
-		if ( error ) {
-			setIsInProgress( false );
-
-			setInternalServerError( {
-				id: `${ MODULE_SLUG_READER_REVENUE_MANAGER }-setup-error`,
-				description: error.message,
-			} );
-
-			return null;
+	function handleCTAClick() {
+		if ( ! activateReaderRevenueManager ) {
+			return;
 		}
 
-		await setItem( 'module_setup', MODULE_SLUG_READER_REVENUE_MANAGER, {
-			ttl: 300,
-		} );
-
-		navigateTo(
-			addQueryArgs( response.moduleReauthURL, {
-				cta: 'newsletter',
-				expressSetup: 'true',
-			} )
-		);
-
-		return null;
+		setIsInProgress( true );
+		activateReaderRevenueManager();
 	}
 
 	async function handleDismissClick() {
-		await dismissPrompt( RRM_EXPRESS_SETUP_TRAFFIC_CTA_DISMISSED_KEY );
-	}
-
-	if ( ! shouldShowWidget ) {
-		return <WidgetNull />;
+		await dismissItem( RRM_EXPRESS_SETUP_TRAFFIC_CTA_DISMISSED_KEY );
 	}
 
 	return (
@@ -149,25 +107,35 @@ export default function ReaderRevenueManagerSetupCTABannerWidget( {
 			<Banner
 				className="googlesitekit-banner--rrm-setup"
 				title={ __(
-					'Collect reader emails with a sign-up form',
+					'Collect reader emails directly on your site',
 					'google-site-kit'
 				) }
 				description={
 					<Fragment>
 						<P size={ SIZE_MEDIUM }>
-							{ __(
-								'Create a newsletter sign-up form to help turn visitors into loyal readers.',
-								'google-site-kit'
-							) }{ ' ' }
-							<Link
-								href={ documentationLinkURL }
-								external
-								hideExternalIndicator
-							>
-								{ __( 'Learn more', 'google-site-kit' ) }
-							</Link>
+							{ createInterpolateElement(
+								__(
+									'Add a simple sign-up form to your site so readers can share their email addresses with you. It’s an easy, privacy-safe way to start building a list of your most interested visitors. <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: (
+										<Link
+											href={ documentationLinkURL }
+											external
+											hideExternalIndicator
+										/>
+									),
+								}
+							) }
 						</P>
-						<PoweredByReaderRevenueManager />
+						<PoweredBy
+							Icon={ ReaderRevenueManagerIcon }
+							text={ __(
+								'Powered by Reader Revenue Manager',
+								'google-site-kit'
+							) }
+						/>
 					</Fragment>
 				}
 				ctaButton={ {
