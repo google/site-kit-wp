@@ -372,6 +372,10 @@ class Email_Reporting_Data_Requests {
 			)
 		);
 
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
 		return $request_assembler->map_responses( $response, $request_map );
 	}
 

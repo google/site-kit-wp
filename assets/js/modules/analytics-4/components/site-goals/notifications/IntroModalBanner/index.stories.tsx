@@ -25,6 +25,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ENUM_CONVERSION_EVENTS,
@@ -33,7 +34,11 @@ import {
 import { Story } from '@/js/types/Story';
 import { provideUserAuthentication } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
-import IntroModal from './index';
+import IntroModal, { SITE_GOALS_INTRO_MODAL_BANNER } from './index';
+
+const NotificationWithComponentProps = withNotificationComponentProps(
+	SITE_GOALS_INTRO_MODAL_BANNER
+)( IntroModal );
 
 function Template( {
 	setupRegistry,
@@ -60,7 +65,7 @@ function Template( {
 			before it shows. Add that element here so the modal shows in
 			the stories. */ }
 			<div className="googlesitekit-site-goals-primary-action" />
-			<IntroModal />
+			<NotificationWithComponentProps />
 		</WithRegistrySetup>
 	);
 }

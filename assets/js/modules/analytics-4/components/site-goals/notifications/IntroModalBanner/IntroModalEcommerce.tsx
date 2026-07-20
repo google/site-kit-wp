@@ -38,7 +38,6 @@ import SiteGoalsIntroModalEcommerceGraphic from '@/svg/graphics/site-goals-intro
 import type { IntroModalVariantProps } from './types';
 
 const IntroModalEcommerce: FC< IntroModalVariantProps > = ( {
-	onView,
 	onConfirm,
 	onClickLearnMore,
 	onDismiss,
@@ -53,7 +52,6 @@ const IntroModalEcommerce: FC< IntroModalVariantProps > = ( {
 		<BannerModal
 			className="googlesitekit-banner-modal--site-goals-intro"
 			Graphic={ SiteGoalsIntroModalEcommerceGraphic }
-			onView={ onView }
 			onClose={ onDismiss }
 			title={ __( 'See what drives your sales', 'google-site-kit' ) }
 			description={ createInterpolateElement(
