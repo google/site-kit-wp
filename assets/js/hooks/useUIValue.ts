@@ -32,7 +32,7 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
  *
  * @since n.e.x.t
  *
- * @param {string} key Ui key.
+ * @param {string} key UI key.
  * @return {Array} An array containing the value and a function to update it.
  */
 export default function useUIValue< T = unknown >(
