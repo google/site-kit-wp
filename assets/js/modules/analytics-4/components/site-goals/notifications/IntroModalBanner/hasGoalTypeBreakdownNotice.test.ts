@@ -109,16 +109,14 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		// `createTestRegistry` types `select` as `Function`. Narrow it to
-		// `Select` so the tests can pass it to `hasGoalTypeBreakdownNotice`.
+
 		select = registry.select as Select;
-		// Each resolver under test waits on the module's connection state and
-		// on the signed-in user, so provide both rather than letting them
-		// reach for the network.
+
 		provideModules( registry, [
 			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
 		] );
 		provideUserAuthentication( registry );
+
 		// The available dimensions resolver ends by syncing the list from GA4,
 		// but only for a user who can manage options. The helper reads none of
 		// that, so withhold the capability and the resolver stops short of the
@@ -180,7 +178,7 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 		);
 	} );
 
-	it( 'returns false while the available custom dimensions have not arrived', () => {
+	it( 'returns false while the available custom dimensions have not loaded', () => {
 		muteFetch( analyticsSettingsEndpoint );
 		provideActiveWidgets();
 		provideDismissedItems();
@@ -197,7 +195,7 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 		).toBe( false );
 	} );
 
-	it( 'returns false while the site goals settings have not arrived', () => {
+	it( 'returns false while the site goals settings have not loaded', () => {
 		muteFetch( siteGoalsSettingsEndpoint );
 		provideCustomDimensions();
 		provideDismissedItems();
@@ -214,7 +212,7 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 		).toBe( false );
 	} );
 
-	it( 'returns false while the dismissed items have not arrived', () => {
+	it( 'returns false while the dismissed items have not loaded', () => {
 		muteFetch( dismissedItemsEndpoint );
 		provideActiveWidgets( [ GOAL_TYPES.ECOMMERCE ] );
 		provideCustomDimensions();
