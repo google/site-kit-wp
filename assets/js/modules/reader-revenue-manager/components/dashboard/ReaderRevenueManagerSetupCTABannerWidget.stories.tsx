@@ -17,6 +17,16 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -44,8 +54,8 @@ Default.scenario = {};
 export default {
 	title: 'Modules/ReaderRevenueManager/Components/Dashboard/ReaderRevenueManagerSetupCTABannerWidget',
 	decorators: [
-		( Story ) => {
-			function setupRegistry( registry ) {
+		( Story: FC ) => {
+			function setupRegistry( registry: WPDataRegistry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_READER_REVENUE_MANAGER,
