@@ -46,7 +46,7 @@ const PSI_ENDPOINT = new RegExp(
  * @since 1.183.0
  *
  * @param url The request URL the fetch mock checks.
- * @return `true` when the URL requests the mobile report, `false` otherwise.
+ * @return Whether the URL requests the mobile report.
  */
 function MOBILE_ENDPOINT( url: string ) {
 	return (
@@ -61,7 +61,7 @@ function MOBILE_ENDPOINT( url: string ) {
  * @since 1.183.0
  *
  * @param url The request URL the fetch mock checks.
- * @return `true` when the URL requests the desktop report, `false` otherwise.
+ * @return Whether the URL requests the desktop report.
  */
 function DESKTOP_ENDPOINT( url: string ) {
 	return (

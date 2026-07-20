@@ -91,10 +91,10 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} overrides                           The state to set in place of the defaults.
-	 * @param {Array}  overrides.activeWidgets             The goal types whose widget the dashboard shows.
-	 * @param {Array}  overrides.availableCustomDimensions The custom dimensions the GA4 property already holds.
-	 * @param {Array}  overrides.dismissedItems            The dismissed item slugs.
+	 * @param  overrides                           The state to set in place of the defaults.
+	 * @param  overrides.activeWidgets             The goal types whose widget the dashboard shows.
+	 * @param  overrides.availableCustomDimensions The custom dimensions the GA4 property already holds.
+	 * @param  overrides.dismissedItems            The dismissed item slugs.
 	 * @return {void}
 	 */
 	function provideNoticeState( {
