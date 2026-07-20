@@ -124,56 +124,46 @@ class Email_Report_Section_Builder {
 		}
 
 		$sections                    = array();
-		$switched_locale             = switch_to_locale( $user_locale );
 		$log_date_range              = Email_Log::get_date_range_from_log( $email_log );
 		$this->current_period_length = $this->calculate_period_length_from_date_range( $log_date_range );
 
-		try {
 			$section_payloads = $this->extract_sections_from_payloads( $module_slug, $raw_sections_payloads );
 
-			if ( is_wp_error( $section_payloads ) ) {
-				// Surface payload build failures directly so callers receive the original module error context.
-				return $section_payloads;
-			}
-
-			foreach ( $section_payloads as $section_payload ) {
-				list( $labels, $values, $trends, $event_names ) = $this->normalize_section_payload_components( $section_payload );
-
-				$date_range = $log_date_range ?: $this->report_processor->compute_date_range( $section_payload['date_range'] ?? null );
-
-				$section = new Email_Report_Data_Section_Part(
-					$section_payload['section_key'] ?? 'section',
-					array(
-						'title'            => $section_payload['title'] ?? '',
-						'labels'           => $labels,
-						'event_names'      => $event_names,
-						'values'           => $values,
-						'trends'           => $trends,
-						'dimensions'       => $section_payload['dimensions'] ?? array(),
-						'dimension_values' => $section_payload['dimension_values'] ?? array(),
-						'date_range'       => $date_range,
-						'dashboard_link'   => $this->format_dashboard_link( $module_slug ),
-					)
-				);
-
-				if ( $section->is_empty() ) {
-					continue;
-				}
-
-				$sections[] = $section;
-			}
-
-			return $sections;
-		} catch ( \Exception $exception ) {
-			// Re-throw exception to the caller to prevent this email from being sent.
-			throw $exception;
-		} finally {
-			if ( $switched_locale ) {
-				restore_previous_locale();
-			}
-
-			$this->current_period_length = null;
+		if ( is_wp_error( $section_payloads ) ) {
+			// Surface payload build failures directly so callers receive the original module error context.
+			return $section_payloads;
 		}
+
+		foreach ( $section_payloads as $section_payload ) {
+			list( $labels, $values, $trends, $event_names ) = $this->normalize_section_payload_components( $section_payload );
+
+			$date_range = $log_date_range ?: $this->report_processor->compute_date_range( $section_payload['date_range'] ?? null );
+
+			$section = new Email_Report_Data_Section_Part(
+				$section_payload['section_key'] ?? 'section',
+				array(
+					'title'            => $section_payload['title'] ?? '',
+					'labels'           => $labels,
+					'event_names'      => $event_names,
+					'values'           => $values,
+					'trends'           => $trends,
+					'dimensions'       => $section_payload['dimensions'] ?? array(),
+					'dimension_values' => $section_payload['dimension_values'] ?? array(),
+					'date_range'       => $date_range,
+					'dashboard_link'   => $this->format_dashboard_link( $module_slug ),
+				)
+			);
+
+			if ( $section->is_empty() ) {
+				continue;
+			}
+
+			$sections[] = $section;
+		}
+
+		$this->current_period_length = null;
+
+		return $sections;
 	}
 
 	/**

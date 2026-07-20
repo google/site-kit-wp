@@ -124,6 +124,9 @@ class Email_Log_Processor {
 			return;
 		}
 
+		$user_locale     = get_user_locale( $user );
+		$switched_locale = switch_to_locale( $user_locale );
+
 		$sections = $this->build_sections_for_log( $email_log, $user, $raw_payload );
 		if ( is_wp_error( $sections ) ) {
 			$this->mark_failed( $post_id, $sections );
@@ -140,6 +143,11 @@ class Email_Log_Processor {
 		$template_data    = isset( $template_payload['template_data'] ) ? $template_payload['template_data'] : array();
 
 		$send_result = $this->report_sender->send( $user, $sections_payload, $template_data );
+
+		if ( $switched_locale ) {
+			restore_previous_locale();
+		}
+
 		if ( is_wp_error( $send_result ) ) {
 			$this->mark_failed( $post_id, $send_result );
 			return;
