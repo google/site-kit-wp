@@ -162,18 +162,18 @@ class Email_Report_Section_Builder {
 
 				$sections[] = $section;
 			}
+
+			return $sections;
 		} catch ( \Exception $exception ) {
+			// Re-throw exception to the caller to prevent this email from being sent.
+			throw $exception;
+		} finally {
 			if ( $switched_locale ) {
 				restore_previous_locale();
 			}
 
-			// Re-throw exception to the caller to prevent this email from being sent.
-			throw $exception;
+			$this->current_period_length = null;
 		}
-
-		$this->current_period_length = null;
-
-		return $sections;
 	}
 
 	/**
