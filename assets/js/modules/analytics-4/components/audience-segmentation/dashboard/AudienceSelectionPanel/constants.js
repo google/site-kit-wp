@@ -33,4 +33,6 @@ export const MIN_SELECTED_AUDIENCES_COUNT = 1;
 export const MAX_SELECTED_AUDIENCES_COUNT = 3;
 export const AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG =
 	'audience-creation-edit-scope-notice';
+export const AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG =
+	'audience-segmentation-setup-dismissed';
 export const AUDIENCE_CREATION_FORM = 'audience-creation-form';

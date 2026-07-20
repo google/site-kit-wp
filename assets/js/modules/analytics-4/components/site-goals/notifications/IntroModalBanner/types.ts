@@ -20,4 +20,5 @@ export interface IntroModalVariantProps {
 	onConfirm: () => void;
 	onClickLearnMore: () => void;
 	onDismiss: () => void;
+	onView: () => void;
 }

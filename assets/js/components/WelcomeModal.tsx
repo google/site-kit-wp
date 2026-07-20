@@ -39,6 +39,7 @@ import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import BannerModal from '@/js/components/BannerModal/index';
 import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
 import { deleteItem, getItem } from '@/js/googlesitekit/api/cache';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	CORE_USER,
 	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
@@ -47,6 +48,7 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { useHasBeenViewed } from '@/js/googlesitekit/notifications/hooks/useHasBeenViewed';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { useFeature } from '@/js/hooks/useFeature';
 import useQueryArg from '@/js/hooks/useQueryArg';
@@ -221,6 +223,7 @@ const WelcomeModal: FC< WelcomeModalProps > = ( { id, Notification } ) => {
 
 	const { dismissItem, triggerOnDemandTour } = useDispatch( CORE_USER );
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+	const { setValue } = useDispatch( CORE_UI );
 	const [ , setNotification ] = useQueryArg( 'notification' );
 
 	// Pass null for the category to use the default category
@@ -307,6 +310,16 @@ const WelcomeModal: FC< WelcomeModalProps > = ( { id, Notification } ) => {
 	}, [ closeAndDismissModal, triggerOnDemandTour, welcomeTour ] );
 
 	const handleView = useCallback( () => {
+		// The modal content renders inside a fixed-position Dialog, which is
+		// taken out of the flow of the `<Notification>` wrapper's `<section>`.
+		// That leaves the section with no reliable area for the framework's own
+		// intersection observer to flip the notification to "viewed", so the
+		// `view_notice` event can be missed. `BannerModal` observes its own
+		// visible content instead, so mark the notification viewed when the
+		// modal comes into view, which is what makes `<Notification>` fire the
+		// view event.
+		setValue( useHasBeenViewed.getKey( id ), true );
+
 		async function trackSetupEventsOnce() {
 			const startSiteSetup = await getItem( 'start_site_setup' );
 			const startUserSetup = await getItem( 'start_user_setup' );
@@ -328,7 +341,7 @@ const WelcomeModal: FC< WelcomeModalProps > = ( { id, Notification } ) => {
 		}
 
 		trackSetupEventsOnce();
-	}, [ viewContext ] );
+	}, [ id, setValue, viewContext ] );
 
 	const trackConfirmation = useCallback( () => {
 		trackEvents.confirm( VARIANT_TRACKING_LABELS[ modalVariant ] );
