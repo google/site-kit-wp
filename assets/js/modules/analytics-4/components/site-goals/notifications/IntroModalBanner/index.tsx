@@ -17,9 +17,9 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
-import { useState } from '@wordpress/element';
+import { ElementType, FC } from 'react';
 
 /**
  * Internal dependencies
@@ -32,6 +32,8 @@ import {
 } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { useHasBeenViewed } from '@/js/googlesitekit/notifications/hooks/useHasBeenViewed';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 import {
@@ -68,7 +70,6 @@ type IntroModalVariantLabel =
 	typeof INTRO_MODAL_VARIANTS[ keyof typeof INTRO_MODAL_VARIANTS ];
 
 interface IntroModalTrackingEvents {
-	view: ( label: IntroModalVariantLabel ) => void;
 	confirm: ( label: IntroModalVariantLabel ) => void;
 	clickLearnMore: ( label: IntroModalVariantLabel ) => void;
 	dismiss: ( label: IntroModalVariantLabel ) => void;
@@ -78,12 +79,10 @@ function createModalHandlers(
 	label: IntroModalVariantLabel,
 	onClose: () => void,
 	trackEvent: IntroModalTrackingEvents,
-	onShowMeCTAClicked: () => void
+	onShowMeCTAClicked: () => void,
+	onView: () => void
 ): IntroModalVariantProps {
 	return {
-		onView: () => {
-			trackEvent.view( label );
-		},
 		onConfirm: () => {
 			trackEvent.confirm( label );
 			// The "Show me" path saves its dismissed items inside
@@ -98,13 +97,18 @@ function createModalHandlers(
 			trackEvent.dismiss( label );
 			onClose();
 		},
+		onView,
 	};
 }
 
-export default function IntroModal() {
-	const [ isOpen, setIsOpen ] = useState( true );
+interface IntroModalProps {
+	id: string;
+	Notification: ElementType;
+}
 
+const IntroModal: FC< IntroModalProps > = ( { id, Notification } ) => {
 	const { dismissItem, triggerOnDemandTour } = useDispatch( CORE_USER );
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 	const { setValue } = useDispatch( CORE_UI );
 
 	const breakpoint = useBreakpoint();
@@ -135,13 +139,6 @@ export default function IntroModal() {
 		[]
 	);
 
-	const isIntroModalDismissed = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).isItemDismissed(
-				SITE_GOALS_INTRO_MODAL_BANNER
-			),
-		[]
-	);
 	const hasBreakdownDimensions = useSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
@@ -176,14 +173,16 @@ export default function IntroModal() {
 	// It needs at least one detected event type. If there is none, the
 	// modal never shows, so the hook below should not load the widget
 	// areas or wait.
+	//
+	// The dismissed-item check is intentionally omitted here: `isDismissible`
+	// on the notification registration keeps the framework from mounting this
+	// component while the modal is dismissed.
 	const canShowSiteGoalsIntroModal =
 		hasEcommerceConversionReportingEvents !== undefined &&
 		hasLeadConversionReportingEvents !== undefined &&
 		( hasEcommerceConversionReportingEvents ||
 			hasLeadConversionReportingEvents ) &&
-		isIntroModalDismissed === false &&
-		! hasInsufficientAnalyticsAccess &&
-		isOpen;
+		! hasInsufficientAnalyticsAccess;
 
 	// While the modal can show, the hook loads the widget areas above and
 	// including the Site Goals section, and reports ready once the section
@@ -193,8 +192,18 @@ export default function IntroModal() {
 	);
 
 	function handleClose() {
-		setIsOpen( false );
-		dismissItem( SITE_GOALS_INTRO_MODAL_BANNER );
+		dismissNotification( id );
+	}
+
+	// The modal content renders inside a fixed-position Dialog, which is taken
+	// out of the flow of the `<Notification>` wrapper's `<section>`. That
+	// leaves the section with no measurable area, so the framework's own
+	// intersection observer never flips the notification to "viewed" and the
+	// `view_notification` event never fires. `BannerModal` observes its own
+	// visible content instead, so mark the notification viewed when the modal
+	// comes into view, which is what makes `<Notification>` fire the view event.
+	function handleView() {
+		setValue( useHasBeenViewed.getKey( id ), true );
 	}
 
 	// Save the confirmed slug before the shared slug. Each save replaces the
@@ -203,11 +212,10 @@ export default function IntroModal() {
 	// makes the survey triggers read the wrong segment.
 	async function dismissConfirmedThenShared() {
 		await dismissItem( SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED );
-		dismissItem( SITE_GOALS_INTRO_MODAL_BANNER );
+		dismissNotification( id );
 	}
 
 	function handleShowMe() {
-		setIsOpen( false );
 		dismissConfirmedThenShared();
 
 		triggerOnDemandTour(
@@ -249,35 +257,64 @@ export default function IntroModal() {
 		INTRO_MODAL_VARIANTS.ECOMMERCE,
 		handleClose,
 		trackEvent,
-		handleShowMe
+		handleShowMe,
+		handleView
 	);
 	const leadHandlers = createModalHandlers(
 		INTRO_MODAL_VARIANTS.LEAD,
 		handleClose,
 		trackEvent,
-		handleShowMe
+		handleShowMe,
+		handleView
 	);
 	const ecommerceAndLeadHandlers = createModalHandlers(
 		INTRO_MODAL_VARIANTS.ECOMMERCE_AND_LEAD,
 		handleClose,
 		trackEvent,
-		handleShowMe
+		handleShowMe,
+		handleView
 	);
 
 	if (
 		hasEcommerceConversionReportingEvents &&
 		hasLeadConversionReportingEvents
 	) {
-		return <IntroModalEcommerceAndLead { ...ecommerceAndLeadHandlers } />;
+		return (
+			<Notification
+				gaTrackingEventArgs={ {
+					label: INTRO_MODAL_VARIANTS.ECOMMERCE_AND_LEAD,
+				} }
+			>
+				<IntroModalEcommerceAndLead { ...ecommerceAndLeadHandlers } />
+			</Notification>
+		);
 	}
 
 	if ( hasEcommerceConversionReportingEvents ) {
-		return <IntroModalEcommerce { ...ecommerceHandlers } />;
+		return (
+			<Notification
+				gaTrackingEventArgs={ {
+					label: INTRO_MODAL_VARIANTS.ECOMMERCE,
+				} }
+			>
+				<IntroModalEcommerce { ...ecommerceHandlers } />
+			</Notification>
+		);
 	}
 
 	if ( hasLeadConversionReportingEvents ) {
-		return <IntroModalLead { ...leadHandlers } />;
+		return (
+			<Notification
+				gaTrackingEventArgs={ {
+					label: INTRO_MODAL_VARIANTS.LEAD,
+				} }
+			>
+				<IntroModalLead { ...leadHandlers } />
+			</Notification>
+		);
 	}
 
 	return null;
-}
+};
+
+export default IntroModal;

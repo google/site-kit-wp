@@ -42,6 +42,23 @@ export type PDFIcon = FC< {
 } >;
 
 /**
+ * The props a `?pdf` SVG import accepts.
+ *
+ * `assets/js/types/svg.d.ts` types every `?pdf` import with this interface, so
+ * an import and the icon that wraps it always take the same props.
+ *
+ * @since n.e.x.t
+ */
+export interface PDFSvgFileProps {
+	/** The drawing's width, in page points. */
+	width?: number;
+	/** The drawing's height, in page points. */
+	height?: number;
+	/** The color that replaces `currentColor` in the source file. */
+	color?: string;
+}
+
+/**
  * One header section chip: a dashboard area surfaced in the PDF.
  *
  * @since 1.182.0
