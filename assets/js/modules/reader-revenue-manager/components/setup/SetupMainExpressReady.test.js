@@ -19,15 +19,9 @@
 /**
  * Internal dependencies
  */
-import { isFeatureEnabled } from '@/js/features';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import { render } from '@tests/js/test-utils';
 import SetupMainExpressReady from './SetupMainExpressReady';
-
-jest.mock( '@/js/features', () => ( {
-	...jest.requireActual( '@/js/features' ),
-	isFeatureEnabled: jest.fn(),
-} ) );
 
 jest.mock( './SetupMain', () => {
 	return function MockSetupMain() {
@@ -35,51 +29,31 @@ jest.mock( './SetupMain', () => {
 	};
 } );
 
+jest.mock( './SetupMainExpress', () => {
+	return function MockSetupMainExpress() {
+		return <div>Express setup main</div>;
+	};
+} );
+
 describe( 'SetupMainExpressReady', () => {
 	mockLocation();
 
-	beforeEach( () => {
-		isFeatureEnabled.mockReturnValue( true );
-	} );
-
 	it( 'renders express setup when expressSetup=true', () => {
-		global.location.href =
-			'http://example.com/?expressSetup=true&step=connect-publication';
+		global.location.href = 'http://example.com/?expressSetup=true';
 
 		const { getByText, queryByText } = render( <SetupMainExpressReady /> );
 
-		expect(
-			getByText(
-				'RRM express setup placeholder: publication setup step.'
-			)
-		).toBeInTheDocument();
+		expect( getByText( 'Express setup main' ) ).toBeInTheDocument();
 		expect( queryByText( 'Legacy setup main' ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'renders terms of service step when expressSetup=true and step is terms-of-service', () => {
-		global.location.href =
-			'http://example.com/?expressSetup=true&step=terms-of-service';
+	it( 'renders legacy setup when expressSetup is not present', () => {
+		global.location.href = 'http://example.com/';
 
 		const { getByText, queryByText } = render( <SetupMainExpressReady /> );
 
-		expect(
-			getByText( 'RRM express setup placeholder: terms of service step.' )
-		).toBeInTheDocument();
-		expect( queryByText( 'Legacy setup main' ) ).not.toBeInTheDocument();
-	} );
-
-	it( 'renders publication policies step when expressSetup=true and step is publication-policies', () => {
-		global.location.href =
-			'http://example.com/?expressSetup=true&step=publication-policies';
-
-		const { getByText, queryByText } = render( <SetupMainExpressReady /> );
-
-		expect(
-			getByText(
-				'RRM express setup placeholder: publication policies step.'
-			)
-		).toBeInTheDocument();
-		expect( queryByText( 'Legacy setup main' ) ).not.toBeInTheDocument();
+		expect( getByText( 'Legacy setup main' ) ).toBeInTheDocument();
+		expect( queryByText( 'Express setup main' ) ).not.toBeInTheDocument();
 	} );
 
 	it( 'renders legacy setup when expressSetup is not true', () => {
@@ -88,25 +62,6 @@ describe( 'SetupMainExpressReady', () => {
 		const { getByText, queryByText } = render( <SetupMainExpressReady /> );
 
 		expect( getByText( 'Legacy setup main' ) ).toBeInTheDocument();
-		expect(
-			queryByText(
-				'RRM express setup placeholder: publication setup step.'
-			)
-		).not.toBeInTheDocument();
-	} );
-
-	it( 'renders legacy setup when rrmExpressSetup feature is disabled', () => {
-		isFeatureEnabled.mockReturnValue( false );
-		global.location.href =
-			'http://example.com/?expressSetup=true&step=terms-of-service';
-
-		const { getByText, queryByText } = render( <SetupMainExpressReady /> );
-
-		expect( getByText( 'Legacy setup main' ) ).toBeInTheDocument();
-		expect(
-			queryByText(
-				'RRM express setup placeholder: terms of service step.'
-			)
-		).not.toBeInTheDocument();
+		expect( queryByText( 'Express setup main' ) ).not.toBeInTheDocument();
 	} );
 } );

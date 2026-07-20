@@ -24,7 +24,6 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { isFeatureEnabled } from '@/js/features';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import SetupMain from './SetupMain';
 import SetupMainExpress from './SetupMainExpress';
@@ -38,7 +37,7 @@ export default function SetupMainExpressReady( {
 }: SetupMainExpressReadyProps ) {
 	const [ expressSetup ] = useQueryArg( 'expressSetup' );
 
-	if ( isFeatureEnabled( 'rrmExpressSetup' ) && expressSetup === 'true' ) {
+	if ( expressSetup === 'true' ) {
 		return <SetupMainExpress />;
 	}
 

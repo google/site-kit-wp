@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager express setup newsletter CTA flow.
+ * Reader Revenue Manager newsletter signup CTA express setup flow.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -21,7 +21,32 @@
  */
 import { __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import useQueryArg from '@/js/hooks/useQueryArg';
+import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import StepPublicationPolicies from './StepPublicationPolicies';
+import StepPublicationSetup from './StepPublicationSetup';
+import StepSetupComplete from './StepSetupComplete';
+import StepTermsOfService from './StepTermsOfService';
+
 export default function SetupCTANewsletter() {
+	const [ step ] = useQueryArg( 'step' );
+
+	const stepComponents: Record< string, React.ComponentType > = {
+		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: StepPublicationSetup,
+		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: StepTermsOfService,
+		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: StepPublicationPolicies,
+		[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: StepSetupComplete,
+	};
+
+	const StepComponent = stepComponents[ step ];
+
+	if ( StepComponent ) {
+		return <StepComponent />;
+	}
+
 	return (
 		<p>
 			{ __(

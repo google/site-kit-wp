@@ -20,32 +20,21 @@
  * Internal dependencies
  */
 import useQueryArg from '@/js/hooks/useQueryArg';
-import {
-	EXPRESS_SETUP_CTAS,
-	EXPRESS_SETUP_STEPS,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import SetupCTANewsletter from './SetupCTANewsletter';
-import StepPublicationPolicies from './StepPublicationPolicies';
-import StepPublicationSetup from './StepPublicationSetup';
-import StepSetupComplete from './StepSetupComplete';
-import StepTermsOfService from './StepTermsOfService';
 
 export default function SetupMainExpress() {
 	const [ cta ] = useQueryArg( 'cta' );
-	const [ step ] = useQueryArg( 'step' );
 
-	const stepComponents = {
-		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: StepPublicationSetup,
-		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: StepTermsOfService,
-		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: StepPublicationPolicies,
-		[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: StepSetupComplete,
-		[ EXPRESS_SETUP_STEPS.SETUP_CTA ]:
-			cta === EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
-				? SetupCTANewsletter
-				: StepPublicationSetup,
+	const ctaSetupComponents: Record< string, React.ComponentType > = {
+		[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: SetupCTANewsletter,
 	};
 
-	const StepComponent = stepComponents[ step ] || StepPublicationSetup;
+	const ExpressSetupComponent = ctaSetupComponents[ cta ] || null;
 
-	return <StepComponent />;
+	if ( ! ExpressSetupComponent ) {
+		return null;
+	}
+
+	return <ExpressSetupComponent />;
 }

@@ -26,7 +26,7 @@ import SetupMainExpress from './index';
 describe( 'SetupMainExpress', () => {
 	mockLocation();
 
-	it( 'renders the newsletter CTA setup step for newsletter-signup CTA', () => {
+	it( 'renders the newsletter CTA component for newsletter-signup CTA', () => {
 		global.location.href =
 			'http://example.com/?cta=newsletter-signup&step=setup-cta';
 
@@ -39,71 +39,11 @@ describe( 'SetupMainExpress', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'renders terms of service step for newsletter-signup CTA', () => {
-		global.location.href =
-			'http://example.com/?cta=newsletter-signup&step=terms-of-service';
+	it( 'renders nothing when no CTA is specified', () => {
+		global.location.href = 'http://example.com/';
 
-		const { getByText } = render( <SetupMainExpress /> );
+		const { container } = render( <SetupMainExpress /> );
 
-		expect(
-			getByText( 'RRM express setup placeholder: terms of service step.' )
-		).toBeInTheDocument();
-	} );
-
-	it( 'renders terms of service step when no CTA is set', () => {
-		global.location.href = 'http://example.com/?step=terms-of-service';
-
-		const { getByText } = render( <SetupMainExpress /> );
-
-		expect(
-			getByText( 'RRM express setup placeholder: terms of service step.' )
-		).toBeInTheDocument();
-	} );
-
-	it( 'renders publication policies step for newsletter-signup CTA', () => {
-		global.location.href =
-			'http://example.com/?cta=newsletter-signup&step=publication-policies';
-
-		const { getByText } = render( <SetupMainExpress /> );
-
-		expect(
-			getByText(
-				'RRM express setup placeholder: publication policies step.'
-			)
-		).toBeInTheDocument();
-	} );
-
-	it( 'renders publication policies step when no CTA is set', () => {
-		global.location.href = 'http://example.com/?step=publication-policies';
-
-		const { getByText } = render( <SetupMainExpress /> );
-
-		expect(
-			getByText(
-				'RRM express setup placeholder: publication policies step.'
-			)
-		).toBeInTheDocument();
-	} );
-
-	it( 'renders setup complete for no CTA when the setup-complete step is set', () => {
-		global.location.href = 'http://example.com/?step=setup-complete';
-
-		const { getByText } = render( <SetupMainExpress /> );
-
-		expect(
-			getByText( 'RRM express setup placeholder: setup complete step.' )
-		).toBeInTheDocument();
-	} );
-
-	it( 'renders publication setup by default when no CTA is set', () => {
-		global.location.href = 'http://example.com/?step=connect-publication';
-
-		const { getByText } = render( <SetupMainExpress /> );
-
-		expect(
-			getByText(
-				'RRM express setup placeholder: publication setup step.'
-			)
-		).toBeInTheDocument();
+		expect( container ).toBeEmptyDOMElement();
 	} );
 } );
