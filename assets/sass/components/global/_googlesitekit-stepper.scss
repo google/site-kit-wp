@@ -135,7 +135,7 @@
 		box-sizing: content-box;
 		display: flex;
 
-		@media (min-width: $bp-tablet) {
+		@media (min-width: $bp-desktop) {
 			align-items: stretch;
 			column-gap: 14px;
 			display: grid;
@@ -143,9 +143,10 @@
 		}
 
 		.googlesitekit-stepper__step {
+			display: block;
 			flex: 2 1 0;
 
-			@media (min-width: $bp-tablet) {
+			@media (min-width: $bp-desktop) {
 				display: grid;
 				flex-grow: 1;
 				grid-template-columns: var(--googlesitekit-stepper-size) auto;
@@ -161,7 +162,7 @@
 		.googlesitekit-stepper__step-info {
 			display: none;
 
-			@media (min-width: $bp-tablet) {
+			@media (min-width: $bp-desktop) {
 				align-self: center;
 				display: block;
 			}
@@ -176,7 +177,7 @@
 			flex-direction: row;
 			place-items: center;
 
-			@media (min-width: $bp-tablet) {
+			@media (min-width: $bp-desktop) {
 				flex-direction: column;
 			}
 
@@ -188,7 +189,7 @@
 				display: block;
 				flex: 1 1 0;
 
-				@media (min-width: $bp-tablet) {
+				@media (min-width: $bp-desktop) {
 					block-size: auto;
 					inline-size: 1px;
 				}
@@ -199,7 +200,7 @@
 		.googlesitekit-stepper__step:last-child .googlesitekit-stepper__step-progress::after {
 			display: none;
 
-			@media (min-width: $bp-tablet) {
+			@media (min-width: $bp-desktop) {
 				display: block;
 				visibility: hidden;
 			}
