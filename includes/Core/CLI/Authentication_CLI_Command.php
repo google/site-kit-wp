@@ -35,7 +35,7 @@ class Authentication_CLI_Command extends CLI_Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp google-site-kit auth disconnect --id=11
+	 *     wp google-site-kit auth disconnect --id=11.
 	 *
 	 * @alias revoke
 	 *

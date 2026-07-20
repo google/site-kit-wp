@@ -111,15 +111,15 @@ class Conversion_Reporting_SettingsTest extends TestCase {
 			'lostEventsCalloutDismissedAt' => 0,
 		);
 
-		// Make sure settings can be updated even without having them set initially
+		// Make sure settings can be updated even without having them set initially.
 		$this->conversion_reporting_settings->merge( $original_settings );
 		$this->assertEqualSetsWithIndex( $original_settings, $this->conversion_reporting_settings->get() );
 
-		// Make sure invalid keys aren't set
+		// Make sure invalid keys aren't set.
 		$this->conversion_reporting_settings->merge( array( 'test_key' => 'test_value' ) );
 		$this->assertEqualSetsWithIndex( $original_settings, $this->conversion_reporting_settings->get() );
 
-		// Make sure that we can update settings partially
+		// Make sure that we can update settings partially.
 		$this->conversion_reporting_settings->set( $original_settings );
 		$this->conversion_reporting_settings->merge( array( 'newEventsCalloutDismissedAt' => 1734519924 ) );
 		$this->assertEqualSetsWithIndex(
@@ -130,17 +130,17 @@ class Conversion_Reporting_SettingsTest extends TestCase {
 			$this->conversion_reporting_settings->get()
 		);
 
-		// Make sure that we can update all settings at once
+		// Make sure that we can update all settings at once.
 		$this->conversion_reporting_settings->set( $original_settings );
 		$this->conversion_reporting_settings->merge( $changed_settings );
 		$this->assertEqualSetsWithIndex( $changed_settings, $this->conversion_reporting_settings->get() );
 
-		// Make sure that we can't set wrong format for the newEventsCalloutDismissedAt property
+		// Make sure that we can't set wrong format for the newEventsCalloutDismissedAt property.
 		$this->conversion_reporting_settings->set( $original_settings );
 		$this->conversion_reporting_settings->merge( array( 'newEventsCalloutDismissedAt' => null ) );
 		$this->assertEqualSetsWithIndex( $original_settings, $this->conversion_reporting_settings->get() );
 
-		// Make sure that we can't set wrong format for the lostEventsCalloutDismissedAt property
+		// Make sure that we can't set wrong format for the lostEventsCalloutDismissedAt property.
 		$this->conversion_reporting_settings->set( $original_settings );
 		$this->conversion_reporting_settings->merge( array( 'lostEventsCalloutDismissedAt' => null ) );
 		$this->assertEqualSetsWithIndex( $original_settings, $this->conversion_reporting_settings->get() );

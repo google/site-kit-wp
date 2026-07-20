@@ -142,7 +142,7 @@ final class Client_Factory {
 		// In our case however, the client is namespaced to be used by Site Kit only.
 		$config['headers']['User-Agent'] = Google_Proxy::get_application_name();
 
-		/** This filter is documented in wp-includes/class-http.php */
+		/** This filter is documented in wp-includes/class-http.php.*/
 		$ssl_verify = apply_filters( 'https_ssl_verify', true, null );
 		// If SSL verification is enabled (default) use the SSL certificate bundle included with WP.
 		if ( $ssl_verify ) {

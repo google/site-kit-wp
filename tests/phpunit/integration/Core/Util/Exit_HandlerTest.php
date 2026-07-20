@@ -15,7 +15,7 @@ use Google\Site_Kit\Tests\MethodSpy;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
- * Class Exit_HandlerTest
+ * Class Exit_HandlerTest.
  *
  * @group Util
  */
