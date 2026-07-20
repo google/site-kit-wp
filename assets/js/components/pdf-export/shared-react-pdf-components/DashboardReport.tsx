@@ -54,16 +54,6 @@ import PDFTypography from './PDFTypography';
 const DEFAULT_PAGE_HEIGHT = 792;
 
 /**
- * The document's fixed subject, shown in the PDF's document properties.
- */
-const DOCUMENT_SUBJECT = __( 'Site Kit report', 'google-site-kit' );
-
-/**
- * The document's fixed keywords, shown in the PDF's document properties.
- */
-const DOCUMENT_KEYWORDS = __( 'Site Kit, Google, report', 'google-site-kit' );
-
-/**
  * Formats a date range for the document title, e.g. "Jan 1, 2021 - Jan 28, 2021".
  *
  * @since n.e.x.t
@@ -198,7 +188,7 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 		title = formattedDateRange
 			? sprintf(
 					/* translators: 1: Site name. 2: Report date range. */
-					__( '%1$s: %2$s', 'google-site-kit' ),
+					__( '%1$s: Site Kit report (%2$s)', 'google-site-kit' ),
 					siteName,
 					formattedDateRange
 			  )
@@ -209,8 +199,8 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 		<Document
 			title={ title }
 			author={ siteName }
-			subject={ DOCUMENT_SUBJECT }
-			keywords={ DOCUMENT_KEYWORDS }
+			subject={ __( 'Site Kit report', 'google-site-kit' ) }
+			keywords={ __( 'Site Kit, Google, report', 'google-site-kit' ) }
 			language={ getLocale() }
 			pageMode="useOutlines"
 		>

@@ -311,7 +311,7 @@ describe( 'DashboardReport', () => {
 		const reportJSON = renderDashboardReportJSON();
 
 		expect( reportJSON ).toContain(
-			'"title":"Example Site: Jan 1, 2021 - Jan 28, 2021"'
+			'"title":"Example Site: Site Kit report (Jan 1, 2021 - Jan 28, 2021)"'
 		);
 	} );
 
