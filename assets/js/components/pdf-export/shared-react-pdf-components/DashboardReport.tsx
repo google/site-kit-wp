@@ -30,6 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { formatDateString } from '@/js/components/pdf-export/formatDateString';
 import {
 	PDF_PAGE_PADDING,
 	PDF_PAGE_WIDTH,
@@ -45,11 +46,44 @@ import {
 	PDFReportArea,
 	PDFReportWidget,
 } from '@/js/components/pdf-export/types';
+import { getLocale } from '@/js/util/i18n';
 import PDFEmailReportingNotice from './PDFEmailReportingNotice';
 import PDFHeader from './PDFHeader';
 import PDFTypography from './PDFTypography';
 
 const DEFAULT_PAGE_HEIGHT = 792;
+
+/**
+ * The document's fixed subject, shown in the PDF's document properties.
+ */
+const DOCUMENT_SUBJECT = __( 'Site Kit report', 'google-site-kit' );
+
+/**
+ * The document's fixed keywords, shown in the PDF's document properties.
+ */
+const DOCUMENT_KEYWORDS = __( 'Site Kit, Google, report', 'google-site-kit' );
+
+/**
+ * Formats a date range for the document title, e.g. "Jan 1, 2021 - Jan 28, 2021".
+ *
+ * @since n.e.x.t
+ *
+ * @param dateRange           The report date range.
+ * @param dateRange.startDate The first day of the range, as `YYYY-MM-DD`.
+ * @param dateRange.endDate   The last day of the range, as `YYYY-MM-DD`.
+ * @return The localized date range, or an empty string when neither date is valid.
+ */
+function formatDocumentDateRange( dateRange: {
+	startDate: string;
+	endDate: string;
+} ): string {
+	const startDate = formatDateString( dateRange.startDate );
+	const endDate = formatDateString( dateRange.endDate );
+
+	return startDate && endDate
+		? `${ startDate } - ${ endDate }`
+		: startDate || endDate;
+}
 
 const styles = createPDFStyles( {
 	page: {
@@ -156,18 +190,29 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 		renderableAreaSlugs.has( slug )
 	);
 
+	let title: string = __( 'Site Kit Dashboard Report', 'google-site-kit' );
+
+	if ( siteName ) {
+		const formattedDateRange = formatDocumentDateRange( dateRange );
+
+		title = formattedDateRange
+			? sprintf(
+					/* translators: 1: Site name. 2: Report date range. */
+					__( '%1$s: %2$s', 'google-site-kit' ),
+					siteName,
+					formattedDateRange
+			  )
+			: siteName;
+	}
+
 	return (
 		<Document
-			title={
-				siteName
-					? sprintf(
-							/* translators: %s: Site name. */
-							__( '%s – Site Kit report', 'google-site-kit' ),
-							siteName
-					  )
-					: __( 'Site Kit Dashboard Report', 'google-site-kit' )
-			}
-			author="Site Kit by Google"
+			title={ title }
+			author={ siteName }
+			subject={ DOCUMENT_SUBJECT }
+			keywords={ DOCUMENT_KEYWORDS }
+			language={ getLocale() }
+			pageMode="useOutlines"
 		>
 			<Page
 				size={ [ PDF_PAGE_WIDTH, pageHeight ] }
@@ -196,7 +241,12 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 					) }
 					{ renderableAreas.map(
 						( { areaSlug, areaTitle, widgets } ) => (
-							<View key={ `section-${ areaSlug }` }>
+							<View
+								key={ `section-${ areaSlug }` }
+								// react-pdf's types have a bug that prevents passing a `bookmark` prop, so we use a spread to bypass it.
+								// See: https://github.com/diegomura/react-pdf/issues/1979#issuecomment-1231391616
+								{ ...{ bookmark: areaTitle } }
+							>
 								<PDFTypography
 									type="headline"
 									style={ styles.areaTitle }
