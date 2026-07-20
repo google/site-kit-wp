@@ -43,7 +43,7 @@ export interface BannerModalProps {
 	className?: string;
 	Graphic: FC;
 	newBadge?: boolean;
-	onView?: () => void;
+	onView: () => void;
 	onClose: () => void;
 	title: ReactNode;
 	description: ReactNode;
@@ -71,7 +71,7 @@ export interface BannerModalProps {
  * @param props               Component props.
  * @param props.className     Additional CSS class name(s) to apply to the root Dialog element.
  * @param props.Graphic       SVG graphic component to render in the modal header.
- * @param props.onView        Optional. Callback invoked when the modal content scrolls into view, used for tracking purposes.
+ * @param props.onView        Callback invoked when the modal content scrolls into view, used for tracking purposes.
  * @param props.onClose       Callback invoked when the modal is closed.
  * @param props.title         Modal title text.
  * @param props.description   Modal description content (string or element).
