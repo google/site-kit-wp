@@ -55,6 +55,14 @@ const keyMetricsWidgets = KEY_METRICS_WIDGETS as Record<
 >;
 
 /**
+ * The props shape the aggregate component spreads into a tile: its `title` plus
+ * the fields the tile's `getTileData` resolved. The map above stores each tile as
+ * `ComponentType< never >` so every tile's own props shape fits it, so a
+ * component crossing into the rendered tile is converted to this type.
+ */
+type TileRenderComponent = ComponentType< Record< string, unknown > >;
+
+/**
  * One rendered Key Metrics tile: enough to render its `TileComponent`, plus the
  * `data` it consumes (or `null` when that tile's data failed to load).
  *
@@ -66,7 +74,7 @@ export interface KeyMetricsPDFTile {
 	/** The tile heading, from the `KEY_METRICS_WIDGETS` entry's `title`. */
 	title: string;
 	/** The tile's `@react-pdf/renderer` component. */
-	TileComponent: ComponentType< Record< string, unknown > >;
+	TileComponent: TileRenderComponent;
 	/** The normalised tile data, or `null` when this tile's data failed to load. */
 	data: unknown;
 }
@@ -135,7 +143,8 @@ export default async function getPDFData( {
 				// the dashboard bundle. Preload it here and hand its resolved
 				// default to the aggregate component, which renders it directly
 				// (the react-pdf renderer does not honour Suspense).
-				let TileComponent = pdfTile.TileComponent;
+				let TileComponent =
+					pdfTile.TileComponent as TileRenderComponent;
 
 				try {
 					const [ data, resolved ] = await Promise.all( [
@@ -146,7 +155,7 @@ export default async function getPDFData( {
 									default: pdfTile.TileComponent,
 							  } ),
 					] );
-					TileComponent = resolved.default;
+					TileComponent = resolved.default as TileRenderComponent;
 					return { slug, title: entry.title, TileComponent, data };
 				} catch {
 					failureCount += 1;

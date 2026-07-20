@@ -86,10 +86,11 @@ function render(
 	return tree;
 }
 
-const NumericTile: FC< { title: string; value: string } > = ( {
-	title,
-	value,
-} ) => <Text>{ `${ title }: ${ value }` }</Text>;
+// Typed with the aggregate's own render-prop shape, matching how a real tile is
+// handed to `KeyMetricsPDF` after `getPDFData` widens it.
+const NumericTile: FC< Record< string, unknown > > = ( { title, value } ) => (
+	<Text>{ `${ title }: ${ value }` }</Text>
+);
 
 describe( 'KeyMetricsPDF', () => {
 	it( 'renders one tile per configured metric in a four-column grid', () => {
