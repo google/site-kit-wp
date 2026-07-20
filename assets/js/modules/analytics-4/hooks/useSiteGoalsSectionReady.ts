@@ -49,7 +49,7 @@ import {
  * @since 1.182.0
  *
  * @param enabled Whether to load the widget areas and wait. While `false`, the hook reports the section as not ready.
- * @return Whether the Site Goals section is ready.
+ * @return `true` when the Site Goals section is ready, `false` otherwise.
  */
 export function useSiteGoalsSectionReady( enabled: boolean ): boolean {
 	const [ isSectionReady, setIsSectionReady ] = useState( false );

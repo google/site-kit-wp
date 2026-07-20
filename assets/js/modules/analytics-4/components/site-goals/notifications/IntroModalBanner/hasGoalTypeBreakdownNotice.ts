@@ -33,13 +33,14 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
  *
  * The intro modal calls this helper once per goal type, so the tour knows
  * which widget its breakdown step lands on. It leaves out the intro modal's
- * own dismissal, which confirming the modal saves before the tour starts.
+ * own dismissal. Confirming the modal saves that dismissal before the tour
+ * starts.
  *
  * @since n.e.x.t
  *
- * @param select   Registry `select` function.
- * @param goalType Goal type whose widget to check.
- * @return `true` when that widget shows the notice.
+ * @param select   The registry `select` function.
+ * @param goalType The goal type whose widget to check.
+ * @return `true` when the goal type's widget shows the notice, `false` otherwise.
  */
 export function hasGoalTypeBreakdownNotice(
 	select: Select,

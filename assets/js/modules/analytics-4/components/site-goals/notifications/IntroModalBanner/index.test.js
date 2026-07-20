@@ -391,8 +391,8 @@ describe( 'IntroModal', () => {
 			} )
 		);
 
-		// The modal clears the widget areas to load when it closes. The tour
-		// then sets the same list itself.
+		// The modal clears its list of widget areas to load when it closes. The
+		// tour then sets the same list itself.
 		expect(
 			registry.select( CORE_UI ).getValue( FORCED_IN_VIEW_WIDGET_AREAS )
 		).toEqual( SITE_GOALS_TOUR_PRELOAD_WIDGET_AREAS );

@@ -198,15 +198,16 @@ function gaEventCategory( viewContext: string ) {
  *
  * The breakdown step appears only when a widget shows its notice. Both widgets
  * render that notice under one class, so the step targets the first match on
- * the page, the Online store widget's notice when that widget shows one.
+ * the page. That match is the Online store widget's notice when that widget
+ * shows one, and the Lead generation widget's notice otherwise.
  *
  * @since 1.181.0
  * @since 1.182.0 Load every widget area above and including the Site Goals section before the tour starts, and wait for them to load and the layout to settle.
  * @since n.e.x.t Pick the breakdown step copy from the widget the step points at, in place of the detected event types.
  *
- * @param params                             Tour params.
- * @param params.hasEcommerceBreakdownNotice If true, the Online store widget shows the breakdown notice.
- * @param params.hasLeadBreakdownNotice      If true, the Lead generation widget shows the breakdown notice.
+ * @param params                             The tour params.
+ * @param params.hasEcommerceBreakdownNotice Whether the Online store widget shows the breakdown notice.
+ * @param params.hasLeadBreakdownNotice      Whether the Lead generation widget shows the breakdown notice.
  * @return The Site Goals tour config.
  */
 export function getSiteGoalsTour( {
