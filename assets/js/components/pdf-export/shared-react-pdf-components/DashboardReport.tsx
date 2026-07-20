@@ -71,7 +71,12 @@ function formatDocumentDateRange( dateRange: {
 	const endDate = formatDateString( dateRange.endDate );
 
 	return startDate && endDate
-		? `${ startDate } - ${ endDate }`
+		? sprintf(
+				/* translators: 1: Report start date. 2: Report end date. */
+				__( '%1$s - %2$s', 'google-site-kit' ),
+				startDate,
+				endDate
+		  )
 		: startDate || endDate;
 }
 
