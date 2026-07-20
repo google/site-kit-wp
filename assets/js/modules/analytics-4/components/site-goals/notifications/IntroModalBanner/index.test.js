@@ -35,9 +35,14 @@ import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/c
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import {
+	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE,
+	SITE_GOALS_BREAKDOWN_NOTICE,
+} from '@/js/modules/analytics-4/components/site-goals/constants';
+import {
 	SITE_GOALS_TOUR_PRELOAD_WIDGET_AREAS,
 	getSiteGoalsTour,
 } from '@/js/modules/analytics-4/components/site-goals/feature-tours/site-goals';
+import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ENUM_CONVERSION_EVENTS,
@@ -164,6 +169,10 @@ describe( 'IntroModal', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetSettings( { availableCustomDimensions: [] } );
+		// Both widgets on the dashboard, so each one can show the notice.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+			activeWidgets: [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ],
+		} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
@@ -188,6 +197,43 @@ describe( 'IntroModal', () => {
 		getNavigationalScrollTopSpy.mockClear();
 		scrollToSpy.mockClear();
 	} );
+
+	/**
+	 * Renders the modal, confirms it, and returns the tour that starts.
+	 *
+	 * The framework unmounts the modal once it leaves the notification queue,
+	 * so this helper unmounts it too. The tour runs in the store and keeps
+	 * going after the modal unmounts.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Promise<Object>} The tour the modal started.
+	 */
+	async function confirmModalAndGetTour() {
+		appendTourTarget();
+
+		const { getByRole, unmount } = render( <IntroModalComponent />, {
+			registry,
+		} );
+
+		await waitForIntroModalToShow( getByRole );
+
+		// The async act call lets the dismissal requests finish inside the test.
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByRole( 'button', { name: /show me/i } ) );
+		} );
+
+		unmount();
+
+		await waitFor( () => {
+			expect(
+				registry.select( CORE_USER ).getCurrentTour()
+			).not.toBeUndefined();
+		} );
+
+		return registry.select( CORE_USER ).getCurrentTour();
+	}
 
 	it( 'renders ecommerce-only variant when only ecommerce conversion events exist', async () => {
 		registry
@@ -335,42 +381,84 @@ describe( 'IntroModal', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
-		appendTourTarget();
 
-		const { getByRole, unmount } = render( <IntroModalComponent />, {
-			registry,
-		} );
+		const tour = await confirmModalAndGetTour();
 
-		await waitForIntroModalToShow( getByRole );
-
-		// "Show me" starts the tour and removes the modal from the notification
-		// queue. The async act call lets the dismissal requests finish inside
-		// the test.
-		// eslint-disable-next-line require-await
-		await act( async () => {
-			fireEvent.click( getByRole( 'button', { name: /show me/i } ) );
-		} );
-
-		// The framework unmounts the modal once it leaves the queue. Unmount
-		// here to mirror that; the tour itself runs in the store and keeps
-		// going after the modal is gone.
-		unmount();
-
-		// The tour waits for the section again before it starts.
-		await waitFor( () => {
-			expect( registry.select( CORE_USER ).getCurrentTour() ).toEqual(
-				getSiteGoalsTour( {
-					isEcommerceOnly: true,
-					hasBreakdownNotice: true,
-				} )
-			);
-		} );
+		expect( tour ).toEqual(
+			getSiteGoalsTour( {
+				hasEcommerceBreakdownNotice: true,
+				hasLeadBreakdownNotice: true,
+			} )
+		);
 
 		// The modal clears the widget areas to load when it closes. The tour
 		// then sets the same list itself.
 		expect(
 			registry.select( CORE_UI ).getValue( FORCED_IN_VIEW_WIDGET_AREAS )
 		).toEqual( SITE_GOALS_TOUR_PRELOAD_WIDGET_AREAS );
+	} );
+
+	describe( 'the breakdown step the tour shows', () => {
+		beforeEach( () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setDetectedEvents( [
+					ENUM_CONVERSION_EVENTS.PURCHASE,
+					ENUM_CONVERSION_EVENTS.CONTACT,
+				] );
+		} );
+
+		it( 'should ask about forms when the Online store widget is switched off', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetSiteGoalsSettings( {
+					activeWidgets: [ GOAL_TYPES.LEAD ],
+				} );
+
+			const tour = await confirmModalAndGetTour();
+
+			expect( tour ).toEqual(
+				getSiteGoalsTour( {
+					hasEcommerceBreakdownNotice: false,
+					hasLeadBreakdownNotice: true,
+				} )
+			);
+		} );
+
+		it( 'should ask about plugins when only the Lead generation widget has its breakdown enabled', async () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				availableCustomDimensions: [
+					SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE[
+						GOAL_TYPES.LEAD
+					],
+				],
+			} );
+
+			const tour = await confirmModalAndGetTour();
+
+			expect( tour ).toEqual(
+				getSiteGoalsTour( {
+					hasEcommerceBreakdownNotice: true,
+					hasLeadBreakdownNotice: false,
+				} )
+			);
+		} );
+
+		it( 'should drop the breakdown step once the user dismisses the notice', async () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [ SITE_GOALS_BREAKDOWN_NOTICE ] );
+
+			const tour = await confirmModalAndGetTour();
+
+			expect( tour ).toEqual(
+				getSiteGoalsTour( {
+					hasEcommerceBreakdownNotice: false,
+					hasLeadBreakdownNotice: false,
+				} )
+			);
+			expect( tour.steps ).toHaveLength( 2 );
+		} );
 	} );
 
 	it( 'should navigate to the Site Goals section when the user clicks "Show me"', async () => {
