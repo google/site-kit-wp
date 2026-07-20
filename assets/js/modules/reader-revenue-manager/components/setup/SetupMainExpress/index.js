@@ -1,7 +1,7 @@
 /**
- * Reader Revenue Manager Setup components.
+ * Reader Revenue Manager SetupMainExpress components.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,4 @@
  * limitations under the License.
  */
 
-export { default as SetupForm } from './SetupForm';
-export { default as SetupMain } from './SetupMain';
-export * as SetupMainExpress from './SetupMainExpress';
+export { default as CTAPreview } from './CTAPreview';
