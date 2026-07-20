@@ -39,11 +39,9 @@ interface KeyMetricPDFEntry {
 	/** The tile's PDF export config, present only for metrics with a PDF tile. */
 	pdfTile?: {
 		/** The tile's `@react-pdf/renderer` component, `lazyWithPreload`-wrapped. */
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Each tile owns its own props shape.
-		TileComponent: ComponentType< any > & {
+		TileComponent: ComponentType< never > & {
 			preload?: () => Promise< {
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Each tile owns its own props shape.
-				default: ComponentType< any >;
+				default: ComponentType< never >;
 			} >;
 		};
 		/** Resolves the tile's data, or `null` when the export is canceled. */
@@ -68,8 +66,7 @@ export interface KeyMetricsPDFTile {
 	/** The tile heading, from the `KEY_METRICS_WIDGETS` entry's `title`. */
 	title: string;
 	/** The tile's `@react-pdf/renderer` component. */
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Each tile owns its own props shape.
-	TileComponent: ComponentType< any >;
+	TileComponent: ComponentType< Record< string, unknown > >;
 	/** The normalised tile data, or `null` when this tile's data failed to load. */
 	data: unknown;
 }
