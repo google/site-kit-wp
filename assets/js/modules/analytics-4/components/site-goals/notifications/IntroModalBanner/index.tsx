@@ -33,6 +33,7 @@ import {
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { useHasBeenViewed } from '@/js/googlesitekit/notifications/hooks/useHasBeenViewed';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 import {
@@ -78,7 +79,8 @@ function createModalHandlers(
 	label: IntroModalVariantLabel,
 	onClose: () => void,
 	trackEvent: IntroModalTrackingEvents,
-	onShowMeCTAClicked: () => void
+	onShowMeCTAClicked: () => void,
+	onView: () => void
 ): IntroModalVariantProps {
 	return {
 		onConfirm: () => {
@@ -95,6 +97,7 @@ function createModalHandlers(
 			trackEvent.dismiss( label );
 			onClose();
 		},
+		onView,
 	};
 }
 
@@ -192,6 +195,17 @@ const IntroModal: FC< IntroModalProps > = ( { id, Notification } ) => {
 		dismissNotification( id );
 	}
 
+	// The modal content renders inside a fixed-position Dialog, which is taken
+	// out of the flow of the `<Notification>` wrapper's `<section>`. That
+	// leaves the section with no measurable area, so the framework's own
+	// intersection observer never flips the notification to "viewed" and the
+	// `view_notification` event never fires. `BannerModal` observes its own
+	// visible content instead, so mark the notification viewed when the modal
+	// comes into view, which is what makes `<Notification>` fire the view event.
+	function handleView() {
+		setValue( useHasBeenViewed.getKey( id ), true );
+	}
+
 	// Save the confirmed slug before the shared slug. Each save replaces the
 	// whole dismissed-items list with the server's copy, so two in parallel
 	// can overwrite each other and drop a slug. A dropped confirmed slug
@@ -243,19 +257,22 @@ const IntroModal: FC< IntroModalProps > = ( { id, Notification } ) => {
 		INTRO_MODAL_VARIANTS.ECOMMERCE,
 		handleClose,
 		trackEvent,
-		handleShowMe
+		handleShowMe,
+		handleView
 	);
 	const leadHandlers = createModalHandlers(
 		INTRO_MODAL_VARIANTS.LEAD,
 		handleClose,
 		trackEvent,
-		handleShowMe
+		handleShowMe,
+		handleView
 	);
 	const ecommerceAndLeadHandlers = createModalHandlers(
 		INTRO_MODAL_VARIANTS.ECOMMERCE_AND_LEAD,
 		handleClose,
 		trackEvent,
-		handleShowMe
+		handleShowMe,
+		handleView
 	);
 
 	if (

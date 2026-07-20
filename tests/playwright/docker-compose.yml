@@ -30,7 +30,7 @@ services:
       - sitekit
 
   wp:
-    image: ghcr.io/google/site-kit-wp/playwright-wp:${WP_VERSION:-5.2.21}
+    image: ghcr.io/google/site-kit-wp/playwright-wp:${WP_VERSION:-5.2.21-20260715}
     ports:
       - 9002:80
     volumes:
