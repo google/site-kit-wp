@@ -41,6 +41,7 @@ const IntroModalLead: FC< IntroModalVariantProps > = ( {
 	onConfirm,
 	onClickLearnMore,
 	onDismiss,
+	onView,
 } ) => {
 	const documentationURL = useSelect(
 		( select: Select ) =>
@@ -52,6 +53,7 @@ const IntroModalLead: FC< IntroModalVariantProps > = ( {
 		<BannerModal
 			className="googlesitekit-banner-modal--site-goals-intro"
 			Graphic={ SiteGoalsIntroModalLeadGraphic }
+			onView={ onView }
 			onClose={ onDismiss }
 			title={ __( 'See what brings in new leads', 'google-site-kit' ) }
 			description={ createInterpolateElement(
