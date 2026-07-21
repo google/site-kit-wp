@@ -169,8 +169,10 @@ const PDFMetricTileTable = lazyWithPreload( () =>
 	)
 );
 
-// The percentage format the text tiles share for their share/rate values,
-// matching the dashboard tiles.
+/**
+ * The percentage format the text tiles share for their share/rate values,
+ * matching the dashboard tiles.
+ */
 const TILE_PERCENT_FORMAT = {
 	style: 'percent',
 	signDisplay: 'never',
