@@ -59,6 +59,29 @@ class SettingsTest extends SettingsTestCase {
 				'contentPolicyState'                => '',
 				'policyInfoLink'                    => '',
 				'ownerID'                           => 0,
+				'publicationID'                     => '',
+				'publicationOnboardingState'        => '',
+				'publicationOnboardingStateChanged' => false,
+				'snippetMode'                       => 'post_types',
+				'postTypes'                         => array( 'post' ),
+				'productID'                         => 'openaccess',
+				'productIDs'                        => array(),
+				'paymentOption'                     => '',
+			),
+			get_option( Settings::OPTION ),
+			'RRM Settings should match the default values.'
+		);
+	}
+
+	public function test_get_default__with_express_setup_flag() {
+		$this->enable_feature( 'rrmExpressSetup' );
+		$this->settings->register();
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'contentPolicyState'                => '',
+				'policyInfoLink'                    => '',
+				'ownerID'                           => 0,
 				'organizationID'                    => '',
 				'publicationID'                     => '',
 				'publicationOnboardingState'        => '',
@@ -71,7 +94,7 @@ class SettingsTest extends SettingsTestCase {
 				'configuredCTAs'                    => array(),
 			),
 			get_option( Settings::OPTION ),
-			'RRM Settings should match the default values.'
+			'RRM Settings should include the express setup settings when the flag is enabled.'
 		);
 	}
 
