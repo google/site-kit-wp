@@ -66,7 +66,7 @@ describe( 'createKeyMetricTileDataLoader', () => {
 		);
 		const result = await getTileData( { registry, dates: DATES, signal } );
 
-		expect( buildReports ).toHaveBeenCalledWith( DATES );
+		expect( buildReports ).toHaveBeenCalledWith( DATES, registry );
 		expect( dispatch ).toHaveBeenCalledWith( 'test/store-a' );
 		expect( dispatch ).toHaveBeenCalledWith( 'test/store-b' );
 		expect( fetchGetReport ).toHaveBeenCalledWith(
