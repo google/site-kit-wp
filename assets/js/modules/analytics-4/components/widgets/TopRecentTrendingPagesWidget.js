@@ -77,18 +77,19 @@ export function getDateRange( referenceDate ) {
  * The function utilizes the dates from the last three days to
  * prepare the filter and structure required for the report.
  *
- * This is defined as a function outside the component so that both
- * the component and the higher-order-component (`withCustomDimensions`)
- * can use it.
+ * This is defined as a function outside the component so that the
+ * component, the higher-order-component (`withCustomDimensions`), and
+ * the metric's PDF tile all request the same data.
  *
  * @since 1.113.0
  * @since 1.132.0 Update the function to receive the reference date instead of the select function.
+ * @since n.e.x.t Renamed to `getTopRecentTrendingPagesReportOptions`.
  *
  * @param {string} referenceDate The reference date.
  * @return {Object} The report options containing dimensions, filters,
  * metrics, and other parameters.
  */
-export function getReportOptions( referenceDate ) {
+export function getTopRecentTrendingPagesReportOptions( referenceDate ) {
 	const yesterday = getPreviousDate( referenceDate, 1 );
 	const twoDaysAgo = getPreviousDate( referenceDate, 2 );
 	const threeDaysAgo = getPreviousDate( referenceDate, 3 );
@@ -126,6 +127,9 @@ export function getReportOptions( referenceDate ) {
 	return reportOptions;
 }
 
+// Backwards-compatible alias for existing importers (tests and stories).
+export { getTopRecentTrendingPagesReportOptions as getReportOptions };
+
 function CustomZeroDataMessage() {
 	return __(
 		'No data to display: either no pages were published in the last three days, or they haven’t received any visitors yet',
@@ -140,7 +144,7 @@ function TopRecentTrendingPagesWidget( { Widget } ) {
 		const referenceDate = select( CORE_USER ).getReferenceDate();
 		return [
 			getDateRange( referenceDate ),
-			getReportOptions( referenceDate ),
+			getTopRecentTrendingPagesReportOptions( referenceDate ),
 		];
 	} );
 
@@ -250,7 +254,9 @@ export default compose(
 	} ),
 	withCustomDimensions( {
 		reportOptions( select ) {
-			return getReportOptions( select( CORE_USER ).getReferenceDate() );
+			return getTopRecentTrendingPagesReportOptions(
+				select( CORE_USER ).getReferenceDate()
+			);
 		},
 	} )
 )( TopRecentTrendingPagesWidget );
