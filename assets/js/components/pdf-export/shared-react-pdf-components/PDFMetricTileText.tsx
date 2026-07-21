@@ -77,6 +77,16 @@ export interface PDFMetricTileTextProps {
  * Mirrors the dashboard's `MetricTileText`: it shares the full-card layout of
  * `PDFNumericMetricTile`, but its value is a text label (e.g. a traffic source
  * name) rather than a large formatted number.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}  props            Component props.
+ * @param {string}  props.title      Title.
+ * @param {string}  props.value      Value.
+ * @param {string}  props.subtext    Optional subtext.
+ * @param {string}  props.change     Optional change for the badge.
+ * @param {boolean} props.isNegative Whether the change is negative.
+ * @return                The PDF-rendered tile text.
  */
 const PDFMetricTileText: FC< PDFMetricTileTextProps > = ( {
 	title,
