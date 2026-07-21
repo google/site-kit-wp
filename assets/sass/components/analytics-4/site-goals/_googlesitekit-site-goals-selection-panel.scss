@@ -120,15 +120,18 @@
 	}
 
 	.googlesitekit-site-goals-selection-panel__section-header {
+		align-items: flex-start;
+		display: flex;
+		flex-direction: column;
 
 		@media (min-width: $bp-tablet) {
 			align-items: center;
-			display: flex;
+			flex-direction: row;
 			gap: 10px;
 		}
 
 		.googlesitekit-badge {
-			margin-top: 6px;
+			margin-top: 10px;
 
 			@media (min-width: $bp-tablet) {
 				margin-top: 0;

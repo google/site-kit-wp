@@ -174,7 +174,8 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 
 			// Store the contexts in the dashboard's order, not the selection
 			// order, so the report's section order stays fixed across
-			// re-exports and toggles.
+			// re-exports and toggles. `availableSections` already derives from
+			// this same list, so it gives the identical order.
 			const contextSlugs = ORDERED_MAIN_DASHBOARD_CONTEXTS.filter(
 				( contextSlug ) => selectedContexts.has( contextSlug )
 			);
