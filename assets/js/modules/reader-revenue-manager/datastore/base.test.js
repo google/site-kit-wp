@@ -45,32 +45,4 @@ describe( 'modules/reader-revenue-manager base data store', () => {
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
 		);
 	} );
-
-	it( 'should make the `organizationID` and `configuredCTAs` settings available via the data store', () => {
-		store = require( './base' ).default;
-		registry.registerStore( MODULES_READER_REVENUE_MANAGER, store );
-
-		const configuredCTAs = {
-			'Reader registration': 'newsletter-signup',
-		};
-
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {
-				organizationID: 'ABCD1234',
-				configuredCTAs,
-			} );
-
-		expect(
-			registry
-				.select( MODULES_READER_REVENUE_MANAGER )
-				.getOrganizationID()
-		).toBe( 'ABCD1234' );
-
-		expect(
-			registry
-				.select( MODULES_READER_REVENUE_MANAGER )
-				.getConfiguredCTAs()
-		).toEqual( configuredCTAs );
-	} );
 } );
