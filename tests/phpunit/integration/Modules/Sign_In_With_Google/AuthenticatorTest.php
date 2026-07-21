@@ -239,8 +239,11 @@ class AuthenticatorTest extends TestCase {
 		$this->assertEquals( $user->ID, get_current_user_id(), 'Authenticated user ID should match the email-matched user.' );
 	}
 
-	public function test_authenticate_user__disables_two_factor_for_new_user() {
+	public function test_authenticate_user__removes_two_factor_login_challenge_for_new_user() {
 		add_filter( 'option_users_can_register', '__return_true' );
+
+		// Emulate the Two-Factor plugin's login challenge on the wp_login action.
+		add_action( 'wp_login', array( 'Two_Factor_Core', 'wp_login' ), PHP_INT_MAX, 2 );
 
 		$authenticator                              = $this->create_two_factor_authenticator( self::$new_user_payload );
 		$authenticator->is_two_factor_plugin_active = true;
@@ -249,29 +252,33 @@ class AuthenticatorTest extends TestCase {
 
 		$user_id = get_current_user_id();
 		$this->assertNotEmpty( $user_id, 'A new user should be created and signed in.' );
-		$this->assertTrue(
-			metadata_exists( 'user', $user_id, '_two_factor_enabled_providers' ),
-			'The two-factor providers meta should be written for the new user.'
+		$this->assertFalse(
+			has_action( 'wp_login', array( 'Two_Factor_Core', 'wp_login' ) ),
+			'The Two-Factor login challenge should be removed for the Sign in with Google request.'
 		);
-		$this->assertEquals(
-			array(),
-			get_user_meta( $user_id, '_two_factor_enabled_providers', true ),
-			'The new user should have two-factor authentication disabled.'
+		$this->assertFalse(
+			metadata_exists( 'user', $user_id, '_two_factor_enabled_providers' ),
+			'Sign in with Google should not modify the new account\'s two-factor settings.'
 		);
 	}
 
-	public function test_authenticate_user__does_not_write_two_factor_meta_when_plugin_is_inactive() {
-		add_filter( 'option_users_can_register', '__return_true' );
+	public function test_authenticate_user__removes_two_factor_login_challenge_for_returning_user() {
+		$user         = $this->factory()->user->create_and_get( array() );
+		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
+		$user_options->set( Hashed_User_ID::OPTION, md5( self::$existing_user_payload['sub'] ) );
 
-		$authenticator = $this->create_two_factor_authenticator( self::$new_user_payload );
+		// Emulate the Two-Factor plugin's login challenge on the wp_login action.
+		add_action( 'wp_login', array( 'Two_Factor_Core', 'wp_login' ), PHP_INT_MAX, 2 );
+
+		$authenticator                              = $this->create_two_factor_authenticator( self::$existing_user_payload );
+		$authenticator->is_two_factor_plugin_active = true;
 
 		$authenticator->authenticate_user( new MutableInput() );
 
-		$user_id = get_current_user_id();
-		$this->assertNotEmpty( $user_id, 'A new user should be created and signed in.' );
+		$this->assertEquals( $user->ID, get_current_user_id(), 'The returning Sign in with Google user should be signed in.' );
 		$this->assertFalse(
-			metadata_exists( 'user', $user_id, '_two_factor_enabled_providers' ),
-			'No two-factor providers meta should be written when the Two-Factor plugin is inactive.'
+			has_action( 'wp_login', array( 'Two_Factor_Core', 'wp_login' ) ),
+			'The Two-Factor login challenge should be removed so the returning user can sign in.'
 		);
 	}
 

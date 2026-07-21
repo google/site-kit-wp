@@ -36,14 +36,14 @@ class FakeTwoFactorAuthenticator extends Authenticator {
 	/**
 	 * @inheritDoc
 	 */
-	protected function is_two_factor_plugin_active(): bool {
+	protected function is_two_factor_plugin_active() {
 		return $this->is_two_factor_plugin_active;
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	protected function user_has_two_factor( int $user_id ): bool {
+	protected function user_has_two_factor( int $user_id ) {
 		return is_array( $this->user_ids_with_two_factor )
 			? in_array( $user_id, $this->user_ids_with_two_factor, true )
 			: parent::user_has_two_factor( $user_id );
