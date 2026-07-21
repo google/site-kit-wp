@@ -79,9 +79,11 @@ tests/playwright/
 │       ├── Dockerfile                  # Custom WordPress image (configurable WP version)
 │       ├── db.php                      # DB drop-in: routes connections and logs PHP errors
 │       ├── mu-plugins/
-│       │   ├── e2e-authenticate-admin.php  # Authenticates user via cookie
+│       │   ├── e2e-authenticate-admin.php  # Authenticates user via cookie, applies dismissed items
 │       │   ├── e2e-feature-flags.php       # Enables feature flags via cookie
 │       │   ├── e2e-fixtures.php            # Disables SSL verification, forwards fixture header
+│       │   ├── e2e-module-activation.php   # Connects modules (and applies settings) via cookie
+│       │   ├── e2e-module-sharing.php      # Forces dashboard-sharing settings via cookie
 │       │   └── e2e-reference-date.php      # Fixes reference date to 2026-01-01
 │       └── plugins/                    # Test helper plugins (auto-mounted)
 │           ├── email-reporting.php     # REST endpoint to trigger email reporting cron
@@ -100,7 +102,7 @@ tests/playwright/
 │   ├── database.ts                     # Per-test DB create/drop and error log retrieval
 │   ├── cookies.ts                      # Test routing cookies
 │   ├── plugins.ts                      # Plugin activation via DB
-│   ├── options.ts                      # Annotation helpers (withPlugins, asUser, withFeatureFlags, withFixtures, withConnectedModules)
+│   ├── options.ts                      # Annotation helpers (withPlugins, asUser, withFeatureFlags, withFixtures, withConnectedModules, withSharedModules)
 │   ├── mailpit.ts                      # Mailpit email client
 │   └── error-log-ignore-list.ts        # Known PHP errors to ignore per WP version
 ├── docker-compose.yml
@@ -178,6 +180,8 @@ A local Node.js service (`docker/fixtures/`) intercepts all Google API calls mad
 -   `subscribewithgoogle.googleapis.com`
 -   `www.googleapis.com`
 -   `storage.googleapis.com`
+
+`api.wordpress.org` is aliased to the same service so WordPress core update checks resolve to an empty response instead of failing to connect on the offline network (requests without the `X-WP-Test-Fixtures` header return `{}`).
 
 **How fixture data works:**
 
@@ -294,19 +298,20 @@ npm run -w tests/playwright setup
 
 The following environment variables configure how tests connect to the running environment:
 
-| Variable                 | Default                 | Description                             |
-| ------------------------ | ----------------------- | --------------------------------------- |
-| `PLAYWRIGHT_WP_URL`      | `http://localhost:9002` | WordPress base URL                      |
-| `PLAYWRIGHT_DB_HOST`     | `localhost`             | MariaDB host                            |
-| `PLAYWRIGHT_DB_PORT`     | `9306`                  | MariaDB port                            |
-| `PLAYWRIGHT_DB_USER`     | `root`                  | MariaDB user                            |
-| `PLAYWRIGHT_DB_PASSWORD` | `example`               | MariaDB password                        |
-| `PLAYWRIGHT_MAILPIT_URL` | `http://localhost:8025` | Mailpit API base URL                    |
-| `PLUGIN_PATH`            | `../../`                | Path to the plugin directory to mount   |
-| `WP_VERSION`             | `5.2.21`                | WordPress version to use in Docker      |
-| `FORBID_ONLY`            | _(unset)_               | Fail if `test.only` is present (CI use) |
-| `RETRIES`                | `0`                     | Number of retries per failing test      |
-| `WORKERS`                | _(Playwright default)_  | Number of parallel workers              |
+| Variable                 | Default                 | Description                                   |
+| ------------------------ | ----------------------- | --------------------------------------------- |
+| `PLAYWRIGHT_WP_URL`      | `http://localhost:9002` | WordPress base URL                            |
+| `PLAYWRIGHT_DB_HOST`     | `localhost`             | MariaDB host                                  |
+| `PLAYWRIGHT_DB_PORT`     | `9306`                  | MariaDB port                                  |
+| `PLAYWRIGHT_DB_USER`     | `root`                  | MariaDB user                                  |
+| `PLAYWRIGHT_DB_PASSWORD` | `example`               | MariaDB password                              |
+| `PLAYWRIGHT_MAILPIT_URL` | `http://localhost:8025` | Mailpit API base URL                          |
+| `PLUGIN_PATH`            | `../../`                | Path to the plugin directory to mount         |
+| `WP_VERSION`             | `5.2.21`                | WordPress version to use in Docker            |
+| `WP_IMAGE_TAG`           | `5.2.21-20260715`       | Docker image tag to pull for the `wp` service |
+| `FORBID_ONLY`            | _(unset)_               | Fail if `test.only` is present (CI use)       |
+| `RETRIES`                | `0`                     | Number of retries per failing test            |
+| `WORKERS`                | _(Playwright default)_  | Number of parallel workers                    |
 
 ---
 
@@ -361,6 +366,12 @@ test.describe( 'my suite', details, () => { ... } );
 ```
 
 Available users in the database snapshot: `admin`, `admin-2`, `editor`, `author`, `contributor`.
+
+A second argument sets a profile for the user, including `email`, `firstName`, `lastName`, and `dismissedItems` (items to mark as dismissed so the test lands past interstitials):
+
+```typescript
+asUser( 'editor', { dismissedItems: [ 'shared_dashboard_splash' ] } );
+```
 
 **`withPlugins(...plugins)`** — Activate one or more test helper plugins before the test. Plugin paths are relative to `google-site-kit-test-plugins/`:
 
@@ -426,6 +437,39 @@ Multiple modules can be connected at once:
 {
 	annotation: withConnectedModules( 'ads', 'analytics-4' );
 }
+```
+
+A bare slug only forces the connection check. To also make a module read as connected on the client (which reads the REST modules list, not the connection filter), pass a `{ slug, settings }` object — the plugin then activates the module and applies its settings:
+
+```typescript
+withConnectedModules( {
+	slug: 'adsense',
+	settings: { accountID: 'pub-123456789', clientID: 'ca-pub-123456789' },
+} );
+```
+
+Bare slugs and `{ slug, settings }` objects can be mixed in one call.
+
+**`withSharedModules(sharing)`** — Force dashboard-sharing settings so a shared module's sections appear on a view-only dashboard. Handled by the `e2e-module-sharing.php` must-use plugin:
+
+```typescript
+import { withSharedModules } from '../wordpress';
+
+test(
+    'view-only dashboard lists a shared module',
+    {
+        annotation: [
+            asUser( 'editor' ),
+            withSharedModules( {
+                'search-console': {
+                    sharedRoles: [ 'editor' ],
+                    management: 'owner',
+                },
+            } ),
+        ],
+    },
+    async ( { wp } ) => { ... }
+);
 ```
 
 Annotations can be applied at both the `test.describe` (suite) level and the individual `test` level. Test-level annotations are merged with suite-level annotations.
@@ -535,7 +579,7 @@ Mailpit automatically scopes queries to the current test's sender address (`<dat
 **`wp` (custom WordPress image — `docker/wordpress/Dockerfile`)**
 
 -   Port: `9002` → `80`
--   Based on `ghcr.io/google/site-kit-wp/playwright-wp`; the WordPress version is controlled by the `WP_VERSION` build arg (defaults to `5.2.21`)
+-   Based on `ghcr.io/google/site-kit-wp/playwright-wp`; the image pulled is controlled by `WP_IMAGE_TAG` (defaults to `5.2.21-20260715` — a WordPress 5.2.21 image with a build-date suffix that changes whenever the Dockerfile's bundled plugins, e.g. WooCommerce, are updated); the WordPress version baked into the image is controlled separately by the `WP_VERSION` build arg (defaults to `5.2.21`)
 -   The plugin is mounted at `wp-content/plugins/google-site-kit` from `PLUGIN_PATH` (defaults to `../../` for local dev; CI uses a built artifact)
 -   Test helper plugins are mounted at `wp-content/plugins/google-site-kit-test-plugins`
 -   `WP_HTTP_BLOCK_EXTERNAL` is enabled (only `*.wordpress.org` is reachable from the browser; the fixtures service intercepts Google API calls at the network level)
@@ -570,7 +614,7 @@ Docker Compose uses profiles to separate test-running services from backup-gener
 Must-use plugins in `docker/wordpress/mu-plugins/` are always active and cannot be deactivated through the UI.
 
 **`e2e-authenticate-admin.php`**
-Hooks into `determine_current_user` to authenticate the user specified in the `_wp_test_user` cookie (defaults to `admin`). Also calls `wp_set_auth_cookie()` on admin pages so redirect flows work correctly. This enables tests to act as any WordPress user without performing a real login.
+Hooks into `determine_current_user` to authenticate the user specified in the `_wp_test_user` cookie (defaults to `admin`). Also calls `wp_set_auth_cookie()` on admin pages so redirect flows work correctly. When the cookie's profile includes `dismissedItems`, it marks those items as dismissed for the user so the test lands past interstitials. This enables tests to act as any WordPress user without performing a real login.
 
 **`e2e-feature-flags.php`**
 Hooks into `googlesitekit_is_feature_enabled` at priority 999 to force the feature flags listed in the `_wp_test_feature_flags` cookie to return `true`.
@@ -582,7 +626,10 @@ Disables SSL certificate verification so WordPress can reach the local fixtures 
 Fixes the Site Kit reference date to `2026-01-01 00:00:00` so that date-dependent calculations in reports are deterministic across test runs.
 
 **`e2e-module-activation.php`**
-Hooks into `googlesitekit_is_module_connected` at priority 999. Reads the `_wp_test_connected_modules` cookie (a comma-separated list of module slugs) and forces those modules to return `true` for the connection check. This enables tests to exercise code paths that require specific modules to be connected without setting up a full OAuth flow. Use the `withConnectedModules()` annotation to configure which modules are connected for a test.
+Hooks into `googlesitekit_is_module_connected` at priority 999. Reads the `_wp_test_connected_modules` cookie (a JSON array of `{ slug, settings }` entries) and forces those modules to return `true` for the connection check. For entries with settings the plugin also activates the module and merges its settings, so the module reads as connected on the client (which relies on the REST modules list, not the connection filter). Use the `withConnectedModules()` annotation to configure this.
+
+**`e2e-module-sharing.php`**
+Reads the `_wp_test_shared_modules` cookie (a JSON map of sharing settings keyed by module slug) and forces the dashboard-sharing option on read, bypassing the save-time sanitize that would otherwise drop a module not yet recognized as shareable. Use the `withSharedModules()` annotation to configure this. This lets a view-only test list a shared module's sections.
 
 ### Test Helper Plugins
 

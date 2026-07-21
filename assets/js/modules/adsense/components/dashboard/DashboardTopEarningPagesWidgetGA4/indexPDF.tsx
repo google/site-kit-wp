@@ -59,10 +59,6 @@ const styles = createPDFStyles( {
 		flex: 1,
 		color: PDF_COLORS.CONTENT_SECONDARY,
 	},
-	noData: {
-		paddingHorizontal: 24,
-		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
-	},
 } );
 
 interface TopEarningPageRow {
@@ -74,7 +70,6 @@ interface TopEarningPageRow {
 const DashboardTopEarningPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 	data,
 } ) => {
-	const heading = __( 'Top earning pages', 'google-site-kit' );
 	const topEarningPagesData = data as TopEarningPagesPDFData | null;
 	const rows = topEarningPagesData?.rows ?? [];
 	const titles = topEarningPagesData?.titles ?? {};
@@ -91,6 +86,12 @@ const DashboardTopEarningPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 			earnings: row.metricValues?.[ 0 ]?.value ?? '',
 		};
 	} );
+
+	if ( tableRows.length === 0 ) {
+		return null;
+	}
+
+	const heading = __( 'Top earning pages', 'google-site-kit' );
 
 	const columns: Array< PDFTableColumn< TopEarningPageRow > > = [
 		{
@@ -121,21 +122,9 @@ const DashboardTopEarningPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 		},
 	];
 
-	// The report already limits the rows; an empty set renders a placeholder
-	// inside the card rather than dropping the whole section.
 	return (
 		<PDFWidgetSection heading={ heading } cardStyle={ styles.card }>
-			{ tableRows.length > 0 ? (
-				<PDFTable
-					columns={ columns }
-					rows={ tableRows }
-					columnGap={ 4 }
-				/>
-			) : (
-				<PDFTypography style={ styles.noData }>
-					{ __( 'No data available', 'google-site-kit' ) }
-				</PDFTypography>
-			) }
+			<PDFTable columns={ columns } rows={ tableRows } columnGap={ 4 } />
 		</PDFWidgetSection>
 	);
 };

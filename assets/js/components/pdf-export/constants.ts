@@ -34,6 +34,26 @@ export const PDF_INTRODUCTION_OVERLAY_NOTIFICATION =
 	'pdf_introduction_overlay_notification';
 
 /**
+ * Survey trigger ID for a failed PDF export.
+ *
+ * Fires when a PDF export fails for any reason other than the user cancelling.
+ * The value must match the trigger ID set for this survey in the survey tool.
+ *
+ * @since n.e.x.t
+ */
+export const PDF_EXPORT_ERROR_SURVEY_TRIGGER_ID = 'pdf_export_error';
+
+/**
+ * Survey trigger ID for a completed PDF export.
+ *
+ * Fires when a PDF export finishes and the report download starts. The value
+ * must match the trigger ID set for this survey in the survey tool.
+ *
+ * @since n.e.x.t
+ */
+export const PDF_EXPORT_SUCCESS_SURVEY_TRIGGER_ID = 'pdf_export_success';
+
+/**
  * Main-dashboard context slugs in the dashboard's own order.
  *
  * The PDF report renders one section per selected context, in this order.

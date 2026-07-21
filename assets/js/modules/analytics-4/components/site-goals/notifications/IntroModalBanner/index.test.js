@@ -31,7 +31,9 @@ import {
 } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import {
 	SITE_GOALS_TOUR_PRELOAD_WIDGET_AREAS,
 	getSiteGoalsTour,
@@ -41,6 +43,7 @@ import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4/notifications';
 import * as scrollUtils from '@/js/util/scroll';
 import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
 import {
@@ -54,11 +57,43 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 import IntroModal, {
+	INTRO_MODAL_VARIANTS,
 	SITE_GOALS_INTRO_MODAL_BANNER,
 	SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED,
 } from './index';
 
 jest.mock( '@/js/googlesitekit/notifications/hooks/useNotificationEvents' );
+
+const IntroModalComponent = withNotificationComponentProps(
+	SITE_GOALS_INTRO_MODAL_BANNER
+)( IntroModal );
+
+/**
+ * The modal content renders inside a fixed-position Dialog, so the
+ * `<Notification>` wrapper's own observer never sees it. `BannerModal` observes
+ * its own graphic with `withIntersectionObserver`, which uses the native
+ * `IntersectionObserver`. jsdom has none, so this stub reports the element as
+ * in view the moment it is observed, which fires the modal's `onView` and makes
+ * `<Notification>` send the `view_notification` event.
+ *
+ * @since n.e.x.t
+ */
+class InViewIntersectionObserver {
+	constructor( callback ) {
+		this.callback = callback;
+	}
+
+	observe( element ) {
+		this.callback(
+			[ { isIntersecting: true, intersectionRatio: 1, target: element } ],
+			this
+		);
+	}
+
+	unobserve() {}
+
+	disconnect() {}
+}
 
 const getNavigationalScrollTopSpy = jest.spyOn(
 	scrollUtils,
@@ -95,6 +130,7 @@ async function waitForIntroModalToShow( getByRole ) {
 
 describe( 'IntroModal', () => {
 	let registry;
+	let trackEvents;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -104,12 +140,13 @@ describe( 'IntroModal', () => {
 			status: 200,
 		} );
 
-		useNotificationEvents.mockReturnValue( {
+		trackEvents = {
 			view: jest.fn(),
 			confirm: jest.fn(),
 			clickLearnMore: jest.fn(),
 			dismiss: jest.fn(),
-		} );
+		};
+		useNotificationEvents.mockReturnValue( trackEvents );
 
 		provideSiteInfo( registry );
 		provideModules( registry, [
@@ -129,7 +166,18 @@ describe( 'IntroModal', () => {
 			.receiveGetSettings( { availableCustomDimensions: [] } );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+
+		// Register the notification so the framework's `dismissNotification`
+		// action (dispatched when the modal closes) can find it and persist
+		// its dismissal.
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				SITE_GOALS_INTRO_MODAL_BANNER,
+				ANALYTICS_4_NOTIFICATIONS[ SITE_GOALS_INTRO_MODAL_BANNER ]
+			);
 	} );
 
 	afterEach( () => {
@@ -147,7 +195,7 @@ describe( 'IntroModal', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 		appendTourTarget();
 
-		const { container, getByRole } = render( <IntroModal />, {
+		const { container, getByRole } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
@@ -162,7 +210,7 @@ describe( 'IntroModal', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
 		appendTourTarget();
 
-		const { container, getByRole } = render( <IntroModal />, {
+		const { container, getByRole } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
@@ -180,7 +228,7 @@ describe( 'IntroModal', () => {
 			] );
 		appendTourTarget();
 
-		const { container, getByRole } = render( <IntroModal />, {
+		const { container, getByRole } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
@@ -196,7 +244,7 @@ describe( 'IntroModal', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
-		const { container } = render( <IntroModal />, {
+		const { container } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
@@ -218,7 +266,7 @@ describe( 'IntroModal', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
-		const { getByRole } = render( <IntroModal />, {
+		const { getByRole } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
@@ -239,13 +287,13 @@ describe( 'IntroModal', () => {
 		jest.useRealTimers();
 	} );
 
-	it( 'sets the widget areas to load while waiting, then clears them when the modal is dismissed', async () => {
+	it( 'sets the widget areas to load while waiting, then clears them when the modal unmounts', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 		appendTourTarget();
 
-		const { getByRole } = render( <IntroModal />, {
+		const { getByRole, unmount } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
@@ -256,12 +304,27 @@ describe( 'IntroModal', () => {
 
 		await waitForIntroModalToShow( getByRole );
 
-		// The dismissal also saves the dismissed item. The async act call
-		// lets that request finish inside the test.
+		// Dismissing removes the modal from the notification queue, which
+		// saves the dismissed item. The async act call lets that request
+		// finish inside the test.
 		// eslint-disable-next-line require-await
 		await act( async () => {
 			fireEvent.click( getByRole( 'button', { name: /maybe later/i } ) );
 		} );
+
+		// The dismissal persists the shared slug via `dismissNotification`.
+		expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+			body: {
+				data: {
+					slug: SITE_GOALS_INTRO_MODAL_BANNER,
+					expiration: 0,
+				},
+			},
+		} );
+
+		// The framework unmounts the dismissed notification. Unmounting runs
+		// the section-ready hook's cleanup, which clears the widget areas.
+		unmount();
 
 		expect(
 			registry.select( CORE_UI ).getValue( FORCED_IN_VIEW_WIDGET_AREAS )
@@ -274,13 +337,24 @@ describe( 'IntroModal', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 		appendTourTarget();
 
-		const { getByRole } = render( <IntroModal />, {
+		const { getByRole, unmount } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
 		await waitForIntroModalToShow( getByRole );
 
-		fireEvent.click( getByRole( 'button', { name: /show me/i } ) );
+		// "Show me" starts the tour and removes the modal from the notification
+		// queue. The async act call lets the dismissal requests finish inside
+		// the test.
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByRole( 'button', { name: /show me/i } ) );
+		} );
+
+		// The framework unmounts the modal once it leaves the queue. Unmount
+		// here to mirror that; the tour itself runs in the store and keeps
+		// going after the modal is gone.
+		unmount();
 
 		// The tour waits for the section again before it starts.
 		await waitFor( () => {
@@ -316,7 +390,7 @@ describe( 'IntroModal', () => {
 			return 0;
 		} );
 
-		const { getByRole } = render( <IntroModal />, {
+		const { getByRole } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
@@ -349,7 +423,7 @@ describe( 'IntroModal', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 		appendTourTarget();
 
-		const { getByRole } = render( <IntroModal />, {
+		const { getByRole } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
@@ -364,14 +438,22 @@ describe( 'IntroModal', () => {
 
 		// The confirmed slug must save before the shared slug. Two parallel
 		// saves can drop one, and a dropped confirmed slug makes the survey
-		// triggers read the wrong segment.
+		// triggers read the wrong segment. Removing the modal from the queue
+		// re-persists the shared slug via the framework, so it may appear more
+		// than once — the ordering relative to the confirmed slug is what
+		// matters.
 		const dismissedSlugs = fetchMock
 			.calls( dismissItemEndpoint )
 			.map( ( [ , request ] ) => JSON.parse( request.body ).data.slug );
-		expect( dismissedSlugs ).toEqual( [
-			SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED,
-			SITE_GOALS_INTRO_MODAL_BANNER,
-		] );
+		expect( dismissedSlugs[ 0 ] ).toBe(
+			SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED
+		);
+		expect( dismissedSlugs ).toContain( SITE_GOALS_INTRO_MODAL_BANNER );
+		expect(
+			dismissedSlugs.indexOf( SITE_GOALS_INTRO_MODAL_BANNER )
+		).toBeGreaterThan(
+			dismissedSlugs.indexOf( SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED )
+		);
 	} );
 
 	it( 'does not save the confirmed dismissal item when the user clicks "Maybe later"', async () => {
@@ -380,7 +462,7 @@ describe( 'IntroModal', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 		appendTourTarget();
 
-		const { getByRole } = render( <IntroModal />, {
+		const { getByRole } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
@@ -422,7 +504,7 @@ describe( 'IntroModal', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
-		const { container } = render( <IntroModal />, {
+		const { container } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
@@ -436,10 +518,47 @@ describe( 'IntroModal', () => {
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 		appendTourTarget();
 
-		const { getByRole } = render( <IntroModal />, {
+		const { getByRole } = render( <IntroModalComponent />, {
 			registry,
 		} );
 
 		await waitForIntroModalToShow( getByRole );
+	} );
+
+	describe( 'view tracking', () => {
+		let originalIntersectionObserver;
+
+		beforeEach( () => {
+			originalIntersectionObserver = global.IntersectionObserver;
+			global.IntersectionObserver = InViewIntersectionObserver;
+		} );
+
+		afterEach( () => {
+			global.IntersectionObserver = originalIntersectionObserver;
+		} );
+
+		it( 'sends the view_notification event once the modal comes into view', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+			appendTourTarget();
+
+			const { getByRole } = render( <IntroModalComponent />, {
+				registry,
+			} );
+
+			await waitForIntroModalToShow( getByRole );
+
+			// The modal's content renders inside a fixed-position Dialog, so the
+			// `<Notification>` wrapper's own observer never marks it viewed.
+			// `BannerModal`'s `onView` fills that gap, which makes the wrapper
+			// send the view event labelled with the modal variant.
+			await waitFor( () => {
+				expect( trackEvents.view ).toHaveBeenCalledWith(
+					INTRO_MODAL_VARIANTS.ECOMMERCE,
+					undefined
+				);
+			} );
+		} );
 	} );
 } );
