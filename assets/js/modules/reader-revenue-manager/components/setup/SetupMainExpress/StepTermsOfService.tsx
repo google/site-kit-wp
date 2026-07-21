@@ -1,7 +1,7 @@
 /**
- * Reader Revenue Manager Setup components.
+ * Reader Revenue Manager express setup terms of service step.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,18 @@
  * limitations under the License.
  */
 
-export { default as SetupForm } from './SetupForm';
-export { default as SetupMain } from './SetupMain';
-export { default as SetupMainExpress } from './SetupMainExpress';
-export { default as SetupMainExpressReady } from './SetupMainExpressReady';
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+export default function StepTermsOfService() {
+	return (
+		<p>
+			{ __(
+				'RRM express setup placeholder: terms of service step.',
+				'google-site-kit'
+			) }
+		</p>
+	);
+}
