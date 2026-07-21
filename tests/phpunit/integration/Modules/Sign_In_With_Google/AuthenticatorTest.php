@@ -239,22 +239,17 @@ class AuthenticatorTest extends TestCase {
 		$this->assertEquals( $user->ID, get_current_user_id(), 'Authenticated user ID should match the email-matched user.' );
 	}
 
-	public function test_authenticate_user__removes_two_factor_login_challenge_for_new_user() {
+	public function test_authenticate_user__skips_two_factor_challenge_for_new_user() {
 		add_filter( 'option_users_can_register', '__return_true' );
 
-		// Emulate the Two-Factor plugin's login challenge on the wp_login action.
-		add_action( 'wp_login', array( 'Two_Factor_Core', 'wp_login' ), PHP_INT_MAX, 2 );
-
-		$authenticator                              = $this->create_two_factor_authenticator( self::$new_user_payload );
-		$authenticator->is_two_factor_plugin_active = true;
-
-		$authenticator->authenticate_user( new MutableInput() );
+		$this->do_authenticate_user( self::$new_user_payload );
 
 		$user_id = get_current_user_id();
 		$this->assertNotEmpty( $user_id, 'A new user should be created and signed in.' );
-		$this->assertFalse(
-			has_action( 'wp_login', array( 'Two_Factor_Core', 'wp_login' ) ),
-			'The Two-Factor login challenge should be removed for the Sign in with Google request.'
+		$this->assertEquals(
+			array(),
+			apply_filters( 'two_factor_enabled_providers_for_user', array( 'Two_Factor_Email' ), $user_id ),
+			'Sign in with Google should clear the two-factor providers for the signed-in user so the challenge is skipped.'
 		);
 		$this->assertFalse(
 			metadata_exists( 'user', $user_id, '_two_factor_enabled_providers' ),
@@ -262,23 +257,25 @@ class AuthenticatorTest extends TestCase {
 		);
 	}
 
-	public function test_authenticate_user__removes_two_factor_login_challenge_for_returning_user() {
+	public function test_authenticate_user__skips_two_factor_challenge_for_returning_user() {
 		$user         = $this->factory()->user->create_and_get( array() );
 		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
 		$user_options->set( Hashed_User_ID::OPTION, md5( self::$existing_user_payload['sub'] ) );
 
-		// Emulate the Two-Factor plugin's login challenge on the wp_login action.
-		add_action( 'wp_login', array( 'Two_Factor_Core', 'wp_login' ), PHP_INT_MAX, 2 );
+		$other_user = $this->factory()->user->create_and_get( array() );
 
-		$authenticator                              = $this->create_two_factor_authenticator( self::$existing_user_payload );
-		$authenticator->is_two_factor_plugin_active = true;
-
-		$authenticator->authenticate_user( new MutableInput() );
+		$this->do_authenticate_user( self::$existing_user_payload );
 
 		$this->assertEquals( $user->ID, get_current_user_id(), 'The returning Sign in with Google user should be signed in.' );
-		$this->assertFalse(
-			has_action( 'wp_login', array( 'Two_Factor_Core', 'wp_login' ) ),
-			'The Two-Factor login challenge should be removed so the returning user can sign in.'
+		$this->assertEquals(
+			array(),
+			apply_filters( 'two_factor_enabled_providers_for_user', array( 'Two_Factor_Email' ), $user->ID ),
+			'Sign in with Google should clear the two-factor providers for the signed-in user so the challenge is skipped.'
+		);
+		$this->assertEquals(
+			array( 'Two_Factor_Email' ),
+			apply_filters( 'two_factor_enabled_providers_for_user', array( 'Two_Factor_Email' ), $other_user->ID ),
+			'Sign in with Google should leave the two-factor providers of other users untouched.'
 		);
 	}
 

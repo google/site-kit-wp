@@ -182,7 +182,7 @@ class Authenticator implements Authenticator_Interface {
 	 * Signs in the user.
 	 *
 	 * @since 1.145.0
-	 * @since n.e.x.t Removes the Two-Factor plugin's login challenge for the request so Sign in with Google can complete.
+	 * @since n.e.x.t Skips the Two-Factor plugin's login challenge for the Sign in with Google request.
 	 *
 	 * @param WP_User $user User object.
 	 * @return WP_Error|null WP_Error if an error occurred, null otherwise.
@@ -206,15 +206,10 @@ class Authenticator implements Authenticator_Interface {
 		// Set the authentication cookie.
 		wp_set_auth_cookie( $user->ID );
 
-		// Sign in with Google signs the user in with their Google Account, so
-		// Google handles two-factor for this login. Remove the Two-Factor plugin's
-		// login check for this request only, so it doesn't block the sign-in.
-		if ( $this->is_two_factor_plugin_active() ) {
-			$two_factor_challenge_priority = has_action( 'wp_login', array( 'Two_Factor_Core', 'wp_login' ) );
-			if ( false !== $two_factor_challenge_priority ) {
-				remove_action( 'wp_login', array( 'Two_Factor_Core', 'wp_login' ), $two_factor_challenge_priority );
-			}
-		}
+		// Sign in with Google authenticates the user through their Google Account,
+		// which handles two-factor itself, so the Two-Factor plugin must not
+		// challenge this request.
+		$this->skip_two_factor_for_user( $user );
 
 		/** This filter is documented in wp-login.php */
 		do_action( 'wp_login', $user->user_login, $user );
@@ -340,6 +335,31 @@ class Authenticator implements Authenticator_Interface {
 	 */
 	protected function user_has_two_factor( int $user_id ) {
 		return $this->is_two_factor_plugin_active() && \Two_Factor_Core::is_user_using_two_factor( $user_id ); // @phpstan-ignore class.notFound (Two_Factor_Core comes from the optional Two-Factor plugin, and is_two_factor_plugin_active() confirms it exists.)
+	}
+
+	/**
+	 * Skips the Two-Factor plugin's challenge for the user's Sign in with Google request.
+	 *
+	 * Sign in with Google authenticates the user through their Google Account,
+	 * which handles two-factor itself. This filters the user's enabled providers
+	 * to an empty array for this request, so the Two-Factor plugin treats them as
+	 * not using two-factor and doesn't challenge the sign-in. It doesn't change
+	 * the user's saved two-factor settings, it leaves every other user's providers
+	 * untouched, and it runs only when the Two-Factor plugin is active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_User $user User signing in with Google.
+	 */
+	protected function skip_two_factor_for_user( $user ) {
+		add_filter(
+			'two_factor_enabled_providers_for_user',
+			function ( $enabled_providers, $user_id ) use ( $user ) {
+				return $user_id === $user->ID ? array() : $enabled_providers;
+			},
+			10,
+			2
+		);
 	}
 
 	/**
