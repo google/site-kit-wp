@@ -151,10 +151,12 @@ export default async function getPDFData( {
 		} )
 		.map( ( widget: { slug: string } ) => widget.slug );
 
-	// Tracks tiles that failed to load (threw), as opposed to tiles left out for
-	// having no data. When every attempted tile failed, the section is treated as
-	// an outage below rather than a genuinely empty section.
-	let failureCount = 0;
+	/**
+	 * Tracks tiles that failed to load (threw), as opposed to tiles left out
+	 * for having no data. When every attempted tile failed, the section
+	 * is treated as an outage below rather than a genuinely empty section.
+	 */
+	 let failureCount = 0;
 
 	// A tile with no data (or a failed load) resolves to `null` and is filtered
 	// out below.
