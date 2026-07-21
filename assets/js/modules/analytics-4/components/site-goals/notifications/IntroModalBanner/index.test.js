@@ -178,9 +178,9 @@ describe( 'IntroModal', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 
-		// Register the notification so the framework's `dismissNotification`
-		// action (dispatched when the modal closes) can find it and persist
-		// its dismissal.
+		// Register the notification so the Notifications API's
+		// `dismissNotification` action (dispatched when the modal closes) can
+		// find it and persist its dismissal.
 		registry
 			.dispatch( CORE_NOTIFICATIONS )
 			.registerNotification(
@@ -201,9 +201,9 @@ describe( 'IntroModal', () => {
 	/**
 	 * Renders the modal, confirms it, and returns the tour that starts.
 	 *
-	 * The framework unmounts the modal once it leaves the notification queue,
-	 * so this helper unmounts it too. The tour runs in the store and keeps
-	 * going after the modal unmounts.
+	 * The Notifications API unmounts the modal once it leaves the notification
+	 * queue, so this helper unmounts it too. The tour runs in the store and
+	 * keeps going after the modal unmounts.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -368,8 +368,8 @@ describe( 'IntroModal', () => {
 			},
 		} );
 
-		// The framework unmounts the dismissed notification. Unmounting runs
-		// the section-ready hook's cleanup, which clears the widget areas.
+		// The Notifications API unmounts the dismissed notification. Unmounting
+		// runs the section-ready hook's cleanup, which clears the widget areas.
 		unmount();
 
 		expect(
@@ -527,9 +527,9 @@ describe( 'IntroModal', () => {
 		// The confirmed slug must save before the shared slug. Two parallel
 		// saves can drop one, and a dropped confirmed slug makes the survey
 		// triggers read the wrong segment. Removing the modal from the queue
-		// re-persists the shared slug via the framework, so it may appear more
-		// than once — the ordering relative to the confirmed slug is what
-		// matters.
+		// re-persists the shared slug via the Notifications API, so it may
+		// appear more than once. The ordering relative to the confirmed slug is
+		// what matters.
 		const dismissedSlugs = fetchMock
 			.calls( dismissItemEndpoint )
 			.map( ( [ , request ] ) => JSON.parse( request.body ).data.slug );

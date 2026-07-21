@@ -17,13 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import { Select } from 'googlesitekit-data';
-import {
-	CORE_USER,
-	PERMISSION_MANAGE_OPTIONS,
-} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE,
 	SITE_GOALS_BREAKDOWN_NOTICE,
@@ -37,11 +39,15 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	provideUserCapabilities,
+	untilResolved,
 } from '@tests/js/test-utils';
 import { hasGoalTypeBreakdownNotice } from './hasGoalTypeBreakdownNotice';
 
 const analyticsSettingsEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/settings'
+);
+const syncCustomDimensionsEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 );
 const siteGoalsSettingsEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/site-goals-settings'
@@ -116,14 +122,7 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
 		] );
 		provideUserAuthentication( registry );
-
-		// The available dimensions resolver ends by syncing the list from GA4,
-		// but only for a user who can manage options. The helper reads none of
-		// that, so withhold the capability and the resolver stops short of the
-		// request.
-		provideUserCapabilities( registry, {
-			[ PERMISSION_MANAGE_OPTIONS ]: false,
-		} );
+		provideUserCapabilities( registry );
 	} );
 
 	it( 'returns true when the widget is active, its dimension is missing, and the notice is not dismissed', () => {
@@ -178,13 +177,20 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 		);
 	} );
 
-	it( 'returns false while the available custom dimensions have not loaded', () => {
+	it( 'returns false while the available custom dimensions have not loaded', async () => {
 		muteFetch( analyticsSettingsEndpoint );
+		// The resolver syncs the dimension list from GA4 for a user who can
+		// manage options, so mock that request too.
+		fetchMock.post( syncCustomDimensionsEndpoint, {
+			body: [],
+			status: 200,
+		} );
 		provideActiveWidgets();
 		provideDismissedItems();
 
-		// The dimension list is still on its way, so `hasCustomDimensions`
-		// reads `undefined` rather than `false`.
+		// Before the dimension list loads, `getAvailableCustomDimensions`
+		// reads `undefined`. Assert that here, so the `false` below is the
+		// loading case, not a resolved `false`.
 		expect(
 			registry
 				.select( MODULES_ANALYTICS_4 )
@@ -193,6 +199,14 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 		expect(
 			hasGoalTypeBreakdownNotice( select, GOAL_TYPES.ECOMMERCE )
 		).toBe( false );
+
+		// Wait for the resolver to finish its GA4 sync request. fetch-mock
+		// resets after each test. If the request finishes after that reset, no
+		// mock answers it, and fetch-mock throws an error.
+		await untilResolved(
+			registry,
+			MODULES_ANALYTICS_4
+		).getAvailableCustomDimensions();
 	} );
 
 	it( 'returns false while the site goals settings have not loaded', () => {
@@ -200,8 +214,9 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 		provideCustomDimensions();
 		provideDismissedItems();
 
-		// Without the settings, `isSiteGoalWidgetActive` reads `undefined`
-		// rather than `false`.
+		// Before the settings load, `isSiteGoalWidgetActive` reads
+		// `undefined`. Assert that here, so the `false` below is the loading
+		// case, not a resolved `false`.
 		expect(
 			registry
 				.select( MODULES_ANALYTICS_4 )
@@ -217,8 +232,9 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 		provideActiveWidgets( [ GOAL_TYPES.ECOMMERCE ] );
 		provideCustomDimensions();
 
-		// Without the dismissed items, `isItemDismissed` reads `undefined`
-		// rather than `false`.
+		// Before the dismissed items load, `isItemDismissed` reads
+		// `undefined`. Assert that here, so the `false` below is the loading
+		// case, not a resolved `false`.
 		expect(
 			registry
 				.select( CORE_USER )
