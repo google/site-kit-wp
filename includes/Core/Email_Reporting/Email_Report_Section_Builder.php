@@ -110,15 +110,15 @@ class Email_Report_Section_Builder {
 	 * Build one or more section parts from raw payloads for a module.
 	 *
 	 * @since 1.167.0
+	 * @since n.e.x.t Removed $user_locale parameter, locale switching is now handled by the Email_Log_Processor.
 	 *
 	 * @param string   $module_slug Module slug (e.g. analytics-4).
 	 * @param array    $raw_sections_payloads Raw reports payloads.
-	 * @param string   $user_locale  User locale (e.g. en_US).
 	 * @param \WP_Post $email_log   Optional. Email log post instance containing date metadata.
 	 * @return Email_Report_Data_Section_Part[] Section parts for the provided module.
 	 * @throws \Exception If an error occurs while building sections.
 	 */
-	public function build_sections( $module_slug, $raw_sections_payloads, $user_locale, $email_log = null ) {
+	public function build_sections( $module_slug, $raw_sections_payloads, $email_log = null ) {
 		if ( is_object( $raw_sections_payloads ) ) {
 			$raw_sections_payloads = (array) $raw_sections_payloads;
 		}

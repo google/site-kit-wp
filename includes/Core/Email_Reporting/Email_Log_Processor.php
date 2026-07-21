@@ -127,7 +127,27 @@ class Email_Log_Processor {
 		$user_locale     = get_user_locale( $user );
 		$switched_locale = switch_to_locale( $user_locale );
 
-		$sections = $this->build_sections_for_log( $email_log, $user, $raw_payload );
+		$this->build_and_send_email( $post_id, $email_log, $user, $raw_payload, $frequency, $date_range );
+
+		if ( $switched_locale ) {
+			restore_previous_locale();
+		}
+	}
+
+	/**
+	 * Builds and sends an email.
+	 *
+	 * @since n.e.x.t.
+	 *
+	 * @param int     $post_id     Email log post ID.
+	 * @param WP_Post $email_log   Email log post.
+	 * @param WP_User $user        User receiving the report.
+	 * @param array   $raw_payload Raw payload.
+	 * @param string  $frequency   Frequency slug.
+	 * @param array   $date_range  Date range.
+	 */
+	private function build_and_send_email( $post_id, $email_log, $user, $raw_payload, $frequency, $date_range ) {
+		$sections = $this->build_sections_for_log( $email_log, $raw_payload );
 		if ( is_wp_error( $sections ) ) {
 			$this->mark_failed( $post_id, $sections );
 			return;
@@ -143,10 +163,6 @@ class Email_Log_Processor {
 		$template_data    = isset( $template_payload['template_data'] ) ? $template_payload['template_data'] : array();
 
 		$send_result = $this->report_sender->send( $user, $sections_payload, $template_data );
-
-		if ( $switched_locale ) {
-			restore_previous_locale();
-		}
 
 		if ( is_wp_error( $send_result ) ) {
 			$this->mark_failed( $post_id, $send_result );
@@ -265,14 +281,14 @@ class Email_Log_Processor {
 	 * Builds sections for a log payload.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Removed $user parameter, locale switching is now handled by this class.
 	 *
 	 * @param WP_Post $email_log   Email log post.
-	 * @param WP_User $user        User receiving the report.
 	 * @param array   $raw_payload Raw payload.
 	 * @return array|WP_Error Sections array or WP_Error.
 	 */
-	private function build_sections_for_log( WP_Post $email_log, WP_User $user, $raw_payload ) {
-		$sections = $this->template_formatter->build_sections( $raw_payload, $email_log, $user );
+	private function build_sections_for_log( WP_Post $email_log, $raw_payload ) {
+		$sections = $this->template_formatter->build_sections( $raw_payload, $email_log );
 
 		if ( is_wp_error( $sections ) ) {
 			return $sections;
