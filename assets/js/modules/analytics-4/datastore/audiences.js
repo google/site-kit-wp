@@ -399,9 +399,10 @@ const baseActions = {
 	 *
 	 * @since 1.128.0
 	 * @since 1.131.0 Added `failedSiteKitAudienceSlugs` parameter to retry failed Site Kit audience creation.
+	 * @since n.e.x.t Added `isAudienceCreationError` to the return value.
 	 *
 	 * @param {Array} failedSiteKitAudienceSlugs List of failed Site Kit audience slugs to retry.
-	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs` and `error`.
+	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs`, `isAudienceCreationError` and `error`.
 	 */
 	*enableAudienceGroup( failedSiteKitAudienceSlugs ) {
 		yield { type: START_AUDIENCES_SETUP };
@@ -453,9 +454,10 @@ const baseActions = {
 	 * This contains the main logic for the `*enableAudienceGroup()` action above.
 	 *
 	 * @since 1.136.0
+	 * @since n.e.x.t Added `isAudienceCreationError` to the return value.
 	 *
 	 * @param {Array} failedSiteKitAudienceSlugs List of failed Site Kit audience slugs to retry.
-	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs` and `error`.
+	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs`, `isAudienceCreationError` and `error`.
 	 */
 	*enableAudienceGroupMain( failedSiteKitAudienceSlugs ) {
 		const registry = yield commonActions.getRegistry();
@@ -515,7 +517,10 @@ const baseActions = {
 			} );
 
 			if ( insufficientPermissionsError ) {
-				return { error: insufficientPermissionsError };
+				return {
+					error: insufficientPermissionsError,
+					isAudienceCreationError: true,
+				};
 			}
 
 			yield commonActions.await(
@@ -580,7 +585,7 @@ const baseActions = {
 			);
 
 			if ( error ) {
-				return { error };
+				return { error, isAudienceCreationError: true };
 			}
 
 			// If the custom dimension was created successfully, mark it as gathering

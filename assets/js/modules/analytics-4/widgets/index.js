@@ -74,6 +74,7 @@ import {
 	SecondaryUserSetupWidget,
 } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
 import { AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationBackNotice';
+import { AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSelectionPanel/constants';
 import getAudienceTilesPDFData from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/getPDFData';
 import {
 	DashboardAllTrafficWidgetGA4,
@@ -237,11 +238,11 @@ export function registerWidgets( widgets ) {
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) => {
-				if (
-					! select( CORE_USER ).hasAccessToShareableModule(
-						MODULE_SLUG_ANALYTICS_4
-					)
-				) {
+				const hasAccessToShareableModule = select(
+					CORE_USER
+				).hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 );
+
+				if ( ! hasAccessToShareableModule ) {
 					return false;
 				}
 
@@ -250,6 +251,14 @@ export function registerWidgets( widgets ) {
 				).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 
 				if ( ! isAnalyticsConnected ) {
+					return false;
+				}
+
+				const isItemDismissed = select( CORE_USER ).isItemDismissed(
+					AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG
+				);
+
+				if ( isItemDismissed !== false ) {
 					return false;
 				}
 
@@ -287,11 +296,11 @@ export function registerWidgets( widgets ) {
 					return false;
 				}
 
-				if (
-					! select( CORE_USER ).hasAccessToShareableModule(
-						MODULE_SLUG_ANALYTICS_4
-					)
-				) {
+				const hasAccessToShareableModule = select(
+					CORE_USER
+				).hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 );
+
+				if ( ! hasAccessToShareableModule ) {
 					return false;
 				}
 
@@ -300,6 +309,14 @@ export function registerWidgets( widgets ) {
 				).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 
 				if ( ! isAnalyticsConnected ) {
+					return false;
+				}
+
+				const isItemDismissed = select( CORE_USER ).isItemDismissed(
+					AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG
+				);
+
+				if ( isItemDismissed !== false ) {
 					return false;
 				}
 

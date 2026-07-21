@@ -694,7 +694,7 @@ describe( 'AccountCreate', () => {
 				);
 
 				expect( global.location.assign ).toHaveBeenCalledWith(
-					'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup'
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup&showProgress=true'
 				);
 			} );
 		} );

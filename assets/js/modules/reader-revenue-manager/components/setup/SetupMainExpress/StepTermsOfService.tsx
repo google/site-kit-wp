@@ -1,5 +1,5 @@
 /**
- * IntroModalBanner types.
+ * Reader Revenue Manager express setup terms of service step.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -16,9 +16,18 @@
  * limitations under the License.
  */
 
-export interface IntroModalVariantProps {
-	onConfirm: () => void;
-	onClickLearnMore: () => void;
-	onDismiss: () => void;
-	onView: () => void;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+export default function StepTermsOfService() {
+	return (
+		<p>
+			{ __(
+				'RRM express setup placeholder: terms of service step.',
+				'google-site-kit'
+			) }
+		</p>
+	);
 }

@@ -1,5 +1,5 @@
 /**
- * IntroModalBanner types.
+ * Reader Revenue Manager express setup publication policies step.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -16,9 +16,18 @@
  * limitations under the License.
  */
 
-export interface IntroModalVariantProps {
-	onConfirm: () => void;
-	onClickLearnMore: () => void;
-	onDismiss: () => void;
-	onView: () => void;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+export default function StepPublicationPolicies() {
+	return (
+		<p>
+			{ __(
+				'RRM express setup placeholder: publication policies step.',
+				'google-site-kit'
+			) }
+		</p>
+	);
 }
