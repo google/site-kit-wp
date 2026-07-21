@@ -215,7 +215,6 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
-			viewOnly: false,
 		} );
 
 		expect( result.data ).toEqual( {
@@ -295,12 +294,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			} );
 
 		const signal = new AbortController().signal;
-		const result = await getPDFData( {
-			registry,
-			dates: DATES,
-			signal,
-			viewOnly: false,
-		} );
+		const result = await getPDFData( { registry, dates: DATES, signal } );
 
 		expect( mockEnsureGoogleChartsLoaded ).toHaveBeenCalledTimes( 1 );
 
@@ -388,7 +382,6 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
-			viewOnly: false,
 		} );
 
 		// Six countries collapse to the top four plus a single "Others" row,
@@ -442,7 +435,6 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
-			viewOnly: false,
 		} );
 
 		const pieCalls = mockRenderGoogleChartToDataURI.mock.calls.filter(
@@ -506,7 +498,6 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
-			viewOnly: false,
 		} );
 
 		expect( result.data?.locationBreakdown ).toBeNull();
@@ -567,7 +558,6 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
-			viewOnly: false,
 		} );
 
 		expect( result.data?.locationBreakdown ).toBeNull();
@@ -601,7 +591,6 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
-			viewOnly: false,
 		} );
 
 		const calls = fetchMock.calls( reportEndpoint );
@@ -621,7 +610,6 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal,
-			viewOnly: false,
 		} );
 
 		// The registry starts resolver runs from a timeout. Wait the
@@ -650,7 +638,6 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: controller.signal,
-			viewOnly: false,
 		} );
 
 		expect( result ).toEqual( { data: null } );
@@ -681,7 +668,6 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: controller.signal,
-			viewOnly: false,
 		} );
 
 		// Wait for the report fetches to dispatch before aborting.
@@ -746,7 +732,6 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: controller.signal,
-			viewOnly: false,
 		} );
 
 		expect( result ).toEqual( { data: null } );
@@ -780,7 +765,6 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: firstController.signal,
-			viewOnly: false,
 		} );
 
 		// Wait for all five report requests to start before aborting.
@@ -798,7 +782,6 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
-			viewOnly: false,
 		} );
 
 		expect( fetchMock.calls( reportEndpoint ) ).toHaveLength( 10 );

@@ -63,9 +63,6 @@ const PDFLink: FC< PDFLinkProps > = ( {
 	style,
 	children,
 } ) => {
-	// With no URL, the text renders plain, in the default text color. A caller
-	// that has no link for a row passes an empty `href`, so the row reads as
-	// plain text.
 	if ( ! href ) {
 		return (
 			<PDFTypography type={ type } size={ size } style={ style }>

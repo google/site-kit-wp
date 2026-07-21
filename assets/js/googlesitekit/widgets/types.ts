@@ -103,12 +103,7 @@ export interface WidgetPDFData {
  */
 export interface WidgetPDFConfig {
 	Component: PDFWidgetComponent;
-	getData: ( params: {
-		registry: unknown;
-		dates: PDFReportDates;
-		signal: AbortSignal;
-		viewOnly: boolean;
-	} ) => Promise< WidgetPDFData >;
+	getData: ( params: GetPDFDataParams ) => Promise< WidgetPDFData >;
 	label?: string;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The registry `select` is loosely typed, so `isActive` predicates can read store selectors without casting.
 	isActive?: ( select: ( storeName: string ) => any ) => boolean;

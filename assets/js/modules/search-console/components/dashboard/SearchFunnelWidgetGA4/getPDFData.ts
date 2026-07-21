@@ -150,8 +150,6 @@ export interface GetPDFDataParams {
 	};
 	/** Cancellation signal. */
 	signal: AbortSignal;
-	/** Whether the export runs on a view-only dashboard. This widget has no links to leave out, so the loader doesn't read it. */
-	viewOnly: boolean;
 }
 
 export interface SearchFunnelMetric {

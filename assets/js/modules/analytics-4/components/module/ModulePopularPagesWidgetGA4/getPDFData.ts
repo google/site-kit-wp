@@ -32,12 +32,12 @@ import { getFullURL } from '@/js/util';
 import { getPopularPagesReportArgs } from './reportOptions';
 
 /**
- * Links for one page row: the Analytics report link for the title, and the
- * page's own public URL for the URL line.
+ * Links for one page row: the link the page title points to, and the page's own
+ * public URL for the URL line.
  */
 export interface PopularPageLinks {
-	/** Analytics report link for the page, which the page title links to. */
-	serviceURL: string;
+	/** The link the page title points to: the Analytics report for an administrator, the page's entity dashboard for a view-only user. */
+	titleURL: string;
 	/** The page's own public URL, which the URL line links to. */
 	permaLink: string;
 }
@@ -52,44 +52,63 @@ export interface PopularPagesPDFData {
 		rows: ReportRow[];
 		/** Map of page path to page title. */
 		titles: Record< string, string >;
-		/** Map of page path to its Analytics report link and public URL. Empty on a view-only dashboard, where each title and URL show as plain text. */
+		/** Map of page path to its title link and public URL. */
 		links: Record< string, PopularPageLinks >;
 	} | null;
 }
 
 /**
- * Maps each page path to its Analytics report link and public URL.
+ * Maps each page path to its title link and public URL.
  *
- * The title links to the same All pages and screens report the dashboard
- * widget links to for an administrator. The URL line links to the page itself.
+ * The title links to the same All pages and screens report the dashboard widget
+ * links to for an administrator, and to the page's entity dashboard for a
+ * view-only user, the same `serviceURL || detailsURL` fallback the dashboard
+ * widget's `DetailsPermaLinks` renders. The URL line links to the page itself
+ * for every user.
  *
  * @since 1.182.0
- * @since n.e.x.t Links the title to the page's Analytics report instead of its entity dashboard.
+ * @since n.e.x.t Links the title to the Analytics report for an administrator and to the entity dashboard for a view-only user.
  *
  * @param registry  WordPress data registry.
  * @param dates     Report date range.
  * @param pagePaths Page paths from the main report rows.
- * @return Map of page path to its Analytics report link and public URL.
+ * @param viewOnly  Whether the export runs on a view-only dashboard.
+ * @return Map of page path to its title link and public URL.
  */
 function getPopularPageLinkMap(
 	registry: GetPDFDataParams[ 'registry' ],
 	dates: GetPDFDataParams[ 'dates' ],
-	pagePaths: string[]
+	pagePaths: string[],
+	viewOnly: boolean
 ): Record< string, PopularPageLinks > {
-	const siteURL = registry.select( CORE_SITE ).getReferenceSiteURL();
+	const coreSite = registry.select( CORE_SITE );
+	const siteURL = coreSite.getReferenceSiteURL();
 	const analytics = registry.select( MODULES_ANALYTICS_4 );
 	const { startDate, endDate } = dates;
 
 	const links: Record< string, PopularPageLinks > = {};
 
 	pagePaths.forEach( ( pagePath ) => {
-		links[ pagePath ] = {
-			serviceURL:
-				analytics.getServiceReportURL( 'all-pages-and-screens', {
+		const permaLink = getFullURL( siteURL, pagePath );
+
+		// An administrator's title links to the Analytics report. A view-only
+		// user has no service link, so the title falls back to the page's entity
+		// dashboard, the same `serviceURL || detailsURL` fallback the dashboard
+		// widget renders for that user.
+		const serviceURL = viewOnly
+			? null
+			: analytics.getServiceReportURL( 'all-pages-and-screens', {
 					filters: { unifiedPagePathScreen: pagePath },
 					dates: { startDate, endDate },
-				} ) ?? '',
-			permaLink: getFullURL( siteURL, pagePath ),
+			  } );
+
+		const detailsURL = coreSite.getAdminURL( 'googlesitekit-dashboard', {
+			permaLink,
+		} );
+
+		links[ pagePath ] = {
+			titleURL: serviceURL || detailsURL || '',
+			permaLink,
 		};
 	} );
 
@@ -106,7 +125,7 @@ function getPopularPageLinkMap(
  *
  * @since 1.182.0
  * @since 1.183.0 Returns null data when the report has no rows.
- * @since n.e.x.t Links each title to its Analytics report, and leaves out the page links on a view-only dashboard.
+ * @since n.e.x.t Links each title to the Analytics report for an administrator and to the entity dashboard for a view-only user.
  *
  * @param params          Loader parameters.
  * @param params.registry WordPress data registry.
@@ -150,11 +169,7 @@ export default async function getPDFData( {
 	}
 
 	const pagePaths = getPagePaths( report );
-	// For a view-only user, the loader builds no page links, so the title and
-	// the URL both render as plain text.
-	const links = viewOnly
-		? {}
-		: getPopularPageLinkMap( registry, dates, pagePaths );
+	const links = getPopularPageLinkMap( registry, dates, pagePaths, viewOnly );
 
 	if ( pagePaths.length === 0 ) {
 		return { data: { rows, titles: {}, links } };

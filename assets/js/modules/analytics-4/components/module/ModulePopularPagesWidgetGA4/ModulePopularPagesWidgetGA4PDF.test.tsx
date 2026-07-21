@@ -55,11 +55,11 @@ const DATA = {
 	titles: { '/home-page': 'Home Title', '/about-page': 'About Title' },
 	links: {
 		'/home-page': {
-			serviceURL: 'https://example.com/analytics-report/report-1',
+			titleURL: 'https://example.com/analytics-report/report-1',
 			permaLink: 'http://example.com/home-page',
 		},
 		'/about-page': {
-			serviceURL: 'https://example.com/analytics-report/report-2',
+			titleURL: 'https://example.com/analytics-report/report-2',
 			permaLink: 'http://example.com/about-page',
 		},
 	},
@@ -128,7 +128,7 @@ describe( 'ModulePopularPagesWidgetGA4PDF', () => {
 		const json = renderJSON( { data: DATA } );
 
 		// The title links to the page's Analytics report.
-		expect( json ).toContain( DATA.links[ '/home-page' ].serviceURL );
+		expect( json ).toContain( DATA.links[ '/home-page' ].titleURL );
 		// The URL line links to the page itself.
 		expect( json ).toContain( 'http://example.com/home-page' );
 		expect( json ).toContain( 'http://example.com/about-page' );

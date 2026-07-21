@@ -155,6 +155,19 @@ export default async function getPDFData( {
 		return { data: null };
 	}
 
+	// Each page title links to its Analytics report, which `getServiceReportURL`
+	// builds from the Analytics property ID in the Analytics settings. The PDF
+	// export path resolves the AdSense settings but not the Analytics ones, so
+	// resolve them here, or the property ID stays undefined and every link comes
+	// back empty. A view-only export builds no links, so it skips the resolution.
+	if ( ! viewOnly ) {
+		await registry.resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+
+		if ( signal.aborted ) {
+			return { data: null };
+		}
+	}
+
 	const currencyCode = report?.metadata?.currencyCode ?? '';
 	const pagePaths = getPagePaths( report );
 

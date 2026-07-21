@@ -123,6 +123,8 @@ describe( 'DashboardTopEarningPagesWidgetGA4PDF', () => {
 		expect( json ).toContain( 'About Title' );
 		// No `pdf-link` in the tree means every title rendered as plain text.
 		expect( json ).not.toContain( 'pdf-link' );
+		// Plain text drops the teal link color for the default text color.
+		expect( json ).not.toContain( '#108080' );
 	} );
 
 	it( 'numbers each row by its rank in the page title cell', () => {

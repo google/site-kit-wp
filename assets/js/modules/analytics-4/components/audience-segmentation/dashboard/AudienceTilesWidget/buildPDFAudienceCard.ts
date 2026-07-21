@@ -58,8 +58,8 @@ export interface AudienceTileTopContent {
 	title: string;
 	/** The page's pageviews. */
 	pageviews: number;
-	/** Analytics report link for the page, which the title links to. Empty when the page has no link, so the title renders as plain text. */
-	serviceURL: string;
+	/** Analytics report link for the page, which the title links to, when the page has one. */
+	serviceURL?: string;
 }
 
 /** One audience card's fully loaded data. */

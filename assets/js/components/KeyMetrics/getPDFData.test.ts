@@ -84,8 +84,15 @@ describe( 'Key Metrics getPDFData', () => {
 		] );
 		const { signal } = new AbortController();
 
-		const result = await getPDFData( { registry, dates: DATES, signal } );
+		const result = await getPDFData( {
+			registry,
+			dates: DATES,
+			signal,
+			viewOnly: false,
+		} );
 
+		// The aggregate loader has no view-only branch, so each tile loader
+		// receives only the registry, dates, and signal.
 		expect( getTileDataA ).toHaveBeenCalledWith( {
 			registry,
 			dates: DATES,
@@ -131,6 +138,7 @@ describe( 'Key Metrics getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		expect( result.data?.tiles ).toEqual( [
@@ -176,6 +184,7 @@ describe( 'Key Metrics getPDFData', () => {
 				registry,
 				dates: DATES,
 				signal: new AbortController().signal,
+				viewOnly: false,
 			} )
 		).rejects.toThrow( 'All Key Metrics PDF tiles failed to load.' );
 	} );
@@ -190,6 +199,7 @@ describe( 'Key Metrics getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		expect( result ).toEqual( { data: null } );
@@ -210,6 +220,7 @@ describe( 'Key Metrics getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: controller.signal,
+			viewOnly: false,
 		} );
 
 		expect( result ).toEqual( { data: null } );
@@ -239,6 +250,7 @@ describe( 'Key Metrics getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		expect( preload ).toHaveBeenCalledTimes( 1 );

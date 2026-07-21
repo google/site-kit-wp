@@ -282,6 +282,70 @@ describe( 'DashboardTopEarningPagesWidgetGA4 getPDFData', () => {
 		expect( mainRequest ).not.toContain( '(undefined)' );
 	} );
 
+	it( 'resolves the Analytics settings before building the links when they are not loaded yet', async () => {
+		// Fresh registry without the Analytics settings from `beforeEach`, so the
+		// export starts before the Analytics store has loaded the property. The
+		// AdSense settings go back in, so the main report builds on its own.
+		registry = createTestRegistry() as Registry;
+		provideUserInfo( registry );
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetSettings( { accountID: ACCOUNT_ID } );
+
+		const analyticsSettings = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/settings'
+		);
+		fetchMock.get( analyticsSettings, {
+			body: { propertyID: PROPERTY_ID },
+			status: 200,
+		} );
+		provideReports();
+
+		const result = await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+			viewOnly: false,
+		} );
+
+		// The loader fetched the Analytics settings, so each page link holds the
+		// property's report URL instead of the empty string an unset property gives.
+		expect( fetchMock ).toHaveFetched( analyticsSettings );
+		expect( result.data?.links[ '/' ] ).toBeTruthy();
+		expect( result.data?.links[ '/' ] ).toBe(
+			getExpectedPageLink( registry, '/' )
+		);
+	} );
+
+	it( 'does not resolve the Analytics settings on a view-only dashboard', async () => {
+		// Fresh registry without the Analytics settings, and a view-only export,
+		// which builds no page links and so never reads the property.
+		registry = createTestRegistry() as Registry;
+		provideUserInfo( registry );
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetSettings( { accountID: ACCOUNT_ID } );
+
+		const analyticsSettings = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/settings'
+		);
+		fetchMock.get( analyticsSettings, {
+			body: { propertyID: PROPERTY_ID },
+			status: 200,
+		} );
+		provideReports();
+
+		const result = await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+			viewOnly: true,
+		} );
+
+		expect( fetchMock ).not.toHaveFetched( analyticsSettings );
+		expect( result.data?.links ).toEqual( {} );
+	} );
+
 	it( 'keeps the first title for a repeated path and falls back to "(unknown)" for a missing one', async () => {
 		const mainReport = {
 			metadata: { currencyCode: 'EUR' },

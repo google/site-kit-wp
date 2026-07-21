@@ -64,12 +64,12 @@ interface FetchReportResult {
 export default function createKeyMetricTileDataLoader< TData >(
 	buildReports: ( dates: PDFReportDates ) => TileReportRequest[],
 	extract: ( reports: unknown[] ) => TData
-): ( params: GetPDFDataParams ) => Promise< TData | null > {
+): ( params: Omit< GetPDFDataParams, 'viewOnly' > ) => Promise< TData | null > {
 	return async function getTileData( {
 		registry,
 		dates,
 		signal,
-	}: GetPDFDataParams ): Promise< TData | null > {
+	}: Omit< GetPDFDataParams, 'viewOnly' > ): Promise< TData | null > {
 		if ( signal.aborted ) {
 			return null;
 		}

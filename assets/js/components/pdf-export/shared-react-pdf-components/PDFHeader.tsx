@@ -201,24 +201,14 @@ const PDFHeader: FC< PDFHeaderProps > = ( {
 					</PDFTypography>
 				</View>
 				<View style={ styles.siteBlock }>
-					{ dashboardURL ? (
-						<PDFLink
-							href={ dashboardURL }
-							style={ {
-								color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
-							} }
-						>
-							{ getSiteHost( siteURL ) }
-						</PDFLink>
-					) : (
-						<PDFTypography
-							style={ {
-								color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
-							} }
-						>
-							{ getSiteHost( siteURL ) }
-						</PDFTypography>
-					) }
+					<PDFLink
+						href={ dashboardURL }
+						style={ {
+							color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
+						} }
+					>
+						{ getSiteHost( siteURL ) }
+					</PDFLink>
 				</View>
 			</View>
 			<View style={ styles.chipRow }>

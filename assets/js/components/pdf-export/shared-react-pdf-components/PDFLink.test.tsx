@@ -120,6 +120,21 @@ describe( 'PDFLink', () => {
 		expect( treeJSON ).not.toContain( PDF_COLORS.CONTENT_SECONDARY );
 	} );
 
+	it( 'renders plain text in the default color when the href is undefined', () => {
+		// `href` is optional, so a caller can leave it out. An undefined `href`
+		// renders plain text, the same as an empty one.
+		const tree = renderLink( {
+			href: undefined,
+			children: 'View dashboard',
+		} );
+
+		expect( tree.type ).toBe( 'pdf-text' );
+
+		const treeJSON = JSON.stringify( tree );
+		expect( treeJSON ).toContain( 'View dashboard' );
+		expect( treeJSON ).not.toContain( PDF_COLORS.CONTENT_SECONDARY );
+	} );
+
 	it( 'leaves out the trailing icon when the href is empty', () => {
 		const tree = renderLink( {
 			href: '',

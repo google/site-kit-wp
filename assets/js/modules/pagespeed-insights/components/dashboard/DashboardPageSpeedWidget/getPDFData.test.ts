@@ -105,7 +105,6 @@ describe( 'getPDFData', () => {
 			registry,
 			dates: undefined,
 			signal: new AbortController().signal,
-			viewOnly: false,
 		} );
 
 		expect( resolveSelectSpy ).toHaveBeenCalledWith( CORE_SITE );
@@ -126,7 +125,6 @@ describe( 'getPDFData', () => {
 			registry,
 			dates: undefined,
 			signal: new AbortController().signal,
-			viewOnly: false,
 		} );
 
 		expect( result.data ).not.toBeNull();
@@ -162,7 +160,6 @@ describe( 'getPDFData', () => {
 			registry,
 			dates: undefined,
 			signal: new AbortController().signal,
-			viewOnly: false,
 		} );
 
 		expect( result.data ).not.toBeNull();
@@ -181,7 +178,6 @@ describe( 'getPDFData', () => {
 				registry,
 				dates: undefined,
 				signal: new AbortController().signal,
-				viewOnly: false,
 			} )
 		).rejects.toThrow();
 
@@ -198,7 +194,6 @@ describe( 'getPDFData', () => {
 				registry,
 				dates: undefined,
 				signal: new AbortController().signal,
-				viewOnly: false,
 			} )
 		).rejects.toThrow();
 		expect( console ).toHaveErrored();
@@ -214,7 +209,6 @@ describe( 'getPDFData', () => {
 			registry,
 			dates: undefined,
 			signal: new AbortController().signal,
-			viewOnly: false,
 		} );
 
 		expect( result.data ).not.toBeNull();
@@ -231,7 +225,6 @@ describe( 'getPDFData', () => {
 			registry,
 			dates: undefined,
 			signal: controller.signal,
-			viewOnly: false,
 		} );
 
 		// Null data tells the report document to skip the widget, so the PDF

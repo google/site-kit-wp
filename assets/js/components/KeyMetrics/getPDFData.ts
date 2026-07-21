@@ -44,8 +44,10 @@ interface KeyMetricPDFEntry {
 				default: ComponentType< never >;
 			} >;
 		};
-		/** Resolves the tile's data, or `null` when the export is canceled. */
-		getTileData: ( params: GetPDFDataParams ) => Promise< unknown >;
+		/** Resolves the tile's data, or `null` when the caller cancels the export. Key Metrics tiles have no view-only links, so the loader takes no `viewOnly`. */
+		getTileData: (
+			params: Omit< GetPDFDataParams, 'viewOnly' >
+		) => Promise< unknown >;
 	};
 }
 

@@ -35,8 +35,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { getFullURL } from '@/js/util';
 import getPDFData from './getPDFData';
 
 type Registry = WPDataRegistry & GetPDFDataParams[ 'registry' ];
@@ -121,6 +123,28 @@ function getExpectedPageLink( registry: Registry, pagePath: string ): string {
 }
 
 /**
+ * Builds the entity dashboard link the loader resolves for a view-only page path.
+ *
+ * The link comes from the same selector the loader uses, so a test checks the
+ * title falls back to the page's entity dashboard, not the URL format.
+ *
+ * @since n.e.x.t
+ *
+ * @param registry Registry that holds the reference site URL.
+ * @param pagePath Page path from a report row.
+ * @return The page's entity dashboard link.
+ */
+function getExpectedDetailsURL( registry: Registry, pagePath: string ): string {
+	const siteURL = registry.select( CORE_SITE ).getReferenceSiteURL();
+
+	return registry
+		.select( CORE_SITE )
+		.getAdminURL( 'googlesitekit-dashboard', {
+			permaLink: getFullURL( siteURL, pagePath ),
+		} );
+}
+
+/**
  * Sets up `fetchMock` so each report request returns the matching fixture. Only
  * the page titles report requests the `pageTitle` dimension, so a request whose
  * URL contains `pageTitle` returns the `titles` fixture, and every other report
@@ -194,11 +218,11 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 				titles: { '/': 'Home', '/about': 'About' },
 				links: {
 					'/': {
-						serviceURL: homeLink,
+						titleURL: homeLink,
 						permaLink: 'http://example.com/',
 					},
 					'/about': {
-						serviceURL: getExpectedPageLink( registry, '/about' ),
+						titleURL: getExpectedPageLink( registry, '/about' ),
 						permaLink: 'http://example.com/about',
 					},
 				},
@@ -206,7 +230,7 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 		} );
 	} );
 
-	it( 'builds no page links on a view-only dashboard', async () => {
+	it( 'links each title to its entity dashboard on a view-only dashboard', async () => {
 		fetchMock.get( reportEndpoint, ( requestURL ) => ( {
 			body: requestURL.includes( 'pageTitle' )
 				? TITLES_REPORT
@@ -221,13 +245,29 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 			viewOnly: true,
 		} );
 
-		// The rows and the titles still render. Only the links drop, so the PDF
-		// shows each title and URL as plain text.
+		// A view-only user can't reach the Analytics report, so each title falls
+		// back to the page's entity dashboard, the same link the dashboard widget
+		// renders. The URL line still links to the page itself.
+		const homeDetailsURL = getExpectedDetailsURL( registry, '/' );
+		expect( homeDetailsURL ).toBeTruthy();
+		expect( homeDetailsURL ).not.toBe(
+			getExpectedPageLink( registry, '/' )
+		);
+
 		expect( result ).toEqual( {
 			data: {
 				rows: MAIN_REPORT.rows,
 				titles: { '/': 'Home', '/about': 'About' },
-				links: {},
+				links: {
+					'/': {
+						titleURL: homeDetailsURL,
+						permaLink: 'http://example.com/',
+					},
+					'/about': {
+						titleURL: getExpectedDetailsURL( registry, '/about' ),
+						permaLink: 'http://example.com/about',
+					},
+				},
 			},
 		} );
 	} );
@@ -439,11 +479,11 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 				titles: { '/': 'Home', '/about': 'About' },
 				links: {
 					'/': {
-						serviceURL: getExpectedPageLink( registry, '/' ),
+						titleURL: getExpectedPageLink( registry, '/' ),
 						permaLink: 'http://example.com/',
 					},
 					'/about': {
-						serviceURL: getExpectedPageLink( registry, '/about' ),
+						titleURL: getExpectedPageLink( registry, '/about' ),
 						permaLink: 'http://example.com/about',
 					},
 				},
