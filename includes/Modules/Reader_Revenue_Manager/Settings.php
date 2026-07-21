@@ -197,7 +197,9 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				$option['policyInfoLink'] = '';
 			}
 
-			return $this->sanitize_express_setup_settings( $option );
+			$option = $this->sanitize_express_setup_settings( $option );
+
+			return $option;
 		};
 	}
 
