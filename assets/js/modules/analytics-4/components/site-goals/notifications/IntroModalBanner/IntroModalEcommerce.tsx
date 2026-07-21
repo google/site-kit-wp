@@ -41,6 +41,7 @@ const IntroModalEcommerce: FC< IntroModalVariantProps > = ( {
 	onConfirm,
 	onClickLearnMore,
 	onDismiss,
+	onView,
 } ) => {
 	const documentationURL = useSelect(
 		( select: Select ) =>
@@ -52,6 +53,7 @@ const IntroModalEcommerce: FC< IntroModalVariantProps > = ( {
 		<BannerModal
 			className="googlesitekit-banner-modal--site-goals-intro"
 			Graphic={ SiteGoalsIntroModalEcommerceGraphic }
+			onView={ onView }
 			onClose={ onDismiss }
 			title={ __( 'See what drives your sales', 'google-site-kit' ) }
 			description={ createInterpolateElement(

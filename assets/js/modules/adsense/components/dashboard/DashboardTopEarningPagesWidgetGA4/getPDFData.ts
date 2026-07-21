@@ -97,9 +97,8 @@ function getPageLinkMap(
  * Analytics report link for each page, the same link the dashboard widget
  * shows. For a view-only user, the loader builds no links, because the
  * dashboard widget shows the page title as plain text. Passes the cancellation
- * signal to both requests and returns `{ data: null }` when the signal fires.
- * Canceling the export stops the work, and the widget renders its empty
- * state.
+ * signal to both requests. Returns `{ data: null }` when the signal fires or
+ * the report has no rows, so the report document skips this widget.
  *
  * @since n.e.x.t
  *
@@ -151,6 +150,11 @@ export default async function getPDFData( {
 	}
 
 	const rows = report?.rows ?? [];
+
+	if ( rows.length === 0 ) {
+		return { data: null };
+	}
+
 	const currencyCode = report?.metadata?.currencyCode ?? '';
 	const pagePaths = getPagePaths( report );
 

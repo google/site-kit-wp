@@ -63,6 +63,13 @@ the file + section when flagging a violation.
   changed files: `npm run lint:js:files -- <path...>` / `composer lint -- <path...>`.
 - Relevant tests were **actually executed** and pass.
 - Build succeeds for non-trivial asset changes (`npm run build:dev`).
+- Any change that affects rendering (SCSS, layout, spacing, alignment) is **visually
+  verified on the rendered result**, not inferred from lint/build passing or from reading
+  the diff. Verify the exact state the issue describes (the element in its real context,
+  e.g. badge *next to the title*), not just the component in isolation.
+- Responsive / `@media` changes are checked on **both sides** of each breakpoint they
+  touch; a rule gated below `$bp-tablet` (600px) is verified at mobile width, since the
+  default (desktop-only) VRT run does not exercise mobile-only rules.
 - For UI changes, add/update Storybook stories and the corresponding VRT reference (run
   `./tests/backstop/bin/backstop test --filter="<scenario label>"` to check just that
   scenario, or the same with `approve` to accept it — `npm run test:visualtest` does not

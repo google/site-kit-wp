@@ -57,6 +57,7 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 import IntroModal, {
+	INTRO_MODAL_VARIANTS,
 	SITE_GOALS_INTRO_MODAL_BANNER,
 	SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED,
 } from './index';
@@ -66,6 +67,33 @@ jest.mock( '@/js/googlesitekit/notifications/hooks/useNotificationEvents' );
 const IntroModalComponent = withNotificationComponentProps(
 	SITE_GOALS_INTRO_MODAL_BANNER
 )( IntroModal );
+
+/**
+ * The modal content renders inside a fixed-position Dialog, so the
+ * `<Notification>` wrapper's own observer never sees it. `BannerModal` observes
+ * its own graphic with `withIntersectionObserver`, which uses the native
+ * `IntersectionObserver`. jsdom has none, so this stub reports the element as
+ * in view the moment it is observed, which fires the modal's `onView` and makes
+ * `<Notification>` send the `view_notification` event.
+ *
+ * @since n.e.x.t
+ */
+class InViewIntersectionObserver {
+	constructor( callback ) {
+		this.callback = callback;
+	}
+
+	observe( element ) {
+		this.callback(
+			[ { isIntersecting: true, intersectionRatio: 1, target: element } ],
+			this
+		);
+	}
+
+	unobserve() {}
+
+	disconnect() {}
+}
 
 const getNavigationalScrollTopSpy = jest.spyOn(
 	scrollUtils,
@@ -102,6 +130,7 @@ async function waitForIntroModalToShow( getByRole ) {
 
 describe( 'IntroModal', () => {
 	let registry;
+	let trackEvents;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -111,12 +140,13 @@ describe( 'IntroModal', () => {
 			status: 200,
 		} );
 
-		useNotificationEvents.mockReturnValue( {
+		trackEvents = {
 			view: jest.fn(),
 			confirm: jest.fn(),
 			clickLearnMore: jest.fn(),
 			dismiss: jest.fn(),
-		} );
+		};
+		useNotificationEvents.mockReturnValue( trackEvents );
 
 		provideSiteInfo( registry );
 		provideModules( registry, [
@@ -493,5 +523,42 @@ describe( 'IntroModal', () => {
 		} );
 
 		await waitForIntroModalToShow( getByRole );
+	} );
+
+	describe( 'view tracking', () => {
+		let originalIntersectionObserver;
+
+		beforeEach( () => {
+			originalIntersectionObserver = global.IntersectionObserver;
+			global.IntersectionObserver = InViewIntersectionObserver;
+		} );
+
+		afterEach( () => {
+			global.IntersectionObserver = originalIntersectionObserver;
+		} );
+
+		it( 'sends the view_notification event once the modal comes into view', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+			appendTourTarget();
+
+			const { getByRole } = render( <IntroModalComponent />, {
+				registry,
+			} );
+
+			await waitForIntroModalToShow( getByRole );
+
+			// The modal's content renders inside a fixed-position Dialog, so the
+			// `<Notification>` wrapper's own observer never marks it viewed.
+			// `BannerModal`'s `onView` fills that gap, which makes the wrapper
+			// send the view event labelled with the modal variant.
+			await waitFor( () => {
+				expect( trackEvents.view ).toHaveBeenCalledWith(
+					INTRO_MODAL_VARIANTS.ECOMMERCE,
+					undefined
+				);
+			} );
+		} );
 	} );
 } );
