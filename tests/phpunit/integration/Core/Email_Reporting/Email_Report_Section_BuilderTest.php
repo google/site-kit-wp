@@ -16,9 +16,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Email_Reporting\Email_Log;
 use Google\Site_Kit\Core\Email_Reporting\Email_Report_Section_Builder;
 use Google\Site_Kit\Core\Email_Reporting\Email_Report_Data_Section_Part;
-use Google\Site_Kit\Core\Email_Reporting\Sections_Map;
-use Google\Site_Kit\Core\Golinks\Dashboard_Golink_Handler;
-use Google\Site_Kit\Core\Golinks\Golinks;
 use Google\Site_Kit\Tests\TestCase;
 
 class Email_Report_Section_BuilderTest extends TestCase {
@@ -111,7 +108,7 @@ class Email_Report_Section_BuilderTest extends TestCase {
 			),
 		);
 
-		$ga4_sections = $builder->build_sections( 'analytics-4', $payloads, 'en_US', $email_log );
+		$ga4_sections = $builder->build_sections( 'analytics-4', $payloads, $email_log );
 		$this->assertIsArray( $ga4_sections, 'GA4 sections should be returned as a flat array.' );
 		$this->assertContainsOnlyInstancesOf( Email_Report_Data_Section_Part::class, $ga4_sections, 'GA4 sections should be Email_Report_Data_Section_Part instances.' );
 		$this->assertCount( 1, $ga4_sections, 'GA4 payload should produce one section.' );
@@ -139,54 +136,9 @@ class Email_Report_Section_BuilderTest extends TestCase {
 			),
 		);
 
-		$sections = $builder->build_sections( 'search-console', $payloads, 'en_US' );
+		$sections = $builder->build_sections( 'search-console', $payloads );
 
 		$this->assertWPError( $sections, 'Search Console errors should be propagated as WP_Error.' );
 		$this->assertSame( 'email_report_search_console_missing_result', $sections->get_error_code(), 'Expected original Search Console error code to be preserved.' );
-	}
-
-	/**
-	 * Converts built section parts into section payload used by sections map.
-	 *
-	 * @param Email_Report_Data_Section_Part[] $sections Built section parts.
-	 * @return array
-	 */
-	private function to_sections_payload( array $sections ) {
-		$payload = array();
-
-		foreach ( $sections as $section ) {
-			$dimensions       = $section->get_dimensions();
-			$dimension_values = $section->get_dimension_values();
-			$first_dimension  = $dimensions[0] ?? '';
-			$first_value      = $dimension_values[0] ?? '';
-			$first_label      = is_array( $first_value ) ? ( $first_value['label'] ?? '' ) : $first_value;
-
-			$payload[ $section->get_section_key() ] = array(
-				'value'           => $section->get_values()[0] ?? '',
-				'label'           => $section->get_labels()[0] ?? '',
-				'event_name'      => $section->get_event_names()[0] ?? '',
-				'dimension'       => $first_dimension,
-				'dimension_value' => $first_label,
-				'change_context'  => 'Compared to previous 7 days',
-			);
-		}
-
-		return $payload;
-	}
-
-	/**
-	 * Maps section parts by section key for easier assertions.
-	 *
-	 * @param Email_Report_Data_Section_Part[] $sections Built section parts.
-	 * @return Email_Report_Data_Section_Part[]
-	 */
-	private function map_sections_by_key( array $sections ) {
-		$section_by_key = array();
-
-		foreach ( $sections as $section ) {
-			$section_by_key[ $section->get_section_key() ] = $section;
-		}
-
-		return $section_by_key;
 	}
 }
