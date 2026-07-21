@@ -187,12 +187,12 @@ class SettingsTest extends SettingsTestCase {
 			'configuredCTAs with valid entries'            => array(
 				'configuredCTAs',
 				array(
-					'Reader registration' => 'newsletter-signup',
-					'Reader survey'       => 'survey',
+					'9d2418415-ab3a' => 'newsletter-signup',
+					'8j8152411-cd4b' => 'survey',
 				),
 				array(
-					'Reader registration' => 'newsletter-signup',
-					'Reader survey'       => 'survey',
+					'9d2418415-ab3a' => 'newsletter-signup',
+					'8j8152411-cd4b' => 'survey',
 				),
 			),
 			'configuredCTAs with empty array'              => array( 'configuredCTAs', array(), array() ),
@@ -201,13 +201,13 @@ class SettingsTest extends SettingsTestCase {
 			'configuredCTAs with invalid entries dropped'  => array(
 				'configuredCTAs',
 				array(
-					'Reader registration' => 'newsletter-signup',
-					'invalid value'       => 123,
-					'another invalid'     => array( 'survey' ),
-					0                     => 'numeric-key',
+					'9d2418415-ab3a' => 'newsletter-signup',
+					'8j8152411-cd4b' => 123,
+					'7f1042311-ef5c' => array( 'survey' ),
+					0                => 'numeric-key',
 				),
 				array(
-					'Reader registration' => 'newsletter-signup',
+					'9d2418415-ab3a' => 'newsletter-signup',
 				),
 			),
 		);
