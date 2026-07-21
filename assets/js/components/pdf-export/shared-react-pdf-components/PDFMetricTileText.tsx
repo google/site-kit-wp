@@ -73,9 +73,11 @@ export interface PDFMetricTileTextProps {
 	isNegative?: boolean;
 }
 
-// Mirrors the dashboard's `MetricTileText`: it shares the full-card layout of
-// `PDFNumericMetricTile`, but its value is a text label (e.g. a traffic source
-// name) rather than a large formatted number.
+/**
+ * Mirrors the dashboard's `MetricTileText`: it shares the full-card layout of
+ * `PDFNumericMetricTile`, but its value is a text label (e.g. a traffic source
+ * name) rather than a large formatted number.
+ */
 const PDFMetricTileText: FC< PDFMetricTileTextProps > = ( {
 	title,
 	value,
