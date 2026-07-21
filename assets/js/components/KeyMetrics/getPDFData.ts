@@ -156,7 +156,7 @@ export default async function getPDFData( {
 	 * for having no data. When every attempted tile failed, the section
 	 * is treated as an outage below rather than a genuinely empty section.
 	 */
-	 let failureCount = 0;
+	let failureCount = 0;
 
 	// A tile with no data (or a failed load) resolves to `null` and is filtered
 	// out below.
@@ -208,13 +208,13 @@ export default async function getPDFData( {
 		);
 	}
 
-	const settled = await Promise.all( tilePromises );
+	const loadedTiles = await Promise.all( tilePromises );
 
 	if ( signal.aborted ) {
 		return { data: null };
 	}
 
-	const tiles = settled.filter(
+	const tiles = loadedTiles.filter(
 		( tile ): tile is KeyMetricsPDFTile => tile !== null
 	);
 
