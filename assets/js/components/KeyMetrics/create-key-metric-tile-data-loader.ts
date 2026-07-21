@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import {
-	GetPDFDataParams,
+	PDFDataLoaderParams,
 	PDFReportDates,
 } from '@/js/googlesitekit/widgets/types';
 
@@ -64,12 +64,12 @@ interface FetchReportResult {
 export default function createKeyMetricTileDataLoader< TData >(
 	buildReports: ( dates: PDFReportDates ) => TileReportRequest[],
 	extract: ( reports: unknown[] ) => TData
-): ( params: Omit< GetPDFDataParams, 'viewOnly' > ) => Promise< TData | null > {
+): ( params: PDFDataLoaderParams ) => Promise< TData | null > {
 	return async function getTileData( {
 		registry,
 		dates,
 		signal,
-	}: Omit< GetPDFDataParams, 'viewOnly' > ): Promise< TData | null > {
+	}: PDFDataLoaderParams ): Promise< TData | null > {
 		if ( signal.aborted ) {
 			return null;
 		}

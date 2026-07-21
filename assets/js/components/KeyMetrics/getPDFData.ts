@@ -25,7 +25,10 @@ import { ComponentType } from 'react';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
+import {
+	GetPDFDataParams,
+	PDFDataLoaderParams,
+} from '@/js/googlesitekit/widgets/types';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 
 /**
@@ -44,10 +47,8 @@ interface KeyMetricPDFEntry {
 				default: ComponentType< never >;
 			} >;
 		};
-		/** Resolves the tile's data, or `null` when the caller cancels the export. Key Metrics tiles have no view-only links, so the loader takes no `viewOnly`. */
-		getTileData: (
-			params: Omit< GetPDFDataParams, 'viewOnly' >
-		) => Promise< unknown >;
+		/** Resolves the tile's data, or `null` when the caller cancels the export. */
+		getTileData: ( params: PDFDataLoaderParams ) => Promise< unknown >;
 	};
 }
 

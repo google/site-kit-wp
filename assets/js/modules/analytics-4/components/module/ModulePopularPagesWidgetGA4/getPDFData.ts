@@ -23,6 +23,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
+import { getAllPagesReportURL } from '@/js/modules/analytics-4/utils/page-report-url';
 import {
 	getPagePaths,
 	getPageTitleMap,
@@ -97,9 +98,9 @@ function getPopularPageLinkMap(
 		// widget renders for that user.
 		const serviceURL = viewOnly
 			? null
-			: analytics.getServiceReportURL( 'all-pages-and-screens', {
-					filters: { unifiedPagePathScreen: pagePath },
-					dates: { startDate, endDate },
+			: getAllPagesReportURL( analytics, pagePath, {
+					startDate,
+					endDate,
 			  } );
 
 		const detailsURL = coreSite.getAdminURL( 'googlesitekit-dashboard', {

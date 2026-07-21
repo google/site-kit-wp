@@ -34,6 +34,7 @@ import {
 	getAudienceTilesTopContentReportOptions,
 	getAudienceTilesTotalPageviewsReportOptions,
 } from '@/js/modules/analytics-4/utils/audienceTilesReportOptions';
+import { getAllPagesReportURL } from '@/js/modules/analytics-4/utils/page-report-url';
 import {
 	AudienceTilePDFData,
 	AvailableAudience,
@@ -380,12 +381,11 @@ export default async function getPDFData( {
 		const { startDate, endDate } = dates;
 
 		return (
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getServiceReportURL( 'all-pages-and-screens', {
-					filters: { unifiedPagePathScreen: pagePath },
-					dates: { startDate, endDate },
-				} ) ?? ''
+			getAllPagesReportURL(
+				registry.select( MODULES_ANALYTICS_4 ),
+				pagePath,
+				{ startDate, endDate }
+			) ?? ''
 		);
 	}
 

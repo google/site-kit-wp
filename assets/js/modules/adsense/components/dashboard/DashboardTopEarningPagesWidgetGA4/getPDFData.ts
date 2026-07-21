@@ -23,6 +23,7 @@ import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
+import { getAllPagesReportURL } from '@/js/modules/analytics-4/utils/page-report-url';
 import {
 	getPagePaths,
 	getPageTitleMap,
@@ -66,22 +67,30 @@ interface GetPDFDataResult {
  * @param registry  WordPress data registry.
  * @param dates     Report date range.
  * @param pagePaths Page paths from the main report rows.
- * @return Map of page path to its Analytics report link.
+ * @param viewOnly  Whether the export runs on a view-only dashboard.
+ * @return Map of page path to its Analytics report link, empty for a view-only user.
  */
 function getPageLinkMap(
 	registry: GetPDFDataParams[ 'registry' ],
 	dates: GetPDFDataParams[ 'dates' ],
-	pagePaths: string[]
+	pagePaths: string[],
+	viewOnly: boolean
 ): Record< string, string > {
+	// A view-only user sees each page title as plain text on the dashboard, so
+	// the PDF builds no links either.
+	if ( viewOnly ) {
+		return {};
+	}
+
 	const analytics = registry.select( MODULES_ANALYTICS_4 );
 	const { startDate, endDate } = dates;
 	const links: Record< string, string > = {};
 
 	pagePaths.forEach( ( pagePath ) => {
 		links[ pagePath ] =
-			analytics.getServiceReportURL( 'all-pages-and-screens', {
-				filters: { unifiedPagePathScreen: pagePath },
-				dates: { startDate, endDate },
+			getAllPagesReportURL( analytics, pagePath, {
+				startDate,
+				endDate,
 			} ) ?? '';
 	} );
 
@@ -171,9 +180,7 @@ export default async function getPDFData( {
 	const currencyCode = report?.metadata?.currencyCode ?? '';
 	const pagePaths = getPagePaths( report );
 
-	// For a view-only user, the loader builds no page links, so each page title
-	// renders as plain text.
-	const links = viewOnly ? {} : getPageLinkMap( registry, dates, pagePaths );
+	const links = getPageLinkMap( registry, dates, pagePaths, viewOnly );
 
 	if ( pagePaths.length === 0 ) {
 		return { data: { rows, currencyCode, titles: {}, links } };
