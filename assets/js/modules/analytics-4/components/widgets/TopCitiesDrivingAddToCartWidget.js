@@ -40,17 +40,19 @@ import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
-function TopCitiesDrivingAddToCartWidget( { Widget } ) {
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates()
-	);
-
-	const detectedEvents = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
-	);
-	const hasRequiredEvent = detectedEvents?.includes( 'add_to_cart' );
-
-	const topCitiesReportOptions = {
+/**
+ * Builds the Analytics 4 report options for the Top Cities Driving Add to Cart metric.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range.
+ * @return {Object} The `getReport` options for the top cities report.
+ */
+export function getTopCitiesDrivingAddToCartReportOptions( dates ) {
+	return {
 		...dates,
 		dimensions: [ 'city' ],
 		dimensionFilters: {
@@ -73,6 +75,20 @@ function TopCitiesDrivingAddToCartWidget( { Widget } ) {
 		reportID:
 			'analytics-4_top-cities-driving-add-to-cart-widget_widget_topCitiesReportOptions',
 	};
+}
+
+function TopCitiesDrivingAddToCartWidget( { Widget } ) {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates()
+	);
+
+	const detectedEvents = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
+	);
+	const hasRequiredEvent = detectedEvents?.includes( 'add_to_cart' );
+
+	const topCitiesReportOptions =
+		getTopCitiesDrivingAddToCartReportOptions( dates );
 
 	const topCitiesReport = useInViewSelect(
 		( select ) =>
