@@ -32,8 +32,11 @@ import {
 } from '@/js/components/KeyMetrics';
 import AddMetricCTATile from '@/js/components/KeyMetrics/AddMetricCTATile';
 import { KEY_METRICS_BACK_NOTICE_SLUG } from '@/js/components/KeyMetrics/constants';
+import getKeyMetricsPDFData from '@/js/components/KeyMetrics/getPDFData';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 import KeyMetricsNewBadge from '@/js/components/KeyMetrics/KeyMetricsNewBadge';
 import MetricsWidgetSubtitle from '@/js/components/KeyMetrics/MetricsWidgetSubtitle';
+import lazyWithPreload from '@/js/components/pdf-export/lazy-with-preload';
 import { isFeatureEnabled } from '@/js/features';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
@@ -42,6 +45,7 @@ import {
 	keyMetricsGA4Widgets,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import WidgetNull from '@/js/googlesitekit/widgets/components/WidgetNull';
 import { BREAKPOINT_SMALL } from '@/js/hooks/useBreakpoint';
 import {
 	AudienceAreaFooter,
@@ -56,6 +60,18 @@ import * as WIDGET_CONTEXTS from './default-contexts';
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
 const { ...ADDITIONAL_WIDGET_AREAS } = WIDGET_AREAS;
+
+/**
+ * The Key Metrics PDF section's `@react-pdf/renderer` component. It is only
+ * needed at export time, so it is lazy-loaded into the PDF chunk to keep the
+ * renderer out of the dashboard bundle.
+ */
+const KeyMetricsPDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/components/KeyMetrics/KeyMetricsPDF'
+	)
+);
 
 /**
  * Defines default widget areas for a given context
@@ -110,6 +126,7 @@ export function registerDefaults( widgetsAPI ) {
 					<KeyMetricsNewBadge />
 				</Fragment>
 			),
+			pdfTitle: __( 'Key metrics', 'google-site-kit' ),
 			subtitle: MetricsWidgetSubtitle,
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 1,
@@ -152,6 +169,11 @@ export function registerDefaults( widgetsAPI ) {
 	widgetsAPI.registerWidgetArea(
 		AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
 		{
+			// This is a second area of the Traffic PDF section. It repeats the
+			// "Traffic" title, so the section chip and heading keep that label
+			// when the report includes only this area's widget, not the primary
+			// traffic area.
+			pdfTitle: __( 'Traffic', 'google-site-kit' ),
 			subtitle: __(
 				'Understand how different visitor groups interact with your site',
 				'google-site-kit'
@@ -239,7 +261,8 @@ export function registerDefaults( widgetsAPI ) {
 				'Find out how much you’re earning from your content',
 				'google-site-kit'
 			),
-			pdfTitle: __( 'Monetization', 'google-site-kit' ),
+			pdfTitle: __( 'Revenue', 'google-site-kit' ),
+			pdfReportTitle: __( 'Monetization', 'google-site-kit' ),
 			subtitle: __(
 				'Track your AdSense revenue over time',
 				'google-site-kit'
@@ -388,6 +411,38 @@ export function registerDefaults( widgetsAPI ) {
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
+
+	// The Key Metrics PDF section renders `WidgetNull` on the dashboard (it
+	// occupies no grid slot); it exists to compose the user's configured key
+	// metric tiles into the PDF export. It appears in the export only when at
+	// least one configured metric has a `pdfTile` config. Registered only when
+	// the `pdfGeneration` feature flag is enabled.
+	if ( isFeatureEnabled( 'pdfGeneration' ) ) {
+		widgetsAPI.registerWidget(
+			'keyMetricsPDFSection',
+			{
+				Component: WidgetNull,
+				width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
+				priority: 1,
+				wrapWidget: false,
+				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+				pdf: {
+					Component: KeyMetricsPDF,
+					getData: getKeyMetricsPDFData,
+					// Reads `getKeyMetrics()` without awaiting resolution: an
+					// unresolved value reads as empty, so the section is
+					// omitted until the metrics resolve. This is safe because
+					// the selection panel resolves them, and re-selects the
+					// section once it appears; by export time they are loaded.
+					isActive: ( select ) =>
+						( select( CORE_USER ).getKeyMetrics() || [] ).some(
+							( slug ) => !! KEY_METRICS_WIDGETS[ slug ]?.pdfTile
+						),
+				},
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+	}
 
 	/**
 	 * Since we allow selecting at least two and at most four key

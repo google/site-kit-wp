@@ -38,10 +38,10 @@ import SiteGoalsIntroModalGraphic from '@/svg/graphics/site-goals-intro-modal.sv
 import type { IntroModalVariantProps } from './types';
 
 const IntroModalEcommerceAndLead: FC< IntroModalVariantProps > = ( {
-	onView,
 	onConfirm,
 	onClickLearnMore,
 	onDismiss,
+	onView,
 } ) => {
 	const documentationURL = useSelect(
 		( select: Select ) =>

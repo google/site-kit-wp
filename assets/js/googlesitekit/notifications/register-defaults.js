@@ -49,6 +49,9 @@ import ZeroDataNotification from '@/js/components/notifications/ZeroDataNotifica
 import { PDF_INTRODUCTION_OVERLAY_NOTIFICATION } from '@/js/components/pdf-export/constants';
 import PDFIntroductionOverlayNotification from '@/js/components/pdf-export/PDFIntroductionOverlayNotification';
 import SplashSetupErrorMessageNotification from '@/js/components/setup/SetupUsingProxyWithSignIn/SplashSetupErrorMessageNotification';
+import WelcomeModal, {
+	WELCOME_MODAL_NOTIFICATION,
+} from '@/js/components/WelcomeModal';
 import { isFeatureEnabled } from '@/js/features';
 import {
 	SITE_KIT_VIEW_ONLY_CONTEXTS,
@@ -82,6 +85,7 @@ import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/co
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '@/js/modules/tagmanager/datastore/constants';
 import { MINUTE_IN_SECONDS } from '@/js/util';
 import { asyncRequire, asyncRequireAll } from '@/js/util/async';
+import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 import {
 	GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 	GTG_SETUP_CTA_BANNER_NOTIFICATION,
@@ -825,6 +829,38 @@ export const DEFAULT_NOTIFICATIONS = {
 		],
 		isDismissible: true,
 		featureFlag: 'pdfGeneration',
+	},
+	[ WELCOME_MODAL_NOTIFICATION ]: {
+		Component: WelcomeModal,
+		priority: PRIORITY.SETUP_CTA_WELCOME_MODAL,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_MODALS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		],
+		featureFlag: 'setupFlowRefresh',
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			// The `hasAccessToFeatureTour` selector depends on the modules,
+			// authentication, and capabilities being resolved, while
+			// `isDataGatheringCompleteModalActive` depends on the dismissed
+			// items.
+			await Promise.all( [
+				resolveSelect( CORE_MODULES ).getModules(),
+				resolveSelect( CORE_USER ).getAuthentication(),
+				resolveSelect( CORE_USER ).getCapabilities(),
+				resolveSelect( CORE_USER ).getDismissedItems(),
+			] );
+
+			if ( ! select( CORE_USER ).hasAccessToFeatureTour() ) {
+				return false;
+			}
+
+			return (
+				select( CORE_USER ).isDataGatheringCompleteModalActive() ||
+				isInitialWelcomeModalActive()
+			);
+		},
 	},
 };
 
