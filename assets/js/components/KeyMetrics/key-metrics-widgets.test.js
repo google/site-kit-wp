@@ -37,7 +37,9 @@ const DATES = {
 	compareEndDate: '2025-01-07',
 };
 
-// The percent format the Top Cities tile uses for each city's share.
+/**
+ * The percent format the Top Cities tile uses for each city's share.
+ */
 const PERCENT_1DP = { style: 'percent', maximumFractionDigits: 1 };
 
 /**

@@ -59,9 +59,11 @@ const DATES = {
 	compareEndDate: '2025-01-07',
 };
 
-// A report shaped generously enough for every tile family: two ranked rows that
-// each carry a date-range dimension, per-range totals, a row count, a currency
-// code and a page-path dimension header.
+/**
+ * A report shaped generously enough for every tile family: two ranked rows that
+ * each carry a date-range dimension, per-range totals, a row count, a currency
+ * code and a page-path dimension header.
+ */
 const REPORT = {
 	rowCount: 2,
 	metadata: { currencyCode: 'USD' },
@@ -96,7 +98,9 @@ const REPORT = {
 	],
 };
 
-// Search Console returns a flat array of rows keyed by search query.
+/**
+ * Search Console report returns a flat array of rows keyed by search query.
+ */
 const SEARCH_CONSOLE_REPORT = [
 	{ keys: [ 'site kit' ], ctr: 0.42, clicks: 120, impressions: 285 },
 	{ keys: [ 'analytics plugin' ], ctr: 0.19, clicks: 40, impressions: 210 },
