@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Interface;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
 use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -71,11 +72,10 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * @return array
 	 */
 	protected function get_default() {
-		return array(
+		$defaults = array(
 			'contentPolicyState'                => '',
 			'policyInfoLink'                    => '',
 			'ownerID'                           => 0,
-			'organizationID'                    => '',
 			'publicationID'                     => '',
 			'publicationOnboardingState'        => '',
 			'publicationOnboardingStateChanged' => false,
@@ -84,8 +84,14 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'snippetMode'                       => 'post_types',
 			'postTypes'                         => array( 'post' ),
 			'productID'                         => 'openaccess',
-			'configuredCTAs'                    => array(),
 		);
+
+		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
+			$defaults['organizationID'] = '';
+			$defaults['configuredCTAs'] = array();
+		}
+
+		return $defaults;
 	}
 
 	/**
