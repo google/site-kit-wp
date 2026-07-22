@@ -692,7 +692,7 @@ class AuthenticationTest extends TestCase {
 		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
 		remove_filter( 'home_url', $home_url_hook );
 
-		$this->assertEquals( 'https://example.com/subsite/', $options->get( Connected_Proxy_URL::OPTION ), 'Connected proxy URL should be set to filtered home_url.' ); // PHPCS: line 692
+		$this->assertEquals( base64_encode( 'https://example.com/subsite/' ), $options->get( Connected_Proxy_URL::OPTION ), 'Setter should store the connected proxy URL base64-encoded from the filtered home_url.' ); // PHPCS: line 692
 	}
 
 	public function test_check_connected_proxy_url() {

@@ -27,23 +27,6 @@ class Connected_Proxy_URL extends Setting {
 	const OPTION = 'googlesitekit_connected_proxy_url';
 
 	/**
-	 * Registers the setting in WordPress.
-	 *
-	 * Decodes the stored value on read, so a caller of the option gets the
-	 * plain-text URL.
-	 *
-	 * @since n.e.x.t
-	 */
-	public function register() {
-		parent::register();
-
-		add_filter(
-			'option_' . static::OPTION,
-			fn ( $value ) => $this->decode( $value )
-		);
-	}
-
-	/**
 	 * Matches provided URL with the current proxy URL in the settings.
 	 *
 	 * @since 1.17.0
@@ -128,8 +111,8 @@ class Connected_Proxy_URL extends Setting {
 			return $value;
 		}
 
-		$decoded = base64_decode( $value, true );
+		$decoded_url = base64_decode( $value, true );
 
-		return false === $decoded ? $value : $decoded;
+		return false === $decoded_url ? $value : $decoded_url;
 	}
 }
