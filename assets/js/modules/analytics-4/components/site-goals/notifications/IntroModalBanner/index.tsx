@@ -206,17 +206,13 @@ const IntroModal: FC< IntroModalProps > = ( { id, Notification } ) => {
 		setValue( useHasBeenViewed.getKey( id ), true );
 	}
 
-	// Save the confirmed slug before the shared slug. Each save replaces the
-	// whole dismissed-items list with the server's copy, so two in parallel
-	// can overwrite each other and drop a slug. A dropped confirmed slug
-	// makes the survey triggers read the wrong segment.
-	async function dismissConfirmedThenShared() {
+	async function handleShowMe() {
+		// Save the confirmed slug before the notification ID slug. Each save
+		// replaces the whole dismissed-items list with the server's copy, so
+		// two in parallel can overwrite each other and drop a slug. A dropped
+		// confirmed slug makes the survey triggers read the wrong segment.
 		await dismissItem( SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED );
-		dismissNotification( id );
-	}
-
-	function handleShowMe() {
-		dismissConfirmedThenShared();
+		await dismissNotification( id );
 
 		triggerOnDemandTour(
 			getSiteGoalsTour( {

@@ -45,6 +45,23 @@ import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/co
 import { generateDateRangeArgs } from '@/js/modules/search-console/util';
 import { numFmt } from '@/js/util';
 
+/**
+ * Builds the report options for the Popular Keywords widget.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range dates, e.g. `startDate` and `endDate`.
+ * @return {Object} The Search Console report options.
+ */
+export function getPopularKeywordsReportOptions( dates ) {
+	return {
+		...dates,
+		dimensions: 'query',
+		limit: 100,
+		reportID: 'search-console_popular-keywords-widget_widget_reportOptions',
+	};
+}
+
 export default function PopularKeywordsWidget( { Widget } ) {
 	const viewOnlyDashboard = useViewOnly();
 
@@ -52,12 +69,7 @@ export default function PopularKeywordsWidget( { Widget } ) {
 		select( CORE_USER ).getDateRangeDates()
 	);
 
-	const reportOptions = {
-		...dates,
-		dimensions: 'query',
-		limit: 100,
-		reportID: 'search-console_popular-keywords-widget_widget_reportOptions',
-	};
+	const reportOptions = getPopularKeywordsReportOptions( dates );
 
 	const report = useInViewSelect(
 		( select ) =>

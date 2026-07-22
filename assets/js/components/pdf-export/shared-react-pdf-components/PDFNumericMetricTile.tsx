@@ -32,6 +32,12 @@ import PDFChangeBadge from './PDFChangeBadge';
 import PDFTypography from './PDFTypography';
 
 const styles = createPDFStyles( {
+	// Matches the dashboard tile's `min-height: 150px`, and fills the grid cell so
+	// every tile in a row shares the tallest tile's height.
+	card: {
+		minHeight: 150,
+		flexGrow: 1,
+	},
 	// 12px / 400 / on-surface-variant, matching the dashboard tile heading.
 	title: {
 		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
@@ -74,7 +80,7 @@ const PDFNumericMetricTile: FC< PDFNumericMetricTileProps > = ( {
 	isNegative = false,
 } ) => {
 	return (
-		<PDFCard>
+		<PDFCard style={ styles.card }>
 			<PDFTypography type="body" size="small" style={ styles.title }>
 				{ title }
 			</PDFTypography>
