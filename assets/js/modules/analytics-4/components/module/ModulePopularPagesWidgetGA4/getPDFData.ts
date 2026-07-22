@@ -82,11 +82,8 @@ function getPopularPageLinkMap( {
 	dates,
 	pagePaths,
 	viewOnly,
-}: {
-	registry: GetPDFDataParams[ 'registry' ];
-	dates: GetPDFDataParams[ 'dates' ];
+}: Pick< GetPDFDataParams, 'registry' | 'dates' | 'viewOnly' > & {
 	pagePaths: string[];
-	viewOnly: boolean;
 } ): Record< string, PopularPageLinks > {
 	const coreSite = registry.select( CORE_SITE );
 	const siteURL = coreSite.getReferenceSiteURL();

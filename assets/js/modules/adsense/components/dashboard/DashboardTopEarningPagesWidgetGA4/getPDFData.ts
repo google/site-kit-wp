@@ -76,11 +76,8 @@ function getPageLinkMap( {
 	dates,
 	pagePaths,
 	viewOnly,
-}: {
-	registry: GetPDFDataParams[ 'registry' ];
-	dates: GetPDFDataParams[ 'dates' ];
+}: Pick< GetPDFDataParams, 'registry' | 'dates' | 'viewOnly' > & {
 	pagePaths: string[];
-	viewOnly: boolean;
 } ): Record< string, string > {
 	// A view-only user sees each page title as plain text on the dashboard, so
 	// the PDF builds no links either.
