@@ -72,29 +72,47 @@ function appendPlaceholder( parent: Element ) {
 	return placeholder;
 }
 
-describe( 'getSiteGoalsTour', () => {
-	const baseParams = { isEcommerceOnly: false, hasBreakdownNotice: true };
+const ECOMMERCE_AND_LEAD_BREAKDOWN_NOTICES = {
+	hasEcommerceBreakdownNotice: true,
+	hasLeadBreakdownNotice: true,
+};
+const ECOMMERCE_BREAKDOWN_NOTICE_ONLY = {
+	hasEcommerceBreakdownNotice: true,
+	hasLeadBreakdownNotice: false,
+};
+const LEAD_BREAKDOWN_NOTICE_ONLY = {
+	hasEcommerceBreakdownNotice: false,
+	hasLeadBreakdownNotice: true,
+};
+const NO_BREAKDOWN_NOTICES = {
+	hasEcommerceBreakdownNotice: false,
+	hasLeadBreakdownNotice: false,
+};
 
+const STORE_COPY = /WooCommerce or Easy Digital Downloads/;
+const FORMS_COPY = /each individual form/;
+
+describe( 'getSiteGoalsTour', () => {
 	it( 'should return the Site Goals tour with the right slug', () => {
-		const tour = getSiteGoalsTour( baseParams );
+		const tour = getSiteGoalsTour( ECOMMERCE_AND_LEAD_BREAKDOWN_NOTICES );
 
 		expect( tour.slug ).toBe( 'site-goals-feature-tour' );
 	} );
 
 	it( 'should be repeatable so the tour can start again on demand', () => {
-		const tour = getSiteGoalsTour( baseParams );
+		const tour = getSiteGoalsTour( ECOMMERCE_AND_LEAD_BREAKDOWN_NOTICES );
 
 		expect( tour.isRepeatable ).toBe( true );
 	} );
 
 	it( 'should be scoped to the main dashboard', () => {
-		const tour = getSiteGoalsTour( baseParams );
+		const tour = getSiteGoalsTour( ECOMMERCE_AND_LEAD_BREAKDOWN_NOTICES );
 
 		expect( tour.contexts ).toEqual( [ 'mainDashboard' ] );
 	} );
 
 	it( 'should set the widget areas to load, above and including Site Goals, in page order', () => {
-		const tour = getSiteGoalsTour( baseParams );
+		const tour = getSiteGoalsTour( ECOMMERCE_AND_LEAD_BREAKDOWN_NOTICES );
 
 		expect( tour.preloadWidgetAreas ).toBe(
 			SITE_GOALS_TOUR_PRELOAD_WIDGET_AREAS
@@ -108,13 +126,13 @@ describe( 'getSiteGoalsTour', () => {
 	} );
 
 	it( 'should wait for the Site Goals section before starting the tour', () => {
-		const tour = getSiteGoalsTour( baseParams );
+		const tour = getSiteGoalsTour( ECOMMERCE_AND_LEAD_BREAKDOWN_NOTICES );
 
 		expect( tour.checkRequirements ).toBe( waitForSiteGoalsSectionReady );
 	} );
 
 	it( 'should prefix the Google Analytics event category with the current view context', () => {
-		const tour = getSiteGoalsTour( baseParams );
+		const tour = getSiteGoalsTour( ECOMMERCE_AND_LEAD_BREAKDOWN_NOTICES );
 
 		expect( tour.gaEventCategory( 'test-context' ) ).toBe(
 			'test-context_site-goals-tour'
@@ -122,10 +140,7 @@ describe( 'getSiteGoalsTour', () => {
 	} );
 
 	it( 'should anchor all three steps to the key action, the breakdown notice, and the goal drivers when the notice is shown', () => {
-		const tour = getSiteGoalsTour( {
-			...baseParams,
-			hasBreakdownNotice: true,
-		} );
+		const tour = getSiteGoalsTour( ECOMMERCE_AND_LEAD_BREAKDOWN_NOTICES );
 
 		expect( tour.steps ).toHaveLength( 3 );
 
@@ -140,11 +155,29 @@ describe( 'getSiteGoalsTour', () => {
 		);
 	} );
 
-	it( 'should omit the breakdown notice step when the notice is not shown', () => {
-		const tour = getSiteGoalsTour( {
-			...baseParams,
-			hasBreakdownNotice: false,
-		} );
+	it.each( [
+		{
+			notices: 'only the Online store widget shows the notice',
+			params: ECOMMERCE_BREAKDOWN_NOTICE_ONLY,
+		},
+		{
+			notices: 'only the Lead generation widget shows the notice',
+			params: LEAD_BREAKDOWN_NOTICE_ONLY,
+		},
+	] )(
+		'should include the breakdown notice step when $notices',
+		( { params } ) => {
+			const tour = getSiteGoalsTour( params );
+
+			expect( tour.steps ).toHaveLength( 3 );
+			expect( tour.steps[ 1 ].target ).toBe(
+				'.googlesitekit-site-goals-breakdown-notice'
+			);
+		}
+	);
+
+	it( 'should omit the breakdown notice step when neither widget shows the notice', () => {
+		const tour = getSiteGoalsTour( NO_BREAKDOWN_NOTICES );
 
 		expect( tour.steps ).toHaveLength( 2 );
 
@@ -159,31 +192,71 @@ describe( 'getSiteGoalsTour', () => {
 		);
 	} );
 
-	it( 'should use the leads copy in the breakdown step when isEcommerceOnly is false', () => {
-		const tour = getSiteGoalsTour( {
-			isEcommerceOnly: false,
-			hasBreakdownNotice: true,
-		} );
+	it.each( [
+		{
+			notices: 'both widgets show the notice',
+			params: ECOMMERCE_AND_LEAD_BREAKDOWN_NOTICES,
+			expectedCopy: STORE_COPY,
+			otherCopy: FORMS_COPY,
+		},
+		{
+			notices: 'only the Online store widget shows the notice',
+			params: ECOMMERCE_BREAKDOWN_NOTICE_ONLY,
+			expectedCopy: STORE_COPY,
+			otherCopy: FORMS_COPY,
+		},
+		{
+			notices: 'only the Lead generation widget shows the notice',
+			params: LEAD_BREAKDOWN_NOTICE_ONLY,
+			expectedCopy: FORMS_COPY,
+			otherCopy: STORE_COPY,
+		},
+	] )(
+		'should match the breakdown step copy to the widget it points at when $notices',
+		( { params, expectedCopy, otherCopy } ) => {
+			const tour = getSiteGoalsTour( params );
 
-		expect( tour.steps[ 1 ].content ).toMatch( /each individual form/ );
+			expect( tour.steps[ 1 ].content ).toMatch( expectedCopy );
+			expect( tour.steps[ 1 ].content ).not.toMatch( otherCopy );
+		}
+	);
+
+	it( 'should title the breakdown step "Get into the details"', () => {
+		const tour = getSiteGoalsTour( ECOMMERCE_AND_LEAD_BREAKDOWN_NOTICES );
+
+		expect( tour.steps[ 1 ].title ).toBe( 'Get into the details' );
 	} );
 
-	it( 'should use the sales copy in the breakdown step when isEcommerceOnly is true', () => {
-		const tour = getSiteGoalsTour( {
-			isEcommerceOnly: true,
-			hasBreakdownNotice: true,
-		} );
+	it.each( [
+		{
+			notices: 'both widgets show the notice',
+			params: ECOMMERCE_AND_LEAD_BREAKDOWN_NOTICES,
+		},
+		{
+			notices: 'neither widget shows the notice',
+			params: NO_BREAKDOWN_NOTICES,
+		},
+	] )(
+		'should open on "Your main goal is front and center" and end on "Find what drives success" when $notices',
+		( { params } ) => {
+			const tour = getSiteGoalsTour( params );
+			const lastStep = tour.steps[ tour.steps.length - 1 ];
 
-		expect( tour.steps[ 1 ].content ).toMatch(
-			/WooCommerce or Easy Digital Downloads/
-		);
-	} );
+			expect( tour.steps[ 0 ].title ).toBe(
+				'Your main goal is front and center'
+			);
+			expect( tour.steps[ 0 ].content ).toMatch(
+				/like sales or lead submissions/
+			);
+			expect( lastStep.title ).toBe( 'Find what drives success' );
+			expect( lastStep.content ).toMatch(
+				/which traffic channels or locations/
+			);
+		}
+	);
 
 	it( 'should set the "Done" label only on the last step', () => {
-		const tour = getSiteGoalsTour( {
-			...baseParams,
-			hasBreakdownNotice: true,
-		} );
+		const tour = getSiteGoalsTour( ECOMMERCE_AND_LEAD_BREAKDOWN_NOTICES );
 
 		expect( tour.steps[ tour.steps.length - 1 ] ).toMatchObject( {
 			locale: { last: 'Done' },

@@ -1043,9 +1043,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		await waitForRegistry();
 
 		expect(
-			getByText(
-				'Using both WooCommerce and Easy Digital Downloads to sell products or services?'
-			)
+			getByText( 'See how different plugins contribute to your goals' )
 		).toBeInTheDocument();
 
 		fireEvent.click( getByText( 'No thanks' ) );
