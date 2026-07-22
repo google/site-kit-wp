@@ -22,7 +22,14 @@ use Google\Site_Kit\Core\Storage\Options;
  * @ignore
  */
 class Migration_N_E_X_T {
-	const DB_VERSION        = 'n.e.x.t';
+	/**
+	 * Target DB version.
+	 */
+	const DB_VERSION = 'n.e.x.t';
+
+	/**
+	 * DB version option name.
+	 */
 	const DB_VERSION_OPTION = 'googlesitekit_db_version';
 
 	/**

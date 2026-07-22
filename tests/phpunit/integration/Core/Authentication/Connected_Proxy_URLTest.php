@@ -63,7 +63,7 @@ class Connected_Proxy_URLTest extends SettingsTestCase {
 	public function test_matches_url__with_legacy_plain_text_value() {
 		$connected_proxy_url = new Connected_Proxy_URL( $this->options );
 
-		// Store the option the way versions without encoding saved it.
+		// Store the option in plain text, the way earlier plugin versions saved it.
 		$this->update_option( 'https://example.com/' );
 
 		$connected_proxy_url->register();
@@ -115,7 +115,7 @@ class Connected_Proxy_URLTest extends SettingsTestCase {
 	public function test_get__returns_a_legacy_plain_text_value() {
 		$connected_proxy_url = new Connected_Proxy_URL( $this->options );
 
-		// Store the option the way versions without encoding saved it.
+		// Store the option in plain text, the way earlier plugin versions saved it.
 		$this->update_option( 'https://example.com/' );
 
 		$connected_proxy_url->register();
@@ -185,7 +185,7 @@ class Connected_Proxy_URLTest extends SettingsTestCase {
 		// Connect the site with its current URL.
 		$authentication->get_connected_proxy_url_instance()->set( $context->get_canonical_home_url() );
 
-		// Emulate proxy credentials and an OAuth access token.
+		// Simulate proxy credentials and an OAuth access token.
 		$this->fake_proxy_site_connection();
 		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
 
@@ -198,7 +198,7 @@ class Connected_Proxy_URLTest extends SettingsTestCase {
 			}
 		);
 
-		// Emulate a database search and replace that rewrites the site URL:
+		// Simulate a database search and replace that rewrites the site URL:
 		// it changes the home option but leaves the encoded option untouched.
 		update_option( 'home', 'https://new-domain.example.com' );
 

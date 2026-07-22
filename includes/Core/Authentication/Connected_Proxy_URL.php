@@ -94,9 +94,9 @@ class Connected_Proxy_URL extends Setting {
 	/**
 	 * Encodes the given URL for storage.
 	 *
-	 * Encoding keeps the stored value out of reach of a database search and
-	 * replace. An already encoded value decodes first, so a re-save never
-	 * encodes it twice.
+	 * The encoded value holds no readable URL, so a database search and
+	 * replace leaves it unchanged. An already encoded value decodes first,
+	 * so a re-save never encodes it twice.
 	 *
 	 * @since n.e.x.t
 	 *

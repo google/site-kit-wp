@@ -57,7 +57,7 @@ class Migration_N_E_X_TTest extends TestCase {
 	public function test_migrate__encodes_a_legacy_plain_text_value() {
 		$migration = $this->get_new_migration_instance();
 
-		// Store the option the way versions without encoding saved it.
+		// Store the option in plain text, the way earlier plugin versions saved it.
 		update_option( Connected_Proxy_URL::OPTION, 'https://example.com/' );
 
 		$migration->migrate();
@@ -110,7 +110,7 @@ class Migration_N_E_X_TTest extends TestCase {
 
 		$this->options->set( Migration_N_E_X_T::DB_VERSION_OPTION, Migration_N_E_X_T::DB_VERSION );
 
-		// Store the option the way versions without encoding saved it.
+		// Store the option in plain text, the way earlier plugin versions saved it.
 		update_option( Connected_Proxy_URL::OPTION, 'https://example.com/' );
 
 		$migration->migrate();
