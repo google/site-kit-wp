@@ -98,6 +98,54 @@ class SettingsTest extends SettingsTestCase {
 		);
 	}
 
+	public function test_get__casts_empty_configured_ctas_to_object() {
+		$this->enable_feature( 'rrmExpressSetup' );
+		$this->settings->register();
+
+		$settings = $this->settings->get();
+
+		$this->assertEquals(
+			(object) array(),
+			$settings['configuredCTAs'],
+			'Empty configuredCTAs should be cast to an object on get().'
+		);
+
+		$this->assertEquals(
+			'{}',
+			wp_json_encode( $settings['configuredCTAs'] ),
+			'Empty configuredCTAs should JSON-encode as an object.'
+		);
+
+		// Stored value remains an empty array.
+		$this->assertSame(
+			array(),
+			get_option( Settings::OPTION )['configuredCTAs'],
+			'Empty configuredCTAs should remain stored as an array.'
+		);
+	}
+
+	public function test_get__preserves_non_empty_configured_ctas() {
+		$this->enable_feature( 'rrmExpressSetup' );
+		$this->settings->register();
+
+		$configured_ctas = array(
+			'9d2418415-ab3a' => 'newsletter-signup',
+			'8j8152411-cd4b' => 'survey',
+		);
+
+		$options                   = $this->settings->get();
+		$options['configuredCTAs'] = $configured_ctas;
+		$this->settings->set( $options );
+
+		$settings = $this->settings->get();
+
+		$this->assertSame(
+			$configured_ctas,
+			$settings['configuredCTAs'],
+			'Non-empty configuredCTAs should be returned as an associative array.'
+		);
+	}
+
 	public function test_view_only_keys() {
 		$this->assertEqualSets(
 			array(

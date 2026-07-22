@@ -53,6 +53,31 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	}
 
 	/**
+	 * Gets the value of the setting.
+	 *
+	 * Overrides the parent to ensure empty configuredCTAs arrays are cast
+	 * to objects so that json_encode produces {} instead of [].
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return mixed Value set for the option, or registered default if not set.
+	 */
+	public function get() {
+		$settings = parent::get();
+
+		if (
+			is_array( $settings )
+			&& Feature_Flags::enabled( 'rrmExpressSetup' )
+			&& isset( $settings['configuredCTAs'] )
+			&& array() === $settings['configuredCTAs']
+		) {
+			$settings['configuredCTAs'] = (object) array();
+		}
+
+		return $settings;
+	}
+
+	/**
 	 * Returns keys for owned settings.
 	 *
 	 * @since 1.132.0
