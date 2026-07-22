@@ -137,8 +137,8 @@
 
 		@media (min-width: $bp-desktop) {
 			align-items: stretch;
-			column-gap: 14px;
 			display: grid;
+			gap: 12px 14px;
 			grid-auto-rows: 1fr;
 		}
 
@@ -179,6 +179,7 @@
 
 			@media (min-width: $bp-desktop) {
 				flex-direction: column;
+				position: relative;
 			}
 
 			&::after,
@@ -220,10 +221,6 @@
 				box-shadow: inset 0 0 0 1px $c-site-kit-sk-600;
 				padding: calc((var(--googlesitekit-stepper-size) - var(--googlesitekit-stepper-small-size)) / 2);
 			}
-
-			.googlesitekit-stepper__step-title {
-				font-weight: $fw-medium;
-			}
 		}
 
 		.googlesitekit-stepper__step--upcoming .googlesitekit-stepper__step-number {
@@ -233,6 +230,13 @@
 
 		.googlesitekit-stepper__step-progress-line {
 			display: none;
+
+			@media (min-width: $bp-desktop) {
+				display: block;
+				inset-block-start: 100%;
+				margin: 0;
+				position: absolute;
+			}
 		}
 	}
 }
