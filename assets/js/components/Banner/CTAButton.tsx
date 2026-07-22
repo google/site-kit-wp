@@ -44,7 +44,7 @@ export interface CTAButtonProps {
 	) => void;
 }
 
-export default function Button(
+export default function CTAButton(
 	{
 		ariaLabel,
 		disabled = false,
