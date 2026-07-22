@@ -33,7 +33,7 @@ permissions:
 
 env:
   # Update this date suffix (YYYYMMDD) whenever the bundled plugins in the playwright-wp Dockerfile change.
-  PLAYWRIGHT_WP_DATE_SUFFIX: '20260722'
+  PLAYWRIGHT_WP_DATE_SUFFIX: '20260715'
 
 jobs:
   changes:
