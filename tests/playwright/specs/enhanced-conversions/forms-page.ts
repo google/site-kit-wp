@@ -21,10 +21,7 @@
  */
 import { type Page, expect } from '@playwright/test';
 
-/**
- * Internal dependencies
- */
-import { getGTagEvent, waitForGTagEvent } from './utils';
+type GTagEventPayload = Record< string, unknown >;
 
 type SampleFormField = {
 	label: string;
@@ -74,6 +71,65 @@ export class FormsPage {
 	}
 
 	/**
+	 * Returns the payload for a named gtag event in the data layer.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param page      The page whose data layer should be inspected.
+	 * @param eventName The gtag event name.
+	 * @return The event payload, or null when the event has not fired.
+	 */
+	private getGTagEvent(
+		page: Page,
+		eventName: string
+	): Promise< GTagEventPayload | null > {
+		return page.evaluate( ( name ) => {
+			const dataLayer =
+				( window as Window & { dataLayer?: unknown[] } ).dataLayer ||
+				[];
+
+			for ( const entry of dataLayer ) {
+				const record = entry as Record< number, unknown >;
+
+				if ( record[ 0 ] !== 'event' || record[ 1 ] !== name ) {
+					continue;
+				}
+
+				const payload = record[ 2 ];
+
+				return payload && typeof payload === 'object'
+					? ( payload as GTagEventPayload )
+					: null;
+			}
+
+			return null;
+		}, eventName );
+	}
+
+	/**
+	 * Waits for a named gtag event and returns its payload.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param page      The page whose data layer should be inspected.
+	 * @param eventName The gtag event name.
+	 * @return The event payload.
+	 */
+	private async waitForGTagEvent(
+		page: Page,
+		eventName: string
+	): Promise< GTagEventPayload > {
+		await expect
+			.poll( () => this.getGTagEvent( page, eventName ) )
+			.not.toBeNull();
+
+		return ( await this.getGTagEvent(
+			page,
+			eventName
+		) ) as GTagEventPayload;
+	}
+
+	/**
 	 * Fills a form field with its raw sample value.
 	 *
 	 * @since n.e.x.t
@@ -81,7 +137,7 @@ export class FormsPage {
 	 * @param field The sample field data.
 	 * @return A promise that resolves when the field is filled.
 	 */
-	async fillField( field: SampleFormField ): Promise< void > {
+	private async fillField( field: SampleFormField ): Promise< void > {
 		await this.page.getByLabel( field.label ).fill( field.rawValue );
 	}
 
@@ -119,7 +175,10 @@ export class FormsPage {
 	async verifyEmailFormEvent(): Promise< void > {
 		await this.fillAndSubmit( [ SAMPLE_FORM_DATA.email ] );
 
-		const payload = await waitForGTagEvent( this.page, 'submit_lead_form' );
+		const payload = await this.waitForGTagEvent(
+			this.page,
+			'submit_lead_form'
+		);
 
 		expect( payload ).toMatchObject( {
 			event_source: 'site-kit',
@@ -144,7 +203,10 @@ export class FormsPage {
 			SAMPLE_FORM_DATA.lastName,
 		] );
 
-		const payload = await waitForGTagEvent( this.page, 'submit_lead_form' );
+		const payload = await this.waitForGTagEvent(
+			this.page,
+			'submit_lead_form'
+		);
 
 		expect( payload ).toMatchObject( {
 			event_source: 'site-kit',
@@ -169,7 +231,10 @@ export class FormsPage {
 	async verifyPhoneFormEvent(): Promise< void > {
 		await this.fillAndSubmit( [ SAMPLE_FORM_DATA.phone ] );
 
-		const payload = await waitForGTagEvent( this.page, 'submit_lead_form' );
+		const payload = await this.waitForGTagEvent(
+			this.page,
+			'submit_lead_form'
+		);
 
 		expect( payload ).toMatchObject( {
 			event_source: 'site-kit',
@@ -196,7 +261,10 @@ export class FormsPage {
 			SAMPLE_FORM_DATA.phone,
 		] );
 
-		const payload = await waitForGTagEvent( this.page, 'submit_lead_form' );
+		const payload = await this.waitForGTagEvent(
+			this.page,
+			'submit_lead_form'
+		);
 
 		expect( payload ).toMatchObject( {
 			event_source: 'site-kit',
@@ -228,7 +296,10 @@ export class FormsPage {
 			SAMPLE_FORM_DATA.phone,
 		] );
 
-		const payload = await waitForGTagEvent( this.page, 'submit_lead_form' );
+		const payload = await this.waitForGTagEvent(
+			this.page,
+			'submit_lead_form'
+		);
 
 		expect( payload ).toMatchObject( {
 			event_source: 'site-kit',
@@ -254,7 +325,7 @@ export class FormsPage {
 		] );
 
 		expect(
-			await getGTagEvent( this.page, 'submit_lead_form' )
+			await this.getGTagEvent( this.page, 'submit_lead_form' )
 		).toBeNull();
 	}
 }

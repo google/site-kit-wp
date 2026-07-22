@@ -56,7 +56,11 @@ export type SharedModuleSettings = {
 /**
  * Sets the plugins to activate for the test.
  *
+ * Plugin file paths without a `/` are loaded from the
+ * `google-site-kit-test-plugins/` directory.
+ *
  * @since 1.175.0
+ * @since n.e.x.t Support plugins outside the test plugins directory.
  *
  * @param {string[]} plugins Plugin file paths relative to the plugins directory (e.g. `my-plugin/my-plugin.php`).
  * @return {TestDetailsAnnotation} The annotation to use for the test.
@@ -65,7 +69,11 @@ export function withPlugins( ...plugins: string[] ): TestDetailsAnnotation {
 	return {
 		type: '_wp:plugin',
 		description: plugins
-			.map( ( plugin ) => `google-site-kit-test-plugins/${ plugin }` )
+			.map( ( plugin ) =>
+				plugin.includes( '/' )
+					? plugin
+					: `google-site-kit-test-plugins/${ plugin }`
+			)
 			.join( ANNOTATION_SEPARATOR ),
 	};
 }
@@ -171,5 +179,19 @@ export function asUser(
 	return {
 		type: '_wp:as-user',
 		description,
+	};
+}
+
+/**
+ * Enables Conversion Tracking for the test.
+ *
+ * @since n.e.x.t
+ *
+ * @return {TestDetailsAnnotation} The annotation to use for the test.
+ */
+export function withConversionTracking(): TestDetailsAnnotation {
+	return {
+		type: '_wp:conversion-tracking',
+		description: 'enabled',
 	};
 }

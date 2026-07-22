@@ -23,15 +23,20 @@ import { test } from '../../playwright';
 import {
 	asUser,
 	withConnectedModules,
+	withConversionTracking,
 	withFeatureFlags,
 	withPlugins,
 } from '../../wordpress';
 import { FormsPage } from './forms-page';
-import { setConversionTrackingEnabled } from './utils';
 
-const plugins = withPlugins( 'proxy-auth.php', 'enhanced-conversions.php' );
+const plugins = withPlugins(
+	'proxy-auth.php',
+	'enhanced-conversions.php',
+	'wpforms-lite/wpforms.php'
+);
 const anonymousUser = asUser( 'does-not-exist' );
 const withUserDataFlag = withFeatureFlags( 'gtagUserData' );
+const conversionTracking = withConversionTracking();
 const adsConnected = withConnectedModules( {
 	slug: 'ads',
 	settings: {
@@ -49,17 +54,19 @@ test.describe(
 	'WPForms Enhanced Conversions',
 	{ annotation: [ plugins, anonymousUser ] },
 	() => {
-		test.describe.configure( { mode: 'serial' } );
-
 		test.beforeEach( async ( { wp } ) => {
-			await wp.activatePlugin( 'wpforms-lite/wpforms.php' );
 			await wp.visitFrontend();
-			await setConversionTrackingEnabled( wp, true );
 		} );
 
 		test(
 			'should send normalized user data for the email-only form',
-			{ annotation: [ withUserDataFlag, adsConnected ] },
+			{
+				annotation: [
+					withUserDataFlag,
+					conversionTracking,
+					adsConnected,
+				],
+			},
 			async ( { wp } ) => {
 				await wp.visitFrontend( '/e2e-wpforms-email/' );
 
@@ -70,7 +77,13 @@ test.describe(
 
 		test(
 			'should send normalized user data for the name-only form',
-			{ annotation: [ withUserDataFlag, adsConnected ] },
+			{
+				annotation: [
+					withUserDataFlag,
+					conversionTracking,
+					adsConnected,
+				],
+			},
 			async ( { wp } ) => {
 				await wp.visitFrontend( '/e2e-wpforms-name/' );
 
@@ -81,7 +94,13 @@ test.describe(
 
 		test(
 			'should send normalized user data for the phone-only form',
-			{ annotation: [ withUserDataFlag, adsConnected ] },
+			{
+				annotation: [
+					withUserDataFlag,
+					conversionTracking,
+					adsConnected,
+				],
+			},
 			async ( { wp } ) => {
 				await wp.visitFrontend( '/e2e-wpforms-phone/' );
 
@@ -92,7 +111,13 @@ test.describe(
 
 		test(
 			'should send normalized user data for the all-fields form',
-			{ annotation: [ withUserDataFlag, adsConnected ] },
+			{
+				annotation: [
+					withUserDataFlag,
+					conversionTracking,
+					adsConnected,
+				],
+			},
 			async ( { wp } ) => {
 				await wp.visitFrontend( '/e2e-wpforms-all-fields/' );
 
@@ -103,7 +128,7 @@ test.describe(
 
 		test(
 			'should send the form event without user data when the feature flag is disabled',
-			{ annotation: adsConnected },
+			{ annotation: [ conversionTracking, adsConnected ] },
 			async ( { wp } ) => {
 				await wp.visitFrontend( '/e2e-wpforms-all-fields/' );
 
@@ -116,7 +141,6 @@ test.describe(
 			'should not send a form event when conversion tracking is disabled',
 			{ annotation: [ withUserDataFlag, adsConnected ] },
 			async ( { wp } ) => {
-				await setConversionTrackingEnabled( wp, false );
 				await wp.visitFrontend( '/e2e-wpforms-all-fields/' );
 
 				const formsPage = new FormsPage( wp.page );
@@ -126,7 +150,7 @@ test.describe(
 
 		test(
 			'should not send a form event when no GTag-using module is connected',
-			{ annotation: withUserDataFlag },
+			{ annotation: [ withUserDataFlag, conversionTracking ] },
 			async ( { wp } ) => {
 				await wp.visitFrontend( '/e2e-wpforms-all-fields/' );
 

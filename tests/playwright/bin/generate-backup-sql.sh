@@ -87,7 +87,7 @@ echo "Setting permalink structure..."
 wp rewrite structure '%postname%' --hard --quiet
 
 echo "Creating WPForms forms and pages..."
-wp site-kit-e2e create-wpforms-fixtures --user=admin
+cat wpforms.php | wp eval-file - --user=admin
 
 wp plugin deactivate wpforms-lite --quiet
 wp plugin deactivate google-site-kit-test-plugins/enhanced-conversions.php --quiet
