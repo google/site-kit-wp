@@ -31,7 +31,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Success from '@/svg/icons/success.svg';
+import CheckMark from '@/svg/icons/check-2.svg';
 import Tick from '@/svg/icons/tick.svg';
 import { STEP_STATUS } from './constants';
 
@@ -43,7 +43,7 @@ export default function Stepper( {
 } ) {
 	const childCount = Children.count( children );
 
-	const Icon = variant === 'rail' ? Success : Tick;
+	const Icon = variant === 'rail' ? CheckMark : Tick;
 
 	function getStepStatus( index = -1 ) {
 		if ( index < activeStep ) {

@@ -128,6 +128,7 @@
 	}
 
 	.googlesitekit-stepper--rail {
+		--googlesitekit-stepper-row-gap: 12px;
 		--googlesitekit-stepper-size: 18px;
 		--googlesitekit-stepper-small-size: 10px;
 
@@ -138,7 +139,7 @@
 		@media (min-width: $bp-desktop) {
 			align-items: stretch;
 			display: grid;
-			gap: 12px 14px;
+			gap: var(--googlesitekit-stepper-row-gap);
 			grid-auto-rows: 1fr;
 		}
 
@@ -149,6 +150,7 @@
 			@media (min-width: $bp-desktop) {
 				display: grid;
 				flex-grow: 1;
+				gap: 14px;
 				grid-template-columns: var(--googlesitekit-stepper-size) auto;
 				min-block-size: 36px;
 			}
@@ -232,9 +234,11 @@
 			display: none;
 
 			@media (min-width: $bp-desktop) {
+				block-size: var(--googlesitekit-stepper-row-gap);
 				display: block;
 				inset-block-start: 100%;
 				margin: 0;
+				min-block-size: 0;
 				position: absolute;
 			}
 		}
