@@ -25,49 +25,52 @@ import { ComponentType } from 'react';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
 import {
 	GetPDFDataParams,
 	PDFDataLoaderParams,
 } from '@/js/googlesitekit/widgets/types';
+import { KEY_METRICS_PDF_TILES } from './key-metrics-pdf-tiles';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 
 /**
- * The `KEY_METRICS_WIDGETS` entry fields this loader reads. The map lives in a
- * `.js` file, so this types just the fields used here and adds a string index so
- * entries can be looked up by slug.
+ * One metric's PDF export configuration. Both maps live in `.js` files, so this
+ * types just the fields read here and adds a string index for slug lookups.
  */
-interface KeyMetricPDFEntry {
-	/** The tile heading. */
-	title: string;
-	/** The tile's PDF export config, present only for metrics with a PDF tile. */
-	pdfTile?: {
-		/** The tile's `@react-pdf/renderer` component, `lazyWithPreload`-wrapped. */
-		TileComponent: ComponentType< never > & {
-			preload?: () => Promise< {
-				default: ComponentType< never >;
-			} >;
-		};
-		/** Resolves the tile's data, or `null` when the caller cancels the export. */
-		getTileData: ( params: PDFDataLoaderParams ) => Promise< unknown >;
+interface KeyMetricPDFTileConfig {
+	/** The tile's `@react-pdf/renderer` component, `lazyWithPreload`-wrapped. */
+	TileComponent: ComponentType< never > & {
+		preload?: () => Promise< {
+			default: ComponentType< never >;
+		} >;
 	};
+	/** Resolves the tile's data, or `null` when the report has no data. */
+	getTileData: ( params: PDFDataLoaderParams ) => Promise< unknown >;
 }
 
 const keyMetricsWidgets = KEY_METRICS_WIDGETS as Record<
 	string,
-	KeyMetricPDFEntry
+	{ title: string }
+>;
+
+const keyMetricsPDFTiles = KEY_METRICS_PDF_TILES as Record<
+	string,
+	KeyMetricPDFTileConfig
 >;
 
 /**
  * The props shape the aggregate component spreads into a tile: its `title` plus
  * the fields the tile's `getTileData` resolved. The map above stores each tile as
  * `ComponentType< never >` so every tile's own props shape fits it, so a
- * component crossing into the rendered tile is converted to this type.
+ * component is converted to this type as it crosses into the rendered tile.
  */
 type TileRenderComponent = ComponentType< Record< string, unknown > >;
 
 /**
  * One rendered Key Metrics tile: enough to render its `TileComponent`, plus the
- * `data` it consumes (or `null` when that tile's data failed to load).
+ * `data` it consumes. Only tiles with data are composed, so `data` is always
+ * present — a tile whose report has no data (or failed to load) is left out.
  *
  * @since n.e.x.t
  */
@@ -78,7 +81,7 @@ export interface KeyMetricsPDFTile {
 	title: string;
 	/** The tile's `@react-pdf/renderer` component. */
 	TileComponent: TileRenderComponent;
-	/** The normalised tile data, or `null` when this tile's data failed to load. */
+	/** The normalised tile data the `TileComponent` consumes. */
 	data: unknown;
 }
 
@@ -95,45 +98,76 @@ export interface KeyMetricsPDFData {
 /**
  * Composes the Key Metrics PDF section data from the user's configured tiles.
  *
- * Reads the user's key metric slugs, keeps only those whose `KEY_METRICS_WIDGETS`
- * entry defines a `pdfTile` config (others are skipped silently), and loads each
- * remaining tile's data through its `pdfTile.getTileData`. A single tile's
- * failure is captured as `data: null` so the other tiles still render; the loader
- * throws only when every tile fails. Tiles keep the user's configured order.
+ * Orders the tiles exactly as the dashboard does: it reads the active widgets of
+ * the Key Metrics area, which the widget registry already returns in the
+ * dashboard's render order (by widget priority), rather than the user's raw
+ * selection order. `viewableModules` scopes those widgets to the modules the
+ * current user can view, so a shared dashboard exports the same tiles it shows.
+ * It keeps only the widgets that have an entry in `KEY_METRICS_PDF_TILES` (the
+ * aggregate section widget and CTA tiles are skipped) and loads each tile's data
+ * through its `getTileData`. A tile whose report has no data is left out and the
+ * remaining tiles reflow to fill the grid; a tile whose report fails to load is
+ * also left out, but when every attempted tile fails that way the loader throws,
+ * so a genuine outage surfaces as an export error rather than an empty section.
+ * When no tile has data the loader returns `{ data: null }` so the orchestrator
+ * omits the whole section.
  *
  * @since n.e.x.t
  *
- * @param params          Loader parameters.
- * @param params.registry WordPress data registry.
- * @param params.dates    Report date range.
- * @param params.signal   Cancellation signal.
- * @return The Key Metrics tiles, or `{ data: null }` when canceled.
+ * @param params                 Loader parameters.
+ * @param params.registry        WordPress data registry.
+ * @param params.dates           Report date range.
+ * @param params.signal          Cancellation signal.
+ * @param params.viewableModules The modules the user can view, or `undefined` for the owner.
+ * @return The Key Metrics tiles, or `{ data: null }` when canceled or no tile has data.
  */
 export default async function getPDFData( {
 	registry,
 	dates,
 	signal,
+	viewableModules,
 }: GetPDFDataParams ): Promise< KeyMetricsPDFData > {
 	if ( signal.aborted ) {
 		return { data: null };
 	}
 
-	const keyMetrics: string[] =
-		( await registry.resolveSelect( CORE_USER ).getKeyMetrics() ) || [];
+	// Resolve the user's key metrics first: the area's widgets decide whether
+	// they are active from `isKeyMetricActive`, which reads this selection.
+	await registry.resolveSelect( CORE_USER ).getKeyMetrics();
 
 	if ( signal.aborted ) {
 		return { data: null };
 	}
 
+	// The registry returns the area's active widgets in the dashboard's render
+	// order, so the exported tiles match what the user sees. Scoping to
+	// `viewableModules` drops tiles for modules the user cannot view, matching
+	// the dashboard; widgets without a PDF tile config (the aggregate section
+	// widget, the CTA tiles) are dropped below.
+	const orderedSlugs: string[] = registry
+		.select( CORE_WIDGETS )
+		.getWidgets( AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY, {
+			// `getWidgets` treats an empty array as "allow nothing", so an owner
+			// (or a viewer with no shared modules) passes `undefined` to skip the
+			// filter entirely, matching the orchestrator's area discovery.
+			modules: viewableModules || undefined,
+		} )
+		.map( ( widget: { slug: string } ) => widget.slug );
+
+	/**
+	 * Tracks tiles that failed to load (threw), as opposed to tiles left out
+	 * for having no data. When every attempted tile failed, the section
+	 * is treated as an outage below rather than a genuinely empty section.
+	 */
 	let failureCount = 0;
 
-	// Only the configured metrics that have a PDF tile config render in the PDF,
-	// in the user's configured order. Others are skipped silently.
-	const tilePromises: Promise< KeyMetricsPDFTile >[] = [];
+	// A tile with no data (or a failed load) resolves to `null` and is filtered
+	// out below.
+	const tilePromises: Promise< KeyMetricsPDFTile | null >[] = [];
 
-	for ( const slug of keyMetrics ) {
-		const entry = keyMetricsWidgets[ slug ];
-		const pdfTile = entry?.pdfTile;
+	for ( const slug of orderedSlugs ) {
+		const pdfTile = keyMetricsPDFTiles[ slug ];
+		const title = keyMetricsWidgets[ slug ]?.title;
 
 		if ( ! pdfTile ) {
 			continue;
@@ -142,13 +176,10 @@ export default async function getPDFData( {
 		tilePromises.push(
 			( async () => {
 				// The tile's `TileComponent` is a `lazyWithPreload` component so
-				// `key-metrics-widgets.js` stays free of `@react-pdf/renderer` on
-				// the dashboard bundle. Preload it here and hand its resolved
-				// default to the aggregate component, which renders it directly
-				// (the react-pdf renderer does not honour Suspense).
-				let TileComponent =
-					pdfTile.TileComponent as TileRenderComponent;
-
+				// the dashboard bundle stays free of `@react-pdf/renderer`.
+				// Preload it here and hand its resolved default to the aggregate
+				// component, which renders it directly (the react-pdf renderer
+				// does not honour Suspense).
 				try {
 					const [ data, resolved ] = await Promise.all( [
 						pdfTile.getTileData( { registry, dates, signal } ),
@@ -158,37 +189,48 @@ export default async function getPDFData( {
 									default: pdfTile.TileComponent,
 							  } ),
 					] );
-					TileComponent = resolved.default as TileRenderComponent;
-					return { slug, title: entry.title, TileComponent, data };
-				} catch {
-					failureCount += 1;
+
+					// The tile's report has no data, so leave it out entirely.
+					if ( data === null || data === undefined ) {
+						return null;
+					}
+
 					return {
 						slug,
-						title: entry.title,
-						TileComponent,
-						data: null,
+						title,
+						TileComponent: resolved.default as TileRenderComponent,
+						data,
 					};
+				} catch {
+					// A failed report drops just this tile, but is counted so a
+					// section where every tile failed can surface as an error.
+					failureCount += 1;
+					return null;
 				}
 			} )()
 		);
 	}
 
-	const tiles = await Promise.all( tilePromises );
+	const loadedTiles = await Promise.all( tilePromises );
 
 	if ( signal.aborted ) {
 		return { data: null };
 	}
 
-	// With no tiles to render, omit the section rather than render an empty one,
-	// matching how the report drops a widget with no data.
-	if ( tiles.length === 0 ) {
-		return { data: null };
-	}
+	const tiles = loadedTiles.filter(
+		( tile ): tile is KeyMetricsPDFTile => tile !== null
+	);
 
-	// Every tile failing leaves the section with no data, so surface it as an
-	// error rather than an empty section.
-	if ( failureCount === tiles.length ) {
-		throw new Error( 'All Key Metrics PDF tiles failed to load.' );
+	if ( tiles.length === 0 ) {
+		// Every attempted tile failed to load, so surface the outage as an
+		// export error instead of a silently empty section. Mirrors the
+		// orchestrator, which errors only when every widget fails.
+		if ( failureCount > 0 && failureCount === tilePromises.length ) {
+			throw new Error( 'All Key Metrics PDF tiles failed to load.' );
+		}
+
+		// No configured tile has data, so omit the whole section from the report.
+		return { data: null };
 	}
 
 	return { data: { tiles } };

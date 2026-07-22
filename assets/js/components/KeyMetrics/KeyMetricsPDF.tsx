@@ -40,7 +40,10 @@ const styles = createPDFStyles( {
 		marginBottom: 24,
 	},
 	tileInner: {
-		// A small gutter between the grid columns.
+		// Fills the tile's height so its card stretches to the row's tallest tile,
+		// giving every tile in a row a uniform height as on the dashboard. The
+		// margin is a small gutter between the grid columns.
+		flexGrow: 1,
 		marginRight: 24,
 	},
 } );
@@ -50,25 +53,23 @@ const KeyMetricsPDF: FC< PDFWidgetComponentProps > = ( { data } ) => {
 
 	return (
 		<View style={ styles.container }>
-			{ tiles
-				.filter( ( tile ) => tile.data )
-				.map( ( tile ) => {
-					const TileComponent = tile.TileComponent;
+			{ tiles.map( ( tile ) => {
+				const TileComponent = tile.TileComponent;
 
-					return (
-						<View key={ tile.slug } style={ styles.tile }>
-							<View style={ styles.tileInner }>
-								<TileComponent
-									title={ tile.title }
-									{ ...( tile.data as Record<
-										string,
-										unknown
-									> ) }
-								/>
-							</View>
+				return (
+					<View key={ tile.slug } style={ styles.tile }>
+						<View style={ styles.tileInner }>
+							<TileComponent
+								title={ tile.title }
+								{ ...( tile.data as Record<
+									string,
+									unknown
+								> ) }
+							/>
 						</View>
-					);
-				} ) }
+					</View>
+				);
+			} ) }
 		</View>
 	);
 };

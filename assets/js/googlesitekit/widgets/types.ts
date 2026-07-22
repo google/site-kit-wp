@@ -55,6 +55,12 @@ export interface PDFDataLoaderParams {
 	dates: PDFReportDates;
 	/** Signal that cancels the export. */
 	signal: AbortSignal;
+	/**
+	 * The module slugs the current user can view, or `undefined` on the owner's
+	 * dashboard where every module is viewable. A loader that composes several
+	 * modules' data uses this to match the dashboard's module visibility.
+	 */
+	viewableModules?: string[];
 }
 
 /**

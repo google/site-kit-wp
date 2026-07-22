@@ -43,16 +43,19 @@ import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
-function PopularContentWidget( props ) {
-	const { Widget } = props;
-
-	const viewOnlyDashboard = useViewOnly();
-
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates()
-	);
-
-	const reportOptions = {
+/**
+ * Builds the Analytics 4 report options for the Most popular content metric.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range for the report.
+ * @return {Object} The Analytics 4 `getReport` options.
+ */
+export function getPopularContentReportOptions( dates ) {
+	return {
 		...dates,
 		dimensions: [ 'pagePath' ],
 		metrics: [ { name: 'screenPageViews' } ],
@@ -66,6 +69,18 @@ function PopularContentWidget( props ) {
 		keepEmptyRows: false,
 		reportID: 'analytics-4_popular-content-widget_widget_reportOptions',
 	};
+}
+
+function PopularContentWidget( props ) {
+	const { Widget } = props;
+
+	const viewOnlyDashboard = useViewOnly();
+
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates()
+	);
+
+	const reportOptions = getPopularContentReportOptions( dates );
 
 	const report = useInViewSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),

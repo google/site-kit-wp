@@ -40,17 +40,19 @@ import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
-function TopCitiesDrivingPurchasesWidget( { Widget } ) {
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates()
-	);
-
-	const detectedEvents = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
-	);
-	const hasDetectedEvent = detectedEvents?.includes( 'purchase' );
-
-	const topCitiesReportOptions = {
+/**
+ * Builds the Analytics 4 report options for the Top Cities Driving Purchases metric.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range.
+ * @return {Object} The Analytics 4 `getReport` options.
+ */
+export function getTopCitiesDrivingPurchasesReportOptions( dates ) {
+	return {
 		...dates,
 		dimensions: [ 'city' ],
 		dimensionFilters: {
@@ -79,6 +81,20 @@ function TopCitiesDrivingPurchasesWidget( { Widget } ) {
 		reportID:
 			'analytics-4_top-cities-driving-purchases-widget_widget_topCitiesReportOptions',
 	};
+}
+
+function TopCitiesDrivingPurchasesWidget( { Widget } ) {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates()
+	);
+
+	const detectedEvents = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
+	);
+	const hasDetectedEvent = detectedEvents?.includes( 'purchase' );
+
+	const topCitiesReportOptions =
+		getTopCitiesDrivingPurchasesReportOptions( dates );
 
 	const topCitiesReport = useInViewSelect(
 		( select ) =>

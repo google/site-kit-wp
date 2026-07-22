@@ -1,5 +1,5 @@
 /**
- * PDFNumericMetricTile component for @react-pdf/renderer.
+ * PDFMetricTileText component for @react-pdf/renderer.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -42,8 +42,9 @@ const styles = createPDFStyles( {
 	title: {
 		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
 	},
-	// 28px / line-height 36 / on-surface, the prominent metric value, 4px below
-	// the title.
+	// The primary text value, e.g. "Organic Search", 4px below the title. Unlike
+	// the numeric tile this is a text label, so it uses the title type rather than
+	// the large headline value.
 	value: {
 		marginTop: 4,
 	},
@@ -52,19 +53,19 @@ const styles = createPDFStyles( {
 		marginTop: 2,
 	},
 	// The badge is a pill, so a row wrapper keeps it hugging its content instead
-	// of stretching to the card width. It sits 12px below the description.
+	// of stretching to the card width. It sits 12px below the sub-text.
 	badgeRow: {
 		flexDirection: 'row',
 		marginTop: 12,
 	},
 } );
 
-export interface PDFNumericMetricTileProps {
-	/** The tile heading, e.g. "New visitors". */
+export interface PDFMetricTileTextProps {
+	/** The tile heading, e.g. "Top traffic source". */
 	title: string;
-	/** The pre-formatted prominent value, e.g. "12K". */
+	/** The primary text value, e.g. "Organic Search". */
 	value: string;
-	/** Optional caption below the value, e.g. "of 1,234 total visitors". */
+	/** Optional caption below the value, e.g. "3.4K visitors". */
 	subtext?: string;
 	/** Pre-formatted, signed change for the badge, e.g. "+5.1%". Hides the badge when omitted. */
 	change?: string;
@@ -72,7 +73,22 @@ export interface PDFNumericMetricTileProps {
 	isNegative?: boolean;
 }
 
-const PDFNumericMetricTile: FC< PDFNumericMetricTileProps > = ( {
+/**
+ * Mirrors the dashboard's `MetricTileText`: it shares the full-card layout of
+ * `PDFNumericMetricTile`, but its value is a text label (e.g. a traffic source
+ * name) rather than a large formatted number.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}  props            Component props.
+ * @param {string}  props.title      Title.
+ * @param {string}  props.value      Value.
+ * @param {string}  props.subtext    Optional subtext.
+ * @param {string}  props.change     Optional change for the badge.
+ * @param {boolean} props.isNegative Whether the change is negative.
+ * @return                The PDF-rendered tile text.
+ */
+const PDFMetricTileText: FC< PDFMetricTileTextProps > = ( {
 	title,
 	value,
 	subtext,
@@ -84,7 +100,7 @@ const PDFNumericMetricTile: FC< PDFNumericMetricTileProps > = ( {
 			<PDFTypography type="body" size="small" style={ styles.title }>
 				{ title }
 			</PDFTypography>
-			<PDFTypography type="headline" size="medium" style={ styles.value }>
+			<PDFTypography type="title" size="medium" style={ styles.value }>
 				{ value }
 			</PDFTypography>
 			{ !! subtext && (
@@ -104,4 +120,4 @@ const PDFNumericMetricTile: FC< PDFNumericMetricTileProps > = ( {
 	);
 };
 
-export default PDFNumericMetricTile;
+export default PDFMetricTileText;

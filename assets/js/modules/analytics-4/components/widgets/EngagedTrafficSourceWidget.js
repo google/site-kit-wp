@@ -42,6 +42,56 @@ import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
+/**
+ * Builds the Analytics 4 report options for the Engaged Traffic Source metric.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range, including the compare dates.
+ * @return {Object} The Analytics 4 `getReport` options.
+ */
+export function getEngagedTrafficSourceReportOptions( dates ) {
+	return {
+		...dates,
+		dimensions: [ 'sessionDefaultChannelGroup' ],
+		metrics: [ { name: 'engagedSessions' } ],
+		orderBy: 'engagedSessions',
+		limit: 1,
+		reportID:
+			'analytics-4_engaged-traffic-source-widget_widget_reportOptions',
+	};
+}
+
+/**
+ * Builds the sub-text for the Engaged Traffic Source metric tile.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the PDF tile show the same sub-text.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} rate                 The engaged sessions rate for the top source.
+ * @param {number} totalEngagedSessions The total number of engaged sessions.
+ * @return {string} The metric tile sub-text.
+ */
+export function getEngagedTrafficSourceSubtext( rate, totalEngagedSessions ) {
+	const format = {
+		style: 'percent',
+		signDisplay: 'never',
+		maximumFractionDigits: 1,
+	};
+
+	return sprintf(
+		/* translators: 1. Percentage of total engaged sessions. 2: Total number of engaged sessions. */
+		__( '%1$s of %2$s engaged sessions', 'google-site-kit' ),
+		numFmt( rate, format ),
+		numFmt( totalEngagedSessions, { style: 'decimal' } )
+	);
+}
+
 function EngagedTrafficSourceWidget( props ) {
 	const { Widget } = props;
 
@@ -51,15 +101,7 @@ function EngagedTrafficSourceWidget( props ) {
 		} )
 	);
 
-	const reportOptions = {
-		...dates,
-		dimensions: [ 'sessionDefaultChannelGroup' ],
-		metrics: [ { name: 'engagedSessions' } ],
-		orderBy: 'engagedSessions',
-		limit: 1,
-		reportID:
-			'analytics-4_engaged-traffic-source-widget_widget_reportOptions',
-	};
+	const reportOptions = getEngagedTrafficSourceReportOptions( dates );
 
 	const report = useInViewSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
@@ -129,11 +171,9 @@ function EngagedTrafficSourceWidget( props ) {
 			widgetSlug={ KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE }
 			metricValue={ topTrafficSource }
 			metricValueFormat={ format }
-			subText={ sprintf(
-				/* translators: 1. Percentage of total engaged sessions. 2: Total number of engaged sessions. */
-				__( '%1$s of %2$s engaged sessions', 'google-site-kit' ),
-				numFmt( currentEngagedSessionsRate, format ),
-				numFmt( currentTotalEngagedSessions, { style: 'decimal' } )
+			subText={ getEngagedTrafficSourceSubtext(
+				currentEngagedSessionsRate,
+				currentTotalEngagedSessions
 			) }
 			previousValue={ previousEngagedSessionsRate }
 			currentValue={ currentEngagedSessionsRate }

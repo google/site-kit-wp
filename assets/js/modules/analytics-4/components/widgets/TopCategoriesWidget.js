@@ -48,16 +48,17 @@ import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 /**
- * Gets the report options for the Top Categories widget.
+ * Builds the Analytics 4 report options for the Top Categories metric.
  *
- * @since 1.113.0
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
  *
- * @param {Function} select Data store 'select' function.
- * @return {Object} The report options.
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range.
+ * @return {Object} The Analytics 4 `getReport` options.
  */
-function getReportOptions( select ) {
-	const dates = select( CORE_USER ).getDateRangeDates();
-
+export function getTopCategoriesReportOptions( dates ) {
 	return {
 		...dates,
 		dimensions: [ 'customEvent:googlesitekit_post_categories' ],
@@ -81,6 +82,20 @@ function getReportOptions( select ) {
 		keepEmptyRows: false,
 		reportID: 'analytics-4_top-categories-widget_widget_reportOptions',
 	};
+}
+
+/**
+ * Gets the report options for the Top Categories widget.
+ *
+ * @since 1.113.0
+ *
+ * @param {Function} select Data store 'select' function.
+ * @return {Object} The report options.
+ */
+function getReportOptions( select ) {
+	return getTopCategoriesReportOptions(
+		select( CORE_USER ).getDateRangeDates()
+	);
 }
 
 function TopCategoriesWidget( { Widget } ) {

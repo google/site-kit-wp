@@ -52,18 +52,28 @@ interface FetchReportResult {
  * threading the export's abort `signal` through each request, then hands the
  * resolved report responses (in the same order) to `extract`, which normalises
  * them into the shape the tile's `TileComponent` consumes. It returns `null`
- * early when the export is canceled, and throws when any report fails so the
- * aggregate loader can skip just that tile.
+ * early when the export is canceled, and throws when one of those fetched
+ * reports fails so the aggregate loader can skip just that tile. `extract`
+ * returns `null` when its report has no data, which the aggregate loader treats
+ * the same way — the tile is left out of the report entirely.
+ *
+ * Note this covers only the reports `buildReports` returns. A report a tile
+ * resolves inside `buildReports` (e.g. to discover page paths) is fetched via
+ * `resolveSelect`, which yields `undefined` rather than throwing on failure, so
+ * such a failure reads as no data, not as a thrown error.
  *
  * @since n.e.x.t
  *
- * @param buildReports Returns the reports to fetch for the given date range.
- * @param extract      Maps the resolved report responses to the tile's data.
+ * @param buildReports Returns the reports to fetch for the date range. It receives the registry too, so a tile whose report options depend on resolved state can await it; it may return a promise.
+ * @param extract      Maps the resolved report responses to the tile's data, or `null` when the report has no data.
  * @return A `getTileData( { registry, dates, signal } )` loader.
  */
 export default function createKeyMetricTileDataLoader< TData >(
-	buildReports: ( dates: PDFReportDates ) => TileReportRequest[],
-	extract: ( reports: unknown[] ) => TData
+	buildReports: (
+		dates: PDFReportDates,
+		registry: PDFDataLoaderParams[ 'registry' ]
+	) => TileReportRequest[] | Promise< TileReportRequest[] >,
+	extract: ( reports: unknown[] ) => TData | null
 ): ( params: PDFDataLoaderParams ) => Promise< TData | null > {
 	return async function getTileData( {
 		registry,
@@ -74,7 +84,11 @@ export default function createKeyMetricTileDataLoader< TData >(
 			return null;
 		}
 
-		const requests = buildReports( dates );
+		const requests = await buildReports( dates, registry );
+
+		if ( signal.aborted ) {
+			return null;
+		}
 
 		const results: FetchReportResult[] = await Promise.all(
 			requests.map( ( { moduleStore, options } ) =>

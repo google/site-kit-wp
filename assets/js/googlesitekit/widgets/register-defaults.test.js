@@ -156,7 +156,7 @@ describe( 'registerDefaults - keyMetricsPDFSection', () => {
 		).toBeUndefined();
 	} );
 
-	it( 'pdf.isActive is true only when a configured metric has a pdfTile config', () => {
+	it( 'pdf.isActive is true only when a configured metric has a PDF tile config', () => {
 		enabledFeatures.add( 'pdfGeneration' );
 
 		const widgetsAPI = createWidgetsAPI();
@@ -167,17 +167,22 @@ describe( 'registerDefaults - keyMetricsPDFSection', () => {
 			'keyMetricsPDFSection'
 		);
 
-		// New Visitors has a pdfTile config.
+		// Every Key Metric has a PDF tile, so any real metric activates it.
 		expect(
 			settings.pdf.isActive(
 				selectWithKeyMetrics( [ KM_ANALYTICS_NEW_VISITORS ] )
 			)
 		).toBe( true );
-
-		// Returning Visitors does not, so a selection with only it is inactive.
 		expect(
 			settings.pdf.isActive(
 				selectWithKeyMetrics( [ KM_ANALYTICS_RETURNING_VISITORS ] )
+			)
+		).toBe( true );
+
+		// A slug with no PDF tile leaves the section out of the report.
+		expect(
+			settings.pdf.isActive(
+				selectWithKeyMetrics( [ 'kmMetricWithoutAPDFTile' ] )
 			)
 		).toBe( false );
 
