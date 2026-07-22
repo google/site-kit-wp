@@ -677,7 +677,7 @@ describe( 'BreakdownNoticeArea', () => {
 
 			expect(
 				getByText(
-					/Have multiple forms, or Using both WooCommerce and Easy Digital Downloads/
+					/Have multiple forms, or using both WooCommerce and Easy Digital Downloads/
 				)
 			).toBeInTheDocument();
 		} );
@@ -699,7 +699,7 @@ describe( 'BreakdownNoticeArea', () => {
 
 			expect(
 				getByText(
-					'Using both WooCommerce and Easy Digital Downloads to sell products or services?'
+					'See how different plugins contribute to your goals'
 				)
 			).toBeInTheDocument();
 		} );
