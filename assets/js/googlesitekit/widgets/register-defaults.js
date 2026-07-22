@@ -208,7 +208,7 @@ export function registerDefaults( widgetsAPI ) {
 		CONTEXT_MAIN_DASHBOARD_TRAFFIC
 	);
 
-	if ( isFeatureEnabled( 'setupFlowRefresh' ) ) {
+	if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
 		widgetsAPI.registerWidgetArea(
 			AREA_MAIN_DASHBOARD_TRAFFIC_READER_REVENUE_MANAGER,
 			{
