@@ -34,7 +34,7 @@ export interface PoweredByProps {
 
 export default function PoweredBy( { Icon, text }: PoweredByProps ) {
 	return (
-		<div className="googlesitekit-powered-by googlesitekit-powered-by--reader-revenue-manager">
+		<div className="googlesitekit-powered-by">
 			<Icon
 				aria-hidden="true"
 				className="googlesitekit-powered-by__icon"
