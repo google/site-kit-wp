@@ -51,8 +51,8 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 import { registerPDFFonts } from './pdf-fonts-react';
+import { SECTION_ICONS } from './pdf-icons';
 import PDFExportOrchestrator from './PDFExportOrchestrator';
-import { SECTION_ICONS } from './section-icons';
 import { PDFHeaderSection, PDFReportArea } from './types';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

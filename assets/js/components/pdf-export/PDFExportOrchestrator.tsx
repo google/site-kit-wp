@@ -52,9 +52,9 @@ import useViewOnly from '@/js/hooks/useViewOnly';
 import { getPreviousDate, trackEvent } from '@/js/util';
 import { ORDERED_MAIN_DASHBOARD_CONTEXTS } from './constants';
 import { registerPDFFonts } from './pdf-fonts-react';
+import { SECTION_ICONS } from './pdf-icons';
 import { getPDFFilename, triggerDownload } from './pdf-utils';
 import { WidgetWithPDF, isActivePDFWidget } from './pdf-widget-eligibility';
-import { SECTION_ICONS } from './section-icons';
 import DashboardReport from './shared-react-pdf-components/DashboardReport';
 import { PDFHeaderSection, PDFReportArea, PDFReportWidget } from './types';
 
