@@ -16,17 +16,17 @@
  * limitations under the License.
  */
 
-.googlesitekit-powered-by {
+.googlesitekit-powered-by-module {
 	align-items: center;
 	display: flex;
+}
 
-	svg {
-		display: block;
-		inline-size: 36px;
-		padding: 6px;
-	}
+.googlesitekit-powered-by-module__icon {
+	display: block;
+	inline-size: 36px;
+	padding: 6px;
+}
 
-	.googlesitekit-powered-by__text {
-		padding: 10px;
-	}
+.googlesitekit-powered-by-module__text {
+	padding: 10px;
 }

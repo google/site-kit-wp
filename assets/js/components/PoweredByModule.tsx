@@ -1,5 +1,5 @@
 /**
- * PoweredBy component.
+ * PoweredByModule component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -19,29 +19,51 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import classnames from 'classnames';
+
+/**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { Select, useSelect } from 'googlesitekit-data';
 import Typography from '@/js/components/Typography';
 import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
-export interface PoweredByProps {
-	Icon: FC< React.SVGAttributes< SVGElement > >;
-	text: string;
+export interface PoweredByModuleProps {
+	slug: string;
 }
 
-export default function PoweredBy( { Icon, text }: PoweredByProps ) {
+export default function PoweredByModule( { slug }: PoweredByModuleProps ) {
+	const { Icon, name } = useSelect(
+		( select: Select ) => select( CORE_MODULES ).getModule( slug ),
+		[ slug ]
+	);
+
+	const text = sprintf(
+		// translators: %s: Module name.
+		__( 'Powered by %s', 'google-site-kit' ),
+		name
+	);
+
+	const className = classnames(
+		'googlesitekit-powered-by-module',
+		`googlesitekit-powered-by-module--${ slug }`
+	);
+
 	return (
-		<div className="googlesitekit-powered-by">
+		<div className={ className }>
 			<Icon
 				aria-hidden="true"
-				className="googlesitekit-powered-by__icon"
+				className="googlesitekit-powered-by-module__icon"
 			/>
 			<Typography
 				as="div"
-				className="googlesitekit-powered-by__text"
+				className="googlesitekit-powered-by-module__text"
 				size={ SIZE_SMALL }
 				type={ TYPE_BODY }
 			>

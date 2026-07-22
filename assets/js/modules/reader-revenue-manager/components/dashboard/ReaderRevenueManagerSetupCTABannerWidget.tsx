@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import Banner from '@/js/components/Banner';
 import Link from '@/js/components/Link';
-import PoweredBy from '@/js/components/PoweredBy';
+import PoweredByModule from '@/js/components/PoweredByModule';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -46,7 +46,6 @@ import {
 } from '@/js/modules/reader-revenue-manager/constants';
 import BannerSVGMobile from '@/svg/graphics/banner-rrm-setup-cta-widget-mobile.svg?url';
 import BannerSVGDesktop from '@/svg/graphics/banner-rrm-setup-cta-widget.svg?url';
-import ReaderRevenueManagerIcon from '@/svg/graphics/reader-revenue-manager.svg';
 
 export default function ReaderRevenueManagerSetupCTABannerWidget( {
 	Widget,
@@ -105,7 +104,7 @@ export default function ReaderRevenueManagerSetupCTABannerWidget( {
 	return (
 		<Widget noPadding>
 			<Banner
-				className="googlesitekit-banner--rrm-setup"
+				className="googlesitekit-rrm-setup-cta-banner"
 				title={ __(
 					'Collect reader emails directly on your site',
 					'google-site-kit'
@@ -129,12 +128,8 @@ export default function ReaderRevenueManagerSetupCTABannerWidget( {
 								}
 							) }
 						</P>
-						<PoweredBy
-							Icon={ ReaderRevenueManagerIcon }
-							text={ __(
-								'Powered by Reader Revenue Manager',
-								'google-site-kit'
-							) }
+						<PoweredByModule
+							slug={ MODULE_SLUG_READER_REVENUE_MANAGER }
 						/>
 					</Fragment>
 				}

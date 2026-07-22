@@ -35,7 +35,11 @@ import {
 	MODULE_SLUG_READER_REVENUE_MANAGER,
 	RRM_EXPRESS_SETUP_TRAFFIC_CTA_WIDGET_SLUG,
 } from '@/js/modules/reader-revenue-manager/constants';
-import { provideModules, provideSiteInfo } from '@tests/js/utils';
+import {
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
+} from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import ReaderRevenueManagerSetupCTABannerWidget from './ReaderRevenueManagerSetupCTABannerWidget';
 
@@ -63,6 +67,7 @@ export default {
 						connected: false,
 					},
 				] );
+				provideModuleRegistrations( registry );
 				provideSiteInfo( registry );
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
