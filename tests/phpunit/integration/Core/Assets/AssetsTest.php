@@ -48,7 +48,6 @@ class AssetsTest extends TestCase {
 		// Both script_loader_tag and style_loader_tag are hooked by add_amp_dev_mode_attributes
 		// which requires authorization, however script_loader_tag is also filtered
 		// to apply script_execution attributes for all users, so it must be excluded here.
-		// 'script_loader_tag',.
 		'style_loader_tag',
 	);
 

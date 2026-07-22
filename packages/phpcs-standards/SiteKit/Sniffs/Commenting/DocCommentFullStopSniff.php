@@ -2,10 +2,10 @@
 /**
  * DocCommentFullStopSniff
  *
- * @package Google\Site_Kit\Sniffs\Commenting
+ * @package Google\Site_Kit\PHPCS\Sniffs\Commenting
  */
 
-namespace Google\Site_Kit\Sniffs\Commenting;
+namespace Google\Site_Kit\PHPCS\Sniffs\Commenting;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
@@ -211,13 +211,19 @@ class DocCommentFullStopSniff implements Sniff {
 	 */
 	private function append_full_stop_preserve_newline( $content ) {
 		$line_ending = '';
+		$trailing_ws = '';
 
 		if ( 1 === preg_match( '/\R$/', $content, $matches ) ) {
 			$line_ending = $matches[0];
 			$content     = substr( $content, 0, -strlen( $line_ending ) );
 		}
 
-		return rtrim( $content ) . '.' . $line_ending;
+		if ( 1 === preg_match( '/[\t ]+$/', $content, $matches ) ) {
+			$trailing_ws = $matches[0];
+			$content     = substr( $content, 0, -strlen( $trailing_ws ) );
+		}
+
+		return rtrim( $content ) . '.' . $trailing_ws . $line_ending;
 	}
 
 	/**

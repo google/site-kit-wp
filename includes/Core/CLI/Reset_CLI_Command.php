@@ -34,7 +34,8 @@ class Reset_CLI_Command extends CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     wp google-site-kit reset
-	 *     wp google-site-kit reset --persistent.
+	 * phpcs:ignore PHPCS.Commenting.DocCommentFullStop.MissingFullStop -- Command examples should not include trailing punctuation.
+	 *     wp google-site-kit reset --persistent
 	 *
 	 * @since 1.11.0
 	 * @since 1.27.0 Added --persistent flag to delete persistent options.

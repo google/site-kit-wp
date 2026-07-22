@@ -35,7 +35,8 @@ class Authentication_CLI_Command extends CLI_Command {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp google-site-kit auth disconnect --id=11.
+	 * phpcs:ignore PHPCS.Commenting.DocCommentFullStop.MissingFullStop -- Command examples should not include trailing punctuation.
+	 *     wp google-site-kit auth disconnect --id=11
 	 *
 	 * @alias revoke
 	 *
