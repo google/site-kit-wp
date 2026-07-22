@@ -81,7 +81,7 @@ test.describe(
 					// AdSense Monetization section.
 					await expect(
 						pageObject.sectionCheckbox(
-							'mainDashboardMonetizationPrimary'
+							'mainDashboardMonetization'
 						)
 					).toBeVisible();
 				} );
@@ -119,7 +119,7 @@ test.describe(
 				// download proves the AdSense PDF widget rendered from real report
 				// data.
 				await pageObject.deselectAllExcept( [
-					'mainDashboardMonetizationPrimary',
+					'mainDashboardMonetization',
 				] );
 				const download = await pageObject.download();
 				await expect( pageObject.successSnackbar ).toBeVisible( {
@@ -172,9 +172,7 @@ test.describe(
 				// report errors (the Search Console traffic/content widgets tolerate a
 				// failed report and render an empty state), so every selected section
 				// fails and the export reaches its ERROR state.
-				await pageObject.deselectAllExcept( [
-					'mainDashboardSpeedPrimary',
-				] );
+				await pageObject.deselectAllExcept( [ 'mainDashboardSpeed' ] );
 				await pageObject.downloadReportButton.click();
 
 				await expect( pageObject.errorSnackbar ).toBeVisible( {
@@ -259,10 +257,10 @@ test.describe(
 				// section is listed; PageSpeed is not shared, so the Speed section
 				// is absent.
 				await expect(
-					pageObject.sectionCheckbox( 'mainDashboardTrafficPrimary' )
+					pageObject.sectionCheckbox( 'mainDashboardTraffic' )
 				).toBeVisible();
 				await expect(
-					pageObject.sectionCheckbox( 'mainDashboardSpeedPrimary' )
+					pageObject.sectionCheckbox( 'mainDashboardSpeed' )
 				).toBeHidden();
 			}
 		);

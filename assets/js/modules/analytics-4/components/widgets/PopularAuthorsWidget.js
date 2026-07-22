@@ -47,16 +47,17 @@ import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 /**
- * Gets the report options for the Popular Authors widget.
+ * Builds the Analytics 4 report options for the Popular Authors metric.
  *
- * @since 1.113.0
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
  *
- * @param {Function} select Data store 'select' function.
- * @return {Object} The report options.
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range.
+ * @return {Object} The Analytics 4 `getReport` options.
  */
-function getPopularAuthorsWidgetReportOptions( select ) {
-	const dates = select( CORE_USER ).getDateRangeDates();
-
+export function getPopularAuthorsReportOptions( dates ) {
 	return {
 		...dates,
 		dimensions: [ 'customEvent:googlesitekit_post_author' ],
@@ -78,6 +79,20 @@ function getPopularAuthorsWidgetReportOptions( select ) {
 		keepEmptyRows: false,
 		reportID: 'analytics-4_popular-authors-widget_widget_reportOptions',
 	};
+}
+
+/**
+ * Gets the report options for the Popular Authors widget.
+ *
+ * @since 1.113.0
+ *
+ * @param {Function} select Data store 'select' function.
+ * @return {Object} The report options.
+ */
+function getPopularAuthorsWidgetReportOptions( select ) {
+	return getPopularAuthorsReportOptions(
+		select( CORE_USER ).getDateRangeDates()
+	);
 }
 
 function PopularAuthorsWidget( props ) {

@@ -43,14 +43,33 @@ import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
-function TopCitiesDrivingLeadsWidget( { Widget } ) {
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates()
-	);
-
-	const detectedEvents = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
-	);
+/**
+ * Builds the Analytics 4 report options for the Top Cities Driving Leads metric.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}   dates      The date range for the report.
+ * @param {string[]} eventNames The lead event names to filter by.
+ * @return {Object} The `getReport` options for the top cities report.
+ */
+/**
+ * Resolves the lead conversion event names to filter the report by, from the
+ * property's detected events.
+ *
+ * Mirrors the dashboard widget: it keeps the detected lead events, and drops
+ * `CONTACT` when `SUBMIT_LEAD_FORM` is also present to avoid double-counting.
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request filter by the same events.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string[]} [detectedEvents] The property's detected conversion events.
+ * @return {string[]} The lead event names to filter by.
+ */
+export function getTopCitiesDrivingLeadsEventNames( detectedEvents ) {
 	const eventNames = [
 		ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
 		ENUM_CONVERSION_EVENTS.CONTACT,
@@ -67,7 +86,11 @@ function TopCitiesDrivingLeadsWidget( { Widget } ) {
 		);
 	}
 
-	const topCitiesReportOptions = {
+	return eventNames;
+}
+
+export function getTopCitiesDrivingLeadsReportOptions( dates, eventNames ) {
+	return {
 		...dates,
 		dimensions: [ 'city', 'eventName' ],
 		dimensionFilters: {
@@ -94,6 +117,22 @@ function TopCitiesDrivingLeadsWidget( { Widget } ) {
 		reportID:
 			'analytics-4_top-cities-driving-leads-widget_widget_topCitiesReportOptions',
 	};
+}
+
+function TopCitiesDrivingLeadsWidget( { Widget } ) {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates()
+	);
+
+	const detectedEvents = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
+	);
+	const eventNames = getTopCitiesDrivingLeadsEventNames( detectedEvents );
+
+	const topCitiesReportOptions = getTopCitiesDrivingLeadsReportOptions(
+		dates,
+		eventNames
+	);
 
 	const topCitiesReport = useInViewSelect(
 		( select ) =>

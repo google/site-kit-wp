@@ -58,18 +58,18 @@ import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 /**
- * Gets the report options for the Popular Products widget.
+ * Builds the Analytics 4 report options for the Popular Products metric.
  *
- * @since 1.127.0
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
  *
- * @param {Function} select Data store 'select' function.
- * @return {Object} The report options.
+ * @since n.e.x.t
+ *
+ * @param {Object} dates           The date range.
+ * @param {string} productPostType The detected product post type to filter on.
+ * @return {Object} The Analytics 4 `getReport` options.
  */
-function getPopularProductsWidgetReportOptions( select ) {
-	const dates = select( CORE_USER ).getDateRangeDates();
-
-	const productPostType = select( CORE_SITE ).getProductPostType();
-
+export function getPopularProductsReportOptions( dates, productPostType ) {
 	return {
 		...dates,
 		dimensions: [ 'pagePath' ],
@@ -91,6 +91,21 @@ function getPopularProductsWidgetReportOptions( select ) {
 		keepEmptyRows: false,
 		reportID: 'analytics-4_popular-products-widget_widget_reportOptions',
 	};
+}
+
+/**
+ * Gets the report options for the Popular Products widget.
+ *
+ * @since 1.127.0
+ *
+ * @param {Function} select Data store 'select' function.
+ * @return {Object} The report options.
+ */
+function getPopularProductsWidgetReportOptions( select ) {
+	return getPopularProductsReportOptions(
+		select( CORE_USER ).getDateRangeDates(),
+		select( CORE_SITE ).getProductPostType()
+	);
 }
 
 function PopularProductsWidget( props ) {

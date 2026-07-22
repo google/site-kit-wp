@@ -51,18 +51,25 @@ import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
-function TopEarningContentWidget( { Widget } ) {
-	const viewOnlyDashboard = useViewOnly();
-
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates()
-	);
-
-	const adSenseAccountID = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getAccountID()
-	);
-
-	const reportOptions = {
+/**
+ * Builds the Analytics 4 report options for the Top Earning Content metric.
+ *
+ * Returns the page-path and ad-source report the tile ranks by ad revenue. Both
+ * this widget and the metric's PDF tile import this, so the dashboard tile and
+ * the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates                     The date range.
+ * @param {Object} [params]                  Extra report options.
+ * @param {string} [params.adSenseAccountID] The AdSense account ID the `adSourceName` filter targets.
+ * @return {Object} The `getReport` options.
+ */
+export function getTopEarningContentReportOptions(
+	dates,
+	{ adSenseAccountID } = {}
+) {
+	return {
 		...dates,
 		dimensions: [ 'pagePath', 'adSourceName' ],
 		metrics: [ { name: 'totalAdRevenue' } ],
@@ -78,6 +85,22 @@ function TopEarningContentWidget( { Widget } ) {
 		limit: 3,
 		reportID: 'adsense_top-earning-content-widget_widget_reportOptions',
 	};
+}
+
+function TopEarningContentWidget( { Widget } ) {
+	const viewOnlyDashboard = useViewOnly();
+
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates()
+	);
+
+	const adSenseAccountID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountID()
+	);
+
+	const reportOptions = getTopEarningContentReportOptions( dates, {
+		adSenseAccountID,
+	} );
 
 	const report = useInViewSelect(
 		( select ) => {

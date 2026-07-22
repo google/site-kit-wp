@@ -42,6 +42,45 @@ import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
+/**
+ * Builds the Analytics 4 report options for the Returning Visitors metric.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range, including the compare dates.
+ * @return {Object} The Analytics 4 `getReport` options.
+ */
+export function getReturningVisitorsReportOptions( dates ) {
+	return {
+		...dates,
+		dimensions: [ 'newVsReturning' ],
+		metrics: [ { name: 'activeUsers' } ],
+		reportID: 'analytics-4_returning-visitors-widget_widget_reportOptions',
+	};
+}
+
+/**
+ * Builds the sub-text for the Returning Visitors metric tile.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the PDF tile display the same sub-text.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} total The total number of visitors.
+ * @return {string} The formatted sub-text.
+ */
+export function getReturningVisitorsSubtext( total ) {
+	return sprintf(
+		/* translators: %s: Number of total visitors visiting the site, such as "1,234". */
+		__( 'of %s total visitors', 'google-site-kit' ),
+		numFmt( total, { style: 'decimal' } )
+	);
+}
+
 function ReturningVisitorsWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -49,12 +88,7 @@ function ReturningVisitorsWidget( { Widget } ) {
 		} )
 	);
 
-	const reportOptions = {
-		...dates,
-		dimensions: [ 'newVsReturning' ],
-		metrics: [ { name: 'activeUsers' } ],
-		reportID: 'analytics-4_returning-visitors-widget_widget_reportOptions',
-	};
+	const reportOptions = getReturningVisitorsReportOptions( dates );
 
 	const report = useInViewSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
@@ -110,11 +144,7 @@ function ReturningVisitorsWidget( { Widget } ) {
 			widgetSlug={ KM_ANALYTICS_RETURNING_VISITORS }
 			metricValue={ currentPercentage }
 			metricValueFormat={ format }
-			subText={ sprintf(
-				/* translators: %d: Number of total visitors visiting the site. */
-				__( 'of %s total visitors', 'google-site-kit' ),
-				numFmt( total, { style: 'decimal' } )
-			) }
+			subText={ getReturningVisitorsSubtext( total ) }
 			previousValue={ prevPercentage }
 			currentValue={ currentPercentage }
 			loading={ loading }

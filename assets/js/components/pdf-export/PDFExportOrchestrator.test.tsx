@@ -22,6 +22,11 @@
 import { pdf } from '@react-pdf/renderer';
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
@@ -444,11 +449,11 @@ describe( 'PDFExportOrchestrator', () => {
 		expect( props.dateRange.endDate ).toBe( '2021-01-09' );
 		expect( props.dateRange.startDate ).toBeDefined();
 
-		// One section per discovered area, in area order, with the icon looked
-		// up by the area's dashboard context slug.
+		// One section per context, keyed by the context slug, labelled from the
+		// area's title, with the context's icon.
 		expect( props.sections ).toEqual( [
 			{
-				slug: 'trafficArea',
+				slug: CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 				label: 'Traffic',
 				Icon: SECTION_ICONS[ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
 			},
@@ -520,7 +525,89 @@ describe( 'PDFExportOrchestrator', () => {
 
 		const { props } = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
 		expect( props.sections ).toHaveLength( 1 );
-		expect( props.sections[ 0 ].slug ).toBe( 'sharedArea' );
+		expect( props.sections[ 0 ].slug ).toBe(
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+		);
+	} );
+
+	it( 'merges two areas in one context into a single section, so an untitled area adds no empty chip', async () => {
+		const dispatch = registry.dispatch( CORE_WIDGETS );
+
+		// A titled primary area holding one widget.
+		dispatch.registerWidgetArea( 'trafficPrimary', {
+			title: 'Area',
+			pdfTitle: 'Traffic',
+			style: 'boxes',
+			priority: 1,
+		} );
+		dispatch.assignWidgetArea(
+			'trafficPrimary',
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+		);
+		dispatch.registerWidget( 'primaryWidget', {
+			Component: NullComponent,
+			pdf: {
+				Component: NullComponent,
+				getData: jest.fn( () =>
+					Promise.resolve( { data: { totalUsers: 1 } } )
+				),
+				label: 'Site traffic',
+			},
+		} );
+		dispatch.assignWidget( 'primaryWidget', 'trafficPrimary' );
+
+		// A second area in the same context, registered with no `pdfTitle`.
+		// `registerWidgetArea` doesn't require one, so the merge must take
+		// the section title from the titled sibling and add no empty chip.
+		dispatch.registerWidgetArea( 'trafficAudience', {
+			style: 'boxes',
+			priority: 2,
+		} );
+		dispatch.assignWidgetArea(
+			'trafficAudience',
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+		);
+		dispatch.registerWidget( 'audienceWidget', {
+			Component: NullComponent,
+			pdf: {
+				Component: NullComponent,
+				getData: jest.fn( () =>
+					Promise.resolve( { data: { audiences: [ {}, {} ] } } )
+				),
+				label: 'Your visitor groups',
+			},
+		} );
+		dispatch.assignWidget( 'audienceWidget', 'trafficAudience' );
+
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [ 'primaryWidget', 'audienceWidget' ],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		const { props } = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
+
+		// One Traffic chip, keyed by the context, with the titled area's label.
+		expect( props.sections ).toEqual( [
+			{
+				slug: CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+				label: 'Traffic',
+				Icon: SECTION_ICONS[ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			},
+		] );
+
+		// One body section holding both widgets, in area order.
+		expect( props.areas ).toHaveLength( 1 );
+		expect(
+			props.areas[ 0 ].widgets.map(
+				( widget: { slug: string } ) => widget.slug
+			)
+		).toEqual( [ 'primaryWidget', 'audienceWidget' ] );
 	} );
 
 	it( "derives the sections in the dashboard's order, not the stored order", async () => {
@@ -562,15 +649,20 @@ describe( 'PDFExportOrchestrator', () => {
 
 		const { props } = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
 
-		// Sections and areas follow the dashboard's order, not the stored
-		// order.
-		const expectedAreaOrder = [ 'trafficArea', 'contentArea', 'speedArea' ];
+		// A section covers one dashboard context, so each one is keyed by its
+		// context slug. Sections and areas follow the dashboard's order, not
+		// the stored order.
+		const expectedContextOrder = [
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+			CONTEXT_MAIN_DASHBOARD_CONTENT,
+			CONTEXT_MAIN_DASHBOARD_SPEED,
+		];
 		expect(
 			props.sections.map( ( section: PDFHeaderSection ) => section.slug )
-		).toEqual( expectedAreaOrder );
+		).toEqual( expectedContextOrder );
 		expect(
 			props.areas.map( ( area: PDFReportArea ) => area.areaSlug )
-		).toEqual( expectedAreaOrder );
+		).toEqual( expectedContextOrder );
 	} );
 
 	it( 'should register the PDF fonts before rendering the document', async () => {
@@ -1000,6 +1092,115 @@ describe( 'PDFExportOrchestrator', () => {
 				'pdf_generation_cancel',
 				'loading'
 			);
+		} );
+	} );
+
+	describe( 'pdf.isActive on the analytics audience tiles widget', () => {
+		/**
+		 * Registers the analytics audience tiles widget in a titled Traffic
+		 * area, with the `pdf.isActive` check that limits the PDF row to two or
+		 * more audiences.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param  getData The widget's PDF `getData` mock.
+		 * @return {void}
+		 */
+		function registerAudienceTilesWidget( getData: jest.Mock ) {
+			const dispatch = registry.dispatch( CORE_WIDGETS );
+			dispatch.registerWidgetArea( 'audienceArea', {
+				title: 'Area',
+				pdfTitle: 'Traffic',
+				style: 'boxes',
+				priority: 1,
+			} );
+			dispatch.assignWidgetArea(
+				'audienceArea',
+				CONTEXT_MAIN_DASHBOARD_TRAFFIC
+			);
+			dispatch.registerWidget( 'analyticsAudienceTiles', {
+				Component: NullComponent,
+				pdf: {
+					Component: NullComponent,
+					getData,
+					isActive: ( select: WPDataRegistry[ 'select' ] ) =>
+						( select( CORE_USER ).getConfiguredAudiences()
+							?.length ?? 0 ) >= 2,
+				},
+			} );
+			dispatch.assignWidget( 'analyticsAudienceTiles', 'audienceArea' );
+		}
+
+		/**
+		 * Configures the given number of audiences on the user store.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param  count How many audiences to configure.
+		 * @return {void}
+		 */
+		function setConfiguredAudiences( count: number ) {
+			registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+				configuredAudiences: Array.from(
+					{ length: count },
+					( _, index ) => `properties/1/audiences/${ index + 1 }`
+				),
+				isAudienceSegmentationWidgetHidden: false,
+				didSetAudiences: true,
+			} );
+		}
+
+		it( 'excludes the widget when fewer than two audiences are configured', async () => {
+			const audienceGetData = jest.fn( () =>
+				Promise.resolve( { data: { audiences: [] } } )
+			);
+			const controlGetData = jest.fn( () =>
+				Promise.resolve( { data: { totalUsers: 1 } } )
+			);
+
+			setConfiguredAudiences( 1 );
+			registerAudienceTilesWidget( audienceGetData );
+			registerPDFWidget( 'controlArea', 'controlWidget', controlGetData );
+
+			registry.dispatch( CORE_PDF ).setSelection( {
+				contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+				widgetSlugs: [ 'analyticsAudienceTiles', 'controlWidget' ],
+			} );
+
+			renderOrchestrator();
+
+			await waitFor( () => {
+				expect( registry.select( CORE_PDF ).getStatus() ).toBe(
+					'success'
+				);
+			} );
+
+			expect( audienceGetData ).not.toHaveBeenCalled();
+			expect( controlGetData ).toHaveBeenCalled();
+		} );
+
+		it( 'includes the widget when two or more audiences are configured', async () => {
+			const audienceGetData = jest.fn( () =>
+				Promise.resolve( { data: { audiences: [ {}, {} ] } } )
+			);
+
+			setConfiguredAudiences( 2 );
+			registerAudienceTilesWidget( audienceGetData );
+
+			registry.dispatch( CORE_PDF ).setSelection( {
+				contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+				widgetSlugs: [ 'analyticsAudienceTiles' ],
+			} );
+
+			renderOrchestrator();
+
+			await waitFor( () => {
+				expect( registry.select( CORE_PDF ).getStatus() ).toBe(
+					'success'
+				);
+			} );
+
+			expect( audienceGetData ).toHaveBeenCalledTimes( 1 );
 		} );
 	} );
 } );

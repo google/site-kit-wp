@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
@@ -202,7 +207,7 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		dispatch.assignWidget( 'analyticsWidget', 'analyticsArea' );
 	}
 
-	it( 'omits a section whose pdf widget requires a disconnected module', async () => {
+	it( 'omits a widget that requires a disconnected module', async () => {
 		provideModules( registry, [
 			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: false },
 		] );
@@ -226,17 +231,17 @@ describe( 'PDFSectionsSelectionPanel', () => {
 			).toBe( true );
 		} );
 
-		// Wait for the module-less Traffic section. Its presence proves the
-		// list has loaded before the test checks that the Analytics section
-		// is absent.
+		// The Analytics area sits in the Traffic context, so its widget lists
+		// under the Traffic section. Waiting for that section proves the list
+		// has loaded before the test checks that the widget is absent.
 		await findByRole( 'checkbox', { name: /^Traffic$/ } );
 
 		expect(
-			queryByRole( 'checkbox', { name: /^Analytics$/ } )
+			queryByRole( 'checkbox', { name: /^Analytics widget$/ } )
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'lists a section whose pdf widget requires a connected module, and selects it by default', async () => {
+	it( 'lists a widget that requires a connected module, and selects it by default', async () => {
 		provideModules( registry, [
 			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
 		] );
@@ -259,10 +264,10 @@ describe( 'PDFSectionsSelectionPanel', () => {
 			).toBe( true );
 		} );
 
-		const analyticsSection = ( await findByRole( 'checkbox', {
-			name: /^Analytics$/,
+		const analyticsWidget = ( await findByRole( 'checkbox', {
+			name: /^Analytics widget$/,
 		} ) ) as HTMLInputElement;
-		expect( analyticsSection.checked ).toBe( true );
+		expect( analyticsWidget.checked ).toBe( true );
 	} );
 
 	it( 'renders a Traffic section with its labelled widgets, all selected by default', async () => {
@@ -306,6 +311,124 @@ describe( 'PDFSectionsSelectionPanel', () => {
 			'pdfAllTraffic',
 			'pdfSearchTraffic',
 		] );
+	} );
+
+	it( 'merges two areas in one context into a single section', async () => {
+		const dispatch = registry.dispatch( CORE_WIDGETS );
+
+		// A second Traffic area with its own PDF widget, like the audience
+		// segmentation area. It repeats the "Traffic" title, as the real
+		// registration does, so the merged section keeps one label.
+		dispatch.registerWidgetArea( 'pdfAudienceArea', {
+			title: 'Find out who your visitors are',
+			pdfTitle: 'Traffic',
+			style: 'boxes',
+			priority: 2,
+		} );
+		dispatch.assignWidgetArea(
+			'pdfAudienceArea',
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+		);
+		dispatch.registerWidget( 'pdfAudienceTiles', {
+			Component: NullComponent,
+			pdf: {
+				Component: NullComponent,
+				getData: () => Promise.resolve( { data: null } ),
+				label: 'Your visitor groups',
+			},
+		} );
+		dispatch.assignWidget( 'pdfAudienceTiles', 'pdfAudienceArea' );
+
+		const { findByRole, getAllByRole, getByRole } = render(
+			<PDFSectionsSelectionPanel />,
+			{ registry }
+		);
+
+		openPanel();
+
+		await findByRole( 'checkbox', { name: /^Your visitor groups$/ } );
+
+		// One Traffic parent checkbox, not one per area.
+		expect(
+			getAllByRole( 'checkbox', { name: /^Traffic$/ } )
+		).toHaveLength( 1 );
+		expect(
+			(
+				getByRole( 'checkbox', {
+					name: /^Your visitor groups$/,
+				} ) as HTMLInputElement
+			 ).checked
+		).toBe( true );
+		expect(
+			[ ...registry.select( CORE_PDF ).getSelectedWidgetSlugs() ].sort()
+		).toEqual( [
+			'pdfAllTraffic',
+			'pdfAudienceTiles',
+			'pdfSearchTraffic',
+		] );
+	} );
+
+	it( 'selects a widget when it first appears, and keeps a cleared widget cleared', async () => {
+		const dispatch = registry.dispatch( CORE_WIDGETS );
+
+		// A widget that appears late, like the audience tiles waiting on the
+		// configured audiences to resolve.
+		dispatch.registerWidget( 'pdfLateWidget', {
+			Component: NullComponent,
+			pdf: {
+				Component: NullComponent,
+				getData: () => Promise.resolve( { data: null } ),
+				label: 'Late widget',
+				isActive: ( select: WPDataRegistry[ 'select' ] ) =>
+					select( CORE_UI ).getValue( 'pdfLateWidgetReady' ) === true,
+			},
+		} );
+		dispatch.assignWidget( 'pdfLateWidget', 'pdfTrafficArea' );
+
+		const { findByRole, getByRole, queryByRole } = render(
+			<PDFSectionsSelectionPanel />,
+			{ registry }
+		);
+
+		openPanel();
+
+		// Clear a selected widget before the late widget appears.
+		fireEvent.click(
+			await findByRole( 'checkbox', { name: /^Search traffic$/ } )
+		);
+
+		await waitFor( () => {
+			expect(
+				registry.select( CORE_PDF ).getSelectedWidgetSlugs()
+			).toEqual( [ 'pdfAllTraffic' ] );
+		} );
+		expect(
+			queryByRole( 'checkbox', { name: /^Late widget$/ } )
+		).not.toBeInTheDocument();
+
+		act( () => {
+			registry.dispatch( CORE_UI ).setValue( 'pdfLateWidgetReady', true );
+		} );
+
+		// The late widget is selected on its first appearance, and the widget
+		// the user cleared stays cleared.
+		expect(
+			(
+				( await findByRole( 'checkbox', {
+					name: /^Late widget$/,
+				} ) ) as HTMLInputElement
+			 ).checked
+		).toBe( true );
+		expect(
+			(
+				getByRole( 'checkbox', {
+					name: /^Search traffic$/,
+				} ) as HTMLInputElement
+			 ).checked
+		).toBe( false );
+		expect(
+			[ ...registry.select( CORE_PDF ).getSelectedWidgetSlugs() ].sort()
+		).toEqual( [ 'pdfAllTraffic', 'pdfLateWidget' ] );
 	} );
 
 	it( 'shows the parent as indeterminate when one child is deselected', async () => {

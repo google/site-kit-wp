@@ -67,8 +67,8 @@ export class PDFGenerationPage {
 	}
 
 	/**
-	 * Gets the section checkboxes (one per widget area), excluding the per-widget
-	 * child checkboxes.
+	 * Gets the section checkboxes (one per dashboard context), excluding the
+	 * per-widget child checkboxes.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -81,11 +81,11 @@ export class PDFGenerationPage {
 	}
 
 	/**
-	 * Gets a section checkbox by its widget-area slug.
+	 * Gets a section checkbox by its dashboard-context slug.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param slug The section (widget area) slug.
+	 * @param slug The section (dashboard context) slug.
 	 * @return The section checkbox input.
 	 */
 	sectionCheckbox( slug: string ) {
@@ -149,7 +149,7 @@ export class PDFGenerationPage {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param  slugs The section (widget area) slugs to keep selected.
+	 * @param  slugs The section (dashboard context) slugs to keep selected.
 	 * @return {Promise<void>} Resolves once the selection is applied.
 	 */
 	async deselectAllExcept( slugs: string[] ) {
