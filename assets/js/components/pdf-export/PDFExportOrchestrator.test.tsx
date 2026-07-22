@@ -51,6 +51,8 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 import { registerPDFFonts } from './pdf-fonts-react';
+import { PDF_MEASURE_PAGE_HEIGHT, PDF_PAGE_BOTTOM_PADDING } from './pdf-theme';
+import { triggerDownload } from './pdf-utils';
 import PDFExportOrchestrator from './PDFExportOrchestrator';
 import { SECTION_ICONS } from './section-icons';
 import { PDFHeaderSection, PDFReportArea } from './types';
@@ -78,6 +80,32 @@ jest.mock( './pdf-fonts-react', () => ( {
 
 function NullComponent() {
 	return null;
+}
+
+// The bottom edge of the layout fixture the mocked `toBlob()` passes to
+// `onRender` (see `MOCK_PDF_LAYOUT` in `__mocks__/@react-pdf/renderer.js`).
+const MOCKED_MEASURED_HEIGHT = 500;
+
+/**
+ * Builds a `pdf()` implementation whose `toBlob()` fires the document's
+ * `onRender` callback with the given layout, overriding the mock's fixture.
+ *
+ * @since n.e.x.t
+ *
+ * @param layout The layout to pass to `onRender`.
+ * @return The `pdf()` implementation.
+ */
+function pdfImplementationWithLayout( layout: unknown ) {
+	return ( element: {
+		props?: { onRender?: ( renderedLayout: unknown ) => void };
+	} ) => ( {
+		toBlob: () => {
+			element?.props?.onRender?.( layout );
+			return Promise.resolve(
+				new Blob( [ 'mock-pdf' ], { type: 'application/pdf' } )
+			);
+		},
+	} );
 }
 
 describe( 'PDFExportOrchestrator', () => {
@@ -109,6 +137,7 @@ describe( 'PDFExportOrchestrator', () => {
 		// call that the test still needs to check.
 		( pdf as jest.Mock ).mockClear();
 		jest.mocked( registerPDFFonts ).mockClear();
+		jest.mocked( triggerDownload ).mockClear();
 		mockTrackEvent.mockClear();
 
 		// Put the real `AbortController` back after a test replaced it with the
@@ -296,7 +325,130 @@ describe( 'PDFExportOrchestrator', () => {
 		expect( dates.compareStartDate ).toBeDefined();
 		expect( signal ).toBeInstanceOf( AbortSignal );
 
+		// A measurement pass and a final pass.
+		expect( pdf ).toHaveBeenCalledTimes( 2 );
+	} );
+
+	it( 'sizes the final page to the measured content height plus the bottom padding', async () => {
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [ 'trafficWidget' ],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		expect( pdf ).toHaveBeenCalledTimes( 2 );
+
+		const measurementPass = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
+		expect( measurementPass.props.pageHeight ).toBe(
+			PDF_MEASURE_PAGE_HEIGHT
+		);
+		expect( measurementPass.props.onRender ).toEqual(
+			expect.any( Function )
+		);
+
+		const finalPass = ( pdf as jest.Mock ).mock.calls[ 1 ][ 0 ];
+		expect( finalPass.props.pageHeight ).toBe(
+			MOCKED_MEASURED_HEIGHT + PDF_PAGE_BOTTOM_PADDING
+		);
+		expect( finalPass.props.onRender ).toBeUndefined();
+	} );
+
+	it( 'passes the section anchors extracted from the measurement pass to the final pass', async () => {
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [ 'trafficWidget' ],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		const measurementPass = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
+		expect( measurementPass.props.sectionAnchors ).toBeUndefined();
+
+		// The section node in the mock layout sits at 200 + 24 = 224.
+		const finalPass = ( pdf as jest.Mock ).mock.calls[ 1 ][ 0 ];
+		expect( finalPass.props.sectionAnchors ).toEqual( [
+			{ id: 'section-mockArea', top: 224 },
+		] );
+	} );
+
+	it( 'caps the final page height at the measurement page height', async () => {
+		( pdf as jest.Mock ).mockImplementationOnce(
+			pdfImplementationWithLayout( {
+				_INTERNAL__LAYOUT__DATA_: {
+					children: [
+						{
+							children: [
+								{
+									box: {
+										top: 0,
+										height: PDF_MEASURE_PAGE_HEIGHT,
+									},
+								},
+							],
+						},
+					],
+				},
+			} )
+		);
+
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [ 'trafficWidget' ],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		const finalPass = ( pdf as jest.Mock ).mock.calls[ 1 ][ 0 ];
+		expect( finalPass.props.pageHeight ).toBe( PDF_MEASURE_PAGE_HEIGHT );
+	} );
+
+	it( 'transitions to error and skips the final pass when the layout measurement fails', async () => {
+		( pdf as jest.Mock ).mockImplementationOnce(
+			pdfImplementationWithLayout( { unexpected: 'shape' } )
+		);
+
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [ 'trafficWidget' ],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'error' );
+		} );
+
 		expect( pdf ).toHaveBeenCalledTimes( 1 );
+		expect( triggerDownload ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should transition to error and not build a PDF when the only widget fails', async () => {
@@ -340,7 +492,7 @@ describe( 'PDFExportOrchestrator', () => {
 
 		expect( failing ).toHaveBeenCalledTimes( 1 );
 		expect( succeeding ).toHaveBeenCalledTimes( 1 );
-		expect( pdf ).toHaveBeenCalledTimes( 1 );
+		expect( pdf ).toHaveBeenCalledTimes( 2 );
 	} );
 
 	it( 'includes only the checked widget when the user unchecks the other widget in the same section', async () => {

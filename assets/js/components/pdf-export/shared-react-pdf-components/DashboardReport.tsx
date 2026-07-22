@@ -38,18 +38,19 @@ import {
 import {
 	PDF_COLORS,
 	PDF_FONT_FAMILY_TEXT,
+	PDF_MEASURE_PAGE_HEIGHT,
+	PDF_PAGE_BOTTOM_PADDING,
 } from '@/js/components/pdf-export/pdf-theme';
 import PDFFooter from '@/js/components/pdf-export/shared-react-pdf-components/PDFFooter';
 import {
 	PDFHeaderSection,
 	PDFReportArea,
 	PDFReportWidget,
+	PDFSectionAnchor,
 } from '@/js/components/pdf-export/types';
 import PDFEmailReportingNotice from './PDFEmailReportingNotice';
 import PDFHeader from './PDFHeader';
 import PDFTypography from './PDFTypography';
-
-const DEFAULT_PAGE_HEIGHT = 792;
 
 const styles = createPDFStyles( {
 	page: {
@@ -117,8 +118,12 @@ export interface DashboardReportProps {
 	helpCenterURL: string;
 	/** Golink URL opening the Google privacy policy, for the footer. */
 	privacyPolicyURL: string;
-	/** The page height in points. Defaults to the US letter height. */
+	/** The page height in points. Defaults to the measurement-pass height. */
 	pageHeight?: number;
+	/** Receives the `@react-pdf` layout result once the document renders. */
+	onRender?: ( layout: unknown ) => void;
+	/** Page-level anchors from the measurement pass. When given, they carry the section anchor ids instead of the section views. */
+	sectionAnchors?: PDFSectionAnchor[];
 	/** The report areas, each holding its widgets. */
 	areas?: PDFReportArea[];
 	/** Golink URL for the "Set up email reports" button in the email reporting notice. */
@@ -133,7 +138,9 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 	sections,
 	helpCenterURL,
 	privacyPolicyURL,
-	pageHeight = DEFAULT_PAGE_HEIGHT,
+	pageHeight = PDF_MEASURE_PAGE_HEIGHT,
+	onRender,
+	sectionAnchors,
 	areas = [],
 	emailReportingSetupURL,
 } ) => {
@@ -168,12 +175,44 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 					: __( 'Site Kit Dashboard Report', 'google-site-kit' )
 			}
 			author="Site Kit by Google"
+			onRender={ onRender }
 		>
+			{ /*
+			 * `@react-pdf` sizes a `wrap={false}` page to its content, so the
+			 * page ends at the footer plus this bottom padding; the explicit
+			 * height is an upper bound, not the rendered size.
+			 */ }
 			<Page
 				size={ [ PDF_PAGE_WIDTH, pageHeight ] }
-				style={ [ styles.page, { padding: PDF_PAGE_PADDING } ] }
+				style={ [
+					styles.page,
+					{
+						padding: PDF_PAGE_PADDING,
+						paddingBottom: PDF_PAGE_BOTTOM_PADDING,
+					},
+				] }
 				wrap={ false }
 			>
+				{ /*
+				 * `@react-pdf` registers a named destination from a node's
+				 * parent-relative top, so only a direct page child anchors at
+				 * its true position. The measurement pass reads each section's
+				 * absolute top from the layout, and the final pass pins these
+				 * zero-size anchors there in the sections' place.
+				 */ }
+				{ ( sectionAnchors || [] ).map( ( { id, top } ) => (
+					<View
+						key={ id }
+						id={ id }
+						style={ {
+							position: 'absolute',
+							top,
+							left: 0,
+							width: 0,
+							height: 0,
+						} }
+					/>
+				) ) }
 				<PDFHeader
 					siteURL={ siteURL }
 					dashboardURL={ dashboardURL }
@@ -196,7 +235,14 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 					) }
 					{ renderableAreas.map(
 						( { areaSlug, areaTitle, widgets } ) => (
-							<View key={ `section-${ areaSlug }` }>
+							<View
+								key={ `section-${ areaSlug }` }
+								id={
+									sectionAnchors
+										? undefined
+										: `section-${ areaSlug }`
+								}
+							>
 								<PDFTypography
 									type="headline"
 									style={ styles.areaTitle }
