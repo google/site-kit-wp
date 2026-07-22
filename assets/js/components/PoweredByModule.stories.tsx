@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { ReactElement } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -28,7 +33,7 @@ import PoweredByModule, {
 	PoweredByModuleProps,
 } from '@/js/components/PoweredByModule';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { Story as StoryType } from '@/js/types/Story';
+import { Story } from '@/js/types/Story';
 import { provideModuleRegistrations, provideModules } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 
@@ -36,7 +41,9 @@ function Template( args: PoweredByModuleProps ) {
 	return <PoweredByModule { ...args } />;
 }
 
-export const ReaderRevenueManager = Template.bind( {} );
+export const ReaderRevenueManager = Template.bind(
+	{}
+) as Story< PoweredByModuleProps >;
 ReaderRevenueManager.storyName = 'Reader Revenue Manager';
 ReaderRevenueManager.args = {
 	slug: MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -46,7 +53,7 @@ export default {
 	title: 'Components/PoweredByModule',
 	component: PoweredByModule,
 	decorators: [
-		( Story: StoryType ) => {
+		( StoryComponent: () => ReactElement ) => {
 			function setupRegistry( registry: WPDataRegistry ) {
 				provideModules( registry );
 				provideModuleRegistrations( registry );
@@ -54,7 +61,7 @@ export default {
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
+					<StoryComponent />
 				</WithRegistrySetup>
 			);
 		},

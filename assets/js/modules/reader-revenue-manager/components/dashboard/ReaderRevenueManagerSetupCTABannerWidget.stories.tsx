@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { ReactElement } from 'react';
 
 /**
  * WordPress dependencies
@@ -35,6 +35,7 @@ import {
 	MODULE_SLUG_READER_REVENUE_MANAGER,
 	RRM_EXPRESS_SETUP_TRAFFIC_CTA_WIDGET_SLUG,
 } from '@/js/modules/reader-revenue-manager/constants';
+import { Story } from '@/js/types/Story';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -51,14 +52,14 @@ function Template() {
 	return <WidgetWithComponentProps />;
 }
 
-export const Default = Template.bind( {} );
+export const Default = Template.bind( {} ) as Story;
 Default.storyName = 'Default';
 Default.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Components/Dashboard/ReaderRevenueManagerSetupCTABannerWidget',
 	decorators: [
-		( Story: FC ) => {
+		( StoryComponent: () => ReactElement ) => {
 			function setupRegistry( registry: WPDataRegistry ) {
 				provideModules( registry, [
 					{
@@ -78,7 +79,7 @@ export default {
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
+					<StoryComponent />
 				</WithRegistrySetup>
 			);
 		},
