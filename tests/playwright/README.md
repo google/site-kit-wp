@@ -308,7 +308,7 @@ The following environment variables configure how tests connect to the running e
 | `PLAYWRIGHT_MAILPIT_URL` | `http://localhost:8025` | Mailpit API base URL                          |
 | `PLUGIN_PATH`            | `../../`                | Path to the plugin directory to mount         |
 | `WP_VERSION`             | `5.2.21`                | WordPress version to use in Docker            |
-| `WP_IMAGE_TAG`           | `5.2.21-20260715`       | Docker image tag to pull for the `wp` service |
+| `WP_IMAGE_TAG`           | `5.2.21-20260722`       | Docker image tag to pull for the `wp` service |
 | `FORBID_ONLY`            | _(unset)_               | Fail if `test.only` is present (CI use)       |
 | `RETRIES`                | `0`                     | Number of retries per failing test            |
 | `WORKERS`                | _(Playwright default)_  | Number of parallel workers                    |
@@ -579,7 +579,7 @@ Mailpit automatically scopes queries to the current test's sender address (`<dat
 **`wp` (custom WordPress image — `docker/wordpress/Dockerfile`)**
 
 -   Port: `9002` → `80`
--   Based on `ghcr.io/google/site-kit-wp/playwright-wp`; the image pulled is controlled by `WP_IMAGE_TAG` (defaults to `5.2.21-20260715` — a WordPress 5.2.21 image with a build-date suffix that changes whenever the Dockerfile's bundled plugins, e.g. WooCommerce, are updated); the WordPress version baked into the image is controlled separately by the `WP_VERSION` build arg (defaults to `5.2.21`)
+-   Based on `ghcr.io/google/site-kit-wp/playwright-wp`; the image pulled is controlled by `WP_IMAGE_TAG` (defaults to `5.2.21-20260722` — a WordPress 5.2.21 image with a build-date suffix that changes whenever the Dockerfile's bundled plugins, e.g. WooCommerce, are updated); the WordPress version baked into the image is controlled separately by the `WP_VERSION` build arg (defaults to `5.2.21`)
 -   The plugin is mounted at `wp-content/plugins/google-site-kit` from `PLUGIN_PATH` (defaults to `../../` for local dev; CI uses a built artifact)
 -   Test helper plugins are mounted at `wp-content/plugins/google-site-kit-test-plugins`
 -   `WP_HTTP_BLOCK_EXTERNAL` is enabled (only `*.wordpress.org` is reachable from the browser; the fixtures service intercepts Google API calls at the network level)

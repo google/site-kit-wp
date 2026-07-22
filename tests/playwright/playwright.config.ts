@@ -57,6 +57,7 @@ export default defineConfig( {
 			testIgnore: [
 				'specs/golinks.spec.ts',
 				'specs/enhanced-conversions/enhanced-conversions.spec.ts',
+				'specs/enhanced-conversions/wpforms.spec.ts',
 			],
 		},
 		withDesktopViewport( 'chrome::desktop', DESKTOP_CHROME ),
