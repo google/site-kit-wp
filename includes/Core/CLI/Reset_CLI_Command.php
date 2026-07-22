@@ -23,6 +23,7 @@ use WP_CLI;
  */
 class Reset_CLI_Command extends CLI_Command {
 
+	// phpcs:disable PHPCS.Commenting.DocCommentFullStop.MissingFullStop -- Command examples should not include trailing punctuation.
 	/**
 	 * Deletes options, user stored options, transients and clears object cache for stored options.
 	 *
@@ -34,7 +35,6 @@ class Reset_CLI_Command extends CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     wp google-site-kit reset
-	 * phpcs:ignore PHPCS.Commenting.DocCommentFullStop.MissingFullStop -- Command examples should not include trailing punctuation.
 	 *     wp google-site-kit reset --persistent
 	 *
 	 * @since 1.11.0
@@ -44,6 +44,7 @@ class Reset_CLI_Command extends CLI_Command {
 	 * @param array $assoc_args Additional flags.
 	 */
 	public function __invoke( $args, $assoc_args ) {
+		// phpcs:enable PHPCS.Commenting.DocCommentFullStop.MissingFullStop
 		$reset = new Reset( $this->context );
 		$reset->all();
 
