@@ -29,11 +29,6 @@ import ExternalIcon from '@/svg/icons/external.svg';
 export interface CTAButtonProps {
 	ariaLabel?: string;
 	disabled?: boolean;
-	dismissOnClick?: boolean;
-	dismissOptions?: {
-		expiresInSeconds: number;
-		skipHidingFromQueue: boolean;
-	};
 	external?: boolean;
 	hideExternalIndicator?: boolean;
 	href?: string;

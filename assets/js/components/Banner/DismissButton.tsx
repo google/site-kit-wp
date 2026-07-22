@@ -41,7 +41,7 @@ export interface DismissButtonProps {
 
 export default function DismissButton( {
 	className,
-	label = String( __( 'Maybe later', 'google-site-kit' ) ),
+	label = __( 'Maybe later', 'google-site-kit' ),
 	onClick,
 	disabled,
 	tertiary = true,
