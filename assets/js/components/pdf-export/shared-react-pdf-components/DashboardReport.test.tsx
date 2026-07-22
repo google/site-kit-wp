@@ -25,12 +25,12 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { SECTION_ICONS } from '@/js/components/pdf-export/pdf-icons';
 import {
 	PDF_PAGE_PADDING,
 	PDF_PAGE_WIDTH,
 	scalePDFValue,
 } from '@/js/components/pdf-export/pdf-scale';
-import { SECTION_ICONS } from '@/js/components/pdf-export/section-icons';
 import { PDFWidgetComponentProps } from '@/js/components/pdf-export/types';
 import { CONTEXT_MAIN_DASHBOARD_TRAFFIC } from '@/js/googlesitekit/widgets/default-contexts';
 import { getLocale } from '@/js/util/i18n';
