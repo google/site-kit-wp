@@ -236,12 +236,12 @@ async function fetchAudienceReports(
  *
  * @since n.e.x.t
  *
- * @param params          Loader parameters.
- * @param params.registry WordPress data registry.
- * @param params.dates    Report date range, with the current day excluded.
- * @param params.signal   Cancellation signal.
- * @param params.viewOnly Whether the export runs on a view-only dashboard.
- * @return The loaded audience cards, or `{ data: null }` when the section is omitted or canceled.
+ * @param {Object}      params          Loader parameters.
+ * @param {Object}      params.registry WordPress data registry.
+ * @param {Object}      params.dates    Report date range, with the current day excluded.
+ * @param {AbortSignal} params.signal   Cancellation signal.
+ * @param {boolean}     params.viewOnly Whether the export runs on a view-only dashboard.
+ * @return {Promise<Object>} The loaded audience cards, or `{ data: null }` when the loader omits the section or the user cancels the export.
  */
 export default async function getPDFData( {
 	registry,
@@ -370,8 +370,8 @@ export default async function getPDFData( {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param pagePath Page path of a top content row.
-	 * @return The page's Analytics report link, or an empty string for a view-only user.
+	 * @param {string} pagePath Page path of a top content row.
+	 * @return {string} The page's Analytics report link, or an empty string for a view-only user.
 	 */
 	function getContentServiceURL( pagePath: string ): string {
 		if ( viewOnly ) {

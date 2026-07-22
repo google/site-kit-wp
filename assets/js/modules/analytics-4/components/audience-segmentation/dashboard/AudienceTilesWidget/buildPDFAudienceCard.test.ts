@@ -142,8 +142,8 @@ describe( 'buildTopContent', () => {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param pagePath Page path of a top content row.
-	 * @return The link fixture for the page.
+	 * @param {string} pagePath Page path of a top content row.
+	 * @return {string} The link fixture for the page.
 	 */
 	function getContentServiceURL( pagePath: string ): string {
 		return `https://example.com/analytics-report${ pagePath }`;

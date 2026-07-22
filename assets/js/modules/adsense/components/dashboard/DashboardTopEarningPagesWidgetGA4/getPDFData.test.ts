@@ -130,9 +130,9 @@ function provideReports( {
  *
  * @since n.e.x.t
  *
- * @param registry Registry that holds the Analytics property.
- * @param pagePath Page path from a report row.
- * @return The All pages and screens report link for the page.
+ * @param {Registry} registry Registry that holds the Analytics property.
+ * @param {string}   pagePath Page path from a report row.
+ * @return {string} The All pages and screens report link for the page.
  */
 function getExpectedPageLink( registry: Registry, pagePath: string ): string {
 	return registry

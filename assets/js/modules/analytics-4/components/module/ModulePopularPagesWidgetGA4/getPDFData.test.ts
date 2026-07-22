@@ -109,9 +109,9 @@ const PROPERTY_ID = '123456789';
  *
  * @since n.e.x.t
  *
- * @param registry Registry that holds the Analytics property.
- * @param pagePath Page path from a report row.
- * @return The All pages and screens report link for the page.
+ * @param {Registry} registry Registry that holds the Analytics property.
+ * @param {string}   pagePath Page path from a report row.
+ * @return {string} The All pages and screens report link for the page.
  */
 function getExpectedPageLink( registry: Registry, pagePath: string ): string {
 	return registry
@@ -130,9 +130,9 @@ function getExpectedPageLink( registry: Registry, pagePath: string ): string {
  *
  * @since n.e.x.t
  *
- * @param registry Registry that holds the reference site URL.
- * @param pagePath Page path from a report row.
- * @return The page's entity dashboard link.
+ * @param {Registry} registry Registry that holds the reference site URL.
+ * @param {string}   pagePath Page path from a report row.
+ * @return {string} The page's entity dashboard link.
  */
 function getExpectedDetailsURL( registry: Registry, pagePath: string ): string {
 	const siteURL = registry.select( CORE_SITE ).getReferenceSiteURL();

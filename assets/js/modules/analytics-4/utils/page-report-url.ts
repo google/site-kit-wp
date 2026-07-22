@@ -38,12 +38,12 @@ interface ReportURLSelect {
  *
  * @since n.e.x.t
  *
- * @param analytics       The Analytics 4 store's selectors.
- * @param pagePath        The page path to filter the report to.
- * @param dates           The report's date range.
- * @param dates.startDate The first day of the range (YYYY-MM-DD).
- * @param dates.endDate   The last day of the range (YYYY-MM-DD).
- * @return The report URL, or `undefined` before the Analytics property loads.
+ * @param {ReportURLSelect} analytics       The Analytics 4 store's selectors.
+ * @param {string}          pagePath        The page path to filter the report to.
+ * @param {Object}          dates           The report's date range.
+ * @param {string}          dates.startDate The first day of the range (YYYY-MM-DD).
+ * @param {string}          dates.endDate   The last day of the range (YYYY-MM-DD).
+ * @return {string|undefined} The report URL, or `undefined` before the Analytics property loads.
  */
 export function getAllPagesReportURL(
 	analytics: ReportURLSelect,

@@ -198,10 +198,10 @@ export function buildTopCities(
  *
  * @since n.e.x.t
  *
- * @param report               The top content report, or `undefined`.
- * @param titlesReport         The page titles report used to resolve a path to its title, or `undefined`.
- * @param getContentServiceURL Maps a page path to its Analytics report link, or to an empty string when the page has no link.
- * @return Up to three top content pages.
+ * @param {Object}   report               The top content report, or `undefined`.
+ * @param {Object}   titlesReport         The page titles report that resolves a path to its title, or `undefined`.
+ * @param {Function} getContentServiceURL Maps a page path to its Analytics report link, or to an empty string when the page has no link.
+ * @return {Object[]} Up to three top content pages.
  */
 export function buildTopContent(
 	report: Report | undefined,

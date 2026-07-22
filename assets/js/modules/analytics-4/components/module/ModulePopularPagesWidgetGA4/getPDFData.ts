@@ -70,18 +70,24 @@ export interface PopularPagesPDFData {
  * @since 1.182.0
  * @since n.e.x.t Links the title to the Analytics report for an administrator and to the entity dashboard for a view-only user.
  *
- * @param registry  WordPress data registry.
- * @param dates     Report date range.
- * @param pagePaths Page paths from the main report rows.
- * @param viewOnly  Whether the export runs on a view-only dashboard.
- * @return Map of page path to its title link and public URL.
+ * @param {Object}   params           Link map parameters.
+ * @param {Object}   params.registry  WordPress data registry.
+ * @param {Object}   params.dates     Report date range.
+ * @param {string[]} params.pagePaths Page paths from the main report rows.
+ * @param {boolean}  params.viewOnly  Whether the export runs on a view-only dashboard.
+ * @return {Object} Map of page path to its title link and public URL.
  */
-function getPopularPageLinkMap(
-	registry: GetPDFDataParams[ 'registry' ],
-	dates: GetPDFDataParams[ 'dates' ],
-	pagePaths: string[],
-	viewOnly: boolean
-): Record< string, PopularPageLinks > {
+function getPopularPageLinkMap( {
+	registry,
+	dates,
+	pagePaths,
+	viewOnly,
+}: {
+	registry: GetPDFDataParams[ 'registry' ];
+	dates: GetPDFDataParams[ 'dates' ];
+	pagePaths: string[];
+	viewOnly: boolean;
+} ): Record< string, PopularPageLinks > {
 	const coreSite = registry.select( CORE_SITE );
 	const siteURL = coreSite.getReferenceSiteURL();
 	const analytics = registry.select( MODULES_ANALYTICS_4 );
@@ -128,12 +134,12 @@ function getPopularPageLinkMap(
  * @since 1.183.0 Returns null data when the report has no rows.
  * @since n.e.x.t Links each title to the Analytics report for an administrator and to the entity dashboard for a view-only user.
  *
- * @param params          Loader parameters.
- * @param params.registry WordPress data registry.
- * @param params.dates    Report date range.
- * @param params.signal   Cancellation signal.
- * @param params.viewOnly Whether the export runs on a view-only dashboard.
- * @return The report rows and the page-path-to-title map.
+ * @param {Object}      params          Loader parameters.
+ * @param {Object}      params.registry WordPress data registry.
+ * @param {Object}      params.dates    Report date range.
+ * @param {AbortSignal} params.signal   Cancellation signal.
+ * @param {boolean}     params.viewOnly Whether the export runs on a view-only dashboard.
+ * @return {Promise<Object>} The report rows and the page-path-to-title map.
  */
 export default async function getPDFData( {
 	registry,
@@ -170,7 +176,12 @@ export default async function getPDFData( {
 	}
 
 	const pagePaths = getPagePaths( report );
-	const links = getPopularPageLinkMap( registry, dates, pagePaths, viewOnly );
+	const links = getPopularPageLinkMap( {
+		registry,
+		dates,
+		pagePaths,
+		viewOnly,
+	} );
 
 	if ( pagePaths.length === 0 ) {
 		return { data: { rows, titles: {}, links } };

@@ -201,8 +201,8 @@ describe( 'PDFExportOrchestrator', () => {
 	 * @since 1.181.0
 	 * @since n.e.x.t Added the `viewContext` parameter.
 	 *
-	 * @param viewContext The dashboard view context to render under.
-	 * @return The render result for the orchestrator.
+	 * @param {string} viewContext The dashboard view context to render under.
+	 * @return {Object} The render result for the orchestrator.
 	 */
 	function renderOrchestrator(
 		viewContext: string = VIEW_CONTEXT_MAIN_DASHBOARD

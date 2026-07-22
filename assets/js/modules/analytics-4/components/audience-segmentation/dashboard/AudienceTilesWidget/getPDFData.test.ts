@@ -236,11 +236,11 @@ function buildRegistry( {
  *
  * @since n.e.x.t
  *
- * @param registry         The mock registry.
- * @param options          Run options.
- * @param options.aborted  Whether the signal is aborted before the run.
- * @param options.viewOnly Whether the export runs on a view-only dashboard.
- * @return The loader result.
+ * @param {PDFRegistry} registry         The mock registry.
+ * @param {Object}      options          Run options.
+ * @param {boolean}     options.aborted  Whether the signal aborts before the run.
+ * @param {boolean}     options.viewOnly Whether the export runs on a view-only dashboard.
+ * @return {Promise<Object>} The loader result.
  */
 function runPDFData(
 	registry: PDFRegistry,

@@ -99,12 +99,12 @@ function getQueryLinkMap(
  * @since 1.183.0
  * @since n.e.x.t Leaves out the query links on a view-only dashboard.
  *
- * @param params          Loader parameters.
- * @param params.registry WordPress data registry.
- * @param params.dates    Report date range.
- * @param params.signal   Cancellation signal.
- * @param params.viewOnly Whether the export runs on a view-only dashboard.
- * @return The report rows and the per-query links.
+ * @param {Object}      params          Loader parameters.
+ * @param {Object}      params.registry WordPress data registry.
+ * @param {Object}      params.dates    Report date range.
+ * @param {AbortSignal} params.signal   Cancellation signal.
+ * @param {boolean}     params.viewOnly Whether the export runs on a view-only dashboard.
+ * @return {Promise<Object>} The report rows and the per-query links.
  */
 export default async function getPDFData( {
 	registry,
