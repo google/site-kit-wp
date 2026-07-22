@@ -135,6 +135,16 @@ function shouldDisplayWidgetWithCustomDimensions( {
 	);
 }
 
+/**
+ * Key metric tile configurations, keyed by metric slug.
+ *
+ * Each entry configures how the metric appears in the selection panel and on the
+ * dashboard (`title`, `description`, `infoTooltip`, `metadata`, and the various
+ * display predicates).
+ *
+ * A metric's PDF export configuration lives in `key-metrics-pdf-tiles.js`,
+ * keyed by the same slug, so this module never imports a widget component.
+ */
 const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
 		title: __( 'Top earning pages', 'google-site-kit' ),

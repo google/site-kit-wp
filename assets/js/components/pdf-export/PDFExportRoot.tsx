@@ -1,5 +1,6 @@
 /**
- * PDF export root: hosts the report snackbars and gates the orchestrator mount.
+ * PDF export root: hosts the report snackbars and the survey triggers, and
+ * mounts the orchestrator while a PDF export runs.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -33,6 +34,7 @@ import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import PDFExportSurveyTriggers from './PDFExportSurveyTriggers';
 import PDFReportSnackbarHost from './PDFReportSnackbarHost';
 
 const PDFExportOrchestrator = lazy(
@@ -62,6 +64,7 @@ const PDFExportRoot: FC = () => {
 	return (
 		<Fragment>
 			<PDFReportSnackbarHost onRetry={ openPanel } />
+			<PDFExportSurveyTriggers />
 			{ isExporting && (
 				<Suspense fallback={ null }>
 					<PDFExportOrchestrator onComplete={ finishExporting } />

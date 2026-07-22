@@ -33,6 +33,7 @@ import {
 import { SECTION_ICONS } from '@/js/components/pdf-export/section-icons';
 import { PDFWidgetComponentProps } from '@/js/components/pdf-export/types';
 import { CONTEXT_MAIN_DASHBOARD_TRAFFIC } from '@/js/googlesitekit/widgets/default-contexts';
+import { getLocale } from '@/js/util/i18n';
 import { render } from '@tests/js/test-utils';
 import DashboardReport, { DashboardReportProps } from './DashboardReport';
 
@@ -292,6 +293,69 @@ describe( 'DashboardReport', () => {
 
 		expect( reportJSON ).toContain( `"padding":${ PDF_PAGE_PADDING }` );
 		expect( reportJSON ).toContain( `"size":[${ PDF_PAGE_WIDTH },` );
+	} );
+
+	it( "declares the document's language from the locale", () => {
+		const reportJSON = renderDashboardReportJSON();
+
+		expect( reportJSON ).toContain( `"language":"${ getLocale() }"` );
+	} );
+
+	it( 'opens with the outline pane visible', () => {
+		const reportJSON = renderDashboardReportJSON();
+
+		expect( reportJSON ).toContain( '"pageMode":"useOutlines"' );
+	} );
+
+	it( 'sets the document title from the site name and formatted date range', () => {
+		const reportJSON = renderDashboardReportJSON();
+
+		expect( reportJSON ).toContain(
+			'"title":"Example Site: Site Kit report (Jan 1, 2021 - Jan 28, 2021)"'
+		);
+	} );
+
+	it( 'falls back to the site name alone when the date range cannot be formatted', () => {
+		const reportJSON = renderDashboardReportJSON( {
+			dateRange: { startDate: '', endDate: '' },
+		} );
+
+		expect( reportJSON ).toContain( '"title":"Example Site"' );
+	} );
+
+	it( 'sets the document author to the site name', () => {
+		const reportJSON = renderDashboardReportJSON();
+
+		expect( reportJSON ).toContain( '"author":"Example Site"' );
+	} );
+
+	it( 'sets the fixed document subject and keywords', () => {
+		const reportJSON = renderDashboardReportJSON();
+
+		expect( reportJSON ).toContain( '"subject":"Site Kit report"' );
+		expect( reportJSON ).toContain(
+			'"keywords":"Site Kit, Google, report"'
+		);
+	} );
+
+	it( 'adds a bookmark per area matching its title', () => {
+		const areas = [
+			{
+				areaSlug: 'mainDashboardTrafficPrimary',
+				areaTitle: 'Traffic',
+				widgets: [
+					{
+						slug: 'analyticsAllTrafficGA4',
+						Component: FakeWidget,
+						data: 'visitors',
+					},
+				],
+			},
+		];
+
+		const reportJSON = renderDashboardReportJSON( { areas } );
+
+		expect( reportJSON ).toContain( '"bookmark":"Traffic"' );
 	} );
 
 	it( 'scales the gap between an area title and its first widget', () => {

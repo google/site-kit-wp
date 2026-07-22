@@ -41,12 +41,19 @@ import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
-function TopCitiesWidget( { Widget } ) {
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates()
-	);
-
-	const topCitiesReportOptions = {
+/**
+ * Builds the Analytics 4 report options for the Top Cities metric.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range.
+ * @return {Object} The Analytics 4 `getReport` options.
+ */
+export function getTopCitiesReportOptions( dates ) {
+	return {
 		...dates,
 		dimensions: [ 'city' ],
 		metrics: [ { name: 'totalUsers' } ],
@@ -61,6 +68,14 @@ function TopCitiesWidget( { Widget } ) {
 		limit: 4,
 		reportID: 'analytics-4_top-cities-widget_widget_topCitiesReportOptions',
 	};
+}
+
+function TopCitiesWidget( { Widget } ) {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates()
+	);
+
+	const topCitiesReportOptions = getTopCitiesReportOptions( dates );
 
 	const topCitiesReport = useInViewSelect(
 		( select ) =>
