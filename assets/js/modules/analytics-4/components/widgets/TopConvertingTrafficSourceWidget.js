@@ -42,14 +42,20 @@ import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
-function TopConvertingTrafficSourceWidget( { Widget } ) {
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			compare: true,
-		} )
-	);
-
-	const reportOptions = {
+/**
+ * Builds the Analytics 4 report options for the Top Converting Traffic Source
+ * metric.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range, including the compare dates.
+ * @return {Object} The Analytics 4 `getReport` options.
+ */
+export function getTopConvertingTrafficSourceReportOptions( dates ) {
+	return {
 		...dates,
 		dimensions: [ 'sessionDefaultChannelGroup' ],
 		metrics: [
@@ -62,6 +68,41 @@ function TopConvertingTrafficSourceWidget( { Widget } ) {
 		reportID:
 			'analytics-4_top-converting-traffic-source-widget_widget_reportOptions',
 	};
+}
+
+/**
+ * Builds the sub-text for the Top Converting Traffic Source metric tile.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the PDF tile show the same sub-text.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} rate The share of visits that led to key events.
+ * @return {string} The metric tile sub-text.
+ */
+export function getTopConvertingTrafficSourceSubtext( rate ) {
+	const format = {
+		style: 'percent',
+		signDisplay: 'never',
+		maximumFractionDigits: 1,
+	};
+
+	return sprintf(
+		/* translators: %s: Percentage of visits that led to key events. */
+		__( '%s of visits led to key events', 'google-site-kit' ),
+		numFmt( rate, format )
+	);
+}
+
+function TopConvertingTrafficSourceWidget( { Widget } ) {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} )
+	);
+
+	const reportOptions = getTopConvertingTrafficSourceReportOptions( dates );
 
 	const report = useInViewSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
@@ -120,11 +161,7 @@ function TopConvertingTrafficSourceWidget( { Widget } ) {
 			widgetSlug={ KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE }
 			metricValue={ topChannelGroup }
 			metricValueFormat={ format }
-			subText={ sprintf(
-				/* translators: %d: Percentage of visits that led to key events. */
-				__( '%s of visits led to key events', 'google-site-kit' ),
-				numFmt( topKeyEventRate, format )
-			) }
+			subText={ getTopConvertingTrafficSourceSubtext( topKeyEventRate ) }
 			previousValue={ previousTopKeyEventRate }
 			currentValue={ topKeyEventRate }
 			loading={ loading }

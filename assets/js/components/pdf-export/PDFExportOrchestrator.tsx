@@ -336,6 +336,10 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				registry,
 				dates,
 				signal,
+				// The same module visibility the area discovery used, so a
+				// loader that composes several modules' tiles (Key Metrics) can
+				// keep only the tiles the user can view, as the dashboard does.
+				viewableModules,
 			} );
 
 			throwIfAborted( signal );
@@ -506,11 +510,38 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				registerPDFFonts();
 				throwIfAborted( signal );
 
-				const areas: PDFReportArea[] = discoveredAreas.map(
-					( area ) => ( {
-						areaSlug: area.areaSlug,
-						areaTitle: area.areaTitle,
-						widgets: area.widgets.map( ( widget ) => {
+				// Group the discovered areas by dashboard context, so a context
+				// with more than one area renders as one section under one chip,
+				// not a chip per area. Traffic is the case, since it holds the
+				// traffic charts and the audience tiles. The `Map` keeps the
+				// first-seen order.
+				const contextGroups = new Map<
+					string,
+					{ title: string; widgets: WidgetWithPDF[] }
+				>();
+
+				discoveredAreas.forEach( ( area ) => {
+					const group = contextGroups.get( area.areaContextSlug ) ?? {
+						title: '',
+						widgets: [],
+					};
+
+					// The title comes from the first area that has one. The areas
+					// of a PDF context share the same `pdfTitle`, so this is the
+					// context's title.
+					if ( ! group.title && area.areaTitle ) {
+						group.title = area.areaTitle;
+					}
+					group.widgets.push( ...area.widgets );
+					contextGroups.set( area.areaContextSlug, group );
+				} );
+
+				const areas: PDFReportArea[] = Array.from(
+					contextGroups,
+					( [ contextSlug, group ] ) => ( {
+						areaSlug: contextSlug,
+						areaTitle: group.title,
+						widgets: group.widgets.map( ( widget ) => {
 							const entry = loaded.get( widget.slug );
 							return {
 								slug: widget.slug,
@@ -523,13 +554,14 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 					} )
 				);
 
-				// One header chip per area, in area order, with the icon looked
-				// up by the area's dashboard context slug.
-				const sections: PDFHeaderSection[] = discoveredAreas.map(
-					( area ) => ( {
-						slug: area.areaSlug,
-						label: area.areaTitle,
-						Icon: SECTION_ICONS[ area.areaContextSlug ],
+				// One header chip per context, in context order, with the icon
+				// from the context slug.
+				const sections: PDFHeaderSection[] = Array.from(
+					contextGroups,
+					( [ contextSlug, group ] ) => ( {
+						slug: contextSlug,
+						label: group.title,
+						Icon: SECTION_ICONS[ contextSlug ],
 					} )
 				);
 

@@ -1,0 +1,81 @@
+<?php
+/*
+ * Copyright 2014 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+namespace Google\Service\Webcontentpublisher;
+
+class RrmProduct extends \Google\Model
+{
+  /**
+   * Whether the RRM product is enabled.
+   *
+   * @var bool
+   */
+  public $enabled;
+  /**
+   * The URL to the product-specific terms of service.
+   *
+   * @var string
+   */
+  public $productTosUrl;
+  protected $tosAcceptanceType = TosAcceptance::class;
+  protected $tosAcceptanceDataType = '';
+
+  /**
+   * @param bool $enabled
+   */
+  public function setEnabled($enabled)
+  {
+    $this->enabled = $enabled;
+  }
+  /**
+   * @return bool
+   */
+  public function getEnabled()
+  {
+    return $this->enabled;
+  }
+  /**
+   * @param string $productTosUrl
+   */
+  public function setProductTosUrl($productTosUrl)
+  {
+    $this->productTosUrl = $productTosUrl;
+  }
+  /**
+   * @return string
+   */
+  public function getProductTosUrl()
+  {
+    return $this->productTosUrl;
+  }
+  /**
+   * @param TosAcceptance $tosAcceptance
+   */
+  public function setTosAcceptance(TosAcceptance $tosAcceptance)
+  {
+    $this->tosAcceptance = $tosAcceptance;
+  }
+  /**
+   * @return TosAcceptance
+   */
+  public function getTosAcceptance()
+  {
+    return $this->tosAcceptance;
+  }
+}
+
+class_alias(RrmProduct::class, 'Google_Service_Webcontentpublisher_RrmProduct');
