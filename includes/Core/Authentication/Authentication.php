@@ -284,7 +284,9 @@ final class Authentication implements Provides_Feature_Metrics {
 		add_filter( 'googlesitekit_setup_data', $this->get_method_proxy( 'inline_js_setup_data' ) );
 
 		add_action( 'admin_init', $this->get_method_proxy( 'handle_oauth' ) );
-		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ) );
+		// Run after the connected proxy URL migration (default priority) so it
+		// encodes the stored value before this check compares it to the site URL.
+		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ), 20 );
 
 		add_action( 'admin_action_' . self::ACTION_CONNECT, $this->get_method_proxy( 'handle_connect' ) );
 		add_action( 'admin_action_' . self::ACTION_DISCONNECT, $this->get_method_proxy( 'handle_disconnect' ) );

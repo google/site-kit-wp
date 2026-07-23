@@ -89,17 +89,21 @@ class Migration_N_E_X_T {
 	}
 
 	/**
-	 * Migrates a plain-text connected proxy URL to the encoded format.
+	 * Migrates a plain text connected proxy URL to the encoded format.
+	 *
+	 * Earlier plugin versions stored the URL in plain text. A stored value that
+	 * still starts with its scheme goes back through Connected_Proxy_URL::set(),
+	 * which stores it encoded.
 	 *
 	 * @since n.e.x.t
 	 */
 	protected function migrate_connected_proxy_url() {
-		if ( ! $this->connected_proxy_url->has() ) {
+		$stored_url = $this->options->get( Connected_Proxy_URL::OPTION );
+
+		if ( ! is_string( $stored_url ) || 0 !== strpos( $stored_url, 'http' ) ) {
 			return;
 		}
 
-		// The getter returns a legacy or an encoded value as plain text, and
-		// the setter stores it encoded.
-		$this->connected_proxy_url->set( $this->connected_proxy_url->get() );
+		$this->connected_proxy_url->set( $stored_url );
 	}
 }

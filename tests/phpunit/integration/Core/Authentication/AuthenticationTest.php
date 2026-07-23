@@ -692,7 +692,7 @@ class AuthenticationTest extends TestCase {
 		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
 		remove_filter( 'home_url', $home_url_hook );
 
-		$this->assertEquals( base64_encode( 'https://example.com/subsite/' ), $options->get( Connected_Proxy_URL::OPTION ), 'Setter should store the connected proxy URL base64-encoded from the filtered home_url.' ); // PHPCS: line 692
+		$this->assertEquals( base64_encode( 'https://example.com/subsite/' ), $options->get( Connected_Proxy_URL::OPTION ), 'The `set()` method should store the connected proxy URL base64-encoded from the filtered home_url.' ); // PHPCS: line 692
 	}
 
 	public function test_check_connected_proxy_url() {
@@ -732,6 +732,51 @@ class AuthenticationTest extends TestCase {
 			Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH,
 			$user_options->get( Disconnected_Reason::OPTION ),
 			'User option should be set to URL mismatch reason after admin_init.' // PHPCS: line 728
+		);
+	}
+
+	public function test_check_connected_proxy_url__after_the_home_url_changes() {
+		remove_all_actions( 'admin_init' );
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options      = new Options( $context );
+		$user_options = new User_Options( $context );
+
+		$authentication = new Authentication( $context, $options, $user_options );
+		$authentication->register();
+
+		// Connect the site with the home URL it runs on.
+		$authentication->get_connected_proxy_url_instance()->set( $context->get_canonical_home_url() );
+
+		// Emulate credentials.
+		$this->fake_proxy_site_connection();
+
+		// Emulate OAuth access token.
+		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
+
+		// Grant the administrator the Permissions::SETUP capability regardless
+		// of authentication.
+		add_filter(
+			'user_has_cap',
+			function ( $caps ) {
+				$caps[ Permissions::SETUP ] = true;
+				return $caps;
+			}
+		);
+
+		// Move the site to another domain, as a search and replace over the
+		// database does.
+		update_option( 'home', 'https://new-domain.example.com' );
+
+		do_action( 'admin_init' );
+
+		$this->assertEquals(
+			Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH,
+			$user_options->get( Disconnected_Reason::OPTION ),
+			'Site Kit should flag the URL change once the home URL moves to another domain.'
 		);
 	}
 

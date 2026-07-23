@@ -30,89 +30,45 @@ class Connected_Proxy_URL extends Setting {
 	 * Matches provided URL with the current proxy URL in the settings.
 	 *
 	 * @since 1.17.0
-	 * @since n.e.x.t Compares against the decoded setting value.
+	 * @since n.e.x.t Compares the given URL against the decoded stored URL.
 	 *
-	 * @param string $site_url URL to match against the current one in the settings.
+	 * @param string $url URL to match against the current one in the settings.
 	 * @return bool TRUE if URL matches the current one, otherwise FALSE.
 	 */
-	public function matches_url( $site_url ) {
-		return trailingslashit( $site_url ) === $this->get();
+	public function matches_url( $url ) {
+		return trailingslashit( $url ) === $this->get();
 	}
 
 	/**
-	 * Gets the connected proxy URL in plain text.
+	 * Gets the connected proxy URL, decoded from the form the option holds.
+	 *
+	 * A stored value that fails to decode reads as no value at all, so a
+	 * corrupted option sends the site back through the connection flow rather
+	 * than through a comparison against an unreadable URL.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return string|bool Connected proxy URL, or FALSE if not set.
+	 * @return string|bool Connected proxy URL, or FALSE when the option holds
+	 *                     no value or one that fails to decode.
 	 */
 	public function get() {
-		return $this->decode( parent::get() );
+		$stored_url = parent::get();
+
+		return is_string( $stored_url ) ? base64_decode( $stored_url, true ) : $stored_url;
 	}
 
 	/**
-	 * Sets the connected proxy URL, encoding it for storage.
+	 * Sets the connected proxy URL.
+	 *
+	 * We encode the URL to prevent database-wide search-and-replace tasks
+	 * from changing the URL used to connect to the Site Kit Proxy service.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $value Connected proxy URL, either plain text or encoded.
+	 * @param string $value Connected proxy URL.
 	 * @return bool TRUE on success, FALSE on failure.
 	 */
 	public function set( $value ) {
-		return parent::set( $this->encode( $value ) );
-	}
-
-	/**
-	 * Gets the callback for sanitizing the setting's value before saving.
-	 *
-	 * @since 1.17.0
-	 * @since n.e.x.t Encodes the value for storage.
-	 *
-	 * @return callable A sanitizing function.
-	 */
-	protected function get_sanitize_callback() {
-		return fn ( $value ) => $this->encode( $value );
-	}
-
-	/**
-	 * Encodes the given URL for storage.
-	 *
-	 * The encoded value holds no readable URL, so a database search and
-	 * replace leaves it unchanged. An already encoded value decodes first,
-	 * so a re-save never encodes it twice.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $value Connected proxy URL, either plain text or encoded.
-	 * @return string Base64-encoded URL with a trailing slash.
-	 */
-	private function encode( $value ) {
-		return base64_encode( trailingslashit( $this->decode( $value ) ) );
-	}
-
-	/**
-	 * Decodes the given stored value into a plain-text URL.
-	 *
-	 * Earlier plugin versions stored the value in plain text. A value that
-	 * starts with `http`, or one that fails to decode, passes through
-	 * unchanged.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param mixed $value Stored setting value.
-	 * @return mixed Decoded URL, or the given value unchanged.
-	 */
-	private function decode( $value ) {
-		if ( ! is_string( $value ) || '' === $value ) {
-			return $value;
-		}
-
-		if ( 0 === strpos( $value, 'http' ) ) {
-			return $value;
-		}
-
-		$decoded_url = base64_decode( $value, true );
-
-		return false === $decoded_url ? $value : $decoded_url;
+		return parent::set( base64_encode( trailingslashit( $value ) ) );
 	}
 }

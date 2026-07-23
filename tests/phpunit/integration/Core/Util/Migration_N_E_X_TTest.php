@@ -11,12 +11,19 @@
 namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Connected_Proxy_URL;
+use Google\Site_Kit\Core\Authentication\Disconnected_Reason;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Migration_N_E_X_T;
+use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
 
 class Migration_N_E_X_TTest extends TestCase {
+
+	use Fake_Site_Connection_Trait;
 
 	protected Context $context;
 	protected Options $options;
@@ -29,10 +36,8 @@ class Migration_N_E_X_TTest extends TestCase {
 		$this->options             = new Options( $this->context );
 		$this->connected_proxy_url = new Connected_Proxy_URL( $this->options );
 
-		// Drop the option and the sanitize filter the bootstrap plugin
-		// instance added, so each test reads and writes the raw option value.
+		// Drop the option, so each test starts from the value it stores itself.
 		$this->options->delete( Connected_Proxy_URL::OPTION );
-		remove_all_filters( 'sanitize_option_' . Connected_Proxy_URL::OPTION );
 
 		$this->delete_db_version();
 	}
@@ -50,7 +55,10 @@ class Migration_N_E_X_TTest extends TestCase {
 
 		$migration->register();
 
-		$this->assertTrue( has_action( 'admin_init' ), 'Migration should register the admin_init action.' );
+		$this->assertNotFalse(
+			has_action( 'admin_init', array( $migration, 'migrate' ) ),
+			'Migration should register migrate on admin_init.'
+		);
 	}
 
 	public function test_migrate__encodes_a_legacy_plain_text_url() {
@@ -69,7 +77,7 @@ class Migration_N_E_X_TTest extends TestCase {
 		$this->assertEquals(
 			'https://example.com/',
 			$this->connected_proxy_url->get(),
-			'Getter should still return the plain text URL after the migration.'
+			'The `get()` method should still return the plain text URL after the migration.'
 		);
 	}
 
@@ -85,6 +93,53 @@ class Migration_N_E_X_TTest extends TestCase {
 			$stored_connected_url,
 			$this->options->get( Connected_Proxy_URL::OPTION ),
 			'Migration should keep an already encoded value unchanged.'
+		);
+	}
+
+	public function test_migrate__runs_before_the_connected_proxy_url_check() {
+		remove_all_actions( 'admin_init' );
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$user_options = new User_Options( $this->context );
+
+		// Register in the order the plugin does. The connected proxy URL check
+		// runs at a later priority, so the migration encodes the stored value
+		// before the check reads it.
+		$authentication = new Authentication( $this->context, $this->options, $user_options );
+		$authentication->register();
+		$this->get_new_migration_instance()->register();
+
+		// Store the home URL in plain text, the way earlier plugin versions saved it.
+		$this->options->set( Connected_Proxy_URL::OPTION, $this->context->get_canonical_home_url() );
+
+		// Emulate credentials.
+		$this->fake_proxy_site_connection();
+
+		// Emulate OAuth access token.
+		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
+
+		// Grant the administrator the Permissions::SETUP capability regardless
+		// of authentication.
+		add_filter(
+			'user_has_cap',
+			function ( $caps ) {
+				$caps[ Permissions::SETUP ] = true;
+				return $caps;
+			}
+		);
+
+		do_action( 'admin_init' );
+
+		$this->assertEquals(
+			base64_encode( trailingslashit( $this->context->get_canonical_home_url() ) ),
+			$this->options->get( Connected_Proxy_URL::OPTION ),
+			'Migration should encode the plain text URL on admin_init.'
+		);
+		$this->assertFalse(
+			$user_options->get( Disconnected_Reason::OPTION ),
+			'Site Kit should stay connected when the migration encodes the URL the site still runs on.'
 		);
 	}
 
