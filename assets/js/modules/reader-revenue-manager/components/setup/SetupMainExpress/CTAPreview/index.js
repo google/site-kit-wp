@@ -33,6 +33,8 @@ import { __ } from '@wordpress/i18n';
  */
 import { Tab, TabBar } from 'googlesitekit-components';
 import Typography from '@/js/components/Typography';
+import InlineBackgroundSVG from '@/svg/graphics/inline-background.svg';
+import PopupBackgroundSVG from '@/svg/graphics/popup-background.svg';
 
 const CTA_PREVIEW_TAB_POPUP = 0;
 const CTA_PREVIEW_TAB_INLINE = 1;
@@ -97,7 +99,15 @@ export default function CTAPreview( {
 							'googlesitekit-rrm-cta-preview__panel--popup'
 						) }
 					>
-						{ popupContent }
+						<PopupBackgroundSVG
+							width="288"
+							height="350"
+							className="googlesitekit-rrm-cta-preview__background-image"
+							aria-hidden="true"
+						/>
+						<div className="googlesitekit-rrm-cta-preview__panel-content">
+							{ popupContent }
+						</div>
 					</div>
 				) }
 				{ activeTab === CTA_PREVIEW_TAB_INLINE && (
@@ -107,7 +117,15 @@ export default function CTAPreview( {
 							'googlesitekit-rrm-cta-preview__panel--inline'
 						) }
 					>
-						{ inlineContent }
+						<InlineBackgroundSVG
+							width="288"
+							height="350"
+							className="googlesitekit-rrm-cta-preview__background-image"
+							aria-hidden="true"
+						/>
+						<div className="googlesitekit-rrm-cta-preview__panel-content">
+							{ inlineContent }
+						</div>
 					</div>
 				) }
 			</div>
