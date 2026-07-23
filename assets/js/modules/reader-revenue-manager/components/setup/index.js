@@ -20,4 +20,3 @@ export { default as SetupForm } from './SetupForm';
 export { default as SetupMain } from './SetupMain';
 export { default as SetupMainExpress } from './SetupMainExpress';
 export { default as SetupMainExpressReady } from './SetupMainExpressReady';
-export { default as CTAPreview } from './SetupMainExpress/CTAPreview';
