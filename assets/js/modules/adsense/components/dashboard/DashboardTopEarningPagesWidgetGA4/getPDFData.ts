@@ -57,7 +57,7 @@ interface GetPDFDataResult {
  * signal aborts, or when the report has no rows, so cancelling the export stops
  * the work and the orchestrator omits the widget.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param params          Loader parameters.
  * @param params.registry WordPress data registry.

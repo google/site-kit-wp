@@ -48,7 +48,7 @@ const ALL_ICONS = [
 /**
  * Renders a PDF element to its JSON tree string.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param element The element to render.
  * @return The rendered tree as a string.

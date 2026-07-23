@@ -37,7 +37,7 @@ type Registry = ReturnType< typeof createTestRegistry >;
  * Provides the site info, user authentication, and empty survey timeout list a
  * survey trigger needs, and mocks the trigger endpoint.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param  registry The test registry the component under test renders with.
  * @return {void}
@@ -53,7 +53,7 @@ export function setupSurveyTriggerTest( registry: Registry ) {
 /**
  * Sets the PDF export status on the given registry, inside `act()`.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param  registry The test registry the component under test renders with.
  * @param  status   The PDF export status to set, such as `'progress'` or `'success'`.
@@ -69,7 +69,7 @@ export function setPDFExportStatus( registry: Registry, status: PDFStatus ) {
  * Waits for the survey trigger endpoint to receive a request for the given
  * trigger ID.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param triggerID The survey trigger ID the request body holds, such as `'pdf_export_success'`.
  * @return A promise that resolves once the request lands, and rejects on timeout.

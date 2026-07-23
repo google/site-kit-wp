@@ -95,7 +95,7 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 	 *
 	 * Each test then overrides the one condition it covers.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param  overrides                           The state to set in place of the defaults.
 	 * @param  overrides.activeWidgets             The goal types whose widget the dashboard shows.

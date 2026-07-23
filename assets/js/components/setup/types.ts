@@ -30,7 +30,7 @@ import type { FinishSetupCallback } from './hooks/types';
 /**
  * Callback registered via `registerModule` for the footer complete action.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export type OnCompleteSetupCallback = (
 	registry: Registry,
@@ -40,7 +40,7 @@ export type OnCompleteSetupCallback = (
 /**
  * Minimal module shape required by setup primitives.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export interface ModuleWithSetupComponent {
 	slug: string;
@@ -56,7 +56,7 @@ export interface ModuleWithSetupComponent {
 /**
  * Props passed to a module's `SetupComponent`.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export interface ModuleSetupComponentProps {
 	module: ModuleWithSetupComponent;
@@ -66,7 +66,7 @@ export interface ModuleSetupComponentProps {
 /**
  * Props for `SetupHeader`.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export interface SetupHeaderProps {
 	children?: ReactNode;
@@ -75,7 +75,7 @@ export interface SetupHeaderProps {
 /**
  * Props for `SetupFooter`.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export interface SetupFooterProps {
 	moduleSlug: string;
@@ -86,7 +86,7 @@ export interface SetupFooterProps {
 /**
  * Props for module setup layout components (`DefaultModuleSetup`, `SetupLayout`).
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export interface ModuleSetupLayoutProps {
 	moduleSlug: string;

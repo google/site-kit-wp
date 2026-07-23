@@ -56,7 +56,7 @@ const DEFAULT_PAGE_HEIGHT = 792;
 /**
  * Formats a date range for the document title, e.g. "Jan 1, 2021 - Jan 28, 2021".
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param dateRange           The report date range.
  * @param dateRange.startDate The first day of the range, as `YYYY-MM-DD`.

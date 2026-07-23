@@ -33,7 +33,7 @@ const DATES = {
  * Builds a mock registry whose `dispatch( store ).fetchGetReport` is the given
  * mock, so the loader's report fetches can be inspected.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param fetchGetReport The `fetchGetReport` mock.
  * @return A mock registry and the `dispatch` spy.

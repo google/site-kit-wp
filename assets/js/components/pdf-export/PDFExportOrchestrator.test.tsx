@@ -124,7 +124,7 @@ describe( 'PDFExportOrchestrator', () => {
 	 * Registers a widget area and one pdf widget in the Traffic context, so a
 	 * test can give the orchestrator a widget to export.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param  areaSlug   Slug of the widget area.
 	 * @param  widgetSlug Slug of the pdf widget.
@@ -157,7 +157,7 @@ describe( 'PDFExportOrchestrator', () => {
 	/**
 	 * Registers a PDF widget and its area in a dashboard context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param  contextSlug The dashboard context the area belongs to.
 	 * @param  areaSlug    The widget area to register in that context.
@@ -1101,7 +1101,7 @@ describe( 'PDFExportOrchestrator', () => {
 		 * area, with the `pdf.isActive` check that limits the PDF row to two or
 		 * more audiences.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.184.0
 		 *
 		 * @param  getData The widget's PDF `getData` mock.
 		 * @return {void}
@@ -1134,7 +1134,7 @@ describe( 'PDFExportOrchestrator', () => {
 		/**
 		 * Configures the given number of audiences on the user store.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.184.0
 		 *
 		 * @param  count How many audiences to configure.
 		 * @return {void}

@@ -58,7 +58,7 @@ function hasPDFConfig( widget: Widget ): widget is WidgetWithPDF {
  * the "Module must be active to request data" error.
  *
  * @since 1.183.0
- * @since n.e.x.t Require every module in `widget.modules` to be connected.
+ * @since 1.184.0 Require every module in `widget.modules` to be connected.
  *
  * @param widget Registry widget.
  * @param select Registry `select` function.

@@ -32,7 +32,7 @@ import {
 /**
  * Builds a minimal report from row and totals literals.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param rows   The report rows.
  * @param totals Optional. The report totals.
@@ -45,7 +45,7 @@ function buildReport( rows: unknown[], totals?: unknown[] ): Report {
 /**
  * Builds the current and previous metric rows for one audience.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param dimensionValue The audience dimension value the rows belong to.
  * @param base           The base metric value. The previous row adds one.
@@ -177,7 +177,7 @@ describe( 'buildPDFAudienceCard', () => {
 	 * Builds a full audience card input with successful reports, so a test can
 	 * override one field to make a single report fail.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param overrides Optional. Fields to override on the input. Default `{}`.
 	 * @return The card input.
