@@ -892,7 +892,7 @@ final class Assets {
 	}
 
 	/**
-	 * Gets the inline data specific to the current user
+	 * Gets the inline data specific to the current user.
 	 *
 	 * @since 1.9.0
 	 *
@@ -924,7 +924,7 @@ final class Assets {
 	}
 
 	/**
-	 * Gets the inline dashboard sharing data
+	 * Gets the inline dashboard sharing data.
 	 *
 	 * @since 1.49.0
 	 *

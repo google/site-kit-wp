@@ -230,7 +230,7 @@ class GTagTest extends TestCase {
 	}
 
 	public function test_hat_script_presence_in_wp_head__no_gtg() {
-		$output = $this->capture_action( 'wp_head' ); // includes wp_enqueue_scripts
+		$output = $this->capture_action( 'wp_head' ); // includes wp_enqueue_scripts.
 
 		$this->assertStringNotContainsString( 'google_tags_first_party', $output, 'HAT script should not be present without GTG enabled.' );
 	}
@@ -245,7 +245,7 @@ class GTagTest extends TestCase {
 			)
 		);
 
-		$output = $this->capture_action( 'wp_head' ); // includes wp_enqueue_scripts
+		$output = $this->capture_action( 'wp_head' ); // includes wp_enqueue_scripts.
 
 		$this->assertStringContainsString( 'google_tags_first_party', $output, 'HAT script should be present when GTG is enabled and healthy with script access.' );
 	}

@@ -48,7 +48,7 @@ abstract class OAuth_Client_Base {
 	protected $context;
 
 	/**
-	 * Options instance
+	 * Options instance.
 	 *
 	 * @since 1.39.0
 	 * @var Options
@@ -56,7 +56,7 @@ abstract class OAuth_Client_Base {
 	protected $options;
 
 	/**
-	 * User_Options instance
+	 * User_Options instance.
 	 *
 	 * @since 1.39.0
 	 * @var User_Options
@@ -179,7 +179,7 @@ abstract class OAuth_Client_Base {
 		/**
 		 * Filters the list of required Google OAuth scopes.
 		 *
-		 * See all Google oauth scopes here: https://developers.google.com/identity/protocols/googlescopes
+		 * See all Google oauth scopes here: https://developers.google.com/identity/protocols/googlescopes.
 		 *
 		 * @since 1.39.0
 		 *

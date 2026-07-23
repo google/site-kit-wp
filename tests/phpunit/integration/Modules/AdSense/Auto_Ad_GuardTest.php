@@ -42,7 +42,7 @@ class Auto_Ad_GuardTest extends TestCase {
 	public function test_cant_activate_logged_in_users() {
 		$guard = $this->get_auto_ad_guard( array( 'loggedinUsers' ) );
 
-		// Login basic user
+		// Login basic user.
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
 

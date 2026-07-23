@@ -45,7 +45,7 @@ class REST_RouteTest extends TestCase {
 		$route = new REST_Route( 'test-uri', array() );
 		$this->assertEquals( array(), $route->get_args(), 'Default route args should be empty when not provided.' );
 
-		// Test default args
+		// Test default args.
 		$route = new REST_Route(
 			'test-uri',
 			array(
@@ -58,7 +58,7 @@ class REST_RouteTest extends TestCase {
 		$this->assertNull( $single_route_args['callback'], 'Default callback should be null.' );
 		$this->assertEquals( array(), $single_route_args['args'], 'Default args should be empty.' );
 
-		// Test arg defaults
+		// Test arg defaults.
 		$route = new REST_Route(
 			'test-uri',
 			array(
@@ -79,7 +79,7 @@ class REST_RouteTest extends TestCase {
 			$route->get_args()[0]['args']['args']
 		);
 
-		// Test args take precedence over defaults
+		// Test args take precedence over defaults.
 		$route = new REST_Route(
 			'test-uri',
 			array(
