@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
 /**
- * Connected_Proxy_URLTest
+ * Connected_Proxy_URLTest.
  *
  * @group Authentication
  */

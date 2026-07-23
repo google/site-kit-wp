@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
 /**
- * Disconnected_ReasonTest
+ * Disconnected_ReasonTest.
  *
  * @group Authentication
  */

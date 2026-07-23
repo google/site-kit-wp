@@ -1148,7 +1148,7 @@ class Analytics_4Test extends TestCase {
 				);
 
 				if ( 'analyticsadmin.googleapis.com' !== $url['host'] ) {
-					return new FulfilledPromise( new Response( 403 ) ); // Includes container lookup
+					return new FulfilledPromise( new Response( 403 ) ); // Includes container lookup.
 				}
 
 				switch ( $url['path'] ) {
@@ -3631,7 +3631,7 @@ class Analytics_4Test extends TestCase {
 		// Prevent test from failing in CI with deprecation notice.
 		remove_action( 'wp_print_styles', 'print_emoji_styles' );
 
-		// Set the current user (can be 0 for no user)
+		// Set the current user (can be 0 for no user).
 		$role = $is_content_creator ? 'administrator' : 'subscriber';
 		$user = $logged_in ?
 			$this->factory()->user->create( array( 'role' => $role ) )
@@ -3733,14 +3733,14 @@ class Analytics_4Test extends TestCase {
 				false,
 				true,
 			),
-			// Tracking is not active for content creators if disabled for logged-in users (logged-in users setting overrides content creators setting)
+			// Tracking is not active for content creators if disabled for logged-in users (logged-in users setting overrides content creators setting).
 			array(
 				array_merge( $base_settings, array( 'trackingDisabled' => array( 'loggedinUsers' ) ) ),
 				true,
 				false,
 				true,
 			),
-			// Analytics is enabled and tracking is disabled for logged-in users but property is not configured
+			// Analytics is enabled and tracking is disabled for logged-in users but property is not configured.
 			array(
 				array_merge(
 					$base_settings,
@@ -4813,7 +4813,7 @@ class Analytics_4Test extends TestCase {
 		$this->assertFalse( has_action( 'web_stories_print_analytics' ), 'Web stories analytics action should not be hooked when tag is blocked.' );
 		$this->assertFalse( has_filter( 'amp_post_template_data' ), 'AMP post template data filter should not be hooked when tag is blocked.' );
 
-		// Tag not hooked when only AMP blocked
+		// Tag not hooked when only AMP blocked.
 		add_filter( 'googlesitekit_analytics-4_tag_blocked', '__return_false' );
 		add_filter( 'googlesitekit_analytics-4_tag_amp_blocked', '__return_true' );
 		do_action( 'template_redirect' );

@@ -44,7 +44,7 @@ describe( 'PDFExportSurveyTriggers', () => {
 	 * The dashboard runs the same action when the user cancels an export, and
 	 * when the success snackbar dismisses itself.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return {void}
 	 */
@@ -61,7 +61,7 @@ describe( 'PDFExportSurveyTriggers', () => {
 	 * drops any dispatch for a locked ID. Waiting for the lock first proves the
 	 * transition check stopped the second survey, and not the lock.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param triggerID The locked survey trigger ID, such as `'pdf_export_success'`.
 	 * @return A promise that resolves once the lock clears.
