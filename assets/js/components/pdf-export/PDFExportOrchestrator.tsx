@@ -88,7 +88,7 @@ const VALID_TRANSITIONS: Record< Stage, readonly Stage[] > = {
 };
 
 const LOADING_TIMEOUT_MS = 45 * 1000;
-const BUILDING_TIMEOUT_MS = 15 * 1000;
+const BUILDING_TIMEOUT_MS = 30 * 1000;
 const COMPLETE_UNMOUNT_DELAY_MS = 2 * 1000;
 const BLOB_REVOKE_DELAY_MS = 30 * 1000;
 // Progress budget reserved for the data-loading stage; BUILDING fills the rest.
