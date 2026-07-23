@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Interval Chart PoC — Site Kit</title>
+	<style>
+		body {
+			font-family: 'Google Sans Text', Roboto, Arial, sans-serif;
+			margin: 40px;
+			background: #fff;
+			color: #131418;
+		}
+
+		.card {
+			max-width: 900px;
+			margin: 0 auto;
+			padding: 16px 8px;
+			border: 1px solid #ebeef0;
+			border-radius: 8px;
+			box-shadow: 0 1px 3px rgba(60, 64, 67, 0.08);
+		}
+
+		#chart {
+			width: 100%;
+			height: 230px;
+		}
+
+		.legend {
+			display: flex;
+			gap: 24px;
+			padding: 8px 0 0 16px;
+			font-size: 12px;
+			color: #5f6561;
+		}
+
+		.legend__item {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.legend__swatch--line {
+			width: 20px;
+			height: 3px;
+			border-radius: 2px;
+			background: #3b5fc4;
+		}
+
+		.legend__swatch--band {
+			width: 20px;
+			height: 12px;
+			border-radius: 2px;
+			background: #c3d0f0;
+		}
+
+		.card + .card {
+			margin-top: 24px;
+		}
+
+		/* Positioning context for the overlays. `z-index: 0` makes it a
+		   stacking context, so the shaded region can sit behind the SVG
+		   (negative z) while Google's tooltip (z-index 10000) still paints
+		   above everything. */
+		#chart2 {
+			position: relative;
+			z-index: 0;
+			width: 100%;
+			height: 230px;
+		}
+
+		/* Shaded background for the projected (right-hand) portion. A negative
+		   z-index drops it behind the SVG's line and gridlines without needing
+		   to lift the SVG (which would bury the tooltip). */
+		.projection-region {
+			position: absolute;
+			z-index: -1;
+			background: #e6f4ea;
+			pointer-events: none;
+		}
+
+		/* Vertical delimiter between actual and projected data. */
+		.projection-divider {
+			position: absolute;
+			z-index: 2;
+			width: 1px;
+			background: #9aa0a6;
+			pointer-events: none;
+		}
+
+		/* Shared tooltip card — used by both the point tooltip and the
+		   projected-area tooltip. */
+		.sk-tooltip {
+			background: #fff;
+			border-radius: 8px;
+			box-shadow: 0 2px 12px rgba( 60, 64, 67, 0.25 );
+			padding: 12px 14px;
+			font-family: 'Google Sans Text', Roboto, Arial, sans-serif;
+			text-align: left;
+		}
+
+		.sk-tooltip__title {
+			max-width: 150px;
+			font-size: 13px;
+			font-weight: 500;
+			line-height: 1.35;
+			color: #202124;
+			white-space: normal;
+		}
+
+		.sk-tooltip__meta {
+			margin-top: 4px;
+			font-size: 12px;
+			color: #5f6368;
+		}
+
+		.sk-tooltip__link {
+			display: inline-block;
+			margin-top: 10px;
+			font-size: 13px;
+			color: #1a73e8;
+			text-decoration: none;
+			cursor: pointer;
+		}
+
+		/* Custom point tooltip: positioned by JS so its centered arrow points
+		   directly at the hovered point. */
+		.point-tooltip {
+			position: absolute;
+			z-index: 20;
+			/* Anchored by its bottom-center (the arrow tip) to the point, so
+			   no width/height measurement is needed to place it. */
+			transform: translate( -50%, -100% );
+			opacity: 0;
+			pointer-events: none;
+			transition: opacity 0.1s ease;
+		}
+
+		.sk-tooltip--point {
+			position: relative;
+		}
+
+		/* Centered downward diamond pointer beneath the point tooltip. */
+		.sk-tooltip--point::after {
+			content: '';
+			position: absolute;
+			left: 50%;
+			bottom: -5px;
+			margin-left: -5px;
+			width: 10px;
+			height: 10px;
+			background: #fff;
+			transform: rotate( 45deg );
+			box-shadow: 3px 3px 6px rgba( 60, 64, 67, 0.12 );
+		}
+
+		/* Highlight dot drawn on the hovered point. */
+		.point-dot {
+			position: absolute;
+			z-index: 19;
+			width: 12px;
+			height: 12px;
+			margin: -6px 0 0 -6px;
+			box-sizing: border-box;
+			border-radius: 50%;
+			background: #188038;
+			border: 2px solid #fff;
+			opacity: 0;
+			pointer-events: none;
+		}
+
+		/* Transparent catcher over the projected area. It sits above the SVG
+		   and reveals the "Expected traffic" tooltip on hover. */
+		.projection-hover {
+			position: absolute;
+			z-index: 3;
+			cursor: default;
+		}
+
+		.projection-hover .sk-tooltip {
+			position: absolute;
+			top: 24%;
+			right: 0;
+			opacity: 0;
+			pointer-events: none;
+			transition: opacity 0.12s ease;
+			white-space: nowrap;
+		}
+
+		.projection-hover:hover .sk-tooltip {
+			opacity: 1;
+			/* Reachable/clickable only while shown, so the hidden tooltip
+			   doesn't block clicks on the chart behind it. */
+			pointer-events: auto;
+		}
+	</style>
+	<script src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+<body>
+	<div class="card">
+		<div id="chart"></div>
+		<div class="legend">
+			<div class="legend__item">
+				<span class="legend__swatch--line"></span>
+				<span>Last 28 days traffic</span>
+			</div>
+			<div class="legend__item">
+				<span class="legend__swatch--band"></span>
+				<span>Expected traffic baseline</span>
+			</div>
+		</div>
+	</div>
+
+	<div class="card">
+		<div id="chart2"></div>
+	</div>
+
+	<script>
+		// Match the Site Kit GoogleChart component version.
+		google.charts.load( '49', { packages: [ 'corechart' ] } );
+		google.charts.setOnLoadCallback( drawAll );
+
+		function drawAll() {
+			drawChart();
+			drawProjectionChart();
+		}
+
+		// Deterministic sample data shaped to resemble the screenshot:
+		// a rising traffic line with weekly zigzag. The band hugs the line,
+		// but each point carries its own half-width so the interval visibly
+		// pinches (narrow / high confidence) and bulges (wide / low
+		// confidence) along the curve. Index 0 = Jun 8, index 30 = Jul 8.
+		//
+		// [ actual, halfWidth ]
+		const SAMPLE = [
+			[ 48, 14 ], // Jun 8
+			[ 33, 10 ],
+			[ 40, 24 ], // wide
+			[ 72, 12 ],
+			[ 55, 8 ], // narrow
+			[ 45, 19 ],
+			[ 42, 13 ],
+			[ 58, 28 ], // Jun 15 — wide
+			[ 68, 11 ],
+			[ 50, 8 ], // narrow
+			[ 44, 21 ],
+			[ 62, 14 ],
+			[ 78, 30 ], // wide
+			[ 60, 12 ],
+			[ 52, 9 ], // Jun 22 — narrow
+			[ 70, 25 ], // wide
+			[ 95, 15 ],
+			[ 80, 11 ],
+			[ 72, 33 ], // wide
+			[ 90, 16 ],
+			[ 110, 12 ],
+			[ 130, 38 ], // Jun 29 — wide
+			[ 120, 14 ],
+			[ 100, 9 ], // narrow
+			[ 135, 22 ],
+			[ 150, 40 ], // wide
+			[ 70, 15 ], // Jul 4 dip
+			[ 120, 11 ], // narrow
+			[ 148, 34 ], // Jul 6 — wide
+			[ 125, 18 ],
+			[ 138, 13 ], // Jul 8
+		];
+
+		function drawChart() {
+			const data = new google.visualization.DataTable();
+			data.addColumn( 'date', 'Day' );
+			data.addColumn( 'number', 'Last 28 days traffic' );
+			// Interval role columns describe the expected baseline band.
+			data.addColumn( { id: 'i0', type: 'number', role: 'interval' } );
+			data.addColumn( { id: 'i1', type: 'number', role: 'interval' } );
+
+			const startDate = new Date( 2025, 5, 8 ); // Jun 8, 2025 (month is 0-indexed).
+
+			const rows = SAMPLE.map( ( [ actual, half ], i ) => {
+				const date = new Date(
+					startDate.getFullYear(),
+					startDate.getMonth(),
+					startDate.getDate() + i
+				);
+				// The band hugs the line and follows its curve: bounds are
+				// centered on the actual value, using each point's own
+				// half-width so the interval widens and narrows along the
+				// curve. Both the line and the interval bounds use the same
+				// `curveType: 'function'` smoothing, so the band tracks the
+				// line's shape rather than being a separate envelope.
+				return [ date, actual, actual - half, actual + half ];
+			} );
+
+			data.addRows( rows );
+
+			const options = {
+				height: 230,
+				width: '100%',
+				fontName: 'Google Sans Text, Roboto, Arial, sans-serif',
+				curveType: 'function',
+				colors: [ '#3b5fc4' ],
+				chartArea: {
+					left: 12,
+					right: 44,
+					top: 16,
+					height: 170,
+					width: '100%',
+				},
+				legend: { position: 'none' },
+				tooltip: { trigger: 'none' },
+				// Draw the baseline as a filled area between the two
+				// interval columns, with no boundary lines.
+				intervals: {
+					style: 'area',
+					color: '#c3d0f0',
+					fillOpacity: 0.85,
+					lineWidth: 0,
+					pointSize: 0,
+				},
+				series: {
+					0: {
+						lineWidth: 2,
+						targetAxisIndex: 1,
+					},
+				},
+				hAxis: {
+					format: 'MMM d',
+					maxTextLines: 1,
+					ticks: [
+						new Date( 2025, 5, 8 ),
+						new Date( 2025, 5, 15 ),
+						new Date( 2025, 5, 22 ),
+						new Date( 2025, 5, 29 ),
+						new Date( 2025, 6, 6 ),
+					],
+					gridlines: { color: 'transparent' },
+					baselineColor: 'transparent',
+					textStyle: { color: '#5f6561', fontSize: 11 },
+				},
+				vAxis: {
+					// Hidden left axis.
+					gridlines: { color: 'transparent' },
+					baselineColor: 'transparent',
+					textPosition: 'none',
+				},
+				vAxes: {
+					1: {
+						// Visible right-hand axis.
+						viewWindow: { min: 0, max: 200 },
+						gridlines: { count: 5, color: '#ececec' },
+						minorGridlines: { count: 0 },
+						baselineColor: '#ececec',
+						textPosition: 'out',
+						textStyle: { color: '#5f6561', fontSize: 11 },
+					},
+				},
+			};
+
+			const chart = new google.visualization.LineChart(
+				document.getElementById( 'chart' )
+			);
+			chart.draw( data, options );
+		}
+
+		// --- Chart 2: line chart with a split X axis (actual vs projected) ---
+
+		// Actual (solid) traffic, Jun 8 → Jul 5 (the "last 28 days").
+		const ACTUAL = [
+			48, 33, 40, 72, 55, 45, 42, 58, 68, 50, 44, 62, 78, 60,
+			52, 70, 95, 80, 72, 90, 110, 130, 120, 100, 135, 150, 70, 120,
+		];
+		// Projected (dashed) traffic, Jul 6 → Jul 11.
+		const PROJECTED = [ 142, 155, 150, 170, 180, 190 ];
+
+		// The split sits at the last actual point (Jul 5). June has 30 days,
+		// so `Jun 8 + 27 days` normalises to Jul 5. Reused for the row data
+		// and for locating the divider, so they align exactly.
+		const SPLIT_DATE = new Date( 2025, 5, 8 + ( ACTUAL.length - 1 ) );
+
+		// Every point on the actual line shows the same content tooltip on
+		// hover. (The dots in the mockup were just examples, so there are no
+		// static markers — the tooltip is driven by hovering the line itself.)
+		const POINT_TOOLTIP =
+			'<div class="sk-tooltip sk-tooltip--point">' +
+			'<div class="sk-tooltip__title">best amusement parks in Ireland</div>' +
+			'<div class="sk-tooltip__meta">posted Apr 27</div>' +
+			'<a class="sk-tooltip__link" href="#" onclick="return false">See more</a>' +
+			'</div>';
+
+		function drawProjectionChart() {
+			const data = new google.visualization.DataTable();
+			data.addColumn( 'date', 'Day' );
+			data.addColumn( 'number', 'Traffic' );
+			data.addColumn( 'number', 'Projected' );
+
+			const start = new Date( 2025, 5, 8 );
+			const total = ACTUAL.length + PROJECTED.length;
+			const splitIndex = ACTUAL.length - 1;
+
+			const rows = [];
+			for ( let i = 0; i < total; i++ ) {
+				const date = new Date(
+					start.getFullYear(),
+					start.getMonth(),
+					start.getDate() + i
+				);
+
+				const actual = i < ACTUAL.length ? ACTUAL[ i ] : null;
+
+				// The projected series starts at the split point (sharing the
+				// last actual value) so the dashed line connects seamlessly to
+				// the solid line.
+				let projected = null;
+				if ( i === splitIndex ) {
+					projected = ACTUAL[ i ];
+				} else if ( i >= ACTUAL.length ) {
+					projected = PROJECTED[ i - ACTUAL.length ];
+				}
+
+				rows.push( [ date, actual, projected ] );
+			}
+
+			data.addRows( rows );
+
+			const options = {
+				height: 230,
+				width: '100%',
+				fontName: 'Google Sans Text, Roboto, Arial, sans-serif',
+				curveType: 'function',
+				// Transparent background so the shaded projection region,
+				// which sits behind the SVG, shows through.
+				backgroundColor: 'transparent',
+				// Actual line and projected line (same green).
+				colors: [ '#188038', '#188038' ],
+				chartArea: {
+					left: 22,
+					right: 44,
+					top: 16,
+					height: 170,
+					width: '100%',
+				},
+				legend: { position: 'none' },
+				// Google's built-in tooltip is disabled; we render our own on
+				// the `onmouseover` event so the arrow can point at the point.
+				tooltip: { trigger: 'none' },
+				focusTarget: 'datum',
+				interpolateNulls: false,
+				series: {
+					// Actual: solid line.
+					0: { lineWidth: 2, targetAxisIndex: 1 },
+					// Projected: same green, dashed.
+					1: {
+						lineWidth: 2,
+						targetAxisIndex: 1,
+						lineDashStyle: [ 2, 4 ],
+					},
+				},
+				hAxis: {
+					format: 'MMM d',
+					maxTextLines: 1,
+					ticks: [
+						new Date( 2025, 5, 8 ),
+						new Date( 2025, 5, 15 ),
+						new Date( 2025, 5, 22 ),
+						new Date( 2025, 5, 29 ),
+						new Date( 2025, 6, 6 ),
+					],
+					gridlines: { color: 'transparent' },
+					baselineColor: 'transparent',
+					textStyle: { color: '#5f6561', fontSize: 11 },
+				},
+				vAxis: {
+					// Hidden left axis. Same 0–200 range as the visible right
+					// axis so `getYLocation` (used to place the tooltip) lines
+					// up with the plotted line.
+					viewWindow: { min: 0, max: 200 },
+					gridlines: { color: 'transparent' },
+					baselineColor: 'transparent',
+					textPosition: 'none',
+				},
+				vAxes: {
+					1: {
+						// Visible right-hand axis.
+						viewWindow: { min: 0, max: 200 },
+						gridlines: { count: 5, color: '#ececec' },
+						minorGridlines: { count: 0 },
+						baselineColor: '#ececec',
+						textPosition: 'out',
+						textStyle: { color: '#5f6561', fontSize: 11 },
+					},
+				},
+			};
+
+			const container = document.getElementById( 'chart2' );
+			const chart = new google.visualization.LineChart( container );
+
+			// Overlays are (re)created in the `ready` handler because
+			// `chart.draw()` clears the container's children.
+			let pointTip;
+			let pointDot;
+
+			// Once the chart is laid out, position the shaded region and the
+			// divider using the chart's layout interface — the same approach
+			// Site Kit's DateMarker uses (getXLocation + chart-area box).
+			google.visualization.events.addListener( chart, 'ready', () => {
+				const cli = chart.getChartLayoutInterface();
+				const area = cli.getChartAreaBoundingBox();
+				const x = Math.floor( cli.getXLocation( SPLIT_DATE ) );
+				const areaRight = area.left + area.width;
+
+				const region = getOrCreateOverlay(
+					container,
+					'projection-region'
+				);
+				Object.assign( region.style, {
+					left: `${ x }px`,
+					top: `${ Math.floor( area.top ) }px`,
+					width: `${ Math.ceil( areaRight - x ) }px`,
+					height: `${ Math.floor( area.height ) }px`,
+				} );
+
+				const divider = getOrCreateOverlay(
+					container,
+					'projection-divider'
+				);
+				Object.assign( divider.style, {
+					left: `${ x }px`,
+					top: `${ Math.floor( area.top ) }px`,
+					height: `${ Math.floor( area.height ) }px`,
+				} );
+
+				// Transparent hover-catcher over the projected area, carrying
+				// the "Expected traffic" tooltip. Hovering anywhere in the area
+				// (not a specific point) reveals it via CSS `:hover`.
+				const hover = getOrCreateOverlay( container, 'projection-hover' );
+				Object.assign( hover.style, {
+					left: `${ x }px`,
+					top: `${ Math.floor( area.top ) }px`,
+					width: `${ Math.ceil( areaRight - x ) }px`,
+					height: `${ Math.floor( area.height ) }px`,
+				} );
+				if ( ! hover.dataset.ready ) {
+					hover.dataset.ready = '1';
+					hover.innerHTML =
+						'<div class="sk-tooltip sk-tooltip--area">' +
+						'<div class="sk-tooltip__title">Expected traffic</div>' +
+						'<a class="sk-tooltip__link" href="https://example.com/todays-traffic" target="_blank" rel="noopener noreferrer">See today\'s traffic</a>' +
+						'</div>';
+				}
+
+				// Custom point tooltip + highlight dot (created here because
+				// draw() clears the container). We position the tooltip
+				// ourselves so its centered arrow always points at the hovered
+				// point — Google's built-in tooltip doesn't expose its
+				// placement, so its arrow drifts.
+				pointTip = getOrCreateOverlay( container, 'point-tooltip' );
+				pointTip.innerHTML = POINT_TOOLTIP;
+				pointDot = getOrCreateOverlay( container, 'point-dot' );
+			} );
+
+			function hidePointTooltip() {
+				if ( ! pointTip ) {
+					return;
+				}
+				pointTip.style.opacity = 0;
+				pointTip.style.pointerEvents = 'none';
+				pointDot.style.opacity = 0;
+			}
+
+			// Show the tooltip when a point is clicked, and keep it visible so
+			// it can be hovered and its "See more" link clicked. It stays until
+			// another point (or empty space) is clicked.
+			google.visualization.events.addListener( chart, 'select', () => {
+				if ( ! pointTip ) {
+					return;
+				}
+
+				const selection = chart.getSelection();
+				const row = selection.length ? selection[ 0 ].row : null;
+				if ( row === null || row === undefined ) {
+					hidePointTooltip();
+					return;
+				}
+
+				// Ignore projected-only rows (their actual value is null).
+				const value = data.getValue( row, 1 );
+				if ( value === null ) {
+					hidePointTooltip();
+					return;
+				}
+
+				const cli = chart.getChartLayoutInterface();
+				const area = cli.getChartAreaBoundingBox();
+				const px = cli.getXLocation( data.getValue( row, 0 ) );
+				// Compute Y from the chart area and the fixed 0–200 range.
+				// (getYLocation is unreliable on a dual-axis chart.)
+				const py = area.top + area.height * ( 1 - value / 200 );
+
+				Object.assign( pointDot.style, {
+					left: `${ px }px`,
+					top: `${ py }px`,
+					opacity: 1,
+				} );
+
+				// Anchor point = the arrow tip, just above the dot. The CSS
+				// transform handles centering and lifting the card up.
+				pointTip.style.opacity = 1;
+				pointTip.style.pointerEvents = 'auto';
+				pointTip.style.left = `${ px }px`;
+				pointTip.style.top = `${ py - 8 }px`;
+			} );
+
+			// Dismiss the tooltip when clicking anywhere outside the chart.
+			if ( ! container.dataset.dismissBound ) {
+				container.dataset.dismissBound = '1';
+				document.addEventListener( 'click', ( event ) => {
+					if ( ! container.contains( event.target ) ) {
+						hidePointTooltip();
+					}
+				} );
+			}
+
+			chart.draw( data, options );
+		}
+
+		// Returns the overlay element for the given class, creating it on the
+		// first call so repeated redraws (e.g. on resize) reuse one element.
+		function getOrCreateOverlay( container, className ) {
+			let el = container.querySelector( `.${ className }` );
+			if ( ! el ) {
+				el = document.createElement( 'div' );
+				el.className = className;
+				container.appendChild( el );
+			}
+			return el;
+		}
+
+		window.addEventListener( 'resize', drawAll );
+	</script>
+</body>
+</html>
