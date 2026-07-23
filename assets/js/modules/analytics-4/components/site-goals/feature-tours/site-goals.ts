@@ -196,29 +196,32 @@ function gaEventCategory( viewContext: string ) {
  * Goals and waits for the layout to settle before it starts, through
  * `preloadWidgetAreas` and `checkRequirements`.
  *
- * The breakdown notice step is included only when `hasBreakdownNotice` is
- * true, since that step points at a notice that is not always on the page.
+ * The breakdown step appears only when a widget shows its notice. Both widgets
+ * render that notice under one class, so the step targets the first match on
+ * the page. That match is the Online store widget's notice when that widget
+ * shows one, and the Lead generation widget's notice otherwise.
  *
  * @since 1.181.0
  * @since 1.182.0 Load every widget area above and including the Site Goals section before the tour starts, and wait for them to load and the layout to settle.
+ * @since n.e.x.t Pick the breakdown step copy from the widget the step points at, in place of the detected event types.
  *
- * @param params                    Tour params.
- * @param params.isEcommerceOnly    True when only ecommerce events are detected. Picks the breakdown step copy.
- * @param params.hasBreakdownNotice True when the breakdown notice is shown, so its tour step has a target to point to.
+ * @param params                             The tour params.
+ * @param params.hasEcommerceBreakdownNotice Whether the Online store widget shows the breakdown notice.
+ * @param params.hasLeadBreakdownNotice      Whether the Lead generation widget shows the breakdown notice.
  * @return The Site Goals tour config.
  */
 export function getSiteGoalsTour( {
-	isEcommerceOnly,
-	hasBreakdownNotice,
+	hasEcommerceBreakdownNotice,
+	hasLeadBreakdownNotice,
 }: {
-	isEcommerceOnly: boolean;
-	hasBreakdownNotice: boolean;
+	hasEcommerceBreakdownNotice: boolean;
+	hasLeadBreakdownNotice: boolean;
 } ) {
 	const breakdownStep = {
 		...defaultStepOptions,
 		target: '.googlesitekit-site-goals-breakdown-notice',
 		title: __( 'Get into the details', 'google-site-kit' ),
-		content: isEcommerceOnly
+		content: hasEcommerceBreakdownNotice
 			? __(
 					'Want to see whether WooCommerce or Easy Digital Downloads is driving more success? You can break these numbers down to see the performance of each plugin.',
 					'google-site-kit'
@@ -256,7 +259,9 @@ export function getSiteGoalsTour( {
 					'google-site-kit'
 				),
 			},
-			...( hasBreakdownNotice ? [ breakdownStep ] : [] ),
+			...( hasEcommerceBreakdownNotice || hasLeadBreakdownNotice
+				? [ breakdownStep ]
+				: [] ),
 			{
 				...defaultStepOptions,
 				target: '.googlesitekit-site-goals-goal-drivers-group',
