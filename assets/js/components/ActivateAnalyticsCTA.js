@@ -205,7 +205,6 @@ export default function ActivateAnalyticsCTA( {
 		trackErrorEvents.dismiss( analyticsEventLabel );
 	}
 
-	// Error state content component
 	const ErrorCTAContent = forwardRef( ( props, ref ) => (
 		<div
 			ref={ ref }
@@ -248,7 +247,6 @@ export default function ActivateAnalyticsCTA( {
 	) );
 	ErrorCTAContent.displayName = 'ErrorCTAContent';
 
-	// Normal state content component
 	const NormalCTAContent = forwardRef( ( props, ref ) => (
 		<div ref={ ref } className="googlesitekit-activate-analytics-cta">
 			<div className="googlesitekit-activate-analytics-cta__top">
