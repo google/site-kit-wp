@@ -17,15 +17,23 @@
  */
 
 /**
+ * External dependencies
+ */
+import type { ComponentProps } from 'react';
+
+/**
  * Internal dependencies
  */
+import { Story } from '@/js/types/Story';
 import CTAPreview from './index';
 
-function Template( args ) {
+type Props = ComponentProps< typeof CTAPreview >;
+
+function Template( args: Props ) {
 	return <CTAPreview { ...args } />;
 }
 
-export const Default = Template.bind( {} );
+export const Default = Template.bind( {} ) as Story< Props >;
 Default.storyName = 'Default';
 Default.args = {
 	popupContent: <div style={ { height: '200px' } } />,

@@ -20,7 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
+import type { ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -35,6 +35,14 @@ import { Tab, TabBar } from 'googlesitekit-components';
 import Typography from '@/js/components/Typography';
 import InlineBackgroundSVG from '@/svg/graphics/inline-background.svg';
 import PopupBackgroundSVG from '@/svg/graphics/popup-background.svg';
+
+interface Props {
+	title?: string;
+	description?: string;
+	footer?: string;
+	popupContent?: ReactNode;
+	inlineContent?: ReactNode;
+}
 
 const CTA_PREVIEW_TAB_POPUP = 0;
 const CTA_PREVIEW_TAB_INLINE = 1;
@@ -51,7 +59,7 @@ export default function CTAPreview( {
 	),
 	popupContent,
 	inlineContent,
-} ) {
+}: Props ) {
 	const [ activeTab, setActiveTab ] = useState( CTA_PREVIEW_TAB_POPUP );
 
 	return (
@@ -142,11 +150,3 @@ export default function CTAPreview( {
 		</div>
 	);
 }
-
-CTAPreview.propTypes = {
-	title: PropTypes.string,
-	description: PropTypes.string,
-	footer: PropTypes.string,
-	popupContent: PropTypes.node,
-	inlineContent: PropTypes.node,
-};
