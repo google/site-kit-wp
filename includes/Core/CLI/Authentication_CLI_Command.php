@@ -46,7 +46,6 @@ class Authentication_CLI_Command extends CLI_Command {
 	 * @param array $assoc_args Array of associated arguments.
 	 */
 	public function disconnect( $args, $assoc_args ) {
-		// phpcs:enable PHPCS.Commenting.DocCommentFullStop.MissingFullStop
 		$user_id = absint( $assoc_args['id'] );
 
 		$authentication = new Authentication(

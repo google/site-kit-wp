@@ -105,7 +105,7 @@ class DocCommentFullStopSniff implements Sniff {
 		$fix   = $phpcs_file->addFixableError( $error, $last_ptr, 'MissingFullStop' );
 
 		if ( true === $fix ) {
-			$phpcs_file->fixer->replaceToken( $last_ptr, $this->append_full_stop_preserve_newline( $tokens[ $last_ptr ]['content'] ) );
+			$phpcs_file->fixer->replaceToken( $last_ptr, $this->append_full_stop_preserve_whitespace( $tokens[ $last_ptr ]['content'] ) );
 		}
 	}
 
@@ -188,7 +188,7 @@ class DocCommentFullStopSniff implements Sniff {
 		$fix   = $phpcs_file->addFixableError( $error, $last_ptr, 'InlineMissingFullStop' );
 
 		if ( true === $fix ) {
-			$new = $this->append_full_stop_preserve_newline( $tokens[ $last_ptr ]['content'] );
+			$new = $this->append_full_stop_preserve_whitespace( $tokens[ $last_ptr ]['content'] );
 			$phpcs_file->fixer->replaceToken( $last_ptr, $new );
 		}
 	}
@@ -204,12 +204,12 @@ class DocCommentFullStopSniff implements Sniff {
 	}
 
 	/**
-	 * Appends a full stop while preserving any trailing newline characters.
+	 * Appends a full stop while preserving any trailing whitespace.
 	 *
 	 * @param string $content Token content.
 	 * @return string Updated token content.
 	 */
-	private function append_full_stop_preserve_newline( $content ) {
+	private function append_full_stop_preserve_whitespace( $content ) {
 		$line_ending = '';
 		$trailing_ws = '';
 
