@@ -24,8 +24,14 @@ import baseModuleStore from './base';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import publications from './publications';
 import service from './service';
+import userSettings from './user-settings';
 
-const store = combineStores( baseModuleStore, publications, service );
+const store = combineStores(
+	baseModuleStore,
+	publications,
+	service,
+	userSettings
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;
