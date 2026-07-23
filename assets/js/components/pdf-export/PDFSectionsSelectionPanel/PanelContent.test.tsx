@@ -54,7 +54,7 @@ const DASHBOARD_ORDER = [
  * Registers a widget area and one PDF widget in a dashboard context, so the
  * panel shows it as a section.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param  registry    The test registry that holds the area and widget.
  * @param  contextSlug The dashboard context the area belongs to.
@@ -97,7 +97,7 @@ function registerSection(
  * can prove the stored order follows the dashboard's order, not the
  * registration order.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param  registry The test registry that holds the sections.
  * @return {void}
@@ -141,7 +141,7 @@ describe( 'PanelContent', () => {
 	/**
 	 * Renders the panel with the test registry, on the main dashboard.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return The testing-library render result.
 	 */

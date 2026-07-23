@@ -34,7 +34,7 @@ const CHART_DATA_URI = 'data:image/jpeg;base64,TU9DS0NIQVJU';
 /**
  * Builds the widget data fixture with a total and change for each metric.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @return The widget data fixture.
  */
@@ -54,7 +54,7 @@ function buildData() {
 /**
  * Builds the chart image fixture with the same data URI for each metric.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @return Map of metric key to chart image data URI.
  */
@@ -70,7 +70,7 @@ function buildChartImages() {
 /**
  * Renders the widget to a JSON string so tests can assert on content and style.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param props Props passed to the widget.
  * @return JSON string of the rendered tree.

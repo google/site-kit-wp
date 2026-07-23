@@ -38,7 +38,7 @@ function NullComponent() {
  * Builds a test widget with a pdf config, merging any overrides so each test
  * sets only the fields it needs.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param overrides Widget fields to merge over the defaults.
  * @return The widget to pass to `isActivePDFWidget`.

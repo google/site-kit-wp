@@ -34,7 +34,7 @@ import { registerDefaults } from './register-defaults';
  * Builds a mock widgets API that records `registerWidget`/`registerWidgetArea`
  * calls so a test can inspect what `registerDefaults` registered.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @return {Object} The mock widgets API.
  */
@@ -49,7 +49,7 @@ function createWidgetsAPI() {
 /**
  * Finds the `registerWidget` call for the given slug on a mock widgets API.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param {Object} widgetsAPI The mock widgets API.
  * @param {string} slug       The widget slug to find.
@@ -66,7 +66,7 @@ function findWidgetRegistration( widgetsAPI, slug ) {
 /**
  * Finds the `registerWidgetArea` call for the given slug on a mock widgets API.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param {Object} widgetsAPI The mock widgets API.
  * @param {string} slug       The widget area slug to find.
@@ -83,7 +83,7 @@ function findWidgetAreaRegistration( widgetsAPI, slug ) {
 /**
  * Builds a `select` stand-in whose `getKeyMetrics()` returns the given slugs.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param {string[]} keyMetrics The key metric slugs to return.
  * @return {Function} A `select` stand-in.
@@ -156,7 +156,7 @@ describe( 'registerDefaults - keyMetricsPDFSection', () => {
 		).toBeUndefined();
 	} );
 
-	it( 'pdf.isActive is true only when a configured metric has a pdfTile config', () => {
+	it( 'pdf.isActive is true only when a configured metric has a PDF tile config', () => {
 		enabledFeatures.add( 'pdfGeneration' );
 
 		const widgetsAPI = createWidgetsAPI();
@@ -167,17 +167,22 @@ describe( 'registerDefaults - keyMetricsPDFSection', () => {
 			'keyMetricsPDFSection'
 		);
 
-		// New Visitors has a pdfTile config.
+		// Every Key Metric has a PDF tile, so any real metric activates it.
 		expect(
 			settings.pdf.isActive(
 				selectWithKeyMetrics( [ KM_ANALYTICS_NEW_VISITORS ] )
 			)
 		).toBe( true );
-
-		// Returning Visitors does not, so a selection with only it is inactive.
 		expect(
 			settings.pdf.isActive(
 				selectWithKeyMetrics( [ KM_ANALYTICS_RETURNING_VISITORS ] )
+			)
+		).toBe( true );
+
+		// A slug with no PDF tile leaves the section out of the report.
+		expect(
+			settings.pdf.isActive(
+				selectWithKeyMetrics( [ 'kmMetricWithoutAPDFTile' ] )
 			)
 		).toBe( false );
 

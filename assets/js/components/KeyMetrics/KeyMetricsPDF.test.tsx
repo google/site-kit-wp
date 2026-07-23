@@ -33,7 +33,7 @@ import KeyMetricsPDF from './KeyMetricsPDF';
  * Collects every text string rendered in a react-test-renderer tree, so a test
  * can assert on the tile copy without walking the tree itself.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param node   The current tree node.
  * @param output The strings collected so far.
@@ -68,7 +68,7 @@ function findTextStrings(
 /**
  * Renders `KeyMetricsPDF` with the given tiles and returns its JSON tree.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param tiles The tiles to render.
  * @return The rendered tree.
@@ -144,29 +144,29 @@ describe( 'KeyMetricsPDF', () => {
 		} );
 	} );
 
-	it( 'drops a tile whose data is null rather than showing a placeholder', () => {
-		const TileComponent = jest.fn( () => null );
-
+	it( 'renders exactly the tiles it is given, so the grid reflows with no gaps', () => {
+		// The aggregate loader drops no-data tiles before this component, so every
+		// tile here renders and there is no per-tile placeholder.
 		const tree = render( [
 			{
 				slug: 'metricA',
 				title: 'New visitors',
-				TileComponent,
+				TileComponent: NumericTile,
 				data: { value: '42' },
 			},
 			{
-				slug: 'metricB',
-				title: 'Returning visitors',
-				TileComponent,
-				data: null,
+				slug: 'metricC',
+				title: 'Visit length',
+				TileComponent: NumericTile,
+				data: { value: '3m' },
 			},
 		] );
 
 		const text = findTextStrings( tree ).join( ' ' );
+		expect( text ).toContain( 'New visitors: 42' );
+		expect( text ).toContain( 'Visit length: 3m' );
 		// No placeholder copy is ever rendered.
 		expect( text ).not.toContain( 'Data unavailable' );
-		// The failed tile is dropped; only the tile with data renders.
-		expect( TileComponent ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	it( 'renders no tiles when the tile list is empty', () => {

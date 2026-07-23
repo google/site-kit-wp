@@ -55,6 +55,12 @@ export interface GetPDFDataParams {
 	dates: PDFReportDates;
 	/** Signal that cancels the export. */
 	signal: AbortSignal;
+	/**
+	 * The module slugs the current user can view, or `undefined` on the owner's
+	 * dashboard where every module is viewable. A loader that composes several
+	 * modules' data uses this to match the dashboard's module visibility.
+	 */
+	viewableModules?: string[];
 }
 
 /**
@@ -103,6 +109,7 @@ export interface WidgetPDFConfig {
 		registry: unknown;
 		dates: PDFReportDates;
 		signal: AbortSignal;
+		viewableModules?: string[];
 	} ) => Promise< WidgetPDFData >;
 	label?: string;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The registry `select` is loosely typed, so `isActive` predicates can read store selectors without casting.
