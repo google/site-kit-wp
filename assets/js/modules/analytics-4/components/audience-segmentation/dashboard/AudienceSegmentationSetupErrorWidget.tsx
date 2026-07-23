@@ -60,7 +60,6 @@ export interface AudienceSegmentationSetupErrorWidgetProps {
 	onDismiss: () => void;
 }
 
-// Inner component that will be wrapped with intersection observer
 interface AudienceSegmentationSetupErrorNoticeProps {
 	title: string;
 	description: ReactNode;
