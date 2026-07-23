@@ -35,7 +35,10 @@ import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import useViewContext from '@/js/hooks/useViewContext';
 import { isInsufficientPermissionsError } from '@/js/util/errors';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 
 interface AudienceSegmentationSetupErrorWidgetError {
 	code?: string | number;
@@ -57,6 +60,43 @@ export interface AudienceSegmentationSetupErrorWidgetProps {
 	onDismiss: () => void;
 }
 
+// Inner component that will be wrapped with intersection observer
+interface AudienceSegmentationSetupErrorNoticeProps {
+	title: string;
+	description: ReactNode;
+	onRetry: ( label: string ) => void;
+	onDismiss: ( label: string ) => void;
+	label: string;
+	ref?: React.Ref< HTMLDivElement >;
+	onInView?: () => void;
+	hasBeenInView?: boolean;
+}
+
+const AudienceSegmentationSetupErrorNotice: FC<
+	AudienceSegmentationSetupErrorNoticeProps
+> = ( { title, description, onRetry, onDismiss, label }, ref ) => {
+	return (
+		<div ref={ ref }>
+			<Notice
+				type={ NOTICE_TYPES.ERROR }
+				title={ title }
+				description={ description }
+				ctaButton={ {
+					label: __( 'Retry', 'google-site-kit' ),
+					onClick: () => onRetry( label ),
+				} }
+				dismissButton={ {
+					label: __( 'No thanks', 'google-site-kit' ),
+					onClick: () => onDismiss( label ),
+				} }
+			/>
+		</div>
+	);
+};
+
+const AudienceSegmentationSetupErrorNoticeWithObserver =
+	withIntersectionObserver( AudienceSegmentationSetupErrorNotice );
+
 const AudienceSegmentationSetupErrorWidget: FC<
 	AudienceSegmentationSetupErrorWidgetProps
 > = ( {
@@ -70,6 +110,29 @@ const AudienceSegmentationSetupErrorWidget: FC<
 	const isPermissionsError = isInsufficientPermissionsError(
 		normalizedErrors[ 0 ]
 	);
+	const viewContext = useViewContext();
+
+	const trackEvents = useNotificationEvents(
+		'audience-segmentation-setup-error',
+		viewContext,
+		{
+			viewAction: 'audience_segmentation_setup_error',
+			confirmAction: 'audience_segmentation_setup_error_retry',
+			dismissAction: 'audience_segmentation_setup_error_dismiss',
+		}
+	);
+
+	// Determine label based on variant and error type
+	let label = '';
+	if ( isAudienceCreationVariant ) {
+		label = isPermissionsError
+			? 'audience_creation_permissions'
+			: 'audience_creation_generic';
+	} else {
+		label = isPermissionsError
+			? 'data_loading_permissions'
+			: 'data_loading_generic';
+	}
 
 	const visitorGroupsDocumentationLinkURL = useSelect(
 		( select: Select ) =>
@@ -117,23 +180,28 @@ const AudienceSegmentationSetupErrorWidget: FC<
 		br: <br />,
 	} ) as ReactNode;
 
+	function handleRetry( eventLabel: string ) {
+		trackEvents.confirm( eventLabel );
+		onRetry();
+	}
+
+	function handleDismiss( eventLabel: string ) {
+		trackEvents.dismiss( eventLabel );
+		onDismiss();
+	}
+
 	return (
 		<Widget
 			className="googlesitekit-audience-segmentation-setup-error-widget"
 			noPadding
 		>
-			<Notice
-				type={ NOTICE_TYPES.ERROR }
+			<AudienceSegmentationSetupErrorNoticeWithObserver
 				title={ title }
 				description={ description }
-				ctaButton={ {
-					label: __( 'Retry', 'google-site-kit' ),
-					onClick: onRetry,
-				} }
-				dismissButton={ {
-					label: __( 'No thanks', 'google-site-kit' ),
-					onClick: onDismiss,
-				} }
+				onRetry={ handleRetry }
+				onDismiss={ handleDismiss }
+				label={ label }
+				onInView={ () => trackEvents.view( label ) }
 			/>
 		</Widget>
 	);
