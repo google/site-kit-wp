@@ -24,7 +24,7 @@ import type { ElementType, FC, ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, forwardRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -66,14 +66,14 @@ interface AudienceSegmentationSetupErrorNoticeProps {
 	onRetry: ( label: string ) => void;
 	onDismiss: ( label: string ) => void;
 	label: string;
-	ref?: React.Ref< HTMLDivElement >;
 	onInView?: () => void;
 	hasBeenInView?: boolean;
 }
 
-const AudienceSegmentationSetupErrorNotice: FC<
+const AudienceSegmentationSetupErrorNotice = forwardRef<
+	HTMLDivElement,
 	AudienceSegmentationSetupErrorNoticeProps
-> = ( { title, description, onRetry, onDismiss, label }, ref ) => {
+>( ( { title, description, onRetry, onDismiss, label }, ref ) => {
 	return (
 		<div ref={ ref }>
 			<Notice
@@ -91,7 +91,9 @@ const AudienceSegmentationSetupErrorNotice: FC<
 			/>
 		</div>
 	);
-};
+} );
+AudienceSegmentationSetupErrorNotice.displayName =
+	'AudienceSegmentationSetupErrorNotice';
 
 const AudienceSegmentationSetupErrorNoticeWithObserver =
 	withIntersectionObserver( AudienceSegmentationSetupErrorNotice );

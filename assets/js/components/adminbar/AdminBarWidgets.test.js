@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { useIntersection as mockUseIntersection } from 'react-use';
-
-/**
  * Internal dependencies
  */
 import {
@@ -38,6 +33,7 @@ import {
 } from '@/js/modules/analytics-4/constants';
 import * as tracking from '@/js/util/tracking';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	muteFetch,
@@ -57,24 +53,33 @@ const activateEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/modules/data/activation'
 );
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
-} ) );
-
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+let observedElements = [];
+function observerCallback() {}
 
 describe( 'AdminBarWidgets', () => {
 	let registry;
 
 	beforeEach( () => {
-		registry = createTestRegistry();
+		observedElements = [];
+		observerCallback = () => {};
 
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: false,
-			intersectionRatio: 0,
-		} ) );
+		global.IntersectionObserver = jest.fn( ( callback ) => {
+			observerCallback = callback;
+
+			return {
+				observe: jest.fn( ( element ) => {
+					observedElements.push( element );
+				} ),
+				disconnect: jest.fn(),
+				unobserve: jest.fn(),
+				takeRecords: jest.fn().mockReturnValue( [] ),
+			};
+		} );
+
+		registry = createTestRegistry();
 
 		provideModules( registry );
 		provideUserCapabilities( registry );
@@ -119,6 +124,7 @@ describe( 'AdminBarWidgets', () => {
 	} );
 
 	afterEach( () => {
+		delete global.IntersectionObserver;
 		jest.resetAllMocks();
 	} );
 
@@ -201,7 +207,7 @@ describe( 'AdminBarWidgets', () => {
 	} );
 
 	it( 'should track the `view_cta` event when the Activate Analytics CTA is viewed', async () => {
-		const { waitForRegistry, rerender } = render( <AdminBarWidgets />, {
+		const { waitForRegistry } = render( <AdminBarWidgets />, {
 			registry,
 			features: [ 'setupFlowRefresh' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -211,20 +217,27 @@ describe( 'AdminBarWidgets', () => {
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: true,
-			intersectionRatio: 1,
-		} ) );
-
-		rerender( <AdminBarWidgets /> );
-
-		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
-			'view_cta',
-			'admin_bar'
+		const activateAnalyticsObserver = observedElements.find( ( element ) =>
+			element.classList?.contains(
+				'googlesitekit-activate-analytics-cta'
+			)
 		);
+
+		expect( activateAnalyticsObserver ).toBeDefined();
+
+		act( () => {
+			observerCallback( [ { isIntersecting: true } ] );
+		} );
+
+		await waitFor( () => {
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+				'view_cta',
+				'admin_bar'
+			);
+		} );
 	} );
 
 	it( 'should track the `dismiss_cta` event when the "Maybe later" button is clicked in the Activate Analytics CTA', async () => {

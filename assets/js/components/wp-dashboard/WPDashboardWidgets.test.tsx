@@ -17,12 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { mocked } from 'jest-mock';
-import { useIntersection as mockUseIntersection } from 'react-use';
-
-/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -36,6 +30,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { ANALYTICS_SETUP_ERROR } from '@/js/modules/analytics-4/constants';
 import * as tracking from '@/js/util/tracking';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	muteFetch,
@@ -56,18 +51,32 @@ const activateEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/modules/data/activation'
 );
 
-jest.mock( 'react-use', () => ( {
-	...( jest.requireActual( 'react-use' ) as Record< string, unknown > ),
-	useIntersection: jest.fn(),
-} ) );
-
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+let observedElements: Element[];
+let observerCallback: ( entries: IntersectionObserverEntry[] ) => void;
 
 describe( 'WPDashboardWidgets', () => {
 	let registry: WPDataRegistry;
 
 	beforeEach( () => {
+		observedElements = [];
+		observerCallback = () => {};
+
+		global.IntersectionObserver = jest.fn( ( callback ) => {
+			observerCallback = callback;
+
+			return {
+				observe: jest.fn( ( element ) => {
+					observedElements.push( element );
+				} ),
+				disconnect: jest.fn(),
+				unobserve: jest.fn(),
+				takeRecords: jest.fn().mockReturnValue( [] ),
+			} as unknown as IntersectionObserver;
+		} ) as unknown as typeof IntersectionObserver;
+
 		registry = createTestRegistry();
 
 		provideModules( registry );
@@ -96,11 +105,13 @@ describe( 'WPDashboardWidgets', () => {
 	} );
 
 	afterEach( () => {
+		delete ( global as { IntersectionObserver?: unknown } )
+			.IntersectionObserver;
 		jest.resetAllMocks();
 	} );
 
 	it( 'should track the `view_cta` event when the Activate Analytics CTA is viewed', async () => {
-		const { waitForRegistry, rerender } = render( <WPDashboardWidgets />, {
+		const { waitForRegistry } = render( <WPDashboardWidgets />, {
 			registry,
 			features: [ 'setupFlowRefresh' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -117,23 +128,29 @@ describe( 'WPDashboardWidgets', () => {
 			'wp_dashboard'
 		);
 
-		mocked( mockUseIntersection ).mockImplementation(
-			() =>
-				( {
-					isIntersecting: true,
-					intersectionRatio: 1,
-				} as unknown as IntersectionObserverEntry )
+		const activateAnalyticsObserver = observedElements.find( ( element ) =>
+			element.classList?.contains(
+				'googlesitekit-activate-analytics-cta'
+			)
 		);
 
-		rerender( <WPDashboardWidgets /> );
+		expect( activateAnalyticsObserver ).toBeDefined();
 
-		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		act( () => {
+			observerCallback( [
+				{ isIntersecting: true } as IntersectionObserverEntry,
+			] );
+		} );
 
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
-			'view_cta',
-			'wp_dashboard'
-		);
+		await waitFor( () => {
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+				'view_cta',
+				'wp_dashboard'
+			);
+		} );
 	} );
 
 	it( 'should track the `dismiss_cta` event when the "Maybe later" button is clicked in the Activate Analytics CTA', async () => {
