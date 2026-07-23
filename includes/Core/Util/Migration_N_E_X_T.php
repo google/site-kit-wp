@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Authentication\Connected_Proxy_URL;
 use Google\Site_Kit\Core\Storage\Options;
 
 /**
- * Class Migration_N_E_X_T
+ * Class Migration_N_E_X_T.
  *
  * @since n.e.x.t
  * @access private
