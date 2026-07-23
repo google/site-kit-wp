@@ -530,6 +530,17 @@
 				const x = Math.floor( cli.getXLocation( SPLIT_DATE ) );
 				const areaRight = area.left + area.width;
 
+				// Give the key-event dots a white outline so they stand out in
+				// their default (un-clicked) state. Google Charts has no point-
+				// border option, so we style the rendered circles directly.
+				container.querySelectorAll( 'svg circle' ).forEach( ( circle ) => {
+					const fill = ( circle.getAttribute( 'fill' ) || '' ).toLowerCase();
+					if ( fill.includes( '81c995' ) ) {
+						circle.setAttribute( 'stroke', '#ffffff' );
+						circle.setAttribute( 'stroke-width', '2' );
+					}
+				} );
+
 				const region = getOrCreateOverlay(
 					container,
 					'projection-region'
