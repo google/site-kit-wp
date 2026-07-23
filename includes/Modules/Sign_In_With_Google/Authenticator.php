@@ -182,7 +182,7 @@ class Authenticator implements Authenticator_Interface {
 	 * Signs in the user.
 	 *
 	 * @since 1.145.0
-	 * @since n.e.x.t Skips the Two-Factor plugin's login challenge for the Sign in with Google request.
+	 * @since n.e.x.t Skips the Two-Factor plugin's login challenge for this request.
 	 *
 	 * @param WP_User $user User object.
 	 * @return WP_Error|null WP_Error if an error occurred, null otherwise.
@@ -203,14 +203,22 @@ class Authenticator implements Authenticator_Interface {
 		// Set the user to be the current user.
 		wp_set_current_user( $user->ID, $user->user_login );
 
-		// Set the authentication cookie.
+		// Signing in through Google stands in for the second factor, so the
+		// Two-Factor plugin's challenge would ask for one the user has already
+		// given. Clear the primary provider, the last value the plugin resolves
+		// before wp_login decides whether to drop the session. An earlier value
+		// won't hold, because the plugin restores emailed codes whenever the
+		// enabled providers come back empty while the user's stored providers
+		// don't. The user's own two-factor settings stay untouched.
+		add_filter(
+			'two_factor_primary_provider_for_user',
+			fn ( $provider, $user_id ) => $user_id === $user->ID ? '' : $provider,
+			10,
+			2
+		);
+
+		// Set the authentication cookies and trigger the wp_login action.
 		wp_set_auth_cookie( $user->ID );
-
-		// Sign in with Google authenticates the user through their Google Account,
-		// which handles two-factor itself, so the Two-Factor plugin must not
-		// challenge this request.
-		$this->skip_two_factor_for_user( $user );
-
 		/** This filter is documented in wp-login.php */
 		do_action( 'wp_login', $user->user_login, $user );
 
@@ -221,10 +229,10 @@ class Authenticator implements Authenticator_Interface {
 	 * Finds an existing user using the Google user ID and email.
 	 *
 	 * @since 1.145.0
-	 * @since n.e.x.t Returns a WP_Error when the email-matched user has two-factor authentication enabled.
+	 * @since n.e.x.t Returns a WP_Error when the email-matched user uses two-factor authentication and isn't connected to the Google account.
 	 *
 	 * @param array $payload Google auth payload.
-	 * @return WP_User|WP_Error|null User object if found, WP_Error if the email-matched user has two-factor authentication enabled, null otherwise.
+	 * @return WP_User|WP_Error|null User object when found, WP_Error when the matched user has to connect their Google account first, null otherwise.
 	 */
 	protected function find_user( $payload ) {
 		// Check if there are any existing WordPress users connected to this Google account.
@@ -246,21 +254,22 @@ class Authenticator implements Authenticator_Interface {
 
 		// Find an existing user that matches the email and link to their Google account by store their user ID in user meta.
 		$user = get_user_by( 'email', $payload['email'] );
-		if ( $user ) {
-			// Don't link an account that has two-factor authentication enabled,
-			// as signing in with Google would bypass the account's two-factor challenge.
-			if ( $this->user_has_two_factor( $user->ID ) ) {
-				return new WP_Error( self::ERROR_TWO_FACTOR_ENABLED );
-			}
-
-			$user_options = clone $this->user_options;
-			$user_options->switch_user( $user->ID );
-			$user_options->set( Hashed_User_ID::OPTION, $google_user_hashed_id );
-
-			return $user;
+		if ( ! $user ) {
+			return null;
 		}
 
-		return null;
+		// Connecting the accounts here would let a user with two-factor
+		// authentication sign in without their challenge. They connect from
+		// their profile page instead, where they sign in first.
+		if ( $this->user_has_two_factor_enabled( $user->ID ) ) {
+			return new WP_Error( self::ERROR_TWO_FACTOR_ENABLED );
+		}
+
+		$user_options = clone $this->user_options;
+		$user_options->switch_user( $user->ID );
+		$user_options->set( Hashed_User_ID::OPTION, $google_user_hashed_id );
+
+		return $user;
 	}
 
 	/**
@@ -312,54 +321,17 @@ class Authenticator implements Authenticator_Interface {
 	}
 
 	/**
-	 * Checks whether the Two-Factor plugin is active.
-	 *
-	 * Detects the plugin by its Two_Factor_Core class, so any way of loading
-	 * it (a plugin, an mu-plugin, or a Composer package) counts as active.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return bool True if the Two-Factor plugin is active, false otherwise.
-	 */
-	protected function is_two_factor_plugin_active() {
-		return class_exists( 'Two_Factor_Core' );
-	}
-
-	/**
 	 * Checks whether the given user has two-factor authentication enabled.
+	 *
+	 * Returns false when the optional Two-Factor plugin isn't active.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param int $user_id User ID.
-	 * @return bool True if the Two-Factor plugin is active and the user has two-factor authentication enabled, false otherwise.
+	 * @return bool True when the user has two-factor authentication enabled, false otherwise.
 	 */
-	protected function user_has_two_factor( int $user_id ) {
-		return $this->is_two_factor_plugin_active() && \Two_Factor_Core::is_user_using_two_factor( $user_id ); // @phpstan-ignore class.notFound (Two_Factor_Core comes from the optional Two-Factor plugin, and is_two_factor_plugin_active() confirms it exists.)
-	}
-
-	/**
-	 * Skips the Two-Factor plugin's challenge for the user's Sign in with Google request.
-	 *
-	 * Sign in with Google authenticates the user through their Google Account,
-	 * which handles two-factor itself. This filters the user's enabled providers
-	 * to an empty array for this request, so the Two-Factor plugin treats them as
-	 * not using two-factor and doesn't challenge the sign-in. It doesn't change
-	 * the user's saved two-factor settings, it leaves every other user's providers
-	 * untouched, and it runs only when the Two-Factor plugin is active.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param WP_User $user User signing in with Google.
-	 */
-	protected function skip_two_factor_for_user( $user ) {
-		add_filter(
-			'two_factor_enabled_providers_for_user',
-			function ( $enabled_providers, $user_id ) use ( $user ) {
-				return $user_id === $user->ID ? array() : $enabled_providers;
-			},
-			10,
-			2
-		);
+	protected function user_has_two_factor_enabled( $user_id ) {
+		return class_exists( 'Two_Factor_Core' ) && \Two_Factor_Core::is_user_using_two_factor( $user_id );
 	}
 
 	/**

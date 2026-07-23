@@ -678,18 +678,18 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$error = $this->module->handle_login_errors( new WP_Error() );
 
 		$this->assertEquals(
-			'An existing account using two-factor authentication was detected with that email address. To connect an account using Sign in with Google, two-factor auth must be disabled for your user account.',
-			$error->get_error_message( Sign_In_With_Google::MODULE_SLUG ),
-			'The two-factor error message should be added for the two-factor error code.'
+			'An account with that email address uses two-factor authentication. To use Sign in with Google, log in with your username and password, then connect your Google account on your profile page.',
+			$error->get_error_message( 'sign-in-with-google' ),
+			'Should add the two-factor message for the two-factor error code.'
 		);
 	}
 
-	public function test_handle_login_errors__ignores_unrecognized_error_code() {
+	public function test_handle_login_errors__ignores_an_unrecognized_error_code() {
 		$_GET['error'] = 'unrecognized_error_code';
 
 		$error = $this->module->handle_login_errors( new WP_Error() );
 
-		$this->assertFalse( $error->has_errors(), 'An unrecognized error code should leave the error object untouched.' );
+		$this->assertFalse( $error->has_errors(), 'Should leave the error object untouched for an unrecognized error code.' );
 	}
 
 	protected function create_disconnect_nonce( $user_id ) {

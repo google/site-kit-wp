@@ -18,6 +18,7 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Reader_Interface;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\Two_Factor_Plugin_Trait;
 use WP_Error;
 use WP_Site;
 
@@ -26,6 +27,8 @@ use WP_Site;
  * @group Sign_In_With_Google
  */
 class AuthenticatorTest extends TestCase {
+
+	use Two_Factor_Plugin_Trait;
 
 	private static $existing_user_payload = array(
 		'sub'   => 'existing-user',
@@ -75,26 +78,15 @@ class AuthenticatorTest extends TestCase {
 		$_POST   = $this->post_data;
 	}
 
-	private function create_mock_profile_reader( $profile_reader_data ) {
+	private function do_authenticate_user( $profile_reader_data = array() ) {
+		$user_options        = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$mock_profile_reader = $this->getMockBuilder( Profile_Reader_Interface::class )
 									->setMethods( array( 'get_profile_data' ) )
 									->getMock();
 		$mock_profile_reader->method( 'get_profile_data' )->willReturn( $profile_reader_data );
-
-		return $mock_profile_reader;
-	}
-
-	private function do_authenticate_user( $profile_reader_data = array() ) {
-		$user_options  = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$authenticator = new Authenticator( $user_options, $this->create_mock_profile_reader( $profile_reader_data ) );
+		$authenticator = new Authenticator( $user_options, $mock_profile_reader );
 
 		return $authenticator->authenticate_user( new MutableInput() );
-	}
-
-	private function create_two_factor_authenticator( $profile_reader_data ) {
-		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		return new FakeTwoFactorAuthenticator( $user_options, $this->create_mock_profile_reader( $profile_reader_data ) );
 	}
 
 	public function test_authenticate_user_fails_when_profile_reader_returns_error() {
@@ -183,99 +175,173 @@ class AuthenticatorTest extends TestCase {
 		);
 	}
 
-	public function test_authenticate_user__errors_when_email_matched_user_has_two_factor() {
-		$user = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function test_authenticate_user__blocks_two_factor_user_with_no_connected_account() {
+		$this->activate_two_factor_plugin();
 
-		$authenticator                              = $this->create_two_factor_authenticator( self::$existing_user_payload );
-		$authenticator->is_two_factor_plugin_active = true;
-		$authenticator->user_ids_with_two_factor    = array( $user->ID );
+		$user = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
+		$this->enable_two_factor_for_user( $user->ID );
 
 		$expected = add_query_arg( 'error', 'googlesitekit_auth_two_factor_enabled', wp_login_url() );
-		$actual   = $authenticator->authenticate_user( new MutableInput() );
+		$actual   = $this->do_authenticate_user( self::$existing_user_payload );
 
-		$this->assertEquals( $expected, $actual, 'Should redirect to login with the two-factor error when the email-matched user has two-factor authentication enabled.' );
+		$this->assertEquals( $expected, $actual, 'Should redirect to the login page with the two-factor error.' );
+		$this->assertEquals( 0, get_current_user_id(), 'Should leave the user signed out.' );
 
 		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
 		$this->assertFalse(
 			metadata_exists( 'user', $user->ID, $user_options->get_meta_key( Hashed_User_ID::OPTION ) ),
-			'The Google account should not be linked to the user.'
+			'Should leave the Google account unconnected.'
 		);
-		$this->assertEquals( 0, get_current_user_id(), 'The user should not be signed in.' );
 	}
 
-	public function test_authenticate_user__links_email_matched_user_without_two_factor() {
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function test_authenticate_user__blocks_two_factor_user_connected_to_another_google_account() {
+		$this->activate_two_factor_plugin();
+
+		$user = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
+		$this->enable_two_factor_for_user( $user->ID );
+
+		$connected_account = md5( 'another-google-account' );
+		$user_options      = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
+		$user_options->set( Hashed_User_ID::OPTION, $connected_account );
+
+		$expected = add_query_arg( 'error', 'googlesitekit_auth_two_factor_enabled', wp_login_url() );
+		$actual   = $this->do_authenticate_user( self::$existing_user_payload );
+
+		$this->assertEquals( $expected, $actual, 'Should redirect to the login page with the two-factor error.' );
+		$this->assertEquals( 0, get_current_user_id(), 'Should leave the user signed out.' );
+		$this->assertEquals(
+			$connected_account,
+			$user_options->get( Hashed_User_ID::OPTION ),
+			'Should leave the connected Google account untouched.'
+		);
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function test_authenticate_user__signs_in_two_factor_user_with_connected_account() {
+		$this->activate_two_factor_plugin();
+
+		$user = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
+		$this->enable_two_factor_for_user( $user->ID );
+
+		// Connecting from the profile page stores the hashed Google user ID.
+		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
+		$user_options->set( Hashed_User_ID::OPTION, md5( self::$existing_user_payload['sub'] ) );
+
+		$actual = $this->do_authenticate_user( self::$existing_user_payload );
+
+		$this->assertEquals( admin_url( '/profile.php' ), $actual, 'Should redirect to the profile page after signing in.' );
+		$this->assertEquals( $user->ID, get_current_user_id(), 'Should sign the connected user in.' );
+		$this->assertFalse(
+			$this->two_factor_challenges_user( $user->ID ),
+			'Should skip the two-factor challenge for the connected user.'
+		);
+		$this->assertEquals(
+			array( self::TWO_FACTOR_PROVIDER ),
+			$this->get_two_factor_providers_for_user( $user->ID ),
+			'Should leave the two-factor settings of the connected user alone.'
+		);
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function test_authenticate_user__connects_and_signs_in_user_without_two_factor() {
+		$this->activate_two_factor_plugin();
+
 		$user = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
 
-		$authenticator                              = $this->create_two_factor_authenticator( self::$existing_user_payload );
-		$authenticator->is_two_factor_plugin_active = true;
-		$authenticator->user_ids_with_two_factor    = array();
+		$actual = $this->do_authenticate_user( self::$existing_user_payload );
 
-		$expected = admin_url( '/profile.php' );
-		$actual   = $authenticator->authenticate_user( new MutableInput() );
-
-		$this->assertEquals( $expected, $actual, 'Should redirect to profile when the email-matched user has no two-factor authentication.' );
-		$this->assertEquals( $user->ID, get_current_user_id(), 'Authenticated user ID should match the email-matched user.' );
+		$this->assertEquals( admin_url( '/profile.php' ), $actual, 'Should redirect to the profile page after signing in.' );
+		$this->assertEquals( $user->ID, get_current_user_id(), 'Should sign the matched user in.' );
 
 		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
 		$this->assertEquals(
 			md5( self::$existing_user_payload['sub'] ),
 			$user_options->get( Hashed_User_ID::OPTION ),
-			'The Google account should be linked to the user.'
+			'Should connect the Google account.'
 		);
 	}
 
-	public function test_authenticate_user__links_email_matched_user_when_two_factor_plugin_is_inactive() {
-		$user = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
-		update_user_meta( $user->ID, '_two_factor_enabled_providers', array( 'Two_Factor_Email' ) );
-
-		// The plugin-active flag stays false, and no two-factor users are
-		// faked, so the real user_has_two_factor() runs.
-		$authenticator = $this->create_two_factor_authenticator( self::$existing_user_payload );
-
-		$expected = admin_url( '/profile.php' );
-		$actual   = $authenticator->authenticate_user( new MutableInput() );
-
-		$this->assertEquals( $expected, $actual, 'Should redirect to profile when the Two-Factor plugin is inactive.' );
-		$this->assertEquals( $user->ID, get_current_user_id(), 'Authenticated user ID should match the email-matched user.' );
-	}
-
-	public function test_authenticate_user__skips_two_factor_challenge_for_new_user() {
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function test_authenticate_user__creates_and_connects_new_user() {
+		$this->activate_two_factor_plugin();
 		add_filter( 'option_users_can_register', '__return_true' );
 
 		$this->do_authenticate_user( self::$new_user_payload );
 
 		$user_id = get_current_user_id();
-		$this->assertNotEmpty( $user_id, 'A new user should be created and signed in.' );
 		$this->assertEquals(
-			array(),
-			apply_filters( 'two_factor_enabled_providers_for_user', array( 'Two_Factor_Email' ), $user_id ),
-			'Sign in with Google should clear the two-factor providers for the signed-in user so the challenge is skipped.'
+			self::$new_user_payload['email'],
+			get_userdata( $user_id )->user_email,
+			'Should create the new user and sign them in.'
 		);
-		$this->assertFalse(
-			metadata_exists( 'user', $user_id, '_two_factor_enabled_providers' ),
-			'Sign in with Google should not modify the new account\'s two-factor settings.'
+
+		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user_id );
+		$this->assertEquals(
+			md5( self::$new_user_payload['sub'] ),
+			$user_options->get( Hashed_User_ID::OPTION ),
+			'Should connect the new account to the Google account.'
+		);
+		$this->assertEquals(
+			'',
+			$this->get_two_factor_providers_for_user( $user_id ),
+			'Should leave the two-factor settings of the new account alone.'
 		);
 	}
 
-	public function test_authenticate_user__skips_two_factor_challenge_for_returning_user() {
-		$user         = $this->factory()->user->create_and_get( array() );
+	public function test_authenticate_user__connects_user_when_two_factor_plugin_is_inactive() {
+		$user = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
+		$this->enable_two_factor_for_user( $user->ID );
+
+		$actual = $this->do_authenticate_user( self::$existing_user_payload );
+
+		$this->assertEquals( admin_url( '/profile.php' ), $actual, 'Should redirect to the profile page after signing in.' );
+		$this->assertEquals( $user->ID, get_current_user_id(), 'Should sign the matched user in.' );
+
+		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
+		$this->assertEquals(
+			md5( self::$existing_user_payload['sub'] ),
+			$user_options->get( Hashed_User_ID::OPTION ),
+			'Should connect the Google account.'
+		);
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function test_authenticate_user__leaves_the_two_factor_challenge_of_other_users_in_place() {
+		$this->activate_two_factor_plugin();
+
+		$user = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
+		$this->enable_two_factor_for_user( $user->ID );
+
 		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
 		$user_options->set( Hashed_User_ID::OPTION, md5( self::$existing_user_payload['sub'] ) );
 
-		$other_user = $this->factory()->user->create_and_get( array() );
+		$other_user_id = $this->factory()->user->create();
+		$this->enable_two_factor_for_user( $other_user_id );
 
 		$this->do_authenticate_user( self::$existing_user_payload );
 
-		$this->assertEquals( $user->ID, get_current_user_id(), 'The returning Sign in with Google user should be signed in.' );
-		$this->assertEquals(
-			array(),
-			apply_filters( 'two_factor_enabled_providers_for_user', array( 'Two_Factor_Email' ), $user->ID ),
-			'Sign in with Google should clear the two-factor providers for the signed-in user so the challenge is skipped.'
+		$this->assertEquals( $user->ID, get_current_user_id(), 'Should sign the connected user in.' );
+		$this->assertFalse(
+			$this->two_factor_challenges_user( $user->ID ),
+			'Should skip the two-factor challenge for the user who signed in with Google.'
 		);
-		$this->assertEquals(
-			array( 'Two_Factor_Email' ),
-			apply_filters( 'two_factor_enabled_providers_for_user', array( 'Two_Factor_Email' ), $other_user->ID ),
-			'Sign in with Google should leave the two-factor providers of other users untouched.'
+		$this->assertTrue(
+			$this->two_factor_challenges_user( $other_user_id ),
+			'Should keep the two-factor challenge for every other user.'
 		);
 	}
 

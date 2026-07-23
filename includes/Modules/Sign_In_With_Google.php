@@ -351,7 +351,14 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 				$error->add( self::MODULE_SLUG, __( 'The user is not registered on this site.', 'google-site-kit' ) );
 				break;
 			case Authenticator::ERROR_TWO_FACTOR_ENABLED:
-				$error->add( self::MODULE_SLUG, __( 'An existing account using two-factor authentication was detected with that email address. To connect an account using Sign in with Google, two-factor auth must be disabled for your user account.', 'google-site-kit' ) );
+				$error->add(
+					self::MODULE_SLUG,
+					sprintf(
+						/* translators: %s: Sign in with Google service name */
+						__( 'An account with that email address uses two-factor authentication. To use %s, log in with your username and password, then connect your Google account on your profile page.', 'google-site-kit' ),
+						_x( 'Sign in with Google', 'Service name', 'google-site-kit' )
+					)
+				);
 				break;
 			default:
 				break;
