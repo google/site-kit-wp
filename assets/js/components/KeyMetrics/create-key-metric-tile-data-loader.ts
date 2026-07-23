@@ -28,7 +28,7 @@ import {
  * One report a tile needs: the module datastore to fetch from and the report
  * options to request.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export interface TileReportRequest {
 	/** The module datastore name, e.g. `MODULES_ANALYTICS_4`. */
@@ -55,7 +55,7 @@ interface FetchReportResult {
  * early when the export is canceled, and throws when any report fails so the
  * aggregate loader can skip just that tile.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param buildReports Returns the reports to fetch for the given date range.
  * @param extract      Maps the resolved report responses to the tile's data.

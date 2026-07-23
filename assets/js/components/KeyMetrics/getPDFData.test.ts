@@ -37,7 +37,7 @@ const DATES = {
 /**
  * Builds a mock registry whose `getKeyMetrics` resolves to the given slugs.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param slugs The user's configured key metric slugs.
  * @return A mock registry.

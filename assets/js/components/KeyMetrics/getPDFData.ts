@@ -66,7 +66,7 @@ type TileRenderComponent = ComponentType< Record< string, unknown > >;
  * One rendered Key Metrics tile: enough to render its `TileComponent`, plus the
  * `data` it consumes (or `null` when that tile's data failed to load).
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export interface KeyMetricsPDFTile {
 	/** The key metric slug, e.g. `KM_ANALYTICS_NEW_VISITORS`. */
@@ -82,7 +82,7 @@ export interface KeyMetricsPDFTile {
 /**
  * Resolved output of the Key Metrics aggregate loader.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export interface KeyMetricsPDFData {
 	/** The tiles to render, or `null` when the export is canceled. */
@@ -98,7 +98,7 @@ export interface KeyMetricsPDFData {
  * failure is captured as `data: null` so the other tiles still render; the loader
  * throws only when every tile fails. Tiles keep the user's configured order.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param params          Loader parameters.
  * @param params.registry WordPress data registry.

@@ -34,7 +34,7 @@ const DATES = {
  * Builds a registry whose `fetchGetReport` resolves with the given report, so
  * the New Visitors `getTileData` can be exercised against a report fixture.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param {Object} report The report response to resolve.
  * @return {Object} A mock registry.
@@ -49,7 +49,7 @@ function registryReturning( report ) {
 /**
  * Loads the New Visitors tile data against the given report fixture.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param {Object} report The report response the tile fetches.
  * @return {Promise<Object|null>} The resolved tile data.

@@ -156,7 +156,7 @@ function shouldDisplayWidgetWithCustomDimensions( {
  *
  * Entries without a `pdfTile` field do not render in the PDF and are skipped.
  *
- * @since n.e.x.t Added the optional `pdfTile` field.
+ * @since 1.184.0 Added the optional `pdfTile` field.
  */
 const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {

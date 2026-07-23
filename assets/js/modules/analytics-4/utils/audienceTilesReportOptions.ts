@@ -25,7 +25,7 @@ import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
  * The date range parts every builder needs. The metrics builders also read the
  * comparison range for the delta chip.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export type AudienceTilesReportDates = Pick<
 	ReportOptions,
@@ -36,7 +36,7 @@ export type AudienceTilesReportDates = Pick<
  * The four per-audience metrics, in the order the tile reads them: visitors,
  * visits per visitor, pages per visit, and pageviews.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 const AUDIENCE_METRICS = [
 	{ name: 'totalUsers' },
@@ -49,7 +49,7 @@ const AUDIENCE_METRICS = [
  * Limits the top content reports to posts, matching the dashboard's
  * `googlesitekit_post_type` filter.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 const POST_TYPE_DIMENSION_FILTERS = {
 	'customEvent:googlesitekit_post_type': {
@@ -63,7 +63,7 @@ const POST_TYPE_DIMENSION_FILTERS = {
  * Builds the main metrics report options, one report split by
  * `audienceResourceName` and filtered to the given audiences.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param dates     Report date range, including the comparison range.
  * @param audiences Audience resource names to filter the report to.
@@ -92,7 +92,7 @@ export function getAudienceTilesMetricsReportOptions(
  * It covers new and returning visitors while they're still gathering data, when
  * the `audienceResourceName` dimension is empty.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param dates Report date range, including the comparison range.
  * @return Report options for the `newVsReturning` fallback report.
@@ -116,7 +116,7 @@ export function getAudienceTilesSiteKitAudiencesReportOptions(
  * Builds the total pageviews report options, one `screenPageViews` total for
  * the whole site, the denominator for each audience's "% of total pageviews".
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param dates Report date range.
  * @return Report options for the total pageviews report.
@@ -139,7 +139,7 @@ export function getAudienceTilesTotalPageviewsReportOptions(
  * Builds the top cities report options for cities ranked by `totalUsers`,
  * limited to 4 so the `(not set)` row drops and three cities remain.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param dates Report date range.
  * @return Report options for the top cities report.
@@ -173,7 +173,7 @@ export function getAudienceTilesTopCitiesReportOptions(
  * `screenPageViews`, filtered to posts by the `googlesitekit_post_type` custom
  * event, limited to three.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param dates Report date range.
  * @return Report options for the top content report.
@@ -203,7 +203,7 @@ export function getAudienceTilesTopContentReportOptions(
  * top content report resolves to its title. The limit of 15 gives enough rows
  * for the lookup.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param dates Report date range.
  * @return Report options for the top content page titles report.
