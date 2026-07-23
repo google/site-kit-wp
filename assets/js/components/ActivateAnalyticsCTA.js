@@ -258,7 +258,7 @@ export default function ActivateAnalyticsCTA( {
 				<p className="googlesitekit-activate-analytics-cta__description">
 					{ createInterpolateElement(
 						__(
-							"See how many people visit your site from Search and track how you're achieving your goals. <a>Learn more</a>",
+							'See how many people visit your site from Search and track how you’re achieving your goals. <a>Learn more</a>',
 							'google-site-kit'
 						),
 						{
@@ -324,7 +324,7 @@ export default function ActivateAnalyticsCTA( {
 				<div className="googlesitekit-analytics-cta__details">
 					<p className="googlesitekit-analytics-cta--description">
 						{ __(
-							"See how many people visit your site from Search and track how you're achieving your goals",
+							'See how many people visit your site from Search and track how you’re achieving your goals',
 							'google-site-kit'
 						) }
 					</p>
