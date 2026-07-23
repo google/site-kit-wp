@@ -20,8 +20,6 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
-import { mocked } from 'jest-mock';
-import { useIntersection as mockUseIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -45,6 +43,7 @@ import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/co
 import * as tracking from '@/js/util/tracking';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	muteFetch,
@@ -178,6 +177,27 @@ describe( 'SearchFunnelWidgetGA4', () => {
 	} );
 
 	it( 'should track the `view_cta` event when the Activate Analytics CTA is viewed', async () => {
+		const observers: Array< {
+			callback: IntersectionObserverCallback;
+			target?: Element;
+		} > = [];
+		const originalIntersectionObserver = global.IntersectionObserver;
+
+		(
+			global as { IntersectionObserver?: typeof IntersectionObserver }
+		 ).IntersectionObserver = jest
+			.fn()
+			.mockImplementation( ( callback ) => {
+				return {
+					observe: ( target: Element ) => {
+						observers.push( { callback, target } );
+					},
+					disconnect: jest.fn(),
+					unobserve: jest.fn(),
+					takeRecords: () => [],
+				} as unknown as IntersectionObserver;
+			} );
+
 		provideModules( registry, [
 			{
 				slug: 'analytics-4',
@@ -185,37 +205,55 @@ describe( 'SearchFunnelWidgetGA4', () => {
 				connected: false,
 			},
 		] );
+		provideModuleRegistrations( registry );
 
-		const { rerender } = render(
-			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
-			{
-				registry,
-				features: [ 'setupFlowRefresh' ],
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
-
-		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
-
-		mocked( mockUseIntersection ).mockImplementation(
-			() =>
-				( {
-					isIntersecting: true,
-					intersectionRatio: 1,
-				} as unknown as IntersectionObserverEntry )
-		);
-
-		rerender( <SearchFunnelWidgetGA4 { ...widgetComponentProps } /> );
-
-		await waitFor( () => {
-			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
-				'view_cta',
-				'search_funnel'
+		try {
+			const { waitForRegistry } = render(
+				<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
+				{
+					registry,
+					features: [ 'setupFlowRefresh' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
 			);
-		} );
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			await waitFor( () => {
+				expect( observers.length ).toBeGreaterThan( 0 );
+			} );
+
+			const ctaObserver = observers[ 0 ];
+
+			act( () => {
+				ctaObserver.callback(
+					[
+						{
+							isIntersecting: true,
+							intersectionRatio: 1,
+							target: ctaObserver.target as Element,
+						} as IntersectionObserverEntry,
+					],
+					{} as IntersectionObserver
+				);
+			} );
+
+			await waitFor( () => {
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+					'view_cta',
+					'search_funnel'
+				);
+			} );
+		} finally {
+			(
+				global as { IntersectionObserver?: typeof IntersectionObserver }
+			 ).IntersectionObserver = originalIntersectionObserver;
+		}
 	} );
 
 	it( 'should track the `dismiss_cta` event when the "Maybe later" button is clicked in the Activate Analytics CTA', async () => {
