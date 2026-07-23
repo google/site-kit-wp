@@ -377,21 +377,34 @@
 		// and for locating the divider, so they align exactly.
 		const SPLIT_DATE = new Date( 2025, 5, 8 + ( ACTUAL.length - 1 ) );
 
-		// Every point on the actual line shows the same content tooltip on
-		// hover. (The dots in the mockup were just examples, so there are no
-		// static markers — the tooltip is driven by hovering the line itself.)
-		const POINT_TOOLTIP =
-			'<div class="sk-tooltip sk-tooltip--point">' +
-			'<div class="sk-tooltip__title">best amusement parks in Ireland</div>' +
-			'<div class="sk-tooltip__meta">posted Apr 27</div>' +
-			'<a class="sk-tooltip__link" href="#" onclick="return false">See more</a>' +
-			'</div>';
+		// Builds the point tooltip card for a given event.
+		function buildPointTooltip( { title, meta } ) {
+			return (
+				'<div class="sk-tooltip sk-tooltip--point">' +
+				`<div class="sk-tooltip__title">${ title }</div>` +
+				`<div class="sk-tooltip__meta">${ meta }</div>` +
+				'<a class="sk-tooltip__link" href="#" onclick="return false">See more</a>' +
+				'</div>'
+			);
+		}
+
+		// Key events: dots drawn on the line at these row indices, each with
+		// its own tooltip content. Only these dots show a tooltip (clicking
+		// anywhere else on the line shows nothing).
+		const KEY_EVENTS = {
+			11: { title: 'Ireland reopens major attractions', meta: 'May 2' },
+			16: { title: 'National summer festival announced', meta: 'May 20' },
+			24: { title: 'Heatwave forecast published', meta: 'Jun 28' },
+		};
+		const KEY_EVENT_ROWS = Object.keys( KEY_EVENTS ).map( Number );
 
 		function drawProjectionChart() {
 			const data = new google.visualization.DataTable();
 			data.addColumn( 'date', 'Day' );
 			data.addColumn( 'number', 'Traffic' );
 			data.addColumn( 'number', 'Projected' );
+			// Key-event markers: dots drawn on the line at key-event rows.
+			data.addColumn( 'number', 'Key events' );
 
 			const start = new Date( 2025, 5, 8 );
 			const total = ACTUAL.length + PROJECTED.length;
@@ -417,7 +430,10 @@
 					projected = PROJECTED[ i - ACTUAL.length ];
 				}
 
-				rows.push( [ date, actual, projected ] );
+				// Marker sits on the actual line at each key-event row.
+				const marker = KEY_EVENTS[ i ] ? ACTUAL[ i ] : null;
+
+				rows.push( [ date, actual, projected, marker ] );
 			}
 
 			data.addRows( rows );
@@ -430,8 +446,8 @@
 				// Transparent background so the shaded projection region,
 				// which sits behind the SVG, shows through.
 				backgroundColor: 'transparent',
-				// Actual line and projected line (same green).
-				colors: [ '#188038', '#188038' ],
+				// Actual line, projected line (same green), key-event dots.
+				colors: [ '#188038', '#188038', '#81c995' ],
 				chartArea: {
 					left: 22,
 					right: 44,
@@ -453,6 +469,12 @@
 						lineWidth: 2,
 						targetAxisIndex: 1,
 						lineDashStyle: [ 2, 4 ],
+					},
+					// Key-event markers: dots only, no connecting line.
+					2: {
+						lineWidth: 0,
+						pointSize: 7,
+						targetAxisIndex: 1,
 					},
 				},
 				hAxis: {
@@ -549,12 +571,10 @@
 				}
 
 				// Custom point tooltip + highlight dot (created here because
-				// draw() clears the container). We position the tooltip
-				// ourselves so its centered arrow always points at the hovered
-				// point — Google's built-in tooltip doesn't expose its
-				// placement, so its arrow drifts.
+				// draw() clears the container). Its content is set per click.
+				// We position the tooltip ourselves so its centered arrow
+				// always points at the clicked point.
 				pointTip = getOrCreateOverlay( container, 'point-tooltip' );
-				pointTip.innerHTML = POINT_TOOLTIP;
 				pointDot = getOrCreateOverlay( container, 'point-dot' );
 			} );
 
@@ -567,9 +587,9 @@
 				pointDot.style.opacity = 0;
 			}
 
-			// Show the tooltip when a point is clicked, and keep it visible so
-			// it can be hovered and its "See more" link clicked. It stays until
-			// another point (or empty space) is clicked.
+			// Show the tooltip when a key-event dot is clicked, and keep it
+			// visible so it can be hovered and its "See more" link clicked. It
+			// stays until another dot (or empty space / other point) is clicked.
 			google.visualization.events.addListener( chart, 'select', () => {
 				if ( ! pointTip ) {
 					return;
@@ -582,13 +602,16 @@
 					return;
 				}
 
-				// Ignore projected-only rows (their actual value is null).
-				const value = data.getValue( row, 1 );
-				if ( value === null ) {
+				// Only key-event dots show a tooltip; clicking anywhere else
+				// on the line dismisses it.
+				const eventContent = KEY_EVENTS[ row ];
+				if ( ! eventContent ) {
 					hidePointTooltip();
 					return;
 				}
+				pointTip.innerHTML = buildPointTooltip( eventContent );
 
+				const value = data.getValue( row, 1 );
 				const cli = chart.getChartLayoutInterface();
 				const area = cli.getChartAreaBoundingBox();
 				const px = cli.getXLocation( data.getValue( row, 0 ) );
