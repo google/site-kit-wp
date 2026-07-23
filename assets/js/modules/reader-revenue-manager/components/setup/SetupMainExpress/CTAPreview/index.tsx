@@ -46,6 +46,8 @@ interface Props {
 
 const CTA_PREVIEW_TAB_POPUP = 0;
 const CTA_PREVIEW_TAB_INLINE = 1;
+const POPUP_TAB_ID = 'googlesitekit-rrm-cta-preview-tab-popup';
+const INLINE_TAB_ID = 'googlesitekit-rrm-cta-preview-tab-inline';
 
 export default function CTAPreview( {
 	title = __( 'See how it looks', 'google-site-kit' ),
@@ -87,12 +89,12 @@ export default function CTAPreview( {
 					activeIndex={ activeTab }
 					handleActiveIndexUpdate={ setActiveTab }
 				>
-					<Tab focusOnActivate={ false }>
+					<Tab id={ POPUP_TAB_ID } focusOnActivate={ false }>
 						<span className="mdc-tab__text-label">
 							{ __( 'Pop-up', 'google-site-kit' ) }
 						</span>
 					</Tab>
-					<Tab focusOnActivate={ false }>
+					<Tab id={ INLINE_TAB_ID } focusOnActivate={ false }>
 						<span className="mdc-tab__text-label">
 							{ __( 'Inline', 'google-site-kit' ) }
 						</span>
@@ -106,6 +108,8 @@ export default function CTAPreview( {
 							'googlesitekit-rrm-cta-preview__panel',
 							'googlesitekit-rrm-cta-preview__panel--popup'
 						) }
+						role="tabpanel"
+						aria-labelledby={ POPUP_TAB_ID }
 					>
 						<PopupBackgroundSVG
 							width="288"
@@ -124,6 +128,8 @@ export default function CTAPreview( {
 							'googlesitekit-rrm-cta-preview__panel',
 							'googlesitekit-rrm-cta-preview__panel--inline'
 						) }
+						role="tabpanel"
+						aria-labelledby={ INLINE_TAB_ID }
 					>
 						<InlineBackgroundSVG
 							width="288"

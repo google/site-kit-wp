@@ -115,6 +115,17 @@ describe( 'CTAPreview', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'renders the popup panel as tabpanel linked to the popup tab', () => {
+		render( <CTAPreview popupContent={ <div>Popup content</div> } /> );
+
+		const panel = screen.getByRole( 'tabpanel' );
+
+		expect( panel ).toHaveAttribute(
+			'aria-labelledby',
+			'googlesitekit-rrm-cta-preview-tab-popup'
+		);
+	} );
+
 	it( 'renders the inline panel with the correct class after switching tabs', () => {
 		const { container } = render(
 			<CTAPreview inlineContent={ <div>Inline content</div> } />
@@ -128,6 +139,20 @@ describe( 'CTAPreview', () => {
 				'.googlesitekit-rrm-cta-preview__panel--inline'
 			)
 		).toBeInTheDocument();
+	} );
+
+	it( 'renders the inline panel as tabpanel linked to the inline tab after switching tabs', () => {
+		render( <CTAPreview inlineContent={ <div>Inline content</div> } /> );
+
+		const inlineTab = screen.getByRole( 'tab', { name: /inline/i } );
+		fireEvent.click( inlineTab );
+
+		const panel = screen.getByRole( 'tabpanel' );
+
+		expect( panel ).toHaveAttribute(
+			'aria-labelledby',
+			'googlesitekit-rrm-cta-preview-tab-inline'
+		);
 	} );
 
 	it( 'does not render the footer when footer prop is empty', () => {
