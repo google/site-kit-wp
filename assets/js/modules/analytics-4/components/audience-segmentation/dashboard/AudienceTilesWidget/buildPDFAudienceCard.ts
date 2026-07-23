@@ -111,7 +111,7 @@ export interface AvailableAudience {
  * Finds the row for the audience and date range, then reads the four metrics in
  * order, like the dashboard's `Body.js`. A missing value reads as `0`.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param report         The metrics report, or `undefined`.
  * @param dimensionValue The audience's first-dimension value.
@@ -137,7 +137,7 @@ function readMetricRow(
 /**
  * Reads one audience's four metrics, each with a current and previous value.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param report         The metrics report, or `undefined`.
  * @param dimensionValue The audience's first-dimension value.
@@ -168,7 +168,7 @@ export function readAudienceMetrics(
  * Each percentage is the city's share of the audience's visitors, like the
  * dashboard.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param report   The top cities report, or `undefined`.
  * @param visitors The audience's current-period total visitors, the percentage denominator.
@@ -193,7 +193,7 @@ export function buildTopCities(
 /**
  * Builds an audience's top content, resolving each page path to its page title.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param report       The top content report, or `undefined`.
  * @param titlesReport The page titles report used to resolve a path to its title, or `undefined`.
@@ -232,7 +232,7 @@ export function buildTopContent(
 /**
  * Returns `new` or `returning` for a Site Kit audience slug.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param audienceSlug The Site Kit audience slug, like `new-visitors`.
  * @return `new` for the new visitors audience, otherwise `returning`.
@@ -267,7 +267,7 @@ export interface AudienceCardInput {
  * Builds one audience card, or returns `null` to drop the audience when its
  * reports fail.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param input The reports and context for the audience.
  * @return The audience card, or `null` when the audience is excluded.

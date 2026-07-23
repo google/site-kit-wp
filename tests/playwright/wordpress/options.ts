@@ -37,7 +37,7 @@ type TestUserProfile = {
  * A connected module for a test: either a bare slug, or a slug paired with the
  * module settings to apply (e.g. an AdSense account ID).
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export type ConnectedModule =
 	| string
@@ -46,7 +46,7 @@ export type ConnectedModule =
 /**
  * Dashboard-sharing settings for one module.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export type SharedModuleSettings = {
 	sharedRoles: string[];
@@ -93,7 +93,7 @@ export function withFeatureFlags( ...flags: string[] ): TestDetailsAnnotation {
  * configured with those settings on the WordPress side.
  *
  * @since 1.177.0
- * @since n.e.x.t Accepts per-module settings via `{ slug, settings }` entries.
+ * @since 1.184.0 Accepts per-module settings via `{ slug, settings }` entries.
  *
  * @param {...ConnectedModule} modules Connected modules (slug or `{ slug, settings }`).
  * @return {TestDetailsAnnotation} The annotation to use for the test.
@@ -118,7 +118,7 @@ export function withConnectedModules(
  * save-time sanitize dropping it, letting a view-only test list a shared
  * module's sections.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param {Record<string, SharedModuleSettings>} sharing Sharing settings keyed by module slug.
  * @return {TestDetailsAnnotation} The annotation to use for the test.

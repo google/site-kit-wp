@@ -22,7 +22,7 @@ use Google\Site_Kit\Modules\Analytics_4\Reset_Audiences;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
- * Class Google\Site_Kit\Tests\Modules\Analytics_4\Reset_AudiencesTest
+ * Class Google\Site_Kit\Tests\Modules\Analytics_4\Reset_AudiencesTest.
  *
  * @group Modules
  * @group Analytics

@@ -84,7 +84,7 @@ export const PDF_COLORS = {
  * always match. The list matches the dashboard's donut colors, so each donut
  * looks the same in the dashboard and the PDF.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export const PIE_CHART_COLORS = [
 	PDF_COLORS.YELLOW_Y_100,

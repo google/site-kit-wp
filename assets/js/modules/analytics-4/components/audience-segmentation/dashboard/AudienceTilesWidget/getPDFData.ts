@@ -93,7 +93,7 @@ interface AudienceReports {
  * `newVsReturning` fallback for gathering-data Site Kit audiences, and a
  * cities and content report per audience.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param input The reports context.
  * @return Every report result.
@@ -122,7 +122,7 @@ async function fetchAudienceReports(
 	/**
 	 * Dispatches one report fetch with the export's abort signal attached.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param options The report options to fetch.
 	 * @return The report fetch result.
@@ -143,7 +143,7 @@ async function fetchAudienceReports(
 	 * `newVsReturning` for a gathering-data Site Kit audience,
 	 * `audienceResourceName` for every other.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param baseOptions          The report options to add the filter to.
 	 * @param audienceResourceName The audience the report is scoped to.
@@ -231,7 +231,7 @@ async function fetchAudienceReports(
  * audience whose reports failed, and returns `{ data: null }` when fewer than
  * two cards remain, so a single-card row never appears. It captures no charts.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param params          Loader parameters.
  * @param params.registry WordPress data registry.
@@ -277,7 +277,7 @@ export default async function getPDFData( {
 	/**
 	 * Finds an available audience by its resource name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param audienceResourceName The audience resource name to find.
 	 * @return The matching available audience, or `undefined` when it is absent.

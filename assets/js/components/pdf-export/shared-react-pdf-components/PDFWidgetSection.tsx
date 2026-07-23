@@ -41,15 +41,22 @@ export interface PDFWidgetSectionProps {
 	heading?: string;
 	/** Optional style merged onto the card. */
 	cardStyle?: Style;
+	/** Optional outline (bookmark) entry for this section. */
+	bookmark?: string;
 }
 
 const PDFWidgetSection: FC< PDFWidgetSectionProps > = ( {
 	heading,
 	cardStyle,
+	bookmark,
 	children,
 } ) => {
 	return (
-		<View>
+		<View
+			// react-pdf's types have a bug that prevents passing a `bookmark` prop, so we use a spread to bypass it.
+			// See: https://github.com/diegomura/react-pdf/issues/1979#issuecomment-1231391616
+			{ ...{ bookmark } }
+		>
 			{ !! heading && (
 				<PDFTypography size="large" style={ styles.heading }>
 					{ heading }

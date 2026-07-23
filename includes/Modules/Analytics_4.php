@@ -585,7 +585,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	/**
 	 * Sets the steps query parameter for the proxy setup URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param array $query_params Query parameters.
 	 * @return array

@@ -53,7 +53,7 @@ const DATES = {
 /**
  * Builds the two metric rows (current and previous) for one dimension value.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param dimensionValue The audience dimension value the rows belong to.
  * @param base           The base metric value; the previous row adds one.
@@ -74,7 +74,7 @@ function metricRows( dimensionValue: string, base: number ) {
 /**
  * Builds a mock registry and a `fetchGetReport` spy for `getPDFData`.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param options                      Setup options.
  * @param options.configuredAudiences  Configured audience resource names.
@@ -220,7 +220,7 @@ function buildRegistry( {
 /**
  * Runs `getPDFData` with a real abort signal.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param registry        The mock registry.
  * @param options         Run options.
@@ -241,7 +241,7 @@ function runPDFData(
 /**
  * Returns the loaded audiences, or throws when the section was omitted.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param result The loader result.
  * @return The loaded audience cards.
@@ -256,7 +256,7 @@ function getAudiences( result: AudienceTilesPDFData ): AudienceTilePDFData[] {
 /**
  * Finds one audience card by its resource name, or throws when it is absent.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param audiences The loaded audience cards.
  * @param name      The audience resource name to find.

@@ -109,7 +109,7 @@ class Sections_Map {
 	 * Returns an array describing the layout sections, where each section contains:
 	 * - title: The section heading
 	 * - icon: Icon identifier for the section
-	 * - section_parts: Array of template parts with their data
+	 * - section_parts: Array of template parts with their data.
 	 *
 	 * @since 1.168.0
 	 *
