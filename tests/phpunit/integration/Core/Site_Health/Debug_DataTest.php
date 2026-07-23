@@ -42,7 +42,7 @@ class Debug_DataTest extends TestCase {
 		$permissions     = new Permissions( $context, $authentication, $modules, $user_options, $dismissed_items );
 
 		$fake_module = new FakeModule( $context, $options, $user_options );
-		$fake_module->set_force_active( true ); // necessary to add sharing fields
+		$fake_module->set_force_active( true ); // necessary to add sharing fields.
 		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
 
 		// Ensure email reporting settings are registered so defaults are available.
@@ -135,7 +135,7 @@ class Debug_DataTest extends TestCase {
 				0,
 			),
 			array(
-				array(), // non-scalar
+				array(), // non-scalar.
 				'',
 				-4,
 			),

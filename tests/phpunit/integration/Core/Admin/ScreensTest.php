@@ -22,7 +22,7 @@ use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\MutableInput;
 
 /**
- * ScreensTest
+ * ScreensTest.
  *
  * @group Admin
  */
@@ -31,7 +31,7 @@ class ScreensTest extends TestCase {
 	use Fake_Site_Connection_Trait;
 
 	/**
-	 * Screens object
+	 * Screens object.
 	 *
 	 * @var Screens
 	 */

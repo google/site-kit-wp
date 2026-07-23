@@ -35,7 +35,7 @@ class ModuleTest extends TestCase {
 	const MODULE_CLASS_NAME = '\Google\Site_Kit\Core\Modules\Module';
 
 	public function test_register() {
-		// The register method is abstract and required by any implementation
+		// The register method is abstract and required by any implementation.
 		$method = new ReflectionMethod( self::MODULE_CLASS_NAME, 'register' );
 		$this->assertTrue( $method->isAbstract(), 'Base module should require concrete register implementation.' );
 	}
@@ -47,7 +47,7 @@ class ModuleTest extends TestCase {
 		$this->assertFalse( $module->force_active, 'Magic getter should expose force_active default.' );
 		$this->assertFalse( $module->internal, 'Magic getter should expose internal default.' );
 
-		// Can't use force_set_property here since the property is private on the base module
+		// Can't use force_set_property here since the property is private on the base module.
 		$reflection_property = new \ReflectionProperty( self::MODULE_CLASS_NAME, 'info' );
 		$reflection_property->setAccessible( true );
 		$reflection_property->setValue(
@@ -82,11 +82,11 @@ class ModuleTest extends TestCase {
 	public function test_get_data() {
 		// get_data is a wrapper for the protected execute_data_request method.
 		$method = new ReflectionMethod( self::MODULE_CLASS_NAME, 'get_data' );
-		// Make assertions that affect backwards compatibility
+		// Make assertions that affect backwards compatibility.
 		$this->assertTrue( $method->isPublic(), 'get_data should remain public for backward compatibility.' );
-		// Number of parameters can increase while preserving B/C, but not decrease
+		// Number of parameters can increase while preserving B/C, but not decrease.
 		$this->assertEquals( 2, $method->getNumberOfParameters(), 'get_data should keep expected parameter count.' );
-		// Number of required parameters can decrease while preserving B/C, but not increase
+		// Number of required parameters can decrease while preserving B/C, but not increase.
 		$this->assertEquals( 1, $method->getNumberOfRequiredParameters(), 'get_data should keep required parameter count.' );
 
 		$module   = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -96,7 +96,7 @@ class ModuleTest extends TestCase {
 		$this->assertEquals( 'test-request', $response->datapoint, 'get_data should pass requested datapoint.' );
 		$this->assertEquals( array( 'foo' => 'bar' ), (array) $response->data, 'get_data should pass request data to parser.' );
 
-		// Test that $data is available in parse_data_response
+		// Test that $data is available in parse_data_response.
 		$response = $module->get_data(
 			'test-request',
 			array(
@@ -262,11 +262,11 @@ class ModuleTest extends TestCase {
 	public function test_set_data() {
 		// set_data is a wrapper for the protected execute_data_request method.
 		$method = new ReflectionMethod( self::MODULE_CLASS_NAME, 'set_data' );
-		// Make assertions that affect backwards compatibility
+		// Make assertions that affect backwards compatibility.
 		$this->assertTrue( $method->isPublic(), 'set_data should remain public for backward compatibility.' );
-		// Number of parameters can increase while preserving B/C, but not decrease
+		// Number of parameters can increase while preserving B/C, but not decrease.
 		$this->assertEquals( 2, $method->getNumberOfParameters(), 'set_data should keep expected parameter count.' );
-		// Number of required parameters can decrease while preserving B/C, but not increase
+		// Number of required parameters can decrease while preserving B/C, but not increase.
 		$this->assertEquals( 2, $method->getNumberOfRequiredParameters(), 'set_data should keep required parameter count.' );
 	}
 
@@ -398,7 +398,7 @@ class ModuleTest extends TestCase {
 		};
 
 		// is_recoverable is a proxy through this filter which is handled by
-		// Modules::is_module_recoverable. @see \Google\Site_Kit\Tests\Core\Modules\ModulesTest::test_is_module_recoverable
+		// Modules::is_module_recoverable. @see \Google\Site_Kit\Tests\Core\Modules\ModulesTest::test_is_module_recoverable.
 		add_filter( 'googlesitekit_is_module_recoverable', $spy, 10, 2 );
 
 		$module->is_recoverable();

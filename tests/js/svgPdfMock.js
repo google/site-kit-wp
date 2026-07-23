@@ -28,7 +28,7 @@ import { Path, Svg } from '@react-pdf/renderer';
  * then assert the size and color an icon draws, without depending on any one
  * source file's shape.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param {Object} props        Component props.
  * @param {number} props.width  The drawing's width, in page points.

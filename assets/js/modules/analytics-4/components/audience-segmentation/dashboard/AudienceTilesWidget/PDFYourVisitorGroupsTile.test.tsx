@@ -53,7 +53,7 @@ const TOP_CONTENT = [
 /**
  * Renders `PDFYourVisitorGroupsTile` with default props, as a JSON tree string.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param props Props that override the defaults.
  * @return The rendered tree serialized to a string.

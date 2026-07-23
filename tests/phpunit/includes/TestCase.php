@@ -386,7 +386,7 @@ class TestCase extends WP_UnitTestCase {
 	 *
 	 * Ideally this should hook on to `http_api_debug` rather than `pre_http_request`
 	 * but the former action doesn't fire for blocked HTTP requests until WP 5.3.
-	 * {@link https://github.com/WordPress/WordPress/commit/eeba1c1244ee17424c8953dc416527a97560f6cc}
+	 * {@link https://github.com/WordPress/WordPress/commit/eeba1c1244ee17424c8953dc416527a97560f6cc}.
 	 *
 	 * @param Closure $listener Function to be invoked for all WP HTTP requests.
 	 *                          $listener will be called with $url, $args.

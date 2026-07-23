@@ -71,7 +71,7 @@ const LINE_CHART_OPTION_SCALE = LINE_CHART_SCALE_FACTOR / 2;
 /**
  * One key per report metric, shared with the PDF component and its tests.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export type ModuleOverviewMetricKey =
 	| 'estimatedEarnings'
@@ -181,7 +181,7 @@ const calculateMetricChange = calculateChange as unknown as (
 /**
  * Total and change for one metric card.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export interface ModuleOverviewMetric {
 	/** Total for the current period. */
@@ -193,7 +193,7 @@ export interface ModuleOverviewMetric {
 /**
  * The loader's resolved result.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export interface ModuleOverviewPDFData {
 	/** Widget data, or `null` when the export is canceled or no metric has data. */
@@ -222,7 +222,7 @@ interface MetricCardResult {
  * The current period is a solid smooth line. The previous period is a dotted
  * line of the same color, matching the dashboard.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param options         Options.
  * @param options.color   Series color for both lines.
@@ -311,7 +311,7 @@ function getLineChartOptions( {
  * Reads the dashboard's chart-data rows (a date, a tooltip, the current value,
  * and the previous value) and keeps only the columns the PDF chart needs.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param dataRows     Chart data rows (without the header row).
  * @param currentLabel Column label for the current-period series.
@@ -346,7 +346,7 @@ function buildChartDataTable(
 /**
  * Renders a metric's current and previous line chart to a JPEG data URI.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param options              Options.
  * @param options.dataRows     Chart data rows (without the header row).
@@ -387,7 +387,7 @@ function renderMetricChart( {
 /**
  * Resolves an AdSense report, then reads its value and any selector error.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param registry WordPress data registry.
  * @param args     Report args.
@@ -417,7 +417,7 @@ async function resolveReport(
  * When the card fails, both `metric` and `chartImage` come back `null`, and
  * the widget skips that card.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param options                Options for building the card.
  * @param options.currentTotals  Resolved current-period totals report.
@@ -490,7 +490,7 @@ async function buildMetricCard( {
  * period is dropped. When every metric is empty, `data` is `null` and the
  * report skips the section.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param params          Loader parameters.
  * @param params.registry WordPress data registry.

@@ -1047,7 +1047,7 @@ export const selectors = {
 	 * Gets value of the setting for whether the key metrics widget area is
 	 * hidden.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return {boolean|undefined} Whether the widget area is hidden.
 	 */
@@ -1058,7 +1058,7 @@ export const selectors = {
 	/**
 	 * Checks whether setup has hidden the key metrics widget area.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} Whether the widget area is hidden.

@@ -146,7 +146,7 @@ class Google_Proxy {
 			/**
 			 * Filters parameters included in the proxy setup URL.
 			 *
-			 * @since n.e.x.t
+			 * @since 1.184.0
 			 *
 			 * @param array $query_params Query parameters.
 			 */
