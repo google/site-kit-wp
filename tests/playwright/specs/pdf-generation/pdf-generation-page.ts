@@ -166,6 +166,60 @@ export class PDFGenerationPage {
 	}
 
 	/**
+	 * Selects a single widget within one section, deselecting every other section
+	 * and every sibling widget in that section.
+	 *
+	 * Some PDF sections group several widgets under one dashboard context (e.g. the
+	 * Traffic section holds the audience tiles, the Monetization section holds the
+	 * top earning pages). This keeps the parent section but leaves only the given
+	 * widget checked, so the export renders that widget on its own.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  sectionSlug The parent section (dashboard context) slug to keep.
+	 * @param  widgetSlug  The widget slug to leave selected within that section.
+	 * @return {Promise<void>} Resolves once the selection is applied.
+	 */
+	async selectOnlyWidget( sectionSlug: string, widgetSlug: string ) {
+		await this.deselectAllExcept( [ sectionSlug ] );
+
+		// Every section renders its widgets, but the other sections' widgets are
+		// already unchecked by `deselectAllExcept`, so leaving only the target
+		// widget checked across the whole panel isolates it within its section.
+		const widgetCheckboxes = await this.panel
+			.locator(
+				'.googlesitekit-pdf-download-panel__sub-section input[type="checkbox"]'
+			)
+			.all();
+
+		let matched = false;
+
+		for ( const checkbox of widgetCheckboxes ) {
+			const slug = await checkbox.getAttribute( 'value' );
+			const keep = slug === widgetSlug;
+
+			if ( keep ) {
+				matched = true;
+			}
+
+			if ( ! keep && ( await checkbox.isChecked() ) ) {
+				await checkbox.uncheck();
+			} else if ( keep && ! ( await checkbox.isChecked() ) ) {
+				await checkbox.check();
+			}
+		}
+
+		// Fail loudly if the widget slug matched nothing (typo or a renamed
+		// widget): otherwise no section stays selected and the Download button is
+		// disabled, which would surface only as an opaque download timeout.
+		if ( ! matched ) {
+			throw new Error(
+				`No PDF widget checkbox found for slug "${ widgetSlug }".`
+			);
+		}
+	}
+
+	/**
 	 * Clicks "Download report" and asserts a PDF file is produced.
 	 *
 	 * Waits for the browser download, then asserts the suggested filename ends in
