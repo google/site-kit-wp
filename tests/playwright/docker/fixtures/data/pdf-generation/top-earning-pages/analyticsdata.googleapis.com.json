@@ -1,0 +1,198 @@
+{
+	"/v1beta/properties/123456789:runReport": {
+		"POST::{\"keepemptyrows\":true,\"limit\":\"5\",\"metricaggregations\":[\"total\",\"minimum\",\"maximum\"],\"property\":\"properties\\/123456789\",\"dimensions\":[{\"name\":\"pagepath\"},{\"name\":\"adsourcename\"}],\"dimensionfilter\":{\"andgroup\":{\"expressions\":[{\"filter\":{\"fieldname\":\"hostname\",\"inlistfilter\":{\"values\":[\"localhost\",\"www.localhost\"]}}},{\"filter\":{\"fieldname\":\"adsourcename\",\"stringfilter\":{\"matchtype\":\"exact\",\"value\":\"google adsense account (pub-123456789)\"}}}]}},\"dateranges\":[{\"enddate\":\"2025-12-31\",\"startdate\":\"2025-12-04\"}],\"metrics\":[{\"name\":\"totaladrevenue\"}],\"orderbys\":[{\"desc\":true,\"metric\":{\"metricname\":\"totaladrevenue\"}}]}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"dimensionValues": [
+							{
+								"value": "/"
+							},
+							{
+								"value": "Google AdSense account (pub-123456789)"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "42.15"
+							}
+						]
+					},
+					{
+						"dimensionValues": [
+							{
+								"value": "/about"
+							},
+							{
+								"value": "Google AdSense account (pub-123456789)"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "28.9"
+							}
+						]
+					},
+					{
+						"dimensionValues": [
+							{
+								"value": "/blog/hello-world"
+							},
+							{
+								"value": "Google AdSense account (pub-123456789)"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "17.5"
+							}
+						]
+					},
+					{
+						"dimensionValues": [
+							{
+								"value": "/contact"
+							},
+							{
+								"value": "Google AdSense account (pub-123456789)"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "9.2"
+							}
+						]
+					},
+					{
+						"dimensionValues": [
+							{
+								"value": "/pricing"
+							},
+							{
+								"value": "Google AdSense account (pub-123456789)"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "4.75"
+							}
+						]
+					}
+				],
+				"totals": [
+					{
+						"metricValues": [
+							{
+								"value": "102.50"
+							}
+						]
+					}
+				],
+				"rowCount": 5,
+				"metadata": {
+					"currencyCode": "USD",
+					"timeZone": "America/Los_Angeles"
+				},
+				"kind": "analyticsData#runReport"
+			}
+		},
+		"POST::{\"keepemptyrows\":true,\"limit\":\"25\",\"metricaggregations\":[\"total\",\"minimum\",\"maximum\"],\"property\":\"properties\\/123456789\",\"dimensions\":[{\"name\":\"pagepath\"},{\"name\":\"pagetitle\"}],\"dimensionfilter\":{\"andgroup\":{\"expressions\":[{\"filter\":{\"fieldname\":\"hostname\",\"inlistfilter\":{\"values\":[\"localhost\",\"www.localhost\"]}}},{\"filter\":{\"fieldname\":\"pagepath\",\"inlistfilter\":{\"values\":[\"\\/\",\"\\/about\",\"\\/blog\\/hello-world\",\"\\/contact\",\"\\/pricing\"]}}}]}},\"dateranges\":[{\"enddate\":\"2025-12-31\",\"startdate\":\"2025-12-04\"}],\"metrics\":[{\"name\":\"screenpageviews\"}],\"orderbys\":[{\"desc\":true,\"metric\":{\"metricname\":\"screenpageviews\"}}]}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"dimensionValues": [
+							{
+								"value": "/"
+							},
+							{
+								"value": "Home"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "100"
+							}
+						]
+					},
+					{
+						"dimensionValues": [
+							{
+								"value": "/about"
+							},
+							{
+								"value": "About Us"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "100"
+							}
+						]
+					},
+					{
+						"dimensionValues": [
+							{
+								"value": "/blog/hello-world"
+							},
+							{
+								"value": "Hello World"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "100"
+							}
+						]
+					},
+					{
+						"dimensionValues": [
+							{
+								"value": "/contact"
+							},
+							{
+								"value": "Contact"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "100"
+							}
+						]
+					},
+					{
+						"dimensionValues": [
+							{
+								"value": "/pricing"
+							},
+							{
+								"value": "Pricing"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "100"
+							}
+						]
+					}
+				],
+				"totals": [
+					{
+						"metricValues": [
+							{
+								"value": "500"
+							}
+						]
+					}
+				],
+				"rowCount": 5,
+				"metadata": {
+					"currencyCode": "USD",
+					"timeZone": "America/Los_Angeles"
+				},
+				"kind": "analyticsData#runReport"
+			}
+		}
+	}
+}
