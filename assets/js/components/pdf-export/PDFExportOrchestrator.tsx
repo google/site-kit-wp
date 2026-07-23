@@ -344,6 +344,10 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				registry,
 				dates,
 				signal,
+				// The same module visibility the area discovery used, so a
+				// loader that composes several modules' tiles (Key Metrics) can
+				// keep only the tiles the user can view, as the dashboard does.
+				viewableModules,
 			} );
 
 			throwIfAborted( signal );

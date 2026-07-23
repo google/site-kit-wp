@@ -112,6 +112,26 @@ describe( 'PDFWidgetSection', () => {
 		expect( widgetSectionJSON ).toContain( '"paddingHorizontal":0' );
 	} );
 
+	it( 'passes the bookmark prop to the outer View when supplied', () => {
+		const widgetSectionJSON = renderJSON(
+			<PDFWidgetSection bookmark="Traffic">
+				<Text>child</Text>
+			</PDFWidgetSection>
+		);
+
+		expect( widgetSectionJSON ).toContain( '"bookmark":"Traffic"' );
+	} );
+
+	it( 'omits the bookmark prop when not supplied', () => {
+		const widgetSectionJSON = renderJSON(
+			<PDFWidgetSection>
+				<Text>child</Text>
+			</PDFWidgetSection>
+		);
+
+		expect( widgetSectionJSON ).not.toContain( '"bookmark"' );
+	} );
+
 	it( 'scales the heading gap and adds no outer margin', () => {
 		const widgetSectionJSON = renderJSON(
 			<PDFWidgetSection heading="Top content over time">

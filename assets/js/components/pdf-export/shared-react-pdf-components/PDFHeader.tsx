@@ -30,13 +30,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { formatDateString } from '@/js/components/pdf-export/formatDateString';
 import {
 	PDF_PAGE_PADDING,
 	createPDFStyles,
 } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import { PDFHeaderSection } from '@/js/components/pdf-export/types';
-import { getLocale, isValidDateString, stringToDate } from '@/js/util';
 import PDFChip from './PDFChip';
 import PDFLink from './PDFLink';
 import PDFSiteKitLogo from './PDFSiteKitLogo';
@@ -65,29 +65,6 @@ function getSiteHost( siteURL: string ): string {
 	} catch {
 		return siteURL;
 	}
-}
-
-/**
- * Formats a `YYYY-MM-DD` date as a localized short date, e.g. "Jan 1, 2021".
- *
- * Returns an empty string for missing/invalid input: `stringToDate` throws on a
- * non-`YYYY-MM-DD` string, which would otherwise abort the whole PDF render.
- *
- * @since 1.182.0
- *
- * @param dateString The date in `YYYY-MM-DD` format.
- * @return The localized date, or an empty string.
- */
-function formatHeaderDate( dateString: string ): string {
-	if ( ! isValidDateString( dateString ) ) {
-		return '';
-	}
-
-	return new Intl.DateTimeFormat( getLocale(), {
-		month: 'short',
-		day: 'numeric',
-		year: 'numeric',
-	} ).format( stringToDate( dateString ) );
 }
 
 /**
@@ -178,8 +155,8 @@ const PDFHeader: FC< PDFHeaderProps > = ( {
 	dateRange,
 	sections,
 } ) => {
-	const startDate = formatHeaderDate( dateRange.startDate );
-	const endDate = formatHeaderDate( dateRange.endDate );
+	const startDate = formatDateString( dateRange.startDate );
+	const endDate = formatDateString( dateRange.endDate );
 	/** Avoid a dangling " - " when one (or both) of the dates is invalid. */
 	const formattedDateRange =
 		startDate && endDate

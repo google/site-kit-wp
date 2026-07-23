@@ -24,6 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { isFeatureEnabled } from '@/js/features';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
 import ReaderRevenueManagerIcon from '@/svg/graphics/reader-revenue-manager.svg';
@@ -32,7 +33,7 @@ import {
 	SettingsStatus,
 	SettingsView,
 } from './components/settings';
-import { SetupMain } from './components/setup';
+import { SetupMain, SetupMainExpressReady } from './components/setup';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from './constants';
 import {
 	ERROR_CODE_NON_HTTPS_SITE,
@@ -48,7 +49,9 @@ export function registerModule( modules ) {
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		SettingsStatusComponent: SettingsStatus,
-		SetupComponent: SetupMain,
+		SetupComponent: isFeatureEnabled( 'rrmExpressSetup' )
+			? SetupMainExpressReady
+			: SetupMain,
 		Icon: ReaderRevenueManagerIcon,
 		features: [
 			__(
