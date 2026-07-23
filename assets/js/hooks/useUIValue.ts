@@ -30,7 +30,7 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 /**
  * Returns the value of a UI key.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param {string} key UI key.
  * @return {Array} An array containing the value and a function to update it.

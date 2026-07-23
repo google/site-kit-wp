@@ -47,7 +47,7 @@ export type PDFIcon = FC< {
  * `assets/js/types/svg.d.ts` types every `?pdf` import with this interface, so
  * an import and the icon that wraps it always take the same props.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export interface PDFSvgFileProps {
 	/** The drawing's width, in page points. */

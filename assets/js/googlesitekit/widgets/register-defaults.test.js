@@ -34,7 +34,7 @@ import { registerDefaults } from './register-defaults';
  * Builds a mock widgets API that records `registerWidget`/`registerWidgetArea`
  * calls so a test can inspect what `registerDefaults` registered.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @return {Object} The mock widgets API.
  */
@@ -49,7 +49,7 @@ function createWidgetsAPI() {
 /**
  * Finds the `registerWidget` call for the given slug on a mock widgets API.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param {Object} widgetsAPI The mock widgets API.
  * @param {string} slug       The widget slug to find.
@@ -66,7 +66,7 @@ function findWidgetRegistration( widgetsAPI, slug ) {
 /**
  * Finds the `registerWidgetArea` call for the given slug on a mock widgets API.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param {Object} widgetsAPI The mock widgets API.
  * @param {string} slug       The widget area slug to find.
@@ -83,7 +83,7 @@ function findWidgetAreaRegistration( widgetsAPI, slug ) {
 /**
  * Builds a `select` stand-in whose `getKeyMetrics()` returns the given slugs.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param {string[]} keyMetrics The key metric slugs to return.
  * @return {Function} A `select` stand-in.

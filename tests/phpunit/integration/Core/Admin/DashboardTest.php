@@ -48,10 +48,10 @@ class DashboardTest extends TestCase {
 		global $wp_meta_boxes;
 		$this->get_widget_markup();
 
-		// Check that the dashboard widget was registered
+		// Check that the dashboard widget was registered.
 		$this->assertArrayHasKey( 'google_dashboard_widget', $wp_meta_boxes['dashboard']['normal']['core'], 'Dashboard widget should be registered in meta boxes.' );
 
-		// Check that expected assets are enqueued
+		// Check that expected assets are enqueued.
 		$this->assertTrue( wp_script_is( 'googlesitekit-wp-dashboard', 'enqueued' ), 'The expected script assets are not enqueued.' );
 		$this->assertTrue( wp_style_is( 'googlesitekit-wp-dashboard-css', 'enqueued', ), 'The expected style assets are not enqueued.' );
 	}
@@ -184,9 +184,9 @@ class DashboardTest extends TestCase {
 
 	public function get_widget_markup( $modules = null ) {
 		global $wp_meta_boxes, $current_screen;
-		// Clear out any registered meta boxes
+		// Clear out any registered meta boxes.
 		$wp_meta_boxes = array();
-		// Set the current screen to the dashboard
+		// Set the current screen to the dashboard.
 		$current_screen = convert_to_screen( 'dashboard' );
 		$dashboard      = new Dashboard(
 			$this->context,
@@ -196,7 +196,7 @@ class DashboardTest extends TestCase {
 
 		$dashboard->register();
 
-		// Bypass user authentication requirement in map_meta_cap
+		// Bypass user authentication requirement in map_meta_cap.
 		add_filter(
 			'map_meta_cap',
 			function ( $caps, $cap ) {

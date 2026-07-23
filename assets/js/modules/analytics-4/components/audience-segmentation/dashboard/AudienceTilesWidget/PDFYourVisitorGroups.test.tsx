@@ -30,7 +30,7 @@ import PDFYourVisitorGroups from './PDFYourVisitorGroups';
 /**
  * Builds a loaded audience card fixture with the given name.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param name The audience name, used for the resource name and display name.
  * @return A fully loaded audience card object.
@@ -57,7 +57,7 @@ function buildAudience( name: string ) {
 /**
  * Renders `PDFYourVisitorGroups` with the given props to its JSON tree.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param props The widget props.
  * @return The rendered tree, or `null` when the widget renders nothing.
@@ -71,7 +71,7 @@ function renderWidget( props: ComponentProps< typeof PDFYourVisitorGroups > ) {
 /**
  * Counts the rendered cards by their "Cities with the most visitors" headings.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param json The rendered tree serialized to a string.
  * @return The number of audience cards in the tree.

@@ -212,7 +212,7 @@ class Audience_SettingsTest extends TestCase {
 			'isAudienceSegmentationWidgetHidden' => true,
 		);
 
-		// Make sure settings can be updated even without having them set initially
+		// Make sure settings can be updated even without having them set initially.
 		$this->audience_settings->merge( $original_settings );
 		$this->assertEqualSetsWithIndex(
 			array_merge(
@@ -225,7 +225,7 @@ class Audience_SettingsTest extends TestCase {
 			$this->audience_settings->get()
 		);
 
-		// Make sure invalid keys aren't set
+		// Make sure invalid keys aren't set.
 		$this->audience_settings->merge( array( 'test_key' => 'test_value' ) );
 		$this->assertEqualSetsWithIndex(
 			array_merge(
@@ -237,7 +237,7 @@ class Audience_SettingsTest extends TestCase {
 			$this->audience_settings->get()
 		);
 
-		// Make sure that we can update settings partially
+		// Make sure that we can update settings partially.
 		$this->audience_settings->set( $original_settings );
 		$this->audience_settings->merge( array( 'isAudienceSegmentationWidgetHidden' => true ) );
 		$this->assertEqualSetsWithIndex(
@@ -248,7 +248,7 @@ class Audience_SettingsTest extends TestCase {
 			$this->audience_settings->get()
 		);
 
-		// Make sure that we can update all settings at once
+		// Make sure that we can update all settings at once.
 		$this->audience_settings->set( $original_settings );
 		$this->audience_settings->merge( $changed_settings );
 		$this->assertEqualSetsWithIndex(
@@ -261,7 +261,7 @@ class Audience_SettingsTest extends TestCase {
 			$this->audience_settings->get()
 		);
 
-		// Make sure that we can't set wrong format (or `null`) for the isAudienceSegmentationWidgetHidden property
+		// Make sure that we can't set wrong format (or `null`) for the isAudienceSegmentationWidgetHidden property.
 		$this->audience_settings->set( $original_settings );
 		$this->audience_settings->merge( array( 'isAudienceSegmentationWidgetHidden' => null ) );
 		$this->assertEqualSetsWithIndex( $original_settings, $this->audience_settings->get() );

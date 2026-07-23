@@ -44,7 +44,7 @@ const DATES = {
  * the real `getWidgets` module filter: a slug is dropped when the caller passes a
  * `modules` scope that does not include every module the widget requires.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param slugs           The area's active widget slugs, in dashboard order.
  * @param widgetModules   Map of slug to the modules that widget requires.

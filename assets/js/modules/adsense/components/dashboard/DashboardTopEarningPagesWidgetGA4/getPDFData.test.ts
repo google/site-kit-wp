@@ -95,7 +95,7 @@ const TITLES_REPORT = {
  * URL contains `pageTitle` returns the `titles` fixture, and every other report
  * request returns the `main` fixture.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param  [reports]        Report fixtures to return.
  * @param  [reports.main]   Report returned for requests other than the page titles report.

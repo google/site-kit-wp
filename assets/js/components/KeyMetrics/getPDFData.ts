@@ -69,7 +69,7 @@ type TileRenderComponent = ComponentType< Record< string, unknown > >;
  * `data` it consumes. Only tiles with data are composed, so `data` is always
  * present — a tile whose report has no data (or failed to load) is left out.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export interface KeyMetricsPDFTile {
 	/** The key metric slug, e.g. `KM_ANALYTICS_NEW_VISITORS`. */
@@ -85,7 +85,7 @@ export interface KeyMetricsPDFTile {
 /**
  * Resolved output of the Key Metrics aggregate loader.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export interface KeyMetricsPDFData {
 	/** The tiles to render, or `null` when the export is canceled. */
@@ -109,7 +109,7 @@ export interface KeyMetricsPDFData {
  * When no tile has data the loader returns `{ data: null }` so the orchestrator
  * omits the whole section.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param params                 Loader parameters.
  * @param params.registry        WordPress data registry.
