@@ -70,7 +70,7 @@ export default function ReaderRevenueManagerSetupCTABannerWidget( {
 		[]
 	);
 
-	const isDismissingWidget = useSelect(
+	const isDismissingItem = useSelect(
 		( select: Select ) =>
 			select( CORE_USER ).isDismissingItem(
 				RRM_EXPRESS_SETUP_TRAFFIC_CTA_DISMISSED_KEY
@@ -86,7 +86,7 @@ export default function ReaderRevenueManagerSetupCTABannerWidget( {
 	}, [] );
 
 	const isBusy =
-		isDismissingPrompt || isFetchingSetModuleActivation || isInProgress;
+		isDismissingItem || isFetchingSetModuleActivation || isInProgress;
 
 	function handleCTAClick() {
 		if ( ! activateReaderRevenueManager ) {

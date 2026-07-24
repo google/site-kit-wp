@@ -44,21 +44,21 @@ export function registerWidgets( widgets ) {
 					CORE_MODULES
 				).canActivateModule( MODULE_SLUG_READER_REVENUE_MANAGER );
 
+				const isItemDismissed = select( CORE_USER ).isItemDismissed(
+					RRM_EXPRESS_SETUP_TRAFFIC_CTA_DISMISSED_KEY
+				);
+
 				const isModuleConnected = select(
 					CORE_MODULES
 				).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
-
-				const isWidgetDismissed = select( CORE_USER ).isItemDismissed(
-					RRM_EXPRESS_SETUP_TRAFFIC_CTA_DISMISSED_KEY
-				);
 
 				const isViewOnly = ! select( CORE_USER ).isAuthenticated();
 
 				return (
 					! isViewOnly &&
 					canActivateModule &&
-					isModuleConnected === false &&
-					isPromptDismissed === false
+					isItemDismissed === false &&
+					isModuleConnected === false
 				);
 			},
 		},
