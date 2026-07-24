@@ -41,7 +41,7 @@ We reuse the existing Conversion Tracking pipeline end‑to‑end and add a **si
 
 Concretely:
 
-- A new PHP provider `Content_Events` extends the existing `Conversion_Events_Provider` base. Unlike the plugin providers, its `is_active()` is **not** gated on a third‑party plugin — it is "active" whenever the feature flag is on. Per‑event gating (page type, element presence, provider presence such as bbPress) happens **inside** its hooks and its frontend script.
+- A new PHP provider `Content_Events` extends the existing `Conversion_Events_Provider` base. Unlike the plugin providers, its `is_active()` is **not** gated on a third‑party plugin — it is always active, relying on the Conversion Tracking preconditions (Conversion Tracking enabled + a GA4/Ads web tag present) that `maybe_enqueue_scripts()` already enforces. Per‑event gating (page type, element presence, provider presence such as bbPress) happens **inside** its hooks and its frontend script.
 - The provider registers **one** frontend entry, `googlesitekit-events-provider-content-events`, that attaches all the client‑side listeners/observers and fires events through the **existing** `window._googlesitekit.gtagEvent( name, data )` helper — so every event is automatically de‑duped/throttled and stamped `event_source: 'site-kit'`.
 - The provider's PHP `register_hooks()` handles the server‑side pieces the frontend can't do on its own: appending the end‑of‑content anchor, injecting `enablejsapi=1` into YouTube oEmbeds, detecting Vimeo iframes and conditionally enqueuing the Vimeo Player SDK, and passing per‑page config (post ID, word count, reading‑time constants, page‑type flags) to the script.
 
@@ -49,28 +49,44 @@ Because these are engagement events rather than lead/e‑commerce conversions, t
 
 ### Data flow
 
+**Server side — what PHP prepares on each front-end page request:**
+
+```mermaid
+flowchart TD
+    REQ(["Front-end page request"])
+
+    REQ --> MES["Conversion_Tracking::maybe_enqueue_scripts()<br/>(wp_enqueue_scripts, priority 30)"]
+    MES --> PRE{"Conversion Tracking enabled<br/>AND a GA4/Ads web tag injected?<br/>(did_action init_tag)"}
+    PRE -->|no| STOP(["no-op — nothing enqueued"])
+    PRE -->|yes| ENQ["Enqueue content-events.js<br/>+ inject gtagEvent() helper"]
+
+    REQ --> HOOKS["Content_Events::register_hooks()"]
+    HOOKS --> H1["the_content → end-of-content anchor (single posts)"]
+    HOOKS --> H2["oEmbed / block render → enablejsapi=1 on YouTube; tag Vimeo iframes"]
+    HOOKS --> H3["wp_footer → window._googlesitekit.contentEvents = { postID, wordCount, ... }"]
+    HOOKS --> H4["conditional enqueue → Vimeo Player SDK (only if a Vimeo iframe is present)"]
 ```
-                        wp_enqueue_scripts (priority 30)
-Conversion_Tracking::maybe_enqueue_scripts()
-  ├─ precondition: Conversion Tracking enabled  AND
-  │                a GA4/Ads web tag was injected (did_action init_tag)
-  ├─ enqueue each active provider's script  ──►  content-events.js
-  └─ inject window._googlesitekit.gtagEvent(name, data)  (throttle + event_source:'site-kit')
 
-Content_Events::register_hooks()  (PHP)
-  ├─ the_content            → append end-of-content anchor (single posts)
-  ├─ embed_oembed_html /    → add enablejsapi=1 to YouTube; tag Vimeo iframes
-  │  block render / oembed
-  ├─ wp_footer / inline     → window._googlesitekit.contentEvents = { postID, wordCount, ... }
-  └─ conditionally enqueue Vimeo Player SDK when a Vimeo iframe is present
+**Frontend — what the browser then runs.** `content-events.js` reads the inline config, wires one handler per event, and every handler emits through the injected `gtagEvent()` helper (YouTube is the exception — GA4 fires it directly, unlocked by the `enablejsapi=1` rewrite above):
 
-content-events.js  (frontend)
-  ├─ read_article        → IntersectionObserver(anchor) + dwell timer
-  ├─ pagination_click    → delegated click on a.post-page-numbers / bbPress links
-  ├─ contact_link_click  → delegated click on a[href^="tel:"], a[href^="mailto:"]
-  ├─ outbound_link_click → delegated click on a[rel~="sponsored"|"ugc"|"nofollow"]
-  └─ video (Vimeo)       → Vimeo Player SDK playback callbacks → video_* events
-          (YouTube video_* events are fired by GA4 Enhanced Measurement itself)
+```mermaid
+flowchart TD
+    CFG["window._googlesitekit.contentEvents<br/>{ postID, wordCount, ... }"] --> JS["content-events.js"]
+
+    JS --> A["read_article<br/>IntersectionObserver(anchor) + dwell timer"]
+    JS --> B["pagination_click<br/>a.post-page-numbers / bbPress links"]
+    JS --> C["contact_link_click<br/>tel: / mailto: links"]
+    JS --> D["outbound_link_click<br/>rel ~= sponsored / ugc / nofollow"]
+    JS --> E["video (Vimeo)<br/>Vimeo Player SDK callbacks"]
+
+    A --> GT
+    B --> GT
+    C --> GT
+    D --> GT
+    E --> GT
+
+    GT["window._googlesitekit.gtagEvent(name, data)<br/>(throttle + event_source: 'site-kit')"] --> GA(["GA4 / Ads tag"])
+    YT["YouTube video_* events"] -. "via enablejsapi=1" .-> GA
 ```
 
 ## **Infrastructure**
@@ -83,13 +99,8 @@ We reuse the following existing infrastructure; no new external service is intro
 - **`Script`** asset class + **`frontendModules.config.js`** webpack config — where the existing `googlesitekit-events-provider-*` frontend entries are declared and built to `dist/assets/js/`. We add one entry.
 - **`Conversion_Tracking_Settings`** (`googlesitekit_conversion_tracking` → `{ enabled: bool }`) — the single on/off gate the user already controls. No new setting is required for these events to fire.
 - **`googlesitekit_inline_base_data` filter** — the existing channel for surfacing PHP flags to JS (already used for `hasActiveLeadEventProviders` etc.). Available if any admin‑surface flag is later needed.
-- **`Core\Util\Feature_Flags`** + **`feature-flags.json`** — for the new feature flag.
 
 ## **Detailed design**
-
-### **Feature flag**
-
-The feature is built behind a new `contentEvents` feature flag (added to `feature-flags.json` and checked via `Feature_Flags::enabled( 'contentEvents' )`). The provider's `is_active()` returns `true` only when the flag is enabled, so with the flag off nothing changes for existing sites.
 
 ### **New provider: `Content_Events`**
 
@@ -97,7 +108,7 @@ A new class `Content_Events` in `includes/Core/Conversion_Tracking/Conversion_Ev
 
 | Method | Behavior |
 | :---- | :---- |
-| `is_active()` | `Feature_Flags::enabled( 'contentEvents' )` — **not** plugin‑gated. All finer gating is per‑event, client‑ or hook‑side. |
+| `is_active()` | Returns `true` — **not** plugin‑gated and **not** feature‑flag‑gated. The hard preconditions (Conversion Tracking enabled + a GA4/Ads tag) are already enforced by `maybe_enqueue_scripts()`; all finer gating is per‑event, client‑ or hook‑side. |
 | `get_category()` | New constant `CATEGORY_CONTENT = 'content'` (added to the base class). |
 | `get_event_names()` | Returns `array()` — see [Keeping content events separate](#keeping-content-events-separate). |
 | `register_script()` | Registers/returns a `Script` for `googlesitekit-events-provider-content-events` (`execution => 'defer'`), mirroring the existing providers. |
@@ -246,11 +257,10 @@ Proposed GitHub issues for this mini‑epic (issue numbers and final points TBD 
 
 | # | Title | Design Doc Points |
 | :---- | :---- | :---- |
-| 1 | `contentEvents` feature flag | 3 |
-| 2 | `Content_Events` provider scaffold + registration + `content-events.js` entry (pipeline wiring) | 8 |
-| 3 | `read_article` — end‑of‑content anchor, reading‑time constants, IntersectionObserver + dwell timer | 13 |
-| 4 | Embedded video — YouTube `enablejsapi=1` filter + Vimeo Player SDK tracking | 13 |
-| 5 | `pagination_click` — post pagination + bbPress thread pagination | 8 |
-| 6 | `contact_link_click` — `tel:` / `mailto:` delegated tracking | 5 |
-| 7 | `outbound_link_click` — `rel`‑qualified delegated tracking | 5 |
-| 8 | Site Health debug data + `content_events` feature metric + tester‑plugin support | 5 |
+| 1 | `Content_Events` provider scaffold + registration + `content-events.js` entry (pipeline wiring) | 8 |
+| 2 | `read_article` — end‑of‑content anchor, reading‑time constants, IntersectionObserver + dwell timer | 13 |
+| 3 | Embedded video — YouTube `enablejsapi=1` filter + Vimeo Player SDK tracking | 13 |
+| 4 | `pagination_click` — post pagination + bbPress thread pagination | 8 |
+| 5 | `contact_link_click` — `tel:` / `mailto:` delegated tracking | 5 |
+| 6 | `outbound_link_click` — `rel`‑qualified delegated tracking | 5 |
+| 7 | Site Health debug data + `content_events` feature metric + tester‑plugin support | 5 |
