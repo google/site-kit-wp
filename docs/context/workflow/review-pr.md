@@ -20,7 +20,33 @@ Run these in parallel (substitute `<number>`):
 
 **Stop and ask the user** if the PR can't be found or the diff is empty.
 
-## Step 2 — Identify and read the linked issue
+## Step 2 — Check out the PR into a git worktree
+
+Review the PR's **actual code**, not just the diff. Check the PR branch out into an isolated
+git worktree so your current working tree and branch stay untouched:
+
+```
+git fetch origin pull/<number>/head:pr-<number>-review
+git worktree add ../site-kit-wp-pr-<number> pr-<number>-review
+```
+
+The `pull/<number>/head` ref works whether the PR comes from a branch in this repo or a fork.
+From here on, **inspect the PR's files inside that worktree** (`../site-kit-wp-pr-<number>`) so
+every file you read reflects the code as it would land after merge. Convention docs
+(`docs/context/…`) can be read from either location — they're identical across branches unless
+the PR itself changes them.
+
+If `git fetch` or `git worktree add` fails because of a stale worktree/branch left over from a
+previous review, clean up and retry:
+
+```
+git worktree remove --force ../site-kit-wp-pr-<number>
+git branch -D pr-<number>-review
+```
+
+**Stop and ask the user** if the worktree still can't be created.
+
+## Step 3 — Identify and read the linked issue
 
 Site Kit PRs use `.github/PULL_REQUEST_TEMPLATE.md`, whose **Summary** section links the issue
 the PR implements:
@@ -43,7 +69,7 @@ If the PR body has **no** linked issue (the `- #` line is empty), say so in the 
 requirements adherence as "not verifiable", and review conventions and code quality only. Do
 not invent acceptance criteria.
 
-## Step 3 — Load the relevant convention docs
+## Step 4 — Load the relevant convention docs
 
 Read **only** the convention docs that the changed files touch — use the same scope map as
 `implement-issue.md` Step 3:
@@ -59,18 +85,18 @@ Read **only** the convention docs that the changed files touch — use the same 
 
 The convention checklist in `review-checklist.md` (§2) maps each area to its authoritative doc.
 
-## Step 4 — Inspect the changed files
+## Step 5 — Inspect the changed files
 
-For any non-trivial changed file (not auto-generated, not lock files), read the full file for
-context around the changed lines. Focus on files where the diff alone is insufficient to judge
-correctness.
+For any non-trivial changed file (not auto-generated, not lock files), read the full file
+**inside the worktree** (Step 2) for context around the changed lines. Focus on files where the
+diff alone is insufficient to judge correctness.
 
-## Step 5 — Judge against the checklist
+## Step 6 — Judge against the checklist
 
 Grade the change against `review-checklist.md`:
 
 - **Requirements adherence** (§1) — the primary check. Walk each **Acceptance criterion** and
-  each **Implementation Brief** checkbox from the linked issue (Step 2) and confirm the diff
+  each **Implementation Brief** checkbox from the linked issue (Step 3) and confirm the diff
   actually implements it; call out anything missing, incomplete, or contradicting the brief.
   Confirm every **Test Coverage** item exists as a real test. Skip only if no issue is linked.
 - **Convention adherence** (§2) — check only the areas the change actually touches; cite the
@@ -78,7 +104,7 @@ Grade the change against `review-checklist.md`:
 - **Code quality** (§3) — correctness, security, performance, documentation, accessibility.
 - **Verification** (§4) — lint, tests run, build for non-trivial asset changes.
 
-## Step 6 — Produce the review
+## Step 7 — Produce the review
 
 Structure the output as below. Omit any section with nothing to report.
 
@@ -96,7 +122,7 @@ One paragraph describing what this PR does and what areas it touches. Name the l
 
 #### Requirements Adherence
 
-Only when an issue is linked (Step 2). For each **Acceptance criterion** and **Implementation
+Only when an issue is linked (Step 3). For each **Acceptance criterion** and **Implementation
 Brief** checkbox, state ✅ met / ⚠️ partial / ❌ missing, with the `file:line` that satisfies it
 (or what's absent). Note any **Test Coverage** item without a corresponding test.
 
@@ -144,3 +170,6 @@ Brief justification. If requesting changes, list the blocking issues as a number
 - **Cite, don't assert.** For every convention violation, name the principle, the context file
   + section that defines it, and the affected `file:line`.
 - **Scope the read.** Load only the convention docs the change touches — not everything.
+- **Clean up the worktree.** Once the review is produced, remove the worktree created in Step 2
+  so it doesn't linger: `git worktree remove ../site-kit-wp-pr-<number>` (add `--force` if it
+  refuses), then `git branch -D pr-<number>-review`.
