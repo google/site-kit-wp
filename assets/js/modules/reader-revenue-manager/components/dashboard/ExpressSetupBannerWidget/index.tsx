@@ -19,35 +19,24 @@
 /**
  * WordPress dependencies
  */
-import {
-	Fragment,
-	createInterpolateElement,
-	useState,
-} from '@wordpress/element';
+import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
-import Banner from '@/js/components/Banner';
-import Link from '@/js/components/Link';
-import PoweredByModule from '@/js/components/PoweredByModule';
-import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
-import P from '@/js/components/Typography/P';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import type { WidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import ExpressSetupBanner from '@/js/modules/reader-revenue-manager/components/dashboard/ExpressSetupBannerWidget/ExpressSetupBanner';
 import {
 	MODULE_SLUG_READER_REVENUE_MANAGER,
 	RRM_EXPRESS_SETUP_TRAFFIC_CTA_DISMISSED_KEY,
 } from '@/js/modules/reader-revenue-manager/constants';
-import BannerSVGMobile from '@/svg/graphics/banner-rrm-setup-cta-widget-mobile.svg?url';
-import BannerSVGDesktop from '@/svg/graphics/banner-rrm-setup-cta-widget.svg?url';
 
-export default function ReaderRevenueManagerSetupCTABannerWidget( {
+export default function ExpressSetupBannerWidget( {
 	Widget,
 }: WidgetComponentProps ) {
 	const activateReaderRevenueManager = useActivateModuleCallback(
@@ -63,12 +52,6 @@ export default function ReaderRevenueManagerSetupCTABannerWidget( {
 	const [ isInProgress, setIsInProgress ] = useState( false );
 
 	const { dismissItem } = useDispatch( CORE_USER );
-
-	const documentationLinkURL = useSelect(
-		( select: Select ) =>
-			select( CORE_SITE ).getDocumentationLinkURL( 'rrm-newsletter' ),
-		[]
-	);
 
 	const isDismissingItem = useSelect(
 		( select: Select ) =>
@@ -103,36 +86,7 @@ export default function ReaderRevenueManagerSetupCTABannerWidget( {
 
 	return (
 		<Widget noPadding>
-			<Banner
-				className="googlesitekit-rrm-setup-cta-banner-widget"
-				title={ __(
-					'Collect reader emails directly on your site',
-					'google-site-kit'
-				) }
-				description={
-					<Fragment>
-						<P size={ SIZE_MEDIUM }>
-							{ createInterpolateElement(
-								__(
-									'Add a simple sign-up form to your site so readers can share their email addresses with you. It’s an easy, privacy-safe way to start building a list of your most interested visitors. <a>Learn more</a>',
-									'google-site-kit'
-								),
-								{
-									a: (
-										<Link
-											href={ documentationLinkURL }
-											external
-											hideExternalIndicator
-										/>
-									),
-								}
-							) }
-						</P>
-						<PoweredByModule
-							slug={ MODULE_SLUG_READER_REVENUE_MANAGER }
-						/>
-					</Fragment>
-				}
+			<ExpressSetupBanner
 				ctaButton={ {
 					label: __( 'Set up a sign-up form', 'google-site-kit' ),
 					onClick: handleCTAClick,
@@ -143,11 +97,6 @@ export default function ReaderRevenueManagerSetupCTABannerWidget( {
 					label: __( 'No thanks', 'google-site-kit' ),
 					onClick: handleDismissClick,
 					disabled: isBusy,
-				} }
-				svg={ {
-					desktop: BannerSVGDesktop as unknown as string,
-					mobile: BannerSVGMobile as unknown as string,
-					verticalPosition: 'center',
 				} }
 			/>
 		</Widget>

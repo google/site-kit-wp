@@ -42,22 +42,22 @@ import {
 	provideSiteInfo,
 } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
-import ReaderRevenueManagerSetupCTABannerWidget from './ReaderRevenueManagerSetupCTABannerWidget';
+import ExpressSetupBannerWidget from '.';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	RRM_EXPRESS_SETUP_TRAFFIC_CTA_WIDGET_SLUG
-)( ReaderRevenueManagerSetupCTABannerWidget );
+)( ExpressSetupBannerWidget );
 
 function Template() {
 	return <WidgetWithComponentProps />;
 }
 
 export const Default = Template.bind( {} ) as Story;
-Default.storyName = 'Default';
+Default.storyName = 'ExpressSetupBannerWidget';
 Default.scenario = {};
 
 export default {
-	title: 'Modules/ReaderRevenueManager/Components/Dashboard/ReaderRevenueManagerSetupCTABannerWidget',
+	title: 'Modules/ReaderRevenueManager/Components/Dashboard/ExpressSetupBannerWidget',
 	decorators: [
 		( StoryComponent: () => ReactElement ) => {
 			function setupRegistry( registry: WPDataRegistry ) {

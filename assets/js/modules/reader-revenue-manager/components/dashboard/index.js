@@ -20,7 +20,7 @@ export { default as ProductIDContributionsNotification } from './ProductIDContri
 export { default as ProductIDSubscriptionsNotification } from './ProductIDSubscriptionsNotification';
 export { default as PublicationApprovedOverlayNotification } from './PublicationApprovedOverlayNotification';
 export { default as ReaderRevenueManagerSetupCTABanner } from './ReaderRevenueManagerSetupCTABanner';
-export { default as ReaderRevenueManagerSetupCTABannerWidget } from './ReaderRevenueManagerSetupCTABannerWidget';
+export { default as ExpressSetupBannerWidget } from './ExpressSetupBannerWidget';
 export { default as RRMSetupSuccessSubtleNotification } from './RRMSetupSuccessSubtleNotification';
 export { default as RRMIntroductoryOverlayNotification } from './RRMIntroductoryOverlayNotification';
 export { default as PolicyViolationNotification } from './PolicyViolationNotification';

@@ -23,7 +23,7 @@ import { Select } from '@/js/googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { AREA_MAIN_DASHBOARD_TRAFFIC_READER_REVENUE_MANAGER } from '@/js/googlesitekit/widgets/default-areas';
-import { ReaderRevenueManagerSetupCTABannerWidget } from '@/js/modules/reader-revenue-manager/components/dashboard';
+import { ExpressSetupBannerWidget } from '@/js/modules/reader-revenue-manager/components/dashboard';
 import {
 	MODULE_SLUG_READER_REVENUE_MANAGER,
 	RRM_EXPRESS_SETUP_TRAFFIC_CTA_DISMISSED_KEY,
@@ -35,7 +35,7 @@ export function registerWidgets( widgets ) {
 	widgets.registerWidget(
 		RRM_EXPRESS_SETUP_TRAFFIC_CTA_WIDGET_SLUG,
 		{
-			Component: ReaderRevenueManagerSetupCTABannerWidget,
+			Component: ExpressSetupBannerWidget,
 			width: [ widgets.WIDGET_WIDTHS.FULL ],
 			priority: 1,
 			wrapWidget: false,
