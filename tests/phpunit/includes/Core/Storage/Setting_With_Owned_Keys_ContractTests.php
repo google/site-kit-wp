@@ -10,8 +10,6 @@
  * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\Storage;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
@@ -53,13 +51,13 @@ trait Setting_With_Owned_Keys_ContractTests {
 			delete_option( $options_key );
 
 			$options = $settings->get();
-			$testcase->assertEmpty( $options['ownerID'] );
+			$testcase->assertEmpty( $options['ownerID'], 'Settings should have no owner before an owned field is changed.' );
 
 			$options[ $field ] = 'test-value';
 			$settings->set( $options );
 
 			$options = get_option( $options_key );
-			$testcase->assertEquals( $user_id, $options['ownerID'] );
+			$testcase->assertEquals( $user_id, $options['ownerID'], 'Current administrator should become the settings owner after changing an owned field.' );
 		}
 	}
 
@@ -93,13 +91,13 @@ trait Setting_With_Owned_Keys_ContractTests {
 		);
 
 		$options = $settings->get();
-		$testcase->assertEmpty( $options['ownerID'] );
+		$testcase->assertEmpty( $options['ownerID'], 'Settings should have no owner before a non-owned field is changed.' );
 
 		$options['not-owned-key'] = 'new-value';
 		$settings->set( $options );
 
 		$options = get_option( $options_key );
-		$testcase->assertNotEquals( $user_id, $options['ownerID'] );
+		$testcase->assertNotEquals( $user_id, $options['ownerID'], 'Changing a non-owned field should not assign settings ownership.' );
 	}
 
 	public function test_owner_id_is_not_set_if_user_has_insufficient_permssions() {
@@ -116,13 +114,13 @@ trait Setting_With_Owned_Keys_ContractTests {
 			delete_option( $options_key );
 
 			$options = $settings->get();
-			$testcase->assertEmpty( $options['ownerID'] );
+			$testcase->assertEmpty( $options['ownerID'], 'Settings should have no owner before an owned field is changed.' );
 
 			$options[ $field ] = 'test-value';
 			$settings->set( $options );
 
 			$options = get_option( $options_key );
-			$testcase->assertNotEquals( $user_id, $options['ownerID'] );
+			$testcase->assertNotEquals( $user_id, $options['ownerID'], 'User without permission to manage options should not become the settings owner.' );
 		}
 	}
 }

@@ -37,10 +37,8 @@ const DATA = {
 		{ keys: [ 'dog toys' ], clicks: 300, impressions: 900 },
 	],
 	links: {
-		'cat food':
-			'https://search.google.com/search-console/performance/search-analytics?cat-food',
-		'dog toys':
-			'https://search.google.com/search-console/performance/search-analytics?dog-toys',
+		'cat food': 'https://example.com/search-console-report/cat-food',
+		'dog toys': 'https://example.com/search-console-report/dog-toys',
 	},
 };
 
@@ -108,6 +106,21 @@ describe( 'DashboardPopularKeywordsWidgetPDF', () => {
 
 		expect( json ).toContain( DATA.links[ 'cat food' ] );
 		expect( json ).toContain( DATA.links[ 'dog toys' ] );
+		// The `Link` primitive from `@react-pdf` renders as `pdf-link` under
+		// the test mock. So a `pdf-link` in the tree means the query rendered
+		// as a link, not as text that happens to hold the URL.
+		expect( json ).toContain( 'pdf-link' );
+	} );
+
+	it( 'renders each query as plain text when a query has no link', () => {
+		// An empty `links` map gives every query an empty link, so each one
+		// renders as plain text.
+		const json = renderJSON( { data: { ...DATA, links: {} } } );
+
+		expect( json ).toContain( 'cat food' );
+		expect( json ).toContain( 'dog toys' );
+		// No `pdf-link` in the tree means every query rendered as plain text.
+		expect( json ).not.toContain( 'pdf-link' );
 	} );
 
 	it( 'renders each query link in the link color', () => {

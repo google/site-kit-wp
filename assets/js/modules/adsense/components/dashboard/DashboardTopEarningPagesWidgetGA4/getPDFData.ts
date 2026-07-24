@@ -23,6 +23,7 @@ import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
+import { getAllPagesReportURL } from '@/js/modules/analytics-4/utils/page-report-url';
 import {
 	getPagePaths,
 	getPageTitleMap,
@@ -30,10 +31,18 @@ import {
 } from '@/js/modules/analytics-4/utils/page-titles-report';
 import { getTopEarningPagesReportOptions } from './getTopEarningPagesReportOptions';
 
+/**
+ * Data the Top earning pages PDF widget renders.
+ */
 export interface TopEarningPagesPDFData {
+	/** Rows of the Top earning pages report. */
 	rows: ReportRow[];
+	/** Currency code from the report metadata, for formatting the earnings. */
 	currencyCode: string;
+	/** Map of page path to page title. */
 	titles: Record< string, string >;
+	/** Map of page path to its Analytics report link. Empty on a view-only dashboard, where each page title shows as plain text. */
+	links: Record< string, string >;
 }
 
 /**
@@ -48,37 +57,86 @@ interface GetPDFDataResult {
 }
 
 /**
+ * Maps each page path to its Analytics report link.
+ *
+ * Builds the same All pages and screens report link the dashboard widget shows
+ * for each page. The PDF component renders each page title as this link.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}   params           Link map parameters.
+ * @param {Object}   params.registry  WordPress data registry.
+ * @param {Object}   params.dates     Report date range.
+ * @param {string[]} params.pagePaths Page paths from the main report rows.
+ * @param {boolean}  params.viewOnly  Whether the export runs on a view-only dashboard.
+ * @return {Object} Map of page path to its Analytics report link, empty for a view-only user.
+ */
+function getPageLinkMap( {
+	registry,
+	dates,
+	pagePaths,
+	viewOnly,
+}: Pick< GetPDFDataParams, 'registry' | 'dates' | 'viewOnly' > & {
+	pagePaths: string[];
+} ): Record< string, string > {
+	// A view-only user sees each page title as plain text on the dashboard, so
+	// the PDF builds no links either.
+	if ( viewOnly ) {
+		return {};
+	}
+
+	const analytics = registry.select( MODULES_ANALYTICS_4 );
+	const { startDate, endDate } = dates;
+	const links: Record< string, string > = {};
+
+	pagePaths.forEach( ( pagePath ) => {
+		links[ pagePath ] =
+			getAllPagesReportURL( analytics, pagePath, {
+				startDate,
+				endDate,
+			} ) ?? '';
+	} );
+
+	return links;
+}
+
+/**
  * Loads the report rows, currency code, and page titles for the Top earning
  * pages PDF widget.
  *
  * Resolves the linked AdSense account ID, loads the Top earning pages report,
- * then a second report that matches each page path to its title. Passes the
- * abort signal to both requests and returns `{ data: null }` as soon as the
- * signal aborts, or when the report has no rows, so cancelling the export stops
- * the work and the orchestrator omits the widget.
+ * then a second report that matches each page path to its title. Builds an
+ * Analytics report link for each page, the same link the dashboard widget
+ * shows. For a view-only user, the loader builds no links, because the
+ * dashboard widget shows the page title as plain text. Passes the cancellation
+ * signal to both requests. Returns `{ data: null }` when the signal fires or
+ * the report has no rows, so the report document skips this widget.
  *
  * @since 1.184.0
  *
- * @param params          Loader parameters.
- * @param params.registry WordPress data registry.
- * @param params.dates    Report date range.
- * @param params.signal   Cancellation signal.
- * @return The report rows, currency code, and the page-path-to-title map.
+ * @param {Object}      params          Loader parameters.
+ * @param {Object}      params.registry WordPress data registry.
+ * @param {Object}      params.dates    Report date range.
+ * @param {AbortSignal} params.signal   Cancellation signal.
+ * @param {boolean}     params.viewOnly Whether the export runs on a view-only dashboard.
+ * @return {Promise<Object>} The report rows, currency code, page titles, and per-page links.
  */
 export default async function getPDFData( {
 	registry,
 	dates,
 	signal,
+	viewOnly,
 }: GetPDFDataParams ): Promise< GetPDFDataResult > {
 	if ( signal.aborted ) {
 		return { data: null };
 	}
 
 	// The linked account ID lives in the AdSense settings, and the PDF export
-	// path does not otherwise resolve them (eligibility only checks Analytics'
-	// `adSenseLinked`). Resolve them before reading the ID, or it can be
-	// undefined and the report queries a malformed `Google AdSense account
-	// (undefined)` ad source, returning an empty or wrong report.
+	// path doesn't otherwise resolve them (eligibility only checks the
+	// Analytics `adSenseLinked` setting). Resolve them before reading the ID,
+	// or it stays `undefined` and the report queries a malformed `Google
+	// AdSense account (undefined)` ad source, returning an empty or wrong
+	// report.
 	await registry.resolveSelect( MODULES_ADSENSE ).getSettings();
 
 	if ( signal.aborted ) {
@@ -109,11 +167,26 @@ export default async function getPDFData( {
 		return { data: null };
 	}
 
+	// Each page title links to its Analytics report, which `getServiceReportURL`
+	// builds from the Analytics property ID in the Analytics settings. The PDF
+	// export path resolves the AdSense settings but not the Analytics ones, so
+	// resolve them here, or the property ID stays undefined and every link comes
+	// back empty. A view-only export builds no links, so it skips the resolution.
+	if ( ! viewOnly ) {
+		await registry.resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+
+		if ( signal.aborted ) {
+			return { data: null };
+		}
+	}
+
 	const currencyCode = report?.metadata?.currencyCode ?? '';
 	const pagePaths = getPagePaths( report );
 
+	const links = getPageLinkMap( { registry, dates, pagePaths, viewOnly } );
+
 	if ( pagePaths.length === 0 ) {
-		return { data: { rows, currencyCode, titles: {} } };
+		return { data: { rows, currencyCode, titles: {}, links } };
 	}
 
 	const titlesArgs = getPageTitlesReportOptions( dates, pagePaths );
@@ -132,6 +205,7 @@ export default async function getPDFData( {
 			rows,
 			currencyCode,
 			titles: getPageTitleMap( pagePaths, titlesReport ),
+			links,
 		},
 	};
 }

@@ -9,9 +9,6 @@
  *
  * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\Storage;
 
 use Google\Site_Kit\Context;
@@ -33,11 +30,11 @@ class Encrypted_User_OptionsTest extends TestCase {
 
 		// Get returns the decrypted value.
 		update_user_option( $user_id, 'test-option', base64_encode( 'test-value' ) );
-		$this->assertEquals( 'test-value', $encrypted_user_options->get( 'test-option' ) );
+		$this->assertEquals( 'test-value', $encrypted_user_options->get( 'test-option' ), 'Encrypted user option should be decrypted when read.' );
 
 		// Get returns the unserialized value.
 		update_user_option( $user_id, 'test-serialized-option', base64_encode( serialize( array( 'test-value' ) ) ) );
-		$this->assertEquals( array( 'test-value' ), $encrypted_user_options->get( 'test-serialized-option' ) );
+		$this->assertEquals( array( 'test-value' ), $encrypted_user_options->get( 'test-serialized-option' ), 'Serialized encrypted user option should be decrypted and unserialized when read.' );
 	}
 
 	public function test_set() {
@@ -45,16 +42,30 @@ class Encrypted_User_OptionsTest extends TestCase {
 		wp_set_current_user( $user_id );
 		$encrypted_user_options = $this->new_encrypted_user_options();
 
-		$this->assertFalse( get_user_option( 'test-option', $user_id ) );
-		$this->assertFalse( get_user_option( 'test-serialized-option', $user_id ) );
+		$this->assertFalse(
+			get_user_option( 'test-option', $user_id ),
+			'Scalar user option should not exist before it is stored.'
+		);
+		$this->assertFalse(
+			get_user_option( 'test-serialized-option', $user_id ),
+			'Array user option should not exist before it is stored.'
+		);
 
 		// Set encrypts the raw value before persisting it.
 		$encrypted_user_options->set( 'test-option', 'test-value' );
-		$this->assertEquals( base64_encode( 'test-value' ), get_user_option( 'test-option', $user_id ) );
+		$this->assertEquals(
+			base64_encode( 'test-value' ),
+			get_user_option( 'test-option', $user_id ),
+			'Scalar user option should be encrypted before storage.'
+		);
 
 		// Non-scalar values are serialized before encrypting.
 		$encrypted_user_options->set( 'test-serialized-option', array( 'test-value' ) );
-		$this->assertEquals( base64_encode( serialize( array( 'test-value' ) ) ), get_user_option( 'test-serialized-option', $user_id ) );
+		$this->assertEquals(
+			base64_encode( serialize( array( 'test-value' ) ) ),
+			get_user_option( 'test-serialized-option', $user_id ),
+			'Array user option should be serialized and encrypted before storage.'
+		);
 	}
 
 	public function test_delete() {
@@ -64,14 +75,32 @@ class Encrypted_User_OptionsTest extends TestCase {
 
 		// Delete has no special behavior for encrypted options.
 		update_user_option( $user_id, 'test-option', 'test-value' );
-		$this->assertNotEmpty( get_user_option( 'test-option', $user_id ) );
-		$this->assertTrue( $encrypted_user_options->delete( 'test-option' ) );
-		$this->assertFalse( get_user_option( 'test-option', $user_id ) );
+		$this->assertNotEmpty(
+			get_user_option( 'test-option', $user_id ),
+			'Scalar user option should exist before deletion.'
+		);
+		$this->assertTrue(
+			$encrypted_user_options->delete( 'test-option' ),
+			'Deleting an existing scalar user option should succeed.'
+		);
+		$this->assertFalse(
+			get_user_option( 'test-option', $user_id ),
+			'Scalar user option should no longer exist after deletion.'
+		);
 
 		update_user_option( $user_id, 'test-serialized-option', base64_encode( serialize( array( 'test-value' ) ) ) );
-		$this->assertNotEmpty( get_user_option( 'test-serialized-option', $user_id ) );
-		$this->assertTrue( $encrypted_user_options->delete( 'test-serialized-option' ) );
-		$this->assertFalse( get_user_option( 'test-serialized-option', $user_id ) );
+		$this->assertNotEmpty(
+			get_user_option( 'test-serialized-option', $user_id ),
+			'Serialized user option should exist before deletion.'
+		);
+		$this->assertTrue(
+			$encrypted_user_options->delete( 'test-serialized-option' ),
+			'Deleting an existing serialized user option should succeed.'
+		);
+		$this->assertFalse(
+			get_user_option( 'test-serialized-option', $user_id ),
+			'Serialized user option should no longer exist after deletion.'
+		);
 	}
 
 	/**
