@@ -436,8 +436,8 @@ describe( 'AudienceTilesWidget getPDFData', () => {
 		const audiences = getAudiences( await runPDFData( registry ) );
 
 		// The stub selector serializes its type, page filter, and date range
-		// into the link. So this equality proves the loader asks the same
-		// selector the dashboard tile asks, with the page path and the report
+		// into the link. Ensure the loader uses the same selector the
+		// dashboard tile uses, with the page path and the report
 		// date range.
 		audiences.forEach( ( audience ) => {
 			expect( audience.topContent[ 0 ].serviceURL ).toBe(

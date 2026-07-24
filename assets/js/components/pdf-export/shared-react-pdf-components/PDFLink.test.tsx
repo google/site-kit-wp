@@ -108,9 +108,9 @@ describe( 'PDFLink', () => {
 		expect( linkJSON ).toContain( '#6c726e' );
 	} );
 
-	it( 'renders plain text in the default color when the href is empty', () => {
-		// An empty `href` is how a caller passes a row that has no link, so
-		// the text renders plain instead of as a link.
+	it( 'renders plain text in the default color when the href is an empty string', () => {
+		// An empty `href` is means a row with no link, so the text
+		// should render as plain text instead of as a link.
 		const tree = renderLink( { href: '', children: 'View dashboard' } );
 
 		expect( tree.type ).toBe( 'pdf-text' );
@@ -121,8 +121,8 @@ describe( 'PDFLink', () => {
 	} );
 
 	it( 'renders plain text in the default color when the href is undefined', () => {
-		// `href` is optional, so a caller can leave it out. An undefined `href`
-		// renders plain text, the same as an empty one.
+		// An undefined/missing `href` should renders plain text,
+		// the same as an empty string above.
 		const tree = renderLink( {
 			href: undefined,
 			children: 'View dashboard',
@@ -135,7 +135,7 @@ describe( 'PDFLink', () => {
 		expect( treeJSON ).not.toContain( PDF_COLORS.CONTENT_SECONDARY );
 	} );
 
-	it( 'leaves out the trailing icon when the href is empty', () => {
+	it( 'omits the trailing icon when the href is empty', () => {
 		const tree = renderLink( {
 			href: '',
 			trailingIcon: (

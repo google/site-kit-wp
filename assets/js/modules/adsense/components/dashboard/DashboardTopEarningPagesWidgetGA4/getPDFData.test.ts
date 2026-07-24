@@ -203,7 +203,7 @@ describe( 'DashboardTopEarningPagesWidgetGA4 getPDFData', () => {
 		} );
 	} );
 
-	it( 'builds no page links on a view-only dashboard', async () => {
+	it( 'does not include page links on a view-only dashboard', async () => {
 		provideReports();
 
 		const result = await getPDFData( {

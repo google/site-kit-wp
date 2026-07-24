@@ -141,7 +141,7 @@ describe( 'DashboardPopularKeywordsWidget getPDFData', () => {
 		} );
 	} );
 
-	it( 'builds no query links on a view-only dashboard', async () => {
+	it( 'does not generate query links on a view-only dashboard', async () => {
 		fetchMock.getOnce( reportEndpoint, { body: REPORT, status: 200 } );
 
 		const result = await getPDFData( {

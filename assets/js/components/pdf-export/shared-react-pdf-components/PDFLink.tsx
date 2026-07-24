@@ -43,7 +43,7 @@ const styles = createPDFStyles( {
 } );
 
 export interface PDFLinkProps {
-	/** Link target URL. With no URL, the text renders plain, in the default text color and with no trailing icon. */
+	/** Link target URL. When an empty string: plaintext is still rendered (in the default text color and with no trailing icon). */
 	href?: string;
 	/** Typography type for the link text. */
 	type?: PDFTypographyType;
