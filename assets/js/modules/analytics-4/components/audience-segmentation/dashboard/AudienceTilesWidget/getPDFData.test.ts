@@ -196,6 +196,20 @@ function buildRegistry( {
 			}
 			return isSiteKitPartialData ? found : null;
 		},
+		// Serializes the report type, the page filter, and the date range into
+		// the link. A test then proves what the loader asked the selector by
+		// reading the link a top content row holds.
+		getServiceReportURL: (
+			type: string,
+			{
+				filters,
+				dates,
+			}: {
+				filters: { unifiedPagePathScreen: string };
+				dates: { startDate: string; endDate: string };
+			}
+		) =>
+			`https://example.com/analytics-report/${ type }?path=${ filters.unifiedPagePathScreen }&range=${ dates.startDate }:${ dates.endDate }`,
 	};
 
 	// The loader reads only `resolveSelect`, `select`, and `dispatch`. The mock
@@ -222,20 +236,29 @@ function buildRegistry( {
  *
  * @since 1.184.0
  *
- * @param registry        The mock registry.
- * @param options         Run options.
- * @param options.aborted Whether the signal is aborted before the run.
- * @return The loader result.
+ * @param {PDFRegistry} registry         The mock registry.
+ * @param {Object}      options          Run options.
+ * @param {boolean}     options.aborted  Whether the signal aborts before the run.
+ * @param {boolean}     options.viewOnly Whether the export runs on a view-only dashboard.
+ * @return {Promise<Object>} The loader result.
  */
 function runPDFData(
 	registry: PDFRegistry,
-	{ aborted = false }: { aborted?: boolean } = {}
+	{
+		aborted = false,
+		viewOnly = false,
+	}: { aborted?: boolean; viewOnly?: boolean } = {}
 ) {
 	const controller = new AbortController();
 	if ( aborted ) {
 		controller.abort();
 	}
-	return getPDFData( { registry, dates: DATES, signal: controller.signal } );
+	return getPDFData( {
+		registry,
+		dates: DATES,
+		signal: controller.signal,
+		viewOnly,
+	} );
 }
 
 /**
@@ -330,6 +353,7 @@ describe( 'AudienceTilesWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: controller.signal,
+			viewOnly: false,
 		} );
 
 		expect( fetchGetReport ).toHaveBeenCalled();
@@ -398,8 +422,46 @@ describe( 'AudienceTilesWidget getPDFData', () => {
 			{ name: 'Dublin', percentage: 40 / card.metrics.visitors.current },
 		] );
 		expect( card.topContent ).toEqual( [
-			{ title: 'Post One', pageviews: 80 },
+			{
+				title: 'Post One',
+				pageviews: 80,
+				serviceURL: `https://example.com/analytics-report/all-pages-and-screens?path=/post-1&range=${ DATES.startDate }:${ DATES.endDate }`,
+			},
 		] );
+	} );
+
+	it( 'links each top content page to the same All pages and screens report the dashboard tile links to', async () => {
+		const { registry } = buildRegistry();
+
+		const audiences = getAudiences( await runPDFData( registry ) );
+
+		// The stub selector serializes its type, page filter, and date range
+		// into the link. Ensure the loader uses the same selector the
+		// dashboard tile uses, with the page path and the report
+		// date range.
+		audiences.forEach( ( audience ) => {
+			expect( audience.topContent[ 0 ].serviceURL ).toBe(
+				`https://example.com/analytics-report/all-pages-and-screens?path=/post-1&range=${ DATES.startDate }:${ DATES.endDate }`
+			);
+		} );
+	} );
+
+	it( 'builds no top content links on a view-only dashboard', async () => {
+		const { registry } = buildRegistry();
+
+		const audiences = getAudiences(
+			await runPDFData( registry, { viewOnly: true } )
+		);
+
+		// The dashboard tile shows a view-only user each page title as plain
+		// text, so every card's top content rows hold no link.
+		const contentRows = audiences.flatMap(
+			( audience ) => audience.topContent
+		);
+		expect( contentRows ).not.toHaveLength( 0 );
+		contentRows.forEach( ( content ) => {
+			expect( content.serviceURL ).toBe( '' );
+		} );
 	} );
 
 	it( 'excludes a failed audience while the other two still load', async () => {
