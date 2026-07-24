@@ -48,7 +48,7 @@ export function registerWidgets( widgets ) {
 					CORE_MODULES
 				).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
 
-				const isPromptDismissed = select( CORE_USER ).isPromptDismissed(
+				const isWidgetDismissed = select( CORE_USER ).isItemDismissed(
 					RRM_EXPRESS_SETUP_TRAFFIC_CTA_DISMISSED_KEY
 				);
 
