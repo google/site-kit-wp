@@ -36,6 +36,12 @@ every file you read reflects the code as it would land after merge. Convention d
 (`docs/context/…`) can be read from either location — they're identical across branches unless
 the PR itself changes them.
 
+The worktree contains only tracked files — there is **no `node_modules`** — so treat it as
+**read-only source for judging the code**, not a place to run npm tooling (see Step 6 for
+verification). Capture its absolute path once (`git worktree list`) and read files by that
+absolute path: the worktree is a sibling of the repo directory, and the shell's working
+directory may reset between commands, so don't rely on a prior `cd` persisting.
+
 If `git fetch` or `git worktree add` fails because of a stale worktree/branch left over from a
 previous review, clean up and retry:
 
@@ -102,7 +108,13 @@ Grade the change against `review-checklist.md`:
 - **Convention adherence** (§2) — check only the areas the change actually touches; cite the
   context file + section for every deviation.
 - **Code quality** (§3) — correctness, security, performance, documentation, accessibility.
-- **Verification** (§4) — lint, tests run, build for non-trivial asset changes.
+- **Verification** (§4) — confirm lint, tests, and (for non-trivial asset changes) the build
+  pass. The worktree has no `node_modules`, so these can't run inside it; read the PR's CI
+  results with `gh pr checks <number>` instead of reproducing them locally, and don't `npx` a
+  tool (it pulls the wrong version off the network). If you do run a linter against the
+  worktree via a symlinked `node_modules`, know that `@/…`-aliased imports can resolve into
+  your base checkout: an `import/named` / `import/no-unresolved` "error" on a symbol the PR
+  adds or moves is usually a false positive — confirm by reading the file in the worktree.
 
 ## Step 7 — Produce the review
 
@@ -172,4 +184,5 @@ Brief justification. If requesting changes, list the blocking issues as a number
 - **Scope the read.** Load only the convention docs the change touches — not everything.
 - **Clean up the worktree.** Once the review is produced, remove the worktree created in Step 2
   so it doesn't linger: `git worktree remove ../site-kit-wp-pr-<number>` (add `--force` if it
-  refuses), then `git branch -D pr-<number>-review`.
+  refuses — a `node_modules` symlink or other untracked file makes the plain form refuse), then
+  `git branch -D pr-<number>-review`.
