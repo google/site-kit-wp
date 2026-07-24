@@ -163,7 +163,11 @@ export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 					}
 				) }
 			>
-				<Typography type={ TYPE_BODY } size={ SIZE_SMALL }>
+				<Typography
+					type={ TYPE_BODY }
+					size={ SIZE_SMALL }
+					className="googlesitekit-frequency-selector__current-subscription-label"
+				>
 					{ __( 'Current subscription', 'google-site-kit' ) }
 				</Typography>
 				{ formattedNextReportDate && (

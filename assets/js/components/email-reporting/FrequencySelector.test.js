@@ -165,6 +165,13 @@ describe( 'FrequencySelector', () => {
 				getByText( 'Next report: Aug 1, 2026' )
 			).toBeInTheDocument();
 
+			// Check that the "Current subscription" label has its own
+			// styling hook class (distinct from the "Next report" line),
+			// so it can be styled independently (e.g. its font weight).
+			expect( getByText( 'Current subscription' ) ).toHaveClass(
+				'googlesitekit-frequency-selector__current-subscription-label'
+			);
+
 			expect( containerElement ).toMatchSnapshot();
 		} );
 

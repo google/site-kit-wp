@@ -33,9 +33,8 @@ h3.googlesitekit-frequency-selector-title {
 	color: $c-surfaces-on-surface-variant;
 	display: flex;
 	flex-direction: column;
-	gap: 2px;
 	margin-bottom: $grid-gap-phone;
-	padding: 8px 4px;
+	padding: 6px 0;
 	text-align: center;
 	width: 100%;
 
@@ -46,9 +45,9 @@ h3.googlesitekit-frequency-selector-title {
 	}
 }
 
-// Increase specificity to override body-small typography letter spacing.
-.googlesitekit-typography.googlesitekit-typography--body.googlesitekit-typography--small.googlesitekit-frequency-selector__next-report {
-	letter-spacing: initial;
+// Increase specificity to override body-small typography font weight.
+.googlesitekit-typography.googlesitekit-typography--body.googlesitekit-typography--small.googlesitekit-frequency-selector__current-subscription-label {
+	font-weight: $fw-medium;
 }
 
 .googlesitekit-frequency-selector__current-subscription--selected {
