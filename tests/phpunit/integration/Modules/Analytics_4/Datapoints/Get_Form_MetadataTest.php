@@ -48,11 +48,16 @@ class Get_Form_MetadataTest extends TestCase {
 			)
 		);
 
+		// Mirror OptinMonster's own registration: the campaign post type is
+		// non-public, which register_post_type() defaults to.
+		register_post_type( 'omapi' );
+
 		$this->datapoint = new Get_Form_Metadata( array( 'service' => '' ) );
 	}
 
 	public function tear_down() {
 		unregister_post_type( 'wpforms' );
+		unregister_post_type( 'omapi' );
 		parent::tear_down();
 	}
 
@@ -64,6 +69,31 @@ class Get_Form_MetadataTest extends TestCase {
 			'form-metadata',
 			array( 'formIDs' => $form_ids )
 		);
+	}
+
+	/**
+	 * Creates an `omapi` campaign post and returns the slug WordPress stored.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $title  The campaign title.
+	 * @param string $slug   The requested campaign slug.
+	 * @param string $status Optional. The post status. Default 'publish'.
+	 * @return string The stored campaign slug.
+	 */
+	private function create_omapi_campaign( $title, $slug, $status = 'publish' ) {
+		$post_id = self::factory()->post->create(
+			array(
+				'post_title'  => $title,
+				'post_name'   => $slug,
+				'post_type'   => 'omapi',
+				'post_status' => $status,
+			)
+		);
+
+		// Return the slug WordPress stored, in case it differs from the
+		// requested one.
+		return get_post( $post_id )->post_name;
 	}
 
 	public function test_create_request__returns_title_for_known_post_type() {
@@ -154,17 +184,162 @@ class Get_Form_MetadataTest extends TestCase {
 		);
 	}
 
-	public function test_create_request__drops_non_integer_ids() {
+	public function test_create_request__drops_non_positive_and_empty_ids() {
 		$form_id = self::factory()->post->create( array( 'post_title' => 'Real form' ) );
 
 		$request = $this->datapoint->create_request(
-			$this->data_request( array( $form_id, 0, 'abc' ) )
+			$this->data_request( array( $form_id, 0, -5, '-3', '' ) )
 		);
 
+		// Zero and negative numeric IDs never name a post, and an empty string
+		// names nothing, so they drop out. A non-numeric slug resolves through
+		// the slug path instead.
 		$this->assertSame(
 			array( $form_id ),
 			array_keys( $request() ),
-			'Non positive-integer form IDs should be dropped from the result.'
+			'Non-positive numeric and empty form IDs should drop from the result.'
+		);
+	}
+
+	public function test_create_request__resolves_an_optin_monster_campaign_title_by_slug() {
+		$slug = $this->create_omapi_campaign( 'Newsletter Popup', 'newsletter-popup' );
+
+		$request = $this->datapoint->create_request( $this->data_request( array( $slug ) ) );
+
+		$this->assertSame(
+			array(
+				$slug => array(
+					'title' => 'Newsletter Popup',
+				),
+			),
+			$request(),
+			'A published OptinMonster campaign should resolve its title by slug.'
+		);
+	}
+
+	public function test_create_request__resolves_a_draft_optin_monster_campaign_title() {
+		// OptinMonster saves a paused campaign as a draft, so a paused campaign
+		// with historical conversions must still resolve its name.
+		$slug = $this->create_omapi_campaign( 'Paused Popup', 'paused-popup', 'draft' );
+
+		$request = $this->datapoint->create_request( $this->data_request( array( $slug ) ) );
+
+		$this->assertSame(
+			array(
+				$slug => array(
+					'title' => 'Paused Popup',
+				),
+			),
+			$request(),
+			'A draft OptinMonster campaign should still resolve its title.'
+		);
+	}
+
+	public function test_create_request__returns_null_title_for_a_pending_campaign() {
+		// Only a published or draft campaign resolves. Any other status, such
+		// as a pending one, keeps the ID fallback.
+		$slug = $this->create_omapi_campaign( 'Pending Popup', 'pending-popup', 'pending' );
+
+		$request = $this->datapoint->create_request( $this->data_request( array( $slug ) ) );
+
+		$this->assertNull(
+			$request()[ $slug ]['title'],
+			'A campaign outside the publish and draft statuses must not resolve a title.'
+		);
+	}
+
+	public function test_create_request__returns_null_title_for_an_unknown_campaign_slug() {
+		$slug = 'no-such-campaign';
+
+		$request = $this->datapoint->create_request( $this->data_request( array( $slug ) ) );
+
+		// An unknown slug resolves to a null title, keyed by the requested
+		// value, so the JS side keeps its ID fallback label for the tab.
+		$this->assertSame(
+			array(
+				$slug => array(
+					'title' => null,
+				),
+			),
+			$request(),
+			'An unknown campaign slug should resolve to a null title.'
+		);
+	}
+
+	public function test_create_request__does_not_disclose_a_non_omapi_post_with_the_same_slug() {
+		$slug = 'shared-campaign-slug';
+
+		// The lookup targets the omapi post type alone, so a page or an
+		// attachment sharing the slug must not resolve a title.
+		self::factory()->post->create(
+			array(
+				'post_title' => 'Secret page',
+				'post_name'  => $slug,
+				'post_type'  => 'page',
+			)
+		);
+		self::factory()->post->create(
+			array(
+				'post_title'  => 'Secret attachment',
+				'post_name'   => $slug,
+				'post_type'   => 'attachment',
+				'post_status' => 'inherit',
+			)
+		);
+
+		$request = $this->datapoint->create_request( $this->data_request( array( $slug ) ) );
+
+		$this->assertNull(
+			$request()[ $slug ]['title'],
+			'A non-omapi post sharing the slug must not have its title disclosed.'
+		);
+	}
+
+	public function test_create_request__decodes_an_ampersand_in_a_campaign_title() {
+		$slug = $this->create_omapi_campaign( 'Black Friday & Cyber Monday', 'black-friday' );
+
+		$request = $this->datapoint->create_request( $this->data_request( array( $slug ) ) );
+
+		// get_the_title() returns the stored "&" as the "&#038;" entity. The tab
+		// prints its label as plain text, so the response must hold the decoded
+		// character.
+		$this->assertSame(
+			'Black Friday & Cyber Monday',
+			$request()[ $slug ]['title'],
+			'A campaign title holding an ampersand should resolve without an HTML entity.'
+		);
+	}
+
+	public function test_create_request__decodes_an_apostrophe_in_a_campaign_title() {
+		$slug = $this->create_omapi_campaign( "Kelvin's Autumn Sale", 'kelvins-autumn-sale' );
+
+		$request = $this->datapoint->create_request( $this->data_request( array( $slug ) ) );
+
+		// The title filters turn the straight apostrophe into the "&#8217;"
+		// entity, which decodes back to the curly apostrophe character.
+		$this->assertSame(
+			'Kelvin’s Autumn Sale',
+			$request()[ $slug ]['title'],
+			'A campaign title holding an apostrophe should resolve to the decoded character, not an HTML entity.'
+		);
+	}
+
+	public function test_create_request__decodes_an_ampersand_in_a_form_post_title() {
+		// The numeric post path shares the same title filters, so the decoding
+		// covers every supported form plugin, not only OptinMonster.
+		$form_id = self::factory()->post->create(
+			array(
+				'post_title' => 'Sales & Support',
+				'post_type'  => 'wpforms',
+			)
+		);
+
+		$request = $this->datapoint->create_request( $this->data_request( array( $form_id ) ) );
+
+		$this->assertSame(
+			'Sales & Support',
+			$request()[ $form_id ]['title'],
+			'A form title holding an ampersand should resolve without an HTML entity.'
 		);
 	}
 

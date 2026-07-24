@@ -70,14 +70,22 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 			$metadata = array();
 
 			foreach ( $form_ids as $form_id ) {
-				// Skip non positive-integer IDs, but key the result by the
-				// original requested value so the JS side matches it back exactly
-				// (re-keying via absint would drop e.g. "00123" to "123").
-				if ( ! is_numeric( $form_id ) || (int) $form_id <= 0 ) {
-					continue;
-				}
+				// Key each result by the original requested value so the JS side
+				// matches it back exactly: re-keying via absint would drop
+				// "00123" to "123".
+				if ( is_numeric( $form_id ) ) {
+					// A numeric ID names a form post, and a non-positive value
+					// can't be one, so it drops out of the result.
+					if ( (int) $form_id <= 0 ) {
+						continue;
+					}
 
-				$metadata[ $form_id ] = $this->resolve_form_metadata( (int) $form_id );
+					$metadata[ $form_id ] = $this->resolve_form_metadata( (int) $form_id );
+				} elseif ( is_string( $form_id ) && '' !== $form_id ) {
+					// A non-numeric string, such as an OptinMonster campaign
+					// slug, resolves by slug instead.
+					$metadata[ $form_id ] = $this->resolve_form_metadata( $form_id );
+				}
 			}
 
 			return $metadata;
@@ -88,8 +96,9 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	 * Resolves metadata for a single form ID across the supported form plugins.
 	 *
 	 * @since 1.182.0
+	 * @since n.e.x.t Accepts a non-numeric OptinMonster campaign slug as the form ID.
 	 *
-	 * @param int $form_id Form ID.
+	 * @param int|string $form_id The form post ID, or an OptinMonster campaign slug.
 	 * @return array {
 	 *     Form metadata.
 	 *
@@ -97,6 +106,15 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	 * }
 	 */
 	protected function resolve_form_metadata( $form_id ) {
+		// OptinMonster reports a campaign slug rather than a post ID, so a
+		// non-numeric ID resolves by slug. The early return also keeps such a
+		// string away from the ID-based lookups below.
+		if ( ! is_numeric( $form_id ) ) {
+			return array(
+				'title' => $this->decode_title_entities( $this->resolve_optin_monster_title( $form_id ) ),
+			);
+		}
+
 		$title = '';
 
 		$post_type = get_post_type( $form_id );
@@ -123,8 +141,59 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 		}
 
 		return array(
-			'title' => '' !== $title ? $title : null,
+			'title' => $this->decode_title_entities( $title ),
 		);
+	}
+
+	/**
+	 * Resolves the campaign title for an OptinMonster campaign slug.
+	 *
+	 * OptinMonster stores each campaign as a post of its non-public `omapi`
+	 * post type, whose slug is the campaign ID that the `googlesitekit_form_id`
+	 * dimension reports. The lookup pins the post type list to `omapi` alone.
+	 * With a string post type, `get_page_by_path()` also matches attachments,
+	 * so an attachment sharing the slug could leak its title. OptinMonster
+	 * saves a paused campaign as a draft, so a draft still resolves. A site
+	 * without OptinMonster holds no `omapi` posts, the lookup returns null,
+	 * and the caller's ID fallback applies.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $slug The campaign slug.
+	 * @return string|null Campaign title, which can be empty, or null when no campaign matches the slug.
+	 */
+	protected function resolve_optin_monster_title( $slug ) {
+		$campaign = get_page_by_path( $slug, OBJECT, array( 'omapi' ) );
+
+		if ( ! $campaign || ! in_array( $campaign->post_status, array( 'publish', 'draft' ), true ) ) {
+			return null;
+		}
+
+		return get_the_title( $campaign );
+	}
+
+	/**
+	 * Decodes HTML entities in a resolved form title.
+	 *
+	 * WordPress passes a post title through the `the_title` filters, so
+	 * `get_the_title()` returns "&" as `&#038;` and an apostrophe as `&#8217;`.
+	 * The dashboard prints a breakdown tab label as plain text, so a label
+	 * with an entity shows the entity itself on screen. Decoding here also
+	 * keeps the post-based titles consistent with Ninja Forms, which stores
+	 * its title raw. An empty title means nothing resolved, so it maps to
+	 * null.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string|null $title The resolved title, or null when nothing matched.
+	 * @return string|null Decoded title, or null when there is no title.
+	 */
+	protected function decode_title_entities( $title ) {
+		if ( null === $title || '' === $title ) {
+			return null;
+		}
+
+		return html_entity_decode( $title, ENT_QUOTES | ENT_HTML5, get_bloginfo( 'charset' ) );
 	}
 
 	/**
