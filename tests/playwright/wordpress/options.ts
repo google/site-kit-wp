@@ -133,6 +133,56 @@ export function withSharedModules(
 }
 
 /**
+ * One Analytics audience for a test, mirroring the shape Site Kit stores in the
+ * `availableAudiences` setting.
+ *
+ * @since n.e.x.t
+ */
+export type TestAudience = {
+	name: string;
+	displayName: string;
+	description?: string;
+	audienceType?: string;
+	audienceSlug?: string;
+};
+
+/**
+ * Sets the current user's Key Metrics selection for the test.
+ *
+ * The `e2e-pdf-generation-state.php` must-use plugin applies the selection, so a
+ * section that renders the configured metrics has a deterministic set of tiles.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string[]} widgetSlugs The key metric widget slugs to select.
+ * @return {TestDetailsAnnotation} The annotation to use for the test.
+ */
+export function withKeyMetrics( widgetSlugs: string[] ): TestDetailsAnnotation {
+	return {
+		type: '_wp:key-metrics',
+		description: JSON.stringify( widgetSlugs ),
+	};
+}
+
+/**
+ * Sets the Analytics audiences for the test: the given audiences become the
+ * available and configured audiences, with audience segmentation marked complete.
+ *
+ * @since n.e.x.t
+ *
+ * @param {TestAudience[]} audiences The audiences to make available and configured.
+ * @return {TestDetailsAnnotation} The annotation to use for the test.
+ */
+export function withAudiences(
+	audiences: TestAudience[]
+): TestDetailsAnnotation {
+	return {
+		type: '_wp:audiences',
+		description: JSON.stringify( audiences ),
+	};
+}
+
+/**
  * Sets the fixtures to use for the test.
  *
  * @since 1.177.0
