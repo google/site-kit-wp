@@ -165,6 +165,12 @@ const baseActions = {
 					? { ...defaultSettings, ...settings }
 					: currentSettings;
 
+			// Captured before saving, since a successful save immediately
+			// updates the saved frequency to the new value.
+			const previousFrequency = registry
+				.select( CORE_USER )
+				.getEmailReportingSavedFrequency();
+
 			yield {
 				type: SET_EMAIL_REPORTING_SETTINGS_SAVING_FLAG,
 				payload: { isSaving: true },
@@ -179,6 +185,16 @@ const baseActions = {
 				type: SET_EMAIL_REPORTING_SETTINGS_SAVING_FLAG,
 				payload: { isSaving: false },
 			};
+
+			// Only the frequency affects the next report timestamp, so only
+			// invalidate the cached value (forcing a fresh fetch) when the
+			// frequency has actually changed; otherwise the cached value is
+			// still accurate and a refetch would be wasted.
+			if ( ! error && settingsToSave.frequency !== previousFrequency ) {
+				registry
+					.dispatch( CORE_USER )
+					.invalidateEmailReportingNextReport();
+			}
 
 			return { response, error };
 		}

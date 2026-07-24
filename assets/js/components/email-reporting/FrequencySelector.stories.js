@@ -27,6 +27,9 @@ import { provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import FrequencySelector from './FrequencySelector';
 
+// Aug 1, 2026 09:00 UTC — stand-in for a backend-computed next report timestamp.
+const AUG_1_2026_TIMESTAMP = Date.UTC( 2026, 7, 1, 9, 0, 0 ) / 1000;
+
 export default {
 	title: 'Components/EmailReporting/FrequencySelector',
 	component: FrequencySelector,
@@ -41,7 +44,7 @@ export default {
 	},
 	args: {
 		isUserSubscribed: false,
-		referenceDate: '2026-07-14',
+		nextReportTimestamp: AUG_1_2026_TIMESTAMP,
 		savedSettings: {},
 		clientSettings: {
 			frequency: 'weekly',
@@ -55,7 +58,7 @@ function Template( {
 	isUserSubscribed,
 	savedSettings,
 	clientSettings,
-	referenceDate,
+	nextReportTimestamp,
 } ) {
 	function setupRegistry( registry ) {
 		provideSiteInfo( registry, {
@@ -70,7 +73,9 @@ function Template( {
 			.dispatch( CORE_USER )
 			.setEmailReportingSettings( clientSettings );
 
-		registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingNextReport( {
+			timestamp: nextReportTimestamp,
+		} );
 	}
 
 	return (
@@ -121,7 +126,7 @@ WeeklySelectedSundayStartOfTheWeek.scenario = {};
 export const PreviouslySavedFrequency = Template.bind( {} );
 PreviouslySavedFrequency.args = {
 	isUserSubscribed: true,
-	referenceDate: '2026-07-14',
+	nextReportTimestamp: AUG_1_2026_TIMESTAMP,
 	savedSettings: {
 		frequency: 'monthly',
 	},

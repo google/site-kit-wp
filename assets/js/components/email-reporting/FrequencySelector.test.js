@@ -25,9 +25,22 @@ import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
 import { provideSiteInfo } from '@tests/js/utils';
 import FrequencySelector from './FrequencySelector';
 
+// Aug 1, 2026 09:00 UTC — used as a stand-in for a backend-computed next
+// report timestamp that should display as "Aug 1, 2026".
+const AUG_1_2026_TIMESTAMP = Date.UTC( 2026, 7, 1, 9, 0, 0 ) / 1000;
+
 function setupRegistry(
 	registry,
-	{ startOfWeek = 1, frequency, savedFrequency, referenceDate } = {}
+	{
+		startOfWeek = 1,
+		frequency,
+		savedFrequency,
+		// Default to a falsy timestamp so the "Next report" line stays
+		// hidden unless a test explicitly provides one. This also
+		// pre-populates the store so tests don't trigger a real network
+		// request for the (mocked) next report endpoint.
+		nextReportTimestamp = 0,
+	} = {}
 ) {
 	provideSiteInfo( registry, { startOfWeek } );
 
@@ -45,9 +58,9 @@ function setupRegistry(
 		registry.dispatch( CORE_USER ).setEmailReportingFrequency( frequency );
 	}
 
-	if ( referenceDate ) {
-		registry.dispatch( CORE_USER ).setReferenceDate( referenceDate );
-	}
+	registry.dispatch( CORE_USER ).receiveGetEmailReportingNextReport( {
+		timestamp: nextReportTimestamp,
+	} );
 }
 
 function renderSelector( registry, props = {} ) {
@@ -119,7 +132,7 @@ describe( 'FrequencySelector', () => {
 				startOfWeek: 1,
 				frequency: 'weekly',
 				savedFrequency: 'monthly',
-				referenceDate: '2026-07-14',
+				nextReportTimestamp: AUG_1_2026_TIMESTAMP,
 			} );
 
 			const { container, containerElement, getByText } = renderSelector(
@@ -160,7 +173,7 @@ describe( 'FrequencySelector', () => {
 				startOfWeek: 1,
 				frequency: 'monthly',
 				savedFrequency: 'monthly',
-				referenceDate: '2026-07-14',
+				nextReportTimestamp: AUG_1_2026_TIMESTAMP,
 			} );
 
 			const { container, containerElement, getByText } = renderSelector(
@@ -199,6 +212,54 @@ describe( 'FrequencySelector', () => {
 			expect( containerElement ).toMatchSnapshot();
 		} );
 
+		it( 'Does not show the current subscription pill on desktop when the user is not subscribed', () => {
+			setupRegistry( registry, {
+				startOfWeek: 1,
+				frequency: 'weekly',
+				savedFrequency: 'monthly',
+				nextReportTimestamp: AUG_1_2026_TIMESTAMP,
+			} );
+
+			const { container, queryByText } = renderSelector( registry, {
+				isUserSubscribed: false,
+			} );
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-frequency-selector__badge-row'
+				)
+			).not.toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-frequency-selector__current-subscription'
+				)
+			).not.toBeInTheDocument();
+			expect( queryByText( 'Current subscription' ) ).toBeNull();
+			expect( queryByText( 'Next report: Aug 1, 2026' ) ).toBeNull();
+		} );
+
+		it( 'Does not show the current subscription pill on mobile when the user is not subscribed', () => {
+			global.innerWidth = 500;
+
+			setupRegistry( registry, {
+				startOfWeek: 1,
+				frequency: 'weekly',
+				savedFrequency: 'monthly',
+				nextReportTimestamp: AUG_1_2026_TIMESTAMP,
+			} );
+
+			const { container, queryByText } = renderSelector( registry, {
+				isUserSubscribed: false,
+			} );
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-frequency-selector__current-subscription'
+				)
+			).not.toBeInTheDocument();
+			expect( queryByText( 'Next report: Aug 1, 2026' ) ).toBeNull();
+		} );
+
 		it( 'Renders next report date in the mobile current subscription pill', () => {
 			global.innerWidth = 500;
 
@@ -206,7 +267,7 @@ describe( 'FrequencySelector', () => {
 				startOfWeek: 1,
 				frequency: 'weekly',
 				savedFrequency: 'monthly',
-				referenceDate: '2026-07-14',
+				nextReportTimestamp: AUG_1_2026_TIMESTAMP,
 			} );
 
 			const { container, getByText } = renderSelector( registry, {

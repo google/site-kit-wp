@@ -31,6 +31,9 @@ describe( 'core/user email reporting settings', () => {
 	const emailReportingSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/email-reporting-settings'
 	);
+	const emailReportingNextReportEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/email-reporting-next-report'
+	);
 
 	let emailReportingSettingsResponse;
 
@@ -113,6 +116,133 @@ describe( 'core/user email reporting settings', () => {
 
 				expect( console ).toHaveErrored();
 				expect( error ).toEqual( response );
+			} );
+
+			it( 'should invalidate the cached next report timestamp after a successful save', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetEmailReportingNextReport( {
+						timestamp: 1_800_000_000,
+					} );
+
+				fetchMock.postOnce( emailReportingSettingsEndpoint, {
+					body: {
+						subscribed: true,
+						frequency: 'weekly',
+					},
+					status: 200,
+				} );
+
+				// The stale timestamp should be discarded and a fresh value
+				// fetched from the server, rather than continuing to display
+				// the timestamp computed for the previous frequency.
+				fetchMock.getOnce( emailReportingNextReportEndpoint, {
+					body: { timestamp: 1_900_000_000 },
+				} );
+
+				await registry
+					.dispatch( CORE_USER )
+					.saveEmailReportingSettings( {
+						subscribed: true,
+						frequency: 'weekly',
+					} );
+
+				// Accessing the selector kicks off the (invalidated) resolver
+				// so it re-fetches from the server.
+				registry
+					.select( CORE_USER )
+					.getEmailReportingNextReportTimestamp();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getEmailReportingNextReportTimestamp();
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getEmailReportingNextReportTimestamp()
+				).toEqual( 1_900_000_000 );
+			} );
+
+			it( 'should not invalidate the cached next report timestamp when the frequency is unchanged', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetEmailReportingSettings( {
+						subscribed: false,
+						frequency: 'monthly',
+					} );
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetEmailReportingNextReport( {
+						timestamp: 1_800_000_000,
+					} );
+
+				fetchMock.postOnce( emailReportingSettingsEndpoint, {
+					body: {
+						subscribed: true,
+						frequency: 'monthly',
+					},
+					status: 200,
+				} );
+
+				// Only the `subscribed` flag changes here; the frequency
+				// stays the same, so the cached timestamp is still accurate
+				// and should not be invalidated (which would otherwise cause
+				// an unnecessary network request).
+				await registry
+					.dispatch( CORE_USER )
+					.saveEmailReportingSettings( {
+						subscribed: true,
+					} );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getEmailReportingNextReportTimestamp()
+				).toEqual( 1_800_000_000 );
+				expect( fetchMock ).not.toHaveFetched(
+					emailReportingNextReportEndpoint
+				);
+			} );
+
+			it( 'should not invalidate the cached next report timestamp when the save fails', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetEmailReportingSettings( {
+						subscribed: false,
+						frequency: 'monthly',
+					} );
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetEmailReportingNextReport( {
+						timestamp: 1_800_000_000,
+					} );
+
+				fetchMock.postOnce( emailReportingSettingsEndpoint, {
+					body: {
+						code: 'invalid_param',
+						message: 'Invalid frequency value.',
+						data: {},
+					},
+					status: 400,
+				} );
+
+				await registry
+					.dispatch( CORE_USER )
+					.saveEmailReportingSettings( {
+						subscribed: true,
+						frequency: 'weekly',
+					} );
+
+				expect( console ).toHaveErrored();
+				expect(
+					registry
+						.select( CORE_USER )
+						.getEmailReportingNextReportTimestamp()
+				).toEqual( 1_800_000_000 );
 			} );
 		} );
 

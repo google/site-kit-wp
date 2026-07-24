@@ -44,7 +44,6 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { getLocale } from '@/js/util';
-import getNextReportDate from './getNextReportDate';
 
 export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 	const breakpoint = useBreakpoint();
@@ -84,29 +83,31 @@ export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 	const savedFrequency = useSelect( ( select ) =>
 		select( CORE_USER ).getEmailReportingSavedFrequency()
 	);
-	const referenceDate = useSelect( ( select ) =>
-		select( CORE_USER ).getReferenceDate()
+
+	// The next report timestamp reflects the actual scheduled (or, if not yet
+	// scheduled, freshly calculated) cron occurrence, computed server-side so
+	// it correctly accounts for the report trigger time in the site timezone.
+	const nextReportTimestamp = useSelect( ( select ) =>
+		select( CORE_USER ).getEmailReportingNextReportTimestamp()
 	);
 
 	const { setEmailReportingFrequency } = useDispatch( CORE_USER );
 
 	const formattedNextReportDate = useMemo( () => {
-		if ( ! savedFrequency || ! referenceDate ) {
+		if ( ! savedFrequency || ! nextReportTimestamp ) {
 			return null;
 		}
 
-		const nextReportDate = getNextReportDate(
-			savedFrequency,
-			referenceDate,
-			startOfWeek
-		);
+		// This constructs a date from a server-provided timestamp rather
+		// than the reference date, so using `new Date()` here is valid.
+		const nextReportDate = new Date( nextReportTimestamp * 1000 ); // eslint-disable-line sitekit/no-direct-date
 
 		return nextReportDate.toLocaleDateString( getLocale(), {
 			month: 'short',
 			day: 'numeric',
 			year: 'numeric',
 		} );
-	}, [ savedFrequency, referenceDate, startOfWeek ] );
+	}, [ savedFrequency, nextReportTimestamp ] );
 
 	const weeklyDescription = sprintf(
 		/* translators: %s: localized day-of-week name (e.g. Monday). */
