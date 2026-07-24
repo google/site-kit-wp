@@ -70,9 +70,9 @@ export default function ReaderRevenueManagerSetupCTABannerWidget( {
 		[]
 	);
 
-	const isDismissingPrompt = useSelect(
+	const isDismissingWidget = useSelect(
 		( select: Select ) =>
-			select( CORE_USER ).isDismissingPrompt(
+			select( CORE_USER ).isDismissingItem(
 				RRM_EXPRESS_SETUP_TRAFFIC_CTA_DISMISSED_KEY
 			),
 		[]
