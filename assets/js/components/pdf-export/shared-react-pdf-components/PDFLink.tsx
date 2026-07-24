@@ -1,5 +1,6 @@
 /**
- * A text link for the PDF report, with an optional trailing icon.
+ * A text link for the PDF report, with an optional trailing icon. With no URL,
+ * the text renders plain.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -42,7 +43,7 @@ const styles = createPDFStyles( {
 } );
 
 export interface PDFLinkProps {
-	/** Link target URL. */
+	/** Link target URL. When an empty string: plaintext is still rendered (in the default text color and with no trailing icon). */
 	href?: string;
 	/** Typography type for the link text. */
 	type?: PDFTypographyType;
@@ -62,6 +63,14 @@ const PDFLink: FC< PDFLinkProps > = ( {
 	style,
 	children,
 } ) => {
+	if ( ! href ) {
+		return (
+			<PDFTypography type={ type } size={ size } style={ style }>
+				{ children }
+			</PDFTypography>
+		);
+	}
+
 	const linkColor: Style = { color: PDF_COLORS.CONTENT_SECONDARY };
 
 	return (

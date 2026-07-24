@@ -203,7 +203,7 @@ function gaEventCategory( viewContext: string ) {
  *
  * @since 1.181.0
  * @since 1.182.0 Load every widget area above and including the Site Goals section before the tour starts, and wait for them to load and the layout to settle.
- * @since n.e.x.t Pick the breakdown step copy from the widget the step points at, in place of the detected event types.
+ * @since 1.184.0 Pick the breakdown step copy from the widget the step points at, in place of the detected event types.
  *
  * @param params                             The tour params.
  * @param params.hasEcommerceBreakdownNotice Whether the Online store widget shows the breakdown notice.

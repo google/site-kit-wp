@@ -174,11 +174,11 @@ class Site_VerificationTest extends TestCase {
 		$this->go_to( '/google1234.html' );
 		$this->assertStringNotContainsString( 'google-site-verification', $this->capture_action( 'init' ), 'No verification response should be served without verification file.' );
 
-		// Set correct verification for user
+		// Set correct verification for user.
 		$user_options->set( Verification_File::OPTION, '1234' );
 		$this->assertEquals( 'google-site-verification: google1234.html', $this->capture_action( 'init' ), 'Verification response should be served for matching file.' );
 
-		// Ensure that the verification isn't served if there is no match
+		// Ensure that the verification isn't served if there is no match.
 		$user_options->set( Verification_File::OPTION, '9999' );
 		$this->assertEquals( '', $this->capture_action( 'init' ), 'No verification response should be served for non-matching file.' );
 

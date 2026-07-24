@@ -35,14 +35,14 @@ import {
 /**
  * How many rows the page titles report requests for each page path.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export const PAGE_TITLES_REQUEST_MULTIPLIER = 5;
 
 /**
  * Report ID (cache key) for the page titles report.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export const PAGE_TITLES_REPORT_ID =
 	'analytics-4_get-page-titles_store:selector_options';
@@ -53,7 +53,7 @@ export const PAGE_TITLES_REPORT_ID =
  * The reports this serves dimension `pagePath` first, so each row's first
  * dimension value is its page path.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param [report] Report whose rows carry the page paths.
  * @return Unique page paths in row order.
@@ -74,7 +74,7 @@ export function getPagePaths( report?: Report ): string[] {
 /**
  * Builds the GA4 `getReport` args for the page titles report.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param dates           Report date range.
  * @param dates.startDate Report start date (YYYY-MM-DD).
@@ -109,7 +109,7 @@ export function getPageTitlesReportOptions(
  * Keeps the first title found for each path and falls back to `(unknown)` for
  * any path the titles report missed.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param pagePaths      Page paths the titles were requested for.
  * @param [titlesReport] Page titles report.

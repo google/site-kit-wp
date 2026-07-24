@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { View } from '@react-pdf/renderer';
+import { Link, View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
@@ -113,6 +113,9 @@ const styles = createPDFStyles( {
 	chipWrapper: {
 		marginRight: 24,
 	},
+	chipLink: {
+		textDecoration: 'none',
+	},
 	viewDashboard: {
 		flexShrink: 0,
 		marginLeft: 8,
@@ -171,31 +174,26 @@ const PDFHeader: FC< PDFHeaderProps > = ( {
 					</PDFTypography>
 				</View>
 				<View style={ styles.siteBlock }>
-					{ dashboardURL ? (
-						<PDFLink
-							href={ dashboardURL }
-							style={ {
-								color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
-							} }
-						>
-							{ getSiteHost( siteURL ) }
-						</PDFLink>
-					) : (
-						<PDFTypography
-							style={ {
-								color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
-							} }
-						>
-							{ getSiteHost( siteURL ) }
-						</PDFTypography>
-					) }
+					<PDFLink
+						href={ dashboardURL }
+						style={ {
+							color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
+						} }
+					>
+						{ getSiteHost( siteURL ) }
+					</PDFLink>
 				</View>
 			</View>
 			<View style={ styles.chipRow }>
 				<View style={ styles.chips }>
 					{ sections.map( ( { slug, label, Icon } ) => (
 						<View key={ slug } style={ styles.chipWrapper }>
-							<PDFChip label={ label } Icon={ Icon } />
+							<Link
+								src={ `#section-${ slug }` }
+								style={ styles.chipLink }
+							>
+								<PDFChip label={ label } Icon={ Icon } />
+							</Link>
 						</View>
 					) ) }
 				</View>

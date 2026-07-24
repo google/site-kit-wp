@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import {
-	GetPDFDataParams,
+	PDFDataLoaderParams,
 	PDFReportDates,
 } from '@/js/googlesitekit/widgets/types';
 
@@ -28,7 +28,7 @@ import {
  * One report a tile needs: the module datastore to fetch from and the report
  * options to request.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export interface TileReportRequest {
 	/** The module datastore name, e.g. `MODULES_ANALYTICS_4`. */
@@ -62,7 +62,7 @@ interface FetchReportResult {
  * `resolveSelect`, which yields `undefined` rather than throwing on failure, so
  * such a failure reads as no data, not as a thrown error.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param buildReports Returns the reports to fetch for the date range. It receives the registry too, so a tile whose report options depend on resolved state can await it; it may return a promise.
  * @param extract      Maps the resolved report responses to the tile's data, or `null` when the report has no data.
@@ -71,15 +71,15 @@ interface FetchReportResult {
 export default function createKeyMetricTileDataLoader< TData >(
 	buildReports: (
 		dates: PDFReportDates,
-		registry: GetPDFDataParams[ 'registry' ]
+		registry: PDFDataLoaderParams[ 'registry' ]
 	) => TileReportRequest[] | Promise< TileReportRequest[] >,
 	extract: ( reports: unknown[] ) => TData | null
-): ( params: GetPDFDataParams ) => Promise< TData | null > {
+): ( params: PDFDataLoaderParams ) => Promise< TData | null > {
 	return async function getTileData( {
 		registry,
 		dates,
 		signal,
-	}: GetPDFDataParams ): Promise< TData | null > {
+	}: PDFDataLoaderParams ): Promise< TData | null > {
 		if ( signal.aborted ) {
 			return null;
 		}

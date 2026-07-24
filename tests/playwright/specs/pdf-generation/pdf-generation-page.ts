@@ -33,7 +33,7 @@ export class PDFGenerationPage {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param page The page.
 	 */
@@ -45,7 +45,7 @@ export class PDFGenerationPage {
 	/**
 	 * Gets the header button that opens the export panel.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return The header PDF download button.
 	 */
@@ -58,7 +58,7 @@ export class PDFGenerationPage {
 	/**
 	 * Gets the panel's "Download report" button.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return The download button.
 	 */
@@ -70,7 +70,7 @@ export class PDFGenerationPage {
 	 * Gets the section checkboxes (one per dashboard context), excluding the
 	 * per-widget child checkboxes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return The section checkbox inputs.
 	 */
@@ -83,7 +83,7 @@ export class PDFGenerationPage {
 	/**
 	 * Gets a section checkbox by its dashboard-context slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param slug The section (dashboard context) slug.
 	 * @return The section checkbox input.
@@ -95,7 +95,7 @@ export class PDFGenerationPage {
 	/**
 	 * Gets the progress snackbar shown while the report generates.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return The progress snackbar.
 	 */
@@ -108,7 +108,7 @@ export class PDFGenerationPage {
 	/**
 	 * Gets the success snackbar shown once the report is generated.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return The success snackbar.
 	 */
@@ -121,7 +121,7 @@ export class PDFGenerationPage {
 	/**
 	 * Gets the error snackbar shown when generation fails.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return The error snackbar.
 	 */
@@ -134,7 +134,7 @@ export class PDFGenerationPage {
 	/**
 	 * Opens the export panel from the header.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return {Promise<void>} Resolves once the panel is visible.
 	 */
@@ -147,7 +147,7 @@ export class PDFGenerationPage {
 	 * Selects only the given sections, deselecting every other section. The panel
 	 * selects all sections by default, so this leaves the passed slugs checked.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param  slugs The section (dashboard context) slugs to keep selected.
 	 * @return {Promise<void>} Resolves once the selection is applied.
@@ -172,7 +172,7 @@ export class PDFGenerationPage {
 	 * `.pdf` and the saved file is non-empty. Visual verification of the rendered
 	 * document is handled separately by `verifyPDF()`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return {Promise<Download>} The completed download.
 	 */
@@ -200,7 +200,7 @@ export class PDFGenerationPage {
 	 * images with `pdf-to-png-converter` (pdf.js) rather than shown in the
 	 * browser directly.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param  download The completed download from `download()`.
 	 * @param  testInfo The current test's info, used to attach the file.
@@ -235,7 +235,7 @@ export class PDFGenerationPage {
 	/**
 	 * Cancels an in-progress export via the progress snackbar's Cancel action.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return {Promise<void>} Resolves once Cancel is clicked.
 	 */

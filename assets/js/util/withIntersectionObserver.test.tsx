@@ -56,7 +56,7 @@ const TestComponentWithIntersectionObserver =
  * Builds an `IntersectionObserver` entry for the target, in the shape the
  * `intersectionObserver` mock passes to the callback.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param target         Element the observer watches.
  * @param isIntersecting Whether the target is in view. Sets the intersection ratio to `0.5` when `true`, `0` when `false`.

@@ -62,7 +62,7 @@ const PDF_ICON_SIZE = 20;
 /**
  * Wraps a source SVG file, imported with `?pdf`, as a PDF report icon.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param SvgFile      The SVG file's component, from a `?pdf` import.
  * @param defaultColor Optional. The color to draw when the caller sets none. Defaults to `SURFACES_ON_SURFACE_VARIANT`, the muted color the dashboard draws these icons in.

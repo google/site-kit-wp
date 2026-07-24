@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\Storage;
 
 use Google\Site_Kit\Core\Storage\User_Aware_Interface;
@@ -23,18 +21,18 @@ trait User_Aware_Interface_ContractTests {
 
 	public function test_get_user_id() {
 		list( $user_aware, $user_id ) = $this->create_user_aware_instance();
-		$this->assertEquals( $user_id, $user_aware->get_user_id() );
+		$this->assertEquals( $user_id, $user_aware->get_user_id(), 'User-aware instance should retain its initial user ID.' );
 	}
 
 	public function test_switch_user() {
 		list( $user_aware, $user_id_a ) = $this->create_user_aware_instance();
-		$this->assertEquals( $user_id_a, $user_aware->get_user_id() );
+		$this->assertEquals( $user_id_a, $user_aware->get_user_id(), 'User-aware instance should start with the original user ID.' );
 
 		$user_id_b                = $this->factory()->user->create();
 		$restore_original_user_id = $user_aware->switch_user( $user_id_b );
-		$this->assertEquals( $user_id_b, $user_aware->get_user_id() );
+		$this->assertEquals( $user_id_b, $user_aware->get_user_id(), 'User-aware instance should use the replacement user ID after switching users.' );
 
 		$restore_original_user_id();
-		$this->assertEquals( $user_id_a, $user_aware->get_user_id() );
+		$this->assertEquals( $user_id_a, $user_aware->get_user_id(), 'Restore callback should reinstate the original user ID.' );
 	}
 }

@@ -146,7 +146,7 @@ class Get_Form_MetadataTest extends TestCase {
 
 		$result = $this->datapoint->create_request( $data_request );
 
-		$this->assertWPError( $result );
+		$this->assertWPError( $result, 'Form metadata request with non-array form IDs should return a WP_Error.' );
 		$this->assertSame(
 			'missing_required_param',
 			$result->get_error_code(),

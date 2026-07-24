@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\Remote_Features;
 
 use Google\Site_Kit\Context;
@@ -33,11 +31,17 @@ class Remote_Features_ActivationTest extends TestCase {
 
 	public function test_register() {
 		$activation = new Remote_Features_Activation( $this->setting );
-		$this->assertFalse( has_filter( 'googlesitekit_is_feature_enabled' ) );
+		$this->assertFalse(
+			has_filter( 'googlesitekit_is_feature_enabled' ),
+			'Remote feature activation filter should not be registered before registration.'
+		);
 
 		$activation->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_is_feature_enabled' ) );
+		$this->assertTrue(
+			has_filter( 'googlesitekit_is_feature_enabled' ),
+			'Remote feature activation filter should be registered.'
+		);
 	}
 
 	public function test_feature_activation() {
@@ -49,11 +53,13 @@ class Remote_Features_ActivationTest extends TestCase {
 
 		// Active features are loaded on the first invocation and cached.
 		$this->assertTrue(
-			apply_filters( 'googlesitekit_is_feature_enabled', false, 'testFeature' )
+			apply_filters( 'googlesitekit_is_feature_enabled', false, 'testFeature' ),
+			'Enabled remote feature should be reported as active.'
 		);
 
 		$this->assertFalse(
-			apply_filters( 'googlesitekit_is_feature_enabled', false, 'non-existent-feature' )
+			apply_filters( 'googlesitekit_is_feature_enabled', false, 'non-existent-feature' ),
+			'Unknown remote feature should remain inactive.'
 		);
 
 		// Subsequent updates wont' take effect until the next page load.
@@ -61,7 +67,8 @@ class Remote_Features_ActivationTest extends TestCase {
 			array( 'testFeature' => array( 'enabled' => false ) )
 		);
 		$this->assertTrue(
-			apply_filters( 'googlesitekit_is_feature_enabled', false, 'testFeature' )
+			apply_filters( 'googlesitekit_is_feature_enabled', false, 'testFeature' ),
+			'Feature activation should remain cached for the current request.'
 		);
 	}
 }

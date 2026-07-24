@@ -929,7 +929,7 @@ final class Modules implements Provides_Feature_Metrics {
 	 * - No user is identified by its owner ID
 	 * - the owner lacks the capability to authenticate
 	 * - the owner is no longer authenticated
-	 * - no user exists for the owner ID
+	 * - no user exists for the owner ID.
 	 *
 	 * @since 1.69.0
 	 *

@@ -35,7 +35,8 @@ class SettingsTest extends SettingsTestCase {
 				'userID'                 => '',
 				'accountOverviewURL'     => '',
 			),
-			get_option( Settings::OPTION )
+			get_option( Settings::OPTION ),
+			'Ads settings should initialize every field with an empty default.'
 		);
 	}
 

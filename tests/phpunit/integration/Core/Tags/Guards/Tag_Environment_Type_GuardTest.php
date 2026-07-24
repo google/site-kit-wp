@@ -34,7 +34,7 @@ class Tag_Environment_Type_GuardTest extends TestCase {
 	}
 
 	public function test_can_not_activate_in_development() {
-		// Pre WP-5.5.0
+		// Pre WP-5.5.0.
 		if ( ! function_exists( 'wp_get_environment_type' ) ) {
 			$this->markTestSkipped( 'Missing wp_get_environment_type() function.' );
 		}
@@ -49,7 +49,7 @@ class Tag_Environment_Type_GuardTest extends TestCase {
 	}
 
 	public function test_can_activate_in_development() {
-		// Pre WP-5.5.0
+		// Pre WP-5.5.0.
 		if ( ! function_exists( 'wp_get_environment_type' ) ) {
 			$this->markTestSkipped( 'Missing wp_get_environment_type() function.' );
 		}
