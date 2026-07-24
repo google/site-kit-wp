@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Path, View } from '@react-pdf/renderer';
+import { Link, Path, View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
@@ -120,6 +120,9 @@ const styles = createPDFStyles( {
 	chipWrapper: {
 		marginRight: 24,
 	},
+	chipLink: {
+		textDecoration: 'none',
+	},
 	viewDashboard: {
 		flexShrink: 0,
 		marginLeft: 8,
@@ -192,7 +195,12 @@ const PDFHeader: FC< PDFHeaderProps > = ( {
 				<View style={ styles.chips }>
 					{ sections.map( ( { slug, label, Icon } ) => (
 						<View key={ slug } style={ styles.chipWrapper }>
-							<PDFChip label={ label } Icon={ Icon } />
+							<Link
+								src={ `#section-${ slug }` }
+								style={ styles.chipLink }
+							>
+								<PDFChip label={ label } Icon={ Icon } />
+							</Link>
 						</View>
 					) ) }
 				</View>

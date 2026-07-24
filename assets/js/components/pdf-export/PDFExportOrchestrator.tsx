@@ -51,12 +51,20 @@ import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { getPreviousDate, trackEvent } from '@/js/util';
 import { ORDERED_MAIN_DASHBOARD_CONTEXTS } from './constants';
+import extractPDFSectionAnchors from './extract-pdf-section-anchors';
+import measurePDFContentHeight from './measure-pdf-content-height';
 import { registerPDFFonts } from './pdf-fonts-react';
+import { PDF_MEASURE_PAGE_HEIGHT, PDF_PAGE_BOTTOM_PADDING } from './pdf-theme';
 import { getPDFFilename, triggerDownload } from './pdf-utils';
 import { WidgetWithPDF, isActivePDFWidget } from './pdf-widget-eligibility';
 import { SECTION_ICONS } from './section-icons';
 import DashboardReport from './shared-react-pdf-components/DashboardReport';
-import { PDFHeaderSection, PDFReportArea, PDFReportWidget } from './types';
+import {
+	PDFHeaderSection,
+	PDFReportArea,
+	PDFReportWidget,
+	PDFSectionAnchor,
+} from './types';
 
 const STAGE_IDLE = 'IDLE' as const;
 const STAGE_LOADING = 'LOADING' as const;
@@ -80,7 +88,7 @@ const VALID_TRANSITIONS: Record< Stage, readonly Stage[] > = {
 };
 
 const LOADING_TIMEOUT_MS = 45 * 1000;
-const BUILDING_TIMEOUT_MS = 15 * 1000;
+const BUILDING_TIMEOUT_MS = 30 * 1000;
 const COMPLETE_UNMOUNT_DELAY_MS = 2 * 1000;
 const BLOB_REVOKE_DELAY_MS = 30 * 1000;
 // Progress budget reserved for the data-loading stage; BUILDING fills the rest.
@@ -571,24 +579,77 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 					resolvedDateRange
 				);
 
-				const document = (
+				const reportProps = {
+					siteName: reportSiteName,
+					siteURL: referenceSiteURL || '',
+					dashboardURL: dashboardURL || '',
+					dateRange: {
+						startDate: dates.startDate,
+						endDate: dates.endDate,
+					},
+					sections,
+					helpCenterURL:
+						'https://sitekit.withgoogle.com/support/?doc=get-support',
+					privacyPolicyURL: 'https://policies.google.com/privacy',
+					areas,
+					emailReportingSetupURL,
+				};
+
+				/*
+				 * The report renders twice: a discarded measurement pass
+				 * captures the content height and the sections' absolute
+				 * positions via `onRender`, then the final pass renders the
+				 * page bounded to the measured height, with the header chips'
+				 * anchor targets pinned at those positions.
+				 */
+				let measuredHeight = 0;
+				let sectionAnchors: PDFSectionAnchor[] = [];
+				// `@react-pdf` runs `onRender` inside its own render
+				// pipeline, so an error thrown there may never leave
+				// `toBlob()`. Capture it and rethrow it here instead.
+				let measureError: unknown = null;
+
+				await pdf(
 					<DashboardReport
-						siteName={ reportSiteName }
-						siteURL={ referenceSiteURL || '' }
-						dashboardURL={ dashboardURL || '' }
-						dateRange={ {
-							startDate: dates.startDate,
-							endDate: dates.endDate,
+						{ ...reportProps }
+						pageHeight={ PDF_MEASURE_PAGE_HEIGHT }
+						onRender={ ( layout ) => {
+							try {
+								measuredHeight =
+									measurePDFContentHeight( layout );
+								sectionAnchors =
+									extractPDFSectionAnchors( layout );
+							} catch ( error ) {
+								measureError = error;
+							}
 						} }
-						sections={ sections }
-						helpCenterURL="https://sitekit.withgoogle.com/support/?doc=get-support"
-						privacyPolicyURL="https://policies.google.com/privacy"
-						areas={ areas }
-						emailReportingSetupURL={ emailReportingSetupURL }
 					/>
+				).toBlob();
+
+				throwIfAborted( signal );
+
+				if ( measureError ) {
+					throw measureError;
+				}
+
+				if ( measuredHeight <= 0 ) {
+					throw new Error(
+						'The PDF measurement pass produced no layout.'
+					);
+				}
+
+				const finalPageHeight = Math.min(
+					measuredHeight + PDF_PAGE_BOTTOM_PADDING,
+					PDF_MEASURE_PAGE_HEIGHT
 				);
 
-				const blob = await pdf( document ).toBlob();
+				const blob = await pdf(
+					<DashboardReport
+						{ ...reportProps }
+						pageHeight={ finalPageHeight }
+						sectionAnchors={ sectionAnchors }
+					/>
+				).toBlob();
 
 				throwIfAborted( signal );
 
