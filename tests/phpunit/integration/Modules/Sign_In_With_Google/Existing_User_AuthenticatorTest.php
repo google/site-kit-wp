@@ -137,7 +137,7 @@ class Existing_User_AuthenticatorTest extends TestCase {
 			'Should connect the Google account of a user who uses two-factor authentication.'
 		);
 		$this->assertEquals(
-			array( self::TWO_FACTOR_PROVIDER ),
+			array( self::two_factor_provider() ),
 			$this->get_two_factor_providers_for_user( $user_id ),
 			'Should leave the two-factor settings of the connected user alone.'
 		);

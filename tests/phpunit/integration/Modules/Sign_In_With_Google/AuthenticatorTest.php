@@ -244,7 +244,7 @@ class AuthenticatorTest extends TestCase {
 			'Should skip the two-factor challenge for the connected user.'
 		);
 		$this->assertEquals(
-			array( self::TWO_FACTOR_PROVIDER ),
+			array( self::two_factor_provider() ),
 			$this->get_two_factor_providers_for_user( $user->ID ),
 			'Should leave the two-factor settings of the connected user alone.'
 		);

@@ -17,9 +17,9 @@ namespace Google\Site_Kit\Tests;
  * aliases this class to Two_Factor_Core so the plugin counts as active.
  *
  * The provider lookup applies the same two filters, in the same order, as
- * Two_Factor_Core, including the fallback to emailed codes. The plugin runs its
- * challenge or skips it depending on which of the two filters a caller answers,
- * so a double that left either one out would pass a test the plugin fails.
+ * Two_Factor_Core, including the fallback to emailed codes. Both filters decide
+ * whether the plugin challenges the user, so this fake keeps both. A fake with
+ * only one would let a test pass that the real plugin fails.
  *
  * @since n.e.x.t
  * @access private

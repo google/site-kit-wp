@@ -203,13 +203,11 @@ class Authenticator implements Authenticator_Interface {
 		// Set the user to be the current user.
 		wp_set_current_user( $user->ID, $user->user_login );
 
-		// Signing in through Google stands in for the second factor, so the
-		// Two-Factor plugin's challenge would ask for one the user has already
-		// given. Clear the primary provider, the last value the plugin resolves
-		// before wp_login decides whether to drop the session. An earlier value
-		// won't hold, because the plugin restores emailed codes whenever the
-		// enabled providers come back empty while the user's stored providers
-		// don't. The user's own two-factor settings stay untouched.
+		// Google already checked the second factor, so skip the Two-Factor
+		// challenge for this login. Setting this user's primary provider to
+		// empty turns the challenge off for this user only and keeps their
+		// saved settings. Don't empty the enabled providers instead: the
+		// plugin turns email codes back on when that list is empty.
 		add_filter(
 			'two_factor_primary_provider_for_user',
 			fn ( $provider, $user_id ) => $user_id === $user->ID ? '' : $provider,

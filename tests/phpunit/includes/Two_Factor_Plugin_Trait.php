@@ -20,12 +20,18 @@ namespace Google\Site_Kit\Tests;
 trait Two_Factor_Plugin_Trait {
 
 	/**
-	 * Two-factor provider the test users turn on.
+	 * Gets the two-factor provider the test users turn on.
+	 *
+	 * A trait can't hold a constant before PHP 8.2, and the plugin supports
+	 * PHP 7.4, so this is a static method.
 	 *
 	 * @since n.e.x.t
-	 * @var string
+	 *
+	 * @return string Provider key.
 	 */
-	const TWO_FACTOR_PROVIDER = 'Two_Factor_Totp';
+	protected static function two_factor_provider() {
+		return 'Two_Factor_Totp';
+	}
 
 	/**
 	 * Makes the Two-Factor plugin count as active.
@@ -53,7 +59,7 @@ trait Two_Factor_Plugin_Trait {
 	 * @param int $user_id User ID.
 	 */
 	protected function enable_two_factor_for_user( $user_id ) {
-		update_user_meta( $user_id, Two_Factor_Core_Fake::ENABLED_PROVIDERS_USER_META_KEY, array( self::TWO_FACTOR_PROVIDER ) );
+		update_user_meta( $user_id, Two_Factor_Core_Fake::ENABLED_PROVIDERS_USER_META_KEY, array( self::two_factor_provider() ) );
 	}
 
 	/**
