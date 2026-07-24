@@ -41,7 +41,7 @@ We reuse the existing Conversion Tracking pipeline end‑to‑end and add a **si
 
 Concretely:
 
-- A new PHP provider `Content_Events` extends the existing `Conversion_Events_Provider` base. Unlike the plugin providers, its `is_active()` is **not** gated on a third‑party plugin — it is always active, relying on the Conversion Tracking preconditions (Conversion Tracking enabled + a GA4/Ads web tag present) that `maybe_enqueue_scripts()` already enforces. Per‑event gating (page type, element presence, provider presence such as bbPress) happens **inside** its hooks and its frontend script.
+- A new PHP provider `Content_Events` extends the existing `Conversion_Events_Provider` base. Unlike the plugin providers, its `is_active()` is **not** gated on a third‑party plugin — it is always active, relying on the Conversion Tracking preconditions (Conversion Tracking enabled + a GA4/Ads web tag present) that `maybe_enqueue_scripts()` already enforces. Per‑event gating (page type, element presence — e.g. bbPress pagination markup only exists when bbPress runs) happens **inside** its hooks and its frontend script.
 - The provider registers **one** frontend entry, `googlesitekit-events-provider-content-events`, that attaches all the client‑side listeners/observers and fires events through the **existing** `window._googlesitekit.gtagEvent( name, data )` helper — so every event is automatically de‑duped/throttled and stamped `event_source: 'site-kit'`.
 - The provider's PHP `register_hooks()` handles the server‑side pieces the frontend can't do on its own: appending the end‑of‑content anchor, injecting `enablejsapi=1` into YouTube oEmbeds, detecting Vimeo iframes and conditionally enqueuing the Vimeo Player SDK, and passing per‑page config (post ID, word count, reading‑time constants, page‑type flags) to the script.
 
@@ -131,7 +131,7 @@ This means the shared enumerations require **no modification**, and there is zer
 ### **PHP hooks (`register_hooks`)**
 
 - **End‑of‑content anchor (read_article):** on `is_singular( 'post' )`, a `the_content` filter appends an invisible marker (e.g. `<span id="googlesitekit-end-of-content" aria-hidden="true"></span>`) so the frontend can observe it precisely. The frontend falls back to a scroll‑depth threshold when the anchor is absent (page builders/patterns that bypass `the_content`).
-- **Per‑page config:** an inline script (attached `'before'` the provider handle, exactly like WooCommerce's `window._googlesitekit.wcdata`) publishes `window._googlesitekit.contentEvents = { postID, wordCount, readingSpeedWPM, readThresholdPct, readMinSeconds, isSinglePost, bbpressActive }`. Word count is computed server‑side from the post content; the reading‑time tunables come from a single PHP constants block mirroring the JS one.
+- **Per‑page config:** an inline script (attached `'before'` the provider handle, exactly like WooCommerce's `window._googlesitekit.wcdata`) publishes `window._googlesitekit.contentEvents = { postID, wordCount, readingSpeedWPM, readThresholdPct, readMinSeconds, isSinglePost }`. Word count is computed server‑side from the post content; the reading‑time tunables come from a single PHP constants block mirroring the JS one.
 - **YouTube `enablejsapi=1`:** filters on `embed_oembed_html` / `oembed_result` (and the core embed block render for block themes) rewrite YouTube iframe `src` to add `enablejsapi=1`, which unlocks GA4 Enhanced Measurement's native `video_*` events. We only enable them — GA4 sends them.
 - **Vimeo detection + SDK enqueue:** the same filter path tags Vimeo iframes (and enables their JS API), and when at least one Vimeo iframe is present the provider enqueues the Vimeo Player SDK (`@vimeo/player`) so the frontend can attach playback callbacks.
 
@@ -140,7 +140,7 @@ This means the shared enumerations require **no modification**, and there is zer
 A single new entry in `frontendModules.config.js` (`googlesitekit-events-provider-content-events` → `./js/event-providers/content-events.js`). It reads `window._googlesitekit.contentEvents` and wires each handler independently; each handler is a no‑op if its precondition isn't met. All emissions go through `global._googlesitekit?.gtagEvent?.( name, data )`.
 
 - **`read_article`** — only when `isSinglePost`. Combines an `IntersectionObserver` on the end anchor (or a ~90% scroll‑depth fallback) **and** a dwell timer that must reach `readThresholdPct` of the estimated read time; the timer pauses on tab blur/idle. Constants (`238` WPM, `85%`, `5s` floor) live in one exported block so they can be tuned. Params: `post_id`, `word_count` (or `estimated_read_time_sec`).
-- **`pagination_click`** — delegated `document` click listener scoped to `a.post-page-numbers` inside post content (primary) and, when `bbpressActive`, `.bbp-pagination-links a.page-numbers` (secondary, scoped to avoid the generic `.page-numbers` class colliding with archive pagination). Sent with `transport_type: 'beacon'` because the click triggers a full reload. Params: `pagination_type`, `page_number`, `post_id`.
+- **`pagination_click`** — delegated `document` click listener scoped to `a.post-page-numbers` inside post content (primary) and `.bbp-pagination-links a.page-numbers` (secondary, scoped to avoid the generic `.page-numbers` class colliding with archive pagination). The bbPress selector needs no server‑side presence check: those elements only exist when bbPress renders thread pagination, so the listener is a natural no‑op otherwise. Sent with `transport_type: 'beacon'` because the click triggers a full reload. Params: `pagination_type`, `page_number`, `post_id`.
 - **`contact_link_click`** — delegated `document` click on `a[href^="tel:"], a[href^="mailto:"]`, `link_type: 'phone' | 'email'`. **No raw number/address is sent** (PII); at most the email domain.
 - **`outbound_link_click`** — delegated `document` click on `a[rel~="sponsored"], a[rel~="ugc"], a[rel~="nofollow"]` (token‑match, not string‑equal). Params: `link_rel` (space‑joined matches), `link_url`, `link_domain`.
 - **Vimeo video** — using the Vimeo Player SDK, attaches to discovered players and fires `video_start` / `video_progress` (10/25/50/75%) / `video_complete` with `video_provider: 'vimeo'`, mirroring GA4's YouTube params so both providers report together.
@@ -170,7 +170,7 @@ We should add toggles to force the preconditions and page contexts for manual QA
 
 ### **Site Health**
 
-`Content_Events::get_debug_data()` should report which content events are enabled/eligible on this install (e.g. `read_article, pagination_click, contact_link_click, outbound_link_click, video (vimeo)`), plus whether bbPress is detected, to help support triage "why isn't event X firing" reports.
+`Content_Events::get_debug_data()` should report which content events are enabled/eligible on this install (e.g. `read_article, pagination_click, contact_link_click, outbound_link_click, video (vimeo)`) to help support triage "why isn't event X firing" reports.
 
 ### **Feature discovery**
 
