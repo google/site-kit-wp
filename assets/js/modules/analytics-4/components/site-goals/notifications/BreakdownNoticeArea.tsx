@@ -669,6 +669,11 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 				permissionsTitle={ permissionsErrorTitle }
 				onRetry={ handleErrorRetry }
 				onDismiss={ handleErrorDismiss }
+				// The error state outranks the loading one, so a retry keeps this
+				// notice rendered. Reflect the enable flow's busy state on the CTA
+				// so the retry visibly progresses instead of appearing to do
+				// nothing.
+				ctaInProgress={ isBusy }
 				onInView={ handleErrorView }
 			/>
 		);
