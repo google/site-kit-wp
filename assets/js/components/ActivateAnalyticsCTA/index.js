@@ -24,23 +24,16 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import {
-	createInterpolateElement,
-	forwardRef,
-	useEffect,
-	useState,
-} from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { Button, SpinnerButton } from 'googlesitekit-components';
+import { SpinnerButton } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import Link from '@/js/components/Link';
-import Typography from '@/js/components/Typography';
-import { SIZE_MEDIUM, TYPE_LABEL } from '@/js/components/Typography/constants';
-import P from '@/js/components/Typography/P';
+import ErrorCTAContent from '@/js/components/ActivateAnalyticsCTA/ErrorCTAContent';
+import NormalCTAContent from '@/js/components/ActivateAnalyticsCTA/NormalCTAContent';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -57,7 +50,9 @@ import {
 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
-import AnalyticsIcon from '@/svg/graphics/analytics.svg';
+
+const ErrorCTAWithObserver = withIntersectionObserver( ErrorCTAContent );
+const NormalCTAWithObserver = withIntersectionObserver( NormalCTAContent );
 
 export default function ActivateAnalyticsCTA( {
 	children,
@@ -205,102 +200,6 @@ export default function ActivateAnalyticsCTA( {
 		trackErrorEvents.dismiss( analyticsEventLabel );
 	}
 
-	const ErrorCTAContent = forwardRef( ( props, ref ) => (
-		<div
-			ref={ ref }
-			className="googlesitekit-activate-analytics-cta googlesitekit-activate-analytics-cta--error"
-		>
-			<div>
-				<Typography
-					type={ TYPE_LABEL }
-					size={ SIZE_MEDIUM }
-					as="h2"
-					className="googlesitekit-activate-analytics-cta__title"
-				>
-					{ __( 'Analytics setup failed', 'google-site-kit' ) }
-				</Typography>
-				<P className="googlesitekit-activate-analytics-cta__description">
-					{ __(
-						'Something went wrong, please try again',
-						'google-site-kit'
-					) }
-				</P>
-			</div>
-			<div className="googlesitekit-activate-analytics-cta__actions">
-				<Button
-					className="googlesitekit-activate-analytics-cta__button--secondary googlesitekit-activate-analytics-cta__dismiss-button--error"
-					onClick={ handleActivationErrorDismiss }
-					tertiary
-				>
-					{ __( 'Got it', 'google-site-kit' ) }
-				</Button>
-				<SpinnerButton
-					className="googlesitekit-activate-analytics-cta__button--primary"
-					onClick={ handleActivationRetry }
-					isSaving={ inProgress }
-					disabled={ inProgress }
-				>
-					{ __( 'Retry Analytics setup', 'google-site-kit' ) }
-				</SpinnerButton>
-			</div>
-		</div>
-	) );
-	ErrorCTAContent.displayName = 'ErrorCTAContent';
-
-	const NormalCTAContent = forwardRef( ( props, ref ) => (
-		<div ref={ ref } className="googlesitekit-activate-analytics-cta">
-			<div className="googlesitekit-activate-analytics-cta__top">
-				<div className="googlesitekit-activate-analytics-cta__icon">
-					<AnalyticsIcon width={ 28 } height={ 31 } />
-				</div>
-				<p className="googlesitekit-activate-analytics-cta__description">
-					{ createInterpolateElement(
-						__(
-							'See how many people visit your site from Search and track how you’re achieving your goals. <a>Learn more</a>',
-							'google-site-kit'
-						),
-						{
-							a: (
-								<Link
-									href={ documentationURL }
-									onClick={ () => {
-										trackEvents.clickLearnMore(
-											analyticsEventLabel
-										);
-									} }
-									external
-								/>
-							),
-						}
-					) }
-				</p>
-			</div>
-			<div className="googlesitekit-activate-analytics-cta__actions">
-				<Button
-					className="googlesitekit-activate-analytics-cta__button--secondary"
-					onClick={ handleDismiss }
-					tertiary
-				>
-					{ __( 'Maybe later', 'google-site-kit' ) }
-				</Button>
-				<SpinnerButton
-					className="googlesitekit-activate-analytics-cta__button--primary"
-					onClick={ () => {
-						onClickCallback();
-						trackEvents.confirm( analyticsEventLabel );
-					} }
-					isSaving={ inProgress }
-					disabled={ inProgress }
-				>
-					{ analyticsModuleActive
-						? __( 'Complete setup', 'google-site-kit' )
-						: __( 'Set up Analytics', 'google-site-kit' ) }
-				</SpinnerButton>
-			</div>
-		</div>
-	) );
-	NormalCTAContent.displayName = 'NormalCTAContent';
-
 	const onClickCallback = analyticsModuleActive
 		? completeModuleActivationCallback
 		: activateModuleCallback;
@@ -343,12 +242,12 @@ export default function ActivateAnalyticsCTA( {
 		);
 	}
 
-	const ErrorCTAWithObserver = withIntersectionObserver( ErrorCTAContent );
-	const NormalCTAWithObserver = withIntersectionObserver( NormalCTAContent );
-
 	if ( hasActivationError ) {
 		return (
 			<ErrorCTAWithObserver
+				handleActivationErrorDismiss={ handleActivationErrorDismiss }
+				handleActivationRetry={ handleActivationRetry }
+				inProgress={ inProgress }
 				onInView={ () => trackErrorEvents.view( analyticsEventLabel ) }
 			/>
 		);
@@ -356,6 +255,13 @@ export default function ActivateAnalyticsCTA( {
 
 	return (
 		<NormalCTAWithObserver
+			documentationURL={ documentationURL }
+			analyticsEventLabel={ analyticsEventLabel }
+			handleDismiss={ handleDismiss }
+			inProgress={ inProgress }
+			onClickCallback={ onClickCallback }
+			analyticsModuleActive={ analyticsModuleActive }
+			trackEvents={ trackEvents }
 			onInView={ () => trackEvents.view( analyticsEventLabel ) }
 		/>
 	);

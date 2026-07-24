@@ -32,6 +32,7 @@ import {
 	MODULE_SLUG_ANALYTICS_4,
 } from '@/js/modules/analytics-4/constants';
 import * as tracking from '@/js/util/tracking';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
 	act,
 	createTestRegistry,
@@ -56,29 +57,13 @@ const activateEndpoint = new RegExp(
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-let observedElements = [];
-function observerCallback() {}
+const { getObservedElements, simulateIntersection } =
+	mockIntersectionObserver();
 
 describe( 'AdminBarWidgets', () => {
 	let registry;
 
 	beforeEach( () => {
-		observedElements = [];
-		observerCallback = () => {};
-
-		global.IntersectionObserver = jest.fn( ( callback ) => {
-			observerCallback = callback;
-
-			return {
-				observe: jest.fn( ( element ) => {
-					observedElements.push( element );
-				} ),
-				disconnect: jest.fn(),
-				unobserve: jest.fn(),
-				takeRecords: jest.fn().mockReturnValue( [] ),
-			};
-		} );
-
 		registry = createTestRegistry();
 
 		provideModules( registry );
@@ -124,7 +109,6 @@ describe( 'AdminBarWidgets', () => {
 	} );
 
 	afterEach( () => {
-		delete global.IntersectionObserver;
 		jest.resetAllMocks();
 	} );
 
@@ -217,16 +201,17 @@ describe( 'AdminBarWidgets', () => {
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
-		const activateAnalyticsObserver = observedElements.find( ( element ) =>
-			element.classList?.contains(
-				'googlesitekit-activate-analytics-cta'
-			)
+		const activateAnalyticsObserver = getObservedElements().find(
+			( element ) =>
+				element.classList?.contains(
+					'googlesitekit-activate-analytics-cta'
+				)
 		);
 
 		expect( activateAnalyticsObserver ).toBeDefined();
 
 		act( () => {
-			observerCallback( [ { isIntersecting: true } ] );
+			simulateIntersection( activateAnalyticsObserver, true );
 		} );
 
 		await waitFor( () => {

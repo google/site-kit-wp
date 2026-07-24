@@ -29,6 +29,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { ANALYTICS_SETUP_ERROR } from '@/js/modules/analytics-4/constants';
 import * as tracking from '@/js/util/tracking';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
 	act,
 	createTestRegistry,
@@ -54,29 +55,18 @@ const activateEndpoint = new RegExp(
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-let observedElements: Element[];
-let observerCallback: ( entries: IntersectionObserverEntry[] ) => void;
+const {
+	getObservedElements,
+	simulateIntersection,
+}: {
+	getObservedElements: () => Element[];
+	simulateIntersection: ( target: Element, isIntersecting?: boolean ) => void;
+} = mockIntersectionObserver();
 
 describe( 'WPDashboardWidgets', () => {
 	let registry: WPDataRegistry;
 
 	beforeEach( () => {
-		observedElements = [];
-		observerCallback = () => {};
-
-		global.IntersectionObserver = jest.fn( ( callback ) => {
-			observerCallback = callback;
-
-			return {
-				observe: jest.fn( ( element ) => {
-					observedElements.push( element );
-				} ),
-				disconnect: jest.fn(),
-				unobserve: jest.fn(),
-				takeRecords: jest.fn().mockReturnValue( [] ),
-			} as unknown as IntersectionObserver;
-		} ) as unknown as typeof IntersectionObserver;
-
 		registry = createTestRegistry();
 
 		provideModules( registry );
@@ -105,8 +95,6 @@ describe( 'WPDashboardWidgets', () => {
 	} );
 
 	afterEach( () => {
-		delete ( global as { IntersectionObserver?: unknown } )
-			.IntersectionObserver;
 		jest.resetAllMocks();
 	} );
 
@@ -128,18 +116,17 @@ describe( 'WPDashboardWidgets', () => {
 			'wp_dashboard'
 		);
 
-		const activateAnalyticsObserver = observedElements.find( ( element ) =>
-			element.classList?.contains(
-				'googlesitekit-activate-analytics-cta'
-			)
+		const activateAnalyticsObserver = getObservedElements().find(
+			( element ) =>
+				element.classList?.contains(
+					'googlesitekit-activate-analytics-cta'
+				)
 		);
 
 		expect( activateAnalyticsObserver ).toBeDefined();
 
 		act( () => {
-			observerCallback( [
-				{ isIntersecting: true } as IntersectionObserverEntry,
-			] );
+			simulateIntersection( activateAnalyticsObserver as Element, true );
 		} );
 
 		await waitFor( () => {
@@ -230,6 +217,7 @@ describe( 'WPDashboardWidgets', () => {
 			{
 				registry,
 				features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
 
@@ -241,6 +229,12 @@ describe( 'WPDashboardWidgets', () => {
 		).toBeInTheDocument();
 
 		fireEvent.click( getByRole( 'button', { name: 'Got it' } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			'analytics_setup_cta_error_dismiss',
+			'wp_dashboard'
+		);
 
 		await waitFor( () => {
 			expect(
@@ -274,6 +268,7 @@ describe( 'WPDashboardWidgets', () => {
 		const { getByRole, waitForRegistry } = render( <WPDashboardWidgets />, {
 			registry,
 			features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		await waitForRegistry();
@@ -282,8 +277,50 @@ describe( 'WPDashboardWidgets', () => {
 			getByRole( 'button', { name: 'Retry Analytics setup' } )
 		);
 
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			'analytics_setup_cta_error_retry',
+			'wp_dashboard'
+		);
+
 		await waitFor( () => {
 			expect( fetchMock ).toHaveFetched( activateEndpoint );
+		} );
+	} );
+
+	it( 'should track the `analytics_setup_cta_error` event when the activation error CTA is viewed', async () => {
+		registry.dispatch( CORE_SITE ).setInternalServerError( {
+			id: ANALYTICS_SETUP_ERROR,
+			description: 'This is an error',
+		} );
+
+		const { waitForRegistry } = render( <WPDashboardWidgets />, {
+			registry,
+			features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		const activateAnalyticsObserver = getObservedElements().find(
+			( element ) =>
+				element.classList?.contains(
+					'googlesitekit-activate-analytics-cta'
+				)
+		);
+
+		expect( activateAnalyticsObserver ).toBeDefined();
+
+		act( () => {
+			simulateIntersection( activateAnalyticsObserver as Element, true );
+		} );
+
+		await waitFor( () => {
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				VIEW_CONTEXT_MAIN_DASHBOARD,
+				'analytics_setup_cta_error',
+				'wp_dashboard'
+			);
 		} );
 	} );
 } );
