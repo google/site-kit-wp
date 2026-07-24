@@ -104,7 +104,7 @@ export default function ReaderRevenueManagerSetupCTABannerWidget( {
 	return (
 		<Widget noPadding>
 			<Banner
-				className="googlesitekit-rrm-setup-cta-banner"
+				className="googlesitekit-rrm-setup-cta-banner-widget"
 				title={ __(
 					'Collect reader emails directly on your site',
 					'google-site-kit'
