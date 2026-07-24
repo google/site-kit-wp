@@ -1525,6 +1525,36 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'labels a breakdown tab with the OptinMonster campaign name for a non-numeric form ID', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		// An OptinMonster campaign reports its slug, not a numeric post ID,
+		// as the form ID.
+		seedBreakdown( { formIDs: [ 'jnpfwoygltxurnayflew' ] } );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: {
+				jnpfwoygltxurnayflew: { title: 'Newsletter Popup' },
+			},
+			status: 200,
+		} );
+		seedTabbedReports( { [ FORM_DIMENSION ]: 'jnpfwoygltxurnayflew' } );
+
+		const { getByRole, queryByRole, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		// The tab reads the campaign name, not the raw slug.
+		expect(
+			getByRole( 'tab', { name: /Newsletter Popup/ } )
+		).toBeInTheDocument();
+		expect(
+			queryByRole( 'tab', { name: /jnpfwoygltxurnayflew/ } )
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'renders an info tooltip for a form tab whose plugin is known, across page-count variants', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
