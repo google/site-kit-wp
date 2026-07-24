@@ -328,6 +328,36 @@ describe( 'modules/analytics-4 site goals breakdown', () => {
 				registry.select( MODULES_ANALYTICS_4 ).getFormTitles( [ '7' ] )
 			).toEqual( { 7: '“0” form' } );
 		} );
+
+		it( 'labels a non-numeric form ID by its resolved title, with the fallback for an unknown slug', async () => {
+			// An OptinMonster campaign reports its slug as the form ID. A
+			// resolved slug labels the tab by the campaign name, and an
+			// unknown slug keeps the Form #<id> fallback.
+			fetchMock.getOnce( formMetadataEndpoint, {
+				body: {
+					jnpfwoygltxurnayflew: metadata( 'Newsletter Popup' ),
+					unknownslug: metadata( null ),
+				},
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getFormTitles( [ 'jnpfwoygltxurnayflew', 'unknownslug' ] );
+			await resolved().getFormMetadata( [
+				'jnpfwoygltxurnayflew',
+				'unknownslug',
+			] );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getFormTitles( [ 'jnpfwoygltxurnayflew', 'unknownslug' ] )
+			).toEqual( {
+				jnpfwoygltxurnayflew: '“Newsletter Popup” form',
+				unknownslug: 'Form #unknownslug',
+			} );
+		} );
 	} );
 
 	describe( 'getFormPagePaths', () => {
