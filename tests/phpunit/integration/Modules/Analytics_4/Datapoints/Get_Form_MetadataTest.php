@@ -266,7 +266,7 @@ class Get_Form_MetadataTest extends TestCase {
 		);
 	}
 
-	public function test_create_request__does_not_disclose_a_non_omapi_post_with_the_same_slug() {
+	public function test_create_request__does_not_disclose_a_non_campaign_post_with_the_same_slug() {
 		$slug = 'shared-campaign-slug';
 
 		// The lookup targets the omapi post type alone, so a page or an
@@ -291,12 +291,12 @@ class Get_Form_MetadataTest extends TestCase {
 
 		$this->assertNull(
 			$request()[ $slug ]['title'],
-			'A non-omapi post sharing the slug must not have its title disclosed.'
+			'A non-campaign post sharing the slug must not have its title disclosed.'
 		);
 	}
 
 	public function test_create_request__decodes_an_ampersand_in_a_campaign_title() {
-		$slug = $this->create_omapi_campaign( 'Black Friday & Cyber Monday', 'black-friday' );
+		$slug = $this->create_omapi_campaign( 'Tips & Tricks', 'tips-tricks' );
 
 		$request = $this->datapoint->create_request( $this->data_request( array( $slug ) ) );
 
@@ -304,21 +304,21 @@ class Get_Form_MetadataTest extends TestCase {
 		// prints its label as plain text, so the response must hold the decoded
 		// character.
 		$this->assertSame(
-			'Black Friday & Cyber Monday',
+			'Tips & Tricks',
 			$request()[ $slug ]['title'],
 			'A campaign title holding an ampersand should resolve without an HTML entity.'
 		);
 	}
 
 	public function test_create_request__decodes_an_apostrophe_in_a_campaign_title() {
-		$slug = $this->create_omapi_campaign( "Kelvin's Autumn Sale", 'kelvins-autumn-sale' );
+		$slug = $this->create_omapi_campaign( "Amara's Bookshop Sale", 'amaras-bookshop-sale' );
 
 		$request = $this->datapoint->create_request( $this->data_request( array( $slug ) ) );
 
 		// The title filters turn the straight apostrophe into the "&#8217;"
 		// entity, which decodes back to the curly apostrophe character.
 		$this->assertSame(
-			'Kelvin’s Autumn Sale',
+			'Amara’s Bookshop Sale',
 			$request()[ $slug ]['title'],
 			'A campaign title holding an apostrophe should resolve to the decoded character, not an HTML entity.'
 		);
