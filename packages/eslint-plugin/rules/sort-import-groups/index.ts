@@ -38,16 +38,19 @@ import type {
 	LComment,
 } from './types';
 import {
+	canonicalizeTestsAlias,
 	compareImports,
 	determineReplaceStart,
 	getExpectedCommentBlock,
 	getImportGroup,
 	getImportSource,
+	getImportSourceLiteral,
 	getNonDependencyComments,
 	getPrecedingCommentBlock,
 	groupImports,
 	groupImportsByType,
 	importedName,
+	isBareTestsAlias,
 	isOrphanGroupShapedComment,
 	isValidGroupComment,
 	leadingComments,
@@ -70,6 +73,44 @@ const rule: Rule.RuleModule = {
 
 	create( context ) {
 		const sourceCode = context.getSourceCode();
+
+		function checkTestsAliasCanonicalization(
+			importNodes: ImportNode[]
+		): boolean {
+			for ( const node of importNodes ) {
+				const source = getImportSource( node );
+
+				if ( ! isBareTestsAlias( source ) ) {
+					continue;
+				}
+
+				const sourceLiteral = getImportSourceLiteral( node );
+
+				if ( ! sourceLiteral ) {
+					continue;
+				}
+
+				context.report( {
+					node: sourceLiteral,
+					message: `Import source '${ source }' should use the '@tests' alias.`,
+					fix( fixer ) {
+						const literalText = sourceCode.getText( sourceLiteral );
+						const quote = literalText[ 0 ];
+						const canonicalSource =
+							canonicalizeTestsAlias( source );
+
+						return fixer.replaceText(
+							sourceLiteral,
+							`${ quote }${ canonicalSource }${ quote }`
+						);
+					},
+				} );
+
+				return true;
+			}
+
+			return false;
+		}
 
 		function reportReorganizationErrors(
 			importNodes: ImportNode[],
@@ -814,6 +855,11 @@ const rule: Rule.RuleModule = {
 		return {
 			Program( node ) {
 				const importGroups = groupImports( node.body as AnyNode[] );
+				const importNodes = importGroups.flat();
+
+				if ( checkTestsAliasCanonicalization( importNodes ) ) {
+					return;
+				}
 
 				if ( importGroups.length > 0 ) {
 					checkImportGroup( importGroups[ 0 ] );
