@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\Remote_Features;
 
 use Google\Site_Kit\Core\Remote_Features\Remote_Features_Cron;
@@ -28,21 +26,27 @@ class Remote_Features_CronTest extends TestCase {
 
 	public function test_register() {
 		$cron = new Remote_Features_Cron( '__return_true' );
-		$this->assertFalse( has_action( Remote_Features_Cron::CRON_ACTION ) );
+		$this->assertFalse(
+			has_action( Remote_Features_Cron::CRON_ACTION ),
+			'Cron action hook callback should not be registered before registration.'
+		);
 
 		$cron->register();
 
-		$this->assertTrue( has_action( Remote_Features_Cron::CRON_ACTION ) );
+		$this->assertTrue(
+			has_action( Remote_Features_Cron::CRON_ACTION ),
+			'Cron action hook callback should be registered.'
+		);
 	}
 
 	public function test_register__given_callable() {
 		$spy  = new MethodSpy();
 		$cron = new Remote_Features_Cron( array( $spy, 'func' ) );
 		$cron->register();
-		$this->assertTrue( empty( $spy->invocations['func'] ) );
+		$this->assertTrue( empty( $spy->invocations['func'] ), 'Cron callback should not run during registration.' );
 
 		do_action( Remote_Features_Cron::CRON_ACTION );
 
-		$this->assertCount( 1, $spy->invocations['func'] );
+		$this->assertCount( 1, $spy->invocations['func'], 'Cron callback should run once when the cron action fires.' );
 	}
 }

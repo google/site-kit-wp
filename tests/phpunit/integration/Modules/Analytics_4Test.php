@@ -1797,14 +1797,16 @@ class Analytics_4Test extends TestCase {
 			array(
 				'key-metrics-connect-ga4-cta-widget' => 0,
 			),
-			$dismissed_items->get()
+			$dismissed_items->get(),
+			'Key Metrics Analytics connection prompt should be dismissed before activation.'
 		);
 
 		$this->analytics->on_activation();
 
 		$this->assertEqualSets(
 			array(),
-			$dismissed_items->get()
+			$dismissed_items->get(),
+			'Analytics activation should restore the Key Metrics Analytics connection prompt.'
 		);
 	}
 
@@ -3300,7 +3302,7 @@ class Analytics_4Test extends TestCase {
 			array()
 		);
 
-		$this->assertNotWPError( $response );
+		$this->assertNotWPError( $response, 'Custom dimension synchronization should not return a WP_Error.' );
 
 		// Verify the response is an array of custom dimension names.
 		$this->assertEquals( array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ), $response, 'Sync custom dimensions should return expected dimension names.' );
@@ -4692,7 +4694,7 @@ class Analytics_4Test extends TestCase {
 
 		$data = $this->analytics->set_data( 'sync-audiences', array() );
 
-		$this->assertNotWPError( $data );
+		$this->assertNotWPError( $data, 'Audience synchronization should not return a WP_Error.' );
 
 		// Verify that the response has the correct structure.
 		$this->assertEqualSets(

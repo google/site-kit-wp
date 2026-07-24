@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Analytics_4\Advanced_Tracking;
 
 use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking\AMP_Config_Injector;
@@ -77,13 +75,14 @@ class AMP_Config_InjectorTest extends TestCase {
 					),
 				),
 			),
-			$gtag_amp_opt['triggers']
+			$gtag_amp_opt['triggers'],
+			'AMP configuration should contain a trigger for each advanced tracking event.'
 		);
 	}
 
 	public function test_inject_event_configurations_no_events() {
 		$amp_config_injector = new AMP_Config_Injector();
 		$input               = array( 'someKey' => 'someValue' );
-		$this->assertEquals( $input, $amp_config_injector->inject_event_configurations( $input, array() ) );
+		$this->assertEquals( $input, $amp_config_injector->inject_event_configurations( $input, array() ), 'AMP configuration should remain unchanged when there are no tracking events.' );
 	}
 }

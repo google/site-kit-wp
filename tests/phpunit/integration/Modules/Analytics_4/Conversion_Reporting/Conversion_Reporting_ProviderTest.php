@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Analytics_4\Conversion_Reporting;
 
 use Google\Site_Kit\Context;
@@ -72,7 +70,10 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 
 		$provider->register();
 
-		$this->assertTrue( has_action( 'load-toplevel_page_googlesitekit-dashboard' ) );
+		$this->assertTrue(
+			has_action( 'load-toplevel_page_googlesitekit-dashboard' ),
+			'Loading the Site Kit dashboard should initialize conversion reporting synchronization.'
+		);
 	}
 
 	public function test_cron_callback__does_not_update_site_goals_when_no_active_providers() {

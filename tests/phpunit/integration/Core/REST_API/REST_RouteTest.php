@@ -76,7 +76,8 @@ class REST_RouteTest extends TestCase {
 				'required'          => false,
 				'default'           => null,
 			),
-			$route->get_args()[0]['args']['args']
+			$route->get_args()[0]['args']['args'],
+			'Route argument definitions should include all default schema values.'
 		);
 
 		// Test args take precedence over defaults.
@@ -102,7 +103,8 @@ class REST_RouteTest extends TestCase {
 				'sanitize_callback' => 'rest_sanitize_request_arg',
 				'default'           => true,
 			),
-			$route->get_args()[0]['args']['args']
+			$route->get_args()[0]['args']['args'],
+			'Explicit route argument values should override schema defaults.'
 		);
 	}
 }

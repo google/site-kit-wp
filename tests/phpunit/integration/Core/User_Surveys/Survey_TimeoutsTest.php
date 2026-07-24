@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\User_Surveys;
 
 use Google\Site_Kit\Context;
@@ -41,12 +39,15 @@ class Survey_TimeoutsTest extends TestCase {
 	}
 
 	public function test_add() {
-		$this->assertEmpty( $this->user_options->get( Survey_Timeouts::OPTION ) );
+		$this->assertEmpty(
+			$this->user_options->get( Survey_Timeouts::OPTION ),
+			'Survey timeouts should initially be empty.'
+		);
 
 		$this->timeouts->add( 'foo', 100 );
 		$timeouts = $this->user_options->get( Survey_Timeouts::OPTION );
-		$this->assertArrayHasKey( 'foo', $timeouts );
-		$this->assertEqualsWithDelta( time() + 100, $timeouts['foo'], 2 );
+		$this->assertArrayHasKey( 'foo', $timeouts, 'Added survey timeout should be persisted for its trigger.' );
+		$this->assertEqualsWithDelta( time() + 100, $timeouts['foo'], 2, 'Survey timeout should expire after the requested lifetime.' );
 	}
 
 	public function test_get_survey_timeouts() {
@@ -63,12 +64,16 @@ class Survey_TimeoutsTest extends TestCase {
 			array(
 				'bar',
 			),
-			$this->timeouts->get_survey_timeouts()
+			$this->timeouts->get_survey_timeouts(),
+			'Only unexpired survey timeouts should be returned.'
 		);
 	}
 
 	public function test_set_global_timeout() {
-		$this->assertEmpty( $this->user_options->get( Survey_Timeouts::OPTION ) );
+		$this->assertEmpty(
+			$this->user_options->get( Survey_Timeouts::OPTION ),
+			'Survey timeouts should initially be empty.'
+		);
 
 		$time    = array();
 		$timeout = 12 * HOUR_IN_SECONDS;
@@ -78,8 +83,8 @@ class Survey_TimeoutsTest extends TestCase {
 		array_push( $time, time() + $timeout );
 
 		$timeouts = $this->user_options->get( Survey_Timeouts::OPTION );
-		$this->assertArrayHasKey( Survey_Timeouts::GLOBAL_KEY, $timeouts );
-		$this->assertTrue( $time[0] >= $timeouts[ Survey_Timeouts::GLOBAL_KEY ] );
-		$this->assertTrue( $time[1] <= $timeouts[ Survey_Timeouts::GLOBAL_KEY ] );
+		$this->assertArrayHasKey( Survey_Timeouts::GLOBAL_KEY, $timeouts, 'Global survey timeout should be persisted.' );
+		$this->assertTrue( $time[0] >= $timeouts[ Survey_Timeouts::GLOBAL_KEY ], 'Global timeout should not exceed the start of the expected time window.' );
+		$this->assertTrue( $time[1] <= $timeouts[ Survey_Timeouts::GLOBAL_KEY ], 'Global timeout should not precede the end of the expected time window.' );
 	}
 }
