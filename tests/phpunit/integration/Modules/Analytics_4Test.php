@@ -208,7 +208,7 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEquals(
 			$url,
-			'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&steps=6',
+			'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&service_version=v3&steps=6',
 			'Setup URL should include the steps query parameter as 6 when Analytics is active.'
 		);
 	}
