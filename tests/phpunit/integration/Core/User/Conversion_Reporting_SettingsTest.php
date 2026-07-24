@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\User;
 
 use Google\Site_Kit\Context;
@@ -48,7 +45,8 @@ class Conversion_Reporting_SettingsTest extends TestCase {
 				'newEventsCalloutDismissedAt'  => 0,
 				'lostEventsCalloutDismissedAt' => 0,
 			),
-			$this->conversion_reporting_settings->get()
+			$this->conversion_reporting_settings->get(),
+			'Conversion reporting callouts should be undismissed by default.'
 		);
 	}
 
@@ -97,7 +95,7 @@ class Conversion_Reporting_SettingsTest extends TestCase {
 	 */
 	public function test_get_sanitize_callback( $input, $expected ) {
 		$this->conversion_reporting_settings->set( $input );
-		$this->assertEquals( $expected, $this->conversion_reporting_settings->get() );
+		$this->assertEquals( $expected, $this->conversion_reporting_settings->get(), 'Conversion reporting settings should sanitize dismissal timestamps to integers.' );
 	}
 
 	public function test_merge() {
@@ -113,11 +111,11 @@ class Conversion_Reporting_SettingsTest extends TestCase {
 
 		// Make sure settings can be updated even without having them set initially.
 		$this->conversion_reporting_settings->merge( $original_settings );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->conversion_reporting_settings->get() );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->conversion_reporting_settings->get(), 'Merge should initialize conversion reporting settings when none are stored.' );
 
 		// Make sure invalid keys aren't set.
 		$this->conversion_reporting_settings->merge( array( 'test_key' => 'test_value' ) );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->conversion_reporting_settings->get() );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->conversion_reporting_settings->get(), 'Merge should ignore unsupported conversion reporting setting keys.' );
 
 		// Make sure that we can update settings partially.
 		$this->conversion_reporting_settings->set( $original_settings );
@@ -127,22 +125,23 @@ class Conversion_Reporting_SettingsTest extends TestCase {
 				'newEventsCalloutDismissedAt'  => 1734519924,
 				'lostEventsCalloutDismissedAt' => $original_settings['lostEventsCalloutDismissedAt'],
 			),
-			$this->conversion_reporting_settings->get()
+			$this->conversion_reporting_settings->get(),
+			'Partial merge should preserve unchanged conversion reporting settings.'
 		);
 
 		// Make sure that we can update all settings at once.
 		$this->conversion_reporting_settings->set( $original_settings );
 		$this->conversion_reporting_settings->merge( $changed_settings );
-		$this->assertEqualSetsWithIndex( $changed_settings, $this->conversion_reporting_settings->get() );
+		$this->assertEqualSetsWithIndex( $changed_settings, $this->conversion_reporting_settings->get(), 'Merge should update all conversion reporting settings.' );
 
 		// Make sure that we can't set wrong format for the newEventsCalloutDismissedAt property.
 		$this->conversion_reporting_settings->set( $original_settings );
 		$this->conversion_reporting_settings->merge( array( 'newEventsCalloutDismissedAt' => null ) );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->conversion_reporting_settings->get() );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->conversion_reporting_settings->get(), 'Merge should ignore an invalid new events dismissal timestamp.' );
 
 		// Make sure that we can't set wrong format for the lostEventsCalloutDismissedAt property.
 		$this->conversion_reporting_settings->set( $original_settings );
 		$this->conversion_reporting_settings->merge( array( 'lostEventsCalloutDismissedAt' => null ) );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->conversion_reporting_settings->get() );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->conversion_reporting_settings->get(), 'Merge should ignore an invalid lost events dismissal timestamp.' );
 	}
 }
