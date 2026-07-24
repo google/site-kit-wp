@@ -117,6 +117,17 @@ describe( 'PDFHeader', () => {
 		);
 	} );
 
+	it( 'links each chip to its section anchor within the document', () => {
+		const { getByText } = renderPDFHeader();
+
+		sections.forEach( ( { slug, label } ) => {
+			expect( getByText( label ).closest( 'pdf-link' ) ).toHaveAttribute(
+				'src',
+				`#section-${ slug }`
+			);
+		} );
+	} );
+
 	it( 'renders the "View dashboard in Site Kit" link to the dashboard URL', () => {
 		const { getByText } = renderPDFHeader();
 

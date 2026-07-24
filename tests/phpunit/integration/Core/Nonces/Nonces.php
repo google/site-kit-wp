@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\Nonces;
 
 use Google\Site_Kit\Context;
@@ -49,8 +46,14 @@ class NoncesTest extends TestCase {
 		$nonces = new Nonces( $this->context );
 		$nonces->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
+		$this->assertTrue(
+			has_filter( 'googlesitekit_rest_routes' ),
+			'Nonce REST route should be registered.'
+		);
+		$this->assertTrue(
+			has_filter( 'googlesitekit_apifetch_preload_paths' ),
+			'Nonce REST route should be added to API fetch preload paths.'
+		);
 	}
 
 	public function test_nonces_route__unauthorized_request() {
@@ -61,7 +64,7 @@ class NoncesTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
-		$this->assertEquals( 401, $response->get_status() );
+		$this->assertEquals( 401, $response->get_status(), 'Unauthenticated users should not be able to retrieve REST nonces.' );
 	}
 
 	public function test_nonces_route__success() {
@@ -75,7 +78,7 @@ class NoncesTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
-		$this->assertEquals( 200, $response->get_status() );
-		$this->assertEqualSetsWithIndex( $data, $nonces->get_nonces() );
+		$this->assertEquals( 200, $response->get_status(), 'Authenticated administrators should be able to retrieve REST nonces.' );
+		$this->assertEqualSetsWithIndex( $data, $nonces->get_nonces(), 'Nonce REST response should contain the generated nonces.' );
 	}
 }
