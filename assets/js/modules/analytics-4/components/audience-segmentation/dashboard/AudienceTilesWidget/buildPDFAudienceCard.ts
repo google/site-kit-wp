@@ -77,6 +77,10 @@ export interface AudienceTilePDFData {
 	topCities: AudienceTileTopCity[];
 	/** Up to three top content pages. */
 	topContent: AudienceTileTopContent[];
+	/** Whether the audience is still collecting data for the date range. */
+	isAudiencePartialData: boolean;
+	/** Whether the `googlesitekit_post_type` custom dimension is still collecting full data for the date range. */
+	isTopContentPartialData: boolean;
 }
 
 /** The result of one `fetchGetReport` dispatch. */
@@ -261,6 +265,10 @@ export interface AudienceCardInput {
 	topContentPageTitlesResult: FetchReportResult;
 	/** The site's total pageviews, the percentage denominator. */
 	totalPageviews: number;
+	/** Whether the audience is still collecting full data for the date range. */
+	isAudiencePartialData: boolean;
+	/** Whether the `googlesitekit_post_type` custom dimension is still collecting full data for the date range. */
+	isTopContentPartialData: boolean;
 }
 
 /**
@@ -284,6 +292,8 @@ export function buildPDFAudienceCard(
 		topContentResult,
 		topContentPageTitlesResult,
 		totalPageviews,
+		isAudiencePartialData,
+		isTopContentPartialData,
 	} = input;
 
 	// Don't render when a metrics or cities report has any error, or when
@@ -326,5 +336,7 @@ export function buildPDFAudienceCard(
 			topContentResult.response,
 			topContentPageTitlesResult.response
 		),
+		isAudiencePartialData,
+		isTopContentPartialData,
 	};
 }

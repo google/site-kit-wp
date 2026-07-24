@@ -76,11 +76,15 @@ function metricRows( dimensionValue: string, base: number ) {
  *
  * @since 1.184.0
  *
- * @param options                      Setup options.
- * @param options.configuredAudiences  Configured audience resource names.
- * @param options.isSiteKitPartialData Whether the Site Kit audiences are in a partial data state.
- * @param options.failing              Report IDs, or `id::audience` keys, that resolve with an error.
- * @param options.totalPageviews       The site-wide total pageviews.
+ * @param options                       Setup options.
+ * @param options.configuredAudiences   Configured audience resource names.
+ * @param options.isSiteKitPartialData  Whether the Site Kit audiences are in a partial data state.
+ * @param options.failing               Report IDs, or `id::audience` keys, that resolve with an error.
+ * @param options.totalPageviews        The site-wide total pageviews.
+ * @param options.propertyID            The Analytics 4 property ID.
+ * @param options.isPropertyPartialData Whether the property is in a partial data state.
+ * @param options.partialDataAudiences  Audience resource names in a partial data state.
+ * @param options.isPostTypePartialData Whether the `googlesitekit_post_type` custom dimension is in a partial data state.
  * @return The registry and the `fetchGetReport` spy.
  */
 function buildRegistry( {
@@ -88,11 +92,19 @@ function buildRegistry( {
 	isSiteKitPartialData = false,
 	failing = new Set< string >(),
 	totalPageviews = 2000,
+	propertyID = PROPERTY,
+	isPropertyPartialData = false,
+	partialDataAudiences = new Set< string >(),
+	isPostTypePartialData = false,
 }: {
 	configuredAudiences?: string[];
 	isSiteKitPartialData?: boolean;
 	failing?: Set< string >;
 	totalPageviews?: number;
+	propertyID?: string;
+	isPropertyPartialData?: boolean;
+	partialDataAudiences?: Set< string >;
+	isPostTypePartialData?: boolean;
 } = {} ) {
 	const fetchGetReport = jest.fn( ( options: ReportOptions ) => {
 		const { reportID = '', dimensionFilters = {} } = options;
@@ -196,6 +208,17 @@ function buildRegistry( {
 			}
 			return isSiteKitPartialData ? found : null;
 		},
+		getPropertyID: () => propertyID,
+		isPropertyPartialData: () => isPropertyPartialData,
+		isSiteKitAudience: ( name: string ) => {
+			const found = AVAILABLE_AUDIENCES.find(
+				( item ) => item.name === name
+			);
+			return found?.audienceType === 'SITE_KIT_AUDIENCE';
+		},
+		isAudiencePartialData: ( name: string ) =>
+			partialDataAudiences.has( name ),
+		isCustomDimensionPartialData: () => isPostTypePartialData,
 	};
 
 	// The loader reads only `resolveSelect`, `select`, and `dispatch`. The mock
@@ -207,6 +230,7 @@ function buildRegistry( {
 				Promise.resolve( configuredAudiences ),
 			getOrSyncAvailableAudiences: () =>
 				Promise.resolve( AVAILABLE_AUDIENCES ),
+			getSettings: () => Promise.resolve( {} ),
 			isGatheringData: () => Promise.resolve( false ),
 			getResourceDataAvailabilityDate: () => Promise.resolve( 20240101 ),
 		} ),
@@ -448,5 +472,74 @@ describe( 'AudienceTilesWidget getPDFData', () => {
 
 		expect( data ).toBeNull();
 		expect( fetchGetReport ).not.toHaveBeenCalled();
+	} );
+
+	describe( 'partial-data flags', () => {
+		it( 'clears both flags for a fully-loaded audience', async () => {
+			const { registry } = buildRegistry();
+
+			const card = findCard(
+				getAudiences( await runPDFData( registry ) ),
+				OTHER_A
+			);
+
+			expect( card.isAudiencePartialData ).toBe( false );
+			expect( card.isTopContentPartialData ).toBe( false );
+		} );
+
+		it( 'sets the header flag and clears the top content flag for a partial-data audience', async () => {
+			const { registry } = buildRegistry( {
+				partialDataAudiences: new Set( [ OTHER_A ] ),
+				// The top content flag is cleared by the set header flag, even
+				// while the custom dimension is itself in a partial data state.
+				isPostTypePartialData: true,
+			} );
+
+			const audiences = getAudiences( await runPDFData( registry ) );
+
+			const partialCard = findCard( audiences, OTHER_A );
+			expect( partialCard.isAudiencePartialData ).toBe( true );
+			expect( partialCard.isTopContentPartialData ).toBe( false );
+
+			// The other audience is not partial, so its top content flag follows
+			// the custom dimension's partial data state.
+			const otherCard = findCard( audiences, OTHER_B );
+			expect( otherCard.isAudiencePartialData ).toBe( false );
+			expect( otherCard.isTopContentPartialData ).toBe( true );
+		} );
+
+		it( 'never sets the header flag for a Site Kit audience', async () => {
+			const { registry } = buildRegistry( {
+				// Even flagged as partial data, a Site Kit audience clears the
+				// header flag.
+				partialDataAudiences: new Set( [ SITE_KIT ] ),
+				isPostTypePartialData: true,
+			} );
+
+			const card = findCard(
+				getAudiences( await runPDFData( registry ) ),
+				SITE_KIT
+			);
+
+			expect( card.isAudiencePartialData ).toBe( false );
+			// With no header flag, the top content flag follows the custom
+			// dimension's partial data state.
+			expect( card.isTopContentPartialData ).toBe( true );
+		} );
+
+		it( 'clears both flags for every audience when the property is partial data', async () => {
+			const { registry } = buildRegistry( {
+				isPropertyPartialData: true,
+				partialDataAudiences: new Set( [ OTHER_A, OTHER_B ] ),
+				isPostTypePartialData: true,
+			} );
+
+			const audiences = getAudiences( await runPDFData( registry ) );
+
+			audiences.forEach( ( card ) => {
+				expect( card.isAudiencePartialData ).toBe( false );
+				expect( card.isTopContentPartialData ).toBe( false );
+			} );
+		} );
 	} );
 } );
