@@ -20,13 +20,13 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock-jest';
-import { createTestRegistry, waitForDefaultTimeouts } from 'tests/js/utils';
 
 /**
  * Internal dependencies
  */
 import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { createTestRegistry, waitForDefaultTimeouts } from '@tests/js/utils';
 import getPDFData from './getPDFData';
 
 // The registry `getPDFData` receives: the WordPress data registry with

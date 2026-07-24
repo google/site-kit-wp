@@ -20,11 +20,6 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock-jest';
-import {
-	createTestRegistry,
-	provideSiteInfo,
-	waitForDefaultTimeouts,
-} from 'tests/js/utils';
 
 /**
  * WordPress dependencies
@@ -35,6 +30,11 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
+import {
+	createTestRegistry,
+	provideSiteInfo,
+	waitForDefaultTimeouts,
+} from '@tests/js/utils';
 import getPDFData from './getPDFData';
 
 type Registry = WPDataRegistry & GetPDFDataParams[ 'registry' ];
