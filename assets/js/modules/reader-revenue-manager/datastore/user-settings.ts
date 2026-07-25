@@ -99,7 +99,7 @@ const fetchGetUserSettingsStore = createFetchStore( {
 			{},
 			{
 				useCache: false,
-			} as Parameters< typeof get >[ 4 ]
+			}
 		),
 	reducerCallback: fetchStoreReducerCallback,
 } );
