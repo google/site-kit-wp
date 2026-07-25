@@ -53,6 +53,7 @@ export default function CTAButton( {
 			onClick={ onClick }
 			href={ href }
 			target={ external ? '_blank' : undefined }
+			rel={ external ? 'noopener noreferrer' : undefined }
 			trailingIcon={ trailingIconToUse }
 		>
 			{ label }
