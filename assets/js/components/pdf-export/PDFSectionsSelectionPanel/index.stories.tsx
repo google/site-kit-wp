@@ -63,6 +63,16 @@ function EmptyTemplate() {
 	return <PDFSectionsSelectionPanel />;
 }
 
+function GeneratingTemplate() {
+	const { startExporting } = useDispatch( CORE_PDF );
+
+	useEffect( () => {
+		startExporting();
+	}, [ startExporting ] );
+
+	return <PDFSectionsSelectionPanel />;
+}
+
 export const Default = DefaultTemplate.bind( {} );
 Default.storyName = 'Default (all selected)';
 Default.scenario = {};
@@ -70,6 +80,10 @@ Default.scenario = {};
 export const Empty = EmptyTemplate.bind( {} );
 Empty.storyName = 'All deselected (error state)';
 Empty.scenario = {};
+
+export const Generating = GeneratingTemplate.bind( {} );
+Generating.storyName = 'Generating (warning notice)';
+Generating.scenario = {};
 
 export default {
 	title: 'Components/PDFGeneration/PDFSectionsSelectionPanel',

@@ -141,15 +141,21 @@ describe( 'PanelContent', () => {
 	/**
 	 * Renders the panel with the test registry, on the main dashboard.
 	 *
+	 * @param isOpen
 	 * @since 1.184.0
+	 *
+	 * @param {boolean} [isOpen] Optional. Whether the panel is open.
 	 *
 	 * @return The testing-library render result.
 	 */
-	function renderPanel() {
-		return render( <PanelContent closePanel={ () => {} } />, {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-		} );
+	function renderPanel( isOpen = true ) {
+		return render(
+			<PanelContent closePanel={ () => {} } isOpen={ isOpen } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
 	}
 
 	it( "stores the context slugs in the dashboard's own order when the panel first opens", async () => {
@@ -199,6 +205,47 @@ describe( 'PanelContent', () => {
 			expect(
 				registry.select( CORE_PDF ).getSelectedContextSlugs()
 			).toEqual( DASHBOARD_ORDER );
+		} );
+	} );
+
+	it( 'renders the in-progress notice when the panel is open while a report is generating', async () => {
+		registry.dispatch( CORE_PDF ).startExporting();
+
+		const { findByText } = renderPanel( true );
+
+		expect(
+			await findByText( /Your report is being generated/i )
+		).toBeInTheDocument();
+	} );
+
+	it( 'does not render the in-progress notice when the panel is closed while a report is generating', async () => {
+		registry.dispatch( CORE_PDF ).startExporting();
+
+		const { queryByText, findByRole } = renderPanel( false );
+
+		// Wait for the panel to render its content.
+		await findByRole( 'button', { name: /Download report/i } );
+
+		expect(
+			queryByText( /Your report is being generated/i )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'clears the in-progress notice when the report finishes generating', async () => {
+		registry.dispatch( CORE_PDF ).startExporting();
+
+		const { findByText, queryByText } = renderPanel( true );
+
+		expect(
+			await findByText( /Your report is being generated/i )
+		).toBeInTheDocument();
+
+		registry.dispatch( CORE_PDF ).finishExporting();
+
+		await waitFor( () => {
+			expect(
+				queryByText( /Your report is being generated/i )
+			).not.toBeInTheDocument();
 		} );
 	} );
 } );

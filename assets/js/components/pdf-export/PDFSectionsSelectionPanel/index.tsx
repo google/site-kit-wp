@@ -85,7 +85,7 @@ const PDFSectionsSelectionPanel: FC = () => {
 				isOpen={ !! isOpen }
 				closePanel={ closePanel }
 			>
-				<PanelContent closePanel={ closePanel } />
+				<PanelContent closePanel={ closePanel } isOpen={ !! isOpen } />
 			</SelectionPanel>
 		</InViewProvider>
 	);

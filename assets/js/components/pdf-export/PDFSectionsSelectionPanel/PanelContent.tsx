@@ -58,9 +58,10 @@ import PDFSectionCheckboxes from './PDFSectionCheckboxes';
 
 interface PanelContentProps {
 	closePanel: () => void;
+	isOpen?: boolean;
 }
 
-const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
+const PanelContent: FC< PanelContentProps > = ( { closePanel, isOpen } ) => {
 	const viewOnly = useViewOnly();
 
 	const availableSections = useSelect(
@@ -144,6 +145,15 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 
 	const selectedWidgetSlugs = useSelect(
 		( select: Select ) => select( CORE_PDF ).getSelectedWidgetSlugs(),
+		[]
+	);
+
+	const isExporting = useSelect(
+		( select: Select ) => select( CORE_PDF ).isExporting(),
+		[]
+	);
+	const exportStatus = useSelect(
+		( select: Select ) => select( CORE_PDF ).getStatus(),
 		[]
 	);
 
@@ -256,6 +266,7 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 	);
 
 	const hasSelection = selectedWidgetSlugs.length > 0;
+	const inFlight = !! isExporting || exportStatus === 'progress';
 
 	return (
 		<Fragment>
@@ -282,6 +293,21 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 							) }
 						</Typography>
 					}
+				/>
+			) }
+			{ isOpen && inFlight && (
+				<SelectionPanelNotice
+					// @ts-expect-error - The `SelectionPanelNotice` component is not yet typed.
+					className="googlesitekit-notice--side-panel googlesitekit-pdf-download-panel__notice"
+					type={ NOTICE_TYPES.WARNING }
+					title={ __(
+						'Your report is being generated',
+						'google-site-kit'
+					) }
+					description={ __(
+						'To create another report, please wait for the current download to complete.',
+						'google-site-kit'
+					) }
 				/>
 			) }
 			<Footer closePanel={ closePanel } hasSelection={ hasSelection } />
