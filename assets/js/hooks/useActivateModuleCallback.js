@@ -43,9 +43,10 @@ import useViewContext from './useViewContext';
  * @since 1.70.0
  *
  * @param {string} moduleSlug Module slug.
+ * @param {Object} [options]  Optional. Activation options.
  * @return {Function|null} Callback to activate module, null if the module doesn't exist or the user can't manage options.
  */
-export default function useActivateModuleCallback( moduleSlug ) {
+export default function useActivateModuleCallback( moduleSlug, options = {} ) {
 	const viewContext = useViewContext();
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
@@ -59,7 +60,7 @@ export default function useActivateModuleCallback( moduleSlug ) {
 	const { setInternalServerError } = useDispatch( CORE_SITE );
 
 	const activateModuleCallback = useCallback( async () => {
-		const { error, response } = await activateModule( moduleSlug );
+		const { error, response } = await activateModule( moduleSlug, options );
 
 		if ( ! error ) {
 			await trackEvent(
@@ -80,6 +81,7 @@ export default function useActivateModuleCallback( moduleSlug ) {
 	}, [
 		activateModule,
 		moduleSlug,
+		options,
 		navigateTo,
 		setInternalServerError,
 		viewContext,
