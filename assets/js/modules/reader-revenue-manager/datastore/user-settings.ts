@@ -62,7 +62,15 @@ interface UserSettingsState {
 function validateUserSettings( settings: unknown ): void {
 	invariant( isPlainObject( settings ), 'settings should be an object.' );
 
+	const settingKeys = [ 'lastActionedExpressSetups' ];
 	const userSettings = settings as Record< string, unknown >;
+
+	invariant(
+		Object.keys( userSettings ).every( ( key ) =>
+			settingKeys.includes( key )
+		),
+		'settings contains invalid keys.'
+	);
 
 	if ( userSettings.lastActionedExpressSetups === undefined ) {
 		return;
@@ -85,7 +93,16 @@ function validateUserSettings( settings: unknown ): void {
 
 const fetchStoreReducerCallback = createReducer(
 	( state: UserSettingsState, settings: UserSettings ) => {
-		state.userSettings = settings;
+		const lastActionedExpressSetups = isPlainObject(
+			settings.lastActionedExpressSetups
+		)
+			? settings.lastActionedExpressSetups
+			: {};
+
+		state.userSettings = {
+			...settings,
+			lastActionedExpressSetups,
+		};
 	}
 );
 
