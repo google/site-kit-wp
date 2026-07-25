@@ -107,6 +107,7 @@ describe( 'DashboardPopularKeywordsWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		expect( fetchMock ).toHaveFetchedTimes( 1, reportEndpoint );
@@ -120,6 +121,7 @@ describe( 'DashboardPopularKeywordsWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		// Build the expected link from the same selector the loader uses, so the
@@ -139,6 +141,22 @@ describe( 'DashboardPopularKeywordsWidget getPDFData', () => {
 		} );
 	} );
 
+	it( 'does not generate query links on a view-only dashboard', async () => {
+		fetchMock.getOnce( reportEndpoint, { body: REPORT, status: 200 } );
+
+		const result = await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+			viewOnly: true,
+		} );
+
+		// The dashboard widget shows a view-only user each query as plain text,
+		// so the PDF gets the rows with no link to render.
+		expect( result.data?.rows ).toEqual( REPORT );
+		expect( result.data?.links ).toEqual( {} );
+	} );
+
 	it( 'requests the report with the query dimension, a limit of 10 rows, and the date range', async () => {
 		fetchMock.getOnce( reportEndpoint, { body: REPORT, status: 200 } );
 
@@ -146,6 +164,7 @@ describe( 'DashboardPopularKeywordsWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		const [ [ requestURL ] ] = fetchMock.calls( reportEndpoint );
@@ -162,7 +181,12 @@ describe( 'DashboardPopularKeywordsWidget getPDFData', () => {
 
 		const { signal } = new AbortController();
 
-		await getPDFData( { registry, dates: DATES, signal } );
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal,
+			viewOnly: false,
+		} );
 
 		// The registry starts resolver runs from a timeout. Wait for those
 		// timeouts to finish, so any extra request shows up in the call count
@@ -185,6 +209,7 @@ describe( 'DashboardPopularKeywordsWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: controller.signal,
+			viewOnly: false,
 		} );
 
 		expect( result ).toEqual( { data: null } );
@@ -198,6 +223,7 @@ describe( 'DashboardPopularKeywordsWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		// Null data tells the report document to skip the widget, so the PDF
@@ -225,6 +251,7 @@ describe( 'DashboardPopularKeywordsWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: controller.signal,
+			viewOnly: false,
 		} );
 
 		// Wait for the report request to dispatch before aborting.
@@ -267,6 +294,7 @@ describe( 'DashboardPopularKeywordsWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: firstController.signal,
+			viewOnly: false,
 		} );
 
 		while ( deferredResolvers.length < 1 ) {
@@ -283,6 +311,7 @@ describe( 'DashboardPopularKeywordsWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		expect( secondRun.data?.rows ).toEqual( REPORT );

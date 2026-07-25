@@ -10,8 +10,6 @@
  * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
@@ -35,12 +33,12 @@ trait Module_With_Owner_ContractTests {
 		$module   = $this->get_module_with_owner();
 
 		// By default ownerID is 0.
-		$testcase->assertEquals( 0, $module->get_owner_id() );
-		$testcase->assertInstanceOf( Module_With_Settings::class, $module );
+		$testcase->assertEquals( 0, $module->get_owner_id(), 'Module should have no owner by default.' );
+		$testcase->assertInstanceOf( Module_With_Settings::class, $module, 'Owned module should expose module settings.' );
 
 		$settings = $module->get_settings();
-		$testcase->assertInstanceOf( Setting::class, $settings );
-		$testcase->assertInstanceOf( Setting_With_Owned_Keys_Interface::class, $settings );
+		$testcase->assertInstanceOf( Setting::class, $settings, 'Module settings should use the standard setting abstraction.' );
+		$testcase->assertInstanceOf( Setting_With_Owned_Keys_Interface::class, $settings, 'Module settings should identify fields which establish ownership.' );
 
 		$user_id = $testcase->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
@@ -65,6 +63,6 @@ trait Module_With_Owner_ContractTests {
 		$options[ $key ] = 'new-value';
 		$settings->set( $options );
 
-		$this->assertEquals( $user_id, $module->get_owner_id() );
+		$this->assertEquals( $user_id, $module->get_owner_id(), 'Current administrator should become the module owner after changing an owned setting.' );
 	}
 }

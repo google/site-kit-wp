@@ -314,6 +314,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		expect( result.data ).toEqual( {
@@ -348,7 +349,12 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 		provideReportsWithData();
 
 		const signal = new AbortController().signal;
-		await getPDFData( { registry, dates: DATES, signal } );
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal,
+			viewOnly: false,
+		} );
 
 		expect( mockEnsureGoogleChartsLoaded ).toHaveBeenCalledTimes( 1 );
 		expect( mockRenderGoogleChartToDataURI ).toHaveBeenCalledTimes( 4 );
@@ -410,6 +416,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		expect( result.data?.metrics.pageCTR ).toBeNull();
@@ -451,6 +458,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		// Empty data is not a failure. The report skips the section.
@@ -501,6 +509,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 				registry,
 				dates: DATES,
 				signal: new AbortController().signal,
+				viewOnly: false,
 			} )
 		).rejects.toThrow(
 			/Earning performance over time reports failed to load/
@@ -527,6 +536,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		expect( result.data?.metrics.estimatedEarnings ).toBeNull();
@@ -552,6 +562,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 				registry,
 				dates: DATES,
 				signal: new AbortController().signal,
+				viewOnly: false,
 			} )
 		).rejects.toThrow(
 			/all Earning performance over time charts failed to render/
@@ -568,6 +579,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: controller.signal,
+			viewOnly: false,
 		} );
 
 		expect( result ).toEqual( { data: null } );
@@ -595,6 +607,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: controller.signal,
+			viewOnly: false,
 		} );
 
 		// Wait for all four report fetches to dispatch before aborting.
