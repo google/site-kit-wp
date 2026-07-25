@@ -857,9 +857,7 @@ const rule: Rule.RuleModule = {
 				const importGroups = groupImports( node.body as AnyNode[] );
 				const importNodes = importGroups.flat();
 
-				if ( checkTestsAliasCanonicalization( importNodes ) ) {
-					return;
-				}
+				checkTestsAliasCanonicalization( importNodes );
 
 				if ( importGroups.length > 0 ) {
 					checkImportGroup( importGroups[ 0 ] );
