@@ -40,6 +40,7 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
+	provideUserCapabilities,
 } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import ExpressSetupBannerWidget from '.';
@@ -70,11 +71,11 @@ export default {
 				] );
 				provideModuleRegistrations( registry );
 				provideSiteInfo( registry );
-
-				registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
+				provideUserCapabilities( registry );
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 				registry
 					.dispatch( CORE_USER )
-					.finishResolution( 'getDismissedPrompts', [] );
+					.finishResolution( 'getDismissedItems', [] );
 			}
 
 			return (
