@@ -1,5 +1,5 @@
 /**
- * RRMExpressSetupCTABannerWidget component.
+ * RRM ExpressSetupBannerWidget component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *

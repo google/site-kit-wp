@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager Setup CTA Banner Widget stories.
+ * RRM ExpressSetupBannerWidget stories.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
