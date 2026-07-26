@@ -112,14 +112,15 @@ export function createInfoStore(
 		 *
 		 * @since 1.10.0
 		 *
-		 * @param {Object}  options        Options object.
-		 * @param {boolean} options.reAuth The module activation status. Default is true.
+		 * @param {Object}  options                     Options object.
+		 * @param {boolean} options.reAuth              The module activation status. Default is true.
+		 * @param {Object}  [options.redirectQueryArgs] Optional. Additional query arguments to add to the redirect URL.
 		 * @return {(string|undefined)} The admin reauthentication URL, or
 		 *                              undefined if not loaded yet.
 		 */
 		getAdminReauthURL: createRegistrySelector(
 			( select ) =>
-				( state, { reAuth = true } = {} ) => {
+				( state, { reAuth = true, redirectQueryArgs = {} } = {} ) => {
 					const needsReauthentication =
 						select( CORE_USER ).needsReauthentication();
 					if ( needsReauthentication === undefined ) {
@@ -137,6 +138,7 @@ export function createInfoStore(
 						slug,
 						reAuth,
 						...noSetupQueryArgs,
+						...redirectQueryArgs,
 					} );
 					if ( redirectURL === undefined ) {
 						return undefined;
