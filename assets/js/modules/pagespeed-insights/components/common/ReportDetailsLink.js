@@ -28,18 +28,19 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import P from '@/js/components/Typography/P';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULES_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/datastore/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import {
+	MODULES_PAGESPEED_INSIGHTS,
+	STRATEGY_MOBILE,
+	UI_STRATEGY,
+} from '@/js/modules/pagespeed-insights/datastore/constants';
 
 export default function ReportDetailsLink() {
-	const referenceURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getCurrentReferenceURL()
-	);
+	const strategy =
+		useSelect( ( select ) => select( CORE_UI ).getValue( UI_STRATEGY ) ) ||
+		STRATEGY_MOBILE;
 	const pagespeedInsightsURL = useSelect( ( select ) =>
-		select( MODULES_PAGESPEED_INSIGHTS ).getServiceURL( {
-			path: 'report',
-			query: { url: referenceURL },
-		} )
+		select( MODULES_PAGESPEED_INSIGHTS ).getDetailsLinkURL( strategy )
 	);
 
 	return (

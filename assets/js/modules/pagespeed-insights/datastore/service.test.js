@@ -20,6 +20,7 @@
  *
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createTestRegistry } from '@tests/js/utils';
 import { MODULES_PAGESPEED_INSIGHTS } from './constants';
@@ -38,9 +39,39 @@ describe( 'module/pagespeed-insights service store', () => {
 	beforeAll( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveUserInfo( userData );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			referenceSiteURL: 'https://example.com/',
+			currentEntityURL: null,
+		} );
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'getDetailsLinkURL', () => {
+			it( 'returns the report URL for the current reference URL', () => {
+				const detailsLinkURL = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getDetailsLinkURL();
+
+				expect( new URL( detailsLinkURL ).pathname ).toBe( '/report' );
+				expect( detailsLinkURL ).toMatchQueryParameters( {
+					url: 'https://example.com/',
+					utm_source: 'sitekit',
+				} );
+			} );
+
+			it( 'includes the supplied report strategy', () => {
+				const detailsLinkURL = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getDetailsLinkURL( 'desktop' );
+
+				expect( detailsLinkURL ).toMatchQueryParameters( {
+					url: 'https://example.com/',
+					strategy: 'desktop',
+					utm_source: 'sitekit',
+				} );
+			} );
+		} );
+
 		describe( 'getServiceURL', () => {
 			it( 'retrieves the correct URL with no arguments', () => {
 				const serviceURL = registry

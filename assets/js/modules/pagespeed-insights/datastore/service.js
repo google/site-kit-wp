@@ -21,7 +21,34 @@
  */
 import { addQueryArgs } from '@wordpress/url';
 
+/**
+ * Internal dependencies
+ */
+import { createRegistrySelector } from 'googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_PAGESPEED_INSIGHTS } from './constants';
+
 export const selectors = {
+	/**
+	 * Gets the details link URL for the module.
+	 *
+	 * @since 1.185.0
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} [strategy] PageSpeed report strategy.
+	 * @return {string} Details link URL.
+	 */
+	getDetailsLinkURL: createRegistrySelector(
+		( select ) => ( state, strategy ) =>
+			select( MODULES_PAGESPEED_INSIGHTS ).getServiceURL( {
+				path: 'report',
+				query: {
+					url: select( CORE_SITE ).getCurrentReferenceURL(),
+					...( strategy && { strategy } ),
+				},
+			} )
+	),
+
 	/**
 	 * Gets a URL to the service.
 	 *
