@@ -277,9 +277,12 @@ describe( 'FrequencySelector', () => {
 				nextReportTimestamp: AUG_1_2026_TIMESTAMP,
 			} );
 
-			const { container, getByText } = renderSelector( registry, {
-				isUserSubscribed: true,
-			} );
+			const { container, getByText, getByRole } = renderSelector(
+				registry,
+				{
+					isUserSubscribed: true,
+				}
+			);
 
 			expect(
 				container.querySelector(
@@ -294,6 +297,13 @@ describe( 'FrequencySelector', () => {
 			expect(
 				getByText( 'Next report: Aug 1, 2026' )
 			).toBeInTheDocument();
+
+			// Accessible name must stay the frequency label only, even when the
+			// current-subscription pill (with next report date) is nested in
+			// the card on mobile.
+			expect(
+				getByRole( 'radio', { name: 'Monthly' } )
+			).toHaveAccessibleName( 'Monthly' );
 		} );
 	} );
 

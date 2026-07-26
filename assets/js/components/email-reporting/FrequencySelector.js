@@ -256,6 +256,11 @@ export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 							) }
 							role="radio"
 							aria-checked={ isSelected }
+							// Keep the accessible name limited to the frequency
+							// label. On mobile the current-subscription pill
+							// (including "Next report: …") is rendered inside
+							// this card and would otherwise pollute the name.
+							aria-label={ label }
 							tabIndex={ 0 }
 							onClick={ () =>
 								setEmailReportingFrequency( reportFrequency )
