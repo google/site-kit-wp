@@ -40,54 +40,70 @@ interface BreakdownErrorNoticeProps {
 	permissionsTitle: string;
 	onRetry: () => void;
 	onDismiss: () => void;
+	ctaInProgress?: boolean;
 	className?: string;
 }
 
 const BreakdownErrorNotice = forwardRef<
 	HTMLDivElement,
 	BreakdownErrorNoticeProps
->( ( { error, permissionsTitle, onRetry, onDismiss, className }, ref ) => {
-	const troubleshootingURL = useSelect(
-		( select: Select ) =>
-			select( CORE_SITE ).getErrorTroubleshootingLinkURL( error ),
-		[ error ]
-	);
+>(
+	(
+		{
+			error,
+			permissionsTitle,
+			onRetry,
+			onDismiss,
+			ctaInProgress,
+			className,
+		},
+		ref
+	) => {
+		const troubleshootingURL = useSelect(
+			( select: Select ) =>
+				select( CORE_SITE ).getErrorTroubleshootingLinkURL( error ),
+			[ error ]
+		);
 
-	const isPermissionsError = isInsufficientPermissionsError( error );
+		const isPermissionsError = isInsufficientPermissionsError( error );
 
-	const title = isPermissionsError
-		? permissionsTitle
-		: __( 'Analytics update failed', 'google-site-kit' );
+		const title = isPermissionsError
+			? permissionsTitle
+			: __( 'Analytics update failed', 'google-site-kit' );
 
-	const message = isPermissionsError
-		? __(
-				'We were unable to configure your Google Analytics account settings due to insufficient permissions. To fix this, you can contact your administrator or <a>get help</a>.',
-				'google-site-kit'
-		  )
-		: __(
-				'There was a problem updating your Analytics property. <a>Learn more</a>',
-				'google-site-kit'
-		  );
+		const message = isPermissionsError
+			? __(
+					'We were unable to configure your Google Analytics account settings due to insufficient permissions. To fix this, you can contact your administrator or <a>get help</a>.',
+					'google-site-kit'
+			  )
+			: __(
+					'There was a problem updating your Analytics property. <a>Learn more</a>',
+					'google-site-kit'
+			  );
 
-	return (
-		<Notice
-			ref={ ref }
-			className={ className }
-			type={ NOTICE_TYPES.ERROR }
-			title={ title }
-			description={ createInterpolateElement( message, {
-				a: <Link href={ troubleshootingURL } external />,
-			} ) }
-			ctaButton={ {
-				label: __( 'Retry', 'google-site-kit' ),
-				onClick: onRetry,
-			} }
-			dismissButton={ {
-				label: __( 'Got it', 'google-site-kit' ),
-				onClick: onDismiss,
-			} }
-		/>
-	);
-} );
+		return (
+			<Notice
+				ref={ ref }
+				className={ className }
+				type={ NOTICE_TYPES.ERROR }
+				title={ title }
+				description={ createInterpolateElement( message, {
+					a: <Link href={ troubleshootingURL } external />,
+				} ) }
+				ctaButton={ {
+					label: __( 'Retry', 'google-site-kit' ),
+					onClick: onRetry,
+					inProgress: ctaInProgress,
+					// The retry is already underway, so block a second click.
+					disabled: ctaInProgress,
+				} }
+				dismissButton={ {
+					label: __( 'Got it', 'google-site-kit' ),
+					onClick: onDismiss,
+				} }
+			/>
+		);
+	}
+);
 
 export default BreakdownErrorNotice;
