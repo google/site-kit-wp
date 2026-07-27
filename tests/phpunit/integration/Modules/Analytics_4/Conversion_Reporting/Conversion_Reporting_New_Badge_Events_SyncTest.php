@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Analytics_4\Conversion_Reporting;
 
 use Google\Site_Kit\Context;
@@ -49,10 +47,10 @@ class Conversion_Reporting_New_Badge_Events_SyncTest extends TestCase {
 
 		$result = $this->transients->get( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
 
-		$this->assertNotEmpty( $result );
-		$this->assertArrayHasKey( 'created_at', $result );
-		$this->assertArrayHasKey( 'events', $result );
-		$this->assertEquals( $new_events, $result['events'] );
+		$this->assertNotEmpty( $result, 'New conversion events should create badge data when none exists.' );
+		$this->assertArrayHasKey( 'created_at', $result, 'New badge data should record when it was created.' );
+		$this->assertArrayHasKey( 'events', $result, 'New badge data should include detected conversion events.' );
+		$this->assertEquals( $new_events, $result['events'], 'New badge data should contain all newly detected events.' );
 	}
 
 	public function test_sync_new_badge_events__transient_younger_than_3_days() {
@@ -74,10 +72,11 @@ class Conversion_Reporting_New_Badge_Events_SyncTest extends TestCase {
 
 		$result = $this->transients->get( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
 
-		$this->assertNotEmpty( $result );
+		$this->assertNotEmpty( $result, 'Recent badge data should remain available after synchronization.' );
 		$this->assertEquals(
 			array_merge( $existing_events, $new_events ),
-			$result['events']
+			$result['events'],
+			'New events should be appended to badge data created within the last three days.'
 		);
 	}
 
@@ -100,8 +99,8 @@ class Conversion_Reporting_New_Badge_Events_SyncTest extends TestCase {
 
 		$result = $this->transients->get( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
 
-		$this->assertNotEmpty( $result );
-		$this->assertEquals( $new_events, $result['events'] );
+		$this->assertNotEmpty( $result, 'Expired badge data should be replaced by synchronization.' );
+		$this->assertEquals( $new_events, $result['events'], 'Badge data older than three days should contain only newly detected events.' );
 	}
 
 	public function test_sync_new_badge_events__skip_new_badge_transient_is_present() {
@@ -114,6 +113,6 @@ class Conversion_Reporting_New_Badge_Events_SyncTest extends TestCase {
 
 		$result = $this->transients->get( Conversion_Reporting_New_Badge_Events_Sync::NEW_EVENTS_BADGE_TRANSIENT );
 
-		$this->assertEmpty( $result );
+		$this->assertEmpty( $result, 'New badge data should not be created while badge synchronization is skipped.' );
 	}
 }

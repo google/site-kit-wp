@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\Site_Health;
 
 use Google\Site_Kit\Context;
@@ -45,6 +42,9 @@ class REST_Site_Health_ControllerTest extends TestCase {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
+		$this->assertTrue(
+			has_filter( 'googlesitekit_rest_routes' ),
+			'Site Health REST route should be registered.'
+		);
 	}
 }

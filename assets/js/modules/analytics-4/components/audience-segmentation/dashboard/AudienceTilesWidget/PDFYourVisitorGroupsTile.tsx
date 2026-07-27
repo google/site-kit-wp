@@ -43,6 +43,7 @@ import {
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFCard from '@/js/components/pdf-export/shared-react-pdf-components/PDFCard';
+import PDFLink from '@/js/components/pdf-export/shared-react-pdf-components/PDFLink';
 import PDFPartialDataBadge from '@/js/components/pdf-export/shared-react-pdf-components/PDFPartialDataBadge';
 import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
 import { numFmt } from '@/js/util';
@@ -122,14 +123,16 @@ const styles = createPDFStyles( {
 	contentRow: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
-		marginVertical: 6,
+		marginBottom: 6,
 	},
-	contentLink: {
+	// The title fills the row remainder before the pageviews count.
+	contentTitle: {
 		flex: 1,
-		color: PDF_COLORS.CONTENT_SECONDARY,
 		marginRight: 30,
-		// A long title truncates to one line with an ellipsis. `@react-pdf`
-		// wraps text by default, so `maxLines` caps it at one line.
+	},
+	// A long title truncates to one line with an ellipsis. `@react-pdf`
+	// wraps text by default, so `maxLines` caps it at one line.
+	contentTitleText: {
 		maxLines: 1,
 		textOverflow: 'ellipsis',
 	},
@@ -255,10 +258,13 @@ const PDFYourVisitorGroupsTile: FC< PDFYourVisitorGroupsTileProps > = ( {
 					<PDFAudienceMetricIconTopContent />
 				</View>
 				<View style={ styles.body }>
-					<View style={ [ styles.badgeRow, styles.topContentTitle ] }>
+					<View style={ [ styles.badgeRow ] }>
 						<PDFTypography
 							size="medium"
-							style={ styles.sectionTitle }
+							style={ [
+								styles.sectionTitle,
+								styles.topContentTitle,
+							] }
 						>
 							{ __(
 								'Top content by pageviews',
@@ -267,14 +273,22 @@ const PDFYourVisitorGroupsTile: FC< PDFYourVisitorGroupsTileProps > = ( {
 						</PDFTypography>
 						{ isTopContentPartialData && <PDFPartialDataBadge /> }
 					</View>
+					{ /*
+					 * The page title links to its Analytics report, like the
+					 * dashboard tile. When the page has no link, `PDFLink`
+					 * renders the title as plain text instead of as a link.
+					 */ }
 					{ topContent.map( ( content ) => (
 						<View key={ content.title } style={ styles.contentRow }>
-							<PDFTypography
-								size="small"
-								style={ styles.contentLink }
-							>
-								{ content.title }
-							</PDFTypography>
+							<View style={ styles.contentTitle }>
+								<PDFLink
+									href={ content.serviceURL }
+									size="small"
+									style={ styles.contentTitleText }
+								>
+									{ content.title }
+								</PDFLink>
+							</View>
 							<PDFTypography size="small">
 								{ numFmt( content.pageviews ) }
 							</PDFTypography>

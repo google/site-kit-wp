@@ -70,6 +70,17 @@ export interface PDFHeaderSection {
 }
 
 /**
+ * A named-destination anchor for one report section: the anchor `id` the
+ * header chips link to, and the section's absolute top on the page in points.
+ *
+ * @since n.e.x.t
+ */
+export interface PDFSectionAnchor {
+	id: string;
+	top: number;
+}
+
+/**
  * A loaded PDF widget ready to render into the report document.
  *
  * @since 1.181.0
