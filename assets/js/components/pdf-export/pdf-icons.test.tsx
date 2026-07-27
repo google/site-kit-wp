@@ -17,14 +17,15 @@
  */
 
 /**
- * External dependencies
- */
-import { ReactElement } from 'react';
-import TestRenderer from 'react-test-renderer';
-
-/**
  * Internal dependencies
  */
+import {
+	CONTEXT_MAIN_DASHBOARD_CONTENT,
+	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
+	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+	CONTEXT_MAIN_DASHBOARD_SPEED,
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+} from '@/js/googlesitekit/widgets/default-contexts';
 import {
 	PDFAudienceMetricIconCities,
 	PDFAudienceMetricIconPagesPerVisit,
@@ -32,9 +33,19 @@ import {
 	PDFAudienceMetricIconTopContent,
 	PDFAudienceMetricIconVisitors,
 	PDFAudienceMetricIconVisitsPerVisitor,
+	PDFChevronRight,
+	PDFLogoG,
+	PDFNavContentIcon,
+	PDFNavKeyMetricsIcon,
+	PDFNavMonetizationIcon,
+	PDFNavSpeedIcon,
+	PDFNavTrafficIcon,
+	PDFStarFill,
+	SECTION_ICONS,
 } from './pdf-icons';
 import { scalePDFValue } from './pdf-scale';
 import { PDF_COLORS } from './pdf-theme';
+import { renderJSON } from './test-utils';
 
 const ALL_ICONS = [
 	[ 'visitors', PDFAudienceMetricIconVisitors ],
@@ -43,19 +54,33 @@ const ALL_ICONS = [
 	[ 'pageviews', PDFAudienceMetricIconPageviews ],
 	[ 'cities', PDFAudienceMetricIconCities ],
 	[ 'top content', PDFAudienceMetricIconTopContent ],
+	[ 'key metrics section', PDFNavKeyMetricsIcon ],
+	[ 'traffic section', PDFNavTrafficIcon ],
+	[ 'content section', PDFNavContentIcon ],
+	[ 'speed section', PDFNavSpeedIcon ],
+	[ 'monetization section', PDFNavMonetizationIcon ],
+	[ 'Google "G" logo', PDFLogoG ],
+	[ 'filled star', PDFStarFill ],
+	[ 'right-facing chevron', PDFChevronRight ],
 ] as const;
 
-/**
- * Renders a PDF element to its JSON tree string.
- *
- * @since 1.184.0
- *
- * @param element The element to render.
- * @return The rendered tree as a string.
- */
-function renderJSON( element: ReactElement ) {
-	return JSON.stringify( TestRenderer.create( element ).toJSON() );
-}
+const ICON_DEFAULT_COLORS = [
+	[
+		'key metrics section',
+		PDFNavKeyMetricsIcon,
+		PDF_COLORS.SURFACES_ON_SURFACE,
+	],
+	[ 'traffic section', PDFNavTrafficIcon, PDF_COLORS.SURFACES_ON_SURFACE ],
+	[ 'content section', PDFNavContentIcon, PDF_COLORS.SURFACES_ON_SURFACE ],
+	[ 'speed section', PDFNavSpeedIcon, PDF_COLORS.SURFACES_ON_SURFACE ],
+	[
+		'monetization section',
+		PDFNavMonetizationIcon,
+		PDF_COLORS.SURFACES_ON_SURFACE,
+	],
+	[ 'filled star', PDFStarFill, PDF_COLORS.VIOLET_V_600 ],
+	[ 'right-facing chevron', PDFChevronRight, PDF_COLORS.CONTENT_SECONDARY ],
+] as const;
 
 describe( 'PDF icons', () => {
 	it.each( ALL_ICONS )(
@@ -92,5 +117,22 @@ describe( 'PDF icons', () => {
 		);
 
 		expect( json ).toContain( PDF_COLORS.GREEN_G_50 );
+	} );
+
+	it.each( ICON_DEFAULT_COLORS )(
+		'draws the %s icon in its default color',
+		( _name, Icon, color ) => {
+			expect( renderJSON( <Icon /> ) ).toContain( color );
+		}
+	);
+
+	it( 'maps each main-dashboard section to its icon', () => {
+		expect( SECTION_ICONS ).toEqual( {
+			[ CONTEXT_MAIN_DASHBOARD_KEY_METRICS ]: PDFNavKeyMetricsIcon,
+			[ CONTEXT_MAIN_DASHBOARD_TRAFFIC ]: PDFNavTrafficIcon,
+			[ CONTEXT_MAIN_DASHBOARD_CONTENT ]: PDFNavContentIcon,
+			[ CONTEXT_MAIN_DASHBOARD_SPEED ]: PDFNavSpeedIcon,
+			[ CONTEXT_MAIN_DASHBOARD_MONETIZATION ]: PDFNavMonetizationIcon,
+		} );
 	} );
 } );
