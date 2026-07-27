@@ -54,10 +54,10 @@ import { ORDERED_MAIN_DASHBOARD_CONTEXTS } from './constants';
 import extractPDFSectionAnchors from './extract-pdf-section-anchors';
 import measurePDFContentHeight from './measure-pdf-content-height';
 import { registerPDFFonts } from './pdf-fonts-react';
+import { SECTION_ICONS } from './pdf-icons';
 import { PDF_MEASURE_PAGE_HEIGHT, PDF_PAGE_BOTTOM_PADDING } from './pdf-theme';
 import { getPDFFilename, triggerDownload } from './pdf-utils';
 import { WidgetWithPDF, isActivePDFWidget } from './pdf-widget-eligibility';
-import { SECTION_ICONS } from './section-icons';
 import DashboardReport from './shared-react-pdf-components/DashboardReport';
 import {
 	PDFHeaderSection,
