@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { createInterpolateElement, forwardRef } from '@wordpress/element';
@@ -118,18 +113,5 @@ const NormalCTAContent = forwardRef< HTMLDivElement, NormalCTAContentProps >(
 );
 
 NormalCTAContent.displayName = 'NormalCTAContent';
-
-NormalCTAContent.propTypes = {
-	documentationURL: PropTypes.string,
-	analyticsEventLabel: PropTypes.string,
-	handleDismiss: PropTypes.func.isRequired,
-	inProgress: PropTypes.bool.isRequired,
-	onClickCallback: PropTypes.func.isRequired,
-	analyticsModuleActive: PropTypes.bool.isRequired,
-	trackEvents: PropTypes.shape( {
-		clickLearnMore: PropTypes.func.isRequired,
-		confirm: PropTypes.func.isRequired,
-	} ).isRequired,
-};
 
 export default NormalCTAContent;

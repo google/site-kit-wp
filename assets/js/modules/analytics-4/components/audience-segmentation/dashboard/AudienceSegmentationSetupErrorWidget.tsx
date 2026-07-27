@@ -19,12 +19,12 @@
 /**
  * External dependencies
  */
-import type { ElementType, FC, ReactNode } from 'react';
+import type { ComponentType, ElementType, FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, forwardRef } from '@wordpress/element';
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
-import Notice from '@/js/components/Notice';
+import Notice, { NoticeProps } from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
@@ -60,43 +60,10 @@ export interface AudienceSegmentationSetupErrorWidgetProps {
 	onDismiss: () => void;
 }
 
-interface AudienceSegmentationSetupErrorNoticeProps {
-	title: string;
-	description: ReactNode;
-	onRetry: ( label: string ) => void;
-	onDismiss: ( label: string ) => void;
-	label: string;
-	onInView?: () => void;
-	hasBeenInView?: boolean;
-}
-
-const AudienceSegmentationSetupErrorNotice = forwardRef<
-	HTMLDivElement,
-	AudienceSegmentationSetupErrorNoticeProps
->( ( { title, description, onRetry, onDismiss, label }, ref ) => {
-	return (
-		<div ref={ ref }>
-			<Notice
-				type={ NOTICE_TYPES.ERROR }
-				title={ title }
-				description={ description }
-				ctaButton={ {
-					label: __( 'Retry', 'google-site-kit' ),
-					onClick: () => onRetry( label ),
-				} }
-				dismissButton={ {
-					label: __( 'No thanks', 'google-site-kit' ),
-					onClick: () => onDismiss( label ),
-				} }
-			/>
-		</div>
-	);
-} );
-AudienceSegmentationSetupErrorNotice.displayName =
-	'AudienceSegmentationSetupErrorNotice';
-
 const AudienceSegmentationSetupErrorNoticeWithObserver =
-	withIntersectionObserver( AudienceSegmentationSetupErrorNotice );
+	withIntersectionObserver< NoticeProps >(
+		Notice as unknown as ComponentType< NoticeProps >
+	);
 
 const AudienceSegmentationSetupErrorWidget: FC<
 	AudienceSegmentationSetupErrorWidgetProps
@@ -197,11 +164,17 @@ const AudienceSegmentationSetupErrorWidget: FC<
 			noPadding
 		>
 			<AudienceSegmentationSetupErrorNoticeWithObserver
+				type={ NOTICE_TYPES.ERROR }
 				title={ title }
 				description={ description }
-				onRetry={ handleRetry }
-				onDismiss={ handleDismiss }
-				label={ label }
+				ctaButton={ {
+					label: __( 'Retry', 'google-site-kit' ),
+					onClick: () => handleRetry( label ),
+				} }
+				dismissButton={ {
+					label: __( 'No thanks', 'google-site-kit' ),
+					onClick: () => handleDismiss( label ),
+				} }
 				onInView={ () => trackEvents.view( label ) }
 			/>
 		</Widget>

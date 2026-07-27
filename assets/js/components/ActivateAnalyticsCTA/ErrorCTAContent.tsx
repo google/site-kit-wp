@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { forwardRef } from '@wordpress/element';
@@ -91,11 +86,5 @@ const ErrorCTAContent = forwardRef< HTMLDivElement, ErrorCTAContentProps >(
 );
 
 ErrorCTAContent.displayName = 'ErrorCTAContent';
-
-ErrorCTAContent.propTypes = {
-	handleActivationErrorDismiss: PropTypes.func.isRequired,
-	handleActivationRetry: PropTypes.func.isRequired,
-	inProgress: PropTypes.bool.isRequired,
-};
 
 export default ErrorCTAContent;
