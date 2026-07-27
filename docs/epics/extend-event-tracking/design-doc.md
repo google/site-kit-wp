@@ -164,10 +164,6 @@ Reproduced from the FE tracking spec for convenience — see [`frontend-event-tr
 
 Not applicable. These events are emitted on the **public site frontend** through the visitor's GA4/Ads tag; they do not read Google API data and surface nothing in the Site Kit dashboard. Dashboard Sharing rules are unaffected.
 
-### **Tester plugin**
-
-We should add toggles to force the preconditions and page contexts for manual QA: force Conversion Tracking enabled + a GA4/Ads tag present, force `is_singular('post')` contexts with a known word count (to exercise the read‑time math without waiting), inject sample YouTube/Vimeo embeds, `<!--nextpage-->` split posts, `tel:`/`mailto:` links, and `rel`‑qualified outbound links. This lets QA verify each event fires with the right params in GA4 DebugView.
-
 ### **Site Health**
 
 `Content_Events::get_debug_data()` should report which content events are enabled/eligible on this install (e.g. `read_article, pagination_click, contact_link_click, outbound_link_click, video (vimeo)`) to help support triage "why isn't event X firing" reports.
@@ -178,7 +174,7 @@ None. This is silent, backend/frontend tracking with no dashboard UI, so no feat
 
 ### **Internal measurement: feature metrics**
 
-Extend the existing `Conversion_Tracking::get_feature_metrics()` with a `content_events` metric listing the content events currently eligible on the site (computed from the provider's enabled handlers). This keeps content tracking observable without adding it to the lead/e‑commerce `conversion_tracking_events*` metrics.
+Not applicable. Since the new provider is always active whenever conversion tracking script injection is enabled, there are no toggleable feature settings or optional states that need to be recorded via `Conversion_Tracking::get_feature_metrics()`.
 
 # **Alternatives considered** {#alternatives-considered}
 
@@ -198,7 +194,7 @@ The anchor (via `the_content`) is precise but bypassed by some page builders/blo
 
 ### **Vimeo: custom SDK build vs. skip**
 
-Enhanced Measurement cannot track Vimeo by any filter/parameter, so we build it with the official Player SDK (in scope). Other providers (Wistia, self‑hosted `<video>`) are out of scope for now.
+Enhanced Measurement cannot track Vimeo by any filter/parameter, so we build it with the official Player SDK. Other providers (Wistia, self‑hosted `<video>`) are out of scope for now.
 
 ### **Single `contact_link_click` (with `link_type`) vs. separate `phone_call_click`/`email_click`**
 
@@ -257,10 +253,10 @@ Proposed GitHub issues for this mini‑epic (issue numbers and final points TBD 
 
 | # | Title | Design Doc Points |
 | :---- | :---- | :---- |
-| 1 | `Content_Events` provider scaffold + registration + `content-events.js` entry (pipeline wiring) | 8 |
-| 2 | `read_article` — end‑of‑content anchor, reading‑time constants, IntersectionObserver + dwell timer | 13 |
-| 3 | Embedded video — YouTube `enablejsapi=1` filter + Vimeo Player SDK tracking | 13 |
-| 4 | `pagination_click` — post pagination + bbPress thread pagination | 8 |
-| 5 | `contact_link_click` — `tel:` / `mailto:` delegated tracking | 5 |
-| 6 | `outbound_link_click` — `rel`‑qualified delegated tracking | 5 |
-| 7 | Site Health debug data + `content_events` feature metric + tester‑plugin support | 5 |
+| 1 | `Content_Events` provider scaffold + registration + `content-events.js` entry (pipeline wiring) | 7 |
+| 2 | `read_article` — end‑of‑content anchor, reading‑time constants, IntersectionObserver + dwell timer | 11 |
+| 3 | Embedded video — YouTube `enablejsapi=1` filter + Vimeo Player SDK tracking | 15 |
+| 4 | `pagination_click` — post pagination + bbPress thread pagination | 7 |
+| 5 | `contact_link_click` — `tel:` / `mailto:` delegated tracking | 7 |
+| 6 | `outbound_link_click` — `rel`‑qualified delegated tracking | 7 |
+| 7 | Site Health debug data | 7 |
