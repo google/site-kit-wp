@@ -34,7 +34,22 @@ import { Button, SpinnerButton } from 'googlesitekit-components';
 import Link from '@/js/components/Link';
 import AnalyticsIcon from '@/svg/graphics/analytics.svg';
 
-const NormalCTAContent = forwardRef(
+type TrackEvents = {
+	clickLearnMore: ( analyticsEventLabel?: string ) => void;
+	confirm: ( analyticsEventLabel?: string ) => void;
+};
+
+type NormalCTAContentProps = {
+	documentationURL?: string | null;
+	analyticsEventLabel?: string;
+	handleDismiss: () => void;
+	inProgress: boolean;
+	onClickCallback: () => void;
+	analyticsModuleActive: boolean;
+	trackEvents: TrackEvents;
+};
+
+const NormalCTAContent = forwardRef< HTMLDivElement, NormalCTAContentProps >(
 	(
 		{
 			documentationURL,
@@ -61,7 +76,7 @@ const NormalCTAContent = forwardRef(
 						{
 							a: (
 								<Link
-									href={ documentationURL }
+									href={ documentationURL ?? undefined }
 									onClick={ () => {
 										trackEvents.clickLearnMore(
 											analyticsEventLabel
@@ -75,6 +90,7 @@ const NormalCTAContent = forwardRef(
 				</p>
 			</div>
 			<div className="googlesitekit-activate-analytics-cta__actions">
+				{ /* @ts-expect-error `Button` component is not yet typed. */ }
 				<Button
 					className="googlesitekit-activate-analytics-cta__button--secondary"
 					onClick={ handleDismiss }
@@ -82,6 +98,7 @@ const NormalCTAContent = forwardRef(
 				>
 					{ __( 'Maybe later', 'google-site-kit' ) }
 				</Button>
+				{ /* @ts-expect-error `SpinnerButton` component type does not include children yet. */ }
 				<SpinnerButton
 					className="googlesitekit-activate-analytics-cta__button--primary"
 					onClick={ () => {

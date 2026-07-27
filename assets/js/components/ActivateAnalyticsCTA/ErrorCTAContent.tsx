@@ -35,7 +35,13 @@ import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_LABEL } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 
-const ErrorCTAContent = forwardRef(
+type ErrorCTAContentProps = {
+	handleActivationErrorDismiss: () => void;
+	handleActivationRetry: () => void;
+	inProgress: boolean;
+};
+
+const ErrorCTAContent = forwardRef< HTMLDivElement, ErrorCTAContentProps >(
 	(
 		{ handleActivationErrorDismiss, handleActivationRetry, inProgress },
 		ref
@@ -53,6 +59,7 @@ const ErrorCTAContent = forwardRef(
 				>
 					{ __( 'Analytics setup failed', 'google-site-kit' ) }
 				</Typography>
+				{ /* @ts-expect-error `P` component type currently requires `size` prop. */ }
 				<P className="googlesitekit-activate-analytics-cta__description">
 					{ __(
 						'Something went wrong, please try again',
@@ -61,6 +68,7 @@ const ErrorCTAContent = forwardRef(
 				</P>
 			</div>
 			<div className="googlesitekit-activate-analytics-cta__actions">
+				{ /* @ts-expect-error `Button` component is not yet typed. */ }
 				<Button
 					className="googlesitekit-activate-analytics-cta__button--secondary googlesitekit-activate-analytics-cta__dismiss-button--error"
 					onClick={ handleActivationErrorDismiss }
@@ -68,6 +76,7 @@ const ErrorCTAContent = forwardRef(
 				>
 					{ __( 'Got it', 'google-site-kit' ) }
 				</Button>
+				{ /* @ts-expect-error `SpinnerButton` component type does not include children yet. */ }
 				<SpinnerButton
 					className="googlesitekit-activate-analytics-cta__button--primary"
 					onClick={ handleActivationRetry }
