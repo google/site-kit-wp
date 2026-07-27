@@ -20,27 +20,14 @@
  * External dependencies
  */
 import { Text } from '@react-pdf/renderer';
-import { ReactElement } from 'react';
-import TestRenderer from 'react-test-renderer';
 
 /**
  * Internal dependencies
  */
 import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
+import { renderJSON } from '@/js/components/pdf-export/test-utils';
 import { render } from '@tests/js/test-utils';
 import PDFWidgetSection from './PDFWidgetSection';
-
-/**
- * Renders a PDF element to a JSON string for content and style assertions.
- *
- * @since 1.183.0
- *
- * @param element PDF element to render.
- * @return JSON string of the rendered tree.
- */
-function renderJSON( element: ReactElement ) {
-	return JSON.stringify( TestRenderer.create( element ).toJSON() );
-}
 
 describe( 'PDFWidgetSection', () => {
 	it( 'renders the heading and children', () => {

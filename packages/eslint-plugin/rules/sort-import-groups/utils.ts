@@ -36,7 +36,32 @@ import type {
 	GroupedImports,
 	ImportNode,
 	LComment,
+	SourceLiteral,
 } from './types';
+
+/**
+ * Checks whether a source uses the bare tests alias.
+ *
+ * @since n.e.x.t
+ *
+ * @param source Import source.
+ * @return True if the source uses the bare tests alias.
+ */
+export function isBareTestsAlias( source: string ): boolean {
+	return source === 'tests' || source.startsWith( 'tests/' );
+}
+
+/**
+ * Canonicalizes a bare tests alias.
+ *
+ * @since n.e.x.t
+ *
+ * @param source Import source.
+ * @return The canonicalized import source.
+ */
+export function canonicalizeTestsAlias( source: string ): string {
+	return isBareTestsAlias( source ) ? `@${ source }` : source;
+}
 
 /**
  * Checks whether a comment text matches one of the dependency group headings.
@@ -344,16 +369,18 @@ export function unwrapRequireCall(
 }
 
 /**
- * Gets the import source from a node.
+ * Gets the source literal from an import or require node.
  *
- * @since 1.179.0
+ * @since n.e.x.t
  *
  * @param node Import/require node.
- * @return Import source.
+ * @return Import source literal, or null when unavailable.
  */
-export function getImportSource( node: ImportNode ): string {
+export function getImportSourceLiteral(
+	node: ImportNode
+): SourceLiteral | null {
 	if ( node.type === 'ImportDeclaration' ) {
-		return String( node.source.value ?? '' );
+		return node.source as SourceLiteral;
 	}
 
 	if ( node.declarations.length > 0 ) {
@@ -364,10 +391,25 @@ export function getImportSource( node: ImportNode ): string {
 			requireCall.arguments.length > 0 &&
 			requireCall.arguments[ 0 ].type === 'Literal'
 		) {
-			return String( requireCall.arguments[ 0 ].value ?? '' );
+			return requireCall.arguments[ 0 ] as SourceLiteral;
 		}
 	}
-	return '';
+
+	return null;
+}
+
+/**
+ * Gets the import source from a node.
+ *
+ * @since 1.179.0
+ *
+ * @param node Import/require node.
+ * @return Import source.
+ */
+export function getImportSource( node: ImportNode ): string {
+	const sourceLiteral = getImportSourceLiteral( node );
+
+	return String( sourceLiteral?.value ?? '' );
 }
 
 /**
