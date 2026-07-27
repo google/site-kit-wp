@@ -322,7 +322,10 @@ final class Plugin {
 	/**
 	 * Forces the Setup Flow Refresh feature flag to be enabled.
 	 *
+	 * Forces the Setup Flow Refresh feature flags to be enabled.
+	 *
 	 * @since 1.183.0
+	 * @since n.e.x.t Force-enable the `setupFlowRefreshPhase4` flag in addition to `setupFlowRefresh`.
 	 *
 	 * @param bool   $feature_enabled The current status of this feature flag.
 	 * @param string $feature_name    The feature name.
