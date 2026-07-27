@@ -180,11 +180,15 @@ const IGNORE_CONSOLE_MESSAGES = [
 		pattern:
 			'global-styles-css-custom-properties-inline-css was added to the iframe incorrectly',
 	},
-	// Gutenberg's api-fetch preloading middleware logs any preloaded paths that
-	// were not consumed while loading the block editor. Unrelated to Site Kit.
+	// Gutenberg's api-fetch preloading middleware logs preload consumption
+	// while loading the block editor. Unrelated to Site Kit.
 	{
 		matcher: 'includes',
 		pattern: '[api-fetch][preload] Some preloads were never consumed',
+	},
+	{
+		matcher: 'includes',
+		pattern: '[api-fetch][preload] All preloads consumed.',
 	},
 	// WordPress 6.6 logs when loading the block editor which causes console error.
 	{
