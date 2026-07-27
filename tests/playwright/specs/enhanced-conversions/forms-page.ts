@@ -19,38 +19,14 @@
 /**
  * External dependencies
  */
-import { type Page, expect } from '@playwright/test';
+import { type Page } from '@playwright/test';
 
-type GTagEventPayload = Record< string, unknown >;
-
-type SampleFormField = {
+type FormField = {
 	label: string;
-	rawValue: string;
-	normalizedValue: string;
+	value: string;
 };
 
-const SAMPLE_FORM_DATA: Record< string, SampleFormField > = {
-	email: {
-		label: 'Email Address',
-		normalizedValue: 'test.user@example.com',
-		rawValue: 'Test.User@Example.COM',
-	},
-	firstName: {
-		label: 'First',
-		normalizedValue: 'jane',
-		rawValue: 'Jane',
-	},
-	lastName: {
-		label: 'Last',
-		normalizedValue: 'doe-smith',
-		rawValue: 'Doe-SMITH',
-	},
-	phone: {
-		label: 'Phone Number',
-		normalizedValue: '+15551234567',
-		rawValue: '+1 (555) 123-4567',
-	},
-};
+export type GTagEventPayload = Record< string, unknown >;
 
 /**
  * Page object for completing and submitting frontend forms by their accessible
@@ -71,19 +47,53 @@ export class FormsPage {
 	}
 
 	/**
+	 * Fills a form field with its raw sample value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param field The sample field data.
+	 * @return A promise that resolves when the field is filled.
+	 */
+	private async fillField( field: FormField ): Promise< void > {
+		await this.page.getByLabel( field.label ).fill( field.value );
+	}
+
+	/**
+	 * Fills the supplied fields and submits the form.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param fields The fields to fill before submitting.
+	 * @return A promise that resolves when the submission request succeeds.
+	 */
+	async fillAndSubmit( fields: FormField[] ): Promise< void > {
+		for ( const field of fields ) {
+			await this.fillField( field );
+		}
+
+		const submissionResponse = this.page.waitForResponse(
+			( response ) =>
+				response.request().method() === 'POST' && response.ok()
+		);
+
+		await this.page
+			.getByRole( 'button', { name: 'Submit', exact: true } )
+			.click();
+		await submissionResponse;
+	}
+
+	/**
 	 * Returns the payload for a named gtag event in the data layer.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param page      The page whose data layer should be inspected.
 	 * @param eventName The gtag event name.
 	 * @return The event payload, or null when the event has not fired.
 	 */
-	private getGTagEvent(
-		page: Page,
+	async getGTagEvent(
 		eventName: string
 	): Promise< GTagEventPayload | null > {
-		return page.evaluate( ( name ) => {
+		return await this.page.evaluate( ( name ) => {
 			const dataLayer =
 				( window as Window & { dataLayer?: unknown[] } ).dataLayer ||
 				[];
@@ -104,228 +114,5 @@ export class FormsPage {
 
 			return null;
 		}, eventName );
-	}
-
-	/**
-	 * Waits for a named gtag event and returns its payload.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param page      The page whose data layer should be inspected.
-	 * @param eventName The gtag event name.
-	 * @return The event payload.
-	 */
-	private async waitForGTagEvent(
-		page: Page,
-		eventName: string
-	): Promise< GTagEventPayload > {
-		await expect
-			.poll( () => this.getGTagEvent( page, eventName ) )
-			.not.toBeNull();
-
-		return ( await this.getGTagEvent(
-			page,
-			eventName
-		) ) as GTagEventPayload;
-	}
-
-	/**
-	 * Fills a form field with its raw sample value.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param field The sample field data.
-	 * @return A promise that resolves when the field is filled.
-	 */
-	private async fillField( field: SampleFormField ): Promise< void > {
-		await this.page.getByLabel( field.label ).fill( field.rawValue );
-	}
-
-	/**
-	 * Fills the supplied fields and submits the form.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param fields The fields to fill before submitting.
-	 * @return A promise that resolves when the submission request succeeds.
-	 */
-	private async fillAndSubmit( fields: SampleFormField[] ): Promise< void > {
-		for ( const field of fields ) {
-			await this.fillField( field );
-		}
-
-		const submissionResponse = this.page.waitForResponse(
-			( response ) =>
-				response.request().method() === 'POST' && response.ok()
-		);
-
-		await this.page
-			.getByRole( 'button', { name: 'Submit', exact: true } )
-			.click();
-		await submissionResponse;
-	}
-
-	/**
-	 * Verifies the Enhanced Conversions event for the email-only form.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return A promise that resolves when the event is verified.
-	 */
-	async verifyEmailFormEvent(): Promise< void > {
-		await this.fillAndSubmit( [ SAMPLE_FORM_DATA.email ] );
-
-		const payload = await this.waitForGTagEvent(
-			this.page,
-			'submit_lead_form'
-		);
-
-		expect( payload ).toMatchObject( {
-			event_source: 'site-kit',
-			googlesitekit_event_provider: 'wpforms',
-			user_data: {
-				email: SAMPLE_FORM_DATA.email.normalizedValue,
-			},
-		} );
-		expect( payload.googlesitekit_form_id ).toMatch( /^\d+$/ );
-	}
-
-	/**
-	 * Verifies the Enhanced Conversions event for the name-only form.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return A promise that resolves when the event is verified.
-	 */
-	async verifyNameFormEvent(): Promise< void > {
-		await this.fillAndSubmit( [
-			SAMPLE_FORM_DATA.firstName,
-			SAMPLE_FORM_DATA.lastName,
-		] );
-
-		const payload = await this.waitForGTagEvent(
-			this.page,
-			'submit_lead_form'
-		);
-
-		expect( payload ).toMatchObject( {
-			event_source: 'site-kit',
-			googlesitekit_event_provider: 'wpforms',
-			user_data: {
-				address: {
-					first_name: SAMPLE_FORM_DATA.firstName.normalizedValue,
-					last_name: SAMPLE_FORM_DATA.lastName.normalizedValue,
-				},
-			},
-		} );
-		expect( payload.googlesitekit_form_id ).toMatch( /^\d+$/ );
-	}
-
-	/**
-	 * Verifies the Enhanced Conversions event for the phone-only form.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return A promise that resolves when the event is verified.
-	 */
-	async verifyPhoneFormEvent(): Promise< void > {
-		await this.fillAndSubmit( [ SAMPLE_FORM_DATA.phone ] );
-
-		const payload = await this.waitForGTagEvent(
-			this.page,
-			'submit_lead_form'
-		);
-
-		expect( payload ).toMatchObject( {
-			event_source: 'site-kit',
-			googlesitekit_event_provider: 'wpforms',
-			user_data: {
-				phone_number: SAMPLE_FORM_DATA.phone.normalizedValue,
-			},
-		} );
-		expect( payload.googlesitekit_form_id ).toMatch( /^\d+$/ );
-	}
-
-	/**
-	 * Verifies the Enhanced Conversions event for the all-fields form.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return A promise that resolves when the event is verified.
-	 */
-	async verifyAllFieldsFormEvent(): Promise< void > {
-		await this.fillAndSubmit( [
-			SAMPLE_FORM_DATA.email,
-			SAMPLE_FORM_DATA.firstName,
-			SAMPLE_FORM_DATA.lastName,
-			SAMPLE_FORM_DATA.phone,
-		] );
-
-		const payload = await this.waitForGTagEvent(
-			this.page,
-			'submit_lead_form'
-		);
-
-		expect( payload ).toMatchObject( {
-			event_source: 'site-kit',
-			googlesitekit_event_provider: 'wpforms',
-			user_data: {
-				address: {
-					first_name: SAMPLE_FORM_DATA.firstName.normalizedValue,
-					last_name: SAMPLE_FORM_DATA.lastName.normalizedValue,
-				},
-				email: SAMPLE_FORM_DATA.email.normalizedValue,
-				phone_number: SAMPLE_FORM_DATA.phone.normalizedValue,
-			},
-		} );
-		expect( payload.googlesitekit_form_id ).toMatch( /^\d+$/ );
-	}
-
-	/**
-	 * Verifies the form event does not contain Enhanced Conversions user data.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return A promise that resolves when the event is verified.
-	 */
-	async verifyFormEventWithoutUserData(): Promise< void > {
-		await this.fillAndSubmit( [
-			SAMPLE_FORM_DATA.email,
-			SAMPLE_FORM_DATA.firstName,
-			SAMPLE_FORM_DATA.lastName,
-			SAMPLE_FORM_DATA.phone,
-		] );
-
-		const payload = await this.waitForGTagEvent(
-			this.page,
-			'submit_lead_form'
-		);
-
-		expect( payload ).toMatchObject( {
-			event_source: 'site-kit',
-			googlesitekit_event_provider: 'wpforms',
-		} );
-		expect( payload.googlesitekit_form_id ).toMatch( /^\d+$/ );
-		expect( payload ).not.toHaveProperty( 'user_data' );
-	}
-
-	/**
-	 * Verifies no form event is sent after submitting the all-fields form.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return A promise that resolves when the missing event is verified.
-	 */
-	async verifyNoFormEvent(): Promise< void > {
-		await this.fillAndSubmit( [
-			SAMPLE_FORM_DATA.email,
-			SAMPLE_FORM_DATA.firstName,
-			SAMPLE_FORM_DATA.lastName,
-			SAMPLE_FORM_DATA.phone,
-		] );
-
-		expect(
-			await this.getGTagEvent( this.page, 'submit_lead_form' )
-		).toBeNull();
 	}
 }
