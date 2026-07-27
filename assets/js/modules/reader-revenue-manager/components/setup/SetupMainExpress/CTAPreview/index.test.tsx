@@ -23,7 +23,7 @@ import { fireEvent, render, screen } from '@tests/js/test-utils';
 import CTAPreview from './index';
 
 describe( 'CTAPreview', () => {
-	it( 'renders the default title and description', () => {
+	it( 'should render the default title and description', () => {
 		render( <CTAPreview /> );
 
 		expect( screen.getByText( 'See how it looks' ) ).toBeInTheDocument();
@@ -35,7 +35,7 @@ describe( 'CTAPreview', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'renders the default footer disclaimer', () => {
+	it( 'should render the default footer disclaimer', () => {
 		render( <CTAPreview /> );
 
 		expect(
@@ -45,7 +45,7 @@ describe( 'CTAPreview', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'renders custom title and description when provided', () => {
+	it( 'should render custom title and description when provided', () => {
 		render(
 			<CTAPreview
 				title="Custom Title"
@@ -59,7 +59,7 @@ describe( 'CTAPreview', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'renders the Pop-up and Inline tabs', () => {
+	it( 'should render the Pop-up and Inline tabs', () => {
 		render( <CTAPreview /> );
 
 		expect(
@@ -70,7 +70,7 @@ describe( 'CTAPreview', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'shows popup content by default', () => {
+	it( 'should show popup content by default', () => {
 		render(
 			<CTAPreview
 				popupContent={ <div>Popup panel content</div> }
@@ -84,7 +84,7 @@ describe( 'CTAPreview', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'shows inline content when the Inline tab is clicked', () => {
+	it( 'should show inline content when the Inline tab is clicked', () => {
 		render(
 			<CTAPreview
 				popupContent={ <div>Popup panel content</div> }
@@ -103,7 +103,7 @@ describe( 'CTAPreview', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'renders the popup panel with the correct class', () => {
+	it( 'should render the popup panel with the correct class', () => {
 		const { container } = render(
 			<CTAPreview popupContent={ <div>Popup content</div> } />
 		);
@@ -115,7 +115,7 @@ describe( 'CTAPreview', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'renders the popup panel as tabpanel linked to the popup tab', () => {
+	it( 'should render the popup panel as tabpanel linked to the popup tab', () => {
 		render( <CTAPreview popupContent={ <div>Popup content</div> } /> );
 
 		const panel = screen.getByRole( 'tabpanel' );
@@ -126,7 +126,7 @@ describe( 'CTAPreview', () => {
 		);
 	} );
 
-	it( 'renders the inline panel with the correct class after switching tabs', () => {
+	it( 'should render the inline panel with the correct class after switching tabs', () => {
 		const { container } = render(
 			<CTAPreview inlineContent={ <div>Inline content</div> } />
 		);
@@ -141,7 +141,7 @@ describe( 'CTAPreview', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'renders the inline panel as tabpanel linked to the inline tab after switching tabs', () => {
+	it( 'should render the inline panel as tabpanel linked to the inline tab after switching tabs', () => {
 		render( <CTAPreview inlineContent={ <div>Inline content</div> } /> );
 
 		const inlineTab = screen.getByRole( 'tab', { name: /inline/i } );
@@ -155,7 +155,7 @@ describe( 'CTAPreview', () => {
 		);
 	} );
 
-	it( 'does not render the footer when footer prop is empty', () => {
+	it( 'should not render the footer when footer prop is empty', () => {
 		const { container } = render( <CTAPreview footer="" /> );
 
 		expect(
@@ -163,7 +163,7 @@ describe( 'CTAPreview', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'renders a custom footer when provided', () => {
+	it( 'should render a custom footer when provided', () => {
 		render( <CTAPreview footer="Custom disclaimer." /> );
 
 		expect( screen.getByText( 'Custom disclaimer.' ) ).toBeInTheDocument();
