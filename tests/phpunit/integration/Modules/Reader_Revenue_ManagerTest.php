@@ -194,6 +194,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			array(
 				'publications',
 				'sync-publication-onboarding-state',
+				'user-settings',
 			),
 			$this->reader_revenue_manager->get_datapoints(),
 			'Reader Revenue Manager module should have correct datapoints.'
