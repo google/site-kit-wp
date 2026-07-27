@@ -320,8 +320,6 @@ final class Plugin {
 	}
 
 	/**
-	 * Forces the Setup Flow Refresh feature flag to be enabled.
-	 *
 	 * Forces the Setup Flow Refresh feature flags to be enabled.
 	 *
 	 * @since 1.183.0
