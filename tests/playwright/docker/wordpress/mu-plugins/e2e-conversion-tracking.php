@@ -13,7 +13,7 @@ if ( ! empty( $_COOKIE['_wp_test_conversion_tracking'] ) ) {
 	add_filter(
 		'pre_option_googlesitekit_conversion_tracking',
 		function () {
-			return array( 'enabled' => true );
+			return array( 'enabled' => 'enabled' === $_COOKIE['_wp_test_conversion_tracking'] );
 		}
 	);
 }
