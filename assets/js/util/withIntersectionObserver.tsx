@@ -48,7 +48,7 @@ interface WithIntersectionObserverOptions {
  * disconnects the observer, so it reports only that first time.
  *
  * @since 1.125.0
- * @since n.e.x.t Replaces the `react-use` `useIntersection` hook. Adds the `hasBeenInView` prop and a configurable `threshold`, and makes `onInView` optional.
+ * @since 1.184.0 Replaces the `react-use` `useIntersection` hook. Adds the `hasBeenInView` prop and a configurable `threshold`, and makes `onInView` optional.
  *
  * @param WrappedComponent  Component to wrap. It must attach the ref it receives to the element to observe.
  * @param options           Observer options.

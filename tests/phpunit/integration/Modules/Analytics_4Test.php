@@ -208,7 +208,7 @@ class Analytics_4Test extends TestCase {
 
 		$this->assertEquals(
 			$url,
-			'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&steps=6',
+			'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&service_version=v3&steps=6',
 			'Setup URL should include the steps query parameter as 6 when Analytics is active.'
 		);
 	}
@@ -1148,7 +1148,7 @@ class Analytics_4Test extends TestCase {
 				);
 
 				if ( 'analyticsadmin.googleapis.com' !== $url['host'] ) {
-					return new FulfilledPromise( new Response( 403 ) ); // Includes container lookup
+					return new FulfilledPromise( new Response( 403 ) ); // Includes container lookup.
 				}
 
 				switch ( $url['path'] ) {
@@ -1797,14 +1797,16 @@ class Analytics_4Test extends TestCase {
 			array(
 				'key-metrics-connect-ga4-cta-widget' => 0,
 			),
-			$dismissed_items->get()
+			$dismissed_items->get(),
+			'Key Metrics Analytics connection prompt should be dismissed before activation.'
 		);
 
 		$this->analytics->on_activation();
 
 		$this->assertEqualSets(
 			array(),
-			$dismissed_items->get()
+			$dismissed_items->get(),
+			'Analytics activation should restore the Key Metrics Analytics connection prompt.'
 		);
 	}
 
@@ -3300,7 +3302,7 @@ class Analytics_4Test extends TestCase {
 			array()
 		);
 
-		$this->assertNotWPError( $response );
+		$this->assertNotWPError( $response, 'Custom dimension synchronization should not return a WP_Error.' );
 
 		// Verify the response is an array of custom dimension names.
 		$this->assertEquals( array( 'googlesitekit_dimension1', 'googlesitekit_dimension2' ), $response, 'Sync custom dimensions should return expected dimension names.' );
@@ -3631,7 +3633,7 @@ class Analytics_4Test extends TestCase {
 		// Prevent test from failing in CI with deprecation notice.
 		remove_action( 'wp_print_styles', 'print_emoji_styles' );
 
-		// Set the current user (can be 0 for no user)
+		// Set the current user (can be 0 for no user).
 		$role = $is_content_creator ? 'administrator' : 'subscriber';
 		$user = $logged_in ?
 			$this->factory()->user->create( array( 'role' => $role ) )
@@ -3733,14 +3735,14 @@ class Analytics_4Test extends TestCase {
 				false,
 				true,
 			),
-			// Tracking is not active for content creators if disabled for logged-in users (logged-in users setting overrides content creators setting)
+			// Tracking is not active for content creators if disabled for logged-in users (logged-in users setting overrides content creators setting).
 			array(
 				array_merge( $base_settings, array( 'trackingDisabled' => array( 'loggedinUsers' ) ) ),
 				true,
 				false,
 				true,
 			),
-			// Analytics is enabled and tracking is disabled for logged-in users but property is not configured
+			// Analytics is enabled and tracking is disabled for logged-in users but property is not configured.
 			array(
 				array_merge(
 					$base_settings,
@@ -4692,7 +4694,7 @@ class Analytics_4Test extends TestCase {
 
 		$data = $this->analytics->set_data( 'sync-audiences', array() );
 
-		$this->assertNotWPError( $data );
+		$this->assertNotWPError( $data, 'Audience synchronization should not return a WP_Error.' );
 
 		// Verify that the response has the correct structure.
 		$this->assertEqualSets(
@@ -4813,7 +4815,7 @@ class Analytics_4Test extends TestCase {
 		$this->assertFalse( has_action( 'web_stories_print_analytics' ), 'Web stories analytics action should not be hooked when tag is blocked.' );
 		$this->assertFalse( has_filter( 'amp_post_template_data' ), 'AMP post template data filter should not be hooked when tag is blocked.' );
 
-		// Tag not hooked when only AMP blocked
+		// Tag not hooked when only AMP blocked.
 		add_filter( 'googlesitekit_analytics-4_tag_blocked', '__return_false' );
 		add_filter( 'googlesitekit_analytics-4_tag_amp_blocked', '__return_true' );
 		do_action( 'template_redirect' );

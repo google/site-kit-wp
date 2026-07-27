@@ -39,7 +39,7 @@ export const PDF_INTRODUCTION_OVERLAY_NOTIFICATION =
  * Fires when a PDF export fails for any reason other than the user cancelling.
  * The value must match the trigger ID set for this survey in the survey tool.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export const PDF_EXPORT_ERROR_SURVEY_TRIGGER_ID = 'pdf_export_error';
 
@@ -49,7 +49,7 @@ export const PDF_EXPORT_ERROR_SURVEY_TRIGGER_ID = 'pdf_export_error';
  * Fires when a PDF export finishes and the report download starts. The value
  * must match the trigger ID set for this survey in the survey tool.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export const PDF_EXPORT_SUCCESS_SURVEY_TRIGGER_ID = 'pdf_export_success';
 
@@ -61,7 +61,7 @@ export const PDF_EXPORT_SUCCESS_SURVEY_TRIGGER_ID = 'pdf_export_success';
  * exported section order always follows the dashboard's order, whatever order
  * the user selected the widgets in.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export const ORDERED_MAIN_DASHBOARD_CONTEXTS = [
 	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,

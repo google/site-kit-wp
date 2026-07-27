@@ -42,7 +42,7 @@ class ProfileTest extends TestCase {
 		$client       = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$profile      = new Profile( $user_options, $client );
 
-		// has() requires an array with 'email' and 'photo'
+		// has() requires an array with 'email' and 'photo'.
 		$this->assertFalse( $profile->has(), 'Profile should not exist when not set' );
 		$user_options->set( Profile::OPTION, array() );
 		$this->assertFalse( $profile->has(), 'Profile should not exist with empty array' );

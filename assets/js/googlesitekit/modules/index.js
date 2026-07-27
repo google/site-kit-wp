@@ -45,11 +45,12 @@ export function createModules( { dispatch } ) {
 		 *
 		 * @since 1.8.0
 		 *
-		 * @param {string} slug Slug of the module to activate.
+		 * @param {string} slug      Slug of the module to activate.
+		 * @param {Object} [options] Optional. Activation options with `redirectQueryArgs`.
 		 * @return {Promise} The dispatched action.
 		 */
-		activateModule: ( slug ) => {
-			return dispatch( CORE_MODULES ).activateModule( slug );
+		activateModule: ( slug, options = {} ) => {
+			return dispatch( CORE_MODULES ).activateModule( slug, options );
 		},
 		/**
 		 * Deactivates a module on the server.

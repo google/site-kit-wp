@@ -62,6 +62,7 @@
 	<!-- Custom Site Kit rules -->
 	<rule ref="SiteKit.PHPUnit.RequireAssertionMessage"/>
 	<rule ref="SiteKit.Commenting.RequireDocTagDescription"/>
+	<rule ref="SiteKit.Commenting.DocCommentFullStop"/>
 
 	<!-- Show details about violated sniffs -->
 	<arg value="s"/>

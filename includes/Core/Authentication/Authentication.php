@@ -74,7 +74,7 @@ final class Authentication implements Provides_Feature_Metrics {
 	private $user_options = null;
 
 	/**
-	 * User_Input
+	 * User_Input.
 	 *
 	 * @since 1.90.0
 	 *
@@ -998,7 +998,7 @@ final class Authentication implements Provides_Feature_Metrics {
 	}
 
 	/**
-	 * Add allowed redirect host to safe wp_safe_redirect
+	 * Add allowed redirect host to safe wp_safe_redirect.
 	 *
 	 * @since 1.0.0
 	 *

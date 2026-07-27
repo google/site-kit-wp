@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager;
 
 use Google\Site_Kit\Context;
@@ -44,7 +42,8 @@ class User_SettingsTest extends TestCase {
 			array(
 				'lastActionedExpressSetups' => array(),
 			),
-			$this->user_settings->get()
+			$this->user_settings->get(),
+			'Reader Revenue Manager should have no actioned express setups by default.'
 		);
 	}
 
@@ -73,7 +72,8 @@ class User_SettingsTest extends TestCase {
 					'productSetup'     => 1752537600,
 				),
 			),
-			$this->user_settings->get()
+			$this->user_settings->get(),
+			'Merge should update action timestamps while preserving other express setup timestamps.'
 		);
 	}
 
@@ -89,7 +89,8 @@ class User_SettingsTest extends TestCase {
 			array(
 				'lastActionedExpressSetups' => array( 'publicationSetup' => 1752451200 ),
 			),
-			$this->user_settings->get()
+			$this->user_settings->get(),
+			'Merge should ignore unsupported Reader Revenue Manager user setting keys.'
 		);
 	}
 
@@ -101,7 +102,7 @@ class User_SettingsTest extends TestCase {
 		$this->user_settings->merge( $settings );
 		$this->user_settings->merge( array( 'lastActionedExpressSetups' => null ) );
 
-		$this->assertEqualSetsWithIndex( $settings, $this->user_settings->get() );
+		$this->assertEqualSetsWithIndex( $settings, $this->user_settings->get(), 'Merge should ignore null express setup timestamps.' );
 	}
 
 	public function data_user_settings() {
@@ -157,6 +158,6 @@ class User_SettingsTest extends TestCase {
 	 */
 	public function test_get_sanitize_callback( $input, $expected ) {
 		$this->user_settings->set( $input );
-		$this->assertEquals( $expected, $this->user_settings->get() );
+		$this->assertEquals( $expected, $this->user_settings->get(), 'Express setup timestamps should retain only string keys with integer values.' );
 	}
 }

@@ -92,7 +92,7 @@ export function useSiteGoalsBreakdownNoticeCopy(
 		if ( hasMultipleEcommerceProviders ) {
 			return {
 				title: __(
-					'Using both WooCommerce and Easy Digital Downloads to sell products or services?',
+					'See how different plugins contribute to your goals',
 					'google-site-kit'
 				),
 				description: createInterpolateElement(
@@ -131,12 +131,12 @@ export function useSiteGoalsBreakdownNoticeCopy(
 		if ( hasMultipleEcommerceProviders ) {
 			return {
 				title: __(
-					'Have multiple forms, or Using both WooCommerce and Easy Digital Downloads for your site?',
+					'Have multiple forms, or using both WooCommerce and Easy Digital Downloads for your site?',
 					'google-site-kit'
 				),
 				description: createInterpolateElement(
 					__(
-						'If you use WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
+						'If you use both WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
 						'google-site-kit'
 					),
 					{ a: learnMoreLink }

@@ -355,7 +355,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$admin_id  = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 
 		// Multisite is more restrictive about editing other users, so we'll add the necessary cap.
-		// See https://github.com/WordPress/WordPress/blob/9bc4fadffa05adc4bb72120bf335160639e46764/wp-includes/capabilities.php#L68
+		// See https://github.com/WordPress/WordPress/blob/9bc4fadffa05adc4bb72120bf335160639e46764/wp-includes/capabilities.php#L68.
 		if ( is_multisite() ) {
 			( new WP_User( $admin_id ) )->add_cap( 'manage_network_users' );
 		}

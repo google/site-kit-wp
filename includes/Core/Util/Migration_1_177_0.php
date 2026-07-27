@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings as Reader_Revenue_Manager_Settings;
 
 /**
- * Class Migration_1_177_0
+ * Class Migration_1_177_0.
  *
  * @since 1.177.0
  * @access private

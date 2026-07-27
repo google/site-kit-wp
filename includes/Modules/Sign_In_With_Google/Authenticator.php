@@ -160,7 +160,7 @@ class Authenticator implements Authenticator_Interface {
 			$redirect_to = preg_replace( '|^http://|', 'https://', $redirect_to );
 		}
 
-		/** This filter is documented in wp-login.php */
+		/** This filter is documented in wp-login.php. */
 		$redirect_to = apply_filters( 'login_redirect', $redirect_to, $redirect_to, $user );
 
 		if ( ( empty( $redirect_to ) || 'wp-admin/' === $redirect_to || admin_url() === $redirect_to ) ) {

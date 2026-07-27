@@ -78,7 +78,7 @@ const PREVIOUS_RANGE_DAYS = [
 /**
  * Splits a `YYYY-MM-DD` date into the parts the AdSense API returns.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param date The date string.
  * @return The date parts.
@@ -91,7 +91,7 @@ function toAdSenseDate( date: string ) {
 /**
  * Builds an AdSense totals report fixture with one cell per metric.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param options           Options.
  * @param options.startDate First day of the report.
@@ -122,7 +122,7 @@ function buildTotalsReport( {
 /**
  * Builds an AdSense daily series report fixture, one row per day.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param options             Options.
  * @param options.days        The report days, as `YYYY-MM-DD` strings.

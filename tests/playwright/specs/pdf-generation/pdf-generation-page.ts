@@ -33,7 +33,7 @@ export class PDFGenerationPage {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param page The page.
 	 */
@@ -45,7 +45,7 @@ export class PDFGenerationPage {
 	/**
 	 * Gets the header button that opens the export panel.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return The header PDF download button.
 	 */
@@ -58,7 +58,7 @@ export class PDFGenerationPage {
 	/**
 	 * Gets the panel's "Download report" button.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return The download button.
 	 */
@@ -70,7 +70,7 @@ export class PDFGenerationPage {
 	 * Gets the section checkboxes (one per dashboard context), excluding the
 	 * per-widget child checkboxes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return The section checkbox inputs.
 	 */
@@ -83,7 +83,7 @@ export class PDFGenerationPage {
 	/**
 	 * Gets a section checkbox by its dashboard-context slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param slug The section (dashboard context) slug.
 	 * @return The section checkbox input.
@@ -95,7 +95,7 @@ export class PDFGenerationPage {
 	/**
 	 * Gets the progress snackbar shown while the report generates.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return The progress snackbar.
 	 */
@@ -108,7 +108,7 @@ export class PDFGenerationPage {
 	/**
 	 * Gets the success snackbar shown once the report is generated.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return The success snackbar.
 	 */
@@ -121,7 +121,7 @@ export class PDFGenerationPage {
 	/**
 	 * Gets the error snackbar shown when generation fails.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return The error snackbar.
 	 */
@@ -134,7 +134,7 @@ export class PDFGenerationPage {
 	/**
 	 * Opens the export panel from the header.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return {Promise<void>} Resolves once the panel is visible.
 	 */
@@ -147,7 +147,7 @@ export class PDFGenerationPage {
 	 * Selects only the given sections, deselecting every other section. The panel
 	 * selects all sections by default, so this leaves the passed slugs checked.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param  slugs The section (dashboard context) slugs to keep selected.
 	 * @return {Promise<void>} Resolves once the selection is applied.
@@ -166,13 +166,67 @@ export class PDFGenerationPage {
 	}
 
 	/**
+	 * Selects a single widget within one section, deselecting every other section
+	 * and every sibling widget in that section.
+	 *
+	 * Some PDF sections group several widgets under one dashboard context (e.g. the
+	 * Traffic section holds the audience tiles, the Monetization section holds the
+	 * top earning pages). This keeps the parent section but leaves only the given
+	 * widget checked, so the export renders that widget on its own.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  sectionSlug The parent section (dashboard context) slug to keep.
+	 * @param  widgetSlug  The widget slug to leave selected within that section.
+	 * @return {Promise<void>} Resolves once the selection is applied.
+	 */
+	async selectOnlyWidget( sectionSlug: string, widgetSlug: string ) {
+		await this.deselectAllExcept( [ sectionSlug ] );
+
+		// Every section renders its widgets, but the other sections' widgets are
+		// already unchecked by `deselectAllExcept`, so leaving only the target
+		// widget checked across the whole panel isolates it within its section.
+		const widgetCheckboxes = await this.panel
+			.locator(
+				'.googlesitekit-pdf-download-panel__sub-section input[type="checkbox"]'
+			)
+			.all();
+
+		let matched = false;
+
+		for ( const checkbox of widgetCheckboxes ) {
+			const slug = await checkbox.getAttribute( 'value' );
+			const keep = slug === widgetSlug;
+
+			if ( keep ) {
+				matched = true;
+			}
+
+			if ( ! keep && ( await checkbox.isChecked() ) ) {
+				await checkbox.uncheck();
+			} else if ( keep && ! ( await checkbox.isChecked() ) ) {
+				await checkbox.check();
+			}
+		}
+
+		// Fail loudly if the widget slug matched nothing (typo or a renamed
+		// widget): otherwise no section stays selected and the Download button is
+		// disabled, which would surface only as an opaque download timeout.
+		if ( ! matched ) {
+			throw new Error(
+				`No PDF widget checkbox found for slug "${ widgetSlug }".`
+			);
+		}
+	}
+
+	/**
 	 * Clicks "Download report" and asserts a PDF file is produced.
 	 *
 	 * Waits for the browser download, then asserts the suggested filename ends in
 	 * `.pdf` and the saved file is non-empty. Visual verification of the rendered
 	 * document is handled separately by `verifyPDF()`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return {Promise<Download>} The completed download.
 	 */
@@ -200,7 +254,7 @@ export class PDFGenerationPage {
 	 * images with `pdf-to-png-converter` (pdf.js) rather than shown in the
 	 * browser directly.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param  download The completed download from `download()`.
 	 * @param  testInfo The current test's info, used to attach the file.
@@ -235,7 +289,7 @@ export class PDFGenerationPage {
 	/**
 	 * Cancels an in-progress export via the progress snackbar's Cancel action.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return {Promise<void>} Resolves once Cancel is clicked.
 	 */

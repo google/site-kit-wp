@@ -135,8 +135,8 @@ class Google_ProxyTest extends TestCase {
 
 		$this->assertEquals(
 			$url,
-			'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789&steps=5',
-			'Setup URL should include the steps query parameter.'
+			'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789&service_version=v3&steps=5',
+			'Setup URL should include the service_version and steps query parameters.'
 		);
 	}
 
@@ -161,7 +161,7 @@ class Google_ProxyTest extends TestCase {
 
 		$this->assertEquals(
 			$url,
-			'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&steps=5&foo=foo-789',
+			'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&service_version=v3&steps=5&foo=foo-789',
 			'Setup URL should include filtered query parameters.'
 		);
 	}

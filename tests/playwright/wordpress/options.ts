@@ -37,7 +37,7 @@ type TestUserProfile = {
  * A connected module for a test: either a bare slug, or a slug paired with the
  * module settings to apply (e.g. an AdSense account ID).
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export type ConnectedModule =
 	| string
@@ -46,7 +46,7 @@ export type ConnectedModule =
 /**
  * Dashboard-sharing settings for one module.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export type SharedModuleSettings = {
 	sharedRoles: string[];
@@ -93,7 +93,7 @@ export function withFeatureFlags( ...flags: string[] ): TestDetailsAnnotation {
  * configured with those settings on the WordPress side.
  *
  * @since 1.177.0
- * @since n.e.x.t Accepts per-module settings via `{ slug, settings }` entries.
+ * @since 1.184.0 Accepts per-module settings via `{ slug, settings }` entries.
  *
  * @param {...ConnectedModule} modules Connected modules (slug or `{ slug, settings }`).
  * @return {TestDetailsAnnotation} The annotation to use for the test.
@@ -118,7 +118,7 @@ export function withConnectedModules(
  * save-time sanitize dropping it, letting a view-only test list a shared
  * module's sections.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param {Record<string, SharedModuleSettings>} sharing Sharing settings keyed by module slug.
  * @return {TestDetailsAnnotation} The annotation to use for the test.
@@ -129,6 +129,56 @@ export function withSharedModules(
 	return {
 		type: '_wp:shared-modules',
 		description: JSON.stringify( sharing ),
+	};
+}
+
+/**
+ * One Analytics audience for a test, mirroring the shape Site Kit stores in the
+ * `availableAudiences` setting.
+ *
+ * @since n.e.x.t
+ */
+export type TestAudience = {
+	name: string;
+	displayName: string;
+	description?: string;
+	audienceType?: string;
+	audienceSlug?: string;
+};
+
+/**
+ * Sets the current user's Key Metrics selection for the test.
+ *
+ * The `e2e-pdf-generation-state.php` must-use plugin applies the selection, so a
+ * section that renders the configured metrics has a deterministic set of tiles.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string[]} widgetSlugs The key metric widget slugs to select.
+ * @return {TestDetailsAnnotation} The annotation to use for the test.
+ */
+export function withKeyMetrics( widgetSlugs: string[] ): TestDetailsAnnotation {
+	return {
+		type: '_wp:key-metrics',
+		description: JSON.stringify( widgetSlugs ),
+	};
+}
+
+/**
+ * Sets the Analytics audiences for the test: the given audiences become the
+ * available and configured audiences, with audience segmentation marked complete.
+ *
+ * @since n.e.x.t
+ *
+ * @param {TestAudience[]} audiences The audiences to make available and configured.
+ * @return {TestDetailsAnnotation} The annotation to use for the test.
+ */
+export function withAudiences(
+	audiences: TestAudience[]
+): TestDetailsAnnotation {
+	return {
+		type: '_wp:audiences',
+		description: JSON.stringify( audiences ),
 	};
 }
 
