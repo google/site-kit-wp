@@ -15,15 +15,31 @@ live in `docs/context/js/` and `docs/context/php/`, and the rubric for grading t
 
 Run these in parallel (substitute `<number>`):
 
-- `gh pr view <number> --json number,title,body,author,baseRefName,headRefName,files,additions,deletions,commits`
+- `gh pr view <number> --json number,title,body,author,baseRefName,headRefName,headRefOid,files,additions,deletions,commits`
 - `gh pr diff <number>`
 
 **Stop and ask the user** if the PR can't be found or the diff is empty.
 
-## Step 2 — Check out the PR into a git worktree
+## Step 2 — Get the PR's code into a working tree
 
-Review the PR's **actual code**, not just the diff. Check the PR branch out into an isolated
-git worktree so your current working tree and branch stay untouched:
+Review the PR's **actual code**, not just the diff. Reviewers often check the PR out before
+asking for a review, so **first determine whether it's already checked out** here:
+
+```
+git rev-parse --abbrev-ref HEAD
+git rev-parse HEAD
+```
+
+- **Already checked out** — the current branch equals the PR's `headRefName` **and** the current
+  HEAD commit equals its `headRefOid` (both from Step 1). Review the files in the primary working
+  directory and **skip the worktree entirely** (including the cleanup in Guardrails). This tree
+  has `node_modules`, so the Step 6 verification tooling can run locally if needed.
+- **Same branch name, different commit** — the local checkout is stale or has extra local
+  commits, so it isn't what the PR proposes. Say so in the review and use the worktree below.
+- **Anything else** — use the worktree below.
+
+Check the PR branch out into an isolated git worktree so your current working tree and branch
+stay untouched:
 
 ```
 git fetch origin pull/<number>/head:pr-<number>-review
@@ -93,8 +109,9 @@ The convention checklist in `review-checklist.md` (§2) maps each area to its au
 
 ## Step 5 — Inspect the changed files
 
-For any non-trivial changed file (not auto-generated, not lock files), read the full file
-**inside the worktree** (Step 2) for context around the changed lines. Focus on files where the
+For any non-trivial changed file (not auto-generated, not lock files), read the full file for
+context around the changed lines — **from whichever tree holds the PR's code** (Step 2): the
+worktree if you created one, otherwise the primary working directory. Focus on files where the
 diff alone is insufficient to judge correctness.
 
 ## Step 6 — Judge against the checklist
@@ -109,10 +126,10 @@ Grade the change against `review-checklist.md`:
   context file + section for every deviation.
 - **Code quality** (§3) — correctness, security, performance, documentation, accessibility.
 - **Verification** (§4) — confirm lint, tests, and (for non-trivial asset changes) the build
-  pass. The worktree has no `node_modules`, so these can't run inside it; read the PR's CI
-  results with `gh pr checks <number>` instead of reproducing them locally, and don't `npx` a
-  tool (it pulls the wrong version off the network). If you do run a linter against the
-  worktree via a symlinked `node_modules`, know that `@/…`-aliased imports can resolve into
+  pass. Read the PR's CI results with `gh pr checks <number>` rather than reproducing them
+  locally, and don't `npx` a tool (it pulls the wrong version off the network). A worktree has
+  no `node_modules`, so the tooling can't run inside it at all; if you do run a linter against
+  the worktree via a symlinked `node_modules`, know that `@/…`-aliased imports can resolve into
   your base checkout: an `import/named` / `import/no-unresolved` "error" on a symbol the PR
   adds or moves is usually a false positive — confirm by reading the file in the worktree.
 
@@ -182,7 +199,8 @@ Brief justification. If requesting changes, list the blocking issues as a number
 - **Cite, don't assert.** For every convention violation, name the principle, the context file
   + section that defines it, and the affected `file:line`.
 - **Scope the read.** Load only the convention docs the change touches — not everything.
-- **Clean up the worktree.** Once the review is produced, remove the worktree created in Step 2
+- **Clean up the worktree.** Only if Step 2 created one. Once the review is produced, remove it
   so it doesn't linger: `git worktree remove ../site-kit-wp-pr-<number>` (add `--force` if it
   refuses — a `node_modules` symlink or other untracked file makes the plain form refuse), then
-  `git branch -D pr-<number>-review`.
+  `git branch -D pr-<number>-review`. When the PR was already checked out, there is nothing to
+  clean up — never delete or switch the user's branch.
