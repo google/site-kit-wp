@@ -46,14 +46,22 @@ const TOP_CITIES = [
 ];
 
 const TOP_CONTENT = [
-	{ title: 'First post title', pageviews: 847 },
-	{ title: 'Second post title', pageviews: 596 },
+	{
+		title: 'First post title',
+		pageviews: 847,
+		serviceURL: 'https://example.com/analytics-report/first-post',
+	},
+	{
+		title: 'Second post title',
+		pageviews: 596,
+		serviceURL: 'https://example.com/analytics-report/second-post',
+	},
 ];
 
 /**
  * Renders `PDFYourVisitorGroupsTile` with default props, as a JSON tree string.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param props Props that override the defaults.
  * @return The rendered tree serialized to a string.
@@ -127,6 +135,33 @@ describe( 'PDFYourVisitorGroupsTile', () => {
 		expect( json ).toContain( '847' );
 		expect( json ).toContain( 'Second post title' );
 		expect( json ).toContain( '596' );
+	} );
+
+	it( 'links each top content title to its Analytics report', () => {
+		const json = renderTile();
+
+		expect( json ).toContain( TOP_CONTENT[ 0 ].serviceURL );
+		expect( json ).toContain( TOP_CONTENT[ 1 ].serviceURL );
+		// The `Link` primitive from `@react-pdf` renders as `pdf-link` under
+		// the test mock. So a `pdf-link` in the tree means the title rendered
+		// as a link, not as text that happens to hold the URL.
+		expect( json ).toContain( 'pdf-link' );
+	} );
+
+	it( 'renders each top content title as plain text when a row has no link', () => {
+		// An empty `serviceURL` gives every row an empty link, so each title
+		// renders as plain text.
+		const json = renderTile( {
+			topContent: TOP_CONTENT.map( ( content ) => ( {
+				...content,
+				serviceURL: '',
+			} ) ),
+		} );
+
+		expect( json ).toContain( 'First post title' );
+		expect( json ).toContain( 'Second post title' );
+		// No `pdf-link` in the tree means every title rendered as plain text.
+		expect( json ).not.toContain( 'pdf-link' );
 	} );
 
 	it( "hides the delta chip when the change can't be calculated", () => {

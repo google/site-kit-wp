@@ -325,7 +325,7 @@ class Setup {
 	 * Verifies the given nonce for a setup action.
 	 *
 	 * The nonce passed from the proxy will always be the one initially provided to it.
-	 * {@see Google_Proxy::setup_url()}
+	 * {@see Google_Proxy::setup_url()}.
 	 *
 	 * @since 1.48.0
 	 *

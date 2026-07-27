@@ -36,7 +36,7 @@ const PREVIOUS_RANGE_CHART_REPORT_ID =
  * Each key is the AdSense metric ID sent to `getReport`. Each value is the
  * card label the dashboard and the PDF report show for that metric.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export const MODULE_OVERVIEW_METRICS: Record< string, string > = {
 	ESTIMATED_EARNINGS: __( 'Earnings', 'google-site-kit' ),
@@ -48,7 +48,7 @@ export const MODULE_OVERVIEW_METRICS: Record< string, string > = {
 /**
  * The date range the widget's report builders read.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export interface AdSenseReportDates {
 	/** First day of the current period (YYYY-MM-DD). */
@@ -64,7 +64,7 @@ export interface AdSenseReportDates {
 /**
  * Args for one AdSense `getReport` call.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export interface AdSenseReportOptions {
 	/** The metric IDs to report on, in column order. */
@@ -82,7 +82,7 @@ export interface AdSenseReportOptions {
 /**
  * Builds the AdSense `getReport` args for the current-period totals report.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param dates           Report dates.
  * @param dates.startDate First day of the current period (YYYY-MM-DD).
@@ -104,7 +104,7 @@ export function getCurrentRangeArgs( {
 /**
  * Builds the AdSense `getReport` args for the previous-period totals report.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param dates                  Report dates.
  * @param dates.compareStartDate First day of the previous period (YYYY-MM-DD).
@@ -126,7 +126,7 @@ export function getPreviousRangeArgs( {
 /**
  * Builds the AdSense `getReport` args for the current-period daily series report.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param dates Report dates.
  * @return AdSense getReport args.
@@ -144,7 +144,7 @@ export function getCurrentRangeChartArgs(
 /**
  * Builds the AdSense `getReport` args for the previous-period daily series report.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param dates Report dates.
  * @return AdSense getReport args.

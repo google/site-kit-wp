@@ -81,7 +81,7 @@ const IntroModalComponent = withNotificationComponentProps(
  * in view the moment it is observed, which fires the modal's `onView` and makes
  * `<Notification>` send the `view_notification` event.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 class InViewIntersectionObserver {
 	constructor( callback ) {
@@ -205,7 +205,7 @@ describe( 'IntroModal', () => {
 	 * queue, so this helper unmounts it too. The tour runs in the store and
 	 * keeps going after the modal unmounts.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return {Promise<Object>} The tour the modal started.
 	 */

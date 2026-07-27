@@ -144,6 +144,18 @@ function shouldDisplayWidgetWithCustomDimensions( {
  *
  * A metric's PDF export configuration lives in `key-metrics-pdf-tiles.js`,
  * keyed by the same slug, so this module never imports a widget component.
+ *
+ * - `pdfTile.TileComponent`: the `@react-pdf/renderer` component for the tile,
+ *   wrapped with `lazyWithPreload` so this module stays free of the PDF renderer
+ *   on the dashboard bundle. It receives the tile `title` plus the fields
+ *   returned by `getTileData`.
+ * - `pdfTile.getTileData( { registry, dates, signal } )`: resolves the report(s)
+ *   the tile needs and returns the normalised data the `TileComponent` consumes,
+ *   or `null` when the export is canceled.
+ *
+ * Entries without a `pdfTile` field do not render in the PDF and are skipped.
+ *
+ * @since 1.184.0 Added the optional `pdfTile` field.
  */
 const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {

@@ -120,7 +120,7 @@ const METRIC_HEADERS = [
 /**
  * Splits a `YYYY-MM-DD` date into the parts the AdSense API returns.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param date The date string.
  * @return The date parts.
@@ -133,7 +133,7 @@ function toAdSenseDate( date: string ) {
 /**
  * Builds an AdSense totals report fixture with one cell per metric.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param options           Options.
  * @param options.startDate First day of the report.
@@ -164,7 +164,7 @@ function buildTotalsReport( {
 /**
  * Builds an AdSense daily series report fixture, one row per day.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param options             Options.
  * @param options.days        The report days, as `YYYY-MM-DD` strings.
@@ -209,7 +209,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 	/**
 	 * Sets the global `google` object the loader reads to build chart data tables.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param  value The new `google` global, or `undefined` to remove it.
 	 * @return {void}
@@ -222,7 +222,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 	 * Dispatches the four report fixtures into the registry, so the loader
 	 * resolves them without fetching.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param  reports                The four reports keyed by range.
 	 * @param  reports.currentTotals  Current-period totals report.
@@ -259,7 +259,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 	/**
 	 * Dispatches fixtures where every metric has data in both periods.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return {void}
 	 */
@@ -314,6 +314,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		expect( result.data ).toEqual( {
@@ -348,7 +349,12 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 		provideReportsWithData();
 
 		const signal = new AbortController().signal;
-		await getPDFData( { registry, dates: DATES, signal } );
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal,
+			viewOnly: false,
+		} );
 
 		expect( mockEnsureGoogleChartsLoaded ).toHaveBeenCalledTimes( 1 );
 		expect( mockRenderGoogleChartToDataURI ).toHaveBeenCalledTimes( 4 );
@@ -410,6 +416,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		expect( result.data?.metrics.pageCTR ).toBeNull();
@@ -451,6 +458,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		// Empty data is not a failure. The report skips the section.
@@ -501,6 +509,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 				registry,
 				dates: DATES,
 				signal: new AbortController().signal,
+				viewOnly: false,
 			} )
 		).rejects.toThrow(
 			/Earning performance over time reports failed to load/
@@ -527,6 +536,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		expect( result.data?.metrics.estimatedEarnings ).toBeNull();
@@ -552,6 +562,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 				registry,
 				dates: DATES,
 				signal: new AbortController().signal,
+				viewOnly: false,
 			} )
 		).rejects.toThrow(
 			/all Earning performance over time charts failed to render/
@@ -568,6 +579,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: controller.signal,
+			viewOnly: false,
 		} );
 
 		expect( result ).toEqual( { data: null } );
@@ -595,6 +607,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: controller.signal,
+			viewOnly: false,
 		} );
 
 		// Wait for all four report fetches to dispatch before aborting.

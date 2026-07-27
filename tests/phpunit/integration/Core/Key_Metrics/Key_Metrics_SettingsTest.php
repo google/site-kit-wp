@@ -172,15 +172,15 @@ class Key_Metrics_SettingsTest extends TestCase {
 			'isWidgetHidden' => true,
 		);
 
-		// Make sure settings can be updated even without having them set initially
+		// Make sure settings can be updated even without having them set initially.
 		$this->key_metrics_settings->merge( $original_settings );
 		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get(), 'Merge should initialize missing key metrics settings.' );
 
-		// Make sure invalid keys aren't set
+		// Make sure invalid keys aren't set.
 		$this->key_metrics_settings->merge( array( 'test_key' => 'test_value' ) );
 		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get(), 'Merge should ignore invalid setting keys.' );
 
-		// Make sure that we can update settings partially
+		// Make sure that we can update settings partially.
 		$this->key_metrics_settings->set( $original_settings );
 		$this->key_metrics_settings->merge( array( 'isWidgetHidden' => true ) );
 		$this->assertEqualSetsWithIndex(
@@ -192,24 +192,24 @@ class Key_Metrics_SettingsTest extends TestCase {
 			'Merge should update provided key metrics settings only.'
 		);
 
-		// Make sure that we can update all settings at once
+		// Make sure that we can update all settings at once.
 		$this->key_metrics_settings->set( $original_settings );
 		$this->key_metrics_settings->merge( $changed_settings );
 		$this->assertEqualSetsWithIndex( $changed_settings, $this->key_metrics_settings->get(), 'Merge should update all key metrics settings.' );
 
-		// Make sure that we can't set wrong format for the isWidgetHidden property
+		// Make sure that we can't set wrong format for the isWidgetHidden property.
 		$this->key_metrics_settings->set( $original_settings );
 		$this->key_metrics_settings->merge( array( 'isWidgetHidden' => null ) );
 		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get(), 'Merge should ignore invalid visibility value.' );
 
-		// Make sure that we can't set wrong format for the widgetSlugs property
+		// Make sure that we can't set wrong format for the widgetSlugs property.
 		$this->key_metrics_settings->set( $original_settings );
 		$this->key_metrics_settings->merge( array( 'widgetSlugs' => null ) );
 		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get(), 'Merge should ignore invalid widget slugs value.' );
 	}
 
 	public function test_key_metrics_setup_completed_by_user_id() {
-		// Set ID of user who did initial setup
+		// Set ID of user who did initial setup.
 		$user_id = 100;
 		$this->key_metrics_setup_completed_by->set( $user_id );
 

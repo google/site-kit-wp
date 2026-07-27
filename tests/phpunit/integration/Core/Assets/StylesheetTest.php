@@ -107,7 +107,7 @@ class StylesheetTest extends TestCase {
 
 		$style->enqueue();
 
-		// Must be registered first
+		// Must be registered first.
 		$this->assertFalse( wp_style_is( 'test-handle', 'enqueued' ), 'Stylesheet should not be enqueued without registration.' );
 
 		$style->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );

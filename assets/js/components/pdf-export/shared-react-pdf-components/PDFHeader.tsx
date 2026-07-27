@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Path, View } from '@react-pdf/renderer';
+import { Link, View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { formatDateString } from '@/js/components/pdf-export/formatDateString';
+import { PDFChevronRight } from '@/js/components/pdf-export/pdf-icons';
 import {
 	PDF_PAGE_PADDING,
 	createPDFStyles,
@@ -40,15 +41,7 @@ import { PDFHeaderSection } from '@/js/components/pdf-export/types';
 import PDFChip from './PDFChip';
 import PDFLink from './PDFLink';
 import PDFSiteKitLogo from './PDFSiteKitLogo';
-import PDFSvg from './PDFSvg';
 import PDFTypography from './PDFTypography';
-
-/**
- * `@react-pdf` can't render the app's imported SVG components, so the
- * chevron icon's path data is inline.
- */
-const CHEVRON_RIGHT_PATH =
-	'M3.34374 9.16666L2.60416 8.42708L6.03124 5L2.60416 1.57291L3.34374 0.833328L7.51041 5L3.34374 9.16666Z';
 
 /**
  * Extracts the host (e.g. "www.example.com") from the reference site URL for
@@ -120,6 +113,9 @@ const styles = createPDFStyles( {
 	chipWrapper: {
 		marginRight: 24,
 	},
+	chipLink: {
+		textDecoration: 'none',
+	},
 	viewDashboard: {
 		flexShrink: 0,
 		marginLeft: 8,
@@ -178,31 +174,26 @@ const PDFHeader: FC< PDFHeaderProps > = ( {
 					</PDFTypography>
 				</View>
 				<View style={ styles.siteBlock }>
-					{ dashboardURL ? (
-						<PDFLink
-							href={ dashboardURL }
-							style={ {
-								color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
-							} }
-						>
-							{ getSiteHost( siteURL ) }
-						</PDFLink>
-					) : (
-						<PDFTypography
-							style={ {
-								color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
-							} }
-						>
-							{ getSiteHost( siteURL ) }
-						</PDFTypography>
-					) }
+					<PDFLink
+						href={ dashboardURL }
+						style={ {
+							color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
+						} }
+					>
+						{ getSiteHost( siteURL ) }
+					</PDFLink>
 				</View>
 			</View>
 			<View style={ styles.chipRow }>
 				<View style={ styles.chips }>
 					{ sections.map( ( { slug, label, Icon } ) => (
 						<View key={ slug } style={ styles.chipWrapper }>
-							<PDFChip label={ label } Icon={ Icon } />
+							<Link
+								src={ `#section-${ slug }` }
+								style={ styles.chipLink }
+							>
+								<PDFChip label={ label } Icon={ Icon } />
+							</Link>
 						</View>
 					) ) }
 				</View>
@@ -211,18 +202,7 @@ const PDFHeader: FC< PDFHeaderProps > = ( {
 						href={ dashboardURL }
 						type="label"
 						style={ styles.viewDashboardLink }
-						trailingIcon={
-							<PDFSvg
-								width={ 10 }
-								height={ 10 }
-								viewBox="0 0 10 10"
-							>
-								<Path
-									d={ CHEVRON_RIGHT_PATH }
-									fill={ PDF_COLORS.CONTENT_SECONDARY }
-								/>
-							</PDFSvg>
-						}
+						trailingIcon={ <PDFChevronRight size={ 10 } /> }
 					>
 						{ __(
 							'View dashboard in Site Kit',

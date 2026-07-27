@@ -69,7 +69,7 @@ const styles = createPDFStyles( {
  * `+` or `-` sign to every non-zero change, based on the difference between
  * the current and previous values.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param metric The metric with its current and previous value.
  * @return Props for the change chip, or `null` to hide it.

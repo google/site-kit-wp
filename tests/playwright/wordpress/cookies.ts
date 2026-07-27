@@ -142,6 +142,26 @@ export class WordPressCookies {
 			} );
 		}
 
+		const keyMetrics = this.getAnnotation( '_wp:key-metrics' );
+		if ( keyMetrics ) {
+			cookies.push( {
+				...defaults,
+				name: '_wp_test_key_metrics',
+				// Encoded because the value is JSON.
+				value: encodeURIComponent( keyMetrics ),
+			} );
+		}
+
+		const audiences = this.getAnnotation( '_wp:audiences' );
+		if ( audiences ) {
+			cookies.push( {
+				...defaults,
+				name: '_wp_test_audiences',
+				// Encoded because the value is JSON.
+				value: encodeURIComponent( audiences ),
+			} );
+		}
+
 		return this.context.addCookies( cookies );
 	}
 

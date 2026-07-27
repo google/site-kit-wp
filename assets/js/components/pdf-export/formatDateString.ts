@@ -28,7 +28,7 @@ import { getLocale, isValidDateString, stringToDate } from '@/js/util';
  * non-`YYYY-MM-DD` string, which would otherwise abort the whole PDF render.
  *
  * @since 1.182.0
- * @since n.e.x.t Moved from `PDFHeader` to a shared helper for use in other PDF components.
+ * @since 1.184.0 Moved from `PDFHeader` to a shared helper for use in other PDF components.
  *
  * @param dateString The date in `YYYY-MM-DD` format.
  * @return The localized date, or an empty string.

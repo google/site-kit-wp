@@ -44,7 +44,7 @@ final class Standalone {
 	}
 
 	/**
-	 * Standalone mode
+	 * Standalone mode.
 	 *
 	 * @since 1.8.0
 	 */
