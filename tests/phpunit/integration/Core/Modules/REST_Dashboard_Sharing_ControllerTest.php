@@ -102,7 +102,7 @@ class REST_Dashboard_Sharing_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 		// This admin hasn't authenticated with the Site Kit proxy service yet,
 		// so they aren't allowed to modify Dashboard Sharing settings.
-			$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'Unauthenticated admin should be forbidden from sharing settings.' );
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'Unauthenticated admin should be forbidden from sharing settings.' );
 	}
 
 	public function test_sharing_settings__create_new_settings() {

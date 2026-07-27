@@ -32,7 +32,7 @@ class Module_RegistryTest extends TestCase {
 			if ( ! $expected_exception ) {
 				$this->fail( 'No exception expected but a ' . get_class( $exception ) . ' was thrown' );
 			}
-				$this->assertEquals( $expected_exception, $exception->getMessage(), 'Invalid module registration should throw expected message.' );
+			$this->assertEquals( $expected_exception, $exception->getMessage(), 'Invalid module registration should throw expected message.' );
 		}
 	}
 

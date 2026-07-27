@@ -218,8 +218,8 @@ JS;
 	 */
 	protected function get_gtag_call_for_tag( $tag ) {
 		return empty( $tag['config'] )
-			? sprintf( 'gtag("config", "%s");', esc_js( $tag['tag_id'] ) )
-			: sprintf( 'gtag("config", "%s", %s);', esc_js( $tag['tag_id'] ), wp_json_encode( $tag['config'] ) );
+		? sprintf( 'gtag("config", "%s");', esc_js( $tag['tag_id'] ) )
+		: sprintf( 'gtag("config", "%s", %s);', esc_js( $tag['tag_id'] ), wp_json_encode( $tag['config'] ) );
 	}
 
 	/**

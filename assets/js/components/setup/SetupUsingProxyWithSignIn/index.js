@@ -37,9 +37,9 @@ import {
 	ANALYTICS_NOTICE_CHECKBOX,
 	ANALYTICS_NOTICE_FORM_NAME,
 } from '@/js/components/setup/constants';
-import AnalyticsActivationErrorNotification, {
-	ANALYTICS_ACTIVATION_ERROR_NOTIFICATION,
-} from '@/js/components/setup/SetupUsingProxyWithSignIn/AnalyticsActivationErrorNotification';
+import InitialSetupErrorNotification, {
+	INITIAL_SETUP_ERROR_NOTIFICATION,
+} from '@/js/components/setup/SetupUsingProxyWithSignIn/InitialSetupErrorNotification';
 import { setItem } from '@/js/googlesitekit/api/cache';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -181,9 +181,9 @@ export default function SetupUsingProxyWithSignIn() {
 					return;
 				}
 
-				registerNotification( ANALYTICS_ACTIVATION_ERROR_NOTIFICATION, {
+				registerNotification( INITIAL_SETUP_ERROR_NOTIFICATION, {
 					Component: () => (
-						<AnalyticsActivationErrorNotification
+						<InitialSetupErrorNotification
 							onRetry={ onButtonClick }
 						/>
 					),

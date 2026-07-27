@@ -97,8 +97,8 @@ class User_Transients implements User_Aware_Interface {
 	 */
 	public function get( $transient ) {
 		return wp_using_ext_object_cache()
-			? $this->get_from_cache( $transient )
-			: $this->get_from_user_options( $transient );
+		? $this->get_from_cache( $transient )
+		: $this->get_from_user_options( $transient );
 	}
 
 	/**
@@ -113,8 +113,8 @@ class User_Transients implements User_Aware_Interface {
 	 */
 	public function set( $transient, $value, $expiration = 0 ) {
 		return wp_using_ext_object_cache()
-			? $this->set_in_cache( $transient, $value, $expiration )
-			: $this->set_in_user_options( $transient, $value, $expiration );
+		? $this->set_in_cache( $transient, $value, $expiration )
+		: $this->set_in_user_options( $transient, $value, $expiration );
 	}
 
 	/**
@@ -127,8 +127,8 @@ class User_Transients implements User_Aware_Interface {
 	 */
 	public function delete( $transient ) {
 		return wp_using_ext_object_cache()
-			? $this->delete_from_cache( $transient )
-			: $this->delete_from_user_options( $transient );
+		? $this->delete_from_cache( $transient )
+		: $this->delete_from_user_options( $transient );
 	}
 
 	/**

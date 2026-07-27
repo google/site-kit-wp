@@ -1,5 +1,5 @@
 /**
- * AnalyticsActivationErrorNotification component stories.
+ * InitialSetupErrorNotification component stories.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -20,16 +20,16 @@
  * Internal dependencies
  */
 import { Story } from '@/js/types/Story';
-import AnalyticsActivationErrorNotification from './AnalyticsActivationErrorNotification';
+import InitialSetupErrorNotification from './InitialSetupErrorNotification';
 
 function Template() {
-	return <AnalyticsActivationErrorNotification onRetry={ () => {} } />;
+	return <InitialSetupErrorNotification onRetry={ () => {} } />;
 }
 
 export const Default = Template.bind( {} ) as Story;
-Default.storyName = 'AnalyticsActivationErrorNotification';
+Default.storyName = 'InitialSetupErrorNotification';
 Default.scenario = {};
 
 export default {
-	title: 'Setup/Using Proxy With Sign-in/Components/AnalyticsActivationErrorNotification',
+	title: 'Setup/Using Proxy With Sign-in/Components/InitialSetupErrorNotification',
 };

@@ -112,8 +112,8 @@ class Audience_Settings extends User_Setting {
 			// Allow setting `null` for `configuredAudiences`.
 			if ( array_key_exists( 'configuredAudiences', $settings ) ) {
 				$sanitized_settings['configuredAudiences'] = is_null( $settings['configuredAudiences'] )
-					? null
-					: Sanitize::sanitize_string_list( $settings['configuredAudiences'] );
+				? null
+				: Sanitize::sanitize_string_list( $settings['configuredAudiences'] );
 			}
 
 			if ( isset( $settings['isAudienceSegmentationWidgetHidden'] ) ) {

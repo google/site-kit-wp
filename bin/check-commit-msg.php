@@ -26,9 +26,9 @@ function has_color_support() {
 
 	if ( DIRECTORY_SEPARATOR === '\\' ) {
 		return ( function_exists( 'sapi_windows_vt100_support' ) && sapi_windows_vt100_support( STDERR ) ) // phpcs:ignore PHPCompatibility.FunctionUse.NewFunctions.sapi_windows_vt100_supportFound
-			|| false !== getenv( 'ANSICON' )
-			|| 'ON' === getenv( 'ConEmuANSI' )
-			|| 'xterm' === getenv( 'TERM' );
+		|| false !== getenv( 'ANSICON' )
+		|| 'ON' === getenv( 'ConEmuANSI' )
+		|| 'xterm' === getenv( 'TERM' );
 	}
 
 	if ( function_exists( 'stream_isatty' ) ) {

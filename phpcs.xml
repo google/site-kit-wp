@@ -64,6 +64,13 @@
 	<rule ref="SiteKit.Commenting.RequireDocTagDescription"/>
 	<rule ref="SiteKit.Commenting.DocCommentFullStop"/>
 
+	<!-- Enforce exact scope indentation (flag over- and under-indented lines) -->
+	<rule ref="Generic.WhiteSpace.ScopeIndent">
+		<properties>
+			<property name="exact" value="true"/>
+		</properties>
+	</rule>
+
 	<!-- Show details about violated sniffs -->
 	<arg value="s"/>
 

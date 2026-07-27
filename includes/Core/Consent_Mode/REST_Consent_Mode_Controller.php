@@ -61,16 +61,16 @@ class REST_Consent_Mode_Controller {
 	 */
 	protected $options;
 
-		/**
-		 * Constructor.
-		 *
-		 * @since 1.122.0
-		 * @since 1.142.0 Introduces Modules as an argument.
-		 *
-		 * @param Modules               $modules               Modules instance.
-		 * @param Consent_Mode_Settings $consent_mode_settings Consent_Mode_Settings instance.
-		 * @param Options               $options               Optional. Option API instance. Default is a new instance.
-		 */
+	/**
+	 * Constructor.
+	 *
+	 * @since 1.122.0
+	 * @since 1.142.0 Introduces Modules as an argument.
+	 *
+	 * @param Modules               $modules               Modules instance.
+	 * @param Consent_Mode_Settings $consent_mode_settings Consent_Mode_Settings instance.
+	 * @param Options               $options               Optional. Option API instance. Default is a new instance.
+	 */
 	public function __construct(
 		Modules $modules,
 		Consent_Mode_Settings $consent_mode_settings,

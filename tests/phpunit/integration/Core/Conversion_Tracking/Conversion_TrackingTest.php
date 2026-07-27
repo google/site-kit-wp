@@ -119,17 +119,17 @@ class Conversion_TrackingTest extends TestCase {
 	public function test_get_active_conversion_event_providers() {
 		$active_providers = $this->conversion_tracking->get_active_providers();
 
-			$this->assertArrayHasKey(
-				FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG,
-				$active_providers,
-				'Active providers should include the active fake provider.'
-			);
+		$this->assertArrayHasKey(
+			FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG,
+			$active_providers,
+			'Active providers should include the active fake provider.'
+		);
 
-			$this->assertArrayNotHasKey(
-				FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG,
-				$active_providers,
-				'Active providers should not include the inactive fake provider.'
-			);
+		$this->assertArrayNotHasKey(
+			FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG,
+			$active_providers,
+			'Active providers should not include the inactive fake provider.'
+		);
 	}
 
 	/**
@@ -147,7 +147,7 @@ class Conversion_TrackingTest extends TestCase {
 			if ( ! $expected_exception ) {
 				$this->fail( 'No exception expected but a ' . get_class( $exception ) . ' was thrown' );
 			}
-				$this->assertEquals( $expected_exception, $exception->getMessage(), 'Provider exception message should match expected message.' );
+			$this->assertEquals( $expected_exception, $exception->getMessage(), 'Provider exception message should match expected message.' );
 		}
 	}
 

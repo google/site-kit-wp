@@ -159,18 +159,18 @@ class Admin_Post_List {
 				<label style="align-items: center; display: flex; gap: 16px; line-height: 1;">
 					<span><?php esc_html_e( 'Reader Revenue CTA', 'google-site-kit' ); ?></span>
 					<select name="rrm_product_id">
-						<?php foreach ( $default_options as $value => $label ) : ?>
+		<?php foreach ( $default_options as $value => $label ) : ?>
 							<option value="<?php echo esc_attr( $value ); ?>">
-								<?php echo esc_html( $label ); ?>
+			<?php echo esc_html( $label ); ?>
 							</option>
 						<?php endforeach; ?>
 
-						<?php foreach ( $product_ids as $product_id ) : ?>
-							<?php list( , $label ) = explode( ':', $product_id, 2 ); ?>
+		<?php foreach ( $product_ids as $product_id ) : ?>
+			<?php list( , $label ) = explode( ':', $product_id, 2 ); ?>
 							<option value="<?php echo esc_attr( $product_id ); ?>">
-								<?php
-									echo esc_html( $label );
-								?>
+			<?php
+			echo esc_html( $label );
+			?>
 							</option>
 						<?php endforeach; ?>
 					</select>

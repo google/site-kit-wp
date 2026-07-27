@@ -103,7 +103,7 @@ class REST_User_Surveys_Controller {
 	protected function get_rest_routes() {
 		$can_authenticate = function () {
 			return $this->authentication->is_authenticated()
-				&& $this->authentication->credentials()->using_proxy();
+			&& $this->authentication->credentials()->using_proxy();
 		};
 
 		return array(

@@ -15,13 +15,13 @@ define( 'WP_DEBUG', true );
 define( 'ABSPATH', dirname( dirname( __DIR__ ) ) . '/vendor/roots/wordpress/' );
 
 /*
- * This configuration file will be used by the copy of WordPress being tested.
- * wordpress/wp-config.php will be ignored.
- *
- * WARNING WARNING WARNING!
- * These tests will DROP ALL TABLES in the database with the prefix named below.
- * DO NOT use a production database or one that is shared with something else.
- */
+* This configuration file will be used by the copy of WordPress being tested.
+* wordpress/wp-config.php will be ignored.
+*
+* WARNING WARNING WARNING!
+* These tests will DROP ALL TABLES in the database with the prefix named below.
+* DO NOT use a production database or one that is shared with something else.
+*/
 
 /**
  * Returns an environment variable value if it exists, otherwise the default value.
@@ -42,10 +42,10 @@ $get_env = function ( $name, $default_value ) {
 };
 
 /*
- * These database credentials refer to the `mysql` service in the Site Kit local
- * environment docker configuration. Run `npm run env:start` before running the
- * PHPUnit tests using this file.
- */
+* These database credentials refer to the `mysql` service in the Site Kit local
+* environment docker configuration. Run `npm run env:start` before running the
+* PHPUnit tests using this file.
+*/
 define( 'DB_NAME', 'wordpress_test' );
 define( 'DB_USER', $get_env( 'WORDPRESS_DB_USER', 'root' ) );
 define( 'DB_PASSWORD', $get_env( 'WORDPRESS_DB_PASSWORD', 'example' ) );

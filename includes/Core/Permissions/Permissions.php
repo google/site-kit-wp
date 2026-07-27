@@ -34,8 +34,8 @@ use WP_User;
  */
 final class Permissions {
 	/*
-	 * Custom base capabilities.
-	 */
+	* Custom base capabilities.
+	*/
 	const AUTHENTICATE             = 'googlesitekit_authenticate';
 	const SETUP                    = 'googlesitekit_setup';
 	const VIEW_POSTS_INSIGHTS      = 'googlesitekit_view_posts_insights';
@@ -47,8 +47,8 @@ final class Permissions {
 
 
 	/*
-	 * Custom meta capabilities.
-	 */
+	* Custom meta capabilities.
+	*/
 	const VIEW_SPLASH                        = 'googlesitekit_view_splash';
 	const VIEW_SHARED_DASHBOARD              = 'googlesitekit_view_shared_dashboard';
 	const VIEW_AUTHENTICATED_DASHBOARD       = 'googlesitekit_view_authenticated_dashboard';

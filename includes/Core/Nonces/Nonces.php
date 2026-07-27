@@ -28,10 +28,10 @@ use WP_REST_Server;
  */
 final class Nonces {
 	/*
-	 * Nonce actions.
-	 *
-	 * @since 1.93.0
-	 */
+	* Nonce actions.
+	*
+	* @since 1.93.0
+	*/
 	const NONCE_UPDATES = 'updates';
 
 	/**

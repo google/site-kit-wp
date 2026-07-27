@@ -936,7 +936,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			expect( console ).toHaveErrored();
 		} );
 
-		it( 'should retry plugin setup when the Analytics activation error notification CTA is clicked', async () => {
+		it( 'should retry plugin setup when the initial setup error notification CTA is clicked', async () => {
 			fetchMock.postOnce(
 				new RegExp(
 					'^/google-site-kit/v1/core/modules/data/activation'

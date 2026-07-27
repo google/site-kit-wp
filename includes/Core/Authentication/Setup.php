@@ -165,8 +165,8 @@ class Setup {
 		$this->google_proxy->with_scopes( $required_scopes );
 
 		$oauth_setup_redirect = $this->credentials->has()
-			? $this->google_proxy->sync_site_fields( $this->credentials, 'sync' )
-			: $this->google_proxy->register_site( 'sync' );
+		? $this->google_proxy->sync_site_fields( $this->credentials, 'sync' )
+		: $this->google_proxy->register_site( 'sync' );
 
 		if ( is_wp_error( $oauth_setup_redirect ) ) {
 			$error_message = $oauth_setup_redirect->get_error_message();

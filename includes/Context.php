@@ -353,8 +353,8 @@ class Context {
 		}
 
 		$exposes_support_mode = defined( 'AMP_Theme_Support::STANDARD_MODE_SLUG' )
-			&& defined( 'AMP_Theme_Support::TRANSITIONAL_MODE_SLUG' )
-			&& defined( 'AMP_Theme_Support::READER_MODE_SLUG' );
+		&& defined( 'AMP_Theme_Support::TRANSITIONAL_MODE_SLUG' )
+		&& defined( 'AMP_Theme_Support::READER_MODE_SLUG' );
 
 		if ( defined( 'AMP__VERSION' ) ) {
 			$amp_plugin_version = AMP__VERSION;
@@ -369,12 +369,12 @@ class Context {
 
 		if ( $amp_plugin_version_2_or_higher ) {
 			$exposes_support_mode = class_exists( 'AMP_Options_Manager' )
-				&& method_exists( 'AMP_Options_Manager', 'get_option' )
-				&& $exposes_support_mode;
+			&& method_exists( 'AMP_Options_Manager', 'get_option' )
+			&& $exposes_support_mode;
 		} else {
 			$exposes_support_mode = class_exists( 'AMP_Theme_Support' )
-				&& method_exists( 'AMP_Theme_Support', 'get_support_mode' )
-				&& $exposes_support_mode;
+			&& method_exists( 'AMP_Theme_Support', 'get_support_mode' )
+			&& $exposes_support_mode;
 		}
 
 		if ( $exposes_support_mode ) {
@@ -419,7 +419,7 @@ class Context {
 
 				// Consider MU plugins and network-activated plugins as network-active.
 				$this->network_active = strpos( wp_normalize_path( __FILE__ ), wp_normalize_path( WPMU_PLUGIN_DIR ) ) === 0
-					|| in_array( WP_PLUGIN_DIR . '/' . GOOGLESITEKIT_PLUGIN_BASENAME, $network_active_plugins, true );
+				|| in_array( WP_PLUGIN_DIR . '/' . GOOGLESITEKIT_PLUGIN_BASENAME, $network_active_plugins, true );
 			} else {
 				$this->network_active = false;
 			}

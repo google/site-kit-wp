@@ -90,8 +90,8 @@ class Dismissed_Tours extends User_Setting {
 	protected function get_sanitize_callback() {
 		return function ( $value ) {
 			return is_array( $value )
-				? array_values( array_unique( $value ) )
-				: $this->get();
+			? array_values( array_unique( $value ) )
+			: $this->get();
 		};
 	}
 }

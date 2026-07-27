@@ -88,7 +88,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		);
 		$this->settings->set( $test_sharing_settings );
 		// Use get_option() instead of $settings->get() to test sanitization and set() in isolation.
-			$this->assertEquals( $expected, get_option( $this->get_option_name() ), 'Sharing settings sanitizer should remove invalid roles.' );
+		$this->assertEquals( $expected, get_option( $this->get_option_name() ), 'Sharing settings sanitizer should remove invalid roles.' );
 	}
 
 	public function test_get() {
@@ -333,8 +333,8 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 			),
 		);
 
-			$this->assertTrue( $this->settings->merge( $test_sharing_settings ), 'Merge should accept valid partial module settings.' );
-			$this->assertEquals( $expected, $this->settings->get(), 'Merge should preserve omitted module setting fields.' );
+		$this->assertTrue( $this->settings->merge( $test_sharing_settings ), 'Merge should accept valid partial module settings.' );
+		$this->assertEquals( $expected, $this->settings->get(), 'Merge should preserve omitted module setting fields.' );
 
 		// Keeps the valid parts of partial and discards the invalid parts.
 		$test_sharing_settings = array(
@@ -363,7 +363,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 			),
 		);
 
-			$this->assertTrue( $this->settings->merge( $test_sharing_settings ), 'Merge should accept partially valid module settings.' );
-			$this->assertEquals( $expected, $this->settings->get(), 'Merge should discard invalid fields and keep valid fields.' );
+		$this->assertTrue( $this->settings->merge( $test_sharing_settings ), 'Merge should accept partially valid module settings.' );
+		$this->assertEquals( $expected, $this->settings->get(), 'Merge should discard invalid fields and keep valid fields.' );
 	}
 }

@@ -68,22 +68,22 @@ $subtitle   = $first_part['data']['change_context'] ?? '';
 						style="vertical-align: top; border-bottom: <?php echo esc_attr( $border_style ); ?>; padding: 12px 0;">
 						<div class="text-secondary"
 							style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; margin-bottom:4px;">
-							<?php echo esc_html( $data['label'] ); ?>
+					<?php echo esc_html( $data['label'] ); ?>
 						</div>
 						<div class="text-primary" style="font-size:14px; line-height:20px; font-weight:500;">
-							<?php echo esc_html( $data['value'] ); ?>
+					<?php echo esc_html( $data['value'] ); ?>
 						</div>
 					</td>
 					<td class="border"
 						style="text-align: right; vertical-align: middle; border-bottom: <?php echo esc_attr( $border_style ); ?>; padding: 12px 0;">
-						<?php
-							$render_shared_part(
-								'change-badge',
-								array(
-									'value' => $data['change'],
-								)
-							);
-						?>
+					<?php
+					$render_shared_part(
+						'change-badge',
+						array(
+							'value' => $data['change'],
+						)
+					);
+					?>
 					</td>
 				</tr>
 					<?php

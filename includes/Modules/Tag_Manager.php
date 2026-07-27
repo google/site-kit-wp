@@ -597,8 +597,8 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 		$settings        = $module_settings->get();
 
 		$tag = $is_amp
-			? new AMP_Tag( $settings['ampContainerID'], self::MODULE_SLUG )
-			: new Web_Tag( $settings['containerID'], self::MODULE_SLUG );
+		? new AMP_Tag( $settings['ampContainerID'], self::MODULE_SLUG )
+		: new Web_Tag( $settings['containerID'], self::MODULE_SLUG );
 
 		if ( ! $is_amp ) {
 			$tag->set_is_google_tag_gateway_active( $this->is_google_tag_gateway_active() );
