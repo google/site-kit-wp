@@ -147,7 +147,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Sanitizes boolean properties.
 	 *
-	 * @since 1.30.0
+	 * @since n.e.x.t
 	 *
 	 * @param array &$option The option array to sanitize.
 	 */
@@ -163,7 +163,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Sanitizes Google Tag ID.
 	 *
-	 * @since 1.30.0
+	 * @since n.e.x.t
 	 *
 	 * @param array &$option The option array to sanitize.
 	 */
@@ -180,7 +180,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 *
 	 * Prevents other options from being saved if 'loggedinUsers' is selected.
 	 *
-	 * @since 1.30.0
+	 * @since n.e.x.t
 	 *
 	 * @param array &$option The option array to sanitize.
 	 */
@@ -202,7 +202,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 *
 	 * Validates that numeric properties are positive values or empty strings.
 	 *
-	 * @since 1.30.0
+	 * @since n.e.x.t
 	 *
 	 * @param array &$option The option array to sanitize.
 	 */
@@ -220,7 +220,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Sanitizes container destination IDs.
 	 *
-	 * @since 1.30.0
+	 * @since n.e.x.t
 	 *
 	 * @param array &$option The option array to sanitize.
 	 */
@@ -237,7 +237,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 *
 	 * Validates that custom dimensions are strings starting with 'googlesitekit_' prefix.
 	 *
-	 * @since 1.30.0
+	 * @since n.e.x.t
 	 *
 	 * @param array &$option The option array to sanitize.
 	 */
@@ -263,7 +263,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 *
 	 * Validates that timestamp properties are integers or defaults to 0.
 	 *
-	 * @since 1.30.0
+	 * @since n.e.x.t
 	 *
 	 * @param array &$option The option array to sanitize.
 	 */

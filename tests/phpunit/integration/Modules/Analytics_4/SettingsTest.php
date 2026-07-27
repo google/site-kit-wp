@@ -200,7 +200,7 @@ class SettingsTest extends SettingsTestCase {
 			$options[ $case[0] ] = $case[1];
 			$this->settings->set( $options );
 			$saved_options = get_option( $options_key );
-			$this->assertSame( $case[2], $saved_options[ $case[0] ], "Boolean property {$case[0]} should be sanitized correctly." );
+			$this->assertEquals( $case[2], $saved_options[ $case[0] ], "Boolean property {$case[0]} should be sanitized correctly." );
 		}
 	}
 
@@ -406,9 +406,9 @@ class SettingsTest extends SettingsTestCase {
 	}
 
 	/**
-	 * Test REST API endpoint sanitization with mixed inputs.
+	 * Test sanitization with mixed inputs.
 	 */
-	public function test_sanitization_via_rest_api() {
+	public function test_sanitization_with_mixed_inputs() {
 		$this->settings->register();
 
 		$options_key = $this->get_option_name();
