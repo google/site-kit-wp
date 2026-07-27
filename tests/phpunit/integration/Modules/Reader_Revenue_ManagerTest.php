@@ -235,7 +235,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$result = $this->reader_revenue_manager->get_data( 'publications' );
 
-		$this->assertNotWPError( $result );
+		$this->assertNotWPError( $result, 'Publication lookup for a URL property should not return a WP_Error.' );
 		$this->assertContainsOnlyInstancesOf( Publication::class, $result, 'Publications result should contain only Publication instances for URL-based property.' );
 
 		$publication = $result[0];
@@ -290,7 +290,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$result = $this->reader_revenue_manager->get_data( 'publications' );
 
-		$this->assertNotWPError( $result );
+		$this->assertNotWPError( $result, 'Publication lookup for a domain property should not return a WP_Error.' );
 		$this->assertContainsOnlyInstancesOf( Publication::class, $result, 'Publications result should contain only Publication instances for domain-based property.' );
 
 		$publication = $result[0];
@@ -355,7 +355,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$result = $this->reader_revenue_manager->get_data( 'publications' );
 
-		$this->assertNotWPError( $result );
+		$this->assertNotWPError( $result, 'Publication lookup used to synchronize settings should not return a WP_Error.' );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 
@@ -551,7 +551,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			)
 		);
 
-		$this->assertNotWPError( $result );
+		$this->assertNotWPError( $result, 'Synchronizing an unchanged publication onboarding state should not return a WP_Error.' );
 		$this->assertEquals( (object) array(), $result, 'Sync result should be empty object when onboarding state is unchanged.' );
 	}
 
@@ -599,7 +599,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			)
 		);
 
-		$this->assertNotWPError( $result );
+		$this->assertNotWPError( $result, 'Synchronizing a changed publication onboarding state should not return a WP_Error.' );
 		$this->assertEquals( 'ONBOARDING_COMPLETE', $result->publicationOnboardingState, 'Publication onboarding state should be updated to complete.' );
 		$this->assertEquals( 'ABCDEFGH', $result->publicationID, 'Publication ID should be correct in sync result.' );
 	}
@@ -641,7 +641,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			)
 		);
 
-		$this->assertWPError( $result );
+		$this->assertWPError( $result, 'Synchronizing an unavailable publication should return a WP_Error.' );
 		$this->assertEquals( 'publication_not_found', $result->get_error_code(), 'Error code should indicate publication not found.' );
 	}
 
@@ -659,7 +659,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			)
 		);
 
-		$this->assertWPError( $result );
+		$this->assertWPError( $result, 'Synchronization without a publication ID should return a WP_Error.' );
 		$this->assertEquals( 'missing_required_param', $result->get_error_code(), 'Error code should indicate missing required parameter.' );
 		$this->assertEquals( 'Request parameter is empty: publicationID.', $result->get_error_message(), 'Error message should indicate missing publication ID.' );
 	}
@@ -678,7 +678,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			)
 		);
 
-		$this->assertWPError( $result );
+		$this->assertWPError( $result, 'Synchronization without an onboarding state should return a WP_Error.' );
 		$this->assertEquals( 'missing_required_param', $result->get_error_code(), 'Error code should indicate missing required parameter for onboarding state.' );
 		$this->assertEquals( 'Request parameter is empty: publicationOnboardingState.', $result->get_error_message(), 'Error message should indicate missing publication onboarding state.' );
 	}
@@ -877,7 +877,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'reader_revenue_manager_payment_option',
 				'reader_revenue_manager_content_policy_state',
 			),
-			array_keys( $this->reader_revenue_manager->get_debug_fields() )
+			array_keys( $this->reader_revenue_manager->get_debug_fields() ),
+			'Reader Revenue Manager debug fields should include post types in post-types snippet mode.'
 		);
 
 		$debug_fields = $this->reader_revenue_manager->get_debug_fields();
@@ -940,7 +941,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'reader_revenue_manager_payment_option',
 				'reader_revenue_manager_content_policy_state',
 			),
-			array_keys( $this->reader_revenue_manager->get_debug_fields() )
+			array_keys( $this->reader_revenue_manager->get_debug_fields() ),
+			'Reader Revenue Manager debug fields should omit post types outside post-types snippet mode.'
 		);
 	}
 
@@ -1016,7 +1018,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$access = $module->check_service_entity_access();
 
-		$this->assertNotWPError( $access );
+		$this->assertNotWPError( $access, 'Unavailable publication access check should return an access result rather than a WP_Error.' );
 		$this->assertEquals( false, $access, 'Service entity access should be false when publication is unavailable.' );
 	}
 

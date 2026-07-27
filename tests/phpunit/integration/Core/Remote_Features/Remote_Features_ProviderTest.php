@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\Remote_Features;
 
 use Google\Site_Kit\Context;
@@ -46,10 +44,22 @@ class Remote_Features_ProviderTest extends TestCase {
 		$provider->register();
 
 		$this->assertSettingRegistered( Remote_Features::OPTION );
-		$this->assertTrue( has_action( 'admin_init' ) );
-		$this->assertTrue( has_action( 'heartbeat_tick' ) );
-		$this->assertTrue( has_action( Remote_Features_Cron::CRON_ACTION ) );
-		$this->assertTrue( has_filter( 'googlesitekit_is_feature_enabled' ) );
+		$this->assertTrue(
+			has_action( 'admin_init' ),
+			'Admin initialization should trigger remote feature fallback synchronization.'
+		);
+		$this->assertTrue(
+			has_action( 'heartbeat_tick' ),
+			'Heartbeat requests should trigger remote feature fallback synchronization.'
+		);
+		$this->assertTrue(
+			has_action( Remote_Features_Cron::CRON_ACTION ),
+			'Remote feature cron action should trigger synchronization.'
+		);
+		$this->assertTrue(
+			has_filter( 'googlesitekit_is_feature_enabled' ),
+			'Remote feature activation filter should be registered.'
+		);
 	}
 
 	public function test_register__admin_init__no_proxy() {
@@ -66,7 +76,8 @@ class Remote_Features_ProviderTest extends TestCase {
 		do_action( 'admin_init' );
 
 		$this->assertFalse(
-			wp_next_scheduled( Remote_Features_Cron::CRON_ACTION )
+			wp_next_scheduled( Remote_Features_Cron::CRON_ACTION ),
+			'Remote feature sync should not be scheduled for a non-proxy site.'
 		);
 		// Simulate change to credentials.
 		list( $oauth2_client_id, $oauth2_client_secret ) = $this->get_fake_site_credentials();
@@ -74,7 +85,7 @@ class Remote_Features_ProviderTest extends TestCase {
 			compact( 'oauth2_client_id', 'oauth2_client_secret' )
 		);
 
-		$this->assertEmpty( $http_requests );
+		$this->assertEmpty( $http_requests, 'Credential changes should not request remote features for a non-proxy site.' );
 	}
 
 	public function test_register__admin_init__proxy() {
@@ -91,7 +102,8 @@ class Remote_Features_ProviderTest extends TestCase {
 		do_action( 'admin_init' );
 
 		$this->assertNotEmpty(
-			wp_next_scheduled( Remote_Features_Cron::CRON_ACTION )
+			wp_next_scheduled( Remote_Features_Cron::CRON_ACTION ),
+			'Remote feature sync should be scheduled for a proxy-connected site.'
 		);
 		// Simulate change to credentials.
 		list( $oauth2_client_id, $oauth2_client_secret ) = $this->get_fake_proxy_credentials();
@@ -99,7 +111,7 @@ class Remote_Features_ProviderTest extends TestCase {
 			compact( 'oauth2_client_id', 'oauth2_client_secret' )
 		);
 
-		$this->assertContains( 'https://sitekit.withgoogle.com/site-management/features/', $http_requests );
+		$this->assertContains( 'https://sitekit.withgoogle.com/site-management/features/', $http_requests, 'Credential changes should refresh remote features for a proxy-connected site.' );
 	}
 
 	protected function new_instance() {

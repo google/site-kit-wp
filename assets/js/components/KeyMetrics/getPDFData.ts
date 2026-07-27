@@ -27,7 +27,10 @@ import { ComponentType } from 'react';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
-import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
+import {
+	GetPDFDataParams,
+	PDFDataLoaderParams,
+} from '@/js/googlesitekit/widgets/types';
 import { KEY_METRICS_PDF_TILES } from './key-metrics-pdf-tiles';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 
@@ -43,7 +46,7 @@ interface KeyMetricPDFTileConfig {
 		} >;
 	};
 	/** Resolves the tile's data, or `null` when the report has no data. */
-	getTileData: ( params: GetPDFDataParams ) => Promise< unknown >;
+	getTileData: ( params: PDFDataLoaderParams ) => Promise< unknown >;
 }
 
 const keyMetricsWidgets = KEY_METRICS_WIDGETS as Record<

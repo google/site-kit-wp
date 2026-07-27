@@ -72,12 +72,42 @@ export const Font = {
 	clear: jest.fn(),
 };
 
-export const pdf = jest.fn( () => ( {
-	toBlob: jest.fn( () =>
-		Promise.resolve(
+/*
+ * The layout the mocked `toBlob()` passes to the document's `onRender`
+ * callback, mirroring the real library's internal layout shape. The deepest
+ * box bottom is 24 + 476 = 500, so `measurePDFContentHeight` returns 500,
+ * and the nested section node puts one anchor at absolute top 224 (200 + 24)
+ * for `extractPDFSectionAnchors`.
+ */
+export const MOCK_PDF_LAYOUT = {
+	_INTERNAL__LAYOUT__DATA_: {
+		children: [
+			{
+				children: [
+					{ box: { top: 24, height: 176 } },
+					{
+						box: { top: 200, height: 300 },
+						children: [
+							{
+								props: { id: 'section-mockArea' },
+								box: { top: 24, height: 276 },
+							},
+						],
+					},
+					{ box: { top: 24, height: 476 } },
+				],
+			},
+		],
+	},
+};
+
+export const pdf = jest.fn( ( element ) => ( {
+	toBlob: jest.fn( () => {
+		element?.props?.onRender?.( MOCK_PDF_LAYOUT );
+		return Promise.resolve(
 			new Blob( [ 'mock-pdf' ], { type: 'application/pdf' } )
-		)
-	),
+		);
+	} ),
 	toBuffer: jest.fn( () => Promise.resolve( Buffer.from( 'mock-pdf' ) ) ),
 	toString: jest.fn( () => Promise.resolve( 'mock-pdf' ) ),
 	updateContainer: jest.fn(),

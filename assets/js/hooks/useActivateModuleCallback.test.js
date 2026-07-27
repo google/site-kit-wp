@@ -127,6 +127,38 @@ describe( 'useActivateModuleCallback', () => {
 		expect( global.location.assign ).toHaveBeenCalledWith( reauthURL );
 	} );
 
+	it( 'should navigate to the module reauthentication URL with redirectQueryArgs when provided', async () => {
+		const { result } = renderHook(
+			() =>
+				useActivateModuleCallback( MODULE_SLUG_ANALYTICS_4, {
+					redirectQueryArgs: {
+						foo: 'bar',
+					},
+				} ),
+			{ registry }
+		);
+
+		fetchMock.postOnce(
+			RegExp( 'google-site-kit/v1/core/modules/data/activation' ),
+			{ body: { success: true } }
+		);
+		fetchMock.getOnce(
+			RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			{ body: { needsReauthentication: false } }
+		);
+
+		await result.current();
+
+		const reauthURL = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getAdminReauthURL( {
+				redirectQueryArgs: {
+					foo: 'bar',
+				},
+			} );
+		expect( global.location.assign ).toHaveBeenCalledWith( reauthURL );
+	} );
+
 	it( 'should set an item in storage before navigating to the module reauthentication URL', async () => {
 		const { result } = renderHook(
 			() => useActivateModuleCallback( MODULE_SLUG_ANALYTICS_4 ),
