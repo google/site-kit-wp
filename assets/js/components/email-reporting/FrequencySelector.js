@@ -101,8 +101,10 @@ export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 		// This constructs a date from a server-provided timestamp rather
 		// than the reference date, so using `new Date()` here is valid.
 		const nextReportDate = new Date( nextReportTimestamp * 1000 ); // eslint-disable-line sitekit/no-direct-date
+		const timezone = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
 
 		return nextReportDate.toLocaleDateString( getLocale(), {
+		    timeZone: timezone,
 			month: 'short',
 			day: 'numeric',
 			year: 'numeric',
