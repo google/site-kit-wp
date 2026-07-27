@@ -39,11 +39,11 @@ export interface PDFReportDates {
 }
 
 /**
- * Parameters a PDF widget's `getData` loader receives.
+ * Base parameters a PDF widget's `getData` loader receives.
  *
- * @since 1.183.0
+ * @since n.e.x.t
  */
-export interface GetPDFDataParams {
+export interface PDFDataLoaderParams {
 	/** WordPress data registry, with `resolveSelect` added. */
 	registry: WPDataRegistry & {
 		// `resolveSelect` is on the registry at runtime but missing from the
@@ -61,6 +61,17 @@ export interface GetPDFDataParams {
 	 * modules' data uses this to match the dashboard's module visibility.
 	 */
 	viewableModules?: string[];
+}
+
+/**
+ * Parameters a PDF widget's `getData` loader receives.
+ *
+ * @since 1.183.0
+ * @since n.e.x.t Added `viewOnly`.
+ */
+export interface GetPDFDataParams extends PDFDataLoaderParams {
+	/** Whether the export runs on a view-only dashboard, where a loader leaves out the links an administrator sees. */
+	viewOnly: boolean;
 }
 
 /**
@@ -102,15 +113,11 @@ export interface WidgetPDFData {
  * PDF export configuration for a widget.
  *
  * @since 1.181.0
+ * @since n.e.x.t Added `viewOnly` to the `getData` params.
  */
 export interface WidgetPDFConfig {
 	Component: PDFWidgetComponent;
-	getData: ( params: {
-		registry: unknown;
-		dates: PDFReportDates;
-		signal: AbortSignal;
-		viewableModules?: string[];
-	} ) => Promise< WidgetPDFData >;
+	getData: ( params: GetPDFDataParams ) => Promise< WidgetPDFData >;
 	label?: string;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The registry `select` is loosely typed, so `isActive` predicates can read store selectors without casting.
 	isActive?: ( select: ( storeName: string ) => any ) => boolean;

@@ -47,7 +47,7 @@ export type PDFIcon = FC< {
  * `assets/js/types/svg.d.ts` types every `?pdf` import with this interface, so
  * an import and the icon that wraps it always take the same props.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export interface PDFSvgFileProps {
 	/** The drawing's width, in page points. */
@@ -67,6 +67,17 @@ export interface PDFHeaderSection {
 	slug: string;
 	label: string;
 	Icon?: PDFIcon;
+}
+
+/**
+ * A named-destination anchor for one report section: the anchor `id` the
+ * header chips link to, and the section's absolute top on the page in points.
+ *
+ * @since n.e.x.t
+ */
+export interface PDFSectionAnchor {
+	id: string;
+	top: number;
 }
 
 /**

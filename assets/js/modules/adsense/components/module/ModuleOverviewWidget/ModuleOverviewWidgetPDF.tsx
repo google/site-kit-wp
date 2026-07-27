@@ -62,7 +62,7 @@ const styles = createPDFStyles( {
  * With no currency code, the value falls back to a plain grouped number, so
  * the card never shows the wrong currency.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param total        The metric total.
  * @param currencyCode Currency code from the AdSense report, if any.
@@ -116,7 +116,7 @@ const CARDS: CardDefinition[] = [
 /**
  * Builds the change badge props from a metric's period-over-period change ratio.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param metric The metric data, if any.
  * @return Props for the change badge, empty when there's no change to show.

@@ -54,7 +54,7 @@ interface SearchQueryRow {
 	rank: number;
 	/** The search query text. */
 	query: string;
-	/** Search Console report link for the query. */
+	/** Search Console report link for the query. Empty when the query has no link, so the query renders as plain text. */
 	queryURL: string;
 	/** Number of clicks for the query. */
 	clicks: number;
@@ -89,7 +89,9 @@ const DashboardPopularKeywordsWidgetPDF: FC< PDFWidgetComponentProps > = ( {
 			// 66.7% of the 1084px row (723px).
 			width: '66.7%',
 			// Show the rank number before the query. The query links to its
-			// Search Console report, like the dashboard widget.
+			// Search Console report, like the dashboard widget. When the query
+			// has no link, `PDFLink` renders it as plain text instead of as a
+			// link.
 			cell: ( row ) => (
 				<View style={ styles.queryCell }>
 					<PDFTypography style={ styles.rank }>

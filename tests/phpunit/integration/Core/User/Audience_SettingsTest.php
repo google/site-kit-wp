@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\User;
 
 use Google\Site_Kit\Context;
@@ -49,7 +46,8 @@ class Audience_SettingsTest extends TestCase {
 				'isAudienceSegmentationWidgetHidden' => false,
 				'didSetAudiences'                    => false,
 			),
-			$this->audience_settings->get()
+			$this->audience_settings->get(),
+			'Audience settings should default to no configured audiences with the widget visible.'
 		);
 	}
 
@@ -198,7 +196,7 @@ class Audience_SettingsTest extends TestCase {
 	 */
 	public function test_get_sanitize_callback( $input, $expected ) {
 		$this->audience_settings->set( $input );
-		$this->assertEquals( $expected, $this->audience_settings->get() );
+		$this->assertEquals( $expected, $this->audience_settings->get(), 'Audience settings should sanitize unsupported values and types.' );
 	}
 
 	public function test_merge() {
@@ -212,7 +210,7 @@ class Audience_SettingsTest extends TestCase {
 			'isAudienceSegmentationWidgetHidden' => true,
 		);
 
-		// Make sure settings can be updated even without having them set initially
+		// Make sure settings can be updated even without having them set initially.
 		$this->audience_settings->merge( $original_settings );
 		$this->assertEqualSetsWithIndex(
 			array_merge(
@@ -222,10 +220,11 @@ class Audience_SettingsTest extends TestCase {
 					'didSetAudiences' => true,
 				)
 			),
-			$this->audience_settings->get()
+			$this->audience_settings->get(),
+			'Merge should initialize audience settings and mark audiences as configured.'
 		);
 
-		// Make sure invalid keys aren't set
+		// Make sure invalid keys aren't set.
 		$this->audience_settings->merge( array( 'test_key' => 'test_value' ) );
 		$this->assertEqualSetsWithIndex(
 			array_merge(
@@ -234,10 +233,11 @@ class Audience_SettingsTest extends TestCase {
 					'didSetAudiences' => true,
 				)
 			),
-			$this->audience_settings->get()
+			$this->audience_settings->get(),
+			'Merge should ignore unsupported audience setting keys.'
 		);
 
-		// Make sure that we can update settings partially
+		// Make sure that we can update settings partially.
 		$this->audience_settings->set( $original_settings );
 		$this->audience_settings->merge( array( 'isAudienceSegmentationWidgetHidden' => true ) );
 		$this->assertEqualSetsWithIndex(
@@ -245,10 +245,11 @@ class Audience_SettingsTest extends TestCase {
 				'configuredAudiences'                => $original_settings['configuredAudiences'],
 				'isAudienceSegmentationWidgetHidden' => true,
 			),
-			$this->audience_settings->get()
+			$this->audience_settings->get(),
+			'Partial merge should preserve the configured audiences.'
 		);
 
-		// Make sure that we can update all settings at once
+		// Make sure that we can update all settings at once.
 		$this->audience_settings->set( $original_settings );
 		$this->audience_settings->merge( $changed_settings );
 		$this->assertEqualSetsWithIndex(
@@ -258,13 +259,14 @@ class Audience_SettingsTest extends TestCase {
 					'didSetAudiences' => true,
 				)
 			),
-			$this->audience_settings->get()
+			$this->audience_settings->get(),
+			'Merge should update all audience settings and retain the configured flag.'
 		);
 
-		// Make sure that we can't set wrong format (or `null`) for the isAudienceSegmentationWidgetHidden property
+		// Make sure that we can't set wrong format (or `null`) for the isAudienceSegmentationWidgetHidden property.
 		$this->audience_settings->set( $original_settings );
 		$this->audience_settings->merge( array( 'isAudienceSegmentationWidgetHidden' => null ) );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->audience_settings->get() );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->audience_settings->get(), 'Merge should ignore an invalid audience widget visibility value.' );
 
 		// Make sure that we can't set wrong format for the configuredAudiences property.
 		$this->audience_settings->set( $original_settings );
@@ -276,7 +278,8 @@ class Audience_SettingsTest extends TestCase {
 					'configuredAudiences' => array(),
 				)
 			),
-			$this->audience_settings->get()
+			$this->audience_settings->get(),
+			'Invalid configured audiences value should be sanitized to an empty list.'
 		);
 
 		// Make sure we can set `null` for the configuredAudiences property.
@@ -289,7 +292,8 @@ class Audience_SettingsTest extends TestCase {
 					'configuredAudiences' => null,
 				)
 			),
-			$this->audience_settings->get()
+			$this->audience_settings->get(),
+			'Configured audiences should accept null to represent an uninitialized selection.'
 		);
 	}
 
@@ -302,7 +306,8 @@ class Audience_SettingsTest extends TestCase {
 				'isAudienceSegmentationWidgetHidden' => false,
 				'didSetAudiences'                    => false,
 			),
-			$this->audience_settings->get()
+			$this->audience_settings->get(),
+			'Empty configured audiences should not mark audiences as configured.'
 		);
 
 		// Verify that the `didSetAudiences` flag is set when configuredAudiences is set to a non-empty array.
@@ -313,7 +318,8 @@ class Audience_SettingsTest extends TestCase {
 				'isAudienceSegmentationWidgetHidden' => false,
 				'didSetAudiences'                    => true,
 			),
-			$this->audience_settings->get()
+			$this->audience_settings->get(),
+			'Non-empty configured audiences should mark audiences as configured.'
 		);
 
 		// Verify that `didSetAudiences` retains its value when `configuredAudiences` is updated to an empty array.
@@ -324,7 +330,8 @@ class Audience_SettingsTest extends TestCase {
 				'isAudienceSegmentationWidgetHidden' => false,
 				'didSetAudiences'                    => true,
 			),
-			$this->audience_settings->get()
+			$this->audience_settings->get(),
+			'Configured flag should remain set after audiences are cleared.'
 		);
 
 		// Make sure that we can't set wrong format (or `null`) for the
@@ -336,7 +343,8 @@ class Audience_SettingsTest extends TestCase {
 				'isAudienceSegmentationWidgetHidden' => false,
 				'didSetAudiences'                    => true,
 			),
-			$this->audience_settings->get()
+			$this->audience_settings->get(),
+			'Merge should ignore an invalid configured audiences flag.'
 		);
 	}
 }

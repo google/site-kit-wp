@@ -141,12 +141,13 @@ class Google_Proxy {
 		}
 
 		if ( Feature_Flags::enabled( 'setupFlowRefreshPhase4' ) ) {
-			$query_params['steps'] = 5;
+			$query_params['service_version'] = 'v3';
+			$query_params['steps']           = 5;
 
 			/**
 			 * Filters parameters included in the proxy setup URL.
 			 *
-			 * @since n.e.x.t
+			 * @since 1.184.0
 			 *
 			 * @param array $query_params Query parameters.
 			 */

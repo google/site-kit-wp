@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\AdSense;
 
 use Google\Site_Kit\Context;
@@ -54,7 +52,10 @@ class Ad_Blocking_Recovery_Tag_GuardTest extends TestCase {
 	}
 
 	public function test_can_activate() {
-		$this->assertTrue( $this->guard->can_activate() );
+		$this->assertTrue(
+			$this->guard->can_activate(),
+			'Ad blocking recovery tag should activate after setup when snippet output is enabled.'
+		);
 	}
 
 	/**
@@ -62,7 +63,10 @@ class Ad_Blocking_Recovery_Tag_GuardTest extends TestCase {
 	 */
 	public function test_can_not_activate( $settings ) {
 		$this->settings->merge( $settings );
-		$this->assertFalse( $this->guard->can_activate() );
+		$this->assertFalse(
+			$this->guard->can_activate(),
+			'Ad blocking recovery tag should not activate without completed setup and enabled snippet output.'
+		);
 	}
 
 	public function data_can_not_activate() {

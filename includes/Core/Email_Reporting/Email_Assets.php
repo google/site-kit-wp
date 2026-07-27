@@ -32,7 +32,7 @@ class Email_Assets {
 	 * Asset registry.
 	 *
 	 * Maps asset slugs to their full CDN filenames.
-	 * Format: 'asset-slug' => 'YYYY-MM-DD-asset-slug.ext'
+	 * Format: 'asset-slug' => 'YYYY-MM-DD-asset-slug.ext'.
 	 *
 	 * @since 1.173.0
 	 * @var array

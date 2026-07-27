@@ -200,7 +200,7 @@ const svgoConfig = {
  * this template only redirects the import. An element that the library doesn't
  * export fails at render, rather than dropping a shape with no error.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param {Object}   variables               The component name and the JSX that SVGR built from the file.
  * @param {string}   variables.componentName The generated component's name.

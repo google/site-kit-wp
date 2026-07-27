@@ -170,7 +170,7 @@ class Report_Request_Assembler {
 	 * Maps batch responses back to section payloads.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Returns the response unchanged when it is a WP_Error.
+	 * @since 1.184.0 Returns the response unchanged when it is a WP_Error.
 	 *
 	 * @param array|WP_Error $responses   Batch responses keyed by identifier, or WP_Error on batch failure.
 	 * @param array          $request_map Request metadata map.

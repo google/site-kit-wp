@@ -27,7 +27,8 @@ class SettingsTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array( 'ownerID' => 0 ),
-			get_option( Settings::OPTION )
+			get_option( Settings::OPTION ),
+			'PageSpeed Insights settings should default to having no owner.'
 		);
 	}
 

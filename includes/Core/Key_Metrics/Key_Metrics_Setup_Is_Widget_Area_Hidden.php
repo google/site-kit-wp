@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Setting;
 /**
  * Class for handling the Key Metrics setup widget area hidden state.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Key_Metrics_Setup_Is_Widget_Area_Hidden extends Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return string The type name.
 	 */

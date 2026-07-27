@@ -52,7 +52,7 @@ class Encrypted_OptionsTest extends TestCase {
 	public function test_delete() {
 		$encrypted_options = $this->new_encrypted_options();
 
-		// Use add_option to assert that the option was in fact deleted. (true means option did not exist before)
+		// Use add_option to assert that the option was in fact deleted. (true means option did not exist before).
 		update_option( 'test-option', 'test-value' );
 		$this->assertFalse( add_option( 'test-option', 'irrelevant-value' ), 'Precondition: option should already exist before delete.' );
 		$this->assertTrue( $encrypted_options->delete( 'test-option' ), 'Encrypted_Options::delete should return true on success.' );

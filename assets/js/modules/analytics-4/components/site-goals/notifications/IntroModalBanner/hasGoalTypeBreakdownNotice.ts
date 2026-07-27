@@ -36,7 +36,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
  * own dismissal. Confirming the modal saves that dismissal before the tour
  * starts.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param select   The registry `select` function.
  * @param goalType The goal type whose widget to check.

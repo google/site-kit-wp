@@ -84,6 +84,7 @@ tests/playwright/
 │       │   ├── e2e-fixtures.php            # Disables SSL verification, forwards fixture header
 │       │   ├── e2e-module-activation.php   # Connects modules (and applies settings) via cookie
 │       │   ├── e2e-module-sharing.php      # Forces dashboard-sharing settings via cookie
+│       │   ├── e2e-pdf-generation-state.php # Applies the Key Metrics/audience state a PDF export test declares via withKeyMetrics()/withAudiences()
 │       │   └── e2e-reference-date.php      # Fixes reference date to 2026-01-01
 │       └── plugins/                    # Test helper plugins (auto-mounted)
 │           ├── email-reporting.php     # REST endpoint to trigger email reporting cron

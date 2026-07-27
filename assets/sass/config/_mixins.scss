@@ -37,6 +37,14 @@
 	}
 }
 
+@mixin googlesitekit-typography( $type, $size ) {
+	font-family: map-get($typography-font-families, $type);
+
+	@each $property, $value in map-get($typography-settings, $type, $size) {
+		#{$property}: $value;
+	}
+}
+
 @mixin screen-reader-only {
 	clip: rect(1px, 1px, 1px, 1px);
 	height: 1px;

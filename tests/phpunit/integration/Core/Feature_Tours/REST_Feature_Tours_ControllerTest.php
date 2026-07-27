@@ -100,7 +100,7 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/dismiss-tour' );
 		$request->set_body_params(
 			array(
-				'data' => array(), // no slug
+				'data' => array(), // no slug.
 			)
 		);
 		$this->assertTrue( current_user_can( Permissions::SETUP ), 'Current user should be allowed to dismiss tours.' );
