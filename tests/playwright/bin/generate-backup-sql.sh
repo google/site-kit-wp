@@ -81,16 +81,14 @@ echo "Activating theme and plugins..."
 wp theme activate twentynineteen --quiet
 wp plugin activate google-site-kit --quiet
 wp plugin activate wpforms-lite --quiet
-wp plugin activate google-site-kit-test-plugins/enhanced-conversions.php --quiet
 
 echo "Setting permalink structure..."
 wp rewrite structure '%postname%' --hard --quiet
 
 echo "Creating WPForms forms and pages..."
-cat wpforms.php | wp eval-file - --user=admin
+cat "$SCRIPT_DIR/create-wpforms-fixtures.php" | wp eval-file - --user=admin
 
 wp plugin deactivate wpforms-lite --quiet
-wp plugin deactivate google-site-kit-test-plugins/enhanced-conversions.php --quiet
 
 # Normalize the database so the dump is deterministic across runs.
 echo "Normalizing database for deterministic output..."
