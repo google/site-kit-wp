@@ -96,7 +96,9 @@ const ScrollableTabs: FC< ScrollableTabsProps > = ( {
 
 		// MDC's tab bar scrolls an inner element rather than its wrapper, so
 		// resolve the scrolling element within the container. When nothing
-		// matches the selector, the container itself scrolls.
+		// matches the selector, the container itself scrolls. The lookup runs
+		// only when this effect does, so a tab bar that reaches the DOM later
+		// leaves the arrows reading the container instead.
 		const scrollNode =
 			container.querySelector( scrollTargetSelector ) || container;
 

@@ -34,6 +34,10 @@
 		top: 50%;
 		transform: translateY(-50%);
 		width: 36px;
+
+		// Clears the two layers a consuming tab bar can draw beneath an arrow.
+		// The Site Goals breakdown bar sets its divider to z-index 0 and its
+		// .mdc-tab-bar to z-index 1, so the tabs slide under the arrow.
 		z-index: 2;
 	}
 

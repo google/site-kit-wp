@@ -62,6 +62,21 @@ describe( 'ScrollableTabs', () => {
 	}
 
 	/**
+	 * The DOM that `@material/react-tab-scroller` renders inside a `TabBar`,
+	 * down to the `.mdc-tab-scroller__scroll-area` node the component resolves
+	 * by default and reads its scroll metrics from.
+	 */
+	const mockTabBar = (
+		<div className="mdc-tab-bar">
+			<div className="mdc-tab-scroller">
+				<div className="mdc-tab-scroller__scroll-area">
+					<div className="mdc-tab-scroller__scroll-content">Tabs</div>
+				</div>
+			</div>
+		</div>
+	);
+
+	/**
 	 * Renders ScrollableTabs around a mock MDC tab bar structure.
 	 *
 	 * @since n.e.x.t
@@ -71,17 +86,7 @@ describe( 'ScrollableTabs', () => {
 	 */
 	function renderTabs( props: Partial< ScrollableTabsProps > = {} ) {
 		return render(
-			<ScrollableTabs { ...props }>
-				<div className="mdc-tab-bar">
-					<div className="mdc-tab-scroller">
-						<div className="mdc-tab-scroller__scroll-area">
-							<div className="mdc-tab-scroller__scroll-content">
-								Tabs
-							</div>
-						</div>
-					</div>
-				</div>
-			</ScrollableTabs>
+			<ScrollableTabs { ...props }>{ mockTabBar }</ScrollableTabs>
 		);
 	}
 
@@ -337,6 +342,31 @@ describe( 'ScrollableTabs', () => {
 			expect( resizeObserverConstructedMock ).not.toHaveBeenCalled();
 		}
 	);
+
+	it( 'shows the right arrow once the window widens to a desktop width', () => {
+		( useBreakpoint as jest.Mock ).mockReturnValue( BREAKPOINT_TABLET );
+
+		const { container, getByRole, queryByRole, rerender } = renderTabs();
+		const scrollArea = getScrollArea( container );
+
+		setScrollMetrics( scrollArea, {
+			scrollLeft: 0,
+			clientWidth: 400,
+			scrollWidth: 800,
+		} );
+		fireEvent.scroll( scrollArea );
+
+		expect(
+			queryByRole( 'button', { name: RIGHT_ARROW_LABEL } )
+		).not.toBeInTheDocument();
+
+		( useBreakpoint as jest.Mock ).mockReturnValue( BREAKPOINT_DESKTOP );
+		rerender( <ScrollableTabs>{ mockTabBar }</ScrollableTabs> );
+
+		expect(
+			getByRole( 'button', { name: RIGHT_ARROW_LABEL } )
+		).toBeInTheDocument();
+	} );
 
 	it( 'stops listening for scroll and size changes on unmount', () => {
 		const { container, unmount } = renderTabs();
