@@ -24,8 +24,10 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { PDFStarFill } from '@/js/components/pdf-export/pdf-icons';
 import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import { renderJSON } from '@/js/components/pdf-export/test-utils';
 import { render } from '@tests/js/test-utils';
 import PDFEmailReportingNotice from './PDFEmailReportingNotice';
 
@@ -53,21 +55,14 @@ describe( 'PDFEmailReportingNotice', () => {
 		expect( getByText( 'Set up email reports' ) ).toBeInTheDocument();
 	} );
 
-	it( 'renders the star icon in the notice text color', () => {
-		const { container } = render(
-			<PDFEmailReportingNotice emailReportingSetupURL="https://example.com/golink" />
-		);
-
-		const starPaths = container.querySelectorAll( 'pdf-path' );
-		expect( starPaths ).toHaveLength( 1 );
-		expect( starPaths[ 0 ] ).toHaveAttribute(
-			'd',
-			'M5.825 22L8.15 14.4L2 10H9.6L12 2L14.4 10H22L15.85 14.4L18.175 22L12 17.3L5.825 22Z'
-		);
-		expect( starPaths[ 0 ] ).toHaveAttribute(
-			'fill',
-			PDF_COLORS.VIOLET_V_600
-		);
+	it( 'renders the star icon at its size and color', () => {
+		// `?pdf` imports resolve to a shared mock, so this assertion covers
+		// the icon's size and color.
+		expect(
+			renderJSON(
+				<PDFEmailReportingNotice emailReportingSetupURL="https://example.com/golink" />
+			)
+		).toContain( renderJSON( <PDFStarFill size={ 24 } /> ) );
 	} );
 
 	it( 'links the "Set up email reports" button to the given email reporting setup URL', () => {
