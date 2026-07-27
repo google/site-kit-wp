@@ -30,13 +30,12 @@ class Save_User_Settings extends User_Settings_Datapoint {
 	 * @return callable Closure that saves and returns Reader Revenue Manager user settings.
 	 */
 	public function create_request( Data_Request $data_request ) {
-		$settings      = $data_request->data;
-		$user_settings = $this->user_settings;
+		$settings = $data_request->data;
 
-		return function () use ( $settings, $user_settings ) {
-			$user_settings->merge( $settings );
+		return function () use ( $settings ) {
+			$this->user_settings->merge( $settings );
 
-			return $user_settings->get();
+			return $this->get_user_settings();
 		};
 	}
 }

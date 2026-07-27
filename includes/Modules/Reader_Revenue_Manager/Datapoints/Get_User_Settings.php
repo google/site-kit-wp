@@ -30,10 +30,8 @@ class Get_User_Settings extends User_Settings_Datapoint {
 	 * @return callable Closure that returns Reader Revenue Manager user settings.
 	 */
 	public function create_request( Data_Request $data_request ) {
-		$user_settings = $this->user_settings;
-
-		return function () use ( $user_settings ) {
-			return $user_settings->get();
+		return function () {
+			return $this->get_user_settings();
 		};
 	}
 }

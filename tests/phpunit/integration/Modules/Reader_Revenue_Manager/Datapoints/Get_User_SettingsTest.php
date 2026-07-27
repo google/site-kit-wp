@@ -61,10 +61,10 @@ class Get_User_SettingsTest extends TestCase {
 		$data_request = new Data_Request( 'GET', 'modules', 'reader-revenue-manager', 'user-settings', array() );
 		$request      = $this->datapoint->create_request( $data_request );
 
-		$this->assertSame(
-			array( 'lastActionedExpressSetups' => array() ),
+		$this->assertEquals(
+			array( 'lastActionedExpressSetups' => (object) array() ),
 			$request(),
-			'The datapoint should return the default user settings.'
+			'The datapoint should return an empty object for the default express setup timestamps.'
 		);
 	}
 
@@ -78,9 +78,12 @@ class Get_User_SettingsTest extends TestCase {
 
 		$data_request = new Data_Request( 'GET', 'modules', 'reader-revenue-manager', 'user-settings', array() );
 		$request      = $this->datapoint->create_request( $data_request );
+		$expected     = $settings;
 
-		$this->assertSame(
-			$settings,
+		$expected['lastActionedExpressSetups'] = (object) $expected['lastActionedExpressSetups'];
+
+		$this->assertEquals(
+			$expected,
 			$request(),
 			'The datapoint should return the saved user settings.'
 		);

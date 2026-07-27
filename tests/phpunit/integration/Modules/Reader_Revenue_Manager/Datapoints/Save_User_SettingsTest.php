@@ -81,15 +81,18 @@ class Save_User_SettingsTest extends TestCase {
 		$request      = $this->datapoint->create_request( $data_request );
 		$response     = $request();
 
-		$expected = array(
+		$expected          = array(
 			'lastActionedExpressSetups' => array(
 				'publicationSetup' => 1752451200,
 				'productSetup'     => 1752537600,
 			),
 		);
+		$expected_response = $expected;
 
-		$this->assertSame(
-			$expected,
+		$expected_response['lastActionedExpressSetups'] = (object) $expected_response['lastActionedExpressSetups'];
+
+		$this->assertEquals(
+			$expected_response,
 			$response,
 			'The datapoint should merge and return the updated user settings.'
 		);
@@ -97,6 +100,17 @@ class Save_User_SettingsTest extends TestCase {
 			$expected,
 			$this->user_settings->get(),
 			'The datapoint should persist the merged user settings.'
+		);
+	}
+
+	public function test_create_request__returns_empty_last_actioned_express_setups_as_object() {
+		$data_request = new Data_Request( 'POST', 'modules', 'reader-revenue-manager', 'user-settings', array() );
+		$request      = $this->datapoint->create_request( $data_request );
+
+		$this->assertEquals(
+			array( 'lastActionedExpressSetups' => (object) array() ),
+			$request(),
+			'The datapoint should return an empty object for the default express setup timestamps.'
 		);
 	}
 
@@ -116,9 +130,9 @@ class Save_User_SettingsTest extends TestCase {
 		);
 		$request      = $this->datapoint->create_request( $data_request );
 
-		$this->assertSame(
+		$this->assertEquals(
 			array(
-				'lastActionedExpressSetups' => array(
+				'lastActionedExpressSetups' => (object) array(
 					'publicationSetup' => 1752451200,
 				),
 			),

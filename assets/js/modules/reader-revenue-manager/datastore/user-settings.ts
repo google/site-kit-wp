@@ -93,16 +93,7 @@ function validateUserSettings( settings: unknown ): void {
 
 const fetchStoreReducerCallback = createReducer(
 	( state: UserSettingsState, settings: UserSettings ) => {
-		const lastActionedExpressSetups = isPlainObject(
-			settings.lastActionedExpressSetups
-		)
-			? settings.lastActionedExpressSetups
-			: {};
-
-		state.userSettings = {
-			...settings,
-			lastActionedExpressSetups,
-		};
+		state.userSettings = settings;
 	}
 );
 

@@ -154,22 +154,6 @@ describe( 'modules/reader-revenue-manager user settings', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getUserSettings', () => {
-			it( 'should expose an empty lastActionedExpressSetups array as an object', () => {
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetUserSettings( {
-						lastActionedExpressSetups: [],
-					} );
-
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getUserSettings()
-				).toEqual( {
-					lastActionedExpressSetups: {},
-				} );
-			} );
-
 			it( 'should fetch the settings when they are not loaded', async () => {
 				fetchMock.getOnce( userSettingsEndpoint, {
 					body: settings,
