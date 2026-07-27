@@ -17,6 +17,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import { ReactElement } from 'react';
+import TestRenderer from 'react-test-renderer';
+
+/**
  * Internal dependencies
  */
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
@@ -32,6 +38,21 @@ import {
 } from '@tests/js/test-utils';
 
 type Registry = ReturnType< typeof createTestRegistry >;
+
+/**
+ * Renders a PDF element to its JSON tree as a string.
+ *
+ * A style passed as an array and a prop on a `@react-pdf` primitive never reach
+ * the rendered DOM, so an assertion on either one reads the JSON tree.
+ *
+ * @since n.e.x.t
+ *
+ * @param element The PDF element to render.
+ * @return The rendered tree, as a JSON string.
+ */
+export function renderJSON( element: ReactElement ) {
+	return JSON.stringify( TestRenderer.create( element ).toJSON() );
+}
 
 /**
  * Provides the site info, user authentication, and empty survey timeout list a

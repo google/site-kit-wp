@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\Storage;
 
 use Google\Site_Kit\Core\Storage\Post_Meta;
@@ -39,7 +36,8 @@ class Post_MetaTest extends TestCase {
 
 		$this->assertEquals(
 			$meta_value,
-			$post_meta->get( $post_id, $meta_key, true )
+			$post_meta->get( $post_id, $meta_key, true ),
+			'Post metadata should return the stored value.'
 		);
 	}
 
@@ -52,8 +50,8 @@ class Post_MetaTest extends TestCase {
 		$meta_id = $post_meta->add( $post_id, $meta_key, $meta_value );
 		$meta    = $this->queryPostMeta( $post_id, $meta_key );
 
-		$this->assertGreaterThan( 0, $meta_id );
-		$this->assertEquals( $meta_value, $meta['meta_value'] );
+		$this->assertGreaterThan( 0, $meta_id, 'Adding post metadata should return a valid metadata ID.' );
+		$this->assertEquals( $meta_value, $meta['meta_value'], 'Added post metadata should persist the supplied value.' );
 	}
 
 	public function test_update() {
@@ -77,8 +75,8 @@ class Post_MetaTest extends TestCase {
 		$updated = $post_meta->update( $post_id, $meta_key, $meta_value );
 		$meta    = $this->queryPostMeta( $post_id, $meta_key );
 
-		$this->assertTrue( $updated );
-		$this->assertEquals( $meta_value, $meta['meta_value'] );
+		$this->assertTrue( $updated, 'Updating existing post metadata should succeed.' );
+		$this->assertEquals( $meta_value, $meta['meta_value'], 'Updated post metadata should persist the new value.' );
 	}
 
 	public function test_delete() {
@@ -100,7 +98,7 @@ class Post_MetaTest extends TestCase {
 
 		$deleted = $post_meta->delete( $post_id, $meta_key );
 
-		$this->assertTrue( $deleted );
+		$this->assertTrue( $deleted, 'Deleting existing post metadata should succeed.' );
 		$this->assertPostMetaNotExists( $post_id, $meta_key );
 	}
 }

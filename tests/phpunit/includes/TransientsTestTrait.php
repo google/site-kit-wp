@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests;
 
 trait TransientsTestTrait {
@@ -34,9 +32,15 @@ trait TransientsTestTrait {
 	protected function assertTransientsDeleted( $is_network_mode ) {
 		foreach ( $this->get_transient_keys() as $transient_key ) {
 			if ( $is_network_mode ) {
-				$this->assertFalse( get_site_transient( $transient_key ) );
+				$this->assertFalse(
+					get_site_transient( $transient_key ),
+					"{$transient_key} network transient should no longer exist."
+				);
 			} else {
-				$this->assertFalse( get_transient( $transient_key ) );
+				$this->assertFalse(
+					get_transient( $transient_key ),
+					"{$transient_key} transient should no longer exist."
+				);
 			}
 		}
 	}

@@ -331,6 +331,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * Adds custom errors if Google auth flow failed.
 	 *
 	 * @since 1.140.0
+	 * @since n.e.x.t Added the two-factor authentication error message.
 	 *
 	 * @param WP_Error $error WP_Error instance.
 	 * @return WP_Error $error WP_Error instance.
@@ -348,6 +349,16 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 				break;
 			case Authenticator::ERROR_SIGNIN_FAILED:
 				$error->add( self::MODULE_SLUG, __( 'The user is not registered on this site.', 'google-site-kit' ) );
+				break;
+			case Authenticator::ERROR_TWO_FACTOR_ENABLED:
+				$error->add(
+					self::MODULE_SLUG,
+					sprintf(
+						/* translators: %s: Sign in with Google service name */
+						__( 'An account with that email address uses two-factor authentication. To use %s, log in with your username and password, then connect your Google account on your profile page.', 'google-site-kit' ),
+						_x( 'Sign in with Google', 'Service name', 'google-site-kit' )
+					)
+				);
 				break;
 			default:
 				break;

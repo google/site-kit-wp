@@ -31,6 +31,10 @@ export const RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG =
 	'rrm-product-id-open-access-notice';
 export const RRM_PRODUCT_ID_INFO_NOTICE_SLUG = 'rrm-product-id-info-notice';
 export const RRM_SETUP_NOTIFICATION_ID = 'rrm-setup-notification';
+export const RRM_EXPRESS_SETUP_TRAFFIC_CTA_WIDGET_SLUG =
+	'rrmExpressSetupTrafficCTA';
+export const RRM_EXPRESS_SETUP_TRAFFIC_CTA_DISMISSED_KEY =
+	'rrm-express-setup-traffic-cta';
 export const RRM_SETUP_SUCCESS_NOTIFICATION_ID =
 	'setup-success-notification-rrm';
 export const RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID =
