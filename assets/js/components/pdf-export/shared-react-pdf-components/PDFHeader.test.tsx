@@ -17,15 +17,16 @@
  */
 
 /**
- * External dependencies
- */
-import TestRenderer from 'react-test-renderer';
-
-/**
  * Internal dependencies
  */
+import {
+	PDFChevronRight,
+	PDFLogoG,
+	SECTION_ICONS,
+} from '@/js/components/pdf-export/pdf-icons';
 import { PDF_SCALE, scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
-import { SECTION_ICONS } from '@/js/components/pdf-export/section-icons';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import { renderJSON } from '@/js/components/pdf-export/test-utils';
 import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
 	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
@@ -52,30 +53,30 @@ const sections = [
 	},
 ];
 
+const defaultProps: PDFHeaderProps = {
+	siteURL: 'https://www.example.com/',
+	dashboardURL: 'https://example.com/wp-admin/go-dashboard',
+	dateRange: { startDate: '2021-01-01', endDate: '2021-01-28' },
+	sections,
+};
+
 function renderPDFHeader( props: Partial< PDFHeaderProps > = {} ) {
-	return render(
-		<PDFHeader
-			siteURL="https://www.example.com/"
-			dashboardURL="https://example.com/wp-admin/go-dashboard"
-			dateRange={ { startDate: '2021-01-01', endDate: '2021-01-28' } }
-			sections={ sections }
-			{ ...props }
-		/>
-	);
+	return render( <PDFHeader { ...defaultProps } { ...props } /> );
+}
+
+function renderPDFHeaderJSON( props: Partial< PDFHeaderProps > = {} ) {
+	return renderJSON( <PDFHeader { ...defaultProps } { ...props } /> );
 }
 
 describe( 'PDFHeader', () => {
-	it( 'renders the Site Kit logo (colour "G" + wordmark)', () => {
-		const { container, getByText } = renderPDFHeader();
+	it( 'renders the Site Kit logo', () => {
+		const { getByText } = renderPDFHeader();
 
-		const svgs = Array.from( container.querySelectorAll( 'pdf-svg' ) );
-		// The colour Google "G" is the only SVG with exactly four paths.
-		expect(
-			svgs.find(
-				( svg ) => svg.querySelectorAll( 'pdf-path' ).length === 4
-			)
-		).toBeTruthy();
-		// The "Site Kit" wordmark is rendered as text rather than SVG paths.
+		// `?pdf` imports resolve to a shared mock, so this assertion covers
+		// the icon's size and color.
+		expect( renderPDFHeaderJSON() ).toContain(
+			renderJSON( <PDFLogoG size={ 24 } /> )
+		);
 		expect( getByText( 'Site Kit' ) ).toBeInTheDocument();
 	} );
 
@@ -137,14 +138,21 @@ describe( 'PDFHeader', () => {
 			'src',
 			'https://example.com/wp-admin/go-dashboard'
 		);
+	} );
 
-		// The trailing icon draws the view-dashboard chevron path.
-		const arrowPath = link
-			.closest( 'pdf-link' )
-			?.querySelector( 'pdf-path' );
-		expect( arrowPath ).toHaveAttribute(
-			'd',
-			'M3.34374 9.16666L2.60416 8.42708L6.03124 5L2.60416 1.57291L3.34374 0.833328L7.51041 5L3.34374 9.16666Z'
+	it( 'renders the chevron inside the "View dashboard in Site Kit" link', () => {
+		const { getByText } = renderPDFHeader();
+
+		const link = getByText( 'View dashboard in Site Kit' );
+
+		// `?pdf` imports resolve to a shared mock, so the fill color
+		// identifies the chevron among the header's icons.
+		expect(
+			link.closest( 'pdf-link' )?.querySelector( 'pdf-path' )
+		).toHaveAttribute( 'fill', PDF_COLORS.CONTENT_SECONDARY );
+
+		expect( renderPDFHeaderJSON() ).toContain(
+			renderJSON( <PDFChevronRight size={ 10 } /> )
 		);
 	} );
 
@@ -187,19 +195,7 @@ describe( 'PDFHeader', () => {
 	} );
 
 	it( 'keeps the full-width offsets fixed and scales the other lengths', () => {
-		const json = JSON.stringify(
-			TestRenderer.create(
-				<PDFHeader
-					siteURL="https://www.example.com/"
-					dashboardURL="https://example.com/wp-admin/go-dashboard"
-					dateRange={ {
-						startDate: '2021-01-01',
-						endDate: '2021-01-28',
-					} }
-					sections={ sections }
-				/>
-			).toJSON()
-		);
+		const json = renderPDFHeaderJSON();
 
 		// The full-width offsets stay fixed, so the header background reaches
 		// the page edges.
