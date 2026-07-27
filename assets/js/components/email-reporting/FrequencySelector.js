@@ -91,25 +91,28 @@ export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 		select( CORE_USER ).getEmailReportingNextReportTimestamp()
 	);
 
+	const timezone = useSelect( ( select ) =>
+		select( CORE_SITE ).getTimezone()
+	);
+
 	const { setEmailReportingFrequency } = useDispatch( CORE_USER );
 
 	const formattedNextReportDate = useMemo( () => {
-		if ( ! savedFrequency || ! nextReportTimestamp ) {
+		if ( ! savedFrequency || ! nextReportTimestamp || ! timezone ) {
 			return null;
 		}
 
 		// This constructs a date from a server-provided timestamp rather
 		// than the reference date, so using `new Date()` here is valid.
 		const nextReportDate = new Date( nextReportTimestamp * 1000 ); // eslint-disable-line sitekit/no-direct-date
-		const timezone = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
 
 		return nextReportDate.toLocaleDateString( getLocale(), {
-		    timeZone: timezone,
+			timeZone: timezone,
 			month: 'short',
 			day: 'numeric',
 			year: 'numeric',
 		} );
-	}, [ savedFrequency, nextReportTimestamp ] );
+	}, [ savedFrequency, nextReportTimestamp, timezone ] );
 
 	const weeklyDescription = sprintf(
 		/* translators: %s: localized day-of-week name (e.g. Monday). */
