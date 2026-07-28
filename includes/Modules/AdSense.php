@@ -10,8 +10,6 @@
  * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
-// phpcs:disable Generic.Metrics.CyclomaticComplexity.MaxExceeded
-
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
@@ -46,6 +44,14 @@ use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit\Modules\AdSense\Tag_Guard;
 use Google\Site_Kit\Modules\AdSense\Auto_Ad_Guard;
 use Google\Site_Kit\Modules\AdSense\Web_Tag;
+use Google\Site_Kit\Modules\AdSense\Datapoints\Get_Accounts;
+use Google\Site_Kit\Modules\AdSense\Datapoints\Get_Adunits;
+use Google\Site_Kit\Modules\AdSense\Datapoints\Get_Alerts;
+use Google\Site_Kit\Modules\AdSense\Datapoints\Get_Clients;
+use Google\Site_Kit\Modules\AdSense\Datapoints\Get_Notifications;
+use Google\Site_Kit\Modules\AdSense\Datapoints\Get_Report;
+use Google\Site_Kit\Modules\AdSense\Datapoints\Get_Sites;
+use Google\Site_Kit\Modules\AdSense\Datapoints\Sync_Ad_Blocking_Recovery_Tags;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\Adsense as Google_Service_Adsense;
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\Account;
@@ -311,191 +317,74 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:accounts'                        => array( 'service' => 'adsense' ),
-			'GET:adunits'                         => array( 'service' => 'adsense' ),
-			'GET:alerts'                          => array( 'service' => 'adsense' ),
-			'GET:clients'                         => array( 'service' => 'adsense' ),
-			'GET:notifications'                   => array( 'service' => '' ),
-			'GET:report'                          => array(
-				'service'   => 'adsense',
-				'shareable' => true,
+			'GET:accounts'                        => new Get_Accounts(
+				array(
+					'service' => function () {
+						return $this->get_service( 'adsense' );
+					},
+					'module'  => $this,
+				)
 			),
-			'GET:sites'                           => array( 'service' => 'adsense' ),
-			'POST:sync-ad-blocking-recovery-tags' => array( 'service' => 'adsense' ),
+			'GET:adunits'                         => new Get_Adunits(
+				array(
+					'service' => function () {
+						return $this->get_service( 'adsense' );
+					},
+					'module'  => $this,
+				)
+			),
+			'GET:alerts'                          => new Get_Alerts(
+				array(
+					'service' => function () {
+						return $this->get_service( 'adsense' );
+					},
+					'module'  => $this,
+				)
+			),
+			'GET:clients'                         => new Get_Clients(
+				array(
+					'service' => function () {
+						return $this->get_service( 'adsense' );
+					},
+					'module'  => $this,
+				)
+			),
+			'GET:notifications'                   => new Get_Notifications(
+				array(
+					'service'     => '',
+					'module'      => $this,
+					'account_url' => function () {
+						return $this->get_account_url();
+					},
+				)
+			),
+			'GET:report'                          => new Get_Report(
+				array(
+					'service'   => function () {
+						return $this->get_service( 'adsense' );
+					},
+					'shareable' => true,
+					'module'    => $this,
+				)
+			),
+			'GET:sites'                           => new Get_Sites(
+				array(
+					'service' => function () {
+						return $this->get_service( 'adsense' );
+					},
+					'module'  => $this,
+				)
+			),
+			'POST:sync-ad-blocking-recovery-tags' => new Sync_Ad_Blocking_Recovery_Tags(
+				array(
+					'service'                  => function () {
+						return $this->get_service( 'adsense' );
+					},
+					'module'                   => $this,
+					'ad_blocking_recovery_tag' => $this->ad_blocking_recovery_tag,
+				)
+			),
 		);
-	}
-
-	/**
-	 * Creates a request object for the given datapoint.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param Data_Request $data Data request object.
-	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
-	 *
-	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
-	 */
-	protected function create_data_request( Data_Request $data ) {
-		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:accounts':
-				$service = $this->get_service( 'adsense' );
-				return $service->accounts->listAccounts();
-			case 'GET:adunits':
-				if ( ! isset( $data['accountID'] ) || ! isset( $data['clientID'] ) ) {
-					$option            = $this->get_settings()->get();
-					$data['accountID'] = $option['accountID'];
-					if ( empty( $data['accountID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
-					}
-					$data['clientID'] = $option['clientID'];
-					if ( empty( $data['clientID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
-					}
-				}
-				$service = $this->get_service( 'adsense' );
-				return $service->accounts_adclients_adunits->listAccountsAdclientsAdunits( self::normalize_client_id( $data['accountID'], $data['clientID'] ) );
-			case 'GET:alerts':
-				if ( ! isset( $data['accountID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
-				}
-				$service = $this->get_service( 'adsense' );
-				return $service->accounts_alerts->listAccountsAlerts( self::normalize_account_id( $data['accountID'] ) );
-			case 'GET:clients':
-				if ( ! isset( $data['accountID'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
-						array( 'status' => 400 )
-					);
-				}
-				$service = $this->get_service( 'adsense' );
-				return $service->accounts_adclients->listAccountsAdclients( self::normalize_account_id( $data['accountID'] ) );
-			case 'GET:notifications':
-				return function () {
-					$settings = $this->get_settings()->get();
-
-					if ( empty( $settings['accountID'] ) ) {
-						return array();
-					}
-
-					$alerts = $this->get_data( 'alerts', array( 'accountID' => $settings['accountID'] ) );
-
-					if ( is_wp_error( $alerts ) || empty( $alerts ) ) {
-						return array();
-					}
-					$alerts = array_filter(
-						$alerts,
-						function ( Google_Service_Adsense_Alert $alert ) {
-							return 'SEVERE' === $alert->getSeverity();
-						}
-					);
-
-					// There is no SEVERE alert, return empty.
-					if ( empty( $alerts ) ) {
-						return array();
-					}
-
-					$notifications = array_map(
-						function ( Google_Service_Adsense_Alert $alert ) {
-							return array(
-								'id'            => 'adsense::' . $alert->getName(),
-								'description'   => $alert->getMessage(),
-								'isDismissible' => true,
-								'severity'      => 'win-info',
-								'ctaURL'        => $this->get_account_url(),
-								'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
-								'ctaTarget'     => '_blank',
-							);
-						},
-						$alerts
-					);
-
-					return array_values( $notifications );
-				};
-			case 'GET:report':
-				$start_date = $data['startDate'];
-				$end_date   = $data['endDate'];
-				if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
-					$dates = $this->date_range_to_dates( 'last-28-days' );
-					if ( is_wp_error( $dates ) ) {
-						return $dates;
-					}
-
-					list ( $start_date, $end_date ) = $dates;
-				}
-
-				$args = array(
-					'start_date' => $start_date,
-					'end_date'   => $end_date,
-				);
-
-				$metrics = $this->parse_string_list( $data['metrics'] );
-				if ( ! empty( $metrics ) ) {
-					if ( $this->is_shared_data_request( $data ) ) {
-						try {
-							$this->validate_shared_report_metrics( $metrics );
-						} catch ( Invalid_Report_Metrics_Exception $exception ) {
-							return new WP_Error(
-								'invalid_adsense_report_metrics',
-								$exception->getMessage()
-							);
-						}
-					}
-
-					$args['metrics'] = $metrics;
-				}
-
-				$dimensions = $this->parse_string_list( $data['dimensions'] );
-				if ( ! empty( $dimensions ) ) {
-					if ( $this->is_shared_data_request( $data ) ) {
-						try {
-							$this->validate_shared_report_dimensions( $dimensions );
-						} catch ( Invalid_Report_Dimensions_Exception $exception ) {
-							return new WP_Error(
-								'invalid_adsense_report_dimensions',
-								$exception->getMessage()
-							);
-						}
-					}
-
-					$args['dimensions'] = $dimensions;
-				}
-
-				$orderby = $this->parse_earnings_orderby( $data['orderby'] );
-				if ( ! empty( $orderby ) ) {
-					$args['sort'] = $orderby;
-				}
-
-				if ( ! empty( $data['limit'] ) ) {
-					$args['limit'] = $data['limit'];
-				}
-
-				return $this->create_adsense_earning_data_request( array_filter( $args ) );
-			case 'GET:sites':
-				if ( ! isset( $data['accountID'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
-						array( 'status' => 400 )
-					);
-				}
-				$service = $this->get_service( 'adsense' );
-				return $service->accounts_sites->listAccountsSites( self::normalize_account_id( $data['accountID'] ) );
-			case 'POST:sync-ad-blocking-recovery-tags':
-				$settings = $this->get_settings()->get();
-				if ( empty( $settings['accountID'] ) ) {
-					return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 500 ) );
-				}
-				$service = $this->get_service( 'adsense' );
-				return $service->accounts->getAdBlockingRecoveryTag( self::normalize_account_id( $settings['accountID'] ) );
-		}
-
-		return parent::create_data_request( $data );
 	}
 
 	/**
