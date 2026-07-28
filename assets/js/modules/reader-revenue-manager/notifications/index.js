@@ -35,11 +35,11 @@ import {
 } from '@/js/googlesitekit/notifications/constants';
 import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
 import {
+	ExpressSetupResumeNewsletterNotification,
 	PolicyViolationNotification,
 	RRMSetupSuccessSubtleNotification,
 	ReaderRevenueManagerSetupCTABanner,
 } from '@/js/modules/reader-revenue-manager/components/dashboard';
-import ExpressSetupResumeNewsletterNotification from '@/js/modules/reader-revenue-manager/components/dashboard/ExpressSetupResumeNewsletterNotification';
 import ProductIDContributionsNotification from '@/js/modules/reader-revenue-manager/components/dashboard/ProductIDContributionsNotification';
 import ProductIDSubscriptionsNotification from '@/js/modules/reader-revenue-manager/components/dashboard/ProductIDSubscriptionsNotification';
 import PublicationApprovedOverlayNotification, {
