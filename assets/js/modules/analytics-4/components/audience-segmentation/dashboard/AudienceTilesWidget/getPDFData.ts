@@ -22,6 +22,7 @@
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
 import {
+	CUSTOM_DIMENSION_DEFINITIONS,
 	MODULES_ANALYTICS_4,
 	RESOURCE_TYPE_AUDIENCE,
 	RESOURCE_TYPE_CUSTOM_DIMENSION,
@@ -51,6 +52,9 @@ const MIN_AUDIENCE_TILES = 2;
 const MAX_AUDIENCE_TILES = 3;
 /** Each audience fetches its own cities, content, and content page titles reports. */
 const REPORTS_PER_AUDIENCE = 3;
+
+const postTypeDimension =
+	CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type.parameterName;
 
 /** The loaded audience cards, or `null` when the section is omitted. */
 export interface AudienceTilesPDFData {
@@ -226,9 +230,6 @@ async function fetchAudienceReports(
 	return { mainResult, siteKitResult, totalPageviewsResult, cardResults };
 }
 
-/** The `googlesitekit_post_type` custom dimension the top content report reads. */
-const POST_TYPE_CUSTOM_DIMENSION = 'googlesitekit_post_type';
-
 /** The two partial-data flags one audience card renders its badges from. */
 export interface AudiencePartialDataFlags {
 	/** Whether the audience is still collecting full data for the date range. */
@@ -293,7 +294,7 @@ export function getAudiencePartialDataFlags(
 		! isAudiencePartialData &&
 		!! registry
 			.select( MODULES_ANALYTICS_4 )
-			.isCustomDimensionPartialData( POST_TYPE_CUSTOM_DIMENSION );
+			.isCustomDimensionPartialData( postTypeDimension );
 
 	return { isAudiencePartialData, isTopContentPartialData };
 }
@@ -452,7 +453,7 @@ export default async function getPDFData( {
 			registry
 				.resolveSelect( MODULES_ANALYTICS_4 )
 				.getResourceDataAvailabilityDate(
-					POST_TYPE_CUSTOM_DIMENSION,
+					postTypeDimension,
 					RESOURCE_TYPE_CUSTOM_DIMENSION
 				),
 		] );

@@ -25,6 +25,7 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { AudiencePartialDataFlags } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/getPDFData';
 import PDFYourVisitorGroups from './PDFYourVisitorGroups';
 
 /**
@@ -40,10 +41,7 @@ import PDFYourVisitorGroups from './PDFYourVisitorGroups';
  */
 function buildAudience(
 	name: string,
-	flags: {
-		isAudiencePartialData?: boolean;
-		isTopContentPartialData?: boolean;
-	} = {}
+	flags: Partial< AudiencePartialDataFlags > = {}
 ) {
 	const { isAudiencePartialData = false, isTopContentPartialData = false } =
 		flags;
