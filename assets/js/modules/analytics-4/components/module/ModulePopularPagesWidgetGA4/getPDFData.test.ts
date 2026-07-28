@@ -20,11 +20,6 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock-jest';
-import {
-	createTestRegistry,
-	provideSiteInfo,
-	waitForDefaultTimeouts,
-} from 'tests/js/utils';
 
 /**
  * WordPress dependencies
@@ -34,7 +29,16 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { getFullURL } from '@/js/util';
+import {
+	createTestRegistry,
+	provideSiteInfo,
+	provideUserInfo,
+	waitForDefaultTimeouts,
+} from '@tests/js/utils';
 import getPDFData from './getPDFData';
 
 type Registry = WPDataRegistry & GetPDFDataParams[ 'registry' ];
@@ -93,22 +97,52 @@ const TITLES_REPORT = {
 };
 
 /**
- * Per-page links the loader builds for each page path, from the default test
- * admin URL and reference site URL. The title links to the entity dashboard,
- * and the permaLink to the page itself.
+ * Analytics property ID the registry settings hold, for the page links.
  */
-const LINKS = {
-	'/': {
-		detailsURL:
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=http%3A%2F%2Fexample.com%2F',
-		permaLink: 'http://example.com/',
-	},
-	'/about': {
-		detailsURL:
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=http%3A%2F%2Fexample.com%2Fabout',
-		permaLink: 'http://example.com/about',
-	},
-};
+const PROPERTY_ID = '123456789';
+
+/**
+ * Builds the Analytics report link the loader resolves for a page path.
+ *
+ * The link comes from the same selector the loader uses, so a test checks the
+ * page filter and date range, not the URL format.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Registry} registry Registry that holds the Analytics property.
+ * @param {string}   pagePath Page path from a report row.
+ * @return {string} The All pages and screens report link for the page.
+ */
+function getExpectedPageLink( registry: Registry, pagePath: string ): string {
+	return registry
+		.select( MODULES_ANALYTICS_4 )
+		.getServiceReportURL( 'all-pages-and-screens', {
+			filters: { unifiedPagePathScreen: pagePath },
+			dates: { startDate: DATES.startDate, endDate: DATES.endDate },
+		} );
+}
+
+/**
+ * Builds the entity dashboard link the loader resolves for a view-only page path.
+ *
+ * The link comes from the same selector the loader uses, so a test checks the
+ * title falls back to the page's entity dashboard, not the URL format.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Registry} registry Registry that holds the reference site URL.
+ * @param {string}   pagePath Page path from a report row.
+ * @return {string} The page's entity dashboard link.
+ */
+function getExpectedDetailsURL( registry: Registry, pagePath: string ): string {
+	const siteURL = registry.select( CORE_SITE ).getReferenceSiteURL();
+
+	return registry
+		.select( CORE_SITE )
+		.getAdminURL( 'googlesitekit-dashboard', {
+			permaLink: getFullURL( siteURL, pagePath ),
+		} );
+}
 
 /**
  * Sets up `fetchMock` so each report request returns the matching fixture. Only
@@ -139,6 +173,12 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
 		provideSiteInfo( registry );
+		provideUserInfo( registry );
+		// Receive the Analytics property so each page link builds without
+		// fetching the module settings, which these report tests don't mock.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( { propertyID: PROPERTY_ID } );
 	} );
 
 	it( 'returns rows, page titles, and per-page links from the two reports', async () => {
@@ -161,16 +201,73 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		// The loader requests the main report first, then the page titles report.
 		expect( requestedReports ).toEqual( [ 'main', 'page-titles' ] );
 
+		// An unset Analytics property would make the expected link and the
+		// loader's link both empty, so check the link holds a URL first.
+		const homeLink = getExpectedPageLink( registry, '/' );
+		expect( homeLink ).toBeTruthy();
+
 		expect( result ).toEqual( {
 			data: {
 				rows: MAIN_REPORT.rows,
 				titles: { '/': 'Home', '/about': 'About' },
-				links: LINKS,
+				links: {
+					'/': {
+						titleURL: homeLink,
+						permaLink: 'http://example.com/',
+					},
+					'/about': {
+						titleURL: getExpectedPageLink( registry, '/about' ),
+						permaLink: 'http://example.com/about',
+					},
+				},
+			},
+		} );
+	} );
+
+	it( 'links each title to its entity dashboard on a view-only dashboard', async () => {
+		fetchMock.get( reportEndpoint, ( requestURL ) => ( {
+			body: requestURL.includes( 'pageTitle' )
+				? TITLES_REPORT
+				: MAIN_REPORT,
+			status: 200,
+		} ) );
+
+		const result = await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+			viewOnly: true,
+		} );
+
+		// A view-only user can't reach the Analytics report, so each title falls
+		// back to the page's entity dashboard, the same link the dashboard widget
+		// renders. The URL line still links to the page itself.
+		const homeDetailsURL = getExpectedDetailsURL( registry, '/' );
+		expect( homeDetailsURL ).toBeTruthy();
+		expect( homeDetailsURL ).not.toBe(
+			getExpectedPageLink( registry, '/' )
+		);
+
+		expect( result ).toEqual( {
+			data: {
+				rows: MAIN_REPORT.rows,
+				titles: { '/': 'Home', '/about': 'About' },
+				links: {
+					'/': {
+						titleURL: homeDetailsURL,
+						permaLink: 'http://example.com/',
+					},
+					'/about': {
+						titleURL: getExpectedDetailsURL( registry, '/about' ),
+						permaLink: 'http://example.com/about',
+					},
+				},
 			},
 		} );
 	} );
@@ -214,6 +311,7 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		expect( result.data?.titles ).toEqual( {
@@ -228,7 +326,12 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 
 		const { signal } = new AbortController();
 
-		await getPDFData( { registry, dates: DATES, signal } );
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal,
+			viewOnly: false,
+		} );
 
 		// The registry starts resolver runs from a timeout. Wait for those
 		// timeouts, so an extra run would add its request to the calls this test
@@ -254,6 +357,7 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		await waitForDefaultTimeouts();
@@ -272,6 +376,7 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: controller.signal,
+			viewOnly: false,
 		} );
 
 		expect( result ).toEqual( { data: null } );
@@ -298,6 +403,7 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: controller.signal,
+			viewOnly: false,
 		} );
 
 		// Wait for the main report request to dispatch before aborting.
@@ -347,6 +453,7 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: firstController.signal,
+			viewOnly: false,
 		} );
 
 		while ( deferredResolvers.length < 1 ) {
@@ -363,13 +470,23 @@ describe( 'ModulePopularPagesWidgetGA4 getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		expect( secondRun ).toEqual( {
 			data: {
 				rows: MAIN_REPORT.rows,
 				titles: { '/': 'Home', '/about': 'About' },
-				links: LINKS,
+				links: {
+					'/': {
+						titleURL: getExpectedPageLink( registry, '/' ),
+						permaLink: 'http://example.com/',
+					},
+					'/about': {
+						titleURL: getExpectedPageLink( registry, '/about' ),
+						permaLink: 'http://example.com/about',
+					},
+				},
 			},
 		} );
 		expect( fetchMock.calls( reportEndpoint ) ).toHaveLength( 3 );

@@ -17,7 +17,7 @@ Traits are a mechanism for code reuse in PHP that enables a class to use methods
 
 ### Method_Proxy_Trait
 
-**Location**: `includes/Core/Util/Method_Proxy_Trait.php:1-51`
+**Location**: `includes/Core/Util/Method_Proxy_Trait.php`
 
 Provides method proxies for clean WordPress hook registration.
 
@@ -86,26 +86,31 @@ Provides user ID management and context switching.
 
 ```php
 trait User_Aware_Trait {
-    protected $user_id = 0;
+    private $user_id;
 
     /**
-     * Get current user ID.
+     * Gets the associated user ID.
      *
      * \@return int User ID.
      */
     public function get_user_id() {
-        return $this->user_id;
+        return (int) $this->user_id;
     }
 
     /**
-     * Switch to a different user context.
+     * Switches the current user to the one with the given ID.
      *
-     * \@param int $user_id User ID to switch to.
-     * \@return bool True on success.
+     * \@param int $user_id User ID.
+     * \@return callable A closure to switch back to the original user.
      */
     public function switch_user( $user_id ) {
+        $prev_user_id = $this->user_id;
+
         $this->user_id = (int) $user_id;
-        return true;
+
+        return function () use ( $prev_user_id ) {
+            $this->user_id = $prev_user_id;
+        };
     }
 }
 ```
@@ -135,7 +140,7 @@ final class User_Options implements User_Options_Interface {
 
 ### Module_With_Settings_Trait
 
-**Location**: `includes/Core/Modules/Module_With_Settings_Trait.php:1-55`
+**Location**: `includes/Core/Modules/Module_With_Settings_Trait.php`
 
 Provides lazy-loaded settings management for modules.
 
@@ -185,29 +190,24 @@ final class Analytics_4 extends Module implements Module_With_Settings {
 
 **Location**: `includes/Core/Modules/Module_With_Scopes_Trait.php`
 
-Provides OAuth scope management for modules.
+Registers the hook that adds the module's required OAuth scopes to the global
+`googlesitekit_auth_scopes` list. The trait does not implement `get_scopes()` itself;
+that method is declared by the `Module_With_Scopes` interface and implemented directly
+by each module.
 
 ```php
 trait Module_With_Scopes_Trait {
-    protected $scopes = array();
 
     /**
-     * Set up required OAuth scopes.
-     *
-     * \@return array List of OAuth scopes.
+     * Registers the hook to add required scopes.
      */
-    abstract protected function setup_scopes();
-
-    /**
-     * Get required OAuth scopes.
-     *
-     * \@return array OAuth scopes.
-     */
-    public function get_scopes() {
-        if ( empty( $this->scopes ) ) {
-            $this->scopes = (array) $this->setup_scopes();
-        }
-        return $this->scopes;
+    private function register_scopes_hook() {
+        add_filter(
+            'googlesitekit_auth_scopes',
+            function ( array $scopes ) {
+                return array_merge( $scopes, $this->get_scopes() );
+            }
+        );
     }
 }
 ```
@@ -218,18 +218,20 @@ trait Module_With_Scopes_Trait {
 final class Analytics_4 extends Module implements Module_With_Scopes {
     use Module_With_Scopes_Trait;
 
-    protected function setup_scopes() {
-        return array(
-            'https://www.googleapis.com/auth/analytics.readonly',
-            'https://www.googleapis.com/auth/analytics.edit',
-        );
+    public function register() {
+        $this->register_scopes_hook();
+    }
+
+    // Required by the Module_With_Scopes interface.
+    public function get_scopes() {
+        return array( self::READONLY_SCOPE );
     }
 }
 ```
 
 ### Module_With_Owner_Trait
 
-**Location**: `includes/Core/Modules/Module_With_Owner_Trait.php:1-81`
+**Location**: `includes/Core/Modules/Module_With_Owner_Trait.php`
 
 Manages module ownership and provides owner-specific OAuth client.
 
@@ -238,9 +240,9 @@ trait Module_With_Owner_Trait {
     protected $owner_oauth_client;
 
     /**
-     * Get the module owner's user ID.
+     * Gets an owner ID for the module.
      *
-     * \@return int Owner user ID.
+     * \@return int Owner ID.
      */
     public function get_owner_id() {
         if ( ! $this instanceof Module_With_Settings ) {
@@ -248,29 +250,29 @@ trait Module_With_Owner_Trait {
         }
 
         $settings = $this->get_settings()->get();
-        return empty( $settings['ownerID'] ) ? 0 : $settings['ownerID'];
+        if ( empty( $settings['ownerID'] ) ) {
+            return 0;
+        }
+
+        return $settings['ownerID'];
     }
 
     /**
-     * Get OAuth client for the module owner.
+     * Gets the OAuth_Client instance for the module owner.
      *
-     * \@return OAuth_Client Owner's OAuth client.
+     * \@return OAuth_Client OAuth_Client instance.
      */
     public function get_owner_oauth_client() {
         if ( $this->owner_oauth_client instanceof OAuth_Client ) {
             return $this->owner_oauth_client;
         }
 
-        // Create user options for module owner
-        $user_options = new User_Options(
-            $this->context,
-            $this->get_owner_id()
-        );
+        $user_options = new User_Options( $this->context, $this->get_owner_id() );
 
         $this->owner_oauth_client = new OAuth_Client(
             $this->context,
             $this->options,
-            $user_options,  // Owner's context
+            $user_options,
             $this->authentication->credentials(),
             $this->authentication->get_google_proxy(),
             new Profile( $user_options ),
@@ -278,22 +280,6 @@ trait Module_With_Owner_Trait {
         );
 
         return $this->owner_oauth_client;
-    }
-
-    /**
-     * Set the module owner.
-     *
-     * \@param int $owner_id Owner user ID.
-     * \@return bool True on success.
-     */
-    public function set_owner_id( $owner_id ) {
-        if ( ! $this instanceof Module_With_Settings ) {
-            return false;
-        }
-
-        return $this->get_settings()->merge( array(
-            'ownerID' => (int) $owner_id,
-        ) );
     }
 }
 ```
@@ -322,26 +308,29 @@ Provides asset management for modules.
 
 ```php
 trait Module_With_Assets_Trait {
-    protected $module_assets;
+    protected $registerable_assets;
 
     /**
-     * Set up module assets.
+     * Sets up the module's assets to register.
      *
-     * \@return array List of Asset objects.
+     * \@return Asset[] List of Asset objects.
      */
     abstract protected function setup_assets();
 
     /**
-     * Get module assets.
+     * Gets the assets to register for the module.
      *
-     * \@return array Asset objects.
+     * \@return Asset[] List of Asset objects.
      */
     public function get_assets() {
-        if ( null === $this->module_assets ) {
-            $this->module_assets = (array) $this->setup_assets();
+        if ( null === $this->registerable_assets ) {
+            $this->registerable_assets = $this->setup_assets();
         }
-        return $this->module_assets;
+        return $this->registerable_assets;
     }
+
+    // Also provides enqueue_assets( $asset_context ), which enqueues every
+    // registered asset whose context matches the given page context.
 }
 ```
 
@@ -371,29 +360,32 @@ final class Analytics_4 extends Module implements Module_With_Assets {
 
 **Location**: `includes/Core/Modules/Module_With_Tag_Trait.php`
 
-Manages Google tracking tag output.
+Provides helpers for detecting whether a module's tracking tag has been placed in
+page content and for identifying the URL where the tag should appear.
 
 ```php
 trait Module_With_Tag_Trait {
-    protected $tag;
 
     /**
-     * Set up module tag.
+     * Checks if the module tag is found in the provided content.
      *
-     * \@return Module_Tag Tag instance.
+     * \@param string $content Content to search for the tags.
+     * \@return int A Module_Tag_Matchers::TAG_* constant:
+     *              TAG_EXISTS_WITH_COMMENTS, TAG_EXISTS, or NO_TAG_FOUND.
      */
-    abstract protected function setup_tag();
+    public function has_placed_tag_in_content( $content ) {
+        // Searches for Site Kit comment markers and regex patterns
+        // returned by $this->get_tag_matchers()->regex_matchers().
+    }
 
     /**
-     * Get module tag instance.
+     * Gets the URL of the page where a tag for the module would be placed.
+     * Defaults to home_url(); modules like Sign in with Google override this.
      *
-     * \@return Module_Tag Tag instance.
+     * \@return string The page URL where tags are detected.
      */
-    public function get_tag() {
-        if ( ! $this->tag instanceof Module_Tag ) {
-            $this->tag = $this->setup_tag();
-        }
-        return $this->tag;
+    public function get_content_url() {
+        return home_url();
     }
 }
 ```
@@ -401,19 +393,14 @@ trait Module_With_Tag_Trait {
 **Usage**:
 
 ```php
-final class Analytics_4 extends Module implements Module_With_Tag {
-    use Module_With_Tag_Trait;
-
-    protected function setup_tag() {
-        return new Tag( $this->options, $this->get_settings() );
-    }
-
-    public function register() {
-        if ( $this->is_connected() ) {
-            $this->get_tag()->register();
-        }
-    }
+// Check whether the module's tag is present in a page's HTML content.
+$result = $module->has_placed_tag_in_content( $page_html );
+if ( Module_Tag_Matchers::NO_TAG_FOUND !== $result ) {
+    // Tag was detected.
 }
+
+// Get the URL to fetch when verifying tag placement.
+$check_url = $module->get_content_url();
 ```
 
 ### Module_With_Data_Available_State_Trait

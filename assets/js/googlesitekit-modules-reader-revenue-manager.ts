@@ -22,12 +22,15 @@
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import Notifications from 'googlesitekit-notifications';
+import Widgets from 'googlesitekit-widgets';
 import {
 	registerModule,
 	registerNotifications,
 	registerStore,
+	registerWidgets,
 } from './modules/reader-revenue-manager';
 
 registerStore( Data );
 registerModule( Modules );
+registerWidgets( Widgets );
 registerNotifications( Notifications );

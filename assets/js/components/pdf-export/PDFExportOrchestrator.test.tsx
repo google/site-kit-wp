@@ -22,9 +22,17 @@
 import { pdf } from '@react-pdf/renderer';
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -34,20 +42,23 @@ import {
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
 import {
 	act,
 	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
+	provideUserCapabilities,
 	provideUserInfo,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
 import { registerPDFFonts } from './pdf-fonts-react';
+import { SECTION_ICONS } from './pdf-icons';
+import { PDF_MEASURE_PAGE_HEIGHT, PDF_PAGE_BOTTOM_PADDING } from './pdf-theme';
+import { triggerDownload } from './pdf-utils';
 import PDFExportOrchestrator from './PDFExportOrchestrator';
-import { SECTION_ICONS } from './section-icons';
 import { PDFHeaderSection, PDFReportArea } from './types';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -73,6 +84,32 @@ jest.mock( './pdf-fonts-react', () => ( {
 
 function NullComponent() {
 	return null;
+}
+
+// The bottom edge of the layout fixture the mocked `toBlob()` passes to
+// `onRender` (see `MOCK_PDF_LAYOUT` in `__mocks__/@react-pdf/renderer.js`).
+const MOCKED_MEASURED_HEIGHT = 500;
+
+/**
+ * Builds a `pdf()` implementation whose `toBlob()` fires the document's
+ * `onRender` callback with the given layout, overriding the mock's fixture.
+ *
+ * @since n.e.x.t
+ *
+ * @param layout The layout to pass to `onRender`.
+ * @return The `pdf()` implementation.
+ */
+function pdfImplementationWithLayout( layout: unknown ) {
+	return ( element: {
+		props?: { onRender?: ( renderedLayout: unknown ) => void };
+	} ) => ( {
+		toBlob: () => {
+			element?.props?.onRender?.( layout );
+			return Promise.resolve(
+				new Blob( [ 'mock-pdf' ], { type: 'application/pdf' } )
+			);
+		},
+	} );
 }
 
 describe( 'PDFExportOrchestrator', () => {
@@ -104,6 +141,7 @@ describe( 'PDFExportOrchestrator', () => {
 		// call that the test still needs to check.
 		( pdf as jest.Mock ).mockClear();
 		jest.mocked( registerPDFFonts ).mockClear();
+		jest.mocked( triggerDownload ).mockClear();
 		mockTrackEvent.mockClear();
 
 		// Put the real `AbortController` back after a test replaced it with the
@@ -119,7 +157,7 @@ describe( 'PDFExportOrchestrator', () => {
 	 * Registers a widget area and one pdf widget in the Traffic context, so a
 	 * test can give the orchestrator a widget to export.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param  areaSlug   Slug of the widget area.
 	 * @param  widgetSlug Slug of the pdf widget.
@@ -152,7 +190,7 @@ describe( 'PDFExportOrchestrator', () => {
 	/**
 	 * Registers a PDF widget and its area in a dashboard context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param  contextSlug The dashboard context the area belongs to.
 	 * @param  areaSlug    The widget area to register in that context.
@@ -186,10 +224,21 @@ describe( 'PDFExportOrchestrator', () => {
 		dispatch.assignWidget( widgetSlug, areaSlug );
 	}
 
-	function renderOrchestrator() {
+	/**
+	 * Renders the orchestrator under a dashboard view context.
+	 *
+	 * @since 1.181.0
+	 * @since n.e.x.t Added the `viewContext` parameter.
+	 *
+	 * @param {string} viewContext The dashboard view context to render under.
+	 * @return {Object} The render result for the orchestrator.
+	 */
+	function renderOrchestrator(
+		viewContext: string = VIEW_CONTEXT_MAIN_DASHBOARD
+	) {
 		return render( <PDFExportOrchestrator onComplete={ () => {} } />, {
 			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			viewContext,
 		} );
 	}
 
@@ -285,13 +334,166 @@ describe( 'PDFExportOrchestrator', () => {
 
 		expect( getData ).toHaveBeenCalledTimes( 1 );
 
-		const { dates, signal } = getData.mock.calls[ 0 ][ 0 ];
-		// End date is shifted back one day from the reference date.
+		const { dates, signal, viewOnly } = getData.mock.calls[ 0 ][ 0 ];
+		// The end date shifts back one day from the reference date.
 		expect( dates.endDate ).toBe( '2021-01-09' );
 		expect( dates.compareStartDate ).toBeDefined();
 		expect( signal ).toBeInstanceOf( AbortSignal );
+		// The main dashboard isn't view-only, so `viewOnly` is false and each
+		// widget's `getData` loader resolves the links the PDF shows.
+		expect( viewOnly ).toBe( false );
+
+		// A measurement pass and a final pass.
+		expect( pdf ).toHaveBeenCalledTimes( 2 );
+	} );
+
+	it( 'sizes the final page to the measured content height plus the bottom padding', async () => {
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [ 'trafficWidget' ],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		expect( pdf ).toHaveBeenCalledTimes( 2 );
+
+		const measurementPass = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
+		expect( measurementPass.props.pageHeight ).toBe(
+			PDF_MEASURE_PAGE_HEIGHT
+		);
+		expect( measurementPass.props.onRender ).toEqual(
+			expect.any( Function )
+		);
+
+		const finalPass = ( pdf as jest.Mock ).mock.calls[ 1 ][ 0 ];
+		expect( finalPass.props.pageHeight ).toBe(
+			MOCKED_MEASURED_HEIGHT + PDF_PAGE_BOTTOM_PADDING
+		);
+		expect( finalPass.props.onRender ).toBeUndefined();
+	} );
+
+	it( 'passes the section anchors extracted from the measurement pass to the final pass', async () => {
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [ 'trafficWidget' ],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		const measurementPass = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
+		expect( measurementPass.props.sectionAnchors ).toBeUndefined();
+
+		// The section node in the mock layout sits at 200 + 24 = 224.
+		const finalPass = ( pdf as jest.Mock ).mock.calls[ 1 ][ 0 ];
+		expect( finalPass.props.sectionAnchors ).toEqual( [
+			{ id: 'section-mockArea', top: 224 },
+		] );
+	} );
+
+	it( 'caps the final page height at the measurement page height', async () => {
+		( pdf as jest.Mock ).mockImplementationOnce(
+			pdfImplementationWithLayout( {
+				_INTERNAL__LAYOUT__DATA_: {
+					children: [
+						{
+							children: [
+								{
+									box: {
+										top: 0,
+										height: PDF_MEASURE_PAGE_HEIGHT,
+									},
+								},
+							],
+						},
+					],
+				},
+			} )
+		);
+
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [ 'trafficWidget' ],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		const finalPass = ( pdf as jest.Mock ).mock.calls[ 1 ][ 0 ];
+		expect( finalPass.props.pageHeight ).toBe( PDF_MEASURE_PAGE_HEIGHT );
+	} );
+
+	it( 'transitions to error and skips the final pass when the layout measurement fails', async () => {
+		( pdf as jest.Mock ).mockImplementationOnce(
+			pdfImplementationWithLayout( { unexpected: 'shape' } )
+		);
+
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [ 'trafficWidget' ],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'error' );
+		} );
 
 		expect( pdf ).toHaveBeenCalledTimes( 1 );
+		expect( triggerDownload ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should pass viewOnly as true to each widget loader on a view-only dashboard', async () => {
+		// On a view-only dashboard, the orchestrator reads the viewable
+		// modules, and that read needs the user's capabilities in the store.
+		provideUserCapabilities( registry );
+
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [ 'trafficWidget' ],
+		} );
+
+		renderOrchestrator( VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY );
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		expect( getData ).toHaveBeenCalledTimes( 1 );
+
+		// Each widget's `getData` loader reads `viewOnly` and leaves out the
+		// links a view-only dashboard doesn't show.
+		expect( getData.mock.calls[ 0 ][ 0 ].viewOnly ).toBe( true );
 	} );
 
 	it( 'should transition to error and not build a PDF when the only widget fails', async () => {
@@ -335,7 +537,7 @@ describe( 'PDFExportOrchestrator', () => {
 
 		expect( failing ).toHaveBeenCalledTimes( 1 );
 		expect( succeeding ).toHaveBeenCalledTimes( 1 );
-		expect( pdf ).toHaveBeenCalledTimes( 1 );
+		expect( pdf ).toHaveBeenCalledTimes( 2 );
 	} );
 
 	it( 'includes only the checked widget when the user unchecks the other widget in the same section', async () => {
@@ -444,15 +646,54 @@ describe( 'PDFExportOrchestrator', () => {
 		expect( props.dateRange.endDate ).toBe( '2021-01-09' );
 		expect( props.dateRange.startDate ).toBeDefined();
 
-		// One section per discovered area, in area order, with the icon looked
-		// up by the area's dashboard context slug.
+		// One section per context, keyed by the context slug, labelled from the
+		// area's title, with the context's icon.
 		expect( props.sections ).toEqual( [
 			{
-				slug: 'trafficArea',
+				slug: CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 				label: 'Traffic',
 				Icon: SECTION_ICONS[ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
 			},
 		] );
+	} );
+
+	it( 'titles the report section from pdfReportTitle when set, overriding pdfTitle', async () => {
+		const getData: jest.Mock = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		const dispatch = registry.dispatch( CORE_WIDGETS );
+		dispatch.registerWidgetArea( 'monetizationArea', {
+			title: 'Area',
+			pdfTitle: 'Revenue',
+			pdfReportTitle: 'Monetization',
+			style: 'boxes',
+			priority: 1,
+		} );
+		dispatch.assignWidgetArea(
+			'monetizationArea',
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+		);
+		dispatch.registerWidget( 'monetizationWidget', {
+			Component: NullComponent,
+			pdf: { Component: NullComponent, getData },
+		} );
+		dispatch.assignWidget( 'monetizationWidget', 'monetizationArea' );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [ 'monetizationWidget' ],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		const { props } = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
+
+		// The header chip and the body section title both read the report title.
+		expect( props.sections[ 0 ].label ).toBe( 'Monetization' );
+		expect( props.areas[ 0 ].areaTitle ).toBe( 'Monetization' );
 	} );
 
 	it( 'derives a single section for an area shared across multiple selected contexts', async () => {
@@ -481,7 +722,89 @@ describe( 'PDFExportOrchestrator', () => {
 
 		const { props } = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
 		expect( props.sections ).toHaveLength( 1 );
-		expect( props.sections[ 0 ].slug ).toBe( 'sharedArea' );
+		expect( props.sections[ 0 ].slug ).toBe(
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+		);
+	} );
+
+	it( 'merges two areas in one context into a single section, so an untitled area adds no empty chip', async () => {
+		const dispatch = registry.dispatch( CORE_WIDGETS );
+
+		// A titled primary area holding one widget.
+		dispatch.registerWidgetArea( 'trafficPrimary', {
+			title: 'Area',
+			pdfTitle: 'Traffic',
+			style: 'boxes',
+			priority: 1,
+		} );
+		dispatch.assignWidgetArea(
+			'trafficPrimary',
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+		);
+		dispatch.registerWidget( 'primaryWidget', {
+			Component: NullComponent,
+			pdf: {
+				Component: NullComponent,
+				getData: jest.fn( () =>
+					Promise.resolve( { data: { totalUsers: 1 } } )
+				),
+				label: 'Site traffic',
+			},
+		} );
+		dispatch.assignWidget( 'primaryWidget', 'trafficPrimary' );
+
+		// A second area in the same context, registered with no `pdfTitle`.
+		// `registerWidgetArea` doesn't require one, so the merge must take
+		// the section title from the titled sibling and add no empty chip.
+		dispatch.registerWidgetArea( 'trafficAudience', {
+			style: 'boxes',
+			priority: 2,
+		} );
+		dispatch.assignWidgetArea(
+			'trafficAudience',
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+		);
+		dispatch.registerWidget( 'audienceWidget', {
+			Component: NullComponent,
+			pdf: {
+				Component: NullComponent,
+				getData: jest.fn( () =>
+					Promise.resolve( { data: { audiences: [ {}, {} ] } } )
+				),
+				label: 'Your visitor groups',
+			},
+		} );
+		dispatch.assignWidget( 'audienceWidget', 'trafficAudience' );
+
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [ 'primaryWidget', 'audienceWidget' ],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		const { props } = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
+
+		// One Traffic chip, keyed by the context, with the titled area's label.
+		expect( props.sections ).toEqual( [
+			{
+				slug: CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+				label: 'Traffic',
+				Icon: SECTION_ICONS[ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			},
+		] );
+
+		// One body section holding both widgets, in area order.
+		expect( props.areas ).toHaveLength( 1 );
+		expect(
+			props.areas[ 0 ].widgets.map(
+				( widget: { slug: string } ) => widget.slug
+			)
+		).toEqual( [ 'primaryWidget', 'audienceWidget' ] );
 	} );
 
 	it( "derives the sections in the dashboard's order, not the stored order", async () => {
@@ -523,15 +846,20 @@ describe( 'PDFExportOrchestrator', () => {
 
 		const { props } = ( pdf as jest.Mock ).mock.calls[ 0 ][ 0 ];
 
-		// Sections and areas follow the dashboard's order, not the stored
-		// order.
-		const expectedAreaOrder = [ 'trafficArea', 'contentArea', 'speedArea' ];
+		// A section covers one dashboard context, so each one is keyed by its
+		// context slug. Sections and areas follow the dashboard's order, not
+		// the stored order.
+		const expectedContextOrder = [
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+			CONTEXT_MAIN_DASHBOARD_CONTENT,
+			CONTEXT_MAIN_DASHBOARD_SPEED,
+		];
 		expect(
 			props.sections.map( ( section: PDFHeaderSection ) => section.slug )
-		).toEqual( expectedAreaOrder );
+		).toEqual( expectedContextOrder );
 		expect(
 			props.areas.map( ( area: PDFReportArea ) => area.areaSlug )
-		).toEqual( expectedAreaOrder );
+		).toEqual( expectedContextOrder );
 	} );
 
 	it( 'should register the PDF fonts before rendering the document', async () => {
@@ -778,9 +1106,54 @@ describe( 'PDFExportOrchestrator', () => {
 		expect( activeGetData ).toHaveBeenCalledTimes( 1 );
 	} );
 
+	it( 'excludes the Top earning pages widget when AdSense is not linked to Analytics 4', async () => {
+		const getData = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+
+		const topEarningGetData = jest.fn( () =>
+			Promise.resolve( { data: null } )
+		);
+		// The Top earning pages widget only appears in the PDF when AdSense is
+		// linked to Analytics 4, using the same predicate registered on
+		// `adsenseTopEarningPagesGA4`.
+		registry.dispatch( CORE_WIDGETS ).registerWidget( 'topEarningPages', {
+			Component: NullComponent,
+			pdf: {
+				Component: NullComponent,
+				getData: topEarningGetData,
+				isActive: (
+					select: ( storeName: string ) => {
+						getAdSenseLinked: () => boolean;
+					}
+				) => select( MODULES_ANALYTICS_4 ).getAdSenseLinked() === true,
+			},
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( 'topEarningPages', 'trafficArea' );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( { adSenseLinked: false } );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [ 'trafficWidget', 'topEarningPages' ],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		expect( getData ).toHaveBeenCalledTimes( 1 );
+		expect( topEarningGetData ).not.toHaveBeenCalled();
+	} );
+
 	it( 'does not request data for a widget whose required module is disconnected', async () => {
 		provideModules( registry, [
-			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: false },
+			{ slug: MODULES_ANALYTICS_4, active: true, connected: false },
 		] );
 
 		const connectedGetData: jest.Mock = jest.fn( () =>
@@ -793,7 +1166,7 @@ describe( 'PDFExportOrchestrator', () => {
 		);
 		registry.dispatch( CORE_WIDGETS ).registerWidget( 'analyticsWidget', {
 			Component: NullComponent,
-			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			modules: [ MODULES_ANALYTICS_4 ],
 			pdf: { Component: NullComponent, getData: disconnectedGetData },
 		} );
 		registry
@@ -818,16 +1191,58 @@ describe( 'PDFExportOrchestrator', () => {
 		expect( connectedGetData ).toHaveBeenCalledTimes( 1 );
 	} );
 
+	it( 'includes the Top earning pages widget when AdSense is linked to Analytics 4', async () => {
+		const getData = jest.fn( () =>
+			Promise.resolve( { data: { totalUsers: 100 } } )
+		);
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+
+		const topEarningGetData = jest.fn( () =>
+			Promise.resolve( { data: null } )
+		);
+		registry.dispatch( CORE_WIDGETS ).registerWidget( 'topEarningPages', {
+			Component: NullComponent,
+			pdf: {
+				Component: NullComponent,
+				getData: topEarningGetData,
+				isActive: (
+					select: ( storeName: string ) => {
+						getAdSenseLinked: () => boolean;
+					}
+				) => select( MODULES_ANALYTICS_4 ).getAdSenseLinked() === true,
+			},
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( 'topEarningPages', 'trafficArea' );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( { adSenseLinked: true } );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [ 'trafficWidget', 'topEarningPages' ],
+		} );
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		expect( getData ).toHaveBeenCalledTimes( 1 );
+		expect( topEarningGetData ).toHaveBeenCalledTimes( 1 );
+	} );
+
 	it( 'requests data for a widget whose required module is connected', async () => {
 		provideModules( registry, [
-			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
+			{ slug: MODULES_ANALYTICS_4, active: true, connected: true },
 		] );
 
 		const analyticsGetData: jest.Mock = jest.fn( () =>
 			Promise.resolve( { data: { totalUsers: 100 } } )
 		);
 		registerPDFWidget( 'trafficArea', 'analyticsWidget', analyticsGetData, [
-			MODULE_SLUG_ANALYTICS_4,
+			MODULES_ANALYTICS_4,
 		] );
 		registry.dispatch( CORE_PDF ).setSelection( {
 			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
@@ -874,6 +1289,115 @@ describe( 'PDFExportOrchestrator', () => {
 				'pdf_generation_cancel',
 				'loading'
 			);
+		} );
+	} );
+
+	describe( 'pdf.isActive on the analytics audience tiles widget', () => {
+		/**
+		 * Registers the analytics audience tiles widget in a titled Traffic
+		 * area, with the `pdf.isActive` check that limits the PDF row to two or
+		 * more audiences.
+		 *
+		 * @since 1.184.0
+		 *
+		 * @param  getData The widget's PDF `getData` mock.
+		 * @return {void}
+		 */
+		function registerAudienceTilesWidget( getData: jest.Mock ) {
+			const dispatch = registry.dispatch( CORE_WIDGETS );
+			dispatch.registerWidgetArea( 'audienceArea', {
+				title: 'Area',
+				pdfTitle: 'Traffic',
+				style: 'boxes',
+				priority: 1,
+			} );
+			dispatch.assignWidgetArea(
+				'audienceArea',
+				CONTEXT_MAIN_DASHBOARD_TRAFFIC
+			);
+			dispatch.registerWidget( 'analyticsAudienceTiles', {
+				Component: NullComponent,
+				pdf: {
+					Component: NullComponent,
+					getData,
+					isActive: ( select: WPDataRegistry[ 'select' ] ) =>
+						( select( CORE_USER ).getConfiguredAudiences()
+							?.length ?? 0 ) >= 2,
+				},
+			} );
+			dispatch.assignWidget( 'analyticsAudienceTiles', 'audienceArea' );
+		}
+
+		/**
+		 * Configures the given number of audiences on the user store.
+		 *
+		 * @since 1.184.0
+		 *
+		 * @param  count How many audiences to configure.
+		 * @return {void}
+		 */
+		function setConfiguredAudiences( count: number ) {
+			registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+				configuredAudiences: Array.from(
+					{ length: count },
+					( _, index ) => `properties/1/audiences/${ index + 1 }`
+				),
+				isAudienceSegmentationWidgetHidden: false,
+				didSetAudiences: true,
+			} );
+		}
+
+		it( 'excludes the widget when fewer than two audiences are configured', async () => {
+			const audienceGetData = jest.fn( () =>
+				Promise.resolve( { data: { audiences: [] } } )
+			);
+			const controlGetData = jest.fn( () =>
+				Promise.resolve( { data: { totalUsers: 1 } } )
+			);
+
+			setConfiguredAudiences( 1 );
+			registerAudienceTilesWidget( audienceGetData );
+			registerPDFWidget( 'controlArea', 'controlWidget', controlGetData );
+
+			registry.dispatch( CORE_PDF ).setSelection( {
+				contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+				widgetSlugs: [ 'analyticsAudienceTiles', 'controlWidget' ],
+			} );
+
+			renderOrchestrator();
+
+			await waitFor( () => {
+				expect( registry.select( CORE_PDF ).getStatus() ).toBe(
+					'success'
+				);
+			} );
+
+			expect( audienceGetData ).not.toHaveBeenCalled();
+			expect( controlGetData ).toHaveBeenCalled();
+		} );
+
+		it( 'includes the widget when two or more audiences are configured', async () => {
+			const audienceGetData = jest.fn( () =>
+				Promise.resolve( { data: { audiences: [ {}, {} ] } } )
+			);
+
+			setConfiguredAudiences( 2 );
+			registerAudienceTilesWidget( audienceGetData );
+
+			registry.dispatch( CORE_PDF ).setSelection( {
+				contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+				widgetSlugs: [ 'analyticsAudienceTiles' ],
+			} );
+
+			renderOrchestrator();
+
+			await waitFor( () => {
+				expect( registry.select( CORE_PDF ).getStatus() ).toBe(
+					'success'
+				);
+			} );
+
+			expect( audienceGetData ).toHaveBeenCalledTimes( 1 );
 		} );
 	} );
 } );

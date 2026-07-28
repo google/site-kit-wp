@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { ReactElement } from 'react';
+import { ElementType, FC, ReactElement } from 'react';
 
 /**
  * WordPress dependencies
@@ -28,7 +28,6 @@ import {
 	createInterpolateElement,
 	useCallback,
 	useEffect,
-	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -40,6 +39,7 @@ import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import BannerModal from '@/js/components/BannerModal/index';
 import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
 import { deleteItem, getItem } from '@/js/googlesitekit/api/cache';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	CORE_USER,
 	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
@@ -47,6 +47,9 @@ import {
 	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { useHasBeenViewed } from '@/js/googlesitekit/notifications/hooks/useHasBeenViewed';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { useFeature } from '@/js/hooks/useFeature';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
@@ -57,6 +60,8 @@ import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/co
 import { WEEK_IN_SECONDS, trackEvent } from '@/js/util';
 import WelcomeModalDataGatheringCompleteGraphic from '@/svg/graphics/welcome-modal-data-gathering-complete-graphic.svg';
 import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
+
+export const WELCOME_MODAL_NOTIFICATION = 'welcome-modal';
 
 enum MODAL_VARIANT {
 	DATA_AVAILABLE,
@@ -160,14 +165,17 @@ function getModalDescription( {
 	}
 }
 
-export default function WelcomeModal() {
+interface WelcomeModalProps {
+	id: string;
+	Notification: ElementType;
+}
+
+const WelcomeModal: FC< WelcomeModalProps > = ( { id, Notification } ) => {
 	const setupFlowRefreshPhase4Enabled = useFeature(
 		'setupFlowRefreshPhase4'
 	);
 	const isViewOnly = useViewOnly();
 	const viewContext = useViewContext();
-
-	const [ isOpen, setIsOpen ] = useState( true );
 
 	const analyticsConnected = useSelect(
 		( select: Select ) =>
@@ -214,7 +222,16 @@ export default function WelcomeModal() {
 	}
 
 	const { dismissItem, triggerOnDemandTour } = useDispatch( CORE_USER );
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+	const { setValue } = useDispatch( CORE_UI );
 	const [ , setNotification ] = useQueryArg( 'notification' );
+
+	// Pass null for the category to use the default category
+	// that is built from the view context and the notification slug.
+	const trackEvents = useNotificationEvents( id, null, {
+		confirmAction: 'confirm_notice',
+		dismissAction: 'dismiss_notice',
+	} );
 
 	useEffect( () => {
 		if (
@@ -249,7 +266,12 @@ export default function WelcomeModal() {
 	const showTooltip = useShowTooltip( tooltipSettings );
 
 	const closeAndDismissModal = useCallback( async () => {
-		setIsOpen( false );
+		// Remove the modal from the notification queue so it stops rendering.
+		// The notification isn't dismissible, so this only updates the queue
+		// and doesn't persist the notification's own id as a dismissed item —
+		// the dismissed state is persisted via the slugs below, exactly as
+		// before.
+		dismissNotification( id );
 
 		if ( modalVariant !== MODAL_VARIANT.GATHERING_DATA ) {
 			await dismissItem( WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG );
@@ -264,7 +286,13 @@ export default function WelcomeModal() {
 
 		// Ensure the setup success notification won't be shown on page reload.
 		setNotification( undefined );
-	}, [ modalVariant, setNotification, dismissItem ] );
+	}, [
+		id,
+		dismissNotification,
+		modalVariant,
+		setNotification,
+		dismissItem,
+	] );
 
 	const closeAndDismissModalWithTooltip = useCallback( () => {
 		closeAndDismissModal();
@@ -282,11 +310,15 @@ export default function WelcomeModal() {
 	}, [ closeAndDismissModal, triggerOnDemandTour, welcomeTour ] );
 
 	const handleView = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_welcome-modal`,
-			'view_notice',
-			VARIANT_TRACKING_LABELS[ modalVariant ]
-		);
+		// The modal content renders inside a fixed-position Dialog, which is
+		// taken out of the flow of the `<Notification>` wrapper's `<section>`.
+		// That leaves the section with no reliable area for the framework's own
+		// intersection observer to flip the notification to "viewed", so the
+		// `view_notice` event can be missed. `BannerModal` observes its own
+		// visible content instead, so mark the notification viewed when the
+		// modal comes into view, which is what makes `<Notification>` fire the
+		// view event.
+		setValue( useHasBeenViewed.getKey( id ), true );
 
 		async function trackSetupEventsOnce() {
 			const startSiteSetup = await getItem( 'start_site_setup' );
@@ -309,23 +341,15 @@ export default function WelcomeModal() {
 		}
 
 		trackSetupEventsOnce();
-	}, [ viewContext, modalVariant ] );
+	}, [ id, setValue, viewContext ] );
 
 	const trackConfirmation = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_welcome-modal`,
-			'confirm_notice',
-			VARIANT_TRACKING_LABELS[ modalVariant ]
-		);
-	}, [ viewContext, modalVariant ] );
+		trackEvents.confirm( VARIANT_TRACKING_LABELS[ modalVariant ] );
+	}, [ trackEvents, modalVariant ] );
 
 	const trackDismissal = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_welcome-modal`,
-			'dismiss_notice',
-			VARIANT_TRACKING_LABELS[ modalVariant ]
-		);
-	}, [ viewContext, modalVariant ] );
+		trackEvents.dismiss( VARIANT_TRACKING_LABELS[ modalVariant ] );
+	}, [ trackEvents, modalVariant ] );
 
 	const handleClose = useCallback( () => {
 		trackDismissal();
@@ -349,10 +373,6 @@ export default function WelcomeModal() {
 
 	if ( showGatheringDataModal === undefined ) {
 		// TODO: Implement a loading state when we have a design for it in phase 3 of the Setup Flow Refresh epic.
-		return null;
-	}
-
-	if ( ! isOpen ) {
 		return null;
 	}
 
@@ -401,15 +421,24 @@ export default function WelcomeModal() {
 			: undefined;
 
 	return (
-		<BannerModal
-			className="googlesitekit-banner-modal--welcome-modal"
-			Graphic={ Graphic }
-			onView={ handleView }
-			onClose={ handleClose }
-			title={ title }
-			description={ description }
-			ctaButton={ ctaButton }
-			dismissButton={ dismissButton }
-		/>
+		<Notification
+			gaTrackingEventArgs={ {
+				viewAction: 'view_notice',
+				label: VARIANT_TRACKING_LABELS[ modalVariant ],
+			} }
+		>
+			<BannerModal
+				className="googlesitekit-banner-modal--welcome-modal"
+				Graphic={ Graphic }
+				onView={ handleView }
+				onClose={ handleClose }
+				title={ title }
+				description={ description }
+				ctaButton={ ctaButton }
+				dismissButton={ dismissButton }
+			/>
+		</Notification>
 	);
-}
+};
+
+export default WelcomeModal;

@@ -41,12 +41,19 @@ import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
-function TopCountriesWidget( { Widget } ) {
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates()
-	);
-
-	const topCountriesReportOptions = {
+/**
+ * Builds the Analytics 4 report options for the Top Countries metric.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range.
+ * @return {Object} The Analytics 4 `getReport` options.
+ */
+export function getTopCountriesReportOptions( dates ) {
+	return {
 		...dates,
 		dimensions: [ 'country' ],
 		metrics: [ { name: 'totalUsers' } ],
@@ -62,6 +69,14 @@ function TopCountriesWidget( { Widget } ) {
 		reportID:
 			'analytics-4_top-countries-widget_widget_topCountriesReportOptions',
 	};
+}
+
+function TopCountriesWidget( { Widget } ) {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates()
+	);
+
+	const topCountriesReportOptions = getTopCountriesReportOptions( dates );
 
 	const topCountriesReport = useInViewSelect(
 		( select ) =>

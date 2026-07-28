@@ -24,3 +24,11 @@ declare module '*.svg?url' {
 	const content: React.FunctionComponent< React.SVGAttributes< SVGElement > >;
 	export default content;
 }
+
+declare module '*.svg?pdf' {
+	import type { PDFSvgFileProps } from '@/js/components/pdf-export/types';
+	// The build renders the file with `@react-pdf/renderer` primitives, and
+	// `currentColor` in the source becomes the `color` prop.
+	const content: React.ComponentType< PDFSvgFileProps >;
+	export default content;
+}

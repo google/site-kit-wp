@@ -14,7 +14,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
- * Class Method_Proxy_TraitTest
+ * Class Method_Proxy_TraitTest.
  *
  * @group Util
  */

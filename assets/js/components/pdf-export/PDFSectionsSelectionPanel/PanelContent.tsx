@@ -88,6 +88,16 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 				const areas: WidgetArea[] =
 					select( CORE_WIDGETS ).getWidgetAreas( contextSlug );
 
+				// Merge the context's areas into one section, so a multi-area
+				// context shows one section, not one per area.
+				// For instance, the "Traffic" context area holds
+				// traffic charts and the audience tiles.
+				// The areas of a context share the same `pdfTitle`, so the label
+				// comes from the first area that has one.
+				let label = '';
+				const widgets: PDFSection[ 'widgets' ] = [];
+				const widgetSlugs: string[] = [];
+
 				areas.forEach( ( area ) => {
 					const pdfWidgets: Widget[] = select( CORE_WIDGETS )
 						.getWidgets( area.slug, { modules } )
@@ -99,20 +109,31 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 						return;
 					}
 
-					sections.push( {
-						slug: area.slug,
-						label: area.pdfTitle || area.title || area.slug,
-						contextSlug,
-						widgets: pdfWidgets
-							.filter( ( widget ) => !! widget.pdf?.label )
-							.map( ( widget ) => ( {
+					if ( ! label ) {
+						label = area.pdfTitle || area.title || '';
+					}
+
+					pdfWidgets.forEach( ( widget ) => {
+						if ( widget.pdf?.label ) {
+							widgets.push( {
 								slug: widget.slug,
-								label: widget.pdf?.label as string,
-							} ) ),
-						widgetSlugs: pdfWidgets.map(
-							( widget ) => widget.slug
-						),
+								label: widget.pdf.label as string,
+							} );
+						}
+						widgetSlugs.push( widget.slug );
 					} );
+				} );
+
+				if ( widgetSlugs.length === 0 ) {
+					return;
+				}
+
+				sections.push( {
+					slug: contextSlug,
+					label: label || contextSlug,
+					contextSlug,
+					widgets,
+					widgetSlugs,
 				} );
 			} );
 
@@ -153,7 +174,8 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 
 			// Store the contexts in the dashboard's order, not the selection
 			// order, so the report's section order stays fixed across
-			// re-exports and toggles.
+			// re-exports and toggles. `availableSections` already derives from
+			// this same list, so it gives the identical order.
 			const contextSlugs = ORDERED_MAIN_DASHBOARD_CONTEXTS.filter(
 				( contextSlug ) => selectedContexts.has( contextSlug )
 			);
@@ -163,21 +185,39 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 		[ setSelection ]
 	);
 
-	// Seed the selection with every available widget the first time they resolve.
-	// Subsequent toggles (including deselecting everything) persist via `core/pdf`
-	// for the rest of the session.
-	const seededRef = useRef( false );
+	/**
+	 * Holds every widget slug that has already been selected by default. A
+	 * widget is selected the first time it appears, and its slug is recorded
+	 * here so that a widget which appears later (because its `pdf.isActive`
+	 * reads a module setting that resolves after the panel opens) is still
+	 * selected by default, while a widget the user has since deselected is not
+	 * selected again. Deselections persist in `core/pdf` for the session.
+	 */
+	const defaultSelectedSlugsRef = useRef< Set< string > >( new Set() );
 	useEffect( () => {
-		if ( seededRef.current || availableSections.length === 0 ) {
+		const newWidgetSlugs = availableSections
+			.flatMap( ( section ) => section.widgetSlugs )
+			.filter(
+				( slug ) => ! defaultSelectedSlugsRef.current.has( slug )
+			);
+
+		if ( newWidgetSlugs.length === 0 ) {
 			return;
 		}
 
-		seededRef.current = true;
-		const allWidgetSlugs = availableSections.flatMap(
-			( section ) => section.widgetSlugs
+		newWidgetSlugs.forEach( ( slug ) =>
+			defaultSelectedSlugsRef.current.add( slug )
 		);
-		commitSelection( allWidgetSlugs, widgetContext );
-	}, [ availableSections, commitSelection, widgetContext ] );
+		commitSelection(
+			[ ...selectedWidgetSlugs, ...newWidgetSlugs ],
+			widgetContext
+		);
+	}, [
+		availableSections,
+		selectedWidgetSlugs,
+		commitSelection,
+		widgetContext,
+	] );
 
 	const toggleWidget = useCallback(
 		( widgetSlug: string ) => {

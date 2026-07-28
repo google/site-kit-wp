@@ -42,6 +42,45 @@ import { numFmt } from '@/js/util/i18n';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
+/**
+ * Builds the Analytics 4 report options for the New Visitors metric.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range, including the compare dates.
+ * @return {Object} The Analytics 4 `getReport` options.
+ */
+export function getNewVisitorsReportOptions( dates ) {
+	return {
+		...dates,
+		dimensions: [ 'newVsReturning' ],
+		metrics: [ { name: 'activeUsers' } ],
+		reportID: 'analytics-4_new-visitors-widget_widget_reportOptions',
+	};
+}
+
+/**
+ * Builds the sub-text for the New Visitors metric tile.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the PDF tile display the same sub-text.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} total The total number of visitors.
+ * @return {string} The formatted sub-text.
+ */
+export function getNewVisitorsSubtext( total ) {
+	return sprintf(
+		/* translators: %s: Number of total visitors visiting the site, such as "1,234". */
+		__( 'of %s total visitors', 'google-site-kit' ),
+		numFmt( total, { style: 'decimal' } )
+	);
+}
+
 function NewVisitorsWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -49,12 +88,7 @@ function NewVisitorsWidget( { Widget } ) {
 		} )
 	);
 
-	const reportOptions = {
-		...dates,
-		dimensions: [ 'newVsReturning' ],
-		metrics: [ { name: 'activeUsers' } ],
-		reportID: 'analytics-4_new-visitors-widget_widget_reportOptions',
-	};
+	const reportOptions = getNewVisitorsReportOptions( dates );
 
 	const report = useInViewSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
@@ -96,11 +130,7 @@ function NewVisitorsWidget( { Widget } ) {
 			Widget={ Widget }
 			widgetSlug={ KM_ANALYTICS_NEW_VISITORS }
 			metricValue={ newVisitors }
-			subText={ sprintf(
-				/* translators: %d: Number of total visitors visiting the site. */
-				__( 'of %s total visitors', 'google-site-kit' ),
-				numFmt( total, { style: 'decimal' } )
-			) }
+			subText={ getNewVisitorsSubtext( total ) }
 			previousValue={ prevTotal }
 			currentValue={ total }
 			loading={ loading }

@@ -20,27 +20,14 @@
  * External dependencies
  */
 import { Text } from '@react-pdf/renderer';
-import { ReactElement } from 'react';
-import TestRenderer from 'react-test-renderer';
 
 /**
  * Internal dependencies
  */
 import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
+import { renderJSON } from '@/js/components/pdf-export/test-utils';
 import { render } from '@tests/js/test-utils';
 import PDFWidgetSection from './PDFWidgetSection';
-
-/**
- * Renders a PDF element to a JSON string for content and style assertions.
- *
- * @since 1.183.0
- *
- * @param element PDF element to render.
- * @return JSON string of the rendered tree.
- */
-function renderJSON( element: ReactElement ) {
-	return JSON.stringify( TestRenderer.create( element ).toJSON() );
-}
 
 describe( 'PDFWidgetSection', () => {
 	it( 'renders the heading and children', () => {
@@ -110,6 +97,26 @@ describe( 'PDFWidgetSection', () => {
 
 		expect( widgetSectionJSON ).toContain( '"borderRadius":8' );
 		expect( widgetSectionJSON ).toContain( '"paddingHorizontal":0' );
+	} );
+
+	it( 'passes the bookmark prop to the outer View when supplied', () => {
+		const widgetSectionJSON = renderJSON(
+			<PDFWidgetSection bookmark="Traffic">
+				<Text>child</Text>
+			</PDFWidgetSection>
+		);
+
+		expect( widgetSectionJSON ).toContain( '"bookmark":"Traffic"' );
+	} );
+
+	it( 'omits the bookmark prop when not supplied', () => {
+		const widgetSectionJSON = renderJSON(
+			<PDFWidgetSection>
+				<Text>child</Text>
+			</PDFWidgetSection>
+		);
+
+		expect( widgetSectionJSON ).not.toContain( '"bookmark"' );
 	} );
 
 	it( 'scales the heading gap and adds no outer margin', () => {

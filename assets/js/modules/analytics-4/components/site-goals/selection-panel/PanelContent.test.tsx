@@ -49,10 +49,10 @@ describe( 'PanelContent', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
 
 	const ECOMMERCE_NOTICE_TITLE =
-		'Using both WooCommerce and Easy Digital Downloads to sell products or services?';
+		'See how different plugins contribute to your goals';
 	const LEAD_NOTICE_TITLE = 'Want to see results for each form?';
 	const BOTH_NOTICE_TITLE =
-		'Have multiple forms, or Using both WooCommerce and Easy Digital Downloads for your site?';
+		'Have multiple forms, or using both WooCommerce and Easy Digital Downloads for your site?';
 
 	mockBrowserScrolling();
 

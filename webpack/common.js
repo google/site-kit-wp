@@ -170,6 +170,55 @@ exports.siteKitExternals = siteKitExternals;
 
 exports.externals = { ...siteKitExternals };
 
+/**
+ * SVGR replaces its default SVGO configuration with a custom one rather than
+ * merging the two. So this object sets SVGR's own defaults,
+ * `removeViewBox: false` and `prefixIds`, next to the override below.
+ */
+const svgoConfig = {
+	plugins: [
+		{
+			name: 'preset-default',
+			params: {
+				overrides: {
+					removeViewBox: false,
+					// Curve-to-arc conversion is lossy and visibly distorts
+					// exactly overlapping shapes.
+					convertPathData: false,
+				},
+			},
+		},
+		'prefixIds',
+	],
+};
+
+/**
+ * Renders a source SVG file with `@react-pdf/renderer` primitives.
+ *
+ * The library parses no SVG markup and draws its own `Svg`, `Path`, and `G`
+ * components. SVGR's `native` mode already renames each element to that set, so
+ * this template only redirects the import. An element that the library doesn't
+ * export fails at render, rather than dropping a shape with no error.
+ *
+ * @since 1.184.0
+ *
+ * @param {Object}   variables               The component name and the JSX that SVGR built from the file.
+ * @param {string}   variables.componentName The generated component's name.
+ * @param {Object}   variables.jsx           The drawing, as JSX.
+ * @param {Object}   context                 SVGR's template helpers.
+ * @param {Function} context.tpl             SVGR's Babel template tag.
+ * @return {Object} The generated module's AST.
+ */
+function reactPDFTemplate( variables, { tpl } ) {
+	return tpl`
+import { Circle, ClipPath, Defs, Ellipse, G, Image, Line, LinearGradient, Path, Polygon, Polyline, RadialGradient, Rect, Stop, Svg, Text, Tspan } from '@react-pdf/renderer';
+
+const ${ variables.componentName } = ( props ) => ${ variables.jsx };
+
+export default ${ variables.componentName };
+`;
+}
+
 const svgRule = {
 	test: /\.svg$/,
 	oneOf: [
@@ -178,31 +227,34 @@ const svgRule = {
 			use: 'url-loader',
 		},
 		{
+			// A PDF icon imports its source SVG with `?pdf`. The report then
+			// renders the whole drawing: every shape, each shape's own fill,
+			// and the fill rule. `currentColor` becomes the caller's `color`.
+			resourceQuery: /pdf/,
 			use: [
 				{
 					loader: '@svgr/webpack',
 					options: {
-						// strip width & height to allow manual override using props
+						native: true,
 						dimensions: false,
-						// Restates SVGR's default SVGO config (`removeViewBox: false`
-						// and `prefixIds`), which a custom `svgoConfig` replaces
-						// rather than extends.
-						svgoConfig: {
-							plugins: [
-								{
-									name: 'preset-default',
-									params: {
-										overrides: {
-											removeViewBox: false,
-											// Curve-to-arc conversion is lossy and visibly
-											// distorts precisely overlapping shapes.
-											convertPathData: false,
-										},
-									},
-								},
-								'prefixIds',
-							],
+						template: reactPDFTemplate,
+						replaceAttrValues: {
+							currentColor: '{props.color}',
 						},
+						svgoConfig,
+					},
+				},
+			],
+		},
+		{
+			use: [
+				{
+					loader: '@svgr/webpack',
+					options: {
+						// Strip width & height attributes in SVGs to allow
+						// manual override using props.
+						dimensions: false,
+						svgoConfig,
 					},
 				},
 			],

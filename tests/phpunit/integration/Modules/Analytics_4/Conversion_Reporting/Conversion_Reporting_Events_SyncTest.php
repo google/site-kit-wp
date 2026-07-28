@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Analytics_4\Conversion_Reporting;
 
 use Google\Site_Kit\Context;
@@ -81,7 +79,7 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 		$event_check = $this->get_instance();
 		$event_check->sync_detected_events();
 
-		$this->assertEquals( $detected_events, $this->settings->get()['detectedEvents'] );
+		$this->assertEquals( $detected_events, $this->settings->get()['detectedEvents'], 'Detected conversion events should match events returned by the Analytics report.' );
 	}
 
 	/**
@@ -100,7 +98,7 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 
 		$transient_detected_events = $this->transients->get( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
 
-		$this->assertSame( $transient_detected_events, $detected_new_events );
+		$this->assertSame( $transient_detected_events, $detected_new_events, 'New-events transient should contain events not present in the previous sync.' );
 	}
 
 	/**
@@ -119,7 +117,7 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 
 		$transient_lost_events = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
 
-		$this->assertEquals( $transient_lost_events, $lost_events );
+		$this->assertEquals( $transient_lost_events, $lost_events, 'Lost-events transient should contain events missing from the latest Analytics report.' );
 	}
 
 	public function test_sync__newConversionEventsLastUpdateAt() {
@@ -142,16 +140,21 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals( 0, $this->settings->get()['newConversionEventsLastUpdateAt'] );
+		$this->assertEquals( 0, $this->settings->get()['newConversionEventsLastUpdateAt'], 'New conversion events should have no update timestamp before the first detection.' );
 
 		$event_check->sync_detected_events();
 
 		$transient_detected_events = $this->transients->get( Conversion_Reporting_Events_Sync::DETECTED_EVENTS_TRANSIENT );
 
-		$this->assertSame( $transient_detected_events, array( 'contact' ) );
+		$this->assertSame( $transient_detected_events, array( 'contact' ), 'New-events transient should contain the newly detected contact event.' );
 
 		// Verify that newConversionEventsLastUpdateAt is updated.
-		$this->assertEqualsWithDelta( time(), $this->settings->get()['newConversionEventsLastUpdateAt'], 2 );
+		$this->assertEqualsWithDelta(
+			time(),
+			$this->settings->get()['newConversionEventsLastUpdateAt'],
+			2,
+			'Detecting a new conversion event should record the current timestamp.'
+		);
 	}
 
 	public function test_sync__lostConversionEventsLastUpdateAt() {
@@ -174,16 +177,21 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals( 0, $this->settings->get()['lostConversionEventsLastUpdateAt'] );
+		$this->assertEquals( 0, $this->settings->get()['lostConversionEventsLastUpdateAt'], 'Lost conversion events should have no update timestamp before the first loss.' );
 
 		$event_check->sync_detected_events();
 
 		$transient_lost_events = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
 
-		$this->assertSame( $transient_lost_events, array( 'purchase' ) );
+		$this->assertSame( $transient_lost_events, array( 'purchase' ), 'Lost-events transient should contain the missing purchase event.' );
 
 		// Verify that lostConversionEventsLastUpdateAt is updated.
-		$this->assertEqualsWithDelta( time(), $this->settings->get()['lostConversionEventsLastUpdateAt'], 2 );
+		$this->assertEqualsWithDelta(
+			time(),
+			$this->settings->get()['lostConversionEventsLastUpdateAt'],
+			2,
+			'Losing a conversion event should record the current timestamp.'
+		);
 	}
 
 	public function test_sync__new_events_are_removed_from_lost_events() {
@@ -217,17 +225,22 @@ class Conversion_Reporting_Events_SyncTest extends TestCase {
 		);
 		$transient_lost_events = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
 
-		$this->assertSame( array( 'purchase', 'add_to_cart' ), $transient_lost_events );
+		$this->assertSame( array( 'purchase', 'add_to_cart' ), $transient_lost_events, 'Lost-events transient should initially contain both missing ecommerce events.' );
 
 		$event_check->sync_detected_events();
 
 		$transient_lost_events = $this->transients->get( Conversion_Reporting_Events_Sync::LOST_EVENTS_TRANSIENT );
 
 		// Since purchase is detected, it should be removed from lost events.
-		$this->assertSame( array( 'add_to_cart' ), $transient_lost_events );
+		$this->assertSame( array( 'add_to_cart' ), $transient_lost_events, 'Redetected purchase event should be removed from the lost-events transient.' );
 
 		// Verify that lostConversionEventsLastUpdateAt is updated.
-		$this->assertEqualsWithDelta( time(), $this->settings->get()['lostConversionEventsLastUpdateAt'], 2 );
+		$this->assertEqualsWithDelta(
+			time(),
+			$this->settings->get()['lostConversionEventsLastUpdateAt'],
+			2,
+			'Removing a redetected event from lost events should update the loss timestamp.'
+		);
 	}
 
 	public function get_instance() {

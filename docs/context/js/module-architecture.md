@@ -41,30 +41,47 @@ module-name/
 │   ├── dashboard/       // Dashboard-specific widgets and displays
 │   ├── settings/        // Settings page components
 │   ├── setup/           // Initial setup flow components
-│   ├── notifications/   // Notification and banner components
-│   ├── widgets/         // Reusable widget components
+│   ├── key-metrics/     // Key metric widget components
 │   └── module/          // Module page specific components
 ├── datastore/           // State management stores and logic
 │   ├── index.js         // Combined store registration
 │   ├── base.js          // Base module store with common functionality
 │   ├── settings.js      // Settings-specific store
-│   ├── constants.js     // Datastore constants and action types
+│   ├── constants.ts     // Datastore constants and action types (TS in newer modules; constants.js in others)
 │   ├── __fixtures__/    // Test data fixtures
+│   ├── __factories__/   // Test data factories
 │   └── [feature].js     // Feature-specific stores (accounts, reports, etc.)
-├── utils/               // Module-specific utility functions
-├── hooks/               // Custom React hooks for the module
-└── util/                // Legacy utility functions (being migrated to utils/)
+├── widgets/             // Widget registrations (registerWidgets) and area assignment
+│   └── index.js
+├── notifications/       // Notification definitions and registration (registerNotifications)
+│   └── index.js
+├── utils/               // Module-specific utility functions (some modules use util/ instead)
+└── hooks/               // Custom React hooks for the module (present in some modules)
 ```
+
+> Note: the per-module `index.js` is still JavaScript, but the public module
+> entrypoints loaded by webpack — `assets/js/googlesitekit-modules-<slug>.ts`
+> (e.g. `googlesitekit-modules-analytics-4.ts`) — are now TypeScript. Each
+> entrypoint imports `registerModule`, `registerStore`, `registerWidgets`, and
+> `registerNotifications` from the module and wires them to the global
+> `Modules`, `Data`, `Widgets`, and `Notifications` singletons. Newer modules
+> also migrate individual datastore files to `.ts` (e.g.
+> `datastore/constants.ts`, `datastore/types.ts`) and some components to `.tsx`.
 
 ## Module Registration System
 
 ### Main Registration Entry Point
 
-Each module exports standardized registration functions from its `index.js`:
+Each module exports standardized registration functions from its `index.js`.
+`registerStore`, `registerWidgets`, and `registerNotifications` are typically
+re-exported from dedicated files (`./datastore`, `./widgets`, `./notifications`),
+while `registerModule` is defined in `index.js`:
 
 ```javascript
 // modules/analytics-4/index.js
 export { registerStore } from './datastore';
+export { registerWidgets } from './widgets';
+export { registerNotifications } from './notifications';
 
 export function registerModule( modules ) {
     modules.registerModule( MODULE_SLUG_ANALYTICS_4, {
@@ -75,23 +92,22 @@ export function registerModule( modules ) {
         DashboardMainEffectComponent,              // Side effects component
         Icon: AnalyticsIcon,                       // Module icon
         features: [                                // Feature descriptions for disconnect
-            __( 'Analytics reports will be disabled', 'google-site-kit' ),
-            __( 'Site data will not be sent to Google Analytics', 'google-site-kit' )
+            __(
+                'Your site will no longer send data to Google Analytics',
+                'google-site-kit'
+            ),
+            __(
+                'Analytics reports in Site Kit will be disabled',
+                'google-site-kit'
+            ),
         ],
-        checkRequirements: async ( registry ) => { // Pre-connection validation
-            // Custom requirements checking logic
-        }
     } );
 }
-
-export function registerWidgets( widgets ) {
-    // Widget registration logic
-}
-
-export function registerNotifications( notifications ) {
-    // Notification registration logic
-}
 ```
+
+Some modules also pass `checkRequirements` (pre-connection validation) and
+`SettingsSetupIncompleteComponent`; see the AdSense example under
+"Module Requirements Checking" below.
 
 ### Registration Lifecycle
 
@@ -179,12 +195,14 @@ Each module combines multiple specialized stores:
 ```javascript
 // modules/analytics-4/datastore/index.js
 import { combineStores } from 'googlesitekit-data';
+import { createSnapshotStore } from '@/js/googlesitekit/data/create-snapshot-store';
 import baseModuleStore from './base';
 import accounts from './accounts';
 import properties from './properties';
 import settings from './settings';
 import report from './report';
 import service from './service';
+import { MODULES_ANALYTICS_4 } from './constants';
 
 const store = combineStores(
     baseModuleStore,        // Core module functionality
@@ -320,54 +338,58 @@ widgets.registerWidget(
 
 ### Module Notifications Export
 
-Modules export notification definitions:
+Modules export a notification definitions map (notification ID → config).
+Notification IDs are usually constants. The `checkRequirements` callback receives
+a registry-like object (`{ select, resolveSelect, dispatch }`) and resolves to a
+boolean; most modules compose it from the shared `asyncRequireAll` /
+`asyncRequireAny` / `require*` helpers rather than writing inline logic:
 
 ```javascript
 export const ANALYTICS_4_NOTIFICATIONS = {
-    'audience-segmentation-setup-cta': {
-        Component: AudienceSegmentationSetupCTABanner,
+    [ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
+        Component: SetupCTABanner,
         priority: PRIORITY.SETUP_CTA_LOW,
         areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
         groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
         viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
         isDismissible: true,
-        checkRequirements: async ( { select, resolveSelect } ) => {
-            // Complex requirements checking logic
-            const analyticsConnected = await resolveSelect( CORE_MODULES )
-                .isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
-                
-            const configuredAudiences = select( CORE_USER )
-                .getConfiguredAudiences();
-                
-            return analyticsConnected && 
-                   configuredAudiences === null;
-        }
+        dismissRetries: 1,
+        checkRequirements: asyncRequireAll(
+            requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+            asyncRequireAny(
+                requireIsAuthenticated(),
+                requireCanViewSharedModule( MODULE_SLUG_ANALYTICS_4 )
+            )
+            // ...additional composable requirements
+        ),
     },
-    
+
     'enhanced-measurement-notification': {
         Component: EnhancedMeasurementActivationBanner,
         priority: PRIORITY.SETUP_CTA_LOW,
         areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+        groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+        viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
         isDismissible: true,
-        checkRequirements: async ( { select, resolveSelect } ) => {
-            // Feature-specific activation logic
-        }
-    }
+        checkRequirements: asyncRequireAll(
+            requireModuleConnected( MODULE_SLUG_ANALYTICS_4 )
+            // ...feature-specific activation requirements
+        ),
+    },
 };
 ```
 
 ### Notification Registration
 
-Notifications are registered during module initialization:
+Notifications are registered during module initialization via the shared
+`createRegisterNotifications` helper, which iterates the definitions map and calls
+`notifications.registerNotification()` for each entry:
 
 ```javascript
+import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
+
 export function registerNotifications( notifications ) {
-    for ( const notificationID in ANALYTICS_4_NOTIFICATIONS ) {
-        notifications.registerNotification(
-            notificationID,
-            ANALYTICS_4_NOTIFICATIONS[ notificationID ]
-        );
-    }
+    createRegisterNotifications( notifications, ANALYTICS_4_NOTIFICATIONS );
 }
 ```
 

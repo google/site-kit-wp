@@ -39,12 +39,23 @@ import {
 	AdSenseConnectCTAWidget,
 	DashboardTopEarningPagesWidgetGA4,
 } from '@/js/modules/adsense/components/dashboard';
+import getTopEarningPagesPDFData from '@/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidgetGA4/getPDFData';
 import { ModuleOverviewWidget } from '@/js/modules/adsense/components/module';
 import getModuleOverviewPDFData from '@/js/modules/adsense/components/module/ModuleOverviewWidget/getPDFData';
 import { TopEarningContentWidget } from '@/js/modules/adsense/components/widgets';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+
+/**
+ * Lazy-loaded PDF component for the Top earning pages widget.
+ */
+const DashboardTopEarningPagesWidgetGA4PDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidgetGA4/indexPDF'
+	)
+);
 
 /**
  * The Earning performance over time PDF component, loaded on demand.
@@ -154,6 +165,13 @@ export function registerWidgets( widgets ) {
 			priority: 3,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ADSENSE, MODULE_SLUG_ANALYTICS_4 ],
+			pdf: {
+				Component: DashboardTopEarningPagesWidgetGA4PDF,
+				getData: getTopEarningPagesPDFData,
+				label: __( 'Earning performance', 'google-site-kit' ),
+				isActive: ( select ) =>
+					select( MODULES_ANALYTICS_4 ).getAdSenseLinked() === true,
+			},
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);

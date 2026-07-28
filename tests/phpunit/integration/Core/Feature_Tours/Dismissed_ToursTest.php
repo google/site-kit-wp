@@ -68,7 +68,7 @@ class Dismissed_ToursTest extends TestCase {
 
 		$this->assertFalse( $this->get_value(), 'Dismissed tours option should be unset before sanitization.' );
 
-		// Setting the value to a non-array will result in an empty array
+		// Setting the value to a non-array will result in an empty array.
 		$this->set_value( false );
 
 		$this->assertEquals( array(), $this->get_value(), 'Sanitizer should convert false value to empty list.' );

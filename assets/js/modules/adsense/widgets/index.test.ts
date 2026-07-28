@@ -58,11 +58,11 @@ describe( 'AdSense widget registrations', () => {
 		expect( typeof widget.pdf.Component.preload ).toBe( 'function' );
 	} );
 
-	it( 'should set the Monetization PDF section title through the area pdfTitle', () => {
+	it( 'should set the "Revenue" PDF section title through the area pdfTitle', () => {
 		const area = registry
 			.select( CORE_WIDGETS )
 			.getWidgetArea( AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY );
 
-		expect( area.pdfTitle ).toBe( 'Monetization' );
+		expect( area.pdfTitle ).toBe( 'Revenue' );
 	} );
 } );

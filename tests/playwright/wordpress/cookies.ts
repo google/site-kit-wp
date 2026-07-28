@@ -128,7 +128,37 @@ export class WordPressCookies {
 			cookies.push( {
 				...defaults,
 				name: '_wp_test_connected_modules',
-				value: connectedModules,
+				// Encoded because the value is JSON.
+				value: encodeURIComponent( connectedModules ),
+			} );
+		}
+
+		const sharedModules = this.getAnnotation( '_wp:shared-modules' );
+		if ( sharedModules ) {
+			cookies.push( {
+				...defaults,
+				name: '_wp_test_shared_modules',
+				value: encodeURIComponent( sharedModules ),
+			} );
+		}
+
+		const keyMetrics = this.getAnnotation( '_wp:key-metrics' );
+		if ( keyMetrics ) {
+			cookies.push( {
+				...defaults,
+				name: '_wp_test_key_metrics',
+				// Encoded because the value is JSON.
+				value: encodeURIComponent( keyMetrics ),
+			} );
+		}
+
+		const audiences = this.getAnnotation( '_wp:audiences' );
+		if ( audiences ) {
+			cookies.push( {
+				...defaults,
+				name: '_wp_test_audiences',
+				// Encoded because the value is JSON.
+				value: encodeURIComponent( audiences ),
 			} );
 		}
 

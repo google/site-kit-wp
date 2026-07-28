@@ -17,31 +17,28 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
+import { getAllPagesReportURL } from '@/js/modules/analytics-4/utils/page-report-url';
 import {
-	Report,
-	ReportOptions,
-	ReportRow,
-} from '@/js/modules/analytics-4/datastore/types';
+	getPagePaths,
+	getPageTitleMap,
+	getPageTitlesReportOptions,
+} from '@/js/modules/analytics-4/utils/page-titles-report';
 import { getFullURL } from '@/js/util';
 import { getPopularPagesReportArgs } from './reportOptions';
 
 /**
- * Links for one page row: the entity dashboard URL for the title, and the
- * page's own public URL for the URL line.
+ * Links for one page row: the link the page title points to, and the page's own
+ * public URL for the URL line.
  */
 export interface PopularPageLinks {
-	/** URL of the page's entity dashboard, which the page title links to. */
-	detailsURL: string;
+	/** The link the page title points to: the Analytics report for an administrator, the page's entity dashboard for a view-only user. */
+	titleURL: string;
 	/** The page's own public URL, which the URL line links to. */
 	permaLink: string;
 }
@@ -50,152 +47,71 @@ export interface PopularPageLinks {
  * Data the Top content over time PDF widget renders.
  */
 export interface PopularPagesPDFData {
-	/** Report rows, the page titles, and the per-page links, or `null` when the export is canceled or the report has no rows. */
+	/** Report rows, the page titles, and the per-page links, or `null` when the user cancels the export or the report has no rows. */
 	data: {
 		/** Rows of the Most popular pages report. */
 		rows: ReportRow[];
 		/** Map of page path to page title. */
 		titles: Record< string, string >;
-		/** Map of page path to its entity dashboard URL and public URL. */
+		/** Map of page path to its title link and public URL. */
 		links: Record< string, PopularPageLinks >;
 	} | null;
 }
 
 /**
- * How many rows the page titles report requests for each page path. Matches
- * the `getPageTitles` selector, so the PDF gives each page the same title the
- * dashboard shows.
- */
-const PAGE_TITLES_REQUEST_MULTIPLIER = 5;
-
-/**
- * Report ID (cache key) for the page titles report.
- */
-const PAGE_TITLES_REPORT_ID =
-	'analytics-4_get-page-titles_store:selector_options';
-
-/**
- * Collects the unique page paths from the report rows.
+ * Maps each page path to its title link and public URL.
  *
- * The report has one dimension, `pagePath`, so each row's first dimension value
- * is its page path.
+ * The title links to the same All pages and screens report the dashboard widget
+ * links to for an administrator, and to the page's entity dashboard for a
+ * view-only user, the same `serviceURL || detailsURL` fallback the dashboard
+ * widget's `DetailsPermaLinks` renders. The URL line links to the page itself
+ * for every user.
  *
  * @since 1.182.0
+ * @since n.e.x.t Links the title to the Analytics report for an administrator and to the entity dashboard for a view-only user.
  *
- * @param [report] Most popular pages report.
- * @return Unique page paths in row order.
+ * @param {Object}   params           Link map parameters.
+ * @param {Object}   params.registry  WordPress data registry.
+ * @param {Object}   params.dates     Report date range.
+ * @param {string[]} params.pagePaths Page paths from the main report rows.
+ * @param {boolean}  params.viewOnly  Whether the export runs on a view-only dashboard.
+ * @return {Object} Map of page path to its title link and public URL.
  */
-function getPagePaths( report?: Report ): string[] {
-	const pagePaths: string[] = [];
-
-	( report?.rows ?? [] ).forEach( ( row ) => {
-		const pagePath = row.dimensionValues?.[ 0 ]?.value;
-		if ( pagePath && ! pagePaths.includes( pagePath ) ) {
-			pagePaths.push( pagePath );
-		}
-	} );
-
-	return pagePaths;
-}
-
-/**
- * Builds the page titles report args for the given page paths.
- *
- * Matches the options the `getPageTitles` selector builds, so the PDF requests
- * the report the dashboard uses for its titles.
- *
- * @since 1.182.0
- *
- * @param dates           Report date range.
- * @param dates.startDate Report start date (YYYY-MM-DD).
- * @param dates.endDate   Report end date (YYYY-MM-DD).
- * @param pagePaths       Page paths from the main report rows.
- * @return GA4 getReport args for the page titles report.
- */
-function getPageTitlesReportArgs(
-	{ startDate, endDate }: Pick< ReportOptions, 'startDate' | 'endDate' >,
-	pagePaths: string[]
-): ReportOptions {
-	return {
-		startDate,
-		endDate,
-		dimensions: [ 'pagePath', 'pageTitle' ],
-		dimensionFilters: { pagePath: [ ...pagePaths ].sort() },
-		metrics: [ { name: 'screenPageViews' } ],
-		orderby: [
-			{
-				metric: { metricName: 'screenPageViews' },
-				desc: true,
-			},
-		],
-		limit: PAGE_TITLES_REQUEST_MULTIPLIER * pagePaths.length,
-		reportID: PAGE_TITLES_REPORT_ID,
-	};
-}
-
-/**
- * Maps each page path to its title.
- *
- * Keeps the first title found for each path and falls back to `(unknown)` for
- * any path the titles report missed, matching the dashboard's `getPageTitles`.
- *
- * @since 1.182.0
- *
- * @param pagePaths      Page paths from the main report rows.
- * @param [titlesReport] Page titles report.
- * @return Map of page path to page title.
- */
-function getTitleMap(
-	pagePaths: string[],
-	titlesReport?: Report
-): Record< string, string > {
-	const titles: Record< string, string > = {};
-
-	( titlesReport?.rows ?? [] ).forEach( ( row ) => {
-		const pagePath = row.dimensionValues?.[ 0 ]?.value;
-		const pageTitle = row.dimensionValues?.[ 1 ]?.value;
-		if ( pagePath && ! titles[ pagePath ] ) {
-			titles[ pagePath ] = pageTitle ?? '';
-		}
-	} );
-
-	pagePaths.forEach( ( pagePath ) => {
-		if ( ! titles[ pagePath ] ) {
-			titles[ pagePath ] = __( '(unknown)', 'google-site-kit' );
-		}
-	} );
-
-	return titles;
-}
-
-/**
- * Maps each page path to its entity dashboard URL and public URL.
- *
- * The title links to the page's Site Kit detail view, the same entity dashboard
- * link the dashboard builds for a page. The URL line links to the page itself.
- *
- * @since 1.182.0
- *
- * @param registry  WordPress data registry.
- * @param pagePaths Page paths from the main report rows.
- * @return Map of page path to its entity dashboard URL and public URL.
- */
-function getPopularPageLinkMap(
-	registry: GetPDFDataParams[ 'registry' ],
-	pagePaths: string[]
-): Record< string, PopularPageLinks > {
+function getPopularPageLinkMap( {
+	registry,
+	dates,
+	pagePaths,
+	viewOnly,
+}: Pick< GetPDFDataParams, 'registry' | 'dates' | 'viewOnly' > & {
+	pagePaths: string[];
+} ): Record< string, PopularPageLinks > {
 	const coreSite = registry.select( CORE_SITE );
 	const siteURL = coreSite.getReferenceSiteURL();
+	const analytics = registry.select( MODULES_ANALYTICS_4 );
+	const { startDate, endDate } = dates;
 
 	const links: Record< string, PopularPageLinks > = {};
 
 	pagePaths.forEach( ( pagePath ) => {
 		const permaLink = getFullURL( siteURL, pagePath );
+
+		// An administrator's title links to the Analytics report. A view-only
+		// user has no service link, so the title falls back to the page's entity
+		// dashboard, the same `serviceURL || detailsURL` fallback the dashboard
+		// widget renders for that user.
+		const serviceURL = viewOnly
+			? null
+			: getAllPagesReportURL( analytics, pagePath, {
+					startDate,
+					endDate,
+			  } );
+
+		const detailsURL = coreSite.getAdminURL( 'googlesitekit-dashboard', {
+			permaLink,
+		} );
+
 		links[ pagePath ] = {
-			detailsURL:
-				coreSite.getAdminURL( 'googlesitekit-dashboard', {
-					permaLink,
-				} ) ?? '',
+			titleURL: serviceURL || detailsURL || '',
 			permaLink,
 		};
 	} );
@@ -213,17 +129,20 @@ function getPopularPageLinkMap(
  *
  * @since 1.182.0
  * @since 1.183.0 Returns null data when the report has no rows.
+ * @since n.e.x.t Links each title to the Analytics report for an administrator and to the entity dashboard for a view-only user.
  *
- * @param params          Loader parameters.
- * @param params.registry WordPress data registry.
- * @param params.dates    Report date range.
- * @param params.signal   Cancellation signal.
- * @return The report rows and the page-path-to-title map.
+ * @param {Object}      params          Loader parameters.
+ * @param {Object}      params.registry WordPress data registry.
+ * @param {Object}      params.dates    Report date range.
+ * @param {AbortSignal} params.signal   Cancellation signal.
+ * @param {boolean}     params.viewOnly Whether the export runs on a view-only dashboard.
+ * @return {Promise<Object>} The report rows and the page-path-to-title map.
  */
 export default async function getPDFData( {
 	registry,
 	dates,
 	signal,
+	viewOnly,
 }: GetPDFDataParams ): Promise< PopularPagesPDFData > {
 	if ( signal.aborted ) {
 		return { data: null };
@@ -254,13 +173,18 @@ export default async function getPDFData( {
 	}
 
 	const pagePaths = getPagePaths( report );
-	const links = getPopularPageLinkMap( registry, pagePaths );
+	const links = getPopularPageLinkMap( {
+		registry,
+		dates,
+		pagePaths,
+		viewOnly,
+	} );
 
 	if ( pagePaths.length === 0 ) {
 		return { data: { rows, titles: {}, links } };
 	}
 
-	const titlesArgs = getPageTitlesReportArgs( dates, pagePaths );
+	const titlesArgs = getPageTitlesReportOptions( dates, pagePaths );
 	invalidateResolution( 'getReport', [ titlesArgs, { signal } ] );
 
 	const titlesReport: Report | undefined = await registry
@@ -274,7 +198,7 @@ export default async function getPDFData( {
 	return {
 		data: {
 			rows,
-			titles: getTitleMap( pagePaths, titlesReport ),
+			titles: getPageTitleMap( pagePaths, titlesReport ),
 			links,
 		},
 	};

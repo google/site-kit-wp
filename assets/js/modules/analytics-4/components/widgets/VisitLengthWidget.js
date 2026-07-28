@@ -42,6 +42,44 @@ import { numFmt } from '@/js/util/i18n';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
+/**
+ * Builds the Analytics 4 report options for the Visit Length metric.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range, including the compare dates.
+ * @return {Object} The Analytics 4 `getReport` options.
+ */
+export function getVisitLengthReportOptions( dates ) {
+	return {
+		...dates,
+		metrics: [ { name: 'averageSessionDuration' }, { name: 'sessions' } ],
+		reportID: 'analytics-4_visit-length-widget_widget_reportOptions',
+	};
+}
+
+/**
+ * Builds the sub-text for the Visit Length metric tile.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the PDF tile display the same sub-text.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} totalSessions The total number of visits.
+ * @return {string} The formatted sub-text.
+ */
+export function getVisitLengthSubtext( totalSessions ) {
+	return sprintf(
+		/* translators: %s: Number of total visits to the site, such as "1,234". */
+		__( '%s total visits', 'google-site-kit' ),
+		numFmt( totalSessions, { style: 'decimal' } )
+	);
+}
+
 function VisitLengthWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -49,11 +87,7 @@ function VisitLengthWidget( { Widget } ) {
 		} )
 	);
 
-	const reportOptions = {
-		...dates,
-		metrics: [ { name: 'averageSessionDuration' }, { name: 'sessions' } ],
-		reportID: 'analytics-4_visit-length-widget_widget_reportOptions',
-	};
+	const reportOptions = getVisitLengthReportOptions( dates );
 
 	const report = useInViewSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
@@ -101,11 +135,7 @@ function VisitLengthWidget( { Widget } ) {
 			widgetSlug={ KM_ANALYTICS_VISIT_LENGTH }
 			metricValue={ currentVisitLength }
 			metricValueFormat="s"
-			subText={ sprintf(
-				/* translators: %s: Number of total page views. */
-				__( '%s total visits', 'google-site-kit' ),
-				numFmt( currentTotalSessions, { style: 'decimal' } )
-			) }
+			subText={ getVisitLengthSubtext( currentTotalSessions ) }
 			previousValue={ previousVisitLength }
 			currentValue={ currentVisitLength }
 			loading={ loading }

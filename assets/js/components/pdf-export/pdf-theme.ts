@@ -42,6 +42,24 @@ export const PDF_FONT_FAMILY_DISPLAY = 'GoogleSansDisplay';
 export const PDF_FONT_FAMILY_TEXT = 'GoogleSansText';
 
 /**
+ * The page height, in points, for the measurement render pass.
+ *
+ * Tall enough to hold any report on one page without pagination, while
+ * staying under the PDF specification's hard page-size limit.
+ *
+ * @since n.e.x.t
+ */
+export const PDF_MEASURE_PAGE_HEIGHT = 14400;
+
+/**
+ * The padding, in points, added below the measured content height when
+ * sizing the final single page.
+ *
+ * @since n.e.x.t
+ */
+export const PDF_PAGE_BOTTOM_PADDING = 60;
+
+/**
  * Shared colors for the PDF report.
  *
  * `@react-pdf` builds the PDF from JavaScript values and can't read the
@@ -84,7 +102,7 @@ export const PDF_COLORS = {
  * always match. The list matches the dashboard's donut colors, so each donut
  * looks the same in the dashboard and the PDF.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export const PIE_CHART_COLORS = [
 	PDF_COLORS.YELLOW_Y_100,

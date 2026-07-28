@@ -20,11 +20,6 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock-jest';
-import {
-	createTestRegistry,
-	provideSiteInfo,
-	waitForDefaultTimeouts,
-} from 'tests/js/utils';
 
 /**
  * WordPress dependencies
@@ -38,6 +33,11 @@ import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-c
 import { PIE_CHART_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import renderGoogleChartToDataURI from '@/js/components/pdf-export/render-google-chart-to-data-uri';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	createTestRegistry,
+	provideSiteInfo,
+	waitForDefaultTimeouts,
+} from '@tests/js/utils';
 import getPDFData, { GetPDFDataParams } from './getPDFData';
 import {
 	CHANNELS_BREAKDOWN_REPORT_ID,
