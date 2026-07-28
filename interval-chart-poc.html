@@ -54,6 +54,24 @@
 			background: #c3d0f0;
 		}
 
+		.legend__swatch--dot {
+			width: 10px;
+			height: 10px;
+			border-radius: 50%;
+			background: #81c995;
+		}
+
+		/* Chart 2 legend: reuses the swatch shapes with the projection
+		   chart's own colours (solid green line, shaded predicted region,
+		   key-event dot). */
+		.legend--projection .legend__swatch--line {
+			background: #188038;
+		}
+
+		.legend--projection .legend__swatch--band {
+			background: #e6f4ea;
+		}
+
 		.card + .card {
 			margin-top: 24px;
 		}
@@ -213,6 +231,20 @@
 
 	<div class="card">
 		<div id="chart2"></div>
+		<div class="legend legend--projection">
+			<div class="legend__item">
+				<span class="legend__swatch--line"></span>
+				<span>Last 28 days traffic</span>
+			</div>
+			<div class="legend__item">
+				<span class="legend__swatch--band"></span>
+				<span>Predicted traffic</span>
+			</div>
+			<div class="legend__item">
+				<span class="legend__swatch--dot"></span>
+				<span>Published post</span>
+			</div>
+		</div>
 	</div>
 
 	<script>
