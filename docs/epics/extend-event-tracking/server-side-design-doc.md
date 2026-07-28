@@ -132,9 +132,7 @@ A few details of these two calls shape the rest of the design:
 - **`create` requires `analytics.edit`.**
 - `list` accepts `pageSize` (default **10**, **maximum 10**) and returns `nextPageToken`. The datapoint must follow `nextPageToken` rather than assume one page. The per‑stream secret cap is not publicly documented, so `create` must surface a quota/limit failure gracefully instead of assuming it always succeeds.
 - Parent formats differ between the two calls: `list` parents on `properties/{p}/dataStreams/{d}/measurementProtocolSecrets`, `create` on `properties/{p}/dataStreams/{d}`. The vendored resource class handles the suffix, but the datapoints should build the parent through a shared helper alongside the existing `Analytics_4::normalize_property_id()`.
-- **Use `analyticsadmin` (v1beta), not `analyticsadmin-v1alpha`.** Both vendored clients expose the collection identically, and the module registers both services; v1beta is what the property and data‑stream datapoints use, and it is the surface the [official reference](https://developers.google.com/analytics/devguides/config/admin/v1/rest/v1beta/properties.dataStreams.measurementProtocolSecrets) documents. v1alpha is reserved in this module for features that only exist there (enhanced measurement settings, AdSense links).
 - Neither datapoint extends `Shareable_Datapoint`: a view‑only dashboard user has no reason to enumerate secrets.
-- **Do not follow `docs/context/php/module-architecture.md`'s datapoint example** — it documents an obsolete positional‑argument `Datapoint` constructor and does not mention `Executable_Datapoint` or the current one‑class‑per‑datapoint layout. Copy a recent sibling (`Create_Webdatastream`, `Get_Webdatastreams`) instead. Fixing that doc is a candidate follow‑up.
 
 **`secretValue` must never reach the browser.** The Admin API returns `secretValue` on *every* resource `list` returns, and Google's own guidance is explicit: *"The `api_secret` is private. Don't expose it in the client‑side code of your website or app."* So both datapoints shape their responses through a new `Analytics_4::filter_measurement_protocol_secret_with_ids()` helper (mirroring the existing `filter_webdatastream_with_ids()`) that returns only `{ _id, name, displayName }` — `_id` being the last path segment of `name`.
 
@@ -159,7 +157,7 @@ Only the bare `secretID` is stored, not the full resource name — consistent wi
 
 **Ownership: neither key is an owned key.** The initial instinct is to treat `measurementProtocolSecretID` like `webDataStreamID` — both name a remote resource created on a user's behalf — but owned keys have a much larger blast radius than that analogy suggests: `Setting_With_Owned_Keys_Trait` rewrites `ownerID` to the current user whenever an owned key changes, and `ownerID` determines whose OAuth credentials serve **all** shared‑dashboard Analytics data and who may manage sharing. Selecting a Measurement Protocol secret is not an act that should reassign a site's Analytics ownership — and it would be actively harmful when the change comes from the provisioning cron or from a second administrator. Keeping ownership stable also keeps it pointing at the user most likely to hold `analytics.edit`, which is exactly who the cron needs to switch to.
 
-So neither key joins `get_owned_keys()` / `get_view_only_keys()` in PHP, nor `ownedSettingsSlugs` in `assets/js/modules/analytics-4/datastore/base.js`. Both **must** be added to `settingSlugs` in `base.js`, or `useSelect`/`setX` will not exist for them, and both must exist in `Settings::get_default()` — `Module_Settings::merge()` intersects against existing keys and strips `null`, so a key absent from the defaults is not writable at all, and clearing must be done with `''` rather than `null`.
+So neither key joins `get_owned_keys()` / `get_view_only_keys()` in PHP, nor `ownedSettingsSlugs` in `assets/js/modules/analytics-4/datastore/base.js`. Both **must** be added to `settingSlugs` in `base.js`, or `useSelect`/`setX` will not exist for them, and both must exist in `Settings::get_default()`.
 
 **Deletion.** `Analytics_4::on_deactivation()` already deletes the module settings plus each sub‑settings option (`audience_settings`, `site_goals_settings`, `advanced_data_breakdowns_settings`); `Measurement_Protocol_Settings::delete()` must be added there. `Reset::KEY_PATTERN` covers it for a full reset. Note that deleting the **local** record does not delete the **remote** secret in the GA property — see [open questions](#open-questions).
 
@@ -222,16 +220,16 @@ There are no UX mocks yet, so the proposal is to compose existing primitives onl
 │      Conversion tracking allows you to measure additional events…    │
 │                                                                      │
 │  ★  Server-side measurement                                          │
-│     Measures events Site Kit can't capture in the browser — new       │
-│     comments, new accounts and protected file downloads — by          │
-│     sending them straight to Analytics.  Learn more                   │
+│     Measures events Site Kit can't capture in the browser — new      │
+│     comments, new accounts and protected file downloads — by         │
+│     sending them straight to Analytics.  Learn more                  │
 │                                                                      │
 │     ┌────────────────────────────────────────────────┐               │
 │     │ Measurement Protocol API secret             ▾  │               │
 │     ├────────────────────────────────────────────────┤               │
 │     │ Site Kit by Google                             │               │
 │     │ My existing secret                             │               │
-│     │ Set up a new Measurement Protocol secret       │  ← sentinel    │
+│     │ Set up a new Measurement Protocol secret       │  ← sentinel   │
 │     └────────────────────────────────────────────────┘               │
 │                                                                      │
 │     ⚠ You'll need to grant Site Kit permission to create a new       │
