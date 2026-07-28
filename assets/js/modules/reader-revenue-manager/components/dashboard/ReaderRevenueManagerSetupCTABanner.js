@@ -31,18 +31,15 @@ import {
 	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
+import './rrm-setup-cta-banner.scss';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import useRetriableNotificationDismissButtonLabel from '@/js/components/notifications/useRetriableNotificationDismissButtonLabel';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
@@ -82,15 +79,9 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 	const showTooltip = useShowTooltip( tooltipSettings );
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
-	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const { activateModule } = useDispatch( CORE_MODULES );
-	const { setInternalServerError } = useDispatch( CORE_SITE );
 
-	const existingSetupURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
-			slug: MODULE_SLUG_READER_REVENUE_MANAGER,
-			reAuth: true,
-		} )
+	const onExploreOtherFeaturesCallback = useActivateModuleCallback(
+		MODULE_SLUG_READER_REVENUE_MANAGER
 	);
 
 	const isDismissalFinal = useSelect( ( select ) =>
@@ -104,77 +95,78 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 		triggerSurvey( 'view_reader_revenue_manager_cta' );
 	}, [ triggerSurvey ] );
 
-	const onExpressSetupCallback = useCallback( () => {
-		async function navigateToExpressSetup() {
-			setIsSaving( true );
-
-			const { error, response } = await activateModule(
-				MODULE_SLUG_READER_REVENUE_MANAGER
-			);
-
-			if ( ! error ) {
-				navigateTo(
-					addQueryArgs( response.moduleReauthURL, {
-						expressSetup: true,
-						cta: 'newsletter',
-					} )
-				);
-			} else {
-				setInternalServerError( {
-					id: `${ MODULE_SLUG_READER_REVENUE_MANAGER }-setup-error`,
-					description: error.message,
-				} );
-				setIsSaving( false );
-			}
-		}
-
-		navigateToExpressSetup();
-	}, [ activateModule, navigateTo, setInternalServerError ] );
-
-	const title = rrmExpressSetupEnabled
-		? __( 'Turn casual visitors into loyal readers', 'google-site-kit' )
-		: __(
-				'Grow your revenue and deepen reader engagement',
-				'google-site-kit'
-		  );
-
-	const description = rrmExpressSetupEnabled
-		? createInterpolateElement(
-				__(
-					'Add a simple signup form to your site to start building your email subscriber list, powered by Reader Revenue Manager. Want to do more? <link>Explore other features</link> like reader contributions, paywalls, or surveys.',
-					'google-site-kit'
-				),
-				{
-					link: (
-						// eslint-disable-next-line jsx-a11y/anchor-has-content
-						<a
-							href={ existingSetupURL ?? '' }
-							className="googlesitekit-banner__description_link"
-						/>
-					),
-				}
-		  )
-		: __(
-				'Turn casual visitors into loyal readers and earn more from your content with paywalls, contributions, surveys, newsletter sign-ups and reader insight tools.',
-				'google-site-kit'
-		  );
+	if ( rrmExpressSetupEnabled ) {
+		return (
+			<Notification>
+				<SetupCTA
+					notificationID={ id }
+					title={ __(
+						'Turn casual visitors into loyal readers',
+						'google-site-kit'
+					) }
+					description={ createInterpolateElement(
+						__(
+							'Add a simple signup form to your site to start building your email subscriber list, powered by Reader Revenue Manager. Want to do more? <link>Explore other features</link> like reader contributions, paywalls, or surveys.',
+							'google-site-kit'
+						),
+						{
+							link: (
+								<button
+									type="button"
+									onClick={ onExploreOtherFeaturesCallback }
+									className="googlesitekit-rrm-setup-cta-banner__explore-link"
+								/>
+							),
+						}
+					) }
+					ctaButton={ {
+						label: __( 'Set up a sign-up form', 'google-site-kit' ),
+						onClick: onSetupCallback,
+						inProgress: isSaving,
+						dismissOnClick: true,
+						dismissOptions: {
+							skipHidingFromQueue: true,
+						},
+					} }
+					dismissButton={ {
+						label: dismissLabel,
+						onClick: showTooltip,
+						dismissOptions: {
+							expiresInSeconds: isDismissalFinal
+								? 0
+								: 2 * WEEK_IN_SECONDS,
+						},
+						disabled: isSaving,
+					} }
+					svg={ {
+						desktop: BannerExpressSetupSVGDesktop,
+						mobile: BannerExpressSetupSVGMobile,
+						tablet: BannerExpressSetupSVGTablet,
+						verticalPosition: 'center',
+					} }
+				/>
+			</Notification>
+		);
+	}
 
 	return (
 		<Notification>
 			<SetupCTA
 				notificationID={ id }
-				title={ title }
-				description={ description }
+				title={ __(
+					'Grow your revenue and deepen reader engagement',
+					'google-site-kit'
+				) }
+				description={ __(
+					'Turn casual visitors into loyal readers and earn more from your content with paywalls, contributions, surveys, newsletter sign-ups and reader insight tools.',
+					'google-site-kit'
+				) }
 				ctaButton={ {
-					label: rrmExpressSetupEnabled
-						? __( 'Set up a sign-up form', 'google-site-kit' )
-						: __(
-								'Set up Reader Revenue Manager',
-								'google-site-kit'
-						  ),
-					onClick: rrmExpressSetupEnabled
-						? onExpressSetupCallback
-						: onSetupCallback,
+					label: __(
+						'Set up Reader Revenue Manager',
+						'google-site-kit'
+					),
+					onClick: onSetupCallback,
 					inProgress: isSaving,
 					dismissOnClick: true,
 					dismissOptions: {
@@ -192,24 +184,13 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 					disabled: isSaving,
 				} }
 				svg={ {
-					desktop: rrmExpressSetupEnabled
-						? BannerExpressSetupSVGDesktop
-						: BannerSVGDesktop,
-					mobile: rrmExpressSetupEnabled
-						? BannerExpressSetupSVGMobile
-						: BannerSVGMobile,
-					tablet: rrmExpressSetupEnabled
-						? BannerExpressSetupSVGTablet
-						: undefined,
+					desktop: BannerSVGDesktop,
+					mobile: BannerSVGMobile,
 					verticalPosition: 'center',
 				} }
-				learnMoreLink={
-					rrmExpressSetupEnabled
-						? undefined
-						: {
-								href: 'https://readerrevenue.withgoogle.com',
-						  }
-				}
+				learnMoreLink={ {
+					href: 'https://readerrevenue.withgoogle.com',
+				} }
 			/>
 		</Notification>
 	);

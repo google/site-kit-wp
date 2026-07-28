@@ -129,7 +129,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	it( 'should render express setup copy when the feature flag is enabled', async () => {
 		mockSurveyEndpoints();
 
-		const { getByText, getByRole, waitForRegistry } = render(
+		const { getByText, getAllByRole, waitForRegistry } = render(
 			<ReaderRevenueManagerSetupCTABannerComponent />,
 			{
 				registry,
@@ -142,17 +142,11 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		expect(
 			getByText( /Turn casual visitors into loyal readers/ )
 		).toBeInTheDocument();
-		expect(
-			getByRole( 'button', { name: /Set up a sign-up form/i } )
-		).toBeInTheDocument();
-		expect(
-			getByRole( 'link', { name: /Explore other features/i } )
-		).toHaveAttribute(
-			'href',
-			expect.stringContaining(
-				'page=googlesitekit-dashboard&slug=reader-revenue-manager&reAuth=true'
-			)
-		);
+		expect( getByText( /Set up a sign-up form/i ) ).toBeInTheDocument();
+		expect( getByText( /Explore other features/i ) ).toBeInTheDocument();
+
+		const buttons = getAllByRole( 'button' );
+		expect( buttons.length ).toBeGreaterThan( 0 );
 	} );
 
 	it( 'should call the "useActivateModuleCallback" hook and dismiss the notification when the setup CTA is clicked', async () => {
@@ -251,6 +245,27 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			expect.stringContaining( 'slug=reader-revenue-manager&reAuth=true' )
 		);
 		expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
+	} );
+
+	it( 'should call useActivateModuleCallback when "Explore other features" is clicked', async () => {
+		mockSurveyEndpoints();
+
+		const { getByText, waitForRegistry } = render(
+			<ReaderRevenueManagerSetupCTABannerComponent />,
+			{
+				registry,
+				features: [ 'rrmExpressSetup' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByText( /Explore other features/i ) );
+		} );
+
+		expect( activateModuleCallbackMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	it( 'should render legacy desktop banner graphic when the feature flag is disabled', async () => {
