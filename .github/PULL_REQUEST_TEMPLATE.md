@@ -1,9 +1,9 @@
 ## Summary
 
 <!-- Please reference the issue this PR addresses in the following list. -->
-Addresses issue:
+Related issue(s):
 
-- #
+- Resolves #
 
 ## Relevant technical choices
 
