@@ -25,7 +25,6 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
@@ -188,30 +187,12 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
 	} );
 
-	it( 'should navigate to express setup when the feature flag is enabled', async () => {
+	it( 'should call setup activation callback when express setup CTA is clicked', async () => {
 		mockSurveyEndpoints();
 
 		fetchMock.postOnce( dismissPromptEndpoint, {
 			body: {
 				'rrm-setup-notification': { expires: 0, count: 1 },
-			},
-		} );
-
-		const navigateToSpy = jest.spyOn(
-			registry.dispatch( CORE_LOCATION ),
-			'navigateTo'
-		);
-		navigateToSpy.mockImplementation( () => {} );
-
-		const activateModuleSpy = jest.spyOn(
-			registry.dispatch( CORE_MODULES ),
-			'activateModule'
-		);
-		activateModuleSpy.mockResolvedValue( {
-			error: null,
-			response: {
-				moduleReauthURL:
-					'http://test.test/wp-admin/admin.php?page=googlesitekit-dashboard&slug=reader-revenue-manager&reAuth=true',
 			},
 		} );
 
@@ -234,16 +215,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			);
 		} );
 
-		expect( activateModuleCallbackMock ).not.toHaveBeenCalled();
-		expect( activateModuleSpy ).toHaveBeenCalledWith(
-			MODULE_SLUG_READER_REVENUE_MANAGER
-		);
-		expect( navigateToSpy ).toHaveBeenCalledWith(
-			expect.stringContaining( 'expressSetup=true&cta=newsletter' )
-		);
-		expect( navigateToSpy ).toHaveBeenCalledWith(
-			expect.stringContaining( 'slug=reader-revenue-manager&reAuth=true' )
-		);
+		expect( activateModuleCallbackMock ).toHaveBeenCalledTimes( 1 );
 		expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
 	} );
 
