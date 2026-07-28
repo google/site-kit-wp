@@ -37,6 +37,7 @@ function Template( args: ExpressSetupResumeNoticeProps ) {
 }
 
 export const Default = Template.bind( {} );
+Default.storyName = 'ExpressSetupResumeNotice';
 Default.args = {
 	description:
 		"It looks like you haven't finished setting up your newsletter sign-up form. Resume the setup to complete it and publish it to your site.",

@@ -41,6 +41,7 @@ function Template() {
 }
 
 export const Default = Template.bind( {} );
+Default.storyName = 'ExpressSetupResumeNewsletterNotification';
 Default.parameters = {
 	features: [ 'rrmExpressSetup' ],
 };
