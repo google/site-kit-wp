@@ -30,7 +30,7 @@ import {
 	provideUserCapabilities,
 } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
-import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
+import ActivateAnalyticsCTA from './index';
 
 function Template( args ) {
 	return <ActivateAnalyticsCTA { ...args } />;
