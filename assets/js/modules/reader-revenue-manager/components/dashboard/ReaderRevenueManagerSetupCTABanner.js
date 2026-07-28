@@ -35,7 +35,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import './rrm-setup-cta-banner.scss';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import useRetriableNotificationDismissButtonLabel from '@/js/components/notifications/useRetriableNotificationDismissButtonLabel';
