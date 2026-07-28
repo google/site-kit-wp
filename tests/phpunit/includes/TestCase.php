@@ -10,8 +10,6 @@
  * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests;
 
 use Closure;
@@ -292,8 +290,8 @@ class TestCase extends WP_UnitTestCase {
 	}
 
 	protected function assertWPErrorWithMessage( $expected_message, $actual ) {
-		$this->assertWPError( $actual );
-		$this->assertEquals( $expected_message, $actual->get_error_message() );
+		$this->assertWPError( $actual, 'Value should be a WP_Error.' );
+		$this->assertEquals( $expected_message, $actual->get_error_message(), 'WP_Error should contain the expected error message.' );
 	}
 
 	protected function assertPostMetaNotExists( $post_id, $meta_key ) {
@@ -312,7 +310,7 @@ class TestCase extends WP_UnitTestCase {
 
 	protected function assertPostMetaHasValue( $post_id, $meta_key, $meta_value ) {
 		$meta = $this->queryPostMeta( $post_id, $meta_key );
-		$this->assertNotNull( $meta );
+		$this->assertNotNull( $meta, "Post $post_id should have a $meta_key meta entry." );
 		$this->assertEquals( $meta_value, $meta['meta_value'], "Failed to assert that post $post_id has \"$meta_key\" meta with \"$meta_value\" value." );
 	}
 

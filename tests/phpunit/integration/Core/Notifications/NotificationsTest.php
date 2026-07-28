@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\Notifications;
 
 use Google\Site_Kit\Context;
@@ -48,7 +46,8 @@ class NotificationsTest extends TestCase {
 				'core/site/data/notifications',
 				'core/site/data/mark-notification',
 			),
-			$routes
+			$routes,
+			'Notifications should register routes for retrieving and marking notifications.'
 		);
 	}
 
@@ -88,6 +87,6 @@ class NotificationsTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		// Confirm the request returns 200 status code.
-		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( 200, $response->get_status(), 'Non-proxy sites should receive a successful empty notifications response.' );
 	}
 }

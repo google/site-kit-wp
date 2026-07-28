@@ -10,8 +10,6 @@
  * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
@@ -50,8 +48,8 @@ trait Module_With_Service_Entity_ContractTests {
 
 		$access = $module->check_service_entity_access();
 
-		$testcase->assertNotWPError( $access );
-		$testcase->assertEquals( true, $access );
+		$testcase->assertNotWPError( $access, 'Successful service entity access check should not return a WP_Error.' );
+		$testcase->assertEquals( true, $access, 'Successful service response should indicate that the entity is accessible.' );
 	}
 
 	/**
@@ -67,8 +65,8 @@ trait Module_With_Service_Entity_ContractTests {
 
 		$access = $module->check_service_entity_access();
 
-		$testcase->assertNotWPError( $access );
-		$testcase->assertEquals( false, $access );
+		$testcase->assertNotWPError( $access, 'Permission-denied service entity access check should return an access result rather than a WP_Error.' );
+		$testcase->assertEquals( false, $access, 'Permission-denied service response should indicate that the entity is inaccessible.' );
 	}
 
 	/**
@@ -81,7 +79,10 @@ trait Module_With_Service_Entity_ContractTests {
 		$this->mock_service_entity_access( $module, 401 );
 		$this->set_up_check_service_entity_access( $module );
 
-		$testcase->assertWPError( $module->check_service_entity_access() );
+		$testcase->assertWPError(
+			$module->check_service_entity_access(),
+			'Unauthorized service entity access check should return a WP_Error.'
+		);
 	}
 
 	protected function set_up_check_service_entity_access( Module $module ) {

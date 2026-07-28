@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\AdSense;
 
 use Google\Site_Kit\Context;
@@ -36,7 +34,10 @@ class Auto_Ad_GuardTest extends TestCase {
 	public function test_can_activate() {
 		$guard = $this->get_auto_ad_guard();
 
-		$this->assertTrue( $guard->can_activate() );
+		$this->assertTrue(
+			$guard->can_activate(),
+			'Auto ads should activate when no audience exclusions are configured.'
+		);
 	}
 
 	public function test_cant_activate_logged_in_users() {

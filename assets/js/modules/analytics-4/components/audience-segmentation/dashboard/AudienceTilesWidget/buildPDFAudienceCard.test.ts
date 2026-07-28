@@ -137,7 +137,19 @@ describe( 'buildTopCities', () => {
 } );
 
 describe( 'buildTopContent', () => {
-	it( 'resolves each page path to its title and falls back to the path', () => {
+	/**
+	 * Maps a page path to a stable link fixture.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} pagePath Page path of a top content row.
+	 * @return {string} The link fixture for the page.
+	 */
+	function getContentServiceURL( pagePath: string ): string {
+		return `https://example.com/analytics-report${ pagePath }`;
+	}
+
+	it( 'resolves each page path to its title and its link, and falls back to the path', () => {
 		const content = buildTopContent(
 			buildReport( [
 				{
@@ -151,12 +163,21 @@ describe( 'buildTopContent', () => {
 			] ),
 			buildReport( [
 				{ dimensionValues: [ { value: '/a' }, { value: 'Title A' } ] },
-			] )
+			] ),
+			getContentServiceURL
 		);
 
 		expect( content ).toEqual( [
-			{ title: 'Title A', pageviews: 847 },
-			{ title: '/b', pageviews: 5 },
+			{
+				title: 'Title A',
+				pageviews: 847,
+				serviceURL: 'https://example.com/analytics-report/a',
+			},
+			{
+				title: '/b',
+				pageviews: 5,
+				serviceURL: 'https://example.com/analytics-report/b',
+			},
 		] );
 	} );
 
@@ -167,7 +188,7 @@ describe( 'buildTopContent', () => {
 		} ) );
 
 		expect(
-			buildTopContent( buildReport( rows ), undefined )
+			buildTopContent( buildReport( rows ), undefined, () => '' )
 		).toHaveLength( 3 );
 	} );
 } );
@@ -214,12 +235,18 @@ describe( 'buildPDFAudienceCard', () => {
 			},
 			topContentPageTitlesResult: { response: buildReport( [] ) },
 			totalPageviews: 1000,
+			getContentServiceURL: () => '',
 			...overrides,
 		};
 	}
 
-	it( 'builds a card with the audience name, metrics, and pageviews share', () => {
-		const card = buildPDFAudienceCard( buildCardInput() );
+	it( 'builds a card with the audience name, metrics, pageviews share, and top content links', () => {
+		const card = buildPDFAudienceCard(
+			buildCardInput( {
+				getContentServiceURL: ( pagePath: string ) =>
+					`https://example.com/analytics-report${ pagePath }`,
+			} )
+		);
 
 		expect( card?.audienceName ).toBe( 'Custom A' );
 		expect( card?.metrics.visitors.current ).toBe( 10 );
@@ -229,6 +256,15 @@ describe( 'buildPDFAudienceCard', () => {
 		);
 		expect( card?.topCities ).toEqual( [
 			{ name: 'Dublin', percentage: 5 },
+		] );
+		// The card hands each top content page path to the link resolver, so
+		// the row holds the link its title renders as.
+		expect( card?.topContent ).toEqual( [
+			{
+				title: '/a',
+				pageviews: 80,
+				serviceURL: 'https://example.com/analytics-report/a',
+			},
 		] );
 	} );
 

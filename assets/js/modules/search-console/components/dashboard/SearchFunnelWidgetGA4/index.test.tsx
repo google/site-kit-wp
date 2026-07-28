@@ -20,8 +20,6 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
-import { mocked } from 'jest-mock';
-import { useIntersection as mockUseIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -43,8 +41,12 @@ import {
 } from '@/js/modules/analytics-4/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
+	mockIntersectionObserver,
+	mockLocation,
+} from '@tests/js/mock-browser-utils';
+import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	muteFetch,
@@ -66,13 +68,11 @@ import {
 } from './reportOptions';
 import SearchFunnelWidgetGA4 from '.';
 
-jest.mock( 'react-use', () => ( {
-	...( jest.requireActual( 'react-use' ) as Record< string, unknown > ),
-	useIntersection: jest.fn(),
-} ) );
-
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+const { getObservedElements, simulateIntersection } =
+	mockIntersectionObserver();
 
 describe( 'SearchFunnelWidgetGA4', () => {
 	mockLocation();
@@ -185,8 +185,9 @@ describe( 'SearchFunnelWidgetGA4', () => {
 				connected: false,
 			},
 		] );
+		provideModuleRegistrations( registry );
 
-		const { rerender } = render(
+		const { waitForRegistry } = render(
 			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 			{
 				registry,
@@ -195,17 +196,22 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			}
 		);
 
+		await waitForRegistry();
+
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
-		mocked( mockUseIntersection ).mockImplementation(
-			() =>
-				( {
-					isIntersecting: true,
-					intersectionRatio: 1,
-				} as unknown as IntersectionObserverEntry )
+		const activateAnalyticsObserver = getObservedElements().find(
+			( element ) =>
+				element.classList?.contains(
+					'googlesitekit-activate-analytics-cta'
+				)
 		);
 
-		rerender( <SearchFunnelWidgetGA4 { ...widgetComponentProps } /> );
+		expect( activateAnalyticsObserver ).toBeDefined();
+
+		act( () => {
+			simulateIntersection( activateAnalyticsObserver as Element, true );
+		} );
 
 		await waitFor( () => {
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );

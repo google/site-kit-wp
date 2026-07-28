@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\Site_Health;
 
 use Google\Site_Kit\Context;
@@ -57,7 +54,10 @@ class Debug_DataTest extends TestCase {
 		$debug_data = $this->new_debug_data();
 		$debug_data->register();
 
-		$this->assertTrue( has_filter( 'debug_information' ) );
+		$this->assertTrue(
+			has_filter( 'debug_information' ),
+			'Site Kit debug data should be registered with WordPress Site Health.'
+		);
 	}
 
 	public function test_registered_debug_information() {
@@ -66,14 +66,14 @@ class Debug_DataTest extends TestCase {
 		$debug_data->register();
 
 		$info = apply_filters( 'debug_information', array() );
-		$this->assertArrayHasKey( 'google-site-kit', $info );
+		$this->assertArrayHasKey( 'google-site-kit', $info, 'Debug information should include a Site Kit section.' );
 
 		$this->assertNonConditionalFields( $info );
-		$this->assertArrayHasKey( 'recoverable_modules', $info['google-site-kit']['fields'] );
+		$this->assertArrayHasKey( 'recoverable_modules', $info['google-site-kit']['fields'], 'Debug information should identify recoverable modules.' );
 		$this->assertHasDashboardSharingModuleFields( 'fake-module', $info );
 
-		$this->assertArrayHasKey( 'consent_mode', $info['google-site-kit']['fields'] );
-		$this->assertArrayHasKey( 'consent_api', $info['google-site-kit']['fields'] );
+		$this->assertArrayHasKey( 'consent_mode', $info['google-site-kit']['fields'], 'Debug information should include consent mode status.' );
+		$this->assertArrayHasKey( 'consent_api', $info['google-site-kit']['fields'], 'Debug information should include consent API status.' );
 	}
 
 	public function test_email_reports_fields__present_by_default() {
@@ -113,7 +113,8 @@ class Debug_DataTest extends TestCase {
 	public function test_redact_debug_value( $input, $expected, $mask_start ) {
 		$this->assertEquals(
 			$expected,
-			Debug_Data::redact_debug_value( $input, $mask_start )
+			Debug_Data::redact_debug_value( $input, $mask_start ),
+			'Debug values should be redacted according to the requested visible portion.'
 		);
 	}
 
@@ -190,8 +191,8 @@ class Debug_DataTest extends TestCase {
 		$debug_data->register();
 
 		$info = apply_filters( 'debug_information', array() );
-		$this->assertArrayHasKey( 'google-site-kit', $info );
-		$this->assertEquals( 'Not setup', $info['google-site-kit']['fields']['key_metrics_status']['value'] );
+		$this->assertArrayHasKey( 'google-site-kit', $info, 'Debug information should include a Site Kit section.' );
+		$this->assertEquals( 'Not setup', $info['google-site-kit']['fields']['key_metrics_status']['value'], 'Key Metrics should be reported as not set up by default.' );
 	}
 
 	public function test_key_metrics_fields__setup_and_enabled_tailored() {
@@ -202,9 +203,9 @@ class Debug_DataTest extends TestCase {
 		$debug_data->register();
 
 		$info = apply_filters( 'debug_information', array() );
-		$this->assertArrayHasKey( 'google-site-kit', $info );
-		$this->assertEquals( 'Setup and Enabled', $info['google-site-kit']['fields']['key_metrics_status']['value'] );
-		$this->assertEquals( 'Tailored Metrics', $info['google-site-kit']['fields']['key_metrics_source']['value'] );
+		$this->assertArrayHasKey( 'google-site-kit', $info, 'Debug information should include a Site Kit section.' );
+		$this->assertEquals( 'Setup and Enabled', $info['google-site-kit']['fields']['key_metrics_status']['value'], 'Configured Key Metrics should be reported as enabled.' );
+		$this->assertEquals( 'Tailored Metrics', $info['google-site-kit']['fields']['key_metrics_source']['value'], 'Key Metrics without manual selections should be reported as tailored.' );
 	}
 
 	public function test_key_metrics_fields__setup_and_enabled_manual() {
@@ -222,9 +223,9 @@ class Debug_DataTest extends TestCase {
 		$debug_data->register();
 
 		$info = apply_filters( 'debug_information', array() );
-		$this->assertArrayHasKey( 'google-site-kit', $info );
-		$this->assertEquals( 'Setup and Enabled', $info['google-site-kit']['fields']['key_metrics_status']['value'] );
-		$this->assertEquals( 'Manual Selection', $info['google-site-kit']['fields']['key_metrics_source']['value'] );
+		$this->assertArrayHasKey( 'google-site-kit', $info, 'Debug information should include a Site Kit section.' );
+		$this->assertEquals( 'Setup and Enabled', $info['google-site-kit']['fields']['key_metrics_status']['value'], 'Configured Key Metrics should be reported as enabled.' );
+		$this->assertEquals( 'Manual Selection', $info['google-site-kit']['fields']['key_metrics_source']['value'], 'Explicit widget selections should be reported as manual Key Metrics.' );
 	}
 
 	public function test_key_metrics_fields__setup_and_disabled() {
@@ -242,8 +243,8 @@ class Debug_DataTest extends TestCase {
 		$debug_data->register();
 
 		$info = apply_filters( 'debug_information', array() );
-		$this->assertArrayHasKey( 'google-site-kit', $info );
-		$this->assertEquals( 'Setup and Disabled', $info['google-site-kit']['fields']['key_metrics_status']['value'] );
+		$this->assertArrayHasKey( 'google-site-kit', $info, 'Debug information should include a Site Kit section.' );
+		$this->assertEquals( 'Setup and Disabled', $info['google-site-kit']['fields']['key_metrics_status']['value'], 'Hidden Key Metrics widget area should be reported as disabled.' );
 	}
 
 	public function test_gtg_fields() {

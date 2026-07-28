@@ -49,6 +49,10 @@ const DATA = {
 	],
 	currencyCode: 'EUR',
 	titles: { '/home-page': 'Home Title', '/about-page': 'About Title' },
+	links: {
+		'/home-page': 'https://example.com/analytics-report/home-page',
+		'/about-page': 'https://example.com/analytics-report/about-page',
+	},
 };
 
 /**
@@ -99,6 +103,30 @@ describe( 'DashboardTopEarningPagesWidgetGA4PDF', () => {
 		expect( json ).toContain( 'About Title' );
 	} );
 
+	it( 'renders each page title as its Analytics report link', () => {
+		const json = renderJSON( { data: DATA } );
+
+		expect( json ).toContain( DATA.links[ '/home-page' ] );
+		expect( json ).toContain( DATA.links[ '/about-page' ] );
+		// The `Link` primitive from `@react-pdf` renders as `pdf-link` under
+		// the test mock. So a `pdf-link` in the tree means the title rendered
+		// as a link, not as text that happens to hold the URL.
+		expect( json ).toContain( 'pdf-link' );
+	} );
+
+	it( 'renders each page title as plain text when a row has no link', () => {
+		// An empty `links` map gives every row an empty link, so each title
+		// renders as plain text.
+		const json = renderJSON( { data: { ...DATA, links: {} } } );
+
+		expect( json ).toContain( 'Home Title' );
+		expect( json ).toContain( 'About Title' );
+		// No `pdf-link` in the tree means every title rendered as plain text.
+		expect( json ).not.toContain( 'pdf-link' );
+		// Plain text drops the teal link color for the default text color.
+		expect( json ).not.toContain( '#108080' );
+	} );
+
 	it( 'numbers each row by its rank in the page title cell', () => {
 		const json = renderJSON( { data: DATA } );
 
@@ -106,7 +134,7 @@ describe( 'DashboardTopEarningPagesWidgetGA4PDF', () => {
 		expect( json ).toContain( '2.' );
 	} );
 
-	it( 'renders the page title in the Site Kit teal color', () => {
+	it( 'renders the page title links in the Site Kit teal color', () => {
 		const json = renderJSON( { data: DATA } );
 
 		expect( json ).toContain( '#108080' );

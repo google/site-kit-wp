@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\User_Input;
 
 use Google\Site_Kit\Context;
@@ -85,10 +82,13 @@ class Site_Specific_AnswersTest extends SettingsTestCase {
 	 */
 	public function test_get_sanitize_callback( $input, $expected ) {
 		if ( null === $input ) {
-			$this->assertEmpty( $this->site_specific_answers->get() );
+			$this->assertEmpty(
+				$this->site_specific_answers->get(),
+				'Site-specific answers should be empty by default.'
+			);
 		} else {
 			$this->site_specific_answers->set( $input );
-			$this->assertEquals( $expected, $this->site_specific_answers->get() );
+			$this->assertEquals( $expected, $this->site_specific_answers->get(), 'Site-specific answers should retain only valid site-scoped values.' );
 		}
 	}
 
