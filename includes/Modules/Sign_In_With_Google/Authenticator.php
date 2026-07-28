@@ -33,8 +33,9 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Error codes.
 	 */
-	const ERROR_INVALID_REQUEST = 'googlesitekit_auth_invalid_request';
-	const ERROR_SIGNIN_FAILED   = 'googlesitekit_auth_failed';
+	const ERROR_INVALID_REQUEST    = 'googlesitekit_auth_invalid_request';
+	const ERROR_SIGNIN_FAILED      = 'googlesitekit_auth_failed';
+	const ERROR_TWO_FACTOR_ENABLED = 'googlesitekit_auth_two_factor_enabled';
 
 	/**
 	 * User meta key marking users created via Sign in with Google.
@@ -96,15 +97,15 @@ class Authenticator implements Authenticator_Interface {
 		$payload = $this->profile_reader->get_profile_data( $credential );
 		if ( ! is_wp_error( $payload ) ) {
 			$user = $this->find_user( $payload );
-			if ( ! $user instanceof WP_User ) {
+			if ( null === $user ) {
 				// We haven't found the user using their Google user id and email. Thus we need to create
 				// a new user. But if the registration is closed, we need to return an error to identify
 				// that the sign in process failed.
 				if ( ! $this->is_registration_open() ) {
 					return $this->get_error_redirect_url( self::ERROR_SIGNIN_FAILED );
-				} else {
-					$user = $this->create_user( $payload );
 				}
+
+				$user = $this->create_user( $payload );
 			}
 		}
 
@@ -181,6 +182,7 @@ class Authenticator implements Authenticator_Interface {
 	 * Signs in the user.
 	 *
 	 * @since 1.145.0
+	 * @since n.e.x.t Skips the Two-Factor plugin's login challenge for this request.
 	 *
 	 * @param WP_User $user User object.
 	 * @return WP_Error|null WP_Error if an error occurred, null otherwise.
@@ -201,6 +203,18 @@ class Authenticator implements Authenticator_Interface {
 		// Set the user to be the current user.
 		wp_set_current_user( $user->ID, $user->user_login );
 
+		// Google already checked the second factor, so skip the Two-Factor
+		// challenge for this login. Setting this user's primary provider to
+		// empty turns the challenge off for this user only and keeps their
+		// saved settings. Don't empty the enabled providers instead: the
+		// plugin turns email codes back on when that list is empty.
+		add_filter(
+			'two_factor_primary_provider_for_user',
+			fn ( $provider, $user_id ) => $user_id === $user->ID ? '' : $provider,
+			10,
+			2
+		);
+
 		// Set the authentication cookies and trigger the wp_login action.
 		wp_set_auth_cookie( $user->ID );
 		/** This filter is documented in wp-login.php */
@@ -213,9 +227,10 @@ class Authenticator implements Authenticator_Interface {
 	 * Finds an existing user using the Google user ID and email.
 	 *
 	 * @since 1.145.0
+	 * @since n.e.x.t Returns a WP_Error when the email-matched user uses two-factor authentication and isn't connected to the Google account.
 	 *
 	 * @param array $payload Google auth payload.
-	 * @return WP_User|null User object if found, null otherwise.
+	 * @return WP_User|WP_Error|null User object when found, WP_Error when the matched user has to connect their Google account first, null otherwise.
 	 */
 	protected function find_user( $payload ) {
 		// Check if there are any existing WordPress users connected to this Google account.
@@ -237,15 +252,22 @@ class Authenticator implements Authenticator_Interface {
 
 		// Find an existing user that matches the email and link to their Google account by store their user ID in user meta.
 		$user = get_user_by( 'email', $payload['email'] );
-		if ( $user ) {
-			$user_options = clone $this->user_options;
-			$user_options->switch_user( $user->ID );
-			$user_options->set( Hashed_User_ID::OPTION, $google_user_hashed_id );
-
-			return $user;
+		if ( ! $user ) {
+			return null;
 		}
 
-		return null;
+		// Connecting the accounts here would let a user with two-factor
+		// authentication sign in without their challenge. They connect from
+		// their profile page instead, where they sign in first.
+		if ( $this->user_has_two_factor_enabled( $user->ID ) ) {
+			return new WP_Error( self::ERROR_TWO_FACTOR_ENABLED );
+		}
+
+		$user_options = clone $this->user_options;
+		$user_options->switch_user( $user->ID );
+		$user_options->set( Hashed_User_ID::OPTION, $google_user_hashed_id );
+
+		return $user;
 	}
 
 	/**
@@ -294,6 +316,20 @@ class Authenticator implements Authenticator_Interface {
 		wp_send_new_user_notifications( $user_id );
 
 		return get_user_by( 'id', $user_id );
+	}
+
+	/**
+	 * Checks whether the given user has two-factor authentication enabled.
+	 *
+	 * Returns false when the optional Two-Factor plugin isn't active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id User ID.
+	 * @return bool True when the user has two-factor authentication enabled, false otherwise.
+	 */
+	protected function user_has_two_factor_enabled( $user_id ) {
+		return class_exists( 'Two_Factor_Core' ) && \Two_Factor_Core::is_user_using_two_factor( $user_id );
 	}
 
 	/**

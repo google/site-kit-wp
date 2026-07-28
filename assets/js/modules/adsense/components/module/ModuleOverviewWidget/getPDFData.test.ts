@@ -20,7 +20,6 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock-jest';
-import { createTestRegistry } from 'tests/js/utils';
 
 /**
  * WordPress dependencies
@@ -36,6 +35,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import { calculateChange } from '@/js/util';
+import { createTestRegistry } from '@tests/js/utils';
 import getPDFData from './getPDFData';
 import {
 	getCurrentRangeArgs,

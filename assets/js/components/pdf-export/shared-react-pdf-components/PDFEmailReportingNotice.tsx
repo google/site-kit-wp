@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Path, View } from '@react-pdf/renderer';
+import { View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
@@ -30,20 +30,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { PDFStarFill } from '@/js/components/pdf-export/pdf-icons';
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFButton from './PDFButton';
-import PDFSvg from './PDFSvg';
 import PDFTypography from './PDFTypography';
-
-/**
- * The star path from `assets/svg/icons/star-fill.svg`. Importing the SVG
- * file produces a DOM component, which @react-pdf cannot render in a PDF.
- * So the path data is inlined here and rendered with @react-pdf's own
- * <Svg> and <Path> components.
- */
-const STAR_ICON_PATH =
-	'M5.825 22L8.15 14.4L2 10H9.6L12 2L14.4 10H22L15.85 14.4L18.175 22L12 17.3L5.825 22Z';
 
 const noticeTextColor = { color: PDF_COLORS.VIOLET_V_600 };
 
@@ -80,9 +71,7 @@ const PDFEmailReportingNotice: FC< PDFEmailReportingNoticeProps > = ( {
 } ) => {
 	return (
 		<View style={ styles.container }>
-			<PDFSvg width={ 24 } height={ 24 } viewBox="0 0 24 24">
-				<Path d={ STAR_ICON_PATH } fill={ PDF_COLORS.VIOLET_V_600 } />
-			</PDFSvg>
+			<PDFStarFill size={ 24 } />
 			<View style={ styles.textColumn }>
 				<PDFTypography type="label" style={ noticeTextColor }>
 					{ __(
