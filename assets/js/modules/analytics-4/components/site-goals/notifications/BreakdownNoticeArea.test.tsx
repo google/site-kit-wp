@@ -565,6 +565,51 @@ describe( 'BreakdownNoticeArea', () => {
 		expect( getByRole( 'button', { name: 'Got it' } ) ).toBeInTheDocument();
 	} );
 
+	it( 'puts the Retry CTA into its loading state while the enable flow runs', async () => {
+		// No edit scope, so the retry starts the OAuth redirect and stays busy.
+		provideUserAuthentication( registry, { grantedScopes: [] } );
+		seedAvailableCustomDimensions( [] );
+
+		const propertyID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyID();
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'insufficient_permissions',
+				message: 'Insufficient permissions',
+				data: { status: 403, reason: 'insufficientPermissions' },
+			},
+			'getCustomDimensions',
+			[ propertyID ]
+		);
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: GOAL_TYPES.LEAD,
+			} );
+
+		const { getByRole } = render(
+			<BreakdownNoticeArea
+				origin={ BREAKDOWN_ORIGIN_WIDGET }
+				goalTypes={ [ GOAL_TYPES.LEAD ] }
+			/>,
+			{ registry }
+		);
+
+		fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
+
+		// The notice stays on its error variant, with the CTA showing the retry is
+		// underway and no longer re-triggerable.
+		await waitFor( () => {
+			const retryButton = getByRole( 'button', { name: 'Retry' } );
+
+			expect( retryButton ).toHaveClass(
+				'googlesitekit-notice__cta--spinner__running'
+			);
+			expect( retryButton ).toBeDisabled();
+		} );
+	} );
+
 	it( 'renders "Event breakdown setup failed" title for ECOMMERCE permissions error in widget and panel', () => {
 		seedAvailableCustomDimensions( [] );
 		provideCustomDimensionError( registry, {
