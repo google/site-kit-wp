@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { TextField } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
-import AccessibleWarningIcon from '@/js/components/AccessibleWarningIcon';
+import VisuallyHidden from '@/js/components/VisuallyHidden';
 import useFormValue from '@/js/hooks/useFormValue';
 import {
 	FORM_SETUP,
@@ -59,8 +59,9 @@ export default function ContainerNameTextField( { label, name } ) {
 	);
 
 	const isUniqueName = isUniqueContainerName( containerName, containers );
+	const isEmpty = ! containerName;
 
-	const helperText =
+	const errorMessage =
 		containerName && ! isUniqueName
 			? __(
 					'A container with this name already exists',
@@ -68,14 +69,7 @@ export default function ContainerNameTextField( { label, name } ) {
 			  )
 			: false;
 
-	const trailingIcon =
-		containerName && ! isUniqueName ? (
-			<span className="googlesitekit-text-field-icon--error">
-				<AccessibleWarningIcon />
-			</span>
-		) : (
-			false
-		);
+	const requiredErrorID = `${ name }-required-error`;
 
 	return (
 		<div
@@ -84,13 +78,16 @@ export default function ContainerNameTextField( { label, name } ) {
 				`googlesitekit-tagmanager-${ name }`
 			) }
 		>
+			{ isEmpty && (
+				<VisuallyHidden id={ requiredErrorID }>
+					{ __( 'A container name is required', 'google-site-kit' ) }
+				</VisuallyHidden>
+			) }
 			<TextField
-				className={ classnames( {
-					'mdc-text-field--error': ! containerName || ! isUniqueName,
-				} ) }
 				label={ label }
-				helperText={ helperText }
-				trailingIcon={ trailingIcon }
+				errorMessage={ errorMessage }
+				hasError={ isEmpty }
+				ariaErrorMessage={ isEmpty ? requiredErrorID : undefined }
 				id={ name }
 				name={ name }
 				value={ containerName }

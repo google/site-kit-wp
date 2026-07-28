@@ -25,11 +25,13 @@ import {
 	VIEW_CONTEXT_MODULE_SETUP,
 	VIEW_CONTEXT_SETTINGS,
 } from '@/js/googlesitekit/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ACCOUNT_CREATE,
 	EDIT_SCOPE,
+	FORM_ACCOUNT_CREATE,
 	GTM_SCOPE,
 	MODULES_ANALYTICS_4,
 	PROVISIONING_SCOPE,
@@ -39,6 +41,7 @@ import * as tracking from '@/js/util/tracking';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import { mockUseInstanceID } from '@tests/js/mock-use-instance-id';
 import {
+	act,
 	cleanup,
 	createTestRegistry,
 	fireEvent,
@@ -131,6 +134,28 @@ describe( 'AccountCreate', () => {
 		expect(
 			getByRole( 'button', { name: 'Create Account' } )
 		).toBeInTheDocument();
+	} );
+
+	it( 'should show an accessible error state on the account field when the account name is empty', async () => {
+		const { getByRole, waitForRegistry } = render( <AccountCreate />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		act( () => {
+			registry.dispatch( CORE_FORMS ).setValues( FORM_ACCOUNT_CREATE, {
+				accountName: '',
+			} );
+		} );
+
+		const accountInput = getByRole( 'textbox', { name: 'Account' } );
+
+		expect( accountInput ).toHaveAttribute( 'aria-invalid', 'true' );
+
+		// `CreateAccountField` uses `hasError` with no accompanying
+		// `ariaErrorMessage`, so `TextField` is expected to warn here.
+		expect( console ).toHaveWarned();
 	} );
 
 	describe( 'when clicking on Create Account', () => {

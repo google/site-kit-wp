@@ -23,12 +23,19 @@ import MaterialTextField, {
 	HelperText,
 	Input,
 } from '@material/react-text-field';
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
+import { useEffect } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import AccessibleWarningIcon from '@/js/components/AccessibleWarningIcon';
 
 function TextField( {
 	className,
@@ -40,6 +47,9 @@ function TextField( {
 	leadingIcon,
 	trailingIcon,
 	helperText,
+	errorMessage,
+	hasError,
+	ariaErrorMessage,
 	id,
 	inputType,
 	value,
@@ -54,23 +64,57 @@ function TextField( {
 	// is not supplied. Adding an id is mandatory because otherwise the label
 	// is not able to associate with the input.
 	const idFallback = useInstanceId( TextField, 'googlesitekit-textfield' );
+	const inputID = id || idFallback;
+	const errorMessageID = `${ inputID }-error-message`;
+	const isErrorState = !! ( errorMessage || hasError );
+
+	useEffect( () => {
+		if (
+			process.env.NODE_ENV !== 'production' &&
+			hasError &&
+			! errorMessage &&
+			! ariaErrorMessage
+		) {
+			global.console.warn(
+				'`TextField`: `hasError` is set without an `ariaErrorMessage`. Screen reader users will have no indication of what the error is; consider providing a visually-hidden `ariaErrorMessage`.'
+			);
+		}
+	}, [ ariaErrorMessage, errorMessage, hasError ] );
 
 	return (
 		<MaterialTextField
-			className={ className }
+			className={ classnames( className, {
+				'mdc-text-field--error': isErrorState,
+			} ) }
 			name={ name }
 			label={ label }
 			noLabel={ noLabel }
 			outlined={ outlined }
 			textarea={ textarea }
 			leadingIcon={ leadingIcon }
-			trailingIcon={ trailingIcon }
+			trailingIcon={
+				isErrorState ? (
+					<span className="googlesitekit-text-field-icon--error">
+						<AccessibleWarningIcon />
+					</span>
+				) : (
+					trailingIcon
+				)
+			}
 			helperText={
-				helperText && <HelperText persistent>{ helperText }</HelperText>
+				( errorMessage || helperText ) && (
+					<HelperText persistent>
+						{ errorMessage ? (
+							<span id={ errorMessageID }>{ errorMessage }</span>
+						) : (
+							helperText
+						) }
+					</HelperText>
+				)
 			}
 		>
 			<Input
-				id={ id || idFallback }
+				id={ inputID }
 				inputType={ inputType }
 				value={ value }
 				size={ size }
@@ -79,6 +123,10 @@ function TextField( {
 				disabled={ disabled }
 				onChange={ onChange }
 				onKeyDown={ onKeyDown }
+				aria-invalid={ isErrorState ? true : undefined }
+				aria-errormessage={
+					errorMessage ? errorMessageID : ariaErrorMessage
+				}
 			/>
 		</MaterialTextField>
 	);
@@ -94,6 +142,9 @@ TextField.propTypes = {
 	leadingIcon: PropTypes.element,
 	trailingIcon: PropTypes.oneOfType( [ PropTypes.bool, PropTypes.element ] ),
 	helperText: PropTypes.oneOfType( [ PropTypes.bool, PropTypes.string ] ),
+	errorMessage: PropTypes.node,
+	hasError: PropTypes.bool,
+	ariaErrorMessage: PropTypes.string,
 	id: PropTypes.string,
 	inputType: PropTypes.string,
 	value: PropTypes.oneOfType( [ PropTypes.string, PropTypes.number ] ),

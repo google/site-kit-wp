@@ -95,7 +95,7 @@ describe( 'WebDataStreamNameInput', () => {
 			webDataStreamName: 'Test GA4 WebDataStream',
 		} );
 
-		const { container } = render( <WebDataStreamNameInput />, {
+		const { container, getByText } = render( <WebDataStreamNameInput />, {
 			registry,
 		} );
 
@@ -105,15 +105,25 @@ describe( 'WebDataStreamNameInput', () => {
 				.classList.contains( 'mdc-text-field--error' )
 		).toBeTruthy();
 
-		expect( container ).toHaveTextContent(
+		const errorMessage = getByText(
 			'A web data stream with this name already exists.'
+		);
+
+		expect( errorMessage ).toBeInTheDocument();
+
+		const input = container.querySelector( 'input' );
+
+		expect( input ).toHaveAttribute( 'aria-invalid', 'true' );
+		expect( input ).toHaveAttribute(
+			'aria-errormessage',
+			errorMessage.getAttribute( 'id' )
 		);
 
 		expect( container ).toMatchSnapshot();
 	} );
 
 	it( 'should show error state if web data stream name is not set', () => {
-		const { container } = render( <WebDataStreamNameInput />, {
+		const { container, getByText } = render( <WebDataStreamNameInput />, {
 			registry,
 		} );
 
@@ -130,8 +140,16 @@ describe( 'WebDataStreamNameInput', () => {
 				.classList.contains( 'mdc-text-field--error' )
 		).toBeTruthy();
 
-		expect( container ).toHaveTextContent(
-			'A web data stream name is required.'
+		const errorMessage = getByText( 'A web data stream name is required.' );
+
+		expect( errorMessage ).toBeInTheDocument();
+
+		const input = container.querySelector( 'input' );
+
+		expect( input ).toHaveAttribute( 'aria-invalid', 'true' );
+		expect( input ).toHaveAttribute(
+			'aria-errormessage',
+			errorMessage.getAttribute( 'id' )
 		);
 
 		expect( container ).toMatchSnapshot();

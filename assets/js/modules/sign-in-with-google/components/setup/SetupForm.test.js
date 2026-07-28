@@ -99,6 +99,41 @@ describe( 'SetupForm', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should show an accessible error state when the client ID is invalid', async () => {
+		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).receiveGetSettings( {
+			clientID: 'invalid client id',
+		} );
+
+		const { container, getByText, waitForRegistry } = render(
+			<SetupForm onCompleteSetup={ () => {} } />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container
+				.querySelector( '.mdc-text-field' )
+				.classList.contains( 'mdc-text-field--error' )
+		).toBe( true );
+
+		const errorMessage = getByText(
+			'A valid Client ID is required to use Sign in with Google'
+		);
+
+		expect( errorMessage ).toBeInTheDocument();
+
+		const input = container.querySelector( 'input' );
+
+		expect( input ).toHaveAttribute( 'aria-invalid', 'true' );
+		expect( input ).toHaveAttribute(
+			'aria-errormessage',
+			errorMessage.getAttribute( 'id' )
+		);
+	} );
+
 	it( 'should render the one tap and show next to comments toggles when anyone can register', async () => {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			anyoneCanRegister: 1,

@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-
-/**
  * Internal dependencies
  */
 import { TextField } from 'googlesitekit-components';
@@ -40,9 +35,6 @@ export default function CreateAccountField( {
 
 	return (
 		<TextField
-			className={ classnames( 'mdc-text-field', {
-				'mdc-text-field--error': hasError,
-			} ) }
 			label={ label }
 			name={ name }
 			onChange={ ( event ) => {
@@ -50,6 +42,7 @@ export default function CreateAccountField( {
 			} }
 			value={ value }
 			id={ `googlesitekit_analytics_account_create_${ name }` }
+			hasError={ hasError }
 			outlined
 		/>
 	);

@@ -254,7 +254,7 @@ exports[`SetupForm should render the one tap and show next to comments toggles w
           >
             <input
               class="mdc-text-field__input"
-              id="googlesitekit-textfield-2"
+              id="googlesitekit-textfield-3"
               maxlength="120"
               value=""
             />
@@ -269,7 +269,7 @@ exports[`SetupForm should render the one tap and show next to comments toggles w
               >
                 <label
                   class="mdc-floating-label"
-                  for="googlesitekit-textfield-2"
+                  for="googlesitekit-textfield-3"
                   style=""
                 >
                   Client ID

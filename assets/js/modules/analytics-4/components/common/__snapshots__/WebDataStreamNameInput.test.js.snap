@@ -48,6 +48,8 @@ exports[`WebDataStreamNameInput should show error state if web data stream name 
       class="mdc-text-field mdc-text-field--error mdc-text-field--outlined mdc-text-field--with-trailing-icon"
     >
       <input
+        aria-errormessage="googlesitekit-textfield-2-error-message"
+        aria-invalid="true"
         class="mdc-text-field__input"
         id="googlesitekit-textfield-2"
         value="Test GA4 WebDataStream"
@@ -92,7 +94,11 @@ exports[`WebDataStreamNameInput should show error state if web data stream name 
         aria-hidden="false"
         class="mdc-text-field-helper-text mdc-text-field-helper-text--persistent"
       >
-        A web data stream with this name already exists.
+        <span
+          id="googlesitekit-textfield-2-error-message"
+        >
+          A web data stream with this name already exists.
+        </span>
       </p>
     </div>
   </div>
@@ -108,6 +114,8 @@ exports[`WebDataStreamNameInput should show error state if web data stream name 
       class="mdc-text-field mdc-text-field--error mdc-text-field--outlined mdc-text-field--with-trailing-icon"
     >
       <input
+        aria-errormessage="googlesitekit-textfield-3-error-message"
+        aria-invalid="true"
         class="mdc-text-field__input"
         id="googlesitekit-textfield-3"
         value=""
@@ -152,7 +160,11 @@ exports[`WebDataStreamNameInput should show error state if web data stream name 
         aria-hidden="false"
         class="mdc-text-field-helper-text mdc-text-field-helper-text--persistent"
       >
-        A web data stream name is required.
+        <span
+          id="googlesitekit-textfield-3-error-message"
+        >
+          A web data stream name is required.
+        </span>
       </p>
     </div>
   </div>

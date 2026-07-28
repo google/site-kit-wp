@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -75,8 +74,10 @@ export default function ClientIDTextField( { existingClientID = '' } ) {
 	);
 
 	let helperText;
+	let errorMessage;
+
 	if ( ! isValid ) {
-		helperText = __(
+		errorMessage = __(
 			'A valid Client ID is required to use Sign in with Google',
 			'google-site-kit'
 		);
@@ -93,9 +94,8 @@ export default function ClientIDTextField( { existingClientID = '' } ) {
 		<div className="googlesitekit-settings-module__fields-group">
 			<TextField
 				label={ __( 'Client ID', 'google-site-kit' ) }
-				className={ classnames( 'googlesitekit-text-field-client-id', {
-					'mdc-text-field--error': ! isValid,
-				} ) }
+				className="googlesitekit-text-field-client-id"
+				errorMessage={ errorMessage }
 				helperText={ helperText }
 				value={ clientID }
 				onChange={ onChange }
