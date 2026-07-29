@@ -43,16 +43,19 @@ import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
-function TopReturningVisitorPages( props ) {
-	const { Widget } = props;
-
-	const viewOnlyDashboard = useViewOnly();
-
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates()
-	);
-
-	const reportOptions = {
+/**
+ * Builds the Analytics 4 report options for the Top pages by returning visitors metric.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range.
+ * @return {Object} The Analytics 4 `getReport` options.
+ */
+export function getTopReturningVisitorPagesReportOptions( dates ) {
+	return {
 		...dates,
 		dimensions: [ 'pagePath' ],
 		dimensionFilters: {
@@ -70,6 +73,18 @@ function TopReturningVisitorPages( props ) {
 		reportID:
 			'analytics-4_top-returning-visitor-pages-widget_widget_reportOptions',
 	};
+}
+
+function TopReturningVisitorPages( props ) {
+	const { Widget } = props;
+
+	const viewOnlyDashboard = useViewOnly();
+
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates()
+	);
+
+	const reportOptions = getTopReturningVisitorPagesReportOptions( dates );
 
 	const report = useInViewSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),

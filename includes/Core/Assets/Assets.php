@@ -333,12 +333,9 @@ final class Assets {
 			'googlesitekit-notifications',
 		);
 
-		if ( Feature_Flags::enabled( 'pdfGeneration' ) ) {
-			array_push( $dependencies, 'googlesitekit-datastore-pdf' );
-		}
-
 		if ( 'dashboard' === $context || 'dashboard-sharing' === $context ) {
 			array_push( $dependencies, 'googlesitekit-components' );
+			array_push( $dependencies, 'googlesitekit-datastore-pdf' );
 		}
 
 		if ( 'dashboard-sharing' === $context ) {
@@ -892,7 +889,7 @@ final class Assets {
 	}
 
 	/**
-	 * Gets the inline data specific to the current user
+	 * Gets the inline data specific to the current user.
 	 *
 	 * @since 1.9.0
 	 *
@@ -924,7 +921,7 @@ final class Assets {
 	}
 
 	/**
-	 * Gets the inline dashboard sharing data
+	 * Gets the inline dashboard sharing data.
 	 *
 	 * @since 1.49.0
 	 *

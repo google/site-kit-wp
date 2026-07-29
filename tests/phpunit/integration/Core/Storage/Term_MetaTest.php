@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\Storage;
 
 use Google\Site_Kit\Core\Storage\Term_Meta;
@@ -39,7 +36,8 @@ class Term_MetaTest extends TestCase {
 
 		$this->assertEquals(
 			$meta_value,
-			$term_meta->get( $term_id, $meta_key, true )
+			$term_meta->get( $term_id, $meta_key, true ),
+			'Term metadata should return the stored value.'
 		);
 	}
 
@@ -52,8 +50,8 @@ class Term_MetaTest extends TestCase {
 		$meta_id = $term_meta->add( $term_id, $meta_key, $meta_value );
 		$meta    = $this->queryTermMeta( $term_id, $meta_key );
 
-		$this->assertGreaterThan( 0, $meta_id );
-		$this->assertEquals( $meta_value, $meta['meta_value'] );
+		$this->assertGreaterThan( 0, $meta_id, 'Adding term metadata should return a valid metadata ID.' );
+		$this->assertEquals( $meta_value, $meta['meta_value'], 'Added term metadata should persist the supplied value.' );
 	}
 
 	public function test_update() {
@@ -77,8 +75,8 @@ class Term_MetaTest extends TestCase {
 		$updated = $term_meta->update( $term_id, $meta_key, $meta_value );
 		$meta    = $this->queryTermMeta( $term_id, $meta_key );
 
-		$this->assertTrue( $updated );
-		$this->assertEquals( $meta_value, $meta['meta_value'] );
+		$this->assertTrue( $updated, 'Updating existing term metadata should succeed.' );
+		$this->assertEquals( $meta_value, $meta['meta_value'], 'Updated term metadata should persist the new value.' );
 	}
 
 	public function test_delete() {
@@ -100,7 +98,7 @@ class Term_MetaTest extends TestCase {
 
 		$deleted = $term_meta->delete( $term_id, $meta_key );
 
-		$this->assertTrue( $deleted );
+		$this->assertTrue( $deleted, 'Deleting existing term metadata should succeed.' );
 		$this->assertPostMetaNotExists( $term_id, $meta_key );
 	}
 }

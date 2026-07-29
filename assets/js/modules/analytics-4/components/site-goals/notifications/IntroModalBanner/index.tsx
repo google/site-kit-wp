@@ -36,15 +36,13 @@ import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/c
 import { useHasBeenViewed } from '@/js/googlesitekit/notifications/hooks/useHasBeenViewed';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
-import {
-	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
-	SITE_GOALS_BREAKDOWN_NOTICE,
-} from '@/js/modules/analytics-4/components/site-goals/constants';
 import { getSiteGoalsTour } from '@/js/modules/analytics-4/components/site-goals/feature-tours/site-goals';
+import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { useSiteGoalsSectionReady } from '@/js/modules/analytics-4/hooks/useSiteGoalsSectionReady';
 import { getNavigationalScrollTop } from '@/js/util/scroll';
+import { hasGoalTypeBreakdownNotice } from './hasGoalTypeBreakdownNotice';
 import IntroModalEcommerce from './IntroModalEcommerce';
 import IntroModalEcommerceAndLead from './IntroModalEcommerceAndLead';
 import IntroModalLead from './IntroModalLead';
@@ -131,24 +129,16 @@ const IntroModal: FC< IntroModalProps > = ( { id, Notification } ) => {
 		[]
 	);
 
-	const hasEcommerceConversionReportingEventsOnly = useSelect(
+	// Read the notice per widget, so the tour's breakdown step knows which one
+	// it lands on and takes that widget's copy.
+	const hasEcommerceBreakdownNotice = useSelect(
 		( select: Select ) =>
-			select(
-				MODULES_ANALYTICS_4
-			).hasEcommerceConversionReportingEventsOnly(),
+			hasGoalTypeBreakdownNotice( select, GOAL_TYPES.ECOMMERCE ),
 		[]
 	);
-
-	const hasBreakdownDimensions = useSelect(
+	const hasLeadBreakdownNotice = useSelect(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
-				SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS
-			),
-		[]
-	);
-	const isBreakdownNoticeDismissed = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).isItemDismissed( SITE_GOALS_BREAKDOWN_NOTICE ),
+			hasGoalTypeBreakdownNotice( select, GOAL_TYPES.LEAD ),
 		[]
 	);
 
@@ -206,27 +196,18 @@ const IntroModal: FC< IntroModalProps > = ( { id, Notification } ) => {
 		setValue( useHasBeenViewed.getKey( id ), true );
 	}
 
-	// Save the confirmed slug before the shared slug. Each save replaces the
-	// whole dismissed-items list with the server's copy, so two in parallel
-	// can overwrite each other and drop a slug. A dropped confirmed slug
-	// makes the survey triggers read the wrong segment.
-	async function dismissConfirmedThenShared() {
+	async function handleShowMe() {
+		// Save the confirmed slug before the notification ID slug. Each save
+		// replaces the whole dismissed-items list with the server's copy, so
+		// two in parallel can overwrite each other and drop a slug. A dropped
+		// confirmed slug makes the survey triggers read the wrong segment.
 		await dismissItem( SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED );
-		dismissNotification( id );
-	}
-
-	function handleShowMe() {
-		dismissConfirmedThenShared();
+		await dismissNotification( id );
 
 		triggerOnDemandTour(
 			getSiteGoalsTour( {
-				isEcommerceOnly: !! hasEcommerceConversionReportingEventsOnly,
-				// "Show me" dismisses the intro modal, so the breakdown notice
-				// will render if its dimensions are still missing and it has
-				// not been dismissed. Mirrors the BreakdownNotice gating.
-				hasBreakdownNotice:
-					hasBreakdownDimensions === false &&
-					! isBreakdownNoticeDismissed,
+				hasEcommerceBreakdownNotice,
+				hasLeadBreakdownNotice,
 			} )
 		);
 

@@ -15,6 +15,7 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings as User_Email_Reporting_Settings;
+use WP_User;
 use WP_User_Query;
 
 /**
@@ -25,6 +26,32 @@ use WP_User_Query;
  * @ignore
  */
 class Subscribed_Users_Query {
+
+	use User_Role_Trait;
+
+	/**
+	 * Default number of subscribed users returned per page.
+	 *
+	 * @since n.e.x.t
+	 * @var int
+	 */
+	const PER_PAGE = 20;
+
+	/**
+	 * Maximum number of subscribed users that may be requested per page.
+	 *
+	 * @since n.e.x.t
+	 * @var int
+	 */
+	const MAX_PER_PAGE = 100;
+
+	/**
+	 * Role slug reported for network super admins, who hold no role on the site itself.
+	 *
+	 * @since n.e.x.t
+	 * @var string
+	 */
+	const ROLE_SUPER_ADMIN = 'super-admin';
 
 	/**
 	 * User email reporting settings.
@@ -82,31 +109,225 @@ class Subscribed_Users_Query {
 	 * Gets the number of subscribed users across all frequencies.
 	 *
 	 * @since 1.166.0
+	 * @since n.e.x.t Counts subscribed super admins who are not members of the current site.
 	 *
 	 * @return int
 	 */
 	public function get_subscriber_count() {
 		$meta_key = $this->email_reporting_settings->get_meta_key();
 
-		$user_query = new WP_User_Query(
-			array(
-				'fields'   => 'ids',
-				'meta_key' => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-				'compare'  => 'EXISTS',
-			)
+		$query_args = array(
+			'fields'   => 'ids',
+			'meta_key' => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+			'compare'  => 'EXISTS',
 		);
+
+		if ( is_multisite() ) {
+			// Subscribers are already narrowed down by the subscription meta, and super
+			// admins are not necessarily members of the current site. Without an explicit
+			// network-wide blog ID, WP_User_Query adds a site-membership capabilities
+			// clause that would undercount subscribers who still receive reports.
+			$query_args['blog_id'] = 0;
+		}
+
+		$user_query = new WP_User_Query( $query_args );
 
 		$subscribers = 0;
 
 		foreach ( $user_query->get_results() as $user_id ) {
 			$settings = get_user_meta( $user_id, $meta_key, true );
 
-			if ( is_array( $settings ) && ! empty( $settings['subscribed'] ) ) {
+			if ( User_Email_Reporting_Settings::is_subscribed( $settings ) ) {
 				++$subscribers;
 			}
 		}
 
 		return $subscribers;
+	}
+
+	/**
+	 * Retrieves a paginated, searchable list of subscribed users.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $args {
+	 *     Optional. Arguments to filter and paginate subscribed users.
+	 *
+	 *     @type int    $page     Current page number. Default 1.
+	 *     @type int    $per_page Results per page. Default self::PER_PAGE.
+	 *     @type string $search   Search term for display name, email or role. Default ''.
+	 * }
+	 * @return array {
+	 *     Shaped subscribed users and the total number of matches.
+	 *
+	 *     @type array[] $users Shaped users, each with `id`, `displayName`, `email`, `role` and `roleDisplayName` keys.
+	 *     @type int     $total Total number of matching subscribed users.
+	 * }
+	 */
+	public function get_subscribed_users( array $args = array() ) {
+		$page     = isset( $args['page'] ) ? max( 1, (int) $args['page'] ) : 1;
+		$per_page = isset( $args['per_page'] ) ? max( 1, min( self::MAX_PER_PAGE, (int) $args['per_page'] ) ) : self::PER_PAGE;
+		$search   = isset( $args['search'] ) ? sanitize_text_field( (string) $args['search'] ) : '';
+
+		$users = $this->get_matching_subscribed_users( $search );
+
+		// Paginate after merging/deduplicating admin, shared-role and super-admin results
+		// (and subscription/access filtering) so page boundaries and totals are based on
+		// the final subscribed-user set.
+		$offset      = ( $page - 1 ) * $per_page;
+		$paged_users = array_slice( $users, $offset, $per_page );
+
+		return array(
+			'users' => array_map( array( $this, 'map_user_to_listing' ), $paged_users ),
+			'total' => count( $users ),
+		);
+	}
+
+	/**
+	 * Gets all subscribed users matching the given search term.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $search Search term for display name, email or role.
+	 * @return WP_User[] Matching subscribed users, ordered by display name.
+	 */
+	private function get_matching_subscribed_users( $search ) {
+		$meta_key = $this->email_reporting_settings->get_meta_key();
+
+		$user_ids = array_merge(
+			$this->query_admins( $meta_key ),
+			$this->query_shared_roles( $meta_key )
+		);
+
+		if ( is_multisite() ) {
+			$user_ids = array_merge( $user_ids, $this->query_super_admins() );
+		}
+
+		$user_ids = array_values( array_unique( array_map( 'intval', $user_ids ) ) );
+
+		if ( empty( $user_ids ) ) {
+			return array();
+		}
+
+		// get_users() primes the user meta cache for the returned users, so the
+		// subscription meta below is read from cache rather than per-user queries.
+		$user_args = array(
+			'include' => $user_ids,
+			// Order by ID as well so users sharing a display name keep a stable
+			// position across paginated requests.
+			'orderby' => array(
+				'display_name' => 'ASC',
+				'ID'           => 'ASC',
+			),
+		);
+
+		if ( is_multisite() ) {
+			// The candidate IDs above are already scoped, and super admins are not
+			// necessarily members of the current site. Without an explicit network-wide
+			// blog ID, WP_User_Query adds a site-membership capabilities clause that
+			// would silently drop them from the listing while they keep receiving reports.
+			$user_args['blog_id'] = 0;
+		}
+
+		$users = get_users( $user_args );
+
+		return array_values(
+			array_filter(
+				$users,
+				function ( WP_User $user ) use ( $meta_key, $search ) {
+					if ( ! $this->user_has_email_reporting_access( $user->ID ) ) {
+						return false;
+					}
+
+					$settings = get_user_meta( $user->ID, $meta_key, true );
+
+					if ( ! User_Email_Reporting_Settings::is_subscribed( $settings ) ) {
+						return false;
+					}
+
+					return $this->user_matches_search( $user, $search );
+				}
+			)
+		);
+	}
+
+	/**
+	 * Checks whether a user matches the given search term.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_User $user   User object.
+	 * @param string  $search Search term for display name, email or role.
+	 * @return bool True if the user matches the search term, false otherwise.
+	 */
+	private function user_matches_search( WP_User $user, $search ) {
+		$search = strtolower( trim( (string) $search ) );
+
+		if ( '' === $search ) {
+			return true;
+		}
+
+		$haystacks = array(
+			(string) $user->display_name,
+			(string) $user->user_email,
+		);
+
+		foreach ( (array) $user->roles as $role_slug ) {
+			$haystacks[] = (string) $role_slug;
+			$haystacks[] = $this->get_role_display_name( (string) $role_slug );
+		}
+
+		// Super admins are listed under their network role, so it has to be searchable too.
+		$haystacks = array_unique( array_merge( $haystacks, $this->get_listed_role( $user ) ) );
+
+		foreach ( $haystacks as $haystack ) {
+			if ( '' !== $haystack && false !== strpos( strtolower( $haystack ), $search ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Maps a user to the subscribed users listing shape.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_User $user User object.
+	 * @return array Shaped user data.
+	 */
+	private function map_user_to_listing( WP_User $user ) {
+		list( $role_slug, $role_display_name ) = $this->get_listed_role( $user );
+
+		return array(
+			'id'              => (int) $user->ID,
+			'displayName'     => $user->display_name,
+			'email'           => $user->user_email,
+			'role'            => $role_slug,
+			'roleDisplayName' => $role_display_name,
+		);
+	}
+
+	/**
+	 * Gets the role slug and display name a subscribed user is listed under.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_User $user User object.
+	 * @return array List containing the role slug and its display name.
+	 */
+	private function get_listed_role( WP_User $user ) {
+		$role_slug = $this->get_primary_role( $user );
+
+		// Super admins can be subscribed to a site's reports without holding a role on
+		// that site, so list them under their network role rather than leaving it blank.
+		// The label matches the one WordPress shows next to such users in Users lists.
+		if ( '' === $role_slug && is_multisite() && is_super_admin( $user->ID ) ) {
+			return array( self::ROLE_SUPER_ADMIN, __( 'Super Admin', 'google-site-kit' ) );
+		}
+
+		return array( $role_slug, $this->get_role_display_name( $role_slug ) );
 	}
 
 	/**
@@ -200,7 +421,7 @@ class Subscribed_Users_Query {
 
 			$settings = get_user_meta( $user_id, $meta_key, true );
 
-			if ( ! is_array( $settings ) || empty( $settings['subscribed'] ) ) {
+			if ( ! User_Email_Reporting_Settings::is_subscribed( $settings ) ) {
 				continue;
 			}
 

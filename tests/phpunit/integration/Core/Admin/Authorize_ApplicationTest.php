@@ -107,7 +107,7 @@ class Authorize_ApplicationTest extends TestCase {
 	}
 
 	public function set_global_get_params( $success_url ) {
-		// Set $_GET parameters
+		// Set $_GET parameters.
 		$_GET['app_name']    = 'GoogleServiceIntegration';
 		$_GET['app_id']      = wp_generate_uuid4();
 		$_GET['success_url'] = $success_url;
@@ -115,7 +115,7 @@ class Authorize_ApplicationTest extends TestCase {
 	}
 
 	public function unset_global_get_params() {
-		// Unset $_GET parameters
+		// Unset $_GET parameters.
 		unset( $_GET['app_name'] );
 		unset( $_GET['app_id'] );
 		unset( $_GET['success_url'] );

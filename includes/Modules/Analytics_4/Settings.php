@@ -10,8 +10,6 @@
  * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
-// phpcs:disable Generic.Metrics.CyclomaticComplexity.MaxExceeded
-
 namespace Google\Site_Kit\Modules\Analytics_4;
 
 use Google\Site_Kit\Core\Modules\Module_Settings;
@@ -133,87 +131,155 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	protected function get_sanitize_callback() {
 		return function ( $option ) {
 			if ( is_array( $option ) ) {
-				if ( isset( $option['useSnippet'] ) ) {
-					$option['useSnippet'] = (bool) $option['useSnippet'];
-				}
-				if ( isset( $option['googleTagID'] ) ) {
-					if ( ! preg_match( '/^(G|GT|AW)-[a-zA-Z0-9]+$/', $option['googleTagID'] ) ) {
-						$option['googleTagID'] = '';
-					}
-				}
-				if ( isset( $option['trackingDisabled'] ) ) {
-					// Prevent other options from being saved if 'loggedinUsers' is selected.
-					if ( in_array( 'loggedinUsers', $option['trackingDisabled'], true ) ) {
-						$option['trackingDisabled'] = array( 'loggedinUsers' );
-					} else {
-						$option['trackingDisabled'] = (array) $option['trackingDisabled'];
-					}
-				}
-
-				$numeric_properties = array( 'googleTagAccountID', 'googleTagContainerID' );
-				foreach ( $numeric_properties as $numeric_property ) {
-					if ( isset( $option[ $numeric_property ] ) ) {
-						if ( ! is_numeric( $option[ $numeric_property ] ) || ! $option[ $numeric_property ] > 0 ) {
-							$option[ $numeric_property ] = '';
-						}
-					}
-				}
-
-				if ( isset( $option['googleTagContainerDestinationIDs'] ) ) {
-					if ( ! is_array( $option['googleTagContainerDestinationIDs'] ) ) {
-						$option['googleTagContainerDestinationIDs'] = null;
-					}
-				}
-
-				if ( isset( $option['availableCustomDimensions'] ) ) {
-					if ( is_array( $option['availableCustomDimensions'] ) ) {
-						$valid_dimensions = array_filter(
-							$option['availableCustomDimensions'],
-							function ( $dimension ) {
-								return is_string( $dimension ) && strpos( $dimension, 'googlesitekit_' ) === 0;
-							}
-						);
-
-						$option['availableCustomDimensions'] = array_values( $valid_dimensions );
-					} else {
-						$option['availableCustomDimensions'] = null;
-					}
-				}
-
-				if ( isset( $option['adSenseLinked'] ) ) {
-					$option['adSenseLinked'] = (bool) $option['adSenseLinked'];
-				}
-
-				if ( isset( $option['adSenseLinkedLastSyncedAt'] ) ) {
-					if ( ! is_int( $option['adSenseLinkedLastSyncedAt'] ) ) {
-						$option['adSenseLinkedLastSyncedAt'] = 0;
-					}
-				}
-
-				if ( isset( $option['adsLinked'] ) ) {
-					$option['adsLinked'] = (bool) $option['adsLinked'];
-				}
-
-				if ( isset( $option['adsLinkedLastSyncedAt'] ) ) {
-					if ( ! is_int( $option['adsLinkedLastSyncedAt'] ) ) {
-						$option['adsLinkedLastSyncedAt'] = 0;
-					}
-				}
-
-				if ( isset( $option['newConversionEventsLastUpdateAt'] ) ) {
-					if ( ! is_int( $option['newConversionEventsLastUpdateAt'] ) ) {
-						$option['newConversionEventsLastUpdateAt'] = 0;
-					}
-				}
-
-				if ( isset( $option['lostConversionEventsLastUpdateAt'] ) ) {
-					if ( ! is_int( $option['lostConversionEventsLastUpdateAt'] ) ) {
-						$option['lostConversionEventsLastUpdateAt'] = 0;
-					}
-				}
+				$this->sanitize_boolean_properties( $option );
+				$this->sanitize_google_tag_id( $option );
+				$this->sanitize_tracking_disabled( $option );
+				$this->sanitize_numeric_properties( $option );
+				$this->sanitize_container_destination_ids( $option );
+				$this->sanitize_available_custom_dimensions( $option );
+				$this->sanitize_timestamp_properties( $option );
 			}
 
 			return $option;
 		};
+	}
+
+	/**
+	 * Sanitizes boolean properties.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array &$option The option array to sanitize.
+	 */
+	private function sanitize_boolean_properties( &$option ) {
+		$boolean_properties = array( 'useSnippet', 'adSenseLinked', 'adsLinked' );
+		foreach ( $boolean_properties as $property ) {
+			if ( isset( $option[ $property ] ) ) {
+				$option[ $property ] = (bool) $option[ $property ];
+			}
+		}
+	}
+
+	/**
+	 * Sanitizes Google Tag ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array &$option The option array to sanitize.
+	 */
+	private function sanitize_google_tag_id( &$option ) {
+		if ( isset( $option['googleTagID'] ) ) {
+			if ( ! preg_match( '/^(G|GT|AW)-[a-zA-Z0-9]+$/', $option['googleTagID'] ) ) {
+				$option['googleTagID'] = '';
+			}
+		}
+	}
+
+	/**
+	 * Sanitizes tracking disabled array.
+	 *
+	 * Prevents other options from being saved if 'loggedinUsers' is selected.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array &$option The option array to sanitize.
+	 */
+	private function sanitize_tracking_disabled( &$option ) {
+		if ( isset( $option['trackingDisabled'] ) ) {
+			// Ensure it's an array first.
+			$tracking_disabled = (array) $option['trackingDisabled'];
+			// Prevent other options from being saved if 'loggedinUsers' is selected.
+			if ( in_array( 'loggedinUsers', $tracking_disabled, true ) ) {
+				$option['trackingDisabled'] = array( 'loggedinUsers' );
+			} else {
+				$option['trackingDisabled'] = $tracking_disabled;
+			}
+		}
+	}
+
+	/**
+	 * Sanitizes numeric properties.
+	 *
+	 * Validates that numeric properties are positive values or empty strings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array &$option The option array to sanitize.
+	 */
+	private function sanitize_numeric_properties( &$option ) {
+		$numeric_properties = array( 'googleTagAccountID', 'googleTagContainerID' );
+		foreach ( $numeric_properties as $numeric_property ) {
+			if ( isset( $option[ $numeric_property ] ) ) {
+				if ( ! is_numeric( $option[ $numeric_property ] ) || intval( $option[ $numeric_property ] ) <= 0 ) {
+					$option[ $numeric_property ] = '';
+				}
+			}
+		}
+	}
+
+	/**
+	 * Sanitizes container destination IDs.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array &$option The option array to sanitize.
+	 */
+	private function sanitize_container_destination_ids( &$option ) {
+		if ( isset( $option['googleTagContainerDestinationIDs'] ) ) {
+			if ( ! is_array( $option['googleTagContainerDestinationIDs'] ) ) {
+				$option['googleTagContainerDestinationIDs'] = null;
+			}
+		}
+	}
+
+	/**
+	 * Sanitizes available custom dimensions.
+	 *
+	 * Validates that custom dimensions are strings starting with 'googlesitekit_' prefix.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array &$option The option array to sanitize.
+	 */
+	private function sanitize_available_custom_dimensions( &$option ) {
+		if ( isset( $option['availableCustomDimensions'] ) ) {
+			if ( is_array( $option['availableCustomDimensions'] ) ) {
+				$valid_dimensions = array_filter(
+					$option['availableCustomDimensions'],
+					function ( $dimension ) {
+						return is_string( $dimension ) && strpos( $dimension, 'googlesitekit_' ) === 0;
+					}
+				);
+
+				$option['availableCustomDimensions'] = array_values( $valid_dimensions );
+			} else {
+				$option['availableCustomDimensions'] = null;
+			}
+		}
+	}
+
+	/**
+	 * Sanitizes timestamp properties.
+	 *
+	 * Validates that timestamp properties are integers or defaults to 0.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array &$option The option array to sanitize.
+	 */
+	private function sanitize_timestamp_properties( &$option ) {
+		$timestamp_properties = array(
+			'adSenseLinkedLastSyncedAt',
+			'adsLinkedLastSyncedAt',
+			'newConversionEventsLastUpdateAt',
+			'lostConversionEventsLastUpdateAt',
+		);
+		foreach ( $timestamp_properties as $timestamp_property ) {
+			if ( isset( $option[ $timestamp_property ] ) ) {
+				if ( ! is_int( $option[ $timestamp_property ] ) ) {
+					$option[ $timestamp_property ] = 0;
+				}
+			}
+		}
 	}
 }

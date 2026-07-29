@@ -8,9 +8,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\User;
 
 use Google\Site_Kit\Context;
@@ -78,8 +75,14 @@ class REST_Audience_Settings_ControllerTest extends TestCase {
 
 		$this->controller->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
+		$this->assertTrue(
+			has_filter( 'googlesitekit_rest_routes' ),
+			'Audience settings REST routes should be registered.'
+		);
+		$this->assertTrue(
+			has_filter( 'googlesitekit_apifetch_preload_paths' ),
+			'Audience settings endpoint should be added to API fetch preload paths.'
+		);
 	}
 
 	public function test_get_routes() {
@@ -92,6 +95,6 @@ class REST_Audience_Settings_ControllerTest extends TestCase {
 		);
 		$get_routes = array_intersect( $routes, array_keys( $server->get_routes() ) );
 
-		$this->assertEqualSets( $routes, $get_routes );
+		$this->assertEqualSets( $routes, $get_routes, 'Audience settings REST route should be registered.' );
 	}
 }

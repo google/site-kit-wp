@@ -260,6 +260,48 @@ describe( 'core/modules modules', () => {
 				).toBe( true );
 			} );
 
+			it( 'includes redirectQueryArgs in the moduleReauthURL', async () => {
+				provideUserAuthentication( registry );
+				provideModuleRegistrations( registry );
+				provideSiteInfo( registry );
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
+					{ body: { success: true } }
+				);
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/authentication'
+					),
+					{
+						body: {
+							authenticated: true,
+							needsReauthentication: false,
+						},
+					}
+				);
+				fetchMock.get(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{ body: withActive( MODULE_SLUG_ANALYTICS_4 ) }
+				);
+
+				const { response } = await registry
+					.dispatch( CORE_MODULES )
+					.activateModule( MODULE_SLUG_ANALYTICS_4, {
+						redirectQueryArgs: {
+							foo: 'bar',
+						},
+					} );
+
+				expect( response.moduleReauthURL ).toMatchQueryParameters( {
+					page: 'googlesitekit-dashboard',
+					slug: MODULE_SLUG_ANALYTICS_4,
+					reAuth: 'true',
+					foo: 'bar',
+				} );
+			} );
+
 			it( 'does not update status if the API encountered a failure', async () => {
 				// In our fixtures, tag manager is off by default.
 				const slug = MODULE_SLUG_TAGMANAGER;

@@ -44,7 +44,7 @@ export interface TopEarningPagesReportParams {
  * order, the five-row limit, and the report ID. One builder keeps the two
  * widgets from requesting different reports.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param dates                   Report date range.
  * @param dates.startDate         Report start date (YYYY-MM-DD).

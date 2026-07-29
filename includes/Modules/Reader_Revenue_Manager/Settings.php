@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Interface;
 use Google\Site_Kit\Core\Storage\Setting_With_Owned_Keys_Trait;
 use Google\Site_Kit\Core\Storage\Setting_With_ViewOnly_Keys_Interface;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -52,6 +53,31 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	}
 
 	/**
+	 * Gets the value of the setting.
+	 *
+	 * Overrides the parent to ensure empty configuredCTAs arrays are cast
+	 * to objects so that json_encode produces {} instead of [].
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return mixed Value set for the option, or registered default if not set.
+	 */
+	public function get() {
+		$settings = parent::get();
+
+		if (
+			is_array( $settings )
+			&& Feature_Flags::enabled( 'rrmExpressSetup' )
+			&& isset( $settings['configuredCTAs'] )
+			&& array() === $settings['configuredCTAs']
+		) {
+			$settings['configuredCTAs'] = (object) array();
+		}
+
+		return $settings;
+	}
+
+	/**
 	 * Returns keys for owned settings.
 	 *
 	 * @since 1.132.0
@@ -66,11 +92,12 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Gets the default value.
 	 *
 	 * @since 1.132.0
+	 * @since n.e.x.t Added the `organizationID` and `configuredCTAs` settings.
 	 *
 	 * @return array
 	 */
 	protected function get_default() {
-		return array(
+		$defaults = array(
 			'contentPolicyState'                => '',
 			'policyInfoLink'                    => '',
 			'ownerID'                           => 0,
@@ -83,6 +110,13 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'postTypes'                         => array( 'post' ),
 			'productID'                         => 'openaccess',
 		);
+
+		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
+			$defaults['organizationID'] = '';
+			$defaults['configuredCTAs'] = array();
+		}
+
+		return $defaults;
 	}
 
 	/**
@@ -107,6 +141,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
 	 * @since 1.132.0
+	 * @since n.e.x.t Added sanitization for the `organizationID` and `configuredCTAs` settings.
 	 *
 	 * @return callable|null
 	 */
@@ -193,7 +228,39 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				$option['policyInfoLink'] = '';
 			}
 
+			$option = $this->sanitize_express_setup_settings( $option );
+
 			return $option;
 		};
+	}
+
+	/**
+	 * Sanitizes the express setup settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $option Settings array.
+	 * @return array Sanitized settings array.
+	 */
+	private function sanitize_express_setup_settings( $option ) {
+		if ( isset( $option['organizationID'] ) && ! is_string( $option['organizationID'] ) ) {
+			$option['organizationID'] = '';
+		}
+
+		if ( isset( $option['configuredCTAs'] ) ) {
+			if ( ! is_array( $option['configuredCTAs'] ) ) {
+				$option['configuredCTAs'] = array();
+			} else {
+				$option['configuredCTAs'] = array_filter(
+					$option['configuredCTAs'],
+					function ( $value, $key ) {
+						return is_string( $key ) && is_string( $value );
+					},
+					ARRAY_FILTER_USE_BOTH
+				);
+			}
+		}
+
+		return $option;
 	}
 }

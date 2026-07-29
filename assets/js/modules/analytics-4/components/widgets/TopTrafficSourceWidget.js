@@ -42,6 +42,71 @@ import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
+/**
+ * Builds the Analytics 4 report options for the Top Traffic Source metric.
+ *
+ * Returns both the total-users report and the per-channel report the tile
+ * combines. Both this widget and the metric's PDF tile import this, so the
+ * dashboard tile and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range, including the compare dates.
+ * @return {Object} The `totalUsers` and `trafficSource` `getReport` options.
+ */
+export function getTopTrafficSourceReportOptions( dates ) {
+	return {
+		totalUsers: {
+			...dates,
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+			],
+			reportID:
+				'analytics-4_top-traffic-source-widget_widget_totalUsersReportOptions',
+		},
+		trafficSource: {
+			...dates,
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+			],
+			limit: 1,
+			orderBy: 'totalUsers',
+			reportID:
+				'analytics-4_top-traffic-source-widget_widget_trafficSourceReportOptions',
+		},
+	};
+}
+
+/**
+ * Builds the sub-text for the Top Traffic Source metric tile.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the PDF tile show the same sub-text.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} rate The relative share of total traffic for the top source.
+ * @return {string} The metric tile sub-text.
+ */
+export function getTopTrafficSourceSubtext( rate ) {
+	const format = {
+		style: 'percent',
+		signDisplay: 'never',
+		maximumFractionDigits: 1,
+	};
+
+	return sprintf(
+		/* translators: %s: Percentage of users for the current top traffic source compared to the number of total users for all traffic sources. */
+		__( '%s of total traffic', 'google-site-kit' ),
+		numFmt( rate, format )
+	);
+}
+
 function TopTrafficSourceWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -49,30 +114,10 @@ function TopTrafficSourceWidget( { Widget } ) {
 		} )
 	);
 
-	const totalUsersReportOptions = {
-		...dates,
-		metrics: [
-			{
-				name: 'totalUsers',
-			},
-		],
-		reportID:
-			'analytics-4_top-traffic-source-widget_widget_totalUsersReportOptions',
-	};
-
-	const trafficSourceReportOptions = {
-		...dates,
-		dimensions: [ 'sessionDefaultChannelGroup' ],
-		metrics: [
-			{
-				name: 'totalUsers',
-			},
-		],
-		limit: 1,
-		orderBy: 'totalUsers',
-		reportID:
-			'analytics-4_top-traffic-source-widget_widget_trafficSourceReportOptions',
-	};
+	const {
+		totalUsers: totalUsersReportOptions,
+		trafficSource: trafficSourceReportOptions,
+	} = getTopTrafficSourceReportOptions( dates );
 
 	const totalUsersReport = useInViewSelect(
 		( select ) =>
@@ -176,14 +221,9 @@ function TopTrafficSourceWidget( { Widget } ) {
 			widgetSlug={ KM_ANALYTICS_TOP_TRAFFIC_SOURCE }
 			metricValue={ topTrafficSource }
 			metricValueFormat={ format }
-			subText={
-				// eslint-disable-next-line @wordpress/valid-sprintf
-				sprintf(
-					/* translators: %d: Percentage of users for the current top traffic source compared to the number of total users for all traffic sources. */
-					__( '%s of total traffic', 'google-site-kit' ),
-					numFmt( relativeCurrentTopTrafficSourceUsers, format )
-				)
-			}
+			subText={ getTopTrafficSourceSubtext(
+				relativeCurrentTopTrafficSourceUsers
+			) }
 			previousValue={ relativePreviousTopTrafficSourceUsers }
 			currentValue={ relativeCurrentTopTrafficSourceUsers }
 			loading={ loading }

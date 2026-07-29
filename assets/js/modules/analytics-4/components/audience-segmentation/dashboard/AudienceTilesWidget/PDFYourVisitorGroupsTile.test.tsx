@@ -46,14 +46,22 @@ const TOP_CITIES = [
 ];
 
 const TOP_CONTENT = [
-	{ title: 'First post title', pageviews: 847 },
-	{ title: 'Second post title', pageviews: 596 },
+	{
+		title: 'First post title',
+		pageviews: 847,
+		serviceURL: 'https://example.com/analytics-report/first-post',
+	},
+	{
+		title: 'Second post title',
+		pageviews: 596,
+		serviceURL: 'https://example.com/analytics-report/second-post',
+	},
 ];
 
 /**
  * Renders `PDFYourVisitorGroupsTile` with default props, as a JSON tree string.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param props Props that override the defaults.
  * @return The rendered tree serialized to a string.
@@ -67,10 +75,24 @@ function renderTile(
 			metrics={ METRICS }
 			topCities={ TOP_CITIES }
 			topContent={ TOP_CONTENT }
+			isAudiencePartialData={ false }
+			isTopContentPartialData={ false }
 			{ ...props }
 		/>
 	);
 	return JSON.stringify( renderer.toJSON() );
+}
+
+/**
+ * Counts the "Partial data" badges.
+ *
+ * @since n.e.x.t
+ *
+ * @param json The rendered PDF content, serialized to a string.
+ * @return The number of "Partial data" badges.
+ */
+function countPartialDataBadges( json: string ) {
+	return json.split( 'Partial data' ).length - 1;
 }
 
 describe( 'PDFYourVisitorGroupsTile', () => {
@@ -127,6 +149,79 @@ describe( 'PDFYourVisitorGroupsTile', () => {
 		expect( json ).toContain( '847' );
 		expect( json ).toContain( 'Second post title' );
 		expect( json ).toContain( '596' );
+	} );
+
+	it( 'shows a Partial data badge only where its flag is set', () => {
+		// Neither flag: no badge in either place.
+		expect( countPartialDataBadges( renderTile() ) ).toBe( 0 );
+
+		// Header flag only: one badge beside the audience name.
+		expect(
+			countPartialDataBadges(
+				renderTile( { isAudiencePartialData: true } )
+			)
+		).toBe( 1 );
+
+		// Top content flag only: one badge on the Top content title.
+		expect(
+			countPartialDataBadges(
+				renderTile( { isTopContentPartialData: true } )
+			)
+		).toBe( 1 );
+
+		// Both flags: a badge in each place.
+		expect(
+			countPartialDataBadges(
+				renderTile( {
+					isAudiencePartialData: true,
+					isTopContentPartialData: true,
+				} )
+			)
+		).toBe( 2 );
+	} );
+
+	it( 'truncates a long city name to one line with an ellipsis', () => {
+		const json = renderTile( {
+			topCities: [
+				{
+					name: 'Municipal District of Bandon - Kinsale',
+					percentage: 0.5,
+				},
+			],
+		} );
+
+		expect( json ).toContain( 'Municipal District of Bandon - Kinsale' );
+		// `@react-pdf` wraps text by default, so the city name caps at one line
+		// with an ellipsis.
+		expect( json ).toContain( '"maxLines":1' );
+		expect( json ).toContain( '"textOverflow":"ellipsis"' );
+	} );
+
+	it( 'links each top content title to its Analytics report', () => {
+		const json = renderTile();
+
+		expect( json ).toContain( TOP_CONTENT[ 0 ].serviceURL );
+		expect( json ).toContain( TOP_CONTENT[ 1 ].serviceURL );
+		// The `Link` primitive from `@react-pdf` renders as `pdf-link` under
+		// the test mock. So a `pdf-link` in the tree means the title rendered
+		// as a link, not as text that happens to hold the URL.
+		expect( json ).toContain( 'pdf-link' );
+	} );
+
+	it( 'renders each top content title as plain text when a row has no link', () => {
+		// An empty `serviceURL` gives every row an empty link, so each title
+		// renders as plain text.
+		const json = renderTile( {
+			topContent: TOP_CONTENT.map( ( content ) => ( {
+				...content,
+				serviceURL: '',
+			} ) ),
+		} );
+
+		expect( json ).toContain( 'First post title' );
+		expect( json ).toContain( 'Second post title' );
+		// No `pdf-link` in the tree means every title rendered as plain text.
+		expect( json ).not.toContain( 'pdf-link' );
 	} );
 
 	it( "hides the delta chip when the change can't be calculated", () => {

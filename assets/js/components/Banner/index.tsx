@@ -18,7 +18,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
+import { FC, ReactChild } from 'react';
 
 /**
  * WordPress dependencies
@@ -29,21 +29,41 @@ import { forwardRef } from '@wordpress/element';
  * Internal dependencies
  */
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
-import CTAButton from './CTAButton';
+import CTAButton, { CTAButtonProps } from './CTAButton';
 import Description from './Description';
-import DismissButton from './DismissButton';
+import DismissButton, { DismissButtonProps } from './DismissButton';
 import Footer from './Footer';
 import HelpText from './HelpText';
-import LearnMoreLink from './LearnMoreLink';
+import { LearnMoreLinkProps } from './LearnMoreLink';
 import Title from './Title';
 import TitleIcon from './TitleIcon';
 
-const Banner = forwardRef(
+export interface BannerProps {
+	className?: string;
+	titleIcon?: ReactChild;
+	title?: string;
+	description?: ReactChild;
+	additionalDescription?: ReactChild;
+	errorText?: string;
+	helpText?: string;
+	learnMoreLink?: LearnMoreLinkProps;
+	dismissButton?: DismissButtonProps;
+	ctaButton?: CTAButtonProps;
+	svg?: {
+		desktop?: string;
+		mobile?: string;
+		verticalPosition?: 'top' | 'center' | 'bottom';
+	};
+	footer?: ReactChild;
+}
+
+const Banner: FC< BannerProps > = forwardRef< HTMLDivElement, BannerProps >(
 	(
 		{
 			className,
@@ -65,7 +85,7 @@ const Banner = forwardRef(
 		const isMobileOrTablet =
 			breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
 
-		let SVGData = null;
+		let SVGData: string | null = null;
 		if ( isMobileOrTablet && svg?.mobile ) {
 			SVGData = svg.mobile;
 		} else if ( ! isMobileOrTablet && svg?.desktop ) {
@@ -93,7 +113,10 @@ const Banner = forwardRef(
 					{ helpText && <HelpText>{ helpText }</HelpText> }
 
 					{ errorText && (
-						<Notice type="error" description={ errorText } />
+						<Notice
+							type={ NOTICE_TYPES.ERROR }
+							description={ errorText }
+						/>
 					) }
 
 					<div className="googlesitekit-notice__action">
@@ -122,26 +145,5 @@ const Banner = forwardRef(
 		);
 	}
 );
-
-Banner.propTypes = {
-	titleIcon: PropTypes.node,
-	title: PropTypes.string,
-	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
-	additionalDescription: PropTypes.oneOfType( [
-		PropTypes.string,
-		PropTypes.node,
-	] ),
-	errorText: PropTypes.string,
-	helpText: PropTypes.string,
-	learnMoreLink: PropTypes.shape( LearnMoreLink.propTypes ),
-	dismissButton: PropTypes.shape( DismissButton.propTypes ),
-	ctaButton: PropTypes.shape( CTAButton.propTypes ),
-	svg: PropTypes.shape( {
-		desktop: PropTypes.elementType,
-		mobile: PropTypes.elementType,
-		verticalPosition: PropTypes.oneOf( [ 'top', 'center', 'bottom' ] ),
-	} ),
-	footer: PropTypes.node,
-};
 
 export default Banner;

@@ -297,7 +297,6 @@ export default function DashboardMainApp() {
 	} );
 
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
 
 	const hasAccessToFeatureTour = useSelect( ( select ) =>
 		select( CORE_USER ).hasAccessToFeatureTour()
@@ -367,7 +366,7 @@ export default function DashboardMainApp() {
 			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
-				{ pdfGenerationEnabled && <PDFDownloadButton /> }
+				<PDFDownloadButton />
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu showFeatureTour={ !! hasAccessToFeatureTour } />
 			</Header>
@@ -464,12 +463,8 @@ export default function DashboardMainApp() {
 
 			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
 
-			{ pdfGenerationEnabled && (
-				<Fragment>
-					<PDFSectionsSelectionPanel />
-					<PDFExportRoot />
-				</Fragment>
-			) }
+			<PDFSectionsSelectionPanel />
+			<PDFExportRoot />
 
 			<UserSettingsSelectionPanel />
 			<PUESurveyTriggers />

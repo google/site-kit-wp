@@ -147,7 +147,6 @@ const fetchGetSiteGoalsSettingsStore = createFetchStore( {
 			MODULE_SLUG_ANALYTICS_4,
 			'site-goals-settings',
 			{},
-			// @ts-expect-error -- `get()` infers its options as fully required from the untyped JS source; only `useCache` is needed here.
 			{
 				useCache: false,
 			}
