@@ -56,6 +56,7 @@ import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
+import ConversionInsightBanner from '@/js/modules/analytics-4/components/site-goals/conversion-insights/ConversionInsightBanner';
 import {
 	GOAL_DRIVER_CATALOG,
 	GOAL_TYPES,
@@ -616,6 +617,11 @@ const LeadGenerationPerformanceWidget = forwardRef<
 						learnMoreURL={ otherFormCompletionsDocumentationURL }
 					/>
 				) }
+
+				<ConversionInsightBanner
+					goalType={ GOAL_TYPES.LEAD }
+					keyEventNames={ detectedLeadEvents || [] }
+				/>
 
 				{ loading ? (
 					<PreviewBlock width="100%" height="130px" />

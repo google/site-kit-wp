@@ -57,6 +57,7 @@ import {
 	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
 	SITE_GOALS_VOTE_ID_WIDGET_ONLINE_STORE,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
+import ConversionInsightBanner from '@/js/modules/analytics-4/components/site-goals/conversion-insights/ConversionInsightBanner';
 import {
 	GOAL_DRIVER_CATALOG,
 	GOAL_TYPES,
@@ -488,6 +489,11 @@ const OnlineStorePerformanceWidget = forwardRef<
 						learnMoreURL={ otherSourcesDocumentationURL }
 					/>
 				) }
+
+				<ConversionInsightBanner
+					goalType={ GOAL_TYPES.ECOMMERCE }
+					keyEventNames={ primaryEvent ? [ primaryEvent ] : [] }
+				/>
 
 				{ loading ? (
 					<PreviewBlock

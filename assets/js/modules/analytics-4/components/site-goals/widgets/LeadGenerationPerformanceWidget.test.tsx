@@ -40,6 +40,11 @@ import {
 	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
+	assembleConversionInsightEvents,
+	buildConversionInsightReportOptions,
+	getConversionInsightDateRanges,
+} from '@/js/modules/analytics-4/components/site-goals/conversion-insights/preprocess';
+import {
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
@@ -734,6 +739,19 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		// dismissed); individual tests opt in by dismissing the intro modal.
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
+		// The embedded Conversion Insight banner fetches its own calendar-month
+		// reports and calls the not-yet-live insight endpoint; default both to
+		// empty so the banner stays hidden and these tests don't hit unmatched
+		// requests. Tests that assert on the banner seed real data explicitly.
+		fetchMock.get( new RegExp( 'modules/analytics-4/data/report' ), {
+			body: {},
+			status: 200,
+		} );
+		fetchMock.post(
+			new RegExp( 'modules/analytics-4/data/conversion-insights' ),
+			{ body: { insights: [] }, status: 200 }
+		);
+
 		// Default to aggregated mode (no breakdown form values yet); tabbed tests
 		// re-seed with form IDs.
 		seedBreakdown();
@@ -862,6 +880,108 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 				'.googlesitekit-site-goals-goal-drivers-section__tile:not(.googlesitekit-site-goals-goal-drivers-section__tile--empty)'
 			)
 		).toHaveLength( 3 );
+	} );
+
+	it( 'renders the Conversion Insight banner in context', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+		provideAnalytics4MockReport(
+			registry,
+			buildLeadEventsReportOptions( dates, [
+				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+			] )
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		// Seed the banner's own calendar-month reports and the generated insight.
+		const keyEvents = [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ];
+		const { siteWideOptions, eventOptions, yoyOptions } =
+			buildConversionInsightReportOptions(
+				getConversionInsightDateRanges( '2020-09-08' ),
+				keyEvents
+			);
+		const siteWideReport = {
+			totals: [
+				{
+					dimensionValues: [ { value: 'date_range_0' } ],
+					metricValues: [ { value: '0.66' }, { value: '6000' } ],
+				},
+				{
+					dimensionValues: [ { value: 'date_range_1' } ],
+					metricValues: [ { value: '0.60' }, { value: '5000' } ],
+				},
+			],
+		};
+		const eventReport = {
+			rows: [
+				{
+					dimensionValues: [
+						{ value: ENUM_CONVERSION_EVENTS.GENERATE_LEAD },
+						{ value: 'date_range_0' },
+					],
+					metricValues: [ { value: '150' }, { value: '120' } ],
+				},
+			],
+		};
+		const yoyReport = { rows: [] };
+		[
+			[ siteWideOptions, siteWideReport ],
+			[ eventOptions, eventReport ],
+			[ yoyOptions, yoyReport ],
+		].forEach( ( [ options, report ] ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetReport( report, { options } );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getReport', [ options ] );
+		} );
+
+		const events = assembleConversionInsightEvents(
+			'2020-09-08',
+			keyEvents,
+			{ siteWideReport, eventReport, yoyReport }
+		);
+		const insightText =
+			'Form completions are up 12.1% for the last 7 days thanks to a spike in new visitors.';
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetConversionInsights(
+			{
+				insights: [
+					{
+						// eslint-disable-next-line camelcase
+						key_event_name: ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						code: 'GROWTH_VOL_UP_CR_UP_NOT_SEASONAL',
+						text: insightText,
+						// eslint-disable-next-line camelcase
+						actionable_recommendation: 'Lean into those sources.',
+					},
+				],
+			},
+			{ events }
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getConversionInsights', [ events ] );
+
+		const { container, getByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-conversion-insight' )
+		).toBeInTheDocument();
+		expect( getByText( insightText ) ).toBeInTheDocument();
 	} );
 
 	it( 'renders a collapsible widget', async () => {

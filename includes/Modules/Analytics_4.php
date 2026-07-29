@@ -71,6 +71,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Batch_Report;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Lookup;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Destinations;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Conversion_Insights;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Custom_Dimensions;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Enhanced_Measurement_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Form_Metadata;
@@ -1081,6 +1082,12 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			$this->datapoints['GET:form-metadata']                           = new Get_Form_Metadata(
 				array(
 					'service' => '',
+				)
+			);
+			$this->datapoints['POST:conversion-insights']                    = new Get_Conversion_Insights(
+				array(
+					'authentication' => $this->authentication,
+					'service'        => '',
 				)
 			);
 		}

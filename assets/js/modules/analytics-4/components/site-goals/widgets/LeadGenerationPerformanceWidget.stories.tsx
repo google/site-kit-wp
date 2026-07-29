@@ -26,6 +26,11 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
+	assembleConversionInsightEvents,
+	buildConversionInsightReportOptions,
+	getConversionInsightDateRanges,
+} from '@/js/modules/analytics-4/components/site-goals/conversion-insights/preprocess';
+import {
 	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
@@ -829,6 +834,92 @@ function seedTabbedBreakdown(
 	provideAnalytics4MockReport( registry, engagementReportOptions );
 }
 
+// Seeds the Conversion Insight banner in-context: the three calendar-month
+// reports it fetches (over the story's 2020-09-07 reference date) plus the
+// generated insight, keyed to the story's detected lead event.
+const CI_KEY_EVENTS = [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ];
+const ciDateRanges = getConversionInsightDateRanges( '2020-09-07' );
+const {
+	siteWideOptions: ciSiteWideOptions,
+	eventOptions: ciEventOptions,
+	yoyOptions: ciYoyOptions,
+} = buildConversionInsightReportOptions( ciDateRanges, CI_KEY_EVENTS );
+
+const ciSiteWideReport = {
+	totals: [
+		{
+			dimensionValues: [ { value: 'date_range_0' } ],
+			metricValues: [ { value: '0.66' }, { value: '6000' } ],
+		},
+		{
+			dimensionValues: [ { value: 'date_range_1' } ],
+			metricValues: [ { value: '0.60' }, { value: '5000' } ],
+		},
+	],
+};
+
+const ciEventReport = {
+	rows: [
+		{
+			dimensionValues: [
+				{ value: ENUM_CONVERSION_EVENTS.GENERATE_LEAD },
+				{ value: 'date_range_0' },
+			],
+			metricValues: [ { value: '150' }, { value: '120' } ],
+		},
+		{
+			dimensionValues: [
+				{ value: ENUM_CONVERSION_EVENTS.GENERATE_LEAD },
+				{ value: 'date_range_1' },
+			],
+			metricValues: [ { value: '100' }, { value: '90' } ],
+		},
+	],
+};
+
+const ciYoyReport = { rows: [] };
+
+const ciEvents = assembleConversionInsightEvents( '2020-09-07', CI_KEY_EVENTS, {
+	siteWideReport: ciSiteWideReport,
+	eventReport: ciEventReport,
+	yoyReport: ciYoyReport,
+} );
+
+function seedConversionInsight( registry: WPDataRegistry ) {
+	[
+		[ ciSiteWideOptions, ciSiteWideReport ],
+		[ ciEventOptions, ciEventReport ],
+		[ ciYoyOptions, ciYoyReport ],
+	].forEach( ( [ options, report ] ) => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( report, { options } );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ options ] );
+	} );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetConversionInsights(
+		{
+			insights: [
+				{
+					// eslint-disable-next-line camelcase
+					key_event_name: ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+					code: 'GROWTH_VOL_UP_CR_UP_NOT_SEASONAL',
+					text: 'Form completions are up 12.1% for the last 7 days thanks to a spike in new visitors. In the last 7 days you had 376 new visitors, 34% more than the previous 7 days.',
+					// eslint-disable-next-line camelcase
+					actionable_recommendation:
+						'Identify which traffic sources drove these new conversions and lean into them.',
+				},
+			],
+		},
+		{ events: ciEvents }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getConversionInsights', [ ciEvents ] );
+}
+
 function Template( {
 	setupRegistry,
 	selectedGoalDriverIDs,
@@ -856,6 +947,21 @@ Ready.args = {
 		seedGoalDriverReports( registry, [
 			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 		] );
+	},
+};
+
+export const ReadyWithConversionInsight = Template.bind( {} ) as Story;
+ReadyWithConversionInsight.storyName = 'Ready (With Conversion Insight)';
+ReadyWithConversionInsight.args = {
+	selectedGoalDriverIDs: THREE_VISIBLE_GOAL_DRIVERS,
+	setupRegistry: ( registry ) => {
+		commonSetup( registry );
+		provideAnalytics4MockReport( registry, singleEventReportOptions );
+		provideAnalytics4MockReport( registry, engagementReportOptions );
+		seedGoalDriverReports( registry, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
+		seedConversionInsight( registry );
 	},
 };
 

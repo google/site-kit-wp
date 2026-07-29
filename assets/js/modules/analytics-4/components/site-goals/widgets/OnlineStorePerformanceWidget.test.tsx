@@ -710,6 +710,19 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		// dismissed); individual tests opt in by dismissing the intro modal.
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
+		// The embedded Conversion Insight banner fetches its own calendar-month
+		// reports and calls the not-yet-live insight endpoint; default both to
+		// empty so the banner stays hidden and these tests don't hit unmatched
+		// requests. Tests that assert on the banner seed real data explicitly.
+		fetchMock.get( new RegExp( 'modules/analytics-4/data/report' ), {
+			body: {},
+			status: 200,
+		} );
+		fetchMock.post(
+			new RegExp( 'modules/analytics-4/data/conversion-insights' ),
+			{ body: { insights: [] }, status: 200 }
+		);
+
 		// Default to aggregated mode (no breakdown provider values yet); tabbed
 		// tests re-seed with provider values.
 		seedBreakdown();

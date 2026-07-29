@@ -41,6 +41,7 @@ class Google_Proxy {
 	const FEATURES_URI              = '/site-management/features/';
 	const SURVEY_TRIGGER_URI        = '/survey/trigger/';
 	const SURVEY_EVENT_URI          = '/survey/event/';
+	const CONVERSION_INSIGHTS_URI   = '/v1/ai/conversion-insights';
 	const SUPPORT_LINK_URI          = '/support';
 	const ACTION_EXCHANGE_SITE_CODE = 'googlesitekit_proxy_exchange_site_code';
 	const ACTION_SETUP              = 'googlesitekit_proxy_setup';
@@ -669,6 +670,37 @@ class Google_Proxy {
 				'body'         => array(
 					'session' => $session,
 					'event'   => $event,
+				),
+			)
+		);
+	}
+
+	/**
+	 * Requests AI-generated Conversion Insights (Site Goals) from the proxy service.
+	 *
+	 * The plugin performs the GA4 preprocessing and passes the pre-shaped, size-bounded
+	 * metrics via `$events`; the service adds the generative layer and returns one insight
+	 * per requested key event.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Credentials $credentials  Credentials instance.
+	 * @param string      $access_token Access token (Google OAuth), forwarded as the Bearer token.
+	 * @param array       $events       List of EventData objects (preprocessed metrics per key event).
+	 * @return array|WP_Error Response of the wp_remote_post request.
+	 */
+	public function get_conversion_insights( Credentials $credentials, $access_token, array $events ) {
+		return $this->request(
+			self::CONVERSION_INSIGHTS_URI,
+			$credentials,
+			array(
+				'access_token' => $access_token,
+				'json_request' => true,
+				// NOTE: the AI fetch (GA data + Gemini) can take ~20s, which risks a
+				// timeout on a synchronous request. The real implementation should
+				// move to a Long-Running Operation (AIP-151); see the POC PRD.
+				'body'         => array(
+					'events' => $events,
 				),
 			)
 		);

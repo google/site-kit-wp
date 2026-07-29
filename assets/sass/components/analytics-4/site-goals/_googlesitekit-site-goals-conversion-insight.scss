@@ -1,0 +1,76 @@
+/**
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+	// Colors use the MUI3 design-token variables that correspond to the Figma
+	// Site Goals tokens (node 5169-85544).
+	.googlesitekit-conversion-insight {
+		align-items: flex-start;
+		background-color: $c-blue-b-50;
+		border-radius: 8px;
+		display: flex;
+		gap: 16px;
+		margin: $grid-gap-phone 0;
+		padding: 16px;
+
+		@media (min-width: $bp-tablet) {
+			align-items: center;
+			margin: $grid-gap-desktop 0;
+		}
+	}
+
+	.googlesitekit-conversion-insight__icon {
+		align-items: center;
+		background-color: $c-blue-b-100;
+		border-radius: 50%;
+		color: $c-blue-b-700;
+		display: flex;
+		flex-shrink: 0;
+		height: 36px;
+		justify-content: center;
+		width: 36px;
+	}
+
+	.googlesitekit-conversion-insight__content {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.googlesitekit-conversion-insight__text {
+		color: $c-surfaces-on-surface;
+		font-size: 14px; // body/medium
+		letter-spacing: 0.25px;
+		line-height: 20px;
+		margin: 0;
+	}
+
+	.googlesitekit-conversion-insight__dismiss {
+		align-items: center;
+		background: transparent;
+		border: 0;
+		color: $c-surfaces-on-surface-variant;
+		cursor: pointer;
+		display: flex;
+		flex-shrink: 0;
+		justify-content: center;
+		padding: 4px;
+
+		&:hover,
+		&:focus {
+			color: $c-surfaces-on-surface;
+		}
+	}
+}
