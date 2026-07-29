@@ -22,10 +22,13 @@
 import { ComponentType, FC } from 'react';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
-import Stepper from '@/js/components/Stepper';
-import Step from '@/js/components/Stepper/Step';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -37,6 +40,7 @@ import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datasto
 import PoweredBy from './PoweredBy';
 import StepPublicationPolicies from './StepPublicationPolicies';
 import StepPublicationSetup from './StepPublicationSetup';
+import Steps from './Steps';
 import StepSetupComplete from './StepSetupComplete';
 import StepTermsOfService from './StepTermsOfService';
 
@@ -66,13 +70,12 @@ const SetupCTANewsletter: FC = () => {
 					lgSize={ 3 }
 				>
 					<div className="googlesitekit-rrm-express-setup__sidebar-inner">
-						<Stepper activeStep={ 0 } variant="rail">
-							<Step title="Connect publication" />
-							<Step title="Accept terms of service" />
-							<Step title="Add publication policies" />
-							<Step title="Set up a sign-up form" />
-							<Step title="Setup complete" />
-						</Stepper>
+						<Steps
+							setupCTAStepTitle={ __(
+								'Set up a sign-up form',
+								'google-site-kit'
+							) }
+						/>
 						{ ! isMobileOrTablet && <PoweredBy /> }
 					</div>
 				</Cell>
