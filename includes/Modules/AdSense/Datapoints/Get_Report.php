@@ -22,7 +22,7 @@ use WP_Error;
 /**
  * Class for the report datapoint.
  *
- * @since 1.190.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
@@ -31,7 +31,7 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 	/**
 	 * Callable to get date range.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 * @var callable
 	 */
 	private $date_range_to_dates;
@@ -39,7 +39,7 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 	/**
 	 * Callable to parse string list.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 * @var callable
 	 */
 	private $parse_string_list;
@@ -47,7 +47,7 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 	/**
 	 * Callable to check if shared data request.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 * @var callable
 	 */
 	private $is_shared_data_request;
@@ -55,7 +55,7 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 	/**
 	 * Callable to validate shared report metrics.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 * @var callable
 	 */
 	private $validate_shared_report_metrics;
@@ -63,7 +63,7 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 	/**
 	 * Callable to validate shared report dimensions.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 * @var callable
 	 */
 	private $validate_shared_report_dimensions;
@@ -71,7 +71,7 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 	/**
 	 * Callable to parse earnings orderby.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 * @var callable
 	 */
 	private $parse_earnings_orderby;
@@ -79,7 +79,7 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 	/**
 	 * Callable to create AdSense earning data request.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 * @var callable
 	 */
 	private $create_adsense_earning_data_request;
@@ -87,7 +87,7 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 	/**
 	 * Constructor.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -119,7 +119,7 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object on success, or WP_Error on failure.
@@ -189,7 +189,7 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses a response.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 *
 	 * @param mixed        $response API response.
 	 * @param Data_Request $data     Data request object.

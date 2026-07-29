@@ -20,7 +20,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert as Google_Service_
 /**
  * Class for the notifications datapoint.
  *
- * @since 1.190.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class Get_Notifications extends AdSense_Datapoint implements Executable_Datapoin
 	/**
 	 * Account URL callable.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 * @var callable
 	 */
 	private $account_url;
@@ -36,7 +36,7 @@ class Get_Notifications extends AdSense_Datapoint implements Executable_Datapoin
 	/**
 	 * Constructor.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -49,7 +49,7 @@ class Get_Notifications extends AdSense_Datapoint implements Executable_Datapoin
 	/**
 	 * Creates a request object.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return callable A callable that returns notifications by filtering SEVERE alerts.
@@ -110,7 +110,7 @@ class Get_Notifications extends AdSense_Datapoint implements Executable_Datapoin
 	/**
 	 * Parses a response.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 *
 	 * @param mixed        $response Callable that returns notifications array.
 	 * @param Data_Request $data     Data request object.

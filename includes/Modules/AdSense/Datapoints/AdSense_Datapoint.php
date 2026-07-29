@@ -18,7 +18,7 @@ use Google\Site_Kit\Modules\AdSense;
 /**
  * Base class for AdSense datapoints.
  *
- * @since 1.190.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ abstract class AdSense_Datapoint extends Datapoint {
 	/**
 	 * Module instance.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 * @var AdSense
 	 */
 	protected $module;
@@ -35,7 +35,7 @@ abstract class AdSense_Datapoint extends Datapoint {
 	/**
 	 * Constructor.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -49,7 +49,7 @@ abstract class AdSense_Datapoint extends Datapoint {
 	/**
 	 * Gets the module instance.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 *
 	 * @return AdSense Module instance.
 	 */

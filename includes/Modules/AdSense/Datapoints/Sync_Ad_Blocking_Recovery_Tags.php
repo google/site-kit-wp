@@ -23,7 +23,7 @@ use WP_REST_Response;
 /**
  * Class for the sync ad blocking recovery tags datapoint.
  *
- * @since 1.190.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ class Sync_Ad_Blocking_Recovery_Tags extends AdSense_Datapoint implements Execut
 	/**
 	 * Ad Blocking Recovery Tag instance.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 * @var Ad_Blocking_Recovery_Tag
 	 */
 	private $ad_blocking_recovery_tag;
@@ -40,7 +40,7 @@ class Sync_Ad_Blocking_Recovery_Tags extends AdSense_Datapoint implements Execut
 	/**
 	 * Callable to normalize account ID.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 * @var callable
 	 */
 	private $normalize_account_id;
@@ -48,7 +48,7 @@ class Sync_Ad_Blocking_Recovery_Tags extends AdSense_Datapoint implements Execut
 	/**
 	 * Constructor.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -65,7 +65,7 @@ class Sync_Ad_Blocking_Recovery_Tags extends AdSense_Datapoint implements Execut
 	/**
 	 * Creates a request object.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object on success, or WP_Error on failure.
@@ -83,7 +83,7 @@ class Sync_Ad_Blocking_Recovery_Tags extends AdSense_Datapoint implements Execut
 	/**
 	 * Parses a response.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 *
 	 * @param mixed        $response API response.
 	 * @param Data_Request $data     Data request object.

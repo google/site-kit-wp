@@ -21,7 +21,7 @@ use WP_Error;
 /**
  * Class for the clients listing datapoint.
  *
- * @since 1.190.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class Get_Clients extends AdSense_Datapoint implements Executable_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object on success, or WP_Error on failure.
@@ -51,7 +51,7 @@ class Get_Clients extends AdSense_Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses a response.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 *
 	 * @param mixed        $response API response.
 	 * @param Data_Request $data     Data request object.

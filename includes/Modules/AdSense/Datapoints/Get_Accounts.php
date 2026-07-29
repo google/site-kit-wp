@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\Util\Sort;
 /**
  * Class for the accounts listing datapoint.
  *
- * @since 1.190.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Get_Accounts extends AdSense_Datapoint implements Executable_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
@@ -42,7 +42,7 @@ class Get_Accounts extends AdSense_Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses a response.
 	 *
-	 * @since 1.190.0
+	 * @since n.e.x.t
 	 *
 	 * @param mixed        $response API response.
 	 * @param Data_Request $data     Data request object.
