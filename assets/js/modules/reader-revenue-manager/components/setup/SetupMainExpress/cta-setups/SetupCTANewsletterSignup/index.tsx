@@ -30,17 +30,18 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import useQueryArg from '@/js/hooks/useQueryArg';
-import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
 	StepPublicationPolicies,
 	StepPublicationSetup,
 	StepSetupComplete,
 	StepTermsOfService,
-} from './common-steps';
-import ExpressSetupLayout from './ExpressSetupLayout';
-import ExpressSetupSteps from './ExpressSetupSteps';
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
+import ExpressSetupLayout from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupLayout';
+import ExpressSetupSteps from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupSteps';
+import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import StepSignupForm from './StepSignupForm';
 
-const SetupCTANewsletter: FC = () => {
+const SetupCTANewsletterSignup: FC = () => {
 	const [ step ] = useQueryArg( 'step' );
 
 	const stepContent: Record< string, ReactNode > = {
@@ -49,14 +50,7 @@ const SetupCTANewsletter: FC = () => {
 		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: (
 			<StepPublicationPolicies />
 		),
-		[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: (
-			<p>
-				{ __(
-					'RRM express setup placeholder: newsletter CTA setup step.',
-					'google-site-kit'
-				) }
-			</p>
-		),
+		[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: <StepSignupForm />,
 		[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: <StepSetupComplete />,
 	};
 
@@ -76,4 +70,4 @@ const SetupCTANewsletter: FC = () => {
 	);
 };
 
-export default SetupCTANewsletter;
+export default SetupCTANewsletterSignup;

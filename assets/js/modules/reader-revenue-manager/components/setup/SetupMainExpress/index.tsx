@@ -21,13 +21,13 @@
  */
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import SetupCTANewsletter from './SetupCTANewsletter';
+import { SetupCTANewsletterSignup } from './cta-setups';
 
 export default function SetupMainExpress() {
 	const [ cta ] = useQueryArg( 'cta' );
 
 	const ctaSetupComponents: Record< string, React.ComponentType > = {
-		[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: SetupCTANewsletter,
+		[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: SetupCTANewsletterSignup,
 	};
 
 	const ExpressSetupComponent = ctaSetupComponents[ cta ] || null;
