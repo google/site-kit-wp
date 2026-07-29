@@ -27,7 +27,7 @@ import ExpressSetupSteps from './ExpressSetupSteps';
 describe( 'ExpressSetupSteps', () => {
 	mockLocation();
 
-	it( 'renders the default steps without the setup CTA step', () => {
+	it( 'renders the default steps without extra steps', () => {
 		global.location.href = 'http://example.com/';
 
 		const { getByText, queryByText, container } = render(
@@ -46,17 +46,28 @@ describe( 'ExpressSetupSteps', () => {
 		).toHaveLength( 4 );
 	} );
 
-	it( 'includes the setup CTA step when setupCTAStepTitle is provided', () => {
+	it( 'includes extra steps before setup complete', () => {
 		global.location.href = 'http://example.com/';
 
 		const { getByText, container } = render(
-			<ExpressSetupSteps setupCTAStepTitle="Set up a sign-up form" />
+			<ExpressSetupSteps
+				extraSteps={ {
+					[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: 'Set up a sign-up form',
+					'custom-step': 'Custom step',
+				} }
+			/>
+		);
+
+		const steps = container.querySelectorAll(
+			'.googlesitekit-stepper__step'
 		);
 
 		expect( getByText( 'Set up a sign-up form' ) ).toBeInTheDocument();
-		expect(
-			container.querySelectorAll( '.googlesitekit-stepper__step' )
-		).toHaveLength( 5 );
+		expect( getByText( 'Custom step' ) ).toBeInTheDocument();
+		expect( steps ).toHaveLength( 6 );
+		expect( steps[ 3 ] ).toHaveTextContent( 'Set up a sign-up form' );
+		expect( steps[ 4 ] ).toHaveTextContent( 'Custom step' );
+		expect( steps[ 5 ] ).toHaveTextContent( 'Setup complete' );
 	} );
 
 	it( 'marks the step matching the step query arg as active', () => {
@@ -79,11 +90,15 @@ describe( 'ExpressSetupSteps', () => {
 		);
 	} );
 
-	it( 'marks the setup CTA step as active when it is included and selected', () => {
+	it( 'marks an extra step as active when it is included and selected', () => {
 		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.SETUP_CTA }`;
 
 		const { container } = render(
-			<ExpressSetupSteps setupCTAStepTitle="Set up a sign-up form" />
+			<ExpressSetupSteps
+				extraSteps={ {
+					[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: 'Set up a sign-up form',
+				} }
+			/>
 		);
 
 		const steps = container.querySelectorAll(

@@ -35,11 +35,11 @@ import useQueryArg from '@/js/hooks/useQueryArg';
 import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
 interface ExpressSetupStepsProps {
-	setupCTAStepTitle?: string;
+	extraSteps?: Record< string, string >;
 }
 
 const ExpressSetupSteps: FC< ExpressSetupStepsProps > = ( {
-	setupCTAStepTitle,
+	extraSteps = {},
 } ) => {
 	const [ step ] = useQueryArg( 'step' );
 
@@ -56,9 +56,7 @@ const ExpressSetupSteps: FC< ExpressSetupStepsProps > = ( {
 			'Add publication policies',
 			'google-site-kit'
 		),
-		...( setupCTAStepTitle && {
-			[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: setupCTAStepTitle,
-		} ),
+		...extraSteps,
 		[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: __(
 			'Setup complete',
 			'google-site-kit'
