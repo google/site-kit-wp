@@ -60,7 +60,7 @@ interface TextFieldBaseProps {
 interface TextFieldNoErrorProps extends TextFieldBaseProps {
 	hasError?: false;
 	errorMessage?: ReactNode;
-	ariaErrorMessage?: string;
+	ariaErrorMessage?: never;
 }
 
 interface TextFieldHasErrorWithMessageProps extends TextFieldBaseProps {
