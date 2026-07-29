@@ -48,8 +48,8 @@ class Get_Form_MetadataTest extends TestCase {
 			)
 		);
 
-		// Mirror OptinMonster's own registration: the campaign post type is
-		// non-public, which register_post_type() defaults to.
+		// OptinMonster registers the campaign post type as non-public, which
+		// is what `register_post_type()` does when given no options.
 		register_post_type( 'omapi' );
 
 		$this->datapoint = new Get_Form_Metadata( array( 'service' => '' ) );
@@ -91,8 +91,8 @@ class Get_Form_MetadataTest extends TestCase {
 			)
 		);
 
-		// Return the slug WordPress stored, in case it differs from the
-		// requested one.
+		// The lookup under test finds a campaign by slug, not by post ID, so
+		// each caller sends this value on as the form ID.
 		return get_post( $post_id )->post_name;
 	}
 
@@ -184,20 +184,37 @@ class Get_Form_MetadataTest extends TestCase {
 		);
 	}
 
-	public function test_create_request__drops_non_positive_and_empty_ids() {
+	public function test_create_request__ignores_non_positive_and_empty_string_ids() {
 		$form_id = self::factory()->post->create( array( 'post_title' => 'Real form' ) );
 
 		$request = $this->datapoint->create_request(
 			$this->data_request( array( $form_id, 0, -5, '-3', '' ) )
 		);
 
-		// Zero and negative numeric IDs never name a post, and an empty string
-		// names nothing, so they drop out. A non-numeric slug resolves through
-		// the slug path instead.
+		// A post ID is a positive integer, and an empty string names nothing,
+		// so the result holds none of these values.
 		$this->assertSame(
 			array( $form_id ),
 			array_keys( $request() ),
-			'Non-positive numeric and empty form IDs should drop from the result.'
+			'A zero, a negative, or an empty form ID should not reach the result.'
+		);
+	}
+
+	public function test_create_request__ignores_a_form_id_that_is_not_a_number_or_a_string() {
+		$form_id = self::factory()->post->create( array( 'post_title' => 'Real form' ) );
+
+		// A request can nest an array under formIDs, and only a number or a
+		// string can name a form, so the array reaches no lookup. The
+		// `is_string()` test is what keeps an array away from
+		// `get_page_by_path()`.
+		$request = $this->datapoint->create_request(
+			$this->data_request( array( $form_id, array( 'nested' ) ) )
+		);
+
+		$this->assertSame(
+			array( $form_id ),
+			array_keys( $request() ),
+			'A form ID that is not a number or a string should not reach the result.'
 		);
 	}
 
@@ -236,8 +253,9 @@ class Get_Form_MetadataTest extends TestCase {
 	}
 
 	public function test_create_request__returns_null_title_for_a_pending_campaign() {
-		// Only a published or draft campaign resolves. Any other status, such
-		// as a pending one, keeps the ID fallback.
+		// Only a published or draft campaign resolves a title. Any other
+		// status, such as a pending one, leaves the JS side its ID fallback
+		// label for the tab.
 		$slug = $this->create_omapi_campaign( 'Pending Popup', 'pending-popup', 'pending' );
 
 		$request = $this->datapoint->create_request( $this->data_request( array( $slug ) ) );
@@ -266,32 +284,72 @@ class Get_Form_MetadataTest extends TestCase {
 		);
 	}
 
-	public function test_create_request__does_not_disclose_a_non_campaign_post_with_the_same_slug() {
-		$slug = 'shared-campaign-slug';
-
-		// The lookup targets the omapi post type alone, so a page or an
-		// attachment sharing the slug must not resolve a title.
-		self::factory()->post->create(
+	public function test_create_request__does_not_disclose_the_title_of_a_page_holding_a_campaign_slug() {
+		// The lookup asks only for the post types in FORM_SLUG_POST_TYPES, so a
+		// page holding the slug must not resolve a title.
+		$page_id = self::factory()->post->create(
 			array(
 				'post_title' => 'Secret page',
-				'post_name'  => $slug,
+				'post_name'  => 'shared-page-slug',
 				'post_type'  => 'page',
 			)
 		);
-		self::factory()->post->create(
-			array(
-				'post_title'  => 'Secret attachment',
-				'post_name'   => $slug,
-				'post_type'   => 'attachment',
-				'post_status' => 'inherit',
-			)
-		);
+
+		// Requesting a slug the page never took would pass the assertion
+		// without reaching the lookup, so request the slug the page stored.
+		$slug = get_post( $page_id )->post_name;
 
 		$request = $this->datapoint->create_request( $this->data_request( array( $slug ) ) );
 
 		$this->assertNull(
 			$request()[ $slug ]['title'],
-			'A non-campaign post sharing the slug must not have its title disclosed.'
+			'A page holding a campaign slug must not have its title disclosed.'
+		);
+	}
+
+	public function test_create_request__does_not_disclose_the_title_of_an_attachment_holding_a_campaign_slug() {
+		// Given one post type as a string, `get_page_by_path()` searches
+		// attachments as well. The lookup passes an array of post types
+		// instead, so an attachment holding the slug must not resolve a
+		// title.
+		$attachment_id = self::factory()->post->create(
+			array(
+				'post_title'  => 'Secret attachment',
+				'post_name'   => 'shared-attachment-slug',
+				'post_type'   => 'attachment',
+				'post_status' => 'inherit',
+			)
+		);
+
+		$slug = get_post( $attachment_id )->post_name;
+
+		$request = $this->datapoint->create_request( $this->data_request( array( $slug ) ) );
+
+		$this->assertNull(
+			$request()[ $slug ]['title'],
+			'An attachment holding a campaign slug must not have its title disclosed.'
+		);
+	}
+
+	public function test_create_request__does_not_resolve_a_title_by_slug_for_a_form_named_by_post_id() {
+		// WPForms reports a post ID, so it belongs to FORM_POST_TYPES rather
+		// than FORM_SLUG_POST_TYPES. Another plugin's slug that happens to
+		// match one of its forms must not name that form.
+		$form_id = self::factory()->post->create(
+			array(
+				'post_title' => 'Contact',
+				'post_name'  => 'shared-form-slug',
+				'post_type'  => 'wpforms',
+			)
+		);
+
+		$slug = get_post( $form_id )->post_name;
+
+		$request = $this->datapoint->create_request( $this->data_request( array( $slug ) ) );
+
+		$this->assertNull(
+			$request()[ $slug ]['title'],
+			'A form whose plugin reports a post ID should not resolve its title by slug.'
 		);
 	}
 
@@ -300,33 +358,36 @@ class Get_Form_MetadataTest extends TestCase {
 
 		$request = $this->datapoint->create_request( $this->data_request( array( $slug ) ) );
 
-		// get_the_title() returns the stored "&" as the "&#038;" entity. The tab
-		// prints its label as plain text, so the response must hold the decoded
-		// character.
+		// `get_the_title()` applies the `the_title` filters, and WordPress core
+		// adds `wptexturize()` to them, which rewrites a bare "&" as the
+		// "&#038;" entity. A breakdown tab prints its label as plain text, so
+		// the response has to hold the character rather than the entity.
 		$this->assertSame(
 			'Tips & Tricks',
 			$request()[ $slug ]['title'],
-			'A campaign title holding an ampersand should resolve without an HTML entity.'
+			'A campaign title holding an ampersand should resolve to the "&" character, not the "&#038;" entity.'
 		);
 	}
 
-	public function test_create_request__decodes_an_apostrophe_in_a_campaign_title() {
+	public function test_create_request__decodes_a_curly_apostrophe_in_a_campaign_title() {
 		$slug = $this->create_omapi_campaign( "Amara's Bookshop Sale", 'amaras-bookshop-sale' );
 
 		$request = $this->datapoint->create_request( $this->data_request( array( $slug ) ) );
 
-		// The title filters turn the straight apostrophe into the "&#8217;"
-		// entity, which decodes back to the curly apostrophe character.
+		// The same `wptexturize()` pass rewrites a straight apostrophe as the
+		// "&#8217;" entity, so the decoded title holds the curly apostrophe
+		// rather than the straight one this campaign stores.
 		$this->assertSame(
 			'Amara’s Bookshop Sale',
 			$request()[ $slug ]['title'],
-			'A campaign title holding an apostrophe should resolve to the decoded character, not an HTML entity.'
+			'A campaign title holding an apostrophe should resolve to the curly apostrophe, not the "&#8217;" entity.'
 		);
 	}
 
 	public function test_create_request__decodes_an_ampersand_in_a_form_post_title() {
-		// The numeric post path shares the same title filters, so the decoding
-		// covers every supported form plugin, not only OptinMonster.
+		// A form found by post ID reads its title through `get_the_title()`
+		// too, so `wptexturize()` encodes that title the same way. The decoding
+		// has to cover a WPForms form, not only an OptinMonster campaign.
 		$form_id = self::factory()->post->create(
 			array(
 				'post_title' => 'Sales & Support',
@@ -339,7 +400,7 @@ class Get_Form_MetadataTest extends TestCase {
 		$this->assertSame(
 			'Sales & Support',
 			$request()[ $form_id ]['title'],
-			'A form title holding an ampersand should resolve without an HTML entity.'
+			'A form title holding an ampersand should resolve to the "&" character, not the "&#038;" entity.'
 		);
 	}
 

@@ -1018,7 +1018,7 @@ const baseSelectors = {
 								title
 						  )
 						: sprintf(
-								/* translators: %s: form ID shown as the fallback tab label when no form title resolves, such as "12" or the campaign slug "jnpfwoygltxurnayflew". */
+								/* translators: %s: form ID used as the fallback tab label when the form has no title, such as "12" or the campaign slug "jnpfwoygltxurnayflew". */
 								__( 'Form #%s', 'google-site-kit' ),
 								formID
 						  );

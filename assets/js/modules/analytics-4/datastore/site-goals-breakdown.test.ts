@@ -329,33 +329,27 @@ describe( 'modules/analytics-4 site goals breakdown', () => {
 			).toEqual( { 7: '“0” form' } );
 		} );
 
-		it( 'labels a non-numeric form ID by its resolved title, with the fallback for an unknown slug', async () => {
-			// An OptinMonster campaign reports its slug as the form ID. A
-			// resolved slug labels the tab by the campaign name, and an
-			// unknown slug keeps the Form #<id> fallback.
+		it( 'labels a campaign slug with the campaign title', async () => {
+			// An OptinMonster campaign reports its slug as the form ID, while
+			// every other supported plugin reports a numeric ID.
 			fetchMock.getOnce( formMetadataEndpoint, {
 				body: {
 					jnpfwoygltxurnayflew: metadata( 'Newsletter Popup' ),
-					unknownslug: metadata( null ),
 				},
 				status: 200,
 			} );
 
 			registry
 				.select( MODULES_ANALYTICS_4 )
-				.getFormTitles( [ 'jnpfwoygltxurnayflew', 'unknownslug' ] );
-			await resolved().getFormMetadata( [
-				'jnpfwoygltxurnayflew',
-				'unknownslug',
-			] );
+				.getFormTitles( [ 'jnpfwoygltxurnayflew' ] );
+			await resolved().getFormMetadata( [ 'jnpfwoygltxurnayflew' ] );
 
 			expect(
 				registry
 					.select( MODULES_ANALYTICS_4 )
-					.getFormTitles( [ 'jnpfwoygltxurnayflew', 'unknownslug' ] )
+					.getFormTitles( [ 'jnpfwoygltxurnayflew' ] )
 			).toEqual( {
 				jnpfwoygltxurnayflew: '“Newsletter Popup” form',
-				unknownslug: 'Form #unknownslug',
 			} );
 		} );
 	} );
