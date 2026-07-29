@@ -35,6 +35,7 @@ export default function Header() {
 				<ExitSetup
 					gaTrackingEventArgs={ {
 						category: viewContext,
+						event: 'setup_flow_v3_exit_setup',
 						label: 'splash',
 					} }
 				/>
