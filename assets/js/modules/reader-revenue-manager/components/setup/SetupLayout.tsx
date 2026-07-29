@@ -36,6 +36,7 @@ import {
 	useFinishSetup,
 } from '@/js/components/setup';
 import ExitSetup from '@/js/components/setup/ExitSetup';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
@@ -51,6 +52,11 @@ const SetupLayout: FC = () => {
 			),
 		[]
 	);
+	const dashboardURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ),
+		[]
+	);
 
 	if ( ! module?.SetupComponent ) {
 		return null;
@@ -62,7 +68,10 @@ const SetupLayout: FC = () => {
 		return (
 			<Fragment>
 				<SetupHeader>
-					<ExitSetup gaTrackingEventArgs={ {} } />
+					<ExitSetup
+						gaTrackingEventArgs={ {} }
+						url={ dashboardURL }
+					/>
 				</SetupHeader>
 				<SetupComponent module={ module } finishSetup={ finishSetup } />
 			</Fragment>

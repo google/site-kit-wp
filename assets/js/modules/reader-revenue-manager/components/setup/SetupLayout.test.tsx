@@ -21,15 +21,22 @@
  */
 import { type Registry } from '@/js/googlesitekit-data';
 import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
+	fireEvent,
 	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
 	render,
+	waitFor,
 } from '@tests/js/test-utils';
 import SetupLayout from './SetupLayout';
+
+jest.mock( '@/js/components/notifications/Notifications', () => () => null );
 
 jest.mock( '@/js/components/setup', () => {
 	const actual = jest.requireActual( '@/js/components/setup' );
@@ -48,6 +55,9 @@ describe( 'SetupLayout', () => {
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
 
+		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
+		registry.dispatch( CORE_USER ).receiveGetCapabilities( {} );
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -124,5 +134,24 @@ describe( 'SetupLayout', () => {
 			container.querySelector( '.googlesitekit-header' )
 		).toBeInTheDocument();
 		expect( getByText( 'Exit setup' ) ).toBeInTheDocument();
+	} );
+
+	it( 'navigates to the Site Kit dashboard when Exit setup is clicked', async () => {
+		global.location.href = 'http://example.com/?expressSetup=true';
+
+		const { getByRole } = render( <SetupLayout />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MODULE_SETUP,
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: 'Exit setup' } ) );
+
+		await waitFor( () => {
+			expect( global.location.assign ).toHaveBeenCalled();
+		} );
+
+		expect( global.location.assign ).toHaveBeenCalledWith(
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
+		);
 	} );
 } );
