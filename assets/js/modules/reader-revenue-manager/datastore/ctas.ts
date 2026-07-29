@@ -204,7 +204,13 @@ const baseActions = {
 };
 
 const baseResolvers = {
-	*getCTAs( params: PublicationParams ): Generator< unknown, void, unknown > {
+	*getCTAs(
+		params?: PublicationParams
+	): Generator< unknown, void, unknown > {
+		if ( ! params?.organizationID || ! params?.publicationID ) {
+			return;
+		}
+
 		const registryResult = yield commonActions.getRegistry();
 		const registry = registryResult as WPDataRegistry;
 
@@ -228,12 +234,15 @@ const baseSelectors = {
 	 * @param  state                Data store's state.
 	 * @param  params               Parameters, including the `organizationID` and `publicationID`.
 	 * @param  params.publicationID Publication ID.
-	 * @return {(Array.<Object>|undefined)} The configured CTAs; `undefined` if not loaded.
+	 * @return {(Array.<Object>|undefined)} The configured CTAs; `undefined` if not loaded or the publication ID is missing.
 	 */
-	getCTAs(
-		state: CTAsState,
-		{ publicationID }: PublicationParams
-	): CTA[] | undefined {
+	getCTAs( state: CTAsState, params?: PublicationParams ): CTA[] | undefined {
+		const publicationID = params?.publicationID;
+
+		if ( ! publicationID ) {
+			return undefined;
+		}
+
 		return state.ctas[ publicationID ];
 	},
 };
