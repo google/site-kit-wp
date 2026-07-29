@@ -17,15 +17,8 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { createInterpolateElement } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
-import PoweredByModule from '@/js/components/PoweredByModule';
 import Stepper from '@/js/components/Stepper';
 import Step from '@/js/components/Stepper/Step';
 import {
@@ -35,8 +28,8 @@ import {
 } from '@/js/hooks/useBreakpoint';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { Cell, Grid, Row } from '@/js/material-components';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import PoweredBy from './PoweredBy';
 import StepPublicationPolicies from './StepPublicationPolicies';
 import StepPublicationSetup from './StepPublicationSetup';
 import StepSetupComplete from './StepSetupComplete';
@@ -75,20 +68,7 @@ export default function SetupCTANewsletter() {
 							<Step title="Set up a sign-up form" />
 							<Step title="Setup complete" />
 						</Stepper>
-						{ ! isMobileOrTablet && (
-							<PoweredByModule
-								slug={ MODULE_SLUG_READER_REVENUE_MANAGER }
-								text={ createInterpolateElement(
-									__(
-										'Powered by <br /> Reader Revenue Manager',
-										'google-site-kit'
-									),
-									{
-										br: <br />,
-									}
-								) }
-							/>
-						) }
+						{ ! isMobileOrTablet && <PoweredBy /> }
 					</div>
 				</Cell>
 				<Cell
@@ -113,20 +93,7 @@ export default function SetupCTANewsletter() {
 						<Grid>
 							<Row>
 								<Cell size={ 12 }>
-									<PoweredByModule
-										slug={
-											MODULE_SLUG_READER_REVENUE_MANAGER
-										}
-										text={ createInterpolateElement(
-											__(
-												'Powered by <br /> Reader Revenue Manager',
-												'google-site-kit'
-											),
-											{
-												br: <br />,
-											}
-										) }
-									/>
+									<PoweredBy />
 								</Cell>
 							</Row>
 						</Grid>
