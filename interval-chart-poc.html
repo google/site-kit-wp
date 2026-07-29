@@ -69,7 +69,7 @@
 		}
 
 		.legend--projection .legend__swatch--band {
-			background: #e6f4ea;
+			background: #a8dab5;
 		}
 
 		.card + .card {
@@ -238,7 +238,7 @@
 			</div>
 			<div class="legend__item">
 				<span class="legend__swatch--band"></span>
-				<span>Predicted traffic</span>
+				<span>Predicted traffic range</span>
 			</div>
 			<div class="legend__item">
 				<span class="legend__swatch--dot"></span>
@@ -415,11 +415,26 @@
 			}
 
 			const slope = num / den;
-			return { slope, intercept: meanY - slope * meanI };
+			return {
+				slope,
+				intercept: meanY - slope * meanI,
+				// Both are kept for the prediction interval's leverage term:
+				// a forecast far from the centre of the fitted window carries
+				// more uncertainty than one near it.
+				meanIndex: meanI,
+				sumSquares: den,
+			};
 		}
 
+		// z-multiplier for the prediction interval (two-tailed normal). 0.674
+		// gives a 50% interval — the band covers the middle half of likely
+		// outcomes. Raise to widen: 0.842 = 60%, 1.036 = 70%, 1.28 = 80%.
+		// Anything above ~0.9 pushes the upper bound past AXIS_MAX.
+		const INTERVAL_Z = 0.674;
+
 		// Derives the projected trajectory from the actual series, so the
-		// dashed line is a real forecast rather than hardcoded numbers.
+		// forecast is computed rather than hardcoded. Returns the central
+		// estimate plus the bounds of its prediction interval.
 		//
 		// Model: a trend fitted in log space (traffic grows/shrinks by a
 		// percentage, not by a fixed number of visits) plus a multiplicative
@@ -433,7 +448,8 @@
 		function projectTraffic( actual, horizon, phi = 0.9 ) {
 			// Guard against log( 0 ) on days with no traffic.
 			const logged = actual.map( ( v ) => Math.log( Math.max( v, 1 ) ) );
-			const { slope, intercept } = linearFit( logged );
+			const { slope, intercept, meanIndex, sumSquares } =
+				linearFit( logged );
 
 			// Average each weekday's deviation from the trend. The series is
 			// contiguous daily data, so `i % 7` is a stable weekly phase.
@@ -447,28 +463,62 @@
 				);
 			} );
 
+			// How far the actual data scatters around the fitted model, in log
+			// space. Of the sample's degrees of freedom, two are spent on the
+			// trend (slope + intercept) and six on the weekly factors, so the
+			// divisor is `n - 8` rather than `n`.
+			const unexplained = logged.map(
+				( v, i ) => v - ( intercept + slope * i + weekly[ i % 7 ] )
+			);
+			const sigma = Math.sqrt(
+				unexplained.reduce( ( a, b ) => a + b * b, 0 ) /
+					Math.max( actual.length - 8, 1 )
+			);
+
 			const last = actual.length - 1;
-			const projected = [];
+			const values = [];
+			const lower = [];
+			const upper = [];
 			let damped = 0;
 			for ( let k = 1; k <= horizon; k++ ) {
 				damped += phi ** k;
-				projected.push(
-					Math.round(
-						Math.exp(
-							intercept +
-								slope * last +
-								slope * damped +
-								weekly[ ( last + k ) % 7 ]
-						)
-					)
+
+				const index = last + damped;
+				const value = Math.exp(
+					intercept +
+						slope * index +
+						weekly[ ( last + k ) % 7 ]
 				);
+
+				// Standard OLS prediction interval: the day-to-day noise plus
+				// the uncertainty in the fitted line itself, which grows the
+				// further the forecast sits from the centre of the window.
+				const leverage = Math.sqrt(
+					1 +
+						1 / actual.length +
+						( index - meanIndex ) ** 2 / sumSquares
+				);
+				// Applied in log space, so the interval is a *ratio* around
+				// the estimate. That is what makes the band widen in absolute
+				// terms as the projected level rises.
+				const halfWidth = INTERVAL_Z * sigma * leverage;
+
+				values.push( Math.round( value ) );
+				lower.push( Math.round( value * Math.exp( -halfWidth ) ) );
+				upper.push( Math.round( value * Math.exp( halfWidth ) ) );
 			}
 
-			return projected;
+			return { values, lower, upper };
 		}
 
-		// Projected (dashed) traffic, Jul 6 → Jul 11, computed from ACTUAL.
-		const PROJECTED = projectTraffic( ACTUAL, 6 );
+		// Projection for Jul 6 → Jul 11, computed from ACTUAL.
+		const FORECAST = projectTraffic( ACTUAL, 6 );
+		const PROJECTED = FORECAST.values;
+
+		// Top of both value axes. The band's upper bound overshoots the actual
+		// data, so this needs enough headroom to avoid clipping it — check it
+		// still clears `max( FORECAST.upper )` when widening INTERVAL_Z.
+		const AXIS_MAX = 200;
 
 		// The split sits at the last actual point (Jul 5). June has 30 days,
 		// so `Jun 8 + 27 days` normalises to Jul 5. Reused for the row data
@@ -501,6 +551,10 @@
 			data.addColumn( 'date', 'Day' );
 			data.addColumn( 'number', 'Traffic' );
 			data.addColumn( 'number', 'Projected' );
+			// Interval role columns bound to the projected series (they annotate
+			// the column they follow), drawn as a filled band like chart 1's.
+			data.addColumn( { id: 'i0', type: 'number', role: 'interval' } );
+			data.addColumn( { id: 'i1', type: 'number', role: 'interval' } );
 			// Key-event markers: dots drawn on the line at key-event rows.
 			data.addColumn( 'number', 'Key events' );
 
@@ -522,16 +576,26 @@
 				// last actual value) so the dashed line connects seamlessly to
 				// the solid line.
 				let projected = null;
+				let lower = null;
+				let upper = null;
 				if ( i === splitIndex ) {
 					projected = ACTUAL[ i ];
+					// The band pinches shut here: the last actual day is a
+					// measurement, not a prediction, so it carries no
+					// uncertainty. The band then fans out from this point.
+					lower = ACTUAL[ i ];
+					upper = ACTUAL[ i ];
 				} else if ( i >= ACTUAL.length ) {
-					projected = PROJECTED[ i - ACTUAL.length ];
+					const k = i - ACTUAL.length;
+					projected = PROJECTED[ k ];
+					lower = FORECAST.lower[ k ];
+					upper = FORECAST.upper[ k ];
 				}
 
 				// Marker sits on the actual line at each key-event row.
 				const marker = KEY_EVENTS[ i ] ? ACTUAL[ i ] : null;
 
-				rows.push( [ date, actual, projected, marker ] );
+				rows.push( [ date, actual, projected, lower, upper, marker ] );
 			}
 
 			data.addRows( rows );
@@ -559,6 +623,18 @@
 				tooltip: { trigger: 'none' },
 				focusTarget: 'datum',
 				interpolateNulls: false,
+				// Prediction interval around the projected line, drawn as a
+				// filled band with no boundary lines — same treatment as
+				// chart 1's baseline, in green to match this chart. A step
+				// darker than the `.projection-region` tint behind it so the
+				// band stays legible against it.
+				intervals: {
+					style: 'area',
+					color: '#a8dab5',
+					fillOpacity: 0.85,
+					lineWidth: 0,
+					pointSize: 0,
+				},
 				series: {
 					// Actual: solid line.
 					0: { lineWidth: 2, targetAxisIndex: 1 },
@@ -590,10 +666,10 @@
 					textStyle: { color: '#5f6561', fontSize: 11 },
 				},
 				vAxis: {
-					// Hidden left axis. Same 0–200 range as the visible right
-					// axis so `getYLocation` (used to place the tooltip) lines
-					// up with the plotted line.
-					viewWindow: { min: 0, max: 200 },
+					// Hidden left axis. Same range as the visible right axis so
+					// `getYLocation` (used to place the tooltip) lines up with
+					// the plotted line.
+					viewWindow: { min: 0, max: AXIS_MAX },
 					gridlines: { color: 'transparent' },
 					baselineColor: 'transparent',
 					textPosition: 'none',
@@ -601,7 +677,7 @@
 				vAxes: {
 					1: {
 						// Visible right-hand axis.
-						viewWindow: { min: 0, max: 200 },
+						viewWindow: { min: 0, max: AXIS_MAX },
 						gridlines: { count: 5, color: '#ececec' },
 						minorGridlines: { count: 0 },
 						baselineColor: '#ececec',
@@ -724,9 +800,9 @@
 				const cli = chart.getChartLayoutInterface();
 				const area = cli.getChartAreaBoundingBox();
 				const px = cli.getXLocation( data.getValue( row, 0 ) );
-				// Compute Y from the chart area and the fixed 0–200 range.
+				// Compute Y from the chart area and the fixed axis range.
 				// (getYLocation is unreliable on a dual-axis chart.)
-				const py = area.top + area.height * ( 1 - value / 200 );
+				const py = area.top + area.height * ( 1 - value / AXIS_MAX );
 
 				Object.assign( pointDot.style, {
 					left: `${ px }px`,
