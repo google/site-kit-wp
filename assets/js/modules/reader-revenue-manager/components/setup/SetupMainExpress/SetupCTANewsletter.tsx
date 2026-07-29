@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { ComponentType, FC } from 'react';
+
+/**
  * Internal dependencies
  */
 import Stepper from '@/js/components/Stepper';
@@ -35,14 +40,14 @@ import StepPublicationSetup from './StepPublicationSetup';
 import StepSetupComplete from './StepSetupComplete';
 import StepTermsOfService from './StepTermsOfService';
 
-export default function SetupCTANewsletter() {
+const SetupCTANewsletter: FC = () => {
 	const [ step ] = useQueryArg( 'step' );
 	const breakpoint = useBreakpoint();
 	const isMobileOrTablet = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
 		breakpoint
 	);
 
-	const stepComponents: Record< string, React.ComponentType > = {
+	const stepComponents: Record< string, ComponentType > = {
 		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: StepPublicationSetup,
 		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: StepTermsOfService,
 		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: StepPublicationPolicies,
@@ -102,4 +107,6 @@ export default function SetupCTANewsletter() {
 			</Row>
 		</Grid>
 	);
-}
+};
+
+export default SetupCTANewsletter;

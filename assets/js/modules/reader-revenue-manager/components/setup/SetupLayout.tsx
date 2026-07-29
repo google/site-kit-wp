@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -35,7 +40,7 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 
-export default function SetupLayout() {
+const SetupLayout: FC = () => {
 	const [ expressSetup ] = useQueryArg( 'expressSetup' );
 	const finishSetup = useFinishSetup( MODULE_SLUG_READER_REVENUE_MANAGER );
 
@@ -67,4 +72,6 @@ export default function SetupLayout() {
 	return (
 		<DefaultModuleSetup moduleSlug={ MODULE_SLUG_READER_REVENUE_MANAGER } />
 	);
-}
+};
+
+export default SetupLayout;
