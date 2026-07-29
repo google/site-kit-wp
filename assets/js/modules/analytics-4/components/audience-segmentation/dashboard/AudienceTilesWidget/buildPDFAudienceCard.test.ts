@@ -235,6 +235,8 @@ describe( 'buildPDFAudienceCard', () => {
 			},
 			topContentPageTitlesResult: { response: buildReport( [] ) },
 			totalPageviews: 1000,
+			isAudiencePartialData: false,
+			isTopContentPartialData: false,
 			getContentServiceURL: () => '',
 			...overrides,
 		};
@@ -266,6 +268,25 @@ describe( 'buildPDFAudienceCard', () => {
 				serviceURL: 'https://example.com/analytics-report/a',
 			},
 		] );
+	} );
+
+	it( 'copies both partial-data flags from its input onto the card', () => {
+		const card = buildPDFAudienceCard(
+			buildCardInput( {
+				isAudiencePartialData: true,
+				isTopContentPartialData: true,
+			} )
+		);
+
+		expect( card?.isAudiencePartialData ).toBe( true );
+		expect( card?.isTopContentPartialData ).toBe( true );
+	} );
+
+	it( 'defaults both partial-data flags to false', () => {
+		const card = buildPDFAudienceCard( buildCardInput() );
+
+		expect( card?.isAudiencePartialData ).toBe( false );
+		expect( card?.isTopContentPartialData ).toBe( false );
 	} );
 
 	it( 'drops the audience when the metrics report failed', () => {

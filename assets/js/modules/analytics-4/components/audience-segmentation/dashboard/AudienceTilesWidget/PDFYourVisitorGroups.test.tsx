@@ -25,6 +25,7 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { AudiencePartialDataFlags } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/getPDFData';
 import PDFYourVisitorGroups from './PDFYourVisitorGroups';
 
 /**
@@ -32,10 +33,19 @@ import PDFYourVisitorGroups from './PDFYourVisitorGroups';
  *
  * @since 1.184.0
  *
- * @param name The audience name, used for the resource name and display name.
+ * @param name                          The audience name, used for the resource name and display name.
+ * @param flags                         Optional. The audience's partial-data flags, each `false` by default.
+ * @param flags.isAudiencePartialData   Whether the audience is in a partial data state.
+ * @param flags.isTopContentPartialData Whether the top content is in a partial data state.
  * @return A fully loaded audience card object.
  */
-function buildAudience( name: string ) {
+function buildAudience(
+	name: string,
+	flags: Partial< AudiencePartialDataFlags > = {}
+) {
+	const { isAudiencePartialData = false, isTopContentPartialData = false } =
+		flags;
+
 	return {
 		audienceResourceName: `properties/1/audiences/${ name }`,
 		audienceName: name,
@@ -51,6 +61,8 @@ function buildAudience( name: string ) {
 		},
 		topCities: [],
 		topContent: [],
+		isAudiencePartialData,
+		isTopContentPartialData,
 	};
 }
 
@@ -110,6 +122,23 @@ describe( 'AudienceTilesWidget PDF', () => {
 		} );
 
 		expect( countCards( JSON.stringify( tree ) ) ).toBe( 3 );
+	} );
+
+	it( "gives each card its own audience's partial-data flags", () => {
+		const tree = renderWidget( {
+			data: {
+				audiences: [
+					// One partial-data audience, one fully-loaded audience.
+					buildAudience( 'New', { isAudiencePartialData: true } ),
+					buildAudience( 'Returning' ),
+				],
+			},
+		} );
+		const json = JSON.stringify( tree );
+
+		// Only the first card is in a partial-data state, so the "Partial data"
+		// badge renders exactly once.
+		expect( json.split( 'Partial data' ).length - 1 ).toBe( 1 );
 	} );
 
 	it( 'renders nothing for an empty audiences array', () => {
