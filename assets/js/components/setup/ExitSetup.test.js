@@ -63,6 +63,7 @@ describe( 'ExitSetup', () => {
 			<ExitSetup
 				gaTrackingEventArgs={ {
 					category: 'test-category',
+					event: 'test-event',
 					label: 'test-label',
 				} }
 			/>,
@@ -87,6 +88,7 @@ describe( 'ExitSetup', () => {
 			<ExitSetup
 				gaTrackingEventArgs={ {
 					category: 'test-category',
+					event: 'test-event',
 					label: 'test-label',
 				} }
 			/>,
@@ -99,7 +101,7 @@ describe( 'ExitSetup', () => {
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			'test-category',
-			'setup_flow_v3_exit_setup',
+			'test-event',
 			'test-label'
 		);
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
