@@ -84,6 +84,8 @@ export const PDF_COLORS = {
 	VIOLET_V_600: '#462083', // $c-violet-v-600
 	YELLOW_Y_50: '#ffe4b1', // $c-yellow-y-50
 	YELLOW_Y_500: '#895a00', // $c-yellow-y-500
+	YELLOW_Y_600: '#684500', // $c-yellow-y-600
+	UTILITY_WARNING_CONTAINER: '#ffe4b1', // $c-utility-warning-container
 	BLUE_B_400: '#6380b8', // $c-blue-b-400
 	TEAL_T_300: '#4bbbbb', // $c-teal-t-300
 	SITE_KIT_SK_500: '#3c7251', // $c-site-kit-sk-500

@@ -333,12 +333,9 @@ final class Assets {
 			'googlesitekit-notifications',
 		);
 
-		if ( Feature_Flags::enabled( 'pdfGeneration' ) ) {
-			array_push( $dependencies, 'googlesitekit-datastore-pdf' );
-		}
-
 		if ( 'dashboard' === $context || 'dashboard-sharing' === $context ) {
 			array_push( $dependencies, 'googlesitekit-components' );
+			array_push( $dependencies, 'googlesitekit-datastore-pdf' );
 		}
 
 		if ( 'dashboard-sharing' === $context ) {
