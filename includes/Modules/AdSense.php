@@ -360,11 +360,32 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 			),
 			'GET:report'                          => new Get_Report(
 				array(
-					'service'   => function () {
+					'service'                             => function () {
 						return $this->get_service( 'adsense' );
 					},
-					'shareable' => true,
-					'module'    => $this,
+					'shareable'                           => true,
+					'module'                              => $this,
+					'date_range_to_dates'                 => function ( $date_range ) {
+						return $this->date_range_to_dates( $date_range );
+					},
+					'parse_string_list'                   => function ( $string_list ) {
+						return $this->parse_string_list( $string_list );
+					},
+					'is_shared_data_request'              => function ( $data_request ) {
+						return $this->is_shared_data_request( $data_request );
+					},
+					'validate_shared_report_metrics'      => function ( $metrics ) {
+						return $this->validate_shared_report_metrics( $metrics );
+					},
+					'validate_shared_report_dimensions'   => function ( $dimensions ) {
+						return $this->validate_shared_report_dimensions( $dimensions );
+					},
+					'parse_earnings_orderby'              => function ( $orderby ) {
+						return $this->parse_earnings_orderby( $orderby );
+					},
+					'create_adsense_earning_data_request' => function ( $args ) {
+						return $this->create_adsense_earning_data_request( $args );
+					},
 				)
 			),
 			'GET:sites'                           => new Get_Sites(

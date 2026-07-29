@@ -12,7 +12,7 @@
 
 namespace Google\Site_Kit\Modules\AdSense\Datapoints;
 
-use GoogleSite_KitModulesAdSenseDatapointsAdSense_Datapoint;
+use Google\Site_Kit\Modules\AdSense\Datapoints\AdSense_Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Metrics_Exception;
@@ -29,6 +29,94 @@ use WP_Error;
 class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 
 	/**
+	 * Callable to get date range.
+	 *
+	 * @since 1.190.0
+	 * @var callable
+	 */
+	private $date_range_to_dates;
+
+	/**
+	 * Callable to parse string list.
+	 *
+	 * @since 1.190.0
+	 * @var callable
+	 */
+	private $parse_string_list;
+
+	/**
+	 * Callable to check if shared data request.
+	 *
+	 * @since 1.190.0
+	 * @var callable
+	 */
+	private $is_shared_data_request;
+
+	/**
+	 * Callable to validate shared report metrics.
+	 *
+	 * @since 1.190.0
+	 * @var callable
+	 */
+	private $validate_shared_report_metrics;
+
+	/**
+	 * Callable to validate shared report dimensions.
+	 *
+	 * @since 1.190.0
+	 * @var callable
+	 */
+	private $validate_shared_report_dimensions;
+
+	/**
+	 * Callable to parse earnings orderby.
+	 *
+	 * @since 1.190.0
+	 * @var callable
+	 */
+	private $parse_earnings_orderby;
+
+	/**
+	 * Callable to create AdSense earning data request.
+	 *
+	 * @since 1.190.0
+	 * @var callable
+	 */
+	private $create_adsense_earning_data_request;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since 1.190.0
+	 *
+	 * @param array $definition Definition fields.
+	 */
+	public function __construct( array $definition ) {
+		parent::__construct( $definition );
+		if ( isset( $definition['date_range_to_dates'] ) ) {
+			$this->date_range_to_dates = $definition['date_range_to_dates'];
+		}
+		if ( isset( $definition['parse_string_list'] ) ) {
+			$this->parse_string_list = $definition['parse_string_list'];
+		}
+		if ( isset( $definition['is_shared_data_request'] ) ) {
+			$this->is_shared_data_request = $definition['is_shared_data_request'];
+		}
+		if ( isset( $definition['validate_shared_report_metrics'] ) ) {
+			$this->validate_shared_report_metrics = $definition['validate_shared_report_metrics'];
+		}
+		if ( isset( $definition['validate_shared_report_dimensions'] ) ) {
+			$this->validate_shared_report_dimensions = $definition['validate_shared_report_dimensions'];
+		}
+		if ( isset( $definition['parse_earnings_orderby'] ) ) {
+			$this->parse_earnings_orderby = $definition['parse_earnings_orderby'];
+		}
+		if ( isset( $definition['create_adsense_earning_data_request'] ) ) {
+			$this->create_adsense_earning_data_request = $definition['create_adsense_earning_data_request'];
+		}
+	}
+
+	/**
 	 * Creates a request object.
 	 *
 	 * @since 1.190.0
@@ -41,7 +129,7 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 		$end_date   = $data_request->data['endDate'] ?? '';
 
 		if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
-			$dates = $this->get_module()->date_range_to_dates( 'last-28-days' );
+			$dates = call_user_func( $this->date_range_to_dates, 'last-28-days' );
 			if ( is_wp_error( $dates ) ) {
 				return $dates;
 			}
@@ -54,11 +142,11 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 			'end_date'   => $end_date,
 		);
 
-		$metrics = $this->get_module()->parse_string_list( $data_request->data['metrics'] ?? '' );
+		$metrics = call_user_func( $this->parse_string_list, $data_request->data['metrics'] ?? '' );
 		if ( ! empty( $metrics ) ) {
-			if ( $this->get_module()->is_shared_data_request( $data_request ) ) {
+			if ( call_user_func( $this->is_shared_data_request, $data_request ) ) {
 				try {
-					$this->get_module()->validate_shared_report_metrics( $metrics );
+					call_user_func( $this->validate_shared_report_metrics, $metrics );
 				} catch ( Invalid_Report_Metrics_Exception $exception ) {
 					return new WP_Error(
 						'invalid_adsense_report_metrics',
@@ -70,11 +158,11 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 			$args['metrics'] = $metrics;
 		}
 
-		$dimensions = $this->get_module()->parse_string_list( $data_request->data['dimensions'] ?? '' );
+		$dimensions = call_user_func( $this->parse_string_list, $data_request->data['dimensions'] ?? '' );
 		if ( ! empty( $dimensions ) ) {
-			if ( $this->get_module()->is_shared_data_request( $data_request ) ) {
+			if ( call_user_func( $this->is_shared_data_request, $data_request ) ) {
 				try {
-					$this->get_module()->validate_shared_report_dimensions( $dimensions );
+					call_user_func( $this->validate_shared_report_dimensions, $dimensions );
 				} catch ( Invalid_Report_Dimensions_Exception $exception ) {
 					return new WP_Error(
 						'invalid_adsense_report_dimensions',
@@ -86,7 +174,7 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 			$args['dimensions'] = $dimensions;
 		}
 
-		$orderby = $this->get_module()->parse_earnings_orderby( $data_request->data['orderby'] ?? '' );
+		$orderby = call_user_func( $this->parse_earnings_orderby, $data_request->data['orderby'] ?? '' );
 		if ( ! empty( $orderby ) ) {
 			$args['sort'] = $orderby;
 		}
@@ -95,7 +183,7 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 			$args['limit'] = $data_request->data['limit'];
 		}
 
-		return $this->get_module()->create_adsense_earning_data_request( array_filter( $args ) );
+		return call_user_func( $this->create_adsense_earning_data_request, array_filter( $args ) );
 	}
 
 	/**

@@ -13,6 +13,7 @@
 namespace Google\Site_Kit\Modules\AdSense\Datapoints;
 
 use Google\Site_Kit\Modules\AdSense\Datapoints\AdSense_Datapoint;
+use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Tag;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\AdSense;
@@ -37,6 +38,14 @@ class Sync_Ad_Blocking_Recovery_Tags extends AdSense_Datapoint implements Execut
 	private $ad_blocking_recovery_tag;
 
 	/**
+	 * Callable to normalize account ID.
+	 *
+	 * @since 1.190.0
+	 * @var callable
+	 */
+	private $normalize_account_id;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.190.0
@@ -47,6 +56,9 @@ class Sync_Ad_Blocking_Recovery_Tags extends AdSense_Datapoint implements Execut
 		parent::__construct( $definition );
 		if ( isset( $definition['ad_blocking_recovery_tag'] ) ) {
 			$this->ad_blocking_recovery_tag = $definition['ad_blocking_recovery_tag'];
+		}
+		if ( isset( $definition['normalize_account_id'] ) ) {
+			$this->normalize_account_id = $definition['normalize_account_id'];
 		}
 	}
 
@@ -65,7 +77,7 @@ class Sync_Ad_Blocking_Recovery_Tags extends AdSense_Datapoint implements Execut
 		}
 
 		$service = $this->get_service();
-		return $service->accounts->getAdBlockingRecoveryTag( AdSense::normalize_account_id( $settings['accountID'] ) );
+		return $service->accounts->getAdBlockingRecoveryTag( call_user_func( $this->normalize_account_id, $settings['accountID'] ) );
 	}
 
 	/**
