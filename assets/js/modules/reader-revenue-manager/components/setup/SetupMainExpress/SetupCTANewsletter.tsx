@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { ComponentType, FC } from 'react';
+import type { FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -29,86 +29,50 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import {
-	BREAKPOINT_SMALL,
-	BREAKPOINT_TABLET,
-	useBreakpoint,
-} from '@/js/hooks/useBreakpoint';
 import useQueryArg from '@/js/hooks/useQueryArg';
-import { Cell, Grid, Row } from '@/js/material-components';
 import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import PoweredBy from './PoweredBy';
-import StepPublicationPolicies from './StepPublicationPolicies';
-import StepPublicationSetup from './StepPublicationSetup';
-import Steps from './Steps';
-import StepSetupComplete from './StepSetupComplete';
-import StepTermsOfService from './StepTermsOfService';
+import {
+	StepPublicationPolicies,
+	StepPublicationSetup,
+	StepSetupComplete,
+	StepTermsOfService,
+} from './common-steps';
+import ExpressSetupLayout from './ExpressSetupLayout';
+import ExpressSetupSteps from './ExpressSetupSteps';
 
 const SetupCTANewsletter: FC = () => {
 	const [ step ] = useQueryArg( 'step' );
-	const breakpoint = useBreakpoint();
-	const isMobileOrTablet = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
-		breakpoint
-	);
 
-	const stepComponents: Record< string, ComponentType > = {
-		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: StepPublicationSetup,
-		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: StepTermsOfService,
-		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: StepPublicationPolicies,
-		[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: StepSetupComplete,
+	const stepContent: Record< string, ReactNode > = {
+		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: <StepPublicationSetup />,
+		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: <StepTermsOfService />,
+		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: (
+			<StepPublicationPolicies />
+		),
+		[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: (
+			<p>
+				{ __(
+					'RRM express setup placeholder: newsletter CTA setup step.',
+					'google-site-kit'
+				) }
+			</p>
+		),
+		[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: <StepSetupComplete />,
 	};
 
-	const StepComponent = stepComponents[ step ];
-
 	return (
-		<Grid className="googlesitekit-rrm-express-setup" collapsed>
-			<Row className="googlesitekit-rrm-express-setup__layout">
-				<Cell
-					className="googlesitekit-rrm-express-setup__sidebar"
-					smSize={ 4 }
-					mdSize={ 8 }
-					lgSize={ 3 }
-				>
-					<div className="googlesitekit-rrm-express-setup__sidebar-inner">
-						<Steps
-							setupCTAStepTitle={ __(
-								'Set up a sign-up form',
-								'google-site-kit'
-							) }
-						/>
-						{ ! isMobileOrTablet && <PoweredBy /> }
-					</div>
-				</Cell>
-				<Cell
-					className="googlesitekit-rrm-express-setup__content"
-					smSize={ 4 }
-					mdSize={ 8 }
-					lgSize={ 9 }
-				>
-					<Grid>
-						<Row>
-							<Cell size={ 12 }>
-								<StepComponent />
-							</Cell>
-						</Row>
-					</Grid>
-				</Cell>
-				{ isMobileOrTablet && (
-					<Cell
-						size={ 12 }
-						className="googlesitekit-rrm-express-setup__footer"
-					>
-						<Grid>
-							<Row>
-								<Cell size={ 12 }>
-									<PoweredBy />
-								</Cell>
-							</Row>
-						</Grid>
-					</Cell>
-				) }
-			</Row>
-		</Grid>
+		<ExpressSetupLayout
+			sidebar={
+				<ExpressSetupSteps
+					setupCTAStepTitle={ __(
+						'Set up a sign-up form',
+						'google-site-kit'
+					) }
+				/>
+			}
+		>
+			{ stepContent[ step ] }
+		</ExpressSetupLayout>
 	);
 };
 

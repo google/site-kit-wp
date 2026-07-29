@@ -23,6 +23,8 @@ import { mockLocation } from '@tests/js/mock-browser-utils';
 import { render } from '@tests/js/test-utils';
 import SetupMainExpress from './index';
 
+jest.mock( './PoweredBy', () => () => null );
+
 describe( 'SetupMainExpress', () => {
 	mockLocation();
 

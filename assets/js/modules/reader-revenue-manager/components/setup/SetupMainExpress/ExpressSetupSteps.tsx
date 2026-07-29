@@ -34,11 +34,13 @@ import Step from '@/js/components/Stepper/Step';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
-interface StepsProps {
+interface ExpressSetupStepsProps {
 	setupCTAStepTitle?: string;
 }
 
-const Steps: FC< StepsProps > = ( { setupCTAStepTitle } ) => {
+const ExpressSetupSteps: FC< ExpressSetupStepsProps > = ( {
+	setupCTAStepTitle,
+} ) => {
 	const [ step ] = useQueryArg( 'step' );
 
 	const steps = {
@@ -74,4 +76,4 @@ const Steps: FC< StepsProps > = ( { setupCTAStepTitle } ) => {
 	);
 };
 
-export default Steps;
+export default ExpressSetupSteps;

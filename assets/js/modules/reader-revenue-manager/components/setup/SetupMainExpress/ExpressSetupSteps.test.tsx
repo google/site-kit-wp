@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager express setup Steps component tests.
+ * Reader Revenue Manager ExpressSetupSteps component tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -22,15 +22,17 @@
 import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import { render } from '@tests/js/test-utils';
-import Steps from './Steps';
+import ExpressSetupSteps from './ExpressSetupSteps';
 
-describe( 'Steps', () => {
+describe( 'ExpressSetupSteps', () => {
 	mockLocation();
 
 	it( 'renders the default steps without the setup CTA step', () => {
 		global.location.href = 'http://example.com/';
 
-		const { getByText, queryByText, container } = render( <Steps /> );
+		const { getByText, queryByText, container } = render(
+			<ExpressSetupSteps />
+		);
 
 		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
 		expect( getByText( 'Accept terms of service' ) ).toBeInTheDocument();
@@ -48,7 +50,7 @@ describe( 'Steps', () => {
 		global.location.href = 'http://example.com/';
 
 		const { getByText, container } = render(
-			<Steps setupCTAStepTitle="Set up a sign-up form" />
+			<ExpressSetupSteps setupCTAStepTitle="Set up a sign-up form" />
 		);
 
 		expect( getByText( 'Set up a sign-up form' ) ).toBeInTheDocument();
@@ -60,7 +62,7 @@ describe( 'Steps', () => {
 	it( 'marks the step matching the step query arg as active', () => {
 		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE }`;
 
-		const { container } = render( <Steps /> );
+		const { container } = render( <ExpressSetupSteps /> );
 
 		const steps = container.querySelectorAll(
 			'.googlesitekit-stepper__step'
@@ -81,7 +83,7 @@ describe( 'Steps', () => {
 		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.SETUP_CTA }`;
 
 		const { container } = render(
-			<Steps setupCTAStepTitle="Set up a sign-up form" />
+			<ExpressSetupSteps setupCTAStepTitle="Set up a sign-up form" />
 		);
 
 		const steps = container.querySelectorAll(
