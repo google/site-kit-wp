@@ -67,10 +67,15 @@ class Migration_N_E_X_T {
 	/**
 	 * Registers hooks.
 	 *
+	 * The migration runs at priority 0, so it runs before
+	 * `Authentication::check_connected_proxy_url()` at priority 10. That check
+	 * reads a plain text value as a URL change, so it needs the stored value
+	 * already encoded.
+	 *
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		add_action( 'admin_init', array( $this, 'migrate' ) );
+		add_action( 'admin_init', array( $this, 'migrate' ), 0 );
 	}
 
 	/**
@@ -91,16 +96,21 @@ class Migration_N_E_X_T {
 	/**
 	 * Migrates a plain text connected proxy URL to the encoded format.
 	 *
-	 * Earlier plugin versions stored the URL in plain text. A stored value that
-	 * still starts with its scheme goes back through Connected_Proxy_URL::set(),
-	 * which stores it encoded.
+	 * Earlier plugin versions stored the URL in plain text, which could cause
+	 * issues when users/other plugins would search + replace the site URL.
+	 * If the user's site URL hasn't been encoded, we encode it as part of
+	 * this migration.
 	 *
 	 * @since n.e.x.t
 	 */
 	protected function migrate_connected_proxy_url() {
 		$stored_url = $this->options->get( Connected_Proxy_URL::OPTION );
 
-		if ( ! is_string( $stored_url ) || 0 !== strpos( $stored_url, 'http' ) ) {
+		// A plain text URL holds a scheme, so the migration encodes it. An
+		// encoded value holds none, because the base64 alphabet holds no colon.
+		// Anything else never came from this plugin, and encoding it would
+		// present it to every reader as the URL the site connected with.
+		if ( ! is_string( $stored_url ) || ! URL::parse( $stored_url, PHP_URL_SCHEME ) ) {
 			return;
 		}
 

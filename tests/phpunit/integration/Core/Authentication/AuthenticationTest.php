@@ -27,6 +27,7 @@ use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Migration_N_E_X_T;
 use Google\Site_Kit\Modules\PageSpeed_Insights\Settings as PageSpeed_Insights_Settings;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
@@ -692,10 +693,26 @@ class AuthenticationTest extends TestCase {
 		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
 		remove_filter( 'home_url', $home_url_hook );
 
-		$this->assertEquals( base64_encode( 'https://example.com/subsite/' ), $options->get( Connected_Proxy_URL::OPTION ), 'The `set()` method should store the connected proxy URL base64-encoded from the filtered home_url.' ); // PHPCS: line 692.
+		$this->assertEquals( base64_encode( 'https://example.com/subsite/' ), $options->get( Connected_Proxy_URL::OPTION ), 'Authentication should store the connected proxy URL as a base64-encoded string built from the filtered home URL.' );
 	}
 
-	public function test_check_connected_proxy_url() {
+	/**
+	 * Sets up a proxy connected site with an administrator who can run setup.
+	 *
+	 * Every test of the connected proxy URL check runs over this same
+	 * arrangement, and so does the reconnect notice test. Each test writes the
+	 * stored URL it needs, moves the home URL when its case calls for that, and
+	 * then fires admin_init.
+	 *
+	 * The helper registers Authentication before the connected proxy URL
+	 * migration, the order Plugin.php uses. The migration runs on admin_init at
+	 * priority 0 and the check runs at priority 10, so the migration always
+	 * encodes a stored URL before the check reads it.
+	 *
+	 * @return array Site arrangement, keyed `context`, `options`, `user_options`
+	 *               and `authentication`.
+	 */
+	private function set_up_proxy_connected_site() {
 		remove_all_actions( 'admin_init' );
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
@@ -708,48 +725,11 @@ class AuthenticationTest extends TestCase {
 		$authentication = new Authentication( $context, $options, $user_options );
 		$authentication->register();
 
-		// Set connected proxy URL to something else to emulate URL mismatch.
-		$options->set( Connected_Proxy_URL::OPTION, '/' );
+		( new Migration_N_E_X_T( $context, $options ) )->register();
 
-		// Emulate credentials.
-		$this->fake_proxy_site_connection();
-
-		// Emulate OAuth acccess token.
-		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
-
-		// Ensure admin user has Permissions::SETUP cap regardless of authentication.
-		add_filter(
-			'user_has_cap',
-			function ( $caps ) {
-				$caps[ Permissions::SETUP ] = true;
-				return $caps;
-			}
-		);
-
-		do_action( 'admin_init' );
-
-		$this->assertEquals(
-			Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH,
-			$user_options->get( Disconnected_Reason::OPTION ),
-			'User option should be set to URL mismatch reason after admin_init.' // PHPCS: line 728.
-		);
-	}
-
-	public function test_check_connected_proxy_url__after_the_home_url_changes() {
-		remove_all_actions( 'admin_init' );
-
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options      = new Options( $context );
-		$user_options = new User_Options( $context );
-
-		$authentication = new Authentication( $context, $options, $user_options );
-		$authentication->register();
-
-		// Connect the site with the home URL it runs on.
-		$authentication->get_connected_proxy_url_instance()->set( $context->get_canonical_home_url() );
+		// Drop the database version, so the migration runs the way it does on a
+		// site that upgrades to this version.
+		$options->delete( Migration_N_E_X_T::DB_VERSION_OPTION );
 
 		// Emulate credentials.
 		$this->fake_proxy_site_connection();
@@ -767,17 +747,117 @@ class AuthenticationTest extends TestCase {
 			}
 		);
 
-		// Move the site to another domain, as a search and replace over the
+		return compact( 'context', 'options', 'user_options', 'authentication' );
+	}
+
+	public function test_check_connected_proxy_url__disconnects_a_site_whose_encoded_url_is_another_domain() {
+		$site         = $this->set_up_proxy_connected_site();
+		$options      = $site['options'];
+		$user_options = $site['user_options'];
+
+		// Set connected proxy URL to another site to emulate URL mismatch.
+		$options->set( Connected_Proxy_URL::OPTION, base64_encode( 'https://other.example.com/' ) );
+
+		do_action( 'admin_init' );
+
+		$this->assertEquals(
+			'connected_url_mismatch',
+			$user_options->get( Disconnected_Reason::OPTION ),
+			'Site Kit should record the connected URL mismatch as the disconnected reason when the stored encoded URL is for another domain.'
+		);
+	}
+
+	public function test_check_connected_proxy_url__disconnects_the_site_after_the_home_url_changes() {
+		$site           = $this->set_up_proxy_connected_site();
+		$context        = $site['context'];
+		$user_options   = $site['user_options'];
+		$authentication = $site['authentication'];
+
+		// Connect the site with the home URL it runs on.
+		$authentication->get_connected_proxy_url_instance()->set( $context->get_canonical_home_url() );
+
+		// Move the site to another domain, the way a search and replace over the
 		// database does.
 		update_option( 'home', 'https://new-domain.example.com' );
 
 		do_action( 'admin_init' );
 
 		$this->assertEquals(
-			Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH,
+			'connected_url_mismatch',
 			$user_options->get( Disconnected_Reason::OPTION ),
-			'Site Kit should flag the URL change once the home URL moves to another domain.'
+			'Site Kit should record the connected URL mismatch as the disconnected reason once the home URL moves to another domain.'
 		);
+	}
+
+	public function test_check_connected_proxy_url__disconnects_a_site_whose_plain_text_url_is_another_domain() {
+		$site         = $this->set_up_proxy_connected_site();
+		$options      = $site['options'];
+		$user_options = $site['user_options'];
+
+		// Store the URL the site connected with in plain text, the way plugin
+		// versions before the migration saved it.
+		$options->set( Connected_Proxy_URL::OPTION, 'https://old-domain.example.com/' );
+
+		do_action( 'admin_init' );
+
+		$this->assertEquals(
+			'connected_url_mismatch',
+			$user_options->get( Disconnected_Reason::OPTION ),
+			'Site Kit should still report the connected URL mismatch on a site that stored the URL in plain text before the upgrade.'
+		);
+		$this->assertEquals(
+			base64_encode( 'https://old-domain.example.com/' ),
+			$options->get( Connected_Proxy_URL::OPTION ),
+			'The migration should store the plain text URL base64-encoded before `Authentication::check_connected_proxy_url()` reads it.'
+		);
+	}
+
+	public function test_check_connected_proxy_url__keeps_a_site_connected_whose_plain_text_url_is_the_home_url() {
+		$site         = $this->set_up_proxy_connected_site();
+		$context      = $site['context'];
+		$options      = $site['options'];
+		$user_options = $site['user_options'];
+
+		// Store the URL the site runs on in plain text, the way plugin versions
+		// before the migration saved it.
+		$options->set( Connected_Proxy_URL::OPTION, $context->get_canonical_home_url() );
+
+		do_action( 'admin_init' );
+
+		$this->assertFalse(
+			$user_options->get( Disconnected_Reason::OPTION ),
+			'Site Kit should leave the site connected when the URL it stored in plain text is the URL the site runs on.'
+		);
+	}
+
+	public function test_get_reconnect_after_url_mismatch_notice__omits_the_url_pair_when_the_stored_url_fails_to_decode() {
+		remove_all_filters( 'googlesitekit_admin_notices' );
+
+		$site    = $this->set_up_proxy_connected_site();
+		$options = $site['options'];
+
+		// Store a value that holds no scheme, so the migration leaves it alone
+		// and the notice finds no old URL to print.
+		$options->set( Connected_Proxy_URL::OPTION, 'not*a*valid*value' );
+
+		do_action( 'admin_init' );
+
+		$output = '';
+
+		foreach ( apply_filters( 'googlesitekit_admin_notices', array() ) as $notice ) {
+			if ( ! $notice instanceof Notice
+				|| 'reconnect_after_url_mismatch' !== $notice->get_slug()
+				|| ! $notice->is_active( '' ) ) {
+				continue;
+			}
+
+			ob_start();
+			$notice->render();
+			$output = ob_get_clean();
+		}
+
+		$this->assertStringContainsString( 'Looks like the URL of your site has changed', $output, 'The notice should still ask the user to reconnect.' );
+		$this->assertStringNotContainsString( 'Old URL:', $output, 'The notice should leave the URL pair out when the stored value fails to decode, rather than print an empty old URL.' );
 	}
 
 	/**

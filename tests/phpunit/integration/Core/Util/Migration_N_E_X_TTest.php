@@ -11,19 +11,12 @@
 namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Connected_Proxy_URL;
-use Google\Site_Kit\Core\Authentication\Disconnected_Reason;
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Migration_N_E_X_T;
-use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
 
 class Migration_N_E_X_TTest extends TestCase {
-
-	use Fake_Site_Connection_Trait;
 
 	protected Context $context;
 	protected Options $options;
@@ -36,10 +29,9 @@ class Migration_N_E_X_TTest extends TestCase {
 		$this->options             = new Options( $this->context );
 		$this->connected_proxy_url = new Connected_Proxy_URL( $this->options );
 
-		// Drop the option, so each test starts from the value it stores itself.
+		// Drop both options, so each test starts from the values it stores itself.
 		$this->options->delete( Connected_Proxy_URL::OPTION );
-
-		$this->delete_db_version();
+		$this->options->delete( Migration_N_E_X_T::DB_VERSION_OPTION );
 	}
 
 	public function get_new_migration_instance() {
@@ -55,9 +47,10 @@ class Migration_N_E_X_TTest extends TestCase {
 
 		$migration->register();
 
-		$this->assertNotFalse(
+		$this->assertSame(
+			0,
 			has_action( 'admin_init', array( $migration, 'migrate' ) ),
-			'Migration should register migrate on admin_init.'
+			'The migration should add `migrate()` to the `admin_init` action at priority 0, ahead of `Authentication::check_connected_proxy_url()` at priority 10.'
 		);
 	}
 
@@ -81,69 +74,37 @@ class Migration_N_E_X_TTest extends TestCase {
 		);
 	}
 
-	public function test_migrate__keeps_an_already_encoded_url() {
+	public function test_migrate__keeps_an_already_base64_encoded_url() {
 		$migration = $this->get_new_migration_instance();
 
 		$this->connected_proxy_url->set( 'https://example.com' );
-		$stored_connected_url = $this->options->get( Connected_Proxy_URL::OPTION );
 
 		$migration->migrate();
 
 		$this->assertSame(
-			$stored_connected_url,
+			base64_encode( 'https://example.com/' ),
 			$this->options->get( Connected_Proxy_URL::OPTION ),
 			'Migration should keep an already encoded value unchanged.'
 		);
 	}
 
-	public function test_migrate__runs_before_the_connected_proxy_url_check() {
-		remove_all_actions( 'admin_init' );
+	public function test_migrate__keeps_a_stored_value_that_holds_no_scheme() {
+		$migration = $this->get_new_migration_instance();
 
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
+		// Store a value that holds no scheme, so the migration finds no URL to
+		// encode.
+		$this->options->set( Connected_Proxy_URL::OPTION, 'not*a*valid*value' );
 
-		$user_options = new User_Options( $this->context );
+		$migration->migrate();
 
-		// Register in the order the plugin does. The connected proxy URL check
-		// runs at a later priority, so the migration encodes the stored value
-		// before the check reads it.
-		$authentication = new Authentication( $this->context, $this->options, $user_options );
-		$authentication->register();
-		$this->get_new_migration_instance()->register();
-
-		// Store the home URL in plain text, the way earlier plugin versions saved it.
-		$this->options->set( Connected_Proxy_URL::OPTION, $this->context->get_canonical_home_url() );
-
-		// Emulate credentials.
-		$this->fake_proxy_site_connection();
-
-		// Emulate OAuth access token.
-		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
-
-		// Grant the administrator the Permissions::SETUP capability regardless
-		// of authentication.
-		add_filter(
-			'user_has_cap',
-			function ( $caps ) {
-				$caps[ Permissions::SETUP ] = true;
-				return $caps;
-			}
-		);
-
-		do_action( 'admin_init' );
-
-		$this->assertEquals(
-			base64_encode( trailingslashit( $this->context->get_canonical_home_url() ) ),
+		$this->assertSame(
+			'not*a*valid*value',
 			$this->options->get( Connected_Proxy_URL::OPTION ),
-			'Migration should encode the plain text URL on admin_init.'
-		);
-		$this->assertFalse(
-			$user_options->get( Disconnected_Reason::OPTION ),
-			'Site Kit should stay connected when the migration encodes the URL the site still runs on.'
+			'Migration should keep a stored value that holds no scheme unchanged, rather than encode it as a connected proxy URL.'
 		);
 	}
 
-	public function test_migrate__skips_when_the_option_is_missing() {
+	public function test_migrate__skips_when_no_connected_proxy_url_is_stored() {
 		$migration = $this->get_new_migration_instance();
 
 		$migration->migrate();
@@ -156,7 +117,11 @@ class Migration_N_E_X_TTest extends TestCase {
 
 		$migration->migrate();
 
-		$this->assertEquals( 'n.e.x.t', $this->get_db_version(), "Database version should update to the migration's target version after the migration runs." );
+		$this->assertEquals(
+			'n.e.x.t',
+			$this->options->get( Migration_N_E_X_T::DB_VERSION_OPTION ),
+			"Database version should update to the migration's target version after the migration runs."
+		);
 	}
 
 	public function test_migrate__skips_when_the_db_version_is_current() {
@@ -174,13 +139,5 @@ class Migration_N_E_X_TTest extends TestCase {
 			$this->options->get( Connected_Proxy_URL::OPTION ),
 			'Migration should leave the stored value alone when the database version already matches its target.'
 		);
-	}
-
-	protected function get_db_version() {
-		return $this->options->get( Migration_N_E_X_T::DB_VERSION_OPTION );
-	}
-
-	protected function delete_db_version() {
-		$this->options->delete( Migration_N_E_X_T::DB_VERSION_OPTION );
 	}
 }

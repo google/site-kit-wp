@@ -284,9 +284,7 @@ final class Authentication implements Provides_Feature_Metrics {
 		add_filter( 'googlesitekit_setup_data', $this->get_method_proxy( 'inline_js_setup_data' ) );
 
 		add_action( 'admin_init', $this->get_method_proxy( 'handle_oauth' ) );
-		// Run after the connected proxy URL migration (default priority) so it
-		// encodes the stored value before this check compares it to the site URL.
-		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ), 20 );
+		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ) );
 
 		add_action( 'admin_action_' . self::ACTION_CONNECT, $this->get_method_proxy( 'handle_connect' ) );
 		add_action( 'admin_action_' . self::ACTION_DISCONNECT, $this->get_method_proxy( 'handle_disconnect' ) );
@@ -1081,7 +1079,9 @@ final class Authentication implements Provides_Feature_Metrics {
 
 					// Only show the comparison if URLs don't match as it is possible
 					// they could already match again at this point, although they most likely won't.
-					if ( ! $this->connected_proxy_url->matches_url( $current_url ) ) {
+					// A stored value the plugin can't decode reads as no URL, so
+					// skip the pair rather than print an empty old URL.
+					if ( $connected_url && ! $this->connected_proxy_url->matches_url( $current_url ) ) {
 						$content .= sprintf(
 							'<ul><li>%s</li><li>%s</li></ul>',
 							sprintf(

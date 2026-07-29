@@ -54,15 +54,16 @@ class Connected_Proxy_URLTest extends SettingsTestCase {
 
 		$connected_proxy_url->set( 'https://old-site.example.com' );
 
-		// Simulate a database search and replace of the site domain.
+		// Search and replace the site domain in a copy of the stored value, the
+		// way a database-wide search and replace would.
 		$stored_url    = $this->options->get( Connected_Proxy_URL::OPTION );
 		$rewritten_url = str_replace( 'old-site.example.com', 'new-site.example.com', $stored_url );
 
 		$this->assertSame( $stored_url, $rewritten_url, 'A search and replace should find no domain to rewrite inside the stored value.' );
-		$this->assertTrue( $connected_proxy_url->matches_url( 'https://old-site.example.com' ), 'The stored URL should still match the connected URL after a search and replace.' );
+		$this->assertTrue( $connected_proxy_url->matches_url( 'https://old-site.example.com' ), 'The connected proxy URL should still match the URL the site connected with, because the stored value holds no domain for a search and replace to rewrite.' );
 	}
 
-	public function test_set__stores_an_encoded_url() {
+	public function test_set__stores_a_base64_encoded_url() {
 		$connected_proxy_url = new Connected_Proxy_URL( $this->options );
 		$connected_proxy_url->register();
 
@@ -98,6 +99,15 @@ class Connected_Proxy_URLTest extends SettingsTestCase {
 		$this->options->set( Connected_Proxy_URL::OPTION, 'not*a*valid*value' );
 
 		$this->assertFalse( $connected_proxy_url->get(), 'The `get()` method should return FALSE for a stored value that fails to decode.' );
+	}
+
+	public function test_get__returns_false_for_a_stored_value_that_is_not_a_string() {
+		$connected_proxy_url = new Connected_Proxy_URL( $this->options );
+		$connected_proxy_url->register();
+
+		$this->options->set( Connected_Proxy_URL::OPTION, array( 'https://example.com/' ) );
+
+		$this->assertFalse( $connected_proxy_url->get(), 'The `get()` method should return FALSE for a stored value that is not a string.' );
 	}
 
 	/**

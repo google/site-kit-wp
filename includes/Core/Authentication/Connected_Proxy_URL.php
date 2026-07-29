@@ -40,11 +40,12 @@ class Connected_Proxy_URL extends Setting {
 	}
 
 	/**
-	 * Gets the connected proxy URL, decoded from the form the option holds.
+	 * Gets the connected proxy URL, base64-decoded from the value the option stores.
 	 *
-	 * A stored value that fails to decode reads as no value at all, so a
-	 * corrupted option sends the site back through the connection flow rather
-	 * than through a comparison against an unreadable URL.
+	 * A stored value that fails to decode reads as no value at all, so
+	 * `matches_url()` reports no match and the site goes back through the
+	 * connection flow rather than through a comparison against an unreadable
+	 * URL.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -54,11 +55,15 @@ class Connected_Proxy_URL extends Setting {
 	public function get() {
 		$stored_url = parent::get();
 
-		return is_string( $stored_url ) ? base64_decode( $stored_url, true ) : $stored_url;
+		if ( ! is_string( $stored_url ) ) {
+			return false;
+		}
+
+		return base64_decode( $stored_url, true );
 	}
 
 	/**
-	 * Sets the connected proxy URL.
+	 * Sets the connected proxy URL, base64-encoded and with a trailing slash.
 	 *
 	 * We encode the URL to prevent database-wide search-and-replace tasks
 	 * from changing the URL used to connect to the Site Kit Proxy service.
