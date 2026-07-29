@@ -40,8 +40,11 @@ import ChevronLeftIcon from '@/svg/icons/chevron-left-outlined.svg';
 import ChevronRightIcon from '@/svg/icons/chevron-right-outlined.svg';
 
 /**
- * Tolerance in pixels when reading scroll metrics, to ignore subpixel
- * rounding at either end of the bar.
+ * Pixels of hidden content a direction needs before its arrow turns active.
+ *
+ * Anything at or under this counts as the end of the bar. The subpixel
+ * rounding a browser reports then never leaves an active arrow that scrolls
+ * nowhere.
  */
 const SCROLL_EDGE_THRESHOLD = 1;
 
@@ -105,10 +108,14 @@ const ScrollableTabs: FC< ScrollableTabsProps > = ( {
 		scrollNodeRef.current = scrollNode;
 		updateScrollState();
 
+		// Scroll fires far more often than the arrows can change, so each event
+		// replaces the frame the one before it asked for. That leaves one read
+		// of the scroll metrics per frame, and it never reads a handle that
+		// requestAnimationFrame has yet to hand back.
 		let animationFrameID: number | null = null;
 		function onScroll() {
 			if ( animationFrameID !== null ) {
-				return;
+				window.cancelAnimationFrame( animationFrameID );
 			}
 
 			animationFrameID = window.requestAnimationFrame( () => {
@@ -142,8 +149,11 @@ const ScrollableTabs: FC< ScrollableTabsProps > = ( {
 
 	function scrollByPage( direction: number ) {
 		const scrollNode = scrollNodeRef.current;
+		const canScroll = direction < 0 ? canScrollLeft : canScrollRight;
 
-		if ( ! scrollNode ) {
+		// An arrow with nothing left to scroll still fires its click handler,
+		// since ARIA alone marks it inactive, so stop before scrolling nowhere.
+		if ( ! scrollNode || ! canScroll ) {
 			return;
 		}
 
@@ -161,22 +171,47 @@ const ScrollableTabs: FC< ScrollableTabsProps > = ( {
 				className
 			) }
 		>
-			{ isDesktop && canScrollLeft && (
+			{ /* Both arrows stay in the page at every desktop width, whether or
+			not the bar can scroll, so reaching either end never pulls the
+			focused arrow out from under the person driving it. ARIA marks the
+			spent direction, which the HTML `disabled` attribute can't do
+			without the browser dropping focus to the body. `tabIndex` takes
+			that arrow out of the tab order, and the `--inactive` modifier
+			hides the arrow. */ }
+			{ isDesktop && (
 				<button
 					type="button"
-					className="googlesitekit-scrollable-tabs__arrow googlesitekit-scrollable-tabs__arrow--left"
+					className={ classnames(
+						'googlesitekit-scrollable-tabs__arrow',
+						'googlesitekit-scrollable-tabs__arrow--left',
+						{
+							'googlesitekit-scrollable-tabs__arrow--inactive':
+								! canScrollLeft,
+						}
+					) }
+					aria-disabled={ ! canScrollLeft }
 					aria-label={ __( 'Scroll tabs left', 'google-site-kit' ) }
+					tabIndex={ canScrollLeft ? 0 : -1 }
 					onClick={ () => scrollByPage( -1 ) }
 				>
 					<ChevronLeftIcon width={ 20 } height={ 20 } />
 				</button>
 			) }
 			{ children }
-			{ isDesktop && canScrollRight && (
+			{ isDesktop && (
 				<button
 					type="button"
-					className="googlesitekit-scrollable-tabs__arrow googlesitekit-scrollable-tabs__arrow--right"
+					className={ classnames(
+						'googlesitekit-scrollable-tabs__arrow',
+						'googlesitekit-scrollable-tabs__arrow--right',
+						{
+							'googlesitekit-scrollable-tabs__arrow--inactive':
+								! canScrollRight,
+						}
+					) }
+					aria-disabled={ ! canScrollRight }
 					aria-label={ __( 'Scroll tabs right', 'google-site-kit' ) }
+					tabIndex={ canScrollRight ? 0 : -1 }
 					onClick={ () => scrollByPage( 1 ) }
 				>
 					<ChevronRightIcon width={ 20 } height={ 20 } />

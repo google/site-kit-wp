@@ -46,7 +46,7 @@ describe( 'ScrollableTabs', () => {
 	/**
 	 * Stands in for ResizeObserver, which JSDOM lacks. Captures the observer
 	 * callback and routes the instance methods to the shared mocks, so tests
-	 * can fire size changes and assert the wiring.
+	 * can fire size changes and check what the component observes.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -139,6 +139,41 @@ describe( 'ScrollableTabs', () => {
 		} );
 	}
 
+	/**
+	 * Asserts that an arrow offers a scroll, so it reads as active and sits in
+	 * the tab order.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Element} arrow The arrow button to check.
+	 * @return {void}
+	 */
+	function expectActive( arrow: Element ) {
+		expect( arrow ).toHaveAttribute( 'aria-disabled', 'false' );
+		expect( arrow ).not.toHaveClass(
+			'googlesitekit-scrollable-tabs__arrow--inactive'
+		);
+		expect( arrow ).toHaveAttribute( 'tabindex', '0' );
+	}
+
+	/**
+	 * Asserts that an arrow has nothing left to scroll, so it stays in the
+	 * page, reads as inactive, and leaves the tab order.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Element} arrow The arrow button to check.
+	 * @return {void}
+	 */
+	function expectInactive( arrow: Element ) {
+		expect( arrow ).toBeInTheDocument();
+		expect( arrow ).toHaveAttribute( 'aria-disabled', 'true' );
+		expect( arrow ).toHaveClass(
+			'googlesitekit-scrollable-tabs__arrow--inactive'
+		);
+		expect( arrow ).toHaveAttribute( 'tabindex', '-1' );
+	}
+
 	beforeEach( () => {
 		jest.clearAllMocks();
 
@@ -176,7 +211,7 @@ describe( 'ScrollableTabs', () => {
 		( breakpoint ) => {
 			( useBreakpoint as jest.Mock ).mockReturnValue( breakpoint );
 
-			const { container, getByRole, queryByRole } = renderTabs();
+			const { container, getByRole } = renderTabs();
 			const scrollArea = getScrollArea( container );
 
 			setScrollMetrics( scrollArea, {
@@ -186,12 +221,8 @@ describe( 'ScrollableTabs', () => {
 			} );
 			fireEvent.scroll( scrollArea );
 
-			expect(
-				getByRole( 'button', { name: RIGHT_ARROW_LABEL } )
-			).toBeInTheDocument();
-			expect(
-				queryByRole( 'button', { name: LEFT_ARROW_LABEL } )
-			).not.toBeInTheDocument();
+			expectActive( getByRole( 'button', { name: RIGHT_ARROW_LABEL } ) );
+			expectInactive( getByRole( 'button', { name: LEFT_ARROW_LABEL } ) );
 		}
 	);
 
@@ -206,16 +237,12 @@ describe( 'ScrollableTabs', () => {
 		} );
 		fireEvent.scroll( scrollArea );
 
-		expect(
-			getByRole( 'button', { name: LEFT_ARROW_LABEL } )
-		).toBeInTheDocument();
-		expect(
-			getByRole( 'button', { name: RIGHT_ARROW_LABEL } )
-		).toBeInTheDocument();
+		expectActive( getByRole( 'button', { name: LEFT_ARROW_LABEL } ) );
+		expectActive( getByRole( 'button', { name: RIGHT_ARROW_LABEL } ) );
 	} );
 
 	it( 'shows only the left arrow when the bar is scrolled to the end', () => {
-		const { container, getByRole, queryByRole } = renderTabs();
+		const { container, getByRole } = renderTabs();
 		const scrollArea = getScrollArea( container );
 
 		setScrollMetrics( scrollArea, {
@@ -225,16 +252,12 @@ describe( 'ScrollableTabs', () => {
 		} );
 		fireEvent.scroll( scrollArea );
 
-		expect(
-			getByRole( 'button', { name: LEFT_ARROW_LABEL } )
-		).toBeInTheDocument();
-		expect(
-			queryByRole( 'button', { name: RIGHT_ARROW_LABEL } )
-		).not.toBeInTheDocument();
+		expectActive( getByRole( 'button', { name: LEFT_ARROW_LABEL } ) );
+		expectInactive( getByRole( 'button', { name: RIGHT_ARROW_LABEL } ) );
 	} );
 
 	it( 'shows no arrows when all tabs fit', () => {
-		const { container, queryByRole } = renderTabs();
+		const { container, getByRole } = renderTabs();
 		const scrollArea = getScrollArea( container );
 
 		setScrollMetrics( scrollArea, {
@@ -244,12 +267,53 @@ describe( 'ScrollableTabs', () => {
 		} );
 		fireEvent.scroll( scrollArea );
 
-		expect(
-			queryByRole( 'button', { name: LEFT_ARROW_LABEL } )
-		).not.toBeInTheDocument();
-		expect(
-			queryByRole( 'button', { name: RIGHT_ARROW_LABEL } )
-		).not.toBeInTheDocument();
+		expectInactive( getByRole( 'button', { name: LEFT_ARROW_LABEL } ) );
+		expectInactive( getByRole( 'button', { name: RIGHT_ARROW_LABEL } ) );
+	} );
+
+	it( 'keeps focus on the arrow that runs out of scroll', () => {
+		const { container, getByRole } = renderTabs();
+		const scrollArea = getScrollArea( container );
+
+		setScrollMetrics( scrollArea, {
+			scrollLeft: 200,
+			clientWidth: 400,
+			scrollWidth: 800,
+		} );
+		fireEvent.scroll( scrollArea );
+
+		const rightArrow = getByRole( 'button', { name: RIGHT_ARROW_LABEL } );
+		rightArrow.focus();
+		expect( rightArrow.ownerDocument.activeElement ).toBe( rightArrow );
+
+		// Reaching the end of the bar leaves the arrow with nothing to scroll.
+		setScrollMetrics( scrollArea, {
+			scrollLeft: 400,
+			clientWidth: 400,
+			scrollWidth: 800,
+		} );
+		fireEvent.scroll( scrollArea );
+
+		expectInactive( rightArrow );
+		expect( rightArrow.ownerDocument.activeElement ).toBe( rightArrow );
+	} );
+
+	it( 'does not scroll the bar when an arrow with nothing to scroll is activated', () => {
+		const { container, getByRole } = renderTabs();
+		const scrollArea = getScrollArea( container );
+		const scrollByMock = jest.fn();
+		scrollArea.scrollBy = scrollByMock;
+
+		setScrollMetrics( scrollArea, {
+			scrollLeft: 0,
+			clientWidth: 400,
+			scrollWidth: 800,
+		} );
+		fireEvent.scroll( scrollArea );
+
+		fireEvent.click( getByRole( 'button', { name: LEFT_ARROW_LABEL } ) );
+
+		expect( scrollByMock ).not.toHaveBeenCalled();
 	} );
 
 	it( 'updates the arrows when the container or tab set changes size', () => {
@@ -271,9 +335,7 @@ describe( 'ScrollableTabs', () => {
 			resizeObserverCallback?.( [], {} as ResizeObserver );
 		} );
 
-		expect(
-			getByRole( 'button', { name: RIGHT_ARROW_LABEL } )
-		).toBeInTheDocument();
+		expectActive( getByRole( 'button', { name: RIGHT_ARROW_LABEL } ) );
 	} );
 
 	it( 'scrolls the bar forward when the right arrow is clicked', () => {
@@ -363,9 +425,7 @@ describe( 'ScrollableTabs', () => {
 		( useBreakpoint as jest.Mock ).mockReturnValue( BREAKPOINT_DESKTOP );
 		rerender( <ScrollableTabs>{ mockTabBar }</ScrollableTabs> );
 
-		expect(
-			getByRole( 'button', { name: RIGHT_ARROW_LABEL } )
-		).toBeInTheDocument();
+		expectActive( getByRole( 'button', { name: RIGHT_ARROW_LABEL } ) );
 	} );
 
 	it( 'stops listening for scroll and size changes on unmount', () => {
@@ -400,9 +460,7 @@ describe( 'ScrollableTabs', () => {
 		} );
 		fireEvent.scroll( wrapper );
 
-		expect(
-			getByRole( 'button', { name: RIGHT_ARROW_LABEL } )
-		).toBeInTheDocument();
+		expectActive( getByRole( 'button', { name: RIGHT_ARROW_LABEL } ) );
 	} );
 
 	it( 'shows arrows for a scroll target named by a custom selector', () => {
@@ -424,8 +482,6 @@ describe( 'ScrollableTabs', () => {
 		} );
 		fireEvent.scroll( scroller );
 
-		expect(
-			getByRole( 'button', { name: RIGHT_ARROW_LABEL } )
-		).toBeInTheDocument();
+		expectActive( getByRole( 'button', { name: RIGHT_ARROW_LABEL } ) );
 	} );
 } );
