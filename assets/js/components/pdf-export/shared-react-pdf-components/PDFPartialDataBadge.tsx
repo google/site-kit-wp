@@ -1,5 +1,5 @@
 /**
- * A badge that shows a metric's change, colored for a rise or a fall.
+ * The "Partial data" badge for the PDF report.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -22,36 +22,33 @@
 import { FC } from 'react';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
+import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFBadge from './PDFBadge';
 
-export interface PDFChangeBadgeProps {
-	/** The formatted, signed change string, e.g. "+5.1%". */
-	change: string;
-	/** Whether the change is negative. Controls the badge colors. */
-	isNegative?: boolean;
-}
+const styles = createPDFStyles( {
+	badge: {
+		paddingVertical: 6,
+		paddingHorizontal: 10,
+	},
+} );
 
-const PDFChangeBadge: FC< PDFChangeBadgeProps > = ( {
-	change,
-	isNegative = false,
-} ) => {
-	const backgroundColor = isNegative
-		? PDF_COLORS.UTILITY_ERROR_CONTAINER
-		: PDF_COLORS.GREEN_G_50;
-	const color = isNegative
-		? PDF_COLORS.UTILITY_ON_ERROR_CONTAINER
-		: PDF_COLORS.UTILITY_ON_SUCCESS_CONTAINER;
-
+const PDFPartialDataBadge: FC = () => {
 	return (
 		<PDFBadge
-			label={ change }
-			backgroundColor={ backgroundColor }
-			color={ color }
+			label={ __( 'Partial data', 'google-site-kit' ) }
+			backgroundColor={ PDF_COLORS.UTILITY_WARNING_CONTAINER }
+			color={ PDF_COLORS.YELLOW_Y_600 }
+			style={ styles.badge }
 		/>
 	);
 };
 
-export default PDFChangeBadge;
+export default PDFPartialDataBadge;

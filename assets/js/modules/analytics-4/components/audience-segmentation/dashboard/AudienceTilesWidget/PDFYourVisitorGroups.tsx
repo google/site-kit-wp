@@ -82,6 +82,12 @@ const PDFYourVisitorGroups: FC< PDFWidgetComponentProps > = ( { data } ) => {
 								metrics={ audience.metrics }
 								topCities={ audience.topCities }
 								topContent={ audience.topContent }
+								isAudiencePartialData={
+									audience.isAudiencePartialData
+								}
+								isTopContentPartialData={
+									audience.isTopContentPartialData
+								}
 							/>
 						</View>
 					</Fragment>
