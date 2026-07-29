@@ -161,6 +161,19 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 				).toEqual( [ cta ] );
 			} );
 
+			it( 'should return undefined without fetching when called with no params', async () => {
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getCTAs();
+
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
+			} );
+
 			it( 'should not fetch CTAs that are already loaded', async () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
