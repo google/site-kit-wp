@@ -58,10 +58,12 @@ const SetupCTANewsletterSignup: FC = () => {
 		<ExpressSetupLayout
 			sidebar={
 				<ExpressSetupSteps
-					setupCTAStepTitle={ __(
-						'Set up a sign-up form',
-						'google-site-kit'
-					) }
+					extraSteps={ {
+						[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: __(
+							'Set up a sign-up form',
+							'google-site-kit'
+						),
+					} }
 				/>
 			}
 		>
