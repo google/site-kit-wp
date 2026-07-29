@@ -19,12 +19,23 @@
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import PoweredByModule from '@/js/components/PoweredByModule';
+import Stepper from '@/js/components/Stepper';
+import Step from '@/js/components/Stepper/Step';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '@/js/hooks/useBreakpoint';
 import useQueryArg from '@/js/hooks/useQueryArg';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import StepPublicationPolicies from './StepPublicationPolicies';
 import StepPublicationSetup from './StepPublicationSetup';
@@ -33,6 +44,10 @@ import StepTermsOfService from './StepTermsOfService';
 
 export default function SetupCTANewsletter() {
 	const [ step ] = useQueryArg( 'step' );
+	const breakpoint = useBreakpoint();
+	const isMobileOrTablet = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
+		breakpoint
+	);
 
 	const stepComponents: Record< string, React.ComponentType > = {
 		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: StepPublicationSetup,
@@ -43,16 +58,81 @@ export default function SetupCTANewsletter() {
 
 	const StepComponent = stepComponents[ step ];
 
-	if ( StepComponent ) {
-		return <StepComponent />;
-	}
-
 	return (
-		<p>
-			{ __(
-				'RRM express setup placeholder: newsletter CTA setup step.',
-				'google-site-kit'
-			) }
-		</p>
+		<Grid className="googlesitekit-rrm-express-setup" collapsed>
+			<Row className="googlesitekit-rrm-express-setup__layout">
+				<Cell
+					className="googlesitekit-rrm-express-setup__sidebar"
+					smSize={ 4 }
+					mdSize={ 8 }
+					lgSize={ 3 }
+				>
+					<div className="googlesitekit-rrm-express-setup__sidebar-inner">
+						<Stepper activeStep={ 0 } variant="rail">
+							<Step title="Connect publication" />
+							<Step title="Accept terms of service" />
+							<Step title="Add publication policies" />
+							<Step title="Set up a sign-up form" />
+							<Step title="Setup complete" />
+						</Stepper>
+						{ ! isMobileOrTablet && (
+							<PoweredByModule
+								slug={ MODULE_SLUG_READER_REVENUE_MANAGER }
+								text={ createInterpolateElement(
+									__(
+										'Powered by <br /> Reader Revenue Manager',
+										'google-site-kit'
+									),
+									{
+										br: <br />,
+									}
+								) }
+							/>
+						) }
+					</div>
+				</Cell>
+				<Cell
+					className="googlesitekit-rrm-express-setup__content"
+					smSize={ 4 }
+					mdSize={ 8 }
+					lgSize={ 9 }
+				>
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>
+								<StepComponent />
+							</Cell>
+						</Row>
+					</Grid>
+				</Cell>
+				{ isMobileOrTablet && (
+					<Cell
+						size={ 12 }
+						className="googlesitekit-rrm-express-setup__footer"
+					>
+						<Grid>
+							<Row>
+								<Cell size={ 12 }>
+									<PoweredByModule
+										slug={
+											MODULE_SLUG_READER_REVENUE_MANAGER
+										}
+										text={ createInterpolateElement(
+											__(
+												'Powered by <br /> Reader Revenue Manager',
+												'google-site-kit'
+											),
+											{
+												br: <br />,
+											}
+										) }
+									/>
+								</Cell>
+							</Row>
+						</Grid>
+					</Cell>
+				) }
+			</Row>
+		</Grid>
 	);
 }
