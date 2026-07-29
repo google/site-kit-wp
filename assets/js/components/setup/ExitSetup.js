@@ -45,7 +45,7 @@ export default function ExitSetup( { gaTrackingEventArgs } ) {
 	async function handleClick() {
 		await trackEvent(
 			gaTrackingEventArgs.category,
-			gaTrackingEventArgs.event,
+			gaTrackingEventArgs.action,
 			gaTrackingEventArgs.label
 		);
 
