@@ -65,7 +65,6 @@ describe( 'ContainerNameTextField', () => {
 		const requiredMessage = getByText( 'A container name is required' );
 
 		expect( requiredMessage ).toBeInTheDocument();
-		expect( requiredMessage ).toHaveClass( 'screen-reader-text' );
 
 		expect( input ).toHaveAttribute( 'aria-invalid', 'true' );
 		expect( input ).toHaveAttribute(

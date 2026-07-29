@@ -60,7 +60,7 @@ describe( 'CreateAccountField', () => {
 		expect( queryByText( 'Account is required' ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'should show an accessible, visually-hidden "{label} is required" error when `hasError` is true', () => {
+	it( 'should show an accessible "{label} is required" error when `hasError` is true', () => {
 		const { container, getByRole, getByText } = render(
 			<CreateAccountField
 				label="Property"
@@ -82,7 +82,7 @@ describe( 'CreateAccountField', () => {
 
 		const requiredMessage = getByText( 'Property is required' );
 
-		expect( requiredMessage ).toHaveClass( 'screen-reader-text' );
+		expect( requiredMessage ).toBeInTheDocument();
 		expect( input ).toHaveAttribute(
 			'aria-errormessage',
 			requiredMessage.getAttribute( 'id' )

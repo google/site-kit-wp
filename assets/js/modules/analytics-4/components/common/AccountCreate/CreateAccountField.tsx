@@ -24,14 +24,12 @@ import { ChangeEvent, FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { TextField } from 'googlesitekit-components';
-import VisuallyHidden from '@/js/components/VisuallyHidden';
 
 interface CreateAccountFieldProps {
 	hasError: boolean;
@@ -53,42 +51,29 @@ const CreateAccountField: FC< CreateAccountFieldProps > = ( {
 		return null;
 	}
 
-	// This field has no visible helper text for the required-field error
-	// (just the red outline/icon a `hasError` field already gets), so
-	// `TextField` has no `errorMessage` of its own to point
-	// `aria-errormessage` at. `requiredErrorID` is the id of the
-	// visually-hidden text rendered below, passed in via
-	// `ariaErrorMessage`, so screen readers still get an explanation.
-	const requiredErrorID = `googlesitekit_analytics_account_create_${ name }-required-error`;
+	// `TextField` derives its error state and accessible wiring entirely
+	// from `errorMessage`, so no separate `hasError`/`ariaErrorMessage`
+	// scaffolding is needed here.
+	const errorMessage = hasError
+		? sprintf(
+				/* translators: %s: field label, e.g. "Account" */
+				__( '%s is required', 'google-site-kit' ),
+				label
+		  )
+		: undefined;
 
 	return (
-		<Fragment>
-			{ hasError && (
-				// `className` is passed explicitly (matching its own default)
-				// because TS infers it as required from `VisuallyHidden`'s
-				// plain-JS destructuring, which doesn't pick up its
-				// `defaultProps`.
-				<VisuallyHidden className="" id={ requiredErrorID }>
-					{ sprintf(
-						/* translators: %s: field label, e.g. "Account" */
-						__( '%s is required', 'google-site-kit' ),
-						label
-					) }
-				</VisuallyHidden>
-			) }
-			<TextField
-				label={ label }
-				name={ name }
-				onChange={ ( event: ChangeEvent< HTMLInputElement > ) => {
-					setValue( event.target.value, name );
-				} }
-				value={ value }
-				id={ `googlesitekit_analytics_account_create_${ name }` }
-				hasError={ hasError }
-				ariaErrorMessage={ hasError ? requiredErrorID : undefined }
-				outlined
-			/>
-		</Fragment>
+		<TextField
+			label={ label }
+			name={ name }
+			onChange={ ( event: ChangeEvent< HTMLInputElement > ) => {
+				setValue( event.target.value, name );
+			} }
+			value={ value }
+			id={ `googlesitekit_analytics_account_create_${ name }` }
+			errorMessage={ errorMessage }
+			outlined
+		/>
 	);
 };
 

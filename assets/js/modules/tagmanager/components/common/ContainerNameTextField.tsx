@@ -33,7 +33,6 @@ import { __ } from '@wordpress/i18n';
  */
 import { TextField } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
-import VisuallyHidden from '@/js/components/VisuallyHidden';
 import useFormValue from '@/js/hooks/useFormValue';
 import {
 	FORM_SETUP,
@@ -69,22 +68,21 @@ const ContainerNameTextField: FC< ContainerNameTextFieldProps > = ( {
 	);
 
 	const isUniqueName = isUniqueContainerName( containerName, containers );
-	const isEmpty = ! containerName;
 
-	const errorMessage =
-		containerName && ! isUniqueName
-			? __(
-					'A container with this name already exists',
-					'google-site-kit'
-			  )
-			: undefined;
+	// `TextField` derives its error state and accessible wiring entirely
+	// from `errorMessage`, so both error conditions are unified into one
+	// message here rather than needing a separate `hasError`/
+	// `ariaErrorMessage` path for the "required" case.
+	let errorMessage;
 
-	// The empty-name error is not shown as visible helper text (there's
-	// nothing to say beyond the red outline/icon a merely-empty field
-	// already gets), so `TextField` has no `errorMessage` to point
-	// `aria-errormessage` at. `requiredErrorID` gives it somewhere to
-	// point instead, so screen reader users still get an explanation.
-	const requiredErrorID = `${ name }-required-error`;
+	if ( ! containerName ) {
+		errorMessage = __( 'A container name is required', 'google-site-kit' );
+	} else if ( ! isUniqueName ) {
+		errorMessage = __(
+			'A container with this name already exists',
+			'google-site-kit'
+		);
+	}
 
 	return (
 		<div
@@ -93,20 +91,9 @@ const ContainerNameTextField: FC< ContainerNameTextFieldProps > = ( {
 				`googlesitekit-tagmanager-${ name }`
 			) }
 		>
-			{ isEmpty && (
-				// `className` is passed explicitly (matching its own default)
-				// because TS infers it as required from `VisuallyHidden`'s
-				// plain-JS destructuring, which doesn't pick up its
-				// `defaultProps`.
-				<VisuallyHidden className="" id={ requiredErrorID }>
-					{ __( 'A container name is required', 'google-site-kit' ) }
-				</VisuallyHidden>
-			) }
 			<TextField
 				label={ label }
 				errorMessage={ errorMessage }
-				hasError={ isEmpty }
-				ariaErrorMessage={ isEmpty ? requiredErrorID : undefined }
 				id={ name }
 				name={ name }
 				value={ containerName }
