@@ -54,6 +54,8 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Admin_Post_List;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Contribute_With_Google_Block;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Create_CTA;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_CTAs;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_User_Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Save_User_Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Subscribe_With_Google_Block;
@@ -66,6 +68,7 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\User_Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Web_Tag;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Service_SubscribewithGoogle;
+use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher as Google_Service_Webcontentpublisher;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\PaymentOptions;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
@@ -276,6 +279,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	public function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
 			'subscribewithgoogle' => new Google_Service_SubscribewithGoogle( $client ),
+			'webcontentpublisher' => new Google_Service_Webcontentpublisher( $client ),
 		);
 	}
 
@@ -367,6 +371,10 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
+		$webcontentpublisher_service = function () {
+			return $this->get_service( 'webcontentpublisher' );
+		};
+
 		return array(
 			'GET:publications'                       => array(
 				'service' => 'subscribewithgoogle',
@@ -384,6 +392,16 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				array(
 					'user_settings' => $this->user_settings,
 					'service'       => '',
+				)
+			),
+			'GET:ctas'                               => new Get_CTAs(
+				array(
+					'service' => $webcontentpublisher_service,
+				)
+			),
+			'POST:create-cta'                        => new Create_CTA(
+				array(
+					'service' => $webcontentpublisher_service,
 				)
 			),
 		);
