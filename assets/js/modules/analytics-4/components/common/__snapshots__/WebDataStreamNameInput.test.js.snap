@@ -48,10 +48,10 @@ exports[`WebDataStreamNameInput should show error state if web data stream name 
       class="mdc-text-field mdc-text-field--error mdc-text-field--outlined mdc-text-field--with-trailing-icon"
     >
       <input
-        aria-errormessage="googlesitekit-textfield-2-error-message"
+        aria-errormessage="googlesitekit-textfield-0-error-message"
         aria-invalid="true"
         class="mdc-text-field__input"
-        id="googlesitekit-textfield-2"
+        id="googlesitekit-textfield-0"
         value="Test GA4 WebDataStream"
       />
       <div
@@ -65,7 +65,7 @@ exports[`WebDataStreamNameInput should show error state if web data stream name 
         >
           <label
             class="mdc-floating-label mdc-floating-label--float-above"
-            for="googlesitekit-textfield-2"
+            for="googlesitekit-textfield-0"
             style="transition-duration: 0s;"
           >
             Web data stream name
@@ -95,7 +95,7 @@ exports[`WebDataStreamNameInput should show error state if web data stream name 
         class="mdc-text-field-helper-text mdc-text-field-helper-text--persistent"
       >
         <span
-          id="googlesitekit-textfield-2-error-message"
+          id="googlesitekit-textfield-0-error-message"
         >
           A web data stream with this name already exists.
         </span>
@@ -114,10 +114,10 @@ exports[`WebDataStreamNameInput should show error state if web data stream name 
       class="mdc-text-field mdc-text-field--error mdc-text-field--outlined mdc-text-field--with-trailing-icon"
     >
       <input
-        aria-errormessage="googlesitekit-textfield-3-error-message"
+        aria-errormessage="googlesitekit-textfield-0-error-message"
         aria-invalid="true"
         class="mdc-text-field__input"
-        id="googlesitekit-textfield-3"
+        id="googlesitekit-textfield-0"
         value=""
       />
       <div
@@ -131,7 +131,7 @@ exports[`WebDataStreamNameInput should show error state if web data stream name 
         >
           <label
             class="mdc-floating-label"
-            for="googlesitekit-textfield-3"
+            for="googlesitekit-textfield-0"
             style="transition-duration: 0s;"
           >
             Web data stream name
@@ -161,7 +161,7 @@ exports[`WebDataStreamNameInput should show error state if web data stream name 
         class="mdc-text-field-helper-text mdc-text-field-helper-text--persistent"
       >
         <span
-          id="googlesitekit-textfield-3-error-message"
+          id="googlesitekit-textfield-0-error-message"
         >
           A web data stream name is required.
         </span>

@@ -24,20 +24,78 @@ import MaterialTextField, {
 	Input,
 } from '@material/react-text-field';
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
+import { ChangeEvent, FC, KeyboardEvent, ReactElement } from 'react';
 
 /**
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
-import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import AccessibleWarningIcon from '@/js/components/AccessibleWarningIcon';
 
-function TextField( {
+interface TextFieldBaseProps {
+	className?: string;
+	name?: string;
+	label?: string;
+	noLabel?: boolean;
+	outlined?: boolean;
+	textarea?: boolean;
+	leadingIcon?: ReactElement;
+	trailingIcon?: ReactElement;
+	helperText?: string;
+	id?: string;
+	inputType?: 'input' | 'textarea';
+	value?: string | number;
+	size?: number;
+	maxLength?: number;
+	tabIndex?: number;
+	disabled?: boolean;
+	onChange?: ( event: ChangeEvent< HTMLInputElement > ) => void;
+	onKeyDown?: ( event: KeyboardEvent< HTMLInputElement > ) => void;
+}
+
+interface TextFieldNoErrorProps extends TextFieldBaseProps {
+	hasError?: false;
+	errorMessage?: string;
+	ariaErrorMessage?: string;
+}
+
+interface TextFieldHasErrorWithMessageProps extends TextFieldBaseProps {
+	hasError: boolean;
+	errorMessage: string | undefined;
+	ariaErrorMessage?: string | undefined;
+}
+
+interface TextFieldHasErrorWithAriaMessageProps extends TextFieldBaseProps {
+	hasError: boolean;
+	errorMessage?: undefined;
+	ariaErrorMessage: string | undefined;
+}
+
+/**
+ * `hasError` alone gives screen reader users no indication of what the
+ * error is, so whenever it's set, either `errorMessage` (rendered as
+ * visible helper text) or `ariaErrorMessage` (the id of a description
+ * rendered elsewhere, e.g. a visually-hidden one) must also be supplied.
+ *
+ * `hasError` is typed `boolean` (not the `true` literal) in the two
+ * "with message" variants because callers almost always compute it from a
+ * runtime condition (e.g. `hasError={ ! value }`), which TypeScript widens
+ * to `boolean` rather than narrowing to `true`. Since a widened `boolean`
+ * can't be statically known to be `false`, passing one requires the
+ * `errorMessage`/`ariaErrorMessage` prop to at least be present (its value
+ * may itself resolve to `undefined` when there's no error) — only a
+ * literal `hasError={ false }` (or omitting `hasError` entirely) is exempt.
+ */
+export type TextFieldProps =
+	| TextFieldNoErrorProps
+	| TextFieldHasErrorWithMessageProps
+	| TextFieldHasErrorWithAriaMessageProps;
+
+const TextField: FC< TextFieldProps > = ( {
 	className,
 	name,
 	label,
@@ -59,27 +117,14 @@ function TextField( {
 	disabled,
 	onChange,
 	onKeyDown,
-} ) {
+} ) => {
 	// For accessibility, provide a generated id fallback if an id
 	// is not supplied. Adding an id is mandatory because otherwise the label
 	// is not able to associate with the input.
 	const idFallback = useInstanceId( TextField, 'googlesitekit-textfield' );
-	const inputID = id || idFallback;
+	const inputID = id || String( idFallback );
 	const errorMessageID = `${ inputID }-error-message`;
 	const isErrorState = !! ( errorMessage || hasError );
-
-	useEffect( () => {
-		if (
-			process.env.NODE_ENV !== 'production' &&
-			hasError &&
-			! errorMessage &&
-			! ariaErrorMessage
-		) {
-			global.console.warn(
-				'`TextField`: `hasError` is set without an `ariaErrorMessage`. Screen reader users will have no indication of what the error is; consider providing a visually-hidden `ariaErrorMessage`.'
-			);
-		}
-	}, [ ariaErrorMessage, errorMessage, hasError ] );
 
 	return (
 		<MaterialTextField
@@ -102,7 +147,7 @@ function TextField( {
 				)
 			}
 			helperText={
-				( errorMessage || helperText ) && (
+				errorMessage || helperText ? (
 					<HelperText persistent>
 						{ errorMessage ? (
 							<span id={ errorMessageID }>{ errorMessage }</span>
@@ -110,7 +155,7 @@ function TextField( {
 							helperText
 						) }
 					</HelperText>
-				)
+				) : undefined
 			}
 		>
 			<Input
@@ -130,30 +175,6 @@ function TextField( {
 			/>
 		</MaterialTextField>
 	);
-}
-
-TextField.propTypes = {
-	className: PropTypes.string,
-	name: PropTypes.string,
-	label: PropTypes.string,
-	noLabel: PropTypes.bool,
-	outlined: PropTypes.bool,
-	textarea: PropTypes.bool,
-	leadingIcon: PropTypes.element,
-	trailingIcon: PropTypes.oneOfType( [ PropTypes.bool, PropTypes.element ] ),
-	helperText: PropTypes.oneOfType( [ PropTypes.bool, PropTypes.string ] ),
-	errorMessage: PropTypes.node,
-	hasError: PropTypes.bool,
-	ariaErrorMessage: PropTypes.string,
-	id: PropTypes.string,
-	inputType: PropTypes.string,
-	value: PropTypes.oneOfType( [ PropTypes.string, PropTypes.number ] ),
-	size: PropTypes.number,
-	maxLength: PropTypes.number,
-	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
-	disabled: PropTypes.bool,
-	onChange: PropTypes.func,
-	onKeyDown: PropTypes.func,
 };
 
 /**

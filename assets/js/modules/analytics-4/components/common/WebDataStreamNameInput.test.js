@@ -27,10 +27,14 @@ import {
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { mockUseInstanceID } from '@tests/js/mock-use-instance-id';
 import { act, createTestRegistry, render } from '@tests/js/test-utils';
 import WebDataStreamNameInput from './WebDataStreamNameInput';
 
 describe( 'WebDataStreamNameInput', () => {
+	// Provide our own version of the `useInstanceId()` hook to avoid instability in test snapshots.
+	mockUseInstanceID();
+
 	let registry;
 
 	const propertyID = '1001';
@@ -120,6 +124,26 @@ describe( 'WebDataStreamNameInput', () => {
 		);
 
 		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should not show an error state when the web data stream name is set and valid', () => {
+		registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+			webDataStreamName: 'A New Unique Web Data Stream',
+		} );
+
+		const { container } = render( <WebDataStreamNameInput />, {
+			registry,
+		} );
+
+		expect(
+			container
+				.querySelector( '.mdc-text-field' )
+				.classList.contains( 'mdc-text-field--error' )
+		).toBe( false );
+
+		expect( container.querySelector( 'input' ) ).not.toHaveAttribute(
+			'aria-invalid'
+		);
 	} );
 
 	it( 'should show error state if web data stream name is not set', () => {

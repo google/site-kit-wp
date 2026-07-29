@@ -54,8 +54,14 @@ describe( 'TextField', () => {
 		);
 	} );
 
-	it( 'should add the error class and icon, and set `aria-invalid`, with no message when `hasError` is set', () => {
+	it( 'should add the error class and icon, and set `aria-invalid`, with no `aria-errormessage` when `hasError` is set without an accompanying message', () => {
 		const { container } = render(
+			// `hasError` without `errorMessage`/`ariaErrorMessage` is a type
+			// error, enforced so screen reader users are never left without
+			// an indication of what the error is. It's still reachable at
+			// runtime from a plain JS caller, so the fallback rendering is
+			// exercised here.
+			// @ts-expect-error Intentionally violating the `hasError` invariant.
 			<TextField name="textfield" label="Text Field" hasError />
 		);
 
@@ -76,13 +82,10 @@ describe( 'TextField', () => {
 		).not.toBeInTheDocument();
 
 		expect( input ).toHaveAttribute( 'aria-invalid', 'true' );
-
-		// `hasError` with no accompanying `ariaErrorMessage` leaves screen
-		// reader users with no indication of what the error is.
-		expect( console ).toHaveWarned();
+		expect( input ).not.toHaveAttribute( 'aria-errormessage' );
 	} );
 
-	it( 'should set `aria-errormessage` to the supplied `ariaErrorMessage` id when `hasError` is set, and not warn', () => {
+	it( 'should set `aria-errormessage` to the supplied `ariaErrorMessage` id when `hasError` is set', () => {
 		const { container } = render(
 			<TextField
 				name="textfield"
@@ -98,8 +101,6 @@ describe( 'TextField', () => {
 			'aria-errormessage',
 			'external-error-message-id'
 		);
-
-		expect( console ).not.toHaveWarned();
 	} );
 
 	it( 'should have no error class, no icon, and no `aria-invalid` when the error props are not set', () => {

@@ -153,9 +153,12 @@ describe( 'AccountCreate', () => {
 
 		expect( accountInput ).toHaveAttribute( 'aria-invalid', 'true' );
 
-		// `CreateAccountField` uses `hasError` with no accompanying
-		// `ariaErrorMessage`, so `TextField` is expected to warn here.
-		expect( console ).toHaveWarned();
+		const errorMessageID = accountInput.getAttribute( 'aria-errormessage' );
+
+		expect( errorMessageID ).toBeTruthy();
+		expect( document.getElementById( errorMessageID ) ).toHaveTextContent(
+			'Account is required'
+		);
 	} );
 
 	describe( 'when clicking on Create Account', () => {

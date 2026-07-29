@@ -33,7 +33,7 @@ import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 import { isValidConversionID } from '@/js/modules/ads/utils/validation';
 
 export default function ConversionIDTextField( {
-	helperText,
+	helperText = undefined,
 	hideHeading = false,
 } ) {
 	const conversionID = useSelect( ( select ) =>
@@ -89,11 +89,12 @@ export default function ConversionIDTextField( {
 				label={ __( 'Conversion ID', 'google-site-kit' ) }
 				className="googlesitekit-text-field-conversion-tracking-id"
 				errorMessage={
-					! isValid &&
-					__(
-						'Tracking for your Ads campaigns won’t work until you insert a valid ID',
-						'google-site-kit'
-					)
+					! isValid
+						? __(
+								'Tracking for your Ads campaigns won’t work until you insert a valid ID',
+								'google-site-kit'
+						  )
+						: undefined
 				}
 				// The "AW-" prefix is constant throughout all Conversion Tracking IDs,
 				// so we don't localize it.

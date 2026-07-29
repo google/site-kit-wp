@@ -72,10 +72,6 @@ describe( 'ContainerNameTextField', () => {
 			'aria-errormessage',
 			requiredMessage.getAttribute( 'id' )
 		);
-
-		// Providing `ariaErrorMessage` avoids the `hasError`-without-message
-		// dev warning from `TextField`.
-		expect( console ).not.toHaveWarned();
 	} );
 
 	it( 'should show an error message when the name already exists', () => {

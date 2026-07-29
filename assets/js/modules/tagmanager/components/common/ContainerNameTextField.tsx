@@ -20,7 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
+import { ChangeEvent, FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -41,18 +41,28 @@ import {
 } from '@/js/modules/tagmanager/datastore/constants';
 import { isUniqueContainerName } from '@/js/modules/tagmanager/util';
 
-export default function ContainerNameTextField( { label, name } ) {
+interface ContainerNameTextFieldProps {
+	label: string;
+	name: string;
+}
+
+const ContainerNameTextField: FC< ContainerNameTextFieldProps > = ( {
+	label,
+	name,
+} ) => {
 	const containers = useSelect( ( select ) => {
+		// @ts-expect-error Data store is not yet typed.
 		const accountID = select( MODULES_TAGMANAGER ).getAccountID();
+		// @ts-expect-error Data store is not yet typed.
 		return select( MODULES_TAGMANAGER ).getContainers( accountID );
-	} );
+	}, [] );
 	const [ containerName, setContainerName ] = useFormValue(
 		FORM_SETUP,
 		name
 	);
 
 	const onChange = useCallback(
-		( { currentTarget } ) => {
+		( { currentTarget }: ChangeEvent< HTMLInputElement > ) => {
 			setContainerName( currentTarget.value );
 		},
 		[ setContainerName ]
@@ -67,8 +77,13 @@ export default function ContainerNameTextField( { label, name } ) {
 					'A container with this name already exists',
 					'google-site-kit'
 			  )
-			: false;
+			: undefined;
 
+	// The empty-name error is not shown as visible helper text (there's
+	// nothing to say beyond the red outline/icon a merely-empty field
+	// already gets), so `TextField` has no `errorMessage` to point
+	// `aria-errormessage` at. `requiredErrorID` gives it somewhere to
+	// point instead, so screen reader users still get an explanation.
 	const requiredErrorID = `${ name }-required-error`;
 
 	return (
@@ -79,7 +94,11 @@ export default function ContainerNameTextField( { label, name } ) {
 			) }
 		>
 			{ isEmpty && (
-				<VisuallyHidden id={ requiredErrorID }>
+				// `className` is passed explicitly (matching its own default)
+				// because TS infers it as required from `VisuallyHidden`'s
+				// plain-JS destructuring, which doesn't pick up its
+				// `defaultProps`.
+				<VisuallyHidden className="" id={ requiredErrorID }>
 					{ __( 'A container name is required', 'google-site-kit' ) }
 				</VisuallyHidden>
 			) }
@@ -96,9 +115,6 @@ export default function ContainerNameTextField( { label, name } ) {
 			/>
 		</div>
 	);
-}
-
-ContainerNameTextField.propTypes = {
-	label: PropTypes.string.isRequired,
-	name: PropTypes.string.isRequired,
 };
+
+export default ContainerNameTextField;

@@ -89,7 +89,7 @@ export default function WebDataStreamNameInput() {
 		return null;
 	}
 
-	let errorMessage = false;
+	let errorMessage;
 
 	if ( webDataStreamAlreadyExists ) {
 		errorMessage = __(
