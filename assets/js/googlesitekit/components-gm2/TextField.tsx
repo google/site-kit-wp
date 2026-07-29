@@ -24,7 +24,7 @@ import MaterialTextField, {
 	Input,
 } from '@material/react-text-field';
 import classnames from 'classnames';
-import { ChangeEvent, FC, KeyboardEvent, ReactElement } from 'react';
+import { ChangeEvent, FC, KeyboardEvent, ReactElement, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -59,13 +59,13 @@ interface TextFieldBaseProps {
 
 interface TextFieldNoErrorProps extends TextFieldBaseProps {
 	hasError?: false;
-	errorMessage?: string;
+	errorMessage?: ReactNode;
 	ariaErrorMessage?: string;
 }
 
 interface TextFieldHasErrorWithMessageProps extends TextFieldBaseProps {
 	hasError: boolean;
-	errorMessage: string | undefined;
+	errorMessage: ReactNode;
 	ariaErrorMessage?: string | undefined;
 }
 
