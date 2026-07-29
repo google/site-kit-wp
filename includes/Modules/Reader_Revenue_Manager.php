@@ -50,12 +50,18 @@ use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\Block_Support;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Admin_Post_List;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Contribute_With_Google_Block;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Create_Publication;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publication;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publications;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Terms_Of_Service;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_User_Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Save_User_Settings;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Update_Publication;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Subscribe_With_Google_Block;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
@@ -68,6 +74,7 @@ use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Service_SubscribewithGoogle;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\PaymentOptions;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
+use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher as Google_Service_Webcontentpublisher;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
@@ -276,6 +283,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	public function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
 			'subscribewithgoogle' => new Google_Service_SubscribewithGoogle( $client ),
+			'webcontentpublisher' => new Google_Service_Webcontentpublisher( $client ),
 		);
 	}
 
@@ -367,9 +375,49 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
+		$webcontentpublisher_service = function () {
+			return $this->get_service( 'webcontentpublisher' );
+		};
+
 		return array(
-			'GET:publications'                       => array(
-				'service' => 'subscribewithgoogle',
+			'POST:create-publication'                => new Create_Publication(
+				array(
+					'reference_site_url' => $this->context->get_reference_site_url(),
+					'service'            => $webcontentpublisher_service,
+					'settings'           => $this->get_settings(),
+				)
+			),
+			'GET:publication'                        => new Get_Publication(
+				array(
+					'service' => $webcontentpublisher_service,
+				)
+			),
+			'POST:publication'                       => new Update_Publication(
+				array(
+					'service' => $webcontentpublisher_service,
+				)
+			),
+			'GET:publications'                       => new Get_Publications(
+				array(
+					'get_publication_filter'       => function () {
+						return $this->get_publication_filter();
+					},
+					'service'                      => function () {
+						if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
+							return $this->get_service( 'webcontentpublisher' );
+						}
+						return $this->get_service( 'subscribewithgoogle' );
+					},
+					'settings'                     => $this->get_settings(),
+					'synchronize_publication_data' => function ( $publications ) {
+						$this->synchronize_publication_data( $publications );
+					},
+				)
+			),
+			'GET:terms-of-service'                   => new Get_Terms_Of_Service(
+				array(
+					'service' => '',
+				)
 			),
 			'POST:sync-publication-onboarding-state' => array(
 				'service' => 'subscribewithgoogle',
@@ -401,15 +449,6 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:publications':
-				/**
-				 * Get the SubscribewithGoogle service instance.
-				 *
-				 * @var Google_Service_SubscribewithGoogle
-				 */
-				$subscribewithgoogle = $this->get_service( 'subscribewithgoogle' );
-				return $subscribewithgoogle->publications->listPublications( array( 'filter' => $this->get_publication_filter() ) );
-
 			case 'POST:sync-publication-onboarding-state':
 				if ( empty( $data['publicationID'] ) ) {
 					throw new Missing_Required_Param_Exception( 'publicationID' );
@@ -476,27 +515,6 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		}
 
 		return parent::create_data_request( $data );
-	}
-
-	/**
-	 * Parses a response for the given datapoint.
-	 *
-	 * @since 1.131.0
-	 *
-	 * @param Data_Request $data     Data request object.
-	 * @param mixed        $response Request response.
-	 *
-	 * @return mixed Parsed response data on success, or WP_Error on failure.
-	 */
-	protected function parse_data_response( Data_Request $data, $response ) {
-		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:publications':
-				$publications = array_values( $response->getPublications() );
-				$this->synchronize_publication_data( $publications );
-				return $publications;
-		}
-
-		return parent::parse_data_response( $data, $response );
 	}
 
 	/**

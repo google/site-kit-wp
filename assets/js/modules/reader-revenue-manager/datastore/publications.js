@@ -91,6 +91,142 @@ const fetchGetPublicationsStore = createFetchStore( {
 	} ),
 } );
 
+const fetchCreatePublicationStore = createFetchStore( {
+	baseName: 'createPublication',
+	controlCallback: ( { displayName, languageCode, countryCode } ) =>
+		set(
+			'modules',
+			MODULE_SLUG_READER_REVENUE_MANAGER,
+			'create-publication',
+			{
+				displayName,
+				languageCode,
+				countryCode,
+			}
+		),
+	argsToParams: ( { displayName, languageCode, countryCode } = {} ) => ( {
+		displayName,
+		languageCode,
+		countryCode,
+	} ),
+	validateParams: ( { displayName, languageCode, countryCode } = {} ) => {
+		invariant(
+			typeof displayName === 'string' && displayName.length > 0,
+			'displayName is required and must be a string.'
+		);
+		invariant(
+			typeof languageCode === 'string' && languageCode.length > 0,
+			'languageCode is required and must be a string.'
+		);
+		invariant(
+			typeof countryCode === 'string' && countryCode.length > 0,
+			'countryCode is required and must be a string.'
+		);
+	},
+	isAction: true,
+} );
+
+const fetchGetPublicationStore = createFetchStore( {
+	baseName: 'getPublication',
+	controlCallback: ( { organizationID, publicationID } ) =>
+		get(
+			'modules',
+			MODULE_SLUG_READER_REVENUE_MANAGER,
+			'publication',
+			{
+				organizationID,
+				publicationID,
+			},
+			{ useCache: false }
+		),
+	reducerCallback: createReducer(
+		( state, publication, { organizationID, publicationID } ) => {
+			state.publicationsByOrganization =
+				state.publicationsByOrganization || {};
+			state.publicationsByOrganization[ organizationID ] =
+				state.publicationsByOrganization[ organizationID ] || {};
+			state.publicationsByOrganization[ organizationID ][
+				publicationID
+			] = publication;
+		}
+	),
+	argsToParams: ( { organizationID, publicationID } = {} ) => ( {
+		organizationID,
+		publicationID,
+	} ),
+	validateParams: ( { organizationID, publicationID } = {} ) => {
+		invariant(
+			typeof organizationID === 'string' && organizationID.length > 0,
+			'organizationID is required and must be a string.'
+		);
+		invariant(
+			typeof publicationID === 'string' && publicationID.length > 0,
+			'publicationID is required and must be a string.'
+		);
+	},
+} );
+
+const fetchUpdatePublicationStore = createFetchStore( {
+	baseName: 'updatePublication',
+	controlCallback: ( params ) =>
+		set(
+			'modules',
+			MODULE_SLUG_READER_REVENUE_MANAGER,
+			'publication',
+			params
+		),
+	reducerCallback: createReducer(
+		( state, publication, { organizationID, publicationID } ) => {
+			state.publicationsByOrganization =
+				state.publicationsByOrganization || {};
+			state.publicationsByOrganization[ organizationID ] =
+				state.publicationsByOrganization[ organizationID ] || {};
+			state.publicationsByOrganization[ organizationID ][
+				publicationID
+			] = publication;
+		}
+	),
+	argsToParams: ( params = {} ) => params,
+	validateParams: ( { organizationID, publicationID, ...fields } = {} ) => {
+		invariant(
+			typeof organizationID === 'string' && organizationID.length > 0,
+			'organizationID is required and must be a string.'
+		);
+		invariant(
+			typeof publicationID === 'string' && publicationID.length > 0,
+			'publicationID is required and must be a string.'
+		);
+		invariant(
+			Object.keys( fields ).length > 0,
+			'Publication fields are required.'
+		);
+	},
+	isAction: true,
+} );
+
+const fetchGetTermsOfServiceStore = createFetchStore( {
+	baseName: 'getTermsOfService',
+	controlCallback: ( { tosURL } ) =>
+		get(
+			'modules',
+			MODULE_SLUG_READER_REVENUE_MANAGER,
+			'terms-of-service',
+			{ tosURL },
+			{ useCache: false }
+		),
+	reducerCallback: createReducer( ( state, termsOfService, { tosURL } ) => {
+		state.termsOfService = state.termsOfService || {};
+		state.termsOfService[ tosURL ] = termsOfService;
+	} ),
+	argsToParams: ( { tosURL } = {} ) => ( { tosURL } ),
+	validateParams: ( { tosURL } = {} ) => {
+		invariant(
+			typeof tosURL === 'string' && tosURL.length > 0,
+			'tosURL is required and must be a string.'
+		);
+	},
+} );
+
 const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 	baseName: 'getSyncPublicationOnboardingState',
 	controlCallback: ( { publicationID, publicationOnboardingState } ) =>
@@ -156,9 +292,91 @@ const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 
 const baseInitialState = {
 	publications: undefined,
+	publicationsByOrganization: {},
+	termsOfService: {},
 };
 
 const baseActions = {
+	/**
+	 * Creates a publication.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} params              Publication creation parameters.
+	 * @param {string} params.displayName  Publication display name.
+	 * @param {string} params.languageCode Publication language code.
+	 * @param {string} params.countryCode  Publication country code.
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	createPublication: createValidatedAction(
+		( params ) => {
+			invariant(
+				isPlainObject( params ),
+				'Publication details are required.'
+			);
+			const { displayName, languageCode, countryCode } = params;
+
+			invariant(
+				typeof displayName === 'string' && displayName.length > 0,
+				'displayName is required and must be a string.'
+			);
+			invariant(
+				typeof languageCode === 'string' && languageCode.length > 0,
+				'languageCode is required and must be a string.'
+			);
+			invariant(
+				typeof countryCode === 'string' && countryCode.length > 0,
+				'countryCode is required and must be a string.'
+			);
+		},
+		function* ( params ) {
+			return yield fetchCreatePublicationStore.actions.fetchCreatePublication(
+				params
+			);
+		}
+	),
+
+	/**
+	 * Updates a publication.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} params                               Publication update parameters.
+	 * @param {string} params.organizationID                Organization ID.
+	 * @param {string} params.publicationID                 Publication ID.
+	 * @param {Object} [params.rrmProduct]                  RRM product fields, including ToS acceptance.
+	 * @param {string} [params.publicationTosURL]           Publication Terms of Service URL.
+	 * @param {string} [params.publicationPrivacyPolicyURL] Publication privacy policy URL.
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	updatePublication: createValidatedAction(
+		( params ) => {
+			invariant(
+				isPlainObject( params ),
+				'Publication update parameters are required.'
+			);
+			const { organizationID, publicationID, ...fields } = params;
+
+			invariant(
+				typeof organizationID === 'string' && organizationID.length > 0,
+				'organizationID is required and must be a string.'
+			);
+			invariant(
+				typeof publicationID === 'string' && publicationID.length > 0,
+				'publicationID is required and must be a string.'
+			);
+			invariant(
+				Object.keys( fields ).length > 0,
+				'Publication fields are required.'
+			);
+		},
+		function* ( params ) {
+			return yield fetchUpdatePublicationStore.actions.fetchUpdatePublication(
+				params
+			);
+		}
+	),
+
 	/**
 	 * Synchronizes the onboarding state of the publication with the API.
 	 * Updates the settings on the server.
@@ -332,6 +550,41 @@ const baseResolvers = {
 			yield fetchGetPublicationsStore.actions.fetchGetPublications();
 		}
 	},
+
+	*getPublication( { organizationID, publicationID } = {} ) {
+		if ( ! organizationID || ! publicationID ) {
+			return;
+		}
+
+		const registry = yield commonActions.getRegistry();
+		const publication = registry
+			.select( MODULES_READER_REVENUE_MANAGER )
+			.getPublication( { organizationID, publicationID } );
+
+		if ( publication === undefined ) {
+			yield fetchGetPublicationStore.actions.fetchGetPublication( {
+				organizationID,
+				publicationID,
+			} );
+		}
+	},
+
+	*getTermsOfService( { tosURL } = {} ) {
+		if ( ! tosURL ) {
+			return;
+		}
+
+		const registry = yield commonActions.getRegistry();
+		const termsOfService = registry
+			.select( MODULES_READER_REVENUE_MANAGER )
+			.getTermsOfService( { tosURL } );
+
+		if ( termsOfService === undefined ) {
+			yield fetchGetTermsOfServiceStore.actions.fetchGetTermsOfService( {
+				tosURL,
+			} );
+		}
+	},
 };
 
 const baseSelectors = {
@@ -345,6 +598,45 @@ const baseSelectors = {
 	 */
 	getPublications( state ) {
 		return state.publications;
+	},
+
+	/**
+	 * Gets a publication.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state                 Data store's state.
+	 * @param {Object} params                Publication parameters.
+	 * @param {string} params.organizationID Organization ID.
+	 * @param {string} params.publicationID  Publication ID.
+	 * @return {(Object|undefined)} Publication resource; `undefined` if not loaded.
+	 */
+	getPublication( state, { organizationID, publicationID } = {} ) {
+		if ( ! organizationID || ! publicationID ) {
+			return undefined;
+		}
+
+		return state.publicationsByOrganization?.[ organizationID ]?.[
+			publicationID
+		];
+	},
+
+	/**
+	 * Gets the Terms of Service HTML.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state         Data store's state.
+	 * @param {Object} params        Terms of Service parameters.
+	 * @param {string} params.tosURL Terms of Service URL.
+	 * @return {(string|undefined)} Terms of Service HTML; `undefined` if not loaded.
+	 */
+	getTermsOfService( state, { tosURL } = {} ) {
+		if ( ! tosURL ) {
+			return undefined;
+		}
+
+		return state.termsOfService?.[ tosURL ];
 	},
 
 	/**
@@ -415,6 +707,10 @@ const baseSelectors = {
 
 const store = combineStores(
 	fetchGetPublicationsStore,
+	fetchCreatePublicationStore,
+	fetchGetPublicationStore,
+	fetchUpdatePublicationStore,
+	fetchGetTermsOfServiceStore,
 	fetchGetSyncPublicationOnboardingStateStore,
 	{
 		initialState: baseInitialState,

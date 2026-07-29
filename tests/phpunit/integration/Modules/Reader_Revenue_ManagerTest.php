@@ -187,18 +187,41 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			class_exists( 'Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle' ),
 			'SubscribewithGoogle service class should exist.'
 		);
+		$this->assertTrue(
+			class_exists( 'Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher' ),
+			'Webcontentpublisher service class should exist.'
+		);
 	}
 
 	public function test_get_datapoints() {
 		$this->assertEqualSets(
 			array(
+				'create-publication',
+				'publication',
 				'publications',
 				'sync-publication-onboarding-state',
+				'terms-of-service',
 				'user-settings',
 			),
 			$this->reader_revenue_manager->get_datapoints(),
 			'Reader Revenue Manager module should have correct datapoints.'
 		);
+	}
+
+	public function test_publication_datapoints_are_not_shareable() {
+		foreach (
+			array(
+				'POST:create-publication',
+				'GET:publication',
+				'POST:publication',
+				'GET:terms-of-service',
+			) as $datapoint_id
+		) {
+			$this->assertFalse(
+				$this->reader_revenue_manager->get_datapoint_definition( $datapoint_id )->is_shareable(),
+				"{$datapoint_id} should not be shareable."
+			);
+		}
 	}
 
 	public function test_get_publications__url() {

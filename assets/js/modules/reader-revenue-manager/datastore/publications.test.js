@@ -54,6 +54,18 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
 	);
 
+	const createPublicationEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/create-publication'
+	);
+
+	const publicationEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publication(?:\\?|$)'
+	);
+
+	const termsOfServiceEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/terms-of-service'
+	);
+
 	const syncOnboardingStateEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/sync-publication-onboarding-state'
 	);
@@ -83,6 +95,108 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			];
 			provideModules( registry, extraData );
 			provideModuleRegistrations( registry, extraData );
+		} );
+
+		describe( 'createPublication', () => {
+			const params = {
+				displayName: 'Example Publication',
+				languageCode: 'en',
+				countryCode: 'US',
+			};
+
+			it( 'should require publication details', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.createPublication()
+				).toThrow( 'Publication details are required.' );
+
+				expect( () =>
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.createPublication( {
+							...params,
+							displayName: '',
+						} )
+				).toThrow( 'displayName is required and must be a string.' );
+			} );
+
+			it( 'should call the create publication endpoint', async () => {
+				const publication = {
+					displayName: params.displayName,
+					publicationId: 'publication-1',
+				};
+				fetchMock.postOnce( createPublicationEndpoint, {
+					body: publication,
+					status: 200,
+				} );
+
+				const { response, error } = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.createPublication( params );
+
+				expect( error ).toBeUndefined();
+				expect( response ).toEqual( publication );
+				expect( fetchMock ).toHaveFetched( createPublicationEndpoint, {
+					body: { data: params },
+				} );
+			} );
+		} );
+
+		describe( 'updatePublication', () => {
+			const params = {
+				organizationID: 'organization-1',
+				publicationID: 'publication-1',
+				rrmProduct: {
+					tosAcceptance: {
+						userAccepted: true,
+						emailOptIn: true,
+					},
+				},
+			};
+
+			it( 'should require fields to update', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.updatePublication()
+				).toThrow( 'Publication update parameters are required.' );
+
+				expect( () =>
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.updatePublication( {
+							organizationID: params.organizationID,
+							publicationID: params.publicationID,
+						} )
+				).toThrow( 'Publication fields are required.' );
+			} );
+
+			it( 'should call the update publication endpoint', async () => {
+				const publication = {
+					publicationId: params.publicationID,
+					rrmProduct: params.rrmProduct,
+				};
+				fetchMock.postOnce( publicationEndpoint, {
+					body: publication,
+					status: 200,
+				} );
+
+				const { response, error } = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.updatePublication( params );
+
+				expect( error ).toBeUndefined();
+				expect( response ).toEqual( publication );
+				expect( fetchMock ).toHaveFetched( publicationEndpoint, {
+					body: { data: params },
+				} );
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublication( params )
+				).toEqual( publication );
+			} );
 		} );
 
 		describe( 'syncPublicationOnboardingState', () => {
@@ -740,6 +854,118 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					.getPublications();
 				expect( publications ).toBeUndefined();
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getPublication', () => {
+			const params = {
+				organizationID: 'organization-1',
+				publicationID: 'publication-1',
+			};
+
+			it( 'should use a resolver to fetch a publication', async () => {
+				const publication = {
+					displayName: 'Example Publication',
+					publicationId: params.publicationID,
+				};
+				fetchMock.getOnce( publicationEndpoint, {
+					body: publication,
+					status: 200,
+				} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublication( params )
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublication( params );
+
+				expect( fetchMock ).toHaveFetched( publicationEndpoint );
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublication( params )
+				).toEqual( publication );
+
+				const searchParams = new global.URLSearchParams(
+					fetchMock.lastUrl().split( '?' )[ 1 ]
+				);
+				expect( Object.fromEntries( searchParams ) ).toMatchObject(
+					params
+				);
+			} );
+
+			it( 'should not fetch a publication already in state', async () => {
+				const publication = {
+					publicationId: params.publicationID,
+				};
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublication( publication, params );
+
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPublication( params );
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublication( params );
+
+				expect( fetchMock ).not.toHaveFetched( publicationEndpoint );
+			} );
+		} );
+
+		describe( 'getTermsOfService', () => {
+			const params = {
+				tosURL: 'https://example.com/terms',
+			};
+
+			it( 'should use a resolver to fetch the Terms of Service', async () => {
+				const termsOfService = '<h1>Terms of Service</h1>';
+				fetchMock.getOnce( termsOfServiceEndpoint, {
+					body: JSON.stringify( termsOfService ),
+					status: 200,
+				} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getTermsOfService( params )
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getTermsOfService( params );
+
+				expect( fetchMock ).toHaveFetched( termsOfServiceEndpoint );
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getTermsOfService( params )
+				).toBe( termsOfService );
+			} );
+
+			it( 'should not fetch Terms of Service already in state', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetTermsOfService( '<h1>Terms</h1>', params );
+
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getTermsOfService( params );
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getTermsOfService( params );
+
+				expect( fetchMock ).not.toHaveFetched( termsOfServiceEndpoint );
 			} );
 		} );
 
