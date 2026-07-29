@@ -32,6 +32,7 @@ import {
 	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
+import { isFeatureEnabled } from '@/js/features';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
@@ -493,9 +494,10 @@ const baseActions = {
 			} );
 		},
 		function* ( {
-			// `publicationId` is the identifier used by the API.
-			// eslint-disable-next-line sitekit/acronym-case
+			/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
 			publicationId: publicationID,
+			organizationId: organizationID,
+			/* eslint-enable sitekit/acronym-case */
 			onboardingState,
 			paymentOptions,
 			products,
@@ -511,6 +513,10 @@ const baseActions = {
 				paymentOption: getPaymentOption( paymentOptions ),
 				productID: 'openaccess',
 			};
+
+			if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
+				settings.organizationID = organizationID;
+			}
 
 			if ( contentPolicyStatus ) {
 				settings.contentPolicyState =

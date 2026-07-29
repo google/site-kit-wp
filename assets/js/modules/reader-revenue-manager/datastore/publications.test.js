@@ -27,6 +27,7 @@ import { cloneDeep } from 'lodash';
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
+import { enabledFeatures } from '@/js/features';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
@@ -441,6 +442,42 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getPublicationOnboardingStateChanged()
 				).toEqual( false );
+			} );
+
+			it( 'should set the organization ID when the `rrmExpressSetup` feature flag is enabled', () => {
+				enabledFeatures.add( 'rrmExpressSetup' );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						organizationId: 'organization-id',
+						onboardingState: 'onboarding-state',
+					} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSettings()
+				).toMatchObject( {
+					organizationID: 'organization-id',
+				} );
+			} );
+
+			it( 'should not set the organization ID when the `rrmExpressSetup` feature flag is disabled', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						organizationId: 'organization-id',
+						onboardingState: 'onboarding-state',
+					} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSettings()
+				).not.toHaveProperty( 'organizationID' );
 			} );
 
 			it( 'should set the product IDs in state when products are provided', () => {
