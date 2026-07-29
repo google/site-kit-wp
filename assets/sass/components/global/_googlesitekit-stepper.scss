@@ -136,7 +136,7 @@
 		box-sizing: content-box;
 		display: flex;
 
-		@media (min-width: $bp-desktop) {
+		@media (min-width: $bp-nonTablet) {
 			align-items: stretch;
 			display: grid;
 			gap: var(--googlesitekit-stepper-row-gap);
@@ -147,7 +147,7 @@
 			display: block;
 			flex: 2 1 0;
 
-			@media (min-width: $bp-desktop) {
+			@media (min-width: $bp-nonTablet) {
 				display: grid;
 				flex-grow: 1;
 				gap: 14px;
@@ -164,7 +164,7 @@
 		.googlesitekit-stepper__step-info {
 			display: none;
 
-			@media (min-width: $bp-desktop) {
+			@media (min-width: $bp-nonTablet) {
 				align-self: center;
 				display: block;
 			}
@@ -179,7 +179,7 @@
 			flex-direction: row;
 			place-items: center;
 
-			@media (min-width: $bp-desktop) {
+			@media (min-width: $bp-nonTablet) {
 				flex-direction: column;
 				position: relative;
 			}
@@ -192,7 +192,7 @@
 				display: block;
 				flex: 1 1 0;
 
-				@media (min-width: $bp-desktop) {
+				@media (min-width: $bp-nonTablet) {
 					block-size: auto;
 					inline-size: 1px;
 				}
@@ -203,7 +203,7 @@
 		.googlesitekit-stepper__step:last-child .googlesitekit-stepper__step-progress::after {
 			display: none;
 
-			@media (min-width: $bp-desktop) {
+			@media (min-width: $bp-nonTablet) {
 				display: block;
 				visibility: hidden;
 			}
@@ -233,7 +233,7 @@
 		.googlesitekit-stepper__step-progress-line {
 			display: none;
 
-			@media (min-width: $bp-desktop) {
+			@media (min-width: $bp-nonTablet) {
 				block-size: var(--googlesitekit-stepper-row-gap);
 				display: block;
 				inset-block-start: 100%;
