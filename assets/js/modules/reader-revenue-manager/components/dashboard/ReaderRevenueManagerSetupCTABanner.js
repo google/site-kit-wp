@@ -37,6 +37,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import Link from '@/js/components/Link';
 import useRetriableNotificationDismissButtonLabel from '@/js/components/notifications/useRetriableNotificationDismissButtonLabel';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
@@ -62,10 +63,25 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 		MODULE_SLUG_READER_REVENUE_MANAGER
 	);
 
+	const onExpressSetupActivate = useActivateModuleCallback(
+		MODULE_SLUG_READER_REVENUE_MANAGER,
+		{
+			redirectQueryArgs: {
+				expressSetup: 'true',
+				cta: 'newsletter',
+			},
+		}
+	);
+
 	const onSetupCallback = useCallback( () => {
 		setIsSaving( true );
-		onSetupActivate();
-	}, [ onSetupActivate, setIsSaving ] );
+		( rrmExpressSetupEnabled ? onExpressSetupActivate : onSetupActivate )();
+	}, [
+		onSetupActivate,
+		onExpressSetupActivate,
+		rrmExpressSetupEnabled,
+		setIsSaving,
+	] );
 
 	const tooltipSettings = {
 		tooltipSlug: 'rrm-setup-notification',
@@ -79,8 +95,16 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
-	const onExploreOtherFeaturesCallback = useActivateModuleCallback(
+	const onExploreOtherFeaturesActivate = useActivateModuleCallback(
 		MODULE_SLUG_READER_REVENUE_MANAGER
+	);
+
+	const onExploreOtherFeaturesCallback = useCallback(
+		( event ) => {
+			event.preventDefault();
+			onExploreOtherFeaturesActivate();
+		},
+		[ onExploreOtherFeaturesActivate ]
 	);
 
 	const isDismissalFinal = useSelect( ( select ) =>
@@ -110,8 +134,8 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 						),
 						{
 							link: (
-								<button
-									type="button"
+								<Link
+									href="#"
 									onClick={ onExploreOtherFeaturesCallback }
 									className="googlesitekit-rrm-setup-cta-banner__explore-link"
 								/>

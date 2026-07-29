@@ -1,7 +1,7 @@
 /**
  * Reader Revenue Manager Setup CTA Banner styles.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,5 @@
  */
 
 .googlesitekit-rrm-setup-cta-banner__explore-link {
-	background: none;
-	border: none;
-	color: inherit;
-	cursor: pointer;
 	font-weight: 500;
-	padding: 0;
-	text-decoration: underline;
-
-	&:hover {
-		opacity: 0.8;
-	}
-
-	&:active {
-		opacity: 0.6;
-	}
 }
