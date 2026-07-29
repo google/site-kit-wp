@@ -45,6 +45,49 @@ import {
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { getLocale } from '@/js/util';
 
+function CurrentSubscriptionPill( {
+	selected = false,
+	formattedNextReportDate,
+} ) {
+	return (
+		<div
+			className={ classnames(
+				'googlesitekit-frequency-selector__current-subscription',
+				{
+					'googlesitekit-frequency-selector__current-subscription--selected':
+						selected,
+				}
+			) }
+		>
+			<Typography
+				type={ TYPE_BODY }
+				size={ SIZE_SMALL }
+				className="googlesitekit-frequency-selector__current-subscription-label"
+			>
+				{ __( 'Current subscription', 'google-site-kit' ) }
+			</Typography>
+			{ formattedNextReportDate && (
+				<Typography
+					type={ TYPE_BODY }
+					size={ SIZE_SMALL }
+					className="googlesitekit-frequency-selector__next-report"
+				>
+					{ sprintf(
+						/* translators: %s: formatted date, e.g. Jul 14, 2026. */
+						__( 'Next report: %s', 'google-site-kit' ),
+						formattedNextReportDate
+					) }
+				</Typography>
+			) }
+		</div>
+	);
+}
+
+CurrentSubscriptionPill.propTypes = {
+	selected: PropTypes.bool,
+	formattedNextReportDate: PropTypes.string,
+};
+
 export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
@@ -98,7 +141,7 @@ export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 	const { setEmailReportingFrequency } = useDispatch( CORE_USER );
 
 	const formattedNextReportDate = useMemo( () => {
-		if ( ! savedFrequency || ! nextReportTimestamp || ! timezone ) {
+		if ( ! savedFrequency || ! nextReportTimestamp ) {
 			return null;
 		}
 
@@ -107,7 +150,15 @@ export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 		const nextReportDate = new Date( nextReportTimestamp * 1000 ); // eslint-disable-line sitekit/no-direct-date
 
 		return nextReportDate.toLocaleDateString( getLocale(), {
-			timeZone: timezone,
+			// The site's timezone is only a valid `Intl` timezone when it's
+			// been configured with a named region (e.g. "America/Detroit").
+			// Sites configured with a raw UTC offset instead (common when
+			// the WP General Settings timezone dropdown is left on a
+			// "UTC±X" entry) report an empty timezone string, which would
+			// otherwise either hide this date entirely or throw when passed
+			// as `timeZone`. Omit the option in that case so the browser's
+			// local timezone is used instead.
+			...( timezone && { timeZone: timezone } ),
 			month: 'short',
 			day: 'numeric',
 			year: 'numeric',
@@ -157,41 +208,6 @@ export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 		}
 	}
 
-	function renderCurrentSubscriptionPill( selected = false ) {
-		return (
-			<div
-				className={ classnames(
-					'googlesitekit-frequency-selector__current-subscription',
-					{
-						'googlesitekit-frequency-selector__current-subscription--selected':
-							selected,
-					}
-				) }
-			>
-				<Typography
-					type={ TYPE_BODY }
-					size={ SIZE_SMALL }
-					className="googlesitekit-frequency-selector__current-subscription-label"
-				>
-					{ __( 'Current subscription', 'google-site-kit' ) }
-				</Typography>
-				{ formattedNextReportDate && (
-					<Typography
-						type={ TYPE_BODY }
-						size={ SIZE_SMALL }
-						className="googlesitekit-frequency-selector__next-report"
-					>
-						{ sprintf(
-							/* translators: %s: formatted date, e.g. Jul 14, 2026. */
-							__( 'Next report: %s', 'google-site-kit' ),
-							formattedNextReportDate
-						) }
-					</Typography>
-				) }
-			</div>
-		);
-	}
-
 	if ( isLoading ) {
 		return (
 			<Fragment>
@@ -230,9 +246,11 @@ export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 							className="googlesitekit-frequency-selector__badge-cell"
 						>
 							{ reportFrequency === savedFrequency && (
-								<Fragment>
-									{ renderCurrentSubscriptionPill() }
-								</Fragment>
+								<CurrentSubscriptionPill
+									formattedNextReportDate={
+										formattedNextReportDate
+									}
+								/>
 							) }
 						</div>
 					) ) }
@@ -277,8 +295,14 @@ export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 							{ isUserSubscribed &&
 								savedFrequency &&
 								isMobileBreakpoint &&
-								reportFrequency === savedFrequency &&
-								renderCurrentSubscriptionPill( isSelected ) }
+								reportFrequency === savedFrequency && (
+									<CurrentSubscriptionPill
+										selected={ isSelected }
+										formattedNextReportDate={
+											formattedNextReportDate
+										}
+									/>
+								) }
 
 							<div className="googlesitekit-frequency-selector__content">
 								<div className="googlesitekit-frequency-selector__label">

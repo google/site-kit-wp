@@ -56,6 +56,80 @@ describe( 'core/user email reporting settings', () => {
 	} );
 
 	describe( 'actions', () => {
+		describe( 'invalidateEmailReportingNextReport', () => {
+			it( 'keeps showing the previous timestamp until the fresh one arrives, then re-fetches exactly once', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetEmailReportingNextReport( {
+						timestamp: 1_800_000_000,
+					} );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getEmailReportingNextReportTimestamp()
+				).toEqual( 1_800_000_000 );
+
+				fetchMock.getOnce( emailReportingNextReportEndpoint, {
+					body: { timestamp: 1_900_000_000 },
+				} );
+
+				const dispatchPromise = registry
+					.dispatch( CORE_USER )
+					.invalidateEmailReportingNextReport();
+
+				// The stale value should remain visible while the request is
+				// in flight, rather than being cleared to `undefined` first,
+				// so consuming components don't flash empty while refetching.
+				expect(
+					registry
+						.select( CORE_USER )
+						.getEmailReportingNextReportTimestamp()
+				).toEqual( 1_800_000_000 );
+
+				await dispatchPromise;
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getEmailReportingNextReportTimestamp()
+				).toEqual( 1_900_000_000 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'keeps showing the previous timestamp if the refetch fails', async () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetEmailReportingNextReport( {
+						timestamp: 1_800_000_000,
+					} );
+
+				fetchMock.getOnce( emailReportingNextReportEndpoint, {
+					body: {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					},
+					status: 500,
+				} );
+
+				await registry
+					.dispatch( CORE_USER )
+					.invalidateEmailReportingNextReport();
+
+				expect( console ).toHaveErrored();
+
+				// A failed refetch should not wipe out the last known-good
+				// value; the previous (possibly now-stale) date is still a
+				// better experience than showing nothing.
+				expect(
+					registry
+						.select( CORE_USER )
+						.getEmailReportingNextReportTimestamp()
+				).toEqual( 1_800_000_000 );
+			} );
+		} );
+
 		describe( 'saveEmailReportingSettings', () => {
 			it( 'should save settings', async () => {
 				const settings = {
@@ -66,6 +140,12 @@ describe( 'core/user email reporting settings', () => {
 				fetchMock.postOnce( emailReportingSettingsEndpoint, {
 					body: settings,
 					status: 200,
+				} );
+
+				// The frequency is changing (from unset), so saving triggers
+				// an immediate refetch of the next report timestamp.
+				fetchMock.getOnce( emailReportingNextReportEndpoint, {
+					body: { timestamp: 1_800_000_000 },
 				} );
 
 				await registry
@@ -480,6 +560,12 @@ describe( 'core/user email reporting settings', () => {
 					body: { subscribed: true, frequency: 'weekly' },
 				} );
 
+				// The frequency is changing (from unset), so saving triggers
+				// an immediate refetch of the next report timestamp.
+				fetchMock.getOnce( emailReportingNextReportEndpoint, {
+					body: { timestamp: 1_800_000_000 },
+				} );
+
 				const promise = registry
 					.dispatch( CORE_USER )
 					.saveEmailReportingSettings( {
@@ -554,6 +640,76 @@ describe( 'core/user email reporting settings', () => {
 		} );
 	} );
 
+	describe( 'getEmailReportingNextReportTimestamp', () => {
+		it( 'should use a resolver to make a network request', async () => {
+			fetchMock.getOnce( emailReportingNextReportEndpoint, {
+				body: { timestamp: 1_800_000_000 },
+			} );
+
+			const initialTimestamp = registry
+				.select( CORE_USER )
+				.getEmailReportingNextReportTimestamp();
+
+			expect( initialTimestamp ).toEqual( undefined );
+			await untilResolved(
+				registry,
+				CORE_USER
+			).getEmailReportingNextReportTimestamp();
+
+			const timestamp = registry
+				.select( CORE_USER )
+				.getEmailReportingNextReportTimestamp();
+
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
+			expect( timestamp ).toEqual( 1_800_000_000 );
+		} );
+
+		it( 'should not make a network request if the timestamp is already present', async () => {
+			registry.dispatch( CORE_USER ).receiveGetEmailReportingNextReport( {
+				timestamp: 1_800_000_000,
+			} );
+
+			const timestamp = registry
+				.select( CORE_USER )
+				.getEmailReportingNextReportTimestamp();
+
+			await untilResolved(
+				registry,
+				CORE_USER
+			).getEmailReportingNextReportTimestamp();
+
+			expect( fetchMock ).not.toHaveFetched();
+			expect( timestamp ).toEqual( 1_800_000_000 );
+		} );
+
+		it( 'should dispatch an error if the request fails', async () => {
+			const response = {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			};
+
+			fetchMock.getOnce( emailReportingNextReportEndpoint, {
+				body: response,
+				status: 500,
+			} );
+
+			registry.select( CORE_USER ).getEmailReportingNextReportTimestamp();
+			await untilResolved(
+				registry,
+				CORE_USER
+			).getEmailReportingNextReportTimestamp();
+
+			expect( console ).toHaveErrored();
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+			const timestamp = registry
+				.select( CORE_USER )
+				.getEmailReportingNextReportTimestamp();
+			expect( timestamp ).toEqual( undefined );
+		} );
+	} );
+
 	describe( 'getEmailReportingSavedFrequency', () => {
 		it( 'should return undefined when no saved settings are present', () => {
 			expect(
@@ -598,6 +754,12 @@ describe( 'core/user email reporting settings', () => {
 			fetchMock.postOnce( emailReportingSettingsEndpoint, {
 				body: newSettings,
 				status: 200,
+			} );
+
+			// The frequency is changing (from unset), so saving triggers an
+			// immediate refetch of the next report timestamp.
+			fetchMock.getOnce( emailReportingNextReportEndpoint, {
+				body: { timestamp: 1_800_000_000 },
 			} );
 
 			await registry

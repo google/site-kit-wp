@@ -76,6 +76,7 @@ class REST_Email_Reporting_Controller {
 					$paths,
 					array(
 						'/' . REST_Routes::REST_ROOT . '/core/user/data/email-reporting-settings',
+						'/' . REST_Routes::REST_ROOT . '/core/user/data/email-reporting-next-report',
 					)
 				);
 			}

@@ -39,6 +39,9 @@ const baseInitialState = {
 		savedSettings: undefined,
 		isSavingSettings: false,
 	},
+	emailReportingNextReport: {
+		timestamp: undefined,
+	},
 };
 
 const fetchStoreReducerCallback = createReducer(
@@ -47,6 +50,20 @@ const fetchStoreReducerCallback = createReducer(
 		state.emailReporting.savedSettings = emailReportingSettings;
 	}
 );
+
+const fetchGetEmailReportingNextReportStore = createFetchStore( {
+	baseName: 'getEmailReportingNextReport',
+	controlCallback: () =>
+		get( 'core', 'user', 'email-reporting-next-report', undefined, {
+			// Always fetch fresh data instead of relying on a cached value,
+			// since the next report timestamp depends on the current time
+			// and can go stale quickly.
+			useCache: false,
+		} ),
+	reducerCallback: createReducer( ( state, { timestamp } ) => {
+		state.emailReportingNextReport.timestamp = timestamp;
+	} ),
+} );
 
 const fetchGetEmailReportingSettingsStore = createFetchStore( {
 	baseName: 'getEmailReportingSettings',
@@ -99,6 +116,31 @@ const SET_EMAIL_REPORTING_SETTINGS_SAVING_FLAG =
 const RESET_EMAIL_REPORTING_SETTINGS = 'RESET_EMAIL_REPORTING_SETTINGS';
 
 const baseActions = {
+	/**
+	 * Re-fetches the next report timestamp from the server.
+	 *
+	 * Should be called whenever the saved email reporting frequency changes
+	 * (e.g. after saving settings), since the previously fetched timestamp
+	 * would otherwise remain stale for the lifetime of the page.
+	 *
+	 * Deliberately leaves the previous timestamp in place until the fresh
+	 * one arrives (rather than clearing it first) so the displayed date
+	 * doesn't flash away and back while refetching.
+	 *
+	 * @since n.e.x.t
+	 */
+	*invalidateEmailReportingNextReport() {
+		const registry = yield commonActions.getRegistry();
+
+		registry
+			.dispatch( CORE_USER )
+			.invalidateResolutionForStoreSelector(
+				'getEmailReportingNextReportTimestamp'
+			);
+
+		yield fetchGetEmailReportingNextReportStore.actions.fetchGetEmailReportingNextReport();
+	},
+
 	/**
 	 * Sets email reporting settings.
 	 *
@@ -254,6 +296,18 @@ const baseResolvers = {
 			yield fetchGetEmailReportingSettingsStore.actions.fetchGetEmailReportingSettings();
 		}
 	},
+
+	*getEmailReportingNextReportTimestamp() {
+		const registry = yield commonActions.getRegistry();
+
+		const timestamp = registry
+			.select( CORE_USER )
+			.getEmailReportingNextReportTimestamp();
+
+		if ( timestamp === undefined ) {
+			yield fetchGetEmailReportingNextReportStore.actions.fetchGetEmailReportingNextReport();
+		}
+	},
 };
 
 const baseSelectors = {
@@ -339,9 +393,22 @@ const baseSelectors = {
 	getEmailReportingSavedFrequency( state ) {
 		return state?.emailReporting?.savedSettings?.frequency;
 	},
+
+	/**
+	 * Gets the next scheduled email report timestamp for the user's saved frequency.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(number|undefined)} Unix timestamp (in seconds) of the next scheduled report; `undefined` if not loaded.
+	 */
+	getEmailReportingNextReportTimestamp( state ) {
+		return state.emailReportingNextReport.timestamp;
+	},
 };
 
 const store = combineStores(
+	fetchGetEmailReportingNextReportStore,
 	fetchGetEmailReportingSettingsStore,
 	fetchSaveEmailReportingSettingsStore,
 	{

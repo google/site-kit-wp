@@ -29,7 +29,6 @@ import conversionReportingSettings from './conversion-reporting-settings';
 import dateRange from './date-range';
 import disconnect from './disconnect';
 import dismissedItems from './dismissed-items';
-import emailReportingNextReport from './email-reporting-next-report';
 import emailReportingSettings from './email-reporting-settings';
 import expirableItems from './expirable-items';
 import featureTours from './feature-tours';
@@ -66,7 +65,6 @@ const store = combineStores(
 	userInfo,
 	userInputSettings,
 	conversionReportingSettings,
-	emailReportingNextReport,
 	emailReportingSettings,
 	initialSetupSettings,
 	setupFlow

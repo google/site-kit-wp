@@ -126,6 +126,25 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ), 'Expected API fetch preload paths filter to be registered' );
 	}
 
+	public function test_register_preload_paths() {
+		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
+
+		$this->controller->register();
+
+		$paths = apply_filters( 'googlesitekit_apifetch_preload_paths', array() );
+
+		$this->assertContains(
+			'/' . REST_Routes::REST_ROOT . '/core/user/data/email-reporting-settings',
+			$paths,
+			'Expected email-reporting-settings path to be preloaded'
+		);
+		$this->assertContains(
+			'/' . REST_Routes::REST_ROOT . '/core/user/data/email-reporting-next-report',
+			$paths,
+			'Expected email-reporting-next-report path to be preloaded'
+		);
+	}
+
 	public function test_get_routes() {
 		$this->controller->register();
 

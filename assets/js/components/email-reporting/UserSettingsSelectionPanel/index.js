@@ -66,16 +66,6 @@ export default function UserSettingsSelectionPanel() {
 		return select( CORE_USER ).isSavingEmailReportingSettings();
 	} );
 
-	// Only fetch the next report timestamp once the side panel is opened, and
-	// always fetch it fresh (see the `useCache: false` fetch option on this
-	// selector's store) so the displayed date never goes stale.
-	useSelect( ( select ) => {
-		if ( ! isOpen ) {
-			return undefined;
-		}
-
-		return select( CORE_USER ).getEmailReportingNextReportTimestamp();
-	} );
 	const frequency = useSelect( ( select ) =>
 		select( CORE_USER ).getEmailReportingFrequency()
 	);
