@@ -403,6 +403,9 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 					},
 					'module'                   => $this,
 					'ad_blocking_recovery_tag' => $this->ad_blocking_recovery_tag,
+					'normalize_account_id'     => function ( $account_id ) {
+						return self::normalize_account_id( $account_id );
+					},
 				)
 			),
 		);
