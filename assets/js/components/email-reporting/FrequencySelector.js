@@ -33,10 +33,10 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
+import CurrentSubscriptionPill from '@/js/components/email-reporting/CurrentSubscriptionPill';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import PreviewBlocks from '@/js/components/PreviewBlocks';
 import Typography from '@/js/components/Typography';
-import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
@@ -44,49 +44,6 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { getLocale } from '@/js/util';
-
-function CurrentSubscriptionPill( {
-	selected = false,
-	formattedNextReportDate,
-} ) {
-	return (
-		<div
-			className={ classnames(
-				'googlesitekit-frequency-selector__current-subscription',
-				{
-					'googlesitekit-frequency-selector__current-subscription--selected':
-						selected,
-				}
-			) }
-		>
-			<Typography
-				type={ TYPE_BODY }
-				size={ SIZE_SMALL }
-				className="googlesitekit-frequency-selector__current-subscription-label"
-			>
-				{ __( 'Current subscription', 'google-site-kit' ) }
-			</Typography>
-			{ formattedNextReportDate && (
-				<Typography
-					type={ TYPE_BODY }
-					size={ SIZE_SMALL }
-					className="googlesitekit-frequency-selector__next-report"
-				>
-					{ sprintf(
-						/* translators: %s: formatted date, e.g. Jul 14, 2026. */
-						__( 'Next report: %s', 'google-site-kit' ),
-						formattedNextReportDate
-					) }
-				</Typography>
-			) }
-		</div>
-	);
-}
-
-CurrentSubscriptionPill.propTypes = {
-	selected: PropTypes.bool,
-	formattedNextReportDate: PropTypes.string,
-};
 
 export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 	const breakpoint = useBreakpoint();
