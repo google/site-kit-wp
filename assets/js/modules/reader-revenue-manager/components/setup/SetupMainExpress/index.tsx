@@ -17,24 +17,29 @@
  */
 
 /**
+ * External dependencies
+ */
+import type { ComponentType, FC } from 'react';
+
+/**
  * Internal dependencies
  */
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { SetupCTANewsletterSignup } from './cta-setups';
+import ExpressSetupDefault from './ExpressSetupDefault';
 
-export default function SetupMainExpress() {
+const SetupMainExpress: FC = () => {
 	const [ cta ] = useQueryArg( 'cta' );
 
-	const ctaSetupComponents: Record< string, React.ComponentType > = {
+	const ctaSetupComponents: Record< string, ComponentType > = {
 		[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: SetupCTANewsletterSignup,
 	};
 
-	const ExpressSetupComponent = ctaSetupComponents[ cta ] || null;
-
-	if ( ! ExpressSetupComponent ) {
-		return null;
-	}
+	const ExpressSetupComponent =
+		ctaSetupComponents[ cta ] ?? ExpressSetupDefault;
 
 	return <ExpressSetupComponent />;
-}
+};
+
+export default SetupMainExpress;
