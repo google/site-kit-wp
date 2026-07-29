@@ -19,6 +19,7 @@ use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Golink_Handler;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Settings;
 use Google\Site_Kit\Core\Email_Reporting\Eligible_Subscribers_Query;
 use Google\Site_Kit\Core\Email_Reporting\REST_Email_Reporting_Controller;
+use Google\Site_Kit\Core\Email_Reporting\Subscribed_Users_Query;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Golinks\Golinks;
@@ -132,7 +133,8 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 			new Eligible_Subscribers_Query( $this->modules, $this->user_options ),
 			new Email(),
 			$golinks,
-			$health_check
+			$health_check,
+			new Subscribed_Users_Query( $this->user_settings, $this->modules )
 		);
 		$this->original_sharing_option = get_option( Module_Sharing_Settings::OPTION );
 	}
@@ -175,6 +177,8 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-eligible-subscribers',
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-errors',
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-invite-user',
+			'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-subscribed-users',
+			'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-unsubscribe-user',
 		);
 		$get_routes = array_intersect( $routes, array_keys( $server->get_routes() ) );
 
@@ -491,7 +495,8 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 			new Eligible_Subscribers_Query( $this->modules, $this->user_options ),
 			new Email(),
 			new Golinks( $this->context ),
-			$health_check
+			$health_check,
+			new Subscribed_Users_Query( $this->user_settings, $this->modules )
 		);
 
 		$batch_query = $this->createMock( Email_Log_Batch_Query::class );
@@ -728,6 +733,241 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->assertEquals( 'email_reporting_invite_rate_limited', $response->get_data()['code'], 'Rate-limited invite should return expected error code.' );
 	}
 
+	public function test_get_subscribed_users__permission_denied_for_non_admin() {
+		$non_admin = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $non_admin );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request  = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-subscribed-users' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 403, $response->get_status(), 'Non-admin should receive 403 when requesting subscribed users.' );
+	}
+
+	public function test_get_subscribed_users__returns_shaped_users_and_total() {
+		$subscriber_id = $this->create_admin_with_token( 'subscribed-user', 'Subscribed User', 'subscribed-user@example.com' );
+		$this->subscribe_user( $subscriber_id );
+
+		// An authenticated admin who never subscribed must not be listed.
+		$this->create_admin_with_token( 'unsubscribed-user', 'Unsubscribed User', 'unsubscribed-user@example.com' );
+
+		wp_set_current_user( $this->primary_admin_id );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request  = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-subscribed-users' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertEquals( 200, $response->get_status(), 'Subscribed users request should succeed for admins.' );
+		$this->assertSame( 1, $data['total'], 'Only subscribed users should be counted in total.' );
+		$this->assertSame( 1, $data['totalPages'], 'Total pages should be calculated from total and per-page values.' );
+		$this->assertSame(
+			array(
+				array(
+					'id'              => $subscriber_id,
+					'displayName'     => 'Subscribed User',
+					'email'           => 'subscribed-user@example.com',
+					'role'            => 'administrator',
+					'roleDisplayName' => 'Administrator',
+				),
+			),
+			$data['users'],
+			'Subscribed users should be returned with the expected shape.'
+		);
+	}
+
+	public function test_get_subscribed_users__respects_pagination() {
+		$user_ids = array();
+
+		for ( $i = 1; $i <= 5; $i++ ) {
+			$user_id    = $this->create_admin_with_token(
+				sprintf( 'subscriber-%02d', $i ),
+				sprintf( 'Subscriber %02d', $i ),
+				sprintf( 'subscriber-%02d@example.com', $i )
+			);
+			$user_ids[] = $user_id;
+			$this->subscribe_user( $user_id );
+		}
+
+		wp_set_current_user( $this->primary_admin_id );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-subscribed-users' );
+		$request->set_param( 'per_page', 2 );
+		$request->set_param( 'page', 2 );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertSame( 5, $data['total'], 'Total should include every subscribed user.' );
+		$this->assertSame( 3, $data['totalPages'], 'Total pages should be calculated from total and per-page values.' );
+		$this->assertSame(
+			array_slice( $user_ids, 2, 2 ),
+			wp_list_pluck( $data['users'], 'id' ),
+			'Second page should include the expected user IDs ordered by display name.'
+		);
+	}
+
+	public function test_get_subscribed_users__search_filters_results() {
+		$alpha_name_id  = $this->create_admin_with_token( 'alpha-user', 'Alpha Name', 'alpha@example.com' );
+		$alpha_email_id = $this->create_admin_with_token( 'mail-user', 'No Match Name', 'alpha-mail@example.com' );
+		$beta_id        = $this->create_admin_with_token( 'beta-user', 'Beta Name', 'beta@example.com' );
+
+		$this->subscribe_user( $alpha_name_id );
+		$this->subscribe_user( $alpha_email_id );
+		$this->subscribe_user( $beta_id );
+
+		wp_set_current_user( $this->primary_admin_id );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-subscribed-users' );
+		$request->set_param( 'search', 'alpha' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertSame( 2, $data['total'], 'Search should only count matching users.' );
+		$this->assertEqualSets(
+			array( $alpha_name_id, $alpha_email_id ),
+			wp_list_pluck( $data['users'], 'id' ),
+			'Search should match display names and emails.'
+		);
+
+		$request->set_param( 'search', 'this-will-not-match' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertSame( array(), $data['users'], 'Non-matching search should return no users.' );
+		$this->assertSame( 0, $data['total'], 'Non-matching search should return total of zero.' );
+		$this->assertSame( 0, $data['totalPages'], 'Non-matching search should return zero total pages.' );
+	}
+
+	public function test_unsubscribe_user__permission_denied_for_non_admin() {
+		$subscriber_id = $this->create_admin_with_token( 'subscribed-user' );
+		$this->subscribe_user( $subscriber_id );
+
+		$non_admin = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $non_admin );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new \WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-unsubscribe-user' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'userID' => $subscriber_id,
+				),
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 403, $response->get_status(), 'Non-admin should receive 403 when unsubscribing a user.' );
+		$this->assertTrue(
+			$this->is_user_subscribed( $subscriber_id ),
+			'Refused request should leave the subscription untouched.'
+		);
+	}
+
+	public function test_unsubscribe_user__removes_user_from_subscribed_listing() {
+		$subscriber_id = $this->create_admin_with_token( 'subscribed-user', 'Subscribed User', 'subscribed-user@example.com' );
+		$this->subscribe_user( $subscriber_id, User_Email_Reporting_Settings::FREQUENCY_MONTHLY );
+
+		wp_set_current_user( $this->primary_admin_id );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new \WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-unsubscribe-user' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'userID' => $subscriber_id,
+				),
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status(), 'Unsubscribing a subscribed user should return 200.' );
+		$this->assertTrue( $response->get_data()['success'], 'Unsubscribing a subscribed user should return success true.' );
+		$this->assertFalse( $this->is_user_subscribed( $subscriber_id ), 'Unsubscribed user should no longer be subscribed.' );
+		$this->assertSame(
+			array(),
+			( new Subscribed_Users_Query( $this->user_settings, $this->modules ) )->for_frequency( User_Email_Reporting_Settings::FREQUENCY_MONTHLY ),
+			'Unsubscribed user should no longer receive reports for their frequency.'
+		);
+		$this->assertSame(
+			$this->primary_admin_id,
+			get_current_user_id(),
+			'Unsubscribing should restore the original user context.'
+		);
+
+		$listing_request  = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-subscribed-users' );
+		$listing_response = rest_get_server()->dispatch( $listing_request );
+
+		$this->assertSame( 0, $listing_response->get_data()['total'], 'Unsubscribed user should be removed from the subscribed listing.' );
+	}
+
+	public function test_unsubscribe_user__returns_error_for_invalid_user_id() {
+		wp_set_current_user( $this->primary_admin_id );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new \WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-unsubscribe-user' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'userID' => 999999,
+				),
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 400, $response->get_status(), 'Invalid user ID should return 400.' );
+		$this->assertEquals( 'email_reporting_invalid_user_id', $response->get_data()['code'], 'Invalid user ID should return expected error code.' );
+	}
+
+	public function test_unsubscribe_user__returns_error_for_non_subscribed_user() {
+		$user_id = $this->create_admin_with_token( 'unsubscribed-user' );
+
+		wp_set_current_user( $this->primary_admin_id );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new \WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-unsubscribe-user' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'userID' => $user_id,
+				),
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 400, $response->get_status(), 'Non-subscribed user should return 400.' );
+		$this->assertEquals( 'email_reporting_user_not_subscribed', $response->get_data()['code'], 'Non-subscribed user should return expected error code.' );
+	}
+
 	public function provider_wrong_data() {
 		return array(
 			'wrong data type'     => array( '{}' ),
@@ -751,6 +991,23 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->set_user_access_token( $user_id );
 
 		return $user_id;
+	}
+
+	private function subscribe_user( $user_id, $frequency = User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) {
+		$user_settings = new User_Email_Reporting_Settings( new User_Options( $this->context, $user_id ) );
+
+		$user_settings->merge(
+			array(
+				'subscribed' => true,
+				'frequency'  => $frequency,
+			)
+		);
+	}
+
+	private function is_user_subscribed( $user_id ) {
+		$user_settings = new User_Email_Reporting_Settings( new User_Options( $this->context, $user_id ) );
+
+		return $user_settings->is_user_subscribed();
 	}
 
 	private function set_user_access_token( $user_id ) {
