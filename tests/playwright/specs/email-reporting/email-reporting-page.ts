@@ -51,10 +51,20 @@ export class EmailReportingPage {
 	 * @return {Promise<void>} The promise that resolves when the email reporting settings page is opened.
 	 */
 	async openSettings() {
-		await this.page.getByRole( 'button', { name: 'Account' } ).click();
-		await this.page
-			.getByRole( 'menuitem', { name: 'Manage email reports' } )
-			.click();
+		await this.manageEmailReportsButton.click();
+	}
+
+	/**
+	 * Get the header button that opens the email reports panel.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Locator} The manage email reports header button.
+	 */
+	get manageEmailReportsButton() {
+		return this.page.getByRole( 'button', {
+			name: 'Manage email reports',
+		} );
 	}
 
 	/**
