@@ -23,19 +23,13 @@ import {
 	DefaultModuleSetup,
 	type ModuleSetupLayoutProps,
 } from '@/js/components/setup';
-import { useFeature } from '@/js/hooks/useFeature';
-import useQueryArg from '@/js/hooks/useQueryArg';
+import useIsInitialSetupFlow from '@/js/hooks/useIsInitialSetupFlow';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import InitialSetupLayout from './InitialSetupLayout';
 
 export default function SetupLayout( { moduleSlug }: ModuleSetupLayoutProps ) {
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-	const [ showProgress ] = useQueryArg( 'showProgress' );
-
 	const isInitialSetupFlow =
-		setupFlowRefreshEnabled &&
-		moduleSlug === MODULE_SLUG_ANALYTICS_4 &&
-		showProgress === 'true';
+		useIsInitialSetupFlow() && moduleSlug === MODULE_SLUG_ANALYTICS_4;
 
 	if ( ! isInitialSetupFlow ) {
 		return <DefaultModuleSetup moduleSlug={ moduleSlug } />;
