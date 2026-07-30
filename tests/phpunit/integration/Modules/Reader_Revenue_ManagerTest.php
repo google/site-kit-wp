@@ -195,11 +195,25 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'publications',
 				'sync-publication-onboarding-state',
 				'user-settings',
+			),
+			$this->reader_revenue_manager->get_datapoints(),
+			'Reader Revenue Manager module should have correct datapoints.'
+		);
+	}
+
+	public function test_get_datapoints__with_express_setup_flag() {
+		$this->enable_feature( 'rrmExpressSetup' );
+
+		$this->assertEqualSets(
+			array(
+				'publications',
+				'sync-publication-onboarding-state',
+				'user-settings',
 				'ctas',
 				'create-cta',
 			),
 			$this->reader_revenue_manager->get_datapoints(),
-			'Reader Revenue Manager module should have correct datapoints.'
+			'Reader Revenue Manager module should include the CTA datapoints when the express setup flag is enabled.'
 		);
 	}
 
