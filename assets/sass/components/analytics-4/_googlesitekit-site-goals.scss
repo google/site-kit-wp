@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// The indicator dot is 9px and its gap 10px, so a tile's text starts 19px past
+// The indicator dot is 9px and its gap is 10px, so a tile's text starts 19px past
 // the section's content edge.
 $site-goals-tile-content-offset: 19px;
 
@@ -58,10 +58,11 @@ $site-goals-tile-connector-offset: 3.5px;
 				display: flex;
 				gap: 10px;
 
-				// This row's gap already spaces the collapse chevron, so its
-				// own 10px right margin would stack on top and push the title
-				// 10px past the edge the sections share. IconWrapper sets that
-				// margin inline, so clearing it needs !important.
+				// The row's gap already adds the space before the title
+				// (the flex `gap: 10px` this rule sets). IconWrapper's inline
+				// `margin-right: 10px` would move the title 10px right of
+				// the edge the sections align to. Only `!important`
+				// overrides an inline style.
 				.googlesitekit-icon-wrapper {
 					margin-right: 0 !important;
 				}
@@ -238,9 +239,8 @@ $site-goals-tile-connector-offset: 3.5px;
 		padding: 18px 0;
 		position: relative;
 
-		// This used to be border-left: 2px solid, but that takes the box's
-		// first 2px and pushes the 9px dot off x: 0. A ::before keeps the box
-		// starting at x: 0 instead.
+		// The connector is a `::before` rather than a border-left, so the
+		// box and its 9px dot stay at x: 0.
 		&::before {
 			background: $c-surfaces-surface-1;
 			bottom: 0;
@@ -360,9 +360,8 @@ $site-goals-tile-connector-offset: 3.5px;
 			text-align: right;
 		}
 
-		// These three states hide the connector and the dot (both ::before
-		// rules), so padding sets the text's start: 16px below $bp-nonMobile,
-		// 18px from there up, versus the 19px an indicator tile uses.
+		// These states hide the connector and the dot, so padding sets
+		// where the text starts.
 		&.googlesitekit-site-goals-tile--primary__positive,
 		&.googlesitekit-site-goals-tile--primary__negative,
 		&.googlesitekit-site-goals-tile--primary__neutral {
