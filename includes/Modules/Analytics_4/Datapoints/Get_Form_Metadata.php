@@ -94,9 +94,11 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 			$metadata = array();
 
 			foreach ( $form_ids as $form_id ) {
-				// Both branches key the result by the value the request asked
-				// for, so the JS side matches it back exactly. Re-keying
-				// through `absint()` would turn "00123" into "123".
+				// Note: ensure the value returned matches what the
+				// JS side requested precisely.
+				//
+				// Re-keying through `absint()`, for instance, would turn
+				// "00123" into "123" and cause a mismatch in the JS.
 				if ( is_numeric( $form_id ) ) {
 					// A form post ID is a positive integer, so a zero or a
 					// negative value names no form and never reaches the
@@ -183,10 +185,6 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	 * }
 	 */
 	protected function resolve_form_metadata_by_slug( $slug ) {
-		// Passing the post types as an array confines the lookup to them.
-		// Given one post type as a string, `get_page_by_path()` searches
-		// attachments too, and an attachment sharing the slug would then
-		// disclose its title.
 		$form = get_page_by_path( $slug, OBJECT, array_keys( self::FORM_SLUG_POST_TYPES ) );
 
 		$title = '';
@@ -207,10 +205,11 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	 * to null.
 	 *
 	 * `get_the_title()` runs the stored title through the `the_title` filters.
-	 * One of those filters is WordPress core's `wptexturize()`, which rewrites
-	 * a bare "&" as `&#038;` and a straight apostrophe as the curly `&#8217;`.
+	 * One of those filters is `wptexturize()`, which rewrites "&" to `&#038;`
+	 * and a single quote to an apostrophe (`&#8217;`).
+	 *
 	 * A Site Goals breakdown tab prints its label as plain text, so a tab for
-	 * a form named "Tips & Tricks" would otherwise read "Tips &#038; Tricks"
+	 * a form named "Tips & Tricks" would read "Tips &#038; Tricks"
 	 * on screen. Every title passes through here, including the Ninja Forms
 	 * one that skips those filters, so every plugin's title reaches the
 	 * dashboard with its entities decoded. An empty title means nothing

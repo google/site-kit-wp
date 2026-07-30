@@ -308,10 +308,10 @@ class Get_Form_MetadataTest extends TestCase {
 	}
 
 	public function test_create_request__does_not_disclose_the_title_of_an_attachment_holding_a_campaign_slug() {
-		// Given one post type as a string, `get_page_by_path()` searches
-		// attachments as well. The lookup passes an array of post types
-		// instead, so an attachment holding the slug must not resolve a
-		// title.
+		// When `get_page_by_path()` receives the post type as a string, it
+		// searches attachments too. The lookup passes an array of post types
+		// to keep attachments out, so an attachment holding the campaign's
+		// slug must not have its title disclosed.
 		$attachment_id = self::factory()->post->create(
 			array(
 				'post_title'  => 'Secret attachment',
