@@ -18,7 +18,14 @@
  * Internal dependencies
  */
 import { expect, test } from '../../playwright';
-import { asUser, withFixtures, withPlugins } from '../../wordpress';
+import {
+	asUser,
+	withConnectedModules,
+	withFeatureFlags,
+	withFixtures,
+	withPlugins,
+	withSharedModules,
+} from '../../wordpress';
 import {
 	EmailReportingPage,
 	VerifyPanelStateOptions,
@@ -119,4 +126,149 @@ test.describe( 'Email Reporting', { annotation: [ user, plugins ] }, () => {
 			await pageObject.verifyPanelState( subscribedPanelState );
 		} );
 	} );
+
+	test( 'should open the panel from the header, not the user menu', async ( {
+		wp,
+	} ) => {
+		await wp.visitDashboard();
+
+		const pageObject = new EmailReportingPage( wp.page );
+
+		await expect( pageObject.manageEmailReportsButton ).toBeVisible();
+
+		await pageObject.manageEmailReportsButton.click();
+		await expect( pageObject.panelTitle ).toBeVisible();
+
+		await wp.page.keyboard.press( 'Escape' );
+
+		// The entry point used to live in the user menu.
+		await wp.page.getByRole( 'button', { name: 'Account' } ).click();
+		await expect(
+			wp.page.getByRole( 'menuitem', { name: 'Manage email reports' } )
+		).toBeHidden();
+	} );
+
+	test(
+		'should not offer the header entry point during the initial setup flow',
+		{ annotation: [ withFeatureFlags( 'setupFlowRefresh' ) ] },
+		async ( { wp } ) => {
+			await wp.visitAdmin(
+				'admin.php?page=googlesitekit-dashboard&showProgress=true'
+			);
+
+			const pageObject = new EmailReportingPage( wp.page );
+
+			// The PDF button sits directly beside the entry point, so its presence
+			// proves the header rendered and the icon is missing because this is
+			// the initial setup flow, not because the page never loaded.
+			await expect(
+				wp.page.getByRole( 'button', { name: 'Download PDF report' } )
+			).toBeVisible();
+			await expect( pageObject.manageEmailReportsButton ).toBeHidden();
+		}
+	);
 } );
+
+// Runs as a non-authenticated editor with only site-level proxy credentials (no
+// `proxy-auth.php`), so the dashboard is view-only. Search Console is connected
+// (owned by the admin, ID 1) and shared with the editor role, which is one of the
+// two modules email reports draw data from. The editor has the shared-dashboard
+// splash pre-dismissed so it lands on the view-only dashboard directly.
+test.describe(
+	'Email Reporting (view-only with data access)',
+	{
+		annotation: [
+			asUser( 'editor', {
+				dismissedItems: [ 'shared_dashboard_splash' ],
+			} ),
+			withPlugins( 'proxy-credentials.php' ),
+			withConnectedModules( {
+				slug: 'search-console',
+				settings: {
+					propertyID: 'http://localhost:9002',
+					ownerID: 1,
+				},
+			} ),
+			withSharedModules( {
+				'search-console': {
+					sharedRoles: [ 'editor' ],
+					management: 'owner',
+				},
+			} ),
+		],
+	},
+	() => {
+		test( 'should open the panel from the header', async ( { wp } ) => {
+			await wp.visitDashboard();
+
+			const pageObject = new EmailReportingPage( wp.page );
+
+			await expect( pageObject.manageEmailReportsButton ).toBeVisible();
+
+			await pageObject.manageEmailReportsButton.click();
+			await expect( pageObject.panelTitle ).toBeVisible();
+		} );
+
+		test( 'should no longer offer the view-only menu item', async ( {
+			wp,
+		} ) => {
+			await wp.visitDashboard();
+
+			await wp.page.getByRole( 'button', { name: 'View only' } ).click();
+
+			await expect(
+				wp.page
+					.locator( '#view-only-menu' )
+					.getByText( 'Manage email reports' )
+			).toBeHidden();
+		} );
+	}
+);
+
+// The same view-only setup, but only PageSpeed Insights is shared. It is
+// shareable yet is not a module email reports draw data from, so the editor
+// reaches the view-only dashboard without email reporting data access. Search
+// Console still has to be connected because Site Kit is not set up without it,
+// but leaving it unshared keeps it out of the editor's viewable modules.
+test.describe(
+	'Email Reporting (view-only without data access)',
+	{
+		annotation: [
+			asUser( 'editor', {
+				dismissedItems: [ 'shared_dashboard_splash' ],
+			} ),
+			withPlugins( 'proxy-credentials.php' ),
+			withConnectedModules(
+				{
+					slug: 'search-console',
+					settings: {
+						propertyID: 'http://localhost:9002',
+						ownerID: 1,
+					},
+				},
+				{ slug: 'pagespeed-insights', settings: { ownerID: 1 } }
+			),
+			withSharedModules( {
+				'pagespeed-insights': {
+					sharedRoles: [ 'editor' ],
+					management: 'owner',
+				},
+			} ),
+		],
+	},
+	() => {
+		test( 'should not offer the header entry point', async ( { wp } ) => {
+			await wp.visitDashboard();
+
+			const pageObject = new EmailReportingPage( wp.page );
+
+			// The view-only menu proves this user reached the view-only dashboard,
+			// so a missing icon means they lack access to the data email reports
+			// draw on, not that the page failed to load.
+			await expect(
+				wp.page.getByRole( 'button', { name: 'View only' } )
+			).toBeVisible();
+			await expect( pageObject.manageEmailReportsButton ).toBeHidden();
+		} );
+	}
+);
