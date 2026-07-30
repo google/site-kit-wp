@@ -828,6 +828,7 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		isDismissible: true,
+		featureFlag: 'pdfGeneration',
 	},
 	[ WELCOME_MODAL_NOTIFICATION ]: {
 		Component: WelcomeModal,
