@@ -807,6 +807,7 @@ Ready.args = {
 		seedGoalDriverReports( registry, [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 	},
 };
+Ready.scenario = {};
 
 export const GatheringBreakdownData = Template.bind( {} ) as Story;
 GatheringBreakdownData.storyName = 'Gathering Breakdown Data';
@@ -864,6 +865,7 @@ TabbedBreakdownOtherSources.args = {
 		seedTabbedBreakdown( registry, { unattributedCount: 12 } );
 	},
 };
+TabbedBreakdownOtherSources.scenario = {};
 
 export const ReadyAddToCart = Template.bind( {} ) as Story;
 ReadyAddToCart.storyName = 'Ready (Add to Cart)';
