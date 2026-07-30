@@ -129,9 +129,9 @@ const fetchGetAdvancedDataBreakdownsSettingsStore = createFetchStore( {
 			MODULE_SLUG_ANALYTICS_4,
 			'advanced-data-breakdowns-settings',
 			{},
-			// The shared `get()` helper types its options as all-required, but
-			// they are optional at runtime, so cast to pass only `useCache`.
-			{ useCache: false } as Parameters< typeof get >[ 4 ]
+			{
+				useCache: false,
+			}
 		);
 	},
 	reducerCallback: fetchStoreReducerCallback,

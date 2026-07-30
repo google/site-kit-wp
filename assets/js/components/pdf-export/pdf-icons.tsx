@@ -31,12 +31,27 @@ import { ComponentType } from 'react';
 /**
  * Internal dependencies
  */
+import {
+	CONTEXT_MAIN_DASHBOARD_CONTENT,
+	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
+	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+	CONTEXT_MAIN_DASHBOARD_SPEED,
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+} from '@/js/googlesitekit/widgets/default-contexts';
+import LogoG from '@/svg/graphics/logo-g.svg?pdf';
 import AudienceMetricIconCities from '@/svg/icons/audience-metric-icon-cities.svg?pdf';
 import AudienceMetricIconPagesPerVisit from '@/svg/icons/audience-metric-icon-pages-per-visit.svg?pdf';
 import AudienceMetricIconPageviews from '@/svg/icons/audience-metric-icon-pageviews.svg?pdf';
 import AudienceMetricIconTopContent from '@/svg/icons/audience-metric-icon-top-content.svg?pdf';
 import AudienceMetricIconVisitors from '@/svg/icons/audience-metric-icon-visitors.svg?pdf';
 import AudienceMetricIconVisitsPerVisitor from '@/svg/icons/audience-metric-icon-visits-per-visitor.svg?pdf';
+import ChevronRight from '@/svg/icons/chevron-right.svg?pdf';
+import NavContentIcon from '@/svg/icons/nav-content-icon.svg?pdf';
+import NavKeyMetricsIcon from '@/svg/icons/nav-key-metrics-icon.svg?pdf';
+import NavMonetizationIcon from '@/svg/icons/nav-monetization-icon.svg?pdf';
+import NavSpeedIcon from '@/svg/icons/nav-speed-icon.svg?pdf';
+import NavTrafficIcon from '@/svg/icons/nav-traffic-icon.svg?pdf';
+import StarFill from '@/svg/icons/star-fill.svg?pdf';
 import { scalePDFValue } from './pdf-scale';
 import { PDF_COLORS } from './pdf-theme';
 import { PDFIcon, PDFSvgFileProps } from './types';
@@ -47,7 +62,7 @@ const PDF_ICON_SIZE = 20;
 /**
  * Wraps a source SVG file, imported with `?pdf`, as a PDF report icon.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param SvgFile      The SVG file's component, from a `?pdf` import.
  * @param defaultColor Optional. The color to draw when the caller sets none. Defaults to `SURFACES_ON_SURFACE_VARIANT`, the muted color the dashboard draws these icons in.
@@ -86,3 +101,52 @@ export const PDFAudienceMetricIconCities = createPDFIcon(
 export const PDFAudienceMetricIconTopContent = createPDFIcon(
 	AudienceMetricIconTopContent
 );
+
+export const PDFNavKeyMetricsIcon = createPDFIcon(
+	NavKeyMetricsIcon,
+	PDF_COLORS.SURFACES_ON_SURFACE
+);
+export const PDFNavTrafficIcon = createPDFIcon(
+	NavTrafficIcon,
+	PDF_COLORS.SURFACES_ON_SURFACE
+);
+export const PDFNavContentIcon = createPDFIcon(
+	NavContentIcon,
+	PDF_COLORS.SURFACES_ON_SURFACE
+);
+export const PDFNavSpeedIcon = createPDFIcon(
+	NavSpeedIcon,
+	PDF_COLORS.SURFACES_ON_SURFACE
+);
+export const PDFNavMonetizationIcon = createPDFIcon(
+	NavMonetizationIcon,
+	PDF_COLORS.SURFACES_ON_SURFACE
+);
+
+/**
+ * Draws the Google "G" in its brand colors. The source file sets each fill, so
+ * the `color` prop has no effect.
+ */
+export const PDFLogoG = createPDFIcon( LogoG );
+
+export const PDFStarFill = createPDFIcon( StarFill, PDF_COLORS.VIOLET_V_600 );
+export const PDFChevronRight = createPDFIcon(
+	ChevronRight,
+	PDF_COLORS.CONTENT_SECONDARY
+);
+
+/**
+ * Maps a dashboard context slug to its section icon.
+ *
+ * The map covers the main-dashboard contexts that draw an icon in the report.
+ * Site goals has no entry, so `PDFChip` renders its chip with a label only.
+ *
+ * @since n.e.x.t
+ */
+export const SECTION_ICONS: Record< string, PDFIcon > = {
+	[ CONTEXT_MAIN_DASHBOARD_KEY_METRICS ]: PDFNavKeyMetricsIcon,
+	[ CONTEXT_MAIN_DASHBOARD_TRAFFIC ]: PDFNavTrafficIcon,
+	[ CONTEXT_MAIN_DASHBOARD_CONTENT ]: PDFNavContentIcon,
+	[ CONTEXT_MAIN_DASHBOARD_SPEED ]: PDFNavSpeedIcon,
+	[ CONTEXT_MAIN_DASHBOARD_MONETIZATION ]: PDFNavMonetizationIcon,
+};

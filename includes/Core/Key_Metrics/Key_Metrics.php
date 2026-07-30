@@ -51,7 +51,7 @@ class Key_Metrics implements Provides_Feature_Metrics {
 	/**
 	 * Key_Metrics_Setup_Is_Widget_Area_Hidden instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 * @var Key_Metrics_Setup_Is_Widget_Area_Hidden
 	 */
 	protected $key_metrics_setup_is_widget_area_hidden;

@@ -43,6 +43,8 @@ import {
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFCard from '@/js/components/pdf-export/shared-react-pdf-components/PDFCard';
+import PDFLink from '@/js/components/pdf-export/shared-react-pdf-components/PDFLink';
+import PDFPartialDataBadge from '@/js/components/pdf-export/shared-react-pdf-components/PDFPartialDataBadge';
 import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
 import { numFmt } from '@/js/util';
 import type {
@@ -67,6 +69,13 @@ const styles = createPDFStyles( {
 		paddingHorizontal: 25,
 		borderBottomWidth: 1,
 		borderBottomColor: PDF_COLORS.SURFACES_SURFACE_1,
+	},
+	// A row that keeps a title on the left and its Partial data badge on the
+	// right, both vertically centered, like the dashboard tile.
+	badgeRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
 	},
 	// Each section is inset from the card edges and draws a divider below it.
 	row: {
@@ -102,20 +111,28 @@ const styles = createPDFStyles( {
 	city: {
 		flex: 1,
 	},
+	cityName: {
+		// A long city name truncates to one line with an ellipsis. `@react-pdf`
+		// wraps text by default, so `maxLines` caps it at one line.
+		maxLines: 1,
+		textOverflow: 'ellipsis',
+	},
 	cityPercentage: {
 		marginTop: 2,
 	},
 	contentRow: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
-		marginVertical: 6,
+		marginBottom: 6,
 	},
-	contentLink: {
+	// The title fills the row remainder before the pageviews count.
+	contentTitle: {
 		flex: 1,
-		color: PDF_COLORS.CONTENT_SECONDARY,
 		marginRight: 30,
-		// A long title truncates to one line with an ellipsis. `@react-pdf`
-		// wraps text by default, so `maxLines` caps it at one line.
+	},
+	// A long title truncates to one line with an ellipsis. `@react-pdf`
+	// wraps text by default, so `maxLines` caps it at one line.
+	contentTitleText: {
 		maxLines: 1,
 		textOverflow: 'ellipsis',
 	},
@@ -130,6 +147,10 @@ interface PDFYourVisitorGroupsTileProps {
 	topCities: AudienceTileTopCity[];
 	/** Up to three top content pages. */
 	topContent: AudienceTileTopContent[];
+	/** Whether to show the Partial data badge beside the audience name. */
+	isAudiencePartialData: boolean;
+	/** Whether to show the Partial data badge on the Top content title. */
+	isTopContentPartialData: boolean;
 }
 
 const PDFYourVisitorGroupsTile: FC< PDFYourVisitorGroupsTileProps > = ( {
@@ -137,6 +158,8 @@ const PDFYourVisitorGroupsTile: FC< PDFYourVisitorGroupsTileProps > = ( {
 	metrics,
 	topCities,
 	topContent,
+	isAudiencePartialData,
+	isTopContentPartialData,
 } ) => {
 	const metricRows = [
 		{
@@ -177,10 +200,11 @@ const PDFYourVisitorGroupsTile: FC< PDFYourVisitorGroupsTileProps > = ( {
 
 	return (
 		<PDFCard style={ styles.card }>
-			<View style={ styles.header }>
+			<View style={ [ styles.header, styles.badgeRow ] }>
 				<PDFTypography type="title" size="small">
 					{ audienceName }
 				</PDFTypography>
+				{ isAudiencePartialData && <PDFPartialDataBadge /> }
 			</View>
 
 			{ metricRows.map( ( row ) => (
@@ -207,7 +231,11 @@ const PDFYourVisitorGroupsTile: FC< PDFYourVisitorGroupsTileProps > = ( {
 					<View style={ styles.citiesRow }>
 						{ topCities.map( ( city ) => (
 							<View key={ city.name } style={ styles.city }>
-								<PDFTypography type="title" size="small">
+								<PDFTypography
+									type="title"
+									size="small"
+									style={ styles.cityName }
+								>
 									{ city.name }
 								</PDFTypography>
 								<PDFTypography
@@ -230,23 +258,37 @@ const PDFYourVisitorGroupsTile: FC< PDFYourVisitorGroupsTileProps > = ( {
 					<PDFAudienceMetricIconTopContent />
 				</View>
 				<View style={ styles.body }>
-					<PDFTypography
-						size="medium"
-						style={ [
-							styles.sectionTitle,
-							styles.topContentTitle,
-						] }
-					>
-						{ __( 'Top content by pageviews', 'google-site-kit' ) }
-					</PDFTypography>
+					<View style={ [ styles.badgeRow ] }>
+						<PDFTypography
+							size="medium"
+							style={ [
+								styles.sectionTitle,
+								styles.topContentTitle,
+							] }
+						>
+							{ __(
+								'Top content by pageviews',
+								'google-site-kit'
+							) }
+						</PDFTypography>
+						{ isTopContentPartialData && <PDFPartialDataBadge /> }
+					</View>
+					{ /*
+					 * The page title links to its Analytics report, like the
+					 * dashboard tile. When the page has no link, `PDFLink`
+					 * renders the title as plain text instead of as a link.
+					 */ }
 					{ topContent.map( ( content ) => (
 						<View key={ content.title } style={ styles.contentRow }>
-							<PDFTypography
-								size="small"
-								style={ styles.contentLink }
-							>
-								{ content.title }
-							</PDFTypography>
+							<View style={ styles.contentTitle }>
+								<PDFLink
+									href={ content.serviceURL }
+									size="small"
+									style={ styles.contentTitleText }
+								>
+									{ content.title }
+								</PDFLink>
+							</View>
 							<PDFTypography size="small">
 								{ numFmt( content.pageviews ) }
 							</PDFTypography>

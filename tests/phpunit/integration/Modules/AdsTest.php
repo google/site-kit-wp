@@ -392,7 +392,7 @@ class AdsTest extends TestCase {
 	public function data_get_feature_metrics() {
 		return array(
 			'not connected' => array(
-				array(), // settings
+				array(), // settings.
 				array(
 					'ads_connection' => '',
 				),

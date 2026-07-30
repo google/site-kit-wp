@@ -399,7 +399,7 @@ const baseActions = {
 	 *
 	 * @since 1.128.0
 	 * @since 1.131.0 Added `failedSiteKitAudienceSlugs` parameter to retry failed Site Kit audience creation.
-	 * @since n.e.x.t Added `isAudienceCreationError` to the return value.
+	 * @since 1.184.0 Added `isAudienceCreationError` to the return value.
 	 *
 	 * @param {Array} failedSiteKitAudienceSlugs List of failed Site Kit audience slugs to retry.
 	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs`, `isAudienceCreationError` and `error`.
@@ -454,7 +454,7 @@ const baseActions = {
 	 * This contains the main logic for the `*enableAudienceGroup()` action above.
 	 *
 	 * @since 1.136.0
-	 * @since n.e.x.t Added `isAudienceCreationError` to the return value.
+	 * @since 1.184.0 Added `isAudienceCreationError` to the return value.
 	 *
 	 * @param {Array} failedSiteKitAudienceSlugs List of failed Site Kit audience slugs to retry.
 	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs`, `isAudienceCreationError` and `error`.

@@ -17,6 +17,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import { ReactElement } from 'react';
+import TestRenderer from 'react-test-renderer';
+
+/**
  * Internal dependencies
  */
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
@@ -34,10 +40,25 @@ import {
 type Registry = ReturnType< typeof createTestRegistry >;
 
 /**
+ * Renders a PDF element to its JSON tree as a string.
+ *
+ * A style passed as an array and a prop on a `@react-pdf` primitive never reach
+ * the rendered DOM, so an assertion on either one reads the JSON tree.
+ *
+ * @since n.e.x.t
+ *
+ * @param element The PDF element to render.
+ * @return The rendered tree, as a JSON string.
+ */
+export function renderJSON( element: ReactElement ) {
+	return JSON.stringify( TestRenderer.create( element ).toJSON() );
+}
+
+/**
  * Provides the site info, user authentication, and empty survey timeout list a
  * survey trigger needs, and mocks the trigger endpoint.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param  registry The test registry the component under test renders with.
  * @return {void}
@@ -53,7 +74,7 @@ export function setupSurveyTriggerTest( registry: Registry ) {
 /**
  * Sets the PDF export status on the given registry, inside `act()`.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param  registry The test registry the component under test renders with.
  * @param  status   The PDF export status to set, such as `'progress'` or `'success'`.
@@ -69,7 +90,7 @@ export function setPDFExportStatus( registry: Registry, status: PDFStatus ) {
  * Waits for the survey trigger endpoint to receive a request for the given
  * trigger ID.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param triggerID The survey trigger ID the request body holds, such as `'pdf_export_success'`.
  * @return A promise that resolves once the request lands, and rejects on timeout.

@@ -257,14 +257,14 @@ class ModulesTest extends TestCase {
 
 		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
 
-		// Modules can be active by presence in active modules option
+		// Modules can be active by presence in active modules option.
 		$this->assertFalse( $modules->is_module_active( 'fake-module' ), 'Fake module should not be active before activation source.' );
 		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'fake-module' ) );
 		$this->assertTrue( $modules->is_module_active( 'fake-module' ), 'Fake module should be active when enabled or forced.' );
 
 		delete_option( Modules::OPTION_ACTIVE_MODULES );
 
-		// Some modules are always active
+		// Some modules are always active.
 		$this->assertFalse( $modules->is_module_active( 'fake-module' ), 'Fake module should not be active before activation source.' );
 		$fake_module->set_force_active( true );
 		$this->assertTrue( $modules->is_module_active( 'fake-module' ), 'Fake module should be active when enabled or forced.' );
@@ -312,7 +312,7 @@ class ModulesTest extends TestCase {
 	public function test_activate_module() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		// Attempting to activate a non-existent module returns false
+		// Attempting to activate a non-existent module returns false.
 		$this->assertArrayNotHasKey( 'fake-module', $modules->get_available_modules(), 'Unknown module should be absent before activation.' );
 		$this->assertFalse( $modules->activate_module( 'fake-module' ), 'Activation should fail for unknown module.' );
 
@@ -332,7 +332,7 @@ class ModulesTest extends TestCase {
 		$this->assertEquals( 1, $activation_invocations, 'Activation hook should run only on first activation.' );
 		$this->assertContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ), 'Active modules option should include activated fake module.' );
 
-		// Subsequent calls to activate an active module do not call the on_activation method
+		// Subsequent calls to activate an active module do not call the on_activation method.
 		$this->assertTrue( $modules->activate_module( 'fake-module' ), 'Activation should succeed for available fake module.' );
 		$this->assertEquals( 1, $activation_invocations, 'Activation hook should run only on first activation.' );
 	}
@@ -369,7 +369,7 @@ class ModulesTest extends TestCase {
 	public function test_deactivate_module() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		// Attempting to deactivate a non-existent module returns false
+		// Attempting to deactivate a non-existent module returns false.
 		$this->assertArrayNotHasKey( 'fake-module', $modules->get_available_modules(), 'Unknown module should be absent before deactivation.' );
 		$this->assertFalse( $modules->deactivate_module( 'fake-module' ), 'Deactivation should fail when module cannot be deactivated.' );
 
@@ -386,7 +386,7 @@ class ModulesTest extends TestCase {
 
 		$this->assertContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ), 'Active modules option should contain fake module before deactivation.' );
 
-		// Force-active modules cannot be deactivated
+		// Force-active modules cannot be deactivated.
 		$fake_module->set_force_active( true );
 		$this->assertFalse( $modules->deactivate_module( 'fake-module' ), 'Deactivation should fail when module cannot be deactivated.' );
 		$this->assertEquals( 0, $deactivation_invocations, 'Deactivation hook should run only on first deactivation.' );
@@ -397,7 +397,7 @@ class ModulesTest extends TestCase {
 		$this->assertEquals( 1, $deactivation_invocations, 'Deactivation hook should run only on first deactivation.' );
 		$this->assertNotContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ), 'Active modules option should omit deactivated module.' );
 
-		// Subsequent calls to deactivate an inactive module do not call the on_deactivation method
+		// Subsequent calls to deactivate an inactive module do not call the on_deactivation method.
 		$this->assertTrue( $modules->deactivate_module( 'fake-module' ), 'Deactivation should succeed for active fake module.' );
 		$this->assertEquals( 1, $deactivation_invocations, 'Deactivation hook should run only on first deactivation.' );
 	}
@@ -657,7 +657,7 @@ class ModulesTest extends TestCase {
 		// Checks Module isn't an instance of Module_With_Owner.
 		$this->assertFalse( $modules->is_module_recoverable( 'site-verification' ), 'Recoverability should reject invalid or unrecoverable module.' );
 
-		// Tests with shared_roles
+		// Tests with shared_roles.
 		$test_sharing_settings = array(
 			'analytics-4'        => array(
 				'sharedRoles' => array( 'editor', 'subscriber' ),

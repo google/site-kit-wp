@@ -53,7 +53,7 @@ const DATES = {
 /**
  * Builds the two metric rows (current and previous) for one dimension value.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param dimensionValue The audience dimension value the rows belong to.
  * @param base           The base metric value; the previous row adds one.
@@ -74,13 +74,17 @@ function metricRows( dimensionValue: string, base: number ) {
 /**
  * Builds a mock registry and a `fetchGetReport` spy for `getPDFData`.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
- * @param options                      Setup options.
- * @param options.configuredAudiences  Configured audience resource names.
- * @param options.isSiteKitPartialData Whether the Site Kit audiences are in a partial data state.
- * @param options.failing              Report IDs, or `id::audience` keys, that resolve with an error.
- * @param options.totalPageviews       The site-wide total pageviews.
+ * @param options                       Setup options.
+ * @param options.configuredAudiences   Configured audience resource names.
+ * @param options.isSiteKitPartialData  Whether the Site Kit audiences are in a partial data state.
+ * @param options.failing               Report IDs, or `id::audience` keys, that resolve with an error.
+ * @param options.totalPageviews        The site-wide total pageviews.
+ * @param options.propertyID            The Analytics 4 property ID.
+ * @param options.isPropertyPartialData Whether the property is in a partial data state.
+ * @param options.partialDataAudiences  Audience resource names in a partial data state.
+ * @param options.isPostTypePartialData Whether the `googlesitekit_post_type` custom dimension is in a partial data state.
  * @return The registry and the `fetchGetReport` spy.
  */
 function buildRegistry( {
@@ -88,11 +92,19 @@ function buildRegistry( {
 	isSiteKitPartialData = false,
 	failing = new Set< string >(),
 	totalPageviews = 2000,
+	propertyID = PROPERTY,
+	isPropertyPartialData = false,
+	partialDataAudiences = new Set< string >(),
+	isPostTypePartialData = false,
 }: {
 	configuredAudiences?: string[];
 	isSiteKitPartialData?: boolean;
 	failing?: Set< string >;
 	totalPageviews?: number;
+	propertyID?: string;
+	isPropertyPartialData?: boolean;
+	partialDataAudiences?: Set< string >;
+	isPostTypePartialData?: boolean;
 } = {} ) {
 	const fetchGetReport = jest.fn( ( options: ReportOptions ) => {
 		const { reportID = '', dimensionFilters = {} } = options;
@@ -196,6 +208,31 @@ function buildRegistry( {
 			}
 			return isSiteKitPartialData ? found : null;
 		},
+		getPropertyID: () => propertyID,
+		isPropertyPartialData: () => isPropertyPartialData,
+		isSiteKitAudience: ( name: string ) => {
+			const found = AVAILABLE_AUDIENCES.find(
+				( item ) => item.name === name
+			);
+			return found?.audienceType === 'SITE_KIT_AUDIENCE';
+		},
+		isAudiencePartialData: ( name: string ) =>
+			partialDataAudiences.has( name ),
+		isCustomDimensionPartialData: () => isPostTypePartialData,
+		// Serializes the report type, the page filter, and the date range into
+		// the link. A test then proves what the loader asked the selector by
+		// reading the link a top content row holds.
+		getServiceReportURL: (
+			type: string,
+			{
+				filters,
+				dates,
+			}: {
+				filters: { unifiedPagePathScreen: string };
+				dates: { startDate: string; endDate: string };
+			}
+		) =>
+			`https://example.com/analytics-report/${ type }?path=${ filters.unifiedPagePathScreen }&range=${ dates.startDate }:${ dates.endDate }`,
 	};
 
 	// The loader reads only `resolveSelect`, `select`, and `dispatch`. The mock
@@ -207,6 +244,7 @@ function buildRegistry( {
 				Promise.resolve( configuredAudiences ),
 			getOrSyncAvailableAudiences: () =>
 				Promise.resolve( AVAILABLE_AUDIENCES ),
+			getSettings: () => Promise.resolve( {} ),
 			isGatheringData: () => Promise.resolve( false ),
 			getResourceDataAvailabilityDate: () => Promise.resolve( 20240101 ),
 		} ),
@@ -220,28 +258,37 @@ function buildRegistry( {
 /**
  * Runs `getPDFData` with a real abort signal.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
- * @param registry        The mock registry.
- * @param options         Run options.
- * @param options.aborted Whether the signal is aborted before the run.
- * @return The loader result.
+ * @param {PDFRegistry} registry         The mock registry.
+ * @param {Object}      options          Run options.
+ * @param {boolean}     options.aborted  Whether the signal aborts before the run.
+ * @param {boolean}     options.viewOnly Whether the export runs on a view-only dashboard.
+ * @return {Promise<Object>} The loader result.
  */
 function runPDFData(
 	registry: PDFRegistry,
-	{ aborted = false }: { aborted?: boolean } = {}
+	{
+		aborted = false,
+		viewOnly = false,
+	}: { aborted?: boolean; viewOnly?: boolean } = {}
 ) {
 	const controller = new AbortController();
 	if ( aborted ) {
 		controller.abort();
 	}
-	return getPDFData( { registry, dates: DATES, signal: controller.signal } );
+	return getPDFData( {
+		registry,
+		dates: DATES,
+		signal: controller.signal,
+		viewOnly,
+	} );
 }
 
 /**
  * Returns the loaded audiences, or throws when the section was omitted.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param result The loader result.
  * @return The loaded audience cards.
@@ -256,7 +303,7 @@ function getAudiences( result: AudienceTilesPDFData ): AudienceTilePDFData[] {
 /**
  * Finds one audience card by its resource name, or throws when it is absent.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param audiences The loaded audience cards.
  * @param name      The audience resource name to find.
@@ -330,6 +377,7 @@ describe( 'AudienceTilesWidget getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: controller.signal,
+			viewOnly: false,
 		} );
 
 		expect( fetchGetReport ).toHaveBeenCalled();
@@ -398,8 +446,46 @@ describe( 'AudienceTilesWidget getPDFData', () => {
 			{ name: 'Dublin', percentage: 40 / card.metrics.visitors.current },
 		] );
 		expect( card.topContent ).toEqual( [
-			{ title: 'Post One', pageviews: 80 },
+			{
+				title: 'Post One',
+				pageviews: 80,
+				serviceURL: `https://example.com/analytics-report/all-pages-and-screens?path=/post-1&range=${ DATES.startDate }:${ DATES.endDate }`,
+			},
 		] );
+	} );
+
+	it( 'links each top content page to the same All pages and screens report the dashboard tile links to', async () => {
+		const { registry } = buildRegistry();
+
+		const audiences = getAudiences( await runPDFData( registry ) );
+
+		// The stub selector serializes its type, page filter, and date range
+		// into the link. Ensure the loader uses the same selector the
+		// dashboard tile uses, with the page path and the report
+		// date range.
+		audiences.forEach( ( audience ) => {
+			expect( audience.topContent[ 0 ].serviceURL ).toBe(
+				`https://example.com/analytics-report/all-pages-and-screens?path=/post-1&range=${ DATES.startDate }:${ DATES.endDate }`
+			);
+		} );
+	} );
+
+	it( 'builds no top content links on a view-only dashboard', async () => {
+		const { registry } = buildRegistry();
+
+		const audiences = getAudiences(
+			await runPDFData( registry, { viewOnly: true } )
+		);
+
+		// The dashboard tile shows a view-only user each page title as plain
+		// text, so every card's top content rows hold no link.
+		const contentRows = audiences.flatMap(
+			( audience ) => audience.topContent
+		);
+		expect( contentRows ).not.toHaveLength( 0 );
+		contentRows.forEach( ( content ) => {
+			expect( content.serviceURL ).toBe( '' );
+		} );
 	} );
 
 	it( 'excludes a failed audience while the other two still load', async () => {
@@ -448,5 +534,74 @@ describe( 'AudienceTilesWidget getPDFData', () => {
 
 		expect( data ).toBeNull();
 		expect( fetchGetReport ).not.toHaveBeenCalled();
+	} );
+
+	describe( 'partial-data flags', () => {
+		it( 'clears both flags for a fully-loaded audience', async () => {
+			const { registry } = buildRegistry();
+
+			const card = findCard(
+				getAudiences( await runPDFData( registry ) ),
+				OTHER_A
+			);
+
+			expect( card.isAudiencePartialData ).toBe( false );
+			expect( card.isTopContentPartialData ).toBe( false );
+		} );
+
+		it( 'sets the header flag and clears the top content flag for a partial-data audience', async () => {
+			const { registry } = buildRegistry( {
+				partialDataAudiences: new Set( [ OTHER_A ] ),
+				// The top content flag is cleared by the set header flag, even
+				// while the custom dimension is itself in a partial data state.
+				isPostTypePartialData: true,
+			} );
+
+			const audiences = getAudiences( await runPDFData( registry ) );
+
+			const partialCard = findCard( audiences, OTHER_A );
+			expect( partialCard.isAudiencePartialData ).toBe( true );
+			expect( partialCard.isTopContentPartialData ).toBe( false );
+
+			// The other audience is not partial, so its top content flag follows
+			// the custom dimension's partial data state.
+			const otherCard = findCard( audiences, OTHER_B );
+			expect( otherCard.isAudiencePartialData ).toBe( false );
+			expect( otherCard.isTopContentPartialData ).toBe( true );
+		} );
+
+		it( 'never sets the header flag for a Site Kit audience', async () => {
+			const { registry } = buildRegistry( {
+				// Even flagged as partial data, a Site Kit audience clears the
+				// header flag.
+				partialDataAudiences: new Set( [ SITE_KIT ] ),
+				isPostTypePartialData: true,
+			} );
+
+			const card = findCard(
+				getAudiences( await runPDFData( registry ) ),
+				SITE_KIT
+			);
+
+			expect( card.isAudiencePartialData ).toBe( false );
+			// With no header flag, the top content flag follows the custom
+			// dimension's partial data state.
+			expect( card.isTopContentPartialData ).toBe( true );
+		} );
+
+		it( 'clears both flags for every audience when the property is partial data', async () => {
+			const { registry } = buildRegistry( {
+				isPropertyPartialData: true,
+				partialDataAudiences: new Set( [ OTHER_A, OTHER_B ] ),
+				isPostTypePartialData: true,
+			} );
+
+			const audiences = getAudiences( await runPDFData( registry ) );
+
+			audiences.forEach( ( card ) => {
+				expect( card.isAudiencePartialData ).toBe( false );
+				expect( card.isTopContentPartialData ).toBe( false );
+			} );
+		} );
 	} );
 } );

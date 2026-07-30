@@ -179,7 +179,7 @@ describe( 'PDFSectionsSelectionPanel', () => {
 	 * Registers a Traffic-context area with one pdf widget that depends on
 	 * Analytics 4, so a test can check a module-dependent section.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @return {void}
 	 */

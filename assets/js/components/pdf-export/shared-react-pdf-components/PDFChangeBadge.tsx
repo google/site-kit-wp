@@ -19,23 +19,13 @@
 /**
  * External dependencies
  */
-import { View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
  * Internal dependencies
  */
-import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
-import PDFTypography from './PDFTypography';
-
-const styles = createPDFStyles( {
-	badge: {
-		borderRadius: 100,
-		paddingVertical: 4,
-		paddingHorizontal: 8,
-	},
-} );
+import PDFBadge from './PDFBadge';
 
 export interface PDFChangeBadgeProps {
 	/** The formatted, signed change string, e.g. "+5.1%". */
@@ -56,11 +46,11 @@ const PDFChangeBadge: FC< PDFChangeBadgeProps > = ( {
 		: PDF_COLORS.UTILITY_ON_SUCCESS_CONTAINER;
 
 	return (
-		<View style={ [ styles.badge, { backgroundColor } ] }>
-			<PDFTypography type="label" size="small" style={ { color } }>
-				{ change }
-			</PDFTypography>
-		</View>
+		<PDFBadge
+			label={ change }
+			backgroundColor={ backgroundColor }
+			color={ color }
+		/>
 	);
 };
 

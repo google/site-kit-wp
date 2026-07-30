@@ -32,7 +32,7 @@ import {
 /**
  * Builds a minimal report from row and totals literals.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param rows   The report rows.
  * @param totals Optional. The report totals.
@@ -45,7 +45,7 @@ function buildReport( rows: unknown[], totals?: unknown[] ): Report {
 /**
  * Builds the current and previous metric rows for one audience.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param dimensionValue The audience dimension value the rows belong to.
  * @param base           The base metric value. The previous row adds one.
@@ -137,7 +137,19 @@ describe( 'buildTopCities', () => {
 } );
 
 describe( 'buildTopContent', () => {
-	it( 'resolves each page path to its title and falls back to the path', () => {
+	/**
+	 * Maps a page path to a stable link fixture.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} pagePath Page path of a top content row.
+	 * @return {string} The link fixture for the page.
+	 */
+	function getContentServiceURL( pagePath: string ): string {
+		return `https://example.com/analytics-report${ pagePath }`;
+	}
+
+	it( 'resolves each page path to its title and its link, and falls back to the path', () => {
 		const content = buildTopContent(
 			buildReport( [
 				{
@@ -151,12 +163,21 @@ describe( 'buildTopContent', () => {
 			] ),
 			buildReport( [
 				{ dimensionValues: [ { value: '/a' }, { value: 'Title A' } ] },
-			] )
+			] ),
+			getContentServiceURL
 		);
 
 		expect( content ).toEqual( [
-			{ title: 'Title A', pageviews: 847 },
-			{ title: '/b', pageviews: 5 },
+			{
+				title: 'Title A',
+				pageviews: 847,
+				serviceURL: 'https://example.com/analytics-report/a',
+			},
+			{
+				title: '/b',
+				pageviews: 5,
+				serviceURL: 'https://example.com/analytics-report/b',
+			},
 		] );
 	} );
 
@@ -167,7 +188,7 @@ describe( 'buildTopContent', () => {
 		} ) );
 
 		expect(
-			buildTopContent( buildReport( rows ), undefined )
+			buildTopContent( buildReport( rows ), undefined, () => '' )
 		).toHaveLength( 3 );
 	} );
 } );
@@ -177,7 +198,7 @@ describe( 'buildPDFAudienceCard', () => {
 	 * Builds a full audience card input with successful reports, so a test can
 	 * override one field to make a single report fail.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.184.0
 	 *
 	 * @param overrides Optional. Fields to override on the input. Default `{}`.
 	 * @return The card input.
@@ -214,12 +235,20 @@ describe( 'buildPDFAudienceCard', () => {
 			},
 			topContentPageTitlesResult: { response: buildReport( [] ) },
 			totalPageviews: 1000,
+			isAudiencePartialData: false,
+			isTopContentPartialData: false,
+			getContentServiceURL: () => '',
 			...overrides,
 		};
 	}
 
-	it( 'builds a card with the audience name, metrics, and pageviews share', () => {
-		const card = buildPDFAudienceCard( buildCardInput() );
+	it( 'builds a card with the audience name, metrics, pageviews share, and top content links', () => {
+		const card = buildPDFAudienceCard(
+			buildCardInput( {
+				getContentServiceURL: ( pagePath: string ) =>
+					`https://example.com/analytics-report${ pagePath }`,
+			} )
+		);
 
 		expect( card?.audienceName ).toBe( 'Custom A' );
 		expect( card?.metrics.visitors.current ).toBe( 10 );
@@ -230,6 +259,34 @@ describe( 'buildPDFAudienceCard', () => {
 		expect( card?.topCities ).toEqual( [
 			{ name: 'Dublin', percentage: 5 },
 		] );
+		// The card hands each top content page path to the link resolver, so
+		// the row holds the link its title renders as.
+		expect( card?.topContent ).toEqual( [
+			{
+				title: '/a',
+				pageviews: 80,
+				serviceURL: 'https://example.com/analytics-report/a',
+			},
+		] );
+	} );
+
+	it( 'copies both partial-data flags from its input onto the card', () => {
+		const card = buildPDFAudienceCard(
+			buildCardInput( {
+				isAudiencePartialData: true,
+				isTopContentPartialData: true,
+			} )
+		);
+
+		expect( card?.isAudiencePartialData ).toBe( true );
+		expect( card?.isTopContentPartialData ).toBe( true );
+	} );
+
+	it( 'defaults both partial-data flags to false', () => {
+		const card = buildPDFAudienceCard( buildCardInput() );
+
+		expect( card?.isAudiencePartialData ).toBe( false );
+		expect( card?.isTopContentPartialData ).toBe( false );
 	} );
 
 	it( 'drops the audience when the metrics report failed', () => {

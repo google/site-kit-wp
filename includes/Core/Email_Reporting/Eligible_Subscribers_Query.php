@@ -199,7 +199,7 @@ class Eligible_Subscribers_Query {
 				function ( int $user_id ) use ( $settings_meta_key ) {
 					$settings = get_user_meta( $user_id, $settings_meta_key, true );
 
-					return ! ( is_array( $settings ) && ! empty( $settings['subscribed'] ) );
+					return ! User_Email_Reporting_Settings::is_subscribed( $settings );
 				}
 			)
 		);

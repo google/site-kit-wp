@@ -32,7 +32,7 @@ import PDFAudienceMetricRow from './PDFAudienceMetricRow';
 /**
  * Renders `PDFAudienceMetricRow` as a JSON tree string.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param metric The metric's current and previous value.
  * @return The rendered tree as a string.

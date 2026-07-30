@@ -27,7 +27,10 @@ import { ComponentType } from 'react';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
-import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
+import {
+	GetPDFDataParams,
+	PDFDataLoaderParams,
+} from '@/js/googlesitekit/widgets/types';
 import { KEY_METRICS_PDF_TILES } from './key-metrics-pdf-tiles';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 
@@ -43,7 +46,7 @@ interface KeyMetricPDFTileConfig {
 		} >;
 	};
 	/** Resolves the tile's data, or `null` when the report has no data. */
-	getTileData: ( params: GetPDFDataParams ) => Promise< unknown >;
+	getTileData: ( params: PDFDataLoaderParams ) => Promise< unknown >;
 }
 
 const keyMetricsWidgets = KEY_METRICS_WIDGETS as Record<
@@ -69,7 +72,7 @@ type TileRenderComponent = ComponentType< Record< string, unknown > >;
  * `data` it consumes. Only tiles with data are composed, so `data` is always
  * present — a tile whose report has no data (or failed to load) is left out.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export interface KeyMetricsPDFTile {
 	/** The key metric slug, e.g. `KM_ANALYTICS_NEW_VISITORS`. */
@@ -85,7 +88,7 @@ export interface KeyMetricsPDFTile {
 /**
  * Resolved output of the Key Metrics aggregate loader.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  */
 export interface KeyMetricsPDFData {
 	/** The tiles to render, or `null` when the export is canceled. */
@@ -109,7 +112,7 @@ export interface KeyMetricsPDFData {
  * When no tile has data the loader returns `{ data: null }` so the orchestrator
  * omits the whole section.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param params                 Loader parameters.
  * @param params.registry        WordPress data registry.

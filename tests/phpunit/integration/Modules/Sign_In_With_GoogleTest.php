@@ -23,6 +23,7 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use WP_Error;
 use WP_User;
 use WPDieException;
 
@@ -355,7 +356,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$admin_id  = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 
 		// Multisite is more restrictive about editing other users, so we'll add the necessary cap.
-		// See https://github.com/WordPress/WordPress/blob/9bc4fadffa05adc4bb72120bf335160639e46764/wp-includes/capabilities.php#L68
+		// See https://github.com/WordPress/WordPress/blob/9bc4fadffa05adc4bb72120bf335160639e46764/wp-includes/capabilities.php#L68.
 		if ( is_multisite() ) {
 			( new WP_User( $admin_id ) )->add_cap( 'manage_network_users' );
 		}
@@ -669,6 +670,26 @@ class Sign_In_With_GoogleTest extends TestCase {
 		} catch ( RedirectException $e ) {
 			$this->assertEquals( $redirect_uri, $e->get_location(), 'POST auth callback should redirect to provided URI.' );
 		}
+	}
+
+	public function test_handle_login_errors__adds_two_factor_error_message() {
+		$_GET['error'] = Authenticator::ERROR_TWO_FACTOR_ENABLED;
+
+		$error = $this->module->handle_login_errors( new WP_Error() );
+
+		$this->assertEquals(
+			'An account with that email address uses two-factor authentication. To use Sign in with Google, log in with your username and password, then connect your Google account on your profile page.',
+			$error->get_error_message( 'sign-in-with-google' ),
+			'Should add the two-factor message for the two-factor error code.'
+		);
+	}
+
+	public function test_handle_login_errors__ignores_an_unrecognized_error_code() {
+		$_GET['error'] = 'unrecognized_error_code';
+
+		$error = $this->module->handle_login_errors( new WP_Error() );
+
+		$this->assertFalse( $error->has_errors(), 'Should leave the error object untouched for an unrecognized error code.' );
 	}
 
 	protected function create_disconnect_nonce( $user_id ) {

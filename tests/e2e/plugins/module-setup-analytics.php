@@ -203,7 +203,7 @@ add_action(
 			true
 		);
 
-		// Called when switching properties for Analytics 4
+		// Called when switching properties for Analytics 4.
 		register_rest_route(
 			REST_Routes::REST_ROOT,
 			'modules/analytics-4/data/properties',
