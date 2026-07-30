@@ -39,7 +39,10 @@ import OverlayNotification from '@/js/googlesitekit/notifications/components/lay
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import EmailReportingOverlayGraphicDesktop from '@/svg/graphics/email-reporting-overlay-desktop.svg';
 import EmailReportingOverlayGraphicMobile from '@/svg/graphics/email-reporting-overlay-mobile.svg';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from './constants';
+import {
+	MANAGE_EMAIL_REPORTS_BUTTON_CLASS,
+	USER_SETTINGS_SELECTION_PANEL_OPENED_KEY,
+} from './constants';
 
 export const SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION =
 	'email_reports_setup_overlay_notification';
@@ -74,12 +77,11 @@ export default function SetUpEmailReportingOverlayNotification( {
 	}, [ dismissItem, setValue ] );
 
 	const tooltipSettings = {
-		target: '.googlesitekit-user-selector',
+		target: `.${ MANAGE_EMAIL_REPORTS_BUTTON_CLASS }`,
 		placement: 'bottom-end',
-		className: 'googlesitekit-tour-tooltip--user-menu',
 		tooltipSlug: SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
 		title: __(
-			'You can always manage your email reports subscription from the user menu',
+			'You can always manage your email reports subscription here',
 			'google-site-kit'
 		),
 		dismissLabel: __( 'Got it', 'google-site-kit' ),
