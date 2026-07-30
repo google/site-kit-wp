@@ -50,6 +50,7 @@ use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\Block_Support;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Admin_Post_List;
@@ -277,10 +278,15 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 *               instance of Google_Service.
 	 */
 	public function setup_services( Google_Site_Kit_Client $client ) {
-		return array(
+		$services = array(
 			'subscribewithgoogle' => new Google_Service_SubscribewithGoogle( $client ),
-			'webcontentpublisher' => new Google_Service_Webcontentpublisher( $client ),
 		);
+
+		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
+			$services['webcontentpublisher'] = new Google_Service_Webcontentpublisher( $client );
+		}
+
+		return $services;
 	}
 
 	/**
@@ -371,11 +377,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		$webcontentpublisher_service = function () {
-			return $this->get_service( 'webcontentpublisher' );
-		};
-
-		return array(
+		$datapoints = array(
 			'GET:publications'                       => array(
 				'service' => 'subscribewithgoogle',
 			),
@@ -394,17 +396,26 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 					'service'       => '',
 				)
 			),
-			'GET:ctas'                               => new Get_CTAs(
-				array(
-					'service' => $webcontentpublisher_service,
-				)
-			),
-			'POST:create-cta'                        => new Create_CTA(
-				array(
-					'service' => $webcontentpublisher_service,
-				)
-			),
 		);
+
+		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
+			$webcontentpublisher_service = function () {
+				return $this->get_service( 'webcontentpublisher' );
+			};
+
+			$datapoints['GET:ctas']        = new Get_CTAs(
+				array(
+					'service' => $webcontentpublisher_service,
+				)
+			);
+			$datapoints['POST:create-cta'] = new Create_CTA(
+				array(
+					'service' => $webcontentpublisher_service,
+				)
+			);
+		}
+
+		return $datapoints;
 	}
 
 	/**
