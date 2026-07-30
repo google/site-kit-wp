@@ -19,3 +19,15 @@
 .googlesitekit-rrm-setup-cta-banner__explore-link {
 	font-weight: 500;
 }
+
+.googlesitekit-banner.googlesitekit-banner--setup-cta {
+
+	@media (min-width: $bp-nonTablet) {
+		grid-template-columns: 60% 40%;
+
+		.googlesitekit-banner__svg-wrapper {
+			background-position-x: center;
+			background-size: contain;
+		}
+	}
+}
