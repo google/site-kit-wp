@@ -78,6 +78,7 @@ import { AdminScreenTooltip } from './AdminScreenTooltip';
 import CoreDashboardEffects from './CoreDashboardEffects';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import DateRangeSelector from './DateRangeSelector';
+import ManageEmailReportsButton from './email-reporting/ManageEmailReportsButton';
 import PUESurveyTriggers from './email-reporting/PUESurveyTriggers';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
 import EntitySearchInput from './EntitySearchInput';
@@ -366,6 +367,7 @@ export default function DashboardMainApp() {
 			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
+				<ManageEmailReportsButton />
 				<PDFDownloadButton />
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu showFeatureTour={ !! hasAccessToFeatureTour } />
