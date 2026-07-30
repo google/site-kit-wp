@@ -50,7 +50,10 @@ import {
 	provideUserAuthentication,
 	render,
 } from '@tests/js/test-utils';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from './constants';
+import {
+	MANAGE_EMAIL_REPORTS_BUTTON_CLASS,
+	USER_SETTINGS_SELECTION_PANEL_OPENED_KEY,
+} from './constants';
 import SetUpEmailReportingOverlayNotification, {
 	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
 	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION_SETUP_CTA,
@@ -349,6 +352,22 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 
 			await waitFor( () =>
 				expect( mockShowTooltip ).toHaveBeenCalledTimes( 1 )
+			);
+		} );
+
+		it( 'anchors the tooltip to the header button that opens the panel', () => {
+			render( <NotificationComponent />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			expect( useShowTooltip ).toHaveBeenCalledWith(
+				expect.objectContaining( {
+					target: `.${ MANAGE_EMAIL_REPORTS_BUTTON_CLASS }`,
+					title: expect.stringMatching(
+						/manage your email reports subscription/i
+					),
+				} )
 			);
 		} );
 
