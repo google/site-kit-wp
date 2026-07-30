@@ -15,7 +15,7 @@ $label = $label ?? __( 'Open dashboard', 'google-site-kit' );
 ?>
 <?php /* Outlook requires custom VML for rounded corners. */ ?>
 <!--[if mso]>
-<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="<?php echo esc_url( $url ); ?>" style="mso-wrap-style:none; mso-fit-shape-to-text: true; height:36; width:134;" arcsize="50%" strokecolor="#3C7251" fillcolor="#3C7251">
+<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="<?php echo esc_url( $url ); ?>" style="mso-wrap-style:none; mso-fit-shape-to-text: true; height:36;" arcsize="50%" strokecolor="#3C7251" fillcolor="#3C7251">
 <w:anchorlock/>
 <center style="font-family:Arial,sans-serif; font-size:14px; font-weight:500; color:#ffffff; text-decoration:none; mso-line-height-rule:exactly;">
 <?php echo esc_html( $label ); ?>
