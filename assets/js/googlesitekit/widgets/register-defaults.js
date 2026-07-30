@@ -427,31 +427,34 @@ export function registerDefaults( widgetsAPI ) {
 	// The Key Metrics PDF section renders `WidgetNull` on the dashboard (it
 	// occupies no grid slot); it exists to compose the user's configured key
 	// metric tiles into the PDF export. It appears in the export only when at
-	// least one configured metric has a PDF tile config.
-	widgetsAPI.registerWidget(
-		'keyMetricsPDFSection',
-		{
-			Component: WidgetNull,
-			width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
-			priority: 1,
-			wrapWidget: false,
-			modules: [ MODULE_SLUG_ANALYTICS_4 ],
-			pdf: {
-				Component: KeyMetricsPDF,
-				getData: getKeyMetricsPDFData,
-				// Reads `getKeyMetrics()` without awaiting resolution: an
-				// unresolved value reads as empty, so the section is
-				// omitted until the metrics resolve. This is safe because
-				// the selection panel resolves them, and re-selects the
-				// section once it appears; by export time they are loaded.
-				isActive: ( select ) =>
-					( select( CORE_USER ).getKeyMetrics() || [] ).some(
-						( slug ) => !! KEY_METRICS_PDF_TILES[ slug ]
-					),
+	// least one configured metric has a PDF tile config. Registered only when
+	// the `pdfGeneration` feature flag is enabled.
+	if ( isFeatureEnabled( 'pdfGeneration' ) ) {
+		widgetsAPI.registerWidget(
+			'keyMetricsPDFSection',
+			{
+				Component: WidgetNull,
+				width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
+				priority: 1,
+				wrapWidget: false,
+				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+				pdf: {
+					Component: KeyMetricsPDF,
+					getData: getKeyMetricsPDFData,
+					// Reads `getKeyMetrics()` without awaiting resolution: an
+					// unresolved value reads as empty, so the section is
+					// omitted until the metrics resolve. This is safe because
+					// the selection panel resolves them, and re-selects the
+					// section once it appears; by export time they are loaded.
+					isActive: ( select ) =>
+						( select( CORE_USER ).getKeyMetrics() || [] ).some(
+							( slug ) => !! KEY_METRICS_PDF_TILES[ slug ]
+						),
+				},
 			},
-		},
-		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-	);
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+	}
 
 	/**
 	 * Since we allow selecting at least two and at most four key
