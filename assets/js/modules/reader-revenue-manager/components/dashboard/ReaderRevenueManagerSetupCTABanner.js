@@ -68,7 +68,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 		{
 			redirectQueryArgs: {
 				expressSetup: 'true',
-				cta: 'newsletter',
+				cta: 'newsletter-signup',
 			},
 		}
 	);

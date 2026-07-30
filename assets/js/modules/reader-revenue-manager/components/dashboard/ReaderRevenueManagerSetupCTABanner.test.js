@@ -54,17 +54,6 @@ import {
 } from '@tests/js/test-utils';
 import ReaderRevenueManagerSetupCTABanner from './ReaderRevenueManagerSetupCTABanner';
 
-let mockBreakpoint = 'desktop';
-
-jest.mock( '@/js/hooks/useBreakpoint', () => {
-	const actual = jest.requireActual( '@/js/hooks/useBreakpoint' );
-
-	return {
-		...actual,
-		useBreakpoint: () => mockBreakpoint,
-	};
-} );
-
 jest.mock( '../../../../hooks/useActivateModuleCallback' );
 
 describe( 'ReaderRevenueManagerSetupCTABanner', () => {
@@ -81,7 +70,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		mockBreakpoint = 'desktop';
 		activateModuleCallbackMock = jest.fn();
 		activateModuleMock = jest.fn( () => activateModuleCallbackMock );
 
@@ -206,6 +194,16 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 		await waitForRegistry();
 
+		expect( activateModuleMock ).toHaveBeenCalledWith(
+			MODULE_SLUG_READER_REVENUE_MANAGER,
+			{
+				redirectQueryArgs: {
+					expressSetup: 'true',
+					cta: 'newsletter-signup',
+				},
+			}
+		);
+
 		// eslint-disable-next-line require-await
 		await act( async () => {
 			fireEvent.click(
@@ -232,67 +230,16 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 		await waitForRegistry();
 
+		expect( activateModuleMock ).toHaveBeenLastCalledWith(
+			MODULE_SLUG_READER_REVENUE_MANAGER
+		);
+
 		// eslint-disable-next-line require-await
 		await act( async () => {
 			fireEvent.click( getByText( /Explore other features/i ) );
 		} );
 
 		expect( activateModuleCallbackMock ).toHaveBeenCalledTimes( 1 );
-	} );
-
-	it( 'should render legacy desktop banner graphic when the feature flag is disabled', async () => {
-		mockSurveyEndpoints();
-
-		const { container, waitForRegistry } = render(
-			<ReaderRevenueManagerSetupCTABannerComponent />,
-			{
-				registry,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			container.querySelector( '.googlesitekit-banner__svg-wrapper' )
-		).toBeInTheDocument();
-	} );
-
-	it( 'should render express tablet banner graphic when the feature flag is enabled at tablet width', async () => {
-		mockSurveyEndpoints();
-		mockBreakpoint = 'tablet';
-
-		const { container, waitForRegistry } = render(
-			<ReaderRevenueManagerSetupCTABannerComponent />,
-			{
-				registry,
-				features: [ 'rrmExpressSetup' ],
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			container.querySelector( '.googlesitekit-banner__svg-wrapper' )
-		).toBeInTheDocument();
-	} );
-
-	it( 'should render express mobile banner graphic when the feature flag is enabled at mobile width', async () => {
-		mockSurveyEndpoints();
-		mockBreakpoint = 'small';
-
-		const { container, waitForRegistry } = render(
-			<ReaderRevenueManagerSetupCTABannerComponent />,
-			{
-				registry,
-				features: [ 'rrmExpressSetup' ],
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			container.querySelector( '.googlesitekit-banner__svg-wrapper' )
-		).toBeInTheDocument();
 	} );
 
 	it( 'should call the dismiss item endpoint when the banner is dismissed', async () => {
