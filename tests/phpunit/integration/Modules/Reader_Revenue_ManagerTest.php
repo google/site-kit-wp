@@ -194,7 +194,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			array(
 				'publications',
 				'sync-publication-onboarding-state',
-				'user-settings',
 			),
 			$this->reader_revenue_manager->get_datapoints(),
 			'Reader Revenue Manager module should have correct datapoints.'
@@ -213,7 +212,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'create-cta',
 			),
 			$this->reader_revenue_manager->get_datapoints(),
-			'Reader Revenue Manager module should include the CTA datapoints when the express setup flag is enabled.'
+			'Reader Revenue Manager module should include the express setup datapoints when the express setup flag is enabled.'
 		);
 	}
 
