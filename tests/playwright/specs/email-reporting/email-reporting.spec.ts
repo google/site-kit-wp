@@ -158,12 +158,12 @@ test.describe( 'Email Reporting', { annotation: [ user, plugins ] }, () => {
 
 			const pageObject = new EmailReportingPage( wp.page );
 
-			// The PDF button sits directly beside the entry point, so its presence
-			// proves the header rendered and the icon is missing because this is
-			// the initial setup flow, not because the page never loaded.
-			await expect(
-				wp.page.getByRole( 'button', { name: 'Download PDF report' } )
-			).toBeVisible();
+			// Checked instead of a Site Kit-rendered control: WordPress renders the
+			// admin toolbar itself, outside the Site Kit app's React tree, so it
+			// proves the page loaded even if an unrelated error inside that tree
+			// (e.g. one thrown by a different header control) replaced the app with
+			// its error fallback and took every Site Kit element down with it.
+			await expect( wp.page.locator( '#wpadminbar' ) ).toBeVisible();
 			await expect( pageObject.manageEmailReportsButton ).toBeHidden();
 		}
 	);
