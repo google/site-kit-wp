@@ -297,7 +297,7 @@ const baseActions = {
 			};
 
 			if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
-				settings.organizationID = organizationID;
+				settings.organizationID = organizationID || '';
 			}
 
 			if ( contentPolicyStatus ) {
