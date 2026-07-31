@@ -107,7 +107,8 @@ class Migration_N_E_X_T {
 		$stored_url = $this->options->get( Connected_Proxy_URL::OPTION );
 
 		// A plain text URL starts with `http`, so the migration encodes it.
-		// A base64 value never starts with `http`, so the migration skips it.
+		// A base64 value never starts with `http`, and base64 values won't
+		// include a colon, so the migration skips it.
 		// Anything else never came from this plugin, so we don't encode it.
 		if ( ! is_string( $stored_url ) || 0 !== strpos( $stored_url, 'http' ) ) {
 			return;
