@@ -106,11 +106,10 @@ class Migration_N_E_X_T {
 	protected function migrate_connected_proxy_url() {
 		$stored_url = $this->options->get( Connected_Proxy_URL::OPTION );
 
-		// A plain text URL holds a scheme, so the migration encodes it. An
-		// encoded value holds none, because the base64 alphabet holds no colon.
-		// Anything else never came from this plugin, and encoding it would
-		// present it to every reader as the URL the site connected with.
-		if ( ! is_string( $stored_url ) || ! URL::parse( $stored_url, PHP_URL_SCHEME ) ) {
+		// A plain text URL starts with `http`, so the migration encodes it.
+		// A base64 value never starts with `http`, so the migration skips it.
+		// Anything else never came from this plugin, so we don't encode it.
+		if ( ! is_string( $stored_url ) || 0 !== strpos( $stored_url, 'http' ) ) {
 			return;
 		}
 

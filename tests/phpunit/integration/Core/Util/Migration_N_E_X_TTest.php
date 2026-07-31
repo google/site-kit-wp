@@ -88,11 +88,11 @@ class Migration_N_E_X_TTest extends TestCase {
 		);
 	}
 
-	public function test_migrate__keeps_a_stored_value_that_holds_no_scheme() {
+	public function test_migrate__keeps_a_stored_value_that_does_not_start_with_http() {
 		$migration = $this->get_new_migration_instance();
 
-		// Store a value that holds no scheme, so the migration finds no URL to
-		// encode.
+		// Store a value that doesn't start with `http`. The migration skips it,
+		// so nothing gets encoded.
 		$this->options->set( Connected_Proxy_URL::OPTION, 'not*a*valid*value' );
 
 		$migration->migrate();
@@ -100,7 +100,7 @@ class Migration_N_E_X_TTest extends TestCase {
 		$this->assertSame(
 			'not*a*valid*value',
 			$this->options->get( Connected_Proxy_URL::OPTION ),
-			'Migration should keep a stored value that holds no scheme unchanged, rather than encode it as a connected proxy URL.'
+			'Migration should keep a stored value that is not a plain text URL unchanged, rather than encode it as a connected proxy URL.'
 		);
 	}
 

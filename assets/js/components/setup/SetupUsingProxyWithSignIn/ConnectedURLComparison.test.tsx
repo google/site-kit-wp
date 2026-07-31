@@ -39,18 +39,6 @@ describe( 'ConnectedURLComparison', () => {
 		registry = createTestRegistry() as Registry;
 	} );
 
-	/**
-	 * Renders the comparison over a registry holding the three values it reads,
-	 * so a case states only the one value it changes.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object}         [overrides]                    Values to place over the defaults.
-	 * @param {(string|false)} [overrides.connectedProxyURL]  URL the site connected with, or FALSE when the stored value fails to decode.
-	 * @param {string}         [overrides.disconnectedReason] Reason Site Kit disconnected the site.
-	 * @param {string}         [overrides.homeURL]            URL the site runs on now.
-	 * @return {Object} The render result, holding the container and the queries.
-	 */
 	function renderComparison(
 		overrides: {
 			connectedProxyURL?: string | false;
@@ -75,10 +63,10 @@ describe( 'ConnectedURLComparison', () => {
 		const { getByText } = renderComparison();
 
 		expect(
-			getByText( `— Old URL: ${ CONNECTED_PROXY_URL }`, { exact: false } )
+			getByText( `Old URL: ${ CONNECTED_PROXY_URL }`, { exact: false } )
 		).toBeInTheDocument();
 		expect(
-			getByText( `— New URL: ${ HOME_URL }`, { exact: false } )
+			getByText( `New URL: ${ HOME_URL }`, { exact: false } )
 		).toBeInTheDocument();
 	} );
 

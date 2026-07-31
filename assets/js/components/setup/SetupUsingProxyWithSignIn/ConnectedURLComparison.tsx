@@ -61,19 +61,22 @@ const ConnectedURLComparison: FC = () => {
 	}
 
 	return (
-		/* @ts-expect-error The `P` component defaults `size`, and TypeScript reads it as required because `P` holds no types. */
-		<P>
-			{ sprintf(
-				/* translators: %s: the URL the site connected with, such as "https://example.com/". */
-				__( '— Old URL: %s', 'google-site-kit' ),
-				connectedProxyURL
-			) }
-			<br />
-			{ sprintf(
-				/* translators: %s: the URL the site runs on now, such as "https://example.org/". */
-				__( '— New URL: %s', 'google-site-kit' ),
-				homeURL
-			) }
+		/* @ts-expect-error The `P` component incorrectly requires `size` in TypeScript components. */
+		<P as="ul">
+			<li>
+				{ sprintf(
+					/* translators: %s: the URL the site connected with, eg. "https://oldsite.com/". */
+					__( 'Old URL: %s', 'google-site-kit' ),
+					connectedProxyURL
+				) }
+			</li>
+			<li>
+				{ sprintf(
+					/* translators: %s: the URL the site currently uses, eg. "https://newsite.com/". */
+					__( 'New URL: %s', 'google-site-kit' ),
+					homeURL
+				) }
+			</li>
 		</P>
 	);
 };

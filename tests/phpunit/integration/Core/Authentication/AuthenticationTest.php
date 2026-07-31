@@ -699,16 +699,6 @@ class AuthenticationTest extends TestCase {
 	/**
 	 * Sets up a proxy connected site with an administrator who can run setup.
 	 *
-	 * Every test of the connected proxy URL check runs over this same
-	 * arrangement, and so does the reconnect notice test. Each test writes the
-	 * stored URL it needs, moves the home URL when its case calls for that, and
-	 * then fires admin_init.
-	 *
-	 * The helper registers Authentication before the connected proxy URL
-	 * migration, the order Plugin.php uses. The migration runs on admin_init at
-	 * priority 0 and the check runs at priority 10, so the migration always
-	 * encodes a stored URL before the check reads it.
-	 *
 	 * @return array Site arrangement, keyed `context`, `options`, `user_options`
 	 *               and `authentication`.
 	 */
@@ -727,8 +717,8 @@ class AuthenticationTest extends TestCase {
 
 		( new Migration_N_E_X_T( $context, $options ) )->register();
 
-		// Drop the database version, so the migration runs the way it does on a
-		// site that upgrades to this version.
+		// Roll back the database version, so the migration runs the way it does on
+		// a site that upgrades to this version.
 		$options->delete( Migration_N_E_X_T::DB_VERSION_OPTION );
 
 		// Emulate credentials.
@@ -737,8 +727,7 @@ class AuthenticationTest extends TestCase {
 		// Emulate OAuth access token.
 		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
 
-		// Grant the administrator the Permissions::SETUP capability regardless
-		// of authentication.
+		// Ensure admin user has Permissions::SETUP cap regardless of authentication.
 		add_filter(
 			'user_has_cap',
 			function ( $caps ) {
@@ -747,7 +736,12 @@ class AuthenticationTest extends TestCase {
 			}
 		);
 
-		return compact( 'context', 'options', 'user_options', 'authentication' );
+		return array(
+			'context'        => $context,
+			'options'        => $options,
+			'user_options'   => $user_options,
+			'authentication' => $authentication,
+		);
 	}
 
 	public function test_check_connected_proxy_url__disconnects_a_site_whose_encoded_url_is_another_domain() {
@@ -836,8 +830,8 @@ class AuthenticationTest extends TestCase {
 		$site    = $this->set_up_proxy_connected_site();
 		$options = $site['options'];
 
-		// Store a value that holds no scheme, so the migration leaves it alone
-		// and the notice finds no old URL to print.
+		// Store a value that doesn't start with `http`. The migration skips it,
+		// so the notice finds no old URL to print.
 		$options->set( Connected_Proxy_URL::OPTION, 'not*a*valid*value' );
 
 		do_action( 'admin_init' );
