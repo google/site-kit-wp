@@ -25,7 +25,7 @@ import PopupPane from './PopupPane';
 import Preview from './Preview';
 
 describe( 'Preview', () => {
-	it( 'should render the CTAPreview shell with default heading and description', () => {
+	it( 'should render the popup heading and description by default', () => {
 		render( <Preview /> );
 
 		expect( screen.getByText( 'See how it looks' ) ).toBeInTheDocument();
@@ -51,8 +51,7 @@ describe( 'Preview', () => {
 		render( <Preview ctaTitle="My Newsletter" ctaBody="Sign up today." /> );
 
 		// Popup tab is active by default, popup content should be visible.
-		const panels = screen.getAllByText( 'My Newsletter' );
-		expect( panels[ 0 ] ).toBeInTheDocument();
+		expect( screen.getByText( 'My Newsletter' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should show inline pane content when the Inline tab is clicked', () => {
@@ -70,6 +69,22 @@ describe( 'Preview', () => {
 		// Both popup and inline panes share the same content so verify rendering.
 		expect( screen.getByText( 'My Newsletter' ) ).toBeInTheDocument();
 		expect( screen.getByText( 'Sign up today.' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should update the heading when switching to the Inline tab', () => {
+		render( <Preview /> );
+
+		expect( screen.getByText( 'See how it looks' ) ).toBeInTheDocument();
+
+		const inlineTab = screen.getByRole( 'tab', { name: /inline/i } );
+		fireEvent.click( inlineTab );
+
+		expect(
+			screen.getByText( 'How this would look?' )
+		).toBeInTheDocument();
+		expect(
+			screen.queryByText( 'See how it looks' )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should not render CTA title and body when not provided', () => {

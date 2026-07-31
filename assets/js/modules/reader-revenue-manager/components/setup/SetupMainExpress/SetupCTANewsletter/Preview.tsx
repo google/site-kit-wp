@@ -48,23 +48,18 @@ export default function Preview( {
 	const [ activeTab, setActiveTab ] = useState( CTA_PREVIEW_TAB_POPUP );
 	const paneProps = { ctaTitle, ctaBody, consentEnabled, consentText };
 
-	function handleTabChange( tabIndex: number ) {
-		setActiveTab( tabIndex );
-	}
-
-	const previewTitle =
+	const title =
 		activeTab === CTA_PREVIEW_TAB_INLINE
 			? __( 'How this would look?', 'google-site-kit' )
-			: undefined;
+			: __( 'See how it looks', 'google-site-kit' );
 
 	return (
 		<CTAPreview
-			title={ previewTitle }
-			activeTab={ activeTab }
-			onTabChange={ handleTabChange }
+			classNames="googlesitekit-rrm-newsletter-preview"
+			title={ title }
+			onTabChange={ setActiveTab }
 			popupContent={ <PopupPane { ...paneProps } /> }
 			inlineContent={ <InlinePane { ...paneProps } /> }
-			classNames="googlesitekit-rrm-newsletter-preview"
 		/>
 	);
 }

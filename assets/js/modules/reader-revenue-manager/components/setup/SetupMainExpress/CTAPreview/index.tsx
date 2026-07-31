@@ -25,6 +25,7 @@ import type { ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
+import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -41,9 +42,8 @@ interface Props {
 	footer?: string;
 	popupContent?: ReactNode;
 	inlineContent?: ReactNode;
+	onTabChange?: ( tabIndex: number ) => void;
 	classNames?: string;
-	activeTab: number;
-	onTabChange: ( tabIndex: number ) => void;
 }
 
 export const CTA_PREVIEW_TAB_POPUP = 0;
@@ -63,10 +63,16 @@ export default function CTAPreview( {
 	),
 	popupContent,
 	inlineContent,
-	classNames = '',
-	activeTab,
 	onTabChange,
+	classNames = '',
 }: Props ) {
+	const [ activeTab, setActiveTab ] = useState( CTA_PREVIEW_TAB_POPUP );
+
+	function handleTabChange( tabIndex: number ) {
+		setActiveTab( tabIndex );
+		onTabChange?.( tabIndex );
+	}
+
 	return (
 		<div
 			className={ classnames(
@@ -95,7 +101,7 @@ export default function CTAPreview( {
 			<div className="googlesitekit-rrm-cta-preview__tabs">
 				<TabBar
 					activeIndex={ activeTab }
-					handleActiveIndexUpdate={ onTabChange }
+					handleActiveIndexUpdate={ handleTabChange }
 				>
 					<Tab id={ POPUP_TAB_ID } focusOnActivate={ false }>
 						<span className="mdc-tab__text-label">
@@ -112,10 +118,7 @@ export default function CTAPreview( {
 			<div className="googlesitekit-rrm-cta-preview__stage">
 				{ activeTab === CTA_PREVIEW_TAB_POPUP && (
 					<div
-						className={ classnames(
-							'googlesitekit-rrm-cta-preview__panel',
-							'googlesitekit-rrm-cta-preview__panel--popup'
-						) }
+						className="googlesitekit-rrm-cta-preview__panel googlesitekit-rrm-cta-preview__panel--popup"
 						role="tabpanel"
 						aria-labelledby={ POPUP_TAB_ID }
 					>
@@ -132,10 +135,7 @@ export default function CTAPreview( {
 				) }
 				{ activeTab === CTA_PREVIEW_TAB_INLINE && (
 					<div
-						className={ classnames(
-							'googlesitekit-rrm-cta-preview__panel',
-							'googlesitekit-rrm-cta-preview__panel--inline'
-						) }
+						className="googlesitekit-rrm-cta-preview__panel googlesitekit-rrm-cta-preview__panel--inline"
 						role="tabpanel"
 						aria-labelledby={ INLINE_TAB_ID }
 					>
