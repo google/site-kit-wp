@@ -362,7 +362,7 @@ class Authenticator implements Authenticator_Interface {
 	 * @return bool True if registration is open, false otherwise.
 	 */
 	protected function is_registration_open() {
-		return $this->is_wordpress_registration_open() || $this->is_woocommerce_registration_open();
+		return $this->is_wordpress_registration_open() || $this->woocommerce_allows_registration();
 	}
 
 	/**
@@ -381,7 +381,7 @@ class Authenticator implements Authenticator_Interface {
 	 * @return string Default role.
 	 */
 	protected function get_default_role() {
-		if ( ! $this->is_wordpress_registration_open() && $this->is_woocommerce_registration_open() ) {
+		if ( ! $this->is_wordpress_registration_open() && $this->woocommerce_allows_registration() ) {
 			return 'customer';
 		}
 
@@ -411,11 +411,20 @@ class Authenticator implements Authenticator_Interface {
 	 * Checks if WooCommerce's own account-creation settings allow
 	 * registration, when WooCommerce is active.
 	 *
+	 * Named distinctly from `WooCommerce_Authenticator::is_woocommerce_registration_open()`
+	 * (the static method this defers to) rather than sharing its name: on
+	 * PHP 7.4, a private instance method here with the exact same name as
+	 * that public static method on the subclass triggers a fatal
+	 * "Cannot make non static method ... static" error, even though private
+	 * methods aren't supposed to participate in override compatibility
+	 * checks. PHP 8.1+ correctly excludes private methods from that check,
+	 * but the plugin's floor is PHP 7.4.
+	 *
 	 * @since n.e.x.t
 	 *
 	 * @return bool True if WooCommerce is active and registration is open through it, false otherwise.
 	 */
-	private function is_woocommerce_registration_open() {
+	private function woocommerce_allows_registration() {
 		return class_exists( 'WooCommerce' ) && WooCommerce_Authenticator::is_woocommerce_registration_open();
 	}
 
