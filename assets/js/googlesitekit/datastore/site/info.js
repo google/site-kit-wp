@@ -195,6 +195,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				keyMetricsSetupNew,
 				consentModeRegions,
 				anyoneCanRegister,
+				anyoneCanRegisterWooCommerce,
 				isMultisite,
 				hasActiveLeadEventProviders,
 				hasActiveEcommerceEventProviders,
@@ -235,6 +236,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				keyMetricsSetupNew,
 				consentModeRegions,
 				anyoneCanRegister,
+				anyoneCanRegisterWooCommerce,
 				isMultisite,
 				hasActiveLeadEventProviders,
 				hasActiveEcommerceEventProviders,
@@ -331,6 +333,7 @@ export const resolvers = {
 			keyMetricsSetupNew,
 			consentModeRegions,
 			anyoneCanRegister,
+			anyoneCanRegisterWooCommerce,
 			isMultisite,
 			hasActiveLeadEventProviders,
 			hasActiveEcommerceEventProviders,
@@ -378,6 +381,7 @@ export const resolvers = {
 			keyMetricsSetupNew,
 			consentModeRegions,
 			anyoneCanRegister,
+			anyoneCanRegisterWooCommerce,
 			isMultisite,
 			hasActiveLeadEventProviders,
 			hasActiveEcommerceEventProviders,
@@ -996,6 +1000,22 @@ export const selectors = {
 	 * @return {boolean|undefined} `true` if registrations are open; `false` if not. Returns `undefined` if not yet loaded.
 	 */
 	getAnyoneCanRegister: getSiteInfoProperty( 'anyoneCanRegister' ),
+
+	/**
+	 * Checks if WooCommerce allows new accounts to be created, independently
+	 * of the WordPress "Anyone can register" setting.
+	 *
+	 * `false` both when WooCommerce is inactive and when it is active but its
+	 * own account-creation settings are closed.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} `true` if WooCommerce registration is open; `false` if not. Returns `undefined` if not yet loaded.
+	 */
+	getAnyoneCanRegisterWooCommerce: getSiteInfoProperty(
+		'anyoneCanRegisterWooCommerce'
+	),
 
 	/**
 	 * Checks if WordPress site is running in the multisite mode.
