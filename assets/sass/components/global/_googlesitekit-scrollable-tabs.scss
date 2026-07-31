@@ -35,9 +35,9 @@
 		transform: translateY(-50%);
 		width: 36px;
 
-		// Clears the two layers a consuming tab bar can draw beneath an arrow.
 		// The Site Goals breakdown bar sets its divider to z-index 0 and its
-		// .mdc-tab-bar to z-index 1, so the tabs slide under the arrow.
+		// .mdc-tab-bar to z-index 1. The arrow needs a higher layer than both,
+		// so the tabs scroll under it.
 		z-index: 2;
 	}
 
@@ -49,22 +49,10 @@
 		right: 0;
 	}
 
-	// Each arrow stays in the page at both ends of the bar, so a keyboard user
-	// who runs out of scroll keeps their place. Opacity hides the spent arrow
-	// while leaving it in the accessibility tree, which display or visibility
-	// would drop it from, and pointer-events hands the click to the tab below.
+	// The component disables this arrow at the end of the bar. Opacity hides
+	// it, and pointer-events lets a click pass through to the tab.
 	.googlesitekit-scrollable-tabs__arrow--inactive {
 		opacity: 0;
 		pointer-events: none;
-	}
-
-	// A keyboard user who runs out of scroll keeps their place on the arrow, so
-	// the arrow comes back into view while it holds focus. Otherwise the focus
-	// ring, and the screen reader cursor with it, draws an empty box over the
-	// tabs. The dimmed value reads as an arrow with nothing left to do, and
-	// :focus-visible keeps it out of sight for anyone using a pointer.
-	.googlesitekit-scrollable-tabs__arrow--inactive:focus-visible {
-		opacity: 0.38;
-		pointer-events: auto;
 	}
 }

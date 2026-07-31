@@ -26,7 +26,6 @@ import { FC } from 'react';
  * WordPress dependencies
  */
 import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -149,11 +148,8 @@ const ScrollableTabs: FC< ScrollableTabsProps > = ( {
 
 	function scrollByPage( direction: number ) {
 		const scrollNode = scrollNodeRef.current;
-		const canScroll = direction < 0 ? canScrollLeft : canScrollRight;
 
-		// An arrow with nothing left to scroll still fires its click handler,
-		// since ARIA alone marks it inactive, so stop before scrolling nowhere.
-		if ( ! scrollNode || ! canScroll ) {
+		if ( ! scrollNode ) {
 			return;
 		}
 
@@ -171,13 +167,9 @@ const ScrollableTabs: FC< ScrollableTabsProps > = ( {
 				className
 			) }
 		>
-			{ /* Both arrows stay in the page at every desktop width, whether or
-			not the bar can scroll, so reaching either end never pulls the
-			focused arrow out from under the person driving it. ARIA marks the
-			spent direction, which the HTML `disabled` attribute can't do
-			without the browser dropping focus to the body. `tabIndex` takes
-			that arrow out of the tab order, and the `--inactive` modifier
-			hides the arrow. */ }
+			{ /* The arrows stay out of the tab order and out of the
+			accessibility tree, because the tab bar already moves between tabs
+			on the arrow keys and scrolls each new tab into view. */ }
 			{ isDesktop && (
 				<button
 					type="button"
@@ -189,9 +181,9 @@ const ScrollableTabs: FC< ScrollableTabsProps > = ( {
 								! canScrollLeft,
 						}
 					) }
-					aria-disabled={ ! canScrollLeft }
-					aria-label={ __( 'Scroll tabs left', 'google-site-kit' ) }
-					tabIndex={ canScrollLeft ? 0 : -1 }
+					aria-hidden="true"
+					disabled={ ! canScrollLeft }
+					tabIndex={ -1 }
 					onClick={ () => scrollByPage( -1 ) }
 				>
 					<ChevronLeftIcon width={ 20 } height={ 20 } />
@@ -209,9 +201,9 @@ const ScrollableTabs: FC< ScrollableTabsProps > = ( {
 								! canScrollRight,
 						}
 					) }
-					aria-disabled={ ! canScrollRight }
-					aria-label={ __( 'Scroll tabs right', 'google-site-kit' ) }
-					tabIndex={ canScrollRight ? 0 : -1 }
+					aria-hidden="true"
+					disabled={ ! canScrollRight }
+					tabIndex={ -1 }
 					onClick={ () => scrollByPage( 1 ) }
 				>
 					<ChevronRightIcon width={ 20 } height={ 20 } />
