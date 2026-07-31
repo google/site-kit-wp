@@ -348,32 +348,75 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Checks if the registration is open.
 	 *
+	 * Checked here in the base class, rather than only in
+	 * `WooCommerce_Authenticator`, because the `integration=woocommerce` POST
+	 * value is only ever sent from the WooCommerce-hosted login page: the
+	 * WordPress login page and One Tap there use this base class even when
+	 * WooCommerce is active, so WooCommerce's own account-creation settings
+	 * have to be checked here too for that flow to open registration.
+	 *
 	 * @since 1.145.0
+	 * @since n.e.x.t Also opens registration through WooCommerce's own
+	 *                account-creation settings, when WooCommerce is active.
 	 *
 	 * @return bool True if registration is open, false otherwise.
 	 */
 	protected function is_registration_open() {
-		// No need to check the multisite settings because it is already
-		// incorporated in the following users_can_register check.
-		// See: https://github.com/WordPress/WordPress/blob/505b7c55f5363d51e7e28d512ce7dcb2d5f45894/wp-includes/ms-default-filters.php#L20.
-		return get_option( 'users_can_register' );
+		return $this->is_wordpress_registration_open() || $this->is_woocommerce_registration_open();
 	}
 
 	/**
 	 * Gets the default role for new users.
 	 *
+	 * WordPress's own "Anyone can register" setting takes precedence: when it
+	 * is open, the WordPress default role applies regardless of WooCommerce.
+	 * WooCommerce's `customer` role is only used as a fallback when WordPress
+	 * registration is closed but WooCommerce's own registration is open.
+	 *
 	 * @since 1.141.0
 	 * @since 1.145.0 Updated the function visibility to protected.
+	 * @since n.e.x.t Returns WooCommerce's `customer` role as a fallback when
+	 *                only WooCommerce's own registration setting is open.
 	 *
 	 * @return string Default role.
 	 */
 	protected function get_default_role() {
+		if ( ! $this->is_wordpress_registration_open() && $this->is_woocommerce_registration_open() ) {
+			return 'customer';
+		}
+
 		$default_role = get_option( 'default_role' );
 		if ( empty( $default_role ) ) {
 			$default_role = 'subscriber';
 		}
 
 		return $default_role;
+	}
+
+	/**
+	 * Checks if WordPress's own "Anyone can register" setting is open.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if registration is open, false otherwise.
+	 */
+	private function is_wordpress_registration_open() {
+		// No need to check the multisite settings because it is already
+		// incorporated in the following users_can_register check.
+		// See: https://github.com/WordPress/WordPress/blob/505b7c55f5363d51e7e28d512ce7dcb2d5f45894/wp-includes/ms-default-filters.php#L20.
+		return (bool) get_option( 'users_can_register' );
+	}
+
+	/**
+	 * Checks if WooCommerce's own account-creation settings allow
+	 * registration, when WooCommerce is active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if WooCommerce is active and registration is open through it, false otherwise.
+	 */
+	private function is_woocommerce_registration_open() {
+		return class_exists( 'WooCommerce' ) && WooCommerce_Authenticator::is_woocommerce_registration_open();
 	}
 
 	/**
