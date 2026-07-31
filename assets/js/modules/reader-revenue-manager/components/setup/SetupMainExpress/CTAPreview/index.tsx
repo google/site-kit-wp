@@ -42,10 +42,11 @@ interface Props {
 	footer?: string;
 	popupContent?: ReactNode;
 	inlineContent?: ReactNode;
+	classNames?: string;
 }
 
-const CTA_PREVIEW_TAB_POPUP = 0;
-const CTA_PREVIEW_TAB_INLINE = 1;
+export const CTA_PREVIEW_TAB_POPUP = 0;
+export const CTA_PREVIEW_TAB_INLINE = 1;
 const POPUP_TAB_ID = 'googlesitekit-rrm-cta-preview-tab-popup';
 const INLINE_TAB_ID = 'googlesitekit-rrm-cta-preview-tab-inline';
 
@@ -61,11 +62,17 @@ export default function CTAPreview( {
 	),
 	popupContent,
 	inlineContent,
+	classNames = '',
 }: Props ) {
 	const [ activeTab, setActiveTab ] = useState( CTA_PREVIEW_TAB_POPUP );
 
 	return (
-		<div className="googlesitekit-rrm-cta-preview">
+		<div
+			className={ classnames(
+				'googlesitekit-rrm-cta-preview',
+				classNames
+			) }
+		>
 			<div className="googlesitekit-rrm-cta-preview__header">
 				<Typography
 					as="h3"

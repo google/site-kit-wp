@@ -16,9 +16,6 @@
  * limitations under the License.
  */
 
-// Consumer-only styles for the newsletter CTA preview content card.
-// The CTAPreview shell container, tabs, and stage styles are defined in
-// _googlesitekit-rrm-cta-preview.scss and must not be modified here.
 .googlesitekit-plugin {
 
 	.googlesitekit-rrm-newsletter-preview {
@@ -26,8 +23,8 @@
 		border-radius: $br-xs;
 		display: flex;
 		flex-direction: column;
-		gap: 8px;
-		padding: 16px;
+		gap: 11px;
+		padding: $grid-gap-phone;
 
 		&.googlesitekit-rrm-newsletter-preview--popup {
 			margin: auto;
@@ -35,6 +32,7 @@
 		}
 
 		&.googlesitekit-rrm-newsletter-preview--inline {
+			border-radius: 0;
 			height: 100%;
 		}
 
@@ -49,13 +47,17 @@
 			text-align: center;
 		}
 
+		.googlesitekit-rrm-cta-preview__panel-content {
+			padding: 38px 23px;
+		}
+
 		.googlesitekit-rrm-newsletter-preview__body {
 			margin: 0;
 			text-align: center;
 		}
 
 		.googlesitekit-rrm-newsletter-preview__consent {
-			align-items: flex-start;
+			align-items: center;
 			display: flex;
 			gap: 8px;
 
@@ -64,12 +66,14 @@
 				flex-shrink: 0;
 				margin: 2px 0 0;
 			}
+
+			googlesitekit-rrm-newsletter-preview__consent-text {
+				font-size: 10px;
+			}
 		}
 
 		.googlesitekit-rrm-newsletter-preview__disclaimer {
-			color: $c-neutral-n-700;
-			font-size: $fs-body-sm;
-			line-height: $lh-body-sm;
+			font-size: 8px;
 			margin: 0;
 		}
 
@@ -93,9 +97,15 @@
 			line-height: $lh-body-md;
 			padding: 8px 16px;
 			width: 100%;
+
+			&:hover {
+				pointer-events: none;
+				text-decoration: none;
+			}
 		}
 
 		.googlesitekit-rrm-newsletter-preview__or {
+			font-size: 8px;
 			margin: 0;
 			text-align: center;
 		}

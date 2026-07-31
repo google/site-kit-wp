@@ -42,6 +42,7 @@ export default function Preview( {
 		<CTAPreview
 			popupContent={ <PopupPane { ...paneProps } /> }
 			inlineContent={ <InlinePane { ...paneProps } /> }
+			classNames="googlesitekit-rrm-newsletter-preview"
 		/>
 	);
 }

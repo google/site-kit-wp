@@ -53,8 +53,8 @@ export default function InlinePane( {
 			{ ctaTitle && (
 				<Typography
 					as="h4"
-					type="headline"
-					size="small"
+					type="title"
+					size="large"
 					className="googlesitekit-rrm-newsletter-preview__title"
 				>
 					{ ctaTitle }
@@ -63,7 +63,7 @@ export default function InlinePane( {
 			{ ctaBody && (
 				<Typography
 					as="p"
-					type="title"
+					type="label"
 					size="small"
 					className="googlesitekit-rrm-newsletter-preview__body"
 				>
