@@ -318,6 +318,48 @@ class Email_Log_ProcessorTest extends TestCase {
 		$this->assertEquals( $original_locale, get_locale(), 'The site locale should be restored after a failed build.' );
 	}
 
+	public function test_process__marks_failed_when_build_and_send_throws_exception() {
+		$user_id = self::factory()->user->create();
+		$post_id = $this->create_log_post( $user_id );
+
+		$this->data_requests->method( 'get_user_payload' )->willReturn( array( 'total_visitors' => array() ) );
+		$this->template_formatter->method( 'build_sections' )
+			->willReturnCallback(
+				function () {
+					throw new \Exception( 'Unexpected build failure' );
+				}
+			);
+		$this->report_sender->expects( $this->never() )->method( 'send' );
+
+		$this->processor->process( $post_id, Email_Reporting_Settings::FREQUENCY_WEEKLY );
+
+		$this->assertEquals( Email_Log::STATUS_FAILED, get_post_status( $post_id ), 'Log should be marked failed when building and sending throws.' );
+		$this->assertStringContainsString( 'Unexpected build failure', get_post_meta( $post_id, Email_Log::META_ERROR_DETAILS, true ), 'Exception message should be recorded.' );
+	}
+
+	public function test_process__restores_site_locale_when_build_and_send_throws_exception() {
+		$original_locale     = get_locale();
+		$recipient_locale    = $this->get_other_locale( $original_locale );
+		$user_id             = self::factory()->user->create( array( 'locale' => $recipient_locale ) );
+		$post_id             = $this->create_log_post( $user_id );
+		$locale_during_build = null;
+
+		$this->data_requests->method( 'get_user_payload' )->willReturn( array( 'total_visitors' => array() ) );
+		$this->template_formatter->method( 'build_sections' )
+			->willReturnCallback(
+				function () use ( &$locale_during_build ) {
+					$locale_during_build = get_locale();
+					throw new \Exception( 'Unexpected build failure' );
+				}
+			);
+
+		$this->processor->process( $post_id, Email_Reporting_Settings::FREQUENCY_WEEKLY );
+
+		$this->assertEquals( $recipient_locale, $locale_during_build, 'Sections should be attempted using the recipient locale before the exception is thrown.' );
+		$this->assertEquals( Email_Log::STATUS_FAILED, get_post_status( $post_id ), 'Log should be marked failed.' );
+		$this->assertEquals( $original_locale, get_locale(), 'The site locale should be restored after an exception during build and send.' );
+	}
+
 	public function test_process__restores_site_locale_across_sequential_logs_with_different_recipient_locales() {
 		$original_locale  = get_locale();
 		$locale_one       = $this->get_other_locale( $original_locale );

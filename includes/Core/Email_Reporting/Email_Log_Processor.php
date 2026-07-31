@@ -127,10 +127,15 @@ class Email_Log_Processor {
 		$user_locale     = get_user_locale( $user );
 		$switched_locale = switch_to_locale( $user_locale );
 
-		$this->build_and_send_email( $post_id, $email_log, $user, $raw_payload, $frequency, $date_range );
-
-		if ( $switched_locale ) {
-			restore_previous_locale();
+		try {
+			$this->build_and_send_email( $post_id, $email_log, $user, $raw_payload, $frequency, $date_range );
+		} catch ( \Exception $e ) {
+			$this->mark_failed( $post_id, $e->getMessage() );
+			return;
+		} finally {
+			if ( $switched_locale ) {
+				restore_previous_locale();
+			}
 		}
 	}
 
