@@ -17,9 +17,18 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
-import CTAPreview from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/CTAPreview';
+import CTAPreview, {
+	CTA_PREVIEW_TAB_INLINE,
+	CTA_PREVIEW_TAB_POPUP,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/CTAPreview';
 import InlinePane from './InlinePane';
 import PopupPane from './PopupPane';
 
@@ -36,10 +45,23 @@ export default function Preview( {
 	consentEnabled,
 	consentText,
 }: Props ) {
+	const [ activeTab, setActiveTab ] = useState( CTA_PREVIEW_TAB_POPUP );
 	const paneProps = { ctaTitle, ctaBody, consentEnabled, consentText };
+
+	function handleTabChange( tabIndex: number ) {
+		setActiveTab( tabIndex );
+	}
+
+	const previewTitle =
+		activeTab === CTA_PREVIEW_TAB_INLINE
+			? __( 'How this would look?', 'google-site-kit' )
+			: undefined;
 
 	return (
 		<CTAPreview
+			title={ previewTitle }
+			activeTab={ activeTab }
+			onTabChange={ handleTabChange }
 			popupContent={ <PopupPane { ...paneProps } /> }
 			inlineContent={ <InlinePane { ...paneProps } /> }
 			classNames="googlesitekit-rrm-newsletter-preview"

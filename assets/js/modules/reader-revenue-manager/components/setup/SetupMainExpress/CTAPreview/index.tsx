@@ -25,7 +25,6 @@ import type { ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -43,6 +42,8 @@ interface Props {
 	popupContent?: ReactNode;
 	inlineContent?: ReactNode;
 	classNames?: string;
+	activeTab: number;
+	onTabChange: ( tabIndex: number ) => void;
 }
 
 export const CTA_PREVIEW_TAB_POPUP = 0;
@@ -63,9 +64,9 @@ export default function CTAPreview( {
 	popupContent,
 	inlineContent,
 	classNames = '',
+	activeTab,
+	onTabChange,
 }: Props ) {
-	const [ activeTab, setActiveTab ] = useState( CTA_PREVIEW_TAB_POPUP );
-
 	return (
 		<div
 			className={ classnames(
@@ -94,7 +95,7 @@ export default function CTAPreview( {
 			<div className="googlesitekit-rrm-cta-preview__tabs">
 				<TabBar
 					activeIndex={ activeTab }
-					handleActiveIndexUpdate={ setActiveTab }
+					handleActiveIndexUpdate={ onTabChange }
 				>
 					<Tab id={ POPUP_TAB_ID } focusOnActivate={ false }>
 						<span className="mdc-tab__text-label">
