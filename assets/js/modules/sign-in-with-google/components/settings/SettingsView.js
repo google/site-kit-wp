@@ -46,6 +46,9 @@ export default function SettingsView() {
 	const anyoneCanRegister = useSelect( ( select ) =>
 		select( CORE_SITE ).getAnyoneCanRegister()
 	);
+	const anyoneCanRegisterWooCommerce = useSelect( ( select ) =>
+		select( CORE_SITE ).getAnyoneCanRegisterWooCommerce()
+	);
 
 	const buttonShapeLabel = useSelect( ( select ) => {
 		const shape = select( MODULES_SIGN_IN_WITH_GOOGLE ).getShape();
@@ -212,7 +215,8 @@ export default function SettingsView() {
 						<p className="googlesitekit-settings-module__meta-item-data">
 							<DisplaySetting
 								value={
-									anyoneCanRegister
+									anyoneCanRegister ||
+									anyoneCanRegisterWooCommerce
 										? __( 'Enabled', 'google-site-kit' )
 										: __( 'Disabled', 'google-site-kit' )
 								}
