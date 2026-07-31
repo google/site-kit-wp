@@ -1,0 +1,103 @@
+/**
+ * Reader Revenue Manager Newsletter CTA preview styles.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// Consumer-only styles for the newsletter CTA preview content card.
+// The CTAPreview shell container, tabs, and stage styles are defined in
+// _googlesitekit-rrm-cta-preview.scss and must not be modified here.
+.googlesitekit-plugin {
+
+	.googlesitekit-rrm-newsletter-preview {
+		background-color: $c-surfaces-surface;
+		border-radius: $br-xs;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 16px;
+
+		&.googlesitekit-rrm-newsletter-preview--popup {
+			margin: auto;
+			max-width: 100%;
+		}
+
+		&.googlesitekit-rrm-newsletter-preview--inline {
+			height: 100%;
+		}
+
+		.googlesitekit-rrm-newsletter-preview__publication-name {
+			color: $c-neutral-n-500;
+			margin: 0;
+			text-align: center;
+		}
+
+		.googlesitekit-rrm-newsletter-preview__title {
+			margin: 0;
+			text-align: center;
+		}
+
+		.googlesitekit-rrm-newsletter-preview__body {
+			margin: 0;
+			text-align: center;
+		}
+
+		.googlesitekit-rrm-newsletter-preview__consent {
+			align-items: flex-start;
+			display: flex;
+			gap: 8px;
+
+			.googlesitekit-rrm-newsletter-preview__consent-checkbox {
+				cursor: not-allowed;
+				flex-shrink: 0;
+				margin: 2px 0 0;
+			}
+		}
+
+		.googlesitekit-rrm-newsletter-preview__disclaimer {
+			color: $c-neutral-n-700;
+			font-size: $fs-body-sm;
+			line-height: $lh-body-sm;
+			margin: 0;
+		}
+
+		.googlesitekit-rrm-newsletter-preview__link {
+			color: $c-content-secondary;
+		}
+
+		.googlesitekit-rrm-newsletter-preview__actions {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+		}
+
+		.googlesitekit-rrm-newsletter-preview__button {
+			background-color: $c-surfaces-background;
+			border: none;
+			border-radius: $br-lg;
+			color: $c-neutral-n-500;
+			cursor: not-allowed;
+			font-size: $fs-body-md;
+			line-height: $lh-body-md;
+			padding: 8px 16px;
+			width: 100%;
+		}
+
+		.googlesitekit-rrm-newsletter-preview__or {
+			margin: 0;
+			text-align: center;
+		}
+	}
+}
