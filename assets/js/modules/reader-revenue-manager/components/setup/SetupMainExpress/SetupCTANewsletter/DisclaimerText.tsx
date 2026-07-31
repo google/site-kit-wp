@@ -19,41 +19,29 @@
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 export default function DisclaimerText() {
+	const linkSpan = (
+		<span className="googlesitekit-rrm-newsletter-preview__link" />
+	);
+
 	return (
 		<p className="googlesitekit-rrm-newsletter-preview__disclaimer">
-			{ __(
-				'By continuing, you agree to provide your email and name (if applicable) to ',
-				'google-site-kit'
+			{ createInterpolateElement(
+				__(
+					"By continuing, you agree to provide your email and name (if applicable) to <em>YourSite</em> Test Publication through a Google service. Google delivers your information under its <tos>Terms of Service</tos> and <pp>Privacy Policy</pp>. <em>YourSite</em> Test Publication's use of your data is subject to their own <terms>terms</terms> and <privacypolicy>privacy policy</privacypolicy>.",
+					'google-site-kit'
+				),
+				{
+					em: <em />,
+					tos: linkSpan,
+					pp: linkSpan,
+					terms: linkSpan,
+					privacypolicy: linkSpan,
+				}
 			) }
-			<em>{ __( 'YourSite', 'google-site-kit' ) }</em>
-			{ __(
-				' Test Publication through a Google service. Google delivers your information under its ',
-				'google-site-kit'
-			) }
-			<span className="googlesitekit-rrm-newsletter-preview__link">
-				{ __( 'Terms of Service', 'google-site-kit' ) }
-			</span>{ ' ' }
-			{ __( 'and', 'google-site-kit' ) }{ ' ' }
-			<span className="googlesitekit-rrm-newsletter-preview__link">
-				{ __( 'Privacy Policy', 'google-site-kit' ) }
-			</span>
-			{ '. ' }
-			<em>{ __( 'YourSite', 'google-site-kit' ) }</em>
-			{ __(
-				" Test Publication's use of your data is subject to their own ",
-				'google-site-kit'
-			) }
-			<span className="googlesitekit-rrm-newsletter-preview__link">
-				{ __( 'terms', 'google-site-kit' ) }
-			</span>{ ' ' }
-			{ __( 'and', 'google-site-kit' ) }{ ' ' }
-			<span className="googlesitekit-rrm-newsletter-preview__link">
-				{ __( 'privacy policy', 'google-site-kit' ) }
-			</span>
-			.
 		</p>
 	);
 }
