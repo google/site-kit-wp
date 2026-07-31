@@ -67,6 +67,8 @@ describe( 'core/site site info', () => {
 				},
 			],
 			productPostType: [ 'product' ],
+			anyoneCanRegister: false,
+			anyoneCanRegisterWooCommerce: false,
 			isMultisite: false,
 			hasActiveLeadEventProviders: false,
 			hasActiveEcommerceEventProviders: false,
@@ -518,6 +520,11 @@ describe( 'core/site site info', () => {
 			[ 'getProductPostType', 'productPostType' ],
 			[ 'isKeyMetricsSetupCompleted', 'keyMetricsSetupCompletedBy' ],
 			[ 'getConsentModeRegions', 'consentModeRegions' ],
+			[ 'getAnyoneCanRegister', 'anyoneCanRegister' ],
+			[
+				'getAnyoneCanRegisterWooCommerce',
+				'anyoneCanRegisterWooCommerce',
+			],
 			[ 'isMultisite', 'isMultisite' ],
 			[ 'hasActiveLeadEventProviders', 'hasActiveLeadEventProviders' ],
 			[
