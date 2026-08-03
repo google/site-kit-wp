@@ -29,7 +29,8 @@ class Migration_N_E_X_TTest extends TestCase {
 		$this->options             = new Options( $this->context );
 		$this->connected_proxy_url = new Connected_Proxy_URL( $this->options );
 
-		// Drop both options, so each test starts from the values it stores itself.
+		// Remove both options from the database, so each test relies only on
+		// the values it creates and stores.
 		$this->options->delete( Connected_Proxy_URL::OPTION );
 		$this->options->delete( Migration_N_E_X_T::DB_VERSION_OPTION );
 	}
