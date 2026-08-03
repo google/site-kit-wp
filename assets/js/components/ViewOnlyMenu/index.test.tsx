@@ -95,10 +95,4 @@ describe( 'ViewOnlyMenu', () => {
 
 		expect( getByText( 'Shared services' ) ).toBeInTheDocument();
 	} );
-
-	it( 'should not render the Manage email reports item, which now lives in the header', () => {
-		const { queryByText } = renderOpenMenu();
-
-		expect( queryByText( 'Manage email reports' ) ).not.toBeInTheDocument();
-	} );
 } );

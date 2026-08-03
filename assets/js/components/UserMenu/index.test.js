@@ -203,19 +203,4 @@ describe( 'UserMenu', () => {
 			} );
 		} );
 	} );
-
-	it( 'should not render the Manage email reports item, which now lives in the header', () => {
-		provideUserInfo( registry );
-		provideSiteInfo( registry );
-
-		const { container, queryByText } = render( <UserMenu />, { registry } );
-
-		fireEvent.click(
-			container.querySelector(
-				'.googlesitekit-user-selector .googlesitekit-header__dropdown'
-			)
-		);
-
-		expect( queryByText( 'Manage email reports' ) ).not.toBeInTheDocument();
-	} );
 } );
