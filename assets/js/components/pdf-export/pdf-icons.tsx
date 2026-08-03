@@ -35,6 +35,7 @@ import { ComponentType } from 'react';
 /**
  * Internal dependencies
  */
+import logoGImage from '@/images/logo-g.png';
 import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
 	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
@@ -55,7 +56,6 @@ import NavMonetizationIcon from '@/svg/icons/nav-monetization-icon.svg?pdf';
 import NavSpeedIcon from '@/svg/icons/nav-speed-icon.svg?pdf';
 import NavTrafficIcon from '@/svg/icons/nav-traffic-icon.svg?pdf';
 import StarFill from '@/svg/icons/star-fill.svg?pdf';
-import logoGImage from './images/logo-g.png';
 import { scalePDFValue } from './pdf-scale';
 import { PDF_COLORS } from './pdf-theme';
 import { PDFIcon, PDFSvgFileProps } from './types';
