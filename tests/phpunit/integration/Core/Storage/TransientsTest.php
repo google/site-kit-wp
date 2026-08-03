@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\Storage;
 
 use Google\Site_Kit\Context;
@@ -24,10 +21,13 @@ class TransientsTest extends TestCase {
 	public function test_get() {
 		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$transients = new Transients( $context );
-		$this->assertFalse( $context->is_network_mode() );
+		$this->assertFalse(
+			$context->is_network_mode(),
+			'Single-site transient test should not run in network mode.'
+		);
 		set_transient( 'test-transient', 'test-value' );
 
-		$this->assertEquals( 'test-value', $transients->get( 'test-transient' ) );
+		$this->assertEquals( 'test-value', $transients->get( 'test-transient' ), 'Transient storage should read the site transient value.' );
 	}
 
 	/**
@@ -41,21 +41,30 @@ class TransientsTest extends TestCase {
 
 		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$transients = new Transients( $context );
-		$this->assertTrue( $context->is_network_mode() );
+		$this->assertTrue(
+			$context->is_network_mode(),
+			'Network transient test should run in network mode.'
+		);
 		set_site_transient( 'test-transient', 'test-value' );
 
-		$this->assertEquals( 'test-value', $transients->get( 'test-transient' ) );
+		$this->assertEquals( 'test-value', $transients->get( 'test-transient' ), 'Transient storage should read the network transient value in network mode.' );
 	}
 
 	public function test_set() {
 		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$transients = new Transients( $context );
-		$this->assertFalse( $context->is_network_mode() );
-		$this->assertFalse( get_transient( 'test-transient' ) );
+		$this->assertFalse(
+			$context->is_network_mode(),
+			'Single-site transient test should not run in network mode.'
+		);
+		$this->assertFalse(
+			get_transient( 'test-transient' ),
+			'Site transient should not exist before it is saved.'
+		);
 
 		$transients->set( 'test-transient', 'test-value' );
 
-		$this->assertEquals( 'test-value', get_transient( 'test-transient' ) );
+		$this->assertEquals( 'test-value', get_transient( 'test-transient' ), 'Saving through transient storage should persist a site transient.' );
 	}
 
 	/**
@@ -69,24 +78,36 @@ class TransientsTest extends TestCase {
 
 		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$transients = new Transients( $context );
-		$this->assertTrue( $context->is_network_mode() );
-		$this->assertFalse( get_site_transient( 'test-transient' ) );
+		$this->assertTrue(
+			$context->is_network_mode(),
+			'Network transient test should run in network mode.'
+		);
+		$this->assertFalse(
+			get_site_transient( 'test-transient' ),
+			'Network transient should not exist before it is saved.'
+		);
 
 		$transients->set( 'test-transient', 'test-value' );
 
-		$this->assertEquals( 'test-value', get_site_transient( 'test-transient' ) );
+		$this->assertEquals( 'test-value', get_site_transient( 'test-transient' ), 'Saving through transient storage should persist a network transient in network mode.' );
 	}
 
 	public function test_delete() {
 		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$transients = new Transients( $context );
-		$this->assertFalse( $context->is_network_mode() );
+		$this->assertFalse(
+			$context->is_network_mode(),
+			'Single-site transient test should not run in network mode.'
+		);
 		set_transient( 'test-transient', 'test-value' );
-		$this->assertEquals( 'test-value', get_transient( 'test-transient' ) );
+		$this->assertEquals( 'test-value', get_transient( 'test-transient' ), 'Site transient should exist before deletion.' );
 
 		$transients->delete( 'test-transient' );
 
-		$this->assertFalse( get_transient( 'test-transient' ) );
+		$this->assertFalse(
+			get_transient( 'test-transient' ),
+			'Site transient should no longer exist after deletion.'
+		);
 	}
 
 	/**
@@ -100,12 +121,18 @@ class TransientsTest extends TestCase {
 
 		$context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$transients = new Transients( $context );
-		$this->assertTrue( $context->is_network_mode() );
+		$this->assertTrue(
+			$context->is_network_mode(),
+			'Network transient test should run in network mode.'
+		);
 		set_site_transient( 'test-transient', 'test-value' );
-		$this->assertEquals( 'test-value', get_site_transient( 'test-transient' ) );
+		$this->assertEquals( 'test-value', get_site_transient( 'test-transient' ), 'Network transient should exist before deletion.' );
 
 		$transients->delete( 'test-transient' );
 
-		$this->assertFalse( get_site_transient( 'test-transient' ) );
+		$this->assertFalse(
+			get_site_transient( 'test-transient' ),
+			'Network transient should no longer exist after deletion.'
+		);
 	}
 }

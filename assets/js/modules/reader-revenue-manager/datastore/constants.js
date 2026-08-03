@@ -71,3 +71,15 @@ export const SHOW_PUBLICATION_CREATE = 'showPublicationCreate';
 export const RESET_PUBLICATIONS = 'resetPublications';
 
 export const SYNC_PUBLICATION = 'syncPublication';
+
+export const EXPRESS_SETUP_CTAS = {
+	NEWSLETTER_SIGNUP: 'newsletter-signup',
+};
+
+export const EXPRESS_SETUP_STEPS = {
+	CONNECT_PUBLICATION: 'connect-publication',
+	TERMS_OF_SERVICE: 'terms-of-service',
+	PUBLICATION_POLICIES: 'publication-policies',
+	SETUP_CTA: 'setup-cta',
+	SETUP_COMPLETE: 'setup-complete',
+};

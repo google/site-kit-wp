@@ -27,10 +27,8 @@ import { FC } from 'react';
 /**
  * Internal dependencies
  */
-import {
-	PDF_COLORS,
-	PDF_TYPOGRAPHY,
-} from '@/js/components/pdf-export/pdf-theme';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import { PDF_TYPOGRAPHY } from '@/js/components/pdf-export/pdf-typography';
 
 export type PDFTypographyType = keyof typeof PDF_TYPOGRAPHY;
 export type PDFTypographySize = keyof typeof PDF_TYPOGRAPHY[ 'body' ];
@@ -42,18 +40,27 @@ export interface PDFTypographyProps {
 	size?: PDFTypographySize;
 	/** Style merged on top of the base text styles. */
 	style?: Style | Style[];
+	/** Caps the text at this many lines. Pair with `textOverflow: 'ellipsis'` to truncate. */
+	maxLines?: number;
 }
 
 const PDFTypography: FC< PDFTypographyProps > = ( {
 	type = 'body',
 	size = 'medium',
 	style,
+	maxLines,
 	children,
 } ) => {
 	const baseStyles: Style[] = [
 		PDF_TYPOGRAPHY[ type ][ size ],
 		{ color: PDF_COLORS.SURFACES_ON_SURFACE },
 	];
+
+	// `@react-pdf/renderer` reads `maxLines` off the text's style, not as a
+	// prop, so it is merged into the styles rather than passed to `Text`.
+	if ( typeof maxLines === 'number' ) {
+		baseStyles.push( { maxLines } );
+	}
 
 	return (
 		<Text style={ style ? baseStyles.concat( style ) : baseStyles }>

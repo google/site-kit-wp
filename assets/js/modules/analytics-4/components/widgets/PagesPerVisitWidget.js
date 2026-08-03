@@ -42,14 +42,19 @@ import { numFmt } from '@/js/util/i18n';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
-function PagesPerVisitWidget( { Widget } ) {
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			compare: true,
-		} )
-	);
-
-	const reportOptions = {
+/**
+ * Builds the Analytics 4 report options for the Pages Per Visit metric.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range, including the compare dates.
+ * @return {Object} The Analytics 4 `getReport` options.
+ */
+export function getPagesPerVisitReportOptions( dates ) {
+	return {
 		...dates,
 		metrics: [
 			{ name: 'screenPageViewsPerSession' },
@@ -57,6 +62,35 @@ function PagesPerVisitWidget( { Widget } ) {
 		],
 		reportID: 'analytics-4_pages-per-visit-widget_widget_reportOptions',
 	};
+}
+
+/**
+ * Builds the sub-text for the Pages Per Visit metric tile.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the PDF tile display the same sub-text.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} pageViews The total number of page views.
+ * @return {string} The formatted sub-text.
+ */
+export function getPagesPerVisitSubtext( pageViews ) {
+	return sprintf(
+		/* translators: %s: Number of total page views, such as "1,234". */
+		__( '%s page views', 'google-site-kit' ),
+		numFmt( pageViews, { style: 'decimal' } )
+	);
+}
+
+function PagesPerVisitWidget( { Widget } ) {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} )
+	);
+
+	const reportOptions = getPagesPerVisitReportOptions( dates );
 
 	const report = useInViewSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
@@ -109,11 +143,7 @@ function PagesPerVisitWidget( { Widget } ) {
 			widgetSlug={ KM_ANALYTICS_PAGES_PER_VISIT }
 			metricValue={ currentPagesPerVisit }
 			metricValueFormat={ format }
-			subText={ sprintf(
-				/* translators: %s: Number of total page views. */
-				__( '%s page views', 'google-site-kit' ),
-				numFmt( currentTotalPageViews, { style: 'decimal' } )
-			) }
+			subText={ getPagesPerVisitSubtext( currentTotalPageViews ) }
 			previousValue={ previousPagesPerVisit }
 			currentValue={ currentPagesPerVisit }
 			loading={ loading }

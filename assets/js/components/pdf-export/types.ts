@@ -32,6 +32,14 @@ import type {
 export type { PDFWidgetComponentProps };
 
 /**
+ * The direction of a metric's period-over-period change, controlling the
+ * change badge colors.
+ *
+ * @since n.e.x.t
+ */
+export type PDFChangeType = 'positive' | 'negative' | 'noChange';
+
+/**
  * A section icon rendered with `@react-pdf/renderer` SVG primitives.
  *
  * @since 1.182.0
@@ -67,6 +75,17 @@ export interface PDFHeaderSection {
 	slug: string;
 	label: string;
 	Icon?: PDFIcon;
+}
+
+/**
+ * A named-destination anchor for one report section: the anchor `id` the
+ * header chips link to, and the section's absolute top on the page in points.
+ *
+ * @since n.e.x.t
+ */
+export interface PDFSectionAnchor {
+	id: string;
+	top: number;
 }
 
 /**

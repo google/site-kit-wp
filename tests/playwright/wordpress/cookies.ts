@@ -123,6 +123,17 @@ export class WordPressCookies {
 			} );
 		}
 
+		const conversionTracking = this.getAnnotation(
+			'_wp:conversion-tracking'
+		);
+		if ( conversionTracking ) {
+			cookies.push( {
+				...defaults,
+				name: '_wp_test_conversion_tracking',
+				value: conversionTracking,
+			} );
+		}
+
 		const connectedModules = this.getAnnotation( '_wp:connected-modules' );
 		if ( connectedModules ) {
 			cookies.push( {
@@ -139,6 +150,26 @@ export class WordPressCookies {
 				...defaults,
 				name: '_wp_test_shared_modules',
 				value: encodeURIComponent( sharedModules ),
+			} );
+		}
+
+		const keyMetrics = this.getAnnotation( '_wp:key-metrics' );
+		if ( keyMetrics ) {
+			cookies.push( {
+				...defaults,
+				name: '_wp_test_key_metrics',
+				// Encoded because the value is JSON.
+				value: encodeURIComponent( keyMetrics ),
+			} );
+		}
+
+		const audiences = this.getAnnotation( '_wp:audiences' );
+		if ( audiences ) {
+			cookies.push( {
+				...defaults,
+				name: '_wp_test_audiences',
+				// Encoded because the value is JSON.
+				value: encodeURIComponent( audiences ),
 			} );
 		}
 

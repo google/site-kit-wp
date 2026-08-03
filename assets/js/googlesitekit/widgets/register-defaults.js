@@ -33,7 +33,7 @@ import {
 import AddMetricCTATile from '@/js/components/KeyMetrics/AddMetricCTATile';
 import { KEY_METRICS_BACK_NOTICE_SLUG } from '@/js/components/KeyMetrics/constants';
 import getKeyMetricsPDFData from '@/js/components/KeyMetrics/getPDFData';
-import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { KEY_METRICS_PDF_TILES } from '@/js/components/KeyMetrics/key-metrics-pdf-tiles';
 import KeyMetricsNewBadge from '@/js/components/KeyMetrics/KeyMetricsNewBadge';
 import MetricsWidgetSubtitle from '@/js/components/KeyMetrics/MetricsWidgetSubtitle';
 import lazyWithPreload from '@/js/components/pdf-export/lazy-with-preload';
@@ -103,6 +103,7 @@ export function registerDefaults( widgetsAPI ) {
 		AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY,
 		AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
 		AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+		AREA_MAIN_DASHBOARD_TRAFFIC_READER_REVENUE_MANAGER,
 		AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 		AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
 		AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
@@ -206,6 +207,17 @@ export function registerDefaults( widgetsAPI ) {
 		},
 		CONTEXT_MAIN_DASHBOARD_TRAFFIC
 	);
+
+	if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
+		widgetsAPI.registerWidgetArea(
+			AREA_MAIN_DASHBOARD_TRAFFIC_READER_REVENUE_MANAGER,
+			{
+				style: WIDGET_AREA_STYLES.BOXES,
+				priority: 3,
+			},
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+		);
+	}
 
 	widgetsAPI.registerWidgetArea(
 		AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY,
@@ -415,7 +427,7 @@ export function registerDefaults( widgetsAPI ) {
 	// The Key Metrics PDF section renders `WidgetNull` on the dashboard (it
 	// occupies no grid slot); it exists to compose the user's configured key
 	// metric tiles into the PDF export. It appears in the export only when at
-	// least one configured metric has a `pdfTile` config. Registered only when
+	// least one configured metric has a PDF tile config. Registered only when
 	// the `pdfGeneration` feature flag is enabled.
 	if ( isFeatureEnabled( 'pdfGeneration' ) ) {
 		widgetsAPI.registerWidget(
@@ -436,7 +448,7 @@ export function registerDefaults( widgetsAPI ) {
 					// section once it appears; by export time they are loaded.
 					isActive: ( select ) =>
 						( select( CORE_USER ).getKeyMetrics() || [] ).some(
-							( slug ) => !! KEY_METRICS_WIDGETS[ slug ]?.pdfTile
+							( slug ) => !! KEY_METRICS_PDF_TILES[ slug ]
 						),
 				},
 			},

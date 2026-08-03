@@ -241,6 +241,7 @@ final class Plugin {
 				( new Core\Util\Migration_1_150_0( $this->context, $options ) )->register();
 				( new Core\Util\Migration_1_163_0( $this->context, $options ) )->register();
 				( new Core\Util\Migration_1_177_0( $this->context, $options ) )->register();
+				( new Core\Util\Migration_N_E_X_T( $this->context, $options ) )->register();
 				( new Core\Dashboard_Sharing\Dashboard_Sharing( $this->context ) )->register();
 				( new Core\Key_Metrics\Key_Metrics( $this->context, $user_options, $options ) )->register();
 				( new Core\Prompts\Prompts( $this->context, $user_options ) )->register();
@@ -320,16 +321,17 @@ final class Plugin {
 	}
 
 	/**
-	 * Forces the Setup Flow Refresh feature flag to be enabled.
+	 * Forces the Setup Flow Refresh feature flags to be enabled.
 	 *
 	 * @since 1.183.0
+	 * @since n.e.x.t Force-enable the `setupFlowRefreshPhase4` flag in addition to `setupFlowRefresh`.
 	 *
 	 * @param bool   $feature_enabled The current status of this feature flag.
 	 * @param string $feature_name    The feature name.
-	 * @return bool True for setupFlowRefresh, otherwise the original value.
+	 * @return bool True for setupFlowRefresh or setupFlowRefreshPhase4, otherwise the original value.
 	 */
 	public function force_setup_flow_refresh_feature_enabled( $feature_enabled, $feature_name ) {
-		if ( 'setupFlowRefresh' === $feature_name ) {
+		if ( in_array( $feature_name, array( 'setupFlowRefresh', 'setupFlowRefreshPhase4' ), true ) ) {
 			return true;
 		}
 

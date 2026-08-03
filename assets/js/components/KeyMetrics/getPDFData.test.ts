@@ -21,11 +21,14 @@
  */
 import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
 import getPDFData from './getPDFData';
+import { KEY_METRICS_PDF_TILES } from './key-metrics-pdf-tiles';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 
 jest.mock( './key-metrics-widgets', () => ( { KEY_METRICS_WIDGETS: {} } ) );
+jest.mock( './key-metrics-pdf-tiles', () => ( { KEY_METRICS_PDF_TILES: {} } ) );
 
 const widgets = KEY_METRICS_WIDGETS as Record< string, unknown >;
+const tiles = KEY_METRICS_PDF_TILES as Record< string, unknown >;
 
 const DATES = {
 	startDate: '2025-01-08',
@@ -35,17 +38,46 @@ const DATES = {
 };
 
 /**
- * Builds a mock registry whose `getKeyMetrics` resolves to the given slugs.
+ * Builds a mock registry whose Key Metrics area returns the given slugs, in
+ * order. The loader reads the area's active widgets (the dashboard's render
+ * order), so this is what drives the exported tile order. `widgetModules` mirrors
+ * the real `getWidgets` module filter: a slug is dropped when the caller passes a
+ * `modules` scope that does not include every module the widget requires.
  *
  * @since 1.184.0
  *
- * @param slugs The user's configured key metric slugs.
+ * @param slugs           The area's active widget slugs, in dashboard order.
+ * @param widgetModules   Map of slug to the modules that widget requires.
+ * @param keyMetricsSlugs The raw key metric selection order, when it must differ from the area order. Defaults to `slugs`.
  * @return A mock registry.
  */
-function createRegistry( slugs: string[] ) {
+function createRegistry(
+	slugs: string[],
+	widgetModules: Record< string, string[] > = {},
+	keyMetricsSlugs: string[] = slugs
+) {
 	return {
 		resolveSelect: jest.fn( () => ( {
-			getKeyMetrics: jest.fn( () => Promise.resolve( slugs ) ),
+			getKeyMetrics: jest.fn( () => Promise.resolve( keyMetricsSlugs ) ),
+		} ) ),
+		select: jest.fn( () => ( {
+			getWidgets: jest.fn(
+				(
+					_areaSlug: string,
+					{ modules }: { modules?: string[] } = {}
+				) =>
+					slugs
+						.filter( ( slug ) => {
+							const required = widgetModules[ slug ];
+							if ( ! required || ! modules ) {
+								return true;
+							}
+							return required.every( ( module ) =>
+								modules.includes( module )
+							);
+						} )
+						.map( ( slug ) => ( { slug } ) )
+			),
 		} ) ),
 	} as unknown as GetPDFDataParams[ 'registry' ];
 }
@@ -60,22 +92,19 @@ function TileB() {
 describe( 'Key Metrics getPDFData', () => {
 	beforeEach( () => {
 		Object.keys( widgets ).forEach( ( key ) => delete widgets[ key ] );
+		Object.keys( tiles ).forEach( ( key ) => delete tiles[ key ] );
 	} );
 
-	it( 'skips metrics without a pdfTile and returns the rest in configured order', async () => {
+	it( 'skips widgets without a pdfTile and returns the rest in the dashboard order', async () => {
 		const getTileDataA = jest.fn( () => Promise.resolve( { value: 'A' } ) );
 		const getTileDataB = jest.fn( () => Promise.resolve( { value: 'B' } ) );
 
-		widgets.metricA = {
-			title: 'Metric A',
-			pdfTile: { TileComponent: TileA, getTileData: getTileDataA },
-		};
+		widgets.metricA = { title: 'Metric A' };
+		tiles.metricA = { TileComponent: TileA, getTileData: getTileDataA };
 		// No `pdfTile`, so it is skipped.
 		widgets.metricNoPDF = { title: 'No PDF' };
-		widgets.metricB = {
-			title: 'Metric B',
-			pdfTile: { TileComponent: TileB, getTileData: getTileDataB },
-		};
+		widgets.metricB = { title: 'Metric B' };
+		tiles.metricB = { TileComponent: TileB, getTileData: getTileDataB };
 
 		const registry = createRegistry( [
 			'metricA',
@@ -84,8 +113,15 @@ describe( 'Key Metrics getPDFData', () => {
 		] );
 		const { signal } = new AbortController();
 
-		const result = await getPDFData( { registry, dates: DATES, signal } );
+		const result = await getPDFData( {
+			registry,
+			dates: DATES,
+			signal,
+			viewOnly: false,
+		} );
 
+		// The aggregate loader has no view-only branch, so each tile loader
+		// receives only the registry, dates, and signal.
 		expect( getTileDataA ).toHaveBeenCalledWith( {
 			registry,
 			dates: DATES,
@@ -107,22 +143,49 @@ describe( 'Key Metrics getPDFData', () => {
 		] );
 	} );
 
-	it( 'captures a single tile failure as null data without failing the others', async () => {
-		widgets.metricA = {
-			title: 'Metric A',
-			pdfTile: {
-				TileComponent: TileA,
-				getTileData: jest.fn( () =>
-					Promise.reject( new Error( 'boom' ) )
-				),
-			},
+	it( 'orders tiles by the area widgets, not by the raw key metric selection', async () => {
+		widgets.metricA = { title: 'Metric A' };
+		tiles.metricA = {
+			TileComponent: TileA,
+			getTileData: jest.fn( () => Promise.resolve( { value: 'A' } ) ),
 		};
-		widgets.metricB = {
-			title: 'Metric B',
-			pdfTile: {
-				TileComponent: TileB,
-				getTileData: jest.fn( () => Promise.resolve( { value: 'B' } ) ),
-			},
+		widgets.metricB = { title: 'Metric B' };
+		tiles.metricB = {
+			TileComponent: TileB,
+			getTileData: jest.fn( () => Promise.resolve( { value: 'B' } ) ),
+		};
+
+		// The area returns B before A (the dashboard's render order) while the raw
+		// key metric selection is the opposite order, so the assertion pins the
+		// exported order to the area, not to the selection.
+		const registry = createRegistry( [ 'metricB', 'metricA' ], {}, [
+			'metricA',
+			'metricB',
+		] );
+
+		const result = await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+			viewOnly: false,
+		} );
+
+		expect( result.data?.tiles.map( ( tile ) => tile.slug ) ).toEqual( [
+			'metricB',
+			'metricA',
+		] );
+	} );
+
+	it( 'excludes a failed tile and keeps the tiles that loaded', async () => {
+		widgets.metricA = { title: 'Metric A' };
+		tiles.metricA = {
+			TileComponent: TileA,
+			getTileData: jest.fn( () => Promise.reject( new Error( 'boom' ) ) ),
+		};
+		widgets.metricB = { title: 'Metric B' };
+		tiles.metricB = {
+			TileComponent: TileB,
+			getTileData: jest.fn( () => Promise.resolve( { value: 'B' } ) ),
 		};
 
 		const registry = createRegistry( [ 'metricA', 'metricB' ] );
@@ -131,15 +194,10 @@ describe( 'Key Metrics getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		expect( result.data?.tiles ).toEqual( [
-			{
-				slug: 'metricA',
-				title: 'Metric A',
-				TileComponent: TileA,
-				data: null,
-			},
 			{
 				slug: 'metricB',
 				title: 'Metric B',
@@ -149,24 +207,75 @@ describe( 'Key Metrics getPDFData', () => {
 		] );
 	} );
 
-	it( 'throws only when every tile fails', async () => {
-		widgets.metricA = {
-			title: 'Metric A',
-			pdfTile: {
-				TileComponent: TileA,
-				getTileData: jest.fn( () =>
-					Promise.reject( new Error( 'a' ) )
-				),
-			},
+	it( 'excludes a tile whose report returns no data', async () => {
+		widgets.metricA = { title: 'Metric A' };
+		tiles.metricA = {
+			TileComponent: TileA,
+			// A `null` result means the tile's report has no data.
+			getTileData: jest.fn( () => Promise.resolve( null ) ),
 		};
-		widgets.metricB = {
-			title: 'Metric B',
-			pdfTile: {
+		widgets.metricB = { title: 'Metric B' };
+		tiles.metricB = {
+			TileComponent: TileB,
+			getTileData: jest.fn( () => Promise.resolve( { value: 'B' } ) ),
+		};
+
+		const registry = createRegistry( [ 'metricA', 'metricB' ] );
+
+		const result = await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+			viewOnly: false,
+		} );
+
+		expect( result.data?.tiles ).toEqual( [
+			{
+				slug: 'metricB',
+				title: 'Metric B',
 				TileComponent: TileB,
-				getTileData: jest.fn( () =>
-					Promise.reject( new Error( 'b' ) )
-				),
+				data: { value: 'B' },
 			},
+		] );
+	} );
+
+	it( 'omits the section without throwing when one tile fails and the rest have no data', async () => {
+		widgets.metricA = { title: 'Metric A' };
+		tiles.metricA = {
+			TileComponent: TileA,
+			getTileData: jest.fn( () => Promise.reject( new Error( 'a' ) ) ),
+		};
+		widgets.metricB = { title: 'Metric B' };
+		tiles.metricB = {
+			TileComponent: TileB,
+			// No data for this tile, so the failure is not the whole story.
+			getTileData: jest.fn( () => Promise.resolve( null ) ),
+		};
+
+		const registry = createRegistry( [ 'metricA', 'metricB' ] );
+
+		// Not every attempted tile failed (one merely had no data), so this is a
+		// genuinely empty section rather than an outage.
+		const result = await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+			viewOnly: false,
+		} );
+
+		expect( result ).toEqual( { data: null } );
+	} );
+
+	it( 'throws when every attempted tile fails to load, so an outage is not hidden', async () => {
+		widgets.metricA = { title: 'Metric A' };
+		tiles.metricA = {
+			TileComponent: TileA,
+			getTileData: jest.fn( () => Promise.reject( new Error( 'a' ) ) ),
+		};
+		widgets.metricB = { title: 'Metric B' };
+		tiles.metricB = {
+			TileComponent: TileB,
+			getTileData: jest.fn( () => Promise.reject( new Error( 'b' ) ) ),
 		};
 
 		const registry = createRegistry( [ 'metricA', 'metricB' ] );
@@ -176,8 +285,52 @@ describe( 'Key Metrics getPDFData', () => {
 				registry,
 				dates: DATES,
 				signal: new AbortController().signal,
+				viewOnly: false,
 			} )
 		).rejects.toThrow( 'All Key Metrics PDF tiles failed to load.' );
+	} );
+
+	it( 'drops tiles for modules the user cannot view', async () => {
+		const getTileDataAdSense = jest.fn( () =>
+			Promise.resolve( { value: 'A' } )
+		);
+		const getTileDataAnalytics = jest.fn( () =>
+			Promise.resolve( { value: 'B' } )
+		);
+
+		widgets.metricAdSense = { title: 'AdSense metric' };
+		tiles.metricAdSense = {
+			TileComponent: TileA,
+			getTileData: getTileDataAdSense,
+		};
+		widgets.metricAnalytics = { title: 'Analytics metric' };
+		tiles.metricAnalytics = {
+			TileComponent: TileB,
+			getTileData: getTileDataAnalytics,
+		};
+
+		const registry = createRegistry(
+			[ 'metricAdSense', 'metricAnalytics' ],
+			{
+				metricAdSense: [ 'adsense' ],
+				metricAnalytics: [ 'analytics-4' ],
+			}
+		);
+
+		const result = await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+			// Only a view-only dashboard populates `viewableModules`.
+			viewOnly: true,
+			// AdSense isn't shared, so its tile is neither loaded nor exported.
+			viewableModules: [ 'analytics-4' ],
+		} );
+
+		expect( getTileDataAdSense ).not.toHaveBeenCalled();
+		expect( result.data?.tiles.map( ( tile ) => tile.slug ) ).toEqual( [
+			'metricAnalytics',
+		] );
 	} );
 
 	it( 'returns null data when no configured metric has a pdfTile, so the section is omitted', async () => {
@@ -190,6 +343,7 @@ describe( 'Key Metrics getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		expect( result ).toEqual( { data: null } );
@@ -197,10 +351,8 @@ describe( 'Key Metrics getPDFData', () => {
 
 	it( 'returns null data without loading tiles when the signal is already aborted', async () => {
 		const getTileData = jest.fn();
-		widgets.metricA = {
-			title: 'Metric A',
-			pdfTile: { TileComponent: TileA, getTileData },
-		};
+		widgets.metricA = { title: 'Metric A' };
+		tiles.metricA = { TileComponent: TileA, getTileData };
 
 		const registry = createRegistry( [ 'metricA' ] );
 		const controller = new AbortController();
@@ -210,10 +362,66 @@ describe( 'Key Metrics getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: controller.signal,
+			viewOnly: false,
 		} );
 
 		expect( result ).toEqual( { data: null } );
 		expect( getTileData ).not.toHaveBeenCalled();
+	} );
+
+	it( 'returns null data without loading tiles when aborted while resolving the key metrics', async () => {
+		const controller = new AbortController();
+		const getTileData = jest.fn();
+		widgets.metricA = { title: 'Metric A' };
+		tiles.metricA = { TileComponent: TileA, getTileData };
+
+		// Abort mid-flight: the selection resolves, but the export is canceled
+		// before the area widgets are read.
+		const registry = {
+			resolveSelect: jest.fn( () => ( {
+				getKeyMetrics: jest.fn( () => {
+					controller.abort();
+					return Promise.resolve( [ 'metricA' ] );
+				} ),
+			} ) ),
+			select: jest.fn( () => ( {
+				getWidgets: jest.fn( () => [ { slug: 'metricA' } ] ),
+			} ) ),
+		} as unknown as GetPDFDataParams[ 'registry' ];
+
+		const result = await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: controller.signal,
+			viewOnly: false,
+		} );
+
+		expect( result ).toEqual( { data: null } );
+		expect( getTileData ).not.toHaveBeenCalled();
+	} );
+
+	it( 'returns null data when aborted after the tiles have loaded', async () => {
+		const controller = new AbortController();
+		widgets.metricA = { title: 'Metric A' };
+		tiles.metricA = {
+			TileComponent: TileA,
+			// The tile loads, but the export is canceled before it is composed.
+			getTileData: jest.fn( () => {
+				controller.abort();
+				return Promise.resolve( { value: 'A' } );
+			} ),
+		};
+
+		const registry = createRegistry( [ 'metricA' ] );
+
+		const result = await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: controller.signal,
+			viewOnly: false,
+		} );
+
+		expect( result ).toEqual( { data: null } );
 	} );
 
 	it( 'preloads a lazy TileComponent and returns its resolved default', async () => {
@@ -225,12 +433,10 @@ describe( 'Key Metrics getPDFData', () => {
 		);
 		const LazyTile = Object.assign( () => null, { preload } );
 
-		widgets.metricA = {
-			title: 'Metric A',
-			pdfTile: {
-				TileComponent: LazyTile,
-				getTileData: jest.fn( () => Promise.resolve( { value: 'A' } ) ),
-			},
+		widgets.metricA = { title: 'Metric A' };
+		tiles.metricA = {
+			TileComponent: LazyTile,
+			getTileData: jest.fn( () => Promise.resolve( { value: 'A' } ) ),
 		};
 
 		const registry = createRegistry( [ 'metricA' ] );
@@ -239,6 +445,7 @@ describe( 'Key Metrics getPDFData', () => {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
+			viewOnly: false,
 		} );
 
 		expect( preload ).toHaveBeenCalledTimes( 1 );

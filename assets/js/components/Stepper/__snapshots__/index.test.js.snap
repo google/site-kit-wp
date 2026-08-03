@@ -12,6 +12,7 @@ exports[`Stepper should render all steps as completed when activeStep is greater
         class="googlesitekit-stepper__step-progress"
       >
         <span
+          aria-label="Step 1 of 2 (completed)."
           class="googlesitekit-stepper__step-number"
           title="Step 1 of 2 (completed)."
         >
@@ -41,6 +42,7 @@ exports[`Stepper should render all steps as completed when activeStep is greater
         class="googlesitekit-stepper__step-progress"
       >
         <span
+          aria-label="Step 2 of 2 (completed)."
           class="googlesitekit-stepper__step-number"
           title="Step 2 of 2 (completed)."
         >
@@ -76,6 +78,7 @@ exports[`Stepper should render all steps as upcoming when activeStep is negative
         class="googlesitekit-stepper__step-progress"
       >
         <span
+          aria-label="Step 1 of 2 (upcoming)."
           class="googlesitekit-stepper__step-number"
           title="Step 1 of 2 (upcoming)."
         >
@@ -105,6 +108,7 @@ exports[`Stepper should render all steps as upcoming when activeStep is negative
         class="googlesitekit-stepper__step-progress"
       >
         <span
+          aria-label="Step 2 of 2 (upcoming)."
           class="googlesitekit-stepper__step-number"
           title="Step 2 of 2 (upcoming)."
         >
@@ -140,6 +144,7 @@ exports[`Stepper should render all steps as upcoming when activeStep is not prov
         class="googlesitekit-stepper__step-progress"
       >
         <span
+          aria-label="Step 1 of 2 (upcoming)."
           class="googlesitekit-stepper__step-number"
           title="Step 1 of 2 (upcoming)."
         >
@@ -169,6 +174,7 @@ exports[`Stepper should render all steps as upcoming when activeStep is not prov
         class="googlesitekit-stepper__step-progress"
       >
         <span
+          aria-label="Step 2 of 2 (upcoming)."
           class="googlesitekit-stepper__step-number"
           title="Step 2 of 2 (upcoming)."
         >
@@ -204,6 +210,7 @@ exports[`Stepper should render the active step as active and display its content
         class="googlesitekit-stepper__step-progress"
       >
         <span
+          aria-label="Step 1 of 2 (active)."
           class="googlesitekit-stepper__step-number"
           title="Step 1 of 2 (active)."
         >
@@ -239,6 +246,7 @@ exports[`Stepper should render the active step as active and display its content
         class="googlesitekit-stepper__step-progress"
       >
         <span
+          aria-label="Step 2 of 2 (upcoming)."
           class="googlesitekit-stepper__step-number"
           title="Step 2 of 2 (upcoming)."
         >
@@ -274,6 +282,7 @@ exports[`Stepper should render the active step as active and display its content
         class="googlesitekit-stepper__step-progress"
       >
         <span
+          aria-label="Step 1 of 2 (completed)."
           class="googlesitekit-stepper__step-number"
           title="Step 1 of 2 (completed)."
         >
@@ -303,6 +312,7 @@ exports[`Stepper should render the active step as active and display its content
         class="googlesitekit-stepper__step-progress"
       >
         <span
+          aria-label="Step 2 of 2 (active)."
           class="googlesitekit-stepper__step-number"
           title="Step 2 of 2 (active)."
         >

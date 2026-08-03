@@ -19,12 +19,11 @@
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import lazyWithPreload from '@/js/components/pdf-export/lazy-with-preload';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
@@ -61,7 +60,6 @@ import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { calculateChange, numFmt } from '@/js/util';
 import {
 	KEY_METRICS_GROUP_CONTENT_PERFORMANCE,
 	KEY_METRICS_GROUP_DRIVING_TRAFFIC,
@@ -69,7 +67,6 @@ import {
 	KEY_METRICS_GROUP_SELLING_PRODUCTS,
 	KEY_METRICS_GROUP_VISITORS,
 } from './constants';
-import createKeyMetricTileDataLoader from './create-key-metric-tile-data-loader';
 import { shouldDisplayWidgetWithConversionEvent } from './shouldDisplayWidgetWithConversionEvent';
 
 /**
@@ -143,8 +140,10 @@ function shouldDisplayWidgetWithCustomDimensions( {
  *
  * Each entry configures how the metric appears in the selection panel and on the
  * dashboard (`title`, `description`, `infoTooltip`, `metadata`, and the various
- * display predicates). An entry may also define an optional `pdfTile` describing
- * how the metric renders in the PDF export:
+ * display predicates).
+ *
+ * A metric's PDF export configuration lives in `key-metrics-pdf-tiles.js`,
+ * keyed by the same slug, so this module never imports a widget component.
  *
  * - `pdfTile.TileComponent`: the `@react-pdf/renderer` component for the tile,
  *   wrapped with `lazyWithPreload` so this module stays free of the PDF renderer
@@ -331,73 +330,6 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		metadata: { group: KEY_METRICS_GROUP_VISITORS.SLUG },
-		pdfTile: {
-			TileComponent: lazyWithPreload( () =>
-				import(
-					/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
-					'@/js/components/pdf-export/shared-react-pdf-components/PDFNumericMetricTile'
-				)
-			),
-			getTileData: createKeyMetricTileDataLoader(
-				( dates ) => [
-					{
-						moduleStore: MODULES_ANALYTICS_4,
-						options: {
-							...dates,
-							dimensions: [ 'newVsReturning' ],
-							metrics: [ { name: 'activeUsers' } ],
-							reportID:
-								'analytics-4_new-visitors-widget_widget_reportOptions',
-						},
-					},
-				],
-				( [ report ] ) => {
-					const { rows = [], totals = [] } = report || {};
-
-					// The prominent value is the current period's new visitors,
-					// matching the dashboard's NewVisitorsWidget.
-					const newVisitors =
-						Number(
-							rows.find(
-								( row ) =>
-									row?.dimensionValues?.[ 0 ]?.value ===
-										'new' &&
-									row?.dimensionValues?.[ 1 ]?.value ===
-										'date_range_0'
-							)?.metricValues?.[ 0 ]?.value
-						) || 0;
-
-					// The change compares the current and previous total
-					// visitors, again matching the dashboard tile.
-					const currentValue =
-						Number( totals[ 0 ]?.metricValues?.[ 0 ]?.value ) || 0;
-					const previousValue =
-						Number( totals[ 1 ]?.metricValues?.[ 0 ]?.value ) || 0;
-					const change = calculateChange(
-						previousValue,
-						currentValue
-					);
-
-					return {
-						value: numFmt( newVisitors ),
-						subtext: sprintf(
-							/* translators: %s: total number of visitors, such as "1,234". */
-							__( 'of %s total visitors', 'google-site-kit' ),
-							numFmt( currentValue, { style: 'decimal' } )
-						),
-						change:
-							typeof change === 'number'
-								? numFmt( change, {
-										style: 'percent',
-										signDisplay: 'exceptZero',
-										maximumFractionDigits: 1,
-								  } )
-								: undefined,
-						isNegative: typeof change === 'number' && change < 0,
-					};
-				}
-			),
-		},
 	},
 	[ KM_ANALYTICS_RETURNING_VISITORS ]: {
 		title: __( 'Returning visitors', 'google-site-kit' ),

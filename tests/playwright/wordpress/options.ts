@@ -56,7 +56,11 @@ export type SharedModuleSettings = {
 /**
  * Sets the plugins to activate for the test.
  *
+ * Plugin file paths without a `/` are loaded from the
+ * `google-site-kit-test-plugins/` directory.
+ *
  * @since 1.175.0
+ * @since n.e.x.t Support plugins outside the test plugins directory.
  *
  * @param {string[]} plugins Plugin file paths relative to the plugins directory (e.g. `my-plugin/my-plugin.php`).
  * @return {TestDetailsAnnotation} The annotation to use for the test.
@@ -65,7 +69,11 @@ export function withPlugins( ...plugins: string[] ): TestDetailsAnnotation {
 	return {
 		type: '_wp:plugin',
 		description: plugins
-			.map( ( plugin ) => `google-site-kit-test-plugins/${ plugin }` )
+			.map( ( plugin ) =>
+				plugin.includes( '/' )
+					? plugin
+					: `google-site-kit-test-plugins/${ plugin }`
+			)
 			.join( ANNOTATION_SEPARATOR ),
 	};
 }
@@ -133,6 +141,56 @@ export function withSharedModules(
 }
 
 /**
+ * One Analytics audience for a test, mirroring the shape Site Kit stores in the
+ * `availableAudiences` setting.
+ *
+ * @since n.e.x.t
+ */
+export type TestAudience = {
+	name: string;
+	displayName: string;
+	description?: string;
+	audienceType?: string;
+	audienceSlug?: string;
+};
+
+/**
+ * Sets the current user's Key Metrics selection for the test.
+ *
+ * The `e2e-pdf-generation-state.php` must-use plugin applies the selection, so a
+ * section that renders the configured metrics has a deterministic set of tiles.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string[]} widgetSlugs The key metric widget slugs to select.
+ * @return {TestDetailsAnnotation} The annotation to use for the test.
+ */
+export function withKeyMetrics( widgetSlugs: string[] ): TestDetailsAnnotation {
+	return {
+		type: '_wp:key-metrics',
+		description: JSON.stringify( widgetSlugs ),
+	};
+}
+
+/**
+ * Sets the Analytics audiences for the test: the given audiences become the
+ * available and configured audiences, with audience segmentation marked complete.
+ *
+ * @since n.e.x.t
+ *
+ * @param {TestAudience[]} audiences The audiences to make available and configured.
+ * @return {TestDetailsAnnotation} The annotation to use for the test.
+ */
+export function withAudiences(
+	audiences: TestAudience[]
+): TestDetailsAnnotation {
+	return {
+		type: '_wp:audiences',
+		description: JSON.stringify( audiences ),
+	};
+}
+
+/**
  * Sets the fixtures to use for the test.
  *
  * @since 1.177.0
@@ -171,5 +229,19 @@ export function asUser(
 	return {
 		type: '_wp:as-user',
 		description,
+	};
+}
+
+/**
+ * Enables Conversion Tracking for the test.
+ *
+ * @since n.e.x.t
+ *
+ * @return {TestDetailsAnnotation} The annotation to use for the test.
+ */
+export function withConversionTracking(): TestDetailsAnnotation {
+	return {
+		type: '_wp:conversion-tracking',
+		description: 'enabled',
 	};
 }

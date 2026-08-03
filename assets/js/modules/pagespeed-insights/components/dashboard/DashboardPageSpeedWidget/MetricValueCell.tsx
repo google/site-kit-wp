@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import PDFBadge from '@/js/components/pdf-export/shared-react-pdf-components/PDFBadge';
 import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
 import {
 	FieldMetric,
@@ -69,7 +70,6 @@ const styles = createPDFStyles( {
 	},
 	badge: {
 		marginTop: 6,
-		borderRadius: 100,
 		paddingVertical: 3,
 		paddingHorizontal: 10,
 	},
@@ -130,20 +130,12 @@ export default function MetricValueCell( { metric }: MetricValueCellProps ) {
 	return (
 		<View style={ styles.valueCell }>
 			<PDFTypography type="title">{ metric.displayValue }</PDFTypography>
-			<View
-				style={ [
-					styles.badge,
-					{ backgroundColor: badgeColors.background },
-				] }
-			>
-				<PDFTypography
-					type="label"
-					size="small"
-					style={ { color: badgeColors.text } }
-				>
-					{ getCategoryLabel( metric.category ) }
-				</PDFTypography>
-			</View>
+			<PDFBadge
+				label={ getCategoryLabel( metric.category ) }
+				backgroundColor={ badgeColors.background }
+				color={ badgeColors.text }
+				style={ styles.badge }
+			/>
 		</View>
 	);
 }

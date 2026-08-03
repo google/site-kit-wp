@@ -58,6 +58,8 @@ export interface AudienceTileTopContent {
 	title: string;
 	/** The page's pageviews. */
 	pageviews: number;
+	/** Analytics report link for the page, which the title links to, when the page has one. */
+	serviceURL?: string;
 }
 
 /** One audience card's fully loaded data. */
@@ -77,6 +79,10 @@ export interface AudienceTilePDFData {
 	topCities: AudienceTileTopCity[];
 	/** Up to three top content pages. */
 	topContent: AudienceTileTopContent[];
+	/** Whether the audience is still collecting data for the date range. */
+	isAudiencePartialData: boolean;
+	/** Whether the `googlesitekit_post_type` custom dimension is still collecting full data for the date range. */
+	isTopContentPartialData: boolean;
 }
 
 /** The result of one `fetchGetReport` dispatch. */
@@ -191,17 +197,20 @@ export function buildTopCities(
 }
 
 /**
- * Builds an audience's top content, resolving each page path to its page title.
+ * Builds an audience's top content, resolving each page path to its page title
+ * and to its Analytics report link.
  *
  * @since 1.184.0
  *
- * @param report       The top content report, or `undefined`.
- * @param titlesReport The page titles report used to resolve a path to its title, or `undefined`.
- * @return Up to three top content pages.
+ * @param {Object}   report               The top content report, or `undefined`.
+ * @param {Object}   titlesReport         The page titles report that resolves a path to its title, or `undefined`.
+ * @param {Function} getContentServiceURL Maps a page path to its Analytics report link, or to an empty string when the page has no link.
+ * @return {Object[]} Up to three top content pages.
  */
 export function buildTopContent(
 	report: Report | undefined,
-	titlesReport: Report | undefined
+	titlesReport: Report | undefined,
+	getContentServiceURL: ( pagePath: string ) => string
 ): AudienceTileTopContent[] {
 	const titlesByPath = ( titlesReport?.rows || [] ).reduce(
 		( titles: Record< string, string >, row: ReportRow ) => {
@@ -225,6 +234,7 @@ export function buildTopContent(
 			return {
 				title: titlesByPath[ pagePath ] || pagePath,
 				pageviews: Number( row.metricValues?.[ 0 ]?.value || 0 ),
+				serviceURL: getContentServiceURL( pagePath ),
 			};
 		} );
 }
@@ -261,6 +271,12 @@ export interface AudienceCardInput {
 	topContentPageTitlesResult: FetchReportResult;
 	/** The site's total pageviews, the percentage denominator. */
 	totalPageviews: number;
+	/** Whether the audience is still collecting full data for the date range. */
+	isAudiencePartialData: boolean;
+	/** Whether the `googlesitekit_post_type` custom dimension is still collecting full data for the date range. */
+	isTopContentPartialData: boolean;
+	/** Maps a top content page path to its Analytics report link, or to an empty string when the page has no link. */
+	getContentServiceURL: ( pagePath: string ) => string;
 }
 
 /**
@@ -284,6 +300,9 @@ export function buildPDFAudienceCard(
 		topContentResult,
 		topContentPageTitlesResult,
 		totalPageviews,
+		isAudiencePartialData,
+		isTopContentPartialData,
+		getContentServiceURL,
 	} = input;
 
 	// Don't render when a metrics or cities report has any error, or when
@@ -324,7 +343,10 @@ export function buildPDFAudienceCard(
 		),
 		topContent: buildTopContent(
 			topContentResult.response,
-			topContentPageTitlesResult.response
+			topContentPageTitlesResult.response,
+			getContentServiceURL
 		),
+		isAudiencePartialData,
+		isTopContentPartialData,
 	};
 }
