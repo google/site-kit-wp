@@ -26,7 +26,7 @@ import { calculateChange, numFmt } from '@/js/util';
 export interface PDFTileChange {
 	/** The formatted, signed change, e.g. "+5.1%", or `undefined` when it can't be computed. */
 	change?: string;
-	/** The change's direction, controlling the badge color. */
+	/** The change's direction, controlling the badge color. If it's `'noChange'`, there was no change. */
 	changeType?: PDFChangeType;
 }
 
@@ -36,13 +36,13 @@ export interface PDFTileChange {
  * @since n.e.x.t
  *
  * @param {number} change The change value.
- * @return {string} The change's direction.
+ * @return {string} The change's type (`'positive'`, `'negative'`, or `'noChange'`).
  */
 export function getPDFChangeType( change: number ): PDFChangeType {
 	if ( change < 0 ) {
 		return 'negative';
 	}
-	return change === 0 ? 'zero' : 'positive';
+	return change === 0 ? 'noChange' : 'positive';
 }
 
 /**

@@ -40,7 +40,7 @@ const BADGE_COLORS: Record<
 		backgroundColor: PDF_COLORS.UTILITY_ERROR_CONTAINER,
 		color: PDF_COLORS.UTILITY_ON_ERROR_CONTAINER,
 	},
-	zero: {
+	noChange: {
 		backgroundColor: PDF_COLORS.SURFACES_INVERSE_ON_SURFACE,
 		color: PDF_COLORS.NEUTRAL_N_700,
 	},
@@ -49,7 +49,7 @@ const BADGE_COLORS: Record<
 export interface PDFChangeBadgeProps {
 	/** The formatted, signed change string, e.g. "+5.1%". */
 	change: string;
-	/** The change's direction. Controls the badge colors. */
+	/** The change's type (`'positive'`, `'negative'`, or `'noChange'`). Controls the badge colors. */
 	changeType?: PDFChangeType;
 }
 

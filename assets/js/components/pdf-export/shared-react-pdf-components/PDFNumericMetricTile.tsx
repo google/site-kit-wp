@@ -69,7 +69,7 @@ export interface PDFNumericMetricTileProps {
 	subtext?: string;
 	/** Pre-formatted, signed change for the badge, e.g. "+5.1%". Hides the badge when omitted. */
 	change?: string;
-	/** The change's direction, controlling the badge color. */
+	/** The change's type (`'positive'`, `'negative'`, or `'noChange'`), controlling the badge color. */
 	changeType?: PDFChangeType;
 }
 

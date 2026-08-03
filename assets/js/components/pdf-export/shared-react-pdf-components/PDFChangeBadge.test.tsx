@@ -68,7 +68,10 @@ describe( 'PDFChangeBadge', () => {
 	} );
 
 	it( 'uses the neutral colors for a zero change', () => {
-		const badgeJSON = renderBadge( { change: '0%', changeType: 'zero' } );
+		const badgeJSON = renderBadge( {
+			change: '0%',
+			changeType: 'noChange',
+		} );
 
 		expect( badgeJSON ).toContain( '0%' );
 		expect( badgeJSON ).toContain( PDF_COLORS.SURFACES_INVERSE_ON_SURFACE );

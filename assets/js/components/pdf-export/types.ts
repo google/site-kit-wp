@@ -37,7 +37,7 @@ export type { PDFWidgetComponentProps };
  *
  * @since n.e.x.t
  */
-export type PDFChangeType = 'positive' | 'negative' | 'zero';
+export type PDFChangeType = 'positive' | 'negative' | 'noChange';
 
 /**
  * A section icon rendered with `@react-pdf/renderer` SVG primitives.
