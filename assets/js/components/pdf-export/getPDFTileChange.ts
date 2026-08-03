@@ -19,14 +19,30 @@
 /**
  * Internal dependencies
  */
+import type { PDFChangeType } from '@/js/components/pdf-export/types';
 import { calculateChange, numFmt } from '@/js/util';
 
 /** A tile's period-over-period change, pre-formatted for the change badge. */
 export interface PDFTileChange {
 	/** The formatted, signed change, e.g. "+5.1%", or `undefined` when it can't be computed. */
 	change?: string;
-	/** Whether the change is negative, controlling the badge color. */
-	isNegative: boolean;
+	/** The change's direction, controlling the badge color. */
+	changeType?: PDFChangeType;
+}
+
+/**
+ * Gets a change badge's `PDFChangeType` from a numeric change value.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} change The change value.
+ * @return {string} The change's direction.
+ */
+export function getPDFChangeType( change: number ): PDFChangeType {
+	if ( change < 0 ) {
+		return 'negative';
+	}
+	return change === 0 ? 'zero' : 'positive';
 }
 
 /**
@@ -45,7 +61,7 @@ export interface PDFTileChange {
  * @param {number}  currentValue         The current period's value.
  * @param {Object}  [options]            Options.
  * @param {boolean} [options.isAbsolute] Whether to use the absolute rather than relative change. Defaults to `false`.
- * @return {PDFTileChange} The formatted change and its sign.
+ * @return {PDFTileChange} The formatted change and its direction.
  */
 export default function getPDFTileChange(
 	previousValue: number,
@@ -57,7 +73,7 @@ export default function getPDFTileChange(
 		: calculateChange( previousValue, currentValue );
 
 	if ( change === null || change === undefined ) {
-		return { isNegative: false };
+		return {};
 	}
 
 	return {
@@ -66,6 +82,6 @@ export default function getPDFTileChange(
 			signDisplay: 'exceptZero',
 			maximumFractionDigits: 1,
 		} ),
-		isNegative: change < 0,
+		changeType: getPDFChangeType( change ),
 	};
 }

@@ -75,6 +75,8 @@ export const PDF_COLORS = {
 	UTILITY_ON_SUCCESS_CONTAINER: '#1f4c04', // $c-utility-on-success-container
 	UTILITY_ERROR_CONTAINER: '#ffded3', // $c-utility-error-container
 	UTILITY_ON_ERROR_CONTAINER: '#7a1e00', // $c-utility-on-error-container
+	SURFACES_INVERSE_ON_SURFACE: '#ebeef0', // $c-surfaces-inverse-on-surface
+	NEUTRAL_N_700: '#333935', // $c-neutral-n-700
 	VIOLET_V_50: '#e3d1ff', // $c-violet-v-50
 	VIOLET_V_600: '#462083', // $c-violet-v-600
 	YELLOW_Y_50: '#ffe4b1', // $c-yellow-y-50

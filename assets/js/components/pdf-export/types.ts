@@ -32,6 +32,14 @@ import type {
 export type { PDFWidgetComponentProps };
 
 /**
+ * The direction of a metric's period-over-period change, controlling the
+ * change badge colors.
+ *
+ * @since n.e.x.t
+ */
+export type PDFChangeType = 'positive' | 'negative' | 'zero';
+
+/**
  * A section icon rendered with `@react-pdf/renderer` SVG primitives.
  *
  * @since 1.182.0
