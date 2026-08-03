@@ -1,7 +1,7 @@
 /**
- * Reader Revenue Manager styles.
+ * Reader Revenue Manager express setup common steps.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,7 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-rrm-cta-preview";
-@import "googlesitekit-rrm-express-setup";
-@import "googlesitekit-rrm-express-setup-banner";
-@import "googlesitekit-rrm-settings-module";
-@import "googlesitekit-rrm-setup-module";
+export { default as StepPublicationSetup } from './StepPublicationSetup';
+export { default as StepTermsOfService } from './StepTermsOfService';
+export { default as StepPublicationPolicies } from './StepPublicationPolicies';
+export { default as StepSetupComplete } from './StepSetupComplete';

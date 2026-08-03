@@ -1,7 +1,7 @@
 /**
- * Reader Revenue Manager styles.
+ * Reader Revenue Manager newsletter signup form step.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,25 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-rrm-cta-preview";
-@import "googlesitekit-rrm-express-setup";
-@import "googlesitekit-rrm-express-setup-banner";
-@import "googlesitekit-rrm-settings-module";
-@import "googlesitekit-rrm-setup-module";
+/**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+const StepSignupForm: FC = () => {
+	return (
+		<p>
+			{ __(
+				'RRM express setup placeholder: newsletter CTA setup step.',
+				'google-site-kit'
+			) }
+		</p>
+	);
+};
+
+export default StepSignupForm;
