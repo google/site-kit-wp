@@ -167,9 +167,7 @@ const ScrollableTabs: FC< ScrollableTabsProps > = ( {
 				className
 			) }
 		>
-			{ /* The arrows stay out of the tab order and out of the
-			accessibility tree, because the tab bar already moves between tabs
-			on the arrow keys and scrolls each new tab into view. */ }
+			{ /* The tab bar already moves between tabs when navigated with arrow keys and scrolls each new tab into view. Keyboard users don't need to interact with the scroll arrows, so we don't include them in the tab order. */ }
 			{ isDesktop && (
 				<button
 					type="button"

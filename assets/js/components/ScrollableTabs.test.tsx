@@ -295,7 +295,10 @@ describe( 'ScrollableTabs', () => {
 		expectInactive( getArrow( container, RIGHT_ARROW_SELECTOR ) );
 	} );
 
-	it( 'keeps both active arrows out of the tab order and the accessibility tree', () => {
+	it( 'keeps both active arrows out of the tab order so they can not be navigated to using the keyboard', () => {
+		// These arrows are not used for navigation, because the tab bar
+		// already moves between tabs on the arrow keys and scrolls each new
+		// tab into view.
 		const { container, queryAllByRole } = renderTabs();
 		const scrollArea = getScrollArea( container );
 
