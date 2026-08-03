@@ -27,6 +27,7 @@ import { FC } from 'react';
  */
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import type { PDFChangeType } from '@/js/components/pdf-export/types';
 import PDFCard from './PDFCard';
 import PDFChangeBadge from './PDFChangeBadge';
 import PDFTypography from './PDFTypography';
@@ -68,8 +69,8 @@ export interface PDFNumericMetricTileProps {
 	subtext?: string;
 	/** Pre-formatted, signed change for the badge, e.g. "+5.1%". Hides the badge when omitted. */
 	change?: string;
-	/** Whether the change is negative, controlling the badge color. */
-	isNegative?: boolean;
+	/** The change's type (`'positive'`, `'negative'`, or `'noChange'`), controlling the badge color. */
+	changeType?: PDFChangeType;
 }
 
 const PDFNumericMetricTile: FC< PDFNumericMetricTileProps > = ( {
@@ -77,7 +78,7 @@ const PDFNumericMetricTile: FC< PDFNumericMetricTileProps > = ( {
 	value,
 	subtext,
 	change,
-	isNegative = false,
+	changeType = 'positive',
 } ) => {
 	return (
 		<PDFCard style={ styles.card }>
@@ -96,7 +97,7 @@ const PDFNumericMetricTile: FC< PDFNumericMetricTileProps > = ( {
 				<View style={ styles.badgeRow }>
 					<PDFChangeBadge
 						change={ change }
-						isNegative={ isNegative }
+						changeType={ changeType }
 					/>
 				</View>
 			) }

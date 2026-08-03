@@ -134,7 +134,7 @@ describe( 'PDFNumericMetricTile', () => {
 				title: 'x',
 				value: '1',
 				change: '-5.0%',
-				isNegative: true,
+				changeType: 'negative',
 			} )
 		);
 		expect( negative ).toContain( '#ffded3' );
