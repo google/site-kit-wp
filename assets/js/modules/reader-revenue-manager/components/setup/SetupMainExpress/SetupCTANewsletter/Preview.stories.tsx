@@ -34,7 +34,7 @@ function Template( args: Props ) {
 }
 
 export const Default = Template.bind( {} ) as Story< Props >;
-Default.storyName = 'Default (Pop-up)';
+Default.storyName = 'Default';
 Default.args = {
 	ctaTitle: 'Your form header',
 	ctaBody: 'Your newsletter sign-up form text',
@@ -42,15 +42,6 @@ Default.args = {
 	consentText: 'Your consent text will show here',
 };
 Default.scenario = {};
-
-export const InlineTab = Template.bind( {} ) as Story< Props >;
-InlineTab.storyName = 'Inline Tab';
-InlineTab.args = {
-	ctaTitle: 'Your form header',
-	ctaBody: 'Your newsletter sign-up form text',
-	consentEnabled: true,
-	consentText: 'Your consent text will show here',
-};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMainExpress/SetupCTANewsletter/Preview',
