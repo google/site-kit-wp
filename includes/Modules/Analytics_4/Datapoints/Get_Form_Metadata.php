@@ -124,9 +124,11 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	/**
 	 * Resolves metadata for a form the report names by post ID.
 	 *
-	 * The title comes from a published post in FORM_POST_TYPES, and falls back
-	 * to the Ninja Forms custom table, which keeps its forms outside the posts
-	 * table. An ID that neither one matches resolves a null title.
+	 * The title comes from a published post in FORM_POST_TYPES.
+	 * If nothing is found, it will try to get data from the Ninja Forms custom
+	 * table, which keeps its forms outside the posts table.
+	 *
+	 * An ID that neither one matches resolves a null title.
 	 *
 	 * @since 1.182.0
 	 * @since n.e.x.t Renamed from `resolve_form_metadata()`, since a second method now resolves a slug.
@@ -149,7 +151,8 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 			$title = get_the_title( $form_id );
 		}
 
-		// Ninja Forms stores forms in a custom table rather than as a CPT.
+		// Ninja Forms stores forms in a custom table rather than as a Custom
+		// Post Type.
 		if ( '' === $title && function_exists( 'Ninja_Forms' ) ) {
 			// `form()` can return null or a model without a backing row for stale
 			// or non-Ninja IDs, so guard before reading the setting.
