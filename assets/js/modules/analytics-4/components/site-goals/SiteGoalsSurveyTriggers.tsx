@@ -120,11 +120,15 @@ const SiteGoalsSurveyTriggers: FC = () => {
 	}
 
 	// Wait for both widget checks, then render nothing when neither widget
-	// renders. Both signals read below outlive the widgets: the breakdown custom
-	// dimensions belong to the Analytics property and stay after an event
-	// provider is deactivated, and the intro modal's dismissed items are
-	// permanent. Without this, a dashboard with no Site Goals section keeps
-	// reporting a segment.
+	// renders. Both checks below outlive the widgets:
+	//
+	// - the breakdown custom dimensions belong to the Analytics property and
+	//   stay after an event provider is deactivated
+	// - the intro modal's dismissed items are
+	//   permanent.
+	//
+	// Without this, a dashboard with no Site Goals section keeps reporting a
+	// segment.
 	if (
 		isEcommerceWidgetRenderable === undefined ||
 		isLeadWidgetRenderable === undefined ||

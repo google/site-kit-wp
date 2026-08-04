@@ -55,7 +55,7 @@ const { setErrorForAction, clearActionError } = errorStoreActions;
  *
  * Mirrors the pairing in
  * `Conversion_Reporting_Provider::update_active_site_goals_widgets()`, which
- * pairs `ECOMMERCE_EVENT_NAMES` / `LEAD_EVENT_NAMES` with the same categories
+ * pairs `ECOMMERCE_EVENT_NAMES`/`LEAD_EVENT_NAMES` with the same categories
  * when it populates the site-wide `activeWidgets` list.
  */
 const SITE_GOALS_WIDGET_EVENTS: Record< string, string[] > = {
@@ -390,12 +390,14 @@ const baseSelectors = {
 	 * Checks whether a given widget category's widget will render.
 	 *
 	 * Combines the site-wide `activeWidgets` entry with the events currently
-	 * detected for the same category, which together are the conditions the
-	 * widget's registration and its own zero state apply. This is the single
-	 * source of truth for every Site Goals surface that depends on a widget
-	 * being on the page — the widget registrations, the intro modal, the feature
-	 * tour and the survey triggers — so none of them can show for a widget that
-	 * is not rendered.
+	 * detected for the same category. Together, these are the conditions the
+	 * widget's registration and its own zero state use to determine if it should
+	 * render.
+	 *
+	 * This is the single source of truth for every Site Goals surface
+	 * that depends on a widget being on the page (eg. widget registration,
+	 * intro modal, feature tour, and survey triggers). These never show for
+	 * a widget that is not rendered.
 	 *
 	 * @since n.e.x.t
 	 *
