@@ -265,6 +265,11 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 
 				return false;
 			},
+			// The modal introduces Analytics-backed widgets, so it should not
+			// show for a disconnected module.
+			//
+			// Require Analytics 4 module to be connected to show this notifications.
+			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
 			// At least one Site Goals widget must render. This is the same
 			// condition the widget registrations apply, so the modal never
 			// introduces a section that won't appear. `activeWidgets` comes from
