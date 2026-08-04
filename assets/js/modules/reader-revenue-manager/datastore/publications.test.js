@@ -464,6 +464,25 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				} );
 			} );
 
+			it( 'should set the organization ID to an empty string when the publication has no organization ID and the `rrmExpressSetup` feature flag is enabled', () => {
+				enabledFeatures.add( 'rrmExpressSetup' );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+					} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSettings()
+				).toMatchObject( {
+					organizationID: '',
+				} );
+			} );
+
 			it( 'should not set the organization ID when the `rrmExpressSetup` feature flag is disabled', () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )

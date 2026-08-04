@@ -30,24 +30,50 @@ class Connected_Proxy_URL extends Setting {
 	 * Matches provided URL with the current proxy URL in the settings.
 	 *
 	 * @since 1.17.0
+	 * @since n.e.x.t Compares the given URL against the decoded stored URL.
 	 *
 	 * @param string $url URL to match against the current one in the settings.
 	 * @return bool TRUE if URL matches the current one, otherwise FALSE.
 	 */
 	public function matches_url( $url ) {
-		$sanitize   = $this->get_sanitize_callback();
-		$normalized = $sanitize( $url );
-		return $normalized === $this->get();
+		return trailingslashit( $url ) === $this->get();
 	}
 
 	/**
-	 * Gets the callback for sanitizing the setting's value before saving.
+	 * Gets the connected proxy URL, base64-decoded from the value the option stores.
 	 *
-	 * @since 1.17.0
+	 * A stored value that fails to decode reads as no value at all, so
+	 * `matches_url()` reports no match and the site goes back through the
+	 * connection flow rather than through a comparison against an unreadable
+	 * URL.
 	 *
-	 * @return callable A sanitizing function.
+	 * @since n.e.x.t
+	 *
+	 * @return string|bool Connected proxy URL, or FALSE when the option holds
+	 *                     no value or one that fails to decode.
 	 */
-	protected function get_sanitize_callback() {
-		return 'trailingslashit';
+	public function get() {
+		$stored_url = parent::get();
+
+		if ( ! is_string( $stored_url ) ) {
+			return false;
+		}
+
+		return base64_decode( $stored_url, true );
+	}
+
+	/**
+	 * Sets the connected proxy URL, base64-encoded and with a trailing slash.
+	 *
+	 * We encode the URL to prevent database-wide search-and-replace tasks
+	 * from changing the URL used to connect to the Site Kit Proxy service.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $value Connected proxy URL.
+	 * @return bool TRUE on success, FALSE on failure.
+	 */
+	public function set( $value ) {
+		return parent::set( base64_encode( trailingslashit( $value ) ) );
 	}
 }

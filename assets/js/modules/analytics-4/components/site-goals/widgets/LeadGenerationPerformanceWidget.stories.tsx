@@ -858,6 +858,7 @@ Ready.args = {
 		] );
 	},
 };
+Ready.scenario = {};
 
 export const GatheringBreakdownData = Template.bind( {} ) as Story;
 GatheringBreakdownData.storyName = 'Gathering Breakdown Data';

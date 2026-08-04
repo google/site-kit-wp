@@ -224,6 +224,20 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		}
 	}
 
+	public function test_get_datapoints__with_express_setup_flag() {
+		$this->enable_feature( 'rrmExpressSetup' );
+
+		$this->assertEqualSets(
+			array(
+				'publications',
+				'sync-publication-onboarding-state',
+				'user-settings',
+			),
+			$this->reader_revenue_manager->get_datapoints(),
+			'Reader Revenue Manager module should include the user settings datapoints when the express setup flag is enabled.'
+		);
+	}
+
 	public function test_get_publications__url() {
 		$filter = '';
 

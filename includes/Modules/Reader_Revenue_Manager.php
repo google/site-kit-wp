@@ -192,7 +192,10 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	public function register() {
 		$this->register_scopes_hook();
 		$this->register_feature_metrics();
-		$this->user_settings->register();
+
+		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
+			$this->user_settings->register();
+		}
 
 		$synchronize_publication = new Synchronize_Publication(
 			$this,
@@ -379,7 +382,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			return $this->get_service( 'webcontentpublisher' );
 		};
 
-		return array(
+		$datapoints = array(
 			'POST:create-publication'                => new Create_Publication(
 				array(
 					'reference_site_url' => $this->context->get_reference_site_url(),
@@ -422,19 +425,24 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			'POST:sync-publication-onboarding-state' => array(
 				'service' => 'subscribewithgoogle',
 			),
-			'GET:user-settings'                      => new Get_User_Settings(
-				array(
-					'user_settings' => $this->user_settings,
-					'service'       => '',
-				)
-			),
-			'POST:user-settings'                     => new Save_User_Settings(
-				array(
-					'user_settings' => $this->user_settings,
-					'service'       => '',
-				)
-			),
 		);
+
+		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
+			$datapoints['GET:user-settings']  = new Get_User_Settings(
+				array(
+					'user_settings' => $this->user_settings,
+					'service'       => '',
+				)
+			);
+			$datapoints['POST:user-settings'] = new Save_User_Settings(
+				array(
+					'user_settings' => $this->user_settings,
+					'service'       => '',
+				)
+			);
+		}
+
+		return $datapoints;
 	}
 
 	/**

@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+// The indicator dot is 9px and its gap is 10px, so a tile's text starts 19px past
+// the section's content edge.
+$site-goals-tile-content-offset: 19px;
+
+// The 2px connector sits centered in the 9px dot: (9px - 2px) / 2.
+$site-goals-tile-connector-offset: 3.5px;
+
 .googlesitekit-plugin {
 
 	.googlesitekit-widget--analyticsOnlineStorePerformance,
@@ -25,6 +32,13 @@
 
 		.googlesitekit-widget__body {
 			padding-top: 6px;
+
+			// $grid-gap-desktop repeats what the layout grid already sets. The
+			// extra 30px lines the sections up with the widget title, which the
+			// chevron indents: 4px padding, 4px margin, 12px chevron, 10px gap.
+			@media (min-width: $bp-nonTablet) {
+				padding-left: $grid-gap-desktop + 30px;
+			}
 		}
 
 		// When the whole widget fails, its report error notice needs the
@@ -43,6 +57,15 @@
 				align-items: center;
 				display: flex;
 				gap: 10px;
+
+				// The row's gap already adds the space before the title
+				// (the flex `gap: 10px` this rule sets). IconWrapper's inline
+				// `margin-right: 10px` would move the title 10px right of
+				// the edge the sections align to. Only `!important`
+				// overrides an inline style.
+				.googlesitekit-icon-wrapper {
+					margin-right: 0 !important;
+				}
 			}
 
 			.googlesitekit-badge {
@@ -56,10 +79,6 @@
 	}
 
 	.googlesitekit-site-goals-tiles-group {
-
-		@media (min-width: $bp-tablet) {
-			padding: 0 0 0 $grid-gap-desktop;
-		}
 
 		.googlesitekit-site-goals-tiles-group__header {
 			align-items: flex-start;
@@ -109,10 +128,6 @@
 			.googlesitekit-site-goals-breakdown-notice
 		) {
 		margin: 34px 0;
-
-		@media (min-width: $bp-tablet) {
-			padding-left: $grid-gap-desktop;
-		}
 	}
 
 	.googlesitekit-site-goals-breakdown-notice {
@@ -130,7 +145,6 @@
 
 	.googlesitekit-site-goals-other-sources-notice {
 		margin-bottom: 24px;
-		padding: 0 0 0 24px;
 	}
 
 	.googlesitekit-site-goals-breakdown-tabs {
@@ -217,17 +231,28 @@
 	}
 
 	.googlesitekit-site-goals-tile {
-		border-left: 2px solid $c-surfaces-surface-1;
 		display: flex;
 		flex-direction: column;
-		margin-left: 0;
 
 		// Match the primary tile's 18px padding, so the badge and the
 		// comparison label sit at the same height in every tile of a row.
 		padding: 18px 0;
+		position: relative;
+
+		// The connector is a `::before` rather than a border-left, so the
+		// box and its 9px dot stay at x: 0.
+		&::before {
+			background: $c-surfaces-surface-1;
+			bottom: 0;
+			content: "";
+			left: $site-goals-tile-connector-offset;
+			position: absolute;
+			top: 0;
+			width: 2px;
+		}
 
 		.googlesitekit-site-goals-tile__inner {
-			padding-left: 14px;
+			padding-left: $site-goals-tile-content-offset;
 		}
 
 		.googlesitekit-site-goals-tile__header {
@@ -256,7 +281,7 @@
 				content: "";
 				display: block;
 				height: 9px;
-				left: -19.5px;
+				left: -$site-goals-tile-content-offset;
 				position: absolute;
 				top: 50%;
 				transform: translateY(-50%);
@@ -335,51 +360,40 @@
 			text-align: right;
 		}
 
-		&.googlesitekit-site-goals-tile--primary {
-			padding: 18px;
+		// These states hide the connector and the dot, so padding sets
+		// where the text starts.
+		&.googlesitekit-site-goals-tile--primary__positive,
+		&.googlesitekit-site-goals-tile--primary__negative,
+		&.googlesitekit-site-goals-tile--primary__neutral {
+			padding: 18px 18px 18px 16px;
+
+			@media (min-width: $bp-nonMobile) {
+				padding: 18px;
+			}
+
+			&::before {
+				display: none;
+			}
 
 			.googlesitekit-site-goals-tile__inner {
 				padding: 0;
 			}
 
-			.googlesitekit-site-goals-tile__title {
-				&::before {
-					left: -23.5px;
-				}
+			.googlesitekit-site-goals-tile__title::before {
+				display: none;
 			}
+		}
 
-			&.googlesitekit-site-goals-tile--primary__positive {
-				background: $c-green-g-10;
-				border-left: none;
+		&.googlesitekit-site-goals-tile--primary__positive {
+			background: $c-green-g-10;
+		}
 
-				.googlesitekit-site-goals-tile__title {
-					&::before {
-						display: none;
-					}
-				}
-			}
+		&.googlesitekit-site-goals-tile--primary__negative {
+			background: $c-red-r-10;
+		}
 
-			&.googlesitekit-site-goals-tile--primary__negative {
-				background: $c-red-r-10;
-				border-left: none;
-
-				.googlesitekit-site-goals-tile__title {
-					&::before {
-						display: none;
-					}
-				}
-			}
-
-			&.googlesitekit-site-goals-tile--primary__neutral {
-				background: $c-neutral-n-10;
-				border-left: none;
-
-				.googlesitekit-site-goals-tile__title {
-					&::before {
-						display: none;
-					}
-				}
-			}
+		&.googlesitekit-site-goals-tile--primary__neutral {
+			background: $c-neutral-n-10;
 		}
 	}
 
@@ -407,19 +421,18 @@
 		.googlesitekit-site-goals-goal-drivers-section__tile {
 			min-height: 81px;
 			min-width: 0;
-			padding: 8px 0 8px 19px;
+			padding: 8px 0 8px $site-goals-tile-content-offset;
 			position: relative;
 
 			@media (min-width: $bp-tablet) {
 				height: 100%;
-				padding: 8px 0 8px 24px;
 			}
 
 			&::before {
 				background: $c-utility-divider;
 				bottom: 0;
 				content: "";
-				left: 0;
+				left: $site-goals-tile-connector-offset;
 				position: absolute;
 				top: 0;
 				width: 2px;
@@ -430,7 +443,7 @@
 				border-radius: 50%;
 				content: "";
 				height: 9px;
-				left: -3.5px;
+				left: 0;
 				position: absolute;
 				top: 12px;
 				width: 9px;

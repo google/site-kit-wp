@@ -19,26 +19,29 @@
 /**
  * Internal dependencies
  */
-import ErrorNotice from './ErrorNotice';
+import { Story } from '@/js/types/Story';
+import ErrorNotice, { ErrorNoticeProps } from './ErrorNotice';
 
-function Template( args ) {
+function Template( args: ErrorNoticeProps ) {
 	return <ErrorNotice { ...args } />;
 }
 
-export const Default = Template.bind( {} );
+export const Default = Template.bind( {} ) as Story< ErrorNoticeProps >;
 Default.storyName = 'Default';
 Default.args = {
 	message: 'An error occurred',
 };
 
-export const WithNoPrefix = Template.bind( {} );
+export const WithNoPrefix = Template.bind( {} ) as Story< ErrorNoticeProps >;
 WithNoPrefix.storyName = 'No Prefix';
 WithNoPrefix.args = {
 	message: 'Could not load data',
 	noPrefix: true,
 };
 
-export const WithReconnectURL = Template.bind( {} );
+export const WithReconnectURL = Template.bind(
+	{}
+) as Story< ErrorNoticeProps >;
 WithReconnectURL.storyName = 'With Reconnect URL';
 WithReconnectURL.args = {
 	error: {
@@ -49,6 +52,17 @@ WithReconnectURL.args = {
 		},
 	},
 };
+
+export const WithTitle = Template.bind( {} ) as Story< ErrorNoticeProps >;
+WithTitle.storyName = 'With Title, No Prefix, and No Retry';
+WithTitle.args = {
+	title: 'Insufficient permissions',
+	message:
+		'Your Google account does not have sufficient permissions for this Analytics property, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "admin", you can contact them for more information.',
+	noPrefix: true,
+	skipRetryMessage: true,
+};
+WithTitle.scenario = {};
 
 export default {
 	title: 'Components/ErrorNotice',
