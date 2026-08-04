@@ -188,10 +188,6 @@ const IGNORE_CONSOLE_MESSAGES = [
 		matcher: 'startsWith',
 		pattern: '[api-fetch][preload]',
 	},
-	{
-		matcher: 'includes',
-		pattern: '[api-fetch][preload] All preloads consumed.',
-	},
 	// WordPress 6.6 logs when loading the block editor which causes console error.
 	{
 		matcher: 'startsWith',
