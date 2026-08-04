@@ -63,10 +63,17 @@ const SiteGoalsSurveyTriggers: FC = () => {
 			),
 		[]
 	);
-	// Whether each goal type's widget renders. Every segment below describes how
-	// the user interacted with a Site Goals widget, so none of them applies when
-	// no widget is on the page. Both reads are skipped until Analytics is
-	// connected, for the same reason as the dimension check below.
+
+	/**
+	 * Whether each goal type's widget renders.
+	 *
+	 * Every segment after this describes how the user interacted with a Site
+	 * Goals widget, so none of them apply when no widget is on the page.
+	 *
+	 * Both reads are skipped until Analytics is connected, so we don't make
+	 * requests for disconnected module data (which can cause a console error
+	 * and is needless).
+	 */
 	const isEcommerceWidgetRenderable = useSelect(
 		( select: Select ) => {
 			if ( ! isGA4Connected ) {
