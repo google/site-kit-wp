@@ -67,7 +67,7 @@ flowchart TD
     GATE -->|yes| HOOKS["Content_Events::register_hooks()<br/>(init — too early to know if a tag will render)"]
     HOOKS --> BOOT["one-shot bootstrap on<br/>googlesitekit_analytics-4_init_tag / googlesitekit_ads_init_tag<br/>(fired from register_tag() on template_redirect)"]
     BOOT --> ADD["register_content_hooks()"]
-    ADD --> H1["the_content → end-of-content anchor (single posts)"]
+    ADD --> H1["the_content (priority 1) → end-of-content anchor<br/>(main post content only — see guards)"]
     ADD --> H2["embed_oembed_html / block render → enablejsapi=1 on YouTube; detect Vimeo iframes (no rewrite)"]
     ADD --> H3["wp_footer → window._googlesitekit.contentEvents = { postID, wordCount, ... }"]
     ADD --> H4["wp_print_footer_scripts → Vimeo Player SDK (only if a Vimeo iframe was rendered)"]
@@ -207,17 +207,71 @@ Two hook‑level consequences follow directly from this gate:
 
 ### **PHP hooks (`register_hooks`)**
 
-- **End‑of‑content anchor (read_article):** on `is_singular( 'post' )`, a `the_content` filter appends an invisible marker (e.g. `<span id="googlesitekit-end-of-content" aria-hidden="true"></span>`) so the frontend can observe it precisely. The frontend falls back to a scroll‑depth threshold when the anchor is absent (page builders/patterns that bypass `the_content`).
-- **Per‑page config:** an inline script (attached `'before'` the provider handle, exactly like WooCommerce's `window._googlesitekit.wcdata`) publishes `window._googlesitekit.contentEvents = { postID, wordCount, readingSpeedWPM, readThresholdPct, readMinSeconds, isSinglePost }`. Word count is computed server‑side from the post content; the reading‑time tunables come from a single PHP constants block mirroring the JS one.
+- **End‑of‑content anchor (read_article):** a `the_content` filter appends an invisible marker (`<span class="googlesitekit-end-of-content" …>`) at the end of the *main* post content so the frontend can observe it precisely. `the_content` runs an arbitrary number of times per request, so this needs more than `is_singular( 'post' )` — see [End‑of‑content anchor](#end-of-content-anchor). The frontend falls back to a scroll‑depth threshold when the anchor is absent (page builders/patterns that bypass `the_content`).
+- **Per‑page config:** an inline script (attached `'before'` the provider handle, exactly like WooCommerce's `window._googlesitekit.wcdata`) publishes `window._googlesitekit.contentEvents = { postID, wordCount, readingSpeedWPM, readThresholdPct, readMinSeconds, isSinglePost, isFinalPage }`. Word count is captured by the anchor filter itself, from the same content the anchor is appended to; the reading‑time tunables come from a single PHP constants block mirroring the JS one.
 - **YouTube `enablejsapi=1`:** a filter on `embed_oembed_html` (and the core embed block render for block themes) rewrites YouTube iframe `src` to add `enablejsapi=1`, which unlocks GA4 Enhanced Measurement's native `video_*` events. We only enable them — GA4 sends them. `oembed_result` is deliberately **not** used because its output is persisted in the oEmbed post‑meta cache.
 - **Vimeo detection (no rewrite):** the same filter path *detects* `player.vimeo.com` iframes and flips a flag; unlike YouTube it does **not** modify their `src`. Vimeo has no `enablejsapi=1` equivalent — the `postMessage` API is on by default for every `player.vimeo.com` embed. Detection‑only keeps us out of rewriting third‑party iframe URLs on that path.
 - **Vimeo SDK enqueue:** when at least one Vimeo iframe was rendered the provider enqueues the Vimeo Player SDK on `wp_print_footer_scripts` — the iframes are only known after `the_content` has run.
+
+### **End‑of‑content anchor** {#end-of-content-anchor}
+
+`the_content` is not a once‑per‑request filter. On a page that satisfies `is_singular( 'post' )` it can be applied many times, and the *first* application is not reliably the main content — so neither `is_singular()` alone nor the `in_the_loop()` + one‑shot pattern used by [`AdSense\AMP_Tag`](../../../includes/Modules/AdSense/AMP_Tag.php) is sufficient here. The applications that have to be excluded:
+
+| Case | Why the naive guards let it through |
+| :---- | :---- |
+| A Query Loop / related‑posts block rendering **another** post's content | It renders *inside* the main loop, so the global `$wp_query->in_the_loop` is still `true` |
+| An auto‑generated excerpt for **the current** post — `wp_trim_excerpt()` applies `the_content` — e.g. a "you might also like" block that includes the current post, or an SEO plugin building a meta description | Same post ID and same loop, and it frequently runs *before* the real content, so a one‑shot flag burns on the excerpt |
+| Feed requests — `get_the_content_feed()` applies `the_content` | `is_feed()` and `is_singular()` can both be true, and feeds reach `template_redirect`, so the tag gate opens and the anchor leaks into the RSS body |
+| WordPress's own oEmbed iframe for the post | `is_singular( 'post' )` is true on the embed template too |
+| A paginated post (`<!--nextpage-->`) | Every page is `is_singular( 'post' )`, so "end of content" would fire on page 1 |
+
+`is_main_query()` does not help: it only asserts that the global `$wp_query` *is* the main query, which holds throughout all of the above. The discriminator that does work is **post identity against the queried object** — every secondary loop calls `the_post()`/`setup_postdata()`, which swaps the global `$post`:
+
+```php
+/**
+ * Appends the end-of-content anchor to the main post content.
+ *
+ * Hooked at priority 1: `the_content` can be applied many times per request,
+ * and only the main post's own content may receive the anchor.
+ */
+private function append_end_of_content_anchor( $content ) {
+	global $page, $numpages, $multipage;
+
+	if (
+		$this->anchor_printed                       // One-shot.
+		|| ! is_singular( 'post' )
+		|| is_feed()                                // get_the_content_feed() applies the_content.
+		|| is_embed()                               // The oEmbed template renders the excerpt.
+		|| doing_filter( 'get_the_excerpt' )        // wp_trim_excerpt() applies the_content.
+		|| get_the_ID() !== get_queried_object_id() // Nested loops swap the global $post.
+		|| ( $multipage && $page < $numpages )      // Only the last page ends the article.
+	) {
+		return $content;
+	}
+
+	$this->anchor_printed = true;
+	$this->word_count     = $this->count_words( $content );
+
+	return $content . self::END_OF_CONTENT_ANCHOR;
+}
+```
+
+Four decisions embedded in that:
+
+- **Priority 1, not the default 10 or a late one.** The anchor must mark the end of the *author's* content, not the end of whatever other plugins append at priorities 10–20 (share buttons, related‑post lists, subscribe forms). Running first also means `$content` is still the post's own text when we count words. The cost is that shortcodes are not expanded yet, so `count_words()` runs `strip_shortcodes()` + `wp_strip_all_tags()` first (`strip_tags()` also removes block delimiter comments) and a `[gallery]` counts as one word — immaterial to a reading‑time estimate.
+- **A class, not an `id`.** `id="googlesitekit-end-of-content"` would produce duplicate IDs — invalid HTML, and a silently wrong `getElementById()` — the first time a guard misses. A class degrades gracefully.
+- **A 1px block, not an empty inline span.** `END_OF_CONTENT_ANCHOR` is `<span class="googlesitekit-end-of-content" aria-hidden="true" style="display:block;height:1px"></span>`. A zero‑area target is an `IntersectionObserver` gotcha (implementations disagree on whether an empty rect ever intersects), and the inline style avoids shipping a frontend stylesheet for one element.
+- **Word count comes from this filter, not a second pass over `post_content`.** Anchor and word count then always describe the same text — including on a paginated post, where `$content` is just the current page. If the filter never ran (content pipeline bypassed), the footer falls back to a word count over `get_the_content()` so `read_article` still has a reading‑time estimate to work with.
+
+**Paginated posts.** The anchor goes on the last page only, and `wordCount` is that page's words, so a multi‑page post emits at most one `read_article` per visit rather than one per page. This means the frontend cannot infer "no anchor" ⇒ "bypassed pipeline": on pages 1…*n*−1 the anchor is deliberately absent, and the scroll‑depth fallback would fire there and re‑introduce the per‑page inflation. Hence `isFinalPage` in the config — the server stays the single source of truth for "this request renders the end of the article", and the frontend gates `read_article` (anchor *and* fallback) on it. The accepted trade‑off is an undercount: a visitor who reads pages 1–3 of 4 and leaves emits nothing.
+
+**Residual limitation.** A theme or page builder that calls `apply_filters( 'the_content', $arbitrary_string )` while the global `$post` is still the queried post passes every guard above, and the one‑shot would spend the anchor on that string. Nothing in the filter's contract distinguishes it, and the fallback still covers the page, so this is accepted rather than defended against.
 
 ### **Frontend script (`content-events.js`)**
 
 A single new entry in `frontendModules.config.js` (`googlesitekit-events-provider-content-events` → `./js/event-providers/content-events.js`). It reads `window._googlesitekit.contentEvents` and wires each handler independently; each handler is a no‑op if its precondition isn't met. All emissions go through `global._googlesitekit?.gtagEvent?.( name, data )`.
 
-- **`read_article`** — only when `isSinglePost`. Combines an `IntersectionObserver` on the end anchor (or a ~90% scroll‑depth fallback) **and** a dwell timer that must reach `readThresholdPct` of the estimated read time; the timer pauses on tab blur/idle. Constants (`238` WPM, `85%`, `5s` floor) live in one exported block so they can be tuned. Params: `post_id`, `word_count` (or `estimated_read_time_sec`).
+- **`read_article`** — only when `isSinglePost && isFinalPage`; both gates come from the server, so a non‑final page of a paginated post is skipped entirely rather than falling through to the scroll fallback ([End‑of‑content anchor](#end-of-content-anchor)). Combines an `IntersectionObserver` on `.googlesitekit-end-of-content` (or a ~90% scroll‑depth fallback when that element is absent) **and** a dwell timer that must reach `readThresholdPct` of the estimated read time; the timer pauses on tab blur/idle. Constants (`238` WPM, `85%`, `5s` floor) live in one exported block so they can be tuned. Params: `post_id`, `word_count` (or `estimated_read_time_sec`).
 - **`pagination_click`** — delegated `document` click listener scoped to `a.post-page-numbers` inside post content (primary) and `.bbp-pagination-links a.page-numbers` (secondary, scoped to avoid the generic `.page-numbers` class colliding with archive pagination). The bbPress selector needs no server‑side presence check: those elements only exist when bbPress renders thread pagination, so the listener is a natural no‑op otherwise. Sent with `transport_type: 'beacon'` because the click triggers a full reload. Params: `pagination_type`, `page_number`, `post_id`.
 - **`contact_link_click`** — delegated `document` click on `a[href^="tel:"], a[href^="mailto:"]`, `link_type: 'phone' | 'email'`. **No raw number/address is sent** (PII); at most the email domain.
 - **`outbound_link_click`** — delegated `document` click on `a[rel~="sponsored"], a[rel~="ugc"], a[rel~="nofollow"]` (token‑match, not string‑equal). Params: `link_rel` (space‑joined matches), `link_url`, `link_domain`.
@@ -268,7 +322,13 @@ Returning `array()` (recommended) needs **no** change to the shared enumerations
 
 ### **End‑of‑content anchor vs. pure scroll depth**
 
-The anchor (via `the_content`) is precise but bypassed by some page builders/block patterns; pure scroll depth always works but is coarser. We do **both**: anchor when present, scroll‑depth fallback otherwise.
+The anchor (via `the_content`) is precise but bypassed by some page builders/block patterns; pure scroll depth always works but is coarser. We do **both**: anchor when present, scroll‑depth fallback otherwise. Scroll depth alone is not an acceptable primary: on a post with a long comment thread or a tall footer, the reader can finish the article without ever reaching 90% of the *document*.
+
+### **Guarding the anchor filter vs. detecting the container on the frontend**
+
+Because `the_content` fires an unbounded number of times per request ([End‑of‑content anchor](#end-of-content-anchor)), the same precision can be had without touching the filter at all: the config already publishes `postID`, so `content-events.js` could locate the article container — `.wp-block-post-content` on block themes, `.entry-content` inside `.post-{postID}` on classic ones — and observe *its* bottom edge, keeping scroll depth as the fallback. That removes the PHP filter, the injected markup and the multiple‑application problem outright.
+
+We chose the guarded filter anyway: its correctness rests on core APIs (`get_queried_object_id()`, `doing_filter()`, the `$multipage` globals) that can be asserted directly in PHPUnit, one case per guard, whereas "does this theme wrap content in `.entry-content`" is a convention we can neither verify nor test.
 
 ### **Vimeo: custom SDK build vs. skip**
 
@@ -313,11 +373,11 @@ No new PII is collected. `contact_link_click` deliberately **omits** the raw pho
 
 ## **Scalability**
 
-Negligible runtime cost: delegated `document` listeners (constant number regardless of link count), one `IntersectionObserver`, and a paused‑on‑blur timer. The Vimeo SDK loads only when a Vimeo iframe exists. Server‑side work is a word count and a few string filters per request.
+Negligible runtime cost: delegated `document` listeners (constant number regardless of link count), one `IntersectionObserver`, and a paused‑on‑blur timer. The Vimeo SDK loads only when a Vimeo iframe exists. Server‑side work is a few string filters per request plus one word count — and because the anchor filter short‑circuits on its guards, the count runs once per request at most, not once per `the_content` application.
 
 ## **Accessibility (a11y)**
 
-No user‑facing UI is added. The only DOM addition is a visually hidden, `aria-hidden` end‑of‑content anchor with no interactive semantics, so there is no keyboard/screen‑reader impact.
+No user‑facing UI is added. The only DOM addition is a 1px, `aria-hidden` end‑of‑content anchor with no text and no interactive semantics, so there is no keyboard/screen‑reader impact.
 
 ## **Internationalization (i18n)**
 
@@ -332,7 +392,7 @@ Proposed GitHub issues for this mini‑epic (issue numbers and final points TBD 
 | # | Title | Design Doc Points |
 | :---- | :---- | :---- |
 | 1 | `Content_Events` provider scaffold + registration + `content-events.js` entry (pipeline wiring), including the `Conversion_Tracking::register()` settings gate and the tag‑init bootstrap ([Gating the server‑side hooks](#gating-server-side-hooks)) | 7 |
-| 2 | `read_article` — end‑of‑content anchor, reading‑time constants, IntersectionObserver + dwell timer | 11 |
+| 2 | `read_article` — end‑of‑content anchor (guarded against repeat `the_content` applications, with a PHPUnit case per guard), reading‑time constants, IntersectionObserver + dwell timer | 11 |
 | 3 | Embedded video — YouTube `enablejsapi=1` filter + Vimeo Player SDK tracking | 15 |
 | 4 | `pagination_click` — post pagination + bbPress thread pagination | 7 |
 | 5 | `contact_link_click` — `tel:` / `mailto:` delegated tracking | 7 |
