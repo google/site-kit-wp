@@ -34,7 +34,7 @@ import { DAY_IN_SECONDS } from '@/js/util';
 import {
 	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
 	SITE_GOALS_SURVEY_TRIGGER_BREAKDOWN_ENABLED,
-	SITE_GOALS_SURVEY_TRIGGER_NON_INTERACTED,
+	SITE_GOALS_SURVEY_TRIGGER_NOT_INTERACTED,
 	SITE_GOALS_SURVEY_TRIGGER_NO_BREAKDOWN,
 } from './constants';
 import { GOAL_TYPES } from './goal-drivers/constants';
@@ -150,7 +150,7 @@ const SiteGoalsSurveyTriggers: FC = () => {
 	// The user confirmed the intro modal with "Show me" but hasn't enabled
 	// the breakdown. Confirming also saves `SITE_GOALS_INTRO_MODAL_BANNER`,
 	// so a confirmed user looks dismissed too. Check this before the
-	// non-interacted segment below.
+	// not-interacted segment below.
 	if ( isIntroModalConfirmed ) {
 		return (
 			<SurveyViewTrigger
@@ -165,7 +165,7 @@ const SiteGoalsSurveyTriggers: FC = () => {
 	if ( isIntroModalDismissed ) {
 		return (
 			<SurveyViewTrigger
-				triggerID={ SITE_GOALS_SURVEY_TRIGGER_NON_INTERACTED }
+				triggerID={ SITE_GOALS_SURVEY_TRIGGER_NOT_INTERACTED }
 				ttl={ DAY_IN_SECONDS }
 			/>
 		);

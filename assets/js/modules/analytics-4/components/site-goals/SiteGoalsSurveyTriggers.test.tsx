@@ -49,7 +49,7 @@ import {
 import {
 	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
 	SITE_GOALS_SURVEY_TRIGGER_BREAKDOWN_ENABLED,
-	SITE_GOALS_SURVEY_TRIGGER_NON_INTERACTED,
+	SITE_GOALS_SURVEY_TRIGGER_NOT_INTERACTED,
 	SITE_GOALS_SURVEY_TRIGGER_NO_BREAKDOWN,
 } from './constants';
 import { GOAL_TYPES } from './goal-drivers/constants';
@@ -180,7 +180,7 @@ describe( 'SiteGoalsSurveyTriggers', () => {
 		expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
 	} );
 
-	it( 'dispatches the non-interacted trigger when the user closed the intro modal without confirming it', async () => {
+	it( 'dispatches the not-interacted trigger when the user closed the intro modal without confirming it', async () => {
 		setup( {
 			dismissedItems: [ SITE_GOALS_INTRO_MODAL_BANNER ],
 		} );
@@ -189,7 +189,7 @@ describe( 'SiteGoalsSurveyTriggers', () => {
 		const { waitForRegistry } = renderComponent();
 
 		await waitForRegistry();
-		await expectTriggerFetch( SITE_GOALS_SURVEY_TRIGGER_NON_INTERACTED );
+		await expectTriggerFetch( SITE_GOALS_SURVEY_TRIGGER_NOT_INTERACTED );
 	} );
 
 	it( 'dispatches the no-breakdown trigger when the user confirmed the intro modal and the custom dimensions are missing', async () => {
