@@ -231,26 +231,17 @@ describe( 'DashboardPageSpeed', () => {
 	} );
 
 	it( 'has tabs for toggling the tested device', () => {
-		const { getByLabelText, getByRole } = render( <DashboardPageSpeed />, {
+		const { getByLabelText } = render( <DashboardPageSpeed />, {
 			registry,
 		} );
 
-		const detailsLink = getByRole( 'link', {
-			name: /PageSpeed Insights/i,
-		} );
 		const desktopToggle = getByLabelText( /desktop/i );
 		expect( desktopToggle ).not.toHaveClass( activeClass );
-		expect( detailsLink.href ).toMatchQueryParameters( {
-			strategy: STRATEGY_MOBILE,
-		} );
 
 		fireEvent.click( desktopToggle );
 
 		expect( desktopToggle ).toHaveClass( activeClass );
 		expect( getByLabelText( /mobile/i ) ).not.toHaveClass( activeClass );
-		expect( detailsLink.href ).toMatchQueryParameters( {
-			strategy: STRATEGY_DESKTOP,
-		} );
 	} );
 
 	it( 'displays refreshing states when the `Run test again` button is clicked', async () => {

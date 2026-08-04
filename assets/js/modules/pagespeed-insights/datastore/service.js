@@ -32,19 +32,16 @@ export const selectors = {
 	/**
 	 * Gets the details link URL for the module.
 	 *
-	 * @since 1.185.0
+	 * @since n.e.x.t
 	 *
-	 * @param {Object} state      Data store's state.
-	 * @param {string} [strategy] PageSpeed report strategy.
 	 * @return {string} Details link URL.
 	 */
 	getDetailsLinkURL: createRegistrySelector(
-		( select ) => ( state, strategy ) =>
+		( select ) => () =>
 			select( MODULES_PAGESPEED_INSIGHTS ).getServiceURL( {
 				path: 'report',
 				query: {
 					url: select( CORE_SITE ).getCurrentReferenceURL(),
-					...( strategy && { strategy } ),
 				},
 			} )
 	),

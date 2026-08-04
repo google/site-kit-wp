@@ -58,18 +58,6 @@ describe( 'module/pagespeed-insights service store', () => {
 					utm_source: 'sitekit',
 				} );
 			} );
-
-			it( 'includes the supplied report strategy', () => {
-				const detailsLinkURL = registry
-					.select( MODULES_PAGESPEED_INSIGHTS )
-					.getDetailsLinkURL( 'desktop' );
-
-				expect( detailsLinkURL ).toMatchQueryParameters( {
-					url: 'https://example.com/',
-					strategy: 'desktop',
-					utm_source: 'sitekit',
-				} );
-			} );
 		} );
 
 		describe( 'getServiceURL', () => {
