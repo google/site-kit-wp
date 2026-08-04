@@ -217,7 +217,7 @@ export function registerWidgets( widgets ) {
 			pdf: {
 				Component: PDFYourVisitorGroups,
 				getData: getAudienceTilesPDFData,
-				label: __( 'Your visitor groups', 'google-site-kit' ),
+				label: __( 'Visitor groups', 'google-site-kit' ),
 				// The PDF row needs two cards, so it renders only for two or
 				// more audiences. The dashboard tile keeps its own `isActive`,
 				// which allows a single audience.
@@ -407,7 +407,7 @@ export function registerWidgets( widgets ) {
 			pdf: {
 				Component: ModulePopularPagesWidgetGA4PDF,
 				getData: getModulePopularPagesPDFData,
-				label: __( 'Top content over time', 'google-site-kit' ),
+				label: __( 'Top content', 'google-site-kit' ),
 			},
 		},
 		[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
