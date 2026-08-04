@@ -59,6 +59,23 @@ class Content_Map {
 	}
 
 	/**
+	 * Gets the email subject for a template.
+	 *
+	 * Falls back to the template's title when no distinct subject is
+	 * mapped, since most templates use the same string for both.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $template_name The template name.
+	 * @return string The subject string.
+	 */
+	public static function get_subject( $template_name ) {
+		$subjects = self::get_all_subjects();
+
+		return $subjects[ $template_name ] ?? self::get_title( $template_name );
+	}
+
+	/**
 	 * Gets the body content for a template.
 	 *
 	 * @since 1.173.0
@@ -168,6 +185,23 @@ class Content_Map {
 	}
 
 	/**
+	 * Gets template subject mappings that differ from their title.
+	 *
+	 * Only templates whose email subject must diverge from their
+	 * in-email title/heading need an entry here; every other template
+	 * falls back to `get_title()` in `get_subject()`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Mapping of template names to subject strings.
+	 */
+	protected static function get_all_subjects() {
+		return array(
+			'error-email' => __( 'Action needed: your Site Kit report couldn’t be generated', 'google-site-kit' ),
+		);
+	}
+
+	/**
 	 * Gets all template body content mappings.
 	 *
 	 * @since 1.173.0
@@ -260,6 +294,55 @@ class Content_Map {
 				return array(
 					'https://sitekit.withgoogle.com/support/?error_id=analytics-4_insufficient_permissions',
 					$link_style,
+				);
+
+			default:
+				return array();
+		}
+	}
+
+	/**
+	 * Gets the primary call-to-action for a template.
+	 *
+	 * Only the four module-specific error keys define a CTA, each
+	 * linking to that module's settings screen; every other key
+	 * (including the generic `error-email` key) defines no CTA.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string  $content_key Content key (e.g. 'error-email-report-analytics-4').
+	 * @param Golinks $golinks     Golinks instance for building URLs.
+	 * @return array {
+	 *     CTA configuration, or empty array if the key defines no CTA.
+	 *
+	 *     @type string $label CTA button label.
+	 *     @type string $url   CTA destination URL.
+	 * }
+	 */
+	public static function get_cta( $content_key, Golinks $golinks ) {
+		switch ( $content_key ) {
+			case 'error-email-permissions-search-console':
+				return array(
+					'label' => __( 'Request access', 'google-site-kit' ),
+					'url'   => add_query_arg( 'module', 'search-console', $golinks->get_url( 'settings' ) ),
+				);
+
+			case 'error-email-permissions-analytics-4':
+				return array(
+					'label' => __( 'Request access', 'google-site-kit' ),
+					'url'   => add_query_arg( 'module', 'analytics-4', $golinks->get_url( 'settings' ) ),
+				);
+
+			case 'error-email-report-search-console':
+				return array(
+					'label' => __( 'Go to settings', 'google-site-kit' ),
+					'url'   => add_query_arg( 'module', 'search-console', $golinks->get_url( 'settings' ) ),
+				);
+
+			case 'error-email-report-analytics-4':
+				return array(
+					'label' => __( 'Go to settings', 'google-site-kit' ),
+					'url'   => add_query_arg( 'module', 'analytics-4', $golinks->get_url( 'settings' ) ),
 				);
 
 			default:
