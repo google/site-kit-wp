@@ -153,3 +153,86 @@ export function mockBrowserScrolling() {
 		Element.prototype.scrollIntoView.mockReset();
 	} );
 }
+
+/**
+ * Mocks the `IntersectionObserver` API in jsdom and provides helpers to
+ * inspect observed elements and simulate intersection changes.
+ *
+ * Sets up in beforeAll, resets observer state in beforeEach, and restores in
+ * afterAll.
+ *
+ * @since n.e.x.t
+ *
+ * @return {{
+ *   getObservedElements: function(): Element[],
+ *   simulateIntersection: function(Element, boolean=): void,
+ *   simulateAllIntersections: function(boolean=): void,
+ * }} Intersection observer test helpers.
+ */
+export function mockIntersectionObserver() {
+	let oldIntersectionObserver;
+	let observers = [];
+
+	function createEntry( target, isIntersecting ) {
+		return {
+			isIntersecting,
+			intersectionRatio: isIntersecting ? 1 : 0,
+			target,
+		};
+	}
+
+	beforeAll( () => {
+		oldIntersectionObserver = global.IntersectionObserver;
+
+		global.IntersectionObserver = function MockIntersectionObserver(
+			callback
+		) {
+			this.observe = function observe( target ) {
+				observers.push( { callback, target } );
+			};
+			this.disconnect = jest.fn();
+			this.unobserve = jest.fn();
+			this.takeRecords = jest.fn().mockReturnValue( [] );
+		};
+	} );
+
+	beforeEach( () => {
+		observers = [];
+	} );
+
+	afterAll( () => {
+		if ( typeof oldIntersectionObserver === 'undefined' ) {
+			delete global.IntersectionObserver;
+			return;
+		}
+
+		global.IntersectionObserver = oldIntersectionObserver;
+	} );
+
+	return {
+		getObservedElements: () =>
+			observers.map( ( observer ) => observer.target ),
+		simulateIntersection: ( target, isIntersecting = true ) => {
+			const observer = observers.find(
+				( currentObserver ) => currentObserver.target === target
+			);
+
+			if ( ! observer ) {
+				return;
+			}
+
+			observer.callback(
+				[ createEntry( target, isIntersecting ) ],
+				{} // This argument is unused by code under test.
+			);
+		},
+		simulateAllIntersections: ( isIntersecting = true ) => {
+			observers.forEach( ( observer ) => {
+				observer.callback(
+					[ createEntry( observer.target, isIntersecting ) ],
+					{} // This argument is unused by code under test.
+				);
+			} );
+		},
+	};
+}

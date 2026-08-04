@@ -132,7 +132,7 @@ describe( 'KeyMetricsPDF', () => {
 				slug: 'metricA',
 				title: 'New visitors',
 				TileComponent,
-				data: { value: '42', change: '+5.1%', isNegative: false },
+				data: { value: '42', change: '+5.1%', changeType: 'positive' },
 			},
 		] );
 
@@ -140,7 +140,7 @@ describe( 'KeyMetricsPDF', () => {
 			title: 'New visitors',
 			value: '42',
 			change: '+5.1%',
-			isNegative: false,
+			changeType: 'positive',
 		} );
 	} );
 

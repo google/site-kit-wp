@@ -274,9 +274,24 @@ const ttfRule = {
 
 exports.ttfRule = ttfRule;
 
+/**
+ * An import of a PNG never reads the picture. Webpack copies the file into the
+ * build folder under a unique name, and the import holds the URL of that copy.
+ */
+const pngRule = {
+	test: /\.png$/,
+	type: 'asset/resource',
+	generator: {
+		filename: 'images/[name]-[contenthash][ext]',
+	},
+};
+
+exports.pngRule = pngRule;
+
 exports.createRules = ( mode ) => [
 	svgRule,
 	ttfRule,
+	pngRule,
 	{
 		test: /\.tsx?$/,
 		exclude: /node_modules/,

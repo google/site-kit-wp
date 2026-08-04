@@ -36,8 +36,6 @@ import Notifications from '@/js/components/notifications/Notifications';
 import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
 import Services from '@/js/components/setup/Services';
 import Typography from '@/js/components/Typography';
-import P from '@/js/components/Typography/P';
-import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
 import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import {
 	BREAKPOINT_SMALL,
@@ -48,17 +46,15 @@ import { useFeature } from '@/js/hooks/useFeature';
 import { Cell, Row } from '@/js/material-components';
 import SplashBackground from '@/svg/graphics/splash-graphic.svg';
 import AnalyticsOptIn from './AnalyticsOptIn';
+import ConnectedURLComparison from './ConnectedURLComparison';
 import SplashScreenshotSVG from './SetupFlowSVG';
 
 export default function SplashContent( {
 	analyticsModuleActive,
 	analyticsModuleAvailable,
 	children,
-	connectedProxyURL,
 	description,
-	disconnectedReason,
 	getHelpURL,
-	homeURL,
 	secondAdminLearnMoreLink,
 	showLearnMoreLink,
 	title,
@@ -130,23 +126,7 @@ export default function SplashContent( {
 						</Link>
 					) }
 
-					{ DISCONNECTED_REASON_CONNECTED_URL_MISMATCH ===
-						disconnectedReason &&
-						connectedProxyURL !== homeURL && (
-							<P>
-								{ sprintf(
-									/* translators: %s: Previous Connected Proxy URL */
-									__( '— Old URL: %s', 'google-site-kit' ),
-									connectedProxyURL
-								) }
-								<br />
-								{ sprintf(
-									/* translators: %s: Connected Proxy URL */
-									__( '— New URL: %s', 'google-site-kit' ),
-									homeURL
-								) }
-							</P>
-						) }
+					<ConnectedURLComparison />
 
 					{ setupFlowRefreshPhase4Enabled &&
 						analyticsModuleActive && <Services /> }
@@ -182,14 +162,8 @@ SplashContent.propTypes = {
 	analyticsModuleActive: PropTypes.bool,
 	analyticsModuleAvailable: PropTypes.bool,
 	children: PropTypes.func,
-	connectedProxyURL: PropTypes.oneOfType( [
-		PropTypes.string,
-		PropTypes.bool,
-	] ),
 	description: PropTypes.string,
-	disconnectedReason: PropTypes.string,
 	getHelpURL: PropTypes.string,
-	homeURL: PropTypes.string,
 	secondAdminLearnMoreLink: PropTypes.string,
 	showLearnMoreLink: PropTypes.bool,
 	title: PropTypes.string.isRequired,

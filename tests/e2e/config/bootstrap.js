@@ -180,11 +180,13 @@ const IGNORE_CONSOLE_MESSAGES = [
 		pattern:
 			'global-styles-css-custom-properties-inline-css was added to the iframe incorrectly',
 	},
-	// Gutenberg's api-fetch preloading middleware logs preload consumption
-	// while loading the block editor. Unrelated to Site Kit.
+	// Gutenberg's api-fetch preloading middleware reports on the preloaded paths
+	// consumed while loading the block editor, warning about any that were left
+	// unconsumed and otherwise logging that all were consumed. Unrelated to
+	// Site Kit, so both are ignored via their common prefix.
 	{
-		matcher: 'includes',
-		pattern: '[api-fetch][preload] Some preloads were never consumed',
+		matcher: 'startsWith',
+		pattern: '[api-fetch][preload]',
 	},
 	{
 		matcher: 'includes',

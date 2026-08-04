@@ -50,16 +50,20 @@ use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\Block_Support;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Admin_Post_List;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Contribute_With_Google_Block;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_User_Settings;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Save_User_Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Subscribe_With_Google_Block;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_Publication;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Matchers;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\User_Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Web_Tag;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Service_SubscribewithGoogle;
@@ -125,6 +129,15 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 */
 	private $tag_guard;
 
+	/**
+	 * User_Settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var User_Settings
+	 */
+	private $user_settings;
+
 	const PRODUCT_ID_NOTIFICATIONS = array(
 		'rrm-product-id-contributions-notification',
 		'rrm-product-id-subscriptions-notification',
@@ -158,6 +171,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		$post_meta = new Post_Meta();
 		$settings  = $this->get_settings();
 
+		$this->user_settings                = new User_Settings( $this->user_options );
 		$this->post_product_id              = new Post_Product_ID( $post_meta, $settings );
 		$this->tag_guard                    = new Tag_Guard( $settings, $this->post_product_id );
 		$this->contribute_with_google_block = new Contribute_With_Google_Block( $this->context, $this->tag_guard, $settings );
@@ -172,6 +186,10 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	public function register() {
 		$this->register_scopes_hook();
 		$this->register_feature_metrics();
+
+		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
+			$this->user_settings->register();
+		}
 
 		$synchronize_publication = new Synchronize_Publication(
 			$this,
@@ -353,7 +371,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		return array(
+		$datapoints = array(
 			'GET:publications'                       => array(
 				'service' => 'subscribewithgoogle',
 			),
@@ -361,6 +379,23 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				'service' => 'subscribewithgoogle',
 			),
 		);
+
+		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
+			$datapoints['GET:user-settings']  = new Get_User_Settings(
+				array(
+					'user_settings' => $this->user_settings,
+					'service'       => '',
+				)
+			);
+			$datapoints['POST:user-settings'] = new Save_User_Settings(
+				array(
+					'user_settings' => $this->user_settings,
+					'service'       => '',
+				)
+			);
+		}
+
+		return $datapoints;
 	}
 
 	/**

@@ -328,6 +328,30 @@ describe( 'modules/analytics-4 site goals breakdown', () => {
 				registry.select( MODULES_ANALYTICS_4 ).getFormTitles( [ '7' ] )
 			).toEqual( { 7: '“0” form' } );
 		} );
+
+		it( 'labels a campaign slug with the campaign title', async () => {
+			// An OptinMonster campaign reports its slug as the form ID, while
+			// every other supported plugin reports a numeric ID.
+			fetchMock.getOnce( formMetadataEndpoint, {
+				body: {
+					jnpfwoygltxurnayflew: metadata( 'Newsletter Popup' ),
+				},
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getFormTitles( [ 'jnpfwoygltxurnayflew' ] );
+			await resolved().getFormMetadata( [ 'jnpfwoygltxurnayflew' ] );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getFormTitles( [ 'jnpfwoygltxurnayflew' ] )
+			).toEqual( {
+				jnpfwoygltxurnayflew: '“Newsletter Popup” form',
+			} );
+		} );
 	} );
 
 	describe( 'getFormPagePaths', () => {
