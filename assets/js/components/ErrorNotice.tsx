@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -31,33 +31,58 @@ import { isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { sanitizeHTML } from '@/js/util';
 import { isErrorRetryable, isPermissionScopeError } from '@/js/util/errors';
 import Notice from './Notice';
 
-export default function ErrorNotice( {
+export interface ErrorNoticeProps {
+	className?: string;
+	error?: {
+		message?: string;
+		data?: {
+			reconnectURL?: string;
+		};
+	};
+	hasButton?: boolean;
+	storeName?: string;
+	message?: string;
+	title?: string;
+	noPrefix?: boolean;
+	skipRetryMessage?: boolean;
+	hideIcon?: boolean;
+}
+
+const ErrorNotice: FC< ErrorNoticeProps > = ( {
 	className,
-	error,
+	error = {},
 	hasButton = false,
 	storeName,
-	message = error.message,
+	message = error?.message,
+	title,
 	noPrefix = false,
 	skipRetryMessage,
 	hideIcon = false,
-} ) {
+} ) => {
 	const dispatch = useDispatch();
 
-	const selectorData = useSelect( ( select ) => {
-		if ( ! storeName ) {
-			return null;
-		}
+	const selectorData = useSelect(
+		( select: Select ) => {
+			if ( ! storeName ) {
+				return null;
+			}
 
-		return select( storeName ).getSelectorDataForError( error );
-	} );
+			return select( storeName ).getSelectorDataForError( error );
+		},
+		[ error, storeName ]
+	);
 
 	const handleRetry = useCallback( () => {
+		if ( ! selectorData ) {
+			return;
+		}
+
 		dispatch( selectorData.storeName ).invalidateResolution(
 			selectorData.name,
 			selectorData.args
@@ -96,7 +121,7 @@ export default function ErrorNotice( {
 		);
 	}
 
-	const reconnectURL = error?.data?.reconnectURL;
+	const reconnectURL = error.data?.reconnectURL;
 
 	if ( reconnectURL && isURL( reconnectURL ) ) {
 		/**
@@ -129,6 +154,7 @@ export default function ErrorNotice( {
 		<Notice
 			className={ className }
 			type={ NOTICE_TYPES.ERROR }
+			title={ title }
 			description={
 				// The error messages that come from the server/API can contain
 				// HTML (eg. links), so we use `dangerouslySetInnerHTML` and sanitize
@@ -154,17 +180,6 @@ export default function ErrorNotice( {
 			hideIcon={ hideIcon }
 		/>
 	);
-}
-
-ErrorNotice.propTypes = {
-	className: PropTypes.string,
-	error: PropTypes.shape( {
-		message: PropTypes.string,
-	} ),
-	hasButton: PropTypes.bool,
-	storeName: PropTypes.string,
-	message: PropTypes.string,
-	noPrefix: PropTypes.bool,
-	skipRetryMessage: PropTypes.bool,
-	hideIcon: PropTypes.bool,
 };
+
+export default ErrorNotice;

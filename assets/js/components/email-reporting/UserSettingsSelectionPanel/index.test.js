@@ -54,10 +54,20 @@ describe( 'UserSettingsSelectionPanel', () => {
 	const emailReportingSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/email-reporting-settings'
 	);
+	const emailReportingNextReportEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/email-reporting-next-report'
+	);
 	let registry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		// Saving settings invalidates the cached next report timestamp,
+		// triggering a refetch; keep this mocked so real (non-spied) saves
+		// in these tests don't hit the network unexpectedly.
+		fetchMock.get( emailReportingNextReportEndpoint, {
+			body: { timestamp: 0 },
+		} );
 
 		provideModules( registry );
 		provideSiteInfo( registry );
@@ -68,6 +78,10 @@ describe( 'UserSettingsSelectionPanel', () => {
 		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
 			subscribed: false,
 			frequency: 'monthly',
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingNextReport( {
+			timestamp: 0,
 		} );
 
 		registry

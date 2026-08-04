@@ -65,6 +65,7 @@ export default function UserSettingsSelectionPanel() {
 
 		return select( CORE_USER ).isSavingEmailReportingSettings();
 	} );
+
 	const frequency = useSelect( ( select ) =>
 		select( CORE_USER ).getEmailReportingFrequency()
 	);
