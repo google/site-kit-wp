@@ -52,6 +52,7 @@ import {
 	SITE_GOALS_SURVEY_TRIGGER_NON_INTERACTED,
 	SITE_GOALS_SURVEY_TRIGGER_NO_BREAKDOWN,
 } from './constants';
+import { GOAL_TYPES } from './goal-drivers/constants';
 import {
 	SITE_GOALS_INTRO_MODAL_BANNER,
 	SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED,
@@ -72,12 +73,21 @@ describe( 'SiteGoalsSurveyTriggers', () => {
 		connected?: boolean;
 		dismissedItems?: string[];
 		availableCustomDimensions?: string[];
+		detectedEvents?: string[];
+		activeWidgets?: string[];
 	}
+
+	// One event per goal type, so both Site Goals widgets render by default and
+	// every segment below applies.
+	const BOTH_WIDGET_EVENTS = [ 'purchase', 'contact' ];
+	const BOTH_WIDGETS = [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ];
 
 	function setup( {
 		connected = true,
 		dismissedItems = [],
 		availableCustomDimensions = [],
+		detectedEvents = BOTH_WIDGET_EVENTS,
+		activeWidgets = BOTH_WIDGETS,
 	}: SetupOptions = {} ) {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
@@ -97,9 +107,13 @@ describe( 'SiteGoalsSurveyTriggers', () => {
 		// fetch `analytics4SettingsEndpoint`, which these tests assert never
 		// happens.
 		if ( connected ) {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				availableCustomDimensions,
+				detectedEvents,
+			} );
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetSettings( { availableCustomDimensions } );
+				.receiveGetSiteGoalsSettings( { activeWidgets } );
 		}
 	}
 
@@ -195,6 +209,57 @@ describe( 'SiteGoalsSurveyTriggers', () => {
 
 	it( 'dispatches the breakdown-enabled trigger when the custom dimensions exist', async () => {
 		setup( {
+			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
+		} );
+		mockSurveyEndpoints();
+
+		const { waitForRegistry } = renderComponent();
+
+		await waitForRegistry();
+		await expectTriggerFetch( SITE_GOALS_SURVEY_TRIGGER_BREAKDOWN_ENABLED );
+	} );
+
+	it( 'dispatches no trigger when no Site Goals widget renders', async () => {
+		// The custom dimensions belong to the Analytics property and the
+		// dismissed items are permanent, so both outlive the widgets. With no
+		// widget on the page, no segment applies.
+		setup( {
+			activeWidgets: [],
+			dismissedItems: [
+				SITE_GOALS_INTRO_MODAL_BANNER,
+				SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED,
+			],
+			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
+		} );
+		mockSurveyEndpoints();
+
+		const { waitForRegistry } = renderComponent();
+
+		await waitForRegistry();
+
+		expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
+	} );
+
+	it( 'dispatches no trigger when the active widgets no longer have detected events', async () => {
+		setup( {
+			detectedEvents: [],
+			dismissedItems: [ SITE_GOALS_INTRO_MODAL_BANNER ],
+		} );
+		mockSurveyEndpoints();
+
+		const { waitForRegistry } = renderComponent();
+
+		await waitForRegistry();
+
+		expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
+	} );
+
+	it( 'dispatches the breakdown-enabled trigger for a site where only one widget renders', async () => {
+		// The breakdown flow creates every Site Kit custom dimension at once, so
+		// a single-goal-type site still holds both breakdown dimensions.
+		setup( {
+			activeWidgets: [ GOAL_TYPES.ECOMMERCE ],
+			detectedEvents: [ 'purchase' ],
 			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
 		} );
 		mockSurveyEndpoints();

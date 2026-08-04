@@ -37,6 +37,7 @@ import {
 	SITE_GOALS_SURVEY_TRIGGER_NON_INTERACTED,
 	SITE_GOALS_SURVEY_TRIGGER_NO_BREAKDOWN,
 } from './constants';
+import { GOAL_TYPES } from './goal-drivers/constants';
 import {
 	SITE_GOALS_INTRO_MODAL_BANNER,
 	SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED,
@@ -62,6 +63,34 @@ const SiteGoalsSurveyTriggers: FC = () => {
 			),
 		[]
 	);
+	// Whether each goal type's widget renders. Every segment below describes how
+	// the user interacted with a Site Goals widget, so none of them applies when
+	// no widget is on the page. Both reads are skipped until Analytics is
+	// connected, for the same reason as the dimension check below.
+	const isEcommerceWidgetRenderable = useSelect(
+		( select: Select ) => {
+			if ( ! isGA4Connected ) {
+				return undefined;
+			}
+
+			return select( MODULES_ANALYTICS_4 ).isSiteGoalWidgetRenderable(
+				GOAL_TYPES.ECOMMERCE
+			);
+		},
+		[ isGA4Connected ]
+	);
+	const isLeadWidgetRenderable = useSelect(
+		( select: Select ) => {
+			if ( ! isGA4Connected ) {
+				return undefined;
+			}
+
+			return select( MODULES_ANALYTICS_4 ).isSiteGoalWidgetRenderable(
+				GOAL_TYPES.LEAD
+			);
+		},
+		[ isGA4Connected ]
+	);
 	const hasBreakdownDimensions = useSelect(
 		( select: Select ) => {
 			// Skip the dimension check until Analytics is connected, so this
@@ -80,6 +109,20 @@ const SiteGoalsSurveyTriggers: FC = () => {
 	// Render nothing until Analytics is connected. `isGA4Connected` is
 	// `undefined` while loading and `false` when not connected.
 	if ( ! isGA4Connected ) {
+		return null;
+	}
+
+	// Wait for both widget checks, then render nothing when neither widget
+	// renders. Both signals read below outlive the widgets: the breakdown custom
+	// dimensions belong to the Analytics property and stay after an event
+	// provider is deactivated, and the intro modal's dismissed items are
+	// permanent. Without this, a dashboard with no Site Goals section keeps
+	// reporting a segment.
+	if (
+		isEcommerceWidgetRenderable === undefined ||
+		isLeadWidgetRenderable === undefined ||
+		( ! isEcommerceWidgetRenderable && ! isLeadWidgetRenderable )
+	) {
 		return null;
 	}
 
