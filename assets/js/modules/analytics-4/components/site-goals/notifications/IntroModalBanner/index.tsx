@@ -119,7 +119,7 @@ const IntroModal: FC< IntroModalProps > = ( { id, Notification } ) => {
 	// widgets, so it follows the exact conditions they apply.
 	const isEcommerceWidgetRenderable = useSelect(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).isSiteGoalWidgetRenderable(
+			select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
 				GOAL_TYPES.ECOMMERCE
 			),
 		[]
@@ -127,7 +127,7 @@ const IntroModal: FC< IntroModalProps > = ( { id, Notification } ) => {
 
 	const isLeadWidgetRenderable = useSelect(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).isSiteGoalWidgetRenderable(
+			select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
 				GOAL_TYPES.LEAD
 			),
 		[]

@@ -73,7 +73,7 @@ const SiteGoalsSurveyTriggers: FC = () => {
 				return undefined;
 			}
 
-			return select( MODULES_ANALYTICS_4 ).isSiteGoalWidgetRenderable(
+			return select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
 				GOAL_TYPES.ECOMMERCE
 			);
 		},
@@ -85,7 +85,7 @@ const SiteGoalsSurveyTriggers: FC = () => {
 				return undefined;
 			}
 
-			return select( MODULES_ANALYTICS_4 ).isSiteGoalWidgetRenderable(
+			return select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
 				GOAL_TYPES.LEAD
 			);
 		},

@@ -861,7 +861,7 @@ export function registerWidgets( widgets ) {
 				wrapWidget: false,
 				modules: [ MODULE_SLUG_ANALYTICS_4 ],
 				isActive: ( select ) =>
-					select( MODULES_ANALYTICS_4 ).isSiteGoalWidgetRenderable(
+					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
 						GOAL_TYPES.ECOMMERCE
 					) === true,
 			},
@@ -877,7 +877,7 @@ export function registerWidgets( widgets ) {
 				wrapWidget: false,
 				modules: [ MODULE_SLUG_ANALYTICS_4 ],
 				isActive: ( select ) =>
-					select( MODULES_ANALYTICS_4 ).isSiteGoalWidgetRenderable(
+					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
 						GOAL_TYPES.LEAD
 					) === true,
 			},

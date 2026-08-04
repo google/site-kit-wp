@@ -235,13 +235,13 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 		provideCustomDimensions();
 		provideDismissedItems();
 
-		// Before the settings load, `isSiteGoalWidgetRenderable` reads
+		// Before the settings load, `isSiteGoalsWidgetRenderable` reads
 		// `undefined`. Assert that here, so the `false` below is the loading
 		// case, not a resolved `false`.
 		expect(
 			registry
 				.select( MODULES_ANALYTICS_4 )
-				.isSiteGoalWidgetRenderable( GOAL_TYPES.ECOMMERCE )
+				.isSiteGoalsWidgetRenderable( GOAL_TYPES.ECOMMERCE )
 		).toBeUndefined();
 		expect(
 			hasGoalTypeBreakdownNotice( select, GOAL_TYPES.ECOMMERCE )

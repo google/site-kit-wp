@@ -270,7 +270,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 			} );
 		} );
 
-		describe( 'isSiteGoalWidgetActive', () => {
+		describe( 'isSiteGoalsWidgetActive', () => {
 			it( 'should return undefined before settings are loaded', async () => {
 				fetchMock.getOnce( getSiteGoalsSettingsEndpoint, {
 					body: { activeWidgets: [] },
@@ -280,7 +280,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetActive( 'ecommerce' )
+						.isSiteGoalsWidgetActive( 'ecommerce' )
 				).toBeUndefined();
 
 				await untilResolved(
@@ -299,12 +299,12 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetActive( 'ecommerce' )
+						.isSiteGoalsWidgetActive( 'ecommerce' )
 				).toBe( true );
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetActive( 'lead' )
+						.isSiteGoalsWidgetActive( 'lead' )
 				).toBe( true );
 			} );
 
@@ -318,7 +318,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetActive( 'lead' )
+						.isSiteGoalsWidgetActive( 'lead' )
 				).toBe( false );
 			} );
 
@@ -332,17 +332,17 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetActive( 'ecommerce' )
+						.isSiteGoalsWidgetActive( 'ecommerce' )
 				).toBe( false );
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetActive( 'lead' )
+						.isSiteGoalsWidgetActive( 'lead' )
 				).toBe( false );
 			} );
 		} );
 
-		describe( 'isSiteGoalWidgetRenderable', () => {
+		describe( 'isSiteGoalsWidgetRenderable', () => {
 			function receiveSettings(
 				activeWidgets: string[],
 				detectedEvents: string[]
@@ -364,12 +364,12 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetRenderable( 'ecommerce' )
+						.isSiteGoalsWidgetRenderable( 'ecommerce' )
 				).toBe( true );
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetRenderable( 'lead' )
+						.isSiteGoalsWidgetRenderable( 'lead' )
 				).toBe( true );
 			} );
 
@@ -382,12 +382,12 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetRenderable( 'ecommerce' )
+						.isSiteGoalsWidgetRenderable( 'ecommerce' )
 				).toBe( true );
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetRenderable( 'lead' )
+						.isSiteGoalsWidgetRenderable( 'lead' )
 				).toBe( true );
 			} );
 
@@ -397,7 +397,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetRenderable( 'lead' )
+						.isSiteGoalsWidgetRenderable( 'lead' )
 				).toBe( false );
 			} );
 
@@ -407,7 +407,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetRenderable( 'ecommerce' )
+						.isSiteGoalsWidgetRenderable( 'ecommerce' )
 				).toBe( false );
 			} );
 
@@ -417,12 +417,12 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetRenderable( 'ecommerce' )
+						.isSiteGoalsWidgetRenderable( 'ecommerce' )
 				).toBe( false );
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetRenderable( 'lead' )
+						.isSiteGoalsWidgetRenderable( 'lead' )
 				).toBe( false );
 			} );
 
@@ -432,7 +432,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetRenderable( 'unknown' )
+						.isSiteGoalsWidgetRenderable( 'unknown' )
 				).toBe( false );
 			} );
 
@@ -449,7 +449,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetRenderable( 'ecommerce' )
+						.isSiteGoalsWidgetRenderable( 'ecommerce' )
 				).toBeUndefined();
 
 				await untilResolved(
@@ -473,7 +473,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetRenderable( 'ecommerce' )
+						.isSiteGoalsWidgetRenderable( 'ecommerce' )
 				).toBeUndefined();
 
 				await untilResolved(

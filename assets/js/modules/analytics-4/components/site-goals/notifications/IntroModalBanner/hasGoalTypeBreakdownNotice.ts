@@ -51,8 +51,9 @@ export function hasGoalTypeBreakdownNotice(
 	// the resolved value. An unresolved read counts as no notice, which keeps
 	// the tour from pointing at a missing step target.
 	return (
-		select( MODULES_ANALYTICS_4 ).isSiteGoalWidgetRenderable( goalType ) ===
-			true &&
+		select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+			goalType
+		) === true &&
 		select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
 			SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE[ goalType ]
 		) === false &&

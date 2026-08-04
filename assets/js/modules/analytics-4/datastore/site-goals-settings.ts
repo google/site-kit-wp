@@ -58,7 +58,7 @@ const { setErrorForAction, clearActionError } = errorStoreActions;
  * pairs `ECOMMERCE_EVENT_NAMES` / `LEAD_EVENT_NAMES` with the same categories
  * when it populates the site-wide `activeWidgets` list.
  */
-const SITE_GOAL_WIDGET_EVENTS: Record< string, string[] > = {
+const SITE_GOALS_WIDGET_EVENTS: Record< string, string[] > = {
 	[ GOAL_TYPES.ECOMMERCE ]: CONVERSION_REPORTING_ECOMMERCE_EVENTS,
 	[ GOAL_TYPES.LEAD ]: CONVERSION_REPORTING_LEAD_EVENTS,
 };
@@ -365,7 +365,7 @@ const baseSelectors = {
 	 * category stays in it after the provider is deactivated.
 	 *
 	 * To decide whether a widget actually renders, use
-	 * `isSiteGoalWidgetRenderable()` instead, which also accounts for the events
+	 * `isSiteGoalsWidgetRenderable()` instead, which also accounts for the events
 	 * still being detected.
 	 *
 	 * @since 1.182.0
@@ -374,7 +374,7 @@ const baseSelectors = {
 	 * @param {string} category Widget category slug (e.g. 'lead' or 'ecommerce').
 	 * @return {boolean|undefined} `true` if active, `false` if not, `undefined` if not loaded.
 	 */
-	isSiteGoalWidgetActive: createRegistrySelector(
+	isSiteGoalsWidgetActive: createRegistrySelector(
 		( select: Select ) =>
 			( _state: State, category: string ): boolean | undefined => {
 				const settings =
@@ -403,17 +403,17 @@ const baseSelectors = {
 	 * @param {string} category Widget category slug (e.g. 'lead' or 'ecommerce').
 	 * @return {boolean|undefined} `true` if the widget renders, `false` if not, `undefined` if not loaded.
 	 */
-	isSiteGoalWidgetRenderable: createRegistrySelector(
+	isSiteGoalsWidgetRenderable: createRegistrySelector(
 		( select: Select ) =>
 			( _state: State, category: string ): boolean | undefined => {
-				const events = SITE_GOAL_WIDGET_EVENTS[ category ];
+				const events = SITE_GOALS_WIDGET_EVENTS[ category ];
 
 				if ( ! events ) {
 					return false;
 				}
 
 				const isActive =
-					select( MODULES_ANALYTICS_4 ).isSiteGoalWidgetActive(
+					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetActive(
 						category
 					);
 				const hasEvents =

@@ -276,10 +276,10 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				] );
 
 				return (
-					select( MODULES_ANALYTICS_4 ).isSiteGoalWidgetRenderable(
+					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
 						GOAL_TYPES.ECOMMERCE
 					) === true ||
-					select( MODULES_ANALYTICS_4 ).isSiteGoalWidgetRenderable(
+					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
 						GOAL_TYPES.LEAD
 					) === true
 				);
