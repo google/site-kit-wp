@@ -102,7 +102,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			const params = {
 				displayName: 'Example Publication',
 				languageCode: 'en',
-				countryCode: 'US',
+				regionCode: 'US',
 			};
 
 			it( 'should require publication details', () => {

@@ -94,7 +94,7 @@ const fetchGetPublicationsStore = createFetchStore( {
 
 const fetchCreatePublicationStore = createFetchStore( {
 	baseName: 'createPublication',
-	controlCallback: ( { displayName, languageCode, countryCode } ) =>
+	controlCallback: ( { displayName, languageCode, regionCode } ) =>
 		set(
 			'modules',
 			MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -102,15 +102,15 @@ const fetchCreatePublicationStore = createFetchStore( {
 			{
 				displayName,
 				languageCode,
-				countryCode,
+				regionCode,
 			}
 		),
-	argsToParams: ( { displayName, languageCode, countryCode } = {} ) => ( {
+	argsToParams: ( { displayName, languageCode, regionCode } = {} ) => ( {
 		displayName,
 		languageCode,
-		countryCode,
+		regionCode,
 	} ),
-	validateParams: ( { displayName, languageCode, countryCode } = {} ) => {
+	validateParams: ( { displayName, languageCode, regionCode } = {} ) => {
 		invariant(
 			typeof displayName === 'string' && displayName.length > 0,
 			'displayName is required and must be a string.'
@@ -120,8 +120,8 @@ const fetchCreatePublicationStore = createFetchStore( {
 			'languageCode is required and must be a string.'
 		);
 		invariant(
-			typeof countryCode === 'string' && countryCode.length > 0,
-			'countryCode is required and must be a string.'
+			typeof regionCode === 'string' && regionCode.length > 0,
+			'regionCode is required and must be a string.'
 		);
 	},
 	isAction: true,
@@ -306,7 +306,7 @@ const baseActions = {
 	 * @param {Object} params              Publication creation parameters.
 	 * @param {string} params.displayName  Publication display name.
 	 * @param {string} params.languageCode Publication language code.
-	 * @param {string} params.countryCode  Publication country code.
+	 * @param {string} params.regionCode   Publication region code.
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	createPublication: createValidatedAction(
@@ -315,7 +315,7 @@ const baseActions = {
 				isPlainObject( params ),
 				'Publication details are required.'
 			);
-			const { displayName, languageCode, countryCode } = params;
+			const { displayName, languageCode, regionCode } = params;
 
 			invariant(
 				typeof displayName === 'string' && displayName.length > 0,
@@ -326,8 +326,8 @@ const baseActions = {
 				'languageCode is required and must be a string.'
 			);
 			invariant(
-				typeof countryCode === 'string' && countryCode.length > 0,
-				'countryCode is required and must be a string.'
+				typeof regionCode === 'string' && regionCode.length > 0,
+				'regionCode is required and must be a string.'
 			);
 		},
 		function* ( params ) {
