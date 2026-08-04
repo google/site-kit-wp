@@ -68,11 +68,13 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 	}
 
 	const BOTH_WIDGETS: string[] = [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ];
-	// One event per goal type, so both widgets render by default.
+	/**
+	 * One event per goal type, so both widgets render by default.
+	 */
 	const BOTH_WIDGET_EVENTS: string[] = [ 'purchase', 'contact' ];
 
 	function provideActiveWidgets(
-		activeWidgets: string[] = BOTH_WIDGETS
+		activeWidgets: NoticeState[ 'activeWidgets' ] = BOTH_WIDGETS
 	): void {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -80,8 +82,8 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 	}
 
 	function provideCustomDimensions(
-		availableCustomDimensions: string[] = [],
-		detectedEvents: string[] = BOTH_WIDGET_EVENTS
+		availableCustomDimensions: NoticeState[ 'availableCustomDimensions' ] = [],
+		detectedEvents: NoticeState[ 'detectedEvents' ] = BOTH_WIDGET_EVENTS
 	): void {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			availableCustomDimensions,
@@ -89,7 +91,9 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 		} );
 	}
 
-	function provideDismissedItems( dismissedItems: string[] = [] ): void {
+	function provideDismissedItems(
+		dismissedItems: NoticeState[ 'dismissedItems' ] = []
+	): void {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( dismissedItems );
