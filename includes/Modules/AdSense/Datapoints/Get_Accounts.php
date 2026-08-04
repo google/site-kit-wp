@@ -15,7 +15,6 @@ namespace Google\Site_Kit\Modules\AdSense\Datapoints;
 use Google\Site_Kit\Modules\AdSense\Datapoints\AdSense_Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Core\Util\Sort;
 
 /**
  * Class for the accounts listing datapoint.

@@ -15,6 +15,7 @@ namespace Google\Site_Kit\Modules\AdSense\Datapoints;
 use Google\Site_Kit\Modules\AdSense\Datapoints\AdSense_Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Util\Date;
 use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Metrics_Exception;
 use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Dimensions_Exception;
 use WP_Error;
@@ -29,52 +30,12 @@ use WP_Error;
 class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 
 	/**
-	 * Callable to get date range.
-	 *
-	 * @since n.e.x.t
-	 * @var callable
-	 */
-	private $date_range_to_dates;
-
-	/**
-	 * Callable to parse string list.
-	 *
-	 * @since n.e.x.t
-	 * @var callable
-	 */
-	private $parse_string_list;
-
-	/**
 	 * Callable to check if shared data request.
 	 *
 	 * @since n.e.x.t
 	 * @var callable
 	 */
 	private $is_shared_data_request;
-
-	/**
-	 * Callable to validate shared report metrics.
-	 *
-	 * @since n.e.x.t
-	 * @var callable
-	 */
-	private $validate_shared_report_metrics;
-
-	/**
-	 * Callable to validate shared report dimensions.
-	 *
-	 * @since n.e.x.t
-	 * @var callable
-	 */
-	private $validate_shared_report_dimensions;
-
-	/**
-	 * Callable to parse earnings orderby.
-	 *
-	 * @since n.e.x.t
-	 * @var callable
-	 */
-	private $parse_earnings_orderby;
 
 	/**
 	 * Callable to create AdSense earning data request.
@@ -93,23 +54,8 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 	 */
 	public function __construct( array $definition ) {
 		parent::__construct( $definition );
-		if ( isset( $definition['date_range_to_dates'] ) ) {
-			$this->date_range_to_dates = $definition['date_range_to_dates'];
-		}
-		if ( isset( $definition['parse_string_list'] ) ) {
-			$this->parse_string_list = $definition['parse_string_list'];
-		}
 		if ( isset( $definition['is_shared_data_request'] ) ) {
 			$this->is_shared_data_request = $definition['is_shared_data_request'];
-		}
-		if ( isset( $definition['validate_shared_report_metrics'] ) ) {
-			$this->validate_shared_report_metrics = $definition['validate_shared_report_metrics'];
-		}
-		if ( isset( $definition['validate_shared_report_dimensions'] ) ) {
-			$this->validate_shared_report_dimensions = $definition['validate_shared_report_dimensions'];
-		}
-		if ( isset( $definition['parse_earnings_orderby'] ) ) {
-			$this->parse_earnings_orderby = $definition['parse_earnings_orderby'];
 		}
 		if ( isset( $definition['create_adsense_earning_data_request'] ) ) {
 			$this->create_adsense_earning_data_request = $definition['create_adsense_earning_data_request'];
@@ -129,7 +75,7 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 		$end_date   = $data_request->data['endDate'] ?? '';
 
 		if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
-			$dates = call_user_func( $this->date_range_to_dates, 'last-28-days' );
+			$dates = $this->date_range_to_dates( 'last-28-days' );
 			if ( is_wp_error( $dates ) ) {
 				return $dates;
 			}
@@ -142,11 +88,11 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 			'end_date'   => $end_date,
 		);
 
-		$metrics = call_user_func( $this->parse_string_list, $data_request->data['metrics'] ?? '' );
+		$metrics = $this->parse_string_list( $data_request->data['metrics'] ?? '' );
 		if ( ! empty( $metrics ) ) {
 			if ( call_user_func( $this->is_shared_data_request, $data_request ) ) {
 				try {
-					call_user_func( $this->validate_shared_report_metrics, $metrics );
+					$this->validate_shared_report_metrics( $metrics );
 				} catch ( Invalid_Report_Metrics_Exception $exception ) {
 					return new WP_Error(
 						'invalid_adsense_report_metrics',
@@ -158,11 +104,11 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 			$args['metrics'] = $metrics;
 		}
 
-		$dimensions = call_user_func( $this->parse_string_list, $data_request->data['dimensions'] ?? '' );
+		$dimensions = $this->parse_string_list( $data_request->data['dimensions'] ?? '' );
 		if ( ! empty( $dimensions ) ) {
 			if ( call_user_func( $this->is_shared_data_request, $data_request ) ) {
 				try {
-					call_user_func( $this->validate_shared_report_dimensions, $dimensions );
+					$this->validate_shared_report_dimensions( $dimensions );
 				} catch ( Invalid_Report_Dimensions_Exception $exception ) {
 					return new WP_Error(
 						'invalid_adsense_report_dimensions',
@@ -174,7 +120,7 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 			$args['dimensions'] = $dimensions;
 		}
 
-		$orderby = call_user_func( $this->parse_earnings_orderby, $data_request->data['orderby'] ?? '' );
+		$orderby = $this->parse_earnings_orderby( $data_request->data['orderby'] ?? '' );
 		if ( ! empty( $orderby ) ) {
 			$args['sort'] = $orderby;
 		}
@@ -197,5 +143,198 @@ class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
 	 */
 	public function parse_response( $response, Data_Request $data ) {
 		return $response;
+	}
+
+	/**
+	 * Parses the string list into an array of strings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string|array $items Items to parse.
+	 * @return array An array of string items.
+	 */
+	private function parse_string_list( $items ) {
+		if ( is_string( $items ) ) {
+			$items = explode( ',', $items );
+		}
+
+		if ( ! is_array( $items ) || empty( $items ) ) {
+			return array();
+		}
+
+		$items = array_map(
+			function ( $item ) {
+				if ( ! is_string( $item ) ) {
+					return false;
+				}
+
+				$item = trim( $item );
+				if ( empty( $item ) ) {
+					return false;
+				}
+
+				return $item;
+			},
+			$items
+		);
+
+		$items = array_filter( $items );
+		$items = array_values( $items );
+
+		return $items;
+	}
+
+	/**
+	 * Gets an array of dates for the given named date range.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $date_range Named date range.
+	 * @return array|WP_Error Array of [startDate, endDate] or WP_Error if invalid named range.
+	 */
+	private function date_range_to_dates( $date_range ) {
+		switch ( $date_range ) {
+			case 'today':
+				return array(
+					gmdate( 'Y-m-d', strtotime( 'today' ) ),
+					gmdate( 'Y-m-d', strtotime( 'today' ) ),
+				);
+			// Intentional fallthrough.
+			case 'last-7-days':
+			case 'last-14-days':
+			case 'last-28-days':
+			case 'last-90-days':
+				return Date::parse_date_range( $date_range );
+		}
+
+		return new WP_Error( 'invalid_date_range', __( 'Invalid date range.', 'google-site-kit' ) );
+	}
+
+	/**
+	 * Parses the orderby value of the data request into an array of earning orderby format.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array|null $orderby Data request orderby value.
+	 * @return string[] An array of reporting orderby strings.
+	 */
+	private function parse_earnings_orderby( $orderby ) {
+		if ( empty( $orderby ) || ! is_array( $orderby ) ) {
+			return array();
+		}
+
+		$results = array_map(
+			function ( $order_def ) {
+				$order_def = array_merge(
+					array(
+						'fieldName' => '',
+						'sortOrder' => '',
+					),
+					(array) $order_def
+				);
+
+				if ( empty( $order_def['fieldName'] ) || empty( $order_def['sortOrder'] ) ) {
+					return null;
+				}
+
+				return ( 'ASCENDING' === $order_def['sortOrder'] ? '+' : '-' ) . $order_def['fieldName'];
+			},
+			// When just object is passed we need to convert it to an array of objects.
+			wp_is_numeric_array( $orderby ) ? $orderby : array( $orderby )
+		);
+
+		$results = array_filter( $results );
+		$results = array_values( $results );
+
+		return $results;
+	}
+
+	/**
+	 * Validates the report metrics for a shared request.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string[] $metrics The metrics to validate.
+	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
+	 */
+	private function validate_shared_report_metrics( $metrics ) {
+		$valid_metrics = apply_filters(
+			'googlesitekit_shareable_adsense_metrics',
+			array(
+				'ESTIMATED_EARNINGS',
+				'IMPRESSIONS',
+				'PAGE_VIEWS_CTR',
+				'PAGE_VIEWS_RPM',
+			)
+		);
+
+		$invalid_metrics = array_diff( $metrics, $valid_metrics );
+
+		if ( count( $invalid_metrics ) > 0 ) {
+			$message = count( $invalid_metrics ) > 1 ? sprintf(
+				/* translators: %s: is replaced with a comma separated list of the invalid metrics. */
+				__(
+					'Unsupported metrics requested: %s',
+					'google-site-kit'
+				),
+				join(
+					/* translators: used between list items, there is a space after the comma. */
+					__( ', ', 'google-site-kit' ),
+					$invalid_metrics
+				)
+			) : sprintf(
+				/* translators: %s: is replaced with the invalid metric. */
+				__(
+					'Unsupported metric requested: %s',
+					'google-site-kit'
+				),
+				$invalid_metrics[0]
+			);
+
+			throw new Invalid_Report_Metrics_Exception( $message );
+		}
+	}
+
+	/**
+	 * Validates the report dimensions for a shared request.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string[] $dimensions The dimensions to validate.
+	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.
+	 */
+	private function validate_shared_report_dimensions( $dimensions ) {
+		$valid_dimensions = apply_filters(
+			'googlesitekit_shareable_adsense_dimensions',
+			array(
+				'DATE',
+			)
+		);
+
+		$invalid_dimensions = array_diff( $dimensions, $valid_dimensions );
+
+		if ( count( $invalid_dimensions ) > 0 ) {
+			$message = count( $invalid_dimensions ) > 1 ? sprintf(
+				/* translators: %s: is replaced with a comma separated list of the invalid dimensions. */
+				__(
+					'Unsupported dimensions requested: %s',
+					'google-site-kit'
+				),
+				join(
+					/* translators: used between list items, there is a space after the comma. */
+					__( ', ', 'google-site-kit' ),
+					$invalid_dimensions
+				)
+			) : sprintf(
+				/* translators: %s: is replaced with the invalid dimension. */
+				__(
+					'Unsupported dimension requested: %s',
+					'google-site-kit'
+				),
+				$invalid_dimensions[0]
+			);
+
+			throw new Invalid_Report_Dimensions_Exception( $message );
+		}
 	}
 }

@@ -24,19 +24,13 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
-use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
-use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Metrics_Exception;
-use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Dimensions_Exception;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
-use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
-use Google\Site_Kit\Core\Util\Date;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
-use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Tag;
 use Google\Site_Kit\Modules\AdSense\AMP_Tag;
@@ -78,7 +72,6 @@ use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Web_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use WP_Error;
-use WP_REST_Response;
 
 /**
  * Class representing the AdSense module.
@@ -365,23 +358,8 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 					},
 					'shareable'                           => true,
 					'module'                              => $this,
-					'date_range_to_dates'                 => function ( $date_range ) {
-						return $this->date_range_to_dates( $date_range );
-					},
-					'parse_string_list'                   => function ( $string_list ) {
-						return $this->parse_string_list( $string_list );
-					},
 					'is_shared_data_request'              => function ( $data_request ) {
 						return $this->is_shared_data_request( $data_request );
-					},
-					'validate_shared_report_metrics'      => function ( $metrics ) {
-						return $this->validate_shared_report_metrics( $metrics );
-					},
-					'validate_shared_report_dimensions'   => function ( $dimensions ) {
-						return $this->validate_shared_report_dimensions( $dimensions );
-					},
-					'parse_earnings_orderby'              => function ( $orderby ) {
-						return $this->parse_earnings_orderby( $orderby );
 					},
 					'create_adsense_earning_data_request' => function ( $args ) {
 						return $this->create_adsense_earning_data_request( $args );
@@ -409,52 +387,6 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 				)
 			),
 		);
-	}
-
-	/**
-	 * Parses a response for the given datapoint.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param Data_Request $data Data request object.
-	 * @param mixed        $response Request response.
-	 *
-	 * @return mixed Parsed response data on success, or WP_Error on failure.
-	 */
-	protected function parse_data_response( Data_Request $data, $response ) {
-		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:accounts':
-				$accounts = array_filter( $response->getAccounts(), array( self::class, 'is_account_not_closed' ) );
-				return Sort::case_insensitive_list_sort(
-					array_map( array( self::class, 'filter_account_with_ids' ), $accounts ),
-					'displayName'
-				);
-			case 'GET:adunits':
-				return array_map( array( self::class, 'filter_adunit_with_ids' ), $response->getAdUnits() );
-			case 'GET:alerts':
-				return $response->getAlerts();
-			case 'GET:clients':
-				return array_map( array( self::class, 'filter_client_with_ids' ), $response->getAdClients() );
-			case 'GET:report':
-				return $response;
-			case 'GET:sites':
-				return $response->getSites();
-			case 'POST:sync-ad-blocking-recovery-tags':
-				$this->ad_blocking_recovery_tag->set(
-					array(
-						'tag'                   => $response->getTag(),
-						'error_protection_code' => $response->getErrorProtectionCode(),
-					)
-				);
-
-				return new WP_REST_Response(
-					array(
-						'success' => true,
-					)
-				);
-		}
-
-		return parent::parse_data_response( $data, $response );
 	}
 
 	/**
@@ -499,70 +431,6 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 		return add_query_arg( $query, $url );
 	}
 
-	/**
-	 * Parses the orderby value of the data request into an array of earning orderby format.
-	 *
-	 * @since 1.15.0
-	 *
-	 * @param array|null $orderby Data request orderby value.
-	 * @return string[] An array of reporting orderby strings.
-	 */
-	protected function parse_earnings_orderby( $orderby ) {
-		if ( empty( $orderby ) || ! is_array( $orderby ) ) {
-			return array();
-		}
-
-		$results = array_map(
-			function ( $order_def ) {
-				$order_def = array_merge(
-					array(
-						'fieldName' => '',
-						'sortOrder' => '',
-					),
-					(array) $order_def
-				);
-
-				if ( empty( $order_def['fieldName'] ) || empty( $order_def['sortOrder'] ) ) {
-					return null;
-				}
-
-				return ( 'ASCENDING' === $order_def['sortOrder'] ? '+' : '-' ) . $order_def['fieldName'];
-			},
-			// When just object is passed we need to convert it to an array of objects.
-			wp_is_numeric_array( $orderby ) ? $orderby : array( $orderby )
-		);
-
-		$results = array_filter( $results );
-		$results = array_values( $results );
-
-		return $results;
-	}
-
-	/**
-	 * Gets an array of dates for the given named date range.
-	 *
-	 * @param string $date_range Named date range.
-	 *                           E.g. 'last-28-days'.
-	 *
-	 * @return array|WP_Error Array of [startDate, endDate] or WP_Error if invalid named range.
-	 */
-	private function date_range_to_dates( $date_range ) {
-		switch ( $date_range ) {
-			case 'today':
-				return array(
-					gmdate( 'Y-m-d', strtotime( 'today' ) ),
-					gmdate( 'Y-m-d', strtotime( 'today' ) ),
-				);
-			// Intentional fallthrough.
-			case 'last-7-days':
-			case 'last-14-days':
-			case 'last-28-days':
-			case 'last-90-days':
-				return Date::parse_date_range( $date_range );
-		}
-
-		return new WP_Error( 'invalid_date_range', __( 'Invalid date range.', 'google-site-kit' ) );
-	}
 
 	/**
 	 * Creates a new AdSense earning request for the current account, site and given arguments.
@@ -926,96 +794,6 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 		return true;
 	}
 
-	/**
-	 * Validates the report metrics for a shared request.
-	 *
-	 * @since 1.83.0
-	 * @since 1.98.0 Renamed the method, and moved the check for being a shared request to the caller.
-	 *
-	 * @param string[] $metrics The metrics to validate.
-	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
-	 */
-	protected function validate_shared_report_metrics( $metrics ) {
-		$valid_metrics = apply_filters(
-			'googlesitekit_shareable_adsense_metrics',
-			array(
-				'ESTIMATED_EARNINGS',
-				'IMPRESSIONS',
-				'PAGE_VIEWS_CTR',
-				'PAGE_VIEWS_RPM',
-			)
-		);
-
-		$invalid_metrics = array_diff( $metrics, $valid_metrics );
-
-		if ( count( $invalid_metrics ) > 0 ) {
-			$message = count( $invalid_metrics ) > 1 ? sprintf(
-				/* translators: %s: is replaced with a comma separated list of the invalid metrics. */
-				__(
-					'Unsupported metrics requested: %s',
-					'google-site-kit'
-				),
-				join(
-					/* translators: used between list items, there is a space after the comma. */
-					__( ', ', 'google-site-kit' ),
-					$invalid_metrics
-				)
-			) : sprintf(
-				/* translators: %s: is replaced with the invalid metric. */
-				__(
-					'Unsupported metric requested: %s',
-					'google-site-kit'
-				),
-				$invalid_metrics[0]
-			);
-
-			throw new Invalid_Report_Metrics_Exception( $message );
-		}
-	}
-
-	/**
-	 * Validates the report dimensions for a shared request.
-	 *
-	 * @since 1.83.0
-	 * @since 1.98.0 Renamed the method, and moved the check for being a shared request to the caller.
-	 *
-	 * @param string[] $dimensions The dimensions to validate.
-	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.
-	 */
-	protected function validate_shared_report_dimensions( $dimensions ) {
-		$valid_dimensions = apply_filters(
-			'googlesitekit_shareable_adsense_dimensions',
-			array(
-				'DATE',
-			)
-		);
-
-		$invalid_dimensions = array_diff( $dimensions, $valid_dimensions );
-
-		if ( count( $invalid_dimensions ) > 0 ) {
-			$message = count( $invalid_dimensions ) > 1 ? sprintf(
-				/* translators: %s: is replaced with a comma separated list of the invalid dimensions. */
-				__(
-					'Unsupported dimensions requested: %s',
-					'google-site-kit'
-				),
-				join(
-					/* translators: used between list items, there is a space after the comma. */
-					__( ', ', 'google-site-kit' ),
-					$invalid_dimensions
-				)
-			) : sprintf(
-				/* translators: %s: is replaced with the invalid dimension. */
-				__(
-					'Unsupported dimension requested: %s',
-					'google-site-kit'
-				),
-				$invalid_dimensions[0]
-			);
-
-			throw new Invalid_Report_Dimensions_Exception( $message );
-		}
-	}
 
 	/**
 	 * Gets the Ad Blocking Recovery setup status label.

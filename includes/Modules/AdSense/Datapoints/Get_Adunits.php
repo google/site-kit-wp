@@ -12,7 +12,7 @@
 
 namespace Google\Site_Kit\Modules\AdSense\Datapoints;
 
-use GoogleSite_KitModulesAdSenseDatapointsAdSense_Datapoint;
+use Google\Site_Kit\Modules\AdSense\Datapoints\AdSense_Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\AdSense;
