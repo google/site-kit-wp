@@ -7,7 +7,11 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  *
- * @var float|null $value The percentage change value.
+ * @var float $value The percentage change value. Callers must guard against
+ *                    `null` and skip rendering this part entirely when no
+ *                    comparison is available, rather than passing a
+ *                    default of `0`, which would render a misleading `0%`
+ *                    badge.
  */
 
 $change_value = (float) $value;

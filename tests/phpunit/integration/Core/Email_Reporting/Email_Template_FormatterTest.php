@@ -135,6 +135,81 @@ class Email_Template_FormatterTest extends TestCase {
 	}
 
 	/**
+	 * @dataProvider data_parse_change_value
+	 */
+	public function test_parse_change_value( $locale, $change, $expected ) {
+		$method = new \ReflectionMethod( Email_Template_Formatter::class, 'parse_change_value' );
+		$method->setAccessible( true );
+
+		$result = $this->with_locale_number_format(
+			$locale,
+			function () use ( $method, $change ) {
+				return $method->invoke( $this->formatter, $change );
+			}
+		);
+
+		$this->assertSame( $expected, $result, "Expected '$change' to parse to the given value under the $locale number format." );
+	}
+
+	public function data_parse_change_value() {
+		$cases  = array();
+		$values = array(
+			'6.52%'  => 6.52,
+			'-0.85%' => -0.85,
+			'6,52%'  => 6.52,
+			'-0,85%' => -0.85,
+			'0%'     => 0.0,
+		);
+
+		foreach ( array( 'en_US', 'es_CO', 'de_DE' ) as $locale ) {
+			foreach ( $values as $change => $expected ) {
+				$cases[ "$locale: $change" ] = array( $locale, $change, $expected );
+			}
+
+			$cases[ "$locale: null" ]         = array( $locale, null, null );
+			$cases[ "$locale: empty string" ] = array( $locale, '', null );
+			$cases[ "$locale: unparseable" ]  = array( $locale, 'n/a%', null );
+		}
+
+		return $cases;
+	}
+
+	/**
+	 * Runs a callback with the global `$wp_locale` number format set to match
+	 * the given locale's convention.
+	 *
+	 * `es_CO` and `de_DE` are not installed as real test locales, so this
+	 * simulates their decimal-comma, period-thousands number format directly
+	 * rather than relying on `switch_to_locale()`, which silently no-ops for
+	 * locales without an installed translation file.
+	 *
+	 * @param string   $locale   Locale name (en_US, es_CO, or de_DE).
+	 * @param callable $callback Callback to run under the simulated locale.
+	 * @return mixed The callback's return value.
+	 */
+	private function with_locale_number_format( $locale, callable $callback ) {
+		global $wp_locale;
+
+		$original = $wp_locale->number_format;
+
+		$wp_locale->number_format = in_array( $locale, array( 'es_CO', 'de_DE' ), true )
+			? array(
+				'decimal_point' => ',',
+				'thousands_sep' => '.',
+			)
+			: array(
+				'decimal_point' => '.',
+				'thousands_sep' => ',',
+			);
+
+		try {
+			return $callback();
+		} finally {
+			$wp_locale->number_format = $original;
+		}
+	}
+
+	/**
 	 * Gets a minimal valid date range.
 	 *
 	 * @return array

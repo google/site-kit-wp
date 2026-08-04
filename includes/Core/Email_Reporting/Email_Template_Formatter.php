@@ -221,10 +221,20 @@ class Email_Template_Formatter {
 	/**
 	 * Parses a change value into float.
 	 *
+	 * Handles both the canonical period-decimal percentage strings the
+	 * section builder emits (e.g. `6.52%`) and locale-formatted ones that
+	 * may still arrive from previously stored section data under a
+	 * decimal-comma locale (e.g. `6,52%` for `es_CO`/`de_DE`). The decimal
+	 * separator is identified structurally — the last `.` or `,` followed
+	 * by exactly two digits, since trend percentages are always formatted
+	 * with two decimal places — rather than assumed from the active
+	 * locale, which would misread an already-canonical value under a
+	 * decimal-comma locale.
+	 *
 	 * @since 1.170.0
 	 *
 	 * @param mixed $change Change value.
-	 * @return float|null Parsed change.
+	 * @return float|null Parsed change, or null when missing or unparseable.
 	 */
 	private function parse_change_value( $change ) {
 		if ( null === $change || '' === $change ) {
@@ -232,7 +242,12 @@ class Email_Template_Formatter {
 		}
 
 		if ( is_string( $change ) ) {
-			$change = str_replace( '%', '', $change );
+			$change = trim( str_replace( '%', '', $change ) );
+
+			if ( preg_match( '/^([+-]?[\d.,]*)[.,](\d{2})$/', $change, $matches ) ) {
+				$integer_part = str_replace( array( '.', ',' ), '', $matches[1] );
+				$change       = $integer_part . '.' . $matches[2];
+			}
 		}
 
 		if ( ! is_numeric( $change ) ) {

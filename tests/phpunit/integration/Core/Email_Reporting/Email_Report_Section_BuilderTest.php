@@ -126,6 +126,69 @@ class Email_Report_Section_BuilderTest extends TestCase {
 		$this->assertSame( $expected_date_range, $ga4_section->get_date_range(), 'GA4 date range should come from email log meta.' );
 	}
 
+	public function test_build_sections__trends_use_canonical_period_decimal_format_under_comma_locale() {
+		global $wp_locale;
+
+		$original_number_format   = $wp_locale->number_format;
+		$wp_locale->number_format = array(
+			'decimal_point' => ',',
+			'thousands_sep' => '.',
+		);
+
+		try {
+			$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+			$builder = new Email_Report_Section_Builder( $context );
+
+			$payloads = array(
+				array(
+					'total_visitors' => array(
+						array(
+							'dimensionHeaders' => array(
+								array( 'name' => 'dateRange' ),
+							),
+							'metricHeaders'    => array(
+								array(
+									'name' => 'totalUsers',
+									'type' => 'TYPE_INTEGER',
+								),
+							),
+							'rows'             => array(
+								array(
+									'dimensionValues' => array(
+										array( 'value' => 'date_range_0' ),
+									),
+									'metricValues'    => array(
+										array( 'value' => '10652' ),
+									),
+								),
+								array(
+									'dimensionValues' => array(
+										array( 'value' => 'date_range_1' ),
+									),
+									'metricValues'    => array(
+										array( 'value' => '10000' ),
+									),
+								),
+							),
+							'rowCount'         => 2,
+						),
+					),
+				),
+			);
+
+			// `es_CO` is not an installed test locale, but `normalize_trends()`
+			// must not localize the trend regardless of what the active
+			// locale's number format looks like (simulated above), so the
+			// locale name here only documents intent.
+			$sections = $builder->build_sections( 'analytics-4', $payloads, 'es_CO' );
+			$section  = $sections[0];
+
+			$this->assertSame( array( '6.52%' ), $section->get_trends(), 'Trend should use a canonical period-decimal format even when the active locale formats numbers with a decimal comma.' );
+		} finally {
+			$wp_locale->number_format = $original_number_format;
+		}
+	}
+
 	public function test_build_sections__returns_wp_error_for_search_console_error_payload() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$builder = new Email_Report_Section_Builder( $context );
