@@ -68,7 +68,7 @@ flowchart TD
     HOOKS --> BOOT["one-shot bootstrap on<br/>googlesitekit_analytics-4_init_tag / googlesitekit_ads_init_tag<br/>(fired from register_tag() on template_redirect)"]
     BOOT --> ADD["register_content_hooks()"]
     ADD --> H1["the_content → end-of-content anchor (single posts)"]
-    ADD --> H2["embed_oembed_html / block render → enablejsapi=1 on YouTube; tag Vimeo iframes"]
+    ADD --> H2["embed_oembed_html / block render → enablejsapi=1 on YouTube; detect Vimeo iframes (no rewrite)"]
     ADD --> H3["wp_footer → window._googlesitekit.contentEvents = { postID, wordCount, ... }"]
     ADD --> H4["wp_print_footer_scripts → Vimeo Player SDK (only if a Vimeo iframe was rendered)"]
 ```
@@ -118,7 +118,7 @@ A new class `Content_Events` in `includes/Core/Conversion_Tracking/Conversion_Ev
 | `get_category()` | New constant `CATEGORY_CONTENT = 'content'` (added to the base class). |
 | `get_event_names()` | Returns `array()` — see [Keeping content events separate](#keeping-content-events-separate). |
 | `register_script()` | Registers/returns a `Script` for `googlesitekit-events-provider-content-events` (`execution => 'defer'`), mirroring the existing providers. |
-| `register_hooks()` | Registers a one‑shot bootstrap on `googlesitekit_analytics-4_init_tag` / `googlesitekit_ads_init_tag`; the bootstrap adds the `the_content` anchor filter, the `embed_oembed_html`/block YouTube+Vimeo filters, the per‑page inline‑config output, and the conditional Vimeo SDK enqueue. |
+| `register_hooks()` | Registers a one‑shot bootstrap on `googlesitekit_analytics-4_init_tag` / `googlesitekit_ads_init_tag`; the bootstrap adds the `the_content` anchor filter, the `embed_oembed_html`/block embed filter (YouTube rewrite + Vimeo detection), the per‑page inline‑config output, and the conditional Vimeo SDK enqueue. |
 
 ### **Keeping content events separate** {#keeping-content-events-separate}
 
@@ -203,13 +203,15 @@ Two hook‑level consequences follow directly from this gate:
 
 - **Do not filter `oembed_result`** (the design previously listed it alongside `embed_oembed_html`). WP core persists the value returned from `oembed_result` into the `_oembed_{hash}` post‑meta cache, and that filter also runs in admin/REST requests (post save, editor preview) where no tag renders and the gate never opens. Rewriting there would (a) bake `enablejsapi=1` into the database so it outlives disabling Conversion Tracking, and (b) make the outcome depend on which request happened to warm the cache. The rewrite therefore runs **only** on render‑time, uncached filters: `embed_oembed_html` plus the core embed block render for block themes.
 - **Enqueue the Vimeo SDK from the footer.** Which iframes exist is only known once `the_content` has run, i.e. *after* `wp_enqueue_scripts` (priority 30 included). The conditional SDK enqueue therefore happens on `wp_print_footer_scripts`/`wp_footer`, not `wp_enqueue_scripts`. (Pre‑scanning `get_post()->post_content` at `wp_enqueue_scripts` would double‑parse the content and still miss widgets and template parts.)
+- **Don't load a second copy of the SDK.** A Vimeo embed does *not* bring `player.js` with it — the iframe loads Vimeo's player app inside its own cross‑origin document, while `player.js` is a parent‑page wrapper over the `postMessage` protocol, and WordPress oEmbed emits only the bare `<iframe>`. But it can already be present: Vimeo's copy‑paste embed code from the Share dialog includes `<script src="https://player.vimeo.com/api/player.js">`, and some video plugins/themes ship it. `content-events.js` therefore reuses `window.Vimeo.Player` when it already exists and only waits on our own handle otherwise, so a hand‑pasted embed doesn't end up with two copies loaded.
 
 ### **PHP hooks (`register_hooks`)**
 
 - **End‑of‑content anchor (read_article):** on `is_singular( 'post' )`, a `the_content` filter appends an invisible marker (e.g. `<span id="googlesitekit-end-of-content" aria-hidden="true"></span>`) so the frontend can observe it precisely. The frontend falls back to a scroll‑depth threshold when the anchor is absent (page builders/patterns that bypass `the_content`).
 - **Per‑page config:** an inline script (attached `'before'` the provider handle, exactly like WooCommerce's `window._googlesitekit.wcdata`) publishes `window._googlesitekit.contentEvents = { postID, wordCount, readingSpeedWPM, readThresholdPct, readMinSeconds, isSinglePost }`. Word count is computed server‑side from the post content; the reading‑time tunables come from a single PHP constants block mirroring the JS one.
 - **YouTube `enablejsapi=1`:** a filter on `embed_oembed_html` (and the core embed block render for block themes) rewrites YouTube iframe `src` to add `enablejsapi=1`, which unlocks GA4 Enhanced Measurement's native `video_*` events. We only enable them — GA4 sends them. `oembed_result` is deliberately **not** used because its output is persisted in the oEmbed post‑meta cache.
-- **Vimeo detection + SDK enqueue:** the same filter path tags Vimeo iframes (and enables their JS API), and when at least one Vimeo iframe was rendered the provider enqueues the Vimeo Player SDK (`@vimeo/player`) on `wp_print_footer_scripts` — the iframes are only known after `the_content` has run.
+- **Vimeo detection (no rewrite):** the same filter path *detects* `player.vimeo.com` iframes and flips a flag; unlike YouTube it does **not** modify their `src`. Vimeo has no `enablejsapi=1` equivalent — the `postMessage` API is on by default for every `player.vimeo.com` embed. Detection‑only keeps us out of rewriting third‑party iframe URLs on that path.
+- **Vimeo SDK enqueue:** when at least one Vimeo iframe was rendered the provider enqueues the Vimeo Player SDK on `wp_print_footer_scripts` — the iframes are only known after `the_content` has run.
 
 ### **Frontend script (`content-events.js`)**
 
@@ -270,7 +272,7 @@ The anchor (via `the_content`) is precise but bypassed by some page builders/blo
 
 ### **Vimeo: custom SDK build vs. skip**
 
-Enhanced Measurement cannot track Vimeo by any filter/parameter, so we build it with the official Player SDK. Other providers (Wistia, self‑hosted `<video>`) are out of scope for now.
+Enhanced Measurement cannot track Vimeo by any filter/parameter, so we build it with the official Player SDK, loaded from Vimeo's CDN (see [Dependencies](#dependencies)). Other providers (Wistia, self‑hosted `<video>`) are out of scope for now.
 
 ### **Single `contact_link_click` (with `link_type`) vs. separate `phone_call_click`/`email_click`**
 
@@ -284,7 +286,7 @@ Single event + param keeps one filterable GA4 report and mirrors how GA4 carries
 
 # **Dependencies**
 
-- **Vimeo Player SDK (`@vimeo/player` / `player.js`)** — the only new dependency, loaded only on pages that contain a Vimeo iframe. If it fails to load, Vimeo events are simply not sent; nothing else is affected.
+- **Vimeo Player SDK (`player.js`)** — the only new dependency, loaded only on pages that contain a Vimeo iframe, and skipped entirely when the page already provides `window.Vimeo.Player`. Loaded from Vimeo's own CDN (`https://player.vimeo.com/api/player.js`) rather than bundling the `@vimeo/player` npm package: that is Vimeo's documented recommendation, keeps the SDK in sync with the player it talks to, and keeps ~40KB out of our frontend bundle. The trade‑off is a third‑party request — if it fails to load, Vimeo events are simply not sent; nothing else is affected.
 - **GA4/Ads web tag + Conversion Tracking enabled** — existing hard preconditions, already enforced by `maybe_enqueue_scripts()`.
 
 # **Migrations**
@@ -299,7 +301,7 @@ Minimal. The design intentionally avoids modifying shared enumerations by having
 
 ## **Security**
 
-We inject small frontend scripts and rewrite oEmbed iframe markup on public pages. All output must be properly escaped, iframe `src` rewriting must validate host/URL before modifying, and delegated listeners must not trust attacker‑controlled DOM. No credentials or tokens are involved.
+We inject small frontend scripts and rewrite oEmbed iframe markup on public pages. All output must be properly escaped and iframe `src` rewriting must validate host/URL before modifying. No credentials or tokens are involved.
 
 ## **Reliability**
 
