@@ -668,6 +668,13 @@ final class Assets {
 				)
 			),
 			new Script(
+				'googlesitekit-features',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-features.js',
+					'dependencies' => $this->get_asset_dependencies( 'dashboard-sharing' ),
+				)
+			),
+			new Script(
 				'googlesitekit-ad-blocking-recovery',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-ad-blocking-recovery.js',
