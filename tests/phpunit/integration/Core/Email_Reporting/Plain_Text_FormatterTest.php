@@ -189,11 +189,6 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertEquals( '', $result, 'Null change should return empty string.' );
 	}
 
-	public function test_format_change_rounds_negative_zero_to_zero() {
-		$result = Plain_Text_Formatter::format_change( -0.03 );
-		$this->assertEquals( '(0%)', $result, 'A change that rounds to negative zero should display as a plain 0%, not -0%.' );
-	}
-
 	public function test_format_footer() {
 		$cta = array(
 			'label' => 'View dashboard',

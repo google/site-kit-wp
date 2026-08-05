@@ -14,20 +14,10 @@
  *                    badge.
  */
 
-$change_value  = (float) $value;
-$rounded_value = round( $change_value, 1 );
-
-// A small negative change (e.g. -0.03) can round to -0.0, which PHP
-// string-casts as "-0". Normalize it to a plain 0 so the badge reads as a
-// neutral 0% instead of a misleading negative one.
-if ( 0.0 === $rounded_value ) {
-	$change_value  = 0.0;
-	$rounded_value = 0.0;
-}
-
-$color       = '#1F4C04';
-$background  = '#D8FFC0';
-$badge_class = 'badge-positive';
+$change_value = (float) $value;
+$color        = '#1F4C04';
+$background   = '#D8FFC0';
+$badge_class  = 'badge-positive';
 
 if ( $change_value < 0 ) {
 	$color       = '#7A1E00';
@@ -36,7 +26,7 @@ if ( $change_value < 0 ) {
 }
 
 $prefix        = $change_value > 0 ? '+' : '';
-$display_value = $prefix . $rounded_value . '%';
+$display_value = $prefix . round( $change_value, 1 ) . '%';
 ?>
 <?php /* Outlook requires custom VML for rounded corners. */ ?>
 <!--[if mso]>

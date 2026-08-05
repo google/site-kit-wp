@@ -330,7 +330,6 @@ class Plain_Text_Formatter {
 	 * Formats a change value with sign prefix.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Normalized values that round to negative zero to avoid a misleading `-0%` display.
 	 *
 	 * @param float|null $change The percentage change value, or null.
 	 * @return string Formatted change text (e.g., "(+12%)" or "(-5%)"), or empty string if null.
@@ -340,18 +339,8 @@ class Plain_Text_Formatter {
 			return '';
 		}
 
-		$rounded_value = round( $change, 1 );
-
-		// A small negative change (e.g. -0.03) can round to -0.0, which PHP
-		// string-casts as "-0". Normalize it to a plain 0 so the text matches
-		// the neutral 0% the HTML badge shows for the same value.
-		if ( 0.0 === $rounded_value ) {
-			$change        = 0.0;
-			$rounded_value = 0.0;
-		}
-
 		$prefix        = $change > 0 ? '+' : '';
-		$display_value = $prefix . $rounded_value . '%';
+		$display_value = $prefix . round( $change, 1 ) . '%';
 
 		return '(' . $display_value . ')';
 	}

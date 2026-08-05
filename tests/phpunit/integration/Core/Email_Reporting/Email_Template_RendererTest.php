@@ -124,31 +124,6 @@ class Email_Template_RendererTest extends TestCase {
 		$this->assertStringNotContainsString( 'class="badge-negative"', $html_output_without_change, 'Expected no change badge when the change value is null.' );
 	}
 
-	public function test_change_badge_normalizes_negative_zero_to_zero_percent() {
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$golinks = new Golinks( $context );
-		$golinks->register_handler( 'dashboard', new Dashboard_Golink_Handler() );
-
-		$payload = array(
-			'total_visitors' => array(
-				'label'          => 'Total visitors',
-				'value'          => '120',
-				'change'         => -0.03,
-				'change_context' => 'Compared to previous 7 days',
-			),
-		);
-
-		$sections_map  = new Sections_Map( $context, $payload, $golinks );
-		$renderer      = new Email_Template_Renderer( $sections_map );
-		$template_data = $this->get_minimal_template_data();
-
-		$html_output = $renderer->render( 'email-report', $template_data );
-
-		$this->assertStringNotContainsString( '-0%', $html_output, 'Expected no misleading -0% badge for a change that rounds to negative zero.' );
-		$this->assertMatchesRegularExpression( '/class="badge-positive"[^>]*>\s*0%\s*</', $html_output, 'Expected a plain, neutral 0% badge for a change that rounds to negative zero.' );
-		$this->assertStringNotContainsString( 'class="badge-negative"', $html_output, 'Expected no negative badge styling for a change that rounds to zero.' );
-	}
-
 	public function test_page_metrics_change_badge_shows_signed_value_and_is_omitted_when_change_is_null() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$golinks = new Golinks( $context );
