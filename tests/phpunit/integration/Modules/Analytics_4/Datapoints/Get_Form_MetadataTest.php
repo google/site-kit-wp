@@ -74,7 +74,7 @@ class Get_Form_MetadataTest extends TestCase {
 	/**
 	 * Creates an `omapi` campaign post and returns the slug WordPress stored.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param string $title  The campaign title.
 	 * @param string $slug   The requested campaign slug.

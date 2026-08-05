@@ -87,7 +87,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Subscribed_Users_Query instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 * @var Subscribed_Users_Query
 	 */
 	private $subscribed_users_query;
@@ -132,7 +132,7 @@ class REST_Email_Reporting_Controller {
 	 * @since 1.173.0 Added eligible subscribers query and email sender dependencies and removed unused user options dependency.
 	 * @since 1.174.0 Added golinks dependency.
 	 * @since 1.176.0 Added cron health check dependency.
-	 * @since n.e.x.t Added subscribed users query dependency.
+	 * @since 1.185.0 Added subscribed users query dependency.
 	 *
 	 * @param Email_Reporting_Settings      $settings                       Email_Reporting_Settings instance.
 	 * @param Modules                       $modules                        Modules instance.
@@ -518,7 +518,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Unsubscribes a single user from email reports.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response|WP_Error
@@ -572,7 +572,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Calculates the number of pages a paginated user listing spans.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param int $total    Total number of matching users.
 	 * @param int $per_page Number of users per page.

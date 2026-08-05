@@ -21,7 +21,7 @@ namespace Google\Site_Kit\Tests;
  * whether the plugin challenges the user, so this fake keeps both. A fake with
  * only one would let a test pass that the real plugin fails.
  *
- * @since n.e.x.t
+ * @since 1.185.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class Two_Factor_Core_Fake {
 	/**
 	 * User meta key the Two-Factor plugin stores the enabled providers under.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 * @var string
 	 */
 	const ENABLED_PROVIDERS_USER_META_KEY = '_two_factor_enabled_providers';
@@ -39,7 +39,7 @@ class Two_Factor_Core_Fake {
 	 * Provider the Two-Factor plugin turns on when a user's stored providers
 	 * resolve to nothing, so a user who asked for two-factor never loses it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 * @var string
 	 */
 	const FALLBACK_PROVIDER = 'Two_Factor_Email';
@@ -47,7 +47,7 @@ class Two_Factor_Core_Fake {
 	/**
 	 * Checks whether the given user has to pass a two-factor challenge.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param int $user_id Optional. User ID. Default null.
 	 * @return bool True when the user has a provider enabled, false otherwise.
@@ -59,7 +59,7 @@ class Two_Factor_Core_Fake {
 	/**
 	 * Gets the provider that runs the challenge for the given user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param int $user_id User ID.
 	 * @return string Provider key, or an empty string when the user has none.
@@ -78,7 +78,7 @@ class Two_Factor_Core_Fake {
 	/**
 	 * Gets the providers the given user can pass a challenge with.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param int $user_id User ID.
 	 * @return string[] Provider keys.
