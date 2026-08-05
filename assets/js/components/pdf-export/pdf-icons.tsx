@@ -6,6 +6,9 @@
  * that file with `@react-pdf/renderer` primitives, so an edit to the SVG also
  * changes the PDF icon.
  *
+ * The Google "G" is the one icon that comes in as an image. The letter needs a
+ * mask and a conic gradient that `@react-pdf/renderer` can't draw.
+ *
  * Each export adds a `PDF` prefix to the dashboard icon's name.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
@@ -26,11 +29,13 @@
 /**
  * External dependencies
  */
+import { Image } from '@react-pdf/renderer';
 import { ComponentType } from 'react';
 
 /**
  * Internal dependencies
  */
+import logoGImage from '@/images/logo-g.png';
 import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
 	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
@@ -38,7 +43,6 @@ import {
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
-import LogoG from '@/svg/graphics/logo-g.svg?pdf';
 import AudienceMetricIconCities from '@/svg/icons/audience-metric-icon-cities.svg?pdf';
 import AudienceMetricIconPagesPerVisit from '@/svg/icons/audience-metric-icon-pages-per-visit.svg?pdf';
 import AudienceMetricIconPageviews from '@/svg/icons/audience-metric-icon-pageviews.svg?pdf';
@@ -78,6 +82,32 @@ function createPDFIcon(
 				width={ scalePDFValue( size ) }
 				height={ scalePDFValue( size ) }
 				color={ color }
+			/>
+		);
+	};
+}
+
+/**
+ * Creates a PDF report icon from an image.
+ *
+ * The icon uses `size` as the height, and multiplies `size` by `aspectRatio` for
+ * the width. The image keeps its proportions at any size.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} src         The image's URL, from a `.png` import.
+ * @param {number} aspectRatio The image's width divided by its height.
+ * @return {PDFIcon} An icon that takes a `size` in pixels. It ignores `color`.
+ */
+function createPDFImageIcon( src: string, aspectRatio: number ): PDFIcon {
+	return function Icon( { size = PDF_ICON_SIZE } ) {
+		return (
+			<Image
+				src={ src }
+				style={ {
+					width: scalePDFValue( size * aspectRatio ),
+					height: scalePDFValue( size ),
+				} }
 			/>
 		);
 	};
@@ -124,10 +154,13 @@ export const PDFNavMonetizationIcon = createPDFIcon(
 );
 
 /**
- * Draws the Google "G" in its brand colors. The source file sets each fill, so
- * the `color` prop has no effect.
+ * Gives the Google "G" its width from its height and keeps the letter from stretching.
+ *
+ * @since n.e.x.t
  */
-export const PDFLogoG = createPDFIcon( LogoG );
+export const LOGO_G_ASPECT_RATIO = 23.599 / 24.1136;
+
+export const PDFLogoG = createPDFImageIcon( logoGImage, LOGO_G_ASPECT_RATIO );
 
 export const PDFStarFill = createPDFIcon( StarFill, PDF_COLORS.VIOLET_V_600 );
 export const PDFChevronRight = createPDFIcon(

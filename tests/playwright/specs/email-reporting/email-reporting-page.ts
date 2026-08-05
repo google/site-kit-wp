@@ -92,7 +92,10 @@ export class EmailReportingPage {
 	 * @return          The frequency radio button.
 	 */
 	getFrequencyRadio( frequency: 'Weekly' | 'Monthly' | 'Quarterly' ) {
-		return this.root.getByRole( 'radio', { name: frequency } );
+		return this.root.getByRole( 'radio', {
+			name: frequency,
+			exact: true,
+		} );
 	}
 
 	/**

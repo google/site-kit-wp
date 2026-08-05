@@ -103,7 +103,7 @@ describe( 'PDFMetricTileText', () => {
 			value: 'Organic Search',
 			subtext: '3.4K visitors',
 			change: '+5.1%',
-			isNegative: false,
+			changeType: 'positive',
 		} );
 
 		expect( text ).toContain( 'Top traffic source' );
@@ -155,7 +155,7 @@ describe( 'PDFMetricTileText', () => {
 				title: 'Top traffic source',
 				value: 'Organic Search',
 				change: '-5.0%',
-				isNegative: true,
+				changeType: 'negative',
 			} )
 		);
 		// The fall chip background.

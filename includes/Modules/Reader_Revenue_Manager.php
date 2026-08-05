@@ -50,6 +50,7 @@ use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\Block_Support;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Admin_Post_List;
@@ -185,7 +186,10 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	public function register() {
 		$this->register_scopes_hook();
 		$this->register_feature_metrics();
-		$this->user_settings->register();
+
+		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
+			$this->user_settings->register();
+		}
 
 		$synchronize_publication = new Synchronize_Publication(
 			$this,
@@ -367,26 +371,31 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		return array(
+		$datapoints = array(
 			'GET:publications'                       => array(
 				'service' => 'subscribewithgoogle',
 			),
 			'POST:sync-publication-onboarding-state' => array(
 				'service' => 'subscribewithgoogle',
 			),
-			'GET:user-settings'                      => new Get_User_Settings(
-				array(
-					'user_settings' => $this->user_settings,
-					'service'       => '',
-				)
-			),
-			'POST:user-settings'                     => new Save_User_Settings(
-				array(
-					'user_settings' => $this->user_settings,
-					'service'       => '',
-				)
-			),
 		);
+
+		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
+			$datapoints['GET:user-settings']  = new Get_User_Settings(
+				array(
+					'user_settings' => $this->user_settings,
+					'service'       => '',
+				)
+			);
+			$datapoints['POST:user-settings'] = new Save_User_Settings(
+				array(
+					'user_settings' => $this->user_settings,
+					'service'       => '',
+				)
+			);
+		}
+
+		return $datapoints;
 	}
 
 	/**

@@ -34,9 +34,10 @@ import { DAY_IN_SECONDS } from '@/js/util';
 import {
 	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
 	SITE_GOALS_SURVEY_TRIGGER_BREAKDOWN_ENABLED,
-	SITE_GOALS_SURVEY_TRIGGER_NON_INTERACTED,
+	SITE_GOALS_SURVEY_TRIGGER_NOT_INTERACTED,
 	SITE_GOALS_SURVEY_TRIGGER_NO_BREAKDOWN,
 } from './constants';
+import { GOAL_TYPES } from './goal-drivers/constants';
 import {
 	SITE_GOALS_INTRO_MODAL_BANNER,
 	SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED,
@@ -62,6 +63,41 @@ const SiteGoalsSurveyTriggers: FC = () => {
 			),
 		[]
 	);
+
+	/**
+	 * Whether each goal type's widget renders.
+	 *
+	 * Every segment after this describes how the user interacted with a Site
+	 * Goals widget, so none of them apply when no widget is on the page.
+	 *
+	 * Both reads are skipped until Analytics is connected, so we don't make
+	 * requests for disconnected module data (which can cause a console error
+	 * and is needless).
+	 */
+	const isEcommerceWidgetRenderable = useSelect(
+		( select: Select ) => {
+			if ( ! isGA4Connected ) {
+				return undefined;
+			}
+
+			return select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+				GOAL_TYPES.ECOMMERCE
+			);
+		},
+		[ isGA4Connected ]
+	);
+	const isLeadWidgetRenderable = useSelect(
+		( select: Select ) => {
+			if ( ! isGA4Connected ) {
+				return undefined;
+			}
+
+			return select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+				GOAL_TYPES.LEAD
+			);
+		},
+		[ isGA4Connected ]
+	);
 	const hasBreakdownDimensions = useSelect(
 		( select: Select ) => {
 			// Skip the dimension check until Analytics is connected, so this
@@ -80,6 +116,24 @@ const SiteGoalsSurveyTriggers: FC = () => {
 	// Render nothing until Analytics is connected. `isGA4Connected` is
 	// `undefined` while loading and `false` when not connected.
 	if ( ! isGA4Connected ) {
+		return null;
+	}
+
+	// Wait for both widget checks, then render nothing when neither widget
+	// renders. Both checks below outlive the widgets:
+	//
+	// - the breakdown custom dimensions belong to the Analytics property and
+	//   stay after an event provider is deactivated
+	// - the intro modal's dismissed items are
+	//   permanent.
+	//
+	// Without this, a dashboard with no Site Goals section keeps reporting a
+	// segment.
+	if (
+		isEcommerceWidgetRenderable === undefined ||
+		isLeadWidgetRenderable === undefined ||
+		( ! isEcommerceWidgetRenderable && ! isLeadWidgetRenderable )
+	) {
 		return null;
 	}
 
@@ -107,7 +161,7 @@ const SiteGoalsSurveyTriggers: FC = () => {
 	// The user confirmed the intro modal with "Show me" but hasn't enabled
 	// the breakdown. Confirming also saves `SITE_GOALS_INTRO_MODAL_BANNER`,
 	// so a confirmed user looks dismissed too. Check this before the
-	// non-interacted segment below.
+	// not-interacted segment below.
 	if ( isIntroModalConfirmed ) {
 		return (
 			<SurveyViewTrigger
@@ -122,7 +176,7 @@ const SiteGoalsSurveyTriggers: FC = () => {
 	if ( isIntroModalDismissed ) {
 		return (
 			<SurveyViewTrigger
-				triggerID={ SITE_GOALS_SURVEY_TRIGGER_NON_INTERACTED }
+				triggerID={ SITE_GOALS_SURVEY_TRIGGER_NOT_INTERACTED }
 				ttl={ DAY_IN_SECONDS }
 			/>
 		);

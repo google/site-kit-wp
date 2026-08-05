@@ -20,6 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import { ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -36,19 +37,25 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 export interface PoweredByModuleProps {
 	slug: string;
+	text?: ReactNode;
 }
 
-export default function PoweredByModule( { slug }: PoweredByModuleProps ) {
+export default function PoweredByModule( {
+	slug,
+	text,
+}: PoweredByModuleProps ) {
 	const { Icon, name } = useSelect(
 		( select: Select ) => select( CORE_MODULES ).getModule( slug ),
 		[ slug ]
 	);
 
-	const text = sprintf(
-		// translators: %s: Module name.
-		__( 'Powered by %s', 'google-site-kit' ),
-		name
-	);
+	text =
+		text ||
+		sprintf(
+			// translators: %s: Module name.
+			__( 'Powered by %s', 'google-site-kit' ),
+			name
+		);
 
 	const className = classnames(
 		'googlesitekit-powered-by-module',

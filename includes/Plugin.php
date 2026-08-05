@@ -241,6 +241,7 @@ final class Plugin {
 				( new Core\Util\Migration_1_150_0( $this->context, $options ) )->register();
 				( new Core\Util\Migration_1_163_0( $this->context, $options ) )->register();
 				( new Core\Util\Migration_1_177_0( $this->context, $options ) )->register();
+				( new Core\Util\Migration_1_185_0( $this->context, $options ) )->register();
 				( new Core\Dashboard_Sharing\Dashboard_Sharing( $this->context ) )->register();
 				( new Core\Key_Metrics\Key_Metrics( $this->context, $user_options, $options ) )->register();
 				( new Core\Prompts\Prompts( $this->context, $user_options ) )->register();
