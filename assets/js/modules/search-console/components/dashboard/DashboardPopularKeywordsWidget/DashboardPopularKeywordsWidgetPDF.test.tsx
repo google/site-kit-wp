@@ -136,6 +136,29 @@ describe( 'DashboardPopularKeywordsWidgetPDF', () => {
 		expect( json ).toContain( '4,500' );
 	} );
 
+	it( 'truncates a long query to one line with an ellipsis and keeps a 20px gap before the Clicks column', () => {
+		const json = renderJSON( {
+			data: {
+				...DATA,
+				rows: [
+					{
+						keys: [
+							"A very long search query that doesn't fit on one line",
+						],
+						clicks: 9,
+						impressions: 1204,
+					},
+				],
+			},
+		} );
+
+		expect( json ).toContain( '"maxLines":1' );
+		expect( json ).toContain( '"textOverflow":"ellipsis"' );
+		expect( json ).toContain(
+			`"flexBasis":0,"marginRight":${ 20 * PDF_SCALE }`
+		);
+	} );
+
 	it( 'applies the column widths and the scaled column gap', () => {
 		const json = renderJSON( { data: DATA } );
 
