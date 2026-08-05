@@ -23,6 +23,22 @@ not post comments, approve, or change the PR state unless explicitly asked. (Cla
 exposes this as the `review-pr` skill; Gemini as `/review-pr`; Antigravity as the `/review-pr`
 workflow.)
 
+## Creating a design doc
+When asked to create, write, or draft a design doc (technical design / epic design) for a feature,
+follow the shared, tool-agnostic playbook **`docs/context/workflow/create-design-doc.md`** (the
+single source of truth), whose § Document structure and § Style rules sections define the house
+style in full. This workflow runs **in plan mode**: research, question, and
+design only — no code, tests, or issues. The user **must** provide a PRD (local file path or pasted
+text); if none is given, stop and ask for one. Analyze the codebase for the infrastructure the epic
+will reuse, then **ask as many questions as it takes** (use the playbook's question bank as the
+minimum coverage) before drafting. Write for an audience that knows the codebase completely: state
+how things work as plain fact, never narrating what you checked or what another document says. No
+images or image placeholders — a human adds mocks later; any diagram is a fenced `mermaid` block,
+never ASCII art. Never invent requirements, answers, or code — unresolved items
+become `❓` entries under **Open questions**. Confirm the output path with the user before saving.
+(Claude Code exposes this as the `create-design-doc` skill; Gemini as `/create-design-doc`;
+Antigravity as the `/create-design-doc` workflow.)
+
 ## Architecture Essentials
 
 ### PHP Structure

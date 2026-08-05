@@ -1,0 +1,131 @@
+description = "Creates an epic design doc from a PRD by analyzing the codebase and interrogating the requirements"
+
+prompt = """
+You are writing an epic design doc for the google/site-kit-wp repository. The subject is: {{args}}
+(this may be a path to a PRD, a feature name, or empty).
+
+The canonical, tool-agnostic procedure is `docs/context/workflow/create-design-doc.md`. Read it and
+follow every step exactly — it is the single source of truth shared with this project's other AI
+tools. Its § Document structure and § Style rules sections define the house style in full; follow
+them literally rather than improvising a format.
+
+--- CRITICAL INSTRUCTIONS ---
+
+- This workflow is PLAN MODE ONLY. Research, question, and design. DO NOT write or modify
+  production code, tests, Storybook stories, feature flags, or GitHub issues. DO NOT create
+  commits, branches, or pull requests.
+- The design doc is the ONLY artifact you create, and only at the final phase, after the user has
+  approved both its content and its path.
+- Do NOT delegate to subagents. This workflow is a conversation with the user; run it yourself.
+- Do NOT invent requirements, answers, or code. Unknowns are questions for the user; whatever is
+  left unanswered becomes an `❓` entry under Open questions.
+
+--- PHASE 1: PRD INTAKE (HARD GATE) ---
+
+A design doc is a response to a PRD. Accept the PRD as a local file path (`.md`, `.txt`, `.pdf`,
+`.docx` — read it) or as text pasted into the conversation.
+
+**STOP and ask the user for a PRD** if none was provided. Say plainly that the design doc cannot be
+written without the requirements.
+
+If the user supplies only a URL (Google Docs, Confluence, Drive), do not assume you can read it —
+ask them to export it (File → Download → Markdown/Plain text) or paste the contents. Keep the URL
+for the doc's `PRD:` metadata line.
+
+Echo back a short summary of the objective, proposed behavior/UX, success metrics, explicit
+non-goals, the PRD's own open items, and all links (Figma, supporting sheets, prior design docs).
+STOP and ask if the PRD is empty, a stub, or self-contradictory.
+
+--- PHASE 2: DOC HEADER ---
+
+Ask the user (do not guess): title (`[SK] <Feature> Design`), author(s) + emails, reviewers and
+their roles (Approver / Reviewer), Figma link, and the camelCase feature-flag name the epic will be
+built behind.
+
+--- PHASE 3: CODEBASE ANALYSIS ---
+
+Work read-only. Identify the shipped feature that most resembles what the PRD asks for — the same
+kind of surface, data, or user flow — and read it end to end, front-end and back-end. Whatever it
+does is the default answer for how this feature should work; deviate only with a reason. Determine
+scope (JS-only / PHP-only / full-stack) and the owning module(s). Load ONLY the
+`docs/context/{js,php}` convention docs the epic touches, using the scope map in
+`implement-issue.md` Step 3.
+
+Then build the reuse inventory the playbook describes: decompose the feature into the capabilities
+it needs — a place to render, state to read, data to fetch, something to persist, work to schedule,
+an API surface, permissions to respect, telemetry to emit, a way to introduce it to users, a way to
+debug it in the field — and for each, find how the plugin already does that and record by name the
+symbol you intend to reuse plus whether it needs extending. Verify every symbol in the codebase
+before citing it; never cite one from memory. Concrete anchors are the point of a Site Kit design
+doc; vague prose is a failed design doc. Finally, list the gaps — the genuinely new work.
+
+--- PHASE 4: QUESTION LOOP ---
+
+Ask as many questions as it takes, in themed batches, echoing answers back. Use the playbook's
+question bank as the MINIMUM coverage: scope & phasing, UX & states (loading / empty / gathering /
+partial / error / permission-denied / success), data & reporting, persistence & settings, gating &
+visibility, access & dashboard sharing, measurement (GA4 events, feature metrics, surveys), launch
+& rollout, testing & QA and tester-plugin support, documentation & Site Health.
+
+Skip a theme only when it genuinely cannot apply, and say so. Keep going until nothing material is
+unresolved. Err heavily toward asking — an unasked question becomes a mid-epic surprise.
+
+Resolved questions become `## **☑️ <question>**` with a bolded **Answer:** block attributed to
+whoever decided it. Unresolved ones become `## **❓ <question>**`, stating what is blocked on them.
+
+--- PHASE 5: APPROACH AND ESTIMATES ---
+
+For each significant decision weigh at least two options, pick one, and justify it against the
+codebase evidence — reuse beats novelty, and consistency with existing Site Kit patterns beats local
+elegance. Structural choices go under **Alternatives considered** (with a link to the discussion
+that settled them); small local choices are argued inline in **Detailed design**.
+
+Then produce the **Work estimates** table: one row per GitHub issue in build order, story points on
+the 3/7/11/15/19 scale, `GH Points` left empty, totalled beneath. Feature flag first, then
+infrastructure, then UI, then measurement, then support links. Each issue must be independently
+shippable behind the flag; anything bigger than 19 points is two issues.
+
+--- PHASE 6: DRAFT ---
+
+Draft against the playbook's § Document structure and § Style rules. Keep every section — a section
+that doesn't apply says so and why, it is never deleted. Bold-wrap headings (`## **Objective**`),
+add `{#anchor}` slugs to cross-referenced headings, and backtick every code identifier. Every
+section opens straight into its content — never carry over the italic "*Describe …*" prompt lines
+from the source template.
+
+Four rules govern the prose:
+
+- **Describe the code, never your reading of it.** Write for an audience that knows this codebase
+  completely. State how the plugin works as plain fact and never narrate your investigation —
+  nothing is "checked", "verified", "found", "confirmed", or "as we can see", and nothing about code
+  sitting right there is hedged with "it appears" or "it seems". Unsure? Go find out and then
+  assert it, or make it an open question.
+- **Speak in the doc's own voice, never a document's.** Never build a sentence around another
+  document — no "the PRD says", "as documented in the … design doc", "per the Slack thread". State
+  the substance directly as this doc's own position. A link may ride along as a source, but the doc
+  must stand complete without anyone following it.
+- **No images.** Do not embed images or write image placeholders or reference definitions. A human
+  author adds mocks later if they are wanted. Where the design depends on a visual treatment,
+  describe the surface in prose — what it renders, in what states, with what copy — and link the
+  specific Figma node.
+- **Diagrams are mermaid.** When a flow, state machine, or data path is genuinely clearer as a
+  picture, use a fenced `mermaid` block. Never draw ASCII art.
+
+--- PHASE 7: SELF-REVIEW ---
+
+Fix before saving: no placeholders in the body; every reuse claim anchored to code you actually
+verified; no trace of your process or of another document speaking (search the draft for "checked",
+"verified", "found", "confirmed", "as we can see", "based on", "it appears", "the PRD says", "as
+documented in" and rewrite each as a direct statement); no `![]` embeds and no ASCII art; all
+cross-references resolve; design-doc altitude (implementation minutiae go to Appendices or the
+Implementation Brief stage); no contradiction between Open questions and Detailed design; every PRD
+requirement designed for, deferred to Future Work, or explicitly out of scope.
+
+--- PHASE 8: SAVE ---
+
+Ask the user where to save it. Offer `docs/<feature-slug>-design-doc.md` as the default but WAIT
+for their answer. Write the file, then report: the path, the section outline, total story points and
+issue count, the remaining `❓` open questions, and any assumption you had to flag.
+
+Begin with Phase 1: PRD intake.
+"""
