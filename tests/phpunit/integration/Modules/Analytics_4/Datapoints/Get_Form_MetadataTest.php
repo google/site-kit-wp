@@ -96,6 +96,25 @@ class Get_Form_MetadataTest extends TestCase {
 		return get_post( $post_id )->post_name;
 	}
 
+	/**
+	 * Loads the `Ninja_Forms()` fake, and adds the given form titles.
+	 *
+	 * Every caller needs the `runInSeparateProcess` annotation, because PHP holds
+	 * the global `Ninja_Forms()` function for the rest of the process once the
+	 * fake declares it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $form_titles Optional. Each form title, with the form ID as the key. Default empty array.
+	 */
+	private function activate_ninja_forms( array $form_titles = array() ) {
+		require_once TESTS_PLUGIN_DIR . '/tests/phpunit/includes/ninja-forms-fake-functions.php';
+
+		foreach ( $form_titles as $form_id => $title ) {
+			Ninja_Forms()->add_form( $form_id, $title );
+		}
+	}
+
 	public function test_create_request__returns_title_for_known_post_type() {
 		$form_id = self::factory()->post->create(
 			array(
@@ -162,6 +181,50 @@ class Get_Form_MetadataTest extends TestCase {
 			),
 			$request(),
 			'A missing post should resolve null metadata under its requested ID.'
+		);
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function test_create_request__resolves_a_ninja_forms_form_title_by_id() {
+		$form_id = 2;
+
+		$this->activate_ninja_forms( array( $form_id => 'Contact Me' ) );
+
+		$request = $this->datapoint->create_request( $this->data_request( array( $form_id ) ) );
+
+		$this->assertSame(
+			array(
+				$form_id => array(
+					'title' => 'Contact Me',
+				),
+			),
+			$request(),
+			'A Ninja Forms form named by ID should resolve its title.'
+		);
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function test_create_request__returns_null_title_for_a_deleted_ninja_forms_form() {
+		$form_id = 2;
+
+		// This test adds no form, which is what the dashboard meets after someone
+		// deletes one.
+		$this->activate_ninja_forms();
+
+		$request = $this->datapoint->create_request( $this->data_request( array( $form_id ) ) );
+
+		$this->assertSame(
+			array(
+				$form_id => array(
+					'title' => null,
+				),
+			),
+			$request(),
+			'A deleted Ninja Forms form should resolve to a null title.'
 		);
 	}
 
