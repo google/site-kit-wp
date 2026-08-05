@@ -127,7 +127,7 @@ class Email_Report_Section_Builder {
 		$log_date_range              = Email_Log::get_date_range_from_log( $email_log );
 		$this->current_period_length = $this->calculate_period_length_from_date_range( $log_date_range );
 
-			$section_payloads = $this->extract_sections_from_payloads( $module_slug, $raw_sections_payloads );
+		$section_payloads = $this->extract_sections_from_payloads( $module_slug, $raw_sections_payloads );
 
 		if ( is_wp_error( $section_payloads ) ) {
 			// Surface payload build failures directly so callers receive the original module error context.
