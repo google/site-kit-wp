@@ -17,8 +17,14 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
+import { useDispatch } from 'googlesitekit-data';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import UserSettingsSelectionPanel from '@/js/components/email-reporting/UserSettingsSelectionPanel';
 import SelectionPanelFooter from '@/js/components/email-reporting/UserSettingsSelectionPanel/SelectionPanelFooter';
@@ -203,40 +209,67 @@ describe( 'UserSettingsSelectionPanel', () => {
 			'invalidateEmailReportingNextReport'
 		);
 
-		render( <UserSettingsSelectionPanel />, {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-		} );
+		// Stands in for the panel's real triggers (e.g. `UserMenu`,
+		// `SettingsEmailReporting`), which open the panel by setting this
+		// same CORE_UI flag in response to a click.
+		function OpenPanelButton() {
+			const { setValue } = useDispatch( CORE_UI );
 
-		act( () => {
-			registry
-				.dispatch( CORE_UI )
-				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-		} );
+			return (
+				<button
+					onClick={ () =>
+						setValue(
+							USER_SETTINGS_SELECTION_PANEL_OPENED_KEY,
+							true
+						)
+					}
+				>
+					Open panel
+				</button>
+			);
+		}
+
+		const { getByRole } = render(
+			<Fragment>
+				<OpenPanelButton />
+				<UserSettingsSelectionPanel />
+			</Fragment>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		const dialog = document.querySelector( '[role="dialog"]' );
+
+		fireEvent.click( getByRole( 'button', { name: 'Open panel' } ) );
 
 		await waitFor( () =>
 			expect( invalidateSpy ).toHaveBeenCalledTimes( 1 )
 		);
+		expect( dialog ).toHaveAttribute( 'aria-hidden', 'false' );
 		expect( fetchMock ).toHaveFetchedTimes(
 			1,
 			emailReportingNextReportEndpoint
 		);
 
-		act( () => {
-			registry
-				.dispatch( CORE_UI )
-				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
-		} );
+		fireEvent.click(
+			document.querySelector(
+				'.googlesitekit-selection-panel-header__close'
+			)
+		);
 
-		act( () => {
-			registry
-				.dispatch( CORE_UI )
-				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-		} );
+		await waitFor( () =>
+			expect( dialog ).toHaveAttribute( 'aria-hidden', 'true' )
+		);
+		expect( invalidateSpy ).toHaveBeenCalledTimes( 1 );
+
+		fireEvent.click( getByRole( 'button', { name: 'Open panel' } ) );
 
 		await waitFor( () =>
 			expect( invalidateSpy ).toHaveBeenCalledTimes( 2 )
 		);
+		expect( dialog ).toHaveAttribute( 'aria-hidden', 'false' );
 		expect( fetchMock ).toHaveFetchedTimes(
 			2,
 			emailReportingNextReportEndpoint
