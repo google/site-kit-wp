@@ -232,6 +232,7 @@ class Email_Template_Formatter {
 	 * decimal-comma locale.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Hardened decimal-separator detection to support decimal-comma locales.
 	 *
 	 * @param mixed $change Change value.
 	 * @return float|null Parsed change, or null when missing or unparseable.

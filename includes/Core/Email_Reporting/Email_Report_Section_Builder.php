@@ -202,6 +202,7 @@ class Email_Report_Section_Builder {
 	 * re-parse.
 	 *
 	 * @since 1.167.0
+	 * @since n.e.x.t Emitted a locale-independent percentage format instead of `number_format_i18n()`.
 	 *
 	 * @param array $trends Trend values.
 	 * @return array|null Normalized trend values.
