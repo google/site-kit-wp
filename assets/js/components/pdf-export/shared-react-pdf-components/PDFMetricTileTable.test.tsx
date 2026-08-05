@@ -145,6 +145,31 @@ describe( 'PDFMetricTileTable', () => {
 		);
 	} );
 
+	it( 'keeps a 20px gap between the label and the metric and sizes the label to the width that remains', () => {
+		const json = JSON.stringify(
+			TestRenderer.create(
+				<PDFMetricTileTable
+					title="Top performing keywords"
+					rows={ [
+						{
+							primary: 'lagos para nadar perto de mim',
+							metric: '100% CTR',
+						},
+					] }
+				/>
+			).toJSON()
+		);
+
+		// The metric takes its own width first, and the label gets the width
+		// that remains. react-pdf then cuts a long label short to fit that
+		// width, rather than letting it run on under the metric.
+		expect( json ).toContain(
+			`"flexGrow":1,"flexShrink":1,"flexBasis":0,"marginRight":${ scalePDFValue(
+				20
+			) }`
+		);
+	} );
+
 	it( 'gives the card the dashboard tile min height so a row of tiles is uniform', () => {
 		const tree = TestRenderer.create(
 			<PDFMetricTileTable
