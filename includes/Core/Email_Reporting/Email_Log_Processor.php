@@ -142,7 +142,7 @@ class Email_Log_Processor {
 	/**
 	 * Builds and sends an email.
 	 *
-	 * @since n.e.x.t.
+	 * @since n.e.x.t
 	 *
 	 * @param int     $post_id     Email log post ID.
 	 * @param WP_Post $email_log   Email log post.
