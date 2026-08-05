@@ -53,7 +53,7 @@ export interface PDFLinkProps {
 	trailingIcon?: ReactNode;
 	/** Style merged over the link color on the text. */
 	style?: Style | Style[];
-	/** Maximum number of lines for the text. `textOverflow: 'ellipsis'` in the style adds an ellipsis where the text stops. */
+	/** Maximum number of lines for the link text. `textOverflow: 'ellipsis'` in the style ends the last line with an ellipsis. */
 	maxLines?: number;
 }
 

@@ -25,7 +25,7 @@ import { renderJSON } from '@/js/components/pdf-export/test-utils';
 import PDFTruncatedValue from './PDFTruncatedValue';
 
 describe( 'PDFTruncatedValue', () => {
-	it( 'keeps a 20px gap between the value and the metric and sizes the value to the width that remains', () => {
+	it( 'keeps a 20px gap to the right of the value and sizes the value to the width the row leaves', () => {
 		const json = renderJSON(
 			<PDFTruncatedValue>A very long page title</PDFTruncatedValue>
 		);
@@ -83,7 +83,7 @@ describe( 'PDFTruncatedValue', () => {
 		expect( json ).toContain( `"letterSpacing":${ 0.2 * PDF_SCALE }` );
 	} );
 
-	it( 'renders the value in the given color and ends it with an ellipsis', () => {
+	it( "renders the value in the style's color without dropping the ellipsis style", () => {
 		const json = renderJSON(
 			<PDFTruncatedValue
 				style={ { color: PDF_COLORS.CONTENT_SECONDARY } }

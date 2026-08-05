@@ -135,7 +135,7 @@ describe( 'PDFLink', () => {
 		expect( treeJSON ).not.toContain( PDF_COLORS.CONTENT_SECONDARY );
 	} );
 
-	it( 'forwards maxLines to the link text', () => {
+	it( 'renders the link text with the one-line limit the maxLines prop sets', () => {
 		const tree = renderLink( {
 			href: 'https://example.com/dashboard',
 			maxLines: 1,
@@ -145,7 +145,7 @@ describe( 'PDFLink', () => {
 		expect( JSON.stringify( tree ) ).toContain( '"maxLines":1' );
 	} );
 
-	it( 'forwards maxLines to the plain text when the href is an empty string', () => {
+	it( 'renders plain text with the one-line limit the maxLines prop sets when the href is an empty string', () => {
 		const tree = renderLink( {
 			href: '',
 			maxLines: 1,

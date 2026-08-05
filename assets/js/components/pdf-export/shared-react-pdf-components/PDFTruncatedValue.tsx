@@ -43,13 +43,13 @@ const styles = createPDFStyles( {
 } );
 
 export interface PDFTruncatedValueProps {
-	/** URL the value links to. With no URL, it renders as plain text. */
+	/** URL the value links to. With no URL, the value renders as plain text. */
 	href?: string;
 	/** Typography type for the value. */
 	type?: PDFTypographyType;
 	/** Typography size for the value. */
 	size?: PDFTypographySize;
-	/** Extra style for the value. It merges with the truncation style. */
+	/** Additional styles applied to the value. */
 	style?: Style | Style[];
 }
 
