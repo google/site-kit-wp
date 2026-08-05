@@ -198,8 +198,10 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 		$title = $form->get_setting( 'title' );
 
 		// Ninja Forms reads a form with no title as false rather than a string,
-		// and it reads an ID that matches no form as false too. An empty string
-		// replaces both, and the return stays a string.
+		// and it reads an ID that matches no form as false too.
+		//
+		// In either of those cases, we return an empty string to keep our return
+		// value type (a string) consistent.
 		return empty( $title ) ? '' : $title;
 	}
 
