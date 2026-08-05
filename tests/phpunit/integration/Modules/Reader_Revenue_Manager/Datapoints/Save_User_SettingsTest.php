@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Datapoints;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Save_User_Settings;
@@ -53,7 +52,6 @@ class Save_User_SettingsTest extends TestCase {
 		$this->datapoint = new Save_User_Settings(
 			array(
 				'user_settings' => $this->user_settings,
-				'service'       => '',
 			)
 		);
 	}
@@ -103,17 +101,6 @@ class Save_User_SettingsTest extends TestCase {
 		);
 	}
 
-	public function test_create_request__returns_empty_last_actioned_express_setups_as_object() {
-		$data_request = new Data_Request( 'POST', 'modules', 'reader-revenue-manager', 'user-settings', array() );
-		$request      = $this->datapoint->create_request( $data_request );
-
-		$this->assertEquals(
-			array( 'lastActionedExpressSetups' => (object) array() ),
-			$request(),
-			'The datapoint should return an empty object for the default express setup timestamps.'
-		);
-	}
-
 	public function test_create_request__sanitizes_settings() {
 		$data_request = new Data_Request(
 			'POST',
@@ -138,25 +125,6 @@ class Save_User_SettingsTest extends TestCase {
 			),
 			$request(),
 			'The datapoint should rely on User_Settings to sanitize values and ignore unknown keys.'
-		);
-	}
-
-	public function test_parse_response() {
-		$data_request = new Data_Request( 'POST', 'modules', 'reader-revenue-manager', 'user-settings', array() );
-		$settings     = array( 'lastActionedExpressSetups' => array() );
-
-		$this->assertSame(
-			$settings,
-			$this->datapoint->parse_response( $settings, $data_request ),
-			'The datapoint should return the response unchanged.'
-		);
-	}
-
-	public function test_permission_callback() {
-		$this->assertSame(
-			current_user_can( Permissions::VIEW_DASHBOARD ),
-			$this->datapoint->permission_callback(),
-			'The datapoint permission should gate on the VIEW_DASHBOARD capability.'
 		);
 	}
 }

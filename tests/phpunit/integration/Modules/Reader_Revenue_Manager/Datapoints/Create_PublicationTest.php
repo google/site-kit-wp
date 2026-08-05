@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Datapoints;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
+use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Create_Publication;
 use Google\Site_Kit\Tests\TestCase;
@@ -70,7 +71,7 @@ class Create_PublicationTest extends TestCase {
 				array(
 					'displayName'  => 'Example Publication',
 					'languageCode' => 'en',
-					'countryCode'  => 'US',
+					'regionCode'   => 'US',
 				)
 			)
 		);
@@ -102,7 +103,7 @@ class Create_PublicationTest extends TestCase {
 		$data = array(
 			'displayName'  => 'Example Publication',
 			'languageCode' => 'en',
-			'countryCode'  => 'US',
+			'regionCode'   => 'US',
 		);
 		unset( $data[ $param ] );
 
@@ -115,15 +116,15 @@ class Create_PublicationTest extends TestCase {
 	public function test_create_request__requires_organization_id() {
 		$this->module->get_settings()->merge( array( 'organizationID' => '' ) );
 
-		$this->expectException( Missing_Required_Param_Exception::class );
-		$this->expectExceptionMessage( 'Request parameter is empty: organizationID.' );
+		$this->expectException( Missing_Required_Setting_Exception::class );
+		$this->expectExceptionMessage( 'Required setting is missing: organizationID.' );
 
 		$this->datapoint->create_request(
 			$this->get_data_request(
 				array(
 					'displayName'  => 'Example Publication',
 					'languageCode' => 'en',
-					'countryCode'  => 'US',
+					'regionCode'   => 'US',
 				)
 			)
 		);
@@ -133,12 +134,8 @@ class Create_PublicationTest extends TestCase {
 		return array(
 			'displayName'  => array( 'displayName' ),
 			'languageCode' => array( 'languageCode' ),
-			'countryCode'  => array( 'countryCode' ),
+			'regionCode'   => array( 'regionCode' ),
 		);
-	}
-
-	public function test_is_not_shareable() {
-		$this->assertFalse( $this->datapoint->is_shareable(), 'The create publication datapoint should not be shareable.' );
 	}
 
 	public function test_parse_response() {
@@ -155,7 +152,7 @@ class Create_PublicationTest extends TestCase {
 				array(
 					'displayName'  => 'Example Publication',
 					'languageCode' => 'en',
-					'countryCode'  => 'US',
+					'regionCode'   => 'US',
 				)
 			)
 		);

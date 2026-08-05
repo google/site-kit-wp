@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Datapoints;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
+use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Update_Publication;
 use Google\Site_Kit\Tests\TestCase;
@@ -33,18 +34,30 @@ class Update_PublicationTest extends TestCase {
 	 */
 	private $datapoint;
 
+	/**
+	 * Reader Revenue Manager module.
+	 *
+	 * @var Reader_Revenue_Manager
+	 */
+	private $module;
+
 	public function set_up() {
 		parent::set_up();
 
-		$module = new Reader_Revenue_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$module->get_client()->withDefer( true );
+		$this->enable_feature( 'rrmExpressSetup' );
 
-		$service         = new Webcontentpublisher( $module->get_client() );
+		$this->module = new Reader_Revenue_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->module->get_settings()->register();
+		$this->module->get_settings()->merge( array( 'organizationID' => 'organization-1' ) );
+		$this->module->get_client()->withDefer( true );
+
+		$service         = new Webcontentpublisher( $this->module->get_client() );
 		$this->datapoint = new Update_Publication(
 			array(
-				'service' => function () use ( $service ) {
+				'service'  => function () use ( $service ) {
 					return $service;
 				},
+				'settings' => $this->module->get_settings(),
 			)
 		);
 	}
@@ -53,9 +66,8 @@ class Update_PublicationTest extends TestCase {
 		$request = $this->datapoint->create_request(
 			$this->get_data_request(
 				array(
-					'organizationID' => 'organization-1',
-					'publicationID'  => 'publication-1',
-					'rrmProduct'     => array(
+					'publicationID' => 'publication-1',
+					'rrmProduct'    => array(
 						'tosAcceptance' => array(
 							'userAccepted'   => true,
 							'signerFullName' => 'Site Owner',
@@ -98,7 +110,6 @@ class Update_PublicationTest extends TestCase {
 		$request = $this->datapoint->create_request(
 			$this->get_data_request(
 				array(
-					'organizationID'              => 'organization-1',
 					'publicationID'               => 'publication-1',
 					'publicationTosURL'           => 'https://example.com/terms',
 					'publicationPrivacyPolicyURL' => 'https://example.com/privacy',
@@ -124,27 +135,30 @@ class Update_PublicationTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @dataProvider data_missing_required_params
-	 */
-	public function test_create_request__requires_params( $param ) {
+	public function test_create_request__requires_publication_id() {
 		$data = array(
-			'organizationID'    => 'organization-1',
-			'publicationID'     => 'publication-1',
 			'publicationTosURL' => 'https://example.com/terms',
 		);
-		unset( $data[ $param ] );
 
 		$this->expectException( Missing_Required_Param_Exception::class );
-		$this->expectExceptionMessage( "Request parameter is empty: {$param}." );
+		$this->expectExceptionMessage( 'Request parameter is empty: publicationID.' );
 
 		$this->datapoint->create_request( $this->get_data_request( $data ) );
 	}
 
-	public function data_missing_required_params() {
-		return array(
-			'organizationID' => array( 'organizationID' ),
-			'publicationID'  => array( 'publicationID' ),
+	public function test_create_request__requires_organization_id_setting() {
+		$this->module->get_settings()->merge( array( 'organizationID' => '' ) );
+
+		$this->expectException( Missing_Required_Setting_Exception::class );
+		$this->expectExceptionMessage( 'Required setting is missing: organizationID.' );
+
+		$this->datapoint->create_request(
+			$this->get_data_request(
+				array(
+					'publicationID'     => 'publication-1',
+					'publicationTosURL' => 'https://example.com/terms',
+				)
+			)
 		);
 	}
 
@@ -155,15 +169,10 @@ class Update_PublicationTest extends TestCase {
 		$this->datapoint->create_request(
 			$this->get_data_request(
 				array(
-					'organizationID' => 'organization-1',
-					'publicationID'  => 'publication-1',
+					'publicationID' => 'publication-1',
 				)
 			)
 		);
-	}
-
-	public function test_is_not_shareable() {
-		$this->assertFalse( $this->datapoint->is_shareable(), 'The update publication datapoint should not be shareable.' );
 	}
 
 	public function test_parse_response() {
@@ -178,7 +187,6 @@ class Update_PublicationTest extends TestCase {
 			$response,
 			$this->get_data_request(
 				array(
-					'organizationID'    => 'organization-1',
 					'publicationID'     => 'publication-1',
 					'publicationTosURL' => 'https://example.com/terms',
 				)

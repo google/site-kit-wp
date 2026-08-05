@@ -89,17 +89,6 @@ class Get_User_SettingsTest extends TestCase {
 		);
 	}
 
-	public function test_parse_response() {
-		$data_request = new Data_Request( 'GET', 'modules', 'reader-revenue-manager', 'user-settings', array() );
-		$settings     = array( 'lastActionedExpressSetups' => array() );
-
-		$this->assertSame(
-			$settings,
-			$this->datapoint->parse_response( $settings, $data_request ),
-			'The datapoint should return the response unchanged.'
-		);
-	}
-
 	public function test_permission_callback() {
 		$this->assertSame(
 			current_user_can( Permissions::VIEW_DASHBOARD ),

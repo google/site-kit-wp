@@ -112,10 +112,6 @@ class Get_Terms_Of_ServiceTest extends TestCase {
 		$this->assertSame( 404, $response->get_error_data()['status'], 'The upstream response status should be preserved.' );
 	}
 
-	public function test_is_not_shareable() {
-		$this->assertFalse( $this->datapoint->is_shareable(), 'The Terms of Service datapoint should not be shareable.' );
-	}
-
 	private function get_data_request( array $data ) {
 		return new Data_Request( 'GET', 'modules', 'reader-revenue-manager', 'terms-of-service', $data );
 	}

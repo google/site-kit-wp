@@ -52,7 +52,6 @@ use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\Block_Support;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
-use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Admin_Post_List;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Contribute_With_Google_Block;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Create_Publication;
@@ -72,8 +71,6 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\User_Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Web_Tag;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Service_SubscribewithGoogle;
-use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\PaymentOptions;
-use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
 use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher as Google_Service_Webcontentpublisher;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
@@ -291,6 +288,28 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	}
 
 	/**
+	 * Gets the configured Subscribe with Google service instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Google_Service_SubscribewithGoogle Subscribe with Google service instance.
+	 */
+	public function get_subscribewithgoogle_service() {
+		return $this->get_service( 'subscribewithgoogle' );
+	}
+
+	/**
+	 * Gets the configured Web Content Publisher service instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Google_Service_Webcontentpublisher Web Content Publisher service instance.
+	 */
+	public function get_webcontentpublisher_service() {
+		return $this->get_service( 'webcontentpublisher' );
+	}
+
+	/**
 	 * Checks whether the module is connected.
 	 *
 	 * @since 1.132.0
@@ -378,66 +397,55 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		$webcontentpublisher_service = function () {
-			return $this->get_service( 'webcontentpublisher' );
-		};
+		$search_console_settings = new Search_Console_Settings( $this->options );
+		$webcontentpublisher     = array( $this, 'get_webcontentpublisher_service' );
+		$publications_service    = Feature_Flags::enabled( 'rrmExpressSetup' )
+			? $webcontentpublisher
+			: array( $this, 'get_subscribewithgoogle_service' );
 
 		$datapoints = array(
 			'POST:create-publication'                => new Create_Publication(
 				array(
 					'reference_site_url' => $this->context->get_reference_site_url(),
-					'service'            => $webcontentpublisher_service,
+					'service'            => $webcontentpublisher,
 					'settings'           => $this->get_settings(),
 				)
 			),
 			'GET:publication'                        => new Get_Publication(
 				array(
-					'service' => $webcontentpublisher_service,
+					'service'  => $webcontentpublisher,
+					'settings' => $this->get_settings(),
 				)
 			),
 			'POST:publication'                       => new Update_Publication(
 				array(
-					'service' => $webcontentpublisher_service,
+					'service'  => $webcontentpublisher,
+					'settings' => $this->get_settings(),
 				)
 			),
 			'GET:publications'                       => new Get_Publications(
 				array(
-					'get_publication_filter'       => function () {
-						return $this->get_publication_filter();
-					},
-					'service'                      => function () {
-						if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
-							return $this->get_service( 'webcontentpublisher' );
-						}
-						return $this->get_service( 'subscribewithgoogle' );
-					},
-					'settings'                     => $this->get_settings(),
-					'synchronize_publication_data' => function ( $publications ) {
-						$this->synchronize_publication_data( $publications );
-					},
+					'search_console_settings' => $search_console_settings,
+					'service'                 => $publications_service,
+					'settings'                => $this->get_settings(),
 				)
 			),
-			'GET:terms-of-service'                   => new Get_Terms_Of_Service(
-				array(
-					'service' => '',
-				)
-			),
+			'GET:terms-of-service'                   => new Get_Terms_Of_Service( array() ),
 			'POST:sync-publication-onboarding-state' => array(
 				'service' => 'subscribewithgoogle',
 			),
 		);
 
 		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
-			$datapoints['GET:user-settings']  = new Get_User_Settings(
+			$datapoints['GET:user-settings'] = new Get_User_Settings(
 				array(
 					'user_settings' => $this->user_settings,
-					'service'       => '',
 				)
 			);
+
 			$datapoints['POST:user-settings'] = new Save_User_Settings(
 				array(
 					'user_settings' => $this->user_settings,
-					'service'       => '',
 				)
 			);
 		}
@@ -526,118 +534,6 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	}
 
 	/**
-	 * Synchronizes the publication data with the module settings.
-	 *
-	 * @since 1.175.0
-	 *
-	 * @param array $publications Array of Publication objects.
-	 * @return void
-	 */
-	protected function synchronize_publication_data( $publications ) {
-		if ( empty( $publications ) ) {
-			return;
-		}
-
-		$settings       = $this->get_settings()->get();
-		$publication_id = $settings['publicationID'];
-
-		if ( empty( $publication_id ) ) {
-			return;
-		}
-
-		$filtered_publications = array_filter(
-			$publications,
-			function ( $pub ) use ( $publication_id ) {
-				return $pub->getPublicationId() === $publication_id;
-			}
-		);
-
-		if ( empty( $filtered_publications ) ) {
-			return;
-		}
-
-		$filtered_publications = array_values( $filtered_publications );
-		$publication           = $filtered_publications[0];
-
-		$onboarding_state     = $settings['publicationOnboardingState'];
-		$new_onboarding_state = $publication->getOnboardingState();
-
-		$new_settings = array(
-			'publicationOnboardingState' => $new_onboarding_state,
-			'productIDs'                 => $this->get_product_ids( $publication ),
-			'paymentOption'              => $this->get_payment_option( $publication ),
-		);
-
-		$content_policy_status = $publication->getContentPolicyStatus();
-
-		if ( $content_policy_status ) {
-			$new_settings['contentPolicyState'] = $content_policy_status->getContentPolicyState() ?? '';
-			$new_settings['policyInfoLink']     = $content_policy_status->getPolicyInfoLink() ?? '';
-		}
-
-		if ( $new_onboarding_state !== $onboarding_state ) {
-			$new_settings['publicationOnboardingStateChanged'] = true;
-		}
-
-		$this->get_settings()->merge( $new_settings );
-
-		$cron_event = wp_next_scheduled( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
-		if ( $cron_event ) {
-			wp_unschedule_event( $cron_event, Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
-		}
-
-		wp_schedule_single_event(
-			time() + HOUR_IN_SECONDS,
-			Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION
-		);
-	}
-
-	/**
-	 * Returns the product IDs for the given publication.
-	 *
-	 * @since 1.175.0
-	 *
-	 * @param Publication $publication Publication object.
-	 * @return array Product IDs.
-	 */
-	private function get_product_ids( Publication $publication ) {
-		$products    = $publication->getProducts();
-		$product_ids = array();
-
-		if ( ! empty( $products ) ) {
-			foreach ( $products as $product ) {
-				$product_ids[] = $product->getName();
-			}
-		}
-
-		return $product_ids;
-	}
-
-	/**
-	 * Returns the payment option for the given publication.
-	 *
-	 * @since 1.175.0
-	 *
-	 * @param Publication $publication Publication object.
-	 * @return string Payment option.
-	 */
-	private function get_payment_option( Publication $publication ) {
-		$payment_options = $publication->getPaymentOptions();
-		$payment_option  = '';
-
-		if ( $payment_options instanceof PaymentOptions ) {
-			foreach ( $payment_options as $option => $value ) {
-				if ( true === $value ) {
-					$payment_option = $option;
-					break;
-				}
-			}
-		}
-
-		return $payment_option;
-	}
-
-	/**
 	 * Sets up information about the module.
 	 *
 	 * @since 1.130.0
@@ -651,43 +547,6 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			'description' => __( 'Add simple CTAs to your pages that ask readers to sign up for your newsletter, complete a survey, make a contribution, or subscribe', 'google-site-kit' ),
 			'homepage'    => 'https://publishercenter.google.com',
 		);
-	}
-
-	/**
-	 * Gets the filter for retrieving publications for the current site.
-	 *
-	 * @since 1.131.0
-	 *
-	 * @return string Permutations for site hosts or URL.
-	 */
-	private function get_publication_filter() {
-		$sc_settings    = $this->options->get( Search_Console_Settings::OPTION );
-		$sc_property_id = $sc_settings['propertyID'];
-
-		if ( 0 === strpos( $sc_property_id, 'sc-domain:' ) ) { // Domain property.
-			$host   = str_replace( 'sc-domain:', '', $sc_property_id );
-			$filter = join(
-				' OR ',
-				array_map(
-					function ( $domain ) {
-						return sprintf( 'domain = "%s"', $domain );
-					},
-					URL::permute_site_hosts( $host )
-				)
-			);
-		} else { // URL property.
-			$filter = join(
-				' OR ',
-				array_map(
-					function ( $url ) {
-						return sprintf( 'site_url = "%s"', $url );
-					},
-					URL::permute_site_url( $sc_property_id )
-				)
-			);
-		}
-
-		return $filter;
 	}
 
 	/**

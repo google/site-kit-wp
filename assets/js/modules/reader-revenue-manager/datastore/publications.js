@@ -129,37 +129,24 @@ const fetchCreatePublicationStore = createFetchStore( {
 
 const fetchGetPublicationStore = createFetchStore( {
 	baseName: 'getPublication',
-	controlCallback: ( { organizationID, publicationID } ) =>
+	controlCallback: ( { publicationID } ) =>
 		get(
 			'modules',
 			MODULE_SLUG_READER_REVENUE_MANAGER,
 			'publication',
-			{
-				organizationID,
-				publicationID,
-			},
+			{ publicationID },
 			{ useCache: false }
 		),
 	reducerCallback: createReducer(
-		( state, publication, { organizationID, publicationID } ) => {
-			state.publicationsByOrganization =
-				state.publicationsByOrganization || {};
-			state.publicationsByOrganization[ organizationID ] =
-				state.publicationsByOrganization[ organizationID ] || {};
-			state.publicationsByOrganization[ organizationID ][
-				publicationID
-			] = publication;
+		( state, publication, { publicationID } ) => {
+			state.publicationsByID = state.publicationsByID || {};
+			state.publicationsByID[ publicationID ] = publication;
 		}
 	),
-	argsToParams: ( { organizationID, publicationID } = {} ) => ( {
-		organizationID,
+	argsToParams: ( { publicationID } = {} ) => ( {
 		publicationID,
 	} ),
-	validateParams: ( { organizationID, publicationID } = {} ) => {
-		invariant(
-			typeof organizationID === 'string' && organizationID.length > 0,
-			'organizationID is required and must be a string.'
-		);
+	validateParams: ( { publicationID } = {} ) => {
 		invariant(
 			typeof publicationID === 'string' && publicationID.length > 0,
 			'publicationID is required and must be a string.'
@@ -177,22 +164,13 @@ const fetchUpdatePublicationStore = createFetchStore( {
 			params
 		),
 	reducerCallback: createReducer(
-		( state, publication, { organizationID, publicationID } ) => {
-			state.publicationsByOrganization =
-				state.publicationsByOrganization || {};
-			state.publicationsByOrganization[ organizationID ] =
-				state.publicationsByOrganization[ organizationID ] || {};
-			state.publicationsByOrganization[ organizationID ][
-				publicationID
-			] = publication;
+		( state, publication, { publicationID } ) => {
+			state.publicationsByID = state.publicationsByID || {};
+			state.publicationsByID[ publicationID ] = publication;
 		}
 	),
 	argsToParams: ( params = {} ) => params,
-	validateParams: ( { organizationID, publicationID, ...fields } = {} ) => {
-		invariant(
-			typeof organizationID === 'string' && organizationID.length > 0,
-			'organizationID is required and must be a string.'
-		);
+	validateParams: ( { publicationID, ...fields } = {} ) => {
 		invariant(
 			typeof publicationID === 'string' && publicationID.length > 0,
 			'publicationID is required and must be a string.'
@@ -293,7 +271,7 @@ const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 
 const baseInitialState = {
 	publications: undefined,
-	publicationsByOrganization: {},
+	publicationsByID: {},
 	termsOfService: {},
 };
 
@@ -343,7 +321,6 @@ const baseActions = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} params                               Publication update parameters.
-	 * @param {string} params.organizationID                Organization ID.
 	 * @param {string} params.publicationID                 Publication ID.
 	 * @param {Object} [params.rrmProduct]                  RRM product fields, including ToS acceptance.
 	 * @param {string} [params.publicationTosURL]           Publication Terms of Service URL.
@@ -356,12 +333,7 @@ const baseActions = {
 				isPlainObject( params ),
 				'Publication update parameters are required.'
 			);
-			const { organizationID, publicationID, ...fields } = params;
-
-			invariant(
-				typeof organizationID === 'string' && organizationID.length > 0,
-				'organizationID is required and must be a string.'
-			);
+			const { publicationID, ...fields } = params;
 			invariant(
 				typeof publicationID === 'string' && publicationID.length > 0,
 				'publicationID is required and must be a string.'
@@ -557,19 +529,18 @@ const baseResolvers = {
 		}
 	},
 
-	*getPublication( { organizationID, publicationID } = {} ) {
-		if ( ! organizationID || ! publicationID ) {
+	*getPublication( { publicationID } = {} ) {
+		if ( ! publicationID ) {
 			return;
 		}
 
 		const registry = yield commonActions.getRegistry();
 		const publication = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
-			.getPublication( { organizationID, publicationID } );
+			.getPublication( { publicationID } );
 
 		if ( publication === undefined ) {
 			yield fetchGetPublicationStore.actions.fetchGetPublication( {
-				organizationID,
 				publicationID,
 			} );
 		}
@@ -611,20 +582,17 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state                 Data store's state.
-	 * @param {Object} params                Publication parameters.
-	 * @param {string} params.organizationID Organization ID.
-	 * @param {string} params.publicationID  Publication ID.
+	 * @param {Object} state                Data store's state.
+	 * @param {Object} params               Publication parameters.
+	 * @param {string} params.publicationID Publication ID.
 	 * @return {(Object|undefined)} Publication resource; `undefined` if not loaded.
 	 */
-	getPublication( state, { organizationID, publicationID } = {} ) {
-		if ( ! organizationID || ! publicationID ) {
+	getPublication( state, { publicationID } = {} ) {
+		if ( ! publicationID ) {
 			return undefined;
 		}
 
-		return state.publicationsByOrganization?.[ organizationID ]?.[
-			publicationID
-		];
+		return state.publicationsByID?.[ publicationID ];
 	},
 
 	/**

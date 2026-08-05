@@ -146,7 +146,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 
 		describe( 'updatePublication', () => {
 			const params = {
-				organizationID: 'organization-1',
 				publicationID: 'publication-1',
 				rrmProduct: {
 					tosAcceptance: {
@@ -167,7 +166,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					registry
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
 						.updatePublication( {
-							organizationID: params.organizationID,
 							publicationID: params.publicationID,
 						} )
 				).toThrow( 'Publication fields are required.' );
@@ -915,7 +913,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 
 		describe( 'getPublication', () => {
 			const params = {
-				organizationID: 'organization-1',
 				publicationID: 'publication-1',
 			};
 
@@ -950,9 +947,10 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				const searchParams = new global.URLSearchParams(
 					fetchMock.lastUrl().split( '?' )[ 1 ]
 				);
-				expect( Object.fromEntries( searchParams ) ).toMatchObject(
-					params
-				);
+				expect( Object.fromEntries( searchParams ) ).toEqual( {
+					...params,
+					_locale: 'user',
+				} );
 			} );
 
 			it( 'should not fetch a publication already in state', async () => {

@@ -77,7 +77,7 @@ class Synchronize_Publication {
 	 *
 	 * Fetches publications via `GET:publications`, which triggers
 	 * synchronization of the connected publication data in
-	 * {@see Reader_Revenue_Manager::synchronize_publication_data()}.
+	 * {@see Get_Publications::synchronize_publication_data()}.
 	 *
 	 * @since 1.146.0
 	 *
