@@ -46,10 +46,7 @@ use Google\Site_Kit\Modules\AdSense\Datapoints\Get_Notifications;
 use Google\Site_Kit\Modules\AdSense\Datapoints\Get_Report;
 use Google\Site_Kit\Modules\AdSense\Datapoints\Get_Sites;
 use Google\Site_Kit\Modules\AdSense\Datapoints\Sync_Ad_Blocking_Recovery_Tags;
-use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\Adsense as Google_Service_Adsense;
-use Google\Site_Kit_Dependencies\Google\Service\Adsense\Account;
-use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert as Google_Service_Adsense_Alert;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Exception;
 use Google\Site_Kit\Context;
@@ -315,15 +312,14 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 					'service' => function () {
 						return $this->get_service( 'adsense' );
 					},
-					'module'  => $this,
 				)
 			),
 			'GET:adunits'                         => new Get_Adunits(
 				array(
-					'service' => function () {
+					'service'  => function () {
 						return $this->get_service( 'adsense' );
 					},
-					'module'  => $this,
+					'settings' => $this->get_settings(),
 				)
 			),
 			'GET:alerts'                          => new Get_Alerts(
@@ -331,7 +327,6 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 					'service' => function () {
 						return $this->get_service( 'adsense' );
 					},
-					'module'  => $this,
 				)
 			),
 			'GET:clients'                         => new Get_Clients(
@@ -339,14 +334,15 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 					'service' => function () {
 						return $this->get_service( 'adsense' );
 					},
-					'module'  => $this,
 				)
 			),
 			'GET:notifications'                   => new Get_Notifications(
 				array(
-					'service'     => '',
-					'module'      => $this,
-					'account_url' => function () {
+					'settings'        => $this->get_settings(),
+					'get_data'        => function ( $datapoint, $args = array() ) {
+						return $this->get_data( $datapoint, $args );
+					},
+					'get_account_url' => function () {
 						return $this->get_account_url();
 					},
 				)
@@ -357,7 +353,6 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 						return $this->get_service( 'adsense' );
 					},
 					'shareable'                           => true,
-					'module'                              => $this,
 					'is_shared_data_request'              => function ( $data_request ) {
 						return $this->is_shared_data_request( $data_request );
 					},
@@ -371,7 +366,6 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 					'service' => function () {
 						return $this->get_service( 'adsense' );
 					},
-					'module'  => $this,
 				)
 			),
 			'POST:sync-ad-blocking-recovery-tags' => new Sync_Ad_Blocking_Recovery_Tags(
@@ -379,7 +373,7 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 					'service'                  => function () {
 						return $this->get_service( 'adsense' );
 					},
-					'module'                   => $this,
+					'settings'                 => $this->get_settings(),
 					'ad_blocking_recovery_tag' => $this->ad_blocking_recovery_tag,
 					'normalize_account_id'     => function ( $account_id ) {
 						return self::normalize_account_id( $account_id );
@@ -387,18 +381,6 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 				)
 			),
 		);
-	}
-
-	/**
-	 * Checks for the state of an Account, whether closed or not.
-	 *
-	 * @since 1.73.0
-	 *
-	 * @param Account $account Account model.
-	 * @return bool Whether the account is not closed.
-	 */
-	public static function is_account_not_closed( $account ) {
-		return 'CLOSED' !== $account->getState();
 	}
 
 	/**
@@ -661,69 +643,6 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 	 */
 	public function get_tag_matchers() {
 		return new Tag_Matchers();
-	}
-
-	/**
-	 * Parses account ID, adds it to the model object and returns updated model.
-	 *
-	 * @since 1.36.0
-	 *
-	 * @param Google_Model $account Account model.
-	 * @param string       $id_key Attribute name that contains account ID.
-	 * @return \stdClass Updated model with _id attribute.
-	 */
-	public static function filter_account_with_ids( $account, $id_key = 'name' ) {
-		$obj = $account->toSimpleObject();
-
-		$matches = array();
-		if ( preg_match( '#accounts/([^/]+)#', $account[ $id_key ], $matches ) ) {
-			$obj->_id = $matches[1];
-		}
-
-		return $obj;
-	}
-
-	/**
-	 * Parses account and client IDs, adds it to the model object and returns updated model.
-	 *
-	 * @since 1.36.0
-	 *
-	 * @param Google_Model $client Client model.
-	 * @param string       $id_key Attribute name that contains client ID.
-	 * @return \stdClass Updated model with _id and _accountID attributes.
-	 */
-	public static function filter_client_with_ids( $client, $id_key = 'name' ) {
-		$obj = $client->toSimpleObject();
-
-		$matches = array();
-		if ( preg_match( '#accounts/([^/]+)/adclients/([^/]+)#', $client[ $id_key ], $matches ) ) {
-			$obj->_id        = $matches[2];
-			$obj->_accountID = $matches[1]; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		}
-
-		return $obj;
-	}
-
-	/**
-	 * Parses account, client and ad unit IDs, adds it to the model object and returns updated model.
-	 *
-	 * @since 1.36.0
-	 *
-	 * @param Google_Model $adunit Ad unit model.
-	 * @param string       $id_key Attribute name that contains ad unit ID.
-	 * @return \stdClass Updated model with _id, _clientID and _accountID attributes.
-	 */
-	public static function filter_adunit_with_ids( $adunit, $id_key = 'name' ) {
-		$obj = $adunit->toSimpleObject();
-
-		$matches = array();
-		if ( preg_match( '#accounts/([^/]+)/adclients/([^/]+)/adunits/([^/]+)#', $adunit[ $id_key ], $matches ) ) {
-			$obj->_id        = $matches[3];
-			$obj->_clientID  = $matches[2]; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-			$obj->_accountID = $matches[1]; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		}
-
-		return $obj;
 	}
 
 	/**

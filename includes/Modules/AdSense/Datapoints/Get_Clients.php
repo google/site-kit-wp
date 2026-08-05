@@ -12,7 +12,7 @@
 
 namespace Google\Site_Kit\Modules\AdSense\Datapoints;
 
-use Google\Site_Kit\Modules\AdSense\Datapoints\AdSense_Datapoint;
+use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\AdSense;
@@ -25,7 +25,7 @@ use WP_Error;
  * @access private
  * @ignore
  */
-class Get_Clients extends AdSense_Datapoint implements Executable_Datapoint {
+class Get_Clients extends Datapoint implements Executable_Datapoint {
 
 	/**
 	 * Creates a request object.
@@ -58,6 +58,27 @@ class Get_Clients extends AdSense_Datapoint implements Executable_Datapoint {
 	 * @return mixed Parsed response.
 	 */
 	public function parse_response( $response, Data_Request $data ) {
-		return array_map( array( $this->get_module(), 'filter_client_with_ids' ), $response->getAdClients() );
+		return array_map( array( $this, 'filter_client_with_ids' ), $response->getAdClients() );
+	}
+
+	/**
+	 * Parses account and client IDs, adds it to the model object and returns updated model.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param object $client Client model.
+	 * @param string $id_key Attribute name that contains client ID.
+	 * @return \stdClass Updated model with _id and _accountID attributes.
+	 */
+	private function filter_client_with_ids( $client, $id_key = 'name' ) {
+		$obj = $client->toSimpleObject();
+
+		$matches = array();
+		if ( preg_match( '#accounts/([^/]+)/adclients/([^/]+)#', $client[ $id_key ], $matches ) ) {
+			$obj->_id        = $matches[2];
+			$obj->_accountID = $matches[1]; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		}
+
+		return $obj;
 	}
 }

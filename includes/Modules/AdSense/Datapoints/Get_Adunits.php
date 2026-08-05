@@ -12,8 +12,9 @@
 
 namespace Google\Site_Kit\Modules\AdSense\Datapoints;
 
-use Google\Site_Kit\Modules\AdSense\Datapoints\AdSense_Datapoint;
+use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
+use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\AdSense;
 use WP_Error;
@@ -25,7 +26,29 @@ use WP_Error;
  * @access private
  * @ignore
  */
-class Get_Adunits extends AdSense_Datapoint implements Executable_Datapoint {
+class Get_Adunits extends Datapoint implements Executable_Datapoint {
+
+	/**
+	 * Module settings instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Module_Settings
+	 */
+	private $settings;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $definition Definition fields.
+	 */
+	public function __construct( array $definition ) {
+		parent::__construct( $definition );
+		if ( isset( $definition['settings'] ) ) {
+			$this->settings = $definition['settings'];
+		}
+	}
 
 	/**
 	 * Creates a request object.
@@ -40,7 +63,7 @@ class Get_Adunits extends AdSense_Datapoint implements Executable_Datapoint {
 		$client_id  = $data_request->data['clientID'] ?? null;
 
 		if ( ! $account_id || ! $client_id ) {
-			$option     = $this->get_module()->get_settings()->get();
+			$option     = $this->settings->get();
 			$account_id = $account_id ?? $option['accountID'];
 			if ( empty( $account_id ) ) {
 				/* translators: %s: Missing parameter name */
@@ -67,6 +90,28 @@ class Get_Adunits extends AdSense_Datapoint implements Executable_Datapoint {
 	 * @return mixed Parsed response.
 	 */
 	public function parse_response( $response, Data_Request $data ) {
-		return array_map( array( $this->get_module(), 'filter_adunit_with_ids' ), $response->getAdUnits() );
+		return array_map( array( $this, 'filter_adunit_with_ids' ), $response->getAdUnits() );
+	}
+
+	/**
+	 * Parses account, client and ad unit IDs, adds it to the model object and returns updated model.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param object $adunit Ad unit model.
+	 * @param string $id_key Attribute name that contains ad unit ID.
+	 * @return \stdClass Updated model with _id, _clientID and _accountID attributes.
+	 */
+	private function filter_adunit_with_ids( $adunit, $id_key = 'name' ) {
+		$obj = $adunit->toSimpleObject();
+
+		$matches = array();
+		if ( preg_match( '#accounts/([^/]+)/adclients/([^/]+)/adunits/([^/]+)#', $adunit[ $id_key ], $matches ) ) {
+			$obj->_id        = $matches[3];
+			$obj->_clientID  = $matches[2]; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			$obj->_accountID = $matches[1]; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		}
+
+		return $obj;
 	}
 }

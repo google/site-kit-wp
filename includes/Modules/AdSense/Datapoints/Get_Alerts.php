@@ -12,7 +12,7 @@
 
 namespace Google\Site_Kit\Modules\AdSense\Datapoints;
 
-use Google\Site_Kit\Modules\AdSense\Datapoints\AdSense_Datapoint;
+use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\AdSense;
@@ -25,7 +25,7 @@ use WP_Error;
  * @access private
  * @ignore
  */
-class Get_Alerts extends AdSense_Datapoint implements Executable_Datapoint {
+class Get_Alerts extends Datapoint implements Executable_Datapoint {
 
 	/**
 	 * Creates a request object.

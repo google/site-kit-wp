@@ -12,7 +12,7 @@
 
 namespace Google\Site_Kit\Modules\AdSense\Datapoints;
 
-use Google\Site_Kit\Modules\AdSense\Datapoints\AdSense_Datapoint;
+use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Date;
@@ -27,7 +27,7 @@ use WP_Error;
  * @access private
  * @ignore
  */
-class Get_Report extends AdSense_Datapoint implements Executable_Datapoint {
+class Get_Report extends Datapoint implements Executable_Datapoint {
 
 	/**
 	 * Callable to check if shared data request.

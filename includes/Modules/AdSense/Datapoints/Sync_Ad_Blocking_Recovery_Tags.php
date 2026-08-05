@@ -12,11 +12,11 @@
 
 namespace Google\Site_Kit\Modules\AdSense\Datapoints;
 
-use Google\Site_Kit\Modules\AdSense\Datapoints\AdSense_Datapoint;
+use Google\Site_Kit\Core\Modules\Datapoint;
+use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Modules\AdSense\Ad_Blocking_Recovery_Tag;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Modules\AdSense;
 use WP_Error;
 use WP_REST_Response;
 
@@ -27,7 +27,15 @@ use WP_REST_Response;
  * @access private
  * @ignore
  */
-class Sync_Ad_Blocking_Recovery_Tags extends AdSense_Datapoint implements Executable_Datapoint {
+class Sync_Ad_Blocking_Recovery_Tags extends Datapoint implements Executable_Datapoint {
+
+	/**
+	 * Module settings instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Module_Settings
+	 */
+	private $settings;
 
 	/**
 	 * Ad Blocking Recovery Tag instance.
@@ -54,6 +62,9 @@ class Sync_Ad_Blocking_Recovery_Tags extends AdSense_Datapoint implements Execut
 	 */
 	public function __construct( array $definition ) {
 		parent::__construct( $definition );
+		if ( isset( $definition['settings'] ) ) {
+			$this->settings = $definition['settings'];
+		}
 		if ( isset( $definition['ad_blocking_recovery_tag'] ) ) {
 			$this->ad_blocking_recovery_tag = $definition['ad_blocking_recovery_tag'];
 		}
@@ -71,7 +82,7 @@ class Sync_Ad_Blocking_Recovery_Tags extends AdSense_Datapoint implements Execut
 	 * @return mixed Request object on success, or WP_Error on failure.
 	 */
 	public function create_request( Data_Request $data_request ) {
-		$settings = $this->get_module()->get_settings()->get();
+		$settings = $this->settings->get();
 		if ( empty( $settings['accountID'] ) ) {
 			return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 500 ) );
 		}

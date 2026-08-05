@@ -12,8 +12,9 @@
 
 namespace Google\Site_Kit\Modules\AdSense\Datapoints;
 
-use Google\Site_Kit\Modules\AdSense\Datapoints\AdSense_Datapoint;
+use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
+use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert as Google_Service_Adsense_Alert;
 
@@ -24,14 +25,30 @@ use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert as Google_Service_
  * @access private
  * @ignore
  */
-class Get_Notifications extends AdSense_Datapoint implements Executable_Datapoint {
+class Get_Notifications extends Datapoint implements Executable_Datapoint {
 	/**
-	 * Account URL callable.
+	 * Module settings instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Module_Settings
+	 */
+	private $settings;
+
+	/**
+	 * Get data callable.
 	 *
 	 * @since n.e.x.t
 	 * @var callable
 	 */
-	private $account_url;
+	private $get_data;
+
+	/**
+	 * Get account URL callable.
+	 *
+	 * @since n.e.x.t
+	 * @var callable
+	 */
+	private $get_account_url;
 
 	/**
 	 * Constructor.
@@ -42,8 +59,14 @@ class Get_Notifications extends AdSense_Datapoint implements Executable_Datapoin
 	 */
 	public function __construct( array $definition ) {
 		parent::__construct( $definition );
-		if ( isset( $definition['account_url'] ) ) {
-			$this->account_url = $definition['account_url'];
+		if ( isset( $definition['settings'] ) ) {
+			$this->settings = $definition['settings'];
+		}
+		if ( isset( $definition['get_data'] ) ) {
+			$this->get_data = $definition['get_data'];
+		}
+		if ( isset( $definition['get_account_url'] ) ) {
+			$this->get_account_url = $definition['get_account_url'];
 		}
 	}
 	/**
@@ -55,17 +78,18 @@ class Get_Notifications extends AdSense_Datapoint implements Executable_Datapoin
 	 * @return callable A callable that returns notifications by filtering SEVERE alerts.
 	 */
 	public function create_request( Data_Request $data_request ) {
-		$module      = $this->get_module();
-		$account_url = $this->account_url;
+		$get_data        = $this->get_data;
+		$get_account_url = $this->get_account_url;
+		$settings        = $this->settings;
 
-		return function () use ( $module, $account_url ) {
-			$settings = $module->get_settings()->get();
+		return function () use ( $get_data, $get_account_url, $settings ) {
+			$settings = $settings->get();
 
 			if ( empty( $settings['accountID'] ) ) {
 				return array();
 			}
 
-			$alerts = $module->get_data( 'alerts', array( 'accountID' => $settings['accountID'] ) );
+			$alerts = call_user_func( $get_data, 'alerts', array( 'accountID' => $settings['accountID'] ) );
 
 			if ( is_wp_error( $alerts ) || empty( $alerts ) ) {
 				return array();
@@ -84,18 +108,13 @@ class Get_Notifications extends AdSense_Datapoint implements Executable_Datapoin
 			}
 
 			$notifications = array_map(
-				function ( Google_Service_Adsense_Alert $alert ) use ( $account_url ) {
-					$url = $account_url;
-					if ( is_callable( $url ) ) {
-						$url = $url();
-					}
-
+				function ( Google_Service_Adsense_Alert $alert ) use ( $get_account_url ) {
 					return array(
 						'id'            => 'adsense::' . $alert->getName(),
 						'description'   => $alert->getMessage(),
 						'isDismissible' => true,
 						'severity'      => 'win-info',
-						'ctaURL'        => $url,
+						'ctaURL'        => call_user_func( $get_account_url ),
 						'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
 						'ctaTarget'     => '_blank',
 					);

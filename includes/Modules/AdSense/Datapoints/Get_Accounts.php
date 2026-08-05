@@ -12,9 +12,10 @@
 
 namespace Google\Site_Kit\Modules\AdSense\Datapoints;
 
-use Google\Site_Kit\Modules\AdSense\Datapoints\AdSense_Datapoint;
+use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Util\Sort;
 
 /**
  * Class for the accounts listing datapoint.
@@ -23,7 +24,7 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
  * @access private
  * @ignore
  */
-class Get_Accounts extends AdSense_Datapoint implements Executable_Datapoint {
+class Get_Accounts extends Datapoint implements Executable_Datapoint {
 
 	/**
 	 * Creates a request object.
@@ -48,10 +49,42 @@ class Get_Accounts extends AdSense_Datapoint implements Executable_Datapoint {
 	 * @return mixed Parsed response.
 	 */
 	public function parse_response( $response, Data_Request $data ) {
-		$accounts = array_filter( $response->getAccounts(), array( $this->get_module(), 'is_account_not_closed' ) );
-		return \Google\Site_Kit\Core\Util\Sort::case_insensitive_list_sort(
-			array_map( array( $this->get_module(), 'filter_account_with_ids' ), $accounts ),
+		$accounts = array_filter( $response->getAccounts(), array( $this, 'is_account_not_closed' ) );
+		return Sort::case_insensitive_list_sort(
+			array_map( array( $this, 'filter_account_with_ids' ), $accounts ),
 			'displayName'
 		);
+	}
+
+	/**
+	 * Checks for the state of an Account, whether closed or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param object $account Account model.
+	 * @return bool Whether the account is not closed.
+	 */
+	private function is_account_not_closed( $account ) {
+		return 'CLOSED' !== $account->getState();
+	}
+
+	/**
+	 * Parses account ID, adds it to the model object and returns updated model.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param object $account Account model.
+	 * @param string $id_key Attribute name that contains account ID.
+	 * @return \stdClass Updated model with _id attribute.
+	 */
+	private function filter_account_with_ids( $account, $id_key = 'name' ) {
+		$obj = $account->toSimpleObject();
+
+		$matches = array();
+		if ( preg_match( '#accounts/([^/]+)#', $account[ $id_key ], $matches ) ) {
+			$obj->_id = $matches[1];
+		}
+
+		return $obj;
 	}
 }
