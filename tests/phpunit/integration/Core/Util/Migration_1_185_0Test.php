@@ -1,6 +1,6 @@
 <?php
 /**
- * \Google\Site_Kit\Tests\Core\Util\Migration_N_E_X_TTest
+ * \Google\Site_Kit\Tests\Core\Util\Migration_1_185_0Test
  *
  * @package   Google\Site_Kit\Tests\Core\Util
  * @copyright 2026 Google LLC
@@ -13,10 +13,10 @@ namespace Google\Site_Kit\Tests\Core\Util;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Connected_Proxy_URL;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Util\Migration_N_E_X_T;
+use Google\Site_Kit\Core\Util\Migration_1_185_0;
 use Google\Site_Kit\Tests\TestCase;
 
-class Migration_N_E_X_TTest extends TestCase {
+class Migration_1_185_0Test extends TestCase {
 
 	protected Context $context;
 	protected Options $options;
@@ -32,11 +32,11 @@ class Migration_N_E_X_TTest extends TestCase {
 		// Remove both options from the database, so each test relies only on
 		// the values it creates and stores.
 		$this->options->delete( Connected_Proxy_URL::OPTION );
-		$this->options->delete( Migration_N_E_X_T::DB_VERSION_OPTION );
+		$this->options->delete( Migration_1_185_0::DB_VERSION_OPTION );
 	}
 
 	public function get_new_migration_instance() {
-		return new Migration_N_E_X_T(
+		return new Migration_1_185_0(
 			$this->context,
 			$this->options
 		);
@@ -119,8 +119,8 @@ class Migration_N_E_X_TTest extends TestCase {
 		$migration->migrate();
 
 		$this->assertEquals(
-			'n.e.x.t',
-			$this->options->get( Migration_N_E_X_T::DB_VERSION_OPTION ),
+			'1.185.0',
+			$this->options->get( Migration_1_185_0::DB_VERSION_OPTION ),
 			"Database version should update to the migration's target version after the migration runs."
 		);
 	}
@@ -128,7 +128,7 @@ class Migration_N_E_X_TTest extends TestCase {
 	public function test_migrate__skips_when_the_db_version_is_current() {
 		$migration = $this->get_new_migration_instance();
 
-		$this->options->set( Migration_N_E_X_T::DB_VERSION_OPTION, Migration_N_E_X_T::DB_VERSION );
+		$this->options->set( Migration_1_185_0::DB_VERSION_OPTION, Migration_1_185_0::DB_VERSION );
 
 		// Store the option in plain text, the way earlier plugin versions saved it.
 		$this->options->set( Connected_Proxy_URL::OPTION, 'https://example.com/' );

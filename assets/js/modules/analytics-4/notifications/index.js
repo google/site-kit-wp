@@ -58,6 +58,7 @@ import {
 import EnhancedConversionsNotification, {
 	ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS,
 } from '@/js/modules/analytics-4/components/notifications/EnhancedConversionsNotification';
+import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import IntroModal, {
 	SITE_GOALS_INTRO_MODAL_BANNER,
 } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
@@ -264,17 +265,28 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 
 				return false;
 			},
-			// At least one conversion event type must be detected.
+			// The modal introduces Analytics-backed widgets, so it should not
+			// show for a disconnected module.
+			//
+			// Require Analytics 4 module to be connected to show this notifications.
+			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+			// At least one Site Goals widget must render. This is the same
+			// condition the widget registrations apply, so the modal never
+			// introduces a section that won't appear. `activeWidgets` comes from
+			// the site goals settings endpoint, so that needs resolving too.
 			async ( { select, resolveSelect } ) => {
-				await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+				await Promise.all( [
+					resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+					resolveSelect( MODULES_ANALYTICS_4 ).getSiteGoalsSettings(),
+				] );
 
 				return (
-					select(
-						MODULES_ANALYTICS_4
-					).hasEcommerceConversionReportingEvents() ||
-					select(
-						MODULES_ANALYTICS_4
-					).hasLeadConversionReportingEvents()
+					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+						GOAL_TYPES.ECOMMERCE
+					) === true ||
+					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+						GOAL_TYPES.LEAD
+					) === true
 				);
 			},
 			async ( { select, resolveSelect } ) => {

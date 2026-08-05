@@ -273,6 +273,12 @@ const PDFYourVisitorGroupsTile: FC< PDFYourVisitorGroupsTileProps > = ( {
 						</PDFTypography>
 						{ isTopContentPartialData && <PDFPartialDataBadge /> }
 					</View>
+					{ /* If no content exists, show a "no data" message. */ }
+					{ ! topContent.length && (
+						<PDFTypography size="small">
+							{ __( 'No data to show yet', 'google-site-kit' ) }
+						</PDFTypography>
+					) }
 					{ /*
 					 * The page title links to its Analytics report, like the
 					 * dashboard tile. When the page has no link, `PDFLink`

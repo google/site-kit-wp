@@ -29,6 +29,7 @@ import {
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
+import useQueryArg from '@/js/hooks/useQueryArg';
 import { Cell, Grid, Row } from '@/js/material-components';
 import PoweredBy from './PoweredBy';
 
@@ -41,10 +42,12 @@ const ExpressSetupLayout: FC< ExpressSetupLayoutProps > = ( {
 	children,
 	sidebar,
 } ) => {
+	const [ cta ] = useQueryArg( 'cta' );
 	const breakpoint = useBreakpoint();
 	const isMobileOrTablet = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
 		breakpoint
 	);
+	const showPoweredBy = !! cta;
 
 	return (
 		<Grid className="googlesitekit-rrm-express-setup" collapsed>
@@ -57,7 +60,7 @@ const ExpressSetupLayout: FC< ExpressSetupLayoutProps > = ( {
 				>
 					<div className="googlesitekit-rrm-express-setup__sidebar-inner">
 						{ sidebar }
-						{ ! isMobileOrTablet && <PoweredBy /> }
+						{ showPoweredBy && ! isMobileOrTablet && <PoweredBy /> }
 					</div>
 				</Cell>
 				<Cell
@@ -72,7 +75,7 @@ const ExpressSetupLayout: FC< ExpressSetupLayoutProps > = ( {
 						</Row>
 					</Grid>
 				</Cell>
-				{ isMobileOrTablet && (
+				{ showPoweredBy && isMobileOrTablet && (
 					<Cell
 						size={ 12 }
 						className="googlesitekit-rrm-express-setup__footer"
