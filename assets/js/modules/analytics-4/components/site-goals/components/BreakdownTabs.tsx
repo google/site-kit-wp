@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Tab, TabBar } from 'googlesitekit-components';
 import InfoTooltip from '@/js/components/InfoTooltip';
+import ScrollableTabs from '@/js/components/ScrollableTabs';
 import useViewContext from '@/js/hooks/useViewContext';
 import { SITE_GOALS_BREAKDOWN_OTHER_SOURCES_TAB_ID } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { trackEvent } from '@/js/util';
@@ -77,7 +78,7 @@ const BreakdownTabs: FC< BreakdownTabsProps > = ( {
 	const activeIndex = allTabs.findIndex( ( tab ) => tab.id === activeTabID );
 
 	return (
-		<div className="googlesitekit-site-goals-breakdown-tabs">
+		<ScrollableTabs className="googlesitekit-site-goals-breakdown-tabs">
 			<TabBar
 				activeIndex={ activeIndex < 0 ? 0 : activeIndex }
 				handleActiveIndexUpdate={ ( index: number ) => {
@@ -112,7 +113,7 @@ const BreakdownTabs: FC< BreakdownTabsProps > = ( {
 					</Tab>
 				) ) }
 			</TabBar>
-		</div>
+		</ScrollableTabs>
 	);
 };
 

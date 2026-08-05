@@ -26,6 +26,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ENUM_CONVERSION_EVENTS,
@@ -55,6 +56,11 @@ function Template( {
 				{ access: true },
 				{ slug: MODULE_SLUG_ANALYTICS_4 }
 			);
+		// Both widget categories are active, so each story's detected events
+		// alone decide which variant shows.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+			activeWidgets: [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ],
+		} );
 
 		setupRegistry?.( registry );
 	}

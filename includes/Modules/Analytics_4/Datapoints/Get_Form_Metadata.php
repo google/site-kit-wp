@@ -63,7 +63,7 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	 * isn't active, so the list holds `draft` as well as `publish` and a paused
 	 * campaign still resolves its title.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 * @var array
 	 */
 	const FORM_SLUG_POST_TYPES = array(
@@ -131,7 +131,7 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	 * An ID that neither one matches resolves a null title.
 	 *
 	 * @since 1.182.0
-	 * @since n.e.x.t Renamed from `resolve_form_metadata()`, since a second method now resolves a slug.
+	 * @since 1.185.0 Renamed from `resolve_form_metadata()`, since a second method now resolves a slug.
 	 *
 	 * @param int $form_id The form post ID.
 	 * @return array {
@@ -209,7 +209,7 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	 * A slug that matches no post in FORM_SLUG_POST_TYPES resolves a null
 	 * title, so the dashboard keeps its ID fallback label.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param string $slug The post slug the report names as the form ID. For example, `'jnpfwoygltxurnayflew'`, not `'12'`.
 	 * @return array {
@@ -249,7 +249,7 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	 * dashboard with its entities decoded. An empty title means nothing
 	 * resolved, which maps to null.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param string $title The resolved title, empty when nothing matched.
 	 * @return string|null Decoded title, or null when there is no title.

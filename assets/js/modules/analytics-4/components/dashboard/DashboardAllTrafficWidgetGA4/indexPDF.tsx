@@ -31,6 +31,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { getPDFChangeType } from '@/js/components/pdf-export/getPDFTileChange';
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PIE_CHART_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFCard from '@/js/components/pdf-export/shared-react-pdf-components/PDFCard';
@@ -176,7 +177,11 @@ const DashboardAllTrafficWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 						title={ __( 'All visitors', 'google-site-kit' ) }
 						value={ formattedValue }
 						change={ changeText }
-						isNegative={ typeof change === 'number' && change < 0 }
+						changeType={
+							typeof change === 'number'
+								? getPDFChangeType( change )
+								: undefined
+						}
 						changeLabel={ comparisonLabel }
 					/>
 					{ lineChartImage && (

@@ -192,6 +192,68 @@ describe( 'UserSettingsSelectionPanel', () => {
 		);
 	} );
 
+	it( 'invalidates and re-fetches the next report timestamp each time the panel opens', async () => {
+		// The panel is opened by other components by setting the UI key to true,
+		// so we simulate that here.
+		//
+		// In case any developer looks at this later and wonders why we don't
+		// simulate a user clicking elements in this component to trigger the
+		// open/close behavior, it's because the panel is a side sheet that is
+		// rendered outside of the component tree of the button that opens it.
+		//
+		// This is the most direct way to test the behavior of the panel itself,
+		// without relying on other components to trigger it (which doesn't add
+		// any value as they'd just be triggering this CORE_UI update anyway).
+		registry
+			.dispatch( CORE_UI )
+			.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
+
+		const coreUserDispatch = registry.dispatch( CORE_USER );
+		const invalidateSpy = jest.spyOn(
+			coreUserDispatch,
+			'invalidateEmailReportingNextReport'
+		);
+
+		render( <UserSettingsSelectionPanel />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+		} );
+
+		await waitFor( () =>
+			expect( invalidateSpy ).toHaveBeenCalledTimes( 1 )
+		);
+		expect( fetchMock ).toHaveFetchedTimes(
+			1,
+			emailReportingNextReportEndpoint
+		);
+
+		act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
+		} );
+
+		act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+		} );
+
+		await waitFor( () =>
+			expect( invalidateSpy ).toHaveBeenCalledTimes( 2 )
+		);
+		expect( fetchMock ).toHaveFetchedTimes(
+			2,
+			emailReportingNextReportEndpoint
+		);
+	} );
+
 	it( 'calls saveEmailReportingSettings with subscribed true when subscribing', async () => {
 		const coreUserDispatch = registry.dispatch( CORE_USER );
 		const saveSpy = jest

@@ -37,6 +37,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
  * starts.
  *
  * @since 1.184.0
+ * @since n.e.x.t Required the goal type's widget to render, rather than only its category to be active, so the tour never points at a widget that is absent from the page.
  *
  * @param select   The registry `select` function.
  * @param goalType The goal type whose widget to check.
@@ -50,8 +51,9 @@ export function hasGoalTypeBreakdownNotice(
 	// the resolved value. An unresolved read counts as no notice, which keeps
 	// the tour from pointing at a missing step target.
 	return (
-		select( MODULES_ANALYTICS_4 ).isSiteGoalWidgetActive( goalType ) ===
-			true &&
+		select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+			goalType
+		) === true &&
 		select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
 			SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE[ goalType ]
 		) === false &&
