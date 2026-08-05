@@ -35,7 +35,7 @@ class Migration_1_185_0 {
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 * @var Options
 	 */
 	protected Options $options;
@@ -43,7 +43,7 @@ class Migration_1_185_0 {
 	/**
 	 * Connected_Proxy_URL instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 * @var Connected_Proxy_URL
 	 */
 	protected Connected_Proxy_URL $connected_proxy_url;
@@ -51,7 +51,7 @@ class Migration_1_185_0 {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param Context $context Plugin context instance.
 	 * @param Options $options Optional. Options instance.
@@ -72,7 +72,7 @@ class Migration_1_185_0 {
 	 * reads a plain text value as a URL change, so it needs the stored value
 	 * already encoded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 */
 	public function register() {
 		add_action( 'admin_init', array( $this, 'migrate' ), 0 );
@@ -81,7 +81,7 @@ class Migration_1_185_0 {
 	/**
 	 * Migrates the DB.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 */
 	public function migrate() {
 		$db_version = $this->options->get( self::DB_VERSION_OPTION );
@@ -101,7 +101,7 @@ class Migration_1_185_0 {
 	 * If the user's site URL hasn't been encoded, we encode it as part of
 	 * this migration.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 */
 	protected function migrate_connected_proxy_url() {
 		$stored_url = $this->options->get( Connected_Proxy_URL::OPTION );

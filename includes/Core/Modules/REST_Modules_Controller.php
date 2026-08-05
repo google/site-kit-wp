@@ -201,7 +201,7 @@ class REST_Modules_Controller {
 	/**
 	 * Builds the modules list route.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @return REST_Route The modules list REST route.
 	 */
@@ -236,7 +236,7 @@ class REST_Modules_Controller {
 	/**
 	 * Builds the modules activation route.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @return REST_Route The modules activation REST route.
 	 */
@@ -291,7 +291,7 @@ class REST_Modules_Controller {
 	/**
 	 * Builds the modules info route.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @return REST_Route The modules info REST route.
 	 */
@@ -335,7 +335,7 @@ class REST_Modules_Controller {
 	/**
 	 * Builds the modules check-access route.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @return REST_Route The modules check-access REST route.
 	 */
@@ -403,7 +403,7 @@ class REST_Modules_Controller {
 	/**
 	 * Builds the modules notifications route.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @return REST_Route The modules notifications REST route.
 	 */
@@ -454,7 +454,7 @@ class REST_Modules_Controller {
 	/**
 	 * Builds the modules settings route.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @return REST_Route The modules settings REST route.
 	 */
@@ -556,7 +556,7 @@ class REST_Modules_Controller {
 	/**
 	 * Builds the modules data-available route.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @return REST_Route The modules data-available REST route.
 	 */
@@ -606,7 +606,7 @@ class REST_Modules_Controller {
 	/**
 	 * Builds the modules data route (GET/POST for datapoints).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @return REST_Route The modules data REST route.
 	 */
@@ -711,7 +711,7 @@ class REST_Modules_Controller {
 	/**
 	 * Builds the modules recover route.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @return REST_Route The modules recover REST route.
 	 */
@@ -844,7 +844,7 @@ class REST_Modules_Controller {
 	/**
 	 * Handles module activation flow.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param string $slug Module slug.
 	 * @return WP_Error|WP_REST_Response Error or success response.
@@ -882,7 +882,7 @@ class REST_Modules_Controller {
 	/**
 	 * Handles module deactivation flow.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param string $slug Module slug.
 	 * @return WP_Error|WP_REST_Response Error or success response.
@@ -922,7 +922,7 @@ class REST_Modules_Controller {
 	/**
 	 * Handles a single module recovery item.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param string $slug Module slug.
 	 * @param array  $response Current response array.
@@ -1018,7 +1018,7 @@ class REST_Modules_Controller {
 	/**
 	 * Resolves datapoint permission callback.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param WP_REST_Request $request The request.
 	 * @param callable        $default_callback Default permission callback.
