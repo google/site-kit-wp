@@ -15,17 +15,17 @@ use Google\Site_Kit\Core\Authentication\Connected_Proxy_URL;
 use Google\Site_Kit\Core\Storage\Options;
 
 /**
- * Class Migration_N_E_X_T.
+ * Class Migration_1_185_0.
  *
- * @since n.e.x.t
+ * @since 1.185.0
  * @access private
  * @ignore
  */
-class Migration_N_E_X_T {
+class Migration_1_185_0 {
 	/**
 	 * Target DB version.
 	 */
-	const DB_VERSION = 'n.e.x.t';
+	const DB_VERSION = '1.185.0';
 
 	/**
 	 * DB version option name.

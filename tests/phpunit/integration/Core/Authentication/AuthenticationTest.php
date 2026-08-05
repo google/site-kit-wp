@@ -27,7 +27,7 @@ use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Migration_N_E_X_T;
+use Google\Site_Kit\Core\Util\Migration_1_185_0;
 use Google\Site_Kit\Modules\PageSpeed_Insights\Settings as PageSpeed_Insights_Settings;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
@@ -715,11 +715,11 @@ class AuthenticationTest extends TestCase {
 		$authentication = new Authentication( $context, $options, $user_options );
 		$authentication->register();
 
-		( new Migration_N_E_X_T( $context, $options ) )->register();
+		( new Migration_1_185_0( $context, $options ) )->register();
 
 		// Roll back the database version, so the migration runs the way it does on
 		// a site that upgrades to this version.
-		$options->delete( Migration_N_E_X_T::DB_VERSION_OPTION );
+		$options->delete( Migration_1_185_0::DB_VERSION_OPTION );
 
 		// Emulate credentials.
 		$this->fake_proxy_site_connection();

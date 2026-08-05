@@ -150,6 +150,35 @@ class Email_Template_RendererTest extends TestCase {
 		$this->assertStringNotContainsString( 'class="badge-positive"', $html_output, 'Expected no positive badge to be rendered.' );
 	}
 
+	public function test_dashboard_link_renders_outlook_vml_and_html_anchor_branches() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$golinks = new Golinks( $context );
+		$golinks->register_handler( 'dashboard', new Dashboard_Golink_Handler() );
+
+		$payload = array(
+			'total_visitors' => array(
+				'label'          => 'Total visitors',
+				'value'          => '120',
+				'change'         => 20,
+				'change_context' => 'Compared to previous 7 days',
+			),
+		);
+
+		$sections_map  = new Sections_Map( $context, $payload, $golinks );
+		$renderer      = new Email_Template_Renderer( $sections_map );
+		$template_data = $this->get_minimal_template_data();
+
+		$html_output = $renderer->render( 'email-report', $template_data );
+
+		$vml_matched = preg_match( '#<v:roundrect[^>]*href="https://example\.com/dashboard"[^>]*>(.*?)</v:roundrect>#s', $html_output, $vml_matches );
+		$this->assertSame( 1, $vml_matched, 'Expected an Outlook VML roundrect button linking to the dashboard.' );
+		$this->assertStringContainsString( 'View dashboard', $vml_matches[1], 'Expected the label inside the VML roundrect branch.' );
+
+		$anchor_matched = preg_match( '#<a class="button" href="https://example\.com/dashboard"[^>]*>(.*?)</a>#s', $html_output, $anchor_matches );
+		$this->assertSame( 1, $anchor_matched, 'Expected an HTML anchor button linking to the dashboard.' );
+		$this->assertStringContainsString( 'View dashboard', $anchor_matches[1], 'Expected the label inside the HTML anchor branch.' );
+	}
+
 	/**
 	 * Gets minimal template data for rendering the email-report template.
 	 *
