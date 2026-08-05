@@ -24,6 +24,7 @@ import {
 	BREAKPOINT_SMALL,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import { render } from '@tests/js/test-utils';
 import ExpressSetupLayout from './ExpressSetupLayout';
 
@@ -35,11 +36,15 @@ jest.mock( '@/js/hooks/useBreakpoint', () => ( {
 jest.mock( './PoweredBy', () => () => <div>Powered by RRM</div> );
 
 describe( 'ExpressSetupLayout', () => {
+	mockLocation();
+
 	beforeEach( () => {
 		( useBreakpoint as jest.Mock ).mockReturnValue( BREAKPOINT_DESKTOP );
 	} );
 
 	it( 'renders the supplied sidebar and content', () => {
+		global.location.href = 'http://example.com/';
+
 		const { getByText } = render(
 			<ExpressSetupLayout sidebar={ <div>Setup steps</div> }>
 				<div>Step content</div>
@@ -50,7 +55,21 @@ describe( 'ExpressSetupLayout', () => {
 		expect( getByText( 'Step content' ) ).toBeInTheDocument();
 	} );
 
-	it( 'renders the module attribution in the sidebar on desktop', () => {
+	it( 'does not render the module attribution when no CTA is specified', () => {
+		global.location.href = 'http://example.com/';
+
+		const { queryByText } = render(
+			<ExpressSetupLayout sidebar={ <div>Setup steps</div> }>
+				<div>Step content</div>
+			</ExpressSetupLayout>
+		);
+
+		expect( queryByText( 'Powered by RRM' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'renders the module attribution in the sidebar on desktop when a CTA is specified', () => {
+		global.location.href = 'http://example.com/?cta=newsletter-signup';
+
 		const { container, getByText } = render(
 			<ExpressSetupLayout sidebar={ <div>Setup steps</div> }>
 				<div>Step content</div>
@@ -69,8 +88,9 @@ describe( 'ExpressSetupLayout', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'renders the module attribution in the footer on mobile', () => {
+	it( 'renders the module attribution in the footer on mobile when a CTA is specified', () => {
 		( useBreakpoint as jest.Mock ).mockReturnValue( BREAKPOINT_SMALL );
+		global.location.href = 'http://example.com/?cta=newsletter-signup';
 
 		const { getByText } = render(
 			<ExpressSetupLayout sidebar={ <div>Setup steps</div> }>

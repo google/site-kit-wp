@@ -44,12 +44,23 @@ export default function UserSettingsSelectionPanel() {
 	);
 	const previousIsOpen = usePrevious( isOpen );
 
+	const { setValue } = useDispatch( CORE_UI );
+	const {
+		invalidateEmailReportingNextReport,
+		saveEmailReportingSettings,
+		resetEmailReportingSettings,
+	} = useDispatch( CORE_USER );
+
 	const onSideSheetOpen = useCallback( () => {
+		// Re-fetch the next report timestamp on every open, since it depends
+		// on the current time and can go stale between panel visits.
+		invalidateEmailReportingNextReport();
+
 		trackEvent(
 			`${ viewContext }_email_reports_user_settings-sidebar`,
 			'user_settings_sidebar_view'
 		);
-	}, [ viewContext ] );
+	}, [ invalidateEmailReportingNextReport, viewContext ] );
 
 	const settings = useSelect( ( select ) => {
 		if ( ! isOpen ) {
@@ -71,10 +82,6 @@ export default function UserSettingsSelectionPanel() {
 	);
 
 	const [ notice, setNotice ] = useState( null );
-
-	const { setValue } = useDispatch( CORE_UI );
-	const { saveEmailReportingSettings, resetEmailReportingSettings } =
-		useDispatch( CORE_USER );
 
 	const closePanel = useCallback( () => {
 		if ( isOpen ) {
