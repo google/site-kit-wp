@@ -25,6 +25,7 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import DashboardTopEarningPagesWidgetGA4PDF from './indexPDF';
 
 /**
@@ -138,6 +139,25 @@ describe( 'DashboardTopEarningPagesWidgetGA4PDF', () => {
 		const json = renderJSON( { data: DATA } );
 
 		expect( json ).toContain( '#108080' );
+	} );
+
+	it( 'truncates a long page title to one line with an ellipsis and keeps a 20px gap before the Earnings column', () => {
+		const json = renderJSON( {
+			data: {
+				...DATA,
+				titles: {
+					...DATA.titles,
+					'/home-page':
+						"A very long page title that doesn't fit on one line",
+				},
+			},
+		} );
+
+		expect( json ).toContain( '"maxLines":1' );
+		expect( json ).toContain( '"textOverflow":"ellipsis"' );
+		expect( json ).toContain(
+			`"flexBasis":0,"marginRight":${ 20 * PDF_SCALE }`
+		);
 	} );
 
 	it( 'formats the earnings as currency using the report currency code', () => {
