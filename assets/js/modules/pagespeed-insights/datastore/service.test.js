@@ -58,6 +58,19 @@ describe( 'module/pagespeed-insights service store', () => {
 					utm_source: 'sitekit',
 				} );
 			} );
+
+			it( 'returns undefined if the current reference URL is not loaded yet', () => {
+				const loadingRegistry = createTestRegistry();
+				loadingRegistry
+					.dispatch( CORE_USER )
+					.receiveUserInfo( userData );
+
+				const detailsLinkURL = loadingRegistry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getDetailsLinkURL();
+
+				expect( detailsLinkURL ).toBeUndefined();
+			} );
 		} );
 
 		describe( 'getServiceURL', () => {

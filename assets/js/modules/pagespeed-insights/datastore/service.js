@@ -34,17 +34,23 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {string} Details link URL.
+	 * @return {(string|undefined)} Details link URL, or `undefined` if not loaded.
 	 */
-	getDetailsLinkURL: createRegistrySelector(
-		( select ) => () =>
-			select( MODULES_PAGESPEED_INSIGHTS ).getServiceURL( {
-				path: 'report',
-				query: {
-					url: select( CORE_SITE ).getCurrentReferenceURL(),
-				},
-			} )
-	),
+	getDetailsLinkURL: createRegistrySelector( ( select ) => () => {
+		const currentReferenceURL =
+			select( CORE_SITE ).getCurrentReferenceURL();
+
+		if ( currentReferenceURL === undefined ) {
+			return undefined;
+		}
+
+		return select( MODULES_PAGESPEED_INSIGHTS ).getServiceURL( {
+			path: 'report',
+			query: {
+				url: currentReferenceURL,
+			},
+		} );
+	} ),
 
 	/**
 	 * Gets a URL to the service.
