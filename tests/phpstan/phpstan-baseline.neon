@@ -124,7 +124,7 @@ parameters:
 			rawMessage: 'Argument of an invalid type Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\PaymentOptions supplied for foreach, only iterables are supported.'
 			identifier: foreach.nonIterable
 			count: 1
-			path: ../../includes/Modules/Reader_Revenue_Manager.php
+			path: ../../includes/Modules/Reader_Revenue_Manager/Datapoints/Get_Publications.php
 
 		-
 			rawMessage: 'Method Google\Site_Kit\Modules\Reader_Revenue_Manager::has_placed_tag_in_content() should return bool but returns int.'
