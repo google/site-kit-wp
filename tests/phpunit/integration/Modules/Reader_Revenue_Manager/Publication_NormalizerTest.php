@@ -1,16 +1,16 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Datapoints\Publication_NormalizerTest
+ * Class Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Publication_NormalizerTest
  *
- * @package   Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Datapoints
+ * @package   Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager
  * @copyright 2026 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Datapoints;
+namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager;
 
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Publication_Normalizer;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Publication_Normalizer;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication as Legacy_Publication;
 use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Publication;
