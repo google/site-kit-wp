@@ -234,7 +234,7 @@ describe( 'PanelContent', () => {
 		} );
 	} );
 
-	it( 'shows the report-generating notice when the panel is open and a report generates', async () => {
+	it( 'shows the "generating report" notice when the panel is open and a report is being exported', async () => {
 		openPanel();
 		registry.dispatch( CORE_PDF ).startExporting();
 
@@ -250,7 +250,7 @@ describe( 'PanelContent', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'hides the report-generating notice when the panel is closed and a report generates', async () => {
+	it( 'hides the "generating report" notice when the panel is closed and a report is being exported', async () => {
 		closePanel();
 		registry.dispatch( CORE_PDF ).startExporting();
 
@@ -263,7 +263,7 @@ describe( 'PanelContent', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'hides the report-generating notice when the panel is open and no report generates', async () => {
+	it( 'does not show the "generating report" notice when the panel is open but no report is being exported', async () => {
 		openPanel();
 
 		const { findByRole, queryByText } = renderPanel();

@@ -78,7 +78,7 @@ describe( 'Footer', () => {
 		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
 
-	it( 'disables Download report while a report generates', () => {
+	it( 'disables the "Download report" button while a report generates', () => {
 		registry.dispatch( CORE_PDF ).startExporting();
 
 		const { getByRole } = render(
