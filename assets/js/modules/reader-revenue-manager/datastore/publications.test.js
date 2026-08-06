@@ -63,10 +63,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publication(?:\\?|$)'
 	);
 
-	const termsOfServiceEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/terms-of-service'
-	);
-
 	const syncOnboardingStateEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/sync-publication-onboarding-state'
 	);
@@ -971,55 +967,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				).getPublication( params );
 
 				expect( fetchMock ).not.toHaveFetched( publicationEndpoint );
-			} );
-		} );
-
-		describe( 'getTermsOfService', () => {
-			const params = {
-				tosURL: 'https://example.com/terms',
-			};
-
-			it( 'should use a resolver to fetch the Terms of Service', async () => {
-				const termsOfService = '<h1>Terms of Service</h1>';
-				fetchMock.getOnce( termsOfServiceEndpoint, {
-					body: JSON.stringify( termsOfService ),
-					status: 200,
-				} );
-
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getTermsOfService( params )
-				).toBeUndefined();
-
-				await untilResolved(
-					registry,
-					MODULES_READER_REVENUE_MANAGER
-				).getTermsOfService( params );
-
-				expect( fetchMock ).toHaveFetched( termsOfServiceEndpoint );
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getTermsOfService( params )
-				).toBe( termsOfService );
-			} );
-
-			it( 'should not fetch Terms of Service already in state', async () => {
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetTermsOfService( '<h1>Terms</h1>', params );
-
-				registry
-					.select( MODULES_READER_REVENUE_MANAGER )
-					.getTermsOfService( params );
-
-				await untilResolved(
-					registry,
-					MODULES_READER_REVENUE_MANAGER
-				).getTermsOfService( params );
-
-				expect( fetchMock ).not.toHaveFetched( termsOfServiceEndpoint );
 			} );
 		} );
 

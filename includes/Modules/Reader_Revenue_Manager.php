@@ -288,28 +288,6 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	}
 
 	/**
-	 * Gets the configured Subscribe with Google service instance.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return Google_Service_SubscribewithGoogle Subscribe with Google service instance.
-	 */
-	public function get_subscribewithgoogle_service() {
-		return $this->get_service( 'subscribewithgoogle' );
-	}
-
-	/**
-	 * Gets the configured Web Content Publisher service instance.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return Google_Service_Webcontentpublisher Web Content Publisher service instance.
-	 */
-	public function get_webcontentpublisher_service() {
-		return $this->get_service( 'webcontentpublisher' );
-	}
-
-	/**
 	 * Checks whether the module is connected.
 	 *
 	 * @since 1.132.0
@@ -397,46 +375,59 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		$search_console_settings = new Search_Console_Settings( $this->options );
-		$webcontentpublisher     = array( $this, 'get_webcontentpublisher_service' );
-		$publications_service    = Feature_Flags::enabled( 'rrmExpressSetup' )
-			? $webcontentpublisher
-			: array( $this, 'get_subscribewithgoogle_service' );
+		$datapoints = array();
 
-		$datapoints = array(
-			'POST:create-publication'                => new Create_Publication(
-				array(
-					'reference_site_url' => $this->context->get_reference_site_url(),
-					'service'            => $webcontentpublisher,
-					'settings'           => $this->get_settings(),
-				)
-			),
-			'GET:publication'                        => new Get_Publication(
-				array(
-					'service'  => $webcontentpublisher,
-					'settings' => $this->get_settings(),
-				)
-			),
-			'POST:publication'                       => new Update_Publication(
-				array(
-					'service'  => $webcontentpublisher,
-					'settings' => $this->get_settings(),
-				)
-			),
-			'GET:publications'                       => new Get_Publications(
-				array(
-					'search_console_settings' => $search_console_settings,
-					'service'                 => $publications_service,
-					'settings'                => $this->get_settings(),
-				)
-			),
-			'GET:terms-of-service'                   => new Get_Terms_Of_Service( array() ),
-			'POST:sync-publication-onboarding-state' => array(
-				'service' => 'subscribewithgoogle',
-			),
+		$search_console_settings = new Search_Console_Settings( $this->options );
+
+		$datapoints['GET:publications'] = new Get_Publications(
+			array(
+				'search_console_settings' => $search_console_settings,
+				'service'                 => fn() => $this->get_service( 'subscribewithgoogle' ),
+				'settings'                => $this->get_settings(),
+			)
+		);
+
+		$datapoints['POST:sync-publication-onboarding-state'] = array(
+			'service' => '',
 		);
 
 		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
+			$datapoints['POST:create-publication'] = new Create_Publication(
+				array(
+					'reference_site_url' => $this->context->get_reference_site_url(),
+					'service'            => fn() => $this->get_service( 'webcontentpublisher' ),
+					'settings'           => $this->get_settings(),
+				)
+			);
+
+			$datapoints['GET:publications'] = new Get_Publications(
+				array(
+					'search_console_settings' => $search_console_settings,
+					'service'                 => fn() => $this->get_service( 'webcontentpublisher' ),
+					'settings'                => $this->get_settings(),
+				)
+			);
+
+			$datapoints['GET:publication'] = new Get_Publication(
+				array(
+					'settings' => $this->get_settings(),
+					'service'  => fn() => $this->get_service( 'webcontentpublisher' ),
+				)
+			);
+
+			$datapoints['POST:publication'] = new Update_Publication(
+				array(
+					'settings' => $this->get_settings(),
+					'service'  => fn() => $this->get_service( 'webcontentpublisher' ),
+				)
+			);
+
+			$datapoints['GET:terms-of-service'] = new Get_Terms_Of_Service(
+				array(
+					'service' => '',
+				)
+			);
+
 			$datapoints['GET:user-settings'] = new Get_User_Settings(
 				array(
 					'user_settings' => $this->user_settings,

@@ -192,11 +192,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	public function test_get_datapoints() {
 		$this->assertEqualSets(
 			array(
-				'create-publication',
-				'publication',
 				'publications',
 				'sync-publication-onboarding-state',
-				'terms-of-service',
 			),
 			$this->reader_revenue_manager->get_datapoints(),
 			'Reader Revenue Manager module should have correct datapoints.'
