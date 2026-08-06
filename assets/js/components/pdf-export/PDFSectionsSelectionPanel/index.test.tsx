@@ -25,7 +25,6 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
-import { REPORT_GENERATING_NOTICE_TITLE } from '@/js/components/pdf-export/test-utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
@@ -611,13 +610,13 @@ describe( 'PDFSectionsSelectionPanel', () => {
 
 		// The panel closed, so the notice shouldn't be on screen.
 		expect(
-			queryByText( REPORT_GENERATING_NOTICE_TITLE )
+			queryByText( 'Your report is being generated' )
 		).not.toBeInTheDocument();
 
 		openPanel();
 
 		expect(
-			getByText( REPORT_GENERATING_NOTICE_TITLE )
+			getByText( 'Your report is being generated' )
 		).toBeInTheDocument();
 		expect(
 			getByRole( 'button', { name: 'Download report' } )
@@ -637,7 +636,7 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		await findByRole( 'checkbox', { name: 'Traffic' } );
 
 		expect(
-			getByText( REPORT_GENERATING_NOTICE_TITLE )
+			getByText( 'Your report is being generated' )
 		).toBeInTheDocument();
 
 		// The real export ends in two steps, which this test runs in order.
@@ -647,7 +646,7 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		} );
 
 		expect(
-			queryByText( REPORT_GENERATING_NOTICE_TITLE )
+			queryByText( 'Your report is being generated' )
 		).not.toBeInTheDocument();
 		expect(
 			getByRole( 'button', { name: 'Download report' } )

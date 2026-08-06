@@ -20,10 +20,6 @@
  * Internal dependencies
  */
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
-import {
-	REPORT_GENERATING_NOTICE_DESCRIPTION,
-	REPORT_GENERATING_NOTICE_TITLE,
-} from '@/js/components/pdf-export/test-utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
@@ -243,10 +239,12 @@ describe( 'PanelContent', () => {
 		await findByRole( 'checkbox', { name: 'Traffic' } );
 
 		expect(
-			getByText( REPORT_GENERATING_NOTICE_TITLE )
+			getByText( 'Your report is being generated' )
 		).toBeInTheDocument();
 		expect(
-			getByText( REPORT_GENERATING_NOTICE_DESCRIPTION )
+			getByText(
+				'To create another report, please wait for the current download to complete.'
+			)
 		).toBeInTheDocument();
 	} );
 
@@ -259,7 +257,7 @@ describe( 'PanelContent', () => {
 		await findByRole( 'checkbox', { name: 'Traffic' } );
 
 		expect(
-			queryByText( REPORT_GENERATING_NOTICE_TITLE )
+			queryByText( 'Your report is being generated' )
 		).not.toBeInTheDocument();
 	} );
 
@@ -271,7 +269,7 @@ describe( 'PanelContent', () => {
 		await findByRole( 'checkbox', { name: 'Traffic' } );
 
 		expect(
-			queryByText( REPORT_GENERATING_NOTICE_TITLE )
+			queryByText( 'Your report is being generated' )
 		).not.toBeInTheDocument();
 	} );
 } );

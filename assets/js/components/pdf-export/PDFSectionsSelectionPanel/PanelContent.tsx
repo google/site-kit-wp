@@ -149,20 +149,20 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 		[]
 	);
 
-	// Clicking Download report starts the export and sets
-	// `PDF_DOWNLOAD_PANEL_OPENED_KEY` to false at the same moment, so without
-	// `isPanelOpen` the user would see the notice flash in the side sheet as it
-	// closes.
-	const isPanelOpen = useSelect(
-		( select: Select ) =>
-			select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY ),
-		[]
-	);
-
-	const isGeneratingReport = useSelect(
-		( select: Select ) => select( CORE_PDF ).isGeneratingReport(),
-		[]
-	);
+	/**
+	 * Only show the notice when the panel should be open and visible to the
+	 * user _and_ a report is generating.
+	 *
+	 * This prevents the "Your report is being generated" notice from appearing
+	 * when the user first clicks the "Download report" button and the panel
+	 * closes.
+	 */
+	const showGeneratingReportNotice = useSelect( ( select: Select ) => {
+		return (
+			select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY ) &&
+			select( CORE_PDF ).isGeneratingReport()
+		);
+	}, [] );
 
 	const { setSelection } = useDispatch( CORE_PDF );
 
@@ -301,7 +301,7 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 					}
 				/>
 			) }
-			{ isPanelOpen && isGeneratingReport && (
+			{ showGeneratingReportNotice && (
 				<SelectionPanelNotice
 					// @ts-expect-error - The `SelectionPanelNotice` component isn't typed yet.
 					className="googlesitekit-notice--side-panel googlesitekit-pdf-download-panel__notice"
