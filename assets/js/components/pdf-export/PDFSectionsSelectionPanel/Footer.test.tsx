@@ -77,4 +77,20 @@ describe( 'Footer', () => {
 		).toBeDisabled();
 		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
+
+	it( 'disables Download report while a report generates', () => {
+		registry.dispatch( CORE_PDF ).startExporting();
+
+		const { getByRole } = render(
+			<Footer closePanel={ () => {} } hasSelection />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		expect(
+			getByRole( 'button', { name: 'Download report' } )
+		).toBeDisabled();
+	} );
 } );
