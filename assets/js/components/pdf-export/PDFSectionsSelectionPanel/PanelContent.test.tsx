@@ -165,7 +165,7 @@ describe( 'PanelContent', () => {
 	 *
 	 * @return {void}
 	 */
-	function setPanelOpen() {
+	function openPanel() {
 		registry
 			.dispatch( CORE_UI )
 			.setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, true );
@@ -178,7 +178,7 @@ describe( 'PanelContent', () => {
 	 *
 	 * @return {void}
 	 */
-	function setPanelClosed() {
+	function closePanel() {
 		registry
 			.dispatch( CORE_UI )
 			.setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, false );
@@ -235,7 +235,7 @@ describe( 'PanelContent', () => {
 	} );
 
 	it( 'shows the report-generating notice when the panel is open and a report generates', async () => {
-		setPanelOpen();
+		openPanel();
 		registry.dispatch( CORE_PDF ).startExporting();
 
 		const { findByRole, getByText } = renderPanel();
@@ -251,7 +251,7 @@ describe( 'PanelContent', () => {
 	} );
 
 	it( 'hides the report-generating notice when the panel is closed and a report generates', async () => {
-		setPanelClosed();
+		closePanel();
 		registry.dispatch( CORE_PDF ).startExporting();
 
 		const { findByRole, queryByText } = renderPanel();
@@ -264,7 +264,7 @@ describe( 'PanelContent', () => {
 	} );
 
 	it( 'hides the report-generating notice when the panel is open and no report generates', async () => {
-		setPanelOpen();
+		openPanel();
 
 		const { findByRole, queryByText } = renderPanel();
 

@@ -432,9 +432,9 @@ describe( 'core/pdf store', () => {
 			} );
 		} );
 
-		describe( 'isReportGenerating', () => {
+		describe( 'isGeneratingReport', () => {
 			it( 'should return false when no report is generating', () => {
-				expect( registry.select( CORE_PDF ).isReportGenerating() ).toBe(
+				expect( registry.select( CORE_PDF ).isGeneratingReport() ).toBe(
 					false
 				);
 			} );
@@ -442,7 +442,7 @@ describe( 'core/pdf store', () => {
 			it( 'should return true as soon as the export starts', () => {
 				registry.dispatch( CORE_PDF ).startExporting();
 
-				expect( registry.select( CORE_PDF ).isReportGenerating() ).toBe(
+				expect( registry.select( CORE_PDF ).isGeneratingReport() ).toBe(
 					true
 				);
 			} );
@@ -450,7 +450,7 @@ describe( 'core/pdf store', () => {
 			it( 'should return true while the export reports progress', () => {
 				registry.dispatch( CORE_PDF ).setStatus( 'progress' );
 
-				expect( registry.select( CORE_PDF ).isReportGenerating() ).toBe(
+				expect( registry.select( CORE_PDF ).isGeneratingReport() ).toBe(
 					true
 				);
 			} );
@@ -460,7 +460,7 @@ describe( 'core/pdf store', () => {
 				registry.dispatch( CORE_PDF ).setStatus( 'success' );
 				registry.dispatch( CORE_PDF ).finishExporting();
 
-				expect( registry.select( CORE_PDF ).isReportGenerating() ).toBe(
+				expect( registry.select( CORE_PDF ).isGeneratingReport() ).toBe(
 					false
 				);
 			} );

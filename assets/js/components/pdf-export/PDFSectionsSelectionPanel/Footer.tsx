@@ -43,8 +43,8 @@ interface FooterProps {
 }
 
 const Footer: FC< FooterProps > = ( { closePanel, hasSelection } ) => {
-	const isReportGenerating = useSelect(
-		( select: Select ) => select( CORE_PDF ).isReportGenerating(),
+	const isGeneratingReport = useSelect(
+		( select: Select ) => select( CORE_PDF ).isGeneratingReport(),
 		[]
 	);
 	const selectedContextSlugs = useSelect(
@@ -78,7 +78,7 @@ const Footer: FC< FooterProps > = ( { closePanel, hasSelection } ) => {
 					{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
 					<Button
 						onClick={ handleDownloadClick }
-						disabled={ ! hasSelection || isReportGenerating }
+						disabled={ ! hasSelection || isGeneratingReport }
 					>
 						{ __( 'Download report', 'google-site-kit' ) }
 					</Button>

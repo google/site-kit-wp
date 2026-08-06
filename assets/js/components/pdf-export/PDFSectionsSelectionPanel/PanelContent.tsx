@@ -159,8 +159,8 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 		[]
 	);
 
-	const isReportGenerating = useSelect(
-		( select: Select ) => select( CORE_PDF ).isReportGenerating(),
+	const isGeneratingReport = useSelect(
+		( select: Select ) => select( CORE_PDF ).isGeneratingReport(),
 		[]
 	);
 
@@ -301,7 +301,7 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 					}
 				/>
 			) }
-			{ isPanelOpen && isReportGenerating && (
+			{ isPanelOpen && isGeneratingReport && (
 				<SelectionPanelNotice
 					// @ts-expect-error - The `SelectionPanelNotice` component isn't typed yet.
 					className="googlesitekit-notice--side-panel googlesitekit-pdf-download-panel__notice"

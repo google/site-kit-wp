@@ -450,7 +450,7 @@ export const selectors = {
 	 * @param {PDFState} state Data store's state.
 	 * @return {boolean} `true` while a report is generating.
 	 */
-	isReportGenerating( state: PDFState ): boolean {
+	isGeneratingReport( state: PDFState ): boolean {
 		return state.isExporting || state.status === 'progress';
 	},
 };
