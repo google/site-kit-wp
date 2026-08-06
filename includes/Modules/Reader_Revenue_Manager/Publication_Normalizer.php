@@ -128,9 +128,13 @@ class Publication_Normalizer {
 		$status = (array) $publication['contentPolicyStatus'];
 
 		if ( isset( $status['state'] ) ) {
-			$status['contentPolicyState'] = 0 === strpos( $status['state'], 'CONTENT_POLICY_' )
-				? $status['state']
-				: 'CONTENT_POLICY_' . $status['state'];
+			if ( 'OK' === $status['state'] ) {
+				$status['contentPolicyState'] = 'CONTENT_POLICY_STATE_OK';
+			} else {
+				$status['contentPolicyState'] = 0 === strpos( $status['state'], 'CONTENT_POLICY_' )
+					? $status['state']
+					: 'CONTENT_POLICY_' . $status['state'];
+			}
 		}
 
 		if ( isset( $status['policyInfoUrl'] ) ) {

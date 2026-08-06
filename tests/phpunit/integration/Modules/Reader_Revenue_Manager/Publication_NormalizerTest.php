@@ -69,4 +69,20 @@ class Publication_NormalizerTest extends TestCase {
 		$this->assertSame( 'https://example.com/privacy', $normalized['publicationPrivacyPolicyUrl'], 'The privacy policy URL should be preserved.' );
 		$this->assertSame( 'https://example.com/product-terms', $normalized['rrmProduct']['productTosUrl'], 'The product ToS URL should be preserved.' );
 	}
+
+	public function test_normalize__maps_ok_content_policy_state_to_legacy_value() {
+		$publication = new Publication(
+			array(
+				'contentPolicyStatus' => array( 'state' => 'OK' ),
+			)
+		);
+
+		$normalized = Publication_Normalizer::normalize( $publication );
+
+		$this->assertSame(
+			'CONTENT_POLICY_STATE_OK',
+			$normalized->getContentPolicyStatus()->getContentPolicyState(),
+			'The OK content policy state should use the legacy value.'
+		);
+	}
 }
