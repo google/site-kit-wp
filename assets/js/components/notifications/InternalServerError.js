@@ -40,10 +40,12 @@ export default function InternalServerError() {
 	const error = useSelect( ( select ) =>
 		select( CORE_SITE ).getInternalServerError()
 	);
+	const shouldShowGlobalNotification =
+		error?.showGlobalNotification !== false;
 
 	// Scroll to the notification when the error is present.
 	useEffect( () => {
-		if ( ! error ) {
+		if ( ! error || ! shouldShowGlobalNotification ) {
 			return;
 		}
 
@@ -54,9 +56,9 @@ export default function InternalServerError() {
 			),
 			behavior: 'smooth',
 		} );
-	}, [ error, breakpoint ] );
+	}, [ error, breakpoint, shouldShowGlobalNotification ] );
 
-	if ( ! error ) {
+	if ( ! error || ! shouldShowGlobalNotification ) {
 		return null;
 	}
 
