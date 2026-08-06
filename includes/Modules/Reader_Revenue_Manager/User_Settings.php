@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\User_Setting;
 /**
  * Class for per-user Reader Revenue Manager settings.
  *
- * @since n.e.x.t
+ * @since 1.185.0
  * @access private
  */
 class User_Settings extends User_Setting {
@@ -33,7 +33,7 @@ class User_Settings extends User_Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @return string The type name.
 	 */
@@ -44,7 +44,7 @@ class User_Settings extends User_Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @return array The default value.
 	 */
@@ -57,7 +57,7 @@ class User_Settings extends User_Setting {
 	/**
 	 * Merges an array of settings to update.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param array $partial Partial settings array to save.
 	 * @return bool True on success, false on failure.
@@ -82,7 +82,7 @@ class User_Settings extends User_Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @return callable Sanitize callback.
 	 */
@@ -111,7 +111,7 @@ class User_Settings extends User_Setting {
 	/**
 	 * Merges the last actioned express setups.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param array $old_value Current value..
 	 * @param mixed $new_value Value to merge.
@@ -128,7 +128,7 @@ class User_Settings extends User_Setting {
 	/**
 	 * Sanitizes the last actioned express setups.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param mixed $value Value to sanitize.
 	 * @return array The sanitized express setup timestamps.

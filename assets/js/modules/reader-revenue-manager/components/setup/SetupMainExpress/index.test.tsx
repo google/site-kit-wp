@@ -23,6 +23,8 @@ import { mockLocation } from '@tests/js/mock-browser-utils';
 import { render } from '@tests/js/test-utils';
 import SetupMainExpress from './index';
 
+jest.mock( './PoweredBy', () => () => null );
+
 describe( 'SetupMainExpress', () => {
 	mockLocation();
 
@@ -37,13 +39,42 @@ describe( 'SetupMainExpress', () => {
 				'RRM express setup placeholder: newsletter CTA setup step.'
 			)
 		).toBeInTheDocument();
+		expect( getByText( 'Set up a sign-up form' ) ).toBeInTheDocument();
 	} );
 
-	it( 'renders nothing when no CTA is specified', () => {
-		global.location.href = 'http://example.com/';
+	it( 'renders the default express setup when no CTA is specified', () => {
+		global.location.href = 'http://example.com/?step=connect-publication';
 
-		const { container } = render( <SetupMainExpress /> );
+		const { getByText, queryByText, container } = render(
+			<SetupMainExpress />
+		);
 
-		expect( container ).toBeEmptyDOMElement();
+		expect(
+			getByText(
+				'RRM express setup placeholder: publication setup step.'
+			)
+		).toBeInTheDocument();
+		expect(
+			queryByText( 'Set up a sign-up form' )
+		).not.toBeInTheDocument();
+		expect(
+			container.querySelectorAll( '.googlesitekit-stepper__step' )
+		).toHaveLength( 4 );
+	} );
+
+	it( 'renders the default express setup for an unknown CTA', () => {
+		global.location.href =
+			'http://example.com/?cta=unknown-cta&step=connect-publication';
+
+		const { getByText, queryByText } = render( <SetupMainExpress /> );
+
+		expect(
+			getByText(
+				'RRM express setup placeholder: publication setup step.'
+			)
+		).toBeInTheDocument();
+		expect(
+			queryByText( 'Set up a sign-up form' )
+		).not.toBeInTheDocument();
 	} );
 } );

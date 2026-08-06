@@ -138,7 +138,7 @@ export function registerWidgets( widgets ) {
 			pdf: {
 				Component: ModuleOverviewWidgetPDF,
 				getData: getModuleOverviewPDFData,
-				label: __( 'Earning performance over time', 'google-site-kit' ),
+				label: __( 'Earning performance', 'google-site-kit' ),
 			},
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
@@ -168,7 +168,7 @@ export function registerWidgets( widgets ) {
 			pdf: {
 				Component: DashboardTopEarningPagesWidgetGA4PDF,
 				getData: getTopEarningPagesPDFData,
-				label: __( 'Earning performance', 'google-site-kit' ),
+				label: __( 'Top earning pages', 'google-site-kit' ),
 				isActive: ( select ) =>
 					select( MODULES_ANALYTICS_4 ).getAdSenseLinked() === true,
 			},

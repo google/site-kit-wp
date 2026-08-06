@@ -63,13 +63,18 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 	interface NoticeState {
 		activeWidgets?: string[];
 		availableCustomDimensions?: string[];
+		detectedEvents?: string[];
 		dismissedItems?: string[];
 	}
 
 	const BOTH_WIDGETS: string[] = [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ];
+	/**
+	 * One event per goal type, so both widgets render by default.
+	 */
+	const BOTH_WIDGET_EVENTS: string[] = [ 'purchase', 'contact' ];
 
 	function provideActiveWidgets(
-		activeWidgets: string[] = BOTH_WIDGETS
+		activeWidgets: NoticeState[ 'activeWidgets' ] = BOTH_WIDGETS
 	): void {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -77,14 +82,18 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 	}
 
 	function provideCustomDimensions(
-		availableCustomDimensions: string[] = []
+		availableCustomDimensions: NoticeState[ 'availableCustomDimensions' ] = [],
+		detectedEvents: NoticeState[ 'detectedEvents' ] = BOTH_WIDGET_EVENTS
 	): void {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetSettings( { availableCustomDimensions } );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			availableCustomDimensions,
+			detectedEvents,
+		} );
 	}
 
-	function provideDismissedItems( dismissedItems: string[] = [] ): void {
+	function provideDismissedItems(
+		dismissedItems: NoticeState[ 'dismissedItems' ] = []
+	): void {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( dismissedItems );
@@ -100,16 +109,18 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 	 * @param  overrides                           The state to set in place of the defaults.
 	 * @param  overrides.activeWidgets             The goal types whose widget the dashboard shows.
 	 * @param  overrides.availableCustomDimensions The custom dimensions the GA4 property already holds.
+	 * @param  overrides.detectedEvents            The conversion events currently detected.
 	 * @param  overrides.dismissedItems            The dismissed item slugs.
 	 * @return {void}
 	 */
 	function provideNoticeState( {
 		activeWidgets,
 		availableCustomDimensions,
+		detectedEvents,
 		dismissedItems,
 	}: NoticeState = {} ): void {
 		provideActiveWidgets( activeWidgets );
-		provideCustomDimensions( availableCustomDimensions );
+		provideCustomDimensions( availableCustomDimensions, detectedEvents );
 		provideDismissedItems( dismissedItems );
 	}
 
@@ -138,6 +149,20 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 
 	it( 'returns false for a goal type whose widget is not active', () => {
 		provideNoticeState( { activeWidgets: [ GOAL_TYPES.ECOMMERCE ] } );
+
+		expect( hasGoalTypeBreakdownNotice( select, GOAL_TYPES.LEAD ) ).toBe(
+			false
+		);
+		expect(
+			hasGoalTypeBreakdownNotice( select, GOAL_TYPES.ECOMMERCE )
+		).toBe( true );
+	} );
+
+	it( 'returns false for a goal type whose events are no longer detected', () => {
+		// Both widgets stay in `activeWidgets`, which is never pruned, but only
+		// the ecommerce widget still has a detected event, so only that one
+		// renders and can show the notice.
+		provideNoticeState( { detectedEvents: [ 'purchase' ] } );
 
 		expect( hasGoalTypeBreakdownNotice( select, GOAL_TYPES.LEAD ) ).toBe(
 			false
@@ -214,13 +239,13 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 		provideCustomDimensions();
 		provideDismissedItems();
 
-		// Before the settings load, `isSiteGoalWidgetActive` reads
+		// Before the settings load, `isSiteGoalsWidgetRenderable` reads
 		// `undefined`. Assert that here, so the `false` below is the loading
 		// case, not a resolved `false`.
 		expect(
 			registry
 				.select( MODULES_ANALYTICS_4 )
-				.isSiteGoalWidgetActive( GOAL_TYPES.ECOMMERCE )
+				.isSiteGoalsWidgetRenderable( GOAL_TYPES.ECOMMERCE )
 		).toBeUndefined();
 		expect(
 			hasGoalTypeBreakdownNotice( select, GOAL_TYPES.ECOMMERCE )
