@@ -25,6 +25,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
+import { REPORT_GENERATING_NOTICE_TITLE } from '@/js/components/pdf-export/test-utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
@@ -588,6 +589,69 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		expect(
 			registry.select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY )
 		).toBe( false );
+	} );
+
+	it( 're-opening the panel mid-export shows the report-generating notice and disables the Download report button', async () => {
+		const { findByRole, getByRole, getByText, queryByText } = render(
+			<PDFSectionsSelectionPanel />,
+			{ registry }
+		);
+
+		openPanel();
+
+		await findByRole( 'checkbox', { name: 'Traffic' } );
+
+		fireEvent.click(
+			await findByRole( 'button', { name: 'Download report' } )
+		);
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).isExporting() ).toBe( true );
+		} );
+
+		// The panel closed, so the notice shouldn't be on screen.
+		expect(
+			queryByText( REPORT_GENERATING_NOTICE_TITLE )
+		).not.toBeInTheDocument();
+
+		openPanel();
+
+		expect(
+			getByText( REPORT_GENERATING_NOTICE_TITLE )
+		).toBeInTheDocument();
+		expect(
+			getByRole( 'button', { name: 'Download report' } )
+		).toBeDisabled();
+	} );
+
+	it( 'finishing the export with the panel open clears the report-generating notice and enables the Download report button', async () => {
+		registry.dispatch( CORE_PDF ).startExporting();
+
+		const { findByRole, getByRole, getByText, queryByText } = render(
+			<PDFSectionsSelectionPanel />,
+			{ registry }
+		);
+
+		openPanel();
+
+		await findByRole( 'checkbox', { name: 'Traffic' } );
+
+		expect(
+			getByText( REPORT_GENERATING_NOTICE_TITLE )
+		).toBeInTheDocument();
+
+		// The real export ends in two steps, which this test runs in order.
+		act( () => {
+			registry.dispatch( CORE_PDF ).setStatus( 'success' );
+			registry.dispatch( CORE_PDF ).finishExporting();
+		} );
+
+		expect(
+			queryByText( REPORT_GENERATING_NOTICE_TITLE )
+		).not.toBeInTheDocument();
+		expect(
+			getByRole( 'button', { name: 'Download report' } )
+		).toBeEnabled();
 	} );
 
 	it( 'fires pdf_generation_sidebar_view once when the panel opens', async () => {
