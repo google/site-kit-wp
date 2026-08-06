@@ -37,6 +37,21 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 
+/**
+ * The title of the notice shown while a report is generating.
+ *
+ * @since n.e.x.t
+ */
+export const REPORT_GENERATING_NOTICE_TITLE = 'Your report is being generated';
+
+/**
+ * The text under the title of the notice shown while a report is generating.
+ *
+ * @since n.e.x.t
+ */
+export const REPORT_GENERATING_NOTICE_DESCRIPTION =
+	'To create another report, please wait for the current download to complete.';
+
 type Registry = ReturnType< typeof createTestRegistry >;
 
 /**
