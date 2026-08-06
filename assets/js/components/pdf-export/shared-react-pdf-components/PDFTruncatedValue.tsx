@@ -27,8 +27,10 @@ import { FC } from 'react';
  * Internal dependencies
  */
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
-import PDFLink from './PDFLink';
-import { PDFTypographySize, PDFTypographyType } from './PDFTypography';
+import PDFTypography, {
+	PDFTypographySize,
+	PDFTypographyType,
+} from './PDFTypography';
 
 const styles = createPDFStyles( {
 	box: {
@@ -43,8 +45,6 @@ const styles = createPDFStyles( {
 } );
 
 export interface PDFTruncatedValueProps {
-	/** URL the value links to. With no URL, the value renders as plain text. */
-	href?: string;
 	/** Typography type for the value. */
 	type?: PDFTypographyType;
 	/** Typography size for the value. */
@@ -54,7 +54,6 @@ export interface PDFTruncatedValueProps {
 }
 
 const PDFTruncatedValue: FC< PDFTruncatedValueProps > = ( {
-	href,
 	type,
 	size,
 	style,
@@ -64,15 +63,14 @@ const PDFTruncatedValue: FC< PDFTruncatedValueProps > = ( {
 
 	return (
 		<View style={ styles.box }>
-			<PDFLink
-				href={ href }
+			<PDFTypography
 				type={ type }
 				size={ size }
 				style={ style ? baseStyles.concat( style ) : baseStyles }
 				maxLines={ 1 }
 			>
 				{ children }
-			</PDFLink>
+			</PDFTypography>
 		</View>
 	);
 };

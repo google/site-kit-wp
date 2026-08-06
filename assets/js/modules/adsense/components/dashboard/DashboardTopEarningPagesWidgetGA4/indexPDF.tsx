@@ -32,6 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import PDFLink from '@/js/components/pdf-export/shared-react-pdf-components/PDFLink';
 import PDFTable, {
 	PDFTableColumn,
 } from '@/js/components/pdf-export/shared-react-pdf-components/PDFTable';
@@ -103,15 +104,13 @@ const DashboardTopEarningPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 			header: '',
 			// Shows the page title with the row rank to its left. The title
 			// links to the page's Analytics report, like the dashboard widget.
-			// A long title truncates to one line and never overlaps the Earnings
-			// column. A title with no URL renders as plain text.
 			cell: ( row ) => (
 				<View style={ styles.pageCell }>
 					<PDFTypography style={ styles.rank }>
 						{ `${ row.rank }.` }
 					</PDFTypography>
-					<PDFTruncatedValue href={ row.serviceURL }>
-						{ row.title }
+					<PDFTruncatedValue>
+						<PDFLink href={ row.serviceURL }>{ row.title }</PDFLink>
 					</PDFTruncatedValue>
 				</View>
 			),

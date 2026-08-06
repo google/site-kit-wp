@@ -22,6 +22,7 @@
 import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import { renderJSON } from '@/js/components/pdf-export/test-utils';
+import PDFLink from './PDFLink';
 import PDFTruncatedValue from './PDFTruncatedValue';
 
 describe( 'PDFTruncatedValue', () => {
@@ -46,28 +47,18 @@ describe( 'PDFTruncatedValue', () => {
 		expect( json ).toContain( '"maxLines":1' );
 	} );
 
-	it( 'links the value to the href and renders it in the link color', () => {
+	it( 'truncates a linked value to one line with an ellipsis, and keeps its link', () => {
 		const json = renderJSON(
-			<PDFTruncatedValue href="https://example.com/report/home">
-				Home
+			<PDFTruncatedValue>
+				<PDFLink href="https://example.com/report/home">
+					A very long page title
+				</PDFLink>
 			</PDFTruncatedValue>
 		);
 
 		expect( json ).toContain( '"src":"https://example.com/report/home"' );
-		expect( json ).toContain( PDF_COLORS.CONTENT_SECONDARY );
-		// A linked value truncates the same way a value with no link does.
 		expect( json ).toContain( '"textOverflow":"ellipsis"' );
 		expect( json ).toContain( '"maxLines":1' );
-	} );
-
-	it( 'renders the value as plain text in the default color when the href is an empty string', () => {
-		const json = renderJSON(
-			<PDFTruncatedValue href="">Home</PDFTruncatedValue>
-		);
-
-		expect( json ).not.toContain( 'pdf-link' );
-		expect( json ).toContain( 'Home' );
-		expect( json ).not.toContain( PDF_COLORS.CONTENT_SECONDARY );
 	} );
 
 	it( 'renders the value in the body small typography', () => {
