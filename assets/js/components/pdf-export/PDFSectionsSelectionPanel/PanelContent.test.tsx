@@ -19,8 +19,14 @@
 /**
  * Internal dependencies
  */
+import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
+import {
+	REPORT_GENERATING_NOTICE_DESCRIPTION,
+	REPORT_GENERATING_NOTICE_TITLE,
+} from '@/js/components/pdf-export/test-utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
@@ -152,6 +158,32 @@ describe( 'PanelContent', () => {
 		} );
 	}
 
+	/**
+	 * Sets the stored panel state to open.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {void}
+	 */
+	function setPanelOpen() {
+		registry
+			.dispatch( CORE_UI )
+			.setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, true );
+	}
+
+	/**
+	 * Sets the stored panel state to closed.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {void}
+	 */
+	function setPanelClosed() {
+		registry
+			.dispatch( CORE_UI )
+			.setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, false );
+	}
+
 	it( "stores the context slugs in the dashboard's own order when the panel first opens", async () => {
 		const { findByRole } = renderPanel();
 
@@ -200,5 +232,46 @@ describe( 'PanelContent', () => {
 				registry.select( CORE_PDF ).getSelectedContextSlugs()
 			).toEqual( DASHBOARD_ORDER );
 		} );
+	} );
+
+	it( 'shows the report-generating notice when the panel is open and a report generates', async () => {
+		setPanelOpen();
+		registry.dispatch( CORE_PDF ).startExporting();
+
+		const { findByRole, getByText } = renderPanel();
+
+		await findByRole( 'checkbox', { name: 'Traffic' } );
+
+		expect(
+			getByText( REPORT_GENERATING_NOTICE_TITLE )
+		).toBeInTheDocument();
+		expect(
+			getByText( REPORT_GENERATING_NOTICE_DESCRIPTION )
+		).toBeInTheDocument();
+	} );
+
+	it( 'hides the report-generating notice when the panel is closed and a report generates', async () => {
+		setPanelClosed();
+		registry.dispatch( CORE_PDF ).startExporting();
+
+		const { findByRole, queryByText } = renderPanel();
+
+		await findByRole( 'checkbox', { name: 'Traffic' } );
+
+		expect(
+			queryByText( REPORT_GENERATING_NOTICE_TITLE )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'hides the report-generating notice when the panel is open and no report generates', async () => {
+		setPanelOpen();
+
+		const { findByRole, queryByText } = renderPanel();
+
+		await findByRole( 'checkbox', { name: 'Traffic' } );
+
+		expect(
+			queryByText( REPORT_GENERATING_NOTICE_TITLE )
+		).not.toBeInTheDocument();
 	} );
 } );

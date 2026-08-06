@@ -41,12 +41,14 @@ import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import {
 	ORDERED_MAIN_DASHBOARD_CONTEXTS,
 	PDFSection,
+	PDF_DOWNLOAD_PANEL_OPENED_KEY,
 } from '@/js/components/pdf-export/constants';
 import { isActivePDFWidget } from '@/js/components/pdf-export/pdf-widget-eligibility';
 import { SelectionPanelContent } from '@/js/components/SelectionPanel';
 import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
 import Typography from '@/js/components/Typography';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
@@ -144,6 +146,21 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 
 	const selectedWidgetSlugs = useSelect(
 		( select: Select ) => select( CORE_PDF ).getSelectedWidgetSlugs(),
+		[]
+	);
+
+	// Clicking Download report starts the export and sets
+	// `PDF_DOWNLOAD_PANEL_OPENED_KEY` to false at the same moment, so without
+	// `isPanelOpen` the user would see the notice flash in the side sheet as it
+	// closes.
+	const isPanelOpen = useSelect(
+		( select: Select ) =>
+			select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY ),
+		[]
+	);
+
+	const isReportGenerating = useSelect(
+		( select: Select ) => select( CORE_PDF ).isReportGenerating(),
 		[]
 	);
 
@@ -282,6 +299,22 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 							) }
 						</Typography>
 					}
+				/>
+			) }
+			{ isPanelOpen && isReportGenerating && (
+				<SelectionPanelNotice
+					// @ts-expect-error - The `SelectionPanelNotice` component isn't typed yet.
+					className="googlesitekit-notice--side-panel googlesitekit-pdf-download-panel__notice"
+					type={ NOTICE_TYPES.WARNING }
+					title={ __(
+						'Your report is being generated',
+						'google-site-kit'
+					) }
+					description={ __(
+						'To create another report, please wait for the current download to complete.',
+						'google-site-kit'
+					) }
+					hideIcon
 				/>
 			) }
 			<Footer closePanel={ closePanel } hasSelection={ hasSelection } />
