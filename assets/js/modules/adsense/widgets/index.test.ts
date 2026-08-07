@@ -44,14 +44,14 @@ describe( 'AdSense widget registrations', () => {
 		registerDefaultWidgets( widgets );
 	} );
 
-	it( 'should register the Earning performance over time PDF config on the overview widget', () => {
+	it( 'should register the Earning performance PDF config on the overview widget', () => {
 		registerWidgets( widgets );
 
 		const widget = registry
 			.select( CORE_WIDGETS )
 			.getWidget( 'adsenseModuleOverview' );
 
-		expect( widget.pdf.label ).toBe( 'Earning performance over time' );
+		expect( widget.pdf.label ).toBe( 'Earning performance' );
 		expect( widget.pdf.getData ).toBe( getModuleOverviewPDFData );
 		// The PDF component loads on demand and exposes `preload`, so the
 		// orchestrator can load its chunk before it renders.

@@ -56,12 +56,28 @@ describe( 'PDFChangeBadge', () => {
 	} );
 
 	it( 'uses the negative colors for a falling change', () => {
-		const badgeJSON = renderBadge( { change: '-5.0%', isNegative: true } );
+		const badgeJSON = renderBadge( {
+			change: '-5.0%',
+			changeType: 'negative',
+		} );
 
 		expect( badgeJSON ).toContain( '-5.0%' );
 		expect( badgeJSON ).toContain( PDF_COLORS.UTILITY_ERROR_CONTAINER );
 		expect( badgeJSON ).toContain( PDF_COLORS.UTILITY_ON_ERROR_CONTAINER );
 		expect( badgeJSON ).not.toContain( PDF_COLORS.GREEN_G_50 );
+	} );
+
+	it( 'uses the neutral colors for a zero change', () => {
+		const badgeJSON = renderBadge( {
+			change: '0%',
+			changeType: 'noChange',
+		} );
+
+		expect( badgeJSON ).toContain( '0%' );
+		expect( badgeJSON ).toContain( PDF_COLORS.SURFACES_INVERSE_ON_SURFACE );
+		expect( badgeJSON ).toContain( PDF_COLORS.NEUTRAL_N_700 );
+		expect( badgeJSON ).not.toContain( PDF_COLORS.GREEN_G_50 );
+		expect( badgeJSON ).not.toContain( PDF_COLORS.UTILITY_ERROR_CONTAINER );
 	} );
 
 	it( 'scales the badge radius and padding', () => {

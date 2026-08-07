@@ -460,6 +460,7 @@ export default function KeyMetricsSetupApp() {
 					<ExitSetup
 						gaTrackingEventArgs={ {
 							category: `${ viewContext }_setup`,
+							action: 'setup_flow_v3_exit_setup',
 							label: 'key-metrics',
 						} }
 					/>

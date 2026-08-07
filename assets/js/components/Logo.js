@@ -33,13 +33,13 @@ function Logo() {
 		<div className="googlesitekit-logo" aria-hidden="true">
 			<GoogleLogoIcon
 				className="googlesitekit-logo__logo-g"
-				height="34"
-				width="32"
+				height="25"
+				width="25"
 			/>
 			<SiteKitLogoIcon
 				className="googlesitekit-logo__logo-sitekit"
-				height="26"
-				width="99"
+				height="29"
+				width="100"
 			/>
 			<VisuallyHidden>
 				{ __( 'Site Kit by Google Logo', 'google-site-kit' ) }
