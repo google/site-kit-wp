@@ -192,17 +192,10 @@ class Email_Report_Section_Builder {
 	}
 
 	/**
-	 * Normalize trend values to canonical percentage strings.
-	 *
-	 * The trend is kept in a canonical, period-decimal form rather than a
-	 * locale-formatted one, since downstream consumers (the template
-	 * formatter and the change-badge template) always re-parse and
-	 * re-format the value themselves. A locale-formatted string (e.g.
-	 * `6,52%` under a decimal-comma locale) only made the value harder to
-	 * re-parse.
+	 * Normalize trend values to floats.
 	 *
 	 * @since 1.167.0
-	 * @since n.e.x.t Emitted a locale-independent percentage format instead of `number_format_i18n()`.
+	 * @since n.e.x.t Returns floats instead of locale-formatted percentage strings.
 	 *
 	 * @param array $trends Trend values.
 	 * @return array|null Normalized trend values.
@@ -228,11 +221,7 @@ class Email_Report_Section_Builder {
 				$trend = floatval( preg_replace( '/[^0-9+\-.]/', '', $trend ) );
 			}
 
-			$number = floatval( $trend );
-
-			$formatted = number_format( $number, 2, '.', '' );
-
-			$output[] = sprintf( '%s%%', $formatted );
+			$output[] = floatval( $trend );
 		}
 
 		return $output;

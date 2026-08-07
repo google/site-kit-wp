@@ -122,11 +122,11 @@ class Email_Report_Section_BuilderTest extends TestCase {
 		$this->assertSame( 'How many visitors do I have?', $ga4_section->get_title(), 'GA4 section title should come from payload.' );
 		$this->assertSame( array( 'Total visitors' ), $ga4_section->get_labels(), 'GA4 labels should be translated when a translation exists.' );
 		$this->assertSame( array( '123' ), $ga4_section->get_values(), 'GA4 totals should be normalized.' );
-		$this->assertSame( array( '23.00%' ), $ga4_section->get_trends(), 'GA4 trends should represent percentage change from previous period.' );
+		$this->assertSame( array( 23.0 ), $ga4_section->get_trends(), 'GA4 trends should represent percentage change from previous period.' );
 		$this->assertSame( $expected_date_range, $ga4_section->get_date_range(), 'GA4 date range should come from email log meta.' );
 	}
 
-	public function test_build_sections__trends_use_canonical_period_decimal_format_under_comma_locale() {
+	public function test_build_sections__trends_are_locale_independent_floats() {
 		global $wp_locale;
 
 		$original_number_format   = $wp_locale->number_format;
@@ -176,14 +176,12 @@ class Email_Report_Section_BuilderTest extends TestCase {
 				),
 			);
 
-			// `es_CO` is not an installed test locale, but `normalize_trends()`
-			// must not localize the trend regardless of what the active
-			// locale's number format looks like (simulated above), so the
-			// locale name here only documents intent.
+			// Simulate the `es_CO` locale, which uses commas
+			// for decimals (eg. `6,52`, not `6.52`).
 			$sections = $builder->build_sections( 'analytics-4', $payloads, 'es_CO' );
 			$section  = $sections[0];
 
-			$this->assertSame( array( '6.52%' ), $section->get_trends(), 'Trend should use a canonical period-decimal format even when the active locale formats numbers with a decimal comma.' );
+			$this->assertSame( array( 6.52 ), $section->get_trends(), 'Trend should be a plain float, unaffected by the active locale\'s number format.' );
 		} finally {
 			$wp_locale->number_format = $original_number_format;
 		}

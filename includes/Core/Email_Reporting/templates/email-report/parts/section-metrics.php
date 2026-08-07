@@ -77,15 +77,12 @@ $subtitle   = $first_part['data']['change_context'] ?? '';
 					<td class="border"
 						style="text-align: right; vertical-align: middle; border-bottom: <?php echo esc_attr( $border_style ); ?>; padding: 12px 0;">
 						<?php
-							$change = $data['change'] ?? null;
-						if ( null !== $change ) :
 							$render_shared_part(
 								'change-badge',
 								array(
-									'value' => $change,
+									'value' => $data['change'],
 								)
 							);
-						endif;
 						?>
 					</td>
 				</tr>

@@ -154,11 +154,14 @@ class Email_Template_FormatterTest extends TestCase {
 	public function data_parse_change_value() {
 		$cases  = array();
 		$values = array(
-			'6.52%'  => 6.52,
-			'-0.85%' => -0.85,
-			'6,52%'  => 6.52,
-			'-0,85%' => -0.85,
-			'0%'     => 0.0,
+			'6.52%'      => 6.52,
+			'-0.85%'     => -0.85,
+			'6,52%'      => 6.52,
+			'-0,85%'     => -0.85,
+			'0%'         => 0.0,
+			'1,234.56%'  => 1234.56,
+			'1.234,56%'  => 1234.56,
+			'-1.234,56%' => -1234.56,
 		);
 
 		foreach ( array( 'en_US', 'es_CO', 'de_DE' ) as $locale ) {
@@ -180,10 +183,10 @@ class Email_Template_FormatterTest extends TestCase {
 	 *
 	 * `es_CO` and `de_DE` are not installed as real test locales, so this
 	 * simulates their decimal-comma, period-thousands number format directly
-	 * rather than relying on `switch_to_locale()`, which silently no-ops for
-	 * locales without an installed translation file.
+	 * rather than relying on `switch_to_locale()`, which proceeds without warnings
+	 * for locales without an installed translation file.
 	 *
-	 * @param string   $locale   Locale name (en_US, es_CO, or de_DE).
+	 * @param string   $locale   Locale name (eg. `'en_US'`, etc.).
 	 * @param callable $callback Callback to run under the simulated locale.
 	 * @return mixed The callback's return value.
 	 */
@@ -235,7 +238,7 @@ class Email_Template_FormatterTest extends TestCase {
 				'title'  => 'Visitors',
 				'labels' => array( 'Total visitors' ),
 				'values' => array( '100' ),
-				'trends' => array( '10.5' ),
+				'trends' => array( 10.5 ),
 			)
 		);
 	}

@@ -118,8 +118,9 @@ class Email_Template_RendererTest extends TestCase {
 		$html_output_without_change          = $renderer->render( 'email-report', $template_data );
 
 		// The email's static <style> block always defines `.badge-positive`/
-		// `.badge-negative` CSS rules, so assert on the rendered `class`
-		// attribute rather than the bare class name.
+		// `.badge-negative` CSS rules, so include the `class=""` wrapper to
+		// ensure we're testing for the existence of the badge markup and not
+		// just the CSS in the `<style>` tag.
 		$this->assertStringNotContainsString( 'class="badge-positive"', $html_output_without_change, 'Expected no change badge when the change value is null.' );
 		$this->assertStringNotContainsString( 'class="badge-negative"', $html_output_without_change, 'Expected no change badge when the change value is null.' );
 	}
