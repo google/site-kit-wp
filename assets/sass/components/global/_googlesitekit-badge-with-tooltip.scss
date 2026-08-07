@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
+// VRT test: intentional change to trigger visual regression failure.
 .googlesitekit-badge-with-tooltip {
 	background-color: $c-utility-warning-container;
+	border: 2px solid #F00;
 	color: $c-yellow-y-600;
 	display: inline-flex;
 	line-height: 16px;
