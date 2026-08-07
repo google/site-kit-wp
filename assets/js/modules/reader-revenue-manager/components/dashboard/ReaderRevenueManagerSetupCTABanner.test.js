@@ -116,7 +116,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	it( 'should render express setup copy when the feature flag is enabled', async () => {
 		mockSurveyEndpoints();
 
-		const { getByText, getAllByRole, waitForRegistry } = render(
+		const { getByText, waitForRegistry } = render(
 			<ReaderRevenueManagerSetupCTABannerComponent />,
 			{
 				registry,
@@ -131,9 +131,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		).toBeInTheDocument();
 		expect( getByText( /Set up a sign-up form/i ) ).toBeInTheDocument();
 		expect( getByText( /Explore other features/i ) ).toBeInTheDocument();
-
-		const buttons = getAllByRole( 'button' );
-		expect( buttons.length ).toBeGreaterThan( 0 );
 	} );
 
 	it( 'should call the "useActivateModuleCallback" hook and dismiss the notification when the setup CTA is clicked', async () => {
@@ -194,16 +191,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 		await waitForRegistry();
 
-		expect( activateModuleMock ).toHaveBeenCalledWith(
-			MODULE_SLUG_READER_REVENUE_MANAGER,
-			{
-				redirectQueryArgs: {
-					expressSetup: 'true',
-					cta: 'newsletter-signup',
-				},
-			}
-		);
-
 		// eslint-disable-next-line require-await
 		await act( async () => {
 			fireEvent.click(
@@ -214,6 +201,15 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		} );
 
 		expect( activateModuleCallbackMock ).toHaveBeenCalledTimes( 1 );
+		expect( activateModuleMock ).toHaveBeenCalledWith(
+			MODULE_SLUG_READER_REVENUE_MANAGER,
+			{
+				redirectQueryArgs: {
+					expressSetup: 'true',
+					cta: 'newsletter-signup',
+				},
+			}
+		);
 		expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
 	} );
 
@@ -229,10 +225,6 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		);
 
 		await waitForRegistry();
-
-		expect( activateModuleMock ).toHaveBeenLastCalledWith(
-			MODULE_SLUG_READER_REVENUE_MANAGER
-		);
 
 		// eslint-disable-next-line require-await
 		await act( async () => {

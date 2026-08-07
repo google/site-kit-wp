@@ -122,7 +122,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 		return (
 			<Notification>
 				<SetupCTA
-					className="googlesitekit-banner--setup-cta googlesitekit-banner--setup-cta-rrmexpress"
+					className="googlesitekit-rrm-setup-cta-banner"
 					notificationID={ id }
 					title={ __(
 						'Turn casual visitors into loyal readers',
