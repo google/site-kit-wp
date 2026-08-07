@@ -73,7 +73,7 @@ export function registerModule( modules ) {
 			await registry.resolveSelect( CORE_SITE ).getSiteInfo();
 			const homeURL = registry.select( CORE_SITE ).getHomeURL();
 
-			if ( ! isURLUsingHTTPS( homeURL ) ) {
+			if ( isURLUsingHTTPS( homeURL ) ) {
 				return;
 			}
 
