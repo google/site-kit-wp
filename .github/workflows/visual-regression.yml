@@ -86,7 +86,7 @@ jobs:
         if: always() && env.CAN_UPLOAD_VRT_REPORTS == 'true'
         with:
           credentials-json: ${{ secrets.GCP_CREDENTIALS }}
-          path: tests/backstop/html_report
+          path: tests/backstop
           destination: ${{ env.GCS_ROOT_PATH }}/${{ steps.report-target.outputs.dir }}
 
       - name: Save report URL
@@ -94,9 +94,9 @@ jobs:
         run: |
           mkdir -p /tmp/artifact-url
           if [ "${{ steps.run-backstopjs.outcome }}" == "success" ]; then
-            echo "- ✅ [VRT Report](${{ steps.upload-to-gcs.outputs.public-url }}/index.html)" > /tmp/artifact-url/url.md
+            echo "- ✅ [VRT Report](${{ steps.upload-to-gcs.outputs.public-url }}/html_report/index.html)" > /tmp/artifact-url/url.md
           else
-            echo "- ❌ [VRT Report](${{ steps.upload-to-gcs.outputs.public-url }}/index.html)" > /tmp/artifact-url/url.md
+            echo "- ❌ [VRT Report](${{ steps.upload-to-gcs.outputs.public-url }}/html_report/index.html)" > /tmp/artifact-url/url.md
           fi
 
       - name: Upload report URL
