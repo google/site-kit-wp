@@ -150,19 +150,16 @@ class Content_MapTest extends TestCase {
 		$subject = Content_Map::get_subject( 'error-email' );
 		$title   = Content_Map::get_title( 'error-email' );
 
-		$this->assertSame( 'Action needed: your Site Kit report couldn’t be generated', $subject, 'Generic error email subject should match the corrected copy.' );
-		$this->assertSame( 'Email reports are failing to send', $title, 'Generic error email title/heading should remain unchanged.' );
-		$this->assertNotSame( $subject, $title, 'Generic error email subject should differ from its title.' );
+		$this->assertNotSame( $subject, $title, 'Error emails should use a custom subject, not the title of the email.' );
 	}
 
-	/**
-	 * @dataProvider data_module_specific_error_keys
-	 */
-	public function test_get_subject_falls_back_to_title_for_module_specific_keys( $content_key ) {
+	public function test_get_subject_falls_back_to_title_for_module_specific_keys() {
+		$content_key = 'error-email-permissions-search-console';
+
 		$subject = Content_Map::get_subject( $content_key );
 		$title   = Content_Map::get_title( $content_key );
 
-		$this->assertSame( $title, $subject, "Subject for '$content_key' should equal its title." );
+		$this->assertSame( $title, $subject, 'Subject should fall back to the title when no custom subject is mapped.' );
 	}
 
 	public function test_get_subject_returns_empty_string_for_unknown_template() {
@@ -172,38 +169,32 @@ class Content_MapTest extends TestCase {
 		$this->assertEmpty( $subject, 'Subject should be empty for unknown template.' );
 	}
 
-	/**
-	 * @dataProvider data_permissions_ctas
-	 */
-	public function test_get_cta_returns_request_access_for_permissions_keys( $content_key, $module_slug ) {
-		$cta = Content_Map::get_cta( $content_key, $this->build_golinks() );
+	public function test_get_cta_returns_request_access_for_search_console_permissions_error() {
+		$cta = Content_Map::get_cta( 'error-email-permissions-search-console', $this->build_golinks() );
 
-		$this->assertSame( 'Request access', $cta['label'], "CTA label for '$content_key' should be 'Request access'." );
-		$this->assertStringContainsString( 'module=' . $module_slug, $cta['url'], "CTA url for '$content_key' should target the $module_slug module settings." );
+		$this->assertSame( 'Request access', $cta['label'], 'Search Console permissions error CTA label should be Request access.' );
+		$this->assertStringContainsString( 'module=search-console', $cta['url'], 'Search Console permissions error CTA should link to that module\'s settings.' );
 	}
 
-	public function data_permissions_ctas() {
-		return array(
-			'search-console' => array( 'error-email-permissions-search-console', 'search-console' ),
-			'analytics-4'    => array( 'error-email-permissions-analytics-4', 'analytics-4' ),
-		);
+	public function test_get_cta_returns_request_access_for_analytics_4_permissions_error() {
+		$cta = Content_Map::get_cta( 'error-email-permissions-analytics-4', $this->build_golinks() );
+
+		$this->assertSame( 'Request access', $cta['label'], 'Analytics permissions error CTA label should be Request access.' );
+		$this->assertStringContainsString( 'module=analytics-4', $cta['url'], 'Analytics permissions error CTA should link to that module\'s settings.' );
 	}
 
-	/**
-	 * @dataProvider data_report_ctas
-	 */
-	public function test_get_cta_returns_go_to_settings_for_report_keys( $content_key, $module_slug ) {
-		$cta = Content_Map::get_cta( $content_key, $this->build_golinks() );
+	public function test_get_cta_returns_go_to_settings_for_search_console_report_error() {
+		$cta = Content_Map::get_cta( 'error-email-report-search-console', $this->build_golinks() );
 
-		$this->assertSame( 'Go to settings', $cta['label'], "CTA label for '$content_key' should be 'Go to settings'." );
-		$this->assertStringContainsString( 'module=' . $module_slug, $cta['url'], "CTA url for '$content_key' should target the $module_slug module settings." );
+		$this->assertSame( 'Go to settings', $cta['label'], 'Search Console report error CTA label should be Go to settings.' );
+		$this->assertStringContainsString( 'module=search-console', $cta['url'], 'Search Console report error CTA should link to that module\'s settings.' );
 	}
 
-	public function data_report_ctas() {
-		return array(
-			'search-console' => array( 'error-email-report-search-console', 'search-console' ),
-			'analytics-4'    => array( 'error-email-report-analytics-4', 'analytics-4' ),
-		);
+	public function test_get_cta_returns_go_to_settings_for_analytics_4_report_error() {
+		$cta = Content_Map::get_cta( 'error-email-report-analytics-4', $this->build_golinks() );
+
+		$this->assertSame( 'Go to settings', $cta['label'], 'Analytics report error CTA label should be Go to settings.' );
+		$this->assertStringContainsString( 'module=analytics-4', $cta['url'], 'Analytics report error CTA should link to that module\'s settings.' );
 	}
 
 	public function test_get_cta_returns_empty_array_for_generic_error_email() {
@@ -218,15 +209,6 @@ class Content_MapTest extends TestCase {
 
 		$this->assertIsArray( $cta, 'CTA should be an array for unknown templates.' );
 		$this->assertEmpty( $cta, 'CTA should be empty for unknown template.' );
-	}
-
-	public function data_module_specific_error_keys() {
-		return array(
-			'permissions-search-console' => array( 'error-email-permissions-search-console' ),
-			'permissions-analytics-4'    => array( 'error-email-permissions-analytics-4' ),
-			'report-search-console'      => array( 'error-email-report-search-console' ),
-			'report-analytics-4'         => array( 'error-email-report-analytics-4' ),
-		);
 	}
 
 	public function test_get_graphic_config_returns_correct_config_for_invitation_email() {

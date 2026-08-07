@@ -70,7 +70,7 @@ class Content_Map {
 	 * @return string The subject string.
 	 */
 	public static function get_subject( $template_name ) {
-		$subjects = self::get_all_subjects();
+		$subjects = self::get_templates_with_custom_subjects();
 
 		return $subjects[ $template_name ] ?? self::get_title( $template_name );
 	}
@@ -185,17 +185,16 @@ class Content_Map {
 	}
 
 	/**
-	 * Gets template subject mappings that differ from their title.
+	 * Get a mapping of all templates with custom subjects (eg. ones
+	 * that differ from their title).
 	 *
-	 * Only templates whose email subject must diverge from their
-	 * in-email title/heading need an entry here; every other template
-	 * falls back to `get_title()` in `get_subject()`.
+	 * Templates not in this mapping use `get_title()` as their subject.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @return array Mapping of template names to subject strings.
 	 */
-	protected static function get_all_subjects() {
+	protected static function get_templates_with_custom_subjects() {
 		return array(
 			'error-email' => __( 'Action needed: your Site Kit report couldn’t be generated', 'google-site-kit' ),
 		);
@@ -304,13 +303,9 @@ class Content_Map {
 	/**
 	 * Gets the primary call-to-action for a template.
 	 *
-	 * Only the four module-specific error keys define a CTA, each
-	 * linking to that module's settings screen; every other key
-	 * (including the generic `error-email` key) defines no CTA.
-	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string  $content_key Content key (e.g. 'error-email-report-analytics-4').
+	 * @param string  $content_key Content_Map key (e.g. 'error-email-report-analytics-4').
 	 * @param Golinks $golinks     Golinks instance for building URLs.
 	 * @return array {
 	 *     CTA configuration, or empty array if the key defines no CTA.
