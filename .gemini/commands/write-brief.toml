@@ -1,0 +1,91 @@
+description = "Writes the Implementation Brief and Test Coverage sections of a GitHub issue, verified against the codebase"
+
+prompt = """
+You are writing the **Implementation Brief** and **Test Coverage** sections for {{args}} — either a GitHub issue number in the google/site-kit-wp repository, or a path the user supplied to a local issue file. If neither was given, ask for one before doing anything else; never go looking for the file yourself.
+
+The canonical, tool-agnostic procedure is `docs/context/workflow/write-implementation-brief.md`. Read it and follow it exactly; the phases below are the same steps, and the playbook wins on any detail.
+
+--- CRITICAL INSTRUCTIONS ---
+
+- Write ONLY the Implementation Brief and Test Coverage sections. Leave Feature Description, Acceptance criteria, QA Brief and Changelog entry untouched.
+- DO NOT edit the GitHub issue or post a comment. Produce the text, or update the local issue file you were given, and let the user place it.
+- DO NOT name any class, method, hook, handle or path you have not opened and read.
+- DO NOT expand scope beyond the acceptance criteria.
+
+--- PHASE 1: READ THE ISSUE ---
+
+For a GitHub issue, fetch it using the GitHub MCP tools (`issue_read`). Fallback: `!{gh issue view {{args}} --json title,body,labels}`. For a local path, read the file.
+
+Extract:
+1. **Feature Description** (between `## Feature Description` and the moderator notice)
+2. **Acceptance criteria** (between `## Acceptance criteria` and `## Implementation Brief`)
+
+The acceptance criteria are the contract: everything you write must trace back to one, and nothing may quietly extend them.
+
+**STOP and ask the user** if the issue is not found, the body is empty, or the acceptance criteria are missing, ambiguous, or contradictory.
+
+--- PHASE 2: READ THE SOURCE MATERIAL ---
+
+- The design doc. Use the one the issue links, or the path the user gives you; otherwise ask the user for it, bundling the question with any Phase 1 ask. Many issues have no design doc — if there isn't one, say so and write the brief from the acceptance criteria and the code. Never stall on it, and never invent a path to one.
+- The sibling issues in the same epic, which bound where this issue's scope stops and supply the numbers to cross-reference.
+
+--- PHASE 3: VERIFY AGAINST THE CODE ---
+
+Open every file the brief will touch. Confirm each class, method, constant, hook, filter, option and script handle exists and is spelled exactly right; confirm the pattern you will tell someone to follow actually looks that way; trace hook ordering to its `do_action()` / `apply_filters()` call site when the brief depends on it; and identify the existing tests, fixtures, snapshots and inline data the change will move.
+
+Where the code contradicts the design doc, the code wins.
+
+--- PHASE 4: LOAD THE CONVENTION DOCS ---
+
+Read only the `docs/context/{js,php}` docs the issue touches, using the scope map in `docs/context/workflow/implement-issue.md` Step 3.
+
+--- PHASE 5: WRITE THE IMPLEMENTATION BRIEF ---
+
+Group by path. Every group is headed by the path it changes, with the changes nested under it. Two shapes are in use — pick one and stay consistent within the issue:
+
+```
+* [ ] In `path/to/File.php`:
+  * <one change per bullet>
+```
+
+```
+In `path/to/directory/` (new directory):
+
+* [ ] <one change per bullet>
+```
+
+Head a group with a file, a directory, or a path plus a parenthetical note — `(new file)`, `(new directory)`, `(new file, combined into the store in `index.js`)`. Order the groups the way someone would work through them: shared/base changes, new classes, registration, build config, components, SCSS last. Nest a third level when one bullet covers several related behaviors, ending the parent in a colon ("Submit behavior:" → on click / on success / on failure).
+
+Every bullet is an instruction. Name the real thing wherever the codebase already decides it: classes, methods, hooks, constants, script handles, datapoint names (`GET:ctas`); selectors and actions with their signature (`getCTAs( { organizationID, publicationID } )`); components to reuse (`SpinnerButton`, `ProgressBar`, `Notice`), their props (`helperText`) and CSS class names (`mdc-text-field--error`); inline-data globals and keys; and user-facing strings quoted verbatim. Point at an existing exemplar ("following `publications.js`") instead of describing one. Cross-reference sibling issues inline (`(added in #12950)`, `(see #13005)`). Fence the scope in one line when an adjacent concern could be pulled in. For UI work, reference the design rather than restating measurements, spell out the interaction states (what disables the CTA, pending, success, error), and name the SCSS partial and the index file to import it into.
+
+Do NOT include:
+- rationale, justification, trade-offs, or the benefits of a decision;
+- work that is not needed ("no Storybook changes required", "no migration needed");
+- routine commands (lint, build, test, VRT) — `implement-issue.md` owns verification;
+- links to local design docs — the brief is read on GitHub, where those paths do not resolve. External links (Figma, a hosted design doc) are fine;
+- restated acceptance criteria, a recap of the Feature Description, or background prose.
+
+DO include, when they apply: the concrete shape of published data (array keys, JSON payload, inline-script global, selector signature); the exact insertion point when ordering matters (hook priority, array position, above/below an early return); and changes to existing files the criteria imply but do not name.
+
+--- PHASE 6: WRITE THE TEST COVERAGE ---
+
+Keep it short — a handful of bullets, not a test plan. Two shapes, both in use:
+
+```
+* Add tests for `<source file>` covering:
+  * <case>
+
+* JS tests in `<file>.test.js` covering the `<name>` action and the `<name>` selector.
+```
+
+One bullet per test file or area, cases nested under it. Name real paths (co-located `*.test.js` / `*.test.tsx` next to the source, `*Test.php` under the mirroring `tests/phpunit/integration/` path). Phrase each case as the behavior or outcome, not the mechanics. Cover every acceptance criterion including its negative cases. **Storybook stories belong here, not in the brief** — "Add a Story for `<Component>`", or list the states when there is more than one ("default, loading, error"). Name any new fixture or fake and where it goes. Call out existing tests the change will break ("Fix any failing tests/snapshots" when the blast radius isn't knowable up front). No commands.
+
+--- PHASE 7: REPORT WHAT DID NOT GO IN THE BRIEF ---
+
+In your reply to the user — not in the issue — report:
+- discrepancies between the design doc and the code, with the `file:line` you checked;
+- consequences the acceptance criteria did not anticipate (a metric that will shift, a default that changes for every install, an existing test that will fail);
+- anything left as an open decision, and the assumption the brief is written under.
+
+Begin with Phase 1.
+"""
