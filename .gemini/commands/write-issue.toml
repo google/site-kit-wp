@@ -1,0 +1,72 @@
+description = "Writes the Feature Description and Acceptance criteria of a GitHub issue from a design doc or requirements, verified against the codebase"
+
+prompt = """
+You are writing the **Feature Description** and **Acceptance criteria** of a Site Kit issue for {{args}} — a path to a design doc, requirements stated in the user's message, or an existing GitHub issue in google/site-kit-wp that needs acceptance criteria. If nothing usable was given, ask for it before doing anything else.
+
+The canonical, tool-agnostic procedure is `docs/context/workflow/write-issue.md`. Read it and follow it exactly; the phases below are the same steps, and the playbook wins on any detail.
+
+--- CRITICAL INSTRUCTIONS ---
+
+- Write ONLY the Feature Description and Acceptance criteria. Leave Implementation Brief, Test Coverage, QA Brief and Changelog entry as the template's placeholder comments.
+- If the issue ALREADY has a Feature Description, write ONLY the Acceptance criteria and leave the description byte-for-byte unchanged, unless the user explicitly asks you to change it.
+- DO NOT run `gh issue create` or `gh issue edit`, and DO NOT post a comment, unless the user explicitly asks. Produce the markdown file and let the user place it.
+- DO NOT name any class, method, hook, handle or path you have not opened and read.
+- DO NOT put links or paths to local design docs or spec files in either section — they do not resolve on GitHub.
+- DO NOT refer to a sibling issue by its position in the design doc ("issue 5", "the next issue"). That numbering is not GitHub's and will be wrong. Use a real issue number, or the name of the deliverable.
+
+--- PHASE 1: ESTABLISH THE SOURCE AND THE MODE ---
+
+The source is a design doc (a repo path or a hosted doc), requirements written in the user's message, or an existing issue (`!{gh issue view {{args}} --json title,body}`, or a local path the user supplies — never go looking for one).
+
+Two modes: a NEW issue gets both sections; an EXISTING issue that already has a Feature Description gets ONLY the criteria.
+
+STOP and ask the user if no source material was given, if the requirements are ambiguous or contradictory, or if the design doc covers an epic and the user has not said which issue to write. Never invent a path to a design doc.
+
+If the design doc has a work-estimate table of proposed issues, that table IS the breakdown — one issue per row, with its title and points. Do not re-slice it.
+
+--- PHASE 2: READ THE SOURCE MATERIAL END TO END ---
+
+Read the WHOLE design doc, not just this issue's section — the reasoning behind one issue's decisions routinely sits in Alternatives considered, Quality attributes, Technical debt or Dependencies. Read any sibling spec the design doc names as authoritative; where that spec and the design doc disagree on what is built, the spec wins. Read the sibling issues already written for the epic — they set the level of detail and show where this issue's scope stops.
+
+--- PHASE 3: VERIFY AGAINST THE CODE ---
+
+Open the files the issue will touch. Confirm every class, method, constant, hook, filter, option, script handle and path exists and is spelled exactly right; confirm the base class, registry or filter being extended has the shape the design doc claims; identify who CONSUMES the data the issue changes, which is what makes a "must stay unchanged" criterion real rather than imagined; and confirm that behavior the design doc treats as already existing actually exists.
+
+Where the code contradicts the design doc, the code wins.
+
+--- PHASE 4: LAY THE ISSUE OUT ---
+
+Follow `.github/ISSUE_TEMPLATE/feature_request.md` exactly, keeping the `Do not alter or remove anything below` moderator notice and the placeholder comments for the sections you are not writing.
+
+The title names the deliverable, not the activity — lead with the symbol or event produced, then the scope in a short clause. Nothing sits between the title and `## Feature Description` — no epic name, no point estimate, no dependency line. Where the issue depends on another, that dependency is a clause inside the Feature Description, by REAL GitHub issue number.
+
+--- PHASE 5: WRITE THE FEATURE DESCRIPTION ---
+
+Prose paragraphs. This is the ONLY section where rationale belongs.
+
+Open with the gap: what happens today and where it falls short, naming the concrete thing that does not cover the case. State what this issue adds in one sentence. Break the work into halves with bold run-in headings when it has more than one (server + frontend, two surfaces, markup + asset). Carry over the load-bearing decisions the design doc made, and their reasons — the constraint an acceptance criterion compresses into one line.
+
+No bullets of criteria, no implementation instructions, no file trees.
+
+--- PHASE 6: WRITE THE ACCEPTANCE CRITERIA ---
+
+A flat list of `*` bullets. Bold run-in group labels only when the issue has genuinely separate halves. One outcome per bullet; nest a second level when one outcome has an enumerable set of cases (the conditions a hook must not fire under, the values a param may take, the forms excluded from a match rule). Inline a table when a criterion enumerates a lookup that prose would obscure — never link out to it.
+
+Each bullet states an outcome that can be checked by reading the diff or exercising the feature. Lead with the precondition when the behavior is conditional. Name the real symbol — event name, config key, inline-data global, CSS selector, param names, hook, class. Give the values (`viewContext: 'mainDashboard'`, `dateRange: 'last-28-days'`, `limit: 3`). State cardinality when it matters ("at most once per request", "exactly one of the four states"). Say what must stay unchanged when the change touches shared code, naming the consumers.
+
+CUT from the criteria:
+- rationale — no "because", "since", "so that", "the same reasoning as X";
+- technique — HOW to match, parse or store is the brief's job. "The value falls back to the site default when the user setting is unset" is an outcome; "read with `array_key_exists()` rather than `isset()`" is a technique note. Keep the outcome and its counter-example, drop the note;
+- negative parentheticals — "(not an `id`)", "(not the raw response)", "rather than assumed to be the first entry". State what it IS;
+- restatements — name the thing once, in the bullet that defines when it happens. Never add "the selector is named X";
+- work that is not being done — "no new setting is registered", "no Storybook story is added", "no migration needed". Silence says it;
+- out-of-scope and known-limitation lists.
+
+KEEP the negatives that are themselves assertable outcomes: "the notification is not rendered when ...", "an unconnected module contributes nothing", "the legacy option is not written", "the payload carries the slug and nothing else".
+
+--- PHASE 7: REPORT WHAT DID NOT GO IN THE ISSUE ---
+
+In your reply to the user — not in the issue — report the decisions you had to make because the design doc was silent (flagged as decisions, so the user can overrule them); discrepancies between the design doc and the code, with the `file:line` you checked; anything you added beyond the design doc's scope; and any ordering constraint, when one issue's text refers to another's deliverable by name.
+
+Begin with Phase 1.
+"""
