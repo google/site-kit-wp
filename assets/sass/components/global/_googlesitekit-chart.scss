@@ -59,6 +59,7 @@
 	// This is the only way to have this style override the inline style.
 	height: fit-content !important;
 	width: fit-content !important;
+	z-index: 8;
 
 	.google-visualization-tooltip-item-list {
 		margin: 0.5em 0;
