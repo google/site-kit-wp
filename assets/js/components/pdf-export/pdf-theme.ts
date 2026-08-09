@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { createPDFStyles } from './pdf-scale';
+import { createPDFStyles, scalePDFValue } from './pdf-scale';
 
 /**
  * The `@react-pdf` family name for display and headline text.
@@ -52,12 +52,15 @@ export const PDF_FONT_FAMILY_TEXT = 'GoogleSansText';
 export const PDF_MEASURE_PAGE_HEIGHT = 14400;
 
 /**
- * The padding, in points, added below the measured content height when
- * sizing the final single page.
+ * The padding under the footer links, in points.
+ *
+ * The Figma design sets the padding to 44 frame pixels, and `scalePDFValue`
+ * converts that length to points. The final page height is the measured
+ * height plus the padding.
  *
  * @since n.e.x.t
  */
-export const PDF_PAGE_BOTTOM_PADDING = 60;
+export const PDF_PAGE_BOTTOM_PADDING = scalePDFValue( 44 );
 
 /**
  * Shared colors for the PDF report.

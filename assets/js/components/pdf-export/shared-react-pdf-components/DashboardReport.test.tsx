@@ -31,10 +31,7 @@ import {
 	PDF_PAGE_WIDTH,
 	scalePDFValue,
 } from '@/js/components/pdf-export/pdf-scale';
-import {
-	PDF_MEASURE_PAGE_HEIGHT,
-	PDF_PAGE_BOTTOM_PADDING,
-} from '@/js/components/pdf-export/pdf-theme';
+import { PDF_MEASURE_PAGE_HEIGHT } from '@/js/components/pdf-export/pdf-theme';
 import { PDFWidgetComponentProps } from '@/js/components/pdf-export/types';
 import { CONTEXT_MAIN_DASHBOARD_TRAFFIC } from '@/js/googlesitekit/widgets/default-contexts';
 import { getLocale } from '@/js/util/i18n';
@@ -296,10 +293,15 @@ describe( 'DashboardReport', () => {
 		const reportJSON = renderDashboardReportJSON();
 
 		expect( reportJSON ).toContain( `"padding":${ PDF_PAGE_PADDING }` );
-		expect( reportJSON ).toContain(
-			`"paddingBottom":${ PDF_PAGE_BOTTOM_PADDING }`
-		);
 		expect( reportJSON ).toContain( `"size":[${ PDF_PAGE_WIDTH },` );
+	} );
+
+	it( 'leaves the padding the design sets under the footer links', () => {
+		const reportJSON = renderDashboardReportJSON();
+
+		expect( reportJSON ).toContain(
+			`"paddingBottom":${ scalePDFValue( 44 ) }`
+		);
 	} );
 
 	it( 'sizes the page to the measurement height by default and to the given pageHeight otherwise', () => {
