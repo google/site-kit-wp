@@ -56,7 +56,8 @@ import {
 } from '@tests/js/test-utils';
 import { registerPDFFonts } from './pdf-fonts-react';
 import { SECTION_ICONS } from './pdf-icons';
-import { PDF_MEASURE_PAGE_HEIGHT, PDF_PAGE_BOTTOM_PADDING } from './pdf-theme';
+import { PDF_PAGE_BOTTOM_PADDING } from './pdf-scale';
+import { PDF_MEASURE_PAGE_HEIGHT } from './pdf-theme';
 import { triggerDownload } from './pdf-utils';
 import PDFExportOrchestrator from './PDFExportOrchestrator';
 import { PDFHeaderSection, PDFReportArea } from './types';
