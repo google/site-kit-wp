@@ -27,6 +27,7 @@ import {
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
 import {
+	LOGO_G_ASPECT_RATIO,
 	PDFAudienceMetricIconCities,
 	PDFAudienceMetricIconPagesPerVisit,
 	PDFAudienceMetricIconPageviews,
@@ -59,7 +60,6 @@ const ALL_ICONS = [
 	[ 'content section', PDFNavContentIcon ],
 	[ 'speed section', PDFNavSpeedIcon ],
 	[ 'monetization section', PDFNavMonetizationIcon ],
-	[ 'Google "G" logo', PDFLogoG ],
 	[ 'filled star', PDFStarFill ],
 	[ 'right-facing chevron', PDFChevronRight ],
 ] as const;
@@ -94,6 +94,27 @@ describe( 'PDF icons', () => {
 			);
 		}
 	);
+
+	it( 'draws the Google "G" logo from its image file at its own width and height', () => {
+		const json = renderJSON( <PDFLogoG /> );
+
+		// Jest replaces every image import with `tests/js/fileMock.js`. The icon's
+		// `src` is the string that file exports.
+		expect( json ).toContain( 'test-file-stub' );
+		expect( json ).toContain(
+			`"width":${ scalePDFValue( 20 * LOGO_G_ASPECT_RATIO ) }`
+		);
+		expect( json ).toContain( `"height":${ scalePDFValue( 20 ) }` );
+	} );
+
+	it( 'draws the Google "G" logo at the size prop it gets', () => {
+		const json = renderJSON( <PDFLogoG size={ 24 } /> );
+
+		expect( json ).toContain(
+			`"width":${ scalePDFValue( 24 * LOGO_G_ASPECT_RATIO ) }`
+		);
+		expect( json ).toContain( `"height":${ scalePDFValue( 24 ) }` );
+	} );
 
 	it( 'renders at the scaled default size, in the muted variant color', () => {
 		const json = renderJSON( <PDFAudienceMetricIconVisitors /> );

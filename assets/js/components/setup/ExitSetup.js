@@ -35,7 +35,7 @@ import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { trackEvent, untrailingslashit } from '@/js/util';
 
-export default function ExitSetup( { gaTrackingEventArgs } ) {
+export default function ExitSetup( { gaTrackingEventArgs, url } ) {
 	const adminURL = useSelect( ( select ) => {
 		return untrailingslashit( select( CORE_SITE ).getAdminURL() );
 	} );
@@ -45,11 +45,11 @@ export default function ExitSetup( { gaTrackingEventArgs } ) {
 	async function handleClick() {
 		await trackEvent(
 			gaTrackingEventArgs.category,
-			'setup_flow_v3_exit_setup',
+			gaTrackingEventArgs.action,
 			gaTrackingEventArgs.label
 		);
 
-		navigateTo( adminURL );
+		navigateTo( url ? untrailingslashit( url ) : adminURL );
 	}
 
 	return (
@@ -61,4 +61,5 @@ export default function ExitSetup( { gaTrackingEventArgs } ) {
 
 ExitSetup.propTypes = {
 	gaTrackingEventArgs: PropTypes.object.isRequired,
+	url: PropTypes.string,
 };

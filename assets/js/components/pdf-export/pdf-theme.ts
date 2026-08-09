@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { createPDFStyles, scalePDFValue } from './pdf-scale';
+import { scalePDFValue } from './pdf-scale';
 
 /**
  * The `@react-pdf` family name for display and headline text.
@@ -47,7 +47,7 @@ export const PDF_FONT_FAMILY_TEXT = 'GoogleSansText';
  * Tall enough to hold any report on one page without pagination, while
  * staying under the PDF specification's hard page-size limit.
  *
- * @since n.e.x.t
+ * @since 1.185.0
  */
 export const PDF_MEASURE_PAGE_HEIGHT = 14400;
 
@@ -58,7 +58,7 @@ export const PDF_MEASURE_PAGE_HEIGHT = 14400;
  * converts that length to points. The final page height is the measured
  * height plus the padding.
  *
- * @since n.e.x.t
+ * @since 1.185.0
  */
 export const PDF_PAGE_BOTTOM_PADDING = scalePDFValue( 44 );
 
@@ -83,6 +83,8 @@ export const PDF_COLORS = {
 	UTILITY_ON_SUCCESS_CONTAINER: '#1f4c04', // $c-utility-on-success-container
 	UTILITY_ERROR_CONTAINER: '#ffded3', // $c-utility-error-container
 	UTILITY_ON_ERROR_CONTAINER: '#7a1e00', // $c-utility-on-error-container
+	SURFACES_INVERSE_ON_SURFACE: '#ebeef0', // $c-surfaces-inverse-on-surface
+	NEUTRAL_N_700: '#333935', // $c-neutral-n-700
 	VIOLET_V_50: '#e3d1ff', // $c-violet-v-50
 	VIOLET_V_600: '#462083', // $c-violet-v-600
 	YELLOW_Y_50: '#ffe4b1', // $c-yellow-y-50
@@ -116,149 +118,3 @@ export const PIE_CHART_COLORS = [
 	PDF_COLORS.PINK_P_200,
 	PDF_COLORS.RED_R_200,
 ];
-
-/**
- * The typography in pixels, before the page scale.
- *
- * `@react-pdf` can't read the dashboard's CSS, so each entry copies
- * `$typography-settings` and `$typography-font-families` from
- * `assets/sass/components/global/_googlesitekit-typography.scss`. The PDF
- * text then reads the same as the dashboard.
- */
-const UNSCALED_TYPOGRAPHY = {
-	display: {
-		small: {
-			fontFamily: PDF_FONT_FAMILY_DISPLAY,
-			fontSize: 38,
-			fontWeight: 400,
-			letterSpacing: 0,
-			lineHeight: 1.158,
-		},
-		medium: {
-			fontFamily: PDF_FONT_FAMILY_DISPLAY,
-			fontSize: 46,
-			fontWeight: 400,
-			letterSpacing: 0,
-			lineHeight: 1.13,
-		},
-		large: {
-			fontFamily: PDF_FONT_FAMILY_DISPLAY,
-			fontSize: 58,
-			fontWeight: 400,
-			letterSpacing: -0.25,
-			lineHeight: 1.1,
-		},
-	},
-	headline: {
-		small: {
-			fontFamily: PDF_FONT_FAMILY_DISPLAY,
-			fontSize: 22,
-			fontWeight: 400,
-			letterSpacing: 0,
-			lineHeight: 1.27,
-		},
-		medium: {
-			fontFamily: PDF_FONT_FAMILY_DISPLAY,
-			fontSize: 28,
-			fontWeight: 400,
-			letterSpacing: 0,
-			lineHeight: 1.286,
-		},
-		large: {
-			fontFamily: PDF_FONT_FAMILY_DISPLAY,
-			fontSize: 32,
-			fontWeight: 400,
-			letterSpacing: 0,
-			lineHeight: 1.25,
-		},
-	},
-	title: {
-		small: {
-			fontFamily: PDF_FONT_FAMILY_TEXT,
-			fontSize: 14,
-			fontWeight: 500,
-			letterSpacing: -0.1,
-			lineHeight: 1.14,
-		},
-		medium: {
-			fontFamily: PDF_FONT_FAMILY_TEXT,
-			fontSize: 16,
-			fontWeight: 500,
-			letterSpacing: 0.1,
-			lineHeight: 1.25,
-		},
-		large: {
-			fontFamily: PDF_FONT_FAMILY_TEXT,
-			fontSize: 18,
-			fontWeight: 500,
-			letterSpacing: 0,
-			lineHeight: 1.33,
-		},
-	},
-	body: {
-		small: {
-			fontFamily: PDF_FONT_FAMILY_TEXT,
-			fontSize: 12,
-			fontWeight: 400,
-			letterSpacing: 0.2,
-			lineHeight: 1.33,
-		},
-		medium: {
-			fontFamily: PDF_FONT_FAMILY_TEXT,
-			fontSize: 14,
-			fontWeight: 400,
-			letterSpacing: 0.25,
-			lineHeight: 1.43,
-		},
-		large: {
-			fontFamily: PDF_FONT_FAMILY_TEXT,
-			fontSize: 16,
-			fontWeight: 400,
-			letterSpacing: 0.5,
-			lineHeight: 1.5,
-		},
-	},
-	label: {
-		small: {
-			fontFamily: PDF_FONT_FAMILY_TEXT,
-			fontSize: 12,
-			fontWeight: 500,
-			letterSpacing: 0.2,
-			lineHeight: 1.33,
-		},
-		medium: {
-			fontFamily: PDF_FONT_FAMILY_TEXT,
-			fontSize: 14,
-			fontWeight: 500,
-			letterSpacing: 0,
-			lineHeight: 1.43,
-		},
-		large: {
-			fontFamily: PDF_FONT_FAMILY_TEXT,
-			fontSize: 16,
-			fontWeight: 500,
-			letterSpacing: 0,
-			lineHeight: 1.5,
-		},
-	},
-} as const;
-
-/**
- * Complete text styles for each typography type and size.
- *
- * Each entry holds the font family, size, weight, letter spacing, and line
- * height, ready to apply to a `<Text>`. The PDF page is measured in points
- * and is narrower than the dashboard's pixel values assume, so
- * `createPDFStyles` scales the font size and letter spacing down to page
- * points. The line height is a ratio and the weight is a keyword, so both
- * apply as they are.
- *
- * @since 1.183.0
- */
-export const PDF_TYPOGRAPHY = {
-	display: createPDFStyles( UNSCALED_TYPOGRAPHY.display ),
-	headline: createPDFStyles( UNSCALED_TYPOGRAPHY.headline ),
-	title: createPDFStyles( UNSCALED_TYPOGRAPHY.title ),
-	body: createPDFStyles( UNSCALED_TYPOGRAPHY.body ),
-	label: createPDFStyles( UNSCALED_TYPOGRAPHY.label ),
-} as const;

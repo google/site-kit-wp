@@ -64,15 +64,11 @@ export default function Splash( { children } ) {
 	const siteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
-	const homeURL = useSelect( ( select ) => select( CORE_SITE ).getHomeURL() );
 	const secondAdminLearnMoreLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'already-configured' )
 	);
 	const disconnectedReason = useSelect( ( select ) =>
 		select( CORE_USER ).getDisconnectedReason()
-	);
-	const connectedProxyURL = useSelect( ( select ) =>
-		select( CORE_USER ).getConnectedProxyURL()
 	);
 	const changedURLHelpLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'url-has-changed' )
@@ -151,13 +147,10 @@ export default function Splash( { children } ) {
 	const splashProps = {
 		analyticsModuleActive,
 		secondAdminLearnMoreLink,
-		homeURL,
 		analyticsModuleAvailable,
-		disconnectedReason,
 		title,
 		description,
 		getHelpURL,
-		connectedProxyURL,
 		showLearnMoreLink,
 	};
 

@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import getKeyMetricsPDFData from '@/js/components/KeyMetrics/getPDFData';
+import { enabledFeatures } from '@/js/features';
 import {
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_RETURNING_VISITORS,
@@ -94,7 +95,13 @@ function selectWithKeyMetrics( keyMetrics ) {
 }
 
 describe( 'registerDefaults - keyMetricsPDFSection', () => {
-	it( 'registers the aggregate widget in the Key Metrics area', () => {
+	afterEach( () => {
+		enabledFeatures.delete( 'pdfGeneration' );
+	} );
+
+	it( 'registers the aggregate widget in the Key Metrics area when pdfGeneration is enabled', () => {
+		enabledFeatures.add( 'pdfGeneration' );
+
 		const widgetsAPI = createWidgetsAPI();
 		registerDefaults( widgetsAPI );
 
@@ -140,7 +147,18 @@ describe( 'registerDefaults - keyMetricsPDFSection', () => {
 		expect( area.settings.pdfTitle ).toBe( 'Key metrics' );
 	} );
 
+	it( 'does not register the aggregate widget when pdfGeneration is disabled', () => {
+		const widgetsAPI = createWidgetsAPI();
+		registerDefaults( widgetsAPI );
+
+		expect(
+			findWidgetRegistration( widgetsAPI, 'keyMetricsPDFSection' )
+		).toBeUndefined();
+	} );
+
 	it( 'pdf.isActive is true only when a configured metric has a PDF tile config', () => {
+		enabledFeatures.add( 'pdfGeneration' );
+
 		const widgetsAPI = createWidgetsAPI();
 		registerDefaults( widgetsAPI );
 
