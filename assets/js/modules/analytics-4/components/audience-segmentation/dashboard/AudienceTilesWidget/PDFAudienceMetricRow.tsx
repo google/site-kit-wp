@@ -27,11 +27,12 @@ import { FC } from 'react';
 /**
  * Internal dependencies
  */
+import { getPDFChangeType } from '@/js/components/pdf-export/getPDFTileChange';
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFChangeBadge from '@/js/components/pdf-export/shared-react-pdf-components/PDFChangeBadge';
 import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
-import { PDFIcon } from '@/js/components/pdf-export/types';
+import { PDFChangeType, PDFIcon } from '@/js/components/pdf-export/types';
 import { calculateChange, numFmt } from '@/js/util';
 import type { AudienceTileMetric } from './buildPDFAudienceCard';
 
@@ -76,7 +77,7 @@ const styles = createPDFStyles( {
  */
 function getChangeChip(
 	metric: AudienceTileMetric
-): { change: string; isNegative: boolean } | null {
+): { change: string; changeType: PDFChangeType } | null {
 	const change = calculateChange( metric.previous, metric.current );
 
 	if ( change === null ) {
@@ -89,7 +90,7 @@ function getChangeChip(
 			signDisplay: 'exceptZero',
 			maximumFractionDigits: 1,
 		} ),
-		isNegative: change < 0,
+		changeType: getPDFChangeType( change ),
 	};
 }
 
@@ -132,7 +133,7 @@ const PDFAudienceMetricRow: FC< PDFAudienceMetricRowProps > = ( {
 			{ chip && (
 				<PDFChangeBadge
 					change={ chip.change }
-					isNegative={ chip.isNegative }
+					changeType={ chip.changeType }
 				/>
 			) }
 		</View>

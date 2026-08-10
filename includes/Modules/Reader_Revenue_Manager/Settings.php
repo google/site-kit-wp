@@ -58,7 +58,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Overrides the parent to ensure empty configuredCTAs arrays are cast
 	 * to objects so that json_encode produces {} instead of [].
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @return mixed Value set for the option, or registered default if not set.
 	 */
@@ -92,7 +92,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Gets the default value.
 	 *
 	 * @since 1.132.0
-	 * @since n.e.x.t Added the `organizationID` and `configuredCTAs` settings.
+	 * @since 1.185.0 Added the `organizationID` and `configuredCTAs` settings.
 	 *
 	 * @return array
 	 */
@@ -141,7 +141,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
 	 * @since 1.132.0
-	 * @since n.e.x.t Added sanitization for the `organizationID` and `configuredCTAs` settings.
+	 * @since 1.185.0 Added sanitization for the `organizationID` and `configuredCTAs` settings.
 	 *
 	 * @return callable|null
 	 */
@@ -237,7 +237,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	/**
 	 * Sanitizes the express setup settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param array $option Settings array.
 	 * @return array Sanitized settings array.

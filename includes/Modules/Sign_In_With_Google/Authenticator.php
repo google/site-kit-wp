@@ -182,7 +182,7 @@ class Authenticator implements Authenticator_Interface {
 	 * Signs in the user.
 	 *
 	 * @since 1.145.0
-	 * @since n.e.x.t Skips the Two-Factor plugin's login challenge for this request.
+	 * @since 1.185.0 Skips the Two-Factor plugin's login challenge for this request.
 	 *
 	 * @param WP_User $user User object.
 	 * @return WP_Error|null WP_Error if an error occurred, null otherwise.
@@ -227,7 +227,7 @@ class Authenticator implements Authenticator_Interface {
 	 * Finds an existing user using the Google user ID and email.
 	 *
 	 * @since 1.145.0
-	 * @since n.e.x.t Returns a WP_Error when the email-matched user uses two-factor authentication and isn't connected to the Google account.
+	 * @since 1.185.0 Returns a WP_Error when the email-matched user uses two-factor authentication and isn't connected to the Google account.
 	 *
 	 * @param array $payload Google auth payload.
 	 * @return WP_User|WP_Error|null User object when found, WP_Error when the matched user has to connect their Google account first, null otherwise.
@@ -323,7 +323,7 @@ class Authenticator implements Authenticator_Interface {
 	 *
 	 * Returns false when the optional Two-Factor plugin isn't active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param int $user_id User ID.
 	 * @return bool True when the user has two-factor authentication enabled, false otherwise.

@@ -115,17 +115,21 @@ const IntroModal: FC< IntroModalProps > = ( { id, Notification } ) => {
 		SITE_GOALS_INTRO_MODAL_BANNER
 	) as IntroModalTrackingEvents;
 
-	const hasEcommerceConversionReportingEvents = useSelect(
+	// Whether each goal type's widget renders. The modal introduces those
+	// widgets, so it follows the exact conditions they apply.
+	const isEcommerceWidgetRenderable = useSelect(
 		( select: Select ) =>
-			select(
-				MODULES_ANALYTICS_4
-			).hasEcommerceConversionReportingEvents(),
+			select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+				GOAL_TYPES.ECOMMERCE
+			),
 		[]
 	);
 
-	const hasLeadConversionReportingEvents = useSelect(
+	const isLeadWidgetRenderable = useSelect(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).hasLeadConversionReportingEvents(),
+			select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+				GOAL_TYPES.LEAD
+			),
 		[]
 	);
 
@@ -160,18 +164,15 @@ const IntroModal: FC< IntroModalProps > = ( { id, Notification } ) => {
 	}, [] );
 
 	// All the checks the modal needs, apart from the section being ready.
-	// It needs at least one detected event type. If there is none, the
-	// modal never shows, so the hook below should not load the widget
-	// areas or wait.
+	// At least one Site Goals widget must render. If none does, the modal never
+	// shows, so the hook below should not load the widget areas or wait.
 	//
 	// The dismissed-item check is intentionally omitted here: `isDismissible`
 	// on the notification registration keeps the framework from mounting this
 	// component while the modal is dismissed.
 	const canShowSiteGoalsIntroModal =
-		hasEcommerceConversionReportingEvents !== undefined &&
-		hasLeadConversionReportingEvents !== undefined &&
-		( hasEcommerceConversionReportingEvents ||
-			hasLeadConversionReportingEvents ) &&
+		( isEcommerceWidgetRenderable === true ||
+			isLeadWidgetRenderable === true ) &&
 		! hasInsufficientAnalyticsAccess;
 
 	// While the modal can show, the hook loads the widget areas above and
@@ -256,10 +257,7 @@ const IntroModal: FC< IntroModalProps > = ( { id, Notification } ) => {
 		handleView
 	);
 
-	if (
-		hasEcommerceConversionReportingEvents &&
-		hasLeadConversionReportingEvents
-	) {
+	if ( isEcommerceWidgetRenderable && isLeadWidgetRenderable ) {
 		return (
 			<Notification
 				gaTrackingEventArgs={ {
@@ -271,7 +269,7 @@ const IntroModal: FC< IntroModalProps > = ( { id, Notification } ) => {
 		);
 	}
 
-	if ( hasEcommerceConversionReportingEvents ) {
+	if ( isEcommerceWidgetRenderable ) {
 		return (
 			<Notification
 				gaTrackingEventArgs={ {
@@ -283,7 +281,7 @@ const IntroModal: FC< IntroModalProps > = ( { id, Notification } ) => {
 		);
 	}
 
-	if ( hasLeadConversionReportingEvents ) {
+	if ( isLeadWidgetRenderable ) {
 		return (
 			<Notification
 				gaTrackingEventArgs={ {

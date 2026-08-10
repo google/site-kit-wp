@@ -109,43 +109,69 @@ describe( 'Analytics 4 widget registrations', () => {
 	} );
 
 	describe( 'Site Goals widgets', () => {
+		const ALL_SITE_GOALS_WIDGETS = [
+			'analyticsOnlineStorePerformance',
+			'analyticsLeadGenerationPerformance',
+		];
+
 		it.each( [
 			[
 				'only ecommerce active',
 				{ activeWidgets: [ 'ecommerce' ] },
+				[ 'purchase', 'contact' ],
 				[ 'analyticsOnlineStorePerformance' ],
 				[ 'analyticsLeadGenerationPerformance' ],
 			],
 			[
 				'only lead active',
 				{ activeWidgets: [ 'lead' ] },
+				[ 'purchase', 'contact' ],
 				[ 'analyticsLeadGenerationPerformance' ],
 				[ 'analyticsOnlineStorePerformance' ],
 			],
 			[
 				'both active',
 				{ activeWidgets: [ 'ecommerce', 'lead' ] },
-				[
-					'analyticsOnlineStorePerformance',
-					'analyticsLeadGenerationPerformance',
-				],
+				[ 'purchase', 'contact' ],
+				ALL_SITE_GOALS_WIDGETS,
 				[],
 			],
 			[
 				'neither active',
 				{ activeWidgets: [] },
+				[ 'purchase', 'contact' ],
 				[],
-				[
-					'analyticsOnlineStorePerformance',
-					'analyticsLeadGenerationPerformance',
-				],
+				ALL_SITE_GOALS_WIDGETS,
+			],
+			[
+				'a category is active but its events are no longer detected',
+				{ activeWidgets: [ 'ecommerce', 'lead' ] },
+				[],
+				[],
+				ALL_SITE_GOALS_WIDGETS,
+			],
+			[
+				'a category is active but only the other category has events',
+				{ activeWidgets: [ 'ecommerce', 'lead' ] },
+				[ 'purchase' ],
+				[ 'analyticsOnlineStorePerformance' ],
+				[ 'analyticsLeadGenerationPerformance' ],
 			],
 		] )(
 			'should gate widgets correctly when %s',
-			( _, siteGoalsSettings, expectedPresent, expectedAbsent ) => {
+			(
+				_,
+				siteGoalsSettings,
+				detectedEvents,
+				expectedPresent,
+				expectedAbsent
+			) => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSiteGoalsSettings( siteGoalsSettings );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( { detectedEvents } );
 				registerWidgets( widgets );
 
 				const slugs = registry

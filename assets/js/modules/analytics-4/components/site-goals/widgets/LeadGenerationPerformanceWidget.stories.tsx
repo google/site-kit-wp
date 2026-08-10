@@ -143,7 +143,11 @@ function commonSetup( registry: WPDataRegistry ) {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {} );
+	// Pairs with the detected event above, so the state matches one where the
+	// widget renders. `isSiteGoalsWidgetRenderable` needs both.
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+		activeWidgets: [ GOAL_TYPES.LEAD ],
+	} );
 
 	registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
 	registry
@@ -858,6 +862,7 @@ Ready.args = {
 		] );
 	},
 };
+Ready.scenario = {};
 
 export const GatheringBreakdownData = Template.bind( {} ) as Story;
 GatheringBreakdownData.storyName = 'Gathering Breakdown Data';

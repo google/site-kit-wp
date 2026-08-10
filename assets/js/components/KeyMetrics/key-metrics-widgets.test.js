@@ -218,7 +218,7 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 			expect( data.value ).toBe( numFmt( 500 ) );
 			expect( data.value ).not.toBe( numFmt( 1200 ) );
 			// The total rose 1,000 -> 1,200, so the change is positive.
-			expect( data.isNegative ).toBe( false );
+			expect( data.changeType ).toBe( 'positive' );
 			expect( data.change ).toEqual( expect.stringContaining( '20' ) );
 			// The subtext reads the total visitors, matching the dashboard tile.
 			expect( data.subtext ).toContain(
@@ -249,7 +249,7 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 			const data = await loadNewVisitorsTile( report );
 
 			expect( data.value ).toBe( numFmt( 900 ) );
-			expect( data.isNegative ).toBe( true );
+			expect( data.changeType ).toBe( 'negative' );
 		} );
 
 		it( 'returns null when the report has no rows, so the tile is dropped', async () => {
@@ -321,7 +321,7 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 				} )
 			);
 			// The badge shows the absolute point change (30% - 20% = +10%).
-			expect( data.isNegative ).toBe( false );
+			expect( data.changeType ).toBe( 'positive' );
 			expect( data.change ).toEqual( expect.stringContaining( '10' ) );
 			expect( data.subtext ).toContain(
 				numFmt( 1000, { style: 'decimal' } )
@@ -387,7 +387,7 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 			);
 			expect( data.subtext ).toContain( 'of total traffic' );
 			// 40% vs 25% (200/800) previous, so the absolute change is +15 points.
-			expect( data.isNegative ).toBe( false );
+			expect( data.changeType ).toBe( 'positive' );
 			expect( data.change ).toEqual( expect.stringContaining( '15' ) );
 		} );
 

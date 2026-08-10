@@ -355,7 +355,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * Adds custom errors if Google auth flow failed.
 	 *
 	 * @since 1.140.0
-	 * @since n.e.x.t Added the two-factor authentication error message.
+	 * @since 1.185.0 Added the two-factor authentication error message.
 	 *
 	 * @param WP_Error $error WP_Error instance.
 	 * @return WP_Error $error WP_Error instance.

@@ -166,7 +166,11 @@ const PDFMetricChartTile: FC< PDFMetricChartTileProps > = ( {
 						changeDirection && (
 							<PDFChangeBadge
 								change={ change }
-								isNegative={ changeDirection === 'down' }
+								changeType={
+									changeDirection === 'down'
+										? 'negative'
+										: 'positive'
+								}
 							/>
 						) }
 					{ changeLabel && (

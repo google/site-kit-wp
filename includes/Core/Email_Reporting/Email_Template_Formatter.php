@@ -86,15 +86,14 @@ class Email_Template_Formatter {
 	 * Builds sections from raw payload grouped by module.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Removed $user parameter, locale switching is now handled by the Email_Log_Processor.
 	 *
 	 * @param array   $raw_payload Raw payload.
 	 * @param WP_Post $email_log   Email log post.
-	 * @param WP_User $user        User receiving the report.
 	 * @return array|WP_Error Sections array or WP_Error.
 	 */
-	public function build_sections( $raw_payload, WP_Post $email_log, WP_User $user ) {
-		$sections    = array();
-		$user_locale = get_user_locale( $user );
+	public function build_sections( $raw_payload, WP_Post $email_log ) {
+		$sections = array();
 
 		if ( ! is_array( $raw_payload ) ) {
 			return $sections;
@@ -109,7 +108,6 @@ class Email_Template_Formatter {
 				$module_sections = $this->section_builder->build_sections(
 					$module_slug,
 					array( $module_payload ),
-					$user_locale,
 					$email_log
 				);
 			} catch ( \Throwable $exception ) {
