@@ -32,7 +32,7 @@
 			color: $c-neutral-n-900;
 			display: flex;
 			flex-direction: column;
-			gap: 8px;
+			gap: 6px;
 			text-align: center;
 		}
 
@@ -70,7 +70,7 @@
 				.mdc-tab {
 					border-radius: 0;
 					flex: 1 1 50%;
-					height: 38px;
+					height: 34px;
 					min-width: 0;
 					padding: 0;
 
@@ -120,12 +120,12 @@
 		}
 
 		.googlesitekit-rrm-cta-preview__stage {
-			min-height: 320px;
+			min-height: 350px;
 		}
 
 		.googlesitekit-rrm-cta-preview__panel {
 			height: 100%;
-			min-height: 320px;
+			min-height: 350px;
 			overflow: hidden;
 			position: relative;
 
@@ -147,8 +147,6 @@
 			height: 100%;
 			inset: 0;
 			left: 0;
-			object-fit: contain;
-			object-position: center top;
 			pointer-events: none;
 			position: absolute;
 			top: 0;
