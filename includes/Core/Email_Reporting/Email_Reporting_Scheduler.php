@@ -153,7 +153,7 @@ class Email_Reporting_Scheduler {
 	 * WP-Cron hasn't processed it yet) so callers never receive a stale,
 	 * already-past timestamp.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @return int Unix timestamp for the next report.

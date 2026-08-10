@@ -113,6 +113,26 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should render express setup copy when the feature flag is enabled', async () => {
+		mockSurveyEndpoints();
+
+		const { getByText, waitForRegistry } = render(
+			<ReaderRevenueManagerSetupCTABannerComponent />,
+			{
+				registry,
+				features: [ 'rrmExpressSetup' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByText( /Turn casual visitors into loyal readers/ )
+		).toBeInTheDocument();
+		expect( getByText( /Set up a sign-up form/i ) ).toBeInTheDocument();
+		expect( getByText( /Explore other features/i ) ).toBeInTheDocument();
+	} );
+
 	it( 'should call the "useActivateModuleCallback" hook and dismiss the notification when the setup CTA is clicked', async () => {
 		mockSurveyEndpoints();
 
@@ -150,6 +170,68 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 		expect( activateModuleCallbackMock ).toHaveBeenCalledTimes( 1 );
 		expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
+	} );
+
+	it( 'should call setup activation callback when express setup CTA is clicked', async () => {
+		mockSurveyEndpoints();
+
+		fetchMock.postOnce( dismissPromptEndpoint, {
+			body: {
+				'rrm-setup-notification': { expires: 0, count: 1 },
+			},
+		} );
+
+		const { getByRole, waitForRegistry } = render(
+			<ReaderRevenueManagerSetupCTABannerComponent />,
+			{
+				registry,
+				features: [ 'rrmExpressSetup' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click(
+				getByRole( 'button', {
+					name: /Set up a sign-up form/i,
+				} )
+			);
+		} );
+
+		expect( activateModuleCallbackMock ).toHaveBeenCalledTimes( 1 );
+		expect( activateModuleMock ).toHaveBeenCalledWith(
+			MODULE_SLUG_READER_REVENUE_MANAGER,
+			{
+				redirectQueryArgs: {
+					expressSetup: 'true',
+					cta: 'newsletter-signup',
+				},
+			}
+		);
+		expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
+	} );
+
+	it( 'should call useActivateModuleCallback when "Explore other features" is clicked', async () => {
+		mockSurveyEndpoints();
+
+		const { getByText, waitForRegistry } = render(
+			<ReaderRevenueManagerSetupCTABannerComponent />,
+			{
+				registry,
+				features: [ 'rrmExpressSetup' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByText( /Explore other features/i ) );
+		} );
+
+		expect( activateModuleCallbackMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	it( 'should call the dismiss item endpoint when the banner is dismissed', async () => {
