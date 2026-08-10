@@ -20,7 +20,7 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\User_Settings;
 /**
  * Base class for the per-user Reader Revenue Manager settings datapoints.
  *
- * @since n.e.x.t
+ * @since 1.185.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ abstract class User_Settings_Datapoint extends Datapoint implements Executable_D
 	/**
 	 * Reader Revenue Manager user settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @var User_Settings
 	 */
@@ -38,7 +38,7 @@ abstract class User_Settings_Datapoint extends Datapoint implements Executable_D
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -50,7 +50,7 @@ abstract class User_Settings_Datapoint extends Datapoint implements Executable_D
 	/**
 	 * Gets the user settings formatted for a REST response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @return array Reader Revenue Manager user settings.
 	 */
@@ -65,7 +65,7 @@ abstract class User_Settings_Datapoint extends Datapoint implements Executable_D
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data     Data request object.
@@ -78,7 +78,7 @@ abstract class User_Settings_Datapoint extends Datapoint implements Executable_D
 	/**
 	 * Checks whether the current user is allowed to access the datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @return bool True if the current user can view the dashboard, false otherwise.
 	 */

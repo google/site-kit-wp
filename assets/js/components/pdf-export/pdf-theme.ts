@@ -42,7 +42,7 @@ export const PDF_FONT_FAMILY_TEXT = 'GoogleSansText';
  * Tall enough to hold any report on one page without pagination, while
  * staying under the PDF specification's hard page-size limit.
  *
- * @since n.e.x.t
+ * @since 1.185.0
  */
 export const PDF_MEASURE_PAGE_HEIGHT = 14400;
 
@@ -50,7 +50,7 @@ export const PDF_MEASURE_PAGE_HEIGHT = 14400;
  * The padding, in points, added below the measured content height when
  * sizing the final single page.
  *
- * @since n.e.x.t
+ * @since 1.185.0
  */
 export const PDF_PAGE_BOTTOM_PADDING = 60;
 

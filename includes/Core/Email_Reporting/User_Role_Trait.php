@@ -15,7 +15,7 @@ use WP_User;
 /**
  * Trait for shaping user roles in email reporting user listings.
  *
- * @since n.e.x.t
+ * @since 1.185.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ trait User_Role_Trait {
 	 * Gets the primary role slug of the user.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Moved from REST_Email_Reporting_Controller into this trait.
+	 * @since 1.185.0 Moved from REST_Email_Reporting_Controller into this trait.
 	 *
 	 * @param WP_User $user User object.
 	 * @return string Primary role slug, or an empty string if the user has no roles.
@@ -43,7 +43,7 @@ trait User_Role_Trait {
 	/**
 	 * Gets the translated display name for a role slug.
 	 *
-	 * @since n.e.x.t Extracted from REST_Email_Reporting_Controller::get_primary_role_display_name().
+	 * @since 1.185.0 Extracted from REST_Email_Reporting_Controller::get_primary_role_display_name().
 	 *
 	 * @param string $role_slug Role slug.
 	 * @return string Translated role display name.
@@ -62,7 +62,7 @@ trait User_Role_Trait {
 	 * Gets the translated display name of the user's primary role.
 	 *
 	 * @since 1.178.0
-	 * @since n.e.x.t Moved from REST_Email_Reporting_Controller into this trait.
+	 * @since 1.185.0 Moved from REST_Email_Reporting_Controller into this trait.
 	 *
 	 * @param WP_User $user User object.
 	 * @return string Translated role display name.
