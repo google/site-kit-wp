@@ -33,7 +33,11 @@ import {
 	SettingsStatus,
 	SettingsView,
 } from './components/settings';
-import { SetupMain, SetupMainExpressReady } from './components/setup';
+import {
+	SetupLayout,
+	SetupMain,
+	SetupMainExpressReady,
+} from './components/setup';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from './constants';
 import {
 	ERROR_CODE_NON_HTTPS_SITE,
@@ -50,6 +54,9 @@ export function registerModule( modules ) {
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		SettingsStatusComponent: SettingsStatus,
+		SetupLayout: isFeatureEnabled( 'rrmExpressSetup' )
+			? SetupLayout
+			: undefined,
 		SetupComponent: isFeatureEnabled( 'rrmExpressSetup' )
 			? SetupMainExpressReady
 			: SetupMain,

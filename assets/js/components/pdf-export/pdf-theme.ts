@@ -42,7 +42,7 @@ export const PDF_FONT_FAMILY_TEXT = 'GoogleSansText';
  * Tall enough to hold any report on one page without pagination, while
  * staying under the PDF specification's hard page-size limit.
  *
- * @since n.e.x.t
+ * @since 1.185.0
  */
 export const PDF_MEASURE_PAGE_HEIGHT = 14400;
 
@@ -50,7 +50,7 @@ export const PDF_MEASURE_PAGE_HEIGHT = 14400;
  * The padding, in points, added below the measured content height when
  * sizing the final single page.
  *
- * @since n.e.x.t
+ * @since 1.185.0
  */
 export const PDF_PAGE_BOTTOM_PADDING = 60;
 
@@ -75,6 +75,8 @@ export const PDF_COLORS = {
 	UTILITY_ON_SUCCESS_CONTAINER: '#1f4c04', // $c-utility-on-success-container
 	UTILITY_ERROR_CONTAINER: '#ffded3', // $c-utility-error-container
 	UTILITY_ON_ERROR_CONTAINER: '#7a1e00', // $c-utility-on-error-container
+	SURFACES_INVERSE_ON_SURFACE: '#ebeef0', // $c-surfaces-inverse-on-surface
+	NEUTRAL_N_700: '#333935', // $c-neutral-n-700
 	VIOLET_V_50: '#e3d1ff', // $c-violet-v-50
 	VIOLET_V_600: '#462083', // $c-violet-v-600
 	YELLOW_Y_50: '#ffe4b1', // $c-yellow-y-50

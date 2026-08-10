@@ -21,7 +21,7 @@ const PLUGIN_NAME = 'LazyLoadVendorModulesPlugin';
 /**
  * Collects the source resource paths a module resolves from.
  *
- * @since n.e.x.t
+ * @since 1.185.0
  *
  * @param {Object} module A webpack module.
  * @return {string[]} The resolved resource paths for the module and any inner modules.
@@ -58,13 +58,13 @@ function getModuleResources( module ) {
  * Fails the build when a module is found in an initial chunk that should be
  * lazy-loaded.
  *
- * @since n.e.x.t
+ * @since 1.185.0
  */
 class LazyLoadVendorModulesPlugin {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param {Object}   options            Plugin options.
 	 * @param {string}   options.chunkName  The initial chunk to guard.
@@ -78,7 +78,7 @@ class LazyLoadVendorModulesPlugin {
 	/**
 	 * Applies the plugin to the webpack compiler.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param {Object} compiler The webpack compiler.
 	 */

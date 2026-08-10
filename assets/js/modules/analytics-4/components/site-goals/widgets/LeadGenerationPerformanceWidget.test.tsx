@@ -1525,6 +1525,35 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'renders a form tab with the campaign name when the form ID is a slug', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		// An OptinMonster campaign reports its slug as the form ID, while
+		// every other supported plugin reports a numeric ID.
+		seedBreakdown( { formIDs: [ 'jnpfwoygltxurnayflew' ] } );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: {
+				jnpfwoygltxurnayflew: { title: 'Newsletter Popup' },
+			},
+			status: 200,
+		} );
+		seedTabbedReports( { [ FORM_DIMENSION ]: 'jnpfwoygltxurnayflew' } );
+
+		const { getByRole, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		// Without the resolved title the tab would read
+		// "Form #jnpfwoygltxurnayflew", which tells a user nothing about which
+		// campaign it covers.
+		expect(
+			getByRole( 'tab', { name: '“Newsletter Popup” form' } )
+		).toBeInTheDocument();
+	} );
+
 	it( 'renders an info tooltip for a form tab whose plugin is known, across page-count variants', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
