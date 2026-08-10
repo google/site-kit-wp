@@ -134,6 +134,35 @@ class Email_Template_FormatterTest extends TestCase {
 		$this->assertSame( 'email_report_no_data', $payload->get_error_code(), 'Expected no data error code when report has no data sections.' );
 	}
 
+	public function test_build_template_payload__footer_copy_contains_accessible_unsubscribe_link() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$user    = get_user_by( 'id', $user_id );
+
+		$payload = $this->formatter->build_template_payload(
+			array( $this->get_total_visitors_section() ),
+			Email_Reporting_Settings::FREQUENCY_WEEKLY,
+			$this->get_date_range(),
+			$user
+		);
+
+		$footer_copy = $payload['template_data']['footer']['copy'];
+
+		$this->assertStringContainsString( '<a class="link" href="', $footer_copy, 'Expected footer copy to contain an accessible unsubscribe link.' );
+		$this->assertStringContainsString( '>unsubscribe</a>.', $footer_copy, 'Expected footer copy to use descriptive unsubscribe link text.' );
+		$this->assertStringNotContainsString( '>here</a>', $footer_copy, 'Expected footer copy to not use inaccessible "here" link text.' );
+		$this->assertStringNotContainsString( '&#038;', $footer_copy, 'Expected the unsubscribe URL to stay unescaped in the copy so the plain text variant keeps a usable URL; escaping happens at render time via wp_kses().' );
+	}
+
+	public function test_prepare_subscription_confirmation_template_data__footer_copy_contains_accessible_unsubscribe_link() {
+		$data        = $this->formatter->prepare_subscription_confirmation_template_data( Email_Reporting_Settings::FREQUENCY_WEEKLY );
+		$footer_copy = $data['footer']['copy'];
+
+		$this->assertStringContainsString( '<a class="link" href="', $footer_copy, 'Expected footer copy to contain an accessible unsubscribe link.' );
+		$this->assertStringContainsString( '>unsubscribe</a>.', $footer_copy, 'Expected footer copy to use descriptive unsubscribe link text.' );
+		$this->assertStringNotContainsString( '>here</a>', $footer_copy, 'Expected footer copy to not use inaccessible "here" link text.' );
+		$this->assertStringNotContainsString( '&#038;', $footer_copy, 'Expected the unsubscribe URL to stay unescaped in the copy so the plain text variant keeps a usable URL; escaping happens at render time via wp_kses().' );
+	}
+
 	/**
 	 * Gets a minimal valid date range.
 	 *
