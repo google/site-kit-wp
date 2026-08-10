@@ -185,6 +185,12 @@ const svgoConfig = {
 					// Curve-to-arc conversion is lossy and visibly distorts
 					// exactly overlapping shapes.
 					convertPathData: false,
+					// A path-level `fill="none"` duplicates the root's value,
+					// but it is what protects stroke-based icons from
+					// container CSS that sets `fill` on the svg element.
+					removeUnknownsAndDefaults: {
+						uselessOverrides: false,
+					},
 				},
 			},
 		},
