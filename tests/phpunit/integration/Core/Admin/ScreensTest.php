@@ -45,6 +45,28 @@ class ScreensTest extends TestCase {
 		do_action( 'admin_menu' );
 	}
 
+	/**
+	 * Gets the submenu slugs for the Site Kit admin menu.
+	 *
+	 * The submenu array key can vary in tests because `Screen::add()` stores
+	 * the top-level menu slug in a static local variable.
+	 *
+	 * @return array<string>|null Site Kit submenu item slugs, or null if not found.
+	 */
+	private function get_site_kit_submenu_slugs() {
+		global $submenu;
+
+		foreach ( $submenu as $submenu_items ) {
+			$submenu_slugs = wp_list_pluck( $submenu_items, 2 );
+
+			if ( in_array( 'googlesitekit-dashboard', $submenu_slugs, true ) ) {
+				return $submenu_slugs;
+			}
+		}
+
+		return null;
+	}
+
 	public function set_up() {
 		parent::set_up();
 
@@ -260,16 +282,13 @@ class ScreensTest extends TestCase {
 	}
 
 	public function test_feature_discovery_screen_menu_is_placed_between_dashboard_and_settings() {
-		global $submenu;
-
 		$this->enable_feature( 'featureDiscoveryHub' );
 
 		$this->register_screens();
 
-		$this->assertArrayHasKey( 'googlesitekit-dashboard', $submenu, 'Site Kit submenu should be registered.' );
+		$submenu_slugs = $this->get_site_kit_submenu_slugs();
 
-		$submenu_slugs = wp_list_pluck( $submenu['googlesitekit-dashboard'], 2 );
-
+		$this->assertNotNull( $submenu_slugs, 'Site Kit submenu should be registered.' );
 		$this->assertGreaterThanOrEqual( 3, count( $submenu_slugs ), 'Site Kit submenu should include Dashboard, Add Features, and Settings items.' );
 		$this->assertSame( 'googlesitekit-dashboard', $submenu_slugs[0], 'Dashboard should remain the first Site Kit submenu item.' );
 		$this->assertSame( 'googlesitekit-features', $submenu_slugs[1], 'Add Features should appear immediately after Dashboard.' );
