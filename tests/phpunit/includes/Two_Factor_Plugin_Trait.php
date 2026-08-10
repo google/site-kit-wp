@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Tests;
 /**
  * Trait for testing against the optional Two-Factor plugin.
  *
- * @since n.e.x.t
+ * @since 1.185.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ trait Two_Factor_Plugin_Trait {
 	 * A trait can't hold a constant before PHP 8.2, and the plugin supports
 	 * PHP 7.4, so this is a static method.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @return string Provider key.
 	 */
@@ -40,7 +40,7 @@ trait Two_Factor_Plugin_Trait {
 	 * needs the runInSeparateProcess annotation. Without it the alias reaches
 	 * the tests that expect the plugin to be absent.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 */
 	protected function activate_two_factor_plugin() {
 		if ( ! class_exists( 'Two_Factor_Core' ) ) {
@@ -54,7 +54,7 @@ trait Two_Factor_Plugin_Trait {
 	 * Picks a provider other than the one the plugin falls back to, so a test
 	 * can tell the user's own choice apart from the fallback.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param int $user_id User ID.
 	 */
@@ -65,7 +65,7 @@ trait Two_Factor_Plugin_Trait {
 	/**
 	 * Gets the two-factor providers the given user has turned on.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param int $user_id User ID.
 	 * @return string[]|string Provider keys, or an empty string when the user turned none on.
@@ -77,7 +77,7 @@ trait Two_Factor_Plugin_Trait {
 	/**
 	 * Checks whether the Two-Factor plugin would challenge the given user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param int $user_id User ID.
 	 * @return bool True when the plugin would run its challenge, false otherwise.

@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      7.0
 Requires PHP:      7.4
-Stable tag:        1.184.0
+Stable tag:        1.185.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -112,31 +112,37 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.184.0 =
+= 1.185.0 =
 
 **Enhanced**
 
-* Update notice text for Site Goals. See [#13153](https://github.com/google/site-kit-wp/issues/13153).
-* Add Site Goals Survey Triggers. See [#13040](https://github.com/google/site-kit-wp/issues/13040).
-* Add the `steps` query parameter to the proxy's setup URL to specify the number of progress indicator elements in the new setup flow. See [#12953](https://github.com/google/site-kit-wp/issues/12953).
-* Prevent the Key Metrics widget area from appearing on the dashboard when Analytics is not connected in the new setup flow. See [#12906](https://github.com/google/site-kit-wp/issues/12906).
-* Ask the site purpose question when continuing without Analytics from the Analytics setup screen. See [#12819](https://github.com/google/site-kit-wp/issues/12819).
-* Improve PDF accessibility. Props Jaksenc. See [#12702](https://github.com/google/site-kit-wp/issues/12702).
-* Add new selector anchored notification highlighting the PDF download button. See [#12698](https://github.com/google/site-kit-wp/issues/12698).
-* Fix bug that could cause multiple modals from showing when Site Goals and the new setup flow are enabled on a new site. See [#12652](https://github.com/google/site-kit-wp/issues/12652).
-* Add surveys to PDF Report generation. See [#12649](https://github.com/google/site-kit-wp/issues/12649).
-* Implement the Key Metric PDF widget. See [#12554](https://github.com/google/site-kit-wp/issues/12554).
-* Add "Monetization" section to PDF Widgets. See [#12551](https://github.com/google/site-kit-wp/issues/12551).
-* Implement PDF Widgets for "Monetization" -> "Earning performance over time". See [#12550](https://github.com/google/site-kit-wp/issues/12550).
-* Add "Your visitor groups" section to PDF Reports. See [#12546](https://github.com/google/site-kit-wp/issues/12546).
-* Show an error notice on the dashboard when Audience Segmentation setup fails, with the option to retry or opt out. See [#12381](https://github.com/google/site-kit-wp/issues/12381).
-* Update the setup error notification shown on the splash screen. See [#12375](https://github.com/google/site-kit-wp/issues/12375).
+* Launch the Setup Flow Refresh Phase 4 feature by force-enabling the feature flag in the plugin. See [#13159](https://github.com/google/site-kit-wp/issues/13159).
+* Show the correct number of segments in the progress indicator on the service screens in the new setup flow. See [#13158](https://github.com/google/site-kit-wp/issues/13158).
+* Add the partial data badge to the Your visitor groups PDF widget. See [#13132](https://github.com/google/site-kit-wp/issues/13132).
+* Add subscribed users and unsubscribe user Email Reporting REST routes. See [#13100](https://github.com/google/site-kit-wp/issues/13100).
+* Add GA event tracking for the new Analytics and Audience Segmentation setup error notices. See [#13090](https://github.com/google/site-kit-wp/issues/13090).
+* Fix alignment of Online Store Performance Site Goals widget. See [#13062](https://github.com/google/site-kit-wp/issues/13062).
+* Add tab scrolling to breakdown tabs. See [#13060](https://github.com/google/site-kit-wp/issues/13060).
+* Add a reusable `CTAPreview` shell component for the Reader Revenue Manager express setup CTA preview. See [#13025](https://github.com/google/site-kit-wp/issues/13025).
+* Add the next scheduled report date to the "Current subscription" pill in Email Reporting frequency settings for subscribed users across desktop and mobile layouts. See [#13012](https://github.com/google/site-kit-wp/issues/13012).
+* Add REST controller and datastore infrastructure for RRM user settings. See [#13008](https://github.com/google/site-kit-wp/issues/13008).
+* Add necessary module settings to Reader Revenue Manager for the upcoming express setup feature. See [#12999](https://github.com/google/site-kit-wp/issues/12999).
+* Add the Reader Revenue Manager express setup screen shell with a two-column layout, header, and stepper rail. See [#12997](https://github.com/google/site-kit-wp/issues/12997).
+* Only shows links for users with appropriate dashboard access in PDF reports. See [#12958](https://github.com/google/site-kit-wp/issues/12958).
+* Update the Reader Revenue Manager service to accommodate the new and upcoming express setup flow. See [#12950](https://github.com/google/site-kit-wp/issues/12950).
+* Add a banner in the dashboard for the upcoming Reader Revenue Manager express setup. See [#12947](https://github.com/google/site-kit-wp/issues/12947).
+* Add several Key Metrics widgets to PDF reports. See [#12555](https://github.com/google/site-kit-wp/issues/12555).
+* Update the store permission error notices to match the new design. See [#12382](https://github.com/google/site-kit-wp/issues/12382).
+
+**Changed**
+
+* Update the Sign in with Google module to properly behave when Two Factor authentication is enabled. Props sudhanshugaikwad. See [#11032](https://github.com/google/site-kit-wp/issues/11032).
 
 **Fixed**
 
-* Fix Site Goals tour issues with section highlights. See [#13146](https://github.com/google/site-kit-wp/issues/13146).
-* Fix bug in Email Reporting when Search Console requests fail. See [#13085](https://github.com/google/site-kit-wp/issues/13085).
-* Fix bug that could cause Site Goals widgets to re-render on load. See [#13058](https://github.com/google/site-kit-wp/issues/13058).
-* Fix the loading state issue for the `Get breakdown` button when custom dimensions already exist. See [#12983](https://github.com/google/site-kit-wp/issues/12983).
+* Fix bugs with the Site Goals banners/survey triggers. See [#13211](https://github.com/google/site-kit-wp/issues/13211).
+* Show spinner when retrying Analytics request in the Site Goals error UI. See [#13155](https://github.com/google/site-kit-wp/issues/13155).
+* Fix bug that caused Optin Monster IDs to show instead of their label in Site Goals. See [#13145](https://github.com/google/site-kit-wp/issues/13145).
+* Encode Proxy URL to prevent search + replace database issues. See [#12962](https://github.com/google/site-kit-wp/issues/12962).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

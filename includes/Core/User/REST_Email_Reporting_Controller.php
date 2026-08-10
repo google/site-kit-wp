@@ -87,7 +87,7 @@ class REST_Email_Reporting_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.162.0
-	 * @since n.e.x.t Added the `email-reporting-next-report` route.
+	 * @since 1.185.0 Added the `email-reporting-next-report` route.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
