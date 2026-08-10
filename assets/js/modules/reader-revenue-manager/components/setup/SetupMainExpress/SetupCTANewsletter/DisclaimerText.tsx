@@ -31,7 +31,7 @@ export default function DisclaimerText() {
 		<p className="googlesitekit-rrm-newsletter-preview__disclaimer">
 			{ createInterpolateElement(
 				__(
-					"By continuing, you agree to provide your email and name (if applicable) to <em>YourSite</em> Test Publication through a Google service. Google delivers your information under its <tos>Terms of Service</tos> and <pp>Privacy Policy</pp>. <em>YourSite</em> Test Publication's use of your data is subject to their own <terms>terms</terms> and <privacypolicy>privacy policy</privacypolicy>.",
+					'By continuing, you agree to provide your email and name (if applicable) to <em>YourSite</em> Test Publication through a Google service. Google delivers your information under its <tos>Terms of Service</tos> and <pp>Privacy Policy</pp>. <em>YourSite</em> Test Publication’s use of your data is subject to their own <terms>terms</terms> and <privacypolicy>privacy policy</privacypolicy>.',
 					'google-site-kit'
 				),
 				{
