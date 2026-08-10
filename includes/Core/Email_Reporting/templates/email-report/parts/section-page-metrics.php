@@ -104,7 +104,7 @@ $subtitle        = $first_data_item['change_context'] ?? '';
 										$render_shared_part(
 											'change-badge',
 											array(
-												'value' => $data['changes'][ $index ] ?? 0,
+												'value' => $data['changes'][ $index ] ?? null,
 											)
 										);
 									?>

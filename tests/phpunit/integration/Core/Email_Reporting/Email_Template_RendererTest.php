@@ -90,6 +90,67 @@ class Email_Template_RendererTest extends TestCase {
 		$this->assertStringNotContainsString( 'https://example.com/notice-cta', $html_output_without_notice, 'Expected notice CTA URL to be absent when no header notices are provided.' );
 	}
 
+	public function test_change_badge_shows_signed_value_and_is_omitted_when_change_is_null() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$golinks = new Golinks( $context );
+		$golinks->register_handler( 'dashboard', new Dashboard_Golink_Handler() );
+
+		$payload = array(
+			'total_visitors' => array(
+				'label'          => 'Total visitors',
+				'value'          => '120',
+				'change'         => 6.52,
+				'change_context' => 'Compared to previous 7 days',
+			),
+		);
+
+		$sections_map  = new Sections_Map( $context, $payload, $golinks );
+		$renderer      = new Email_Template_Renderer( $sections_map );
+		$template_data = $this->get_minimal_template_data();
+
+		$html_output = $renderer->render( 'email-report', $template_data );
+
+		$this->assertStringContainsString( '+6.5%', $html_output, 'Expected the signed, real percentage change in the rendered badge.' );
+
+		$payload['total_visitors']['change'] = null;
+		$sections_map                        = new Sections_Map( $context, $payload, $golinks );
+		$renderer                            = new Email_Template_Renderer( $sections_map );
+		$html_output_without_change          = $renderer->render( 'email-report', $template_data );
+
+		// The email's static <style> block always defines `.badge-positive`/
+		// `.badge-negative` CSS rules, so include the `class=""` wrapper to
+		// ensure we're testing for the existence of the badge markup and not
+		// just the CSS in the `<style>` tag.
+		$this->assertStringNotContainsString( 'class="badge-positive"', $html_output_without_change, 'Expected no change badge when the change value is null.' );
+		$this->assertStringNotContainsString( 'class="badge-negative"', $html_output_without_change, 'Expected no change badge when the change value is null.' );
+	}
+
+	public function test_page_metrics_change_badge_shows_signed_value_and_is_omitted_when_change_is_null() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$golinks = new Golinks( $context );
+		$golinks->register_handler( 'dashboard', new Dashboard_Golink_Handler() );
+
+		$payload = array(
+			'traffic_channels' => array(
+				'label'            => 'Traffic channels by visitor count',
+				'change_context'   => 'Compared to previous 7 days',
+				'dimension_values' => array( 'Organic Search', 'Direct' ),
+				'values'           => array( '120', '80' ),
+				'changes'          => array( -0.85, null ),
+			),
+		);
+
+		$sections_map  = new Sections_Map( $context, $payload, $golinks );
+		$renderer      = new Email_Template_Renderer( $sections_map );
+		$template_data = $this->get_minimal_template_data();
+
+		$html_output = $renderer->render( 'email-report', $template_data );
+
+		$this->assertStringContainsString( '-0.9%', $html_output, 'Expected the signed, real percentage change for the row with a comparison.' );
+		$this->assertSame( 1, substr_count( $html_output, 'class="badge-negative"' ), 'Expected exactly one badge for the row with a comparison, and none for the row without one.' );
+		$this->assertStringNotContainsString( 'class="badge-positive"', $html_output, 'Expected no positive badge to be rendered.' );
+	}
+
 	public function test_dashboard_link_renders_outlook_vml_and_html_anchor_branches() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$golinks = new Golinks( $context );
@@ -104,10 +165,28 @@ class Email_Template_RendererTest extends TestCase {
 			),
 		);
 
-		$sections_map = new Sections_Map( $context, $payload, $golinks );
-		$renderer     = new Email_Template_Renderer( $sections_map );
+		$sections_map  = new Sections_Map( $context, $payload, $golinks );
+		$renderer      = new Email_Template_Renderer( $sections_map );
+		$template_data = $this->get_minimal_template_data();
 
-		$template_data = array(
+		$html_output = $renderer->render( 'email-report', $template_data );
+
+		$vml_matched = preg_match( '#<v:roundrect[^>]*href="https://example\.com/dashboard"[^>]*>(.*?)</v:roundrect>#s', $html_output, $vml_matches );
+		$this->assertSame( 1, $vml_matched, 'Expected an Outlook VML roundrect button linking to the dashboard.' );
+		$this->assertStringContainsString( 'View dashboard', $vml_matches[1], 'Expected the label inside the VML roundrect branch.' );
+
+		$anchor_matched = preg_match( '#<a class="button" href="https://example\.com/dashboard"[^>]*>(.*?)</a>#s', $html_output, $anchor_matches );
+		$this->assertSame( 1, $anchor_matched, 'Expected an HTML anchor button linking to the dashboard.' );
+		$this->assertStringContainsString( 'View dashboard', $anchor_matches[1], 'Expected the label inside the HTML anchor branch.' );
+	}
+
+	/**
+	 * Gets minimal template data for rendering the email-report template.
+	 *
+	 * @return array Template data.
+	 */
+	private function get_minimal_template_data() {
+		return array(
 			'subject'                => 'Test subject',
 			'preheader'              => 'Test preheader',
 			'site'                   => array(
@@ -129,15 +208,5 @@ class Email_Template_RendererTest extends TestCase {
 				'links'           => array(),
 			),
 		);
-
-		$html_output = $renderer->render( 'email-report', $template_data );
-
-		$vml_matched = preg_match( '#<v:roundrect[^>]*href="https://example\.com/dashboard"[^>]*>(.*?)</v:roundrect>#s', $html_output, $vml_matches );
-		$this->assertSame( 1, $vml_matched, 'Expected an Outlook VML roundrect button linking to the dashboard.' );
-		$this->assertStringContainsString( 'View dashboard', $vml_matches[1], 'Expected the label inside the VML roundrect branch.' );
-
-		$anchor_matched = preg_match( '#<a class="button" href="https://example\.com/dashboard"[^>]*>(.*?)</a>#s', $html_output, $anchor_matches );
-		$this->assertSame( 1, $anchor_matched, 'Expected an HTML anchor button linking to the dashboard.' );
-		$this->assertStringContainsString( 'View dashboard', $anchor_matches[1], 'Expected the label inside the HTML anchor branch.' );
 	}
 }
