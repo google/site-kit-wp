@@ -24,10 +24,15 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
+import {
+	PDF_DOWNLOAD_PANEL_OPENED_KEY,
+	PDF_EXPORT_PANEL_OPENED_ITEM_SLUG,
+} from '@/js/components/pdf-export/constants';
+import { dismissedItemsEndpoint } from '@/js/components/pdf-export/test-utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
@@ -36,6 +41,7 @@ import {
 } from '@/js/googlesitekit/widgets/default-contexts';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as tracking from '@/js/util/tracking';
+import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -113,18 +119,30 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		// so every test needs modules in the store.
 		provideModules( registry );
 		registerSections( registry );
+
+		// An open panel saves `pdf-export-panel-opened` to WordPress user
+		// meta, and every test needs the saved slugs in the store plus a
+		// reply for that request.
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		fetchMock.post( dismissItemEndpoint, {
+			body: [ PDF_EXPORT_PANEL_OPENED_ITEM_SLUG ],
+		} );
 	} );
 
 	afterEach( () => {
 		mockTrackEvent.mockClear();
 	} );
 
-	function openPanel() {
+	function setPanelOpen( isOpen: boolean ) {
 		act( () => {
 			registry
 				.dispatch( CORE_UI )
-				.setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, true );
+				.setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, isOpen );
 		} );
+	}
+
+	function openPanel() {
+		setPanelOpen( true );
 	}
 
 	it( 'omits a section when every pdf widget in it has pdf.isActive returning false', async () => {
@@ -633,6 +651,72 @@ describe( 'PDFSectionsSelectionPanel', () => {
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pdf_generation_section_selection-sidebar`,
 			'pdf_generation_sidebar_close'
 		);
+	} );
+
+	it( "saves 'pdf-export-panel-opened' to WordPress user meta when the panel opens", async () => {
+		render( <PDFSectionsSelectionPanel />, { registry } );
+
+		openPanel();
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+				body: {
+					data: {
+						slug: PDF_EXPORT_PANEL_OPENED_ITEM_SLUG,
+						expiration: 0,
+					},
+				},
+			} )
+		);
+	} );
+
+	it( "saves 'pdf-export-panel-opened' once when the user closes the panel and opens it again", async () => {
+		const { waitForRegistry } = render( <PDFSectionsSelectionPanel />, {
+			registry,
+		} );
+
+		openPanel();
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetchedTimes( 1, dismissItemEndpoint )
+		);
+
+		setPanelOpen( false );
+		openPanel();
+
+		await waitForRegistry();
+
+		expect( fetchMock ).toHaveFetchedTimes( 1, dismissItemEndpoint );
+	} );
+
+	it( "saves no 'pdf-export-panel-opened' while the panel stays closed", async () => {
+		const { waitForRegistry } = render( <PDFSectionsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
+	} );
+
+	it( "saves no 'pdf-export-panel-opened' while the saved slugs are still loading", async () => {
+		// This fresh registry has none of the slugs `beforeEach` adds, and
+		// the promise never resolves. The request for the saved slugs never
+		// finishes.
+		registry = createTestRegistry();
+		provideModules( registry );
+		registerSections( registry );
+		fetchMock.get( dismissedItemsEndpoint, new Promise( () => {} ) );
+
+		const { waitForRegistry } = render( <PDFSectionsSelectionPanel />, {
+			registry,
+		} );
+
+		openPanel();
+
+		await waitForRegistry();
+
+		expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
 	} );
 
 	it( 'does not fire pdf_generation_sidebar_close when Download is clicked', async () => {
