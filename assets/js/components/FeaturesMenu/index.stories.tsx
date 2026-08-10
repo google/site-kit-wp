@@ -75,8 +75,8 @@ function Template( {
 			<ViewContextProvider value={ viewContext }>
 				<Header>
 					<DateRangeSelector />
-					<FeaturesMenu />
 					<HelpMenu />
+					<FeaturesMenu />
 				</Header>
 			</ViewContextProvider>
 		</WithRegistrySetup>

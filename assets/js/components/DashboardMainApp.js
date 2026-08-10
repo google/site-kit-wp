@@ -379,7 +379,12 @@ export default function DashboardMainApp() {
 				<EntitySearchInput />
 				<DateRangeSelector />
 				{ isMobileOrTabletBreakpoint ? (
-					<FeaturesMenu />
+					<Fragment>
+						<HelpMenu
+							showFeatureTour={ !! hasAccessToFeatureTour }
+						/>
+						<FeaturesMenu />
+					</Fragment>
 				) : (
 					<Fragment>
 						<ManageEmailReportsButton />
@@ -387,9 +392,11 @@ export default function DashboardMainApp() {
 						{ ! viewOnlyDashboard && (
 							<DashboardSharingSettingsButton />
 						) }
+						<HelpMenu
+							showFeatureTour={ !! hasAccessToFeatureTour }
+						/>
 					</Fragment>
 				) }
-				<HelpMenu showFeatureTour={ !! hasAccessToFeatureTour } />
 			</Header>
 
 			<div className="googlesitekit-page-content">
