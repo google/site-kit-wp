@@ -249,7 +249,7 @@ export interface AudiencePartialDataFlags {
  * - A Site Kit audience clears `isAudiencePartialData`.
  * - A set `isAudiencePartialData` clears `isTopContentPartialData`.
  *
- * @since n.e.x.t
+ * @since 1.185.0
  *
  * @param registry             WordPress data registry.
  * @param propertyID           The Analytics 4 property ID, or an empty string when none is set.
@@ -420,7 +420,7 @@ export default async function getPDFData( {
 	 * partial-data states, so the synchronous flag selectors below never read an
 	 * `undefined` value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @return {string} Property ID, or an empty string when none is set.
 	 */
@@ -497,7 +497,7 @@ export default async function getPDFData( {
 	 * link, so each page title renders as plain text, matching how the
 	 * dashboard tile shows it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param {string} pagePath Page path of a top content row.
 	 * @return {string} The page's Analytics report link, or an empty string for a view-only user.

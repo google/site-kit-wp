@@ -42,9 +42,26 @@ import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-
 import { GoalDriverSelectionState } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { VisitorEngagementSelectionState } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement/registry';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from './constants';
+import {
+	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
+	CONVERSION_REPORTING_LEAD_EVENTS,
+	MODULES_ANALYTICS_4,
+} from './constants';
 
 const { setErrorForAction, clearActionError } = errorStoreActions;
+
+/**
+ * Conversion events that belong to each Site Goals widget category.
+ *
+ * Mirrors the pairing in
+ * `Conversion_Reporting_Provider::update_active_site_goals_widgets()`, which
+ * pairs `ECOMMERCE_EVENT_NAMES`/`LEAD_EVENT_NAMES` with the same categories
+ * when it populates the site-wide `activeWidgets` list.
+ */
+const SITE_GOALS_WIDGET_EVENTS: Record< string, string[] > = {
+	[ GOAL_TYPES.ECOMMERCE ]: CONVERSION_REPORTING_ECOMMERCE_EVENTS,
+	[ GOAL_TYPES.LEAD ]: CONVERSION_REPORTING_LEAD_EVENTS,
+};
 
 /**
  * Per-user fields that the SAVE endpoint accepts.
@@ -342,13 +359,22 @@ const baseSelectors = {
 	/**
 	 * Checks whether a given widget category is active.
 	 *
+	 * Reads only the site-wide `activeWidgets` list, which the conversion
+	 * reporting cron populates once a category's events are detected and one of
+	 * its event provider plugins is active. That list is only ever unioned, so a
+	 * category stays in it after the provider is deactivated.
+	 *
+	 * To decide whether a widget actually renders, use
+	 * `isSiteGoalsWidgetRenderable()` instead, which also accounts for the events
+	 * still being detected.
+	 *
 	 * @since 1.182.0
 	 *
 	 * @param {Object} state    Data store's state.
 	 * @param {string} category Widget category slug (e.g. 'lead' or 'ecommerce').
 	 * @return {boolean|undefined} `true` if active, `false` if not, `undefined` if not loaded.
 	 */
-	isSiteGoalWidgetActive: createRegistrySelector(
+	isSiteGoalsWidgetActive: createRegistrySelector(
 		( select: Select ) =>
 			( _state: State, category: string ): boolean | undefined => {
 				const settings =
@@ -357,6 +383,51 @@ const baseSelectors = {
 					return undefined;
 				}
 				return ( settings.activeWidgets ?? [] ).includes( category );
+			}
+	),
+
+	/**
+	 * Checks whether a given widget category's widget will render.
+	 *
+	 * Combines the site-wide `activeWidgets` entry with the events currently
+	 * detected for the same category. Together, these are the conditions the
+	 * widget's registration and its own zero state use to determine if it should
+	 * render.
+	 *
+	 * This is the single source of truth for every Site Goals surface
+	 * that depends on a widget being on the page (eg. widget registration,
+	 * intro modal, feature tour, and survey triggers). These never show for
+	 * a widget that is not rendered.
+	 *
+	 * @since 1.185.0
+	 *
+	 * @param {Object} state    Data store's state.
+	 * @param {string} category Widget category slug (e.g. 'lead' or 'ecommerce').
+	 * @return {boolean|undefined} `true` if the widget renders, `false` if not, `undefined` if not loaded.
+	 */
+	isSiteGoalsWidgetRenderable: createRegistrySelector(
+		( select: Select ) =>
+			( _state: State, category: string ): boolean | undefined => {
+				const events = SITE_GOALS_WIDGET_EVENTS[ category ];
+
+				if ( ! events ) {
+					return false;
+				}
+
+				const isActive =
+					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetActive(
+						category
+					);
+				const hasEvents =
+					select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
+						events
+					);
+
+				if ( isActive === undefined || hasEvents === undefined ) {
+					return undefined;
+				}
+
+				return isActive && hasEvents;
 			}
 	),
 

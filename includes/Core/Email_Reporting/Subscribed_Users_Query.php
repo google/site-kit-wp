@@ -32,7 +32,7 @@ class Subscribed_Users_Query {
 	/**
 	 * Default number of subscribed users returned per page.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 * @var int
 	 */
 	const PER_PAGE = 20;
@@ -40,7 +40,7 @@ class Subscribed_Users_Query {
 	/**
 	 * Maximum number of subscribed users that may be requested per page.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 * @var int
 	 */
 	const MAX_PER_PAGE = 100;
@@ -48,7 +48,7 @@ class Subscribed_Users_Query {
 	/**
 	 * Role slug reported for network super admins, who hold no role on the site itself.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 * @var string
 	 */
 	const ROLE_SUPER_ADMIN = 'super-admin';
@@ -109,7 +109,7 @@ class Subscribed_Users_Query {
 	 * Gets the number of subscribed users across all frequencies.
 	 *
 	 * @since 1.166.0
-	 * @since n.e.x.t Counts subscribed super admins who are not members of the current site.
+	 * @since 1.185.0 Counts subscribed super admins who are not members of the current site.
 	 *
 	 * @return int
 	 */
@@ -148,7 +148,7 @@ class Subscribed_Users_Query {
 	/**
 	 * Retrieves a paginated, searchable list of subscribed users.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param array $args {
 	 *     Optional. Arguments to filter and paginate subscribed users.
@@ -186,7 +186,7 @@ class Subscribed_Users_Query {
 	/**
 	 * Gets all subscribed users matching the given search term.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param string $search Search term for display name, email or role.
 	 * @return WP_User[] Matching subscribed users, ordered by display name.
@@ -254,7 +254,7 @@ class Subscribed_Users_Query {
 	/**
 	 * Checks whether a user matches the given search term.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param WP_User $user   User object.
 	 * @param string  $search Search term for display name, email or role.
@@ -292,7 +292,7 @@ class Subscribed_Users_Query {
 	/**
 	 * Maps a user to the subscribed users listing shape.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param WP_User $user User object.
 	 * @return array Shaped user data.
@@ -312,7 +312,7 @@ class Subscribed_Users_Query {
 	/**
 	 * Gets the role slug and display name a subscribed user is listed under.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param WP_User $user User object.
 	 * @return array List containing the role slug and its display name.

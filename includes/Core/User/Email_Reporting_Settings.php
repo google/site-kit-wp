@@ -97,7 +97,7 @@ class Email_Reporting_Settings extends User_Setting implements User_Aware_Interf
 	/**
 	 * Gets the ID of the user the settings are read from and written to.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @return int User ID.
 	 */
@@ -108,7 +108,7 @@ class Email_Reporting_Settings extends User_Setting implements User_Aware_Interf
 	/**
 	 * Switches the user the settings are read from and written to.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param int $user_id User ID.
 	 * @return callable A closure to switch back to the original user.
@@ -123,7 +123,7 @@ class Email_Reporting_Settings extends User_Setting implements User_Aware_Interf
 	 * Callers that read the settings meta in bulk (user listings, subscriber counts)
 	 * use this instead of loading a settings instance per user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param mixed $settings Raw settings value, as stored in user meta.
 	 * @return bool TRUE if the settings mark the user as subscribed, otherwise FALSE.

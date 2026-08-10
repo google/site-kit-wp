@@ -135,7 +135,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * User_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @var User_Settings
 	 */
