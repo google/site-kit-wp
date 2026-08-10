@@ -50,7 +50,10 @@ import {
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { getPreviousDate, trackEvent } from '@/js/util';
-import { ORDERED_MAIN_DASHBOARD_CONTEXTS } from './constants';
+import {
+	ORDERED_MAIN_DASHBOARD_CONTEXTS,
+	PDF_EXPORT_DOWNLOADED_ITEM_SLUG,
+} from './constants';
 import extractPDFSectionAnchors from './extract-pdf-section-anchors';
 import measurePDFContentHeight from './measure-pdf-content-height';
 import { registerPDFFonts } from './pdf-fonts-react';
@@ -199,6 +202,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 	const registry = useRegistry() as unknown as Registry;
 	const { setStatus, setProgress, setBlob, clearExport, clearCancelRequest } =
 		useDispatch( CORE_PDF );
+	const { dismissItem } = useDispatch( CORE_USER );
 
 	const viewContext = useViewContext();
 	const viewOnly = useViewOnly();
@@ -358,6 +362,25 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				data: result?.data ?? null,
 				chartImages: result?.chartImages,
 			};
+		}
+
+		/**
+		 * Saves the `pdf-export-downloaded` slug to WordPress user meta.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @return {Promise<void>} A promise that resolves after the save.
+		 */
+		async function recordDownload() {
+			const dismissedItems = await registry
+				.resolveSelect( CORE_USER )
+				.getDismissedItems();
+
+			if (
+				! dismissedItems?.includes( PDF_EXPORT_DOWNLOADED_ITEM_SLUG )
+			) {
+				await dismissItem( PDF_EXPORT_DOWNLOADED_ITEM_SLUG );
+			}
 		}
 
 		async function run() {
@@ -670,6 +693,8 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 					selectedContextSlugs.join( ',' )
 				);
 				setStatus( 'success' );
+
+				recordDownload();
 
 				completeTimeoutRef.current = setTimeout( () => {
 					completeTimeoutRef.current = null;
