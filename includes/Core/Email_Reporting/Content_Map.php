@@ -61,8 +61,7 @@ class Content_Map {
 	/**
 	 * Gets the email subject for a template.
 	 *
-	 * Falls back to the template's title when no distinct subject is
-	 * mapped, since most templates use the same string for both.
+	 * Falls back to the template's title when no subject is set.
 	 *
 	 * @since n.e.x.t
 	 *
