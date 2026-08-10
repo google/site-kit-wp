@@ -37,6 +37,14 @@ class ScreensTest extends TestCase {
 	 */
 	private $screens;
 
+	/**
+	 * Registers screens and triggers the admin menu hook.
+	 */
+	private function register_screens() {
+		$this->screens->register();
+		do_action( 'admin_menu' );
+	}
+
 	public function set_up() {
 		parent::set_up();
 
@@ -201,6 +209,71 @@ class ScreensTest extends TestCase {
 		}
 
 		$this->assertEquals( $expected_order, $menu_order, 'Menu order should match expected order for Site Kit.' );
+	}
+
+	public function test_feature_discovery_screen_is_registered_when_feature_flag_is_enabled() {
+		$this->enable_feature( 'featureDiscoveryHub' );
+
+		$this->register_screens();
+
+		$registered_screens = $this->force_get_property( $this->screens, 'screens' );
+
+		$this->assertArrayHasKey( 'site-kit_page_googlesitekit-features', $registered_screens, 'Feature Discovery screen should be registered when the feature flag is enabled.' );
+	}
+
+	public function test_feature_discovery_screen_is_not_registered_when_feature_flag_is_disabled() {
+		add_filter(
+			'googlesitekit_is_feature_enabled',
+			function ( $enabled, $feature_name ) {
+				if ( 'featureDiscoveryHub' === $feature_name ) {
+					return false;
+				}
+
+				return $enabled;
+			},
+			10,
+			2
+		);
+
+		$this->register_screens();
+
+		$registered_screens = $this->force_get_property( $this->screens, 'screens' );
+
+		$this->assertArrayNotHasKey( 'site-kit_page_googlesitekit-features', $registered_screens, 'Feature Discovery screen should not be registered when the feature flag is disabled.' );
+	}
+
+	public function test_feature_discovery_screen_is_not_registered_for_non_admin_users() {
+		$this->enable_feature( 'featureDiscoveryHub' );
+
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_id = $this->factory()->user->create();
+		$assets  = new Assets( $context );
+
+		wp_set_current_user( $user_id );
+		$this->screens = new Screens( $context, $assets );
+
+		$this->register_screens();
+
+		$registered_screens = $this->force_get_property( $this->screens, 'screens' );
+
+		$this->assertArrayNotHasKey( 'site-kit_page_googlesitekit-features', $registered_screens, 'Feature Discovery screen should not be registered for non-admin users.' );
+	}
+
+	public function test_feature_discovery_screen_menu_is_placed_between_dashboard_and_settings() {
+		global $submenu;
+
+		$this->enable_feature( 'featureDiscoveryHub' );
+
+		$this->register_screens();
+
+		$this->assertArrayHasKey( 'googlesitekit-dashboard', $submenu, 'Site Kit submenu should be registered.' );
+
+		$submenu_slugs = wp_list_pluck( $submenu['googlesitekit-dashboard'], 2 );
+
+		$this->assertGreaterThanOrEqual( 3, count( $submenu_slugs ), 'Site Kit submenu should include Dashboard, Add Features, and Settings items.' );
+		$this->assertSame( 'googlesitekit-dashboard', $submenu_slugs[0], 'Dashboard should remain the first Site Kit submenu item.' );
+		$this->assertSame( 'googlesitekit-features', $submenu_slugs[1], 'Add Features should appear immediately after Dashboard.' );
+		$this->assertSame( 'googlesitekit-settings', $submenu_slugs[2], 'Settings should appear immediately after Add Features.' );
 	}
 
 	/**
