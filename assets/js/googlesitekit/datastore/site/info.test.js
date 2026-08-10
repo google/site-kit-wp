@@ -33,8 +33,8 @@ import { CORE_SITE } from './constants';
 import { initialState } from './index';
 
 describe( 'core/site site info', () => {
-	const baseInfoVar = '_googlesitekitBaseData';
-	const entityInfoVar = '_googlesitekitEntityData';
+	const baseInfoKey = '_googlesitekitBaseData';
+	const entityInfoKey = '_googlesitekitEntityData';
 
 	let registry;
 	let store;
@@ -84,8 +84,8 @@ describe( 'core/site site info', () => {
 	} );
 
 	afterEach( () => {
-		delete global[ baseInfoVar ];
-		delete global[ entityInfoVar ];
+		delete global[ baseInfoKey ];
+		delete global[ entityInfoKey ];
 	} );
 
 	describe( 'actions', () => {
@@ -431,11 +431,11 @@ describe( 'core/site site info', () => {
 
 		describe( 'getSiteInfo', () => {
 			it( 'uses a resolver to load site info from a global variable by default, then deletes that global variable after consumption', async () => {
-				global[ baseInfoVar ] = baseInfo;
-				global[ entityInfoVar ] = entityInfo;
+				global[ baseInfoKey ] = baseInfo;
+				global[ entityInfoKey ] = entityInfo;
 
-				expect( global[ baseInfoVar ] ).not.toEqual( undefined );
-				expect( global[ entityInfoVar ] ).not.toEqual( undefined );
+				expect( global[ baseInfoKey ] ).not.toEqual( undefined );
+				expect( global[ entityInfoKey ] ).not.toEqual( undefined );
 
 				registry.select( CORE_SITE ).getSiteInfo();
 				await untilResolved( registry, CORE_SITE ).getSiteInfo();
@@ -449,13 +449,13 @@ describe( 'core/site site info', () => {
 				} );
 
 				// Data must not be wiped after retrieving, as it could be used by other dependants.
-				expect( global[ baseInfoVar ] ).not.toEqual( undefined );
-				expect( global[ entityInfoVar ] ).not.toEqual( undefined );
+				expect( global[ baseInfoKey ] ).not.toEqual( undefined );
+				expect( global[ entityInfoKey ] ).not.toEqual( undefined );
 			} );
 
 			it( 'uses a cloned copy of the global data so modifications to the original object are not reflected in the store', async () => {
-				global[ baseInfoVar ] = baseInfo;
-				global[ entityInfoVar ] = entityInfo;
+				global[ baseInfoKey ] = baseInfo;
+				global[ entityInfoKey ] = entityInfo;
 
 				registry.select( CORE_SITE ).getSiteInfo();
 				await untilResolved( registry, CORE_SITE ).getSiteInfo();
@@ -476,8 +476,8 @@ describe( 'core/site site info', () => {
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', async () => {
-				expect( global[ baseInfoVar ] ).toEqual( undefined );
-				expect( global[ entityInfoVar ] ).toEqual( undefined );
+				expect( global[ baseInfoKey ] ).toEqual( undefined );
+				expect( global[ entityInfoKey ] ).toEqual( undefined );
 
 				const info = registry.select( CORE_SITE ).getSiteInfo();
 
@@ -541,8 +541,8 @@ describe( 'core/site site info', () => {
 			],
 		] )( '%s', ( selector, infoKey ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
-				global[ baseInfoVar ] = baseInfo;
-				global[ entityInfoVar ] = entityInfo;
+				global[ baseInfoKey ] = baseInfo;
+				global[ entityInfoKey ] = entityInfo;
 
 				registry.select( CORE_SITE )[ selector ]();
 
@@ -559,8 +559,8 @@ describe( 'core/site site info', () => {
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', async () => {
-				expect( global[ baseInfoVar ] ).toEqual( undefined );
-				expect( global[ entityInfoVar ] ).toEqual( undefined );
+				expect( global[ baseInfoKey ] ).toEqual( undefined );
+				expect( global[ entityInfoKey ] ).toEqual( undefined );
 
 				const result = registry.select( CORE_SITE )[ selector ]();
 
@@ -573,8 +573,8 @@ describe( 'core/site site info', () => {
 
 		describe( 'isAMP', () => {
 			it( 'uses a resolver to load site info, then returns true if AMP mode is set', async () => {
-				global[ baseInfoVar ] = baseInfo;
-				global[ entityInfoVar ] = entityInfo;
+				global[ baseInfoKey ] = baseInfo;
+				global[ entityInfoKey ] = entityInfo;
 
 				registry.select( CORE_SITE ).isAMP();
 
@@ -586,11 +586,11 @@ describe( 'core/site site info', () => {
 			} );
 
 			it( 'uses a resolver to load site info, then returns false if AMP mode is not set', async () => {
-				global[ baseInfoVar ] = {
+				global[ baseInfoKey ] = {
 					...baseInfo,
 					ampMode: null,
 				};
-				global[ entityInfoVar ] = entityInfo;
+				global[ entityInfoKey ] = entityInfo;
 
 				registry.select( CORE_SITE ).isAMP();
 				await untilResolved( registry, CORE_SITE ).getSiteInfo();
@@ -601,8 +601,8 @@ describe( 'core/site site info', () => {
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', async () => {
-				expect( global[ baseInfoVar ] ).toEqual( undefined );
-				expect( global[ entityInfoVar ] ).toEqual( undefined );
+				expect( global[ baseInfoKey ] ).toEqual( undefined );
+				expect( global[ entityInfoKey ] ).toEqual( undefined );
 
 				const result = registry.select( CORE_SITE ).isAMP();
 
@@ -615,12 +615,12 @@ describe( 'core/site site info', () => {
 
 		describe( 'isRegistrationOpen', () => {
 			it( 'returns true when WordPress registration is open', async () => {
-				global[ baseInfoVar ] = {
+				global[ baseInfoKey ] = {
 					...baseInfo,
 					anyoneCanRegister: true,
 					anyoneCanRegisterWooCommerce: false,
 				};
-				global[ entityInfoVar ] = entityInfo;
+				global[ entityInfoKey ] = entityInfo;
 
 				registry.select( CORE_SITE ).isRegistrationOpen();
 				await untilResolved( registry, CORE_SITE ).getSiteInfo();
@@ -631,12 +631,12 @@ describe( 'core/site site info', () => {
 			} );
 
 			it( 'returns true when only WooCommerce registration is open', async () => {
-				global[ baseInfoVar ] = {
+				global[ baseInfoKey ] = {
 					...baseInfo,
 					anyoneCanRegister: false,
 					anyoneCanRegisterWooCommerce: true,
 				};
-				global[ entityInfoVar ] = entityInfo;
+				global[ entityInfoKey ] = entityInfo;
 
 				registry.select( CORE_SITE ).isRegistrationOpen();
 				await untilResolved( registry, CORE_SITE ).getSiteInfo();
@@ -647,12 +647,12 @@ describe( 'core/site site info', () => {
 			} );
 
 			it( 'returns false when neither WordPress nor WooCommerce registration is open', async () => {
-				global[ baseInfoVar ] = {
+				global[ baseInfoKey ] = {
 					...baseInfo,
 					anyoneCanRegister: false,
 					anyoneCanRegisterWooCommerce: false,
 				};
-				global[ entityInfoVar ] = entityInfo;
+				global[ entityInfoKey ] = entityInfo;
 
 				registry.select( CORE_SITE ).isRegistrationOpen();
 				await untilResolved( registry, CORE_SITE ).getSiteInfo();
@@ -663,8 +663,8 @@ describe( 'core/site site info', () => {
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', async () => {
-				expect( global[ baseInfoVar ] ).toEqual( undefined );
-				expect( global[ entityInfoVar ] ).toEqual( undefined );
+				expect( global[ baseInfoKey ] ).toEqual( undefined );
+				expect( global[ entityInfoKey ] ).toEqual( undefined );
 
 				const result = registry
 					.select( CORE_SITE )
@@ -679,8 +679,8 @@ describe( 'core/site site info', () => {
 
 		describe( 'getCurrentReferenceURL', () => {
 			it( 'uses a resolver to load site info, then returns entity URL if set', async () => {
-				global[ baseInfoVar ] = baseInfo;
-				global[ entityInfoVar ] = entityInfo;
+				global[ baseInfoKey ] = baseInfo;
+				global[ entityInfoKey ] = entityInfo;
 
 				registry.select( CORE_SITE ).getCurrentReferenceURL();
 				await untilResolved( registry, CORE_SITE ).getSiteInfo();
@@ -693,9 +693,9 @@ describe( 'core/site site info', () => {
 			} );
 
 			it( 'uses a resolver to load site info, then returns reference site URL if entity URL not set', async () => {
-				global[ baseInfoVar ] = baseInfo;
+				global[ baseInfoKey ] = baseInfo;
 				// Set empty entity info as it would come from the server in such a case.
-				global[ entityInfoVar ] = {
+				global[ entityInfoKey ] = {
 					currentEntityURL: null,
 					currentEntityType: null,
 					currentEntityTitle: null,
@@ -770,8 +770,8 @@ describe( 'core/site site info', () => {
 
 		describe( 'getAdminSettingsURL', () => {
 			it( 'uses a resolver to load site info, then returns settings URL if set', async () => {
-				global[ baseInfoVar ] = baseInfo;
-				global[ entityInfoVar ] = entityInfo;
+				global[ baseInfoKey ] = baseInfo;
+				global[ entityInfoKey ] = entityInfo;
 
 				registry.select( CORE_SITE ).getAdminSettingsURL();
 				await untilResolved( registry, CORE_SITE ).getSiteInfo();
@@ -810,8 +810,8 @@ describe( 'core/site site info', () => {
 			} );
 
 			it( 'returns undefined if site info is not resolved', async () => {
-				expect( global[ baseInfoVar ] ).toEqual( undefined );
-				expect( global[ entityInfoVar ] ).toEqual( undefined );
+				expect( global[ baseInfoKey ] ).toEqual( undefined );
+				expect( global[ entityInfoKey ] ).toEqual( undefined );
 
 				const adminSettingsURL = registry
 					.select( CORE_SITE )
