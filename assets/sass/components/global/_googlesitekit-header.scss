@@ -203,6 +203,13 @@
 				gap: $grid-gap-desktop;
 			}
 
+			// When the row runs out of space the icon buttons must keep their
+			// size rather than being crushed by flex shrinking.
+			> .mdc-button,
+			> .googlesitekit-dropdown-menu {
+				flex-shrink: 0;
+			}
+
 			div > button > .mdc-button__label {
 				display: none;
 
