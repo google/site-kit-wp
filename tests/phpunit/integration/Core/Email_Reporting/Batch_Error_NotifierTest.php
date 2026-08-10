@@ -410,7 +410,9 @@ class Batch_Error_NotifierTest extends TestCase {
 					$this->stringContains( 'https://sitekit.withgoogle.com/support/' ),
 					$this->stringContains( 'https://policies.google.com/privacy' ),
 					$this->stringContains( 'manage-subscription-email-reporting' ),
-					$this->stringContains( 'you signed up to receive email reports' )
+					$this->stringContains( 'you signed up to receive email reports' ),
+					$this->stringContains( '>unsubscribe</a>' ),
+					$this->logicalNot( $this->stringContains( '>here</a>' ) )
 				),
 				$this->isType( 'array' ),
 				$this->isType( 'string' )
