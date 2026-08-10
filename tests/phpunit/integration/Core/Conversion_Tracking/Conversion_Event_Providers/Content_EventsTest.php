@@ -121,6 +121,10 @@ class Content_EventsTest extends TestCase {
 		$post_id = $this->factory()->post->create();
 		$this->go_to( get_permalink( $post_id ) );
 
+		remove_all_actions( 'googlesitekit_analytics-4_init_tag' );
+		remove_all_actions( 'googlesitekit_ads_init_tag' );
+		remove_all_actions( 'wp_footer' );
+
 		$this->content_events->register_script();
 		$this->content_events->register_hooks();
 
@@ -136,6 +140,10 @@ class Content_EventsTest extends TestCase {
 
 	public function test_inline_config__home_page() {
 		$this->go_to( home_url( '/' ) );
+
+		remove_all_actions( 'googlesitekit_analytics-4_init_tag' );
+		remove_all_actions( 'googlesitekit_ads_init_tag' );
+		remove_all_actions( 'wp_footer' );
 
 		$this->content_events->register_script();
 		$this->content_events->register_hooks();
