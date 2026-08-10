@@ -13,8 +13,10 @@ namespace Google\Tests\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Content_Events;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking_Settings;
+use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeContentEventProvider_Active;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeConversionEventProvider;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeConversionEventProvider_Active;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeEcommerceEventProvider_Active;
@@ -364,5 +366,70 @@ class Conversion_TrackingTest extends TestCase {
 		$this->assertContains( Conversion_Events_Provider::CATEGORY_LEAD, $categories, 'An active lead provider should produce the lead category.' );
 		$this->assertContains( Conversion_Events_Provider::CATEGORY_ECOMMERCE, $categories, 'An active ecommerce provider should produce the ecommerce category.' );
 		$this->assertCount( 2, $categories, 'With one lead and one ecommerce provider, there should be exactly two categories.' );
+	}
+
+	public function test_register__when_tracking_disabled_attaches_no_hooks_or_enqueue() {
+		remove_all_actions( 'wp_enqueue_scripts' );
+		$this->conversion_tracking_settings->set( array( 'enabled' => false ) );
+
+		$this->conversion_tracking->register();
+
+		$this->assertFalse( has_action( 'wp_enqueue_scripts' ), 'wp_enqueue_scripts action should not be registered when tracking is disabled.' );
+		$this->assertFalse( has_action( 'fake_provider_action' ), 'Provider hooks should not be registered when tracking is disabled.' );
+	}
+
+	public function test_inline_js_base_data__filtered_when_tracking_disabled() {
+		remove_all_filters( 'googlesitekit_inline_base_data' );
+		$this->conversion_tracking_settings->set( array( 'enabled' => false ) );
+		Conversion_Tracking::$providers = array(
+			FakeLeadEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeLeadEventProvider_Active::class,
+		);
+
+		$this->conversion_tracking->register();
+
+		$this->assertTrue( has_filter( 'googlesitekit_inline_base_data' ), 'googlesitekit_inline_base_data filter should be registered even when tracking is disabled.' );
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		$this->assertArrayHasKey( 'hasActiveLeadEventProviders', $data );
+		$this->assertArrayHasKey( 'hasActiveEcommerceEventProviders', $data );
+		$this->assertArrayHasKey( 'hasMultipleActiveEcommerceEventProviders', $data );
+		$this->assertTrue( $data['hasActiveLeadEventProviders'] );
+		$this->assertFalse( $data['hasActiveEcommerceEventProviders'] );
+		$this->assertFalse( $data['hasMultipleActiveEcommerceEventProviders'] );
+	}
+
+	public function test_content_event_provider__does_not_affect_conversion_event_getters_and_categories() {
+		Conversion_Tracking::$providers = array(
+			FakeContentEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeContentEventProvider_Active::class,
+		);
+
+		$categories = $this->conversion_tracking->get_active_provider_categories();
+		$this->assertNotContains( Conversion_Events_Provider::CATEGORY_CONTENT, $categories, 'Active provider categories should not contain CATEGORY_CONTENT.' );
+		$this->assertEmpty( $categories, 'Active provider categories should be empty when only a content provider is active.' );
+
+		$this->assertEmpty( $this->conversion_tracking->get_supported_conversion_events(), 'Supported conversion events should be empty for content event providers.' );
+		$this->assertEmpty( $this->conversion_tracking->get_enhanced_conversion_events(), 'Enhanced conversion events should be empty for content event providers.' );
+		$this->assertEmpty( $this->conversion_tracking->get_site_kit_supported_conversion_events(), 'Site Kit supported conversion events should be empty for content event providers.' );
+		$this->assertEmpty( $this->conversion_tracking->get_site_kit_enhanced_conversion_events(), 'Site Kit enhanced conversion events should be empty for content event providers.' );
+
+		$feature_metrics = $this->conversion_tracking->get_feature_metrics();
+		$this->assertEquals(
+			array(
+				'conversion_tracking_enabled'    => true,
+				'conversion_tracking_providers'  => array( FakeContentEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ),
+				'conversion_tracking_events'     => array(),
+				'conversion_tracking_events_enh' => array(),
+			),
+			$feature_metrics,
+			'Feature metrics should list the provider slug but have empty conversion event arrays.'
+		);
+	}
+
+	public function test_default_providers() {
+		$default_providers = ( new \ReflectionClass( Conversion_Tracking::class ) )->getDefaultProperties()['providers'];
+
+		$this->assertArrayHasKey( Content_Events::CONVERSION_EVENT_PROVIDER_SLUG, $default_providers, 'Default providers should contain content-events slug.' );
+		$this->assertEquals( Content_Events::class, $default_providers[ Content_Events::CONVERSION_EVENT_PROVIDER_SLUG ], 'content-events should map to Content_Events class.' );
 	}
 }
