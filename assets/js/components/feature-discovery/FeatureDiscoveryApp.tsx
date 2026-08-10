@@ -17,6 +17,7 @@
  */
 
 function FeatureDiscoveryApp() {
+	// @ToDO: Replace this with the actual Feature Discovery Hub app once it's implemented.
 	return <p>FDH App</p>;
 }
 
