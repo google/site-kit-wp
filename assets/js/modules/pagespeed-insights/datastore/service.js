@@ -21,7 +21,37 @@
  */
 import { addQueryArgs } from '@wordpress/url';
 
+/**
+ * Internal dependencies
+ */
+import { createRegistrySelector } from 'googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_PAGESPEED_INSIGHTS } from './constants';
+
 export const selectors = {
+	/**
+	 * Gets the details link URL for the module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(string|undefined)} Details link URL, or `undefined` if not loaded.
+	 */
+	getDetailsLinkURL: createRegistrySelector( ( select ) => () => {
+		const currentReferenceURL =
+			select( CORE_SITE ).getCurrentReferenceURL();
+
+		if ( currentReferenceURL === undefined ) {
+			return undefined;
+		}
+
+		return select( MODULES_PAGESPEED_INSIGHTS ).getServiceURL( {
+			path: 'report',
+			query: {
+				url: currentReferenceURL,
+			},
+		} );
+	} ),
+
 	/**
 	 * Gets a URL to the service.
 	 *

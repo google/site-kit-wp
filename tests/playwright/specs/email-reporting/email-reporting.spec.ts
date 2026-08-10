@@ -35,6 +35,10 @@ const user = asUser( 'admin' );
 const plugins = withPlugins( 'proxy-auth.php', 'email-reporting.php' );
 
 test.describe( 'Email Reporting', { annotation: [ user, plugins ] }, () => {
+	// Mobile WP nightly runs sit near the default 30s budget once the
+	// settings panel, subscription save, and next-report fetch are included.
+	test.describe.configure( { timeout: 60_000 } );
+
 	test(
 		'should deliver a weekly email report',
 		{

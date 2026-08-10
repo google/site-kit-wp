@@ -83,6 +83,7 @@ import {
 import getAllTrafficPDFData from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/getPDFData';
 import { ModulePopularPagesWidgetGA4 } from '@/js/modules/analytics-4/components/module';
 import getModulePopularPagesPDFData from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/getPDFData';
+import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
 	LeadGenerationPerformanceWidget,
 	OnlineStorePerformanceWidget,
@@ -217,7 +218,7 @@ export function registerWidgets( widgets ) {
 			pdf: {
 				Component: PDFYourVisitorGroups,
 				getData: getAudienceTilesPDFData,
-				label: __( 'Your visitor groups', 'google-site-kit' ),
+				label: __( 'Visitor groups', 'google-site-kit' ),
 				// The PDF row needs two cards, so it renders only for two or
 				// more audiences. The dashboard tile keeps its own `isActive`,
 				// which allows a single audience.
@@ -407,7 +408,7 @@ export function registerWidgets( widgets ) {
 			pdf: {
 				Component: ModulePopularPagesWidgetGA4PDF,
 				getData: getModulePopularPagesPDFData,
-				label: __( 'Top content over time', 'google-site-kit' ),
+				label: __( 'Top content', 'google-site-kit' ),
 			},
 		},
 		[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
@@ -860,9 +861,9 @@ export function registerWidgets( widgets ) {
 				wrapWidget: false,
 				modules: [ MODULE_SLUG_ANALYTICS_4 ],
 				isActive: ( select ) =>
-					!! select( MODULES_ANALYTICS_4 ).isSiteGoalWidgetActive(
-						'ecommerce'
-					),
+					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+						GOAL_TYPES.ECOMMERCE
+					) === true,
 			},
 			[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
 		);
@@ -876,9 +877,9 @@ export function registerWidgets( widgets ) {
 				wrapWidget: false,
 				modules: [ MODULE_SLUG_ANALYTICS_4 ],
 				isActive: ( select ) =>
-					!! select( MODULES_ANALYTICS_4 ).isSiteGoalWidgetActive(
-						'lead'
-					),
+					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+						GOAL_TYPES.LEAD
+					) === true,
 			},
 			[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
 		);

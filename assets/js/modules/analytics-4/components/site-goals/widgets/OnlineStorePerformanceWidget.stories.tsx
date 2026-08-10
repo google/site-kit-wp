@@ -164,7 +164,11 @@ function commonSetup( registry: WPDataRegistry ) {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {} );
+	// Pairs with the detected event above, so the state matches one where the
+	// widget renders. `isSiteGoalsWidgetRenderable` needs both.
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+		activeWidgets: [ GOAL_TYPES.ECOMMERCE ],
+	} );
 
 	registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
 	registry
@@ -807,6 +811,7 @@ Ready.args = {
 		seedGoalDriverReports( registry, [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 	},
 };
+Ready.scenario = {};
 
 export const GatheringBreakdownData = Template.bind( {} ) as Story;
 GatheringBreakdownData.storyName = 'Gathering Breakdown Data';
@@ -864,6 +869,7 @@ TabbedBreakdownOtherSources.args = {
 		seedTabbedBreakdown( registry, { unattributedCount: 12 } );
 	},
 };
+TabbedBreakdownOtherSources.scenario = {};
 
 export const ReadyAddToCart = Template.bind( {} ) as Story;
 ReadyAddToCart.storyName = 'Ready (Add to Cart)';

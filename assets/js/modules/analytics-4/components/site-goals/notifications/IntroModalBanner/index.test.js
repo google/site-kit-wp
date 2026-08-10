@@ -283,6 +283,63 @@ describe( 'IntroModal', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
+	it( 'renders the ecommerce-only variant when both event types exist but only the Online store widget is active', async () => {
+		// `activeWidgets` is what decides which widget renders. With only the
+		// ecommerce widget on the page, the modal must not promise lead
+		// generation, even though its events are detected.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+			activeWidgets: [ GOAL_TYPES.ECOMMERCE ],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [
+				ENUM_CONVERSION_EVENTS.PURCHASE,
+				ENUM_CONVERSION_EVENTS.CONTACT,
+			] );
+		appendTourTarget();
+
+		const { getByRole, getByText, queryByText } = render(
+			<IntroModalComponent />,
+			{ registry }
+		);
+
+		await waitForIntroModalToShow( getByRole );
+
+		expect( getByText( 'See what drives your sales' ) ).toBeInTheDocument();
+		expect(
+			queryByText( 'Track your most valuable goals' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders nothing when no Site Goals widget is active', () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+			activeWidgets: [],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [
+				ENUM_CONVERSION_EVENTS.PURCHASE,
+				ENUM_CONVERSION_EVENTS.CONTACT,
+			] );
+		appendTourTarget();
+
+		const { container } = render( <IntroModalComponent />, { registry } );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'renders nothing when a widget is active but its events are no longer detected', () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+			activeWidgets: [ GOAL_TYPES.ECOMMERCE ],
+		} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
+		appendTourTarget();
+
+		const { container } = render( <IntroModalComponent />, { registry } );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
 	it( 'renders nothing while the Site Goals section is missing', () => {
 		jest.useFakeTimers();
 

@@ -8,6 +8,7 @@ exports[`FrequencySelector Story states (visual + DOM) Monthly selected renders 
 >
   <div
     aria-checked="false"
+    aria-label="Weekly"
     class="googlesitekit-frequency-selector__card"
     role="radio"
     tabindex="0"
@@ -50,6 +51,7 @@ exports[`FrequencySelector Story states (visual + DOM) Monthly selected renders 
   </div>
   <div
     aria-checked="true"
+    aria-label="Monthly"
     class="googlesitekit-frequency-selector__card googlesitekit-frequency-selector__card--selected"
     role="radio"
     tabindex="0"
@@ -92,6 +94,7 @@ exports[`FrequencySelector Story states (visual + DOM) Monthly selected renders 
   </div>
   <div
     aria-checked="false"
+    aria-label="Quarterly"
     class="googlesitekit-frequency-selector__card"
     role="radio"
     tabindex="0"
@@ -143,6 +146,7 @@ exports[`FrequencySelector Story states (visual + DOM) Previously saved frequenc
 >
   <div
     aria-checked="false"
+    aria-label="Weekly"
     class="googlesitekit-frequency-selector__card"
     role="radio"
     tabindex="0"
@@ -185,6 +189,7 @@ exports[`FrequencySelector Story states (visual + DOM) Previously saved frequenc
   </div>
   <div
     aria-checked="true"
+    aria-label="Monthly"
     class="googlesitekit-frequency-selector__card googlesitekit-frequency-selector__card--selected"
     role="radio"
     tabindex="0"
@@ -227,6 +232,7 @@ exports[`FrequencySelector Story states (visual + DOM) Previously saved frequenc
   </div>
   <div
     aria-checked="false"
+    aria-label="Quarterly"
     class="googlesitekit-frequency-selector__card"
     role="radio"
     tabindex="0"
@@ -278,6 +284,7 @@ exports[`FrequencySelector Story states (visual + DOM) Previously saved frequenc
 >
   <div
     aria-checked="true"
+    aria-label="Weekly"
     class="googlesitekit-frequency-selector__card googlesitekit-frequency-selector__card--selected"
     role="radio"
     tabindex="0"
@@ -320,6 +327,7 @@ exports[`FrequencySelector Story states (visual + DOM) Previously saved frequenc
   </div>
   <div
     aria-checked="false"
+    aria-label="Monthly"
     class="googlesitekit-frequency-selector__card"
     role="radio"
     tabindex="0"
@@ -362,6 +370,7 @@ exports[`FrequencySelector Story states (visual + DOM) Previously saved frequenc
   </div>
   <div
     aria-checked="false"
+    aria-label="Quarterly"
     class="googlesitekit-frequency-selector__card"
     role="radio"
     tabindex="0"
@@ -413,6 +422,7 @@ exports[`FrequencySelector Story states (visual + DOM) Quarterly selected render
 >
   <div
     aria-checked="false"
+    aria-label="Weekly"
     class="googlesitekit-frequency-selector__card"
     role="radio"
     tabindex="0"
@@ -455,6 +465,7 @@ exports[`FrequencySelector Story states (visual + DOM) Quarterly selected render
   </div>
   <div
     aria-checked="false"
+    aria-label="Monthly"
     class="googlesitekit-frequency-selector__card"
     role="radio"
     tabindex="0"
@@ -497,6 +508,7 @@ exports[`FrequencySelector Story states (visual + DOM) Quarterly selected render
   </div>
   <div
     aria-checked="true"
+    aria-label="Quarterly"
     class="googlesitekit-frequency-selector__card googlesitekit-frequency-selector__card--selected"
     role="radio"
     tabindex="0"
@@ -548,6 +560,7 @@ exports[`FrequencySelector Story states (visual + DOM) Weekly selected (default 
 >
   <div
     aria-checked="true"
+    aria-label="Weekly"
     class="googlesitekit-frequency-selector__card googlesitekit-frequency-selector__card--selected"
     role="radio"
     tabindex="0"
@@ -590,6 +603,7 @@ exports[`FrequencySelector Story states (visual + DOM) Weekly selected (default 
   </div>
   <div
     aria-checked="false"
+    aria-label="Monthly"
     class="googlesitekit-frequency-selector__card"
     role="radio"
     tabindex="0"
@@ -632,6 +646,7 @@ exports[`FrequencySelector Story states (visual + DOM) Weekly selected (default 
   </div>
   <div
     aria-checked="false"
+    aria-label="Quarterly"
     class="googlesitekit-frequency-selector__card"
     role="radio"
     tabindex="0"
@@ -683,6 +698,7 @@ exports[`FrequencySelector Story states (visual + DOM) Weekly selected with Sund
 >
   <div
     aria-checked="true"
+    aria-label="Weekly"
     class="googlesitekit-frequency-selector__card googlesitekit-frequency-selector__card--selected"
     role="radio"
     tabindex="0"
@@ -725,6 +741,7 @@ exports[`FrequencySelector Story states (visual + DOM) Weekly selected with Sund
   </div>
   <div
     aria-checked="false"
+    aria-label="Monthly"
     class="googlesitekit-frequency-selector__card"
     role="radio"
     tabindex="0"
@@ -767,6 +784,7 @@ exports[`FrequencySelector Story states (visual + DOM) Weekly selected with Sund
   </div>
   <div
     aria-checked="false"
+    aria-label="Quarterly"
     class="googlesitekit-frequency-selector__card"
     role="radio"
     tabindex="0"

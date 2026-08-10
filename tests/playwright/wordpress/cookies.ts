@@ -123,6 +123,17 @@ export class WordPressCookies {
 			} );
 		}
 
+		const conversionTracking = this.getAnnotation(
+			'_wp:conversion-tracking'
+		);
+		if ( conversionTracking ) {
+			cookies.push( {
+				...defaults,
+				name: '_wp_test_conversion_tracking',
+				value: conversionTracking,
+			} );
+		}
+
 		const connectedModules = this.getAnnotation( '_wp:connected-modules' );
 		if ( connectedModules ) {
 			cookies.push( {
