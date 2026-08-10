@@ -148,6 +148,13 @@
 				color: $c-surfaces-on-surface-variant;
 				padding-right: $grid-gap-desktop;
 
+				// The caret belongs to the label; while the label is hidden the
+				// button is icon-only, so the caret hides with it.
+				@media (max-width: $bp-wpAdminBarTablet) {
+					background-image: none;
+					padding-right: 8px;
+				}
+
 				@media (max-width: $bp-mobileOnly) {
 					background: none;
 					margin-right: 0;
