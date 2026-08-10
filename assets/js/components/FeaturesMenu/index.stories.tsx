@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -33,6 +38,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 import {
+	CORE_USER,
 	PERMISSION_AUTHENTICATE,
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	PERMISSION_VIEW_SHARED_DASHBOARD,
@@ -42,7 +48,9 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { Story } from '@/js/types/Story';
 import {
+	provideModuleRegistrations,
 	provideModules,
+	provideSiteConnection,
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserCapabilities,
@@ -115,10 +123,12 @@ ViewOnly.storyName = 'View Only';
 ViewOnly.args = {
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	setupRegistry: ( registry: WPDataRegistry ) => {
+		provideSiteConnection( registry );
 		provideModules( registry, [
 			{ slug: MODULE_SLUG_SEARCH_CONSOLE, shareable: true },
 			{ slug: MODULE_SLUG_ANALYTICS_4, shareable: true },
 		] );
+		provideModuleRegistrations( registry );
 		provideUserCapabilities( registry, {
 			[ PERMISSION_AUTHENTICATE ]: false,
 			[ PERMISSION_VIEW_SHARED_DASHBOARD ]: true,
@@ -131,6 +141,18 @@ ViewOnly.args = {
 				MODULE_SLUG_ANALYTICS_4
 			) ]: true,
 		} );
+
+		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: false } );
+
+		// Mock the tracking endpoint to allow checking/unchecking the tracking checkbox.
+		fetchMock.post(
+			RegExp( 'google-site-kit/v1/core/user/data/tracking' ),
+			( url: string, { body }: { body: string } ) => {
+				const { data } = JSON.parse( body );
+
+				return { body: data };
+			}
+		);
 	},
 };
 ViewOnly.parameters = {
