@@ -46,8 +46,8 @@ export default function SettingsView() {
 	const anyoneCanRegister = useSelect( ( select ) =>
 		select( CORE_SITE ).getAnyoneCanRegister()
 	);
-	const anyoneCanRegisterWooCommerce = useSelect( ( select ) =>
-		select( CORE_SITE ).getAnyoneCanRegisterWooCommerce()
+	const isRegistrationOpen = useSelect( ( select ) =>
+		select( CORE_SITE ).isRegistrationOpen()
 	);
 
 	const buttonShapeLabel = useSelect( ( select ) => {
@@ -211,12 +211,11 @@ export default function SettingsView() {
 					>
 						{ __( 'User registration', 'google-site-kit' ) }
 					</Typography>
-					{ anyoneCanRegister !== undefined && (
+					{ isRegistrationOpen !== undefined && (
 						<p className="googlesitekit-settings-module__meta-item-data">
 							<DisplaySetting
 								value={
-									anyoneCanRegister ||
-									anyoneCanRegisterWooCommerce
+									isRegistrationOpen
 										? __( 'Enabled', 'google-site-kit' )
 										: __( 'Disabled', 'google-site-kit' )
 								}

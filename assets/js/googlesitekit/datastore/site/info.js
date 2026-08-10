@@ -1005,8 +1005,10 @@ export const selectors = {
 	 * Checks if WooCommerce allows new accounts to be created, independently
 	 * of the WordPress "Anyone can register" setting.
 	 *
-	 * `false` both when WooCommerce is inactive and when it is active but its
-	 * own account-creation settings are closed.
+	 * `false` when:
+	 *  - WooCommerce is inactive.
+	 *  - WooCommerce is active but account-creation in WooCommerce is
+	 *    disabled.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -1016,6 +1018,30 @@ export const selectors = {
 	getAnyoneCanRegisterWooCommerce: getSiteInfoProperty(
 		'anyoneCanRegisterWooCommerce'
 	),
+
+	/**
+	 * Checks if new user registration is open, via either WordPress's own
+	 * "Anyone can register" setting or WooCommerce's own account-creation
+	 * setting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean|undefined} `true` if registration is open via either path; `false` if neither is open. Returns `undefined` if not yet loaded.
+	 */
+	isRegistrationOpen: createRegistrySelector( ( select ) => () => {
+		const anyoneCanRegister = select( CORE_SITE ).getAnyoneCanRegister();
+		const anyoneCanRegisterWooCommerce =
+			select( CORE_SITE ).getAnyoneCanRegisterWooCommerce();
+
+		if (
+			anyoneCanRegister === undefined ||
+			anyoneCanRegisterWooCommerce === undefined
+		) {
+			return undefined;
+		}
+
+		return anyoneCanRegister || anyoneCanRegisterWooCommerce;
+	} ),
 
 	/**
 	 * Checks if WordPress site is running in the multisite mode.

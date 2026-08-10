@@ -348,12 +348,12 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Checks if the registration is open.
 	 *
-	 * Checked here in the base class, rather than only in
-	 * `WooCommerce_Authenticator`, because the `integration=woocommerce` POST
-	 * value is only ever sent from the WooCommerce-hosted login page: the
-	 * WordPress login page and One Tap there use this base class even when
-	 * WooCommerce is active, so WooCommerce's own account-creation settings
-	 * have to be checked here too for that flow to open registration.
+	 * Checked here rather than in `WooCommerce_Authenticator`, because the
+	 * `integration=woocommerce` POST value is only ever sent from the
+	 * WooCommerce-hosted login page: the WordPress login page and One Tap
+	 * there use this base class even when WooCommerce is active, so
+	 * WooCommerce's own account-creation settings have to be checked here
+	 * too for that flow to open registration.
 	 *
 	 * @since 1.145.0
 	 * @since n.e.x.t Also opens registration through WooCommerce's own
@@ -415,10 +415,8 @@ class Authenticator implements Authenticator_Interface {
 	 * (the static method this defers to) rather than sharing its name: on
 	 * PHP 7.4, a private instance method here with the exact same name as
 	 * that public static method on the subclass triggers a fatal
-	 * "Cannot make non static method ... static" error, even though private
-	 * methods aren't supposed to participate in override compatibility
-	 * checks. PHP 8.1+ correctly excludes private methods from that check,
-	 * but the plugin's floor is PHP 7.4.
+	 * error, even though private methods aren't supposed to
+	 * participate in override compatibility checks.
 	 *
 	 * @since n.e.x.t
 	 *

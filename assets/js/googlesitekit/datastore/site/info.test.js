@@ -613,6 +613,70 @@ describe( 'core/site site info', () => {
 			} );
 		} );
 
+		describe( 'isRegistrationOpen', () => {
+			it( 'returns true when WordPress registration is open', async () => {
+				global[ baseInfoVar ] = {
+					...baseInfo,
+					anyoneCanRegister: true,
+					anyoneCanRegisterWooCommerce: false,
+				};
+				global[ entityInfoVar ] = entityInfo;
+
+				registry.select( CORE_SITE ).isRegistrationOpen();
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
+
+				expect(
+					registry.select( CORE_SITE ).isRegistrationOpen()
+				).toBe( true );
+			} );
+
+			it( 'returns true when only WooCommerce registration is open', async () => {
+				global[ baseInfoVar ] = {
+					...baseInfo,
+					anyoneCanRegister: false,
+					anyoneCanRegisterWooCommerce: true,
+				};
+				global[ entityInfoVar ] = entityInfo;
+
+				registry.select( CORE_SITE ).isRegistrationOpen();
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
+
+				expect(
+					registry.select( CORE_SITE ).isRegistrationOpen()
+				).toBe( true );
+			} );
+
+			it( 'returns false when neither WordPress nor WooCommerce registration is open', async () => {
+				global[ baseInfoVar ] = {
+					...baseInfo,
+					anyoneCanRegister: false,
+					anyoneCanRegisterWooCommerce: false,
+				};
+				global[ entityInfoVar ] = entityInfo;
+
+				registry.select( CORE_SITE ).isRegistrationOpen();
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
+
+				expect(
+					registry.select( CORE_SITE ).isRegistrationOpen()
+				).toBe( false );
+			} );
+
+			it( 'will return initial state (undefined) when no data is available', async () => {
+				expect( global[ baseInfoVar ] ).toEqual( undefined );
+				expect( global[ entityInfoVar ] ).toEqual( undefined );
+
+				const result = registry
+					.select( CORE_SITE )
+					.isRegistrationOpen();
+
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
+
+				expect( result ).toEqual( undefined );
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
 		describe( 'getCurrentReferenceURL', () => {
 			it( 'uses a resolver to load site info, then returns entity URL if set', async () => {
 				global[ baseInfoVar ] = baseInfo;

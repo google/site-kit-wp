@@ -17,7 +17,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
@@ -31,7 +31,6 @@ import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 
 /**
  * Interpolates a "registration is open, manage it here" message into its
@@ -49,30 +48,18 @@ import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
  * @param {string}  args.message     Complete translated message, containing an `<a>`...`</a>` segment and a `<br/>` tag.
  * @param {string}  args.settingsURL URL of the settings screen the `<a>` should link to.
  * @param {boolean} args.showLink    Whether the current user can reach the settings screen; renders a plain `<span>` instead of a link when false.
- * @param {string}  args.breakpoint  Current breakpoint, from useBreakpoint().
  * @return {Element} Interpolated message content for use inside a HelperText.
  */
-function interpolateRegistrationMessage( {
-	message,
-	settingsURL,
-	showLink,
-	breakpoint,
-} ) {
+function interpolateRegistrationMessage( { message, settingsURL, showLink } ) {
 	return createInterpolateElement( message, {
-		a: showLink ? <Link key="link" href={ settingsURL } /> : <span />,
-		br:
-			breakpoint !== BREAKPOINT_SMALL ? (
-				<br />
-			) : (
-				// eslint-disable-next-line react/jsx-no-useless-fragment
-				<Fragment />
-			),
+		a: showLink ? <Link href={ settingsURL } /> : <span />,
+		br: (
+			<br className="googlesitekit-sign-in-with-google-registration-message__break" />
+		),
 	} );
 }
 
 export default function AnyoneCanRegisterReadOnly() {
-	const breakpoint = useBreakpoint();
-
 	const anyoneCanRegister = useSelect( ( select ) =>
 		select( CORE_SITE ).getAnyoneCanRegister()
 	);
@@ -123,7 +110,6 @@ export default function AnyoneCanRegisterReadOnly() {
 						// "Anyone can register" is a genuine network-level
 						// setting a site admin can't reach on multisite.
 						showLink: ! ( ! canManageOptions && isMultisite ),
-						breakpoint,
 					} ) }
 				</HelperText>
 			) }
@@ -147,7 +133,6 @@ export default function AnyoneCanRegisterReadOnly() {
 						// `isMultisite`: WooCommerce's settings are always
 						// per-site, so `canManageOptions` alone is sufficient.
 						showLink: canManageOptions,
-						breakpoint,
 					} ) }
 				</HelperText>
 			) }
