@@ -41,6 +41,25 @@ class Conversion_TrackingTest extends TestCase {
 	 */
 	private $conversion_tracking_settings;
 
+	/**
+	 * Default providers list.
+	 *
+	 * @var array
+	 */
+	private static $default_providers = array();
+
+	public static function set_up_before_class() {
+		parent::set_up_before_class();
+
+		self::$default_providers = Conversion_Tracking::$providers;
+	}
+
+	public static function tear_down_after_class() {
+		parent::tear_down_after_class();
+
+		Conversion_Tracking::$providers = self::$default_providers;
+	}
+
 	public function set_up() {
 		parent::set_up();
 
@@ -61,7 +80,7 @@ class Conversion_TrackingTest extends TestCase {
 	public function tear_down() {
 		parent::tear_down();
 
-		Conversion_Tracking::$providers = array();
+		Conversion_Tracking::$providers = self::$default_providers;
 	}
 
 	public function test_register__not_enqueued_when_no_snippet_inserted() {
@@ -426,10 +445,11 @@ class Conversion_TrackingTest extends TestCase {
 		);
 	}
 
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function test_default_providers() {
-		$default_providers = ( new \ReflectionClass( Conversion_Tracking::class ) )->getDefaultProperties()['providers'];
-
-		$this->assertArrayHasKey( Content_Events::CONVERSION_EVENT_PROVIDER_SLUG, $default_providers, 'Default providers should contain content-events slug.' );
-		$this->assertEquals( Content_Events::class, $default_providers[ Content_Events::CONVERSION_EVENT_PROVIDER_SLUG ], 'content-events should map to Content_Events class.' );
+		$this->assertArrayHasKey( Content_Events::CONVERSION_EVENT_PROVIDER_SLUG, self::$default_providers, 'Default providers should contain content-events slug.' );
+		$this->assertEquals( Content_Events::class, self::$default_providers[ Content_Events::CONVERSION_EVENT_PROVIDER_SLUG ], 'content-events should map to Content_Events class.' );
 	}
 }
