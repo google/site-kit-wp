@@ -360,7 +360,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 
 			expect( useShowTooltip ).toHaveBeenCalledWith(
 				expect.objectContaining( {
-					target: '.googlesitekit-manage-email-reports__button',
+					target: '.googlesitekit-manage-email-reports__button, .googlesitekit-features-menu__button',
 					title: expect.stringMatching(
 						/manage your email reports subscription/i
 					),

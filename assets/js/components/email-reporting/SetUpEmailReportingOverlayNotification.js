@@ -33,6 +33,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import { FEATURES_MENU_BUTTON_CLASS } from '@/js/components/FeaturesMenu/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import OverlayNotification from '@/js/googlesitekit/notifications/components/layout/OverlayNotification';
@@ -77,7 +78,9 @@ export default function SetUpEmailReportingOverlayNotification( {
 	}, [ dismissItem, setValue ] );
 
 	const tooltipSettings = {
-		target: `.${ MANAGE_EMAIL_REPORTS_BUTTON_CLASS }`,
+		// On mobile and tablet the email reports button collapses into the
+		// features menu, so the tooltip anchors to whichever trigger exists.
+		target: `.${ MANAGE_EMAIL_REPORTS_BUTTON_CLASS }, .${ FEATURES_MENU_BUTTON_CLASS }`,
 		placement: 'bottom-end',
 		tooltipSlug: SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
 		title: __(
