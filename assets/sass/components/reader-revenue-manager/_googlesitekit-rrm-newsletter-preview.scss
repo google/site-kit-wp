@@ -17,23 +17,52 @@
  */
 
 .googlesitekit-plugin {
+	// Applied to the CTAPreview shell, not to the preview card itself.
+	.googlesitekit-rrm-newsletter-preview-shell {
+
+		.googlesitekit-rrm-cta-preview__panel-content {
+			padding: 38px 23px;
+		}
+
+		// The pop-up card is centred in the stage, so the spacing above and
+		// below stays even as the card content grows.
+		.googlesitekit-rrm-cta-preview__panel--popup {
+			align-items: center;
+			display: flex;
+
+			.googlesitekit-rrm-cta-preview__panel-content {
+				padding: 0 23px;
+				width: 100%;
+			}
+		}
+
+		// On the inline panel the card is aligned with the skeleton bars.
+		.googlesitekit-rrm-cta-preview__panel--inline .googlesitekit-rrm-cta-preview__panel-content {
+			padding: 35px $grid-gap-phone 0 14px;
+		}
+	}
 
 	.googlesitekit-rrm-newsletter-preview {
 		background-color: $c-surfaces-surface;
-		border-radius: $br-xs;
+		border-radius: $br-sm;
 		display: flex;
 		flex-direction: column;
-		gap: 11px;
+
+		// Spacing between elements is set per element to match the design.
+		gap: 0;
 		padding: $grid-gap-phone;
 
 		&.googlesitekit-rrm-newsletter-preview--popup {
+			box-shadow: 0 4px 8px rgba(3, 55, 23, 0.4);
 			margin: auto;
 			max-width: 100%;
 		}
 
 		&.googlesitekit-rrm-newsletter-preview--inline {
-			border-radius: 0;
+			border-radius: 4px;
 			height: 100%;
+			padding-bottom: 15px;
+			padding-top: 15px;
 		}
 
 		.googlesitekit-rrm-newsletter-preview__publication-name {
@@ -43,16 +72,12 @@
 		}
 
 		.googlesitekit-rrm-newsletter-preview__title {
-			margin: 0;
+			margin: 3px 0 0;
 			text-align: center;
 		}
 
-		.googlesitekit-rrm-cta-preview__panel-content {
-			padding: 38px 23px;
-		}
-
 		.googlesitekit-rrm-newsletter-preview__body {
-			margin: 0;
+			margin: 3px 0 0;
 			text-align: center;
 		}
 
@@ -60,43 +85,66 @@
 			align-items: center;
 			display: flex;
 			gap: 8px;
+			margin-top: 11px;
+			min-height: 15px;
 
 			.googlesitekit-rrm-newsletter-preview__consent-checkbox {
+				appearance: none;
+				border: 1px solid $c-neutral-n-900;
+				border-radius: 2px;
 				cursor: not-allowed;
 				flex-shrink: 0;
-				margin: 2px 0 0;
+				height: 11px;
+				margin: 0;
+
+				// Overrides the WordPress admin checkbox min-width.
+				min-width: 11px;
+				width: 11px;
 			}
 
-			googlesitekit-rrm-newsletter-preview__consent-text {
+			.googlesitekit-rrm-newsletter-preview__consent-text {
 				font-size: 10px;
 			}
 		}
 
 		.googlesitekit-rrm-newsletter-preview__disclaimer {
 			font-size: 8px;
-			margin: 0;
+			line-height: 10px;
+			margin: 6px 0 0;
 		}
 
 		.googlesitekit-rrm-newsletter-preview__link {
 			color: $c-content-secondary;
+			font-weight: $fw-medium;
 		}
 
 		.googlesitekit-rrm-newsletter-preview__actions {
+			align-items: center;
 			display: flex;
 			flex-direction: column;
-			gap: 8px;
+			gap: 2px;
+			margin-top: 11px;
+
+			// Nested to take precedence over the Typography component styles.
+			.googlesitekit-rrm-newsletter-preview__or {
+				font-size: 8px;
+				line-height: 16px;
+				margin: 0;
+				text-align: center;
+			}
 		}
 
 		.googlesitekit-rrm-newsletter-preview__button {
-			background-color: $c-surfaces-background;
+			background-color: $c-interactive-disable-container;
 			border: none;
 			border-radius: $br-lg;
-			color: $c-neutral-n-500;
+			color: $c-interactive-on-disable-container;
 			cursor: not-allowed;
-			font-size: $fs-body-md;
-			line-height: $lh-body-md;
-			padding: 8px 16px;
-			width: 100%;
+			font-size: 9px;
+			font-weight: $fw-medium;
+			line-height: 16px;
+			padding: 2px 8px;
+			width: 62%;
 
 			&:hover {
 				pointer-events: none;
@@ -104,10 +152,5 @@
 			}
 		}
 
-		.googlesitekit-rrm-newsletter-preview__or {
-			font-size: 8px;
-			margin: 0;
-			text-align: center;
-		}
 	}
 }

@@ -43,7 +43,7 @@ interface Props {
 	popupContent?: ReactNode;
 	inlineContent?: ReactNode;
 	onTabChange?: ( tabIndex: number ) => void;
-	classNames?: string;
+	className?: string;
 }
 
 export const CTA_PREVIEW_TAB_POPUP = 0;
@@ -64,7 +64,7 @@ export default function CTAPreview( {
 	popupContent,
 	inlineContent,
 	onTabChange,
-	classNames = '',
+	className = '',
 }: Props ) {
 	const [ activeTab, setActiveTab ] = useState( CTA_PREVIEW_TAB_POPUP );
 
@@ -77,14 +77,14 @@ export default function CTAPreview( {
 		<div
 			className={ classnames(
 				'googlesitekit-rrm-cta-preview',
-				classNames
+				className
 			) }
 		>
 			<div className="googlesitekit-rrm-cta-preview__header">
 				<Typography
 					as="h3"
-					type="title"
-					size="small"
+					type="label"
+					size="medium"
 					className="googlesitekit-rrm-cta-preview__title"
 				>
 					{ title }
@@ -125,6 +125,7 @@ export default function CTAPreview( {
 						<PopupBackgroundSVG
 							width="288"
 							height="350"
+							preserveAspectRatio="none"
 							className="googlesitekit-rrm-cta-preview__background-image"
 							aria-hidden="true"
 						/>
@@ -142,6 +143,7 @@ export default function CTAPreview( {
 						<InlineBackgroundSVG
 							width="288"
 							height="350"
+							preserveAspectRatio="none"
 							className="googlesitekit-rrm-cta-preview__background-image"
 							aria-hidden="true"
 						/>

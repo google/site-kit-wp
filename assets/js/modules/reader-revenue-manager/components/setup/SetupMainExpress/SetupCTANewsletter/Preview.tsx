@@ -55,7 +55,7 @@ export default function Preview( {
 
 	return (
 		<CTAPreview
-			classNames="googlesitekit-rrm-newsletter-preview"
+			className="googlesitekit-rrm-newsletter-preview-shell"
 			title={ title }
 			onTabChange={ setActiveTab }
 			popupContent={ <PopupPane { ...paneProps } /> }
