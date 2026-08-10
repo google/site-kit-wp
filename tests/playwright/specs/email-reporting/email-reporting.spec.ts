@@ -134,9 +134,7 @@ test.describe( 'Email Reporting', { annotation: [ user, plugins ] }, () => {
 
 		const pageObject = new EmailReportingPage( wp.page );
 
-		await expect( pageObject.manageEmailReportsButton ).toBeVisible();
-
-		await pageObject.manageEmailReportsButton.click();
+		await pageObject.openSettings();
 		await expect( pageObject.panelTitle ).toBeVisible();
 
 		await wp.page.keyboard.press( 'Escape' );
@@ -165,6 +163,15 @@ test.describe( 'Email Reporting', { annotation: [ user, plugins ] }, () => {
 			// its error fallback and took every Site Kit element down with it.
 			await expect( wp.page.locator( '#wpadminbar' ) ).toBeVisible();
 			await expect( pageObject.manageEmailReportsButton ).toBeHidden();
+
+			// The features menu still renders for its other items, so prove
+			// the email reports item is the one missing.
+			if ( await pageObject.featuresMenuButton.isVisible() ) {
+				await pageObject.featuresMenuButton.click();
+				await expect(
+					pageObject.manageEmailReportsMenuItem
+				).toBeHidden();
+			}
 		}
 	);
 } );
@@ -203,9 +210,7 @@ test.describe(
 
 			const pageObject = new EmailReportingPage( wp.page );
 
-			await expect( pageObject.manageEmailReportsButton ).toBeVisible();
-
-			await pageObject.manageEmailReportsButton.click();
+			await pageObject.openSettings();
 			await expect( pageObject.panelTitle ).toBeVisible();
 		} );
 
@@ -269,6 +274,9 @@ test.describe(
 				wp.page.getByRole( 'button', { name: 'View only' } )
 			).toBeVisible();
 			await expect( pageObject.manageEmailReportsButton ).toBeHidden();
+			// Without sharing, PDF download, or email reports access there is
+			// nothing for the features menu to offer, so it is hidden too.
+			await expect( pageObject.featuresMenuButton ).toBeHidden();
 		} );
 	}
 );
