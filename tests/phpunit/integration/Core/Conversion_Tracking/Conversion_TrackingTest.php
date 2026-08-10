@@ -391,12 +391,12 @@ class Conversion_TrackingTest extends TestCase {
 
 		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
 
-		$this->assertArrayHasKey( 'hasActiveLeadEventProviders', $data );
-		$this->assertArrayHasKey( 'hasActiveEcommerceEventProviders', $data );
-		$this->assertArrayHasKey( 'hasMultipleActiveEcommerceEventProviders', $data );
-		$this->assertTrue( $data['hasActiveLeadEventProviders'] );
-		$this->assertFalse( $data['hasActiveEcommerceEventProviders'] );
-		$this->assertFalse( $data['hasMultipleActiveEcommerceEventProviders'] );
+		$this->assertArrayHasKey( 'hasActiveLeadEventProviders', $data, 'Inline base data should include active lead provider flag.' );
+		$this->assertArrayHasKey( 'hasActiveEcommerceEventProviders', $data, 'Inline base data should include active ecommerce provider flag.' );
+		$this->assertArrayHasKey( 'hasMultipleActiveEcommerceEventProviders', $data, 'Inline base data should include multiple ecommerce provider flag.' );
+		$this->assertTrue( $data['hasActiveLeadEventProviders'], 'Lead provider flag should be true with active lead provider.' );
+		$this->assertFalse( $data['hasActiveEcommerceEventProviders'], 'Ecommerce provider flag should be false with only lead provider.' );
+		$this->assertFalse( $data['hasMultipleActiveEcommerceEventProviders'], 'Multiple ecommerce flag should be false with only lead provider.' );
 	}
 
 	public function test_content_event_provider__does_not_affect_conversion_event_getters_and_categories() {
