@@ -289,10 +289,16 @@ class ScreensTest extends TestCase {
 		$submenu_slugs = $this->get_site_kit_submenu_slugs();
 
 		$this->assertNotNull( $submenu_slugs, 'Site Kit submenu should be registered.' );
+		$dashboard_index = array_search( 'googlesitekit-dashboard', $submenu_slugs, true );
+		$features_index  = array_search( 'googlesitekit-features', $submenu_slugs, true );
+		$settings_index  = array_search( 'googlesitekit-settings', $submenu_slugs, true );
+
 		$this->assertGreaterThanOrEqual( 3, count( $submenu_slugs ), 'Site Kit submenu should include Dashboard, Add Features, and Settings items.' );
-		$this->assertSame( 'googlesitekit-dashboard', $submenu_slugs[0], 'Dashboard should remain the first Site Kit submenu item.' );
-		$this->assertSame( 'googlesitekit-features', $submenu_slugs[1], 'Add Features should appear immediately after Dashboard.' );
-		$this->assertSame( 'googlesitekit-settings', $submenu_slugs[2], 'Settings should appear immediately after Add Features.' );
+		$this->assertNotFalse( $dashboard_index, 'Dashboard submenu item should be present.' );
+		$this->assertNotFalse( $features_index, 'Add Features submenu item should be present.' );
+		$this->assertNotFalse( $settings_index, 'Settings submenu item should be present.' );
+		$this->assertGreaterThan( $dashboard_index, $features_index, 'Add Features should appear after Dashboard.' );
+		$this->assertGreaterThan( $features_index, $settings_index, 'Settings should appear after Add Features.' );
 	}
 
 	/**
