@@ -181,7 +181,7 @@ class Email_Report_Section_BuilderTest extends TestCase {
 			$sections = $builder->build_sections( 'analytics-4', $payloads, 'es_CO' );
 			$section  = $sections[0];
 
-			$this->assertSame( array( 6.52 ), $section->get_trends(), 'Trend should be a plain float, unaffected by the active locale\'s number format.' );
+			$this->assertSame( array( 6.52 ), $section->get_trends(), "Trend should be a plain float, unaffected by the active locale's number format." );
 		} finally {
 			$wp_locale->number_format = $original_number_format;
 		}
