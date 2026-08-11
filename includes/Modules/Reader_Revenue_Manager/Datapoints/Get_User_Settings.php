@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 /**
  * Class for the Reader Revenue Manager user settings retrieval datapoint.
  *
- * @since n.e.x.t
+ * @since 1.185.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Get_User_Settings extends User_Settings_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return callable Closure that returns Reader Revenue Manager user settings.

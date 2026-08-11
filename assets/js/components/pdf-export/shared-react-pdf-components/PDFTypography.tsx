@@ -27,10 +27,8 @@ import { FC } from 'react';
 /**
  * Internal dependencies
  */
-import {
-	PDF_COLORS,
-	PDF_TYPOGRAPHY,
-} from '@/js/components/pdf-export/pdf-theme';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import { PDF_TYPOGRAPHY } from '@/js/components/pdf-export/pdf-typography';
 
 export type PDFTypographyType = keyof typeof PDF_TYPOGRAPHY;
 export type PDFTypographySize = keyof typeof PDF_TYPOGRAPHY[ 'body' ];
