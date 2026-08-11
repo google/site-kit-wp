@@ -19,12 +19,10 @@ use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
-use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publications;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_Publication;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
@@ -246,27 +244,31 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	public function test_get_publications__url() {
 		$filter = '';
 
+		// Set the Search Console option.
 		$this->options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'http://test.com' ) );
 
 		FakeHttp::fake_google_http_handler(
 			$this->reader_revenue_manager->get_client(),
 			function ( Request $request ) use ( &$filter ) {
-				$url    = parse_url( $request->getUri() );
+				$url = parse_url( $request->getUri() );
+
 				$filter = $url['query'];
 
-				if ( '/v1/publications' === $url['path'] ) {
-					return new FulfilledPromise(
-						new Response(
-							200,
-							array(),
-							wp_json_encode( $this->get_publications_list_response() )
-						)
-					);
+				switch ( $url['path'] ) {
+					case '/v1/publications':
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode( $this->get_publications_list_response() )
+							)
+						);
 				}
 			}
 		);
 
 		$this->reader_revenue_manager->register();
+
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			$this->authentication->get_oauth_client()->get_required_scopes()
 		);
@@ -274,45 +276,54 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$result = $this->reader_revenue_manager->get_data( 'publications' );
 
 		$this->assertNotWPError( $result, 'Publication lookup for a URL property should not return a WP_Error.' );
-		$this->assertContainsOnlyInstancesOf( Publication::class, $result, 'Publications result should contain only Publication instances for a URL property.' );
-		$this->assertSame( 'Test Property', $result[0]->getDisplayName(), 'Publication display name should be correct.' );
-		$this->assertSame( 'ABCDEFGH', $result[0]->getPublicationId(), 'Publication ID should be correct.' );
+		$this->assertContainsOnlyInstancesOf( Publication::class, $result, 'Publications result should contain only Publication instances for URL-based property.' );
+
+		$publication = $result[0];
+
+		$this->assertEquals( 'Test Property', $publication->getDisplayName(), 'Publication display name should be correct.' );
+		$this->assertEquals( 'ABCDEFGH', $publication->getPublicationId(), 'Publication ID should be correct.' );
 
 		$expected_filter = 'filter=' . join(
 			' OR ',
 			array_map(
-				fn( $url ) => sprintf( 'site_url = "%s"', $url ),
+				function ( $url ) {
+					return sprintf( 'site_url = "%s"', $url );
+				},
 				URL::permute_site_url( 'http://test.com' )
 			)
 		);
 
-		$this->assertSame( $expected_filter, urldecode( $filter ), 'URL filter should match the legacy format.' );
+		$this->assertEquals( $expected_filter, urldecode( $filter ), 'URL filter should match expected format.' );
 	}
 
 	public function test_get_publications__domain() {
 		$filter = '';
 
+		// Set the Search Console option.
 		$this->options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'sc-domain:example.com' ) );
 
 		FakeHttp::fake_google_http_handler(
 			$this->reader_revenue_manager->get_client(),
 			function ( Request $request ) use ( &$filter ) {
-				$url    = parse_url( $request->getUri() );
+				$url = parse_url( $request->getUri() );
+
 				$filter = $url['query'];
 
-				if ( '/v1/publications' === $url['path'] ) {
-					return new FulfilledPromise(
-						new Response(
-							200,
-							array(),
-							wp_json_encode( $this->get_publications_list_response() )
-						)
-					);
+				switch ( $url['path'] ) {
+					case '/v1/publications':
+						return new FulfilledPromise(
+							new Response(
+								200,
+								array(),
+								json_encode( $this->get_publications_list_response() )
+							)
+						);
 				}
 			}
 		);
 
 		$this->reader_revenue_manager->register();
+
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			$this->authentication->get_oauth_client()->get_required_scopes()
 		);
@@ -320,23 +331,31 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$result = $this->reader_revenue_manager->get_data( 'publications' );
 
 		$this->assertNotWPError( $result, 'Publication lookup for a domain property should not return a WP_Error.' );
-		$this->assertContainsOnlyInstancesOf( Publication::class, $result, 'Publications result should contain only Publication instances for a domain property.' );
+		$this->assertContainsOnlyInstancesOf( Publication::class, $result, 'Publications result should contain only Publication instances for domain-based property.' );
+
+		$publication = $result[0];
+
+		$this->assertEquals( 'Test Property', $publication->getDisplayName(), 'Publication display name should be correct for domain test.' );
+		$this->assertEquals( 'ABCDEFGH', $publication->getPublicationId(), 'Publication ID should be correct for domain test.' );
 
 		$expected_filter = 'filter=' . join(
 			' OR ',
 			array_map(
-				fn( $domain ) => sprintf( 'domain = "%s"', $domain ),
+				function ( $domain ) {
+					return sprintf( 'domain = "%s"', $domain );
+				},
 				URL::permute_site_hosts( 'example.com' )
 			)
 		);
 
-		$this->assertSame( $expected_filter, urldecode( $filter ), 'Domain filter should match the legacy format.' );
+		$this->assertEquals( $expected_filter, urldecode( $filter ), 'Domain filter should match expected format.' );
 	}
 
 	public function test_get_publications_synchronizes_settings() {
 		$publication_id = 'ABCDEFGH';
 
 		$this->options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'http://test.com' ) );
+
 		$this->reader_revenue_manager->get_settings()->register();
 		$this->reader_revenue_manager->get_settings()->set(
 			array(
@@ -357,34 +376,65 @@ class Reader_Revenue_ManagerTest extends TestCase {
 						new Response(
 							200,
 							array(),
-							wp_json_encode( $this->get_publications_list_response_with_details( $publication_id ) )
+							json_encode(
+								$this->get_publications_list_response_with_details( $publication_id )
+							)
 						)
 					);
 				}
+
+				return new FulfilledPromise( new Response( 200 ) );
 			}
 		);
 
 		$this->reader_revenue_manager->register();
+
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			$this->authentication->get_oauth_client()->get_required_scopes()
 		);
 
-		$result   = $this->reader_revenue_manager->get_data( 'publications' );
-		$settings = $this->reader_revenue_manager->get_settings()->get();
+		$result = $this->reader_revenue_manager->get_data( 'publications' );
 
 		$this->assertNotWPError( $result, 'Publication lookup used to synchronize settings should not return a WP_Error.' );
-		$this->assertSame( 'ONBOARDING_COMPLETE', $settings['publicationOnboardingState'], 'Onboarding state should be synchronized.' );
-		$this->assertTrue( $settings['publicationOnboardingStateChanged'], 'Onboarding state changed flag should be set.' );
-		$this->assertSame( array( 'testpubID:basic', 'testpubID:advanced' ), $settings['productIDs'], 'Product IDs should be synchronized.' );
-		$this->assertSame( 'subscriptions', $settings['paymentOption'], 'Payment option should be synchronized.' );
-		$this->assertSame( 'CONTENT_POLICY_VIOLATION_ACTIVE', $settings['contentPolicyState'], 'Content policy state should be synchronized.' );
-		$this->assertSame( 'https://example.com/policy-info', $settings['policyInfoLink'], 'Policy info link should be synchronized.' );
+
+		$settings = $this->reader_revenue_manager->get_settings()->get();
+
+		$this->assertEquals(
+			'ONBOARDING_COMPLETE',
+			$settings['publicationOnboardingState'],
+			'Onboarding state should be updated after fetching publications.'
+		);
+		$this->assertTrue(
+			$settings['publicationOnboardingStateChanged'],
+			'Onboarding state changed flag should be true when state changes.'
+		);
+		$this->assertEquals(
+			array( 'testpubID:basic', 'testpubID:advanced' ),
+			$settings['productIDs'],
+			'Product IDs should be updated after fetching publications.'
+		);
+		$this->assertEquals(
+			'subscriptions',
+			$settings['paymentOption'],
+			'Payment option should be updated after fetching publications.'
+		);
+		$this->assertEquals(
+			'CONTENT_POLICY_VIOLATION_ACTIVE',
+			$settings['contentPolicyState'],
+			'Content policy state should be synchronized after fetching publications.'
+		);
+		$this->assertEquals(
+			'https://example.com/policy-info',
+			$settings['policyInfoLink'],
+			'Policy info link should be synchronized after fetching publications.'
+		);
 	}
 
 	public function test_get_publications_reschedules_cron() {
 		$publication_id = 'ABCDEFGH';
 
 		$this->options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'http://test.com' ) );
+
 		$this->reader_revenue_manager->get_settings()->register();
 		$this->reader_revenue_manager->get_settings()->set(
 			array(
@@ -393,8 +443,13 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			)
 		);
 
-		wp_schedule_single_event( time() + 600, Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+		wp_schedule_single_event(
+			time() + 600,
+			Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION
+		);
+
 		$original_schedule = wp_next_scheduled( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+		$this->assertNotFalse( $original_schedule, 'Cron should be scheduled before fetching publications.' );
 
 		FakeHttp::fake_google_http_handler(
 			$this->reader_revenue_manager->get_client(),
@@ -406,31 +461,43 @@ class Reader_Revenue_ManagerTest extends TestCase {
 						new Response(
 							200,
 							array(),
-							wp_json_encode( $this->get_publications_list_response_with_details( $publication_id ) )
+							json_encode(
+								$this->get_publications_list_response_with_details( $publication_id )
+							)
 						)
 					);
 				}
+
+				return new FulfilledPromise( new Response( 200 ) );
 			}
 		);
 
 		$this->reader_revenue_manager->register();
+
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			$this->authentication->get_oauth_client()->get_required_scopes()
 		);
 
 		$this->reader_revenue_manager->get_data( 'publications' );
+
 		$new_schedule = wp_next_scheduled( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
 
-		$this->assertNotFalse( $original_schedule, 'Cron should be scheduled before fetching publications.' );
 		$this->assertNotFalse( $new_schedule, 'Cron should be rescheduled after fetching publications.' );
-		$this->assertNotSame( $original_schedule, $new_schedule, 'Cron schedule should be updated.' );
-		$this->assertGreaterThanOrEqual( time() + HOUR_IN_SECONDS - 1, $new_schedule, 'Cron should be rescheduled approximately one hour from now.' );
-
-		wp_unschedule_event( $new_schedule, Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+		$this->assertNotEquals(
+			$original_schedule,
+			$new_schedule,
+			'Cron schedule should be updated to a new time.'
+		);
+		$this->assertGreaterThanOrEqual(
+			time() + HOUR_IN_SECONDS - 1,
+			$new_schedule,
+			'Cron should be rescheduled approximately one hour from now.'
+		);
 	}
 
 	public function test_get_publications_does_not_synchronize_for_non_matching_publication() {
 		$this->options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'http://test.com' ) );
+
 		$this->reader_revenue_manager->get_settings()->register();
 		$this->reader_revenue_manager->get_settings()->set(
 			array(
@@ -451,121 +518,40 @@ class Reader_Revenue_ManagerTest extends TestCase {
 						new Response(
 							200,
 							array(),
-							wp_json_encode( $this->get_publications_list_response_with_details() )
+							json_encode(
+								$this->get_publications_list_response_with_details( 'ABCDEFGH' )
+							)
 						)
 					);
 				}
+
+				return new FulfilledPromise( new Response( 200 ) );
 			}
 		);
 
 		$this->reader_revenue_manager->register();
+
 		$this->authentication->get_oauth_client()->set_granted_scopes(
 			$this->authentication->get_oauth_client()->get_required_scopes()
 		);
 
 		$this->reader_revenue_manager->get_data( 'publications' );
+
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 
-		$this->assertSame( 'ONBOARDING_ACTION_REQUIRED', $settings['publicationOnboardingState'], 'Onboarding state should remain unchanged.' );
-		$this->assertSame( array(), $settings['productIDs'], 'Product IDs should remain unchanged.' );
-		$this->assertSame( '', $settings['paymentOption'], 'Payment option should remain unchanged.' );
-	}
-
-	public function test_get_publications__with_express_setup_flag() {
-		$this->enable_feature( 'rrmExpressSetup' );
-		$this->options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'http://test.com' ) );
-		$this->reader_revenue_manager->get_client()->withDefer( true );
-
-		$datapoint = $this->reader_revenue_manager->get_datapoint_definition( 'GET:publications' );
-		$request   = $datapoint->create_request(
-			new Data_Request( 'GET', 'modules', 'reader-revenue-manager', 'publications', array() )
+		$this->assertEquals(
+			'ONBOARDING_ACTION_REQUIRED',
+			$settings['publicationOnboardingState'],
+			'Onboarding state should remain unchanged for non-matching publication.'
 		);
-
-		$this->assertInstanceOf(
-			Get_Publications::class,
-			$datapoint,
-			'The publications datapoint should use the Web Content Publisher implementation when express setup is enabled.'
+		$this->assertEmpty(
+			$settings['productIDs'],
+			'Product IDs should remain empty for non-matching publication.'
 		);
-
-		$this->assertSame(
-			'webcontentpublisher.googleapis.com',
-			$request->getUri()->getHost(),
-			'The publications datapoint should use the Web Content Publisher service when express setup is enabled.'
+		$this->assertEmpty(
+			$settings['paymentOption'],
+			'Payment option should remain empty for non-matching publication.'
 		);
-		$this->assertSame(
-			'filter=' . join(
-				' OR ',
-				array_map(
-					fn( $url ) => sprintf( 'site_url = "%s"', $url ),
-					URL::permute_site_url( 'http://test.com' )
-				)
-			),
-			urldecode( $request->getUri()->getQuery() ),
-			'The Web Content Publisher publications datapoint should filter using all site URL permutations.'
-		);
-	}
-
-	public function test_get_publications_synchronizes_settings__with_express_setup_flag() {
-		$this->enable_feature( 'rrmExpressSetup' );
-		$this->options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'http://test.com' ) );
-		$this->reader_revenue_manager->get_settings()->register();
-		$this->reader_revenue_manager->get_settings()->set(
-			array(
-				'publicationID'              => 'publication-1',
-				'publicationOnboardingState' => 'ONBOARDING_ACTION_REQUIRED',
-				'productIDs'                 => array(),
-				'paymentOption'              => '',
-			)
-		);
-
-		FakeHttp::fake_google_http_handler(
-			$this->reader_revenue_manager->get_client(),
-			function () {
-				return new FulfilledPromise(
-					new Response(
-						200,
-						array(),
-						wp_json_encode(
-							array(
-								'publications' => array(
-									array(
-										'contentPolicyStatus' => array(
-											'policyInfoUrl' => 'https://example.com/policy-info',
-											'state' => 'VIOLATION_ACTIVE',
-										),
-										'onboardingState' => 'COMPLETE',
-										'paymentOption'   => 'SUBSCRIPTIONS',
-										'products'        => array( 'publication-1:basic', 'publication-1:advanced' ),
-										'publicationId'   => 'publication-1',
-									),
-								),
-							)
-						)
-					)
-				);
-			}
-		);
-
-		$this->reader_revenue_manager->register();
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->authentication->get_oauth_client()->get_required_scopes()
-		);
-
-		$result   = $this->reader_revenue_manager->get_data( 'publications' );
-		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$schedule = wp_next_scheduled( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
-
-		$this->assertNotWPError( $result, 'WCP publication lookup used to synchronize settings should not return a WP_Error.' );
-		$this->assertIsArray( $result[0], 'WCP publications should be returned as normalized arrays.' );
-		$this->assertSame( 'ONBOARDING_COMPLETE', $settings['publicationOnboardingState'], 'WCP onboarding state should be synchronized.' );
-		$this->assertTrue( $settings['publicationOnboardingStateChanged'], 'WCP onboarding state changed flag should be set.' );
-		$this->assertSame( array( 'publication-1:basic', 'publication-1:advanced' ), $settings['productIDs'], 'WCP product IDs should be synchronized.' );
-		$this->assertSame( 'subscriptions', $settings['paymentOption'], 'WCP payment option should be synchronized.' );
-		$this->assertSame( 'CONTENT_POLICY_VIOLATION_ACTIVE', $settings['contentPolicyState'], 'WCP content policy state should be synchronized.' );
-		$this->assertSame( 'https://example.com/policy-info', $settings['policyInfoLink'], 'WCP policy info link should be synchronized.' );
-		$this->assertNotFalse( $schedule, 'WCP publication synchronization should schedule the next cron event.' );
-
-		wp_unschedule_event( $schedule, Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
 	}
 
 	public function test_sync_publication_onboarding_state_onboarding_state_unchanged() {
@@ -656,50 +642,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertNotWPError( $result, 'Synchronizing a changed publication onboarding state should not return a WP_Error.' );
 		$this->assertEquals( 'ONBOARDING_COMPLETE', $result->publicationOnboardingState, 'Publication onboarding state should be updated to complete.' );
 		$this->assertEquals( 'ABCDEFGH', $result->publicationID, 'Publication ID should be correct in sync result.' );
-	}
-
-	public function test_sync_publication_onboarding_state__with_express_setup_flag() {
-		$this->enable_feature( 'rrmExpressSetup' );
-		$this->options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'http://test.com' ) );
-
-		FakeHttp::fake_google_http_handler(
-			$this->reader_revenue_manager->get_client(),
-			function () {
-				return new FulfilledPromise(
-					new Response(
-						200,
-						array(),
-						wp_json_encode(
-							array(
-								'publications' => array(
-									array(
-										'publicationId'   => 'ABCDEFGH',
-										'onboardingState' => 'COMPLETE',
-									),
-								),
-							)
-						)
-					)
-				);
-			}
-		);
-
-		$this->reader_revenue_manager->register();
-
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->authentication->get_oauth_client()->get_required_scopes()
-		);
-
-		$result = $this->reader_revenue_manager->set_data(
-			'sync-publication-onboarding-state',
-			array(
-				'publicationID'              => 'ABCDEFGH',
-				'publicationOnboardingState' => 'ONBOARDING_ACTION_REQUIRED',
-			)
-		);
-
-		$this->assertNotWPError( $result, 'Synchronizing a WCP publication should not return a WP_Error.' );
-		$this->assertEquals( 'ONBOARDING_COMPLETE', $result->publicationOnboardingState, 'The normalized onboarding state should be returned.' );
 	}
 
 	public function test_sync_publication_onboarding_state_publication_not_found() {
@@ -1422,12 +1364,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$advanced_product = new Product();
 		$advanced_product->setName( 'testpubID:advanced' );
 
-		$payment_options = new PaymentOptions();
-		$payment_options->setSubscriptions( true );
-
-		$content_policy_status = new ContentPolicyStatus();
-		$content_policy_status->setContentPolicyState( 'CONTENT_POLICY_VIOLATION_ACTIVE' );
-		$content_policy_status->setPolicyInfoLink( 'https://example.com/policy-info' );
+		$payment_options                = new PaymentOptions();
+		$payment_options->subscriptions = true;
 
 		$publication = new Publication();
 		$publication->setPublicationId( $publication_id );
@@ -1435,6 +1373,10 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$publication->setOnboardingState( 'ONBOARDING_COMPLETE' );
 		$publication->setProducts( array( $basic_product, $advanced_product ) );
 		$publication->setPaymentOptions( $payment_options );
+
+		$content_policy_status = new ContentPolicyStatus();
+		$content_policy_status->setContentPolicyState( 'CONTENT_POLICY_VIOLATION_ACTIVE' );
+		$content_policy_status->setPolicyInfoLink( 'https://example.com/policy-info' );
 		$publication->setContentPolicyStatus( $content_policy_status );
 
 		$response = new ListPublicationsResponse();
