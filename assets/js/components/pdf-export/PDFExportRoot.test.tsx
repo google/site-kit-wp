@@ -19,43 +19,37 @@
 /**
  * Internal dependencies
  */
+import { DAY_IN_SECONDS } from '@/js/util';
+import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
 import { createTestRegistry, render } from '@tests/js/test-utils';
 import {
-	PDF_EXPORT_ERROR_SURVEY_TRIGGER_ID,
-	PDF_EXPORT_SUCCESS_SURVEY_TRIGGER_ID,
+	PDF_EXPORT_DOWNLOADED_ITEM_SLUG,
+	PDF_EXPORT_DOWNLOADED_SURVEY_TRIGGER_ID,
+	PDF_EXPORT_PANEL_OPENED_ITEM_SLUG,
 } from './constants';
 import PDFExportRoot from './PDFExportRoot';
-import {
-	expectSurveyTriggerFetch,
-	setPDFExportStatus,
-	setupSurveyTriggerTest,
-} from './test-utils';
+import { expectSurveyTriggerFetch, setupSurveyTriggerTest } from './test-utils';
 
 describe( 'PDFExportRoot', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		setupSurveyTriggerTest( registry );
 	} );
 
-	// The orchestrator that runs the PDF export unmounts once the export
-	// finishes, so the root hosts the survey triggers instead.
-	it( 'fires the download-success survey trigger when an export completes and the download starts', async () => {
+	it( 'should send the survey trigger for a user who downloaded a PDF report', async () => {
+		setupSurveyTriggerTest( registry, [
+			PDF_EXPORT_PANEL_OPENED_ITEM_SLUG,
+			PDF_EXPORT_DOWNLOADED_ITEM_SLUG,
+		] );
+
 		render( <PDFExportRoot />, { registry } );
 
-		setPDFExportStatus( registry, 'progress' );
-		setPDFExportStatus( registry, 'success' );
+		await expectSurveyTriggerFetch(
+			PDF_EXPORT_DOWNLOADED_SURVEY_TRIGGER_ID,
+			DAY_IN_SECONDS
+		);
 
-		await expectSurveyTriggerFetch( PDF_EXPORT_SUCCESS_SURVEY_TRIGGER_ID );
-	} );
-
-	it( 'fires the export-error survey trigger when an export fails', async () => {
-		render( <PDFExportRoot />, { registry } );
-
-		setPDFExportStatus( registry, 'progress' );
-		setPDFExportStatus( registry, 'error' );
-
-		await expectSurveyTriggerFetch( PDF_EXPORT_ERROR_SURVEY_TRIGGER_ID );
+		expect( fetchMock ).toHaveFetchedTimes( 1, surveyTriggerEndpoint );
 	} );
 } );
