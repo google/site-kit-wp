@@ -90,6 +90,45 @@ class Email_Template_RendererTest extends TestCase {
 		$this->assertStringNotContainsString( 'https://example.com/notice-cta', $html_output_without_notice, 'Expected notice CTA URL to be absent when no header notices are provided.' );
 	}
 
+	public function test_email_report_notice_keeps_colors_in_dark_mode() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$golinks = new Golinks( $context );
+		$golinks->register_handler( 'dashboard', new Dashboard_Golink_Handler() );
+
+		$payload = array(
+			'total_visitors' => array(
+				'label'          => 'Total visitors',
+				'value'          => '120',
+				'change'         => 20,
+				'change_context' => 'Compared to previous 7 days',
+			),
+		);
+
+		$sections_map  = new Sections_Map( $context, $payload, $golinks );
+		$renderer      = new Email_Template_Renderer( $sections_map );
+		$template_data = $this->get_minimal_template_data();
+
+		$template_data['header_notices'] = array(
+			array(
+				'id'               => 'analytics-setup',
+				'title'            => 'Notice title',
+				'body'             => 'Notice body',
+				'learn_more_label' => 'Learn more',
+				'learn_more_url'   => 'https://example.com/learn-more',
+				'cta_label'        => 'Set up Analytics',
+				'cta_url'          => 'https://example.com/notice-cta',
+			),
+		);
+
+		$html_output = $renderer->render( 'email-report', $template_data );
+
+		$this->assertStringContainsString( 'googlesitekit-email-report-notice-text', $html_output, 'Expected the notice text lock class in the rendered email.' );
+		$this->assertStringContainsString( 'googlesitekit-email-report-notice-cta', $html_output, 'Expected the notice CTA lock class in the rendered email.' );
+		$this->assertStringContainsString( '.googlesitekit-email-report-notice .googlesitekit-email-report-notice-text,', $html_output, 'Expected the notice text color lock rule in the rendered email.' );
+		$this->assertStringContainsString( 'color: #462083 !important;', $html_output, 'Expected the notice text color lock in the rendered email.' );
+		$this->assertStringContainsString( '[data-ogsc] .googlesitekit-email-report-notice .googlesitekit-email-report-notice-cta', $html_output, 'Expected the Outlook app notice CTA lock in the rendered email.' );
+	}
+
 	public function test_change_badge_shows_signed_value_and_is_omitted_when_change_is_null() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$golinks = new Golinks( $context );
