@@ -104,11 +104,9 @@ class Get_PublicationsTest extends TestCase {
 
 		return new Get_Publications(
 			array(
-				'filter'                       => 'site_url = "https://example.com" OR site_url = "http://example.com" OR site_url = "https://www.example.com" OR site_url = "http://www.example.com"',
-				'synchronize_publication_data' => $synchronize_publication_data ?: function () {},
-				'service'                      => function () use ( $client ) {
-					return new Webcontentpublisher( $client );
-				},
+				'filter_callback' => 'site_url = "https://example.com" OR site_url = "http://example.com" OR site_url = "https://www.example.com" OR site_url = "http://www.example.com"',
+				'service'         => fn () => new Webcontentpublisher( $client ),
+				'sync_callback'   => $synchronize_publication_data ?: function () {},
 			)
 		);
 	}
