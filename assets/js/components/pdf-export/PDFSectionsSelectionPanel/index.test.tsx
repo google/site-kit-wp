@@ -610,6 +610,69 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		).toBe( false );
 	} );
 
+	it( 'shows the "generating report" notice and disables the "Download report" button when closing, then opening the panel mid-export', async () => {
+		const { findByRole, getByRole, getByText, queryByText } = render(
+			<PDFSectionsSelectionPanel />,
+			{ registry }
+		);
+
+		openPanel();
+
+		await findByRole( 'checkbox', { name: 'Traffic' } );
+
+		fireEvent.click(
+			await findByRole( 'button', { name: 'Download report' } )
+		);
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).isExporting() ).toBe( true );
+		} );
+
+		// The panel closed, so the notice shouldn't be on screen.
+		expect(
+			queryByText( 'Your report is being generated' )
+		).not.toBeInTheDocument();
+
+		openPanel();
+
+		expect(
+			getByText( 'Your report is being generated' )
+		).toBeInTheDocument();
+		expect(
+			getByRole( 'button', { name: 'Download report' } )
+		).toBeDisabled();
+	} );
+
+	it( 'enables the "Download report" button and clears the "generating report" notice when the export is finished (with the panel open)', async () => {
+		registry.dispatch( CORE_PDF ).startExporting();
+
+		const { findByRole, getByRole, getByText, queryByText } = render(
+			<PDFSectionsSelectionPanel />,
+			{ registry }
+		);
+
+		openPanel();
+
+		await findByRole( 'checkbox', { name: 'Traffic' } );
+
+		expect(
+			getByText( 'Your report is being generated' )
+		).toBeInTheDocument();
+
+		// The real export ends in two steps, which this test runs in order.
+		act( () => {
+			registry.dispatch( CORE_PDF ).setStatus( 'success' );
+			registry.dispatch( CORE_PDF ).finishExporting();
+		} );
+
+		expect(
+			queryByText( 'Your report is being generated' )
+		).not.toBeInTheDocument();
+		expect(
+			getByRole( 'button', { name: 'Download report' } )
+		).toBeEnabled();
+	} );
+
 	it( 'fires pdf_generation_sidebar_view once when the panel opens', async () => {
 		const { findByRole } = render( <PDFSectionsSelectionPanel />, {
 			registry,
