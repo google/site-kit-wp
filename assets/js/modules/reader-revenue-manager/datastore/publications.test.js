@@ -141,36 +141,56 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		} );
 
 		describe( 'updatePublication', () => {
-			const params = {
+			const publicationData = {
+				organizationID: 'organization-1',
 				publicationID: 'publication-1',
-				rrmProduct: {
-					tosAcceptance: {
-						userAccepted: true,
-						emailOptIn: true,
+				data: {
+					rrmProduct: {
+						tosAcceptance: {
+							userAccepted: true,
+						},
 					},
 				},
 			};
-
 			it( 'should require fields to update', () => {
 				expect( () =>
 					registry
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
 						.updatePublication()
-				).toThrow( 'Publication update parameters are required.' );
+				).toThrow( 'params must be an object.' );
 
 				expect( () =>
 					registry
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
 						.updatePublication( {
-							publicationID: params.publicationID,
+							publicationID: publicationData.publicationID,
+							data: publicationData.data,
 						} )
-				).toThrow( 'Publication fields are required.' );
+				).toThrow( 'organizationID is required and must be a string.' );
+
+				expect( () =>
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.updatePublication( {
+							organizationID: publicationData.organizationID,
+							data: publicationData.data,
+						} )
+				).toThrow( 'publicationID is required and must be a string.' );
+
+				expect( () =>
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.updatePublication( {
+							organizationID: publicationData.organizationID,
+							publicationID: publicationData.publicationID,
+						} )
+				).toThrow( 'data is required and must be a non-empty object.' );
 			} );
 
 			it( 'should call the update publication endpoint', async () => {
 				const publication = {
-					publicationId: params.publicationID,
-					rrmProduct: params.rrmProduct,
+					publicationId: publicationData.publicationID,
+					rrmProduct: publicationData.data.rrmProduct,
 				};
 				fetchMock.postOnce( publicationEndpoint, {
 					body: publication,
@@ -179,18 +199,23 @@ describe( 'modules/reader-revenue-manager publications', () => {
 
 				const { response, error } = await registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.updatePublication( params );
+					.updatePublication( publicationData );
 
 				expect( error ).toBeUndefined();
 				expect( response ).toEqual( publication );
 				expect( fetchMock ).toHaveFetched( publicationEndpoint, {
-					body: { data: params },
+					body: { data: publicationData },
 				} );
 				expect(
 					registry
 						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublication( params )
+						.getPublication( publicationData )
 				).toEqual( publication );
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublications()
+				).toContainEqual( publication );
 			} );
 		} );
 
@@ -909,6 +934,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 
 		describe( 'getPublication', () => {
 			const params = {
+				organizationID: 'organization-1',
 				publicationID: 'publication-1',
 			};
 
@@ -933,19 +959,16 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					MODULES_READER_REVENUE_MANAGER
 				).getPublication( params );
 
-				expect( fetchMock ).toHaveFetched( publicationEndpoint );
 				expect(
 					registry
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getPublication( params )
 				).toEqual( publication );
-
-				const searchParams = new global.URLSearchParams(
-					fetchMock.lastUrl().split( '?' )[ 1 ]
-				);
-				expect( Object.fromEntries( searchParams ) ).toEqual( {
-					...params,
-					_locale: 'user',
+				expect( fetchMock ).toHaveFetched( publicationEndpoint, {
+					query: {
+						...params,
+						_locale: 'user',
+					},
 				} );
 			} );
 

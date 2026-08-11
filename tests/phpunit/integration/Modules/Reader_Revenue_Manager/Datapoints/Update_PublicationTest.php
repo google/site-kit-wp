@@ -13,7 +13,6 @@ namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Datapoints;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Update_Publication;
 use Google\Site_Kit\Tests\TestCase;
@@ -47,17 +46,14 @@ class Update_PublicationTest extends TestCase {
 		$this->enable_feature( 'rrmExpressSetup' );
 
 		$this->module = new Reader_Revenue_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->module->get_settings()->register();
-		$this->module->get_settings()->merge( array( 'organizationID' => 'organization-1' ) );
 		$this->module->get_client()->withDefer( true );
 
 		$service         = new Webcontentpublisher( $this->module->get_client() );
 		$this->datapoint = new Update_Publication(
 			array(
-				'service'  => function () use ( $service ) {
+				'service' => function () use ( $service ) {
 					return $service;
 				},
-				'settings' => $this->module->get_settings(),
 			)
 		);
 	}
@@ -66,13 +62,16 @@ class Update_PublicationTest extends TestCase {
 		$request = $this->datapoint->create_request(
 			$this->get_data_request(
 				array(
-					'publicationID' => 'publication-1',
-					'rrmProduct'    => array(
-						'tosAcceptance' => array(
-							'userAccepted'   => true,
-							'signerFullName' => 'Site Owner',
-							'signerTitle'    => 'Publisher',
-							'emailOptIn'     => true,
+					'organizationID' => 'organization-1',
+					'publicationID'  => 'publication-1',
+					'data'           => array(
+						'rrmProduct' => array(
+							'tosAcceptance' => array(
+								'userAccepted'   => true,
+								'signerFullName' => 'Site Owner',
+								'signerTitle'    => 'Publisher',
+								'emailOptIn'     => true,
+							),
 						),
 					),
 				)
@@ -110,9 +109,12 @@ class Update_PublicationTest extends TestCase {
 		$request = $this->datapoint->create_request(
 			$this->get_data_request(
 				array(
-					'publicationID'               => 'publication-1',
-					'publicationTosURL'           => 'https://example.com/terms',
-					'publicationPrivacyPolicyURL' => 'https://example.com/privacy',
+					'organizationID' => 'organization-1',
+					'publicationID'  => 'publication-1',
+					'data'           => array(
+						'publicationTosURL'           => 'https://example.com/terms',
+						'publicationPrivacyPolicyURL' => 'https://example.com/privacy',
+					),
 				)
 			)
 		);
@@ -137,7 +139,10 @@ class Update_PublicationTest extends TestCase {
 
 	public function test_create_request__requires_publication_id() {
 		$data = array(
-			'publicationTosURL' => 'https://example.com/terms',
+			'organizationID' => 'organization-1',
+			'data'           => array(
+				'publicationTosURL' => 'https://example.com/terms',
+			),
 		);
 
 		$this->expectException( Missing_Required_Param_Exception::class );
@@ -146,17 +151,17 @@ class Update_PublicationTest extends TestCase {
 		$this->datapoint->create_request( $this->get_data_request( $data ) );
 	}
 
-	public function test_create_request__requires_organization_id_setting() {
-		$this->module->get_settings()->merge( array( 'organizationID' => '' ) );
-
-		$this->expectException( Missing_Required_Setting_Exception::class );
-		$this->expectExceptionMessage( 'Required setting is missing: organizationID.' );
+	public function test_create_request__requires_organization_id() {
+		$this->expectException( Missing_Required_Param_Exception::class );
+		$this->expectExceptionMessage( 'Request parameter is empty: organizationID.' );
 
 		$this->datapoint->create_request(
 			$this->get_data_request(
 				array(
-					'publicationID'     => 'publication-1',
-					'publicationTosURL' => 'https://example.com/terms',
+					'publicationID' => 'publication-1',
+					'data'          => array(
+						'publicationTosURL' => 'https://example.com/terms',
+					),
 				)
 			)
 		);
@@ -164,36 +169,37 @@ class Update_PublicationTest extends TestCase {
 
 	public function test_create_request__requires_update_fields() {
 		$this->expectException( Missing_Required_Param_Exception::class );
-		$this->expectExceptionMessage( 'Request parameter is empty: fields.' );
+		$this->expectExceptionMessage( 'Request parameter is empty: data.' );
 
 		$this->datapoint->create_request(
 			$this->get_data_request(
 				array(
-					'publicationID' => 'publication-1',
+					'organizationID' => 'organization-1',
+					'publicationID'  => 'publication-1',
 				)
 			)
 		);
 	}
 
 	public function test_parse_response() {
-		$response = new Publication(
-			array(
-				'publicationId'     => 'publication-1',
-				'publicationTosUrl' => 'https://example.com/terms',
-			)
-		);
+		$response = new Publication();
+		$response->setPublicationId( 'publication-1' );
+		$response->setPublicationTosUrl( 'https://example.com/terms' );
 
 		$publication = $this->datapoint->parse_response(
 			$response,
 			$this->get_data_request(
 				array(
-					'publicationID'     => 'publication-1',
-					'publicationTosURL' => 'https://example.com/terms',
+					'organizationID' => 'organization-1',
+					'publicationID'  => 'publication-1',
+					'data'           => array(
+						'publicationTosURL' => 'https://example.com/terms',
+					),
 				)
 			)
 		);
 
-		$this->assertSame( 'publication-1', $publication->getPublicationId(), 'The response should contain the updated publication.' );
+		$this->assertSame( 'publication-1', $publication['publicationId'], 'The response should contain the updated publication.' );
 		$this->assertSame( 'https://example.com/terms', $publication['publicationTosUrl'], 'New API fields should be preserved.' );
 	}
 

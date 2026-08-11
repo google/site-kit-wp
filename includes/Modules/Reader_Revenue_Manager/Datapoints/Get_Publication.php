@@ -14,9 +14,7 @@ use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Publication_Normalizer;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 
 /**
  * Class for the publication retrieval datapoint.
@@ -28,50 +26,26 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 class Get_Publication extends Datapoint implements Executable_Datapoint {
 
 	/**
-	 * Reader Revenue Manager settings.
-	 *
-	 * @since n.e.x.t
-	 * @var Settings
-	 */
-	private $settings;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $definition Definition fields.
-	 */
-	public function __construct( array $definition ) {
-		parent::__construct( $definition );
-
-		$this->settings = $definition['settings'];
-	}
-
-	/**
 	 * Creates a request object.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
-	 * @throws Missing_Required_Param_Exception   Thrown if a required parameter is missing.
-	 * @throws Missing_Required_Setting_Exception Thrown if a required setting is missing.
+	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing.
 	 */
 	public function create_request( Data_Request $data_request ) {
 		if ( empty( $data_request->data['publicationID'] ) ) {
 			throw new Missing_Required_Param_Exception( 'publicationID' );
 		}
 
-		$settings = $this->settings->get();
-
-		if ( empty( $settings['organizationID'] ) ) {
-			throw new Missing_Required_Setting_Exception( 'organizationID' );
+		if ( empty( $data_request->data['organizationID'] ) ) {
+			throw new Missing_Required_Param_Exception( 'organizationID' );
 		}
 
 		$name = sprintf(
 			'organizations/%s/publications/%s',
-			$settings['organizationID'],
+			$data_request['organizationID'],
 			$data_request['publicationID']
 		);
 

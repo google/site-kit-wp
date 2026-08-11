@@ -11,10 +11,9 @@
 namespace Google\Site_Kit\Modules\Reader_Revenue_Manager;
 
 use Google\Site_Kit_Dependencies\Google\Model;
-use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
 
 /**
- * Normalizes Web Content Publisher publication resources to the legacy data model.
+ * Normalizes Web Content Publisher publication resources for existing consumers.
  *
  * @since n.e.x.t
  * @access private
@@ -28,7 +27,7 @@ class Publication_Normalizer {
 	 * @since n.e.x.t
 	 *
 	 * @param Model|array $publication Publication resource.
-	 * @return Publication Normalized publication resource.
+	 * @return array Normalized publication resource.
 	 */
 	public static function normalize( $publication ) {
 		if ( $publication instanceof Model ) {
@@ -41,9 +40,8 @@ class Publication_Normalizer {
 		self::normalize_products( $publication );
 		self::normalize_payment_options( $publication );
 		self::normalize_content_policy_status( $publication );
-		self::normalize_verified_domains( $publication );
 
-		return new Publication( $publication );
+		return $publication;
 	}
 
 	/**
@@ -111,6 +109,8 @@ class Publication_Normalizer {
 				$payment_option_map[ $publication['paymentOption'] ] => true,
 			);
 		}
+
+		unset( $publication['paymentOption'] );
 	}
 
 	/**
@@ -135,43 +135,15 @@ class Publication_Normalizer {
 					? $status['state']
 					: 'CONTENT_POLICY_' . $status['state'];
 			}
+
+			unset( $status['state'] );
 		}
 
 		if ( isset( $status['policyInfoUrl'] ) ) {
 			$status['policyInfoLink'] = $status['policyInfoUrl'];
+			unset( $status['policyInfoUrl'] );
 		}
 
 		$publication['contentPolicyStatus'] = $status;
-	}
-
-	/**
-	 * Normalizes verified domain resources to the legacy URL list.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $publication Publication data.
-	 */
-	private static function normalize_verified_domains( array &$publication ) {
-		$domains = array();
-
-		if ( ! empty( $publication['primaryDomain'] ) ) {
-			$domains[] = $publication['primaryDomain'];
-		}
-
-		if ( ! empty( $publication['additionalDomains'] ) && is_array( $publication['additionalDomains'] ) ) {
-			$domains = array_merge( $domains, $publication['additionalDomains'] );
-		}
-
-		$verified_domains = array();
-		foreach ( $domains as $domain ) {
-			$domain = (array) $domain;
-			if ( ! empty( $domain['ownershipVerified'] ) && ! empty( $domain['url'] ) ) {
-				$verified_domains[] = $domain['url'];
-			}
-		}
-
-		if ( ! empty( $verified_domains ) ) {
-			$publication['verifiedDomains'] = $verified_domains;
-		}
 	}
 }

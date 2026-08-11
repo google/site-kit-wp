@@ -129,24 +129,39 @@ const fetchCreatePublicationStore = createFetchStore( {
 
 const fetchGetPublicationStore = createFetchStore( {
 	baseName: 'getPublication',
-	controlCallback: ( { publicationID } ) =>
+	controlCallback: ( { organizationID, publicationID } ) =>
 		get(
 			'modules',
 			MODULE_SLUG_READER_REVENUE_MANAGER,
 			'publication',
-			{ publicationID },
+			{ organizationID, publicationID },
 			{ useCache: false }
 		),
 	reducerCallback: createReducer(
 		( state, publication, { publicationID } ) => {
-			state.publicationsByID = state.publicationsByID || {};
-			state.publicationsByID[ publicationID ] = publication;
+			state.publications = state.publications || [];
+
+			const publicationIndex = state.publications.findIndex(
+				// eslint-disable-next-line sitekit/acronym-case
+				( { publicationId } ) => publicationId === publicationID
+			);
+
+			if ( publicationIndex === -1 ) {
+				state.publications.push( publication );
+			} else {
+				state.publications[ publicationIndex ] = publication;
+			}
 		}
 	),
-	argsToParams: ( { publicationID } = {} ) => ( {
+	argsToParams: ( { organizationID, publicationID } = {} ) => ( {
+		organizationID,
 		publicationID,
 	} ),
-	validateParams: ( { publicationID } = {} ) => {
+	validateParams: ( { organizationID, publicationID } = {} ) => {
+		invariant(
+			typeof organizationID === 'string' && organizationID.length > 0,
+			'organizationID is required and must be a string.'
+		);
 		invariant(
 			typeof publicationID === 'string' && publicationID.length > 0,
 			'publicationID is required and must be a string.'
@@ -156,28 +171,42 @@ const fetchGetPublicationStore = createFetchStore( {
 
 const fetchUpdatePublicationStore = createFetchStore( {
 	baseName: 'updatePublication',
-	controlCallback: ( params ) =>
+	controlCallback: ( publicationData ) =>
 		set(
 			'modules',
 			MODULE_SLUG_READER_REVENUE_MANAGER,
 			'publication',
-			params
+			publicationData
 		),
 	reducerCallback: createReducer(
 		( state, publication, { publicationID } ) => {
-			state.publicationsByID = state.publicationsByID || {};
-			state.publicationsByID[ publicationID ] = publication;
+			state.publications = state.publications || [];
+
+			const publicationIndex = state.publications.findIndex(
+				// eslint-disable-next-line sitekit/acronym-case
+				( { publicationId } ) => publicationId === publicationID
+			);
+
+			if ( publicationIndex === -1 ) {
+				state.publications.push( publication );
+			} else {
+				state.publications[ publicationIndex ] = publication;
+			}
 		}
 	),
-	argsToParams: ( params = {} ) => params,
-	validateParams: ( { publicationID, ...fields } = {} ) => {
+	argsToParams: ( publicationData = {} ) => publicationData,
+	validateParams: ( { organizationID, publicationID, data } = {} ) => {
+		invariant(
+			typeof organizationID === 'string' && organizationID.length > 0,
+			'organizationID is required and must be a string.'
+		);
 		invariant(
 			typeof publicationID === 'string' && publicationID.length > 0,
 			'publicationID is required and must be a string.'
 		);
 		invariant(
-			Object.keys( fields ).length > 0,
-			'Publication fields are required.'
+			isPlainObject( data ) && Object.keys( data ).length > 0,
+			'data is required and must be a non-empty object.'
 		);
 	},
 	isAction: true,
@@ -248,7 +277,6 @@ const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 
 const baseInitialState = {
 	publications: undefined,
-	publicationsByID: {},
 };
 
 const baseActions = {
@@ -296,27 +324,27 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} params                               Publication update parameters.
-	 * @param {string} params.publicationID                 Publication ID.
-	 * @param {Object} [params.rrmProduct]                  RRM product fields, including ToS acceptance.
-	 * @param {string} [params.publicationTosURL]           Publication Terms of Service URL.
-	 * @param {string} [params.publicationPrivacyPolicyURL] Publication privacy policy URL.
+	 * @param {Object} publicationData                Publication update parameters.
+	 * @param {string} publicationData.publicationID  Publication ID.
+	 * @param {string} publicationData.organizationID Organization ID.
+	 * @param {Object} publicationData.data           Publication fields to update.
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	updatePublication: createValidatedAction(
 		( params ) => {
+			invariant( isPlainObject( params ), 'params must be an object.' );
+			const { organizationID, publicationID, data } = params;
 			invariant(
-				isPlainObject( params ),
-				'Publication update parameters are required.'
+				typeof organizationID === 'string' && organizationID.length > 0,
+				'organizationID is required and must be a string.'
 			);
-			const { publicationID, ...fields } = params;
 			invariant(
 				typeof publicationID === 'string' && publicationID.length > 0,
 				'publicationID is required and must be a string.'
 			);
 			invariant(
-				Object.keys( fields ).length > 0,
-				'Publication fields are required.'
+				isPlainObject( data ) && Object.keys( data ).length > 0,
+				'data is required and must be a non-empty object.'
 			);
 		},
 		function* ( params ) {
@@ -505,18 +533,19 @@ const baseResolvers = {
 		}
 	},
 
-	*getPublication( { publicationID } = {} ) {
-		if ( ! publicationID ) {
+	*getPublication( { organizationID, publicationID } = {} ) {
+		if ( ! organizationID || ! publicationID ) {
 			return;
 		}
 
 		const registry = yield commonActions.getRegistry();
 		const publication = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
-			.getPublication( { publicationID } );
+			.getPublication( { organizationID, publicationID } );
 
 		if ( publication === undefined ) {
 			yield fetchGetPublicationStore.actions.fetchGetPublication( {
+				organizationID,
 				publicationID,
 			} );
 		}
@@ -541,17 +570,21 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state                Data store's state.
-	 * @param {Object} params               Publication parameters.
-	 * @param {string} params.publicationID Publication ID.
+	 * @param {Object} state                 Data store's state.
+	 * @param {Object} params                Publication parameters.
+	 * @param {string} params.organizationID Organization ID.
+	 * @param {string} params.publicationID  Publication ID.
 	 * @return {(Object|undefined)} Publication resource; `undefined` if not loaded.
 	 */
-	getPublication( state, { publicationID } = {} ) {
-		if ( ! publicationID ) {
+	getPublication( state, { organizationID, publicationID } = {} ) {
+		if ( ! organizationID || ! publicationID ) {
 			return undefined;
 		}
 
-		return state.publicationsByID?.[ publicationID ];
+		return state.publications?.find(
+			// eslint-disable-next-line sitekit/acronym-case
+			( { publicationId } ) => publicationId === publicationID
+		);
 	},
 
 	/**

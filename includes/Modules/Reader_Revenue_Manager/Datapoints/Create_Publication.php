@@ -14,10 +14,10 @@ use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Publication_Normalizer;
+use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\DomainProperty;
 use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Publication;
+use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\RrmProduct;
 
 /**
  * Class for the publication creation datapoint.
@@ -37,14 +37,6 @@ class Create_Publication extends Datapoint implements Executable_Datapoint {
 	private $reference_site_url;
 
 	/**
-	 * Reader Revenue Manager settings.
-	 *
-	 * @since n.e.x.t
-	 * @var Settings
-	 */
-	private $settings;
-
-	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -55,7 +47,6 @@ class Create_Publication extends Datapoint implements Executable_Datapoint {
 		parent::__construct( $definition );
 
 		$this->reference_site_url = $definition['reference_site_url'];
-		$this->settings           = $definition['settings'];
 	}
 
 	/**
@@ -65,8 +56,7 @@ class Create_Publication extends Datapoint implements Executable_Datapoint {
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
-	 * @throws Missing_Required_Param_Exception   Thrown if a required parameter is missing.
-	 * @throws Missing_Required_Setting_Exception Thrown if a required setting is missing.
+	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing.
 	 */
 	public function create_request( Data_Request $data_request ) {
 		if ( empty( $data_request->data['displayName'] ) ) {
@@ -81,23 +71,22 @@ class Create_Publication extends Datapoint implements Executable_Datapoint {
 			throw new Missing_Required_Param_Exception( 'regionCode' );
 		}
 
-		$settings = $this->settings->get();
+		$primary_domain = new DomainProperty();
+		$primary_domain->setUrl( $this->reference_site_url );
+		$primary_domain->setOwnershipVerified( true );
 
-		if ( empty( $settings['organizationID'] ) ) {
-			throw new Missing_Required_Setting_Exception( 'organizationID' );
-		}
+		$rrm_product = new RrmProduct();
+		$rrm_product->setEnabled( true );
 
-		$publication = new Publication(
-			array(
-				'displayName'   => $data_request['displayName'],
-				'languageCode'  => $data_request['languageCode'],
-				'primaryDomain' => array( 'url' => $this->reference_site_url ),
-				'regionCode'    => $data_request['regionCode'],
-			)
-		);
+		$publication = new Publication();
+		$publication->setDisplayName( $data_request['displayName'] );
+		$publication->setLanguageCode( $data_request['languageCode'] );
+		$publication->setRegionCode( $data_request['regionCode'] );
+		$publication->setPrimaryDomain( $primary_domain );
+		$publication->setRrmProduct( $rrm_product );
 
 		return $this->get_service()->organizations_publications->create(
-			'organizations/' . $settings['organizationID'],
+			'organizations/*',
 			$publication
 		);
 	}
