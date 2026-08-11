@@ -65,6 +65,22 @@ describe( 'checkRequirementsForExpressSetupResumeNotification', () => {
 		).resolves.toBe( true );
 	} );
 
+	it( 'should return false when the CTA action timestamp is falsy', async () => {
+		provideRRMSettings( {
+			configuredCTAs: {},
+			lastActionedExpressSetups: {
+				[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: 0,
+			},
+		} );
+
+		await expect(
+			checkRequirementsForExpressSetupResumeNotification(
+				registry,
+				EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
+			)
+		).resolves.toBe( false );
+	} );
+
 	it( 'should return false when the CTA was not actioned', async () => {
 		provideRRMSettings( {
 			configuredCTAs: {},

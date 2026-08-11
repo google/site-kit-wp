@@ -46,13 +46,11 @@ export async function checkRequirementsForExpressSetupResumeNotification(
 		return false;
 	}
 
-	const isActioned = Object.keys(
-		userSettings.lastActionedExpressSetups
-	).includes( ctaType );
+	const { configuredCTAs = {} } = settings;
+	const { lastActionedExpressSetups = {} } = userSettings;
 
-	const isConfigured = Object.values( settings.configuredCTAs ).includes(
-		ctaType
-	);
+	const isActioned = !! lastActionedExpressSetups[ ctaType ];
+	const isConfigured = Object.values( configuredCTAs ).includes( ctaType );
 
 	return isActioned && ! isConfigured;
 }
