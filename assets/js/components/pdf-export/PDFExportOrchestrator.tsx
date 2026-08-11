@@ -694,7 +694,11 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				);
 				setStatus( 'success' );
 
-				recordDownload();
+				// `recordDownload` saves `pdf-export-downloaded` in WordPress
+				// user meta, and this call sits inside the export's `try`.
+				// Awaiting it would report a finished export as an error
+				// whenever that save failed.
+				recordDownload().catch( () => null );
 
 				completeTimeoutRef.current = setTimeout( () => {
 					completeTimeoutRef.current = null;

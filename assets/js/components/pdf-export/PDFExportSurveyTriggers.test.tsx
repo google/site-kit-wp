@@ -21,6 +21,7 @@
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { DAY_IN_SECONDS } from '@/js/util';
+import { dismissedItemsEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
 import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
@@ -38,7 +39,6 @@ import {
 } from './constants';
 import PDFExportSurveyTriggers from './PDFExportSurveyTriggers';
 import {
-	dismissedItemsEndpoint,
 	expectSurveyTriggerFetch,
 	setPDFExportStatus,
 	setupSurveyTriggerTest,
@@ -65,7 +65,7 @@ describe( 'PDFExportSurveyTriggers', () => {
 		return render( <PDFExportSurveyTriggers />, { registry } );
 	}
 
-	it( 'sends the survey trigger for a user who never opened the PDF export panel', async () => {
+	it( 'should send the survey trigger for a user who never opened the PDF export panel', async () => {
 		renderWithSavedSlugs( [] );
 
 		await expectSurveyTriggerFetch(
@@ -76,7 +76,7 @@ describe( 'PDFExportSurveyTriggers', () => {
 		expect( fetchMock ).toHaveFetchedTimes( 1, surveyTriggerEndpoint );
 	} );
 
-	it( 'sends the survey trigger for a user who opened the PDF export panel and downloaded no report', async () => {
+	it( 'should send the survey trigger for a user who opened the PDF export panel and downloaded no report', async () => {
 		renderWithSavedSlugs( [ PDF_EXPORT_PANEL_OPENED_ITEM_SLUG ] );
 
 		await expectSurveyTriggerFetch(
@@ -87,7 +87,7 @@ describe( 'PDFExportSurveyTriggers', () => {
 		expect( fetchMock ).toHaveFetchedTimes( 1, surveyTriggerEndpoint );
 	} );
 
-	it( 'sends the survey trigger for a user who downloaded a PDF report', async () => {
+	it( 'should send the survey trigger for a user who downloaded a PDF report', async () => {
 		renderWithSavedSlugs( [
 			PDF_EXPORT_PANEL_OPENED_ITEM_SLUG,
 			PDF_EXPORT_DOWNLOADED_ITEM_SLUG,
@@ -101,7 +101,7 @@ describe( 'PDFExportSurveyTriggers', () => {
 		expect( fetchMock ).toHaveFetchedTimes( 1, surveyTriggerEndpoint );
 	} );
 
-	it( 'sends no survey trigger while the saved slugs are still loading', async () => {
+	it( 'should send no survey trigger while the saved slugs are still loading', async () => {
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		// This promise never resolves, and the request for the saved slugs
@@ -117,7 +117,7 @@ describe( 'PDFExportSurveyTriggers', () => {
 		expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
 	} );
 
-	it( 'sends no second survey trigger when the user opens the PDF export panel on the same page', async () => {
+	it( 'should send no second survey trigger when the user opens the PDF export panel on the same page', async () => {
 		const { waitForRegistry } = renderWithSavedSlugs( [] );
 
 		await expectSurveyTriggerFetch(
@@ -138,7 +138,7 @@ describe( 'PDFExportSurveyTriggers', () => {
 		expect( fetchMock ).toHaveFetchedTimes( 1, surveyTriggerEndpoint );
 	} );
 
-	it( 'sends no second survey trigger when an export starts, stops, fails, or finishes', async () => {
+	it( 'should send no second survey trigger when an export starts, stops, fails, or finishes', async () => {
 		const { waitForRegistry } = renderWithSavedSlugs( [
 			PDF_EXPORT_PANEL_OPENED_ITEM_SLUG,
 		] );

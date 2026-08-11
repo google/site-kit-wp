@@ -1,7 +1,5 @@
 /**
- * PDFExportSurveyTriggers component. The component reads the
- * `pdf-export-panel-opened` and `pdf-export-downloaded` slugs from WordPress
- * user meta, and sends one of three survey triggers a day.
+ * PDFExportSurveyTriggers component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -43,6 +41,9 @@ import {
 	PDF_EXPORT_PANEL_OPENED_ITEM_SLUG,
 } from './constants';
 
+// The component reads the `pdf-export-panel-opened` and
+// `pdf-export-downloaded` slugs from WordPress user meta, and sends one of
+// three survey triggers a day.
 const PDFExportSurveyTriggers: FC = () => {
 	const hasAlreadyOpenedPDFExportPanel = useSelect(
 		( select: Select ) =>

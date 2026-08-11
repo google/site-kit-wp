@@ -28,7 +28,6 @@ import {
 	PDF_DOWNLOAD_PANEL_OPENED_KEY,
 	PDF_EXPORT_PANEL_OPENED_ITEM_SLUG,
 } from '@/js/components/pdf-export/constants';
-import { dismissedItemsEndpoint } from '@/js/components/pdf-export/test-utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
@@ -41,7 +40,10 @@ import {
 } from '@/js/googlesitekit/widgets/default-contexts';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as tracking from '@/js/util/tracking';
-import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
+import {
+	dismissItemEndpoint,
+	dismissedItemsEndpoint,
+} from '@tests/js/mock-dismiss-item-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -653,7 +655,7 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		);
 	} );
 
-	it( "saves 'pdf-export-panel-opened' to WordPress user meta when the panel opens", async () => {
+	it( "should save 'pdf-export-panel-opened' to WordPress user meta when the panel opens", async () => {
 		render( <PDFSectionsSelectionPanel />, { registry } );
 
 		openPanel();
@@ -670,7 +672,7 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		);
 	} );
 
-	it( "saves 'pdf-export-panel-opened' once when the user closes the panel and opens it again", async () => {
+	it( "should save 'pdf-export-panel-opened' once when the user closes the panel and opens it again", async () => {
 		const { waitForRegistry } = render( <PDFSectionsSelectionPanel />, {
 			registry,
 		} );
@@ -689,7 +691,28 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		expect( fetchMock ).toHaveFetchedTimes( 1, dismissItemEndpoint );
 	} );
 
-	it( "saves no 'pdf-export-panel-opened' while the panel stays closed", async () => {
+	it( "should save 'pdf-export-panel-opened' once when the user reopens the panel before the first save lands", async () => {
+		// This request never resolves, so `dismissedItems` stays empty and
+		// `hasAlreadyOpenedPDFExportPanel` never turns true. Only
+		// `panelOpenedItemDismissedRef` can stop the second request.
+		fetchMock.post( dismissItemEndpoint, new Promise( () => {} ), {
+			overwriteRoutes: true,
+		} );
+
+		const { waitForRegistry } = render( <PDFSectionsSelectionPanel />, {
+			registry,
+		} );
+
+		openPanel();
+		setPanelOpen( false );
+		openPanel();
+
+		await waitForRegistry();
+
+		expect( fetchMock ).toHaveFetchedTimes( 1, dismissItemEndpoint );
+	} );
+
+	it( "should save no 'pdf-export-panel-opened' while the panel stays closed", async () => {
 		const { waitForRegistry } = render( <PDFSectionsSelectionPanel />, {
 			registry,
 		} );
@@ -699,7 +722,7 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
 	} );
 
-	it( "saves no 'pdf-export-panel-opened' while the saved slugs are still loading", async () => {
+	it( "should save no 'pdf-export-panel-opened' while the saved slugs are still loading", async () => {
 		// This fresh registry has none of the slugs `beforeEach` adds, and
 		// the promise never resolves. The request for the saved slugs never
 		// finishes.

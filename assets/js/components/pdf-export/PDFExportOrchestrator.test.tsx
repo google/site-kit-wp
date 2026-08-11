@@ -1011,7 +1011,7 @@ describe( 'PDFExportOrchestrator', () => {
 		} );
 	}
 
-	it( "saves 'pdf-export-downloaded' to WordPress user meta when the download starts", async () => {
+	it( "should save 'pdf-export-downloaded' to WordPress user meta when the download starts", async () => {
 		selectOneTrafficWidget(
 			jest.fn( () => Promise.resolve( { data: { totalUsers: 100 } } ) )
 		);
@@ -1030,7 +1030,7 @@ describe( 'PDFExportOrchestrator', () => {
 		);
 	} );
 
-	it( "saves nothing when the user already has 'pdf-export-downloaded'", async () => {
+	it( "should save nothing when the user already has 'pdf-export-downloaded'", async () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [ PDF_EXPORT_DOWNLOADED_ITEM_SLUG ] );
@@ -1047,7 +1047,7 @@ describe( 'PDFExportOrchestrator', () => {
 		expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
 	} );
 
-	it( "saves no 'pdf-export-downloaded' when the export fails", async () => {
+	it( "should save no 'pdf-export-downloaded' when the export fails", async () => {
 		selectOneTrafficWidget(
 			jest.fn( () => Promise.reject( new Error( 'report failed' ) ) )
 		);
@@ -1061,7 +1061,7 @@ describe( 'PDFExportOrchestrator', () => {
 		expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
 	} );
 
-	it( "saves no 'pdf-export-downloaded' when the user stops the export", async () => {
+	it( "should save no 'pdf-export-downloaded' when the user stops the export", async () => {
 		let resolveData: ( value: unknown ) => void;
 		const getData: jest.Mock = jest.fn(
 			() =>

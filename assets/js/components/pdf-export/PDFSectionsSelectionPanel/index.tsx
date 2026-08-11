@@ -60,6 +60,7 @@ const PDFSectionsSelectionPanel: FC = () => {
 	const { dismissItem } = useDispatch( CORE_USER );
 	const viewContext = useViewContext();
 	const viewEventFiredRef = useRef( false );
+	const panelOpenedItemDismissedRef = useRef( false );
 
 	useEffect( () => {
 		if ( isOpen && ! viewEventFiredRef.current ) {
@@ -75,7 +76,16 @@ const PDFSectionsSelectionPanel: FC = () => {
 	}, [ isOpen, viewContext ] );
 
 	useEffect( () => {
-		if ( isOpen && hasAlreadyOpenedPDFExportPanel === false ) {
+		// `dismissItem` saves `pdf-export-panel-opened` in WordPress user meta,
+		// and `hasAlreadyOpenedPDFExportPanel` keeps reading `false` until that
+		// save finishes. Without `panelOpenedItemDismissedRef`, a user who
+		// reopens the panel during the save would start a second one.
+		if (
+			isOpen &&
+			hasAlreadyOpenedPDFExportPanel === false &&
+			! panelOpenedItemDismissedRef.current
+		) {
+			panelOpenedItemDismissedRef.current = true;
 			dismissItem( PDF_EXPORT_PANEL_OPENED_ITEM_SLUG );
 		}
 	}, [ isOpen, hasAlreadyOpenedPDFExportPanel, dismissItem ] );

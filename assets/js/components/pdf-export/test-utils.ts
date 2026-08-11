@@ -40,16 +40,6 @@ import {
 type Registry = ReturnType< typeof createTestRegistry >;
 
 /**
- * Matches the request that reads a user's saved slugs from WordPress user
- * meta.
- *
- * @since n.e.x.t
- */
-export const dismissedItemsEndpoint = new RegExp(
-	'^/google-site-kit/v1/core/user/data/dismissed-items'
-);
-
-/**
  * Renders a PDF element to its JSON tree as a string.
  *
  * A style passed as an array and a prop on a `@react-pdf` primitive never reach

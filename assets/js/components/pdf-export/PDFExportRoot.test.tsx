@@ -37,7 +37,7 @@ describe( 'PDFExportRoot', () => {
 		registry = createTestRegistry();
 	} );
 
-	it( 'sends the survey trigger for a user who downloaded a PDF report', async () => {
+	it( 'should send the survey trigger for a user who downloaded a PDF report', async () => {
 		setupSurveyTriggerTest( registry, [
 			PDF_EXPORT_PANEL_OPENED_ITEM_SLUG,
 			PDF_EXPORT_DOWNLOADED_ITEM_SLUG,
