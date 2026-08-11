@@ -31,7 +31,6 @@ import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import NoticeNotification, {
 	type NoticeNotificationProps,
 } from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
 export interface ExpressSetupResumeNoticeProps
@@ -54,8 +53,6 @@ export default function ExpressSetupResumeNotice( {
 				redirectQueryArgs: {
 					cta: setupCTA,
 					expressSetup: true,
-					reAuth: true,
-					slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 				},
 			} ),
 		[ setupCTA ]
