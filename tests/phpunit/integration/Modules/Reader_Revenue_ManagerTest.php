@@ -19,6 +19,7 @@ use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
+use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\URL;
@@ -238,6 +239,23 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			'get publication'      => array( 'GET:publication' ),
 			'update publication'   => array( 'POST:publication' ),
 			'get terms of service' => array( 'GET:terms-of-service' ),
+		);
+	}
+
+	public function test_get_publications__with_express_setup_flag() {
+		$this->enable_feature( 'rrmExpressSetup' );
+		$this->reader_revenue_manager->get_client()->withDefer( true );
+
+		$datapoint = $this->reader_revenue_manager->get_datapoint_definition( 'GET:publications' );
+
+		$request = $datapoint->create_request(
+			new Data_Request( 'GET', 'modules', 'reader-revenue-manager', 'publications' )
+		);
+
+		$this->assertSame(
+			'webcontentpublisher.googleapis.com',
+			$request->getUri()->getHost(),
+			'The publications datapoint should use the Web Content Publisher service when express setup is enabled.'
 		);
 	}
 
