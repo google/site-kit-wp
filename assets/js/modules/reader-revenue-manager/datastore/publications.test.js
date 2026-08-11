@@ -106,7 +106,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					registry
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
 						.createPublication()
-				).toThrow( 'Publication details are required.' );
+				).toThrow( 'params must be an object.' );
 
 				expect( () =>
 					registry

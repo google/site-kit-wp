@@ -293,12 +293,8 @@ const baseActions = {
 	 */
 	createPublication: createValidatedAction(
 		( params ) => {
-			invariant(
-				isPlainObject( params ),
-				'Publication details are required.'
-			);
+			invariant( isPlainObject( params ), 'params must be an object.' );
 			const { displayName, languageCode, regionCode } = params;
-
 			invariant(
 				typeof displayName === 'string' && displayName.length > 0,
 				'displayName is required and must be a string.'
