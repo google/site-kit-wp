@@ -75,6 +75,7 @@ module.exports = ( mode ) => ( {
 							configFile: false,
 							cacheDirectory: true,
 							presets: [
+								'@babel/preset-typescript',
 								[
 									'@babel/preset-env',
 									{
