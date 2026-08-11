@@ -304,17 +304,17 @@ class Content_Map {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string  $content_key Content_Map key (e.g. 'error-email-report-analytics-4').
-	 * @param Golinks $golinks     Golinks instance for building URLs.
+	 * @param string  $template_name The template name (e.g. 'error-email-report-analytics-4').
+	 * @param Golinks $golinks       Golinks instance for building URLs.
 	 * @return array {
-	 *     CTA configuration, or empty array if the key defines no CTA.
+	 *     CTA configuration array, or an empty array if the given template has no associated CTA.
 	 *
 	 *     @type string $label CTA button label.
 	 *     @type string $url   CTA destination URL.
 	 * }
 	 */
-	public static function get_cta( $content_key, Golinks $golinks ) {
-		switch ( $content_key ) {
+	public static function get_cta( $template_name, Golinks $golinks ) {
+		switch ( $template_name ) {
 			case 'error-email-permissions-search-console':
 				return array(
 					'label' => __( 'Request access', 'google-site-kit' ),
