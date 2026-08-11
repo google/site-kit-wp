@@ -424,12 +424,14 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			$datapoints['GET:user-settings'] = new Get_User_Settings(
 				array(
 					'user_settings' => $this->user_settings,
+					'service'       => '',
 				)
 			);
 
 			$datapoints['POST:user-settings'] = new Save_User_Settings(
 				array(
 					'user_settings' => $this->user_settings,
+					'service'       => '',
 				)
 			);
 		}
@@ -659,7 +661,6 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		return $payment_option;
 	}
 
-
 	/**
 	 * Sets up information about the module.
 	 *
@@ -692,7 +693,9 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			$filter = join(
 				' OR ',
 				array_map(
-					fn( $domain ) => sprintf( 'domain = "%s"', $domain ),
+					function ( $domain ) {
+						return sprintf( 'domain = "%s"', $domain );
+					},
 					URL::permute_site_hosts( $host )
 				)
 			);
@@ -700,7 +703,9 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			$filter = join(
 				' OR ',
 				array_map(
-					fn( $url ) => sprintf( 'site_url = "%s"', $url ),
+					function ( $url ) {
+						return sprintf( 'site_url = "%s"', $url );
+					},
 					URL::permute_site_url( $sc_property_id )
 				)
 			);
