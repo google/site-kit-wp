@@ -50,11 +50,13 @@ export default function ExpressSetupResumeNotice( {
 
 	const setupURL = useSelect(
 		( select: Select ) =>
-			select( MODULES_READER_REVENUE_MANAGER ).getAdminScreenURL( {
-				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
-				reAuth: true,
-				expressSetup: true,
-				cta: setupCTA,
+			select( MODULES_READER_REVENUE_MANAGER ).getAdminReauthURL( {
+				redirectQueryArgs: {
+					cta: setupCTA,
+					expressSetup: true,
+					reAuth: true,
+					slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+				},
 			} ),
 		[ setupCTA ]
 	);

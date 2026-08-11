@@ -43,7 +43,7 @@ import { MODULES_READER_REVENUE_MANAGER } from './constants';
 
 const { setErrorForAction, clearActionError } = errorStoreActions;
 
-export interface UserSettings {
+interface UserSettings {
 	lastActionedExpressSetups?: Record< string, number >;
 }
 

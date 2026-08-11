@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { Registry } from '@/js/googlesitekit-data';
+import { Registry } from 'googlesitekit-data';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
 /**
@@ -27,9 +27,9 @@ import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-mana
  *
  * @since n.e.x.t
  *
- * @param {Registry} registry Data selector.
+ * @param {Registry} registry Data registry.
  * @param {string}   ctaType  CTA type slug.
- * @return {boolean} Whether the CTA type has an abandoned setup.
+ * @return {Promise<boolean>} Whether the CTA type has an abandoned setup.
  */
 export async function checkRequirementsForExpressSetupResumeNotification(
 	registry: Registry,

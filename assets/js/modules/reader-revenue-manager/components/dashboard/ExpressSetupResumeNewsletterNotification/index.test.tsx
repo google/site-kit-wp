@@ -35,6 +35,7 @@ import {
 	createTestRegistry,
 	fireEvent,
 	provideSiteInfo,
+	provideUserAuthentication,
 	render,
 } from '@tests/js/test-utils';
 import ExpressSetupResumeNewsletterNotification from '.';
@@ -53,6 +54,7 @@ describe( 'ExpressSetupResumeNewsletterNotification', () => {
 		registry = createTestRegistry();
 
 		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
 	} );
 
 	it( 'should resume express setup using the newsletter setup slug', () => {

@@ -30,6 +30,7 @@ import {
 	createTestRegistry,
 	fireEvent,
 	provideSiteInfo,
+	provideUserAuthentication,
 	render,
 } from '@tests/js/test-utils';
 import ExpressSetupResumeNotice from '.';
@@ -43,6 +44,7 @@ describe( 'ExpressSetupResumeNotice', () => {
 		registry = createTestRegistry();
 
 		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
 	} );
 
 	function renderNotice() {
