@@ -154,10 +154,10 @@ class Content_MapTest extends TestCase {
 	}
 
 	public function test_get_subject_falls_back_to_title_for_module_specific_keys() {
-		$content_key = 'error-email-permissions-search-console';
+		$template_name = 'error-email-permissions-search-console';
 
-		$subject = Content_Map::get_subject( $content_key );
-		$title   = Content_Map::get_title( $content_key );
+		$subject = Content_Map::get_subject( $template_name );
+		$title   = Content_Map::get_title( $template_name );
 
 		$this->assertSame( $title, $subject, 'Subject should fall back to the title when no custom subject is mapped.' );
 	}
