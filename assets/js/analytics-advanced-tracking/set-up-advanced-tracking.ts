@@ -44,6 +44,7 @@ export default function setUpAdvancedTracking(
 	eventConfigurations: AdvancedTrackingEvent[],
 	sendEvent: SendEvent
 ) {
+	const ownerDocument = global.document.documentElement.ownerDocument;
 	const toRemove: Array< [ string, EventListener, boolean ] > = [];
 
 	eventConfigurations.forEach( ( eventConfig ) => {
@@ -58,18 +59,14 @@ export default function setUpAdvancedTracking(
 			}
 		}
 
-		global.document.addEventListener(
-			eventConfig.on,
-			handleDOMEvent,
-			true
-		);
+		ownerDocument.addEventListener( eventConfig.on, handleDOMEvent, true );
 
 		toRemove.push( [ eventConfig.on, handleDOMEvent, true ] );
 	} );
 
 	return () => {
 		toRemove.forEach( ( [ type, listener, useCapture ] ) => {
-			document.removeEventListener( type, listener, useCapture );
+			ownerDocument.removeEventListener( type, listener, useCapture );
 		} );
 	};
 }
