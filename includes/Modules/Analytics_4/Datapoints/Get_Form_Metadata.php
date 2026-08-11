@@ -63,7 +63,7 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	 * isn't active, so the list holds `draft` as well as `publish` and a paused
 	 * campaign still resolves its title.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 * @var array
 	 */
 	const FORM_SLUG_POST_TYPES = array(
@@ -131,7 +131,7 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	 * An ID that neither one matches resolves a null title.
 	 *
 	 * @since 1.182.0
-	 * @since n.e.x.t Renamed from `resolve_form_metadata()`, since a second method now resolves a slug.
+	 * @since 1.185.0 Renamed from `resolve_form_metadata()`, since a second method now resolves a slug.
 	 *
 	 * @param int $form_id The form post ID.
 	 * @return array {
@@ -151,20 +151,11 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 			$title = get_the_title( $form_id );
 		}
 
-		// Ninja Forms stores forms in a custom table rather than as a Custom
-		// Post Type.
-		if ( '' === $title && function_exists( 'Ninja_Forms' ) ) {
-			// `form()` can return null or a model without a backing row for stale
-			// or non-Ninja IDs, so guard before reading the setting.
-			$ninja_form = Ninja_Forms()->form( $form_id );
-
-			if ( is_object( $ninja_form ) && method_exists( $ninja_form, 'get_setting' ) ) {
-				$ninja_title = $ninja_form->get_setting( 'title' );
-
-				if ( ! empty( $ninja_title ) ) {
-					$title = $ninja_title;
-				}
-			}
+		// FORM_POST_TYPES resolves first, and an ID it leaves empty can still
+		// name a Ninja Forms form, because that plugin keeps its forms in its
+		// own database table.
+		if ( '' === $title ) {
+			$title = $this->resolve_ninja_forms_title( $form_id );
 		}
 
 		return array(
@@ -173,12 +164,54 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	}
 
 	/**
+	 * Resolves a form title from the Ninja Forms tables, and returns an empty
+	 * string on any miss.
+	 *
+	 * Ninja Forms keeps its forms in its own database tables rather than as
+	 * posts, and reading a title takes two steps: `Ninja_Forms()->form()` gives
+	 * a factory, and the factory's `get()` gives the form that holds the title.
+	 * Every step checks what it received, since another plugin could declare
+	 * `Ninja_Forms()`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $form_id The form ID.
+	 * @return string The form title, or an empty string when Ninja Forms is inactive or holds no title for the ID.
+	 */
+	protected function resolve_ninja_forms_title( $form_id ) {
+		if ( ! function_exists( 'Ninja_Forms' ) ) {
+			return '';
+		}
+
+		$form_factory = Ninja_Forms()->form( $form_id );
+
+		if ( ! is_object( $form_factory ) || ! method_exists( $form_factory, 'get' ) ) {
+			return '';
+		}
+
+		$form = $form_factory->get();
+
+		if ( ! is_object( $form ) || ! method_exists( $form, 'get_setting' ) ) {
+			return '';
+		}
+
+		$title = $form->get_setting( 'title' );
+
+		// Ninja Forms reads a form with no title as false rather than a string,
+		// and it reads an ID that matches no form as false too.
+		//
+		// In either of those cases, we return an empty string to keep our return
+		// value type (a string) consistent.
+		return empty( $title ) ? '' : $title;
+	}
+
+	/**
 	 * Resolves metadata for a form the report names by post slug.
 	 *
 	 * A slug that matches no post in FORM_SLUG_POST_TYPES resolves a null
 	 * title, so the dashboard keeps its ID fallback label.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param string $slug The post slug the report names as the form ID. For example, `'jnpfwoygltxurnayflew'`, not `'12'`.
 	 * @return array {
@@ -218,7 +251,7 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	 * dashboard with its entities decoded. An empty title means nothing
 	 * resolved, which maps to null.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param string $title The resolved title, empty when nothing matched.
 	 * @return string|null Decoded title, or null when there is no title.

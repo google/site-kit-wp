@@ -50,7 +50,7 @@ describe( 'ScrollableTabs', () => {
 	 * callback and routes the instance methods to the shared mocks, so tests
 	 * can fire size changes and check what the component observes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 */
 	class ResizeObserverMock implements ResizeObserver {
 		constructor( callback: ResizeObserverCallback ) {
@@ -81,7 +81,7 @@ describe( 'ScrollableTabs', () => {
 	/**
 	 * Renders ScrollableTabs around a mock MDC tab bar structure.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param {Object} props The extra props to pass to the component.
 	 * @return {Object} The render result.
@@ -95,7 +95,7 @@ describe( 'ScrollableTabs', () => {
 	/**
 	 * Gets the MDC scroll area from a rendered container.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param {Element} container The rendered container element.
 	 * @return {Element} The MDC scroll area element.
@@ -109,7 +109,7 @@ describe( 'ScrollableTabs', () => {
 	/**
 	 * Gets an arrow button from a rendered container.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param {Element} container The rendered container element.
 	 * @param {string}  selector  The class selector for the arrow to get.
@@ -122,7 +122,7 @@ describe( 'ScrollableTabs', () => {
 	/**
 	 * Sets the scroll metrics on an element, since JSDOM computes no layout.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param {Element} element             The element to define the metrics on.
 	 * @param {Object}  metrics             The metrics to define.
@@ -158,7 +158,7 @@ describe( 'ScrollableTabs', () => {
 	 * Asserts that an arrow with more to scroll stays in the page, takes a
 	 * click, and holds no `--inactive` class.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param {Element|null} arrow The arrow button to check.
 	 * @return {void}
@@ -173,7 +173,7 @@ describe( 'ScrollableTabs', () => {
 	 * Asserts that an arrow with nothing left to scroll stays in the page, stops
 	 * taking clicks, and holds the `--inactive` class that hides it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param {Element|null} arrow The arrow button to check.
 	 * @return {void}
@@ -188,7 +188,7 @@ describe( 'ScrollableTabs', () => {
 	 * Asserts that an arrow sits outside the tab order and the accessibility
 	 * tree.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param {Element|null} arrow The arrow button to check.
 	 * @return {void}

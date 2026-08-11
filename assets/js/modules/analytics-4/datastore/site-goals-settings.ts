@@ -399,7 +399,7 @@ const baseSelectors = {
 	 * intro modal, feature tour, and survey triggers). These never show for
 	 * a widget that is not rendered.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param {Object} state    Data store's state.
 	 * @param {string} category Widget category slug (e.g. 'lead' or 'ecommerce').

@@ -30,7 +30,7 @@ class Connected_Proxy_URL extends Setting {
 	 * Matches provided URL with the current proxy URL in the settings.
 	 *
 	 * @since 1.17.0
-	 * @since n.e.x.t Compares the given URL against the decoded stored URL.
+	 * @since 1.185.0 Compares the given URL against the decoded stored URL.
 	 *
 	 * @param string $url URL to match against the current one in the settings.
 	 * @return bool TRUE if URL matches the current one, otherwise FALSE.
@@ -47,7 +47,7 @@ class Connected_Proxy_URL extends Setting {
 	 * connection flow rather than through a comparison against an unreadable
 	 * URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @return string|bool Connected proxy URL, or FALSE when the option holds
 	 *                     no value or one that fails to decode.
@@ -68,7 +68,7 @@ class Connected_Proxy_URL extends Setting {
 	 * We encode the URL to prevent database-wide search-and-replace tasks
 	 * from changing the URL used to connect to the Site Kit Proxy service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.185.0
 	 *
 	 * @param string $value Connected proxy URL.
 	 * @return bool TRUE on success, FALSE on failure.
