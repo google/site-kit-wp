@@ -25,7 +25,7 @@ final class Google_Icon {
 	 *
 	 * See the comment in includes/Core/Admin/Screen.php::add() for more information.
 	 */
-	const XML = '<svg width="20" height="20" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill="white" d="M17.6 8.5h-7.5v3h4.4c-.4 2.1-2.3 3.5-4.4 3.4-2.6-.1-4.6-2.1-4.7-4.7-.1-2.7 2-5 4.7-5.1 1.1 0 2.2.4 3.1 1.2l2.3-2.2C14.1 2.7 12.1 2 10.2 2c-4.4 0-8 3.6-8 8s3.6 8 8 8c4.6 0 7.7-3.2 7.7-7.8-.1-.6-.1-1.1-.3-1.7z" fillrule="evenodd" cliprule="evenodd"></path></svg>';
+	const XML = '<svg width="20" height="20" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill="white" d="M19.61 8.18H10.2V12.04H15.57C15.34 13.29 14.64 14.36 13.58 15.07C12.69 15.67 11.54 16.02 10.2 16.02C7.6 16.02 5.4 14.27 4.61 11.9C4.41 11.3 4.3 10.66 4.3 10C4.3 9.34 4.41 8.7 4.61 8.1C5.4 5.73 7.6 3.98 10.2 3.98C11.67 3.98 12.98 4.48 14.02 5.47L16.88 2.61C15.15 0.99 12.89 0 10.2 0C6.3 0 2.92 2.24 1.28 5.51C0.6 6.86 0.21 8.38 0.21 10C0.21 11.62 0.6 13.14 1.28 14.49C2.92 17.76 6.3 20 10.2 20C12.89 20 15.16 19.11 16.82 17.59C18.7 15.85 19.79 13.27 19.79 10.23C19.79 9.52 19.73 8.84 19.61 8.18V8.18Z"></path></svg>';
 
 	/**
 	 * Returns a base64 encoded version of the SVG.

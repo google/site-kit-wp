@@ -75,10 +75,24 @@ function renderTile(
 			metrics={ METRICS }
 			topCities={ TOP_CITIES }
 			topContent={ TOP_CONTENT }
+			isAudiencePartialData={ false }
+			isTopContentPartialData={ false }
 			{ ...props }
 		/>
 	);
 	return JSON.stringify( renderer.toJSON() );
+}
+
+/**
+ * Counts the "Partial data" badges.
+ *
+ * @since n.e.x.t
+ *
+ * @param json The rendered PDF content, serialized to a string.
+ * @return The number of "Partial data" badges.
+ */
+function countPartialDataBadges( json: string ) {
+	return json.split( 'Partial data' ).length - 1;
 }
 
 describe( 'PDFYourVisitorGroupsTile', () => {
@@ -135,6 +149,52 @@ describe( 'PDFYourVisitorGroupsTile', () => {
 		expect( json ).toContain( '847' );
 		expect( json ).toContain( 'Second post title' );
 		expect( json ).toContain( '596' );
+	} );
+
+	it( 'shows a Partial data badge only where its flag is set', () => {
+		// Neither flag: no badge in either place.
+		expect( countPartialDataBadges( renderTile() ) ).toBe( 0 );
+
+		// Header flag only: one badge beside the audience name.
+		expect(
+			countPartialDataBadges(
+				renderTile( { isAudiencePartialData: true } )
+			)
+		).toBe( 1 );
+
+		// Top content flag only: one badge on the Top content title.
+		expect(
+			countPartialDataBadges(
+				renderTile( { isTopContentPartialData: true } )
+			)
+		).toBe( 1 );
+
+		// Both flags: a badge in each place.
+		expect(
+			countPartialDataBadges(
+				renderTile( {
+					isAudiencePartialData: true,
+					isTopContentPartialData: true,
+				} )
+			)
+		).toBe( 2 );
+	} );
+
+	it( 'truncates a long city name to one line with an ellipsis', () => {
+		const json = renderTile( {
+			topCities: [
+				{
+					name: 'Municipal District of Bandon - Kinsale',
+					percentage: 0.5,
+				},
+			],
+		} );
+
+		expect( json ).toContain( 'Municipal District of Bandon - Kinsale' );
+		// `@react-pdf` wraps text by default, so the city name caps at one line
+		// with an ellipsis.
+		expect( json ).toContain( '"maxLines":1' );
+		expect( json ).toContain( '"textOverflow":"ellipsis"' );
 	} );
 
 	it( 'links each top content title to its Analytics report', () => {

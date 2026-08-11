@@ -117,7 +117,7 @@ describe( 'PDFMetricTile', () => {
 			title: 'All visitors',
 			value: '32.6K',
 			change: '-5.0%',
-			isNegative: true,
+			changeType: 'negative',
 		} );
 
 		const json = JSON.stringify( tree );

@@ -63,6 +63,7 @@ describe( 'ExitSetup', () => {
 			<ExitSetup
 				gaTrackingEventArgs={ {
 					category: 'test-category',
+					action: 'test-action',
 					label: 'test-label',
 				} }
 			/>,
@@ -82,11 +83,38 @@ describe( 'ExitSetup', () => {
 		);
 	} );
 
+	it( 'should navigate to the provided URL when the user clicks the button', async () => {
+		const { getByRole } = render(
+			<ExitSetup
+				gaTrackingEventArgs={ {
+					category: 'test-category',
+					action: 'test-action',
+					label: 'test-label',
+				} }
+				url="http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard"
+			/>,
+			{
+				registry,
+			}
+		);
+
+		fireEvent.click( getByRole( 'button' ) );
+
+		await waitFor( () => {
+			expect( global.location.assign ).toHaveBeenCalled();
+		} );
+
+		expect( global.location.assign ).toHaveBeenCalledWith(
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
+		);
+	} );
+
 	it( 'should track an event when the user clicks the button', () => {
 		const { getByRole } = render(
 			<ExitSetup
 				gaTrackingEventArgs={ {
 					category: 'test-category',
+					action: 'test-action',
 					label: 'test-label',
 				} }
 			/>,
@@ -99,7 +127,7 @@ describe( 'ExitSetup', () => {
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			'test-category',
-			'setup_flow_v3_exit_setup',
+			'test-action',
 			'test-label'
 		);
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );

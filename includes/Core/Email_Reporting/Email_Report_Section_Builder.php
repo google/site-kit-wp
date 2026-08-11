@@ -110,65 +110,55 @@ class Email_Report_Section_Builder {
 	 * Build one or more section parts from raw payloads for a module.
 	 *
 	 * @since 1.167.0
+	 * @since n.e.x.t Removed $user_locale parameter, locale switching is now handled by the Email_Log_Processor.
 	 *
 	 * @param string   $module_slug Module slug (e.g. analytics-4).
 	 * @param array    $raw_sections_payloads Raw reports payloads.
-	 * @param string   $user_locale  User locale (e.g. en_US).
 	 * @param \WP_Post $email_log   Optional. Email log post instance containing date metadata.
 	 * @return Email_Report_Data_Section_Part[] Section parts for the provided module.
 	 * @throws \Exception If an error occurs while building sections.
 	 */
-	public function build_sections( $module_slug, $raw_sections_payloads, $user_locale, $email_log = null ) {
+	public function build_sections( $module_slug, $raw_sections_payloads, $email_log = null ) {
 		if ( is_object( $raw_sections_payloads ) ) {
 			$raw_sections_payloads = (array) $raw_sections_payloads;
 		}
 
 		$sections                    = array();
-		$switched_locale             = switch_to_locale( $user_locale );
 		$log_date_range              = Email_Log::get_date_range_from_log( $email_log );
 		$this->current_period_length = $this->calculate_period_length_from_date_range( $log_date_range );
 
-		try {
-			$section_payloads = $this->extract_sections_from_payloads( $module_slug, $raw_sections_payloads );
+		$section_payloads = $this->extract_sections_from_payloads( $module_slug, $raw_sections_payloads );
 
-			if ( is_wp_error( $section_payloads ) ) {
-				// Surface payload build failures directly so callers receive the original module error context.
-				return $section_payloads;
+		if ( is_wp_error( $section_payloads ) ) {
+			// Surface payload build failures directly so callers receive the original module error context.
+			return $section_payloads;
+		}
+
+		foreach ( $section_payloads as $section_payload ) {
+			list( $labels, $values, $trends, $event_names ) = $this->normalize_section_payload_components( $section_payload );
+
+			$date_range = $log_date_range ?: $this->report_processor->compute_date_range( $section_payload['date_range'] ?? null );
+
+			$section = new Email_Report_Data_Section_Part(
+				$section_payload['section_key'] ?? 'section',
+				array(
+					'title'            => $section_payload['title'] ?? '',
+					'labels'           => $labels,
+					'event_names'      => $event_names,
+					'values'           => $values,
+					'trends'           => $trends,
+					'dimensions'       => $section_payload['dimensions'] ?? array(),
+					'dimension_values' => $section_payload['dimension_values'] ?? array(),
+					'date_range'       => $date_range,
+					'dashboard_link'   => $this->format_dashboard_link( $module_slug ),
+				)
+			);
+
+			if ( $section->is_empty() ) {
+				continue;
 			}
 
-			foreach ( $section_payloads as $section_payload ) {
-				list( $labels, $values, $trends, $event_names ) = $this->normalize_section_payload_components( $section_payload );
-
-				$date_range = $log_date_range ?: $this->report_processor->compute_date_range( $section_payload['date_range'] ?? null );
-
-				$section = new Email_Report_Data_Section_Part(
-					$section_payload['section_key'] ?? 'section',
-					array(
-						'title'            => $section_payload['title'] ?? '',
-						'labels'           => $labels,
-						'event_names'      => $event_names,
-						'values'           => $values,
-						'trends'           => $trends,
-						'dimensions'       => $section_payload['dimensions'] ?? array(),
-						'dimension_values' => $section_payload['dimension_values'] ?? array(),
-						'date_range'       => $date_range,
-						'dashboard_link'   => $this->format_dashboard_link( $module_slug ),
-					)
-				);
-
-				if ( $section->is_empty() ) {
-					continue;
-				}
-
-				$sections[] = $section;
-			}
-		} catch ( \Exception $exception ) {
-			if ( $switched_locale ) {
-				restore_previous_locale();
-			}
-
-			// Re-throw exception to the caller to prevent this email from being sent.
-			throw $exception;
+			$sections[] = $section;
 		}
 
 		$this->current_period_length = null;
@@ -192,9 +182,10 @@ class Email_Report_Section_Builder {
 	}
 
 	/**
-	 * Normalize trend values to localized percentage strings.
+	 * Normalize trend values to floats.
 	 *
 	 * @since 1.167.0
+	 * @since n.e.x.t Returns floats instead of locale-formatted percentage strings.
 	 *
 	 * @param array $trends Trend values.
 	 * @return array|null Normalized trend values.
@@ -220,11 +211,7 @@ class Email_Report_Section_Builder {
 				$trend = floatval( preg_replace( '/[^0-9+\-.]/', '', $trend ) );
 			}
 
-			$number = floatval( $trend );
-
-			$formatted = number_format_i18n( $number, 2 );
-
-			$output[] = sprintf( '%s%%', $formatted );
+			$output[] = floatval( $trend );
 		}
 
 		return $output;

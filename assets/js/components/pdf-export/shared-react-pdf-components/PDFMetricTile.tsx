@@ -27,6 +27,7 @@ import { FC } from 'react';
  */
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import type { PDFChangeType } from '@/js/components/pdf-export/types';
 import PDFChangeBadge from './PDFChangeBadge';
 import PDFTypography from './PDFTypography';
 
@@ -59,8 +60,8 @@ export interface PDFMetricTileProps {
 	value: string;
 	/** Pre-formatted, signed change string for the badge, e.g. "+5.1%". Hides the badge when omitted. */
 	change?: string;
-	/** Whether the change is negative. Controls the badge color. */
-	isNegative?: boolean;
+	/** The change's direction. Controls the badge color. */
+	changeType?: PDFChangeType;
 	/** Optional caption rendered below the badge, e.g. "Vs. prev. 28 days". */
 	changeLabel?: string;
 }
@@ -69,7 +70,7 @@ const PDFMetricTile: FC< PDFMetricTileProps > = ( {
 	title,
 	value,
 	change,
-	isNegative = false,
+	changeType = 'positive',
 	changeLabel,
 } ) => {
 	return (
@@ -88,7 +89,7 @@ const PDFMetricTile: FC< PDFMetricTileProps > = ( {
 				{ !! change && (
 					<PDFChangeBadge
 						change={ change }
-						isNegative={ isNegative }
+						changeType={ changeType }
 					/>
 				) }
 				{ !! changeLabel && (

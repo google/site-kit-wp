@@ -242,6 +242,30 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		if ( $this->is_connected() ) {
 			$this->sign_in_with_google_block->register();
 		}
+
+		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
+	}
+
+	/**
+	 * Adds the "anyone can register" flags, and whether the site is
+	 * multisite, to the most basic inline data passed to JS.
+	 *
+	 * These are owned here, rather than in `Assets::get_inline_base_data()`,
+	 * because Sign in with Google is their only consumer: `isMultisite` is
+	 * only read to decide who can reach the network-level "Anyone can
+	 * register" setting in the registration messaging below it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $data Base data.
+	 * @return array Filtered base data.
+	 */
+	protected function inline_js_base_data( $data ) {
+		$data['anyoneCanRegister']            = (bool) get_option( 'users_can_register' );
+		$data['anyoneCanRegisterWooCommerce'] = $this->is_woocommerce_active() && WooCommerce_Authenticator::is_woocommerce_registration_open();
+		$data['isMultisite']                  = is_multisite();
+
+		return $data;
 	}
 
 	/**
@@ -331,7 +355,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * Adds custom errors if Google auth flow failed.
 	 *
 	 * @since 1.140.0
-	 * @since n.e.x.t Added the two-factor authentication error message.
+	 * @since 1.185.0 Added the two-factor authentication error message.
 	 *
 	 * @param WP_Error $error WP_Error instance.
 	 * @return WP_Error $error WP_Error instance.

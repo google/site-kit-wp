@@ -241,6 +241,7 @@ final class Plugin {
 				( new Core\Util\Migration_1_150_0( $this->context, $options ) )->register();
 				( new Core\Util\Migration_1_163_0( $this->context, $options ) )->register();
 				( new Core\Util\Migration_1_177_0( $this->context, $options ) )->register();
+				( new Core\Util\Migration_1_185_0( $this->context, $options ) )->register();
 				( new Core\Dashboard_Sharing\Dashboard_Sharing( $this->context ) )->register();
 				( new Core\Key_Metrics\Key_Metrics( $this->context, $user_options, $options ) )->register();
 				( new Core\Prompts\Prompts( $this->context, $user_options ) )->register();
@@ -323,7 +324,7 @@ final class Plugin {
 	 * Forces the Setup Flow Refresh feature flags to be enabled.
 	 *
 	 * @since 1.183.0
-	 * @since n.e.x.t Force-enable the `setupFlowRefreshPhase4` flag in addition to `setupFlowRefresh`.
+	 * @since 1.185.0 Force-enable the `setupFlowRefreshPhase4` flag in addition to `setupFlowRefresh`.
 	 *
 	 * @param bool   $feature_enabled The current status of this feature flag.
 	 * @param string $feature_name    The feature name.
