@@ -183,16 +183,7 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 	protected function get_datapoint_definitions() {
 		return array(
 			'GET:matched-sites'          => array( 'service' => 'searchconsole' ),
-			'GET:searchanalytics'        => new Get_Search_Analytics(
-				array(
-					'service'   => function () {
-						return $this->get_searchconsole_service();
-					},
-					'shareable' => true,
-					'settings'  => $this->get_settings(),
-					'context'   => $this->context,
-				)
-			),
+			'GET:searchanalytics'        => $this->create_search_analytics_datapoint(),
 			'POST:searchanalytics-batch' => new Batch_Search_Analytics(
 				array(
 					'service'   => function () {
@@ -205,6 +196,26 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 			),
 			'POST:site'                  => array( 'service' => 'searchconsole' ),
 			'GET:sites'                  => array( 'service' => 'searchconsole' ),
+		);
+	}
+
+	/**
+	 * Creates the search analytics datapoint.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Get_Search_Analytics Search analytics datapoint instance.
+	 */
+	private function create_search_analytics_datapoint() {
+		return new Get_Search_Analytics(
+			array(
+				'service'   => function () {
+					return $this->get_searchconsole_service();
+				},
+				'shareable' => true,
+				'settings'  => $this->get_settings(),
+				'context'   => $this->context,
+			)
 		);
 	}
 
@@ -522,7 +533,7 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 		);
 
 		try {
-			$this->get_datapoint_definition( 'GET:searchanalytics' )->create_request( $data_request );
+			$this->create_search_analytics_datapoint()->create_request( $data_request );
 		} catch ( Exception $e ) {
 			if ( $e->getCode() === 403 ) {
 				return false;
