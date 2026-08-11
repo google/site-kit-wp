@@ -59,5 +59,65 @@ declare global {
 	// This is not fully typed yet. We will keep improving it as we migrate more files that use it.
 	var _googlesitekitBaseData: {
 		assetsURL: string;
+		enabledFeatures?: string[];
 	};
+
+	// This is not fully typed yet. We will keep improving it as we migrate more files that use it.
+	var _googlesitekit:
+		| {
+				gtagUserData?: boolean;
+				gtagEvent?: (
+					eventName: string,
+					eventData?: Record< string, unknown >
+				) => void;
+				[ key: string ]: unknown;
+		  }
+		| undefined;
+
+	// eslint-disable-next-line camelcase
+	var gtag: Window[ 'gtag' ] | undefined;
+
+	var _googlesitekitConsentCategoryMap:
+		| Record< string, string[] >
+		| undefined;
+	var _googlesitekitConsents: Record< string, string > | undefined;
+
+	// Third-party WP Consent API globals.
+	// eslint-disable-next-line camelcase
+	var wp_consent_type: string | undefined;
+	// eslint-disable-next-line camelcase
+	var wp_fallback_consent_type: string | undefined;
+	// eslint-disable-next-line camelcase
+	var wp_has_consent: ( ( category: string ) => boolean ) | undefined;
+	// eslint-disable-next-line camelcase
+	var waitfor_consent_hook: boolean | undefined;
+
+	// Third-party WordPress plugin globals — no public type packages available.
+	/* eslint-disable @typescript-eslint/no-explicit-any */
+	var jQuery: any;
+	var mc4wp: any;
+	var Marionette: any;
+	var Backbone: any;
+	var PUM: any;
+	/* eslint-enable @typescript-eslint/no-explicit-any */
+
+	namespace NodeJS {
+		interface Global {
+			gtag?: Window[ 'gtag' ];
+			_googlesitekitAnalyticsTrackingData?: Window[ '_googlesitekitAnalyticsTrackingData' ];
+			_googlesitekit?: {
+				gtagUserData?: boolean;
+				gtagEvent?: (
+					eventName: string,
+					eventData?: Record< string, unknown >
+				) => void;
+				[ key: string ]: unknown;
+			};
+			_googlesitekitConsentCategoryMap?: Record< string, string[] >;
+			_googlesitekitConsents?: Record< string, string >;
+			googlesitekit: typeof googlesitekit;
+			_googlesitekitLegacyData: typeof _googlesitekitLegacyData;
+			_googlesitekitBaseData: typeof _googlesitekitBaseData;
+		}
+	}
 }

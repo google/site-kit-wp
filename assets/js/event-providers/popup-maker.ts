@@ -24,26 +24,35 @@ import { classifyPII, getUserData } from './utils';
 		return;
 	}
 
-	PUM.hooks.addAction( 'pum.integration.form.success', ( form, args ) => {
-		const gtagUserDataEnabled = global._googlesitekit?.gtagUserData;
+	PUM.hooks.addAction(
+		'pum.integration.form.success',
+		(
+			form: unknown,
+			// eslint-disable-next-line sitekit/acronym-case
+			args: { formProvider?: string; popupId?: string | number }
+		) => {
+			const gtagUserDataEnabled = global._googlesitekit?.gtagUserData;
 
-		const userData =
-			gtagUserDataEnabled && shouldHandleProvider( args.formProvider )
-				? getUserDataFromPMForm( form )
-				: undefined;
+			const userData =
+				gtagUserDataEnabled && shouldHandleProvider( args.formProvider )
+					? getUserDataFromPMForm( form )
+					: undefined;
 
-		// Disabled because the data/property names in this form are
-		// not controlled by Site Kit, thus don't conform to our ESLint
-		// rules on casing.
-		// eslint-disable-next-line sitekit/acronym-case
-		const popupID = args?.popupId;
+			// Disabled because the data/property names in this form are
+			// not controlled by Site Kit, thus don't conform to our ESLint
+			// rules on casing.
+			// eslint-disable-next-line sitekit/acronym-case
+			const popupID = args?.popupId;
 
-		global._googlesitekit?.gtagEvent?.( 'submit_lead_form', {
-			googlesitekit_event_provider: 'popup-maker',
-			...( popupID ? { googlesitekit_form_id: String( popupID ) } : {} ),
-			...( userData ? { user_data: userData } : {} ),
-		} );
-	} );
+			global._googlesitekit?.gtagEvent?.( 'submit_lead_form', {
+				googlesitekit_event_provider: 'popup-maker',
+				...( popupID
+					? { googlesitekit_form_id: String( popupID ) }
+					: {} ),
+				...( userData ? { user_data: userData } : {} ),
+			} );
+		}
+	);
 } )( global.jQuery, global.PUM );
 
 const HANDLED_PROVIDERS = [ 'wpforms', 'contactform7', 'ninjaforms', 'mc4wp' ];
@@ -56,8 +65,8 @@ const HANDLED_PROVIDERS = [ 'wpforms', 'contactform7', 'ninjaforms', 'mc4wp' ];
  * @param {string} provider The form provider (plugin) slug.
  * @return {boolean} Whether this provider's submission should be handled here or not.
  */
-function shouldHandleProvider( provider ) {
-	return ! HANDLED_PROVIDERS.includes( provider );
+function shouldHandleProvider( provider: string | undefined ): boolean {
+	return provider !== undefined && ! HANDLED_PROVIDERS.includes( provider );
 }
 
 /**
@@ -68,18 +77,23 @@ function shouldHandleProvider( provider ) {
  * @param {Object} form A jQuery object or an HTMLFormElement instance.
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
  */
-function getUserDataFromPMForm( form ) {
+function getUserDataFromPMForm( form: unknown ) {
 	// eslint-disable-next-line sitekit/acronym-case
-	form = form instanceof HTMLFormElement ? form : form[ 0 ];
+	const resolvedForm: HTMLFormElement | null =
+		form instanceof HTMLFormElement
+			? form
+			: ( form as { 0?: HTMLFormElement | null } )?.[ 0 ] ?? null;
 
-	if ( ! form ) {
+	if ( ! resolvedForm ) {
 		return undefined;
 	}
 
-	const formData = new FormData( form );
+	const formData = new FormData( resolvedForm );
 	const detectedFields = Array.from( formData.entries() )
 		.map( ( [ name, value ] ) => {
-			const input = form.querySelector( `[name='${ name }']` );
+			const input = resolvedForm.querySelector< HTMLInputElement >(
+				`[name='${ name }']`
+			);
 
 			const type = input?.type;
 
@@ -88,10 +102,16 @@ function getUserDataFromPMForm( form ) {
 				return null;
 			}
 
+			// Skip file inputs — only string values are classifiable as PII.
+			if ( typeof value !== 'string' ) {
+				return null;
+			}
+
 			const label =
 				( input?.id
-					? form.querySelector( `label[for='${ input?.id }']` )
-							?.textContent
+					? resolvedForm.querySelector(
+							`label[for='${ input?.id }']`
+					  )?.textContent
 					: null ) || input?.closest( 'label' )?.textContent;
 
 			return classifyPII( {
@@ -101,7 +121,7 @@ function getUserDataFromPMForm( form ) {
 				value,
 			} );
 		} )
-		.filter( Boolean );
+		.filter( ( f ): f is NonNullable< typeof f > => f !== null );
 
 	return getUserData( detectedFields );
 }

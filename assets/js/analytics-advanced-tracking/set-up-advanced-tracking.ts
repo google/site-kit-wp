@@ -17,6 +17,16 @@
  */
 
 /**
+ * Internal dependencies
+ */
+import { AdvancedTrackingEvent } from './types';
+
+type SendEvent = (
+	action: string,
+	metadata: Record< string, unknown > | null | undefined
+) => void;
+
+/**
  * Sets up advanced tracking.
  *
  * This will for each provided event configuration add a DOM event listener that,
@@ -31,13 +41,13 @@
  * @return {Function} Returns parameter-less function to destroy the tracking, i.e. remove all added listeners.
  */
 export default function setUpAdvancedTracking(
-	eventConfigurations,
-	sendEvent
+	eventConfigurations: AdvancedTrackingEvent[],
+	sendEvent: SendEvent
 ) {
-	const toRemove = [];
+	const toRemove: Array< [ string, EventListener, boolean ] > = [];
 
 	eventConfigurations.forEach( ( eventConfig ) => {
-		function handleDOMEvent( domEvent ) {
+		function handleDOMEvent( domEvent: Event ) {
 			if ( 'DOMContentLoaded' === eventConfig.on ) {
 				sendEvent( eventConfig.action, eventConfig.metadata );
 			} else if (
@@ -58,8 +68,8 @@ export default function setUpAdvancedTracking(
 	} );
 
 	return () => {
-		toRemove.forEach( ( listenerArgs ) => {
-			document.removeEventListener.apply( document, listenerArgs );
+		toRemove.forEach( ( [ type, listener, useCapture ] ) => {
+			document.removeEventListener( type, listener, useCapture );
 		} );
 	};
 }
@@ -73,17 +83,28 @@ export default function setUpAdvancedTracking(
  * @param {string}  selector A selector to check for.
  * @return {boolean} True if the DOM element matches the selector, false otherwise.
  */
-function matches( element, selector ) {
+function matches( element: EventTarget | null, selector: string ): boolean {
+	if ( ! element ) {
+		return false;
+	}
+	// Cast to access legacy vendor-prefixed match APIs alongside the standard one.
+	const element_ = element as Element & {
+		matchesSelector?: ( s: string ) => boolean;
+		webkitMatchesSelector?: ( s: string ) => boolean;
+		mozMatchesSelector?: ( s: string ) => boolean;
+		msMatchesSelector?: ( s: string ) => boolean;
+		oMatchesSelector?: ( s: string ) => boolean;
+	};
 	// Use fallbacks for older browsers.
 	// See https://developer.mozilla.org/en-US/docs/Web/API/Element/matches#Polyfill.
 	const matcher =
-		element.matches ||
-		element.matchesSelector ||
-		element.webkitMatchesSelector ||
-		element.mozMatchesSelector ||
-		element.msMatchesSelector ||
-		element.oMatchesSelector ||
-		function ( s ) {
+		element_.matches ||
+		element_.matchesSelector ||
+		element_.webkitMatchesSelector ||
+		element_.mozMatchesSelector ||
+		element_.msMatchesSelector ||
+		element_.oMatchesSelector ||
+		function ( this: Element & { document?: Document }, s: string ) {
 			const elements = (
 				this.document || this.ownerDocument
 			).querySelectorAll( s );
