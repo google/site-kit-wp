@@ -590,7 +590,7 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		).toBe( false );
 	} );
 
-	it( 'closing, then opening the panel mid-export shows the "generating report" notice and disables the "Download report" button', async () => {
+	it( 'shows the "generating report" notice and disables the "Download report" button when closing, then opening the panel mid-export', async () => {
 		const { findByRole, getByRole, getByText, queryByText } = render(
 			<PDFSectionsSelectionPanel />,
 			{ registry }
@@ -623,7 +623,7 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		).toBeDisabled();
 	} );
 
-	it( 'finishing the export with the panel open clears the "generating report" notice and enables the "Download report" button', async () => {
+	it( 'enables the "Download report" button and clears the "generating report" notice when the export is finished (with the panel open)', async () => {
 		registry.dispatch( CORE_PDF ).startExporting();
 
 		const { findByRole, getByRole, getByText, queryByText } = render(

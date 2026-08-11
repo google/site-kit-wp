@@ -433,13 +433,13 @@ describe( 'core/pdf store', () => {
 		} );
 
 		describe( 'isGeneratingReport', () => {
-			it( 'should return false when no report is generating', () => {
+			it( 'returns false when no report is generating', () => {
 				expect( registry.select( CORE_PDF ).isGeneratingReport() ).toBe(
 					false
 				);
 			} );
 
-			it( 'should return true as soon as the export starts', () => {
+			it( 'returns true as soon as the export starts', () => {
 				registry.dispatch( CORE_PDF ).startExporting();
 
 				expect( registry.select( CORE_PDF ).isGeneratingReport() ).toBe(
@@ -447,7 +447,7 @@ describe( 'core/pdf store', () => {
 				);
 			} );
 
-			it( 'should return true while the export reports progress', () => {
+			it( 'returns true while the export reports progress', () => {
 				registry.dispatch( CORE_PDF ).setStatus( 'progress' );
 
 				expect( registry.select( CORE_PDF ).isGeneratingReport() ).toBe(
