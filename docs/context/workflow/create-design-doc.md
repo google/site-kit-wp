@@ -66,10 +66,14 @@ never in the body.
 
 ## Step 3 — Analyze the codebase
 
-The value of a Site Kit design doc is that it names the **existing** infrastructure the epic will
-reuse. Vague prose ("we will add a datastore") is a failed design doc; naming the specific selector,
-component, or class to be reused, the file it lives in, and what has to change about it is the goal.
-Aim to anchor every design decision to a real symbol a reviewer can go and read.
+The value of a Site Kit design doc is that its design is grounded in the **existing** infrastructure
+the epic will reuse. Vague prose ("we will add a datastore") is a failed design doc: you have to know
+exactly which selector, component, or class is being reused, where it lives, and what has to change
+about it, and every design decision has to survive contact with that reality.
+
+Knowing is not the same as printing. What you learn here is what makes the design *correct*; how much
+of it reaches the page is decided by **§ Style rules**, which is strict about not restating what a
+Site Kit engineer already knows.
 
 Work read-only through:
 
@@ -210,8 +214,12 @@ Before saving, re-read the draft and fix:
 - **No placeholders in the body.** No `TBD`, no `TODO`, no empty section. A section that doesn't
   apply says so and why — "No migrations are envisaged at this stage as the feature is completely
   new" — it is **never** deleted.
-- **Every claim is anchored.** Each reuse claim names a real file, selector, action, class, or
-  constant that you verified in Step 3. No invented API names.
+- **Every claim is true.** Each reuse claim matches what you verified in Step 3, and every symbol
+  the doc does name exists under that name. No invented APIs.
+- **No inventory prose.** Find any run of bullets or clauses that merely lists familiar APIs and the
+  files they live in, and compress it into prose. Every symbol left on the page passes the test in
+  § Style rules — new, changed, load-bearing, ambiguous, or obscure — and the ones that don't come
+  out, taking their file paths with them.
 - **No trace of your process.** Search the draft for "checked", "verified", "found", "confirmed",
   "reviewed", "as we can see", "based on", "it appears", "it seems" — and for any sentence built
   around another document ("the PRD says", "as documented in"). Rewrite each one as a direct
@@ -312,6 +320,11 @@ not for the document — never write them into it.
 # **Changes during engineering**
 ```
 
+**Infrastructure** says what the epic stands on and what is genuinely new. Keep it short: a paragraph
+acknowledging the routine reuse in prose, then the few pieces whose specific behavior the design
+depends on, each pointing at the section that develops it, and a closing line on the new work and any
+external dependency. It is not a catalogue of every API the feature touches.
+
 **Detailed design** is the section that varies most between epics. Organize it around the user's
 journey through the feature or around the surfaces being built, and subdivide with `###` and `####`
 headings. Give each new surface its own subsection covering gating conditions, states, the data
@@ -359,11 +372,28 @@ run more than one form on a site, so aggregating a single event across all of th
 performs better." A link may ride along as a source for a reader who wants to go deeper, but the doc
 must be complete and convincing without anyone following it.
 
-**Code identifiers.** Backtick every selector, action, hook, constant, class, method, event name,
-custom dimension, setting key, and file path — every one of them, every time — and qualify each
-enough that a reviewer can find it: the store a selector belongs to, the class a method hangs off,
-the file a component lives in. For new code, name the destination directory and the naming
-convention its files will follow.
+**Code identifiers — name what carries weight, not what everyone knows.** The reader is a Site Kit
+engineer who knows this codebase. They do not need to be told that widgets register through
+`widgets.registerWidget()`, that reports come from the `getReport` selector, or which file
+`GoogleChart` lives in. Spelling out the familiar buys nothing and buries the sentences that matter.
+Name a symbol when the design turns on something specific about it:
+
+- it is **new**, or something about it has to **change**;
+- a **property of it** is what makes the approach work, or is the constraint the design works around
+  — "`Google_Proxy::request()` defaults `timeout` to 15 seconds";
+- there are **several plausible candidates** and the reader would otherwise assume the wrong one;
+- it is **obscure** enough that a reviewer would have to go hunting.
+
+Otherwise describe the capability in prose: "the widget registers into the existing Traffic area",
+"the partial-data state decides whether it renders". A passage that lists a dozen familiar APIs with
+their file paths is an inventory, not a design — compress it to a sentence and spend the space on
+the decisions.
+
+When a symbol does earn its place, backtick it — every selector, action, hook, constant, class,
+method, event name, custom dimension, setting key and file path, every time — and qualify it enough
+to be unambiguous: the store a selector belongs to, the class a method hangs off, the file a
+component lives in when the location itself is part of the point. For new code, name the destination
+directory and the naming convention its files will follow.
 
 **Links.** Anchor every link on descriptive text, never a bare URL. Links belong in the metadata
 block (PRD, Figma), in the Work estimates table (issues), and as quiet supporting references
