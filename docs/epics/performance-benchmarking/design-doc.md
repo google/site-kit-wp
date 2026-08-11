@@ -10,7 +10,7 @@
 ***Author(s):** [Eugene Manuilov](mailto:eugene.manuilov@fueled.com)*
 ***PRD:** [Performance intelligence: site benchmarking & forecasts in Site Kit \[PRD\]](https://docs.google.com/document/d/1zwM9ogRlrFO__rLFVYT6SE1qqsjIwzfFUELBiLnYHUQ/edit?usp=sharing)*
 ***Figma Designs:** [Performance benchmarking](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-11454&m=dev)*
-***Last Major Revision:** Aug 10, 2026 ([Revision history](#revision-history))*
+***Last Major Revision:** Aug 11, 2026 ([Revision history](#revision-history))*
 
 # **Context**
 
@@ -195,9 +195,10 @@ same composition `BreakdownTabs` uses for the Site Goals breakdown, so tab overf
 navigation and the desktop scroll arrows all behave as they already do elsewhere.
 
 The active tab is component state. Each tab panel is its own component under
-`performance-benchmarking/tabs/`, and only the active panel's reports resolve, because the panels
-call `useInViewSelect` and are unmounted when inactive. Switching tabs emits a `tab_select` event
-via `trackEvent`.
+`performance-benchmarking/tabs/` and is unmounted when inactive. The reports behind the request
+payload resolve at the shell rather than in the panels, because the insight both panels render is
+derived from all of them — see [Panel data flow](#panel-data-flow); a panel adds only what its own
+sections need on top. Switching tabs emits a `tab_select` event via `trackEvent`.
 
 The shell owns the states shared by both tabs:
 
@@ -220,113 +221,226 @@ stateDiagram-v2
 * **Error** — the underlying reports failed. Renders `WidgetReportError` with the module slug, so
   the existing retry and request-access affordances apply.
 
+### **Panel data flow** {#panel-data-flow}
+
+No component in the widget calls a report selector. Six hooks in `performance-benchmarking/hooks/`
+sit between the datastore and the panels, each a thin composition of keyed selectors over the pure
+functions in `performance-benchmarking/utils/`:
+
+| Hook | Returns | Reads |
+| :---- | :---- | :---- |
+| `useDailyTrafficSeries` | the zero-filled daily `totalUsers` series over the [baseline span](#expected-baseline) | one GA4 daily report |
+| `useVisitorTotals` | the `{ current, previous }` pairs the `visitors` array carries | the daily series, plus a totals report for the windows it does not span |
+| `useExpectedBaseline` | the per-day expected range and the period-scale [`baseline` object](#baseline-payload) | the daily series |
+| `useContextualData` | the seven `contextual_data` dimension arrays | six GA4 reports and one Search Console report |
+| `useBenchmarkingPayload` | the assembled request body and its stable hash | the four hooks above |
+| `useBenchmarkingInsight` | the insight, its loading state, and the reason it is unavailable | the `benchmarking` slice |
+
+The shell calls the last two, because the [states it owns](#widget-shell) are defined over the
+insight and both panels render it. **That makes every report an input to the shell rather than to the
+panel whose sections display it** — the insight is derived from the whole payload, so the Traffic
+Insights tab waits on the search-query report it never draws. The panels call the hooks their own
+sections need again; each hook's selectors are keyed by their report options and the insight by the
+payload hash, so the second call reads a resolved value and issues nothing.
+
+Below the hooks, every section component takes rows and numbers as props and touches no store, which
+is what makes each of them renderable from a fixture in Storybook and testable without a registry.
+
 ### **Traffic Overview tab** {#traffic-overview-tab}
 
-[Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-11454&m=dev).
-Four sections, top to bottom.
+`TrafficOverviewTab.tsx` renders four sections in a fixed order and owns no data logic: it takes the
+insight from the shell, calls the hooks its sections need, and hands each component its props
+([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-11454&m=dev)).
+
+| Section | Component | Fed by |
+| :---- | :---- | :---- |
+| Total visitors | `TotalVisitors` | `useVisitorTotals` |
+| Generated insight | `GeneratedInsight` | the shell's insight |
+| Traffic chart | `TrafficOverviewChart` | `useDailyTrafficSeries`, `useContextualData` |
+| Traffic breakdown | `TrafficBreakdown` | `useContextualData`, `topDimensions` |
+
+Every section component lives in `performance-benchmarking/components/`, one per file with a
+co-located test and story. `GeneratedInsight` is rendered by both panels; the other three are used
+only here.
 
 #### *Total visitors*
 
-The headline figure is `totalUsers` for the selected date range, with a change badge against the
-immediately preceding period of equal length. `getDateRangeDates( { compare: true } )` supplies both
-windows in one report; `calculateChange()` and `numFmt()` format the delta, and `ChangeBadge`
-(`assets/js/components/ChangeBadge.tsx`) renders it.
+`TotalVisitors` takes the period total and the preceding period's total and renders the headline
+figure with `ChangeBadge` beneath it. Both numbers come from `useVisitorTotals`, which sums them out
+of the daily series the baseline already fetched rather than issuing a second report, so the headline
+cannot disagree with the chart below it.
 
 `totalUsers` is the metric, not `activeUsers`, so the figure agrees with the All Visitors count in
 the widget directly above it — `TOTAL_USERS_METRIC` in that widget's `reportOptions.ts` is
 `totalUsers`.
 
+`ChangeBadge` derives the delta from the two values it is handed and renders nothing when the
+previous value is zero, which is the behavior this section wants: a site with no traffic in the
+previous period shows a total and no badge rather than an unbounded percentage. The section renders
+in every state but Error, since it depends on one report and on no insight.
+
 #### *Generated insight*
 
-[Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-11471&m=dev).
-The response carries three separate pieces of localized prose rather than one blob, and the block
-renders them as three distinct elements: `text`, the summary comparing the period against the
+`GeneratedInsight`
+([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-11471&m=dev))
+takes the resolved insight and a variant prop for the two tabs' differing emphasis, and renders three
+distinct elements rather than one blob: `text`, the summary comparing the period against the
 baseline, under 250 characters; `driver`, the concrete explanation with the numbers in it, under 210
 characters; and `actionable_recommendation`, the suggested next step, under 400 characters. The
-returned `scenario` code drives the icon and emphasis treatment. The plugin never parses the localized
-text to decide layout; that is exactly what `scenario` exists for. The block is absent when no insight
-resolved.
+service enforces those character limits in the prompt rather than by truncation, so the layout treats
+them as the expected case and not as a guarantee.
 
-The service enforces those character limits in the prompt rather than by truncation, so the layout
-treats them as the expected case and not as a guarantee.
+The icon and emphasis treatment come from a lookup in `constants.ts` keyed by the eleven `scenario`
+codes, with a default entry that any unrecognized code falls through to. **The plugin never parses
+the localized text to decide layout** — that is exactly what `scenario` exists for, and a scenario
+the service adds later renders in the default treatment rather than in none at all. All three strings
+render as plain React children, per
+[Sanitization responsibilities](#sanitization-responsibilities).
+
+The component returns `null` when no insight resolved, which is what the
+[Reporting state](#widget-shell) looks like in this panel: no block and no placeholder standing in
+for one.
 
 #### *Traffic chart with content markers*
 
-A `GoogleChart` `LineChart` of daily `totalUsers` over the selected range — the same report shape as
-`getGraphReportOptions()`, which uses the `date` dimension ordered ascending.
+`TrafficOverviewChart` renders `GoogleChart` with `chartType="LineChart"` over a two-column data
+table — date and `totalUsers` — sliced from `useDailyTrafficSeries` down to the selected range. The
+report shape is the one `getGraphReportOptions()` produces for the All Traffic graph, using the
+`date` dimension ordered ascending.
 
-Recently published content that is gaining traffic is annotated on the chart. `GoogleChart` already
-supports this through its `dateMarkers` prop: each marker draws a vertical line with a tooltip via
-`DateMarker`, and `UserCountGraph` uses the same prop today to mark the property creation date.
-Markers come from the same `recent_content_momentum` data the request payload carries, so the
-annotations and the narration describe the same posts, and their labels are plugin-formatted — the
-response returns no per-item strings. The service drops the root URL and index pages from
-`recent_content_momentum` before it narrates, so a marker on `/` would be annotating a post the
-insight has been told to ignore; the derivation applies the same exclusion.
+Recently published content that is gaining traffic is annotated through the chart's existing
+`dateMarkers` prop, which takes `{ date, text }` entries, draws a dotted vertical line with a tooltip
+per entry via `DateMarker`, and discards entries outside the plotted range itself, so posts published
+before the selected range need no filtering here. `UserCountGraph` uses the same prop today to mark
+the property creation date.
+
+A pure function in `utils/` builds the marker list from the same rows that become
+`recent_content_momentum` in the payload, so the annotations and the narration describe the same
+posts. Three rules live in that function:
+
+* The marker date is the post's publish date from `customEvent:googlesitekit_post_date`, the
+  dimension those rows are already filtered on; the payload's `published_days_ago` is the same value
+  counted back from the reference date.
+* The root URL and index pages are dropped, matching the exclusion the service applies before it
+  narrates — a marker on `/` would annotate a page the insight has been told to ignore.
+* Posts sharing a publish date collapse into a single marker whose tooltip names them, and the list
+  is capped by a constant in `constants.ts`, ranked by visitor gain. One marker is one vertical line
+  at one x position, so an uncapped list on a site that publishes daily draws a picket fence across
+  the chart.
+
+Marker text is plugin-formatted with `sprintf` against a translated pattern; the response carries no
+per-item strings. Where the custom dimension is absent or still gathering data there are no markers
+and the section renders as a plain line chart.
 
 #### *Traffic breakdown* {#traffic-breakdown}
 
-[Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-11543&m=dev).
-Rows describing where the change came from: channels whose visitors surged, content categories that
-resonated, search queries that shifted. Every value comes from the request payload's
-`contextual_data`, described in [Payload assembly](#payload-assembly) — the response carries no rows.
+`TrafficBreakdown`
+([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-11543&m=dev))
+renders up to three sections — channels whose visitors surged, content categories that resonated,
+search queries that shifted — one per `top_dimensions` code, in the order the response gives them.
+Every value comes from the request payload's `contextual_data`, described in
+[Payload assembly](#payload-assembly); the response carries no rows and no per-item strings.
 
-What the response does carry is `top_dimensions`: up to three `DimensionType` codes —
-`TRAFFIC_CHANNELS`, `AUDIENCE_SEGMENTS`, `PAGES`, `SEARCH_QUERIES`, `DEVICES`, `CATEGORIES`,
-`REFERRING_SITES`, `HISTORICAL_BASELINE` — ordered from highest impact down, chosen by the model from
-the ranked impacts the service computes over the payload. The breakdown leads with the sections those
-codes name, in that order, and the plugin ranks rows within a section itself. When the insight is
-absent the plugin's own ordering stands on its own, which is what keeps the section alive in the
-[Reporting state](#widget-shell).
+What the response carries is `top_dimensions`: up to three `DimensionType` codes — `TRAFFIC_CHANNELS`,
+`AUDIENCE_SEGMENTS`, `PAGES`, `SEARCH_QUERIES`, `DEVICES`, `CATEGORIES`, `REFERRING_SITES`,
+`HISTORICAL_BASELINE` — ordered from highest impact down, chosen by the model from the ranked impacts
+the service computes over the payload.
+
+Each code maps to an entry in a catalog in `performance-benchmarking/breakdown/registry.ts`: its
+title copy, the `contextual_data` key it reads, a static fallback order, and the components that
+render it. This is the shape `GOAL_DRIVER_CATALOG` in `site-goals/goal-drivers/registry.ts` uses to
+map driver IDs onto copy and components, and it is what lets this section and
+[What affected your traffic](#what-affected-your-traffic) walk the same ordered codes while differing
+only in which renderer they take off the entry.
+
+Three resolution rules live in the catalog lookup rather than in the components:
+
+* A code with no catalog entry is dropped, so an unrecognized `DimensionType` costs one section
+  rather than the panel.
+* A code whose `contextual_data` key was omitted from the request is dropped as well. The service
+  picks only from what it was sent, so this should not arise; the lookup treats it as no section
+  rather than as an empty one.
+* With no insight, ordering falls back to the entries' static order, which leads with the dimensions
+  every site has — channels, devices, visitor mix — ahead of the two that depend on custom
+  dimensions. That fallback is what keeps the section alive in the [Reporting state](#widget-shell).
+
+Within a section the plugin ranks rows itself, by the absolute change between the
+`{ current, previous }` pair each `contextual_data` item already carries, capped at a row limit in
+`constants.ts`, with values formatted through `numFmt` and each row carrying its own `ChangeBadge`.
+The row list is a new component rather than Site Goals' `TableTile`, whose `TableTileRow` is
+`{ label, value, url }` with no column for a change; nothing else about `TableTile` is Site
+Goals-specific, so promoting it and adding the column is the alternative available to the brief.
 
 ### **Traffic Insights tab** {#traffic-insights-tab}
 
-[Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-10410&m=dev).
+`TrafficInsightsTab.tsx` renders four sections against the same insight the Overview panel receives
+from the shell
+([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-10410&m=dev)).
+
+| Section | Component | Fed by |
+| :---- | :---- | :---- |
+| Generated insight | `GeneratedInsight` | the shell's insight |
+| Actual traffic vs expected baseline | `ExpectedBaselineChart` | `useDailyTrafficSeries`, `useExpectedBaseline` |
+| What affected your traffic | `TrafficFactors` | `useContextualData`, `useExpectedBaseline`, `topDimensions` |
+| Is this helpful? | `FeedbackPrompt` | — |
 
 #### *Generated insight*
 
-[Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-10450&m=dev).
-The same `scenario`, `text`, `driver` and `actionable_recommendation` as the Overview tab, presented
-with this tab's emphasis. One benchmarking request serves both tabs: the datastore keys the insight by
-the derived payload, so switching tabs reads the resolved value rather than issuing a second request.
-This matters — the service rate-limits to a burst of 10 with a refill of 2 per hour per site and user.
+The [Overview tab's component](#traffic-overview-tab) with the variant prop set to this tab's
+emphasis
+([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-10450&m=dev)).
+One benchmarking request serves both panels: the shell resolves the insight and the store keys it by
+the payload hash, so switching tabs reads a resolved value rather than issuing a second request. This
+matters — the service rate-limits to a burst of 10 with a refill of 2 per hour per site and user.
 
 #### *Actual traffic vs expected baseline*
 
-[Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-11363&m=dev).
-One `GoogleChart` `LineChart` carries both series: actual daily `totalUsers` as a line, and the
-expected range for the same days as a shaded band behind it. Both are read from the same daily report,
-so the line and the band cannot disagree about a day. The range itself is computed in the browser,
-described under [Expected baseline](#expected-baseline).
+`ExpectedBaselineChart`
+([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-11363&m=dev))
+renders one `GoogleChart` `LineChart` carrying both series: actual daily `totalUsers` as a line, and
+the expected range for the same days as a shaded band behind it. Both are sliced from the same daily
+series, so the line and the band cannot disagree about a day, and the range comes from
+`useExpectedBaseline` over that series — the model itself is specified under
+[Expected baseline](#expected-baseline).
 
 The band is drawn with Google Charts interval roles rather than a second chart type. The data table
-carries the range's lower and upper bound as two columns with `role: 'interval'` following the
-actual-users column, and the chart options set `intervals: { style: 'area' }`. The chart passes no
-`selectedStats`, so `getFilteredChartData()` hands the table through untouched, and
-`getChartOptions()` does not touch `intervals` — `chartType` stays `LineChart` and `GoogleChart`
-needs no change.
+is four columns — date, actual `totalUsers`, then the range's lower and upper bound as two columns
+declared with `role: 'interval'` immediately after the series they annotate — and the chart options
+set `intervals: { style: 'area' }`. The chart passes no `selectedStats`, so `getFilteredChartData()`
+hands the table through untouched, and `getChartOptions()` does not touch `intervals`: `chartType`
+stays `LineChart` and `GoogleChart` needs no change. Building that table is a pure function over the
+series and the range in `utils/`, which puts the column order the interval role depends on under a
+unit test rather than under inspection.
 
 The chart resolves independently of the generative call: a failed, timed-out or rate-limited insight
 leaves both series in place. Where the property's history is too short for the full model, the band
-renders from the [tier](#expected-baseline) that the available history supports rather than
-disappearing.
+renders from whichever [tier](#expected-baseline) the available history supports rather than
+disappearing, and this section carries the support link explaining what the band is — the least
+self-evident thing in the widget.
 
-#### *What affected your traffic*
+#### *What affected your traffic* {#what-affected-your-traffic}
 
-[Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-10572&m=dev).
-An explanatory section attributing the movement to the contributing factors — the same
-`contextual_data` inputs and the same `top_dimensions` ordering as the
-[traffic breakdown](#traffic-breakdown), presented as explanation rather than as a list of rows.
-`HISTORICAL_BASELINE` is the code to handle deliberately here: the service returns it when the
-site's own trajectory is the explanation, and it is also the fallback the service substitutes when the
-model names no valid dimension at all. In both cases the section explains the movement against the
-[expected baseline](#expected-baseline) rather than pointing at a channel or a page.
+`TrafficFactors`
+([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-10572&m=dev))
+walks the same ordered `top_dimensions` codes and the same catalog as the
+[traffic breakdown](#traffic-breakdown), taking the explanatory renderer off each entry instead of
+the row renderer, so the two sections cannot drift out of agreement about what the top dimensions
+were or what they are called.
+
+`HISTORICAL_BASELINE` is the entry to handle deliberately. The service returns it when the site's own
+trajectory is the explanation, and it is also the fallback it substitutes when the model names no
+valid dimension at all — and unlike every other code it has no `contextual_data` key behind it. Its
+catalog entry therefore reads `useExpectedBaseline` rather than a dimension array and explains the
+movement against the expected band, from `status_vs_baseline`, `trend_direction` and the
+`period_months` the tier actually used. **This is why a catalog entry carries components rather than
+only a `contextual_data` key.**
 
 #### *Is this helpful?*
 
-[Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-10477&m=dev).
-A thumbs up / thumbs down prompt, reusing the component described in
-[Shared feedback prompt](#shared-feedback-prompt).
+`FeedbackPrompt`
+([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-10477&m=dev)),
+promoted to a global component by [Shared feedback prompt](#shared-feedback-prompt) and rendered here
+with this widget's tracking event category and label and its own `downvoteFormURL`.
 
 This prompt is also the feature's post-launch quality signal. Negative feedback is only actionable
 if it can be attributed to the scenario that produced it, which means the vote needs to carry the
@@ -447,9 +561,9 @@ real choice — send a weekday-only baseline with `period_months: 2`, or send no
 
 The computation is pure functions over report rows in `performance-benchmarking/utils/` — the
 zero-filled series builder, each of the three factors, the band, and the mapping onto the six
-`baseline` fields — with the report options alongside them in `reportOptions.ts`. A hook in
-`performance-benchmarking/hooks/` composes the report and the computation, and its result feeds two
-consumers: the chart's data table and the request payload. Nothing in the model touches the registry,
+`baseline` fields — with the report options alongside them in `reportOptions.ts`.
+`useExpectedBaseline` composes the report and the computation, and its result feeds two consumers:
+the chart's data table and the request payload. Nothing in the model touches the registry,
 so all of it is unit-testable against fixed daily fixtures, and `getReferenceDate()` on `core/user`
 keeps those fixtures deterministic.
 
@@ -580,7 +694,7 @@ Derivation lives in `performance-benchmarking/utils/` as pure functions over rep
 unit-testable without a registry, and the report options live in a `reportOptions.ts` module
 alongside, following the pattern the All Traffic widget uses.
 
-#### *Sanitization responsibilities*
+#### *Sanitization responsibilities* {#sanitization-responsibilities}
 
 The service owns prompt-injection defense: the data travels inside `<data>` delimiters with an
 explicit instruction not to obey anything inside them, page titles and query, channel and category
@@ -604,7 +718,7 @@ those checks is a 500, not a degraded insight. The plugin's responsibility is na
 specifics: a `goalType` prop used only to label the tracking event, and the
 `SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL` constant.
 
-It moves to `assets/js/components/WidgetFeedbackPrompt.tsx` with those two specifics turned into
+It moves to `assets/js/components/FeedbackPrompt.tsx` with those two specifics turned into
 props: a tracking event category and label supplied by the caller, and a `downvoteFormURL`. The two
 Site Goals call sites — `OnlineStorePerformanceWidget` and `LeadGenerationPerformanceWidget` — pass
 their existing values, so their behavior is unchanged. The existing breakpoint-aware popper
@@ -617,9 +731,10 @@ prompt, which is an [open question](#❓-what-is-the-downvote-follow-up-url).
 
 New front-end code lives under
 `assets/js/modules/analytics-4/components/performance-benchmarking/`, mirroring the `site-goals/`
-layout: `widgets/` for the registered widget, `tabs/` for the two tab panels, `components/` for
-shared presentational pieces, `hooks/`, `utils/` and `constants.ts`. Components are TypeScript
-function components, one component per file, with co-located tests and Storybook stories.
+layout: `widgets/` for the registered widget, `tabs/` for the two tab panels, `components/` for the
+section components both panels are assembled from, `breakdown/` for the dimension catalog and its
+renderers, `hooks/`, `utils/` and `constants.ts`. Components are TypeScript function components, one
+component per file, with co-located tests and Storybook stories.
 
 New PHP lives in `includes/Modules/Analytics_4/Datapoints/` for the two datapoints, with the
 transport methods added to `includes/Core/Authentication/Google_Proxy.php`.
@@ -810,8 +925,8 @@ The new widget could import `WidgetFeedbackPrompt` from
 
 It would also make an Analytics sub-feature directory a dependency of an unrelated one, and the
 component is not Site Goals-specific in anything but two props. Promoting it to
-`assets/js/components/` is a small, contained change that leaves both features importing from a
-neutral location.
+`assets/js/components/FeedbackPrompt.tsx` is a small, contained change that leaves both features
+importing from a neutral location under a name that does not tie the prompt to widgets.
 
 ## **Future Work**
 
@@ -883,8 +998,8 @@ Console outages are handled by the existing `WidgetReportError` path.
 ## **Migrations**
 
 No migrations are required. The feature introduces no new setting, option or user meta, and changes
-no existing stored data. Promoting `WidgetFeedbackPrompt` moves a file and updates two imports; no
-persisted value refers to it.
+no existing stored data. Promoting `WidgetFeedbackPrompt` to `FeedbackPrompt` renames a file, moves
+it and updates two imports; no persisted value refers to it.
 
 ## **Technical debt**
 
@@ -1023,7 +1138,7 @@ absorb the longest case rather than being tuned to the English one.
 | 11 | Compute the expected baseline range from the GA4 daily series | 19 |  |
 | 12 | Traffic Insights: actual traffic vs expected baseline chart | 15 |  |
 | 13 | Traffic Insights: what affected your traffic section | 19 |  |
-| 14 | Promote `WidgetFeedbackPrompt` to a global component | 7 |  |
+| 14 | Promote `WidgetFeedbackPrompt` to a global `FeedbackPrompt` component | 7 |  |
 | 15 | Add the "Is this helpful?" prompt to the Traffic Insights tab | 3 |  |
 | 16 | Loading, unavailable-insight, rate-limited and error states | 15 |  |
 | 17 | Introduce the feature to users | 15 |  |
@@ -1044,6 +1159,10 @@ assembly rather than after it.
 Issue 5 is the one most likely to need splitting when its brief is written: `contextual_data` carries
 seven dimensions, each needing a current and a comparison window, and two of them depend on custom
 dimensions that may not be gathering data yet.
+
+Issues 9 and 13 share the dimension catalog described under [Traffic breakdown](#traffic-breakdown):
+whichever lands first builds `breakdown/registry.ts` and the second adds its renderer to the existing
+entries, so the two sections cannot end up ordering or naming the dimensions differently.
 
 Issues 1 through 4 are the critical path; issues 6, 8, 9, 11 and 12 depend only on reports and can be
 built against fixtures before the endpoint is available in production. Issues 7, 10, 13 and 16 depend
@@ -1142,8 +1261,9 @@ an internal tab shell, so the later Recent Activities epic adds a panel rather t
 
 ## **☑️ Where does the shared feedback prompt live?**
 
-**Answer: Eugene: `WidgetFeedbackPrompt` moves to `assets/js/components/WidgetFeedbackPrompt.tsx`
-with its Site Goals specifics turned into props, and both Site Goals call sites are updated.**
+**Answer: Eugene: `WidgetFeedbackPrompt` moves to `assets/js/components/FeedbackPrompt.tsx` — renamed
+to `FeedbackPrompt`, since nothing about it is widget-specific and other surfaces may want it — with
+its Site Goals specifics turned into props, and both Site Goals call sites are updated.**
 
 ## **☑️ Does the widget follow the header date-range selector?**
 
@@ -1381,6 +1501,7 @@ failure.
 
 | Date | Author(s) | Description |
 | :---- | :---- | :---- |
+| Aug 11, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Rewrote the two tab sections as implementation plans — the components each panel is built from, the hooks between them and the datastore under [Panel data flow](#panel-data-flow), and the dimension catalog the breakdown and the "what affected your traffic" sections share |
 | Aug 10, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Aligned with the implemented endpoint: the call is one synchronous request rather than a polled operation, so the operation datapoint and the polling slice are gone; the response's `top_dimensions`, `driver` and `actionable_recommendation` are designed for; the request gains `baseline` and three more `contextual_data` dimensions |
 | Aug 10, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Expected baseline resolved as a client-side computation: added [Expected baseline](#expected-baseline), rewrote the Traffic Insights chart section, split the baseline model out of the chart issue, and reworked the look-ahead forecast as an extension of the same model |
 | Aug 5, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Initial draft |

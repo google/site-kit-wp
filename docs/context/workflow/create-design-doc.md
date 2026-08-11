@@ -229,9 +229,14 @@ Before saving, re-read the draft and fix:
 - **No template scaffolding.** No italic "*Describe …*" prompt lines left under any heading; every
   section starts with substance.
 - **Cross-references resolve.** Every `[…](#anchor)` has a matching `{#anchor}` heading.
-- **Right altitude.** Design-doc level, not implementation level. Exhaustive selector/action lists,
-  prop tables, and CSS specifics belong in **Appendices** or are deferred to the Implementation
-  Brief stage of the individual issues.
+- **Right altitude.** Design-doc level, not implementation level. Which components exist, where they
+  live, and what feeds each one is design; exhaustive prop signatures, selector/action lists and CSS
+  specifics belong in **Appendices** or are deferred to the Implementation Brief stage of the
+  individual issues.
+- **No mock walkthroughs.** Every UI subsection reads as a build plan — components, inputs, states,
+  and the decisions the implementation forces — not as an account of what the Figma frame contains.
+  A subsection whose structure is the frame's structure, or that would survive unchanged if the
+  codebase were empty, needs rewriting.
 - **Internally consistent.** A decision recorded under Open questions matches the behavior
   described in Detailed design. If Step 4 changed an earlier assumption, the earlier section is
   updated too.
@@ -330,6 +335,18 @@ journey through the feature or around the surfaces being built, and subdivide wi
 headings. Give each new surface its own subsection covering gating conditions, states, the data
 behind it, and the components/datastore it uses.
 
+A surface subsection is a **plan for building the surface, not a tour of its mock**. Name the
+components the epic will add and where they live, say what feeds each one and what it renders when
+that input is missing, and surface the decisions the implementation forces — the shared registry two
+sections need, the prop that separates two uses of one component, the constraint an existing
+component puts on the data it is handed. Prose that restates what is in the Figma frame — "four
+sections, top to bottom", a heading per frame followed by its contents — is description, and
+description is what the Figma link is for.
+
+Where several surfaces read the same data, describe that path once in its own subsection and have
+each surface point at it. Deriving it again per surface is how two sections end up disagreeing about
+it.
+
 **Appendices** is where implementation-level detail goes when it would otherwise bloat the design —
 prefix it with a line explaining that these details can be ironed out at the Implementation Brief
 stage of each issue.
@@ -401,8 +418,9 @@ alongside a statement the doc has already made in full — never as a substitute
 
 **No images.** Do not embed images, and do not write image placeholders or reference definitions.
 Mocks are added by a human author afterward if they are wanted. Where the design depends on a visual
-treatment, describe the surface in prose — what it renders, in what states, with what copy — and
-link the specific Figma node for the visual detail.
+treatment, say what the code has to produce — the component, its inputs, its states, its copy — and
+hang the specific Figma node off that statement as the reference for the visual detail. The link
+carries the appearance; the doc carries the build.
 
 **Diagrams.** When a flow, state machine, or data path is genuinely clearer as a picture, use a
 fenced `mermaid` block. Never draw ASCII art. Keep diagrams small enough to read at a glance —
