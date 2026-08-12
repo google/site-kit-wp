@@ -56,11 +56,6 @@ const styles = createPDFStyles( {
 	rank: {
 		color: PDF_COLORS.SURFACES_ON_SURFACE,
 	},
-	// The group fills the row remainder after the rank, so a long page title
-	// wraps inside the cell.
-	titleGroup: {
-		flex: 1,
-	},
 } );
 
 interface TopEarningPageRow {
@@ -108,16 +103,14 @@ const DashboardTopEarningPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 			header: '',
 			// Shows the page title with the row rank to its left. The title
 			// links to the page's Analytics report, like the dashboard widget.
-			// When the page has no link, `PDFLink` renders the title as plain
-			// text instead of as a link.
 			cell: ( row ) => (
 				<View style={ styles.pageCell }>
 					<PDFTypography style={ styles.rank }>
 						{ `${ row.rank }.` }
 					</PDFTypography>
-					<View style={ styles.titleGroup }>
+					<PDFTypography truncateContent>
 						<PDFLink href={ row.serviceURL }>{ row.title }</PDFLink>
-					</View>
+					</PDFTypography>
 				</View>
 			),
 		},
