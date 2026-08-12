@@ -135,27 +135,6 @@ describe( 'PDFLink', () => {
 		expect( treeJSON ).not.toContain( PDF_COLORS.CONTENT_SECONDARY );
 	} );
 
-	it( 'renders the link text with the one-line limit the maxLines prop sets', () => {
-		const tree = renderLink( {
-			href: 'https://example.com/dashboard',
-			maxLines: 1,
-			children: 'A very long dashboard link label',
-		} );
-
-		expect( JSON.stringify( tree ) ).toContain( '"maxLines":1' );
-	} );
-
-	it( 'renders plain text with the one-line limit the maxLines prop sets when the href is an empty string', () => {
-		const tree = renderLink( {
-			href: '',
-			maxLines: 1,
-			children: 'A very long dashboard link label',
-		} );
-
-		expect( tree.type ).toBe( 'pdf-text' );
-		expect( JSON.stringify( tree ) ).toContain( '"maxLines":1' );
-	} );
-
 	it( 'omits the trailing icon when the href is empty', () => {
 		const tree = renderLink( {
 			href: '',

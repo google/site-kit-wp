@@ -53,8 +53,6 @@ export interface PDFLinkProps {
 	trailingIcon?: ReactNode;
 	/** Style merged over the link color on the text. */
 	style?: Style | Style[];
-	/** Maximum number of lines for the link text. */
-	maxLines?: number;
 }
 
 const PDFLink: FC< PDFLinkProps > = ( {
@@ -63,17 +61,11 @@ const PDFLink: FC< PDFLinkProps > = ( {
 	size,
 	trailingIcon,
 	style,
-	maxLines,
 	children,
 } ) => {
 	if ( ! href ) {
 		return (
-			<PDFTypography
-				type={ type }
-				size={ size }
-				style={ style }
-				maxLines={ maxLines }
-			>
+			<PDFTypography type={ type } size={ size } style={ style }>
 				{ children }
 			</PDFTypography>
 		);
@@ -87,7 +79,6 @@ const PDFLink: FC< PDFLinkProps > = ( {
 				type={ type }
 				size={ size }
 				style={ style ? [ linkColor ].concat( style ) : linkColor }
-				maxLines={ maxLines }
 			>
 				{ children }
 			</PDFTypography>

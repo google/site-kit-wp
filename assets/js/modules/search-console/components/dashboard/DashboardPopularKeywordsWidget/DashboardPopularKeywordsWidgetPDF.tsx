@@ -34,7 +34,6 @@ import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import PDFLink from '@/js/components/pdf-export/shared-react-pdf-components/PDFLink';
 import { PDFTableColumn } from '@/js/components/pdf-export/shared-react-pdf-components/PDFTable';
 import PDFTableSection from '@/js/components/pdf-export/shared-react-pdf-components/PDFTableSection';
-import PDFTruncatedValue from '@/js/components/pdf-export/shared-react-pdf-components/PDFTruncatedValue';
 import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
 import { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
 import { numFmt } from '@/js/util';
@@ -96,9 +95,9 @@ const DashboardPopularKeywordsWidgetPDF: FC< PDFWidgetComponentProps > = ( {
 					<PDFTypography style={ styles.rank }>
 						{ `${ row.rank }.` }
 					</PDFTypography>
-					<PDFTruncatedValue>
+					<PDFTypography truncateContent>
 						<PDFLink href={ row.queryURL }>{ row.query }</PDFLink>
-					</PDFTruncatedValue>
+					</PDFTypography>
 				</View>
 			),
 		},

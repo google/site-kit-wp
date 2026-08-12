@@ -36,7 +36,6 @@ import PDFLink from '@/js/components/pdf-export/shared-react-pdf-components/PDFL
 import PDFTable, {
 	PDFTableColumn,
 } from '@/js/components/pdf-export/shared-react-pdf-components/PDFTable';
-import PDFTruncatedValue from '@/js/components/pdf-export/shared-react-pdf-components/PDFTruncatedValue';
 import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
 import PDFWidgetSection from '@/js/components/pdf-export/shared-react-pdf-components/PDFWidgetSection';
 import { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
@@ -109,9 +108,9 @@ const DashboardTopEarningPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 					<PDFTypography style={ styles.rank }>
 						{ `${ row.rank }.` }
 					</PDFTypography>
-					<PDFTruncatedValue>
+					<PDFTypography truncateContent>
 						<PDFLink href={ row.serviceURL }>{ row.title }</PDFLink>
-					</PDFTruncatedValue>
+					</PDFTypography>
 				</View>
 			),
 		},

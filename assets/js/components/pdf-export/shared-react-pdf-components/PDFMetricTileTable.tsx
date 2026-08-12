@@ -28,7 +28,6 @@ import { FC } from 'react';
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFCard from './PDFCard';
-import PDFTruncatedValue from './PDFTruncatedValue';
 import PDFTypography from './PDFTypography';
 
 const styles = createPDFStyles( {
@@ -99,13 +98,14 @@ const PDFMetricTileTable: FC< PDFMetricTileTableProps > = ( {
 			<View style={ styles.table }>
 				{ visibleRows.map( ( row, index ) => (
 					<View key={ index } style={ styles.row }>
-						<PDFTruncatedValue
+						<PDFTypography
 							type="body"
 							size="small"
 							style={ linked ? styles.primaryLink : undefined }
+							truncateContent
 						>
 							{ row.primary }
-						</PDFTruncatedValue>
+						</PDFTypography>
 						<PDFTypography
 							type="body"
 							size="small"

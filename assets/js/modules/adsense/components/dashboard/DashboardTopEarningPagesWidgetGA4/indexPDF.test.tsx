@@ -140,6 +140,13 @@ describe( 'DashboardTopEarningPagesWidgetGA4PDF', () => {
 		expect( json ).toContain( '#108080' );
 	} );
 
+	it( 'truncates each page title to one line with an ellipsis', () => {
+		const json = renderJSON( { data: DATA } );
+
+		expect( json ).toContain( '"maxLines":1' );
+		expect( json ).toContain( '"textOverflow":"ellipsis"' );
+	} );
+
 	it( 'formats the earnings as currency using the report currency code', () => {
 		const json = renderJSON( { data: DATA } );
 
