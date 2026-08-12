@@ -25,11 +25,13 @@ import {
 	VIEW_CONTEXT_MODULE_SETUP,
 	VIEW_CONTEXT_SETTINGS,
 } from '@/js/googlesitekit/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ACCOUNT_CREATE,
 	EDIT_SCOPE,
+	FORM_ACCOUNT_CREATE,
 	GTM_SCOPE,
 	MODULES_ANALYTICS_4,
 	PROVISIONING_SCOPE,
@@ -132,6 +134,65 @@ describe( 'AccountCreate', () => {
 			getByRole( 'button', { name: 'Create Account' } )
 		).toBeInTheDocument();
 	} );
+
+	it.each( [
+		[ 'Account', 'An account name is required.' ],
+		[ 'Property', 'A property name is required.' ],
+		[ 'Web data stream', 'A web data stream name is required.' ],
+	] )(
+		'keeps the message for the %s field off the screen and marks the input invalid when the field is empty',
+		async ( label, message ) => {
+			registry.dispatch( CORE_FORMS ).setValues( FORM_ACCOUNT_CREATE, {
+				accountName: '',
+				propertyName: '',
+				dataStreamName: '',
+			} );
+
+			const { getByRole, getByText, waitForRegistry } = render(
+				<AccountCreate />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			const errorMessage = getByText( message );
+
+			expect( errorMessage ).toHaveClass( 'screen-reader-text' );
+			expect( getByRole( 'textbox', { name: label } ) ).toHaveAttribute(
+				'aria-invalid',
+				'true'
+			);
+			expect( getByRole( 'textbox', { name: label } ) ).toHaveAttribute(
+				'aria-errormessage',
+				errorMessage.id
+			);
+		}
+	);
+
+	it.each( [
+		[ 'Account', 'An account name is required.' ],
+		[ 'Property', 'A property name is required.' ],
+		[ 'Web data stream', 'A web data stream name is required.' ],
+	] )(
+		'leaves the %s field valid and renders no error message when the field holds a name',
+		async ( label, message ) => {
+			const { getByRole, queryByText, waitForRegistry } = render(
+				<AccountCreate />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				getByRole( 'textbox', { name: label } )
+			).not.toHaveAttribute( 'aria-invalid' );
+			expect( queryByText( message ) ).not.toBeInTheDocument();
+		}
+	);
 
 	describe( 'when clicking on Create Account', () => {
 		const accountTicketID = 'abc123';
