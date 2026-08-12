@@ -43,12 +43,8 @@ interface FooterProps {
 }
 
 const Footer: FC< FooterProps > = ( { closePanel, hasSelection } ) => {
-	const isExporting = useSelect(
-		( select: Select ) => select( CORE_PDF ).isExporting(),
-		[]
-	);
-	const exportStatus = useSelect(
-		( select: Select ) => select( CORE_PDF ).getStatus(),
+	const isGeneratingReport = useSelect(
+		( select: Select ) => select( CORE_PDF ).isGeneratingReport(),
 		[]
 	);
 	const selectedContextSlugs = useSelect(
@@ -71,8 +67,6 @@ const Footer: FC< FooterProps > = ( { closePanel, hasSelection } ) => {
 		startExporting();
 	}
 
-	const inFlight = !! isExporting || exportStatus === 'progress';
-
 	return (
 		<footer className="googlesitekit-selection-panel-footer googlesitekit-pdf-download-panel__footer">
 			<div className="googlesitekit-selection-panel-footer__content">
@@ -84,7 +78,7 @@ const Footer: FC< FooterProps > = ( { closePanel, hasSelection } ) => {
 					{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
 					<Button
 						onClick={ handleDownloadClick }
-						disabled={ ! hasSelection || inFlight }
+						disabled={ ! hasSelection || isGeneratingReport }
 					>
 						{ __( 'Download report', 'google-site-kit' ) }
 					</Button>

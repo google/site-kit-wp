@@ -176,6 +176,105 @@ class AuthenticatorTest extends TestCase {
 	}
 
 	/**
+	 * The WordPress login page (and One Tap there) never sends an
+	 * `integration=woocommerce` POST value, so these requests always use this
+	 * base `Authenticator`, even when WooCommerce is active. WooCommerce's own
+	 * account-creation settings must still open registration for that flow.
+	 *
+	 * @runInSeparateProcess
+	 */
+	public function test_authenticate_user_creates_customer_when_only_woocommerce_registration_is_open() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			// `class_alias()` requires a user-defined source class, so alias
+			// this test case rather than an internal class like `stdClass`.
+			class_alias( __CLASS__, 'WooCommerce' );
+		}
+
+		if ( ! get_role( 'customer' ) ) {
+			// WooCommerce itself registers this role when active; stand in
+			// for it since the plugin isn't loaded in this test environment.
+			add_role( 'customer', 'Customer', array( 'read' => true ) );
+		}
+
+		add_filter( 'option_users_can_register', '__return_false' );
+		update_option( 'woocommerce_enable_myaccount_registration', 'yes' );
+
+		// The `customer` role has no `edit_posts` capability, so the base
+		// Authenticator's own (unmodified) redirect logic sends them to their
+		// profile rather than the admin dashboard root — the same redirect
+		// path any non-edit_posts WordPress role would get, not anything
+		// WooCommerce-specific.
+		$expected = admin_url( '/profile.php' );
+		$actual   = $this->do_authenticate_user( self::$new_user_payload );
+
+		$this->assertEquals( $expected, $actual, 'Should follow the base Authenticator\'s own redirect logic, not WooCommerce\'s.' );
+
+		$user = wp_get_current_user();
+		$this->assertNotEmpty( $user->ID, 'Should create and sign in a new user via the WordPress login page flow when only WooCommerce registration is open.' );
+		$this->assertTrue( in_array( 'customer', $user->roles, true ), 'New user role should be customer when only WooCommerce registration is open.' );
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function test_authenticate_user_prefers_wordpress_default_role_when_both_registrations_are_open_on_wordpress_login() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			class_alias( __CLASS__, 'WooCommerce' );
+		}
+
+		add_filter( 'option_users_can_register', '__return_true' );
+		add_filter( 'option_default_role', fn () => 'editor' );
+		update_option( 'woocommerce_enable_myaccount_registration', 'yes' );
+
+		$this->do_authenticate_user( self::$new_user_payload );
+
+		$user = wp_get_current_user();
+		$this->assertTrue( in_array( 'editor', $user->roles, true ), 'New user role should be the WordPress default role when WordPress registration is open, even if WooCommerce registration is also open.' );
+		$this->assertFalse( in_array( 'customer', $user->roles, true ), 'New user should not get the WooCommerce customer role when WordPress registration is the open path.' );
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function test_authenticate_user_fails_when_both_registrations_are_closed_on_wordpress_login() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			class_alias( __CLASS__, 'WooCommerce' );
+		}
+
+		add_filter( 'option_users_can_register', '__return_false' );
+		update_option( 'woocommerce_enable_myaccount_registration', 'no' );
+		update_option( 'woocommerce_enable_signup_and_login_from_checkout', 'no' );
+		update_option( 'woocommerce_enable_delayed_account_creation', 'no' );
+
+		$expected = add_query_arg( 'error', Authenticator::ERROR_SIGNIN_FAILED, wp_login_url() );
+		$actual   = $this->do_authenticate_user( self::$new_user_payload );
+
+		$this->assertEquals( $expected, $actual, 'Should redirect to login with sign-in failed error when neither registration path is open.' );
+		$this->assertEquals( 0, get_current_user_id(), 'Should not sign in or create a user when registration is closed everywhere.' );
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function test_authenticate_user_signs_in_existing_user_when_both_registrations_are_closed_on_wordpress_login() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			class_alias( __CLASS__, 'WooCommerce' );
+		}
+
+		add_filter( 'option_users_can_register', '__return_false' );
+		update_option( 'woocommerce_enable_myaccount_registration', 'no' );
+
+		$user         = $this->factory()->user->create_and_get( array( 'user_email' => self::$existing_user_payload['email'] ) );
+		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
+		$user_options->set( Hashed_User_ID::OPTION, md5( self::$existing_user_payload['sub'] ) );
+
+		$actual = $this->do_authenticate_user( self::$existing_user_payload );
+
+		$this->assertEquals( admin_url( '/profile.php' ), $actual, 'Should redirect to the profile page after signing in.' );
+		$this->assertEquals( $user->ID, get_current_user_id(), 'Existing user should be able to sign in regardless of registration settings.' );
+	}
+
+	/**
 	 * @runInSeparateProcess
 	 */
 	public function test_authenticate_user__blocks_two_factor_user_with_no_connected_account() {

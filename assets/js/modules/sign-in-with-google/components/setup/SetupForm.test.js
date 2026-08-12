@@ -128,4 +128,51 @@ describe( 'SetupForm', () => {
 		expect( showNextToCommentsSwitchControl ).toBeInTheDocument();
 		expect( showNextToCommentsSwitchControl ).toBeChecked();
 	} );
+
+	it( 'should render and check the one tap toggle, but not show next to comments, when only WooCommerce registration is open', async () => {
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			anyoneCanRegister: false,
+			anyoneCanRegisterWooCommerce: true,
+		} );
+		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).receiveGetSettings( {
+			oneTapEnabled: false,
+			showNextToCommentsEnabled: false,
+		} );
+		const { getByLabelText, queryByLabelText, waitForRegistry } = render(
+			<SetupForm onCompleteSetup={ () => {} } />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		const oneTapSwitchControl = getByLabelText( 'Enable One Tap sign in' );
+		expect( oneTapSwitchControl ).toBeInTheDocument();
+		expect( oneTapSwitchControl ).toBeChecked();
+
+		expect(
+			queryByLabelText( 'Show next to comments' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should not render the one tap toggle when neither registration path is open', async () => {
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			anyoneCanRegister: false,
+			anyoneCanRegisterWooCommerce: false,
+		} );
+
+		const { queryByLabelText, waitForRegistry } = render(
+			<SetupForm onCompleteSetup={ () => {} } />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			queryByLabelText( 'Enable One Tap sign in' )
+		).not.toBeInTheDocument();
+	} );
 } );

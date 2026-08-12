@@ -32,38 +32,27 @@ export default function SettingsNotice() {
 	const anyoneCanRegister = useSelect( ( select ) =>
 		select( CORE_SITE ).getAnyoneCanRegister()
 	);
+	const anyoneCanRegisterWooCommerce = useSelect( ( select ) =>
+		select( CORE_SITE ).getAnyoneCanRegisterWooCommerce()
+	);
 	const oneTapEnabled = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getOneTapEnabled()
 	);
-	const isWooCommerceActive = useSelect( ( select ) =>
-		select( MODULES_SIGN_IN_WITH_GOOGLE ).getIsWooCommerceActive()
-	);
-	const isWooCommerceRegistrationEnabled = useSelect( ( select ) =>
-		select(
-			MODULES_SIGN_IN_WITH_GOOGLE
-		).getIsWooCommerceRegistrationEnabled()
-	);
 
-	let shouldShowRegistrationDisabledNotice =
-		oneTapEnabled &&
-		anyoneCanRegister === false &&
-		isWooCommerceActive === false;
+	// Registration is closed everywhere only when neither WordPress nor
+	// WooCommerce (if active) allows new accounts to be created. When
+	// WooCommerce already has registration open, neither notice below is
+	// relevant: AnyoneCanRegisterReadOnly already communicates that new
+	// accounts can be created via WooCommerce.
+	const registrationClosedEverywhere =
+		anyoneCanRegister === false && ! anyoneCanRegisterWooCommerce;
 
-	if ( isWooCommerceActive ) {
-		// If WooCommerce is active, we take the `isWooCommerceRegistrationEnabled`
-		// option into the account to determine if this notice should be shown.
-		//
-		// It is cleaner to redefine the variable here than place all conditionals
-		// in a single check.
-		shouldShowRegistrationDisabledNotice =
-			oneTapEnabled &&
-			anyoneCanRegister === false &&
-			isWooCommerceRegistrationEnabled === false;
-	}
+	const shouldShowRegistrationDisabledNotice =
+		oneTapEnabled && registrationClosedEverywhere;
 
 	return (
 		<Fragment>
-			{ anyoneCanRegister === false &&
+			{ registrationClosedEverywhere &&
 				! shouldShowRegistrationDisabledNotice && (
 					<AnyoneCanRegisterDisabledNotice />
 				) }
