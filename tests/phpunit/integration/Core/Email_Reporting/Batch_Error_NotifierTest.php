@@ -13,7 +13,6 @@ use Google\Site_Kit\Core\Email_Reporting\Batch_Error_Notifier;
 use Google\Site_Kit\Core\Email_Reporting\Content_Map;
 use Google\Site_Kit\Core\Email_Reporting\Email_Log_Batch_Query;
 use Google\Site_Kit\Core\Golinks\Golinks;
-use Google\Site_Kit\Core\Golinks\Dashboard_Golink_Handler;
 use Google\Site_Kit\Core\Golinks\Settings_Golink_Handler;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -46,7 +45,6 @@ class Batch_Error_NotifierTest extends TestCase {
 		$this->email_sender = $this->createMock( Email::class );
 		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->golinks      = new Golinks( $this->context );
-		$this->golinks->register_handler( 'dashboard', new Dashboard_Golink_Handler() );
 		$this->golinks->register_handler( 'settings', new Settings_Golink_Handler() );
 	}
 
@@ -108,7 +106,7 @@ class Batch_Error_NotifierTest extends TestCase {
 		self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$this->set_up_batch_with_category( $category_id );
 
-		$expected_subject = Content_Map::get_title( $content_key );
+		$expected_subject = Content_Map::get_subject( $content_key );
 
 		$this->batch_query->expects( $this->once() )
 			->method( 'mark_batch_admin_notified' )
@@ -143,7 +141,7 @@ class Batch_Error_NotifierTest extends TestCase {
 		$this->batch_query->method( 'is_batch_admin_notified' )->willReturn( false );
 		$this->batch_query->method( 'get_batch_error_details' )->willReturn( null );
 
-		$expected_subject = Content_Map::get_title( 'error-email' );
+		$expected_subject = Content_Map::get_subject( 'error-email' );
 
 		$this->email_sender->method( 'build_headers' )->willReturn( array() );
 		$this->email_sender->expects( $this->atLeastOnce() )
@@ -163,7 +161,7 @@ class Batch_Error_NotifierTest extends TestCase {
 		self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$this->set_up_batch_with_category( 'some_unknown_category' );
 
-		$expected_subject = Content_Map::get_title( 'error-email' );
+		$expected_subject = Content_Map::get_subject( 'error-email' );
 
 		$this->email_sender->method( 'build_headers' )->willReturn( array() );
 		$this->email_sender->expects( $this->atLeastOnce() )
@@ -186,7 +184,7 @@ class Batch_Error_NotifierTest extends TestCase {
 		$this->batch_query->method( 'is_batch_admin_notified' )->willReturn( false );
 		$this->batch_query->method( 'get_batch_error_details' )->willReturn( 'not-valid-json' );
 
-		$expected_subject = Content_Map::get_title( 'error-email' );
+		$expected_subject = Content_Map::get_subject( 'error-email' );
 
 		$this->email_sender->method( 'build_headers' )->willReturn( array() );
 		$this->email_sender->expects( $this->atLeastOnce() )
@@ -303,7 +301,7 @@ class Batch_Error_NotifierTest extends TestCase {
 		self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$this->set_up_batch_with_category_and_module( $category_id, $module_slug );
 
-		$expected_subject = Content_Map::get_title( $expected_content_key );
+		$expected_subject = Content_Map::get_subject( $expected_content_key );
 
 		$this->batch_query->expects( $this->once() )
 			->method( 'mark_batch_admin_notified' )
@@ -337,7 +335,7 @@ class Batch_Error_NotifierTest extends TestCase {
 		$this->set_up_batch_with_category_and_module( 'permissions_error', 'unknown-module' );
 
 		// No module-specific body for permissions + unknown-module, so falls back to generic error-email.
-		$expected_subject = Content_Map::get_title( 'error-email' );
+		$expected_subject = Content_Map::get_subject( 'error-email' );
 
 		$this->email_sender->method( 'build_headers' )->willReturn( array() );
 		$this->email_sender->expects( $this->atLeastOnce() )
@@ -358,7 +356,7 @@ class Batch_Error_NotifierTest extends TestCase {
 		$this->set_up_batch_with_category_and_module( 'server_error', 'some-unknown-module' );
 
 		// No module-specific body for server_error + some-unknown-module, falls back to generic error-email.
-		$expected_subject = Content_Map::get_title( 'error-email' );
+		$expected_subject = Content_Map::get_subject( 'error-email' );
 
 		$this->email_sender->method( 'build_headers' )->willReturn( array() );
 		$this->email_sender->expects( $this->atLeastOnce() )
@@ -374,11 +372,33 @@ class Batch_Error_NotifierTest extends TestCase {
 		$this->create_notifier()->maybe_notify( 'batch-1' );
 	}
 
-	public function test_cta_uses_dashboard_golink() {
+	public function test_server_error_has_no_cta_button() {
 		self::factory()->user->create( array( 'role' => 'administrator' ) );
-		$this->set_up_batch_with_category( 'permissions_error' );
+		$this->set_up_batch_with_category( 'server_error' );
 
-		// HTML output encodes & as &#038; or &amp;, so check for the unique go-link path.
+		// The generic error-email key defines no CTA, so no button should render.
+		$this->email_sender->method( 'build_headers' )->willReturn( array() );
+		$this->email_sender->expects( $this->atLeastOnce() )
+			->method( 'send' )
+			->with(
+				$this->isType( 'string' ),
+				$this->isType( 'string' ),
+				$this->logicalNot( $this->stringContains( 'class="button"' ) ),
+				$this->isType( 'array' ),
+				$this->isType( 'string' )
+			);
+
+		$this->create_notifier()->maybe_notify( 'batch-1' );
+	}
+
+	/**
+	 * @dataProvider data_module_error_ctas
+	 */
+	public function test_module_specific_error_shows_settings_cta( $category_id, $module_slug, $expected_label ) {
+		self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->set_up_batch_with_category_and_module( $category_id, $module_slug );
+
+		// HTML output encodes & in URLs, so check for the unique identifying parts.
 		$this->email_sender->method( 'build_headers' )->willReturn( array() );
 		$this->email_sender->expects( $this->atLeastOnce() )
 			->method( 'send' )
@@ -386,14 +406,24 @@ class Batch_Error_NotifierTest extends TestCase {
 				$this->isType( 'string' ),
 				$this->isType( 'string' ),
 				$this->logicalAnd(
-					$this->stringContains( 'googlesitekit_go' ),
-					$this->stringContains( 'to=dashboard' )
+					$this->stringContains( 'class="button"' ),
+					$this->stringContains( 'module=' . $module_slug ),
+					$this->stringContains( $expected_label )
 				),
 				$this->isType( 'array' ),
 				$this->isType( 'string' )
 			);
 
 		$this->create_notifier()->maybe_notify( 'batch-1' );
+	}
+
+	public function data_module_error_ctas() {
+		return array(
+			'permissions_error with search-console' => array( 'permissions_error', 'search-console', 'Request access' ),
+			'permissions_error with analytics-4'    => array( 'permissions_error', 'analytics-4', 'Request access' ),
+			'report_error with search-console'      => array( 'report_error', 'search-console', 'Go to settings' ),
+			'report_error with analytics-4'         => array( 'report_error', 'analytics-4', 'Go to settings' ),
+		);
 	}
 
 	public function test_footer_contains_help_center_privacy_and_unsubscribe_links() {

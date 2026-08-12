@@ -34,24 +34,55 @@ export const PDF_INTRODUCTION_OVERLAY_NOTIFICATION =
 	'pdf_introduction_overlay_notification';
 
 /**
- * Survey trigger ID for a failed PDF export.
+ * The dashboard asks for the survey written for a user who never opened the
+ * PDF export panel.
  *
- * Fires when a PDF export fails for any reason other than the user cancelling.
- * The value must match the trigger ID set for this survey in the survey tool.
+ * The survey service holds that survey under this ID.
  *
- * @since 1.184.0
+ * @since n.e.x.t
  */
-export const PDF_EXPORT_ERROR_SURVEY_TRIGGER_ID = 'pdf_export_error';
+export const PDF_EXPORT_NOT_USED_SURVEY_TRIGGER_ID = 'view_pdf_export_not_used';
 
 /**
- * Survey trigger ID for a completed PDF export.
+ * The dashboard asks for the survey written for a user who opened the PDF
+ * export panel and never downloaded a report.
  *
- * Fires when a PDF export finishes and the report download starts. The value
- * must match the trigger ID set for this survey in the survey tool.
+ * The survey service holds that survey under this ID.
  *
- * @since 1.184.0
+ * @since n.e.x.t
  */
-export const PDF_EXPORT_SUCCESS_SURVEY_TRIGGER_ID = 'pdf_export_success';
+export const PDF_EXPORT_INCOMPLETE_SURVEY_TRIGGER_ID =
+	'view_pdf_export_incomplete';
+
+/**
+ * The dashboard asks for the survey written for a user who downloaded at
+ * least one PDF report.
+ *
+ * The survey service holds that survey under this ID.
+ *
+ * @since n.e.x.t
+ */
+export const PDF_EXPORT_DOWNLOADED_SURVEY_TRIGGER_ID =
+	'view_pdf_export_downloaded';
+
+/**
+ * The PDF export panel saves this slug to WordPress user meta the first time
+ * a user opens the panel.
+ *
+ * The `core/pdf` data store holds the export state in memory, and this slug
+ * persists. The survey trigger component reads the slug to pick a survey.
+ *
+ * @since n.e.x.t
+ */
+export const PDF_EXPORT_PANEL_OPENED_ITEM_SLUG = 'pdf-export-panel-opened';
+
+/**
+ * The export saves this slug to WordPress user meta the first time a user
+ * downloads a PDF report.
+ *
+ * @since n.e.x.t
+ */
+export const PDF_EXPORT_DOWNLOADED_ITEM_SLUG = 'pdf-export-downloaded';
 
 /**
  * Main-dashboard context slugs in the dashboard's own order.

@@ -1,5 +1,5 @@
 /**
- * PDF export survey triggers: fires one survey for each PDF export that finishes.
+ * PDFExportSurveyTriggers component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -24,48 +24,86 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { usePrevious } from '@wordpress/compose';
-import { useEffect } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { Select, useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
+import { Select, useSelect } from 'googlesitekit-data';
+import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
 import {
-	PDF_EXPORT_ERROR_SURVEY_TRIGGER_ID,
-	PDF_EXPORT_SUCCESS_SURVEY_TRIGGER_ID,
+	PDF_EXPORT_DOWNLOADED_ITEM_SLUG,
+	PDF_EXPORT_DOWNLOADED_SURVEY_TRIGGER_ID,
+	PDF_EXPORT_INCOMPLETE_SURVEY_TRIGGER_ID,
+	PDF_EXPORT_NOT_USED_SURVEY_TRIGGER_ID,
+	PDF_EXPORT_PANEL_OPENED_ITEM_SLUG,
 } from './constants';
 
+// The component reads the `pdf-export-panel-opened` and
+// `pdf-export-downloaded` slugs from WordPress user meta, and sends one of
+// three survey triggers a day.
 const PDFExportSurveyTriggers: FC = () => {
-	const status = useSelect(
-		( select: Select ) => select( CORE_PDF ).getStatus(),
+	const hasAlreadyOpenedPDFExportPanel = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).isItemDismissed(
+				PDF_EXPORT_PANEL_OPENED_ITEM_SLUG
+			),
 		[]
 	);
-	const previousStatus = usePrevious( status );
+	const hasAlreadyDownloadedPDFReport = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).isItemDismissed(
+				PDF_EXPORT_DOWNLOADED_ITEM_SLUG
+			),
+		[]
+	);
 
-	const { triggerSurvey } = useDispatch( CORE_USER );
+	const [ surveyTriggerID, setSurveyTriggerID ] = useState< string | null >(
+		null
+	);
 
 	useEffect( () => {
-		// Each survey asks about one finished PDF export, so it fires on the move
-		// into `'error'` or `'success'`, and not again while that status holds.
-		// When the user cancels an export, the status returns to `'idle'`, which
-		// fires no survey.
-		if ( status === previousStatus ) {
+		// This effect picks one of three PDF export surveys for the user.
+		// Return early when the effect already picked a survey.
+		if ( surveyTriggerID !== null ) {
 			return;
 		}
 
-		if ( status === 'error' ) {
-			triggerSurvey( PDF_EXPORT_ERROR_SURVEY_TRIGGER_ID );
+		if (
+			hasAlreadyOpenedPDFExportPanel === undefined ||
+			hasAlreadyDownloadedPDFReport === undefined
+		) {
+			return;
 		}
 
-		if ( status === 'success' ) {
-			triggerSurvey( PDF_EXPORT_SUCCESS_SURVEY_TRIGGER_ID );
+		if ( hasAlreadyDownloadedPDFReport ) {
+			// A user who downloaded a report also opened the panel, because
+			// the download button sits inside the panel. The download came
+			// later, and the later action decides the survey.
+			setSurveyTriggerID( PDF_EXPORT_DOWNLOADED_SURVEY_TRIGGER_ID );
+		} else if ( hasAlreadyOpenedPDFExportPanel ) {
+			setSurveyTriggerID( PDF_EXPORT_INCOMPLETE_SURVEY_TRIGGER_ID );
+		} else {
+			setSurveyTriggerID( PDF_EXPORT_NOT_USED_SURVEY_TRIGGER_ID );
 		}
-	}, [ status, previousStatus, triggerSurvey ] );
+	}, [
+		surveyTriggerID,
+		hasAlreadyOpenedPDFExportPanel,
+		hasAlreadyDownloadedPDFReport,
+	] );
 
-	return null;
+	if ( surveyTriggerID === null ) {
+		return null;
+	}
+
+	return (
+		<SurveyViewTrigger
+			triggerID={ surveyTriggerID }
+			ttl={ DAY_IN_SECONDS }
+		/>
+	);
 };
 
 export default PDFExportSurveyTriggers;

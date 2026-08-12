@@ -80,6 +80,14 @@
 				}
 			}
 
+			.googlesitekit-sign-in-with-google-registration-message__break {
+				display: none;
+
+				@media (min-width: $bp-nonMobile) {
+					display: block;
+				}
+			}
+
 			.googlesitekit-sign-in-with-google-settings-fields__button-preview {
 
 				@media (min-width: $bp-xlarge) {
