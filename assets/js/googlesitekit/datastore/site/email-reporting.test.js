@@ -49,9 +49,9 @@ describe( 'core/site Email Reporting', () => {
 		'^/google-site-kit/v1/core/site/data/email-reporting-unsubscribe-user'
 	);
 	const USER_ID_PARAM = 'userID';
-	const defaultEligibleSubscribersArgs = { search: '' };
+	const defaultUserListArgs = { search: '' };
 
-	function createEligibleSubscribersResponse( users, args = {} ) {
+	function createUserListResponse( users, args = {} ) {
 		const page = Number.isInteger( args.page ) ? args.page : 1;
 		const total = Number.isInteger( args.total )
 			? args.total
@@ -78,12 +78,9 @@ describe( 'core/site Email Reporting', () => {
 	 * @param {Object} [args] Page and search args to resolve.
 	 * @return {Promise} Promise that resolves once the listing is in the store.
 	 */
-	async function resolveSubscribedUsers(
-		users,
-		args = defaultEligibleSubscribersArgs
-	) {
+	async function resolveSubscribedUsers( users, args = defaultUserListArgs ) {
 		fetchMock.getOnce( subscribedUsersEndpointRegExp, {
-			body: createEligibleSubscribersResponse( users ),
+			body: createUserListResponse( users ),
 			status: 200,
 		} );
 
@@ -285,7 +282,7 @@ describe( 'core/site Email Reporting', () => {
 
 				// First, resolve eligible subscribers with the user not yet invited.
 				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
-					body: createEligibleSubscribersResponse( [
+					body: createUserListResponse( [
 						{
 							id: userID,
 							displayName: 'Test User',
@@ -302,15 +299,15 @@ describe( 'core/site Email Reporting', () => {
 
 				registry
 					.select( CORE_SITE )
-					.getEligibleSubscribers( defaultEligibleSubscribersArgs );
+					.getEligibleSubscribers( defaultUserListArgs );
 				await untilResolved(
 					registry,
 					CORE_SITE
-				).getEligibleSubscribers( defaultEligibleSubscribersArgs );
+				).getEligibleSubscribers( defaultUserListArgs );
 
 				const subscribersBefore = registry
 					.select( CORE_SITE )
-					.getEligibleSubscribers( defaultEligibleSubscribersArgs );
+					.getEligibleSubscribers( defaultUserListArgs );
 				expect( subscribersBefore.users[ 0 ].invited ).toBe( false );
 
 				// Now invite the user successfully.
@@ -324,7 +321,7 @@ describe( 'core/site Email Reporting', () => {
 				// The user should now be marked as invited in the store.
 				const subscribersAfter = registry
 					.select( CORE_SITE )
-					.getEligibleSubscribers( defaultEligibleSubscribersArgs );
+					.getEligibleSubscribers( defaultUserListArgs );
 				expect( subscribersAfter.users[ 0 ].invited ).toBe( true );
 			} );
 
@@ -333,7 +330,7 @@ describe( 'core/site Email Reporting', () => {
 
 				// First, resolve eligible subscribers with the user not yet invited.
 				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
-					body: createEligibleSubscribersResponse( [
+					body: createUserListResponse( [
 						{
 							id: userID,
 							displayName: 'Test User',
@@ -350,11 +347,11 @@ describe( 'core/site Email Reporting', () => {
 
 				registry
 					.select( CORE_SITE )
-					.getEligibleSubscribers( defaultEligibleSubscribersArgs );
+					.getEligibleSubscribers( defaultUserListArgs );
 				await untilResolved(
 					registry,
 					CORE_SITE
-				).getEligibleSubscribers( defaultEligibleSubscribersArgs );
+				).getEligibleSubscribers( defaultUserListArgs );
 
 				// Now invite a user that fails.
 				fetchMock.postOnce( inviteUserEndpointRegExp, {
@@ -372,7 +369,7 @@ describe( 'core/site Email Reporting', () => {
 				// The user should still NOT be marked as invited.
 				const subscribersAfter = registry
 					.select( CORE_SITE )
-					.getEligibleSubscribers( defaultEligibleSubscribersArgs );
+					.getEligibleSubscribers( defaultUserListArgs );
 				expect( subscribersAfter.users[ 0 ].invited ).toBe( false );
 
 				expect( console ).toHaveErrored();
@@ -476,7 +473,7 @@ describe( 'core/site Email Reporting', () => {
 				expect(
 					registry
 						.select( CORE_SITE )
-						.getSubscribedUsers( defaultEligibleSubscribersArgs )
+						.getSubscribedUsers( defaultUserListArgs )
 				).toEqual( {
 					users: [
 						{
@@ -530,13 +527,12 @@ describe( 'core/site Email Reporting', () => {
 			} );
 
 			it( 'keeps a cached total at zero when the removal would go below it', async () => {
-				// The subscribed-users endpoint can return users with no `total`
-				// field, and sanitizeUserListTotal() turns that missing value into
-				// zero. Dispatching `total: 0` with one user recreates that state,
-				// so the unsubscribe would push the total under zero without the
-				// floor.
+				// sanitizeUserListTotal() reads a missing or malformed total as
+				// zero, so a cached subscribed-users listing can hold one
+				// subscribed user against a total of zero. The zero floor is what
+				// keeps the removal from taking that total below zero.
 				registry.dispatch( CORE_SITE ).receiveGetSubscribedUsers(
-					createEligibleSubscribersResponse( [ subscribedUser ], {
+					createUserListResponse( [ subscribedUser ], {
 						total: 0,
 					} ),
 					{ page: 1, search: '' }
@@ -581,7 +577,7 @@ describe( 'core/site Email Reporting', () => {
 
 				const { users, total } = registry
 					.select( CORE_SITE )
-					.getSubscribedUsers( defaultEligibleSubscribersArgs );
+					.getSubscribedUsers( defaultUserListArgs );
 
 				expect( users.map( ( { id } ) => id ) ).toEqual( [
 					subscribedUser.id,
@@ -614,20 +610,20 @@ describe( 'core/site Email Reporting', () => {
 		describe( 'resetEligibleSubscribers', () => {
 			it( 'clears cached eligible subscribers', async () => {
 				fetchMock.get( eligibleSubscribersEndpointRegExp, {
-					body: createEligibleSubscribersResponse( [] ),
+					body: createUserListResponse( [] ),
 					status: 200,
 				} );
 
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetEligibleSubscribers(
-						createEligibleSubscribersResponse( [] ),
+						createUserListResponse( [] ),
 						{ page: 1, search: '' }
 					);
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetEligibleSubscribers(
-						createEligibleSubscribersResponse( [] ),
+						createUserListResponse( [] ),
 						{ page: 1, search: 'editor' }
 					);
 
@@ -654,7 +650,7 @@ describe( 'core/site Email Reporting', () => {
 				provideUserInfo( registry, { id: 1 } );
 
 				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
-					body: createEligibleSubscribersResponse( [
+					body: createUserListResponse( [
 						{
 							id: 2,
 							displayName: 'Eligible User',
@@ -669,18 +665,18 @@ describe( 'core/site Email Reporting', () => {
 
 				registry
 					.select( CORE_SITE )
-					.getEligibleSubscribers( defaultEligibleSubscribersArgs );
+					.getEligibleSubscribers( defaultUserListArgs );
 				await untilResolved(
 					registry,
 					CORE_SITE
-				).getEligibleSubscribers( defaultEligibleSubscribersArgs );
+				).getEligibleSubscribers( defaultUserListArgs );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				await registry.dispatch( CORE_SITE ).resetEligibleSubscribers();
 
 				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
-					body: createEligibleSubscribersResponse( [
+					body: createUserListResponse( [
 						{
 							id: 3,
 							displayName: 'Another Eligible User',
@@ -695,11 +691,11 @@ describe( 'core/site Email Reporting', () => {
 
 				registry
 					.select( CORE_SITE )
-					.getEligibleSubscribers( defaultEligibleSubscribersArgs );
+					.getEligibleSubscribers( defaultUserListArgs );
 				await untilResolved(
 					registry,
 					CORE_SITE
-				).getEligibleSubscribers( defaultEligibleSubscribersArgs );
+				).getEligibleSubscribers( defaultUserListArgs );
 
 				expect( fetchMock ).toHaveFetchedTimes( 2 );
 			} );
@@ -711,28 +707,22 @@ describe( 'core/site Email Reporting', () => {
 				// the resolver runs again for both cached search terms and this
 				// catch-all mock responds to both refetches.
 				fetchMock.get( subscribedUsersEndpointRegExp, {
-					body: createEligibleSubscribersResponse( [] ),
+					body: createUserListResponse( [] ),
 					status: 200,
 				} );
 
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetSubscribedUsers(
-						createEligibleSubscribersResponse( [] ),
-						{
-							page: 1,
-							search: '',
-						}
-					);
+					.receiveGetSubscribedUsers( createUserListResponse( [] ), {
+						page: 1,
+						search: '',
+					} );
 				registry
 					.dispatch( CORE_SITE )
-					.receiveGetSubscribedUsers(
-						createEligibleSubscribersResponse( [] ),
-						{
-							page: 1,
-							search: 'editor',
-						}
-					);
+					.receiveGetSubscribedUsers( createUserListResponse( [] ), {
+						page: 1,
+						search: 'editor',
+					} );
 
 				expect(
 					registry.select( CORE_SITE ).getSubscribedUsers( {
@@ -890,7 +880,7 @@ describe( 'core/site Email Reporting', () => {
 				provideUserInfo( registry, { id: 1 } );
 
 				registry.dispatch( CORE_SITE ).receiveGetEligibleSubscribers(
-					createEligibleSubscribersResponse( [
+					createUserListResponse( [
 						{
 							id: 1,
 							displayName: 'Current User',
@@ -935,7 +925,7 @@ describe( 'core/site Email Reporting', () => {
 				provideUserInfo( registry, { id: 1 } );
 
 				registry.dispatch( CORE_SITE ).receiveGetEligibleSubscribers(
-					createEligibleSubscribersResponse( [
+					createUserListResponse( [
 						{
 							id: 2,
 							displayName: 'Eligible User',
@@ -973,7 +963,7 @@ describe( 'core/site Email Reporting', () => {
 				provideUserInfo( registry, { id: 1 } );
 
 				registry.dispatch( CORE_SITE ).receiveGetEligibleSubscribers(
-					createEligibleSubscribersResponse( [
+					createUserListResponse( [
 						{
 							id: 2,
 							displayName: 'Eligible User',
@@ -997,7 +987,7 @@ describe( 'core/site Email Reporting', () => {
 				provideUserInfo( registry, { id: 1 } );
 
 				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
-					body: createEligibleSubscribersResponse( [
+					body: createUserListResponse( [
 						{
 							id: 2,
 							displayName: 'Search User',
@@ -1036,7 +1026,7 @@ describe( 'core/site Email Reporting', () => {
 				provideUserInfo( registry, { id: 1 } );
 
 				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
-					body: createEligibleSubscribersResponse( [
+					body: createUserListResponse( [
 						{
 							id: 2,
 							displayName: 'Alpha User',
@@ -1050,7 +1040,7 @@ describe( 'core/site Email Reporting', () => {
 				} );
 
 				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
-					body: createEligibleSubscribersResponse( [
+					body: createUserListResponse( [
 						{
 							id: 3,
 							displayName: 'Beta User',
@@ -1100,7 +1090,7 @@ describe( 'core/site Email Reporting', () => {
 				provideUserInfo( registry, { id: 1 } );
 
 				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
-					body: createEligibleSubscribersResponse(
+					body: createUserListResponse(
 						[
 							{
 								id: 2,
@@ -1117,7 +1107,7 @@ describe( 'core/site Email Reporting', () => {
 				} );
 
 				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
-					body: createEligibleSubscribersResponse(
+					body: createUserListResponse(
 						[
 							{
 								id: 3,
@@ -1153,7 +1143,7 @@ describe( 'core/site Email Reporting', () => {
 				provideUserInfo( registry, { id: 1 } );
 
 				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
-					body: createEligibleSubscribersResponse(
+					body: createUserListResponse(
 						[
 							{
 								id: 3,
@@ -1234,7 +1224,7 @@ describe( 'core/site Email Reporting', () => {
 		describe( 'getSubscribedUsers', () => {
 			it( 'returns the cached subscribed-users listing for matching args', () => {
 				registry.dispatch( CORE_SITE ).receiveGetSubscribedUsers(
-					createEligibleSubscribersResponse( [
+					createUserListResponse( [
 						{
 							id: 2,
 							displayName: 'Subscribed User',
@@ -1266,7 +1256,7 @@ describe( 'core/site Email Reporting', () => {
 				provideUserInfo( registry, { id: 1 } );
 
 				registry.dispatch( CORE_SITE ).receiveGetSubscribedUsers(
-					createEligibleSubscribersResponse( [
+					createUserListResponse( [
 						{
 							id: 1,
 							displayName: 'Current User',
@@ -1293,7 +1283,7 @@ describe( 'core/site Email Reporting', () => {
 
 			it( 'returns roleDisplayName as the role when the response provides it', () => {
 				registry.dispatch( CORE_SITE ).receiveGetSubscribedUsers(
-					createEligibleSubscribersResponse( [
+					createUserListResponse( [
 						{
 							id: 2,
 							displayName: 'Subscribed User',
@@ -1314,7 +1304,7 @@ describe( 'core/site Email Reporting', () => {
 
 			it( 'returns the role slug when the response holds no roleDisplayName', () => {
 				registry.dispatch( CORE_SITE ).receiveGetSubscribedUsers(
-					createEligibleSubscribersResponse( [
+					createUserListResponse( [
 						{
 							id: 2,
 							displayName: 'Subscribed User',
@@ -1334,7 +1324,7 @@ describe( 'core/site Email Reporting', () => {
 
 			it( 'fetches page 1 with the search term on a cache miss', async () => {
 				fetchMock.getOnce( subscribedUsersEndpointRegExp, {
-					body: createEligibleSubscribersResponse( [
+					body: createUserListResponse( [
 						{
 							id: 2,
 							displayName: 'Search User',
@@ -1368,7 +1358,7 @@ describe( 'core/site Email Reporting', () => {
 
 			it( "keeps each search term's results separate", async () => {
 				fetchMock.getOnce( subscribedUsersEndpointRegExp, {
-					body: createEligibleSubscribersResponse( [
+					body: createUserListResponse( [
 						{
 							id: 2,
 							displayName: 'Alpha User',
@@ -1380,7 +1370,7 @@ describe( 'core/site Email Reporting', () => {
 				} );
 
 				fetchMock.getOnce( subscribedUsersEndpointRegExp, {
-					body: createEligibleSubscribersResponse( [
+					body: createUserListResponse( [
 						{
 							id: 3,
 							displayName: 'Beta User',
@@ -1440,7 +1430,7 @@ describe( 'core/site Email Reporting', () => {
 
 			it( 'fetches every page and merges the users when totalPages is greater than 1', async () => {
 				fetchMock.getOnce( subscribedUsersEndpointRegExp, {
-					body: createEligibleSubscribersResponse(
+					body: createUserListResponse(
 						[
 							{
 								id: 2,
@@ -1455,7 +1445,7 @@ describe( 'core/site Email Reporting', () => {
 				} );
 
 				fetchMock.getOnce( subscribedUsersEndpointRegExp, {
-					body: createEligibleSubscribersResponse(
+					body: createUserListResponse(
 						[
 							{
 								id: 3,
@@ -1483,6 +1473,49 @@ describe( 'core/site Email Reporting', () => {
 						.users.map( ( { name } ) => name )
 				).toEqual( [ 'Page 1 User', 'Page 2 User' ] );
 				expect( fetchMock ).toHaveFetchedTimes( 2 );
+			} );
+
+			it( 'returns only the requested subscribed-users page when the caller asks for a page after the first', async () => {
+				fetchMock.getOnce( subscribedUsersEndpointRegExp, {
+					body: createUserListResponse(
+						[
+							{
+								id: 3,
+								displayName: 'Page 2 User',
+								email: 'page2@example.com',
+								role: 'editor',
+							},
+						],
+						{ page: 2, total: 2, totalPages: 2 }
+					),
+					status: 200,
+				} );
+
+				registry.select( CORE_SITE ).getSubscribedUsers( {
+					page: 2,
+					search: '',
+				} );
+				await untilResolved( registry, CORE_SITE ).getSubscribedUsers( {
+					page: 2,
+					search: '',
+				} );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched(
+					subscribedUsersEndpointRegExp,
+					{
+						queryParams: {
+							page: 2,
+							search: '',
+						},
+					}
+				);
+				expect(
+					registry
+						.select( CORE_SITE )
+						.getSubscribedUsers( { page: 2, search: '' } )
+						.users.map( ( { name } ) => name )
+				).toEqual( [ 'Page 2 User' ] );
 			} );
 
 			it( 'returns undefined when the request fails', async () => {
