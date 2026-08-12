@@ -52,20 +52,6 @@ const styles = createPDFStyles( {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 	},
-	// The label cell takes the width the metric leaves. Truncation needs a
-	// bounded box, so the text is measured against this cell rather than growing
-	// past the metric. The dashboard uses a 10px gutter here, but react-pdf's
-	// truncation reserves less room for the ellipsis than CSS `text-overflow`
-	// does, so a wider gutter keeps the label clear of the metric.
-	primaryCell: {
-		flexGrow: 1,
-		flexShrink: 1,
-		marginRight: 20,
-	},
-	// Truncates on a single line, matching the dashboard's `text-overflow`.
-	primary: {
-		textOverflow: 'ellipsis',
-	},
 	// A label the dashboard renders as a link keeps that link colour.
 	primaryLink: {
 		color: PDF_COLORS.CONTENT_SECONDARY,
@@ -104,10 +90,6 @@ const PDFMetricTileTable: FC< PDFMetricTileTableProps > = ( {
 	const visibleRows =
 		typeof limit === 'number' ? rows.slice( 0, limit ) : rows;
 
-	const primaryStyles = linked
-		? [ styles.primary, styles.primaryLink ]
-		: styles.primary;
-
 	return (
 		<PDFCard style={ styles.card }>
 			<PDFTypography type="body" size="small" style={ styles.title }>
@@ -116,16 +98,14 @@ const PDFMetricTileTable: FC< PDFMetricTileTableProps > = ( {
 			<View style={ styles.table }>
 				{ visibleRows.map( ( row, index ) => (
 					<View key={ index } style={ styles.row }>
-						<View style={ styles.primaryCell }>
-							<PDFTypography
-								type="body"
-								size="small"
-								style={ primaryStyles }
-								maxLines={ 1 }
-							>
-								{ row.primary }
-							</PDFTypography>
-						</View>
+						<PDFTypography
+							type="body"
+							size="small"
+							style={ linked ? styles.primaryLink : undefined }
+							truncateContent
+						>
+							{ row.primary }
+						</PDFTypography>
 						<PDFTypography
 							type="body"
 							size="small"
