@@ -1,5 +1,5 @@
 /**
- * ExpressSetupResumeNotice component stories.
+ * ExpressSetupResumeNewsletterNotification component stories.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -26,7 +26,11 @@ import { ElementType } from 'react';
  */
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { RRM_EXPRESS_SETUP_RESUME_NEWSLETTER_NOTIFICATION_ID } from '@/js/modules/reader-revenue-manager/constants';
-import { createTestRegistry, provideSiteInfo } from '@tests/js/utils';
+import {
+	createTestRegistry,
+	provideSiteInfo,
+	provideUserAuthentication,
+} from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import ExpressSetupResumeNewsletterNotification from '.';
 
@@ -54,6 +58,7 @@ export default {
 		( Story: ElementType ) => {
 			function setupRegistry( registry: Registry ) {
 				provideSiteInfo( registry );
+				provideUserAuthentication( registry );
 			}
 
 			return (

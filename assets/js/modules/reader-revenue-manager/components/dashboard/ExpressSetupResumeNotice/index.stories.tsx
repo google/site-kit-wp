@@ -27,7 +27,11 @@ import { ElementType } from 'react';
 import ExpressSetupResumeNotice, {
 	ExpressSetupResumeNoticeProps,
 } from '@/js/modules/reader-revenue-manager/components/dashboard/ExpressSetupResumeNotice';
-import { createTestRegistry, provideSiteInfo } from '@tests/js/utils';
+import {
+	createTestRegistry,
+	provideSiteInfo,
+	provideUserAuthentication,
+} from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 
 type Registry = ReturnType< typeof createTestRegistry >;
@@ -56,6 +60,7 @@ export default {
 		( Story: ElementType ) => {
 			function setupRegistry( registry: Registry ) {
 				provideSiteInfo( registry );
+				provideUserAuthentication( registry );
 			}
 
 			return (
