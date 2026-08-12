@@ -129,5 +129,24 @@ describe( 'module/pagespeed-insights service store', () => {
 				} );
 			} );
 		} );
+
+		describe( 'getDetailsLinkURL', () => {
+			it( 'returns the PageSpeed report URL for the reference site', () => {
+				const referenceSiteURL = 'https://example.com/test-page/';
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					referenceSiteURL,
+				} );
+
+				const detailsLinkURL = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getDetailsLinkURL();
+
+				expect( new URL( detailsLinkURL ).pathname ).toBe( '/report' );
+				expect( detailsLinkURL ).toMatchQueryParameters( {
+					url: referenceSiteURL,
+					utm_source: 'sitekit',
+				} );
+			} );
+		} );
 	} );
 } );

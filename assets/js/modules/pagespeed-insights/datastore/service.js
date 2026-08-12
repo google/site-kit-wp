@@ -77,6 +77,24 @@ export const selectors = {
 			utm_source: 'sitekit',
 		} );
 	},
+
+	/**
+	 * Gets the details link URL for the module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {string} Details link URL.
+	 */
+	getDetailsLinkURL: createRegistrySelector( ( select ) => () => {
+		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
+
+		return select( MODULES_PAGESPEED_INSIGHTS ).getServiceURL( {
+			path: 'report',
+			query: {
+				url: siteURL,
+			},
+		} );
+	} ),
 };
 
 const store = {
