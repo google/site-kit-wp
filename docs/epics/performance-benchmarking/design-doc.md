@@ -62,46 +62,61 @@ Behind the widget, four new pieces:
 1. **Proxy access to the generative endpoint.** `Google_Proxy` gains a method that posts to the
    service's `/v1/ai/benchmarking` endpoint and returns the generated insight from that same
    response.
-2. **A module datapoint.** `Analytics_4` gains a `GET` datapoint that forwards a benchmarking request
-   and returns the insight.
-3. **A datastore slice.** `modules/analytics-4` gains a `benchmarking` slice that requests the
-   insight through the API layer's cache and exposes it to the widget.
-4. **The expected-baseline model.** Pure functions that derive the expected daily traffic range the
-   Traffic Insights chart plots from the site's own GA4 daily history, described under
+2. **A module datapoint that assembles its own request.** `Analytics_4` gains a `GET` datapoint that
+   runs the GA4 reports, collects Search Console rows through a filter, derives the request payload,
+   calls the proxy, and returns the insight together with the series and rows the widget renders.
+3. **The expected-baseline model.** PHP that derives the expected daily traffic range the Traffic
+   Insights chart plots from the site's own GA4 daily history, described under
    [Expected baseline](#expected-baseline).
+4. **A datastore slice.** `modules/analytics-4` gains a `benchmarking` slice that requests that one
+   response through the API layer's cache and exposes it to the widget.
 
-The analytical inputs themselves are assembled in the browser from GA4 and Search Console reports
-the plugin already knows how to fetch. The service narrates; it does not query, and it does not
-model — the expected baseline is closed-form arithmetic over the site's own daily series, computed
-in the browser and rendered without waiting for the generative call.
+**The browser assembles nothing.** The widget calls the datapoint with the selected date range and
+receives a single object carrying the generated insight, the daily series, the expected band and the
+breakdown rows. No component in the widget reads a report selector, and no Search Console request is
+issued from the front end. The service narrates; it does not query, and it does not model — the
+expected baseline is closed-form arithmetic over the site's own daily series, computed in PHP
+alongside the payload it travels in and returned whether or not the generative call succeeds.
 
 ```mermaid
 sequenceDiagram
     participant W as Widget
     participant S as benchmarking store
     participant C as API cache
-    participant P as Analytics_4 datapoint
+    participant D as Analytics_4 datapoint
+    participant G as GA4 Data API
+    participant SC as Search Console
     participant X as Site Kit Service
-    W->>S: getBenchmarkingInsight( payload )
-    S->>C: GET benchmarking-insight
-    C->>P: on a cache miss
-    P->>X: POST /v1/ai/benchmarking
-    X-->>P: scenario, top_dimensions, text, driver, recommendation
-    P-->>C: insight
-    C-->>S: insight
-    S-->>W: insight
+    W->>S: getBenchmarking( startDate, endDate )
+    S->>C: GET benchmarking
+    C->>D: on a cache miss
+    D->>G: batched reports
+    D->>SC: contextual_data filter
+    D->>X: POST /v1/ai/benchmarking
+    X-->>D: scenario, top_dimensions, text, driver, recommendation
+    D-->>C: insight, daily series, baseline, breakdown rows
+    C-->>S: response
+    S-->>W: response
 ```
 
 ## **Infrastructure**
 
 Almost nothing here is new. The widget registers through the Widgets API into the Traffic area and
-context that already exist; its data comes from the `analytics-4` and `search-console` report
-selectors, framed by the `core/user` date-range selectors and the date utilities; the tabs, the
-error and null states, the thumbs survey and the tracking and debug-field traits are the ones the
-rest of the dashboard uses, wired up the usual way.
+context that already exist; the tabs, the error and null states, the thumbs survey and the tracking
+and debug-field traits are the ones the rest of the dashboard uses, wired up the usual way. The
+server-side half has a working precedent in Email Reporting, which already runs GA4 and Search
+Console reports to compose a payload rather than to answer a single report request.
 
-Five reuses carry weight in the design, because it depends on a particular property of each:
+Seven reuses carry weight in the design, because it depends on a particular property of each:
 
+* **`Module::get_data()` and `Module::set_data()` dispatch a datapoint in-process.** That is how the
+  new datapoint runs its reports: no HTTP hop and no REST round trip, using the module's own service
+  client — see [Report gathering](#report-gathering).
+* **`GET:batch-report` on `Analytics_4` runs up to five report requests per GA4 call.** The reports
+  the payload needs therefore cost two round trips rather than eight, chunked the way
+  `Email_Reporting_Data_Requests::collect_batch_reports()` chunks them.
+* **`POST:searchanalytics-batch` on `Search_Console`** answers the query rows the same way, which is
+  what the [contextual-data filter](#cross-module-contextual-data) hands back.
 * **`GoogleChart` passes Google Charts interval roles through untouched.** That is what draws the
   expected-range band, with no new chart type and no change to the shared component — see
   [Traffic Insights tab](#traffic-insights-tab).
@@ -111,17 +126,15 @@ Five reuses carry weight in the design, because it depends on a particular prope
 * **`Google_Proxy::request()`** already injects `site_id`/`site_secret` and the bearer header, which
   keeps the new proxy method thin. Its 15-second default timeout is a constraint the design has to
   work around — see [One request, and its latency budget](#latency-budget).
-* **The `googlesitekit_post_date` and `googlesitekit_post_categories` custom dimensions** supply
-  content momentum and category resonance. A site missing them loses those payload keys, and with
-  them the scenarios that depend on them — see [Payload assembly](#payload-assembly).
-* **The property-create-time and partial-data state** decides whether the widget renders at all, and
-  the [expected baseline](#expected-baseline) needs considerably more history than that state
-  guarantees.
+* **`Custom_Dimensions_Data_Available`** answers server-side whether `googlesitekit_post_date` and
+  `googlesitekit_post_categories` are gathering data, which decides whether those payload keys are
+  derived at all — see [Payload assembly](#payload-assembly).
 
-The new infrastructure is the generative call and nothing else: a `Google_Proxy` method, the
-`Analytics_4` datapoint in front of it, and the `benchmarking` datastore slice behind it. The one
-external dependency the plugin has not talked to before is the service's `/v1/ai/benchmarking`
-endpoint; the GA4 Data API and the Search Console API are reached the way they always are.
+The new infrastructure is the generative call and the assembly in front of it: a `Google_Proxy`
+method, the `Analytics_4` datapoint that gathers, derives and forwards, the filter Search Console
+answers, and the `benchmarking` datastore slice behind it. The one external dependency the plugin
+has not talked to before is the service's `/v1/ai/benchmarking` endpoint; the GA4 Data API and the
+Search Console API are reached the way they always are.
 
 ## **Detailed design** {#detailed-design}
 
@@ -132,7 +145,9 @@ The epic is built behind a new `performanceBenchmarking` feature flag.
 Registration in `assets/js/modules/analytics-4/widgets/index.js` is wrapped in the flag check, so with
 the flag off the widget is never registered and nothing about the Traffic area changes. The new
 datapoint is likewise added to `Analytics_4::get_datapoint_definitions()` only when the flag is
-enabled.
+enabled, and Search Console adds its
+[contextual-data callback](#cross-module-contextual-data) under the same check — with the flag off
+neither module carries any benchmarking code into a request.
 
 ### **Widget registration and placement** {#widget-registration-and-placement}
 
@@ -208,71 +223,78 @@ The tab bar reuses `TabBar` and `Tab` from `googlesitekit-components` inside `Sc
 overflow, keyboard navigation and the desktop scroll arrows all behave as they already do elsewhere.
 
 The active tab is component state. Each tab panel is its own component under
-`performance-benchmarking/tabs/` and is unmounted when inactive. The reports behind the request
-payload resolve at the shell rather than in the panels, because the insight both panels render is
-derived from all of them — see [Panel data flow](#panel-data-flow); a panel adds only what its own
-sections need on top. Switching tabs emits a `tab_select` event via `trackEvent`.
+`performance-benchmarking/tabs/` and is unmounted when inactive. The shell resolves the one
+benchmarking response and hands each panel the parts its sections render — see
+[Panel data flow](#panel-data-flow); a panel resolves nothing of its own. Switching tabs emits a
+`tab_select` event via `trackEvent`.
 
-The shell owns the states shared by both tabs:
+The shell owns the states shared by both tabs, and all of them are read off that single response:
 
 ```mermaid
 stateDiagram-v2
     [*] --> InsufficientHistory: property < 13 months
     [*] --> Loading
-    Loading --> Ready: reports + insight resolved
-    Loading --> Reporting: insight failed, reports resolved
-    Loading --> Error: reports failed
-    Ready --> Reporting: rate limit reached
+    Loading --> Ready: response carries an insight
+    Loading --> Reporting: response carries data, insight omitted
+    Loading --> Error: request failed
 ```
 
 * **InsufficientHistory** — the property is too young for the year-over-year comparison. Whether
   this is a panel the shell renders, or the widget never mounting at all, is the
   [gating decision](#what-does-the-widget-do-when-the-property-is-too-young) still to be confirmed.
-* **Loading** — `PreviewBlock` placeholders sized per section, held until the reports resolve.
+* **Loading** — `PreviewBlock` placeholders sized per section, held until the response resolves.
+  It is one request, so the panel fills in at once rather than section by section.
 * **Ready** — metrics, charts and generated insight all present.
-* **Reporting** — the GA4 and Search Console data resolved but the generated insight did not. The
-  charts, totals and breakdown still render; the insight block is absent. A failed narration must
-  never take the numbers down with it.
-* **Error** — the underlying reports failed. Renders `WidgetReportError` with the module slug, so
-  the existing retry and request-access affordances apply.
+* **Reporting** — the response resolved with its data and without an insight, which is what the
+  datapoint returns when the generative call is rate-limited, times out, or fails. The charts,
+  totals and breakdown still render; the insight block is absent. A failed narration must never take
+  the numbers down with it, which is why generation failure is an omitted field rather than an error
+  response.
+* **Error** — the request failed: the GA4 reports behind it errored, or the datapoint itself did.
+  Renders `WidgetReportError` with the module slug, so the existing retry and request-access
+  affordances apply.
 
 ### **Panel data flow** {#panel-data-flow}
 
-No component in the widget calls a report selector. Six hooks in `performance-benchmarking/hooks/`
-sit between the datastore and the panels, each a thin composition of keyed selectors over the pure
-functions in `performance-benchmarking/utils/`:
+No component in the widget calls a report selector, and only the shell touches the datastore. One
+hook in `performance-benchmarking/hooks/`, `useBenchmarking()`, reads the selected date range off
+`core/user`, calls the [`benchmarking` slice](#datastore-slice), and returns the resolved response
+with its loading state. Everything both panels render is a field of that response:
 
-| Hook | Returns | Reads |
+| Response field | Shape | Rendered by |
 | :---- | :---- | :---- |
-| `useDailyTrafficSeries` | the zero-filled daily `totalUsers` series over the [baseline span](#expected-baseline) | one GA4 daily report |
-| `useVisitorTotals` | the `{ current, previous }` pairs the `visitors` array carries | the daily series, plus a totals report for the windows it does not span |
-| `useExpectedBaseline` | the per-day expected range and the period-scale [`baseline` object](#baseline-payload) | the daily series |
-| `useContextualData` | the seven `contextual_data` dimension arrays | six GA4 reports and one Search Console report |
-| `useBenchmarkingPayload` | the assembled request body and its stable hash | the four hooks above |
-| `useBenchmarkingInsight` | the insight, its loading state, and the reason it is unavailable | the `benchmarking` slice |
+| `insight` | `{ scenario, topDimensions, text, driver, actionableRecommendation }`; omitted when generation did not succeed | `GeneratedInsight`, and the dimension order both breakdown sections walk |
+| `insightUnavailableReason` | `rate_limited`, `timed_out`, `forbidden` or `errored`; omitted on success | the [Reporting state](#widget-shell) and the `insight_unavailable` event |
+| `visitors` | `{ current, previous }` totals for the selected period | `TotalVisitors` |
+| `dailyTraffic` | one row per plotted day: `{ date, visitors, expectedMin, expectedMax }` | both charts |
+| `baseline` | `{ periodMonths, expectedRangeMin, expectedRangeMax, trendDirection, statusVsBaseline, isSeasonalPeriod, tier }` | `TrafficFactors` for `HISTORICAL_BASELINE`, and the band's copy |
+| `contentMarkers` | `{ date, urls, visitors }` per publish date, already capped and ranked | the Overview chart's `dateMarkers` |
+| `contextualData` | the dimension arrays, each row `{ label, current, previous }` | `TrafficBreakdown` and `TrafficFactors` |
 
-The shell calls the last two, because the [states it owns](#widget-shell) are defined over the
-insight and both panels render it. **That makes every report an input to the shell rather than to the
-panel whose sections display it** — the insight is derived from the whole payload, so the Traffic
-Insights tab waits on the search-query report it never draws. The panels call the hooks their own
-sections need again; each hook's selectors are keyed by their report options and the insight by the
-payload hash, so the second call reads a resolved value and issues nothing.
+`dailyTraffic` carries the plotted days only. The 392-day lookback the
+[baseline](#expected-baseline) reads is consumed server-side and never crosses the wire, so the
+28-day range returns 28 rows rather than 420.
 
-Below the hooks, every section component takes rows and numbers as props and touches no store, which
-is what makes each of them renderable from a fixture in Storybook and testable without a registry.
+The response is camelCase and flat — the plugin's own shape, not the service's. The snake_case
+contract in the [appendix](#request-and-response-field-mapping) describes what the datapoint sends
+to the service, and stops at the datapoint.
+
+Every section component takes rows and numbers as props and touches no store, which is what makes
+each of them renderable from a fixture in Storybook and testable without a registry. The fixture is
+one JSON object per state rather than a set of report responses per section.
 
 ### **Traffic Overview tab** {#traffic-overview-tab}
 
 `TrafficOverviewTab.tsx` renders four sections in a fixed order and owns no data logic: it takes the
-insight from the shell, calls the hooks its sections need, and hands each component its props
+response from the shell and hands each component its props
 ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-11454&m=dev)).
 
 | Section | Component | Fed by |
 | :---- | :---- | :---- |
-| Total visitors | `TotalVisitors` | `useVisitorTotals` |
-| Generated insight | `GeneratedInsight` | the shell's insight |
-| Traffic chart | `TrafficOverviewChart` | `useDailyTrafficSeries`, `useContextualData` |
-| Traffic breakdown | `TrafficBreakdown` | `useContextualData`, `topDimensions` |
+| Total visitors | `TotalVisitors` | `visitors` |
+| Generated insight | `GeneratedInsight` | `insight` |
+| Traffic chart | `TrafficOverviewChart` | `dailyTraffic`, `contentMarkers` |
+| Traffic breakdown | `TrafficBreakdown` | `contextualData`, `insight.topDimensions` |
 
 Every section component lives in `performance-benchmarking/components/`, one per file with a
 co-located test and story. `GeneratedInsight` is rendered by both panels; the other three are used
@@ -281,8 +303,8 @@ only here.
 #### *Total visitors*
 
 `TotalVisitors` takes the period total and the preceding period's total and renders the headline
-figure with `ChangeBadge` beneath it. Both numbers come from `useVisitorTotals`, which sums them out
-of the daily series the baseline already fetched rather than issuing a second report, so the headline
+figure with `ChangeBadge` beneath it. Both numbers are `visitors` off the response, summed
+server-side from the same daily series the chart plots and the baseline reads, so the headline
 cannot disagree with the chart below it.
 
 `totalUsers` is the metric, not `activeUsers`, so the figure agrees with the All Visitors count in
@@ -318,49 +340,48 @@ for one.
 #### *Traffic chart with content markers*
 
 `TrafficOverviewChart` renders `GoogleChart` with `chartType="LineChart"` over a two-column data
-table — date and `totalUsers` — sliced from `useDailyTrafficSeries` down to the selected range. The
-report shape is the one `getGraphReportOptions()` produces for the All Traffic graph, using the
-`date` dimension ordered ascending.
+table — date and visitors — mapped straight off `dailyTraffic`, which already covers exactly the
+plotted range.
 
 Recently published content that is gaining traffic is annotated through the chart's existing
-`dateMarkers` prop — the one `UserCountGraph` marks the property creation date with. It discards
-entries outside the plotted range itself, so posts published before the selected range need no
-filtering here.
+`dateMarkers` prop — the one `UserCountGraph` marks the property creation date with — mapped from
+`contentMarkers`. It discards entries outside the plotted range itself, so nothing needs filtering
+here.
 
-A pure function in `utils/` builds the marker list from the same rows that become
-`recent_content_momentum` in the payload, so the annotations and the narration describe the same
-posts. Three rules live in that function:
+`contentMarkers` is derived server-side from the same rows that become `recent_content_momentum` in
+the payload, so the annotations and the narration describe the same posts. Three rules live in that
+derivation:
 
 * The marker date is the post's publish date from `customEvent:googlesitekit_post_date`, the
   dimension those rows are already filtered on; the payload's `published_days_ago` is the same value
   counted back from the reference date.
 * The root URL and index pages are dropped, matching the exclusion the service applies before it
   narrates — a marker on `/` would annotate a page the insight has been told to ignore.
-* Posts sharing a publish date collapse into a single marker whose tooltip names them, and the list
-  is capped by a constant in `constants.ts`, ranked by visitor gain. One marker is one vertical line
-  at one x position, so an uncapped list on a site that publishes daily draws a picket fence across
-  the chart.
+* Posts sharing a publish date collapse into a single marker naming them, and the list is capped and
+  ranked by visitor gain. One marker is one vertical line at one x position, so an uncapped list on a
+  site that publishes daily draws a picket fence across the chart.
 
-Marker text is plugin-formatted with `sprintf` against a translated pattern; the response carries no
-per-item strings. Where the custom dimension is absent or still gathering data there are no markers
-and the section renders as a plain line chart.
+Marker text is formatted in the browser with `sprintf` against a translated pattern, over the URLs
+and counts the row carries; neither the datapoint nor the service returns per-item strings. Where
+the custom dimension is absent or still gathering data, `contentMarkers` is empty and the section
+renders as a plain line chart.
 
 #### *Traffic breakdown* {#traffic-breakdown}
 
 `TrafficBreakdown`
 ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-11543&m=dev))
 renders up to three sections — channels whose visitors surged, content categories that resonated,
-search queries that shifted — one per `top_dimensions` code, in the order the response gives them.
-Every value comes from the request payload's `contextual_data`, described in
-[Payload assembly](#payload-assembly); the response carries no rows and no per-item strings.
+search queries that shifted — one per `topDimensions` code, in the order the insight gives them.
+Every value comes from `contextualData`, the same rows the datapoint sent to the service, described
+in [Payload assembly](#payload-assembly); the service returns no rows and no per-item strings.
 
-What the response carries is `top_dimensions`: up to three `DimensionType` codes — `TRAFFIC_CHANNELS`,
+What the insight carries is `topDimensions`: up to three `DimensionType` codes — `TRAFFIC_CHANNELS`,
 `AUDIENCE_SEGMENTS`, `PAGES`, `SEARCH_QUERIES`, `DEVICES`, `CATEGORIES`, `REFERRING_SITES`,
 `HISTORICAL_BASELINE` — ordered from highest impact down, chosen by the model from the ranked impacts
 the service computes over the payload.
 
 Each code maps to an entry in a catalog in `performance-benchmarking/breakdown/registry.ts`: its
-title copy, the `contextual_data` key it reads, a static fallback order, and the components that
+title copy, the `contextualData` key it reads, a static fallback order, and the components that
 render it. Holding copy and components against the code in one place is what lets this section and
 [What affected your traffic](#what-affected-your-traffic) walk the same ordered codes while differing
 only in which renderer they take off the entry.
@@ -369,18 +390,19 @@ Three resolution rules live in the catalog lookup rather than in the components:
 
 * A code with no catalog entry is dropped, so an unrecognized `DimensionType` costs one section
   rather than the panel.
-* A code whose `contextual_data` key was omitted from the request is dropped as well. The service
+* A code whose `contextualData` key is absent from the response is dropped as well. The service
   picks only from what it was sent, so this should not arise; the lookup treats it as no section
   rather than as an empty one.
 * With no insight, ordering falls back to the entries' static order, which leads with the dimensions
   every site has — channels, devices, visitor mix — ahead of the two that depend on custom
-  dimensions. That fallback is what keeps the section alive in the [Reporting state](#widget-shell).
+  dimensions. That fallback is what keeps the section alive in the [Reporting state](#widget-shell),
+  where `contextualData` is present and `insight` is not.
 
-Within a section the plugin ranks rows itself, by the absolute change between the
-`{ current, previous }` pair each `contextual_data` item already carries, capped at a row limit in
-`constants.ts`, with values formatted through `numFmt` and each row carrying its own `ChangeBadge`.
-The row list is a new component: the rows carry a label, a value and a change, and no shared row
-component in the plugin has a column for the change.
+Rows arrive ranked and capped: the datapoint orders each dimension by the absolute change between
+its `{ current, previous }` pair before sending it, and the response carries what it sent. The
+components render that order, formatting values through `numFmt` and giving each row its own
+`ChangeBadge`. The row list is a new component: the rows carry a label, a value and a change, and no
+shared row component in the plugin has a column for the change.
 
 ### **Traffic Insights tab** {#traffic-insights-tab}
 
@@ -390,9 +412,9 @@ from the shell
 
 | Section | Component | Fed by |
 | :---- | :---- | :---- |
-| Generated insight | `GeneratedInsight` | the shell's insight |
-| Actual traffic vs expected baseline | `ExpectedBaselineChart` | `useDailyTrafficSeries`, `useExpectedBaseline` |
-| What affected your traffic | `TrafficFactors` | `useContextualData`, `useExpectedBaseline`, `topDimensions` |
+| Generated insight | `GeneratedInsight` | `insight` |
+| Actual traffic vs expected baseline | `ExpectedBaselineChart` | `dailyTraffic` |
+| What affected your traffic | `TrafficFactors` | `contextualData`, `baseline`, `insight.topDimensions` |
 | Is this helpful? | `FeedbackPrompt` | — |
 
 #### *Generated insight*
@@ -400,52 +422,51 @@ from the shell
 The [Overview tab's component](#traffic-overview-tab) with the variant prop set to this tab's
 emphasis
 ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-10450&m=dev)).
-One benchmarking request serves both panels: the shell resolves the insight and the store keys it by
-the payload hash, so switching tabs reads a resolved value rather than issuing a second request, and
-a later mount with the same payload reads the [API cache](#datastore-slice) rather than the service.
+One benchmarking request serves both panels: the shell resolves the response and the store keys it by
+the date range, so switching tabs reads a resolved value rather than issuing a second request, and a
+later mount over the same range reads the [API cache](#datastore-slice) rather than the service.
 This matters — the service rate-limits to a burst of 10 with a refill of 2 per hour per site and user.
 
 #### *Actual traffic vs expected baseline*
 
 `ExpectedBaselineChart`
 ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-11363&m=dev))
-renders one `GoogleChart` `LineChart` carrying both series: actual daily `totalUsers` as a line, and
-the expected range for the same days as a shaded band behind it. Both are sliced from the same daily
-series, so the line and the band cannot disagree about a day, and the range comes from
-`useExpectedBaseline` over that series — the model itself is specified under
-[Expected baseline](#expected-baseline).
+renders one `GoogleChart` `LineChart` carrying both series: actual daily visitors as a line, and the
+expected range for the same days as a shaded band behind it. Both come from `dailyTraffic`, one row
+per plotted day carrying the actual and both bounds, so the line and the band cannot disagree about a
+day — the model that produced the bounds is specified under [Expected baseline](#expected-baseline).
 
 The band is drawn with Google Charts interval roles rather than a second chart type. The data table
-is four columns — date, actual `totalUsers`, then the range's lower and upper bound as two columns
-declared with `role: 'interval'` immediately after the series they annotate — and the chart options
-set `intervals: { style: 'area' }`. The chart passes no `selectedStats`, so `getFilteredChartData()`
+is four columns — date, actual visitors, then `expectedMin` and `expectedMax` as two columns declared
+with `role: 'interval'` immediately after the series they annotate — and the chart options set
+`intervals: { style: 'area' }`. The chart passes no `selectedStats`, so `getFilteredChartData()`
 hands the table through untouched, and `getChartOptions()` does not touch `intervals`: `chartType`
 stays `LineChart` and `GoogleChart` needs no change. Building that table is a pure function over the
-series and the range in `utils/`, which puts the column order the interval role depends on under a
-unit test rather than under inspection.
+rows in `utils/`, which puts the column order the interval role depends on under a unit test rather
+than under inspection.
 
-The chart resolves independently of the generative call: a failed, timed-out or rate-limited insight
-leaves both series in place. Where the property's history is too short for the full model, the band
-renders from whichever [tier](#expected-baseline) the available history supports rather than
-disappearing, and this section carries the support link explaining what the band is — the least
-self-evident thing in the widget.
+The chart is unaffected by the generative call: `dailyTraffic` is derived before the proxy request
+and returned whether that request succeeds, times out or is rate-limited. Where the property's
+history is too short for the full model, the band renders from whichever [tier](#expected-baseline)
+the available history supports rather than disappearing, and this section carries the support link
+explaining what the band is — the least self-evident thing in the widget.
 
 #### *What affected your traffic* {#what-affected-your-traffic}
 
 `TrafficFactors`
 ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-10572&m=dev))
-walks the same ordered `top_dimensions` codes and the same catalog as the
+walks the same ordered `topDimensions` codes and the same catalog as the
 [traffic breakdown](#traffic-breakdown), taking the explanatory renderer off each entry instead of
 the row renderer, so the two sections cannot drift out of agreement about what the top dimensions
 were or what they are called.
 
 `HISTORICAL_BASELINE` is the entry to handle deliberately. The service returns it when the site's own
 trajectory is the explanation, and it is also the fallback it substitutes when the model names no
-valid dimension at all — and unlike every other code it has no `contextual_data` key behind it. Its
-catalog entry therefore reads `useExpectedBaseline` rather than a dimension array and explains the
-movement against the expected band, from `status_vs_baseline`, `trend_direction` and the
-`period_months` the tier actually used. **This is why a catalog entry carries components rather than
-only a `contextual_data` key.**
+valid dimension at all — and unlike every other code it has no `contextualData` key behind it. Its
+catalog entry therefore reads the response's `baseline` object rather than a dimension array, and
+explains the movement against the expected band from `statusVsBaseline`, `trendDirection` and the
+`periodMonths` the tier actually used. **This is why a catalog entry carries components rather than
+only a `contextualData` key.**
 
 #### *Is this helpful?*
 
@@ -462,8 +483,9 @@ See the [open question](#how-does-the-scenario-code-reach-the-feedback-telemetry
 ### **Expected baseline** {#expected-baseline}
 
 The expected range is a stateless, closed-form calculation over the site's own daily `totalUsers`
-history, evaluated in the browser for every day the Traffic Insights chart plots. It stores nothing,
-trains nothing, and costs well under a millisecond for any range the date-range selector offers.
+history, evaluated in PHP for every day the Traffic Insights chart plots. It stores nothing, trains
+nothing, and is arithmetic over a few hundred rows — negligible against the API calls in the same
+request.
 
 #### *The daily series it reads*
 
@@ -477,8 +499,9 @@ GA4 returns no row for a day with no traffic, so the derivation keys rows by dat
 with zeros before computing anything. A missing day must not shorten a week or drag down a weekday
 average.
 
-The span covers the selected range as well, so the chart's actual series is a slice of this report
-rather than a second fetch.
+The span covers the selected range as well, so the actual series the chart plots, the `visitors`
+totals and the baseline all come out of this one report. Only the plotted days leave the server: the
+lookback rows are inputs to the calculation and are not part of the response.
 
 #### *The point prediction*
 
@@ -571,13 +594,16 @@ real choice — send a weekday-only baseline with `period_months: 2`, or send no
 
 #### *Where the code lives*
 
-The computation is pure functions over report rows in `performance-benchmarking/utils/` — the
-zero-filled series builder, each of the three factors, the band, and the mapping onto the six
-`baseline` fields — with the report options alongside them in `reportOptions.ts`.
-`useExpectedBaseline` composes the report and the computation, and its result feeds two consumers:
-the chart's data table and the request payload. Nothing in the model touches the registry,
-so all of it is unit-testable against fixed daily fixtures, and `getReferenceDate()` on `core/user`
-keeps those fixtures deterministic.
+The computation is one class under `includes/Modules/Analytics_4/Benchmarking/`,
+`Expected_Baseline`, taking the zero-filled daily series and the plotted range and returning the
+per-day bounds and the period-scale `baseline` fields. The zero-filled series builder, each of the
+three factors, the band and the tier selection are methods on it with no dependencies beyond the
+rows — no settings, no options, no service client — so the whole model is unit-testable against
+fixed daily fixtures in PHPUnit.
+
+Its result feeds two consumers in the same request: the `dailyTraffic` rows the chart plots, and the
+`baseline` object the payload carries to the service. The reference date comes from the same
+`Context` the rest of the datapoint uses, which is what keeps the fixtures deterministic.
 
 ### **Generative endpoint infrastructure** {#generative-endpoint-infrastructure}
 
@@ -593,33 +619,125 @@ The user's locale travels as an `hl` **query parameter**, which is the only plac
 for it — not a body field. `request()` takes no query arguments, so the new method appends `hl`,
 resolved from `$this->context->get_locale( 'user' )`, to the URI it hands the helper. The locale is
 part of the service's cache key, so switching the admin language produces a newly generated insight
-rather than a cached one in the wrong language.
+rather than a cached one in the wrong language. The plugin's own cache keys on the date range alone,
+which is the [caveat the slice carries](#datastore-slice).
 
-#### *Module datapoint*
+#### *Module datapoint* {#module-datapoint}
 
-One new `GET:benchmarking-insight` datapoint on `Analytics_4`, an `Executable_Datapoint` class under
-`includes/Modules/Analytics_4/Datapoints/`, taking the `Google_Proxy` instance, `Credentials` and the
-OAuth client through its `$definition` array.
+One new `GET:benchmarking` datapoint on `Analytics_4`, an `Executable_Datapoint` class under
+`includes/Modules/Analytics_4/Datapoints/`, taking the module instance, the `Google_Proxy` instance,
+`Credentials`, the OAuth client and `Context` through its `$definition` array.
+
+**Its only request parameters are `startDate` and `endDate`**, the two every report datapoint
+already takes. The comparison window, the prior-year windows, the reports, the baseline, the payload
+and the rendered rows are all derived from them.
+
+Unlike the module's other datapoints it is not a wrapper over one service call, so it does not use
+`create_request()`/`parse_response()` to shape a single Google API call. It runs a four-step
+pipeline, and the steps fail differently:
+
+1. **Gather.** Two batched GA4 report calls, and one Search Console call through the filter — see
+   [Report gathering](#report-gathering). A GA4 failure ends the request with the module's own
+   `WP_Error`, which is what puts the widget in its Error state. A Search Console failure costs one
+   `contextual_data` key and nothing else.
+2. **Derive.** The zero-filled daily series, the `visitors` totals, the
+   [expected baseline](#expected-baseline), the ranked `contextual_data` arrays and the content
+   markers — see [Payload assembly](#payload-assembly).
+3. **Generate.** One `Google_Proxy` call carrying the assembled payload. **Its failure is recorded,
+   not propagated**: the datapoint keeps everything from step 2, omits `insight`, and sets
+   `insightUnavailableReason` from the status — 429, a timeout, 403 or anything else.
+4. **Compose.** The camelCase response the [panels read](#panel-data-flow).
 
 **It is a `GET` datapoint even though the call it forwards is a `POST` to the service**, so that the
 response is cacheable — the same shape as `GET:report`, which answers a read by POSTing `runReport`.
-Two things follow for the implementation:
+With the payload assembled server-side, nothing rides in the query string but the two dates, and
+those two are what the API cache keys on.
 
-* The payload arrives as query parameters, so every scalar arrives as a string. `days_in_period`, the
-  `visitors` counts, each `MetricPair` and the `baseline` integers are cast before the body is
-  assembled; the service answers a wrongly typed field with a 400.
-* The route's default permission for a read is the view-insights capability rather than the
-  manage-options capability a write gets, which is why the datapoint implements
-  `Permission_Aware_Datapoint` rather than relying on the default.
+Because step 3 fails into a 200, a rate-limited or timed-out generation is cached like any other
+response and the insight does not come back on its own. The datapoint therefore returns
+`insightRetryAfter` alongside the reason — the service's `Retry-After` where the 429 carries one, and
+otherwise a fixed cool-down — and the [slice](#datastore-slice) invalidates and refetches once that
+time has passed. Without it, one 429 costs the insight for the length of the cache TTL.
 
-The datapoint requires the caller's own Google access token, because the service identifies the
-user from the bearer token and checks that user's membership of the site. That makes it **not** a
-`Shareable_Datapoint`, and the consequence for the view-only dashboard is an
-[open question](#what-does-the-view-only-dashboard-show).
+The route's default permission for a read is the view-insights capability rather than the
+manage-options capability a write gets, which is why the datapoint implements
+`Permission_Aware_Datapoint` rather than relying on the default.
+
+The generative call needs the caller's own Google access token, because the service identifies the
+user from the bearer token and checks that user's membership of the site. **Now that the numbers
+travel through the same datapoint as the narration, making it non-shareable would take the whole
+widget away from view-only users, not just the insight** — which is the sharpest form of the
+[view-only open question](#what-does-the-view-only-dashboard-show).
 
 It lives on the Analytics module rather than in a new core controller because every input is GA4
 and Search Console data and every consumer is an Analytics widget. A later feature needing the same
 transport reuses the `Google_Proxy` method and duplicates only the datapoint wrapper.
+
+#### *Report gathering* {#report-gathering}
+
+The datapoint runs reports through `Module::get_data()` and `Module::set_data()`, which dispatch a
+datapoint in-process against the module's own service client — the same path Email Reporting uses to
+compose its payload, with no HTTP hop and no REST permission round trip.
+
+GA4 reports go through `GET:batch-report`, which takes up to five report requests per call.
+`Analytics_4` therefore answers the payload in two calls rather than eight:
+
+| Report | Feeds |
+| :---- | :---- |
+| `totalUsers` by `date`, ascending, over `days_in_period + 392` days | the daily series, `visitors[ 0 ]` and `visitors[ 1 ]`, the whole baseline |
+| `totalUsers` totals over the two windows two years back | `visitors[ 2 ]` |
+| `totalUsers` by `sessionDefaultChannelGrouping`, both windows | `traffic_channel_surges` |
+| `totalUsers` by `newVsReturning`, both windows | `user_mix_shifts` |
+| `totalUsers` by `deviceCategory`, both windows | `device_shifts` |
+| `totalUsers` by `sessionSource`, both windows | `referrers` |
+| `screenPageViews`/`totalUsers` by `pagePath`, filtered on `customEvent:googlesitekit_post_date` | `recent_content_momentum`, `contentMarkers` |
+| `totalUsers` by `customEvent:googlesitekit_post_categories` | `category_resonance` |
+
+Each report carries its current and comparison window as two date ranges in one request rather than
+as two requests. The last two are requested only when `Custom_Dimensions_Data_Available` says the
+dimension is gathering data, so a site without either issues six reports rather than eight.
+
+The report options live in `includes/Modules/Analytics_4/Benchmarking/Report_Options.php`, following
+the `Email_Reporting/Report_Options.php` precedent, which keeps every window and dimension in one
+readable place rather than spread through the datapoint.
+
+#### *Cross-module contextual data* {#cross-module-contextual-data}
+
+`Analytics_4` does not call Search Console. It applies a filter and takes what comes back:
+
+```php
+$contextual_data = apply_filters(
+	'googlesitekit_benchmarking_contextual_data',
+	$contextual_data,
+	array(
+		'start_date'         => $start_date,
+		'end_date'           => $end_date,
+		'compare_start_date' => $compare_start_date,
+		'compare_end_date'   => $compare_end_date,
+		'row_limit'          => $row_limit,
+	)
+);
+```
+
+`Search_Console::register()` adds the callback that answers with `search_query_shifts`, deriving it
+through its own `POST:searchanalytics-batch` datapoint and its own settings, in a
+`Benchmarking\Report_Data_Builder` alongside the `Email_Reporting` one. The callback returns the
+array untouched unless the module `is_connected()`, so a site without a verified property simply
+omits the key — the same degradation the payload already defines for a missing custom dimension.
+Search Console is force-active, so its `register()` always runs and the connection check is the only
+gate that matters.
+
+**No module holds a reference to another.** Analytics owns the extension point and the payload
+shape; Search Console owns its own reports, credentials and connection state; a later module with
+something to contribute adds a callback rather than an edit to the Analytics datapoint. The cost is
+that the payload's contents are not readable from one file alone, which is why the keys and their
+row shapes are specified under [Payload assembly](#payload-assembly) rather than left to the
+callbacks.
+
+The datapoint validates the returned array against those keys and shapes before it builds the
+request — unknown keys dropped, scalars cast, the same row cap applied — because the filter is public
+and what comes back reaches a model and then the dashboard. A callback that errors or returns
+something unusable costs its key, not the request.
 
 #### *One request, and its latency budget* {#latency-budget}
 
@@ -630,65 +748,89 @@ service does carry a long-running-operation framework, and `GET /ai/operations/:
 routed, but the benchmarking endpoint does not create operations, so a plugin-side polling loop would
 have nothing to read. The datastore therefore does one fetch and is done.
 
-That moves the latency exposure the polling design existed to avoid onto the plugin's own request.
-Generation is the slow part, and `Google_Proxy::request()` defaults `timeout` to 15 seconds, which is
-below what a cold generation can take; the benchmarking method passes a higher `timeout` through the
-`$args` the helper already accepts. A generation that outruns that timeout surfaces as a
-`WP_Error` from `wp_remote_post()`, and the widget treats it exactly as it treats any other failed
-insight — it drops to the [Reporting state](#widget-shell) with the numbers intact. The value of the
-timeout, and whether a timed-out request is retried at all given that each attempt spends a
-rate-limit token, is an [open question](#what-is-the-latency-budget-for-the-insight-request).
+That moves the latency exposure the polling design existed to avoid onto the plugin's own request,
+and server-side assembly puts the reports in front of it. One cache miss is four sequential outbound
+calls in one PHP request: two GA4 batch calls, one Search Console call, then generation. The reports
+are the predictable part and generation is the slow part, but the request is the sum rather than the
+generation alone.
+
+`Google_Proxy::request()` defaults `timeout` to 15 seconds, which is below what a cold generation can
+take; the benchmarking method passes a higher `timeout` through the `$args` the helper already
+accepts. A generation that outruns it surfaces as a `WP_Error` from `wp_remote_post()`, which step 3
+of the [pipeline](#module-datapoint) turns into a data-only response rather than a failure — the
+widget drops to the [Reporting state](#widget-shell) with the numbers intact.
+
+What that timeout has to respect is the budget above it. The whole request runs under
+`max_execution_time`, which is 30 seconds on a good deal of shared hosting, and under whatever a
+reverse proxy or CDN in front of the site allows. **The generation timeout is therefore bounded by
+what is left after the reports return, not chosen on its own** — and a request that exceeds the
+host's limit is cut with a 502 or 504 the plugin cannot tell apart from a service failure, losing
+the numbers as well as the insight. Reducing the risk means keeping the report gathering batched,
+capping the generation timeout against the remaining budget, and treating the reports as the part
+that must always complete. The values are an
+[open question](#what-is-the-latency-budget-for-the-insight-request).
 
 #### *Datastore slice* {#datastore-slice}
 
 A new `assets/js/modules/analytics-4/datastore/benchmarking.ts` slice, combined into the module store,
 over one `createFetchStore`:
 
-* `baseName` — `getBenchmarkingInsight`.
+* `baseName` — `getBenchmarking`.
 * `controlCallback` —
-  `get( 'modules', MODULE_SLUG_ANALYTICS_4, 'benchmarking-insight', payload, { cacheTTL: DAY_IN_SECONDS } )`.
+  `get( 'modules', MODULE_SLUG_ANALYTICS_4, 'benchmarking', { startDate, endDate }, { cacheTTL: DAY_IN_SECONDS } )`.
   The 24-hour TTL matches the service's own cache window.
-* `argsToParams` — the derived payload, which makes the store's key and the API cache key the same
-  hash of the same object. It carries the dashboard locale, which is otherwise resolved server-side
-  and would not take part in that hash.
-* `validateParams` — `end_date`, `days_in_period` and a non-empty `visitors`, the three fields a
-  request cannot omit.
+* `argsToParams` — `{ startDate, endDate }`. The store's key and the API cache key are those two
+  dates and nothing else.
+* `validateParams` — both dates present and in `YYYY-MM-DD`.
 
 Selectors on `modules/analytics-4`:
 
-* `getBenchmarkingInsight( payload )` — `{ scenario, topDimensions, text, driver,
-  actionableRecommendation }`.
-* `isLoadingBenchmarkingInsight( payload )` — resolution state and the fetch store's in-flight flag,
-  which is what the shell's Loading state reads.
-* `getBenchmarkingInsightUnavailableReason( payload )` — rate-limited (429), timed out, forbidden
-  (403) or errored (400/500), which both the [Reporting state](#widget-shell) and the
-  `insight_unavailable` event need to tell apart.
+* `getBenchmarking( startDate, endDate )` — the whole response, which is what `useBenchmarking()`
+  destructures for the panels.
+* `isLoadingBenchmarking( startDate, endDate )` — resolution state and the fetch store's in-flight
+  flag, which is what the shell's Loading state reads.
+* `getBenchmarkingInsightUnavailableReason( startDate, endDate )` — the response's reason field,
+  which both the [Reporting state](#widget-shell) and the `insight_unavailable` event read.
 
-One action: `clearBenchmarkingInsight( payload )`, dropping the stored insight and the cached response
-through `invalidateCache()`, so a retry reaches the service rather than reading back what is cached.
+One action: `clearBenchmarking( startDate, endDate )`, dropping the stored response and the cached
+one through `invalidateCache()`. It runs on the error path's retry, and when a response whose
+`insightRetryAfter` has passed is read back from the cache — the only way a rate-limited insight
+returns before the entry expires.
 
-The payload derivation has to be byte-stable — the same reports must produce the same payload, or the
-hash changes and both this cache and the service's miss.
+Two consequences of keying on the dates alone. Repeat loads are free regardless of whether the
+underlying GA4 figures moved, where a payload-derived key missed the cache on every still-open day.
+And the locale is not in the key: the datapoint resolves `hl` from the user's admin language, so a
+language change surfaces when the entry expires or is cleared rather than immediately.
+
+The payload the datapoint assembles still has to be deterministic, since the *service* keys its own
+24-hour cache over the serialized payload. That is a PHP concern — stable ordering, stable rounding,
+stable row caps — and it has no bearing on whether the browser's cache hits.
 
 #### *Payload assembly* {#payload-assembly}
 
 The request payload is `end_date`, `days_in_period`, a `visitors` array of `{ current, previous }`
 pairs — index 0 the active period this year, index 1 the same period a year ago, index 2 two years
 ago — a `contextual_data` object with seven optional keys, and the optional `baseline` object. Every
-field is derived in the browser:
+field is derived in PHP, from the reports the datapoint has just run:
 
 | Payload field | Derived from |
 | :---- | :---- |
-| `end_date`, `days_in_period` | `getDateRangeDates()` and `getDateRangeNumberOfDays()` on `core/user` |
-| `visitors` | `totalUsers` totals for the selected window and its preceding window, repeated for the equivalent windows in prior years, using `getPreviousDate()` and `dateSub()` |
-| `baseline` | The [expected baseline](#baseline-payload) model's period-scale output |
-| `recent_content_momentum` | `screenPageViews`/`totalUsers` by `pagePath`, filtered on `customEvent:googlesitekit_post_date` with an `inListFilter` — the same technique `getTopRecentTrendingPagesReportOptions()` uses |
-| `traffic_channel_surges` | `totalUsers` by `sessionDefaultChannelGrouping`, current and comparison windows |
-| `category_resonance` | `totalUsers` by `customEvent:googlesitekit_post_categories` |
-| `search_query_shifts` | `getReport` on `modules/search-console` with `dimensions: 'query'`, current versus comparison window, carrying both clicks and average position |
-| `user_mix_shifts` | `totalUsers` by `newVsReturning`, current and comparison windows — the dimension `useAudienceTilesReports` already queries |
-| `device_shifts` | `totalUsers` by `deviceCategory`, current and comparison windows — the dimension behind the All Traffic widget's Devices tab |
-| `referrers` | `totalUsers` by `sessionSource`, current and comparison windows |
+| `end_date`, `days_in_period` | the `startDate` and `endDate` request parameters |
+| `visitors` | the daily series for this year's two windows and last year's, and the two-years-back totals report |
+| `baseline` | `Expected_Baseline`'s [period-scale output](#baseline-payload) |
+| `recent_content_momentum` | the `pagePath` report filtered on `customEvent:googlesitekit_post_date` |
+| `traffic_channel_surges` | the `sessionDefaultChannelGrouping` report |
+| `category_resonance` | the `customEvent:googlesitekit_post_categories` report |
+| `search_query_shifts` | the [contextual-data filter](#cross-module-contextual-data) |
+| `user_mix_shifts` | the `newVsReturning` report |
+| `device_shifts` | the `deviceCategory` report |
+| `referrers` | the `sessionSource` report |
+
+The comparison windows are computed off the two request parameters: the preceding window of the same
+length, and both windows shifted back 364 days per prior year, the same offset the
+[baseline](#expected-baseline) uses to keep weekdays aligned. The widget sends dates rather than the
+date-range slug, so the cache key changes when the reference date rolls over instead of holding
+yesterday's answer under today's range.
 
 Every dimension except `recent_content_momentum` and `category_resonance` carries a
 `{ current, previous }` pair rather than a single figure, because the service computes the impact
@@ -698,33 +840,34 @@ without its previous-period figure is a dimension the narration cannot rank**, s
 a comparison range, not just a current one. The plugin sends no pre-computed trend or ranking of its
 own; the request has no field for one.
 
-For the default 28-day range, the trailing daily series the [expected baseline](#expected-baseline)
-fetches already spans all four windows the first two `visitors` entries need — this year's current
-and previous periods, and the same two a year ago — so those totals are summed from rows the widget
-has rather than fetched a second time. Longer date ranges and any earlier year fall outside that span
-and need their own totals report.
+The first two `visitors` entries are summed out of the daily series the baseline already reads, which
+spans 392 days beyond the selected window at every range the selector offers. Only the two-years-back
+entry falls outside that span and needs its own totals report.
 
 `recent_content_momentum` and `category_resonance` depend on the `googlesitekit_post_date` and
 `googlesitekit_post_categories` custom dimensions, which Site Kit already defines and creates. No new
-custom dimension is introduced. Where a dimension is absent or still gathering data, its
-`contextual_data` key is omitted — every key is optional in the request schema — and the
-insight degrades rather than failing. Which keys are present also constrains which scenario can come
-back: `SEARCH_QUERY_SHIFTS`, `TRAFFIC_CHANNEL_SURGES`, `CATEGORY_RESONANCE`, `REFERRING_SITE_SHIFTS`
-and `RECENT_CONTENT_MOMENTUM` are each conditional on their own key being sent, so a site missing the
-custom dimensions is steered toward the baseline and steady-state scenarios rather than getting a
-worse version of the same insight.
+custom dimension is introduced. Where `Custom_Dimensions_Data_Available` reports one is absent or
+still gathering data, its report is not requested and its `contextual_data` key is omitted — every
+key is optional in the request schema — and the insight degrades rather than failing. Which keys are
+present also constrains which scenario can come back: `SEARCH_QUERY_SHIFTS`, `TRAFFIC_CHANNEL_SURGES`,
+`CATEGORY_RESONANCE`, `REFERRING_SITE_SHIFTS` and `RECENT_CONTENT_MOMENTUM` are each conditional on
+their own key being sent, so a site missing the custom dimensions is steered toward the baseline and
+steady-state scenarios rather than getting a worse version of the same insight.
 
 Only `end_date`, `days_in_period` and a non-empty `visitors` are required; a request missing any of
-them is rejected with a 400 rather than answered with a thinner insight.
+them is rejected with a 400. Since the plugin assembles the payload itself, a 400 is a plugin defect
+rather than a state a site can get into, and the widget treats it as an unavailable insight either
+way.
 
-The payload reaches the datapoint as query parameters, so every `contextual_data` row lands in the
-request line and common server defaults cut that at around 8 KB. The derivation caps each dimension
-at a fixed number of rows rather than sending whatever the report returned; the caps themselves are
-an [open question](#how-many-rows-does-each-contextual-data-dimension-carry).
+Each dimension is ranked by the absolute change in its `{ current, previous }` pair and capped at a
+fixed number of rows before it is sent. The payload travels as a JSON body to the service and the
+capped rows travel back to the browser as `contextualData`, so the cap bounds what the model reads,
+what the breakdown renders and what the API cache stores; the values are an
+[open question](#how-many-rows-does-each-contextual-data-dimension-carry).
 
-Derivation lives in `performance-benchmarking/utils/` as pure functions over report rows, so it is
-unit-testable without a registry, and the report options live in a `reportOptions.ts` module
-alongside, following the pattern the All Traffic widget uses.
+Assembly lives in `includes/Modules/Analytics_4/Benchmarking/` — `Report_Options` for the windows and
+dimensions, `Expected_Baseline` for the model, and a payload builder over the report rows — as
+classes with no dependency on the REST layer, so PHPUnit can drive them from fixed report fixtures.
 
 #### *Sanitization responsibilities* {#sanitization-responsibilities}
 
@@ -736,11 +879,15 @@ URIs and system-instruction overrides before it is returned. An unknown `top_dim
 dropped server-side, and an empty list becomes `[ HISTORICAL_BASELINE ]`. A response that fails any of
 those checks is a 500, not a degraded insight. The plugin's responsibility is narrower but real:
 
-* Send structured fields only. The payload carries no free-text field a site visitor could reach.
+* Send structured fields only. The payload carries no free-text field a site visitor could reach,
+  and the browser contributes nothing to it but two dates.
 * Treat `text`, `driver` and `actionable_recommendation` as untrusted text on render — plain text
   into a React child, never `dangerouslySetInnerHTML`. All three are model output.
-* Treat `scenario` and every `top_dimensions` entry as enums and fall back to the default treatment
+* Treat `scenario` and every `topDimensions` entry as enums and fall back to the default treatment
   for an unrecognized value, rather than assuming the server-side validation is the only gate.
+* Pass the service's response fields through the datapoint unchanged. The composed response is the
+  plugin's own shape, but the three strings inside it are the model's, and re-encoding or wrapping
+  them in PHP would only hide that from the components that have to treat them as untrusted.
 
 ### **Shared feedback prompt** {#shared-feedback-prompt}
 
@@ -766,10 +913,16 @@ New front-end code lives under
 `widgets/` for the registered widget, `tabs/` for the two tab panels, `components/` for the
 section components both panels are assembled from, `breakdown/` for the dimension catalog and its
 renderers, `hooks/`, `utils/` and `constants.ts`. Components are TypeScript function components, one
-component per file, with co-located tests and Storybook stories.
+component per file, with co-located tests and Storybook stories. `utils/` holds presentation helpers
+only — the chart data tables and the marker strings — since no analytical derivation remains in the
+bundle.
 
-New PHP lives in `includes/Modules/Analytics_4/Datapoints/` for the datapoint, with the transport
-method added to `includes/Core/Authentication/Google_Proxy.php`.
+New PHP lives in three places: `includes/Modules/Analytics_4/Datapoints/` for the datapoint,
+`includes/Modules/Analytics_4/Benchmarking/` for the report options, the baseline model and the
+payload builder, and `includes/Modules/Search_Console/Benchmarking/` for the callback that answers
+the [contextual-data filter](#cross-module-contextual-data) — the same per-module layout
+`Email_Reporting/` already uses on both modules. The transport method is added to
+`includes/Core/Authentication/Google_Proxy.php`.
 
 The widget wraps its export in `withIntersectionObserver` and reads reports through
 `useInViewSelect`, so neither the view event nor the report requests fire for a widget below the
@@ -777,17 +930,17 @@ fold.
 
 ### **REST infrastructure**
 
-Existing routes cover everything except the generative call: the GA4 and Search Console report
-datapoints, `triggerSurvey` for the feedback votes, and the custom-dimension availability and
-creation datapoints. `GET:benchmarking-insight` is dispatched by the `READABLE` branch of the module
-datapoint route like any other read, so no new REST route object is registered, and it implements
-`Permission_Aware_Datapoint` for its own permission check.
+One new datapoint and no new route. `GET:benchmarking` is dispatched by the `READABLE` branch of the
+module datapoint route like any other read, and implements `Permission_Aware_Datapoint` for its own
+permission check. The reports behind it are dispatched in-process rather than over REST, so the GA4
+and Search Console report routes are involved only in the dashboard's other widgets. `triggerSurvey`
+carries the feedback votes as it already does.
 
 No new user or site setting is introduced, and nothing about the widget is written to the database:
-the active tab is component state and there is no dismissal. The insight lives in the API cache and
-in the service's own, both for 24 hours; the service keys its copy over the site, the user,
-`end_date`, the locale and the serialized payload — `days_in_period`, `visitors`, `contextual_data`
-and `baseline` included.
+the active tab is component state and there is no dismissal. The response lives in the API cache and
+the insight inside it in the service's own, both for 24 hours; the service keys its copy over the
+site, the user, `end_date`, the locale and the serialized payload — `days_in_period`, `visitors`,
+`contextual_data` and `baseline` included.
 
 ## **Common considerations**
 
@@ -795,13 +948,21 @@ and `baseline` included.
 
 The widget follows the existing Dashboard Sharing rules for the `analytics-4` module. Its `isActive`
 requires `hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 )`, so when Analytics is not shared
-with a user's role the widget does not render, and when it is shared the GA4 reports resolve through
-the module's shareable datapoints as they do for every other Analytics widget.
+with a user's role the widget does not render.
 
-The generative call is the exception. It authenticates the user by bearer token, and a view-only
-user has no token, so the insight cannot be generated on their behalf under the current design. The
-charts, totals and breakdown are unaffected. What a view-only user should see in place of the
-insight is an [open question](#what-does-the-view-only-dashboard-show).
+**One datapoint decides what a view-only user sees.** Every number the widget draws arrives through
+`GET:benchmarking`, so its shareability is the difference between a working widget and an empty slot,
+not between a narrated widget and a bare one. The generative call is the part that cannot be shared:
+the service authenticates the user by bearer token and a view-only user has none.
+
+The shape that follows from the [pipeline](#module-datapoint) is a shareable datapoint that skips
+step 3. The GA4 reports run under the module owner's credentials the way every shared report does,
+the derived data is composed as usual, and a shared request omits `insight` with a reason of its own
+rather than calling the proxy — the [Reporting state](#widget-shell) the widget already has. Two
+things have to be confirmed before that is more than a direction: whether a view-only user should get
+an insight at all, generated with the owner's token and cached site-wide, and whether the Search
+Console rows can be gathered under a shared request, since `POST:searchanalytics-batch` is not a read
+datapoint. Both sit in the [view-only open question](#what-does-the-view-only-dashboard-show).
 
 No new sharing capability is introduced.
 
@@ -810,16 +971,21 @@ No new sharing capability is introduced.
 The states that matter for QA are hard to produce on a real site: a property with 13+ months of
 history and a genuine seasonal pattern, a rate-limited response, a generation slow enough to exceed
 the request timeout, and each of the eleven `scenario` codes with each combination of
-`top_dimensions` that drives a different layout.
+`topDimensions` that drives a different layout.
 
 The tester plugin should be able to force the benchmarking response — supplying an arbitrary
-`scenario`, `top_dimensions`, `text`, `driver` and `actionable_recommendation` without calling the
-service — and to force the failure modes: a 429, a request that exceeds the timeout, a 403, and a 500.
-It should also be able to force the property-age gate on and off so the hidden state is reachable
-without a young property.
+`scenario`, `topDimensions`, `text`, `driver` and `actionableRecommendation` without calling the
+service — and to force the failure modes: a 429, a request that exceeds the timeout, a 403, and a
+500. It should also be able to force the property-age gate on and off so the hidden state is
+reachable without a young property.
+
+Assembling server-side makes this cheaper than it was: the datapoint composes one response, so a
+filter over that response is the single point where every state is reachable, including the ones the
+front end cannot fabricate — an empty `contextualData` key, a short-history baseline tier, a
+`topDimensions` code with no rows behind it.
 
 Reaching any of those states needs the API cache out of the way — `setUsingCache( false )` or a
-cleared session store — since a cached insight for the same payload is served without a request.
+cleared session store — since a cached response for the same dates is served without a request.
 
 ### **Site Health**
 
@@ -830,11 +996,13 @@ Debug fields worth adding through `Analytics_4::get_debug_fields()`, alongside t
   one.
 * Which `contextual_data` keys were available on the last request, which is the fastest way to
   explain a thin insight.
-* The outcome of the last benchmarking request — completed, rate-limited, timed out or errored — and
-  the `scenario` code it returned.
+* The outcome of the last benchmarking request — completed, rate-limited, timed out or errored — the
+  `scenario` code it returned, and how long the request took, which is what separates a slow host
+  from a slow generation.
 
-The last two require persisting the last outcome, which nothing currently does. Whether that is
-worth a site option is a judgement call for the Site Health issue.
+The last two require persisting the last outcome, which nothing currently does. The datapoint is the
+one place that knows it and the only one that sees the timings, so it is where the record is written;
+whether that record is a site option or a transient is a judgement call for the Site Health issue.
 
 ### **Feature Discovery**
 
@@ -852,7 +1020,7 @@ Events are emitted with `trackEvent()` under a category of
 1. `view_widget` — once per view, gated on `hasBeenInView` from `withIntersectionObserver`.
 2. `tab_select` — with the tab ID as the label.
 3. `view_insight` — with the `scenario` code as the label, so engagement can be read per scenario,
-   and the leading `top_dimensions` code carried alongside it, since that is what decided the layout.
+   and the leading `topDimensions` code carried alongside it, since that is what decided the layout.
 4. `insight_unavailable` — with the reason (rate limited, timed out, forbidden, errored).
 5. `data_loading_error` and `data_loading_error_retry`.
 6. `insufficient_permissions_error_request_access`.
@@ -877,45 +1045,75 @@ telemetry rather than by site-wide feature metrics.
 
 ## **Alternatives considered** {#alternatives-considered}
 
-### **Assembling the request payload in PHP rather than in the browser**
+### **Assembling the request payload in the browser rather than in PHP**
 
-The alternative was a single plugin REST route that ran the GA4 and Search Console reports
-server-side through `$this->get_service( 'analyticsdata' )`, derived `contextual_data` in PHP, and
-called the proxy — one round trip from the browser instead of several.
+The alternative was to derive everything client-side: the widget fetches the GA4 and Search Console
+reports through `getReport`, computes the baseline and `contextual_data` in `utils/`, and hands the
+finished payload to a datapoint that only forwards it. That reuses the plugin's reporting stack as it
+stands — caching and de-duplication, `areReportsLoading`, `getFirstReportError`, gathering-data and
+partial-data state, the `reportID` conventions — and keeps the PHP request down to the generative
+call alone.
 
-We assemble in the browser instead. The plugin's entire reporting stack lives in JS: report
-caching and de-duplication through `getReport`, loading aggregation through `areReportsLoading`,
-error surfacing through `getFirstReportError`, gathering-data and partial-data state, view-only
-handling, and the `reportID` conventions that make report usage traceable. A PHP path would
-reimplement all of it, and the same reports would then be fetched twice — once server-side for the
-narration, once client-side for the charts. Server-side also puts a multi-report GA4 fetch inside the
-same PHP request that already waits on generation, on shared hosting, which is the exact exposure the
-[latency budget](#latency-budget) is trying to contain.
+We assemble in PHP. Three properties of this particular payload decide it:
 
-The cost is that the payload shape is visible to the browser and the derivation logic ships in the
-bundle. Neither carries a security consequence: the payload contains only the site's own analytics
-data, which the same user can already read through the dashboard.
+* **The derived data has exactly one consumer.** Shared report caching pays off when several widgets
+  read the same report, and nothing else on the dashboard reads a 420-day daily series or a channel
+  report with a comparison window. One composed response cached under the date range serves this
+  widget better than eight reports the rest of the dashboard never asks for.
+* **The cross-module dependency leaves the front end.** Client-side, the Traffic Insights tab issues
+  a Search Console request from inside an Analytics widget, wiring one module's reporting into
+  another's component tree. Server-side it is a filter Search Console answers on its own terms, and
+  neither module holds a reference to the other — see
+  [Cross-module contextual data](#cross-module-contextual-data).
+* **The payload stops riding in a query string.** A `GET` datapoint carrying `contextual_data` as
+  query parameters is bounded by the server's request-line limit, and every scalar in it arrives as a
+  string to be cast back. With two dates in the query and the payload assembled behind them, neither
+  is a design constraint.
 
-### **Returning the expected baseline from the service instead of computing it in the browser**
+The costs are real and are paid where the design says so. One PHP request holds several report calls
+in front of generation, which is what the [latency budget](#latency-budget) has to contain and
+what [Technical debt](#technical-debt) records. Loading is all-or-nothing rather than per section.
+And the daily series is fetched twice on the Traffic section — once client-side for the All Traffic
+graph, once inside the benchmarking request — because the two paths do not share a cache.
+
+### **Calling Search Console directly instead of filtering for its rows**
+
+`Analytics_4` could resolve the Search Console module from `Modules` and call its datapoint, which is
+what `Email_Reporting_Data_Requests` does — an `if`/`elseif` over module slugs in one place that
+knows both modules. It is less indirection, and the whole payload is then readable from one file.
+
+The filter wins on which module owns what. Search Console's connection state, its property setting,
+its report shape and its failure modes stay behind its own callback instead of being conditions
+inside an Analytics datapoint; the extension point is declared once and any later contributor adds a
+callback rather than an edit. The Email Reporting precedent is a Core class composing two modules it
+is allowed to know about, which is not the position `Analytics_4` is in here.
+
+The cost is that the payload's contents are not enumerable from the datapoint alone, and a
+badly behaved callback is inside the request's latency budget. The first is answered by specifying
+the keys and row shapes under [Payload assembly](#payload-assembly); the second is the same exposure
+any `apply_filters()` in a request path carries.
+
+### **Returning the expected baseline from the service instead of computing it in the plugin**
 
 The alternative was to grow the response schema with a per-day expected series, so the model lived in
 one place, next to the reasoning that narrates it, and the plugin only plotted what it was handed.
 
-We compute it in the browser. The [baseline](#expected-baseline) is arithmetic — nine weekly totals,
-seven weekday ratios, one year-ago ratio per day and a square root — over a report the widget fetches
-anyway; there is no state to keep and nothing to train. Computing it client-side also keeps the chart
-independent of the generative call, which matters more than anything else here: a 429 or a timed-out
-request must not take away the series the tab is built around. The service would otherwise need either
-a multi-year daily series in every request payload or the ability to query GA4 itself, and it does
-neither — it takes the finished `baseline` object from the plugin and narrates against it.
+We compute it in the plugin. The [baseline](#expected-baseline) is arithmetic — nine weekly totals,
+seven weekday ratios, one year-ago ratio per day and a square root — over a report the datapoint runs
+anyway; there is no state to keep and nothing to train. Computing it in the datapoint also keeps the
+chart independent of the generative call, which matters more than anything else here: the bounds are
+derived before the proxy request and returned whether it succeeds, so a 429 or a timeout cannot take
+away the series the tab is built around. The service would otherwise need either a multi-year daily
+series in every request payload or the ability to query GA4 itself, and it does neither — it takes the
+finished `baseline` object from the plugin and narrates against it.
 
 Within the model, longer moving-average windows, a stacked forward-trend multiplier, server-side
 Prophet or ARIMA, and a normalized-residual MAD band were each rejected: a simple moving average cuts
 weeks off at a hard boundary and, stretched far enough to be stable, drags out-of-season data into the
 level; a trend multiplier on top of an EWMA level double-counts growth; per-tenant time-series models
 need stored history and batch inference for accuracy that does not change what a site owner is told;
-and the MAD band needs residual sorting and medians in JavaScript to reach the same ~95% coverage the
-square-root ribbon gets in one expression. The
+and the MAD band needs residual sorting and medians to reach the same ~95% coverage the square-root
+ribbon gets in one expression. The
 [derivation of each constant](./expected-baseline-range-implementation.md) carries the detail.
 
 ### **Polling a long-running operation instead of waiting for one response**
@@ -935,14 +1133,13 @@ moves.
 
 ### **A write datapoint for the insight request**
 
-The insight request looks like a submission — a large derived payload goes out, a generated narration
-comes back — and a `POST:` datapoint would carry that payload in a request body, where its size is
-nobody's problem.
+The insight request looks like a submission — a payload goes out to a generative endpoint, a narration
+comes back — and `POST:` is the verb that describes it.
 
-It would also make the response uncacheable, so every mount, reload and return to a date range
-already viewed would reach the service, and each would spend one of the ten tokens the burst allows.
-A `GET` costs the payload having to fit in a query string, which is a bounded derivation problem with
-a known lever; a `POST` costs the user their insight after ten dashboard loads.
+It would make the response uncacheable. Every mount, reload and return to a date range already viewed
+would reach the service, and each would spend one of the ten tokens the burst allows, on top of
+re-running the reports behind it. A `GET` costs nothing, since the payload is assembled server-side:
+the request is two dates, and the API layer caches what comes back for a day.
 
 ### **One widget per tab instead of one widget with a tab shell**
 
@@ -982,10 +1179,12 @@ band by 5% per week across the horizon so day +28 is not asserted with day +1's 
 seasonally adjusted predictions back into the level is what must not happen — that traps a holiday
 spike in the structural baseline permanently.
 
-What is left to build is the chart's forward extension, the copy, and the comparison that decides
-whether the next 28 days read as a seasonal boom or a lull: summing the 28 forward predictions and
-testing them against the past 28 days of actuals at a ±15% threshold. Whether that lands in this epic
-is an [open question](#does-the-look-ahead-forecast-land-in-this-epic).
+What is left to build is the forward days on `dailyTraffic`, the chart's forward extension, the copy,
+and the comparison that decides whether the next 28 days read as a seasonal boom or a lull: summing
+the 28 forward predictions and testing them against the past 28 days of actuals at a ±15% threshold.
+The prediction and the comparison are both `Expected_Baseline` work; the widget renders rows it is
+handed either way. Whether that lands in this epic is an
+[open question](#does-the-look-ahead-forecast-land-in-this-epic).
 
 ### **Richer feedback than thumbs up / down**
 
@@ -1025,15 +1224,17 @@ payload shape strictly and failing on a field it has never seen.
 The service rate-limits to a burst of 10 tokens refilling at 2 per hour per site and user, and caches
 successful responses for 24 hours. **The limiter is checked before the cache**, so a repeat request
 spends a token even when the service answers it from that cache — which is why the insight is fetched
-through a `GET` datapoint and why one request serves both tabs. Both caches are keyed over the entire
-payload, so they only absorb repeat loads when the derivation is byte-stable; GA4 figures for a
-still-open day are not, which is one more reason the trailing series and the
-[baseline](#baseline-payload) are derived deterministically. A 429 still reaches the widget whenever
-the payload is genuinely new, and the widget degrades to its Reporting state rather than treating it
-as an error.
+through a `GET` datapoint and why one request serves both tabs. The plugin's cache keys on the date
+range, so it absorbs every repeat load regardless of whether the figures moved; the service's keys on
+the serialized payload, so it only helps when the assembly is deterministic, which is a property the
+PHP derivation has to hold rather than one the browser can affect. A 429 still reaches the widget on
+a genuinely new request, and the widget degrades to its Reporting state rather than treating it as an
+error.
 
-When the service is unavailable, the widget renders everything except the insight. GA4 and Search
-Console outages are handled by the existing `WidgetReportError` path.
+When the service is unavailable, the widget renders everything except the insight — the reports run
+first and the response carries them either way. GA4 outages are what take the widget down, and they
+surface through the existing `WidgetReportError` path; a Search Console outage costs one breakdown
+section.
 
 ## **Migrations**
 
@@ -1045,13 +1246,15 @@ it and updates two imports; no persisted value refers to it.
 
 Three items:
 
-1. **The insight request holds a PHP worker for the length of a generation.** This is accepted rather
-   than solved, because the endpoint returns the insight in its response. If the service moves the
-   endpoint onto the operation framework it already ships, the plugin should follow rather than keep
-   paying for a long request — see the [latency budget](#latency-budget).
-2. **`contextual_data` derivation may belong server-side.** The plugin is deriving analytical inputs
-   for a model it does not own. If the service later grows the ability to query GA4 itself, this
-   derivation becomes dead weight and should be removed rather than maintained.
+1. **The request holds a PHP worker for several report calls and a generation.** This is accepted
+   rather than solved: the endpoint returns the insight in its own response, and the reports have to
+   run before it. If the service moves the endpoint onto the operation framework it already ships,
+   the plugin should follow rather than keep paying for a long request — see the
+   [latency budget](#latency-budget).
+2. **The plugin derives analytical inputs for a model it does not own.** If the service later grows
+   the ability to query GA4 itself, `Benchmarking/` becomes dead weight and should be removed rather
+   than maintained. Keeping the derivation in classes with no REST or widget dependencies is what
+   makes that removal a deletion rather than an unpicking.
 3. **`SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL` is `'#'`.** Promoting the feedback prompt is the moment
    to fix the placeholder rather than propagate it to a second caller.
 
@@ -1064,39 +1267,53 @@ The new surface is one outbound proxy call carrying the site's own analytics dat
 **Prompt injection.** Page titles and search queries in `contextual_data` originate from site
 content and from visitors' searches. The service separates system instructions from data, delimits
 the data, strips markup and truncates titles. The plugin contributes by sending structured fields
-only — there is no free-text field in the payload — so nothing a visitor controls can reach the
-model outside a delimited data slot.
+only — there is no free-text field in the payload, and the browser contributes nothing to it.
+
+`googlesitekit_benchmarking_contextual_data` widens that surface, since any plugin on the site can
+hook it and any string it returns reaches the model. **The datapoint validates what the filter hands
+back rather than forwarding it**: known keys only, the row shape each key declares, scalars cast, and
+the same row cap applied to filtered rows as to derived ones. That keeps a third-party callback to
+the same contract Search Console's own is held to.
 
 **Rendered model output.** `text`, `driver` and `actionable_recommendation` are all model-generated
 and all rendered in the dashboard. Each is treated as untrusted text and rendered as a React child,
 never as HTML — the service's own narrative safety checks are a second line of defense, not a licence
-to trust the string. `scenario` and each `top_dimensions` entry are validated against the known sets
+to trust the string. `scenario` and each `topDimensions` entry are validated against the known sets
 before they select a treatment.
 
-**Authorization.** The datapoint requires an authenticated proxy user and implements
-`Permission_Aware_Datapoint`, so the existing `REST_Modules_Controller` permission dispatch applies.
-Being a `GET` datapoint, what it would otherwise inherit is the route's broader view-insights
-default, which is precisely why the check is defined on the datapoint rather than left to the route.
-It is not shareable, so no path exists for a view-only user to trigger a generative call with someone
-else's token. The service independently verifies the bearer token, resolves it to a hashed Google user
-ID and requires that user to be registered against the requesting site, so a valid
-`site_id`/`site_secret` pair alone cannot buy an insight.
+**Authorization.** The datapoint implements `Permission_Aware_Datapoint`, so the existing
+`REST_Modules_Controller` permission dispatch applies. Being a `GET` datapoint, what it would
+otherwise inherit is the route's broader view-insights default, which is precisely why the check is
+defined on the datapoint rather than left to the route. The generative call is made only for a
+request that carries the caller's own token: a shared request skips it, so no path exists for a
+view-only user to trigger a generation with someone else's. The service independently verifies the
+bearer token, resolves it to a hashed Google user ID and requires that user to be registered against
+the requesting site, so a valid `site_id`/`site_secret` pair alone cannot buy an insight.
 
 ## **Reliability**
 
 The generated insight is best-effort and the widget is designed to survive its absence: a failed,
 timed-out or rate-limited generation leaves the metrics, charts and breakdown in place. This is the
 single most important reliability property of the design, and it is worth stating plainly — **the
-numbers must never disappear because the narration failed.**
+numbers must never disappear because the narration failed.** Server-side assembly is what makes it
+structural rather than a matter of ordering: the data is derived before the proxy is called and
+composed into the response afterwards, so a generation failure can only ever remove a field.
 
-Ordinary navigation does not consume the rate-limit budget: a repeated payload is answered from the
-API cache, and the service's own cache does not help there, since its limiter runs first. What
-neither cache covers is a genuinely new payload once the budget is gone — what the widget shows then
-is an [open question](#what-does-the-widget-show-when-the-rate-limit-is-hit). Transient GA4 and
-Search Console failures use the existing report error path with its retry affordance.
+The pipeline's ordering carries the other half of that. **The reports run first and the generation
+last**, so a request cut short by `max_execution_time` or a proxy timeout is one that lost the
+insight, not one that lost the data — provided the reports have already returned. A host slow enough
+to cut the request during the reports takes the whole widget down, which is the case
+[Site Health](#site-health) exists to make diagnosable.
 
-Local data loss is not a concern: nothing about the feature is persisted in the plugin, and a cache
-entry that is evicted or expires costs one request rather than anything the user notices.
+Ordinary navigation does not consume the rate-limit budget: a repeat load over the same dates is
+answered from the API cache without reaching the datapoint at all, and the service's own cache does
+not help there, since its limiter runs first. What no cache covers is a new date range once the
+budget is gone — what the widget shows then is an
+[open question](#what-does-the-widget-show-when-the-rate-limit-is-hit).
+
+Local data loss is not a concern: nothing about the feature is persisted in the plugin beyond the
+last-outcome record the debug fields read, and a cache entry that is evicted or expires costs one
+request rather than anything the user notices.
 
 ## **Privacy**
 
@@ -1113,33 +1330,36 @@ state and locale.
 No new OAuth scope is requested. No new custom dimension is created, so no additional data is
 collected from site visitors.
 
-The payload and the insight are held in browser storage by the API cache, which scopes its keys to
-the WordPress user and session, so neither outlives a logout or reaches another user of the same
-browser.
+The composed response — the daily series, the breakdown rows and the insight — is held in browser
+storage by the API cache, which scopes its keys to the WordPress user and session, so none of it
+outlives a logout or reaches another user of the same browser. The request payload itself is
+assembled and discarded inside the PHP request and is never stored.
 
 ## **Scalability**
 
-Each widget view issues a bounded set of GA4 reports plus one Search Console report, all through the
-existing cached `getReport` path, and at most one generative request per distinct payload per
-session, since the [API cache](#datastore-slice) answers every repeat of one. Report count does not
-grow with the size of the site: every query is aggregated and limited, and the `GET` datapoint's
-[row caps](#how-many-rows-does-each-contextual-data-dimension-carry) bound the payload as well as
-the query string that carries it. The seven `contextual_data` dimensions each need a current and a
-comparison window, which is a wider fan-out than the four the design started with, but they are
-still aggregated single-dimension reports and several can share one request per dimension using a
-comparison range.
+**One browser request per date range per day, and one PHP request behind it.** A cache miss costs two
+batched GA4 calls, one Search Console call and one generation; every repeat over the same dates is
+answered by the [API cache](#datastore-slice) without reaching the server. The unit that scales is
+therefore the number of distinct date ranges a user opens, not the number of times they load the
+dashboard.
 
-The largest of those reports is the daily series behind the [expected baseline](#expected-baseline):
-one row per day over `days_in_period + 392` days, so 482 rows at the widest range the selector
-offers, well inside the GA4 Data API's default row limit. It replaces the Insights tab's actual-series
-report rather than adding to it, and the arithmetic over it is linear in the number of days.
+Report count does not grow with the size of the site: every query is aggregated, each carries its
+current and comparison window as two date ranges in one request, and the
+[row caps](#how-many-rows-does-each-contextual-data-dimension-carry) bound both what goes to the
+service and what comes back to the browser. Batching is what keeps the eight reports to two calls,
+which matters here more than it does elsewhere because they are serial inside one PHP request rather
+than parallel across the browser's connection pool.
+
+The largest of them is the daily series behind the [expected baseline](#expected-baseline): one row
+per day over `days_in_period + 392` days, so 482 rows at the widest range the selector offers, well
+inside the GA4 Data API's default row limit. The arithmetic over it is linear in the number of days,
+and only the plotted days are serialized into the response — 90 rows at the widest range.
 
 The number of prior years included in the `visitors` array is the one parameter that scales the
 request cost, and it is a fixed small number rather than a function of property age.
 
 Nothing in the feature iterates posts, users or terms, so a site with 100k posts behaves the same as
-a small one. The insight is one request per resolved payload, and the service's ranking of the
-dimensions happens on its side of the call.
+a small one. The service's ranking of the dimensions happens on its side of the call.
 
 ## **Accessibility (a11y)**
 
@@ -1175,54 +1395,62 @@ absorb the longest case rather than being tuned to the English one.
 | \# | Title | Design Doc Points | GH Points |
 | :---- | :---- | :---- | :---- |
 | 1 | Performance Benchmarking feature flag | 3 |  |
-| 2 | Add the generative benchmarking request method to `Google_Proxy` and the Analytics datapoint | 15 |  |
-| 3 | Add the `benchmarking` datastore slice | 11 |  |
-| 4 | Register the Performance Benchmarking widget with its tab shell and gating | 19 |  |
-| 5 | Derive the benchmarking request payload from GA4 and Search Console reports | 19 |  |
-| 6 | Traffic Overview: total visitors with period comparison | 11 |  |
-| 7 | Traffic Overview: generated insight block | 15 |  |
-| 8 | Traffic Overview: traffic chart with content-momentum markers | 19 |  |
-| 9 | Traffic Overview: traffic breakdown section | 19 |  |
-| 10 | Traffic Insights: generated insight block | 11 |  |
-| 11 | Compute the expected baseline range from the GA4 daily series | 19 |  |
-| 12 | Traffic Insights: actual traffic vs expected baseline chart | 15 |  |
-| 13 | Traffic Insights: what affected your traffic section | 19 |  |
-| 14 | Promote `WidgetFeedbackPrompt` to a global `FeedbackPrompt` component | 7 |  |
-| 15 | Add the "Is this helpful?" prompt to the Traffic Insights tab | 3 |  |
-| 16 | Loading, unavailable-insight, rate-limited and error states | 15 |  |
-| 17 | Introduce the feature to users | 15 |  |
-| 18 | Performance Benchmarking GA4 tracking events | 15 |  |
-| 19 | Performance Benchmarking internal feature metrics | 11 |  |
-| 20 | Performance Benchmarking Site Health debug fields | 7 |  |
-| 21 | Add support links to the Performance Benchmarking widget | 7 |  |
+| 2 | Add the generative benchmarking request method to `Google_Proxy` and the `GET:benchmarking` datapoint pipeline | 15 |  |
+| 3 | Gather the GA4 reports and assemble the benchmarking payload in PHP | 19 |  |
+| 4 | Add the `googlesitekit_benchmarking_contextual_data` filter and Search Console's callback | 11 |  |
+| 5 | Compute the expected baseline range from the GA4 daily series in PHP | 19 |  |
+| 6 | Add the `benchmarking` datastore slice | 7 |  |
+| 7 | Register the Performance Benchmarking widget with its tab shell and gating | 19 |  |
+| 8 | Traffic Overview: total visitors with period comparison | 7 |  |
+| 9 | Traffic Overview: generated insight block | 15 |  |
+| 10 | Traffic Overview: traffic chart with content markers | 11 |  |
+| 11 | Traffic Overview: traffic breakdown section | 15 |  |
+| 12 | Traffic Insights: generated insight block | 11 |  |
+| 13 | Traffic Insights: actual traffic vs expected baseline chart | 11 |  |
+| 14 | Traffic Insights: what affected your traffic section | 15 |  |
+| 15 | Promote `WidgetFeedbackPrompt` to a global `FeedbackPrompt` component | 7 |  |
+| 16 | Add the "Is this helpful?" prompt to the Traffic Insights tab | 3 |  |
+| 17 | Loading, unavailable-insight, rate-limited and error states | 11 |  |
+| 18 | Introduce the feature to users | 15 |  |
+| 19 | Performance Benchmarking GA4 tracking events | 15 |  |
+| 20 | Performance Benchmarking internal feature metrics | 11 |  |
+| 21 | Performance Benchmarking Site Health debug fields | 7 |  |
+| 22 | Add support links to the Performance Benchmarking widget | 7 |  |
 
-**TOTAL: 275 STORY POINTS across 21 issues**
+**TOTAL: 254 STORY POINTS across 22 issues**
 
-Issue 4 is sized for the four `isActive` conditions and nothing more. Whichever way the
+**The response shape is the contract that splits this epic in two.** Issues 2 to 6 build the
+datapoint and the store; issues 7 to 17 build against the response, from a fixture rather than from a
+running service. Agreeing that shape in issue 2 is what lets the two halves proceed in parallel, and
+the [panel data flow](#panel-data-flow) table is the version to agree.
+
+Issue 7 is sized for the four `isActive` conditions and nothing more. Whichever way the
 [too-young state](#what-does-the-widget-do-when-the-property-is-too-young) is confirmed adds to it —
 a panel in the shell, or a `core/notifications` registration with the dismissal arithmetic — and
 neither is costed in the total above.
 
-Issue 11 is the baseline model itself — the series builder, the three factors, the band, the fallback
-tiers and the [`baseline` payload object](#baseline-payload), as pure functions with their own tests —
-and issue 12 is only the chart that plots what it returns. They are split because the model is the
-analytically substantial part and is verifiable on its own, while the chart is two columns and an
-`intervals` option. Issue 11 now feeds issue 5 as well as issue 12, so it moves ahead of payload
-assembly rather than after it.
+Issue 5 is the baseline model itself — the series builder, the three factors, the band, the fallback
+tiers and the [`baseline` payload object](#baseline-payload), as PHP with its own fixtures — and
+issue 13 is only the chart that plots the bounds the response carries. They are split because the
+model is the analytically substantial part and is verifiable on its own, while the chart is four
+columns and an `intervals` option. Issue 5 feeds issue 3 as well, so it lands before payload
+assembly is finished rather than after it.
 
-Issue 5 is the one most likely to need splitting when its brief is written: `contextual_data` carries
-seven dimensions, each needing a current and a comparison window, and two of them depend on custom
-dimensions that may not be gathering data yet. It also owns the
-[row caps](#how-many-rows-does-each-contextual-data-dimension-carry) that keep the assembled query
-string inside what a web server accepts.
+Issue 3 is the one most likely to need splitting when its brief is written: it owns the report
+options for every dimension, the batching, the ranking, the
+[row caps](#how-many-rows-does-each-contextual-data-dimension-carry) and the composition of the
+response. Splitting it by report group — the daily series and visitor totals first, the dimension
+reports second — is the obvious line if it is needed.
 
-Issues 9 and 13 share the dimension catalog described under [Traffic breakdown](#traffic-breakdown):
-whichever lands first builds `breakdown/registry.ts` and the second adds its renderer to the existing
-entries, so the two sections cannot end up ordering or naming the dimensions differently.
+Issues 11 and 14 share the dimension catalog described under
+[Traffic breakdown](#traffic-breakdown): whichever lands first builds `breakdown/registry.ts` and the
+second adds its renderer to the existing entries, so the two sections cannot end up ordering or
+naming the dimensions differently.
 
-Issues 1 through 4 are the critical path; issues 6, 8, 9, 11 and 12 depend only on reports and can be
-built against fixtures before the endpoint is available in production. Issues 7, 10, 13 and 16 depend
-on the live endpoint, since `top_dimensions` drives what they order and render.
+Issues 1 through 6 are the critical path. Everything from issue 7 on can be built and tested against
+a fixture of the response before the service endpoint is available in production; issues 9, 12, 14
+and 17 are the ones whose acceptance needs the live endpoint, since `topDimensions` and the scenario
+codes drive what they order and render.
 
 ## **Documentation in-product**
 
@@ -1238,7 +1466,7 @@ The widget needs support links in three places, resolved through `getDocumentati
 3. An explanation of why the widget does not appear for properties with insufficient history,
    reachable from support rather than from the dashboard, since the widget is absent in that case.
 
-The support team drafts these before rollout; the slugs are added in issue 21.
+The support team drafts these before rollout; the slugs are added in issue 22.
 
 ## **Testing plan considerations**
 
@@ -1252,26 +1480,37 @@ property is the one scenario QA can reach without any setup at all.
 
 QA therefore depends on tester-plugin support for forcing the response and the failure modes, listed
 under [Tester plugin](#tester-plugin), plus access to an Analytics property with genuine history.
-Jest coverage should pin the payload derivation — it is pure functions over report rows — and the
-state machine of the [widget shell](#widget-shell). Storybook stories should cover each tab in
-loading, ready, insight-unavailable and error states, which also gives VRT coverage.
+
+**The derivation is PHPUnit's and the rendering is Jest's**, and the response is the seam between
+them. PHPUnit covers the payload assembly, the ranking and caps, the filter contract — including a
+callback that errors and one that returns the wrong shape — and the pipeline's behavior when
+generation fails, which must be a 200 carrying data. Jest covers the [shell's](#widget-shell) state
+machine and the sections, driven from fixtures of that response rather than from report responses.
+Storybook stories cover each tab in loading, ready, insight-unavailable and error states, which also
+gives VRT coverage.
 
 The [baseline](#expected-baseline) is the one part of the feature whose numbers can be asserted
 exactly. Its deterministic seeding and clamping rules mean a fixture of daily rows has one correct
-answer per day, so Jest should cover the model on hand-built series: a clean nine-week series, a viral
-week that must be clamped at `2x`, a tracking outage that must be clamped at `0.5x`, days GA4 omitted
-entirely, a year-ago window that ends mid-range, and each of the three history tiers. Storybook should
-carry the Insights chart at small, medium and large traffic so the band's proportional behavior is in
-VRT, along with the weekday-only and same-weekday-average tiers.
+answer per day, so PHPUnit should cover the model on hand-built series: a clean nine-week series, a
+viral week that must be clamped at `2x`, a tracking outage that must be clamped at `0.5x`, days GA4
+omitted entirely, a year-ago window that ends mid-range, and each of the three history tiers.
+Storybook should carry the Insights chart at small, medium and large traffic so the band's
+proportional behavior is in VRT, along with the weekday-only and same-weekday-average tiers.
 
 Search Console is a soft dependency: QA needs to verify the widget behaves when Search Console is
-disconnected or unshared and `search_query_shifts` is omitted.
+disconnected and `search_query_shifts` is omitted, which is a matter of the filter callback declining
+rather than of a failed request.
 
 Two response-driven cases are worth naming because they are easy to miss and awkward to reach
-naturally: a `top_dimensions` list naming a dimension whose `contextual_data` key was omitted, and
+naturally: a `topDimensions` list naming a dimension whose `contextualData` key is absent, and
 `[ HISTORICAL_BASELINE ]` on its own, which is what the service substitutes when the model names
 nothing valid. Both must render a coherent section rather than an empty one, and both are reachable
 only through a forced response.
+
+One case is new with server-side assembly and worth reaching deliberately: a host that cuts the
+request part-way. A `max_execution_time` low enough to fire during generation must leave the widget
+in its Reporting state rather than in an error, and the [latency budget](#latency-budget) is what
+decides whether it does.
 
 ## **Launch plans**
 
@@ -1295,21 +1534,40 @@ has none, yet the feature is meant to reach everyone with access to Analytics da
 are to render the tabs without the insight, to generate with the module owner's token and cache the
 result site-wide, or to hide the widget entirely in the view-only dashboard.
 
-Blocked on this: the widget's `isActive` conditions, and whether a site-level insight cache is
-needed at all.
+Server-side assembly raises the stakes: every number the widget draws arrives through the same
+datapoint as the narration, so a non-shareable datapoint costs a view-only user the whole widget
+rather than one block of text. The [direction](#dashboard-sharing) is a shareable datapoint whose
+pipeline skips the generative step on a shared request, which needs confirming rather than assuming.
+
+Undecided with it: whether the Search Console rows can be gathered at all under a shared request,
+since the callback reaches for `POST:searchanalytics-batch` and shared access is defined over read
+datapoints. If they cannot, `search_query_shifts` is simply absent for view-only users, which the
+payload already tolerates — but that should be a decision rather than a discovery in QA.
+
+Blocked on this: the widget's `isActive` conditions, whether the datapoint is shareable, and whether
+a site-level insight cache is needed at all.
 
 ## **What is the latency budget for the insight request?** {#what-is-the-latency-budget-for-the-insight-request}
 
-The request waits for generation, so the timeout the datapoint passes to `Google_Proxy::request()` is
-the whole latency policy. Too low and a cold generation is thrown away after the rate-limit token has
-already been spent; too high and a PHP worker sits on a request that shared hosts,
-`max_execution_time`, reverse proxies and CDNs may cut anyway — with a 504 the plugin cannot
-distinguish from a service failure. `request()` defaults to 15 seconds, which is below the worst case
-the endpoint was designed around.
+One PHP request runs two GA4 batch calls, a Search Console call and a generation, in that order, so
+the timeout the datapoint passes to `Google_Proxy::request()` is not a policy on its own — it is
+whatever is left of the host's budget after the reports return. Too low and a cold generation is
+thrown away after the rate-limit token has already been spent; too high and the request runs into
+`max_execution_time`, a reverse proxy or a CDN, and is cut with a 502 or 504 that costs the numbers
+as well as the insight. `request()` defaults to 15 seconds, which is below the worst case the
+endpoint was designed around, and `max_execution_time` is 30 seconds on a good deal of shared
+hosting.
 
-Undecided: the timeout value, whether a timed-out or 5xx request is retried once given that each
-attempt costs a token, and the copy shown while waiting — a plain skeleton, or something that says an
-insight is being generated.
+Undecided: the timeout value and whether it is computed against the elapsed request time rather than
+fixed; whether the reports carry their own shorter timeouts so a slow GA4 cannot eat the generation's
+budget; whether a timed-out or 5xx generation is retried once given that each attempt costs a token;
+and the copy shown while waiting — a plain skeleton, or something that says an insight is being
+generated.
+
+Also undecided: whether the datapoint should return its data before generation completes at all —
+answering fast with `insight` omitted and letting a second request collect it. That is the polling
+design in a different shape, and it only pays for itself if the service's generation times turn out
+to sit above what shared hosting tolerates.
 
 ## **How is the `baseline` payload object derived?** {#how-is-the-baseline-payload-object-derived}
 
@@ -1331,33 +1589,41 @@ no definition in the daily model:
 Also undecided: whether the short-history tiers send a `baseline` with `period_months: 2` or omit the
 object and let the service narrate against the previous period instead.
 
-Blocked on this: the payload half of issue 11, and the scenario mix QA will actually see.
+Blocked on this: the payload half of issue 5, and the scenario mix QA will actually see.
 
 ## **What does the widget show when the rate limit is hit?** {#what-does-the-widget-show-when-the-rate-limit-is-hit}
 
 The service allows a burst of 10 with a refill of 2 per hour per site and user, and returns 429 beyond
-that. Caching narrows what a 429 means without removing it: the request that gets one is over a
-payload the cache has never held, so there is nothing to fall back on. Several date-range changes in
-one sitting reach that, and so does any movement in the figures that changes the payload hash.
+that. Keying the cache on the date range narrows what a 429 means: only a range the browser has not
+held recently reaches the service at all, so several date-range changes in one sitting is the way to
+hit it.
 
 The numbers stay on screen either way. What is open is the insight block: rendering the tab without
 it, or saying in its place that the insight is temporarily unavailable and will be back shortly, are
 materially different experiences, and the choice decides whether a 429 is tracked as an error.
 
-Two things to settle with it. The API cache stores an error response only when it carries
-`data.cacheTTL`, so the datapoint has to put that field on the 429 for the widget to stop re-requesting
-through the cool-down. And if the user is told to come back later, whether the service's 429 carries a
-`Retry-After` the datapoint can pass through decides whether "later" is a real time or a vague one.
+The mechanics need settling with it, because a rate-limited response is a **successful** response
+with `insight` omitted, and the API cache holds it for the full 24 hours like any other. Left alone,
+one 429 costs that date range its insight for a day. The design's answer is `insightRetryAfter` and a
+[store-side invalidation](#datastore-slice) once it passes, which leaves two things to decide:
+whether the service's 429 carries a `Retry-After` the datapoint can pass through, or the plugin
+picks a cool-down; and whether the refetch happens silently on the next mount after that time or only
+when the user does something.
 
 ## **How many rows does each `contextual_data` dimension carry?** {#how-many-rows-does-each-contextual-data-dimension-carry}
 
-The payload travels as query parameters, and a request line over the server's limit — commonly around
-8 KB — is rejected before PHP sees it, with a status the plugin cannot tell apart from a server fault.
-The contract sets no length on the `contextual_data` arrays, so the derivation has to: a row cap per
-dimension, applied after ranking, so the rows that survive are the ones carrying the movement.
+The contract sets no length on the `contextual_data` arrays, so the derivation has to. Rows are
+ranked by absolute change and capped per dimension, so the ones that survive are the ones carrying
+the movement.
 
-Undecided: the cap for each of the seven dimensions, and whether the assembled query string is
-measured before the request is made, so an over-long payload sheds rows rather than failing.
+Assembling in PHP takes the request-line limit out of it — the payload travels as a JSON body — and
+leaves three softer pressures pulling in different directions: what the model reads best, what the
+breakdown sections need to render (three to five rows a section, from the Figma frames), and what the
+response costs in browser storage, since the capped rows come back to the widget as `contextualData`.
+
+Undecided: the cap for each of the seven dimensions, and whether the rendered cap and the sent cap
+are the same number — sending more rows than the widget shows gives the model more to reason over at
+no cost to the layout, but pays for them in the cached response.
 
 ## **What does the widget do when the property is too young?** {#what-does-the-widget-do-when-the-property-is-too-young}
 
@@ -1414,7 +1680,7 @@ selected range — and of a higher bar for the short-history tiers, which would 
 *before* the earliest plotted day rather than 63 days in total. The report span is unaffected either
 way: the seasonality lookback already reaches deeper than both windows.
 
-Blocked on this: the window arithmetic in issue 11, and the history each fallback tier requires.
+Blocked on this: the window arithmetic in issue 5, and the history each fallback tier requires.
 
 ## **How does the scenario code reach the feedback telemetry?** {#how-does-the-scenario-code-reach-the-feedback-telemetry}
 
@@ -1422,13 +1688,13 @@ The service's post-launch quality process aggregates thumbs feedback per scenari
 thumbs prompt sends `vote:<voteID>:<direction>` through `triggerSurvey`, which carries no metadata,
 so the scenario would have to be encoded in the `voteID` or the survey trigger extended.
 
-Blocked on this: issue 15, and the definition of the vote IDs.
+Blocked on this: issue 16, and the definition of the vote IDs.
 
 ## **How is the feature introduced to users?** {#how-is-the-feature-introduced-to-users}
 
 The widget appears in a section users already read, so it may need no introduction at all. If it
 does, the options are an intro notification, a feature tour over the two tabs, or a "New" badge on
-the widget header. Issue 17 is sized on the assumption that something is needed.
+the widget header. Issue 18 is sized on the assumption that something is needed.
 
 ## **What is the downvote follow-up URL?** {#what-is-the-downvote-follow-up-url}
 
@@ -1444,8 +1710,9 @@ tab across reloads. Both are cheap to add now and awkward to add later.
 
 The next-28-days projection is listed under Future Work on the assumption that it needed a forecast
 field in the benchmarking response. It does not: the [baseline model](#expected-baseline) produces it
-from data the widget already holds, and what is left is the chart's forward extension, the boom-or-lull
-comparison and the copy — one issue about the size of issue 12, not an epic of its own.
+from reports the datapoint already runs, and what is left is the forward rows, the chart's forward
+extension, the boom-or-lull comparison and the copy — one issue about the size of issue 13, not an
+epic of its own.
 
 Blocked on this: the issue list and the total, and whether the Insights chart is built once with a
 forward half or built now and extended later.
@@ -1466,9 +1733,38 @@ frames.
 The following are implementation-level details that can be settled at the Implementation Brief
 stage of the individual issues.
 
-### **Request and response field mapping**
+### **Datapoint response shape** {#datapoint-response-shape}
 
-The service contract, for reference while implementing the derivation in issue 5. Every
+What `GET:benchmarking` returns, and therefore the fixture every front-end issue is built against.
+It is the plugin's own shape: camelCase, flat, and unrelated to the service contract below except
+for the five fields inside `insight`.
+
+| Field | Type | Present |
+| :---- | :---- | :---: |
+| `insight.scenario` | `string`, one of the eleven codes | When generation succeeded |
+| `insight.topDimensions` | `Array<DimensionType>`, up to 3, ranked | When generation succeeded |
+| `insight.text`, `insight.driver`, `insight.actionableRecommendation` | `string`, localized | When generation succeeded |
+| `insightUnavailableReason` | `rate_limited` \| `timed_out` \| `forbidden` \| `errored` | When it did not |
+| `insightRetryAfter` | `integer`, Unix timestamp | With a reason that can clear |
+| `visitors` | `{ current: int, previous: int }` | Always |
+| `dailyTraffic` | `Array<{ date, visitors, expectedMin, expectedMax }>`, one row per plotted day | Always |
+| `baseline.periodMonths` | `integer` | Always |
+| `baseline.expectedRangeMin`, `baseline.expectedRangeMax` | `integer`, period totals | Always |
+| `baseline.trendDirection` | `UP` \| `DOWN` \| `STABLE` | Always |
+| `baseline.statusVsBaseline` | `ABOVE_EXPECTED` \| `WITHIN_EXPECTED` \| `BELOW_EXPECTED` | Always |
+| `baseline.isSeasonalPeriod` | `boolean` | Always |
+| `baseline.tier` | `full` \| `weekday` \| `weekday_average` | Always |
+| `contentMarkers` | `Array<{ date, urls: string[], visitors: int }>` | With the post-date custom dimension |
+| `contextualData.<key>` | `Array<{ label, current, previous }>`, ranked and capped | Per key, as the payload carries it |
+
+`contextualData` keys are the camelCase form of the request's `contextual_data` keys —
+`trafficChannelSurges`, `searchQueryShifts`, and so on — and a key absent from the request is absent
+here. `searchQueryShifts` rows carry `position` alongside the click pair, the one dimension whose row
+is not a label and two numbers.
+
+### **Request and response field mapping** {#request-and-response-field-mapping}
+
+The service contract, for reference while implementing the derivation in issue 3. Every
 `contextual_data` key is optional, and each `MetricPair` is `{ current, previous }`:
 
 | Request field | Type | Required |
@@ -1504,10 +1800,10 @@ The service contract, for reference while implementing the derivation in issue 5
 `REFERRING_SITES` or `HISTORICAL_BASELINE`.
 
 `site_id` and `site_secret` are injected by `Google_Proxy::request()` and are not part of the
-payload the browser sends. `hl` travels as a query parameter, not in the body. The plugin sends no
-trend or ranking of its own: the service derives `trends`, including the ranked per-item impacts the
-model must respect, from `visitors` and `contextual_data`, and none of that intermediate structure
-comes back in the response.
+payload the datapoint assembles. `hl` travels as a query parameter, not in the body. The plugin sends
+no trend or ranking of its own: the service derives `trends`, including the ranked per-item impacts
+the model must respect, from `visitors` and `contextual_data`, and none of that intermediate
+structure comes back in the response.
 
 Failure responses to distinguish: `400` for a missing or invalid field, including a `baseline` with a
 non-positive `period_months`; `403` for an unverifiable token or a user not registered against the
@@ -1518,6 +1814,7 @@ failure.
 
 | Date | Author(s) | Description |
 | :---- | :---- | :---- |
+| Aug 12, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Moved report gathering, payload assembly and the expected-baseline model into the `GET:benchmarking` datapoint: the widget calls it with the selected date range and renders one composed response, and Search Console contributes its rows through `googlesitekit_benchmarking_contextual_data` rather than through a request issued by an Analytics widget |
 | Aug 12, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Made the insight datapoint a `GET` so its response is cached under the payload hash, since the service spends a rate-limit token before consulting its own cache; specified the fetch store, selectors and action the slice adds, and the row caps the query string now requires |
 | Aug 12, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Dropped the Site Goals comparisons throughout, stating what this epic builds directly instead |
 | Aug 12, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Settled that the expected band is drawn at whichever history tier the property supports rather than hidden when the full tier is out of reach, leaving only the floor beneath the tiers open |
