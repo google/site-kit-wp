@@ -69,9 +69,14 @@ export function requireIsAuthenticated() {
  */
 export function requireCanViewSharedModule( slug ) {
 	return async ( { select, resolveSelect } ) => {
-		await resolveSelect( CORE_USER ).getCapabilities();
+		await Promise.all( [
+			// The canViewSharedModule() selector relies on the resolution of
+			// the getModules() and getCapabilities() resolvers.
+			resolveSelect( CORE_MODULES ).getModules(),
+			resolveSelect( CORE_USER ).getCapabilities(),
+		] );
 
-		return select( CORE_USER ).canViewSharedModule( slug );
+		return true === select( CORE_USER ).canViewSharedModule( slug );
 	};
 }
 
