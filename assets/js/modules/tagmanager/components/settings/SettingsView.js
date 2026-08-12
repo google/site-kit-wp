@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -28,15 +28,15 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import DisplaySetting from '@/js/components/DisplaySetting';
 import Link from '@/js/components/Link';
+import SettingsStatuses from '@/js/components/settings/SettingsStatuses';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
-import VisuallyHidden from '@/js/components/VisuallyHidden';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
-import { escapeURI } from '@/js/util/escape-uri';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
-import SettingsStatuses from '@/js/components/settings/SettingsStatuses';
+import VisuallyHidden from '@/js/components/VisuallyHidden';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { useFeature } from '@/js/hooks/useFeature';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
+import { escapeURI } from '@/js/util/escape-uri';
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) =>

@@ -19,13 +19,13 @@
 /**
  * External dependencies
  */
-import { useClickAway } from 'react-use';
 import classnames from 'classnames';
+import { useClickAway } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { useState, useRef, useCallback } from '@wordpress/element';
+import { useCallback, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
 
@@ -33,30 +33,27 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import { Button, Menu } from 'googlesitekit-components';
+import { useSelect } from 'googlesitekit-data';
 import {
 	Divider,
 	MenuSection,
 	MenuWithHeading,
 } from '@/js/components/HeaderMenu';
-import useViewContext from '@/js/hooks/useViewContext';
-import { useFeature } from '@/js/hooks/useFeature';
+import Typography from '@/js/components/Typography';
+import ManageEmailReports from '@/js/components/ViewOnlyMenu/ManageEmailReports';
+import {
+	CORE_USER,
+	PERMISSION_AUTHENTICATE,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
+import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 import ViewIcon from '@/svg/icons/view.svg';
 import Description from './Description';
 import SharedServices from './SharedServices';
 import Tracking from './Tracking';
-import { useSelect } from 'googlesitekit-data';
-import {
-	CORE_USER,
-	PERMISSION_AUTHENTICATE,
-} from '@/js/googlesitekit/datastore/user/constants';
-import ManageEmailReports from '@/js/components/ViewOnlyMenu/ManageEmailReports';
-import Typography from '@/js/components/Typography';
 
 export default function ViewOnlyMenu() {
-	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
-
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
 	const viewContext = useViewContext();
@@ -134,7 +131,7 @@ export default function ViewOnlyMenu() {
 						<SharedServices viewableModules={ viewableModules } />
 					</MenuWithHeading>
 				) }
-				{ emailReportingEnabled && <ManageEmailReports /> }
+				<ManageEmailReports />
 				<Divider />
 				<MenuSection className="googlesitekit-view-only-menu__list-item">
 					<Tracking />

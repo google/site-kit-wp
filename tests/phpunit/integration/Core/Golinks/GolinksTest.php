@@ -6,14 +6,18 @@
  * @copyright 2026 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Tests\Core\Golinks;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Golinks\Connect_Module_Golink_Handler;
 use Google\Site_Kit\Core\Golinks\Dashboard_Golink_Handler;
 use Google\Site_Kit\Core\Golinks\Golink_Handler_Interface;
 use Google\Site_Kit\Core\Golinks\Golinks;
+use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\MutableInput;
@@ -92,11 +96,31 @@ class GolinksTest extends TestCase {
 		}
 	}
 
-	public function test_handle_go__dashboard_handler_forwards_deeplink_args() {
+	public function test_handle_go__dashboard_handler_forwards_permalink_only() {
 		$this->golinks->register_handler( 'dashboard', new Dashboard_Golink_Handler() );
-		$_GET['to']     = 'dashboard';
-		$_GET['slug']   = 'analytics-4';
-		$_GET['reAuth'] = 'true';
+		$_GET['to']        = 'dashboard';
+		$_GET['permaLink'] = 'http://example.com/';
+		$_GET['slug']      = 'analytics-4';
+		$_GET['reAuth']    = 'true';
+
+		try {
+			do_action( 'admin_action_' . Golinks::ACTION_GO );
+			$this->fail( 'Expected RedirectException!' );
+		} catch ( RedirectException $redirect_exception ) {
+			$location = $redirect_exception->get_location();
+			$query    = wp_parse_url( $location, PHP_URL_QUERY );
+			parse_str( is_string( $query ) ? $query : '', $query_args );
+
+			$this->assertSame( 'googlesitekit-dashboard', $query_args['page'], 'Expected redirect to dashboard page.' );
+			$this->assertArrayHasKey( 'permaLink', $query_args, 'Expected permaLink to be forwarded.' );
+			$this->assertArrayNotHasKey( 'slug', $query_args, 'Expected slug not to be forwarded.' );
+			$this->assertArrayNotHasKey( 'reAuth', $query_args, 'Expected reAuth not to be forwarded.' );
+		}
+	}
+
+	public function test_handle_go__connect_module_handler_resolves_to_setup_destination() {
+		$this->golinks->register_handler( 'connect-analytics-4', new Connect_Module_Golink_Handler( Analytics_4::MODULE_SLUG ) );
+		$_GET['to'] = 'connect-analytics-4';
 
 		try {
 			do_action( 'admin_action_' . Golinks::ACTION_GO );
@@ -106,8 +130,32 @@ class GolinksTest extends TestCase {
 			parse_str( is_string( $query ) ? $query : '', $query_args );
 
 			$this->assertSame( 'googlesitekit-dashboard', $query_args['page'], 'Expected redirect to dashboard page.' );
-			$this->assertSame( 'analytics-4', $query_args['slug'], 'Expected slug query arg to be forwarded.' );
-			$this->assertSame( 'true', $query_args['reAuth'], 'Expected reAuth query arg to be forwarded.' );
+			$this->assertSame( Analytics_4::MODULE_SLUG, $query_args['slug'], 'Expected slug=analytics-4 in redirect URL.' );
+			$this->assertSame( 'true', $query_args['reAuth'], 'Expected reAuth=true in redirect URL.' );
+		}
+	}
+
+	public function test_handle_go__dies_with_404_for_unknown_connect_key() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		$_GET['to']               = 'connect-nonexistent-module';
+		$grant_view_dashboard_cap = function ( $caps, $cap ) {
+			if ( Permissions::VIEW_DASHBOARD === $cap ) {
+				return array();
+			}
+
+			return $caps;
+		};
+		add_filter( 'map_meta_cap', $grant_view_dashboard_cap, 20, 4 );
+		$wp_die_handler_spy = $this->spy_on_wp_die_handler();
+
+		try {
+			do_action( 'admin_action_' . Golinks::ACTION_GO );
+			$this->fail( 'Expected WPDieException!' );
+		} catch ( WPDieException $exception ) {
+			list( $message, $title, $args ) = $wp_die_handler_spy->args;
+			$this->assertSame( 404, $args['response'], 'Expected 404 response code for unknown connect key.' );
+			$this->assertStringContainsString( 'The link you followed is invalid.', $message, 'Expected invalid golink message.' );
 		}
 	}
 

@@ -30,12 +30,13 @@ import { addQueryArgs, hasQueryArg } from '@wordpress/url';
  * Internal dependencies
  */
 import {
-	createReducer,
 	commonActions,
+	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { CORE_USER } from './constants';
+import { getGlobalData } from '@/js/googlesitekit/data/utils';
 import { escapeURI } from '@/js/util/escape-uri';
+import { CORE_USER } from './constants';
 
 const RECEIVE_CONNECT_URL = 'RECEIVE_CONNECT_URL';
 const RECEIVE_USER_INFO = 'RECEIVE_USER_INFO';
@@ -207,12 +208,15 @@ export const resolvers = {
 			return;
 		}
 
-		if ( ! global._googlesitekitUserData ) {
+		let userData;
+		try {
+			userData = getGlobalData( '_googlesitekitUserData' );
+		} catch ( error ) {
 			global.console.error( 'Could not load core/user info.' );
 			return;
 		}
-		const { user } = global._googlesitekitUserData;
-		yield actions.receiveUserInfo( user );
+
+		yield actions.receiveUserInfo( userData.user );
 	},
 
 	*getInitialSiteKitVersion() {

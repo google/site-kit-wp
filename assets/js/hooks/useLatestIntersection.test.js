@@ -29,7 +29,7 @@ import { createRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { act, actHook, render, renderHook } from '../../../tests/js/test-utils';
+import { act, actHook, render, renderHook } from '@tests/js/test-utils';
 import useLatestIntersection from './useLatestIntersection';
 
 describe( 'useLatestIntersection', () => {

@@ -31,11 +31,11 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
-import BannerSVG from '@/svg/graphics/banner-enhanced-measurement-setup-cta.svg?url';
-import BannerMobileSVG from '@/svg/graphics/banner-enhanced-measurement-setup-cta-mobile.svg?url';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
 import { EDIT_SCOPE } from '@/js/modules/analytics-4/datastore/constants';
+import BannerMobileSVG from '@/svg/graphics/banner-enhanced-measurement-setup-cta-mobile.svg?url';
+import BannerSVG from '@/svg/graphics/banner-enhanced-measurement-setup-cta.svg?url';
 
 export default function ProcessingBanner( { id, Notification, onDismiss } ) {
 	const documentationURL = useSelect( ( select ) =>

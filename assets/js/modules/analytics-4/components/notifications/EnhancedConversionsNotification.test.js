@@ -19,15 +19,22 @@
 /**
  * Internal dependencies
  */
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '@tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	provideSiteInfo,
+	provideUserAuthentication,
 	provideUserInfo,
 	render,
-} from '../../../../../../tests/js/test-utils';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+	waitFor,
+} from '@tests/js/test-utils';
 import EnhancedConversionsNotification, {
+	ECEE_ANALYTICS_SURVEY_TRIGGER_ID,
 	ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS,
 } from './EnhancedConversionsNotification';
 
@@ -44,11 +51,14 @@ describe( 'Analytics EnhancedConversionsNotification', () => {
 
 		provideSiteInfo( registry );
 		provideUserInfo( registry );
+		provideUserAuthentication( registry );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			accountID: '123456',
 			propertyID: '654321',
 		} );
+
+		mockSurveyEndpoints();
 	} );
 
 	it( 'should render the notification', async () => {
@@ -62,5 +72,27 @@ describe( 'Analytics EnhancedConversionsNotification', () => {
 		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
+	} );
+
+	it( `should dispatch the ${ ECEE_ANALYTICS_SURVEY_TRIGGER_ID } survey trigger when rendered`, async () => {
+		const { waitForRegistry } = render(
+			<EnhancedConversionsNotificationComponent />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched(
+				surveyTriggerEndpoint,
+				expect.objectContaining( {
+					body: {
+						data: { triggerID: ECEE_ANALYTICS_SURVEY_TRIGGER_ID },
+					},
+				} )
+			)
+		);
 	} );
 } );

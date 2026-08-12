@@ -25,18 +25,15 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import {
-	MODULES_SEARCH_CONSOLE,
-	DATE_RANGE_OFFSET,
-} from '@/js/modules/search-console/datastore/constants';
-import { calculateChange } from '@/js/util';
-import PreviewBlock from '@/js/components/PreviewBlock';
 import DataBlock from '@/js/components/DataBlock';
 import { NOTICE_STYLE } from '@/js/components/GatheringDataNotice';
-import sumObjectListValue from '@/js/util/sum-object-list-value';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { calculateChange } from '@/js/util';
 import { partitionReport } from '@/js/util/partition-report';
+import sumObjectListValue from '@/js/util/sum-object-list-value';
 
 function AdminBarClicks( { WidgetReportError } ) {
 	const isGatheringData = useSelect( ( select ) =>
@@ -48,7 +45,6 @@ function AdminBarClicks( { WidgetReportError } ) {
 	const { compareStartDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
 	const dateRangeLength = useSelect( ( select ) =>

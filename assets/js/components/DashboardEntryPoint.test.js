@@ -19,15 +19,15 @@
 /**
  * Internal dependencies
  */
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { mockCreateComponent } from '@tests/js/mock-component-utils';
 import {
 	createTestRegistry,
 	provideModules,
 	provideUserAuthentication,
 	render,
-} from '../../../tests/js/test-utils';
-import { mockCreateComponent } from '../../../tests/js/mock-component-utils';
+} from '@tests/js/test-utils';
 import DashboardEntryPoint from './DashboardEntryPoint';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 jest.mock( './setup/ModuleSetup', () => mockCreateComponent( 'ModuleSetup' ) );
 jest.mock( './DashboardMainApp', () =>
@@ -62,12 +62,11 @@ describe( 'DashboardEntryPoint', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'should render the user settings panel when the module setup is shown and proactive user engagement is enabled', () => {
+	it( 'should render the user settings panel when the module setup is shown', () => {
 		const { getByText } = render(
 			<DashboardEntryPoint setupModuleSlug="analytics-4" />,
 			{
 				registry,
-				features: [ 'proactiveUserEngagement' ],
 			}
 		);
 

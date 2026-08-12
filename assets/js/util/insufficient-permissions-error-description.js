@@ -21,8 +21,12 @@
  */
 import { __, sprintf } from '@wordpress/i18n';
 
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+/**
+ * Internal dependencies
+ */
+import { isFeatureEnabled } from '@/js/features';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 /**
  * Gets a description for an insufficient permissions error.
@@ -86,22 +90,40 @@ export function getInsufficientPermissionsErrorDescription(
 		);
 	}
 
+	const setupFlowRefreshPhase4Enabled = isFeatureEnabled(
+		'setupFlowRefreshPhase4'
+	);
+
 	if ( owner && owner.login ) {
-		userInfo = sprintf(
-			/* translators: %s: owner name */
-			__(
-				'This service was originally connected by the administrator "%s" — you can contact them for more information.',
-				'google-site-kit'
-			),
-			owner.login
-		);
+		userInfo = setupFlowRefreshPhase4Enabled
+			? sprintf(
+					/* translators: %s: owner name */
+					__(
+						'This service was originally connected by the administrator "%s", you can contact them for more information.',
+						'google-site-kit'
+					),
+					owner.login
+			  )
+			: sprintf(
+					/* translators: %s: owner name */
+					__(
+						'This service was originally connected by the administrator "%s" — you can contact them for more information.',
+						'google-site-kit'
+					),
+					owner.login
+			  );
 	}
 
 	if ( ! userInfo ) {
-		userInfo = __(
-			'This service was originally connected by an administrator — you can contact them for more information.',
-			'google-site-kit'
-		);
+		userInfo = setupFlowRefreshPhase4Enabled
+			? __(
+					'This service was originally connected by an administrator, you can contact them for more information.',
+					'google-site-kit'
+			  )
+			: __(
+					'This service was originally connected by an administrator — you can contact them for more information.',
+					'google-site-kit'
+			  );
 	}
 
 	return `${ message } ${ userInfo }`;

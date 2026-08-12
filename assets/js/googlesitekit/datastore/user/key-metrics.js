@@ -25,47 +25,47 @@ import { isEmpty, isPlainObject } from 'lodash';
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	commonActions,
-	createRegistrySelector,
 	combineStores,
+	commonActions,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
-import {
-	CORE_USER,
-	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-	KM_ANALYTICS_RETURNING_VISITORS,
-	KM_ANALYTICS_MOST_ENGAGING_PAGES,
-	KM_ANALYTICS_NEW_VISITORS,
-	KM_ANALYTICS_PAGES_PER_VISIT,
-	KM_ANALYTICS_POPULAR_CONTENT,
-	KM_ANALYTICS_POPULAR_PRODUCTS,
-	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-	KM_ANALYTICS_VISITS_PER_VISITOR,
-	KM_ANALYTICS_VISIT_LENGTH,
-	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
-	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
-	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
-	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
-	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
-	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
-	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
-	KM_ANALYTICS_TOP_CATEGORIES,
-	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
-	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
-	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
-	KM_ANALYTICS_POPULAR_AUTHORS,
-	KM_ANALYTICS_TOP_CITIES,
-	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-} from './constants';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { isFeatureEnabled } from '@/js/features';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { ENUM_CONVERSION_EVENTS } from '@/js/modules/analytics-4/datastore/constants';
-
-import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
-import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import {
+	CORE_USER,
+	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+	KM_ANALYTICS_MOST_ENGAGING_PAGES,
+	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_PAGES_PER_VISIT,
+	KM_ANALYTICS_POPULAR_AUTHORS,
+	KM_ANALYTICS_POPULAR_CONTENT,
+	KM_ANALYTICS_POPULAR_PRODUCTS,
+	KM_ANALYTICS_RETURNING_VISITORS,
+	KM_ANALYTICS_TOP_CATEGORIES,
+	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+	KM_ANALYTICS_VISITS_PER_VISITOR,
+	KM_ANALYTICS_VISIT_LENGTH,
+	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+} from './constants';
 
 const { setErrorForAction, clearActionError } = errorStoreActions;
 
@@ -587,10 +587,33 @@ const baseSelectors = {
 	 * Gets whether the key metrics widget is hidden.
 	 *
 	 * @since 1.103.0
+	 * @since 1.183.0 Returns `false` when the `setupFlowRefresh` feature flag is enabled, as the widget is now an integral part of the dashboard.
 	 *
 	 * @return {boolean|undefined} True if the key metrics widget is hidden, false if it is not, or undefined if the key metrics settings are not loaded.
 	 */
 	isKeyMetricsWidgetHidden: createRegistrySelector( ( select ) => () => {
+		const isWidgetAreaHidden =
+			select( CORE_SITE ).isKeyMetricsWidgetAreaHidden();
+
+		if ( isWidgetAreaHidden ) {
+			return true;
+		}
+
+		if ( isFeatureEnabled( 'setupFlowRefresh' ) ) {
+			return false;
+		}
+
+		return select( CORE_USER ).getRawKeyMetricsWidgetHidden();
+	} ),
+
+	/**
+	 * Gets the stored value of whether the key metrics widget is hidden, without the `setupFlowRefresh` feature flag override.
+	 *
+	 * @since 1.183.0
+	 *
+	 * @return {boolean|undefined} True if the key metrics widget is hidden, false if it is not, or undefined if the key metrics settings are not loaded.
+	 */
+	getRawKeyMetricsWidgetHidden: createRegistrySelector( ( select ) => () => {
 		const keyMetricsSettings = select( CORE_USER ).getKeyMetricsSettings();
 
 		if ( keyMetricsSettings === undefined ) {

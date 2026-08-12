@@ -24,34 +24,36 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import {
-	CORE_USER,
-	KM_ANALYTICS_TOP_CITIES,
-} from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
-import { numFmt } from '@/js/util';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
 } from '@/js/components/KeyMetrics';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_CITIES,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { reportRowsWithSetValues } from '@/js/modules/analytics-4/utils/report-rows-with-set-values';
+import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import { reportRowsWithSetValues } from '@/js/modules/analytics-4/utils/report-rows-with-set-values';
 
-function TopCitiesWidget( { Widget } ) {
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
-	);
-
-	const topCitiesReportOptions = {
+/**
+ * Builds the Analytics 4 report options for the Top Cities metric.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range.
+ * @return {Object} The Analytics 4 `getReport` options.
+ */
+export function getTopCitiesReportOptions( dates ) {
+	return {
 		...dates,
 		dimensions: [ 'city' ],
 		metrics: [ { name: 'totalUsers' } ],
@@ -66,6 +68,14 @@ function TopCitiesWidget( { Widget } ) {
 		limit: 4,
 		reportID: 'analytics-4_top-cities-widget_widget_topCitiesReportOptions',
 	};
+}
+
+function TopCitiesWidget( { Widget } ) {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates()
+	);
+
+	const topCitiesReportOptions = getTopCitiesReportOptions( dates );
 
 	const topCitiesReport = useInViewSelect(
 		( select ) =>

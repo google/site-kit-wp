@@ -31,26 +31,26 @@ import { isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import {
-	MODULES_SEARCH_CONSOLE,
-	DATE_RANGE_OFFSET,
-} from '@/js/modules/search-console/datastore/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
+import PreviewBlock from '@/js/components/PreviewBlock';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import PreviewBlock from '@/js/components/PreviewBlock';
-import Header from './Header';
-import Footer from './Footer';
-import Overview from './Overview';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
-import {
-	MODULES_ANALYTICS_4,
-	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
-} from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import Chart from './Chart';
+import Footer from './Footer';
+import Header from './Header';
+import Overview from './Overview';
+import {
+	getGA4KeyEventsOverviewReportOptions,
+	getGA4KeyEventsReportOptions,
+	getGA4VisitorsReportOptions,
+	getSearchConsoleReportOptions,
+} from './reportOptions';
 
 function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
@@ -88,13 +88,11 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 	const { endDate, compareStartDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
 	const ga4Dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
-			offsetDays: DATE_RANGE_OFFSET_ANALYTICS,
 		} )
 	);
 
@@ -126,78 +124,30 @@ function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 		[ isGA4Connected, canViewSharedAnalytics4, showRecoverableAnalytics ]
 	);
 
-	const searchConsoleReportArgs = {
-		startDate: compareStartDate,
+	// The report option builders are the single source of truth shared with the
+	// PDF export, so the dashboard and PDF report cannot drift.
+	const entityURL = isURL( url ) ? url : undefined;
+
+	const searchConsoleReportArgs = getSearchConsoleReportOptions( {
+		compareStartDate,
 		endDate,
-		dimensions: 'date',
-	};
+		url: entityURL,
+	} );
 
-	const ga4OverviewArgs = {
+	const ga4OverviewArgs = getGA4KeyEventsOverviewReportOptions( {
 		...ga4Dates,
-		metrics: [
-			{
-				name: 'keyEvents',
-			},
-			{
-				name: 'engagementRate',
-			},
-		],
-		dimensionFilters: {
-			sessionDefaultChannelGrouping: [ 'Organic Search' ],
-		},
-		reportID:
-			'search-console_search-funnel-widget-ga4_widget_ga4OverviewArgs',
-	};
+		url: entityURL,
+	} );
 
-	const ga4StatsArgs = {
+	const ga4StatsArgs = getGA4KeyEventsReportOptions( {
 		...ga4Dates,
-		...ga4OverviewArgs,
-		dimensions: [
-			{
-				name: 'date',
-			},
-		],
-		orderby: [
-			{
-				dimension: {
-					dimensionName: 'date',
-				},
-			},
-		],
-		reportID: 'search-console_search-funnel-widget-ga4_widget_ga4StatsArgs',
-	};
-	const ga4VisitorsOverviewAndStatsArgs = {
-		...ga4Dates,
-		metrics: [
-			{
-				name: 'totalUsers',
-			},
-		],
-		dimensions: [
-			{
-				name: 'date',
-			},
-		],
-		dimensionFilters: {
-			sessionDefaultChannelGrouping: [ 'Organic Search' ],
-		},
-		orderby: [
-			{
-				dimension: {
-					dimensionName: 'date',
-				},
-			},
-		],
-		reportID:
-			'search-console_search-funnel-widget-ga4_widget_ga4VisitorsOverviewAndStatsArgs',
-	};
+		url: entityURL,
+	} );
 
-	if ( isURL( url ) ) {
-		searchConsoleReportArgs.url = url;
-		ga4OverviewArgs.url = url;
-		ga4StatsArgs.url = url;
-		ga4VisitorsOverviewAndStatsArgs.url = url;
-	}
+	const ga4VisitorsOverviewAndStatsArgs = getGA4VisitorsReportOptions( {
+		...ga4Dates,
+		url: entityURL,
+	} );
 
 	const searchConsoleData = useInViewSelect(
 		( select ) =>

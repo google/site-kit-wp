@@ -31,20 +31,20 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { trackEvent, WEEK_IN_SECONDS } from '@/js/util';
-import whenActive from '@/js/util/when-active';
+import useViewContext from '@/js/hooks/useViewContext';
 import InfoNotice from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/InfoNotice';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { WEEK_IN_SECONDS, trackEvent } from '@/js/util';
+import whenActive from '@/js/util/when-active';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import {
 	AUDIENCE_INFO_NOTICES,
 	AUDIENCE_INFO_NOTICE_HIDE_UI,
 	AUDIENCE_INFO_NOTICE_SLUG,
 } from './constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import withIntersectionObserver from '@/js/util/withIntersectionObserver';
-import useViewContext from '@/js/hooks/useViewContext';
 
 const InfoNoticeWithIntersectionObserver =
 	withIntersectionObserver( InfoNotice );

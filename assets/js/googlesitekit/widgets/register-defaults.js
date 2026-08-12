@@ -25,34 +25,53 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import * as WIDGET_CONTEXTS from './default-contexts';
-import * as WIDGET_AREAS from './default-areas';
+import {
+	ChangeMetricsLink,
+	KeyMetricsBackNotice,
+	KeyMetricsSetupCTAWidget,
+} from '@/js/components/KeyMetrics';
+import AddMetricCTATile from '@/js/components/KeyMetrics/AddMetricCTATile';
+import { KEY_METRICS_BACK_NOTICE_SLUG } from '@/js/components/KeyMetrics/constants';
+import getKeyMetricsPDFData from '@/js/components/KeyMetrics/getPDFData';
+import { KEY_METRICS_PDF_TILES } from '@/js/components/KeyMetrics/key-metrics-pdf-tiles';
+import KeyMetricsNewBadge from '@/js/components/KeyMetrics/KeyMetricsNewBadge';
+import MetricsWidgetSubtitle from '@/js/components/KeyMetrics/MetricsWidgetSubtitle';
+import lazyWithPreload from '@/js/components/pdf-export/lazy-with-preload';
+import { isFeatureEnabled } from '@/js/features';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	allKeyMetricsTileWidgets,
 	keyMetricsGA4Widgets,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { WIDGET_AREA_STYLES } from './datastore/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import {
-	KeyMetricsSetupCTAWidget,
-	ChangeMetricsLink,
-} from '@/js/components/KeyMetrics';
-import AddMetricCTATile from '@/js/components/KeyMetrics/AddMetricCTATile';
-import KeyMetricsNewBadge from '@/js/components/KeyMetrics/KeyMetricsNewBadge';
-import MetricsWidgetSubtitle from '@/js/components/KeyMetrics/MetricsWidgetSubtitle';
-import ConnectGA4CTAWidget from '@/js/modules/analytics-4/components/widgets/ConnectGA4CTAWidget';
+import WidgetNull from '@/js/googlesitekit/widgets/components/WidgetNull';
+import { BREAKPOINT_SMALL } from '@/js/hooks/useBreakpoint';
 import {
 	AudienceAreaFooter,
 	ChangeGroupsLink,
 } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
-import { BREAKPOINT_SMALL } from '@/js/hooks/useBreakpoint';
+import ConnectGA4CTAWidget from '@/js/modules/analytics-4/components/widgets/ConnectGA4CTAWidget';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { WIDGET_AREA_STYLES } from './datastore/constants';
+import * as WIDGET_AREAS from './default-areas';
+import * as WIDGET_CONTEXTS from './default-contexts';
 
 const { ...ADDITIONAL_WIDGET_CONTEXTS } = WIDGET_CONTEXTS;
 
 const { ...ADDITIONAL_WIDGET_AREAS } = WIDGET_AREAS;
+
+/**
+ * The Key Metrics PDF section's `@react-pdf/renderer` component. It is only
+ * needed at export time, so it is lazy-loaded into the PDF chunk to keep the
+ * renderer out of the dashboard bundle.
+ */
+const KeyMetricsPDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/components/KeyMetrics/KeyMetricsPDF'
+	)
+);
 
 /**
  * Defines default widget areas for a given context
@@ -84,6 +103,7 @@ export function registerDefaults( widgetsAPI ) {
 		AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY,
 		AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
 		AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+		AREA_MAIN_DASHBOARD_TRAFFIC_READER_REVENUE_MANAGER,
 		AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 		AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
 		AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
@@ -107,6 +127,7 @@ export function registerDefaults( widgetsAPI ) {
 					<KeyMetricsNewBadge />
 				</Fragment>
 			),
+			pdfTitle: __( 'Key metrics', 'google-site-kit' ),
 			subtitle: MetricsWidgetSubtitle,
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 1,
@@ -135,6 +156,7 @@ export function registerDefaults( widgetsAPI ) {
 				'Find out how your audience is growing',
 				'google-site-kit'
 			),
+			pdfTitle: __( 'Traffic', 'google-site-kit' ),
 			subtitle: __(
 				'Track your site’s traffic over time',
 				'google-site-kit'
@@ -148,6 +170,11 @@ export function registerDefaults( widgetsAPI ) {
 	widgetsAPI.registerWidgetArea(
 		AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
 		{
+			// This is a second area of the Traffic PDF section. It repeats the
+			// "Traffic" title, so the section chip and heading keep that label
+			// when the report includes only this area's widget, not the primary
+			// traffic area.
+			pdfTitle: __( 'Traffic', 'google-site-kit' ),
 			subtitle: __(
 				'Understand how different visitor groups interact with your site',
 				'google-site-kit'
@@ -181,6 +208,17 @@ export function registerDefaults( widgetsAPI ) {
 		CONTEXT_MAIN_DASHBOARD_TRAFFIC
 	);
 
+	if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
+		widgetsAPI.registerWidgetArea(
+			AREA_MAIN_DASHBOARD_TRAFFIC_READER_REVENUE_MANAGER,
+			{
+				style: WIDGET_AREA_STYLES.BOXES,
+				priority: 3,
+			},
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+		);
+	}
+
 	widgetsAPI.registerWidgetArea(
 		AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY,
 		{
@@ -199,6 +237,7 @@ export function registerDefaults( widgetsAPI ) {
 		AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 		{
 			title: __( 'See how your content is doing', 'google-site-kit' ),
+			pdfTitle: __( 'Content', 'google-site-kit' ),
 			subtitle: __(
 				'Keep track of your most popular pages and how people found them from Search',
 				'google-site-kit'
@@ -216,6 +255,7 @@ export function registerDefaults( widgetsAPI ) {
 				'Find out how visitors experience your site',
 				'google-site-kit'
 			),
+			pdfTitle: __( 'Speed', 'google-site-kit' ),
 			subtitle: __(
 				'Keep track of how fast your pages are and get specific recommendations on what to improve',
 				'google-site-kit'
@@ -233,6 +273,8 @@ export function registerDefaults( widgetsAPI ) {
 				'Find out how much you’re earning from your content',
 				'google-site-kit'
 			),
+			pdfTitle: __( 'Revenue', 'google-site-kit' ),
+			pdfReportTitle: __( 'Monetization', 'google-site-kit' ),
 			subtitle: __(
 				'Track your AdSense revenue over time',
 				'google-site-kit'
@@ -254,6 +296,7 @@ export function registerDefaults( widgetsAPI ) {
 				'Find out how your audience is growing',
 				'google-site-kit'
 			),
+			pdfTitle: __( 'Traffic', 'google-site-kit' ),
 			subtitle: __(
 				'Track traffic to this page over time',
 				'google-site-kit'
@@ -268,6 +311,7 @@ export function registerDefaults( widgetsAPI ) {
 		AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
 		{
 			title: __( 'See how your content is doing', 'google-site-kit' ),
+			pdfTitle: __( 'Content', 'google-site-kit' ),
 			subtitle: __(
 				'Understand how people found this page from Search',
 				'google-site-kit'
@@ -311,6 +355,28 @@ export function registerDefaults( widgetsAPI ) {
 		},
 		CONTEXT_ENTITY_DASHBOARD_MONETIZATION
 	);
+
+	// Notice re-informing users that the Key Metrics widget area, which they had
+	// previously hidden, is now shown by default. Only registered under the
+	// `setupFlowRefresh` flag, and renders above the metric tiles.
+	if ( isFeatureEnabled( 'setupFlowRefresh' ) ) {
+		widgetsAPI.registerWidget(
+			'keyMetricsBackNotice',
+			{
+				Component: KeyMetricsBackNotice,
+				width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
+				priority: 0,
+				wrapWidget: false,
+				isActive: ( select ) =>
+					select( CORE_USER ).getRawKeyMetricsWidgetHidden() ===
+						true &&
+					select( CORE_USER ).isItemDismissed(
+						KEY_METRICS_BACK_NOTICE_SLUG
+					) === false,
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+	}
 
 	widgetsAPI.registerWidget(
 		'keyMetricsSetupCTA',
@@ -357,6 +423,38 @@ export function registerDefaults( widgetsAPI ) {
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
+
+	// The Key Metrics PDF section renders `WidgetNull` on the dashboard (it
+	// occupies no grid slot); it exists to compose the user's configured key
+	// metric tiles into the PDF export. It appears in the export only when at
+	// least one configured metric has a PDF tile config. Registered only when
+	// the `pdfGeneration` feature flag is enabled.
+	if ( isFeatureEnabled( 'pdfGeneration' ) ) {
+		widgetsAPI.registerWidget(
+			'keyMetricsPDFSection',
+			{
+				Component: WidgetNull,
+				width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
+				priority: 1,
+				wrapWidget: false,
+				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+				pdf: {
+					Component: KeyMetricsPDF,
+					getData: getKeyMetricsPDFData,
+					// Reads `getKeyMetrics()` without awaiting resolution: an
+					// unresolved value reads as empty, so the section is
+					// omitted until the metrics resolve. This is safe because
+					// the selection panel resolves them, and re-selects the
+					// section once it appears; by export time they are loaded.
+					isActive: ( select ) =>
+						( select( CORE_USER ).getKeyMetrics() || [] ).some(
+							( slug ) => !! KEY_METRICS_PDF_TILES[ slug ]
+						),
+				},
+			},
+			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+		);
+	}
 
 	/**
 	 * Since we allow selecting at least two and at most four key

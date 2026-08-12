@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Admin;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
+use Google\Site_Kit\Core\Util\Current_Screen;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -75,13 +76,9 @@ final class Authorize_Application {
 	 * @return bool True if the current screen is the Authorize Application screen, false otherwise.
 	 */
 	protected function is_authorize_application_screen() {
-		$current_screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		$current_screen = Current_Screen::get();
 
-		if ( $current_screen instanceof \WP_Screen && 'authorize-application' === $current_screen->id ) {
-			return true;
-		}
-
-		return false;
+		return null !== $current_screen && 'authorize-application' === $current_screen->id;
 	}
 
 	/**

@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-import { render } from '../../../../tests/js/test-utils';
+/**
+ * Internal dependencies
+ */
+import { render } from '@tests/js/test-utils';
 import SettingsGroup from './SettingsGroup';
 
 describe( 'SettingsGroup', () => {

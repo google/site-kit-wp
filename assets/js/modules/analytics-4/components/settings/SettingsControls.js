@@ -30,21 +30,21 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { useFeature } from '@/js/hooks/useFeature';
+import {
+	AccountSelect,
+	PropertySelect,
+	WebDataStreamNameInput,
+	WebDataStreamSelect,
+} from '@/js/modules/analytics-4/components/common';
 import {
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	AccountSelect,
-	PropertySelect,
-	WebDataStreamSelect,
-	WebDataStreamNameInput,
-} from '@/js/modules/analytics-4/components/common';
-import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
-import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import AnalyticsSettingsNotice from './AnalyticsSettingsNotice';
 import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamNotAvailableError';
-import { useFeature } from '@/js/hooks/useFeature';
+import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
 
 export default function SettingsControls( props ) {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );

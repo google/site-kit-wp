@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
-import { WIDGET_WIDTHS } from '@/js/googlesitekit/widgets/datastore/constants';
-import ReportZero from '@/js/components/ReportZero';
 import RecoverableModules from '@/js/components/RecoverableModules';
+import ReportZero from '@/js/components/ReportZero';
+import { WIDGET_WIDTHS } from '@/js/googlesitekit/widgets/datastore/constants';
 
 export const WIDTH_GRID_COUNTER_MAP = {
 	[ WIDGET_WIDTHS.QUARTER ]: 3,

@@ -17,8 +17,22 @@
  */
 
 /**
+ * External dependencies
+ */
+import { waitFor } from '@testing-library/react';
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { getPreviousDate } from '@/js/util';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '@tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -30,31 +44,20 @@ import {
 	provideUserInfo,
 	untilResolved,
 	waitForDefaultTimeouts,
-} from '../../../../../tests/js/utils';
-import { getPreviousDate } from '@/js/util';
+} from '@tests/js/utils';
+import {
+	audiences as audiencesFixture,
+	availableAudiences as availableAudiencesFixture,
+	properties as propertiesFixture,
+} from './__fixtures__';
 import {
 	AUDIENCE_FILTER_CLAUSE_TYPE_ENUM,
 	AUDIENCE_FILTER_SCOPE_ENUM,
 	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	CUSTOM_DIMENSION_DEFINITIONS,
-	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import {
-	properties as propertiesFixture,
-	audiences as audiencesFixture,
-	availableAudiences as availableAudiencesFixture,
-} from './__fixtures__';
-import fetchMock from 'fetch-mock';
-import {
-	mockSurveyEndpoints,
-	surveyTriggerEndpoint,
-} from '../../../../../tests/js/mock-survey-endpoints';
-import { waitFor } from '@testing-library/react';
 
 describe( 'modules/analytics-4 audiences', () => {
 	let registry;
@@ -589,10 +592,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			const testPropertyID = propertiesFixture[ 0 ]._id;
 
 			const referenceDate = '2024-05-10';
-			const startDate = getPreviousDate(
-				referenceDate,
-				90 + DATE_RANGE_OFFSET
-			);
+			const startDate = getPreviousDate( referenceDate, 90 );
 
 			const availableNewVisitorsAudienceFixture =
 				availableAudiencesFixture[ 2 ];
@@ -1843,10 +1843,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			const testPropertyID = propertiesFixture[ 0 ]._id;
 
 			const referenceDate = '2024-05-10';
-			const startDate = getPreviousDate(
-				referenceDate,
-				90 + DATE_RANGE_OFFSET
-			);
+			const startDate = getPreviousDate( referenceDate, 90 );
 
 			const availableNewVisitorsAudienceFixture =
 				availableAudiencesFixture[ 2 ];
@@ -2734,9 +2731,7 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				const { startDate, endDate } = registry
 					.select( CORE_USER )
-					.getDateRangeDates( {
-						offsetDays: DATE_RANGE_OFFSET,
-					} );
+					.getDateRangeDates();
 
 				expect( reportOptions ).toEqual( {
 					...expectedReportOptions,

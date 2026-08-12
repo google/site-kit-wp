@@ -211,7 +211,7 @@ class Plain_Text_FormatterTest extends TestCase {
 				'',
 				'Manage Subscription: https://example.com/unsubscribe',
 				'Privacy Policy: https://policies.google.com/privacy',
-				'Help Center: ' . add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ),
+				'Help Center: https://sitekit.withgoogle.com/support/?doc=get-support',
 			)
 		);
 
@@ -356,7 +356,7 @@ class Plain_Text_FormatterTest extends TestCase {
 				'',
 				'Manage Subscription: https://example.com/unsubscribe',
 				'Privacy Policy: https://policies.google.com/privacy',
-				'Help Center: ' . add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ),
+				'Help Center: https://sitekit.withgoogle.com/support/?doc=get-support',
 			)
 		);
 
@@ -444,7 +444,7 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringNotContainsString( 'Unsubscribe:', $result, 'Simple email should omit standalone Unsubscribe link.' );
 		$this->assertStringNotContainsString( 'Manage Subscription:', $result, 'Simple email should omit Manage Subscription link without unsubscribe URL.' );
 		$this->assertStringContainsString( 'Privacy Policy: https://policies.google.com/privacy', $result, 'Simple email should always contain Privacy Policy link.' );
-		$this->assertStringContainsString( 'Help Center: ' . add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ), $result, 'Simple email should always contain Help Center link.' );
+		$this->assertStringContainsString( 'Help Center: https://sitekit.withgoogle.com/support/?doc=get-support', $result, 'Simple email should always contain Help Center link.' );
 	}
 
 	public function test_convert_links_to_text__converts_anchor_tags() {

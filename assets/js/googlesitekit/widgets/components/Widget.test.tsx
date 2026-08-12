@@ -25,8 +25,8 @@ import { fireEvent } from '@testing-library/react';
  * Internal dependencies
  */
 import Widget from '@/js/googlesitekit/widgets/components/Widget';
-import { render } from 'tests/js/test-utils';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
+import { render } from '@tests/js/test-utils';
 
 describe( 'Widget', () => {
 	it( 'should render the widget header and body', () => {
@@ -210,8 +210,8 @@ describe( 'Widget', () => {
 			</Widget>
 		);
 
-		expect( console ).toHaveWarned(
-			'Error in `Widget` compoenent:The `defaultCollapsed` prop should not be used together with the `isCollapsed` prop. Providing the `isCollapsed` prop means the `Widget` component for slug "collapsible-test-widget" is controlled by its parent component, and the `defaultCollapsed` prop will be ignored.'
+		expect( console ).toHaveWarnedWith(
+			'Error in `Widget` component: The `defaultCollapsed` prop should not be used together with the `isCollapsed` prop. Providing the `isCollapsed` prop means the `Widget` component for slug "collapsible-test-widget" is controlled by its parent component, and the `defaultCollapsed` prop will be ignored.'
 		);
 	} );
 } );

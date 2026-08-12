@@ -25,20 +25,20 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { __, _x, sprintf } from '@wordpress/i18n';
 import { useCallback, useState } from '@wordpress/element';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
-import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
-import BannerSVGDesktop from '@/svg/graphics/banner-sign-in-with-google-setup-cta.svg?url';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 import BannerSVGMobile from '@/svg/graphics/banner-sign-in-with-google-setup-cta-mobile.svg?url';
+import BannerSVGDesktop from '@/svg/graphics/banner-sign-in-with-google-setup-cta.svg?url';
 
 export default function SignInWithGoogleSetupCTABanner( { id, Notification } ) {
 	const [ isSaving, setIsSaving ] = useState( false );

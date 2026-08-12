@@ -26,19 +26,22 @@ import { useInterval } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useEffect, useState, useRef } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import TourTooltip from './TourTooltip';
-import Portal from './Portal';
-import { joyrideStyles, floaterProps } from './TourTooltips';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
+import Portal from './Portal';
+import TourTooltip from './TourTooltip';
+import {
+	floaterProps as defaultFloaterProps,
+	joyrideStyles,
+} from './TourTooltips';
 
 export default function JoyrideTooltip( props ) {
 	const {
@@ -56,6 +59,7 @@ export default function JoyrideTooltip( props ) {
 		onView = () => {},
 		onTourStart = () => {},
 		onTourEnd = () => {},
+		floaterProps = {},
 	} = props;
 
 	function checkIfTargetExists() {
@@ -139,6 +143,7 @@ export default function JoyrideTooltip( props ) {
 			placement,
 			cta,
 			className,
+			floaterProps,
 		},
 	];
 
@@ -180,7 +185,7 @@ export default function JoyrideTooltip( props ) {
 				callback={ callback }
 				disableOverlay={ disableOverlay }
 				spotlightPadding={ 0 }
-				floaterProps={ floaterProps }
+				floaterProps={ defaultFloaterProps }
 				locale={ joyrideLocale }
 				steps={ steps }
 				styles={ {
@@ -216,4 +221,5 @@ JoyrideTooltip.propTypes = {
 	slug: PropTypes.string,
 	placement: PropTypes.string,
 	onView: PropTypes.func,
+	floaterProps: PropTypes.object,
 };

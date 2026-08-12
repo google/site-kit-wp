@@ -6,9 +6,9 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
-
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
 
 namespace Google\Site_Kit\Tests\Core\Modules;
 
@@ -30,13 +30,13 @@ trait Module_With_Scopes_ContractTests {
 
 		$scopes = $module->get_scopes();
 
-		$testcase->assertIsArray( $scopes );
+		$testcase->assertIsArray( $scopes, 'Module scopes should be returned as an array.' );
 
 		// Test that anything else is only a Google scope.
 		$scopes = array_diff( $scopes, array( 'openid', 'profile', 'email' ) );
 
 		foreach ( $scopes as $scope ) {
-			$testcase->assertStringStartsWith( 'https://www.googleapis.com/auth/', $scope );
+			$testcase->assertStringStartsWith( 'https://www.googleapis.com/auth/', $scope, 'Non-profile scopes should use the Google API authorization scope prefix.' );
 		}
 	}
 }

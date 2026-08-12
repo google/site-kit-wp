@@ -20,15 +20,15 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
-import ModuleSetupFooter from './ModuleSetupFooter';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
-	render,
-	provideSiteInfo,
 	provideModules,
-} from '../../../../tests/js/test-utils';
-import { mockLocation } from '../../../../tests/js/mock-browser-utils';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+	provideSiteInfo,
+	render,
+} from '@tests/js/test-utils';
+import ModuleSetupFooter from './ModuleSetupFooter';
 
 describe( 'ModuleSetupFooter', () => {
 	mockLocation();

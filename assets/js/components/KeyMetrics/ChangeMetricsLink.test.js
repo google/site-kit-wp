@@ -16,6 +16,19 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
+	KM_ANALYTICS_MOST_ENGAGING_PAGES,
+} from '@/js/googlesitekit/datastore/user/constants';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '@tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -25,19 +38,9 @@ import {
 	provideUserAuthentication,
 	provideUserInfo,
 	render,
-} from '../../../../tests/js/test-utils';
-import {
-	mockSurveyEndpoints,
-	surveyTriggerEndpoint,
-} from '../../../../tests/js/mock-survey-endpoints';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
-import {
-	CORE_USER,
-	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
-	KM_ANALYTICS_MOST_ENGAGING_PAGES,
-} from '@/js/googlesitekit/datastore/user/constants';
+} from '@tests/js/test-utils';
 import ChangeMetricsLink from './ChangeMetricsLink';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 
 describe( 'ChangeMetricsLink', () => {
 	let registry;
@@ -95,6 +98,22 @@ describe( 'ChangeMetricsLink', () => {
 		const button = queryByRole( 'button' );
 		expect( button ).toBeInTheDocument();
 		expect( button ).toHaveTextContent( 'Change metrics' );
+	} );
+
+	it( 'should render "Select metrics" when the `setupFlowRefresh` feature flag is enabled', () => {
+		provideKeyMetrics( registry, {
+			widgetSlugs: [
+				KM_ANALYTICS_LEAST_ENGAGING_PAGES,
+				KM_ANALYTICS_MOST_ENGAGING_PAGES,
+			],
+		} );
+
+		const { getByRole } = render( <ChangeMetricsLink />, {
+			registry,
+			features: [ 'setupFlowRefresh' ],
+		} );
+
+		expect( getByRole( 'button' ) ).toHaveTextContent( 'Select metrics' );
 	} );
 
 	it( 'should set UI store key correctly when button is clicked', () => {

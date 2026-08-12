@@ -20,29 +20,29 @@
  * WordPress dependencies
  */
 import {
+	RegistryProvider,
 	controls,
 	createRegistry,
 	createRegistryControl,
 	createRegistrySelector,
-	useSelect,
 	useDispatch,
 	useRegistry,
-	withSelect,
+	useSelect,
 	withDispatch,
-	RegistryProvider,
+	withSelect,
 } from '@wordpress/data';
 
 /**
  * Internal dependencies
  */
 import { useInViewSelect } from '@/js/hooks/useInViewSelect';
+import { createReducer } from './create-reducer';
 import {
 	combineStores,
 	commonActions,
 	commonControls,
 	commonStore,
 } from './utils';
-import { createReducer } from './create-reducer';
 
 /**
  * @since 1.166.0

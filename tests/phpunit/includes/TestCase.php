@@ -6,9 +6,9 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
-
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
 
 namespace Google\Site_Kit\Tests;
 
@@ -290,8 +290,8 @@ class TestCase extends WP_UnitTestCase {
 	}
 
 	protected function assertWPErrorWithMessage( $expected_message, $actual ) {
-		$this->assertWPError( $actual );
-		$this->assertEquals( $expected_message, $actual->get_error_message() );
+		$this->assertWPError( $actual, 'Value should be a WP_Error.' );
+		$this->assertEquals( $expected_message, $actual->get_error_message(), 'WP_Error should contain the expected error message.' );
 	}
 
 	protected function assertPostMetaNotExists( $post_id, $meta_key ) {
@@ -310,7 +310,7 @@ class TestCase extends WP_UnitTestCase {
 
 	protected function assertPostMetaHasValue( $post_id, $meta_key, $meta_value ) {
 		$meta = $this->queryPostMeta( $post_id, $meta_key );
-		$this->assertNotNull( $meta );
+		$this->assertNotNull( $meta, "Post $post_id should have a $meta_key meta entry." );
 		$this->assertEquals( $meta_value, $meta['meta_value'], "Failed to assert that post $post_id has \"$meta_key\" meta with \"$meta_value\" value." );
 	}
 
@@ -384,7 +384,7 @@ class TestCase extends WP_UnitTestCase {
 	 *
 	 * Ideally this should hook on to `http_api_debug` rather than `pre_http_request`
 	 * but the former action doesn't fire for blocked HTTP requests until WP 5.3.
-	 * {@link https://github.com/WordPress/WordPress/commit/eeba1c1244ee17424c8953dc416527a97560f6cc}
+	 * {@link https://github.com/WordPress/WordPress/commit/eeba1c1244ee17424c8953dc416527a97560f6cc}.
 	 *
 	 * @param Closure $listener Function to be invoked for all WP HTTP requests.
 	 *                          $listener will be called with $url, $args.

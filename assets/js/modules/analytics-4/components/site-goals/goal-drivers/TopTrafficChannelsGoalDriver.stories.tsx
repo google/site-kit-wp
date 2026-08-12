@@ -19,22 +19,19 @@
 /**
  * External dependencies
  */
-import type { ReactElement } from 'react';
+import { ReactElement } from 'react';
 
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import {
-	provideModuleRegistrations,
-	provideModules,
-} from '../../../../../../../tests/js/utils';
+import { Select, useSelect } from 'googlesitekit-data';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Story } from '@/js/types/Story';
+import { provideModuleRegistrations, provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import TopTrafficChannelsGoalDriver from './TopTrafficChannelsGoalDriver';
-import type { GoalDriverComponentProps } from './types';
+import { GoalDriverComponentProps } from './types';
 
 const RETRYABLE_REPORT_OPTIONS = {
 	startDate: '2020-08-11',
@@ -89,9 +86,11 @@ export default {
 	],
 };
 
-function Template( props: TopTrafficChannelsGoalDriverStoryProps ) {
-	const { errorSelectorArgs, error, ...args } = props;
-
+function Template( {
+	errorSelectorArgs,
+	error,
+	...args
+}: TopTrafficChannelsGoalDriverStoryProps ) {
 	const storyError = useSelect(
 		( select: Select ) => {
 			if ( ! errorSelectorArgs ) {
@@ -116,6 +115,7 @@ export const Ready = Template.bind(
 ) as Story< TopTrafficChannelsGoalDriverStoryProps >;
 Ready.args = {
 	goalType: 'lead',
+	title: 'Top traffic channels by total form completions',
 	rows: [
 		{ label: 'Direct', value: '30.5%' },
 		{ label: 'Organic search', value: '24.7%' },

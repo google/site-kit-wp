@@ -24,14 +24,18 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import SettingsForm from './SettingsForm';
-import { Cell, Grid, Row } from '@/js/material-components';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { provideModules } from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import {
+	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE,
+	WEBDATASTREAM_CREATE,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
+import SettingsForm from './SettingsForm';
 
 const {
 	accountSummaries,
@@ -52,7 +56,7 @@ function Template( args ) {
 	return (
 		<div className="googlesitekit-layout">
 			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--analytics-4">
-				<div className="googlesitekit-setup-module">
+				<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
 					<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
 						<Grid>
 							<Row>
@@ -309,6 +313,104 @@ WithEnhancedConversionsNotice.storyName = 'With enhanced conversions notice';
 WithEnhancedConversionsNotice.parameters = {
 	features: [ 'gtagUserData' ],
 };
+
+export const WithSiteGoalsBreakdownsRow = Template.bind( null );
+WithSiteGoalsBreakdownsRow.storyName = 'With Site Goals custom dimensions row';
+WithSiteGoalsBreakdownsRow.parameters = {
+	features: [ 'siteGoals' ],
+};
+WithSiteGoalsBreakdownsRow.decorators = [
+	( Story ) => {
+		function setupRegistry( registry ) {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAdvancedDataBreakdownsSettings( {
+					[ propertyID ]: false,
+				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetCustomDimensions( [], { propertyID } );
+		}
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithSiteGoalsBreakdownsRow.scenario = {};
+
+export const WithSiteGoalsBreakdownsRowEnabled = Template.bind( null );
+WithSiteGoalsBreakdownsRowEnabled.storyName =
+	'With Site Goals custom dimensions row enabled';
+WithSiteGoalsBreakdownsRowEnabled.parameters = {
+	features: [ 'siteGoals' ],
+};
+WithSiteGoalsBreakdownsRowEnabled.decorators = [
+	( Story ) => {
+		function setupRegistry( registry ) {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAdvancedDataBreakdownsSettings( {
+					[ propertyID ]: true,
+				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetCustomDimensions(
+					[
+						'googlesitekit_post_date',
+						'googlesitekit_post_author',
+						'googlesitekit_post_categories',
+						'googlesitekit_post_type',
+						'googlesitekit_event_provider',
+						'googlesitekit_form_id',
+					],
+					{ propertyID }
+				);
+		}
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithSiteGoalsBreakdownsRowEnabled.scenario = {};
+
+export const WithSiteGoalsBreakdownsRowNewProperty = Template.bind( null );
+WithSiteGoalsBreakdownsRowNewProperty.storyName =
+	'With Site Goals custom dimensions row and a new property';
+WithSiteGoalsBreakdownsRowNewProperty.parameters = {
+	features: [ 'siteGoals' ],
+};
+WithSiteGoalsBreakdownsRowNewProperty.decorators = [
+	( Story ) => {
+		function setupRegistry( registry ) {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAdvancedDataBreakdownsSettings( {
+					[ propertyID ]: true,
+				} );
+			// Select "Set up a new property", which disables the Enable
+			// button in the advanced data breakdowns row.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setPropertyID( PROPERTY_CREATE );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setWebDataStreamID( WEBDATASTREAM_CREATE );
+		}
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithSiteGoalsBreakdownsRowNewProperty.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Settings/SettingsEdit',

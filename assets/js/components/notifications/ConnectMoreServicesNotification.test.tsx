@@ -24,29 +24,29 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	render,
-	provideGatheringDataState,
-	provideUserAuthentication,
-	fireEvent,
-	provideSiteInfo,
-	muteFetch,
-	freezeFetch,
-} from '../../../../tests/js/test-utils';
-import { dismissItemEndpoint } from 'tests/js/mock-dismiss-item-endpoints';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import ConnectMoreServicesNotification from './ConnectMoreServicesNotification';
-import { mockLocation } from 'tests/js/mock-browser-utils';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import * as tracking from '@/js/util/tracking';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
+import {
+	createTestRegistry,
+	fireEvent,
+	freezeFetch,
+	muteFetch,
+	provideGatheringDataState,
+	provideSiteInfo,
+	provideUserAuthentication,
+	render,
+} from '@tests/js/test-utils';
+import ConnectMoreServicesNotification from './ConnectMoreServicesNotification';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

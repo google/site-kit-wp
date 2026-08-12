@@ -19,12 +19,29 @@
 /**
  * Internal dependencies
  */
+import lazyWithPreload from '@/js/components/pdf-export/lazy-with-preload';
 import {
 	AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
 	AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
 } from '@/js/googlesitekit/widgets/default-areas';
 import DashboardPageSpeedWidget from '@/js/modules/pagespeed-insights/components/dashboard/DashboardPageSpeedWidget';
+import getPDFData from '@/js/modules/pagespeed-insights/components/dashboard/DashboardPageSpeedWidget/getPDFData';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+
+/**
+ * Lazy-loaded PDF component for the PageSpeed Insights widget.
+ *
+ * Lazy-load the component so `@react-pdf/renderer` isn't included in
+ * the main vendor bundle.
+ *
+ * See: https://github.com/google/site-kit-wp/issues/13193.
+ */
+const DashboardPageSpeedWidgetPDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/pagespeed-insights/components/dashboard/DashboardPageSpeedWidget/indexPDF'
+	)
+);
 
 export function registerWidgets( widgets ) {
 	widgets.registerWidget(
@@ -34,6 +51,12 @@ export function registerWidgets( widgets ) {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_PAGESPEED_INSIGHTS ],
+			// Speed is a single-widget area; the sub-section heading is
+			// suppressed so `pdf.label` is intentionally omitted.
+			pdf: {
+				Component: DashboardPageSpeedWidgetPDF,
+				getData: getPDFData,
+			},
 		},
 		[
 			AREA_MAIN_DASHBOARD_SPEED_PRIMARY,

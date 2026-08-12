@@ -29,13 +29,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { useSelect } from 'googlesitekit-data';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import CompatibilityErrors from '@/js/modules/sign-in-with-google/components/common/CompatibilityErrors';
 import { SignInWithGoogleCompatibilityErrors } from '@/js/modules/sign-in-with-google/components/types';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 
 interface CompatibilityWarningSubtleNotificationProps {
 	id: string;

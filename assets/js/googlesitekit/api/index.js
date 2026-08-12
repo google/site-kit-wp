@@ -30,19 +30,17 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { HOUR_IN_SECONDS, stringifyObject } from '@/js/util';
+import { trackAPIError } from '@/js/util/api';
+import { isAuthError, isPermissionScopeError } from '@/js/util/errors';
 import {
+	STORAGE_KEY_PREFIX_ROOT,
 	deleteItem,
 	getItem,
 	getKeys,
 	setItem,
-	STORAGE_KEY_PREFIX_ROOT,
 } from './cache';
-import { stringifyObject, HOUR_IN_SECONDS } from '@/js/util';
-import { isAuthError, isPermissionScopeError } from '@/js/util/errors';
-import { trackAPIError } from '@/js/util/api';
-
-// Specific error to handle here, see below.
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 // Caching is enabled by default.
 let cachingEnabled = true;
@@ -220,14 +218,14 @@ export async function siteKitRequest(
  *
  * @since 1.5.0
  *
- * @param {string}  type             The data to access. One of 'core' or 'modules'.
- * @param {string}  identifier       The data identifier, eg. a module slug like `search-console`.
- * @param {string}  datapoint        The endpoint to request data from.
- * @param {Object}  data             Data (query params) to send with the request.
- * @param {Object}  options          Extra options for this request.
- * @param {number}  options.cacheTTL The oldest cache data to use, in seconds.
- * @param {boolean} options.useCache Enable or disable caching for this request only.
- * @param {Object}  options.signal   Abort the fetch request.
+ * @param {string}  type               The data to access. One of 'core' or 'modules'.
+ * @param {string}  identifier         The data identifier, eg. a module slug like `search-console`.
+ * @param {string}  datapoint          The endpoint to request data from.
+ * @param {Object}  data               Data (query params) to send with the request.
+ * @param {Object}  options            Extra options for this request.
+ * @param {number}  [options.cacheTTL] Optional. The oldest cache data to use, in seconds.
+ * @param {boolean} [options.useCache] Optional. Enable or disable caching for this request only.
+ * @param {Object}  [options.signal]   Optional. Abort the fetch request.
  * @return {Promise} A promise for the `fetch` request.
  */
 export function get(

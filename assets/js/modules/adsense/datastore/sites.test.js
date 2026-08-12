@@ -20,14 +20,14 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { MODULES_ADSENSE } from './constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
 	subscribeUntil,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import * as fixtures from './__fixtures__';
+import { MODULES_ADSENSE } from './constants';
 
 const sitesByDomain = fixtures.sites.reduce(
 	( acc, site ) => ( { ...acc, [ site.domain ]: site } ),

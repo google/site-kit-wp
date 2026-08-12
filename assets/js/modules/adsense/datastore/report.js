@@ -26,36 +26,37 @@ import { isPlainObject } from 'lodash';
  * Internal dependencies
  */
 import { get } from 'googlesitekit-api';
-import {
-	commonActions,
-	combineStores,
-	createReducer,
-} from 'googlesitekit-data';
-import { MODULES_ADSENSE } from './constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { stringifyObject } from '@/js/util';
+import { combineStores, createReducer } from 'googlesitekit-data';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createGetReportResolver } from '@/js/googlesitekit/data/create-get-report-resolver';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import {
+	validateDimensions,
+	validateMetrics,
+} from '@/js/modules/adsense/util/report-validation';
+import {
+	getCacheableReportOptions,
+	getReportCacheKey,
+} from '@/js/util/report-options';
 import {
 	isValidDateRange,
 	isValidOrders,
 	isValidStringularItems,
 } from '@/js/util/report-validation';
-import {
-	validateDimensions,
-	validateMetrics,
-} from '@/js/modules/adsense/util/report-validation';
+import { MODULES_ADSENSE } from './constants';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
-	controlCallback: ( { options } ) => {
-		return get( 'modules', MODULE_SLUG_ADSENSE, 'report', options );
+	controlCallback: ( { options }, { signal } = {} ) => {
+		return get( 'modules', MODULE_SLUG_ADSENSE, 'report', options, {
+			signal,
+		} );
 	},
 	reducerCallback: createReducer( ( state, report, { options } ) => {
-		state.reports = state.reports || {};
-		state.reports[ stringifyObject( options ) ] = report;
+		state.reports[ getReportCacheKey( options ) ] = report;
 	} ),
 	argsToParams: ( options ) => {
-		return { options };
+		return { options: getCacheableReportOptions( options ) };
 	},
 	validateParams: ( { options } = {} ) => {
 		invariant( isPlainObject( options ), 'options must be an object.' );
@@ -96,20 +97,7 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	*getReport( options = {} ) {
-		const registry = yield commonActions.getRegistry();
-		const existingReport = registry
-			.select( MODULES_ADSENSE )
-			.getReport( options );
-
-		// If there are already alerts loaded in state, consider it fulfilled
-		// and don't make an API request.
-		if ( existingReport ) {
-			return;
-		}
-
-		yield fetchGetReportStore.actions.fetchGetReport( options );
-	},
+	getReport: createGetReportResolver( MODULES_ADSENSE ),
 };
 
 const baseSelectors = {
@@ -125,6 +113,8 @@ const baseSelectors = {
 	 * An AdSense report will be returned; `undefined` if the report is not yet loaded.
 	 *
 	 * @since 1.9.0
+	 * @since 1.182.0 Accept optional fetch options as a second argument, such as `{ signal }` to cancel the report request.
+	 * @since 1.183.0 Treat report options that differ only in `reportID` as one report.
 	 *
 	 * @param {Object}         state                Data store's state.
 	 * @param {Object}         options              Options for generating the report.
@@ -134,12 +124,14 @@ const baseSelectors = {
 	 * @param {Array.<string>} [options.dimensions] Optional. List of {@link https://developers.google.com/adsense/management/metrics-dimensions#dimensions|dimensions} to group results by.
 	 * @param {Array.<Object>} [options.orderby]    Optional. Order definition objects containing 'fieldName' and 'sortOrder'. 'sortOrder' must be either 'ASCENDING' or 'DESCENDING'. Default null.
 	 * @param {number}         [options.limit]      Optional. Maximum number of entries to return. Default 1000.
+	 * @param {Object}         [fetchOptions]       Optional. Fetch options that change how the request runs, such as `{ signal }` to cancel it.
 	 * @return {(Array.<Object>|undefined)} An AdSense report; `undefined` if not loaded.
 	 */
-	getReport( state, options = {} ) {
+	// eslint-disable-next-line no-unused-vars -- The fetch options only change how the request runs, so the selector does not read them.
+	getReport( state, options, fetchOptions ) {
 		const { reports } = state;
 
-		return reports[ stringifyObject( options ) ];
+		return reports[ getReportCacheKey( options ) ];
 	},
 };
 

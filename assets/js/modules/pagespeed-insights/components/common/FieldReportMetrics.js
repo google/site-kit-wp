@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -31,22 +31,28 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ReportMetric from './ReportMetric';
-import MetricsLearnMoreLink from './MetricsLearnMoreLink';
-import INPLearnMoreLink from './INPLearnMoreLink';
-import ReportErrorActions from '@/js/components/ReportErrorActions';
-import { getReportErrorMessage } from '@/js/util/errors';
-import { CATEGORY_AVERAGE } from '@/js/modules/pagespeed-insights/util/constants';
 import ErrorNotice from '@/js/components/ErrorNotice';
+import ReportErrorActions from '@/js/components/ReportErrorActions';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import { CATEGORY_AVERAGE } from '@/js/modules/pagespeed-insights/util/constants';
+import { getReportErrorMessage } from '@/js/util/errors';
+import INPLearnMoreLink from './INPLearnMoreLink';
+import MetricsLearnMoreLink from './MetricsLearnMoreLink';
+import ReportMetric from './ReportMetric';
+import { extractFieldMetrics } from './reportMetrics';
 
 export default function FieldReportMetrics( { data, error } ) {
-	const {
-		LARGEST_CONTENTFUL_PAINT_MS: largestContentfulPaint,
-		CUMULATIVE_LAYOUT_SHIFT_SCORE: cumulativeLayoutShift,
-		INTERACTION_TO_NEXT_PAINT: interactionToNextPaint,
-	} = data?.loadingExperience?.metrics || {};
+	// INP is read from the raw report for the dashboard tile; extractFieldMetrics
+	// also extracts it as interactionToNextPaint for the PDF (LCP / CLS / INP).
+	const { INTERACTION_TO_NEXT_PAINT: interactionToNextPaint } =
+		data?.loadingExperience?.metrics || {};
+
+	// Each field metric is independently optional, so LCP and CLS still render
+	// when other CrUX metrics (e.g. FID) are absent.
+	const fieldMetrics = extractFieldMetrics( data );
+	const largestContentfulPaint = fieldMetrics?.largestContentfulPaint;
+	const cumulativeLayoutShift = fieldMetrics?.cumulativeLayoutShift;
 
 	if ( error ) {
 		const errorMessage = getReportErrorMessage( error );
@@ -87,13 +93,6 @@ export default function FieldReportMetrics( { data, error } ) {
 		);
 	}
 
-	// Convert milliseconds to seconds with 1 fraction digit.
-	const lcpSeconds = (
-		Math.round( largestContentfulPaint?.percentile / 100 ) / 10
-	).toFixed( 1 );
-	// Convert 2 digit score to a decimal between 0 and 1, with 2 fraction digits.
-	const cls = ( cumulativeLayoutShift?.percentile / 100 ).toFixed( 2 );
-
 	return (
 		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
 			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
@@ -132,11 +131,7 @@ export default function FieldReportMetrics( { data, error } ) {
 							'Time it takes for the page to load',
 							'google-site-kit'
 						) }
-						displayValue={ sprintf(
-							/* translators: %s: number of seconds */
-							_x( '%s s', 'duration', 'google-site-kit' ),
-							lcpSeconds
-						) }
+						displayValue={ largestContentfulPaint?.displayValue }
 						category={ largestContentfulPaint?.category }
 						isUnavailable={ ! largestContentfulPaint }
 					/>
@@ -150,7 +145,7 @@ export default function FieldReportMetrics( { data, error } ) {
 							'How stable the elements on the page are',
 							'google-site-kit'
 						) }
-						displayValue={ cls }
+						displayValue={ cumulativeLayoutShift?.displayValue }
 						category={ cumulativeLayoutShift?.category }
 						isUnavailable={ ! cumulativeLayoutShift }
 					/>

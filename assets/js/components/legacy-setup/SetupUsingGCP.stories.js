@@ -19,15 +19,15 @@
 /**
  * Internal dependencies
  */
-import SetupUsingGCP from './../../components/legacy-setup/SetupUsingGCP';
-import { CORE_USER } from './../../googlesitekit/datastore/user/constants';
 import {
 	provideUserAuthentication,
 	provideUserCapabilities,
-} from './../../../../tests/js/utils';
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
+import SetupUsingGCP from './../../components/legacy-setup/SetupUsingGCP';
 import { Provider as ViewContextProvider } from './../../components/Root/ViewContextContext';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from './../../googlesitekit/constants';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { CORE_USER } from './../../googlesitekit/datastore/user/constants';
 
 function Template() {
 	return <SetupUsingGCP />;

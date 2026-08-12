@@ -32,12 +32,13 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
  */
 import {
 	commonActions,
-	createRegistrySelector,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
-import { CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
+import { getGlobalData } from '@/js/googlesitekit/data/utils';
 import { normalizeURL, untrailingslashit } from '@/js/util';
 import { negateDefined } from '@/js/util/negate';
+import { AMP_MODE_PRIMARY, AMP_MODE_SECONDARY, CORE_SITE } from './constants';
 
 function getSiteInfoProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -190,10 +191,15 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				pluginBasename,
 				productPostType,
 				keyMetricsSetupCompletedBy,
+				keyMetricsSetupIsWidgetAreaHidden,
 				keyMetricsSetupNew,
 				consentModeRegions,
 				anyoneCanRegister,
+				anyoneCanRegisterWooCommerce,
 				isMultisite,
+				hasActiveLeadEventProviders,
+				hasActiveEcommerceEventProviders,
+				hasMultipleActiveEcommerceEventProviders,
 			} = payload.siteInfo;
 
 			state.siteInfo = {
@@ -226,10 +232,15 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				pluginBasename,
 				productPostType,
 				keyMetricsSetupCompletedBy,
+				keyMetricsSetupIsWidgetAreaHidden,
 				keyMetricsSetupNew,
 				consentModeRegions,
 				anyoneCanRegister,
+				anyoneCanRegisterWooCommerce,
 				isMultisite,
+				hasActiveLeadEventProviders,
+				hasActiveEcommerceEventProviders,
+				hasMultipleActiveEcommerceEventProviders,
 			};
 			break;
 
@@ -281,10 +292,13 @@ export const resolvers = {
 			return;
 		}
 
-		if (
-			! global._googlesitekitBaseData ||
-			! global._googlesitekitEntityData
-		) {
+		let baseData;
+		let entityData;
+
+		try {
+			baseData = getGlobalData( '_googlesitekitBaseData' );
+			entityData = getGlobalData( '_googlesitekitEntityData' );
+		} catch ( error ) {
 			global.console.error( 'Could not load core/site info.' );
 			return;
 		}
@@ -315,18 +329,23 @@ export const resolvers = {
 			pluginBasename,
 			productPostType,
 			keyMetricsSetupCompletedBy,
+			keyMetricsSetupIsWidgetAreaHidden,
 			keyMetricsSetupNew,
 			consentModeRegions,
 			anyoneCanRegister,
+			anyoneCanRegisterWooCommerce,
 			isMultisite,
-		} = global._googlesitekitBaseData;
+			hasActiveLeadEventProviders,
+			hasActiveEcommerceEventProviders,
+			hasMultipleActiveEcommerceEventProviders,
+		} = baseData;
 
 		const {
 			currentEntityID,
 			currentEntityTitle,
 			currentEntityType,
 			currentEntityURL,
-		} = global._googlesitekitEntityData;
+		} = entityData;
 
 		yield actions.receiveSiteInfo( {
 			adminURL,
@@ -358,10 +377,15 @@ export const resolvers = {
 			pluginBasename,
 			productPostType,
 			keyMetricsSetupCompletedBy,
+			keyMetricsSetupIsWidgetAreaHidden,
 			keyMetricsSetupNew,
 			consentModeRegions,
 			anyoneCanRegister,
+			anyoneCanRegisterWooCommerce,
 			isMultisite,
+			hasActiveLeadEventProviders,
+			hasActiveEcommerceEventProviders,
+			hasMultipleActiveEcommerceEventProviders,
 		} );
 	},
 };
@@ -978,6 +1002,48 @@ export const selectors = {
 	getAnyoneCanRegister: getSiteInfoProperty( 'anyoneCanRegister' ),
 
 	/**
+	 * Checks if WooCommerce allows new accounts to be created, independently
+	 * of the WordPress "Anyone can register" setting.
+	 *
+	 * `false` when:
+	 *  - WooCommerce is inactive.
+	 *  - WooCommerce is active but account-creation in WooCommerce is
+	 *    disabled.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} `true` if WooCommerce registration is open; `false` if not. Returns `undefined` if not yet loaded.
+	 */
+	getAnyoneCanRegisterWooCommerce: getSiteInfoProperty(
+		'anyoneCanRegisterWooCommerce'
+	),
+
+	/**
+	 * Checks if new user registration is open, via either WordPress's own
+	 * "Anyone can register" setting or WooCommerce's own account-creation
+	 * setting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean|undefined} `true` if registration is open via either path; `false` if neither is open. Returns `undefined` if not yet loaded.
+	 */
+	isRegistrationOpen: createRegistrySelector( ( select ) => () => {
+		const anyoneCanRegister = select( CORE_SITE ).getAnyoneCanRegister();
+		const anyoneCanRegisterWooCommerce =
+			select( CORE_SITE ).getAnyoneCanRegisterWooCommerce();
+
+		if (
+			anyoneCanRegister === undefined ||
+			anyoneCanRegisterWooCommerce === undefined
+		) {
+			return undefined;
+		}
+
+		return anyoneCanRegister || anyoneCanRegisterWooCommerce;
+	} ),
+
+	/**
 	 * Checks if WordPress site is running in the multisite mode.
 	 *
 	 * @since 1.142.0
@@ -986,6 +1052,66 @@ export const selectors = {
 	 * @return {boolean|undefined} `true` if it is multisite; `false` if not. Returns `undefined` if not yet loaded.
 	 */
 	isMultisite: getSiteInfoProperty( 'isMultisite' ),
+
+	/**
+	 * Checks if any lead event provider plugin is active.
+	 *
+	 * @since 1.181.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} `true` if a lead event provider is active; `false` if not. Returns `undefined` if not yet loaded.
+	 */
+	hasActiveLeadEventProviders: getSiteInfoProperty(
+		'hasActiveLeadEventProviders'
+	),
+
+	/**
+	 * Checks if any ecommerce event provider plugin is active.
+	 *
+	 * @since 1.181.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} `true` if an ecommerce event provider is active; `false` if not. Returns `undefined` if not yet loaded.
+	 */
+	hasActiveEcommerceEventProviders: getSiteInfoProperty(
+		'hasActiveEcommerceEventProviders'
+	),
+
+	/**
+	 * Checks if more than one ecommerce event provider plugin is active.
+	 *
+	 * @since 1.182.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} `true` if multiple ecommerce event providers are active; `false` if not. Returns `undefined` if not yet loaded.
+	 */
+	hasMultipleActiveEcommerceEventProviders: getSiteInfoProperty(
+		'hasMultipleActiveEcommerceEventProviders'
+	),
+
+	/**
+	 * Gets value of the setting for whether the key metrics widget area is
+	 * hidden.
+	 *
+	 * @since 1.184.0
+	 *
+	 * @return {boolean|undefined} Whether the widget area is hidden.
+	 */
+	getKeyMetricsSetupIsWidgetAreaHidden: getSiteInfoProperty(
+		'keyMetricsSetupIsWidgetAreaHidden'
+	),
+
+	/**
+	 * Checks whether setup has hidden the key metrics widget area.
+	 *
+	 * @since 1.184.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} Whether the widget area is hidden.
+	 */
+	isKeyMetricsWidgetAreaHidden: ( state ) => {
+		return !! selectors.getKeyMetricsSetupIsWidgetAreaHidden( state );
+	},
 };
 
 export default {

@@ -24,29 +24,29 @@ import { delay } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { __, _x } from '@wordpress/i18n';
-import { Component, Fragment } from '@wordpress/element';
 import { compose } from '@wordpress/compose';
+import { Component, Fragment } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { withSelect } from 'googlesitekit-data';
 import { set } from 'googlesitekit-api';
 import { Button } from 'googlesitekit-components';
+import { withSelect } from 'googlesitekit-data';
+import Header from '@/js/components/Header';
+import HelpMenu from '@/js/components/help/HelpMenu';
+import Layout from '@/js/components/layout/Layout';
+import Typography from '@/js/components/Typography';
+import { clearCache } from '@/js/googlesitekit/api/cache';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
-	PERMISSION_SETUP,
 	CORE_USER,
+	PERMISSION_SETUP,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { Cell, Grid, Row } from '@/js/material-components';
-import Header from '@/js/components/Header';
-import Layout from '@/js/components/layout/Layout';
-import { clearCache } from '@/js/googlesitekit/api/cache';
-import STEPS from './wizard-steps';
 import WizardProgressStep from './wizard-progress-step';
-import HelpMenu from '@/js/components/help/HelpMenu';
-import Typography from '@/js/components/Typography';
+import STEPS from './wizard-steps';
 
 class SetupUsingGCP extends Component {
 	constructor( props ) {

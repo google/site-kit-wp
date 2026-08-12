@@ -17,9 +17,9 @@
 /**
  * External dependencies
  */
-import type { ComponentType, ElementType, FC, ReactNode } from 'react';
-import { get } from 'lodash';
 import classnames from 'classnames';
+import { get } from 'lodash';
+import type { ComponentType, ElementType, FC, ReactNode } from 'react';
 
 /**
  * Internal dependencies

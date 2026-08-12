@@ -19,21 +19,51 @@
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
 	fireEvent,
 	render,
-} from '../../../../tests/js/test-utils';
-import { provideSiteInfo } from '../../../../tests/js/utils';
+	waitFor,
+} from '@tests/js/test-utils';
+import { provideSiteInfo } from '@tests/js/utils';
 import FrequencySelector from './FrequencySelector';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+
+// Aug 1, 2026 09:00 UTC — used as a stand-in for a backend-computed next
+// report timestamp that should display as "Aug 1, 2026".
+const AUG_1_2026_TIMESTAMP = Date.UTC( 2026, 7, 1, 9, 0, 0 ) / 1000;
+// Sep 1, 2026 09:00 UTC — a distinct second timestamp used to verify the
+// displayed date updates once a refetch (e.g. after changing frequency)
+// resolves.
+const SEP_1_2026_TIMESTAMP = Date.UTC( 2026, 8, 1, 9, 0, 0 ) / 1000;
+
+const emailReportingSettingsEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/email-reporting-settings'
+);
+const emailReportingNextReportEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/email-reporting-next-report'
+);
 
 function setupRegistry(
 	registry,
-	{ startOfWeek = 1, frequency, savedFrequency } = {}
+	{
+		startOfWeek = 1,
+		frequency,
+		savedFrequency,
+		// Default to a falsy timestamp so the "Next report" line stays
+		// hidden unless a test explicitly provides one. This also
+		// pre-populates the store so tests don't trigger a real network
+		// request for the (mocked) next report endpoint.
+		nextReportTimestamp = 0,
+		// Defaults to the same non-empty value `provideSiteInfo` normally
+		// uses; tests can pass an empty string to simulate a site whose
+		// WP General Settings timezone is a raw UTC offset rather than a
+		// named region, which is reported to JS as an empty string.
+		timezone = 'America/Detroit',
+	} = {}
 ) {
-	provideSiteInfo( registry, { startOfWeek } );
+	provideSiteInfo( registry, { startOfWeek, timezone } );
 
 	registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 		enabled: true,
@@ -48,6 +78,10 @@ function setupRegistry(
 	if ( frequency ) {
 		registry.dispatch( CORE_USER ).setEmailReportingFrequency( frequency );
 	}
+
+	registry.dispatch( CORE_USER ).receiveGetEmailReportingNextReport( {
+		timestamp: nextReportTimestamp,
+	} );
 }
 
 function renderSelector( registry, props = {} ) {
@@ -70,6 +104,7 @@ describe( 'FrequencySelector', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		global.innerWidth = 1024;
 	} );
 
 	describe( 'Story states (visual + DOM)', () => {
@@ -118,6 +153,7 @@ describe( 'FrequencySelector', () => {
 				startOfWeek: 1,
 				frequency: 'weekly',
 				savedFrequency: 'monthly',
+				nextReportTimestamp: AUG_1_2026_TIMESTAMP,
 			} );
 
 			const { container, containerElement, getByText } = renderSelector(
@@ -146,8 +182,35 @@ describe( 'FrequencySelector', () => {
 
 			// Check that the pill text is correct.
 			expect( getByText( 'Current subscription' ) ).toBeInTheDocument();
+			expect(
+				getByText( 'Next report: Aug 1, 2026' )
+			).toBeInTheDocument();
+
+			// Check that the "Current subscription" label has its own
+			// styling hook class (distinct from the "Next report" line),
+			// so it can be styled independently (e.g. its font weight).
+			expect( getByText( 'Current subscription' ) ).toHaveClass(
+				'googlesitekit-frequency-selector__current-subscription-label'
+			);
 
 			expect( containerElement ).toMatchSnapshot();
+		} );
+
+		it( 'Still shows the next report date when the site has no named timezone (e.g. configured with a raw UTC offset)', () => {
+			setupRegistry( registry, {
+				startOfWeek: 1,
+				frequency: 'weekly',
+				savedFrequency: 'monthly',
+				nextReportTimestamp: AUG_1_2026_TIMESTAMP,
+				timezone: '',
+			} );
+
+			const { getByText } = renderSelector( registry, {
+				isUserSubscribed: true,
+			} );
+
+			expect( getByText( 'Current subscription' ) ).toBeInTheDocument();
+			expect( getByText( /Next report: /i ) ).toBeInTheDocument();
 		} );
 
 		it( 'Previously saved frequency (same as the current frequency) shows current subscription pill above selected card and matches snapshot', () => {
@@ -155,6 +218,7 @@ describe( 'FrequencySelector', () => {
 				startOfWeek: 1,
 				frequency: 'monthly',
 				savedFrequency: 'monthly',
+				nextReportTimestamp: AUG_1_2026_TIMESTAMP,
 			} );
 
 			const { container, containerElement, getByText } = renderSelector(
@@ -186,8 +250,98 @@ describe( 'FrequencySelector', () => {
 				)
 			).toBe( true );
 			expect( monthlyCard.getAttribute( 'aria-checked' ) ).toBe( 'true' );
+			expect(
+				getByText( 'Next report: Aug 1, 2026' )
+			).toBeInTheDocument();
 
 			expect( containerElement ).toMatchSnapshot();
+		} );
+
+		it( 'Does not show the current subscription pill on desktop when the user is not subscribed', () => {
+			setupRegistry( registry, {
+				startOfWeek: 1,
+				frequency: 'weekly',
+				savedFrequency: 'monthly',
+				nextReportTimestamp: AUG_1_2026_TIMESTAMP,
+			} );
+
+			const { container, queryByText } = renderSelector( registry, {
+				isUserSubscribed: false,
+			} );
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-frequency-selector__badge-row'
+				)
+			).not.toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-frequency-selector__current-subscription'
+				)
+			).not.toBeInTheDocument();
+			expect( queryByText( 'Current subscription' ) ).toBeNull();
+			expect( queryByText( 'Next report: Aug 1, 2026' ) ).toBeNull();
+		} );
+
+		it( 'Does not show the current subscription pill on mobile when the user is not subscribed', () => {
+			global.innerWidth = 500;
+
+			setupRegistry( registry, {
+				startOfWeek: 1,
+				frequency: 'weekly',
+				savedFrequency: 'monthly',
+				nextReportTimestamp: AUG_1_2026_TIMESTAMP,
+			} );
+
+			const { container, queryByText } = renderSelector( registry, {
+				isUserSubscribed: false,
+			} );
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-frequency-selector__current-subscription'
+				)
+			).not.toBeInTheDocument();
+			expect( queryByText( 'Next report: Aug 1, 2026' ) ).toBeNull();
+		} );
+
+		it( 'Renders next report date in the mobile current subscription pill', () => {
+			global.innerWidth = 500;
+
+			setupRegistry( registry, {
+				startOfWeek: 1,
+				frequency: 'weekly',
+				savedFrequency: 'monthly',
+				nextReportTimestamp: AUG_1_2026_TIMESTAMP,
+			} );
+
+			const { container, getByText, getByRole } = renderSelector(
+				registry,
+				{
+					isUserSubscribed: true,
+				}
+			);
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-frequency-selector__badge-row'
+				)
+			).not.toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-frequency-selector__current-subscription'
+				)
+			).toBeInTheDocument();
+			expect(
+				getByText( 'Next report: Aug 1, 2026' )
+			).toBeInTheDocument();
+
+			// Accessible name must stay the frequency label only, even when the
+			// current-subscription pill (with next report date) is nested in
+			// the card on mobile.
+			expect(
+				getByRole( 'radio', { name: 'Monthly' } )
+			).toHaveAccessibleName( 'Monthly' );
 		} );
 	} );
 
@@ -269,6 +423,66 @@ describe( 'FrequencySelector', () => {
 				registry.select( CORE_USER ).getEmailReportingFrequency()
 			).toBe( 'weekly' );
 			expect( weeklyCard.getAttribute( 'aria-checked' ) ).toBe( 'true' );
+		} );
+
+		it( 'Keeps the next report date visible (no flash) while it refetches after a saved frequency change', async () => {
+			setupRegistry( registry, {
+				startOfWeek: 1,
+				frequency: 'weekly',
+				savedFrequency: 'weekly',
+				nextReportTimestamp: AUG_1_2026_TIMESTAMP,
+			} );
+
+			const { getByText } = renderSelector( registry, {
+				isUserSubscribed: true,
+			} );
+
+			expect(
+				getByText( 'Next report: Aug 1, 2026' )
+			).toBeInTheDocument();
+
+			fetchMock.postOnce( emailReportingSettingsEndpoint, {
+				body: { subscribed: true, frequency: 'monthly' },
+				status: 200,
+			} );
+
+			// Hold the refetch open so we can assert on the in-flight state
+			// before it resolves.
+			let resolveNextReportFetch;
+			const nextReportFetchPromise = new Promise( ( resolve ) => {
+				resolveNextReportFetch = () =>
+					resolve( { body: { timestamp: SEP_1_2026_TIMESTAMP } } );
+			} );
+			fetchMock.getOnce(
+				emailReportingNextReportEndpoint,
+				nextReportFetchPromise
+			);
+
+			const savePromise = registry
+				.dispatch( CORE_USER )
+				.saveEmailReportingSettings( { frequency: 'monthly' } );
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched(
+					emailReportingNextReportEndpoint
+				)
+			);
+
+			// While the refetch triggered by the frequency change is still
+			// pending, the previously-fetched date should remain visible
+			// rather than disappearing until the new value arrives.
+			expect(
+				getByText( 'Next report: Aug 1, 2026' )
+			).toBeInTheDocument();
+
+			resolveNextReportFetch();
+			await savePromise;
+
+			await waitFor( () =>
+				expect(
+					getByText( 'Next report: Sep 1, 2026' )
+				).toBeInTheDocument()
+			);
 		} );
 	} );
 } );

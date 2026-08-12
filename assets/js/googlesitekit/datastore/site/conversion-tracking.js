@@ -17,18 +17,18 @@
 /**
  * External dependencies
  */
-import { isPlainObject, isEqual } from 'lodash';
 import invariant from 'invariant';
+import { isEqual, isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
-	createRegistrySelector,
+	commonActions,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { CORE_SITE } from './constants';

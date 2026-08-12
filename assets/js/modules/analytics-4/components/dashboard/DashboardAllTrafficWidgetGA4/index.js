@@ -19,32 +19,32 @@
 /**
  * WordPress dependencies
  */
-import { useState, useEffect } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
+import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { Cell, Grid, Row } from '@/js/material-components/layout';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
+	UI_ALL_TRAFFIC_LOADED,
 	UI_DIMENSION_NAME,
 	UI_DIMENSION_VALUE,
-	UI_ALL_TRAFFIC_LOADED,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import useAllTrafficWidgetReport from '@/js/modules/analytics-4/hooks/useAllTrafficWidgetReport';
 import { isZeroReport } from '@/js/modules/analytics-4/utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { Grid, Row, Cell } from '@/js/material-components/layout';
 import whenActive from '@/js/util/when-active';
 import DataSourceLink from './DataSourceLink';
+import DimensionTabs from './DimensionTabs';
+import { getGraphReportOptions, getTotalsReportOptions } from './reportOptions';
 import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
-import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
-import useAllTrafficWidgetReport from '@/js/modules/analytics-4/hooks/useAllTrafficWidgetReport';
-import useViewOnly from '@/js/hooks/useViewOnly';
 
 function DashboardAllTrafficWidgetGA4( props ) {
 	const { Widget, WidgetReportError } = props;
@@ -87,7 +87,6 @@ function DashboardAllTrafficWidgetGA4( props ) {
 	const { compareStartDate, compareEndDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
 
@@ -108,30 +107,18 @@ function DashboardAllTrafficWidgetGA4( props ) {
 		reportID: 'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
 	};
 
-	const graphArgs = {
-		dimensions: [ 'date' ],
-		orderby: [
-			{
-				dimension: {
-					dimensionName: 'date',
-				},
-			},
-		],
-		reportID:
-			'analytics-4_dashboard-all-traffic-widget-ga4_widget_graphArgs',
-	};
+	const dimensionFilters =
+		dimensionName && dimensionValue
+			? { [ dimensionName ]: dimensionValue }
+			: undefined;
 
-	const totalsArgs = {
+	const graphArgs = getGraphReportOptions( { dimensionFilters } );
+
+	const totalsArgs = getTotalsReportOptions( {
 		compareStartDate,
 		compareEndDate,
-		reportID:
-			'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs',
-	};
-
-	if ( dimensionName && dimensionValue ) {
-		graphArgs.dimensionFilters = { [ dimensionName ]: dimensionValue };
-		totalsArgs.dimensionFilters = { [ dimensionName ]: dimensionValue };
-	}
+		dimensionFilters,
+	} );
 
 	const {
 		loaded: pieChartLoaded,

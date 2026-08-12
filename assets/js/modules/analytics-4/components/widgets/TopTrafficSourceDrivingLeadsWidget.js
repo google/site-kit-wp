@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 
 /**
@@ -29,20 +30,18 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import MetricTileText from '@/js/components/KeyMetrics/MetricTileText';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-	ENUM_CONVERSION_EVENTS,
-} from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import { numFmt } from '@/js/util';
-import { get } from 'lodash';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
@@ -62,17 +61,19 @@ function getDateRangeIndex( reportRows, dateRangeSlug ) {
 	return 0;
 }
 
-function TopTrafficSourceDrivingLeadsWidget( { Widget } ) {
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-			compare: true,
-		} )
-	);
-
-	const detectedEvents = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
-	);
+/**
+ * Resolves the lead conversion event names to filter the reports by, from the
+ * property's detected events.
+ *
+ * Mirrors the dashboard widget: it keeps the detected lead events, and drops
+ * `CONTACT` when `SUBMIT_LEAD_FORM` is also present to avoid double-counting.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string[]} [detectedEvents] The property's detected conversion events.
+ * @return {string[]} The lead event names to filter by.
+ */
+export function getTopTrafficSourceDrivingLeadsEventNames( detectedEvents ) {
 	const eventNames = [
 		ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
 		ENUM_CONVERSION_EVENTS.CONTACT,
@@ -89,43 +90,110 @@ function TopTrafficSourceDrivingLeadsWidget( { Widget } ) {
 		);
 	}
 
-	const totalLeadsReportOptions = {
-		...dates,
-		metrics: [
-			{
-				name: 'eventCount',
+	return eventNames;
+}
+
+/**
+ * Builds the Analytics 4 report options for the Top Traffic Source Driving Leads
+ * metric.
+ *
+ * Returns both the total-leads report and the per-channel report the tile
+ * combines, each filtered to the given lead event names. Both this widget and
+ * the metric's PDF tile import this, so the dashboard tile and the report
+ * request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}   dates      The date range, including the compare dates.
+ * @param {string[]} eventNames The lead event names to filter by.
+ * @return {Object} The `totalLeads` and `trafficSource` `getReport` options.
+ */
+export function getTopTrafficSourceDrivingLeadsReportOptions(
+	dates,
+	eventNames
+) {
+	return {
+		totalLeads: {
+			...dates,
+			metrics: [
+				{
+					name: 'eventCount',
+				},
+			],
+			dimensions: [ 'eventName' ],
+			dimensionFilters: {
+				eventName: {
+					filterType: 'inListFilter',
+					value: eventNames,
+				},
 			},
-		],
-		dimensions: [ 'eventName' ],
-		dimensionFilters: {
-			eventName: {
-				filterType: 'inListFilter',
-				value: eventNames,
-			},
+			reportID:
+				'analytics-4_top-traffic-source-driving-leads-widget_widget_totalLeadsReportOptions',
 		},
-		reportID:
-			'analytics-4_top-traffic-source-driving-leads-widget_widget_totalLeadsReportOptions',
+		trafficSource: {
+			...dates,
+			dimensions: [ 'sessionDefaultChannelGroup', 'eventName' ],
+			dimensionFilters: {
+				eventName: {
+					filterType: 'inListFilter',
+					value: eventNames,
+				},
+			},
+			metrics: [
+				{
+					name: 'eventCount',
+				},
+			],
+			limit: 1,
+			orderBy: 'eventCount',
+			reportID:
+				'analytics-4_top-traffic-source-driving-leads-widget_widget_trafficSourceReportOptions',
+		},
+	};
+}
+
+/**
+ * Builds the sub-text for the Top Traffic Source Driving Leads metric tile.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the PDF tile show the same sub-text.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} rate The relative share of total leads for the top source.
+ * @return {string} The metric tile sub-text.
+ */
+export function getTopTrafficSourceDrivingLeadsSubtext( rate ) {
+	const format = {
+		style: 'percent',
+		signDisplay: 'never',
+		maximumFractionDigits: 1,
 	};
 
-	const trafficSourceReportOptions = {
-		...dates,
-		dimensions: [ 'sessionDefaultChannelGroup', 'eventName' ],
-		dimensionFilters: {
-			eventName: {
-				filterType: 'inListFilter',
-				value: eventNames,
-			},
-		},
-		metrics: [
-			{
-				name: 'eventCount',
-			},
-		],
-		limit: 1,
-		orderBy: 'eventCount',
-		reportID:
-			'analytics-4_top-traffic-source-driving-leads-widget_widget_trafficSourceReportOptions',
-	};
+	return sprintf(
+		/* translators: %s: Percentage of leads for the current top traffic source compared to the number of total leads for all traffic sources. */
+		__( '%s of total leads', 'google-site-kit' ),
+		numFmt( rate, format )
+	);
+}
+
+function TopTrafficSourceDrivingLeadsWidget( { Widget } ) {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} )
+	);
+
+	const detectedEvents = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
+	);
+	const eventNames =
+		getTopTrafficSourceDrivingLeadsEventNames( detectedEvents );
+
+	const {
+		totalLeads: totalLeadsReportOptions,
+		trafficSource: trafficSourceReportOptions,
+	} = getTopTrafficSourceDrivingLeadsReportOptions( dates, eventNames );
 
 	const totalLeadsReport = useInViewSelect(
 		( select ) =>
@@ -275,14 +343,9 @@ function TopTrafficSourceDrivingLeadsWidget( { Widget } ) {
 			widgetSlug={ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS }
 			metricValue={ topTrafficSource }
 			metricValueFormat={ format }
-			subText={
-				// eslint-disable-next-line @wordpress/valid-sprintf
-				sprintf(
-					/* translators: %d: Percentage of leads for the current top traffic source compared to the number of total leads for all traffic sources. */
-					__( '%s of total leads', 'google-site-kit' ),
-					numFmt( relativeCurrentTopTrafficSourceUsers, format )
-				)
-			}
+			subText={ getTopTrafficSourceDrivingLeadsSubtext(
+				relativeCurrentTopTrafficSourceUsers
+			) }
 			previousValue={ relativePreviousTopTrafficSourceUsers }
 			currentValue={ relativeCurrentTopTrafficSourceUsers }
 			loading={ loading }

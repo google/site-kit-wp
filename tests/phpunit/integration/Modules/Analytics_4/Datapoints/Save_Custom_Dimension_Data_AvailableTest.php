@@ -107,6 +107,8 @@ class Save_Custom_Dimension_Data_AvailableTest extends TestCase {
 				'googlesitekit_post_author'     => true,
 				'googlesitekit_post_categories' => false,
 				'googlesitekit_post_type'       => false,
+				'googlesitekit_event_provider'  => false,
+				'googlesitekit_form_id'         => false,
 			),
 			$this->custom_dimensions_data_available->get_data_availability(),
 			'Saving custom dimension data available should mark only the requested custom dimension as data available.'

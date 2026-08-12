@@ -24,26 +24,26 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useCallback, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import {
 	EDITING_USER_ROLE_SELECT_SLUG_KEY,
 	RESET_SETTINGS_DIALOG,
 	SETTINGS_DIALOG,
 } from '@/js/components/dashboard-sharing/DashboardSharingSettings/constants';
+import ErrorNotice from '@/js/components/ErrorNotice';
+import Link from '@/js/components/Link';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
-import Link from '@/js/components/Link';
 import Notice from './Notice';
-import ErrorNotice from '@/js/components/ErrorNotice';
 
 export default function Footer( { closeDialog, openResetDialog } ) {
 	const viewContext = useViewContext();

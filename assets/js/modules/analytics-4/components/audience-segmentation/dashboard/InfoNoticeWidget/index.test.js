@@ -19,34 +19,30 @@
 /**
  * External dependencies
  */
-import { useIntersection as mockUseIntersection } from 'react-use';
+import { intersectionObserver } from '@shopify/jest-dom-mocks';
 
 /**
  * Internal dependencies.
  */
-import InfoNoticeWidget from '.';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { WEEK_IN_SECONDS } from '@/js/util';
+import * as tracking from '@/js/util/tracking';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	muteFetch,
 	provideModules,
 	render,
 	waitForDefaultTimeouts,
-} from '../../../../../../../../tests/js/test-utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { WEEK_IN_SECONDS } from '@/js/util';
-import * as tracking from '@/js/util/tracking';
-import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+} from '@tests/js/test-utils';
 import { AUDIENCE_INFO_NOTICES, AUDIENCE_INFO_NOTICE_SLUG } from './constants';
-
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
-} ) );
+import InfoNoticeWidget from '.';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -57,10 +53,7 @@ describe( 'InfoNoticeWidget', () => {
 	let dismissPromptSpy;
 
 	beforeEach( () => {
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: false,
-			intersectionRatio: 0,
-		} ) );
+		intersectionObserver.mock();
 
 		registry = createTestRegistry();
 		provideModules( registry, [
@@ -78,6 +71,7 @@ describe( 'InfoNoticeWidget', () => {
 	} );
 
 	afterEach( () => {
+		intersectionObserver.restore();
 		mockTrackEvent.mockClear();
 	} );
 
@@ -376,7 +370,7 @@ describe( 'InfoNoticeWidget', () => {
 	)(
 		'for the "%s" notice, when dismiss count is %d',
 		( content, dismissCount, slug ) => {
-			let getByText, getByRole, rerender;
+			let getByText, getByRole;
 
 			beforeEach( () => {
 				registry
@@ -397,7 +391,7 @@ describe( 'InfoNoticeWidget', () => {
 					},
 				} );
 
-				( { getByRole, getByText, rerender } = render(
+				( { getByRole, getByText } = render(
 					<WidgetWithComponentProps />,
 					{
 						registry,
@@ -413,13 +407,13 @@ describe( 'InfoNoticeWidget', () => {
 			it( 'should track an event when the notice is viewed', () => {
 				expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
-				// Simulate the CTA becoming visible.
-				mockUseIntersection.mockImplementation( () => ( {
-					isIntersecting: true,
-					intersectionRatio: 1,
-				} ) );
-
-				rerender( <WidgetWithComponentProps /> );
+				// Simulate the notice coming into view.
+				act( () => {
+					intersectionObserver.simulate( {
+						isIntersecting: true,
+						intersectionRatio: 1,
+					} );
+				} );
 
 				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 				expect( mockTrackEvent ).toHaveBeenCalledWith(

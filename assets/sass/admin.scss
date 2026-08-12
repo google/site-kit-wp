@@ -125,11 +125,14 @@
 @import "components/global/googlesitekit-page-footer";
 @import "components/global/googlesitekit-page-header";
 @import "components/global/googlesitekit-percent-circle";
+@import "components/global/googlesitekit-popper";
 @import "components/global/googlesitekit-post-searcher";
+@import "components/global/googlesitekit-powered-by-module";
 @import "components/global/googlesitekit-preview-block";
 @import "components/global/googlesitekit-preview-table";
 @import "components/global/googlesitekit-progress-segments";
 @import "components/global/googlesitekit-progress-indicator";
+@import "components/global/googlesitekit-scrollable-tabs";
 @import "components/global/googlesitekit-selection-box";
 @import "components/global/googlesitekit-selection-panel";
 @import "components/global/googlesitekit-sharing-settings";
@@ -167,6 +170,7 @@
 @import "components/dashboard/wizard/googlesitekit-wizard-step";
 
 // Key Metrics
+@import "components/key-metrics/googlesitekit-key-metrics-back-notice";
 @import "components/key-metrics/googlesitekit-key-metrics-setup-cta";
 @import "components/key-metrics/googlesitekit-key-metrics-setup-screen";
 @import "components/key-metrics/googlesitekit-key-metrics-widgets";
@@ -181,7 +185,7 @@
 @import "components/email-reporting/googlesitekit-invite-others-to-subscribe";
 
 // PDF Generation
-@import "components/pdf-generation/googlesitekit-pdf-download-panel";
+@import "components/pdf-export/googlesitekit-pdf-download-panel";
 
 // Setup
 @import "components/setup/googlesitekit-setup";
@@ -238,6 +242,7 @@
 @import "components/notice/googlesitekit-notice";
 
 // PDF export
+@import "components/pdf-export/googlesitekit-pdf-introduction-overlay";
 @import "components/pdf-export/googlesitekit-pdf-report-error-snackbar";
 @import "components/pdf-export/googlesitekit-pdf-report-progress-snackbar";
 @import "components/pdf-export/googlesitekit-pdf-report-success-snackbar";

@@ -19,23 +19,23 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { Fragment, useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import ShareIcon from '@/svg/icons/share.svg';
-import useViewContext from '@/js/hooks/useViewContext';
-import { trackEvent } from '@/js/util';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE } from '@/js/modules/analytics-4/datastore/constants';
-import { SETTINGS_DIALOG } from './DashboardSharingSettings/constants';
-import DashboardSharingDialog from './DashboardSharingDialog';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import useFormValue from '@/js/hooks/useFormValue';
+import useViewContext from '@/js/hooks/useViewContext';
+import { AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE } from '@/js/modules/analytics-4/datastore/constants';
+import { trackEvent } from '@/js/util';
+import ShareIcon from '@/svg/icons/share.svg';
+import DashboardSharingDialog from './DashboardSharingDialog';
+import { SETTINGS_DIALOG } from './DashboardSharingSettings/constants';
 
 export default function DashboardSharingSettingsButton() {
 	const viewContext = useViewContext();

@@ -24,27 +24,79 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import {
-	CORE_USER,
-	KM_ANALYTICS_MOST_ENGAGING_PAGES,
-} from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
 } from '@/js/components/KeyMetrics';
 import Link from '@/js/components/Link';
+import {
+	CORE_USER,
+	KM_ANALYTICS_MOST_ENGAGING_PAGES,
+} from '@/js/googlesitekit/datastore/user/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
+import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import useViewOnly from '@/js/hooks/useViewOnly';
-import { numFmt } from '@/js/util';
-import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
+
+/**
+ * Builds the `getReport` options for the Most engaging pages widget, so the
+ * dashboard tile and the PDF export request the same data.
+ *
+ * The engaging pages report filters to pages at or above the average page
+ * views, a value derived from the page views report at runtime, so it is
+ * passed in rather than recomputed here.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates              The date range for the reports.
+ * @param {number} [averagePageViews] The average page views threshold the engaging pages report filters on. Defaults to `0`.
+ * @return {Object} The `pageViews` and `engagingPages` `getReport` options.
+ */
+export function getMostEngagingPagesReportOptions(
+	dates,
+	averagePageViews = 0
+) {
+	return {
+		pageViews: {
+			...dates,
+			dimensions: [ 'pagePath' ],
+			metrics: [ { name: 'screenPageViews' } ],
+			limit: 1,
+			reportID:
+				'analytics-4_most-engaging-pages-widget_widget_pageViewsReportOptions',
+		},
+		engagingPages: {
+			...dates,
+			dimensions: [ 'pagePath' ],
+			metrics: [ 'engagementRate', 'screenPageViews' ],
+			orderby: [
+				{
+					metric: { metricName: 'engagementRate' },
+					desc: true,
+				},
+				{
+					metric: { metricName: 'screenPageViews' },
+					desc: true,
+				},
+			],
+			metricFilters: {
+				screenPageViews: {
+					filterType: 'numericFilter',
+					operation: 'GREATER_THAN_OR_EQUAL',
+					value: { int64Value: averagePageViews },
+				},
+			},
+			limit: 3,
+			reportID:
+				'analytics-4_most-engaging-pages-widget_widget_reportOptions',
+		},
+	};
+}
 
 function MostEngagingPagesWidget( props ) {
 	const { Widget } = props;
@@ -52,19 +104,11 @@ function MostEngagingPagesWidget( props ) {
 	const viewOnlyDashboard = useViewOnly();
 
 	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
+		select( CORE_USER ).getDateRangeDates()
 	);
 
-	const pageViewsReportOptions = {
-		...dates,
-		dimensions: [ 'pagePath' ],
-		metrics: [ { name: 'screenPageViews' } ],
-		limit: 1,
-		reportID:
-			'analytics-4_most-engaging-pages-widget_widget_pageViewsReportOptions',
-	};
+	const { pageViews: pageViewsReportOptions } =
+		getMostEngagingPagesReportOptions( dates );
 
 	const pageViewsReport = useInViewSelect(
 		( select ) =>
@@ -78,30 +122,10 @@ function MostEngagingPagesWidget( props ) {
 				pageViewsReport?.rowCount
 		) || 0;
 
-	const reportOptions = {
-		...dates,
-		dimensions: [ 'pagePath' ],
-		metrics: [ 'engagementRate', 'screenPageViews' ],
-		orderby: [
-			{
-				metric: { metricName: 'engagementRate' },
-				desc: true,
-			},
-			{
-				metric: { metricName: 'screenPageViews' },
-				desc: true,
-			},
-		],
-		metricFilters: {
-			screenPageViews: {
-				filterType: 'numericFilter',
-				operation: 'GREATER_THAN_OR_EQUAL',
-				value: { int64Value: averagePageViews },
-			},
-		},
-		limit: 3,
-		reportID: 'analytics-4_most-engaging-pages-widget_widget_reportOptions',
-	};
+	const { engagingPages: reportOptions } = getMostEngagingPagesReportOptions(
+		dates,
+		averagePageViews
+	);
 
 	const pageViewsReportErrors = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [

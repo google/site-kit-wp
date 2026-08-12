@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../tests/js/utils';
-import { CORE_USER } from './constants';
 import { getDateString } from '@/js/util';
+import { createTestRegistry } from '@tests/js/utils';
+import { CORE_USER } from './constants';
 
 describe( 'core/user date-range', () => {
 	let registry;
@@ -103,30 +103,9 @@ describe( 'core/user date-range', () => {
 						...additionalOptions,
 					} )
 				).toEqual( expected );
-
-				if ( additionalOptions.offsetDays === undefined ) {
-					// eslint-disable-next-line no-console
-					expect( console.warn ).toHaveBeenCalled();
-				}
 			}
 
-			describe( 'with date range and w/o offset', () => {
-				beforeAll( () => {
-					jest.spyOn( console, 'warn' ).mockImplementation(
-						() => {}
-					);
-				} );
-
-				afterAll( () => {
-					// eslint-disable-next-line no-console
-					console.warn.mockRestore();
-				} );
-
-				afterEach( () => {
-					// eslint-disable-next-line no-console
-					console.warn.mockClear();
-				} );
-
+			describe( 'with date range', () => {
 				// [ dateRange, expectedReturnDates ]
 				const valuesToTest = [
 					[
@@ -151,59 +130,11 @@ describe( 'core/user date-range', () => {
 				);
 			} );
 
-			describe( 'with date range & offset', () => {
-				// [ dateRange, offsetDays, expectedReturnDates ]
+			describe( 'with date range & compare', () => {
+				// [ dateRange, expectedReturnDates ]
 				const valuesToTest = [
 					[
 						'last-1-days',
-						0,
-						{ startDate: '2020-09-24', endDate: '2020-09-24' },
-					],
-					[
-						'last-7-days',
-						0,
-						{ startDate: '2020-09-18', endDate: '2020-09-24' },
-					],
-					[
-						'last-30-days',
-						0,
-						{ startDate: '2020-08-26', endDate: '2020-09-24' },
-					],
-					[
-						'last-1-days',
-						3,
-						{ startDate: '2020-09-21', endDate: '2020-09-21' },
-					],
-					[
-						'last-7-days',
-						3,
-						{ startDate: '2020-09-15', endDate: '2020-09-21' },
-					],
-					[
-						'last-30-days',
-						3,
-						{ startDate: '2020-08-23', endDate: '2020-09-21' },
-					],
-				];
-
-				const testName =
-					'should return proper dates for "%s" & offsetDays %s';
-				it.each( valuesToTest )(
-					testName,
-					( dateRange, offsetDays, expected ) => {
-						createDateRangeTest( dateRange, expected, {
-							offsetDays,
-						} );
-					}
-				);
-			} );
-
-			describe( 'with date range, offset, & compare', () => {
-				// [ dateRange, offsetDays, expectedReturnDates ]
-				const valuesToTest = [
-					[
-						'last-1-days',
-						0,
 						{
 							startDate: '2020-09-24',
 							endDate: '2020-09-24',
@@ -213,7 +144,6 @@ describe( 'core/user date-range', () => {
 					],
 					[
 						'last-7-days',
-						0,
 						{
 							startDate: '2020-09-18',
 							endDate: '2020-09-24',
@@ -223,7 +153,6 @@ describe( 'core/user date-range', () => {
 					],
 					[
 						'last-30-days',
-						0,
 						{
 							startDate: '2020-08-26',
 							endDate: '2020-09-24',
@@ -231,49 +160,16 @@ describe( 'core/user date-range', () => {
 							compareEndDate: '2020-08-25',
 						},
 					],
-					[
-						'last-1-days',
-						3,
-						{
-							startDate: '2020-09-21',
-							endDate: '2020-09-21',
-							compareStartDate: '2020-09-20',
-							compareEndDate: '2020-09-20',
-						},
-					],
-					[
-						'last-7-days',
-						3,
-						{
-							startDate: '2020-09-15',
-							endDate: '2020-09-21',
-							compareStartDate: '2020-09-08',
-							compareEndDate: '2020-09-14',
-						},
-					],
-					[
-						'last-30-days',
-						3,
-						{
-							startDate: '2020-08-23',
-							endDate: '2020-09-21',
-							compareStartDate: '2020-07-24',
-							compareEndDate: '2020-08-22',
-						},
-					],
 				];
 
 				const testName =
-					'should return proper dates for "%s" & offsetDays %s, & compare';
-				it.each( valuesToTest )(
-					testName,
-					( dateRange, offsetDays, expected ) => {
-						createDateRangeTest( dateRange, expected, {
-							offsetDays,
-							compare: true,
-						} );
-					}
-				);
+					'should return proper dates for "%s" & compare';
+
+				it.each( valuesToTest )( testName, ( dateRange, expected ) => {
+					createDateRangeTest( dateRange, expected, {
+						compare: true,
+					} );
+				} );
 			} );
 		} );
 

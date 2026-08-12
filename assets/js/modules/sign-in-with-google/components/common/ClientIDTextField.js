@@ -25,17 +25,17 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useState, useEffect } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { TextField } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useDebounce } from '@/js/hooks/useDebounce';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 import { isValidClientID } from '@/js/modules/sign-in-with-google/utils/validation';
-import { useDebounce } from '@/js/hooks/useDebounce';
 
 export default function ClientIDTextField( { existingClientID = '' } ) {
 	const clientID = useSelect( ( select ) =>

@@ -6,9 +6,9 @@
  * @copyright 2023 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
-
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
 
 namespace Google\Site_Kit\Tests\Core\Modules;
 
@@ -33,19 +33,28 @@ trait Module_With_Data_Available_State_ContractTests {
 		$module   = $this->get_module_with_data_available_state();
 
 		// Should return `false` because the transient is not set.
-		$testcase->assertFalse( $module->is_data_available() );
+		$testcase->assertFalse(
+			$module->is_data_available(),
+			'Module data should initially be marked as unavailable.'
+		);
 
 		// Set the transient.
 		set_transient( $this->get_data_available_transient_name( $module ), true );
 
 		// Should return `true` because the transient is set.
-		$testcase->assertTrue( $module->is_data_available() );
+		$testcase->assertTrue(
+			$module->is_data_available(),
+			'Module data should be available while the availability transient is set.'
+		);
 
 		// Reset the transient.
 		delete_transient( $this->get_data_available_transient_name( $module ) );
 
 		// Should return `false` because the transient is not set.
-		$testcase->assertFalse( $module->is_data_available() );
+		$testcase->assertFalse(
+			$module->is_data_available(),
+			'Module data should return to unavailable after the availability transient is deleted.'
+		);
 	}
 
 	/**
@@ -56,13 +65,19 @@ trait Module_With_Data_Available_State_ContractTests {
 		$module   = $this->get_module_with_data_available_state();
 
 		// Should return `false` because the transient is not set.
-		$testcase->assertFalse( get_transient( $this->get_data_available_transient_name( $module ) ) );
+		$testcase->assertFalse(
+			get_transient( $this->get_data_available_transient_name( $module ) ),
+			'Data availability transient should not exist before data is marked as available.'
+		);
 
 		// Set the transient.
 		$module->set_data_available();
 
 		// Should return `true` because the transient is set.
-		$testcase->assertTrue( get_transient( $this->get_data_available_transient_name( $module ) ) );
+		$testcase->assertTrue(
+			get_transient( $this->get_data_available_transient_name( $module ) ),
+			'Data availability transient should be set when data is marked as available.'
+		);
 	}
 
 	/**
@@ -76,13 +91,19 @@ trait Module_With_Data_Available_State_ContractTests {
 		set_transient( $this->get_data_available_transient_name( $module ), true );
 
 		// Should return `true` because the transient is set.
-		$testcase->assertTrue( get_transient( $this->get_data_available_transient_name( $module ) ) );
+		$testcase->assertTrue(
+			get_transient( $this->get_data_available_transient_name( $module ) ),
+			'Data availability transient should exist before it is reset.'
+		);
 
 		// Reset the transient.
 		$module->reset_data_available();
 
 		// Should return `false` because the transient is not set.
-		$testcase->assertFalse( get_transient( $this->get_data_available_transient_name( $module ) ) );
+		$testcase->assertFalse(
+			get_transient( $this->get_data_available_transient_name( $module ) ),
+			'Data availability transient should be deleted when data availability is reset.'
+		);
 	}
 
 	protected function get_data_available_transient_name( $module ) {

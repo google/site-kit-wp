@@ -25,6 +25,17 @@ class Ninja_Forms extends Conversion_Events_Provider {
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'ninja-forms';
 
 	/**
+	 * Gets the provider category.
+	 *
+	 * @since 1.181.0
+	 *
+	 * @return string Provider category.
+	 */
+	public function get_category() {
+		return self::CATEGORY_LEAD;
+	}
+
+	/**
 	 * Checks if the Ninja Forms plugin is active.
 	 *
 	 * @since 1.130.0

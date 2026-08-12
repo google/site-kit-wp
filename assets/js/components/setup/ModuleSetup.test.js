@@ -19,38 +19,22 @@
 /**
  * Internal dependencies
  */
-import {
-	act,
-	fireEvent,
-	render,
-	waitFor,
-} from '../../../../tests/js/test-utils';
+import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-} from '../../../../tests/js/utils';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import * as analyticsFixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+} from '@tests/js/utils';
 import ModuleSetup from './ModuleSetup';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
-import { mockLocation } from '../../../../tests/js/mock-browser-utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import * as tracking from '@/js/util/tracking';
-
-const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
-mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 jest.mock( '@/js/components/notifications/Notifications', () => () => null );
 
 describe( 'ModuleSetup', () => {
-	mockLocation();
-
 	let registry;
 
 	beforeEach( () => {
@@ -62,224 +46,6 @@ describe( 'ModuleSetup', () => {
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		provideModuleRegistrations( registry );
-	} );
-
-	afterEach( () => {
-		mockTrackEvent.mockClear();
-		jest.resetAllMocks();
-	} );
-
-	describe( 'Analytics 4', () => {
-		beforeEach( () => {
-			provideModules( registry, [
-				{
-					slug: MODULE_SLUG_ANALYTICS_4,
-					active: false,
-					connected: false,
-				},
-			] );
-
-			const {
-				accountSummaries,
-				webDataStreamsBatch,
-				defaultEnhancedMeasurementSettings,
-			} = analyticsFixtures;
-
-			const accounts = accountSummaries.accountSummaries;
-			const properties = accounts[ 1 ].propertySummaries;
-			const accountID = accounts[ 1 ]._id;
-			const propertyID = properties[ 0 ]._id;
-			const webDataStreamID = webDataStreamsBatch[ propertyID ][ 0 ]._id;
-
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetExistingTag( null );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetAccountSummaries( accountSummaries );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.finishResolution( 'getAccountSummaries', [] );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetProperty( properties[ 0 ], {
-					propertyID,
-				} );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetWebDataStreamsBatch( webDataStreamsBatch, {
-					propertyIDs: [ propertyID ],
-				} );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.finishResolution( 'getWebDataStreams', [ propertyID ] );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetEnhancedMeasurementSettings(
-					{
-						...defaultEnhancedMeasurementSettings,
-						streamEnabled: false,
-					},
-					{
-						propertyID,
-						webDataStreamID,
-					}
-				);
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.finishResolution(
-					'isEnhancedMeasurementStreamAlreadyEnabled',
-					[ propertyID, webDataStreamID ]
-				);
-
-			registry.dispatch( MODULES_ANALYTICS_4 ).selectAccount( accountID );
-
-			registry
-				.dispatch( CORE_SITE )
-				.receiveGetConversionTrackingSettings( {
-					enabled: false,
-				} );
-		} );
-
-		describe( 'initial setup flow', () => {
-			let container, waitForRegistry, queryByText, getByText;
-
-			beforeEach( async () => {
-				global.location.href =
-					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true';
-
-				( { container, waitForRegistry, queryByText, getByText } =
-					render(
-						<ModuleSetup moduleSlug={ MODULE_SLUG_ANALYTICS_4 } />,
-						{
-							registry,
-							viewContext: VIEW_CONTEXT_MODULE_SETUP,
-							features: [ 'setupFlowRefresh' ],
-						}
-					) );
-
-				await waitForRegistry();
-			} );
-
-			it( 'should match the snapshot', () => {
-				expect( container ).toMatchSnapshot();
-			} );
-
-			it( 'should display the progress indicator', () => {
-				expect(
-					container.querySelector(
-						'.googlesitekit-progress-indicator'
-					)
-				).toBeInTheDocument();
-			} );
-
-			it( 'should not display the "Connect Service" text', () => {
-				expect(
-					queryByText( 'Connect Service' )
-				).not.toBeInTheDocument();
-			} );
-
-			it( 'should not display the setup footer', () => {
-				expect(
-					container.querySelector( '.googlesitekit-setup__footer' )
-				).not.toBeInTheDocument();
-			} );
-
-			it( 'should display an exit button', () => {
-				expect( getByText( 'Exit setup' ) ).toBeInTheDocument();
-			} );
-
-			it( 'should track an event when the user clicks the exit button', async () => {
-				// Clear the mock, as there is a tracked event on mount.
-				mockTrackEvent.mockClear();
-
-				await act( () => {
-					fireEvent.click( getByText( 'Exit setup' ) );
-
-					return Promise.resolve();
-				} );
-
-				expect( mockTrackEvent ).toHaveBeenCalledWith(
-					`${ VIEW_CONTEXT_MODULE_SETUP }_setup`,
-					'setup_flow_v3_exit_setup',
-					MODULE_SLUG_ANALYTICS_4
-				);
-
-				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-			} );
-
-			it( 'tracks only the initial setup analytics view event', () => {
-				expect( mockTrackEvent ).toHaveBeenCalledWith(
-					`${ VIEW_CONTEXT_MODULE_SETUP }_setup`,
-					'setup_flow_v3_view_analytics_step'
-				);
-
-				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-			} );
-		} );
-
-		describe( 'not initial setup flow', () => {
-			let container, waitForRegistry, queryByText, getByText;
-
-			beforeEach( async () => {
-				global.location.href =
-					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true';
-
-				( { container, waitForRegistry, queryByText, getByText } =
-					render(
-						<ModuleSetup moduleSlug={ MODULE_SLUG_ANALYTICS_4 } />,
-						{
-							registry,
-							viewContext: VIEW_CONTEXT_MODULE_SETUP,
-							features: [],
-						}
-					) );
-
-				await waitForRegistry();
-			} );
-
-			it( 'should not display an exit button', () => {
-				expect( queryByText( 'Exit setup' ) ).not.toBeInTheDocument();
-			} );
-
-			it( 'should not display the progress indicator', () => {
-				expect(
-					container.querySelector(
-						'.googlesitekit-progress-indicator'
-					)
-				).not.toBeInTheDocument();
-			} );
-
-			it( 'should display the "Connect Service" text', () => {
-				expect( getByText( 'Connect Service' ) ).toBeInTheDocument();
-			} );
-
-			it( 'should display the setup footer', () => {
-				expect(
-					container.querySelector( '.googlesitekit-setup__footer' )
-				).toBeInTheDocument();
-			} );
-
-			it( 'should match the snapshot', () => {
-				expect( container ).toMatchSnapshot();
-			} );
-
-			it( 'tracks only the generic module setup view event', () => {
-				expect( mockTrackEvent ).toHaveBeenCalledWith(
-					'moduleSetup',
-					'view_module_setup',
-					MODULE_SLUG_ANALYTICS_4
-				);
-
-				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-			} );
-		} );
 	} );
 
 	it( 'renders all elements correctly', () => {
@@ -317,180 +83,30 @@ describe( 'ModuleSetup', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	describe( 'forwardable params', () => {
-		const customRedirectURL =
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true';
-
-		function registerFinishSetupModule( moduleSlug, setupHandler ) {
-			registry.dispatch( CORE_MODULES ).registerModule( moduleSlug, {
-				slug: moduleSlug,
-				storeName: `modules/${ moduleSlug }`,
-				SetupComponent: ( { finishSetup } ) => (
-					<button
-						onClick={ () => setupHandler( finishSetup ) }
-						type="button"
-					>
-						Trigger finish setup
-					</button>
-				),
-			} );
-
-			provideModules( registry, [
-				{
-					slug: moduleSlug,
-					active: false,
-					connected: false,
-				},
-			] );
+	it( 'should render the registered SetupLayout when provided', () => {
+		function CustomSetupLayout( { moduleSlug } ) {
+			return <div>Custom setup layout for { moduleSlug }</div>;
 		}
 
-		it( 'should not override existing params in redirect URL with forwarded params', async () => {
-			const moduleSlug = 'test-module';
+		provideModules( registry, [
+			{ slug: 'custom-module', name: 'Custom Module' },
+		] );
 
-			global.location.href =
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&panel=email-reporting&notification=authentication_success';
-
-			const customRedirectURLWithNotification =
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=ads&notification=ads_success';
-
-			registerFinishSetupModule( moduleSlug, ( finishSetup ) =>
-				finishSetup( customRedirectURLWithNotification )
-			);
-
-			const { getByRole, waitForRegistry } = render(
-				<ModuleSetup moduleSlug={ moduleSlug } />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MODULE_SETUP,
-				}
-			);
-
-			await waitForRegistry();
-
-			await act( () => {
-				fireEvent.click(
-					getByRole( 'button', { name: 'Trigger finish setup' } )
-				);
-			} );
-
-			await waitFor( () =>
-				expect( global.location.assign ).toHaveBeenCalled()
-			);
-
-			const redirectURL = new URL(
-				global.location.assign.mock.calls[ 0 ][ 0 ]
-			);
-			expect( redirectURL.searchParams.get( 'notification' ) ).toEqual(
-				'ads_success'
-			);
+		registry.dispatch( CORE_MODULES ).registerModule( 'custom-module', {
+			storeName: 'modules/custom-module',
+			SetupLayout: CustomSetupLayout,
 		} );
 
-		it( 'should preserve forwarded params for custom redirect URL', async () => {
-			const moduleSlug = 'test-module';
+		const { getByText } = render(
+			<ModuleSetup moduleSlug="custom-module" />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MODULE_SETUP,
+			}
+		);
 
-			global.location.href =
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&panel=email-reporting';
-
-			registerFinishSetupModule( moduleSlug, ( finishSetup ) =>
-				finishSetup( customRedirectURL )
-			);
-
-			const { getByRole, waitForRegistry } = render(
-				<ModuleSetup moduleSlug={ moduleSlug } />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MODULE_SETUP,
-				}
-			);
-
-			await waitForRegistry();
-			await waitFor( () =>
-				expect(
-					getByRole( 'button', { name: 'Trigger finish setup' } )
-				).toBeInTheDocument()
-			);
-
-			await act( () => {
-				fireEvent.click(
-					getByRole( 'button', { name: 'Trigger finish setup' } )
-				);
-			} );
-
-			await act( async () => {
-				await waitFor( () =>
-					expect( global.location.assign ).toHaveBeenCalled()
-				);
-			} );
-
-			const redirectURL = new URL(
-				global.location.assign.mock.calls[ 0 ][ 0 ]
-			);
-			expect( redirectURL.searchParams.get( 'page' ) ).toEqual(
-				'googlesitekit-dashboard'
-			);
-			expect( redirectURL.searchParams.get( 'slug' ) ).toEqual(
-				'analytics-4'
-			);
-			expect( redirectURL.searchParams.get( 'reAuth' ) ).toEqual(
-				'true'
-			);
-			expect( redirectURL.searchParams.get( 'panel' ) ).toEqual(
-				'email-reporting'
-			);
-		} );
-
-		it( 'should preserve forwarded params for default dashboard redirect URL', async () => {
-			const moduleSlug = 'test-module';
-
-			global.location.href =
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&panel=email-reporting';
-
-			registerFinishSetupModule( moduleSlug, ( finishSetup ) =>
-				finishSetup()
-			);
-
-			const { getByRole, waitForRegistry } = render(
-				<ModuleSetup moduleSlug={ moduleSlug } />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MODULE_SETUP,
-				}
-			);
-
-			await waitForRegistry();
-			await waitFor( () =>
-				expect(
-					getByRole( 'button', { name: 'Trigger finish setup' } )
-				).toBeInTheDocument()
-			);
-
-			await act( () => {
-				fireEvent.click(
-					getByRole( 'button', { name: 'Trigger finish setup' } )
-				);
-			} );
-
-			await act( async () => {
-				await waitFor( () =>
-					expect( global.location.assign ).toHaveBeenCalled()
-				);
-			} );
-
-			const redirectURL = new URL(
-				global.location.assign.mock.calls[ 0 ][ 0 ]
-			);
-			expect( redirectURL.searchParams.get( 'page' ) ).toEqual(
-				'googlesitekit-dashboard'
-			);
-			expect( redirectURL.searchParams.get( 'notification' ) ).toEqual(
-				'authentication_success'
-			);
-			expect( redirectURL.searchParams.get( 'slug' ) ).toEqual(
-				moduleSlug
-			);
-			expect( redirectURL.searchParams.get( 'panel' ) ).toEqual(
-				'email-reporting'
-			);
-		} );
+		expect(
+			getByText( 'Custom setup layout for custom-module' )
+		).toBeInTheDocument();
 	} );
 } );

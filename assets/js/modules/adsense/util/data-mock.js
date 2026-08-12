@@ -21,8 +21,8 @@
  */
 import faker from 'faker';
 import invariant from 'invariant';
-import md5 from 'md5';
 import { castArray, isPlainObject } from 'lodash';
+import md5 from 'md5';
 import { range } from 'rxjs';
 import { map, reduce } from 'rxjs/operators';
 
@@ -31,8 +31,8 @@ import { map, reduce } from 'rxjs/operators';
  */
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import { getDateString, isValidDateString, stringToDate } from '@/js/util';
-import { validateMetrics } from './report-validation';
 import { dateInstanceToAdSenseDate } from './date';
+import { validateMetrics } from './report-validation';
 
 const METRIC_RATIO = 'METRIC_RATIO';
 const METRIC_TALLY = 'METRIC_TALLY';

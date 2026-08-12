@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\Authentication\Clients;
 
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
@@ -32,7 +30,7 @@ class Google_Site_Kit_ClientTest extends TestCase {
 		wp_set_current_user( $user_id );
 		self::force_home_url( 'https://example.com' );
 
-		$this->assertEquals( "https://{$user_id}@example.com", Google_Site_Kit_Client::getQuotaUser() );
+		$this->assertEquals( "https://{$user_id}@example.com", Google_Site_Kit_Client::getQuotaUser(), 'Quota user should include the current user and home URL.' );
 	}
 
 	public function test_getQuotaUser__port_is_ignored() {
@@ -40,14 +38,14 @@ class Google_Site_Kit_ClientTest extends TestCase {
 		wp_set_current_user( $user_id );
 		self::force_home_url( 'https://example.org:9000' );
 
-		$this->assertEquals( "https://{$user_id}@example.org", Google_Site_Kit_Client::getQuotaUser() );
+		$this->assertEquals( "https://{$user_id}@example.org", Google_Site_Kit_Client::getQuotaUser(), 'Quota user should not include the home URL port.' );
 	}
 
 	public function test_getQuotaUser__no_user() {
 		wp_set_current_user( 0 );
 		self::force_home_url( 'https://example.com' );
 
-		$this->assertEquals( 'https://0@example.com', Google_Site_Kit_Client::getQuotaUser() );
+		$this->assertEquals( 'https://0@example.com', Google_Site_Kit_Client::getQuotaUser(), 'Quota user ID should be 0 when no user is logged in.' );
 	}
 
 	public function test_getQuotaUser__subdirectory_url() {
@@ -56,6 +54,6 @@ class Google_Site_Kit_ClientTest extends TestCase {
 
 		self::force_home_url( 'http://example.com/subdirectory' );
 
-		$this->assertEquals( "http://{$user_id}@example.com/subdirectory", Google_Site_Kit_Client::getQuotaUser() );
+		$this->assertEquals( "http://{$user_id}@example.com/subdirectory", Google_Site_Kit_Client::getQuotaUser(), 'Quota user should include the home URL subdirectory.' );
 	}
 }

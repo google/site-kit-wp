@@ -24,9 +24,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import CreateAccountField from './CreateAccountField';
-import { FORM_ACCOUNT_CREATE } from '@/js/modules/analytics-4/datastore/constants';
 import useFormValue from '@/js/hooks/useFormValue';
+import { FORM_ACCOUNT_CREATE } from '@/js/modules/analytics-4/datastore/constants';
+import CreateAccountField from './CreateAccountField';
 
 export default function AccountField() {
 	const [ value, setValue ] = useFormValue(

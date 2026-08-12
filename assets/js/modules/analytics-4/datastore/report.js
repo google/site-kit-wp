@@ -17,53 +17,59 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * External dependencies
  */
 import { isPlainObject } from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { get } from 'googlesitekit-api';
 import {
-	createRegistrySelector,
-	commonActions,
 	combineStores,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { createGatheringDataStore } from '@/js/googlesitekit/modules/create-gathering-data-store';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createGetReportResolver } from '@/js/googlesitekit/data/create-get-report-resolver';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4, DATE_RANGE_OFFSET } from './constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createGatheringDataStore } from '@/js/googlesitekit/modules/create-gathering-data-store';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { DAY_IN_SECONDS, dateSub, stringifyObject } from '@/js/util';
 import {
-	normalizeReportOptions,
 	isZeroReport,
+	normalizeReportOptions,
 } from '@/js/modules/analytics-4/utils';
+import { getPageTitlesReportOptions } from '@/js/modules/analytics-4/utils/page-titles-report';
 import { validateReport } from '@/js/modules/analytics-4/utils/validation';
+import { DAY_IN_SECONDS, dateSub } from '@/js/util';
+import {
+	getCacheableReportOptions,
+	getReportCacheKey,
+} from '@/js/util/report-options';
+import { MODULES_ANALYTICS_4 } from './constants';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
-	controlCallback: ( { options } ) => {
+	controlCallback: ( { options }, { signal } = {} ) => {
 		return get(
 			'modules',
 			MODULE_SLUG_ANALYTICS_4,
 			'report',
-			normalizeReportOptions( options )
+			normalizeReportOptions( options ),
+			{ signal }
 		);
 	},
 	reducerCallback: createReducer( ( state, report, { options } ) => {
-		state.reports[ stringifyObject( options ) ] = report;
+		state.reports[ getReportCacheKey( options ) ] = report;
 	} ),
 	argsToParams: ( options ) => {
-		return { options };
+		return { options: getCacheableReportOptions( options ) };
 	},
 	validateParams: ( { options } = {} ) => validateReport( options ),
 } );
@@ -137,20 +143,7 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	*getReport( options = {} ) {
-		const registry = yield commonActions.getRegistry();
-		const existingReport = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getReport( options );
-
-		// If there is already a report loaded in state, consider it fulfilled
-		// and don't make an API request.
-		if ( existingReport ) {
-			return;
-		}
-
-		yield fetchGetReportStore.actions.fetchGetReport( options );
-	},
+	getReport: createGetReportResolver( MODULES_ANALYTICS_4 ),
 };
 
 const baseSelectors = {
@@ -159,6 +152,8 @@ const baseSelectors = {
 	 *
 	 * @since 1.94.0
 	 * @since 1.111.0 Add metricFilters to the options list, to reflect added support for the metric filters.
+	 * @since 1.182.0 Accept optional fetch options as a second argument, such as `{ signal }` to cancel the report request.
+	 * @since 1.183.0 Treat report options that differ only in `reportID` as one report.
 	 *
 	 * @param {Object}         state                      Data store's state.
 	 * @param {Object}         options                    Options for generating the report.
@@ -173,12 +168,14 @@ const baseSelectors = {
 	 * @param {Array.<Object>} [options.orderby]          Optional. An order definition object, or a list of order definition objects, each one containing 'fieldName' and 'sortOrder'. 'sortOrder' must be either 'ASCENDING' or 'DESCENDING'. Default empty array.
 	 * @param {string}         [options.url]              Optional. URL to get a report for only this URL. Default an empty string.
 	 * @param {number}         [options.limit]            Optional. Maximum number of entries to return. Default 1000.
+	 * @param {Object}         [fetchOptions]             Optional. Fetch options that change how the request runs, such as `{ signal }` to cancel it.
 	 * @return {(Array.<Object>|undefined)} An Analytics report; `undefined` if not loaded.
 	 */
-	getReport( state, options ) {
+	// eslint-disable-next-line no-unused-vars -- The fetch options only change how the request runs, so the selector does not read them.
+	getReport( state, options, fetchOptions ) {
 		const { reports } = state;
 
-		return reports[ stringifyObject( options ) ];
+		return reports[ getReportCacheKey( options ) ];
 	},
 
 	/**
@@ -201,7 +198,6 @@ const baseSelectors = {
 				}
 
 				const pagePaths = [];
-				const REQUEST_MULTIPLIER = 5;
 
 				/*
 				 * Iterate over the report rows, finding the dimension containing the
@@ -233,22 +229,10 @@ const baseSelectors = {
 					return urlTitleMap;
 				}
 
-				const options = {
-					startDate,
-					endDate,
-					dimensions: [ 'pagePath', 'pageTitle' ],
-					dimensionFilters: { pagePath: pagePaths.sort() },
-					metrics: [ { name: 'screenPageViews' } ],
-					orderby: [
-						{
-							metric: { metricName: 'screenPageViews' },
-							desc: true,
-						},
-					],
-					limit: REQUEST_MULTIPLIER * pagePaths.length,
-					reportID:
-						'analytics-4_get-page-titles_store:selector_options',
-				};
+				const options = getPageTitlesReportOptions(
+					{ startDate, endDate },
+					pagePaths
+				);
 
 				const pageTitlesReport =
 					select( MODULES_ANALYTICS_4 ).getReport( options );
@@ -381,7 +365,6 @@ const baseSelectors = {
 			CORE_USER
 		).getDateRangeDates( {
 			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
 		} );
 
 		const args = {

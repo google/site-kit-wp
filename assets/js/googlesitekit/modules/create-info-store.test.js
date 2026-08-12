@@ -24,10 +24,10 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../tests/js/utils';
-import { createInfoStore } from './create-info-store';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createTestRegistry } from '@tests/js/utils';
+import { createInfoStore } from './create-info-store';
 
 const MODULE_SLUG = 'test-slug';
 const TEST_STORE_NAME = `test/${ MODULE_SLUG }`;
@@ -256,6 +256,69 @@ describe( 'createInfoStore store', () => {
 				expect( adminReauthURL ).toMatchQueryParameters( {
 					...connectURLQueryParams,
 					redirect: `http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=${ MODULE_SLUG }&reAuth=true`,
+					status: 'true',
+				} );
+			} );
+
+			it( 'adds redirectQueryArgs to the adminReauthURL', () => {
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					adminURL: 'http://example.com/wp-admin/',
+				} );
+				registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+					needsReauthentication: false,
+				} );
+				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG, {
+					storeName: TEST_STORE_NAME,
+				} );
+				registry.registerStore( STORE_NAME, store );
+
+				const adminReauthURL = registry
+					.select( STORE_NAME )
+					.getAdminReauthURL( {
+						redirectQueryArgs: {
+							foo: 'bar',
+						},
+					} );
+
+				expect( adminReauthURL ).toMatchQueryParameters( {
+					page: 'googlesitekit-dashboard',
+					slug: MODULE_SLUG,
+					reAuth: 'true',
+					foo: 'bar',
+				} );
+			} );
+
+			it( 'adds redirectQueryArgs to the OAuth redirect when needsReauthentication is true', () => {
+				const connectURLBase = 'http://example.com/wp-admin/index.php';
+				const connectURL = addQueryArgs( connectURLBase, {
+					action: 'googlesitekit_connect',
+					nonce: 'abc123',
+				} );
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					adminURL: 'http://example.com/wp-admin/',
+				} );
+				registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+					needsReauthentication: true,
+				} );
+				registry.dispatch( CORE_USER ).receiveConnectURL( connectURL );
+
+				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG, {
+					storeName: TEST_STORE_NAME,
+				} );
+				registry.registerStore( STORE_NAME, store );
+
+				const adminReauthURL = registry
+					.select( STORE_NAME )
+					.getAdminReauthURL( {
+						redirectQueryArgs: {
+							foo: 'bar',
+						},
+					} );
+
+				expect( adminReauthURL ).toMatchQueryParameters( {
+					action: 'googlesitekit_connect',
+					nonce: 'abc123',
+					redirect: `http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=${ MODULE_SLUG }&reAuth=true&foo=bar`,
 					status: 'true',
 				} );
 			} );

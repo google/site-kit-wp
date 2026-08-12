@@ -25,14 +25,14 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { Tab, TabBar } from 'googlesitekit-components';
-import Chip from './Chip';
-import CheckMark from '@/svg/icons/check-2.svg';
-import StarFill from '@/svg/icons/star-fill.svg';
-import Null from '@/js/components/Null';
 import {
 	KEY_METRICS_GROUP_CURRENT,
 	KEY_METRICS_GROUP_SUGGESTED,
 } from '@/js/components/KeyMetrics/constants';
+import Null from '@/js/components/Null';
+import CheckMark from '@/svg/icons/check-2.svg';
+import StarFill from '@/svg/icons/star-fill.svg';
+import Chip from './Chip';
 
 const icons = {
 	[ KEY_METRICS_GROUP_CURRENT.SLUG ]: CheckMark,

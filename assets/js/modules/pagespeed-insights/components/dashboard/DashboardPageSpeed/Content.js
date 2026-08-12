@@ -25,18 +25,18 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import LabReportMetrics from '@/js/modules/pagespeed-insights/components/common/LabReportMetrics';
-import FieldReportMetrics from '@/js/modules/pagespeed-insights/components/common/FieldReportMetrics';
-import Recommendations from '@/js/modules/pagespeed-insights/components/common/Recommendations';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import FieldReportMetrics from '@/js/modules/pagespeed-insights/components/common/FieldReportMetrics';
+import LabReportMetrics from '@/js/modules/pagespeed-insights/components/common/LabReportMetrics';
+import Recommendations from '@/js/modules/pagespeed-insights/components/common/Recommendations';
 import {
-	STRATEGY_MOBILE,
 	DATA_SRC_FIELD,
 	DATA_SRC_LAB,
 	DATA_SRC_RECOMMENDATIONS,
-	UI_STRATEGY,
+	STRATEGY_MOBILE,
 	UI_DATA_SOURCE,
+	UI_STRATEGY,
 } from '@/js/modules/pagespeed-insights/datastore/constants';
 
 export default function Content( {

@@ -6,6 +6,8 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Tests\Core\Util;
@@ -348,7 +350,7 @@ class Entity_FactoryTest extends TestCase {
 		// * 'term' (taxonomy 'post_tag', slug 'food', title 'Food')
 		// * 'term' (taxonomy 'post_format', slug 'post-format-image', title 'post-format-image')
 		// * 'term' (taxonomy 'customtaxonomy', slug 'coffee', title 'Coffee')
-		// * 'user' (slug 'johndoe', title 'John Doe')
+		// * 'user' (slug 'johndoe', title 'John Doe').
 		return array(
 			'front page'            => array(
 				array(),
@@ -921,7 +923,7 @@ class Entity_FactoryTest extends TestCase {
 
 	private function set_and_authorize_current_user( \WP_User $user ) {
 		wp_set_current_user( $user->ID );
-		// The only way to change the current user in bootstrapped Site Kit class instances (e.g. Permissions)
+		// The only way to change the current user in bootstrapped Site Kit class instances (e.g. Permissions).
 		do_action( 'wp_login', $user->user_login, $user );
 
 		// Fake setup and authentication for access to dashboard.

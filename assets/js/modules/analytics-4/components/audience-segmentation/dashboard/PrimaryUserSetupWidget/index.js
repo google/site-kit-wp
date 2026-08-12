@@ -25,16 +25,29 @@ import { useMount } from 'react-use';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useFeature } from '@/js/hooks/useFeature';
+import AudienceSegmentationErrorWidget from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationErrorWidget';
+import AudienceSegmentationSetupErrorWidget from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationSetupErrorWidget';
+import { AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSelectionPanel/constants';
 import AudienceTileLoading from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile/AudienceTileLoading';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import AudienceSegmentationErrorWidget from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationErrorWidget';
-import { isInsufficientPermissionsError } from '@/js/util/errors';
 import useEnableAudienceGroup from '@/js/modules/analytics-4/hooks/useEnableAudienceGroup';
+import { isInsufficientPermissionsError } from '@/js/util/errors';
 
 export default function PrimaryUserSetupWidget( { Widget } ) {
-	const { apiErrors, isSaving, failedAudiences, onEnableGroups } =
-		useEnableAudienceGroup();
+	const {
+		apiErrors,
+		isSaving,
+		failedAudiences,
+		isAudienceCreationError,
+		onEnableGroups,
+	} = useEnableAudienceGroup();
+	const setupFlowRefreshPhase4Enabled = useFeature(
+		'setupFlowRefreshPhase4'
+	);
+	const { dismissItem } = useDispatch( CORE_USER );
 
 	const isSettingUpAudiences = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isSettingUpAudiences()
@@ -49,6 +62,22 @@ export default function PrimaryUserSetupWidget( { Widget } ) {
 	} );
 
 	if ( ( apiErrors.length || failedAudiences.length ) && ! isSaving ) {
+		if ( setupFlowRefreshPhase4Enabled ) {
+			return (
+				<AudienceSegmentationSetupErrorWidget
+					Widget={ Widget }
+					errors={ apiErrors }
+					onRetry={ onEnableGroups }
+					isAudienceCreationVariant={ isAudienceCreationError }
+					onDismiss={ () =>
+						dismissItem(
+							AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG
+						)
+					}
+				/>
+			);
+		}
+
 		return (
 			<AudienceSegmentationErrorWidget
 				Widget={ Widget }

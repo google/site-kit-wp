@@ -6,10 +6,9 @@
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Tests\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
@@ -18,6 +17,9 @@ use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking_Settings;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeConversionEventProvider;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeConversionEventProvider_Active;
+use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeEcommerceEventProvider_Active;
+use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeEcommerceEventProvider_Active_Two;
+use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeLeadEventProvider_Active;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -65,8 +67,8 @@ class Conversion_TrackingTest extends TestCase {
 
 		do_action( 'wp_enqueue_scripts' );
 
-		$this->assertFalse( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ) );
-		$this->assertFalse( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG ) );
+		$this->assertFalse( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ), 'Active provider script should not enqueue without snippet.' );
+		$this->assertFalse( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG ), 'Inactive provider script should not enqueue without snippet.' );
 	}
 
 	public function test_register__not_enqueued_when_tracking_disabled() {
@@ -77,7 +79,7 @@ class Conversion_TrackingTest extends TestCase {
 		do_action( 'googlesitekit_ads_init_tag' );
 		do_action( 'wp_enqueue_scripts' );
 
-		$this->assertFalse( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ) );
+		$this->assertFalse( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ), 'Provider script should not enqueue when tracking is disabled.' );
 	}
 
 	public function test_register__feature_metrics() {
@@ -94,17 +96,17 @@ class Conversion_TrackingTest extends TestCase {
 	 * @dataProvider data_modules
 	 */
 	public function test_register__enqueued_when_snippet_inserted( $module_slug ) {
-		$this->assertFalse( has_action( 'fake_provider_action' ) );
+		$this->assertFalse( has_action( 'fake_provider_action' ), 'Provider hook should not exist before registration.' );
 
 		$this->conversion_tracking->register();
 
 		do_action( "googlesitekit_{$module_slug}_init_tag" );
 		do_action( 'wp_enqueue_scripts' );
 
-		$this->assertTrue( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ) );
-		$this->assertFalse( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG ) );
+		$this->assertTrue( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG ), 'Active provider script should enqueue after snippet.' );
+		$this->assertFalse( wp_script_is( 'gsk-cep-' . FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG ), 'Inactive provider script should not enqueue after snippet.' );
 
-		$this->assertTrue( has_action( 'fake_provider_action' ) );
+		$this->assertTrue( has_action( 'fake_provider_action' ), 'Provider hook should be registered after snippet.' );
 	}
 
 	public function data_modules() {
@@ -117,15 +119,17 @@ class Conversion_TrackingTest extends TestCase {
 	public function test_get_active_conversion_event_providers() {
 		$active_providers = $this->conversion_tracking->get_active_providers();
 
-		$this->assertArrayHasKey(
-			FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG,
-			$active_providers
-		);
+			$this->assertArrayHasKey(
+				FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG,
+				$active_providers,
+				'Active providers should include the active fake provider.'
+			);
 
-		$this->assertArrayNotHasKey(
-			FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG,
-			$active_providers
-		);
+			$this->assertArrayNotHasKey(
+				FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG,
+				$active_providers,
+				'Active providers should not include the inactive fake provider.'
+			);
 	}
 
 	/**
@@ -143,7 +147,7 @@ class Conversion_TrackingTest extends TestCase {
 			if ( ! $expected_exception ) {
 				$this->fail( 'No exception expected but a ' . get_class( $exception ) . ' was thrown' );
 			}
-			$this->assertEquals( $expected_exception, $exception->getMessage() );
+				$this->assertEquals( $expected_exception, $exception->getMessage(), 'Provider exception message should match expected message.' );
 		}
 	}
 
@@ -194,7 +198,7 @@ class Conversion_TrackingTest extends TestCase {
 		$this->assertEquals(
 			array(),
 			$events,
-			'Supported conversion events should be an empty array when there are no active providers.'
+			'Supported conversion events should be empty without active providers.'
 		);
 	}
 
@@ -208,5 +212,157 @@ class Conversion_TrackingTest extends TestCase {
 			$events,
 			'Enhanced conversion events should match the expected values.'
 		);
+	}
+
+	public function test_get_site_kit_supported_conversion_events() {
+		$events = $this->conversion_tracking->get_site_kit_supported_conversion_events();
+
+		$this->assertEquals(
+			array(
+				'fake_event_active_1',
+				'fake_event_active_2',
+			),
+			$events,
+			'Site Kit supported conversion events should match the expected values.'
+		);
+	}
+
+	public function test_get_site_kit_supported_conversion_events__no_active_providers() {
+		Conversion_Tracking::$providers = array();
+
+		$events = $this->conversion_tracking->get_site_kit_supported_conversion_events();
+
+		$this->assertEquals(
+			array(),
+			$events,
+			'Site Kit supported conversion events should be empty without active providers.'
+		);
+	}
+
+	public function test_get_site_kit_enhanced_conversion_events() {
+		$events = $this->conversion_tracking->get_site_kit_enhanced_conversion_events();
+
+		$this->assertEquals(
+			array(
+				'fake_event_active_2', // Only this event is defined as enhanced in the active provider.
+			),
+			$events,
+			'Site Kit enhanced conversion events should match the expected values.'
+		);
+	}
+
+	public function test_register__adds_inline_base_data_filter() {
+		$this->conversion_tracking->register();
+
+		$this->assertTrue(
+			has_filter( 'googlesitekit_inline_base_data' ),
+			'The googlesitekit_inline_base_data filter should be registered.'
+		);
+	}
+
+	public function test_inline_js_base_data__no_active_providers() {
+		Conversion_Tracking::$providers = array();
+
+		$this->conversion_tracking->register();
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		$this->assertArrayHasKey( 'hasActiveLeadEventProviders', $data, 'Inline base data should include active lead provider flag.' );
+		$this->assertArrayHasKey( 'hasActiveEcommerceEventProviders', $data, 'Inline base data should include active ecommerce provider flag.' );
+		$this->assertArrayHasKey( 'hasMultipleActiveEcommerceEventProviders', $data, 'Inline base data should include multiple ecommerce provider flag.' );
+		$this->assertFalse( $data['hasActiveLeadEventProviders'], 'Lead provider flag should be false with no active providers.' );
+		$this->assertFalse( $data['hasActiveEcommerceEventProviders'], 'Ecommerce provider flag should be false with no active providers.' );
+		$this->assertFalse( $data['hasMultipleActiveEcommerceEventProviders'], 'Multiple ecommerce flag should be false with no active providers.' );
+	}
+
+	public function test_inline_js_base_data__with_active_lead_provider() {
+		Conversion_Tracking::$providers = array(
+			FakeLeadEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeLeadEventProvider_Active::class,
+		);
+
+		$this->conversion_tracking->register();
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		$this->assertTrue( $data['hasActiveLeadEventProviders'], 'Lead provider flag should be true with active lead provider.' );
+		$this->assertFalse( $data['hasActiveEcommerceEventProviders'], 'Ecommerce provider flag should be false with only lead provider.' );
+	}
+
+	public function test_inline_js_base_data__with_active_ecommerce_provider() {
+		Conversion_Tracking::$providers = array(
+			FakeEcommerceEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeEcommerceEventProvider_Active::class,
+		);
+
+		$this->conversion_tracking->register();
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		$this->assertFalse( $data['hasActiveLeadEventProviders'], 'Lead provider flag should be false with only ecommerce provider.' );
+		$this->assertTrue( $data['hasActiveEcommerceEventProviders'], 'Ecommerce provider flag should be true with active provider.' );
+		// A single active ecommerce provider is not "multiple".
+		$this->assertFalse( $data['hasMultipleActiveEcommerceEventProviders'], 'Multiple ecommerce flag should be false with one provider.' );
+	}
+
+	public function test_inline_js_base_data__with_multiple_active_ecommerce_providers() {
+		Conversion_Tracking::$providers = array(
+			FakeEcommerceEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG     => FakeEcommerceEventProvider_Active::class,
+			FakeEcommerceEventProvider_Active_Two::CONVERSION_EVENT_PROVIDER_SLUG => FakeEcommerceEventProvider_Active_Two::class,
+		);
+
+		$this->conversion_tracking->register();
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		$this->assertTrue( $data['hasActiveEcommerceEventProviders'], 'Ecommerce provider flag should be true with active providers.' );
+		$this->assertTrue( $data['hasMultipleActiveEcommerceEventProviders'], 'Multiple ecommerce flag should be true with multiple providers.' );
+	}
+
+	public function test_inline_js_base_data__with_both_active_providers() {
+		Conversion_Tracking::$providers = array(
+			FakeLeadEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG      => FakeLeadEventProvider_Active::class,
+			FakeEcommerceEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeEcommerceEventProvider_Active::class,
+		);
+
+		$this->conversion_tracking->register();
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		$this->assertTrue( $data['hasActiveLeadEventProviders'], 'Lead provider flag should be true with both provider types.' );
+		$this->assertTrue( $data['hasActiveEcommerceEventProviders'], 'Ecommerce provider flag should be true with both provider types.' );
+	}
+
+	public function test_get_active_provider_categories__no_active_providers() {
+		Conversion_Tracking::$providers = array();
+		$categories                     = $this->conversion_tracking->get_active_provider_categories();
+		$this->assertEquals( array(), $categories, 'With no active providers, the categories list should be empty.' );
+	}
+
+	public function test_get_active_provider_categories__with_lead_provider() {
+		Conversion_Tracking::$providers = array(
+			FakeLeadEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeLeadEventProvider_Active::class,
+		);
+		$categories                     = $this->conversion_tracking->get_active_provider_categories();
+		$this->assertContains( Conversion_Events_Provider::CATEGORY_LEAD, $categories, 'An active lead provider should produce the lead category.' );
+		$this->assertNotContains( Conversion_Events_Provider::CATEGORY_ECOMMERCE, $categories, 'With only a lead provider, the ecommerce category should not be present.' );
+	}
+
+	public function test_get_active_provider_categories__with_ecommerce_provider() {
+		Conversion_Tracking::$providers = array(
+			FakeEcommerceEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeEcommerceEventProvider_Active::class,
+		);
+		$categories                     = $this->conversion_tracking->get_active_provider_categories();
+		$this->assertContains( Conversion_Events_Provider::CATEGORY_ECOMMERCE, $categories, 'An active ecommerce provider should produce the ecommerce category.' );
+		$this->assertNotContains( Conversion_Events_Provider::CATEGORY_LEAD, $categories, 'With only an ecommerce provider, the lead category should not be present.' );
+	}
+
+	public function test_get_active_provider_categories__with_both_providers() {
+		Conversion_Tracking::$providers = array(
+			FakeLeadEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG      => FakeLeadEventProvider_Active::class,
+			FakeEcommerceEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeEcommerceEventProvider_Active::class,
+		);
+		$categories                     = $this->conversion_tracking->get_active_provider_categories();
+		$this->assertContains( Conversion_Events_Provider::CATEGORY_LEAD, $categories, 'An active lead provider should produce the lead category.' );
+		$this->assertContains( Conversion_Events_Provider::CATEGORY_ECOMMERCE, $categories, 'An active ecommerce provider should produce the ecommerce category.' );
+		$this->assertCount( 2, $categories, 'With one lead and one ecommerce provider, there should be exactly two categories.' );
 	}
 }

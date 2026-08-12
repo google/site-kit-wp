@@ -31,14 +31,14 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
 	UNSTAGED_SELECTION,
 } from '@/js/components/KeyMetrics/constants';
 import { SelectionPanelItem } from '@/js/components/SelectionPanel';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import useFormValue from '@/js/hooks/useFormValue';
 
 export default function MetricItem( {

@@ -22,9 +22,15 @@
 import { isEqual } from 'lodash';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import { createRegistrySelector } from 'googlesitekit-data';
+import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '@/js/components/user-input/util/constants';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
@@ -37,15 +43,14 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { safelySort } from '@/js/util';
 import {
 	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
 	CONVERSION_REPORTING_LEAD_EVENTS,
-	MODULES_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '@/js/components/user-input/util/constants';
-import { safelySort } from '@/js/util';
 
 export const selectors = {
 	/**
@@ -106,6 +111,35 @@ export const selectors = {
 			return select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
 				CONVERSION_REPORTING_LEAD_EVENTS
 			);
+		}
+	),
+
+	/**
+	 * Checks whether only ecommerce conversion reporting events have been detected.
+	 *
+	 * @since 1.181.0
+	 *
+	 * @return {(boolean|undefined)} True when ecommerce events are detected and no lead events are detected, otherwise false. Undefined if detected events are not loaded yet.
+	 */
+	hasEcommerceConversionReportingEventsOnly: createRegistrySelector(
+		( select ) => () => {
+			const hasEcommerceEvents =
+				select(
+					MODULES_ANALYTICS_4
+				).hasEcommerceConversionReportingEvents();
+			const hasLeadEvents =
+				select(
+					MODULES_ANALYTICS_4
+				).hasLeadConversionReportingEvents();
+
+			if (
+				hasEcommerceEvents === undefined ||
+				hasLeadEvents === undefined
+			) {
+				return undefined;
+			}
+
+			return hasEcommerceEvents && ! hasLeadEvents;
 		}
 	),
 
@@ -401,6 +435,34 @@ export const selectors = {
 	} ),
 
 	/**
+	 * Returns detected ecommerce events excluding the given primaryEvent, in hierarchy order.
+	 *
+	 * @since 1.180.0
+	 *
+	 * @param {Object} state        Data store's state.
+	 * @param {string} primaryEvent The primary ecommerce event to exclude.
+	 * @return {(Array|undefined)} Array of secondary ecommerce event names, or undefined if events not yet loaded.
+	 */
+	getSecondaryEcommerceEvents: createRegistrySelector(
+		( select ) => ( state, primaryEvent ) => {
+			const detectedEvents =
+				select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+
+			if ( detectedEvents === undefined ) {
+				return undefined;
+			}
+
+			const primaryIndex =
+				CONVERSION_REPORTING_ECOMMERCE_EVENTS.indexOf( primaryEvent );
+
+			// Secondary events are those below the primary in hierarchy order.
+			return CONVERSION_REPORTING_ECOMMERCE_EVENTS.slice(
+				primaryIndex + 1
+			).filter( ( event ) => detectedEvents.includes( event ) );
+		}
+	),
+
+	/**
 	 * Returns detected events intersected with CONVERSION_REPORTING_LEAD_EVENTS.
 	 *
 	 * @since 1.179.0
@@ -419,6 +481,80 @@ export const selectors = {
 			detectedEvents.includes( event )
 		);
 	} ),
+
+	/**
+	 * Returns the Key action label for the Site Goals side panel Primary Action row.
+	 *
+	 * For ecommerce, returns the label of the primary event (`purchase` or `add_to_cart`).
+	 * For lead, returns `Form completion` when any lead event is detected.
+	 *
+	 * @since 1.182.0
+	 *
+	 * @param {Object}               state    Data store's state.
+	 * @param {('ecommerce'|'lead')} goalType Goal type.
+	 * @return {(string|undefined)} Label, or `undefined` for unresolved events or unknown goal types.
+	 */
+	getPrimaryActionPanelLabel: createRegistrySelector(
+		( select ) => ( state, goalType ) => {
+			if ( goalType === 'ecommerce' ) {
+				const primaryEvent =
+					select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent();
+
+				if ( primaryEvent === undefined ) {
+					return undefined;
+				}
+
+				if ( primaryEvent === ENUM_CONVERSION_EVENTS.PURCHASE ) {
+					return __( 'Purchase', 'google-site-kit' );
+				}
+
+				if ( primaryEvent === ENUM_CONVERSION_EVENTS.ADD_TO_CART ) {
+					return __( 'Products added to cart', 'google-site-kit' );
+				}
+
+				return undefined;
+			}
+
+			if ( goalType === 'lead' ) {
+				const detectedLeadEvents =
+					select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents();
+
+				if ( detectedLeadEvents === undefined ) {
+					return undefined;
+				}
+
+				if ( detectedLeadEvents.length > 0 ) {
+					return __( 'Form completion', 'google-site-kit' );
+				}
+
+				return undefined;
+			}
+
+			return undefined;
+		}
+	),
+
+	/**
+	 * Returns the event slug backing the Site Goals side panel Primary Action row.
+	 *
+	 * For ecommerce, returns the primary event (`purchase` or `add_to_cart`).
+	 * For lead, returns the first detected lead event.
+	 *
+	 * @since 1.183.0
+	 *
+	 * @param {Object}               state    Data store's state.
+	 * @param {('ecommerce'|'lead')} goalType Goal type.
+	 * @return {(string|undefined)} Event slug, or `undefined` if not yet resolved.
+	 */
+	getPrimaryActionEventSlug: createRegistrySelector(
+		( select ) => ( state, goalType ) => {
+			if ( goalType === 'ecommerce' ) {
+				return select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent();
+			}
+
+			return select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents()?.[ 0 ];
+		}
+	),
 
 	/**
 	 * Checks if there are new conversion events after initial events were detected. Regardless of how KM were setup.

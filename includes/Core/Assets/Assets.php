@@ -6,6 +6,8 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Core\Assets;
@@ -331,6 +333,10 @@ final class Assets {
 			'googlesitekit-notifications',
 		);
 
+		if ( Feature_Flags::enabled( 'pdfGeneration' ) ) {
+			array_push( $dependencies, 'googlesitekit-datastore-pdf' );
+		}
+
 		if ( 'dashboard' === $context || 'dashboard-sharing' === $context ) {
 			array_push( $dependencies, 'googlesitekit-components' );
 		}
@@ -575,6 +581,15 @@ final class Assets {
 				)
 			),
 			new Script(
+				'googlesitekit-datastore-pdf',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-datastore-pdf.js',
+					'dependencies' => array(
+						'googlesitekit-data',
+					),
+				)
+			),
+			new Script(
 				'googlesitekit-modules',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-modules.js',
@@ -780,26 +795,24 @@ final class Assets {
 		$site_url = $this->context->get_reference_site_url();
 
 		$inline_data = array(
-			'homeURL'           => trailingslashit( $this->context->get_canonical_home_url() ),
-			'referenceSiteURL'  => esc_url_raw( trailingslashit( $site_url ) ),
-			'adminURL'          => esc_url_raw( trailingslashit( admin_url() ) ),
-			'assetsURL'         => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
-			'widgetsAdminURL'   => esc_url_raw( $this->get_widgets_admin_url() ),
-			'blogPrefix'        => $wpdb->get_blog_prefix(),
-			'ampMode'           => $this->context->get_amp_mode(),
-			'isNetworkMode'     => $this->context->is_network_mode(),
-			'timezone'          => get_option( 'timezone_string' ),
-			'startOfWeek'       => (int) get_option( 'start_of_week' ),
-			'siteName'          => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
-			'siteLocale'        => $this->context->get_locale(),
-			'enabledFeatures'   => Feature_Flags::get_enabled_features(),
-			'webStoriesActive'  => defined( 'WEBSTORIES_VERSION' ),
-			'postTypes'         => $this->get_post_types(),
-			'storagePrefix'     => $this->get_storage_prefix(),
-			'referenceDate'     => Date::reference_date(),
-			'productPostType'   => $this->get_product_post_type(),
-			'anyoneCanRegister' => (bool) get_option( 'users_can_register' ),
-			'isMultisite'       => is_multisite(),
+			'homeURL'          => trailingslashit( $this->context->get_canonical_home_url() ),
+			'referenceSiteURL' => esc_url_raw( trailingslashit( $site_url ) ),
+			'adminURL'         => esc_url_raw( trailingslashit( admin_url() ) ),
+			'assetsURL'        => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
+			'widgetsAdminURL'  => esc_url_raw( $this->get_widgets_admin_url() ),
+			'blogPrefix'       => $wpdb->get_blog_prefix(),
+			'ampMode'          => $this->context->get_amp_mode(),
+			'isNetworkMode'    => $this->context->is_network_mode(),
+			'timezone'         => get_option( 'timezone_string' ),
+			'startOfWeek'      => (int) get_option( 'start_of_week' ),
+			'siteName'         => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
+			'siteLocale'       => $this->context->get_locale(),
+			'enabledFeatures'  => Feature_Flags::get_enabled_features(),
+			'webStoriesActive' => defined( 'WEBSTORIES_VERSION' ),
+			'postTypes'        => $this->get_post_types(),
+			'storagePrefix'    => $this->get_storage_prefix(),
+			'referenceDate'    => Date::reference_date(),
+			'productPostType'  => $this->get_product_post_type(),
 		);
 
 		/**
@@ -877,7 +890,7 @@ final class Assets {
 	}
 
 	/**
-	 * Gets the inline data specific to the current user
+	 * Gets the inline data specific to the current user.
 	 *
 	 * @since 1.9.0
 	 *
@@ -909,7 +922,7 @@ final class Assets {
 	}
 
 	/**
-	 * Gets the inline dashboard sharing data
+	 * Gets the inline dashboard sharing data.
 	 *
 	 * @since 1.49.0
 	 *

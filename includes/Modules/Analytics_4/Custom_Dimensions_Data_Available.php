@@ -32,6 +32,8 @@ class Custom_Dimensions_Data_Available {
 		'googlesitekit_post_author',
 		'googlesitekit_post_categories',
 		'googlesitekit_post_type',
+		'googlesitekit_event_provider',
+		'googlesitekit_form_id',
 	);
 
 	/**

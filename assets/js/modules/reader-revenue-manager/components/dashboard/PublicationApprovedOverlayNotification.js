@@ -29,14 +29,14 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import OverlayNotification from '@/js/googlesitekit/notifications/components/layout/OverlayNotification';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import ReaderRevenueManagerIntroductoryGraphicDesktop from '@/svg/graphics/reader-revenue-manager-introductory-graphic-desktop.svg';
 import ReaderRevenueManagerIntroductoryGraphicMobile from '@/svg/graphics/reader-revenue-manager-introductory-graphic-mobile.svg';
-import useViewContext from '@/js/hooks/useViewContext';
 import ExternalIcon from '@/svg/icons/external.svg';
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 export const RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION =
 	'rrmPublicationApprovedOverlayNotification';

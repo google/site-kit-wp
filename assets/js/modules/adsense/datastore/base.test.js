@@ -19,10 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	provideSiteInfo,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, provideSiteInfo } from '@tests/js/utils';
 import { MODULES_ADSENSE } from './constants';
 
 describe( 'modules/adsense base data store', () => {

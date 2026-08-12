@@ -24,6 +24,35 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import ConsentModeSetupCTABanner from '@/js/components/consent-mode/ConsentModeSetupCTABanner';
+import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from '@/js/components/consent-mode/constants';
+import ModuleRecoveryAlert from '@/js/components/dashboard-sharing/ModuleRecoveryAlert';
+import SetUpEmailReportingOverlayNotification, {
+	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
+} from '@/js/components/email-reporting/SetUpEmailReportingOverlayNotification';
+import ActivateAnalyticsNotification from '@/js/components/notifications/ActivateAnalyticsNotification';
+import AuthError from '@/js/components/notifications/AuthError';
+import ConnectMoreServicesNotification from '@/js/components/notifications/ConnectMoreServicesNotification';
+import EnableAutoUpdateBannerNotification, {
+	ENABLE_AUTO_UPDATES_BANNER_SLUG,
+} from '@/js/components/notifications/EnableAutoUpdateBannerNotification';
+import GA4AdSenseLinkedNotification from '@/js/components/notifications/GA4AdSenseLinkedNotification';
+import GatheringDataNotification from '@/js/components/notifications/GatheringDataNotification';
+import GoogleTagGatewaySetupBanner from '@/js/components/notifications/GoogleTagGatewaySetupBanner';
+import GoogleTagGatewayWarningNotification from '@/js/components/notifications/GoogleTagGatewayWarningNotification';
+import ModuleSetupSuccessNotification from '@/js/components/notifications/ModuleSetupSuccessNotification';
+import SetupErrorMessageNotification from '@/js/components/notifications/SetupErrorMessageNotification';
+import SiteKitSetupSuccessNotification from '@/js/components/notifications/SiteKitSetupSuccessNotification';
+import UnsatisfiedScopesAlert from '@/js/components/notifications/UnsatisfiedScopesAlert';
+import UnsatisfiedScopesAlertGTE from '@/js/components/notifications/UnsatisfiedScopesAlertGTE';
+import ZeroDataNotification from '@/js/components/notifications/ZeroDataNotification';
+import { PDF_INTRODUCTION_OVERLAY_NOTIFICATION } from '@/js/components/pdf-export/constants';
+import PDFIntroductionOverlayNotification from '@/js/components/pdf-export/PDFIntroductionOverlayNotification';
+import SplashSetupErrorMessageNotification from '@/js/components/setup/SetupUsingProxyWithSignIn/SplashSetupErrorMessageNotification';
+import WelcomeModal, {
+	WELCOME_MODAL_NOTIFICATION,
+} from '@/js/components/WelcomeModal';
+import { isFeatureEnabled } from '@/js/features';
 import {
 	SITE_KIT_VIEW_ONLY_CONTEXTS,
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
@@ -33,15 +62,12 @@ import {
 	VIEW_CONTEXT_SETTINGS,
 	VIEW_CONTEXT_SPLASH,
 } from '@/js/googlesitekit/constants';
-import { CORE_NOTIFICATIONS } from './datastore/constants';
 import {
-	NOTIFICATION_GROUPS,
-	NOTIFICATION_AREAS,
-	GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
-	GTG_SETUP_CTA_BANNER_NOTIFICATION,
-	SITE_KIT_SETUP_SUCCESS_NOTIFICATION,
-	PRIORITY,
-} from './constants';
+	requireCanActivateModule,
+	requireIsAuthenticatedUser,
+	requireModuleActive,
+	requireModuleGatheringData,
+} from '@/js/googlesitekit/data-requirements';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
@@ -50,46 +76,25 @@ import {
 	PERMISSION_UPDATE_PLUGINS,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { isZeroReport } from '@/js/modules/analytics-4/utils';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { isZeroReport } from '@/js/modules/analytics-4/utils';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '@/js/modules/tagmanager/datastore/constants';
-import AuthError from '@/js/components/notifications/AuthError';
-import UnsatisfiedScopesAlert from '@/js/components/notifications/UnsatisfiedScopesAlert';
-import UnsatisfiedScopesAlertGTE from '@/js/components/notifications/UnsatisfiedScopesAlertGTE';
-import GatheringDataNotification from '@/js/components/notifications/GatheringDataNotification';
-import ZeroDataNotification from '@/js/components/notifications/ZeroDataNotification';
-import GA4AdSenseLinkedNotification from '@/js/components/notifications/GA4AdSenseLinkedNotification';
-import SetupErrorMessageNotification from '@/js/components/notifications/SetupErrorMessageNotification';
-import GoogleTagGatewayWarningNotification from '@/js/components/notifications/GoogleTagGatewayWarningNotification';
-import GoogleTagGatewaySetupBanner from '@/js/components/notifications/GoogleTagGatewaySetupBanner';
-import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from '@/js/components/consent-mode/constants';
-import ConsentModeSetupCTABanner from '@/js/components/consent-mode/ConsentModeSetupCTABanner';
-import EnableAutoUpdateBannerNotification, {
-	ENABLE_AUTO_UPDATES_BANNER_SLUG,
-} from '@/js/components/notifications/EnableAutoUpdateBannerNotification';
 import { MINUTE_IN_SECONDS } from '@/js/util';
-import ModuleRecoveryAlert from '@/js/components/dashboard-sharing/ModuleRecoveryAlert';
-import SiteKitSetupSuccessNotification from '@/js/components/notifications/SiteKitSetupSuccessNotification';
-import ModuleSetupSuccessNotification from '@/js/components/notifications/ModuleSetupSuccessNotification';
-import SetUpEmailReportingOverlayNotification, {
-	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
-} from '@/js/components/email-reporting/SetUpEmailReportingOverlayNotification';
-import ActivateAnalyticsNotification from '@/js/components/notifications/ActivateAnalyticsNotification';
 import { asyncRequire, asyncRequireAll } from '@/js/util/async';
+import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 import {
-	requireCanActivateModule,
-	requireModuleActive,
-	requireModuleGatheringData,
-	requireIsAuthenticatedUser,
-} from '@/js/googlesitekit/data-requirements';
-import ConnectMoreServicesNotification from '@/js/components/notifications/ConnectMoreServicesNotification';
+	GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
+	GTG_SETUP_CTA_BANNER_NOTIFICATION,
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+	PRIORITY,
+	SITE_KIT_SETUP_SUCCESS_NOTIFICATION,
+} from './constants';
+import { CORE_NOTIFICATIONS } from './datastore/constants';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'connect-more-services-notification': {
@@ -127,6 +132,7 @@ export const DEFAULT_NOTIFICATIONS = {
 				false,
 				requireModuleGatheringData( MODULES_SEARCH_CONSOLE )
 			),
+			requireIsAuthenticatedUser(),
 			requireCanActivateModule( MODULE_SLUG_ANALYTICS_4 )
 		),
 		featureFlag: 'setupFlowRefresh',
@@ -226,7 +232,9 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 			VIEW_CONTEXT_SETTINGS,
-			VIEW_CONTEXT_SPLASH,
+			...( isFeatureEnabled( 'setupFlowRefreshPhase4' )
+				? []
+				: [ VIEW_CONTEXT_SPLASH ] ),
 		],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			await resolveSelect( CORE_SITE ).getSiteInfo();
@@ -251,6 +259,22 @@ export const DEFAULT_NOTIFICATIONS = {
 			return !! setupErrorMessage;
 		},
 		isDismissible: false,
+	},
+	'splash-setup-plugin-error': {
+		Component: SplashSetupErrorMessageNotification,
+		priority: PRIORITY.ERROR_HIGH,
+		areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
+		viewContexts: [ VIEW_CONTEXT_SPLASH ],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await resolveSelect( CORE_SITE ).getSiteInfo();
+
+			const setupErrorMessage =
+				select( CORE_SITE ).getSetupErrorMessage();
+
+			return !! setupErrorMessage;
+		},
+		isDismissible: false,
+		featureFlag: 'setupFlowRefreshPhase4',
 	},
 	'auth-error': {
 		Component: AuthError,
@@ -297,11 +321,8 @@ export const DEFAULT_NOTIFICATIONS = {
 				return false;
 			}
 
-			const { startDate, endDate } = select(
-				CORE_USER
-			).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} );
+			const { startDate, endDate } =
+				select( CORE_USER ).getDateRangeDates();
 
 			const reportOptions = {
 				startDate,
@@ -750,7 +771,6 @@ export const DEFAULT_NOTIFICATIONS = {
 		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
-		featureFlag: 'proactiveUserEngagement',
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -796,6 +816,50 @@ export const DEFAULT_NOTIFICATIONS = {
 			}
 
 			return ! select( CORE_USER ).isEmailReportingSubscribed();
+		},
+	},
+	[ PDF_INTRODUCTION_OVERLAY_NOTIFICATION ]: {
+		Component: PDFIntroductionOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_LOW,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		],
+		isDismissible: true,
+		featureFlag: 'pdfGeneration',
+	},
+	[ WELCOME_MODAL_NOTIFICATION ]: {
+		Component: WelcomeModal,
+		priority: PRIORITY.SETUP_CTA_WELCOME_MODAL,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_MODALS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		],
+		featureFlag: 'setupFlowRefresh',
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			// The `hasAccessToFeatureTour` selector depends on the modules,
+			// authentication, and capabilities being resolved, while
+			// `isDataGatheringCompleteModalActive` depends on the dismissed
+			// items.
+			await Promise.all( [
+				resolveSelect( CORE_MODULES ).getModules(),
+				resolveSelect( CORE_USER ).getAuthentication(),
+				resolveSelect( CORE_USER ).getCapabilities(),
+				resolveSelect( CORE_USER ).getDismissedItems(),
+			] );
+
+			if ( ! select( CORE_USER ).hasAccessToFeatureTour() ) {
+				return false;
+			}
+
+			return (
+				select( CORE_USER ).isDataGatheringCompleteModalActive() ||
+				isInitialWelcomeModalActive()
+			);
 		},
 	},
 };

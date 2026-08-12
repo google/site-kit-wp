@@ -6,6 +6,8 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Core\Authentication;
@@ -44,7 +46,7 @@ final class Credentials extends Setting {
 		 * - In the APIs & Services section, enable the APIs that are used within Site Kit
 		 * - Under 'credentials' either create new oAuth Client ID credentials or use an existing set of credentials
 		 * - Set the authorizes redirect URIs to be the URL to the oAuth callback for Site Kit, eg. https://<domainname>?oauth2callback=1 (this must be public)
-		 * - Click the 'Download JSON' button to download the JSON file that can be copied and pasted into the filter
+		 * - Click the 'Download JSON' button to download the JSON file that can be copied and pasted into the filter.
 		 */
 		$credentials = apply_filters( 'googlesitekit_oauth_secret', '' );
 

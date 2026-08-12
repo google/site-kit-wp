@@ -23,14 +23,14 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
-import Typography from '.';
 import {
-	SIZE_SMALL,
 	SIZE_MEDIUM,
+	SIZE_SMALL,
 	TYPE_BODY,
-	VALID_TYPES,
 	VALID_SIZES,
+	VALID_TYPES,
 } from './constants';
+import Typography from '.';
 
 export default function P( { type = TYPE_BODY, size, children, ...props } ) {
 	const breakpoint = useBreakpoint();

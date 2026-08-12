@@ -19,30 +19,30 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
 import {
+	Fragment,
+	createInterpolateElement,
 	useCallback,
 	useEffect,
 	useState,
-	createInterpolateElement,
-	Fragment,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { toggleTracking, trackEvent } from '@/js/util/tracking';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
-import useViewContext from '@/js/hooks/useViewContext';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { useDebounce } from '@/js/hooks/useDebounce';
+import useViewContext from '@/js/hooks/useViewContext';
+import { toggleTracking, trackEvent } from '@/js/util/tracking';
 import LayoutDefault from './LayoutDefault';
 import LayoutStacked from './LayoutStacked';
 

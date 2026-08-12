@@ -6,6 +6,8 @@
  * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Core\Email_Reporting;
@@ -256,7 +258,8 @@ class Email_Reporting implements Provides_Feature_Metrics {
 			$eligible_subscribers_query,
 			$email_sender,
 			$this->golinks,
-			$health_check
+			$health_check,
+			$this->subscribed_users_query
 		);
 		$this->email_log         = new Email_Log();
 		$this->initiator_task    = new Initiator_Task( $this->scheduler, $this->subscribed_users_query );

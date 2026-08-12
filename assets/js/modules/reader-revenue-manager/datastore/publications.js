@@ -27,24 +27,25 @@ import { isPlainObject } from 'lodash';
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
+import { isFeatureEnabled } from '@/js/features';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import {
+	getPaymentOption,
+	getProductIDs,
+} from '@/js/modules/reader-revenue-manager/utils/settings';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
-import {
-	getProductIDs,
-	getPaymentOption,
-} from '@/js/modules/reader-revenue-manager/utils/settings';
 
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
@@ -275,9 +276,10 @@ const baseActions = {
 			} );
 		},
 		function* ( {
-			// `publicationId` is the identifier used by the API.
-			// eslint-disable-next-line sitekit/acronym-case
+			/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
 			publicationId: publicationID,
+			organizationId: organizationID,
+			/* eslint-enable sitekit/acronym-case */
 			onboardingState,
 			paymentOptions,
 			products,
@@ -293,6 +295,10 @@ const baseActions = {
 				paymentOption: getPaymentOption( paymentOptions ),
 				productID: 'openaccess',
 			};
+
+			if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
+				settings.organizationID = organizationID || '';
+			}
 
 			if ( contentPolicyStatus ) {
 				settings.contentPolicyState =

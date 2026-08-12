@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import type {
 	ForwardRefExoticComponent,
 	MouseEventHandler,

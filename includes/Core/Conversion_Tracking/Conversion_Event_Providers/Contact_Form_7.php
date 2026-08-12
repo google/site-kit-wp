@@ -25,6 +25,17 @@ class Contact_Form_7 extends Conversion_Events_Provider {
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'contact-form-7';
 
 	/**
+	 * Gets the provider category.
+	 *
+	 * @since 1.181.0
+	 *
+	 * @return string Provider category.
+	 */
+	public function get_category() {
+		return self::CATEGORY_LEAD;
+	}
+
+	/**
 	 * Checks if the Contact Form 7 plugin is active.
 	 *
 	 * @since 1.127.0

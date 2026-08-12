@@ -24,9 +24,9 @@ import { ComponentProps } from 'react';
 /**
  * Internal dependencies
  */
-import BannerModal from './index';
-import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
 import { Story } from '@/js/types/Story';
+import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
+import BannerModal from './index';
 
 type BannerModalStoryProps = ComponentProps< typeof BannerModal >;
 

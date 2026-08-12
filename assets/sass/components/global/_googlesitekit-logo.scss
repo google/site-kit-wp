@@ -17,34 +17,29 @@
  */
 
 .googlesitekit-logo {
-	color: $c-tertiary;
+	color: $c-surfaces-on-surface;
 	line-height: 0;
 
 	.googlesitekit-logo__logo-g,
 	.googlesitekit-svg-logo-g {
-		height: 24px;
+		// This rule hides the Google "G", which the Site Kit logo already holds.
+		// The "G" shows under 450px, where the style sheet hides the Site Kit logo.
+		display: none;
+		height: 25px;
 		vertical-align: middle;
-		width: 23px;
+		width: 25px;
 
-		@media (min-width: $bp-tablet) {
-			height: 34px;
-			width: 32px;
+		@media (max-width: $bp-xsmallOnly) {
+			display: inline;
 		}
 	}
 
 	.googlesitekit-logo__logo-sitekit,
 	.googlesitekit-svg-logo-sitekit {
 		fill: currentColor;
-		height: 16px;
-		margin-left: $grid-gap-phone / 2;
+		height: 29px;
 		vertical-align: middle;
-		width: 61px;
-
-		@media (min-width: $bp-tablet) {
-			height: 26px;
-			margin-left: $grid-gap-phone;
-			width: 99px;
-		}
+		width: 100px;
 
 		@media (max-width: $bp-xsmallOnly) {
 			display: none;
@@ -65,5 +60,20 @@
 		height: 17px;
 		margin-left: $grid-gap-phone / 4;
 		width: 78px;
+	}
+}
+
+.googlesitekit-setup-flow {
+	// The setup screens add `googlesitekit-setup-flow` to `<body>`. These rules
+	// show the Site Kit logo and hide the Google "G" at every width.
+	.googlesitekit-logo {
+
+		.googlesitekit-logo__logo-g {
+			display: none;
+		}
+
+		.googlesitekit-logo__logo-sitekit {
+			display: inline;
+		}
 	}
 }

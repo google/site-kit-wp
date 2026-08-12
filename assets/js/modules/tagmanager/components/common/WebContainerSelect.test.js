@@ -19,24 +19,24 @@
 /**
  * Internal dependencies
  */
-import WebContainerSelect from './WebContainerSelect';
-import { fireEvent, render } from '../../../../../../tests/js/test-utils';
-import {
-	MODULES_TAGMANAGER,
-	CONTEXT_WEB,
-	CONTEXT_AMP,
-	CONTAINER_CREATE,
-} from '@/js/modules/tagmanager/datastore/constants';
 import {
 	AMP_MODE_PRIMARY,
 	AMP_MODE_SECONDARY,
 } from '@/js/googlesitekit/datastore/site/constants';
+import * as factories from '@/js/modules/tagmanager/datastore/__factories__';
+import {
+	CONTAINER_CREATE,
+	CONTEXT_AMP,
+	CONTEXT_WEB,
+	MODULES_TAGMANAGER,
+} from '@/js/modules/tagmanager/datastore/constants';
+import { fireEvent, render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideSiteInfo,
-} from '../../../../../../tests/js/utils';
-import * as factories from '@/js/modules/tagmanager/datastore/__factories__';
+} from '@tests/js/utils';
+import WebContainerSelect from './WebContainerSelect';
 
 describe( 'WebContainerSelect', () => {
 	let registry;

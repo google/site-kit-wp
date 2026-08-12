@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useIntersection as mockUseIntersection } from 'react-use';
+import { intersectionObserver } from '@shopify/jest-dom-mocks';
 import { getByText as domGetByText } from '@testing-library/dom';
 
 /**
@@ -30,13 +30,19 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import AudienceTile from '.';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import CustomDimensionErrorModal from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/CustomDimensionErrorModal.tsx';
-import {
-	act,
-	fireEvent,
-	render,
-} from '../../../../../../../../../tests/js/test-utils';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
+import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
+import { getPreviousDate } from '@/js/util';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import * as tracking from '@/js/util/tracking';
+import { act, fireEvent, render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
@@ -45,30 +51,9 @@ import {
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
 	waitForTimeouts,
-} from '../../../../../../../../../tests/js/utils';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import * as tracking from '@/js/util/tracking';
-import {
-	MODULES_ANALYTICS_4,
-	DATE_RANGE_OFFSET,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
-import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
-import {
-	getViewportWidth,
-	setViewportWidth,
-} from '../../../../../../../../../tests/js/viewport-utils';
-import { getPreviousDate } from '@/js/util';
-
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
-} ) );
+} from '@tests/js/utils';
+import { getViewportWidth, setViewportWidth } from '@tests/js/viewport-utils';
+import AudienceTile from '.';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -170,10 +155,7 @@ describe( 'AudienceTile', () => {
 		// Ensure the viewport is wide enough to render the tooltips.
 		setViewportWidth( 1024 );
 
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: false,
-			intersectionRatio: 0,
-		} ) );
+		intersectionObserver.mock();
 
 		registry = createTestRegistry();
 		provideModules( registry, [
@@ -195,7 +177,6 @@ describe( 'AudienceTile', () => {
 		} );
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -237,6 +218,7 @@ describe( 'AudienceTile', () => {
 	} );
 
 	afterEach( () => {
+		intersectionObserver.restore();
 		mockTrackEvent.mockClear();
 		setViewportWidth( originalViewportWidth );
 	} );
@@ -280,7 +262,7 @@ describe( 'AudienceTile', () => {
 
 	describe( 'Top content metric', () => {
 		it( 'should track an event when the create custom dimension CTA is viewed', () => {
-			const { getByRole, rerender } = render(
+			const { getByRole } = render(
 				<WidgetWithComponentProps { ...props } />,
 				{
 					registry,
@@ -295,12 +277,12 @@ describe( 'AudienceTile', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			// Simulate the CTA becoming visible.
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} ) );
-
-			rerender( <WidgetWithComponentProps { ...props } /> );
+			act( () => {
+				intersectionObserver.simulate( {
+					isIntersecting: true,
+					intersectionRatio: 1,
+				} );
+			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -488,10 +470,10 @@ describe( 'AudienceTile', () => {
 	} );
 
 	describe( 'with zero data, in the partial data state', () => {
-		let container, getByRole, getByText, rerender;
+		let container, getByRole, getByText;
 
 		beforeEach( () => {
-			( { container, getByRole, getByText, rerender } = render(
+			( { container, getByRole, getByText } = render(
 				<WidgetWithComponentProps
 					{ ...props }
 					isPartialData
@@ -516,20 +498,13 @@ describe( 'AudienceTile', () => {
 		it( 'should track an event when the tile is viewed', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
-			// Simulate the CTA becoming visible.
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} ) );
-
-			rerender(
-				<WidgetWithComponentProps
-					{ ...props }
-					isPartialData
-					isZeroData
-					isTileHideable
-				/>
-			);
+			// Simulate the tile coming into view.
+			act( () => {
+				intersectionObserver.simulate( {
+					isIntersecting: true,
+					intersectionRatio: 1,
+				} );
+			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			expect( mockTrackEvent ).toHaveBeenCalledWith(

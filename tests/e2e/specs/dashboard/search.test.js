@@ -11,10 +11,10 @@ import {
  * Internal dependencies
  */
 import {
-	setSiteVerification,
-	setSearchConsoleProperty,
-	useRequestInterception,
 	deactivateUtilityPlugins,
+	setSearchConsoleProperty,
+	setSiteVerification,
+	useRequestInterception,
 } from '../../utils';
 
 describe( 'Site Kit dashboard post search', () => {

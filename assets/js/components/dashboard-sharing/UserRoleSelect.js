@@ -19,35 +19,35 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
-import { ESCAPE, ENTER } from '@wordpress/keycodes';
 import {
+	Fragment,
+	forwardRef,
 	useCallback,
 	useEffect,
 	useRef,
-	forwardRef,
-	Fragment,
 } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+import { ENTER, ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, Chip } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
-import ShareIcon from '@/svg/icons/share.svg';
-import CheckIcon from '@/svg/icons/check.svg';
-import useViewContext from '@/js/hooks/useViewContext';
-import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
-import { trackEvent } from '@/js/util';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import CheckIcon from '@/svg/icons/check.svg';
+import ShareIcon from '@/svg/icons/share.svg';
 import { EDITING_USER_ROLE_SELECT_SLUG_KEY } from './DashboardSharingSettings/constants';
 
 const ALL_CHIP_ID = 'all';

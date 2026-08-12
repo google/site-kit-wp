@@ -15,36 +15,45 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
-	MODULES_ANALYTICS_4,
-	ENUM_CONVERSION_EVENTS,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
+	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	provideKeyMetrics,
-	provideModuleRegistrations,
-	provideModules,
-} from '../../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 } from '@/js/modules/analytics-4/utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import { Story } from '@/js/types/Story';
-import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+import { getPreviousDate } from '@/js/util';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
+import {
+	provideKeyMetrics,
+	provideModuleRegistrations,
+	provideModules,
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
+import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
 
-// Reference date: 2020-09-07, offsetDays: 0, 28-day range with comparison.
+// Reference date: 2020-09-07, 28-day range with comparison.
 const dates = {
 	startDate: '2020-08-11',
 	endDate: '2020-09-07',
@@ -52,7 +61,16 @@ const dates = {
 	compareEndDate: '2020-08-10',
 };
 
-function buildLeadEventsReportOptions( leadEvents: string[] ) {
+// The fixed 90-day window the breakdown tab structure is evaluated over.
+const discoveryDates = {
+	startDate: getPreviousDate( '2020-09-07', 90 ),
+	endDate: '2020-09-07',
+};
+
+function buildLeadEventsReportOptions(
+	leadEvents: string[],
+	breakdownFilter: Record< string, unknown > = {}
+) {
 	return {
 		...dates,
 		metrics: [ { name: 'eventCount' } ],
@@ -62,6 +80,7 @@ function buildLeadEventsReportOptions( leadEvents: string[] ) {
 				filterType: 'inListFilter',
 				value: leadEvents,
 			},
+			...breakdownFilter,
 		},
 		reportID:
 			'analytics-4_lead-generation-performance-widget_widget_leadEventsReportOptions',
@@ -83,6 +102,23 @@ const multipleEventsReportOptions = buildLeadEventsReportOptions( [
 	ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 ] );
 
+const THREE_VISIBLE_GOAL_DRIVERS: GoalDriverID[] = [
+	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+	GOAL_DRIVER_IDS.CITIES,
+];
+
+const FIVE_VISIBLE_GOAL_DRIVERS: GoalDriverID[] = [
+	...THREE_VISIBLE_GOAL_DRIVERS,
+	GOAL_DRIVER_IDS.TOP_PAGES,
+	GOAL_DRIVER_IDS.VISITOR_TYPE,
+];
+
+const SIX_VISIBLE_GOAL_DRIVERS: GoalDriverID[] = [
+	...FIVE_VISIBLE_GOAL_DRIVERS,
+	GOAL_DRIVER_IDS.COUNTRIES,
+];
+
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'analyticsLeadGenerationPerformance'
 )( LeadGenerationPerformanceWidget );
@@ -98,16 +134,49 @@ function commonSetup( registry: WPDataRegistry ) {
 
 	provideModuleRegistrations( registry );
 
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetSettings( { availableCustomDimensions: [] } );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '34567' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID( '56789' );
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+	// Pairs with the detected event above, so the state matches one where the
+	// widget renders. `isSiteGoalsWidgetRenderable` needs both.
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+		activeWidgets: [ GOAL_TYPES.LEAD ],
+	} );
 
 	registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
+	registry
+		.dispatch( CORE_USER )
+		.receiveGetDismissedItems( [ SITE_GOALS_INTRO_MODAL_BANNER ] );
 
 	provideKeyMetrics( registry );
+
+	const discoveryDimension = 'customEvent:googlesitekit_form_id';
+	const discoveryOptions = {
+		...discoveryDates,
+		dimensions: [ discoveryDimension ],
+		dimensionFilters: {
+			[ discoveryDimension ]: {
+				filterType: 'emptyFilter',
+				notExpression: true,
+			},
+		},
+		metrics: [ { name: 'eventCount' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		reportID:
+			'analytics-4_site-goals-breakdown_values_googlesitekit_form_id',
+	};
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetReport( { rows: [] }, { options: discoveryOptions } );
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ discoveryOptions ] );
 }
 
 function seedGoalDriverReports(
@@ -117,7 +186,13 @@ function seedGoalDriverReports(
 		goalType = GOAL_TYPES.LEAD,
 		empty = false,
 		loading = false,
-	}: { goalType?: string; empty?: boolean; loading?: boolean } = {}
+		breakdownFilter = {},
+	}: {
+		goalType?: string;
+		empty?: boolean;
+		loading?: boolean;
+		breakdownFilter?: Record< string, unknown >;
+	} = {}
 ) {
 	const goalDriverDates = {
 		startDate: dates.startDate,
@@ -129,6 +204,7 @@ function seedGoalDriverReports(
 			filterType: 'inListFilter',
 			value: eventNames,
 		},
+		...breakdownFilter,
 	};
 
 	const topTrafficChannelsOptions = {
@@ -147,6 +223,17 @@ function seedGoalDriverReports(
 		dimensionFilters,
 		metrics: [ { name: 'eventCount' } ],
 		reportID: `analytics-4_site-goals_top-traffic-channels-total_${ goalType }`,
+	};
+
+	const topTrafficRateOptions = {
+		...goalDriverDates,
+		dimensions: [ 'sessionDefaultChannelGroup' ],
+		dimensionFilters,
+		metrics: [ { name: 'eventCount' }, { name: 'sessions' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+		keepEmptyRows: false,
+		reportID: `analytics-4_site-goals_top-traffic-channels-rate_${ goalType }`,
 	};
 
 	const topPagesOptions = {
@@ -184,13 +271,62 @@ function seedGoalDriverReports(
 		reportID: `analytics-4_site-goals_visitor-type_${ goalType }`,
 	};
 
+	const citiesOptions = {
+		...goalDriverDates,
+		dimensions: [ 'city' ],
+		dimensionFilters: {
+			...dimensionFilters,
+			city: {
+				filterType: 'emptyFilter',
+				notExpression: true,
+			},
+		},
+		metrics: [ { name: 'eventCount' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+		keepEmptyRows: false,
+		reportID: `analytics-4_site-goals_cities_${ goalType }`,
+	};
+
+	const countriesOptions = {
+		...goalDriverDates,
+		dimensions: [ 'country' ],
+		dimensionFilters: {
+			...dimensionFilters,
+			country: {
+				filterType: 'emptyFilter',
+				notExpression: true,
+			},
+		},
+		metrics: [ { name: 'eventCount' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+		keepEmptyRows: false,
+		reportID: `analytics-4_site-goals_countries_${ goalType }`,
+	};
+
+	const deviceTypeOptions = {
+		...goalDriverDates,
+		dimensions: [ 'deviceCategory' ],
+		dimensionFilters,
+		metrics: [ { name: 'eventCount' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+		keepEmptyRows: false,
+		reportID: `analytics-4_site-goals_device-type_${ goalType }`,
+	};
+
 	if ( loading ) {
 		[
 			topTrafficChannelsOptions,
 			topTrafficTotalOptions,
+			topTrafficRateOptions,
 			topPagesOptions,
 			pageTitlesOptions,
 			visitorTypeOptions,
+			citiesOptions,
+			countriesOptions,
+			deviceTypeOptions,
 		].forEach( ( options ) => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
@@ -265,6 +401,40 @@ function seedGoalDriverReports(
 		{
 			rows: empty
 				? []
+				: [
+						{
+							dimensionValues: [ { value: 'Direct' } ],
+							metricValues: [
+								{ value: '75' },
+								{ value: '1000' },
+							],
+						},
+						{
+							dimensionValues: [ { value: 'Organic search' } ],
+							metricValues: [
+								{ value: '47' },
+								{ value: '1000' },
+							],
+						},
+						{
+							dimensionValues: [ { value: 'Organic social' } ],
+							metricValues: [
+								{ value: '12' },
+								{ value: '1000' },
+							],
+						},
+				  ],
+		},
+		{ options: topTrafficRateOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ topTrafficRateOptions ] );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: empty
+				? []
 				: pagePaths.map( ( pagePath, index ) => ( {
 						dimensionValues: [
 							{ value: pagePath },
@@ -321,16 +491,360 @@ function seedGoalDriverReports(
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ visitorTypeOptions ] );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: empty
+				? []
+				: [
+						{
+							dimensionValues: [ { value: 'London' } ],
+							metricValues: [ { value: '39' } ],
+						},
+						{
+							dimensionValues: [ { value: 'New York' } ],
+							metricValues: [ { value: '26' } ],
+						},
+						{
+							dimensionValues: [ { value: 'Paris' } ],
+							metricValues: [ { value: '13' } ],
+						},
+				  ],
+		},
+		{ options: citiesOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ citiesOptions ] );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: empty
+				? []
+				: [
+						{
+							dimensionValues: [ { value: 'United States' } ],
+							metricValues: [ { value: '49' } ],
+						},
+						{
+							dimensionValues: [ { value: 'United Kingdom' } ],
+							metricValues: [ { value: '21' } ],
+						},
+						{
+							dimensionValues: [ { value: 'Germany' } ],
+							metricValues: [ { value: '15' } ],
+						},
+				  ],
+		},
+		{ options: countriesOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ countriesOptions ] );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: empty
+				? []
+				: [
+						{
+							dimensionValues: [ { value: 'mobile' } ],
+							metricValues: [ { value: '565' } ],
+						},
+						{
+							dimensionValues: [ { value: 'tablet' } ],
+							metricValues: [ { value: '413' } ],
+						},
+						{
+							dimensionValues: [ { value: 'desktop' } ],
+							metricValues: [ { value: '22' } ],
+						},
+				  ],
+		},
+		{ options: deviceTypeOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ deviceTypeOptions ] );
+}
+
+const FORM_DIMENSION = 'customEvent:googlesitekit_form_id';
+
+// A metrics-only compare report whose totals carry one row per date range.
+function buildTotals( count: number ) {
+	return {
+		totals: [
+			{
+				dimensionValues: [ { value: 'date_range_0' } ],
+				metricValues: [ { value: String( count ) } ],
+			},
+			{
+				dimensionValues: [ { value: 'date_range_1' } ],
+				metricValues: [ { value: '90' } ],
+			},
+		],
+	};
+}
+
+// Seeds everything the tabbed breakdown needs: discovery with form IDs, the
+// form metadata/pages backing the tab labels and tooltips, the partial-data
+// state, the "Other sources" totals, and per-tab section reports.
+function seedTabbedBreakdown(
+	registry: WPDataRegistry,
+	{
+		availabilityDate = 20200101,
+		unattributedCount = 0,
+	}: {
+		availabilityDate?: number;
+		unattributedCount?: number;
+	} = {}
+) {
+	const formIDs = [ '5', '12' ];
+
+	// Discovery with form IDs (overrides the empty report from commonSetup,
+	// switching the widget into tabbed mode).
+	const discoveryOptions = {
+		...discoveryDates,
+		dimensions: [ FORM_DIMENSION ],
+		dimensionFilters: {
+			[ FORM_DIMENSION ]: {
+				filterType: 'emptyFilter',
+				notExpression: true,
+			},
+		},
+		metrics: [ { name: 'eventCount' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		reportID:
+			'analytics-4_site-goals-breakdown_values_googlesitekit_form_id',
+	};
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: formIDs.map( ( value, index ) => ( {
+				dimensionValues: [ { value } ],
+				metricValues: [ { value: String( 100 - index ) } ],
+			} ) ),
+		},
+		{ options: discoveryOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ discoveryOptions ] );
+
+	// Form metadata backing the tab labels.
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetFormMetadata(
+		{
+			5: { title: 'Contact' },
+			12: { title: 'Newsletter signup' },
+		},
+		{ formIDs }
+	);
+
+	// Pages each form appears on: form 5 on two pages (the "as an example"
+	// tooltip variant), form 12 on one (the "this page" variant).
+	const formPagesOptions = {
+		...discoveryDates,
+		dimensions: [ FORM_DIMENSION, 'pagePath' ],
+		dimensionFilters: {
+			[ FORM_DIMENSION ]: {
+				filterType: 'inListFilter',
+				value: formIDs,
+			},
+		},
+		metrics: [ { name: 'eventCount' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		reportID:
+			'analytics-4_site-goals-breakdown_form-pages_googlesitekit_form_id',
+	};
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: [
+				{
+					dimensionValues: [ { value: '5' }, { value: '/contact' } ],
+					metricValues: [ { value: '80' } ],
+				},
+				{
+					dimensionValues: [ { value: '5' }, { value: '/about' } ],
+					metricValues: [ { value: '20' } ],
+				},
+				{
+					dimensionValues: [
+						{ value: '12' },
+						{ value: '/newsletter' },
+					],
+					metricValues: [ { value: '40' } ],
+				},
+			],
+		},
+		{ options: formPagesOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ formPagesOptions ] );
+
+	// The provider each form came from, read from the event's
+	// `googlesitekit_event_provider` dimension; names the source in the tooltip.
+	const formProvidersOptions = {
+		...discoveryDates,
+		dimensions: [
+			FORM_DIMENSION,
+			'customEvent:googlesitekit_event_provider',
+		],
+		dimensionFilters: {
+			[ FORM_DIMENSION ]: {
+				filterType: 'inListFilter',
+				value: formIDs,
+			},
+		},
+		metrics: [ { name: 'eventCount' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		reportID:
+			'analytics-4_site-goals-breakdown_form-providers_googlesitekit_form_id',
+	};
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: [
+				{
+					dimensionValues: [ { value: '5' }, { value: 'wpforms' } ],
+					metricValues: [ { value: '100' } ],
+				},
+				{
+					dimensionValues: [
+						{ value: '12' },
+						{ value: 'ninja-forms' },
+					],
+					metricValues: [ { value: '40' } ],
+				},
+			],
+		},
+		{ options: formProvidersOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ formProvidersOptions ] );
+
+	// The breakdown custom dimensions exist and are done gathering, so neither
+	// the "enable breakdown" notice nor the gathering badge renders.
+	registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+		availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
+	} );
+	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS.forEach( ( customDimension ) => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsCustomDimensionGatheringData( {
+				customDimension,
+				gatheringData: false,
+			} );
+	} );
+
+	// Partial-data state for the form ID dimension.
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( false );
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+		resourceAvailabilityDates: {
+			customDimension: {
+				googlesitekit_form_id: availabilityDate,
+			},
+		},
+	} );
+
+	// "Other sources" totals: all lead events vs those attributed to a form;
+	// the difference is the Other form completions count. Existence is decided
+	// over the discovery window; the displayed count over the current range.
+	function buildOtherSourcesOptions(
+		optionDates: Record< string, string >,
+		kind: string
+	) {
+		return {
+			...optionDates,
+			metrics: [ { name: 'eventCount' } ],
+			dimensionFilters: {
+				eventName: {
+					filterType: 'inListFilter',
+					value: [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+				},
+				...( 'attributed' === kind
+					? {
+							[ FORM_DIMENSION ]: {
+								filterType: 'inListFilter',
+								value: formIDs,
+							},
+					  }
+					: {} ),
+			},
+			reportID: `analytics-4_site-goals-breakdown_other-sources-${ kind }_googlesitekit_form_id`,
+		};
+	}
+
+	function seedReport(
+		reportOptions: Record< string, unknown >,
+		report: unknown
+	) {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( report, { options: reportOptions } );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ reportOptions ] );
+	}
+
+	// Existence over the discovery window (single-range totals).
+	seedReport( buildOtherSourcesOptions( discoveryDates, 'all' ), {
+		totals: [
+			{ metricValues: [ { value: String( 100 + unattributedCount ) } ] },
+		],
+	} );
+	seedReport( buildOtherSourcesOptions( discoveryDates, 'attributed' ), {
+		totals: [ { metricValues: [ { value: '100' } ] } ],
+	} );
+
+	// Displayed count over the current compare range.
+	seedReport(
+		buildOtherSourcesOptions( dates, 'all' ),
+		buildTotals( 100 + unattributedCount )
+	);
+	seedReport(
+		buildOtherSourcesOptions( dates, 'attributed' ),
+		buildTotals( 100 )
+	);
+
+	// Section reports for every form tab, so each is clickable.
+	formIDs.forEach( ( formID ) => {
+		const breakdownFilter = { [ FORM_DIMENSION ]: formID };
+
+		provideAnalytics4MockReport(
+			registry,
+			buildLeadEventsReportOptions(
+				[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+				breakdownFilter
+			)
+		);
+		provideAnalytics4MockReport( registry, {
+			...engagementReportOptions,
+			dimensionFilters: breakdownFilter,
+		} );
+		seedGoalDriverReports(
+			registry,
+			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+			{ breakdownFilter }
+		);
+	} );
+
+	// Unfiltered reports back the "Other sources" tab's view.
+	provideAnalytics4MockReport( registry, singleEventReportOptions );
+	provideAnalytics4MockReport( registry, engagementReportOptions );
 }
 
 function Template( {
 	setupRegistry,
+	selectedGoalDriverIDs,
 }: {
 	setupRegistry: ( registry: WPDataRegistry ) => void;
+	selectedGoalDriverIDs?: GoalDriverID[];
 } ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
-			<WidgetWithComponentProps />
+			<WidgetWithComponentProps
+				selectedGoalDriverIDs={ selectedGoalDriverIDs }
+			/>
 		</WithRegistrySetup>
 	);
 }
@@ -338,6 +852,7 @@ function Template( {
 export const Ready = Template.bind( {} ) as Story;
 Ready.storyName = 'Ready';
 Ready.args = {
+	selectedGoalDriverIDs: THREE_VISIBLE_GOAL_DRIVERS,
 	setupRegistry: ( registry ) => {
 		commonSetup( registry );
 		provideAnalytics4MockReport( registry, singleEventReportOptions );
@@ -347,10 +862,71 @@ Ready.args = {
 		] );
 	},
 };
+Ready.scenario = {};
+
+export const GatheringBreakdownData = Template.bind( {} ) as Story;
+GatheringBreakdownData.storyName = 'Gathering Breakdown Data';
+GatheringBreakdownData.args = {
+	selectedGoalDriverIDs: THREE_VISIBLE_GOAL_DRIVERS,
+	setupRegistry: ( registry ) => {
+		commonSetup( registry );
+		provideAnalytics4MockReport( registry, singleEventReportOptions );
+		provideAnalytics4MockReport( registry, engagementReportOptions );
+		seedGoalDriverReports( registry, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
+		} );
+		SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS.forEach( ( customDimension ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsCustomDimensionGatheringData( {
+					customDimension,
+					gatheringData: true,
+				} );
+		} );
+	},
+};
+
+export const TabbedBreakdown = Template.bind( {} ) as Story;
+TabbedBreakdown.storyName = 'Tabbed Breakdown';
+TabbedBreakdown.args = {
+	selectedGoalDriverIDs: THREE_VISIBLE_GOAL_DRIVERS,
+	setupRegistry: ( registry ) => {
+		commonSetup( registry );
+		seedTabbedBreakdown( registry );
+	},
+};
+
+export const TabbedBreakdownPartialData = Template.bind( {} ) as Story;
+TabbedBreakdownPartialData.storyName = 'Tabbed Breakdown (Partial Data)';
+TabbedBreakdownPartialData.args = {
+	selectedGoalDriverIDs: THREE_VISIBLE_GOAL_DRIVERS,
+	setupRegistry: ( registry ) => {
+		commonSetup( registry );
+		// Tracking began inside the selected date range → partial data badges.
+		seedTabbedBreakdown( registry, { availabilityDate: 20200901 } );
+	},
+};
+
+export const TabbedBreakdownOtherSources = Template.bind( {} ) as Story;
+TabbedBreakdownOtherSources.storyName = 'Tabbed Breakdown (Other Sources)';
+TabbedBreakdownOtherSources.args = {
+	selectedGoalDriverIDs: THREE_VISIBLE_GOAL_DRIVERS,
+	setupRegistry: ( registry ) => {
+		commonSetup( registry );
+		// 12 lead events without a form ID → the Other form completions tab
+		// appears; click it to see the single-metric treatment with the notice.
+		seedTabbedBreakdown( registry, { unattributedCount: 12 } );
+	},
+};
 
 export const ReadyMultipleEvents = Template.bind( {} ) as Story;
 ReadyMultipleEvents.storyName = 'Ready (Multiple Events)';
 ReadyMultipleEvents.args = {
+	selectedGoalDriverIDs: THREE_VISIBLE_GOAL_DRIVERS,
 	setupRegistry: ( registry ) => {
 		commonSetup( registry );
 		registry
@@ -368,6 +944,27 @@ ReadyMultipleEvents.args = {
 	},
 };
 
+export const ReadyFiveDrivers = Template.bind( {} ) as Story;
+ReadyFiveDrivers.storyName = 'Ready (5 Goal Drivers)';
+ReadyFiveDrivers.args = {
+	setupRegistry: Ready.args.setupRegistry,
+	selectedGoalDriverIDs: FIVE_VISIBLE_GOAL_DRIVERS,
+};
+
+export const ReadySixDrivers = Template.bind( {} ) as Story;
+ReadySixDrivers.storyName = 'Ready (6 Goal Drivers)';
+ReadySixDrivers.args = {
+	setupRegistry: Ready.args.setupRegistry,
+	selectedGoalDriverIDs: SIX_VISIBLE_GOAL_DRIVERS,
+};
+
+export const ReadySixDriversShowMore = Template.bind( {} ) as Story;
+ReadySixDriversShowMore.storyName = 'Ready (6 Goal Drivers, Show More)';
+ReadySixDriversShowMore.args = {
+	setupRegistry: ReadyMultipleEvents.args.setupRegistry,
+	selectedGoalDriverIDs: SIX_VISIBLE_GOAL_DRIVERS,
+};
+
 export const Loading = Template.bind( {} ) as Story;
 Loading.storyName = 'Loading';
 Loading.args = {
@@ -376,6 +973,9 @@ Loading.args = {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ singleEventReportOptions ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ engagementReportOptions ] );
 		seedGoalDriverReports(
 			registry,
 			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],

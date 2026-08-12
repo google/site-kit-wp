@@ -1,8 +1,10 @@
 [
 	"googleTagGateway",
 	"gtagUserData",
+	"featureDiscoveryHub",
 	"pdfGeneration",
-	"proactiveUserEngagement",
+	"rrmExpressSetup",
 	"setupFlowRefresh",
+	"setupFlowRefreshPhase4",
 	"siteGoals"
 ]

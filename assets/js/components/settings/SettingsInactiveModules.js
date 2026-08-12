@@ -24,13 +24,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { useSelect } from 'googlesitekit-data';
 import Layout from '@/js/components/layout/Layout';
-import SetupModule from './SetupModule';
-import { Cell, Grid, Row } from '@/js/material-components';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
+import SetupModule from './SetupModule';
 
 export default function SettingsInactiveModules() {
 	const modules = useSelect( ( select ) =>
@@ -66,7 +66,7 @@ export default function SettingsInactiveModules() {
 	return (
 		<Layout
 			title={ __(
-				'Connect More Services to Gain More Insights',
+				'Connect more services to gain more insights',
 				'google-site-kit'
 			) }
 			header

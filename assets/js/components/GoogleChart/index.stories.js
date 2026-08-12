@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import GoogleChart from './';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 
 function Template( args ) {
 	return <GoogleChart { ...args } />;

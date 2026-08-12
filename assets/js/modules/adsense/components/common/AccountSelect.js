@@ -26,10 +26,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Option, ProgressBar, Select } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { trackEvent } from '@/js/util';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import useViewContext from '@/js/hooks/useViewContext';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { trackEvent } from '@/js/util';
 
 export default function AccountSelect() {
 	const viewContext = useViewContext();

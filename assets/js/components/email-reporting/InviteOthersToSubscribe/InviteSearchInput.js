@@ -25,8 +25,8 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
-import { __ } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies

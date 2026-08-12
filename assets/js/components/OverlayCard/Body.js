@@ -29,12 +29,12 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import NewBadge from '@/js/components/NewBadge';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
-import Title from './Title';
+import CTAButton from './CTAButton';
 import Description from './Description';
 import DismissButton, { buttonProps } from './DismissButton';
-import CTAButton from './CTAButton';
-import NewBadge from '@/js/components/NewBadge';
+import Title from './Title';
 
 export default function Body( {
 	title,

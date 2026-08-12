@@ -20,6 +20,8 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
+import { enabledFeatures } from '@/js/features';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -27,8 +29,7 @@ import {
 	provideModules,
 	untilResolved,
 	waitForDefaultTimeouts,
-} from '../../../../../tests/js/utils';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+} from '@tests/js/utils';
 import { CORE_USER } from './constants';
 
 describe( 'modules/analytics-4 audience settings', () => {
@@ -83,6 +84,10 @@ describe( 'modules/analytics-4 audience settings', () => {
 
 	afterAll( () => {
 		setUsingCache( true );
+	} );
+
+	afterEach( () => {
+		enabledFeatures.delete( 'setupFlowRefresh' );
 	} );
 
 	describe( 'actions', () => {
@@ -414,6 +419,92 @@ describe( 'modules/analytics-4 audience settings', () => {
 				).toEqual(
 					audienceSettingsResponse.isAudienceSegmentationWidgetHidden
 				);
+			} );
+
+			it( 'should return false when setupFlowRefresh is enabled regardless of stored value', () => {
+				enabledFeatures.add( 'setupFlowRefresh' );
+
+				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+					...audienceSettingsResponse,
+					isAudienceSegmentationWidgetHidden: true,
+				} );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.isAudienceSegmentationWidgetHidden()
+				).toEqual( false );
+			} );
+		} );
+
+		describe( 'getRawAudienceSegmentationWidgetHidden', () => {
+			it( 'should return undefined while audience settings are loading', async () => {
+				freezeFetch( audienceSettingsEndpoint );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getRawAudienceSegmentationWidgetHidden()
+				).toBeUndefined();
+
+				await waitForDefaultTimeouts();
+			} );
+
+			it( 'should use a resolver to make a network request if data is not available', async () => {
+				fetchMock.getOnce( audienceSettingsEndpoint, {
+					body: audienceSettingsResponse,
+					status: 200,
+				} );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getRawAudienceSegmentationWidgetHidden()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_USER
+				).getUserAudienceSettings();
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getRawAudienceSegmentationWidgetHidden()
+				).toEqual(
+					audienceSettingsResponse.isAudienceSegmentationWidgetHidden
+				);
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should return the audience segmentation widget visibility from the audience settings', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetUserAudienceSettings( audienceSettingsResponse );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getRawAudienceSegmentationWidgetHidden()
+				).toEqual(
+					audienceSettingsResponse.isAudienceSegmentationWidgetHidden
+				);
+			} );
+
+			it( 'should always return the stored value when setupFlowRefresh is enabled', () => {
+				enabledFeatures.add( 'setupFlowRefresh' );
+
+				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+					...audienceSettingsResponse,
+					isAudienceSegmentationWidgetHidden: true,
+				} );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.getRawAudienceSegmentationWidgetHidden()
+				).toEqual( true );
 			} );
 		} );
 

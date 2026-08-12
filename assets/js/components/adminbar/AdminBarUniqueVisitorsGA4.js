@@ -24,17 +24,14 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import DataBlock from '@/js/components/DataBlock';
 import { useSelect } from 'googlesitekit-data';
-import PreviewBlock from '@/js/components/PreviewBlock';
+import DataBlock from '@/js/components/DataBlock';
 import { NOTICE_STYLE } from '@/js/components/GatheringDataNotice';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import PreviewBlock from '@/js/components/PreviewBlock';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { calculateChange } from '@/js/util';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
 
 function AdminBarUniqueVisitorsGA4( { WidgetReportError } ) {
 	const isGatheringData = useSelect( ( select ) =>
@@ -46,7 +43,6 @@ function AdminBarUniqueVisitorsGA4( { WidgetReportError } ) {
 	const dateRangeDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
 	const reportArgs = {

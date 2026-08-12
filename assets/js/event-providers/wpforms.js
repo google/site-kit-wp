@@ -33,10 +33,15 @@ import { classifyPII, getUserData } from './utils';
 				? getUserDataFromForm( event.target )
 				: null;
 
-			global._googlesitekit?.gtagEvent?.(
-				'submit_lead_form',
-				userData ? { user_data: userData } : undefined
-			);
+			const formID = event.target?.dataset?.formid;
+
+			global._googlesitekit?.gtagEvent?.( 'submit_lead_form', {
+				googlesitekit_event_provider: 'wpforms',
+				...( formID
+					? { googlesitekit_form_id: String( formID ) }
+					: {} ),
+				...( userData ? { user_data: userData } : {} ),
+			} );
 		}
 	);
 } )( global.jQuery );

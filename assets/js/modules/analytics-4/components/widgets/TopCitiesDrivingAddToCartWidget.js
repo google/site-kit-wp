@@ -24,38 +24,35 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import {
-	CORE_USER,
-	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
-} from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
-import { numFmt } from '@/js/util';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
 } from '@/js/components/KeyMetrics';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
-function TopCitiesDrivingAddToCartWidget( { Widget } ) {
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
-	);
-
-	const detectedEvents = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
-	);
-	const hasRequiredEvent = detectedEvents?.includes( 'add_to_cart' );
-
-	const topCitiesReportOptions = {
+/**
+ * Builds the Analytics 4 report options for the Top Cities Driving Add to Cart metric.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range.
+ * @return {Object} The `getReport` options for the top cities report.
+ */
+export function getTopCitiesDrivingAddToCartReportOptions( dates ) {
+	return {
 		...dates,
 		dimensions: [ 'city' ],
 		dimensionFilters: {
@@ -78,6 +75,20 @@ function TopCitiesDrivingAddToCartWidget( { Widget } ) {
 		reportID:
 			'analytics-4_top-cities-driving-add-to-cart-widget_widget_topCitiesReportOptions',
 	};
+}
+
+function TopCitiesDrivingAddToCartWidget( { Widget } ) {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates()
+	);
+
+	const detectedEvents = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
+	);
+	const hasRequiredEvent = detectedEvents?.includes( 'add_to_cart' );
+
+	const topCitiesReportOptions =
+		getTopCitiesDrivingAddToCartReportOptions( dates );
 
 	const topCitiesReport = useInViewSelect(
 		( select ) =>

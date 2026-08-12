@@ -29,45 +29,47 @@ import { compose } from '@wordpress/compose';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import {
-	CORE_USER,
-	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-} from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ADSENSE,
-} from '@/js/modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
 } from '@/js/components/KeyMetrics';
 import Link from '@/js/components/Link';
-import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
-import { numFmt } from '@/js/util';
-import whenActive from '@/js/util/when-active';
-import ConnectGA4CTATileWidget from '@/js/modules/analytics-4/components/widgets/ConnectGA4CTATileWidget';
+import {
+	CORE_USER,
+	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+} from '@/js/googlesitekit/datastore/user/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { AdSenseLinkCTA } from '@/js/modules/adsense/components/common';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import ConnectGA4CTATileWidget from '@/js/modules/analytics-4/components/widgets/ConnectGA4CTATileWidget';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { numFmt } from '@/js/util';
+import whenActive from '@/js/util/when-active';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
-function TopEarningContentWidget( { Widget } ) {
-	const viewOnlyDashboard = useViewOnly();
-
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
-	);
-
-	const adSenseAccountID = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getAccountID()
-	);
-
-	const reportOptions = {
+/**
+ * Builds the Analytics 4 report options for the Top Earning Content metric.
+ *
+ * Returns the page-path and ad-source report the tile ranks by ad revenue. Both
+ * this widget and the metric's PDF tile import this, so the dashboard tile and
+ * the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates                     The date range.
+ * @param {Object} [params]                  Extra report options.
+ * @param {string} [params.adSenseAccountID] The AdSense account ID the `adSourceName` filter targets.
+ * @return {Object} The `getReport` options.
+ */
+export function getTopEarningContentReportOptions(
+	dates,
+	{ adSenseAccountID } = {}
+) {
+	return {
 		...dates,
 		dimensions: [ 'pagePath', 'adSourceName' ],
 		metrics: [ { name: 'totalAdRevenue' } ],
@@ -83,6 +85,22 @@ function TopEarningContentWidget( { Widget } ) {
 		limit: 3,
 		reportID: 'adsense_top-earning-content-widget_widget_reportOptions',
 	};
+}
+
+function TopEarningContentWidget( { Widget } ) {
+	const viewOnlyDashboard = useViewOnly();
+
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates()
+	);
+
+	const adSenseAccountID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountID()
+	);
+
+	const reportOptions = getTopEarningContentReportOptions( dates, {
+		adSenseAccountID,
+	} );
 
 	const report = useInViewSelect(
 		( select ) => {

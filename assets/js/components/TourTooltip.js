@@ -32,8 +32,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { createIncrementalArrayBySize } from '@/js/util/create-incremental-array-by-size';
 import { useFeature } from '@/js/hooks/useFeature';
+import { createIncrementalArrayBySize } from '@/js/util/create-incremental-array-by-size';
 import CloseIcon from '@/svg/icons/close.svg';
 import Typography from './Typography';
 

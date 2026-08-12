@@ -24,20 +24,20 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { SetupMain } from './components/setup';
+import {
+	CORE_USER,
+	ERROR_CODE_ADBLOCKER_ACTIVE,
+} from '@/js/googlesitekit/datastore/user/constants';
+import AdSenseIcon from '@/svg/graphics/adsense.svg';
+import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 import {
 	SettingsEdit,
 	SettingsSetupIncomplete,
 	SettingsView,
 } from './components/settings';
-import AdSenseIcon from '@/svg/graphics/adsense.svg';
-import { MODULES_ADSENSE } from './datastore/constants';
+import { SetupMain } from './components/setup';
 import { MODULE_SLUG_ADSENSE } from './constants';
-import {
-	CORE_USER,
-	ERROR_CODE_ADBLOCKER_ACTIVE,
-} from '@/js/googlesitekit/datastore/user/constants';
-import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
+import { MODULES_ADSENSE } from './datastore/constants';
 export { registerStore } from './datastore';
 export { registerWidgets } from './widgets';
 export { registerNotifications } from './notifications';

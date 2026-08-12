@@ -19,15 +19,15 @@
 /**
  * External dependencies
  */
-import { build, sequence, oneOf, perBuild } from '@jackfranklin/test-data-bot';
+import { build, oneOf, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import faker from 'faker';
 
 /**
  * Internal dependencies
  */
 import {
-	CONTEXT_WEB,
 	CONTEXT_AMP,
+	CONTEXT_WEB,
 } from '@/js/modules/tagmanager/datastore/constants';
 
 /**

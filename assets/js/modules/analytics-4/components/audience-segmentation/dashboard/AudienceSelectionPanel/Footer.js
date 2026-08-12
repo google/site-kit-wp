@@ -29,8 +29,12 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
+import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
+import { SelectionPanelFooter } from '@/js/components/SelectionPanel';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 import useViewContext from '@/js/hooks/useViewContext';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { trackEvent } from '@/js/util';
 import {
 	AUDIENCE_SELECTED,
@@ -39,10 +43,6 @@ import {
 	MAX_SELECTED_AUDIENCES_COUNT,
 	MIN_SELECTED_AUDIENCES_COUNT,
 } from './constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { SelectionPanelFooter } from '@/js/components/SelectionPanel';
-import useFormValue from '@/js/hooks/useFormValue';
 
 export default function Footer( { isOpen, closePanel, savedItemSlugs } ) {
 	const viewContext = useViewContext();

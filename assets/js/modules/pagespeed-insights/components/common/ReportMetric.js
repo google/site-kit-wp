@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -30,13 +30,13 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import {
-	CATEGORY_FAST,
-	CATEGORY_AVERAGE,
-	CATEGORY_SLOW,
-} from '@/js/modules/pagespeed-insights/util/constants';
 import Badge from '@/js/components/Badge';
 import InfoTooltip from '@/js/components/InfoTooltip';
+import {
+	CATEGORY_AVERAGE,
+	CATEGORY_FAST,
+	CATEGORY_SLOW,
+} from '@/js/modules/pagespeed-insights/util/constants';
 
 export default function ReportMetric( {
 	title,

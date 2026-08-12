@@ -20,13 +20,13 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import { FC, ReactNode } from 'react';
 
 /**
  * Internal dependencies
  */
 import { Tooltip } from 'googlesitekit-components';
 import InfoIcon from '@/svg/icons/info-green.svg';
-import { FC, ReactNode } from 'react';
 
 interface InfoTooltipProps {
 	onOpen?: () => void;

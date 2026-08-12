@@ -29,10 +29,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export default function CancelUserInputButton( { disabled } ) {
 	const dashboardURL = useSelect( ( select ) =>

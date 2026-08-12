@@ -19,26 +19,29 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	provideModules,
-	provideModuleRegistrations,
-	provideSiteInfo,
-	provideUserCapabilities,
-	renderHook,
-} from '../../../tests/js/test-utils';
 import { getItem } from '@/js/googlesitekit/api/cache';
-import { mockLocation } from '../../../tests/js/mock-browser-utils';
-import * as tracking from '@/js/util/tracking';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	ANALYTICS_SETUP_ERROR,
+	MODULE_SLUG_ANALYTICS_4,
+} from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as tracking from '@/js/util/tracking';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import {
+	createTestRegistry,
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
+	provideUserCapabilities,
+	renderHook,
+} from '@tests/js/test-utils';
 import useActivateModuleCallback from './useActivateModuleCallback';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -124,6 +127,38 @@ describe( 'useActivateModuleCallback', () => {
 		expect( global.location.assign ).toHaveBeenCalledWith( reauthURL );
 	} );
 
+	it( 'should navigate to the module reauthentication URL with redirectQueryArgs when provided', async () => {
+		const { result } = renderHook(
+			() =>
+				useActivateModuleCallback( MODULE_SLUG_ANALYTICS_4, {
+					redirectQueryArgs: {
+						foo: 'bar',
+					},
+				} ),
+			{ registry }
+		);
+
+		fetchMock.postOnce(
+			RegExp( 'google-site-kit/v1/core/modules/data/activation' ),
+			{ body: { success: true } }
+		);
+		fetchMock.getOnce(
+			RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+			{ body: { needsReauthentication: false } }
+		);
+
+		await result.current();
+
+		const reauthURL = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getAdminReauthURL( {
+				redirectQueryArgs: {
+					foo: 'bar',
+				},
+			} );
+		expect( global.location.assign ).toHaveBeenCalledWith( reauthURL );
+	} );
+
 	it( 'should set an item in storage before navigating to the module reauthentication URL', async () => {
 		const { result } = renderHook(
 			() => useActivateModuleCallback( MODULE_SLUG_ANALYTICS_4 ),
@@ -179,7 +214,7 @@ describe( 'useActivateModuleCallback', () => {
 
 		expect( registry.select( CORE_SITE ).getInternalServerError() ).toEqual(
 			expect.objectContaining( {
-				id: 'analytics-4-setup-error',
+				id: ANALYTICS_SETUP_ERROR,
 				description: 'This is an error',
 			} )
 		);

@@ -26,16 +26,16 @@ import invariant from 'invariant';
  */
 import { get } from 'googlesitekit-api';
 import {
-	createRegistrySelector,
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
-import { MODULES_ADSENSE } from './constants';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { isValidAccountID } from '@/js/modules/adsense/util';
-import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { MODULES_ADSENSE } from './constants';
 
 // Actions
 const RESET_CLIENTS = 'RESET_CLIENTS';

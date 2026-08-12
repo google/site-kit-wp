@@ -24,6 +24,7 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
+import { DATA_LAYER } from '@/js/util/tracking/constants';
 import {
 	deactivateUtilityPlugins,
 	pageWait,
@@ -32,7 +33,6 @@ import {
 	setupSiteKit,
 	useRequestInterception,
 } from '../utils';
-import { DATA_LAYER } from '@/js/util/tracking/constants';
 
 async function toggleOptIn() {
 	await page.waitForSelector( '#googlesitekit-opt-in' );

@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import TextField from './TextField';
 import WarningIcon from '@/svg/icons/warning-v2.svg';
+import TextField from './TextField';
 
 function Template() {
 	return (
@@ -65,6 +65,22 @@ function Template() {
 						label="With Icon"
 						name="textfield"
 						value="https://www.sitekitbygoogle.com"
+						trailingIcon={
+							<span className="googlesitekit-text-field-icon--error">
+								<WarningIcon width={ 14 } height={ 12 } />
+							</span>
+						}
+						outlined
+					/>
+				</div>
+
+				<div style={ { marginBottom: '50px' } }>
+					<TextField
+						className="mdc-text-field--error"
+						label="With Error"
+						name="textfield"
+						value="https://www.sitekitbygoogle.com"
+						helperText="This is the error message."
 						trailingIcon={
 							<span className="googlesitekit-text-field-icon--error">
 								<WarningIcon width={ 14 } height={ 12 } />

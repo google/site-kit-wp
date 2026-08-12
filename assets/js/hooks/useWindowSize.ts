@@ -22,8 +22,8 @@
 /**
  * External dependencies
  */
-import { useThrottle } from '@react-hook/throttle';
 import useEvent from '@react-hook/event';
+import { useThrottle } from '@react-hook/throttle';
 
 function getSize() {
 	return [ global.innerWidth, global.innerHeight ];

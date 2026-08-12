@@ -6,6 +6,8 @@
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers;
@@ -29,6 +31,17 @@ use WC_Product;
 class WooCommerce extends Conversion_Events_Provider {
 
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'woocommerce';
+
+	/**
+	 * Gets the provider category.
+	 *
+	 * @since 1.181.0
+	 *
+	 * @return string Provider category.
+	 */
+	public function get_category() {
+		return self::CATEGORY_ECOMMERCE;
+	}
 
 	/**
 	 * Available products on the page.
@@ -70,6 +83,20 @@ class WooCommerce extends Conversion_Events_Provider {
 		$events_to_track  = $this->events_to_track();
 
 		return array_unique( array_merge( $events_to_track, $wgai_event_names ) );
+	}
+
+	/**
+	 * Gets the conversion event names directly tracked by Site Kit's Plugin Conversion Reporting feature.
+	 *
+	 * Overrides the base implementation to exclude events already handled by the Google Analytics
+	 * for WooCommerce add-on, so the internal feature metric only reflects what Site Kit itself tracks.
+	 *
+	 * @since 1.182.0
+	 *
+	 * @return array List of event names.
+	 */
+	public function get_site_kit_event_names() {
+		return $this->events_to_track();
 	}
 
 	/**
@@ -268,7 +295,7 @@ class WooCommerce extends Conversion_Events_Provider {
 
 	/**
 	 * Returns an array of product data in the required format.
-	 * Adapted from https://github.com/woocommerce/woocommerce-google-analytics-integration
+	 * Adapted from https://github.com/woocommerce/woocommerce-google-analytics-integration.
 	 *
 	 * @since 1.153.0
 	 *
@@ -339,7 +366,7 @@ class WooCommerce extends Conversion_Events_Provider {
 
 	/**
 	 * Returns an array of order data in the required format.
-	 * Adapted from https://github.com/woocommerce/woocommerce-google-analytics-integration
+	 * Adapted from https://github.com/woocommerce/woocommerce-google-analytics-integration.
 	 *
 	 * @since 1.153.0
 	 *
@@ -554,7 +581,7 @@ class WooCommerce extends Conversion_Events_Provider {
 
 	/**
 	 * Formats a price the same way WooCommerce Blocks does.
-	 * Taken from https://github.com/woocommerce/woocommerce-google-analytics-integration
+	 * Taken from https://github.com/woocommerce/woocommerce-google-analytics-integration.
 	 *
 	 * @since 1.153.0
 	 *

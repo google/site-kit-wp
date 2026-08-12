@@ -19,6 +19,16 @@
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
+import { getPolicyViolationNotificationCopy } from '@/js/modules/reader-revenue-manager/components/dashboard/PolicyViolationNotification/get-policy-violation-notification-copy';
+import { RRM_POLICY_VIOLATION_NOTIFICATION_ID } from '@/js/modules/reader-revenue-manager/constants';
+import {
+	CONTENT_POLICY_STATES,
+	MODULES_READER_REVENUE_MANAGER,
+	POLICY_VIOLATION_STATES,
+	PUBLICATION_ONBOARDING_STATES,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import * as tracking from '@/js/util/tracking';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -26,17 +36,7 @@ import {
 	provideUserInfo,
 	render,
 	waitFor,
-} from '../../../../../../tests/js/test-utils';
-import { getPolicyViolationNotificationCopy } from '@/js/modules/reader-revenue-manager/components/dashboard/PolicyViolationNotification/get-policy-violation-notification-copy';
-import * as tracking from '@/js/util/tracking';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	CONTENT_POLICY_STATES,
-	PUBLICATION_ONBOARDING_STATES,
-	POLICY_VIOLATION_STATES,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { RRM_POLICY_VIOLATION_NOTIFICATION_ID } from '@/js/modules/reader-revenue-manager/constants';
-import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
+} from '@tests/js/test-utils';
 import PolicyViolationSettingsNotice from './PolicyViolationSettingsNotice';
 
 const {

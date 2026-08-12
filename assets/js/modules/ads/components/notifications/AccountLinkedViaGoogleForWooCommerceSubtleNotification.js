@@ -24,20 +24,20 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useCallback, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY } from '@/js/modules/ads/datastore/constants';
-import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
-import { MINUTE_IN_SECONDS } from '@/js/util';
-import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY } from '@/js/modules/ads/datastore/constants';
+import { MINUTE_IN_SECONDS } from '@/js/util';
 
 export default function AccountLinkedViaGoogleForWooCommerceSubtleNotification( {
 	id,

@@ -18,7 +18,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { FC, ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -28,12 +28,12 @@ import { forwardRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { NOTICE_TYPES } from './constants';
+import CTAButton from './CTAButton';
+import Description from './Description';
+import DismissButton, { DismissButtonProps } from './DismissButton';
 import Icon from './Icon';
 import Title from './Title';
-import Description from './Description';
-import CTAButton from './CTAButton';
-import DismissButton, { DismissButtonProps } from './DismissButton';
-import { NOTICE_TYPES } from './constants';
 
 function hasDismissButtonAction( dismissButton?: DismissButtonProps ) {
 	if ( dismissButton?.variant === 'icon' ) {
@@ -59,9 +59,10 @@ export interface NoticeProps {
 	ctaButton?: Record< string, unknown >;
 	type?: NOTICE_TYPES;
 	hideIcon?: boolean;
+	children?: ReactNode;
 }
 
-const Notice: FC< NoticeProps > = forwardRef< HTMLDivElement, NoticeProps >(
+const Notice = forwardRef< HTMLDivElement, NoticeProps >(
 	(
 		{
 			actionContent,

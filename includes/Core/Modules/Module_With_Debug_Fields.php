@@ -6,12 +6,14 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Core\Modules;
 
 /**
- * Interface Module_With_Debug_Fields
+ * Interface Module_With_Debug_Fields.
  *
  * @since 1.5.0
  */

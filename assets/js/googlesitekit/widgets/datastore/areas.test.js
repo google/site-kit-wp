@@ -19,10 +19,10 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../tests/js/utils';
-import { CORE_WIDGETS } from './constants';
 import Null from '@/js/components/Null';
 import SiteKitLogo from '@/svg/graphics/logo-sitekit.svg';
+import { createTestRegistry } from '@tests/js/utils';
+import { CORE_WIDGETS } from './constants';
 
 describe( 'core/widgets Widget areas', () => {
 	let registry;
@@ -148,6 +148,34 @@ describe( 'core/widgets Widget areas', () => {
 							style: 'composite',
 						} );
 				} ).not.toThrow();
+			} );
+
+			it( 'stores the pdfTitle and exposes it via getWidgetArea', () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidgetArea( 'header', {
+						title: 'Analytics Header',
+						pdfTitle: 'Traffic',
+						style: 'composite',
+					} );
+
+				expect(
+					registry.select( CORE_WIDGETS ).getWidgetArea( 'header' )
+						.pdfTitle
+				).toBe( 'Traffic' );
+			} );
+
+			it( 'leaves pdfTitle undefined when not provided', () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidgetArea( 'header', {
+						title: 'Analytics Header',
+					} );
+
+				expect(
+					registry.select( CORE_WIDGETS ).getWidgetArea( 'header' )
+						.pdfTitle
+				).toBeUndefined();
 			} );
 
 			it( 'should register multiple widget areas', () => {

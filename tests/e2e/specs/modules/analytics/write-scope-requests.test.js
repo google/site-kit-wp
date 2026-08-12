@@ -30,14 +30,15 @@ import {
 /**
  * Internal dependencies
  */
+import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	deactivateUtilityPlugins,
-	resetSiteKit,
-	useRequestInterception,
-	setupSiteKit,
 	ignorePermissionScopeErrors,
+	resetSiteKit,
+	setupSiteKit,
+	step,
+	useRequestInterception,
 } from '../../../utils';
-import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
 
 const interceptions = {
 	'analytics-4/data/create-account-ticket': {
@@ -203,49 +204,64 @@ describe( 'Analytics write scope requests', () => {
 		);
 
 		// Go to the analytics setup page.
-		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
-		await page.waitForSelector( '.mdc-tab-bar' );
-		await expect( page ).toClick( '.mdc-tab', {
-			text: /connect more services/i,
-		} );
-		await page.waitForSelector(
-			'.googlesitekit-settings-connect-module--analytics-4'
-		);
+		await step( 'go to the analytics setup page', async () => {
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
+			await page.waitForSelector( '.mdc-tab-bar' );
+			await expect( page ).toClick( '.mdc-tab', {
+				text: /connect more services/i,
+			} );
+			await page.waitForSelector(
+				'.googlesitekit-settings-connect-module--analytics-4'
+			);
 
-		await expect( page ).toClick( '.googlesitekit-cta-link', {
-			text: /set up analytics/i,
+			await expect( page ).toClick( '.googlesitekit-cta-link', {
+				text: /set up analytics/i,
+			} );
+			await page.waitForSelector(
+				'.googlesitekit-setup-module--analytics'
+			);
+			await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 		} );
-		await page.waitForSelector( '.googlesitekit-setup-module--analytics' );
-		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
 		// The user sees a notice above the button that explains they will need to grant additional permissions.
-		await expect( page ).toMatchElement( 'p', {
-			text: /You will need to give Site Kit permission to create an Analytics account/i,
-		} );
+		await step(
+			'verify the additional permissions notice is displayed',
+			expect( page ).toMatchElement( 'p', {
+				text: /You will need to give Site Kit permission to create an Analytics account/i,
+			} )
+		);
 
 		// Upon clicking the button, they're redirected to OAuth (should be mocked).
 		// This request is intercepted above and handled through the oauth callback plugin.
-		await expect( page ).toClick( '.mdc-button', {
-			text: /create account/i,
-		} );
+		await step(
+			'click the create account button',
+			expect( page ).toClick( '.mdc-button', {
+				text: /create account/i,
+			} )
+		);
 
 		// Once redirected back from OAuth, the user will end back on the Analytics setup screen
 		// where the original action is automatically invoked, without requiring them to click the button again.
 		// This request is intercepted above and returns a test account ticket ID.
 		// Once the account ticket ID is received, the TOS URL will be available which will invoke a navigation
 		// to the external Analytics TOS screen to action.
-		await page.waitForResponse( ( res ) =>
-			res.url().match( 'analytics-4/data/create-account-ticket' )
-		);
+		await step(
+			'wait for the account ticket and TOS navigation',
+			async () => {
+				await page.waitForResponse( ( res ) =>
+					res.url().match( 'analytics-4/data/create-account-ticket' )
+				);
 
-		await page.waitForRequest(
-			( req ) =>
-				req.isNavigationRequest() &&
-				req.url().includes( 'provisioningSignup' )
-		);
+				await page.waitForRequest(
+					( req ) =>
+						req.isNavigationRequest() &&
+						req.url().includes( 'provisioningSignup' )
+				);
 
-		// Without this, we might run into a weird issue when ending the test during the request above.
-		await page.waitForNavigation( { waitUntil: 'networkidle2' } );
+				// Without this, we might run into a weird issue when ending the test during the request above.
+				await page.waitForNavigation( { waitUntil: 'networkidle2' } );
+			}
+		);
 	} );
 
 	it( 'prompts for additional permissions during a new Analytics property creation if the user has not granted the Analytics edit scope', async () => {
@@ -256,62 +272,84 @@ describe( 'Analytics write scope requests', () => {
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock' );
 
 		// Go to the analytics setup page.
-		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
-		await page.waitForSelector( '.mdc-tab-bar' );
-		await expect( page ).toClick( '.mdc-tab', {
-			text: /connect more services/i,
+		await step( 'go to the analytics setup page', async () => {
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
+			await page.waitForSelector( '.mdc-tab-bar' );
+			await expect( page ).toClick( '.mdc-tab', {
+				text: /connect more services/i,
+			} );
+			await page.waitForSelector(
+				'.googlesitekit-settings-connect-module--analytics-4'
+			);
+			await expect( page ).toClick( '.googlesitekit-cta-link', {
+				text: /set up analytics/i,
+			} );
+			await page.waitForNetworkIdle();
+			await page.waitForSelector(
+				'.googlesitekit-setup-module--analytics'
+			);
+			await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 		} );
-		await page.waitForSelector(
-			'.googlesitekit-settings-connect-module--analytics-4'
-		);
-		await expect( page ).toClick( '.googlesitekit-cta-link', {
-			text: /set up analytics/i,
-		} );
-		await page.waitForNetworkIdle();
-		await page.waitForSelector( '.googlesitekit-setup-module--analytics' );
-		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
 		// Select "Set up a new property" option (GA4)
-		await expect( page ).toClick(
-			'.googlesitekit-analytics-4__select-property'
-		);
-		await expect( page ).toClick( '.mdc-menu-surface--open li', {
-			text: /set up a new property/i,
+		await step( 'select the set up a new property option', async () => {
+			await expect( page ).toClick(
+				'.googlesitekit-analytics-4__select-property'
+			);
+			await expect( page ).toClick( '.mdc-menu-surface--open li', {
+				text: /set up a new property/i,
+			} );
+			// Add a brief delay to allow the submit button to become enabled.
+			await page.waitForNetworkIdle();
 		} );
-		// Add a brief delay to allow the submit button to become enabled.
-		await page.waitForNetworkIdle();
 
 		// Click on confirm changes button and wait for permissions modal dialog.
-		await expect( page ).toClick( '.mdc-button--raised', {
-			text: /complete setup/i,
-		} );
+		await step(
+			'click complete setup and wait for the permissions modal',
+			async () => {
+				await expect( page ).toClick( '.mdc-button--raised', {
+					text: /complete setup/i,
+				} );
 
-		await page.waitForSelector( '.mdc-dialog--open .mdc-button', {
-			timeout: 3000,
-		} );
+				await page.waitForSelector( '.mdc-dialog--open .mdc-button', {
+					timeout: 3000,
+				} );
+			}
+		);
 
 		interceptCreatePropertyRequest = true;
 
-		await Promise.all( [
-			expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
-				text: /proceed/i,
-			} ),
-			page.waitForRequest( ( req ) =>
-				req.url().match( 'analytics-4/data/create-property' )
-			),
-			page.waitForRequest( ( req ) =>
-				req.url().match( 'analytics-4/data/create-webdatastream' )
-			),
-		] );
+		await step(
+			'click proceed and wait for the property and web data stream creation requests',
+			Promise.all( [
+				expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
+					text: /proceed/i,
+				} ),
+				page.waitForRequest( ( req ) =>
+					req.url().match( 'analytics-4/data/create-property' )
+				),
+				page.waitForRequest( ( req ) =>
+					req.url().match( 'analytics-4/data/create-webdatastream' )
+				),
+			] )
+		);
 
 		// They should end up on the dashboard.
-		await page.waitForNavigation();
-		await page.waitForSelector( '.googlesitekit-notice__title', {
-			timeout: 5_000,
-		} );
-		await expect( page ).toMatchElement( '.googlesitekit-notice__title', {
-			text: /Congrats on completing the setup for Analytics!/i,
-		} );
+		await step(
+			'verify the user ends up on the dashboard with the success notice',
+			async () => {
+				await page.waitForNavigation();
+				await page.waitForSelector( '.googlesitekit-notice__title', {
+					timeout: 5_000,
+				} );
+				await expect( page ).toMatchElement(
+					'.googlesitekit-notice__title',
+					{
+						text: /Congrats on completing the setup for Analytics!/i,
+					}
+				);
+			}
+		);
 	} );
 
 	it( 'prompts for additional permissions during a new Analytics web data stream creation if the user has not granted the Analytics edit scope', async () => {
@@ -320,78 +358,121 @@ describe( 'Analytics write scope requests', () => {
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock' );
 
 		// Go to the analytics setup page.
-		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
-		await page.waitForSelector( '.mdc-tab-bar' );
-		await expect( page ).toClick( '.mdc-tab', {
-			text: /connect more services/i,
+		await step( 'go to the analytics setup page', async () => {
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
+			await page.waitForSelector( '.mdc-tab-bar' );
+			await expect( page ).toClick( '.mdc-tab', {
+				text: /connect more services/i,
+			} );
+			await page.waitForSelector(
+				'.googlesitekit-settings-connect-module--analytics-4'
+			);
+			await expect( page ).toClick( '.googlesitekit-cta-link', {
+				text: /set up analytics/i,
+			} );
+			await page.waitForSelector(
+				'.googlesitekit-setup-module--analytics'
+			);
+			await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 		} );
-		await page.waitForSelector(
-			'.googlesitekit-settings-connect-module--analytics-4'
-		);
-		await expect( page ).toClick( '.googlesitekit-cta-link', {
-			text: /set up analytics/i,
-		} );
-		await page.waitForSelector( '.googlesitekit-setup-module--analytics' );
-		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
 		// Select "Test Account A" account.
-		await expect( page ).toClick(
-			'.googlesitekit-analytics__select-account'
-		);
+		await step( 'select the account', async () => {
+			await expect( page ).toClick(
+				'.googlesitekit-analytics__select-account'
+			);
 
-		await expect( page ).toClick( '.mdc-menu-surface--open li', {
-			text: /example com/i,
+			await expect( page ).toClick( '.mdc-menu-surface--open li', {
+				text: /example com/i,
+			} );
 		} );
 
 		// Select "example.com" property.
-		await expect( page ).toClick(
-			'.googlesitekit-analytics-4__select-property'
-		);
-		await expect( page ).toClick( '.mdc-menu-surface--open li', {
-			text: /example property/i,
+		await step( 'select the property', async () => {
+			await expect( page ).toClick(
+				'.googlesitekit-analytics-4__select-property'
+			);
+			await expect( page ).toClick( '.mdc-menu-surface--open li', {
+				text: /example property/i,
+			} );
 		} );
 
 		// Select "Set up a new web data stream" option.
-		await expect( page ).toClick(
-			'.googlesitekit-analytics-4__select-webdatastream'
+		await step(
+			'select the set up a new web data stream option',
+			async () => {
+				await expect( page ).toClick(
+					'.googlesitekit-analytics-4__select-webdatastream'
+				);
+				await expect( page ).toClick( '.mdc-menu-surface--open li', {
+					text: /set up a new web data stream/i,
+				} );
+			}
 		);
-		await expect( page ).toClick( '.mdc-menu-surface--open li', {
-			text: /set up a new web data stream/i,
-		} );
 
-		await Promise.all( [
-			expect( page ).toClick( '.mdc-button--raised', {
-				text: /complete setup/i,
-			} ),
+		await step(
+			'click complete setup and wait for the web data stream creation request',
+			Promise.all( [
+				expect( page ).toClick( '.mdc-button--raised', {
+					text: /complete setup/i,
+				} ),
 
-			page.waitForRequest( ( req ) =>
-				req.url().match( 'analytics-4/data/create-webdatastream' )
-			),
-		] );
+				page.waitForRequest( ( req ) =>
+					req.url().match( 'analytics-4/data/create-webdatastream' )
+				),
+			] )
+		);
 
 		// Click on confirm changes button and wait for permissions modal dialog.
-		await page.waitForSelector( '.mdc-dialog--open .mdc-button', {
-			timeout: 3000,
-		} );
+		await step(
+			'wait for the permissions modal',
+			page.waitForSelector( '.mdc-dialog--open .mdc-button', {
+				timeout: 3000,
+			} )
+		);
 
 		interceptCreateWebDataStreamRequest = true;
 		// Click on proceed button and wait for oauth request.
-		await expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
-			text: /proceed/i,
-		} );
+		await step(
+			'click proceed and wait for the oauth request',
+			async () => {
+				await expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
+					text: /proceed/i,
+				} );
 
-		await page.waitForRequest( ( req ) =>
-			req.url().includes( 'sitekit.withgoogle.com/o/oauth2/auth' )
+				await page.waitForRequest( ( req ) =>
+					req.url().includes( 'sitekit.withgoogle.com/o/oauth2/auth' )
+				);
+			}
 		);
 
 		// They should end up on the dashboard.
-		await page.waitForNavigation();
-		await page.waitForSelector( '.googlesitekit-notice__title', {
-			timeout: 10000,
-		} );
+		await step(
+			'verify the user ends up on the dashboard with the success notice',
+			async () => {
+				// After the OAuth round-trip the user lands back on the setup
+				// page where the form is auto-resubmitted, retrying the web data
+				// stream creation. Wait for that retried (and now intercepted)
+				// request to ensure the OAuth redirect chain has settled before
+				// awaiting the final navigation to the dashboard. Otherwise
+				// waitForNavigation may resolve on an intermediate redirect hop
+				// while the document is still being replaced.
+				await page.waitForRequest( ( req ) =>
+					req.url().match( 'analytics-4/data/create-webdatastream' )
+				);
 
-		await expect( page ).toMatchElement( '.googlesitekit-notice__title', {
-			text: /Congrats on completing the setup for Analytics!/i,
-		} );
+				await page.waitForNavigation();
+				await page.waitForSelector( '.googlesitekit-notice__title', {
+					timeout: 10000,
+				} );
+
+				await expect( page ).toMatchElement(
+					'.googlesitekit-notice__title',
+					{
+						text: /Congrats on completing the setup for Analytics!/i,
+					}
+				);
+			}
+		);
 	} );
 } );

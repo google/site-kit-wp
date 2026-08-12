@@ -30,15 +30,15 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { ProgressBar } from 'googlesitekit-components';
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import Banner from '@/js/components/Banner';
-import LearnMoreLink from '@/js/components/Banner/LearnMoreLink';
 import CTAButton from '@/js/components/Banner/CTAButton';
 import DismissButton from '@/js/components/Banner/DismissButton';
+import LearnMoreLink from '@/js/components/Banner/LearnMoreLink';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { Cell, Grid, Row } from '@/js/material-components';
-import { ProgressBar } from 'googlesitekit-components';
 
 export default function SetupCTA( {
 	notificationID,
@@ -161,6 +161,7 @@ SetupCTA.propTypes = {
 	svg: PropTypes.shape( {
 		desktop: PropTypes.elementType,
 		mobile: PropTypes.elementType,
+		tablet: PropTypes.elementType,
 		verticalPosition: PropTypes.oneOf( [ 'top', 'center', 'bottom' ] ),
 	} ),
 	footer: PropTypes.node,

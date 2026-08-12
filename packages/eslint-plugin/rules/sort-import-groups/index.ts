@@ -38,16 +38,20 @@ import type {
 	LComment,
 } from './types';
 import {
+	canonicalizeTestsAlias,
 	compareImports,
 	determineReplaceStart,
 	getExpectedCommentBlock,
 	getImportGroup,
 	getImportSource,
+	getImportSourceLiteral,
 	getNonDependencyComments,
 	getPrecedingCommentBlock,
 	groupImports,
 	groupImportsByType,
 	importedName,
+	isBareTestsAlias,
+	isOrphanGroupShapedComment,
 	isValidGroupComment,
 	leadingComments,
 	needsImportReorganization,
@@ -69,6 +73,44 @@ const rule: Rule.RuleModule = {
 
 	create( context ) {
 		const sourceCode = context.getSourceCode();
+
+		function checkTestsAliasCanonicalization(
+			importNodes: ImportNode[]
+		): boolean {
+			for ( const node of importNodes ) {
+				const source = getImportSource( node );
+
+				if ( ! isBareTestsAlias( source ) ) {
+					continue;
+				}
+
+				const sourceLiteral = getImportSourceLiteral( node );
+
+				if ( ! sourceLiteral ) {
+					continue;
+				}
+
+				context.report( {
+					node: sourceLiteral,
+					message: `Import source '${ source }' should use the '@tests' alias.`,
+					fix( fixer ) {
+						const literalText = sourceCode.getText( sourceLiteral );
+						const quote = literalText[ 0 ];
+						const canonicalSource =
+							canonicalizeTestsAlias( source );
+
+						return fixer.replaceText(
+							sourceLiteral,
+							`${ quote }${ canonicalSource }${ quote }`
+						);
+					},
+				} );
+
+				return true;
+			}
+
+			return false;
+		}
 
 		function reportReorganizationErrors(
 			importNodes: ImportNode[],
@@ -460,6 +502,40 @@ const rule: Rule.RuleModule = {
 			}
 		}
 
+		function checkOrphanGroupShapedComments( importNodes: ImportNode[] ) {
+			for ( let index = 0; index < importNodes.length; index++ ) {
+				const currentImport = importNodes[ index ];
+				const prevImport = index > 0 ? importNodes[ index - 1 ] : null;
+				const commentsBefore = leadingComments(
+					sourceCode,
+					currentImport
+				);
+
+				for ( const comment of commentsBefore ) {
+					if (
+						prevImport &&
+						comment.range[ 0 ] <= prevImport.range[ 1 ]
+					) {
+						continue;
+					}
+					if ( comment.type !== 'Block' ) {
+						continue;
+					}
+
+					const commentText = normalizeCommentText( comment.value );
+					if ( ! isOrphanGroupShapedComment( commentText ) ) {
+						continue;
+					}
+
+					context.report( {
+						node: currentImport,
+						message: `Dependency-style comment block "${ commentText }" is not a recognized group header and should be removed.`,
+						fix: createOrphanedCommentFix( comment ),
+					} );
+				}
+			}
+		}
+
 		function checkMemberSortOrder( node: ImportNode ) {
 			if ( node.type !== 'ImportDeclaration' ) {
 				return;
@@ -570,6 +646,7 @@ const rule: Rule.RuleModule = {
 
 			checkOrphanedCommentsBeforeFirstImport( importNodes );
 			checkOrphanedCommentsBetweenImports( importNodes );
+			checkOrphanGroupShapedComments( importNodes );
 
 			let currentGroup: DependencyGroup | null = null;
 			let lastNode: ImportNode | null = null;
@@ -778,6 +855,9 @@ const rule: Rule.RuleModule = {
 		return {
 			Program( node ) {
 				const importGroups = groupImports( node.body as AnyNode[] );
+				const importNodes = importGroups.flat();
+
+				checkTestsAliasCanonicalization( importNodes );
 
 				if ( importGroups.length > 0 ) {
 					checkImportGroup( importGroups[ 0 ] );

@@ -20,11 +20,12 @@
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	MODULES_ANALYTICS_4,
-	DATE_RANGE_OFFSET,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
+import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
+import { render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
@@ -32,11 +33,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserInfo,
-} from '../../../../../../../tests/js/utils';
-import { mockSurveyEndpoints } from '../../../../../../../tests/js/mock-survey-endpoints';
-import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
-import { render } from '../../../../../../../tests/js/test-utils';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+} from '@tests/js/utils';
 import DashboardAllTrafficWidgetGA4 from '.';
 
 describe( 'DashboardAllTrafficWidgetGA4', () => {
@@ -66,7 +63,6 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
 			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
 		} );
 
 		baseOptions = {

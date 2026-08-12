@@ -29,13 +29,13 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import {
 	ChipMultiSelect,
 	ChipMultiSelectItem,
 } from '@/js/components/ChipMultiSelect';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
 export default function PostTypesSelect( props ) {
 	const { isDisabled, hasModuleAccess, onChange = () => {} } = props;

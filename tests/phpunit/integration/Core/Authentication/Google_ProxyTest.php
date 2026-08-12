@@ -121,6 +121,51 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789', 'Setup URL should use the v3 route and  match the expected format with query parameters.' );
 	}
 
+	public function test_setup_url__with_setup_flow_refresh_phase_4_feature_flag_enabled() {
+		$this->enable_feature( 'setupFlowRefresh' );
+		$this->enable_feature( 'setupFlowRefreshPhase4' );
+
+		$url = $this->google_proxy->setup_url(
+			array(
+				'code'    => 'code-123',
+				'site_id' => 'site_id-456',
+				'foo'     => 'foo-789',
+			)
+		);
+
+		$this->assertEquals(
+			$url,
+			'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789&service_version=v3&steps=5',
+			'Setup URL should include the service_version and steps query parameters.'
+		);
+	}
+
+	public function test_setup_url__applies_params_filter_with_setup_flow_refresh_phase_4_feature_flag_enabled() {
+		$this->enable_feature( 'setupFlowRefresh' );
+		$this->enable_feature( 'setupFlowRefreshPhase4' );
+
+		add_filter(
+			'googlesitekit_proxy_setup_url_params',
+			function ( $params ) {
+				$params['foo'] = 'foo-789';
+				return $params;
+			}
+		);
+
+		$url = $this->google_proxy->setup_url(
+			array(
+				'code'    => 'code-123',
+				'site_id' => 'site_id-456',
+			)
+		);
+
+		$this->assertEquals(
+			$url,
+			'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&service_version=v3&steps=5&foo=foo-789',
+			'Setup URL should include filtered query parameters.'
+		);
+	}
+
 	public function test_add_setup_step_from_error_code() {
 		// Ensure the `step` query param is correctly added according to the error code.
 		$params = $this->google_proxy->add_setup_step_from_error_code( array(), 'missing_verification' );
@@ -635,7 +680,7 @@ class Google_ProxyTest extends TestCase {
 
 		$response = $this->google_proxy->register_site();
 
-		$this->assertWPError( $response );
+		$this->assertWPError( $response, 'Invalid proxy response should return a WP error.' );
 		$this->assertEquals( $expected_error_code, $response->get_error_code(), 'Error response should contain error code.' );
 		$this->assertEquals( $expected_error_message, $response->get_error_message(), 'Error response should contain error message.' );
 	}

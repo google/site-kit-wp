@@ -19,18 +19,18 @@
 /**
  * Internal dependencies
  */
-import { getAnalytics4MockResponse, STRATEGY_ZIP } from './data-mock';
-import mockedReportResponse from './__fixtures__/mocked-report.json';
-import mockedReportMultipleDistinctDateRangesResponse from './__fixtures__/mocked-report-multiple-distinct-date-ranges.json';
-import mockedReportMultipleOverlappingDateRangesResponse from './__fixtures__/mocked-report-multiple-overlapping-date-ranges.json';
 import mockedReportFixedValueDimensionResponse from './__fixtures__/mocked-report-fixed-value-dimension.json';
 import mockedReportMultipleDimensionsCartesianResponse from './__fixtures__/mocked-report-multiple-dimensions-cartesian.json';
 import mockedReportMultipleDimensionsZippedResponse from './__fixtures__/mocked-report-multiple-dimensions-zipped.json';
-import mockedReportOrderByMetricAscendingResponse from './__fixtures__/mocked-report-order-by-metric-ascending.json';
-import mockedReportOrderByMetricDescendingResponse from './__fixtures__/mocked-report-order-by-metric-descending.json';
+import mockedReportMultipleDistinctDateRangesResponse from './__fixtures__/mocked-report-multiple-distinct-date-ranges.json';
+import mockedReportMultipleOverlappingDateRangesResponse from './__fixtures__/mocked-report-multiple-overlapping-date-ranges.json';
 import mockedReportOrderByDimensionAscendingResponse from './__fixtures__/mocked-report-order-by-dimension-ascending.json';
 import mockedReportOrderByDimensionDescendingResponse from './__fixtures__/mocked-report-order-by-dimension-descending.json';
+import mockedReportOrderByMetricAscendingResponse from './__fixtures__/mocked-report-order-by-metric-ascending.json';
+import mockedReportOrderByMetricDescendingResponse from './__fixtures__/mocked-report-order-by-metric-descending.json';
 import mockedReportOrderByMetricsAndDimensionsResponse from './__fixtures__/mocked-report-order-by-metrics-and-dimensions.json';
+import mockedReportResponse from './__fixtures__/mocked-report.json';
+import { STRATEGY_ZIP, getAnalytics4MockResponse } from './data-mock';
 
 describe( 'data-mock', () => {
 	describe( 'getAnalytics4MockResponse', () => {

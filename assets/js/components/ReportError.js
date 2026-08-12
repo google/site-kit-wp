@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import { uniqWith } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -34,18 +34,23 @@ import { removeQueryArgs } from '@wordpress/url';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import {
-	isInsufficientPermissionsError,
 	getReportErrorMessage,
+	isInsufficientPermissionsError,
 } from '@/js/util/errors';
 import { getInsufficientPermissionsErrorDescription } from '@/js/util/insufficient-permissions-error-description';
 import { purify } from '@/js/util/purify';
+import ErrorNotice from './ErrorNotice';
 import CTA from './notifications/CTA';
 import ReportErrorActions from './ReportErrorActions';
-import useViewOnly from '@/js/hooks/useViewOnly';
-import ErrorNotice from './ErrorNotice';
 
-export default function ReportError( { moduleSlug, error } ) {
+export default function ReportError( {
+	moduleSlug,
+	error,
+	onRetry,
+	onRequestAccess,
+} ) {
 	const isViewOnly = useViewOnly();
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
@@ -148,7 +153,12 @@ export default function ReportError( { moduleSlug, error } ) {
 
 	return (
 		<CTA title={ title } description={ description } error>
-			<ReportErrorActions moduleSlug={ moduleSlug } error={ error } />
+			<ReportErrorActions
+				moduleSlug={ moduleSlug }
+				error={ error }
+				onRetry={ onRetry }
+				onRequestAccess={ onRequestAccess }
+			/>
 		</CTA>
 	);
 }
@@ -159,4 +169,6 @@ ReportError.propTypes = {
 		PropTypes.arrayOf( PropTypes.object ),
 		PropTypes.object,
 	] ).isRequired,
+	onRetry: PropTypes.func,
+	onRequestAccess: PropTypes.func,
 };

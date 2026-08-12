@@ -19,10 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	provideSiteInfo,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, provideSiteInfo } from '@tests/js/utils';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 
 describe( 'modules/reader-revenue-manager base data store', () => {

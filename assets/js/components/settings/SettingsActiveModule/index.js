@@ -19,22 +19,22 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { Cell, Grid, Row } from '@/js/material-components';
 import SettingsOverlay from '@/js/components/settings/SettingsOverlay';
 import SettingsRenderer from '@/js/components/settings/SettingsRenderer';
-import Header from './Header';
-import Footer from './Footer';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
 import ConfirmDisconnect from './ConfirmDisconnect';
+import Footer from './Footer';
+import Header from './Header';
 
 export default function SettingsActiveModule( props ) {
 	const { slug } = props;

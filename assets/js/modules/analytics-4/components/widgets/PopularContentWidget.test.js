@@ -19,35 +19,32 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	provideKeyMetrics,
-	provideModuleRegistrations,
-	provideModules,
-	freezeFetch,
-} from '../../../../../../tests/js/utils';
-import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	CORE_USER,
 	KM_ANALYTICS_POPULAR_CONTENT,
 } from '@/js/googlesitekit/datastore/user/constants';
-import PopularContentWidget from './PopularContentWidget';
 import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	STRATEGY_ZIP,
+	getAnalytics4MockResponse,
+	provideAnalytics4MockReport,
+} from '@/js/modules/analytics-4/utils/data-mock';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '@/js/util/errors';
+import { render } from '@tests/js/test-utils';
 import {
-	getAnalytics4MockResponse,
-	provideAnalytics4MockReport,
-	STRATEGY_ZIP,
-} from '@/js/modules/analytics-4/utils/data-mock';
+	createTestRegistry,
+	freezeFetch,
+	provideKeyMetrics,
+	provideModuleRegistrations,
+	provideModules,
+} from '@tests/js/utils';
+import PopularContentWidget from './PopularContentWidget';
 
 describe( 'PopularContentWidget', () => {
 	let registry;
@@ -66,9 +63,7 @@ describe( 'PopularContentWidget', () => {
 
 	it( 'should render correctly with the expected metrics', async () => {
 		const reportOptions = {
-			...registry.select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} ),
+			...registry.select( CORE_USER ).getDateRangeDates(),
 			dimensions: [ 'pagePath' ],
 			metrics: [ { name: 'screenPageViews' } ],
 			orderby: [
@@ -83,9 +78,7 @@ describe( 'PopularContentWidget', () => {
 		};
 
 		const pageTitlesReportOptions = {
-			...registry.select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} ),
+			...registry.select( CORE_USER ).getDateRangeDates(),
 			dimensionFilters: {
 				pagePath: new Array( 3 )
 					.fill( '' )

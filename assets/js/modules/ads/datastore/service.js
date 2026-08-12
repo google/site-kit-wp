@@ -21,9 +21,9 @@
  */
 import { createRegistrySelector } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ADS } from './constants';
-import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { MODULES_ADS } from './constants';
 
 const selectors = {
 	/**

@@ -29,8 +29,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import RefocusableModalDialog from '@/js/components/RefocusableModalDialog';
-import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 
 export default function ConfirmDisableConversionTrackingDialog( {
 	onConfirm,

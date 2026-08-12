@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 
 /**
@@ -29,27 +30,90 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import MetricTileText from '@/js/components/KeyMetrics/MetricTileText';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
 } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-	ENUM_CONVERSION_EVENTS,
-} from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import { numFmt } from '@/js/util';
-import { get } from 'lodash';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+
+/**
+ * Builds the Analytics 4 report options for the Top Traffic Source Driving Add
+ * to Cart metric.
+ *
+ * Returns both the total add-to-cart report and the per-channel report the tile
+ * combines. Both this widget and the metric's PDF tile import this, so the
+ * dashboard tile and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range, including the compare dates.
+ * @return {Object} The `totalAddToCart` and `trafficSource` `getReport` options.
+ */
+export function getTopTrafficSourceDrivingAddToCartReportOptions( dates ) {
+	return {
+		totalAddToCart: {
+			...dates,
+			metrics: [
+				{
+					name: 'addToCarts',
+				},
+			],
+			reportID:
+				'analytics-4_top-traffic-source-driving-add-to-cart-widget_widget_totalAddToCartReportOptions',
+		},
+		trafficSource: {
+			...dates,
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			metrics: [
+				{
+					name: 'addToCarts',
+				},
+			],
+			limit: 1,
+			orderBy: 'addToCarts',
+			reportID:
+				'analytics-4_top-traffic-source-driving-add-to-cart-widget_widget_trafficSourceReportOptions',
+		},
+	};
+}
+
+/**
+ * Builds the sub-text for the Top Traffic Source Driving Add to Cart metric tile.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the PDF tile show the same sub-text.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} rate The relative share of total add to carts for the top source.
+ * @return {string} The metric tile sub-text.
+ */
+export function getTopTrafficSourceDrivingAddToCartSubtext( rate ) {
+	const format = {
+		style: 'percent',
+		signDisplay: 'never',
+		maximumFractionDigits: 1,
+	};
+
+	return sprintf(
+		/* translators: %s: Percentage of add to carts for the current top traffic source compared to the number of total add to carts for all traffic sources. */
+		__( '%s of total add to carts', 'google-site-kit' ),
+		numFmt( rate, format )
+	);
+}
 
 function TopTrafficSourceDrivingAddToCartWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} )
 	);
@@ -61,30 +125,10 @@ function TopTrafficSourceDrivingAddToCartWidget( { Widget } ) {
 		ENUM_CONVERSION_EVENTS.ADD_TO_CART
 	);
 
-	const totalAddToCartReportOptions = {
-		...dates,
-		metrics: [
-			{
-				name: 'addToCarts',
-			},
-		],
-		reportID:
-			'analytics-4_top-traffic-source-driving-add-to-cart-widget_widget_totalAddToCartReportOptions',
-	};
-
-	const trafficSourceReportOptions = {
-		...dates,
-		dimensions: [ 'sessionDefaultChannelGroup' ],
-		metrics: [
-			{
-				name: 'addToCarts',
-			},
-		],
-		limit: 1,
-		orderBy: 'addToCarts',
-		reportID:
-			'analytics-4_top-traffic-source-driving-add-to-cart-widget_widget_trafficSourceReportOptions',
-	};
+	const {
+		totalAddToCart: totalAddToCartReportOptions,
+		trafficSource: trafficSourceReportOptions,
+	} = getTopTrafficSourceDrivingAddToCartReportOptions( dates );
 
 	const totalAddToCartReport = useInViewSelect(
 		( select ) =>
@@ -201,10 +245,8 @@ function TopTrafficSourceDrivingAddToCartWidget( { Widget } ) {
 			widgetSlug={ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART }
 			metricValue={ topTrafficSource }
 			metricValueFormat={ format }
-			subText={ sprintf(
-				/* translators: %s: Percentage of add to carts for the current top traffic source compared to the number of total add to carts for all traffic sources. */
-				__( '%s of total add to carts', 'google-site-kit' ),
-				numFmt( relativeCurrentTopTrafficSourceAddToCart, format )
+			subText={ getTopTrafficSourceDrivingAddToCartSubtext(
+				relativeCurrentTopTrafficSourceAddToCart
 			) }
 			previousValue={ relativePreviousTopTrafficSourceAddToCart }
 			currentValue={ relativeCurrentTopTrafficSourceAddToCart }

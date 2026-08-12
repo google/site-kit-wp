@@ -19,9 +19,9 @@
 /**
  * External dependencies
  */
-import memize from 'memize';
 import invariant from 'invariant';
-import { defaults, merge, isPlainObject } from 'lodash';
+import { defaults, isPlainObject, merge } from 'lodash';
+import memize from 'memize';
 
 /**
  * WordPress dependencies
@@ -29,30 +29,33 @@ import { defaults, merge, isPlainObject } from 'lodash';
 // This is used for JSDoc purposes.
 // eslint-disable-next-line no-unused-vars
 import { WPComponent } from '@wordpress/element';
-import { sprintf, __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	createRegistrySelector,
-	createRegistryControl,
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
+	createRegistryControl,
+	createRegistrySelector,
 } from 'googlesitekit-data';
+import DefaultSettingsSetupIncomplete from '@/js/components/settings/DefaultSettingsSetupIncomplete';
+import DefaultSettingsStatus from '@/js/components/settings/SettingsActiveModule/DefaultSettingsStatus';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import {
+	createValidatedAction,
+	getGlobalData,
+} from '@/js/googlesitekit/data/utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { listFormat } from '@/js/util';
 import {
 	CORE_MODULES,
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
 } from './constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { createValidatedAction } from '@/js/googlesitekit/data/utils';
-import { listFormat } from '@/js/util';
-import DefaultSettingsSetupIncomplete from '@/js/components/settings/DefaultSettingsSetupIncomplete';
-import DefaultSettingsStatus from '@/js/components/settings/SettingsActiveModule/DefaultSettingsStatus';
 
 // Actions.
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
@@ -86,6 +89,7 @@ const moduleDefaults = {
 	SettingsSetupIncompleteComponent: DefaultSettingsSetupIncomplete,
 	SettingsStatusComponent: DefaultSettingsStatus,
 	SetupComponent: null,
+	SetupLayout: null,
 	onCompleteSetup: undefined,
 	checkRequirements: () => true,
 	DashboardMainEffectComponent: null,
@@ -234,12 +238,15 @@ const baseActions = {
 	 *
 	 * @since 1.8.0
 	 *
-	 * @param {string} slug Slug of the module to activate.
+	 * @param {string} slug      Slug of the module to activate.
+	 * @param {Object} [options] Optional. Activation options with `redirectQueryArgs`.
 	 * @return {Object} Object with `{response, error}`. On success, `response.moduleReauthURL`
 	 *                  is set to redirect the user to the corresponding module setup or OAuth
 	 *                  consent screen.
 	 */
-	*activateModule( slug ) {
+	*activateModule( slug, options = {} ) {
+		const { redirectQueryArgs = {} } = options;
+
 		const { response, error } = yield baseActions.setModuleActivation( {
 			slug,
 			active: true,
@@ -247,7 +254,7 @@ const baseActions = {
 
 		if ( response?.success === true ) {
 			const moduleReauthURL = yield {
-				payload: { slug },
+				payload: { slug, redirectQueryArgs },
 				type: SELECT_MODULE_REAUTH_URL,
 			};
 			return {
@@ -343,6 +350,7 @@ const baseActions = {
 	 * @param {WPComponent}    [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
 	 * @param {WPComponent}    [settings.SettingsStatusComponent]          Optional. React component to render the module status. Default none.
 	 * @param {WPComponent}    [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
+	 * @param {WPComponent}    [settings.SetupLayout]                      Optional. React component to render the module setup screen layout. Default none.
 	 * @param {boolean}        [settings.overrideSetupSuccessNotification] Optional. Flag to denote whether to render a custom setup success notification. Default `false`.
 	 * @param {Function}       [settings.onCompleteSetup]                  Optional. Function to use as a complete CTA callback. Default `undefined`.
 	 * @param {Function}       [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
@@ -369,6 +377,7 @@ const baseActions = {
 				SettingsSetupIncompleteComponent,
 				SettingsStatusComponent,
 				SetupComponent,
+				SetupLayout,
 				overrideSetupSuccessNotification = false,
 				onCompleteSetup,
 				checkRequirements,
@@ -390,6 +399,7 @@ const baseActions = {
 				SettingsSetupIncompleteComponent,
 				SettingsStatusComponent,
 				SetupComponent,
+				SetupLayout,
 				overrideSetupSuccessNotification,
 				onCompleteSetup,
 				checkRequirements,
@@ -610,7 +620,7 @@ export const baseControls = {
 	[ SELECT_MODULE_REAUTH_URL ]: createRegistryControl(
 		( { select, resolveSelect } ) =>
 			async ( { payload } ) => {
-				const { slug } = payload;
+				const { slug, redirectQueryArgs = {} } = payload;
 				// Ensure the module is loaded before selecting the store name.
 				await resolveSelect( CORE_MODULES ).getModule( slug );
 
@@ -623,7 +633,9 @@ export const baseControls = {
 				}
 
 				if ( select( storeName )?.getAdminReauthURL ) {
-					return await resolveSelect( storeName ).getAdminReauthURL();
+					return await resolveSelect( storeName ).getAdminReauthURL( {
+						redirectQueryArgs,
+					} );
 				}
 				return select( CORE_SITE ).getAdminURL(
 					'googlesitekit-dashboard'
@@ -831,17 +843,20 @@ const baseResolvers = {
 			return;
 		}
 
-		if ( ! global._googlesitekitDashboardSharingData ) {
+		let dashboardSharingData;
+		try {
+			dashboardSharingData = getGlobalData(
+				'_googlesitekitDashboardSharingData'
+			);
+		} catch ( error ) {
 			global.console.error(
 				'Could not load core/modules dashboard sharing.'
 			);
 			return;
 		}
 
-		const { sharedOwnershipModules } =
-			global._googlesitekitDashboardSharingData;
 		yield baseActions.receiveSharedOwnershipModules(
-			sharedOwnershipModules
+			dashboardSharingData.sharedOwnershipModules
 		);
 	},
 
@@ -852,13 +867,14 @@ const baseResolvers = {
 			return;
 		}
 
-		if ( ! global._googlesitekitModulesData ) {
+		let inlineModulesData;
+		try {
+			inlineModulesData = getGlobalData( '_googlesitekitModulesData' );
+		} catch ( error ) {
 			return;
 		}
 
-		yield baseActions.receiveInlineModulesData(
-			global._googlesitekitModulesData
-		);
+		yield baseActions.receiveInlineModulesData( inlineModulesData );
 	},
 
 	getModule: waitForModules,

@@ -19,18 +19,20 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { omit } from 'lodash';
 import { useMount } from 'react-use';
-import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
 import {
+	Fragment,
 	createInterpolateElement,
 	useCallback,
-	Fragment,
 	useEffect,
+	useMemo,
+	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
@@ -38,43 +40,49 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Header from '@/js/components/Header';
+import HelpMenu from '@/js/components/help/HelpMenu';
+import AdaptiveFooterLayout from '@/js/components/key-metrics-setup/AdaptiveFooterLayout';
+import Layout from '@/js/components/layout/Layout';
+import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import ProgressIndicator from '@/js/components/ProgressIndicator';
+import ExitSetup from '@/js/components/setup/ExitSetup';
+import ToastNotice from '@/js/components/ToastNotice';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
+import UserInputSelectOptions from '@/js/components/user-input/UserInputSelectOptions';
+import {
+	USER_INPUT_MAX_ANSWERS,
+	USER_INPUT_QUESTIONS_PURPOSE,
+	getUserInputAnswers,
+	getUserInputAnswersDescription,
+} from '@/js/components/user-input/util/constants';
+import { hasErrorForAnswer } from '@/js/components/user-input/util/validation';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { useFeature } from '@/js/hooks/useFeature';
+import useForwardableParams from '@/js/hooks/useForwardableParams';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
+import { Cell, Grid, Row } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { Grid, Row, Cell } from '@/js/material-components';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import ExitSetup from '@/js/components/setup/ExitSetup';
-import Header from '@/js/components/Header';
-import HelpMenu from '@/js/components/help/HelpMenu';
-import Layout from '@/js/components/layout/Layout';
-import AdaptiveFooterLayout from '@/js/components/key-metrics-setup/AdaptiveFooterLayout';
-import Typography from '@/js/components/Typography';
-import P from '@/js/components/Typography/P';
-import ProgressIndicator from '@/js/components/ProgressIndicator';
-import UserInputSelectOptions from '@/js/components/user-input/UserInputSelectOptions';
-import ToastNotice from '@/js/components/ToastNotice';
-import { hasErrorForAnswer } from '@/js/components/user-input/util/validation';
-import {
-	getUserInputAnswers,
-	getUserInputAnswersDescription,
-	USER_INPUT_MAX_ANSWERS,
-	USER_INPUT_QUESTIONS_PURPOSE,
-} from '@/js/components/user-input/util/constants';
-import useQueryArg from '@/js/hooks/useQueryArg';
-import useForwardableParams from '@/js/hooks/useForwardableParams';
-import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
-import Notice from '@/js/components/Notice';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function KeyMetricsSetupApp() {
 	const viewContext = useViewContext();
 	const forwardableParams = useForwardableParams();
+	const setupFlowRefreshPhase4Enabled = useFeature(
+		'setupFlowRefreshPhase4'
+	);
+
+	const [ isFooterInline, setIsFooterInline ] = useState( false );
 
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
@@ -90,17 +98,23 @@ export default function KeyMetricsSetupApp() {
 
 	const isSavingInitialSetup = useSelect(
 		( select ) =>
-			select( CORE_USER ).isFetchingSaveInitialSetupSettings( {
-				isAnalyticsSetupComplete: true,
-			} ) || select( CORE_LOCATION ).isNavigating()
+			select( CORE_USER ).isFetchingSaveInitialSetupSettings() ||
+			select( CORE_LOCATION ).isNavigating()
 	);
 
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
-	const settingsLoaded = useSelect(
-		( select ) => select( MODULES_ANALYTICS_4 ).getSettings() !== undefined
+	const isGA4Active = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ANALYTICS_4 )
+	);
+
+	const shouldSync = useSelect(
+		( select ) =>
+			isGA4Active &&
+			select( MODULES_ANALYTICS_4 ).getSettings() !== undefined,
+		[ isGA4Active ]
 	);
 
 	const saveUserInputError = useSelect( ( select ) =>
@@ -108,11 +122,7 @@ export default function KeyMetricsSetupApp() {
 	);
 
 	const saveInitialSetupError = useSelect( ( select ) =>
-		select( CORE_USER ).getErrorForAction( 'saveInitialSetupSettings', [
-			{
-				isAnalyticsSetupComplete: true,
-			},
-		] )
+		select( CORE_USER ).getErrorForAction( 'saveInitialSetupSettings' )
 	);
 
 	const values = useSelect(
@@ -125,6 +135,8 @@ export default function KeyMetricsSetupApp() {
 	const {
 		saveUserInputSettings,
 		saveInitialSetupSettings,
+		setHasSitePurposeAnswer,
+		setIsAnalyticsSetupComplete,
 		clearActionError,
 	} = useDispatch( CORE_USER );
 
@@ -167,6 +179,14 @@ export default function KeyMetricsSetupApp() {
 
 	const isInitialSetupFlow = !! showProgress;
 
+	const progressIndicatorProps = useMemo(
+		() =>
+			setupFlowRefreshPhase4Enabled && ! isGA4Active
+				? { totalSegments: 5, currentSegment: 3 }
+				: { totalSegments: 6, currentSegment: 4 },
+		[ isGA4Active, setupFlowRefreshPhase4Enabled ]
+	);
+
 	useMount( () => {
 		if ( isInitialSetupFlow ) {
 			trackEvent(
@@ -186,9 +206,10 @@ export default function KeyMetricsSetupApp() {
 	} );
 
 	const saveInitialSetup = useCallback( async () => {
-		const response = await saveInitialSetupSettings( {
-			isAnalyticsSetupComplete: true,
-		} );
+		setHasSitePurposeAnswer( true );
+		setIsAnalyticsSetupComplete( true );
+
+		const response = await saveInitialSetupSettings();
 
 		if ( response.error ) {
 			return;
@@ -211,17 +232,15 @@ export default function KeyMetricsSetupApp() {
 	}, [
 		dashboardURL,
 		saveInitialSetupSettings,
+		setHasSitePurposeAnswer,
+		setIsAnalyticsSetupComplete,
 		navigateTo,
 		forwardableParams,
 		isInitialSetupFlow,
 	] );
 
 	const submitChanges = useCallback( async () => {
-		clearActionError( 'saveInitialSetupSettings', [
-			{
-				isAnalyticsSetupComplete: true,
-			},
-		] );
+		clearActionError( 'saveInitialSetupSettings' );
 
 		const response = await saveUserInputSettings();
 
@@ -234,14 +253,14 @@ export default function KeyMetricsSetupApp() {
 		useDispatch( MODULES_ANALYTICS_4 );
 
 	useEffect( () => {
-		if ( ! settingsLoaded ) {
+		if ( ! shouldSync ) {
 			return;
 		}
 
 		syncAvailableAudiences();
 		fetchSyncAvailableCustomDimensions();
 	}, [
-		settingsLoaded,
+		shouldSync,
 		syncAvailableAudiences,
 		fetchSyncAvailableCustomDimensions,
 	] );
@@ -318,7 +337,7 @@ export default function KeyMetricsSetupApp() {
 	const keyMetricsLayout = (
 		<Layout rounded={ ! isInitialSetupFlow }>
 			{ isInitialSetupFlow && (
-				<ProgressIndicator totalSegments={ 6 } currentSegment={ 4 } />
+				<ProgressIndicator { ...progressIndicatorProps } />
 			) }
 			<Grid>
 				<Row>
@@ -328,6 +347,7 @@ export default function KeyMetricsSetupApp() {
 							inlineClassName="googlesitekit-key-metrics-setup__content--footer-inline"
 							footerClassName="googlesitekit-user-input__footer googlesitekit-key-metrics-setup__footer"
 							footer={ footer }
+							onFooterInlineChange={ setIsFooterInline }
 						>
 							<Typography
 								as="h1"
@@ -383,7 +403,15 @@ export default function KeyMetricsSetupApp() {
 							/>
 
 							{ saveInitialSetupError && (
-								<div className="googlesitekit-user-input__error googlesitekit-key-metrics-setup__error">
+								<div
+									className={ classnames(
+										'googlesitekit-user-input__error googlesitekit-key-metrics-setup__error',
+										{
+											'googlesitekit-key-metrics-setup__error--inline':
+												isFooterInline,
+										}
+									) }
+								>
 									<Notice
 										description={ __(
 											'Something went wrong, please try again',
@@ -396,7 +424,15 @@ export default function KeyMetricsSetupApp() {
 
 							{ ! saveInitialSetupError &&
 								!! saveUserInputError && (
-									<div className="googlesitekit-user-input__error googlesitekit-key-metrics-setup__error">
+									<div
+										className={ classnames(
+											'googlesitekit-user-input__error googlesitekit-key-metrics-setup__error',
+											{
+												'googlesitekit-key-metrics-setup__error--inline':
+													isFooterInline,
+											}
+										) }
+									>
 										<Notice
 											title={ __(
 												'Saving your answer failed',
@@ -424,6 +460,7 @@ export default function KeyMetricsSetupApp() {
 					<ExitSetup
 						gaTrackingEventArgs={ {
 							category: `${ viewContext }_setup`,
+							action: 'setup_flow_v3_exit_setup',
 							label: 'key-metrics',
 						} }
 					/>

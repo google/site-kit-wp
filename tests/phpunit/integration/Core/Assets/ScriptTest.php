@@ -36,7 +36,7 @@ class ScriptTest extends TestCase {
 
 		$this->assertTrue( wp_script_is( 'test-handle', 'registered' ), 'Script should be registered after registration.' );
 		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'script_execution' ), 'Script execution should remain false by default.' );
-		// Scripts are registered in footer by default; footer scripts are added to group 1
+		// Scripts are registered in footer by default; footer scripts are added to group 1.
 		$this->assertEquals( 1, wp_scripts()->get_data( 'test-handle', 'group' ), 'Script should be in footer group by default.' );
 	}
 
@@ -74,10 +74,10 @@ class ScriptTest extends TestCase {
 		$script = new Script(
 			'test-handle',
 			array(
-				'in_footer' => false, // true by default
+				'in_footer' => false, // true by default.
 			)
 		);
-		// Scripts are registered in footer by default; footer scripts are added to group 1
+		// Scripts are registered in footer by default; footer scripts are added to group 1.
 		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'group' ), 'Script group should not be set initially.' );
 
 		$script->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -111,7 +111,7 @@ class ScriptTest extends TestCase {
 
 		$script->enqueue();
 
-		// Must be registered first
+		// Must be registered first.
 		$this->assertFalse( wp_script_is( 'test-handle', 'enqueued' ), 'Script should not be enqueued without registration.' );
 
 		$script->register( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );

@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\User;
 
+use Google\Site_Kit\Core\Storage\User_Aware_Interface;
 use Google\Site_Kit\Core\Storage\User_Setting;
 
 /**
@@ -19,7 +20,7 @@ use Google\Site_Kit\Core\Storage\User_Setting;
  * @access private
  * @ignore
  */
-class Email_Reporting_Settings extends User_Setting {
+class Email_Reporting_Settings extends User_Setting implements User_Aware_Interface {
 
 	/**
 	 * The user option name for email reporting setting.
@@ -94,6 +95,44 @@ class Email_Reporting_Settings extends User_Setting {
 	}
 
 	/**
+	 * Gets the ID of the user the settings are read from and written to.
+	 *
+	 * @since 1.185.0
+	 *
+	 * @return int User ID.
+	 */
+	public function get_user_id() {
+		return $this->user_options->get_user_id();
+	}
+
+	/**
+	 * Switches the user the settings are read from and written to.
+	 *
+	 * @since 1.185.0
+	 *
+	 * @param int $user_id User ID.
+	 * @return callable A closure to switch back to the original user.
+	 */
+	public function switch_user( $user_id ) {
+		return $this->user_options->switch_user( $user_id );
+	}
+
+	/**
+	 * Checks whether a raw settings value marks the user as subscribed.
+	 *
+	 * Callers that read the settings meta in bulk (user listings, subscriber counts)
+	 * use this instead of loading a settings instance per user.
+	 *
+	 * @since 1.185.0
+	 *
+	 * @param mixed $settings Raw settings value, as stored in user meta.
+	 * @return bool TRUE if the settings mark the user as subscribed, otherwise FALSE.
+	 */
+	public static function is_subscribed( $settings ) {
+		return is_array( $settings ) && ! empty( $settings['subscribed'] );
+	}
+
+	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
 	 * @since 1.161.0
@@ -136,6 +175,6 @@ class Email_Reporting_Settings extends User_Setting {
 	 * @return bool TRUE if user is subscribed, otherwise FALSE.
 	 */
 	public function is_user_subscribed() {
-		return $this->get()['subscribed'];
+		return self::is_subscribed( $this->get() );
 	}
 }

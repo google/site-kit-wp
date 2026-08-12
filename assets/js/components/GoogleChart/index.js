@@ -23,6 +23,7 @@ import '@/js/util/initialize-google-global';
 /**
  * External dependencies
  */
+// eslint-disable-next-line sitekit/sort-import-groups -- prevent the `initialize-google-global` import from being moved to the "Internal dependencies" group.
 import classnames from 'classnames';
 import invariant from 'invariant';
 import PropTypes from 'prop-types';
@@ -51,6 +52,7 @@ import GatheringDataNotice, {
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import GoogleChartErrorHandler from '@/js/components/GoogleChartErrorHandler';
 import DateMarker from './DateMarker';
+import { CHART_VERSION } from './constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { isSiteKitScreen } from '@/js/util/is-site-kit-screen';
@@ -97,7 +99,7 @@ export default function GoogleChart( props ) {
 	const breakpoint = useBreakpoint();
 
 	const { startDate, endDate } = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( { offsetDays: 0 } )
+		select( CORE_USER ).getDateRangeDates()
 	);
 
 	const viewContext = useViewContext();
@@ -401,7 +403,7 @@ export default function GoogleChart( props ) {
 					chartEvents={ combinedChartEvents }
 					chartLanguage={ getLocale() }
 					chartType={ chartType }
-					chartVersion="49"
+					chartVersion={ CHART_VERSION }
 					data={ filteredData }
 					loader={ loader }
 					height={ height }

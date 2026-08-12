@@ -29,13 +29,13 @@ import {
 	INVARIANT_SETTINGS_NOT_CHANGED,
 } from '@/js/googlesitekit/data/create-settings-store';
 import { createStrictSelect } from '@/js/googlesitekit/data/utils';
+import { isValidClientID } from '@/js/modules/sign-in-with-google/utils/validation';
 import {
 	MODULES_SIGN_IN_WITH_GOOGLE,
 	SIGN_IN_WITH_GOOGLE_SHAPES,
 	SIGN_IN_WITH_GOOGLE_TEXTS,
 	SIGN_IN_WITH_GOOGLE_THEMES,
 } from './constants';
-import { isValidClientID } from '@/js/modules/sign-in-with-google/utils/validation';
 
 export const INVARIANT_INVALID_CLIENT_ID =
 	'a valid clientID is required to submit changes';

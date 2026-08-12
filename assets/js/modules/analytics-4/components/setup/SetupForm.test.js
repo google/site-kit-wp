@@ -17,23 +17,11 @@
 /**
  * Internal dependencies
  */
-import {
-	act,
-	fireEvent,
-	render,
-	within,
-} from '../../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	muteFetch,
-	provideModules,
-	provideSiteInfo,
-	provideUserAuthentication,
-	waitForDefaultTimeouts,
-} from '../../../../../../tests/js/utils';
-import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
+import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	EDIT_SCOPE,
 	ENHANCED_MEASUREMENT_ENABLED,
@@ -41,12 +29,19 @@ import {
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
-import SetupForm from './SetupForm';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 import * as tracking from '@/js/util/tracking';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import { act, fireEvent, render, within } from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	muteFetch,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	waitForDefaultTimeouts,
+} from '@tests/js/utils';
+import SetupForm from './SetupForm';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

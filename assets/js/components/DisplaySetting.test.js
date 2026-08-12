@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
+import { render } from '@tests/js/test-utils';
 import DisplaySetting from './DisplaySetting';
-import { render } from '../../../tests/js/test-utils';
 
 describe( 'DisplaySetting', () => {
 	it( 'returns non-empty string unchanged', () => {

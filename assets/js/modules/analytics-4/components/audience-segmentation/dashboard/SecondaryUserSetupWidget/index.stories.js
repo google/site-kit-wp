@@ -24,19 +24,19 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies.
  */
-import SecondaryUserSetupWidgetWidget from '.';
-import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import {
 	freezeFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
-} from '../../../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
+import SecondaryUserSetupWidgetWidget from '.';
 
 const userAuthenticationEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/user/data/authentication'
@@ -80,6 +80,31 @@ InsufficientPermissionError.args = {
 	},
 };
 
+export const InsufficientPermissionErrorSetupFlowRefreshPhase4 = Template.bind(
+	{}
+);
+InsufficientPermissionErrorSetupFlowRefreshPhase4.storyName =
+	'Insufficient permission error, setupFlowRefreshPhase4 enabled';
+InsufficientPermissionErrorSetupFlowRefreshPhase4.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+
+		const errorResponse = {
+			code: 'test_error',
+			message: 'Error message.',
+			data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+		};
+
+		fetchMock.post( syncAvailableAudiencesEndpoint, {
+			body: errorResponse,
+			status: 403,
+		} );
+	},
+};
+InsufficientPermissionErrorSetupFlowRefreshPhase4.parameters = {
+	features: [ 'setupFlowRefreshPhase4' ],
+};
+
 export const SetupError = Template.bind( {} );
 SetupError.storyName = 'Setup error';
 SetupError.args = {
@@ -99,11 +124,22 @@ SetupError.args = {
 	},
 };
 
+export const SetupErrorSetupFlowRefreshPhase4 = Template.bind( {} );
+SetupErrorSetupFlowRefreshPhase4.storyName =
+	'Setup error, setupFlowRefreshPhase4 enabled';
+SetupErrorSetupFlowRefreshPhase4.args = SetupError.args;
+SetupErrorSetupFlowRefreshPhase4.parameters = {
+	features: [ 'setupFlowRefreshPhase4' ],
+};
+SetupErrorSetupFlowRefreshPhase4.scenario = {};
+
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/SecondaryUserSetupWidget',
 	decorators: [
 		( Story, { args } ) => {
 			async function setupRegistry( registry ) {
+				fetchMock.reset();
+
 				provideModules( registry, [
 					{
 						active: true,

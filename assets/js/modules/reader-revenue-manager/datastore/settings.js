@@ -20,23 +20,25 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import { invalidateCache } from 'googlesitekit-api';
-import { MODULES_READER_REVENUE_MANAGER } from './constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { isFeatureEnabled } from '@/js/features';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
 } from '@/js/googlesitekit/data/create-settings-store';
 import { createStrictSelect } from '@/js/googlesitekit/data/utils';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
-	isValidPublicationID,
 	isValidOnboardingState,
+	isValidPublicationID,
 	isValidSnippetMode,
 } from '@/js/modules/reader-revenue-manager/utils/validation';
+import { MODULES_READER_REVENUE_MANAGER } from './constants';
 // Invariant error messages.
 export const INVARIANT_INVALID_PUBLICATION_ID =
 	'a valid publicationID is required';
@@ -63,6 +65,12 @@ export const INVARIANT_INVALID_CONTENT_POLICY_STATE =
 
 export const INVARIANT_INVALID_POLICY_INFO_LINK =
 	'a valid policy info link string is required';
+
+export const INVARIANT_INVALID_ORGANIZATION_ID =
+	'a valid organization ID string is required';
+
+export const INVARIANT_INVALID_CONFIGURED_CTAS =
+	'a valid configured CTAs object is required';
 
 export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );
@@ -145,6 +153,25 @@ export function validateCanSubmitChanges( select ) {
 		typeof policyInfoLink === 'string',
 		INVARIANT_INVALID_POLICY_INFO_LINK
 	);
+
+	if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
+		const { organizationID, configuredCTAs } = strictSelect(
+			MODULES_READER_REVENUE_MANAGER
+		).getSettings();
+
+		invariant(
+			typeof organizationID === 'string',
+			INVARIANT_INVALID_ORGANIZATION_ID
+		);
+
+		invariant(
+			isPlainObject( configuredCTAs ) &&
+				Object.values( configuredCTAs ).every(
+					( ctaType ) => typeof ctaType === 'string'
+				),
+			INVARIANT_INVALID_CONFIGURED_CTAS
+		);
+	}
 }
 
 export async function submitChanges( { dispatch, select } ) {

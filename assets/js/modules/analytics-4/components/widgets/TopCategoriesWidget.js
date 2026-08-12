@@ -29,40 +29,36 @@ import { compose } from '@wordpress/compose';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import {
-	CORE_USER,
-	KM_ANALYTICS_TOP_CATEGORIES,
-} from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { listFormat, numFmt } from '@/js/util';
-import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
 } from '@/js/components/KeyMetrics';
-import whenActive from '@/js/util/when-active';
-import withCustomDimensions from '@/js/modules/analytics-4/utils/withCustomDimensions';
-import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_CATEGORIES,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { splitCategories } from '@/js/modules/analytics-4/utils';
+import withCustomDimensions from '@/js/modules/analytics-4/utils/withCustomDimensions';
+import { listFormat, numFmt } from '@/js/util';
+import whenActive from '@/js/util/when-active';
+import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 /**
- * Gets the report options for the Top Categories widget.
+ * Builds the Analytics 4 report options for the Top Categories metric.
  *
- * @since 1.113.0
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
  *
- * @param {Function} select Data store 'select' function.
- * @return {Object} The report options.
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range.
+ * @return {Object} The Analytics 4 `getReport` options.
  */
-function getReportOptions( select ) {
-	const dates = select( CORE_USER ).getDateRangeDates( {
-		offsetDays: DATE_RANGE_OFFSET,
-	} );
-
+export function getTopCategoriesReportOptions( dates ) {
 	return {
 		...dates,
 		dimensions: [ 'customEvent:googlesitekit_post_categories' ],
@@ -86,6 +82,20 @@ function getReportOptions( select ) {
 		keepEmptyRows: false,
 		reportID: 'analytics-4_top-categories-widget_widget_reportOptions',
 	};
+}
+
+/**
+ * Gets the report options for the Top Categories widget.
+ *
+ * @since 1.113.0
+ *
+ * @param {Function} select Data store 'select' function.
+ * @return {Object} The report options.
+ */
+function getReportOptions( select ) {
+	return getTopCategoriesReportOptions(
+		select( CORE_USER ).getDateRangeDates()
+	);
 }
 
 function TopCategoriesWidget( { Widget } ) {

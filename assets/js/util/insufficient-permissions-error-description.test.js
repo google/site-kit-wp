@@ -16,6 +16,10 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { enabledFeatures } from '@/js/features';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { getInsufficientPermissionsErrorDescription } from './insufficient-permissions-error-description';
@@ -172,6 +176,43 @@ describe( 'getInsufficientPermissionsErrorDescription', () => {
 			( error, module, expected ) => {
 				expect(
 					getInsufficientPermissionsErrorDescription( error, module )
+				).toBe( expected );
+			}
+		);
+	} );
+
+	describe( 'with setupFlowRefreshPhase4 enabled', () => {
+		beforeEach( () => {
+			enabledFeatures.add( 'setupFlowRefreshPhase4' );
+		} );
+
+		afterEach( () => {
+			enabledFeatures.delete( 'setupFlowRefreshPhase4' );
+		} );
+
+		const apollo = {
+			slug: 'apollo-module',
+			name: 'Apollo',
+		};
+
+		const cases = [
+			[
+				'without an owner login',
+				{ ...apollo },
+				'Your Google account does not have sufficient permissions to access Apollo data, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator, you can contact them for more information.',
+			],
+			[
+				'with an owner login',
+				{ ...apollo, owner: { login: 'bar' } },
+				'Your Google account does not have sufficient permissions to access Apollo data, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar", you can contact them for more information.',
+			],
+		];
+
+		it.each( cases )(
+			'should use the correct separator when %s',
+			( _, module, expected ) => {
+				expect(
+					getInsufficientPermissionsErrorDescription( '', module )
 				).toBe( expected );
 			}
 		);

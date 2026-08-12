@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { renderHook } from '../../../../../../../../tests/js/test-utils';
+import { renderHook } from '@tests/js/test-utils';
 import usePieChartSlices from './usePieChartSlices';
 
 const PIE_CHART_COLORS = [

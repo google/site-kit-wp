@@ -14,8 +14,11 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Exception\Exchange_Site_Code_Exception;
 use Google\Site_Kit\Core\Authentication\Exception\Missing_Verification_Exception;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Is_Widget_Area_Hidden;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Remote_Features;
 
 /**
@@ -211,6 +214,13 @@ class Setup {
 			$this->user_options->set( OAuth_Client::OPTION_REDIRECT_URL, $redirect_url );
 		}
 
+		if ( Feature_Flags::enabled( 'setupFlowRefreshPhase4' ) ) {
+			$options = new Options( $this->context );
+
+			$key_metrics_setup_is_widget_area_hidden = new Key_Metrics_Setup_Is_Widget_Area_Hidden( $options );
+			$key_metrics_setup_is_widget_area_hidden->set( true );
+		}
+
 		wp_safe_redirect( $oauth_setup_redirect );
 		exit;
 	}
@@ -315,7 +325,7 @@ class Setup {
 	 * Verifies the given nonce for a setup action.
 	 *
 	 * The nonce passed from the proxy will always be the one initially provided to it.
-	 * {@see Google_Proxy::setup_url()}
+	 * {@see Google_Proxy::setup_url()}.
 	 *
 	 * @since 1.48.0
 	 *

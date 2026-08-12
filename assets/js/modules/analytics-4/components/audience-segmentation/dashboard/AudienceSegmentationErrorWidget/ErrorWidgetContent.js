@@ -30,15 +30,15 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Cell, Grid, Row } from '@/js/material-components';
+import Typography from '@/js/components/Typography';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
-import AudienceSegmentationErrorSVG from '@/svg/graphics/audience-segmentation-error-full-width.svg';
+import { Cell, Grid, Row } from '@/js/material-components';
 import { isInsufficientPermissionsError } from '@/js/util/errors';
-import Typography from '@/js/components/Typography';
+import AudienceSegmentationErrorSVG from '@/svg/graphics/audience-segmentation-error-full-width.svg';
 import ErrorWidgetDetails from './ErrorWidgetDetails';
 
 const ErrorWidgetContent = forwardRef(

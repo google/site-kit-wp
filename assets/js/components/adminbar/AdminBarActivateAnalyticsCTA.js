@@ -24,11 +24,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import TrafficGraph from '@/svg/graphics/cta-graph-traffic.svg';
-import VisitorsGraph from '@/svg/graphics/cta-graph-visitors.svg';
 import AnalyticsCTA from '@/js/components/ActivateAnalyticsCTA';
 import PreviewGraph from '@/js/components/PreviewGraph';
 import { useFeature } from '@/js/hooks/useFeature';
+import TrafficGraph from '@/svg/graphics/cta-graph-traffic.svg';
+import VisitorsGraph from '@/svg/graphics/cta-graph-visitors.svg';
 
 export default function AdminBarActivateAnalyticsCTA() {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );

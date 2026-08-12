@@ -22,61 +22,101 @@
 import fetchMock from 'fetch-mock';
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
+import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
+import { getWelcomeTour } from '@/js/feature-tours/welcome';
+import { setItem } from '@/js/googlesitekit/api/cache';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import {
+	CORE_USER,
+	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
+	PERMISSION_AUTHENTICATE,
+	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import * as tracking from '@/js/util/tracking';
+import { provideGatheringDataState } from '@tests/js/gathering-data-utils';
+import { mockBrowserScrolling } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
 	render,
 	waitFor,
-} from 'tests/js/test-utils';
+} from '@tests/js/test-utils';
 import {
 	freezeFetch,
 	provideModules,
 	provideUserAuthentication,
 	provideUserCapabilities,
-} from 'tests/js/utils';
-import { mockBrowserScrolling } from 'tests/js/mock-browser-utils';
-import { provideGatheringDataState } from 'tests/js/gathering-data-utils';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import {
-	CORE_USER,
-	PERMISSION_AUTHENTICATE,
-	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
-	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
-	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
-} from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { getWelcomeTour } from '@/js/feature-tours/welcome';
-import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
-import WelcomeModal from './WelcomeModal';
-import * as tracking from '@/js/util/tracking';
-import { setItem } from '@/js/googlesitekit/api/cache';
-import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+} from '@tests/js/utils';
+import WelcomeModal, { WELCOME_MODAL_NOTIFICATION } from './WelcomeModal';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+const WelcomeModalComponent = withNotificationComponentProps(
+	WELCOME_MODAL_NOTIFICATION
+)( WelcomeModal );
 
 const mockWelcomeTour = getWelcomeTour( {
 	isViewOnly: false,
 	canAuthenticate: true,
 	isAnalyticsConnected: false,
 	isActivateAnalyticsNotificationPresent: false,
+	isAudienceSegmentationWidgetPresent: false,
+	isKeyMetricsWidgetPresent: false,
 } );
 
 jest.mock( '@/js/feature-tours/hooks/useWelcomeTour' );
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: () => ( {
-		isIntersecting: true,
-		intersectionRatio: 1,
-	} ),
-} ) );
+/**
+ * The modal graphic is wrapped in `withIntersectionObserver`, which observes
+ * its element with the native `IntersectionObserver`. jsdom has none, so use a
+ * stub that reports the element as in view the moment it observes it. This
+ * makes the modal send its `view_notice` event on render, as these tests
+ * expect.
+ */
+class InViewIntersectionObserver {
+	callback: IntersectionObserverCallback;
+
+	constructor( callback: IntersectionObserverCallback ) {
+		this.callback = callback;
+	}
+
+	observe( element: Element ) {
+		this.callback(
+			[
+				{
+					isIntersecting: true,
+					intersectionRatio: 1,
+					target: element,
+				} as IntersectionObserverEntry,
+			],
+			this as unknown as IntersectionObserver
+		);
+	}
+
+	unobserve() {}
+
+	disconnect() {}
+}
 
 describe( 'WelcomeModal', () => {
 	let registry: WPDataRegistry;
@@ -174,7 +214,12 @@ describe( 'WelcomeModal', () => {
 			] );
 	}
 
+	const originalIntersectionObserver = global.IntersectionObserver;
+
 	beforeEach( () => {
+		global.IntersectionObserver =
+			InViewIntersectionObserver as unknown as typeof IntersectionObserver;
+
 		registry = createTestRegistry();
 
 		fetchMock.post( dismissItemEndpoint, {
@@ -187,11 +232,22 @@ describe( 'WelcomeModal', () => {
 		} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
+
+		// Register the notification so `dismissNotification()` can look up its
+		// settings when the modal closes and does not throw.
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification(
+				WELCOME_MODAL_NOTIFICATION,
+				DEFAULT_NOTIFICATIONS[ WELCOME_MODAL_NOTIFICATION ]
+			);
 
 		jest.mocked( useWelcomeTour ).mockReturnValue( mockWelcomeTour );
 	} );
 
 	afterEach( () => {
+		global.IntersectionObserver = originalIntersectionObserver;
 		mockTrackEvent.mockClear();
 	} );
 
@@ -224,7 +280,7 @@ describe( 'WelcomeModal', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		const { container, getByText, getByRole, waitForRegistry } = render(
-			<WelcomeModal />,
+			<WelcomeModalComponent />,
 			{
 				registry,
 			}
@@ -273,7 +329,7 @@ describe( 'WelcomeModal', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		const { container, getByText, getByRole, waitForRegistry } = render(
-			<WelcomeModal />,
+			<WelcomeModalComponent />,
 			{
 				registry,
 			}
@@ -294,6 +350,27 @@ describe( 'WelcomeModal', () => {
 		).toBeInTheDocument();
 		expect(
 			getByRole( 'button', { name: 'Start tour' } )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should show the view-only data available description when setupFlowRefreshPhase4 is enabled', async () => {
+		provideDataAvailableVariantData();
+
+		const { getByText, waitForRegistry } = render(
+			<WelcomeModalComponent />,
+			{
+				features: [ 'setupFlowRefreshPhase4' ],
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByText(
+				'Take a quick tour to see the most important parts of your dashboard'
+			)
 		).toBeInTheDocument();
 	} );
 
@@ -319,8 +396,12 @@ describe( 'WelcomeModal', () => {
 			} );
 
 			it( 'should close the modal', async () => {
-				const { container, getByRole, waitForRegistry } = render(
-					<WelcomeModal />,
+				const dismissNotification = jest.fn();
+				registry.dispatch( CORE_NOTIFICATIONS ).dismissNotification =
+					dismissNotification;
+
+				const { getByRole, waitForRegistry } = render(
+					<WelcomeModalComponent />,
 					{
 						registry,
 					}
@@ -336,12 +417,16 @@ describe( 'WelcomeModal', () => {
 					expect( fetchMock ).toHaveFetchedTimes( 3 );
 				} );
 
-				expect( container ).toBeEmptyDOMElement();
+				// Closing the modal now removes it from the notification queue
+				// rather than relying on local `isOpen` state.
+				expect( dismissNotification ).toHaveBeenCalledWith(
+					WELCOME_MODAL_NOTIFICATION
+				);
 			} );
 
 			it( 'should dismiss the items for both the with-tour and gathering data variants', async () => {
 				const { getByRole, waitForRegistry } = render(
-					<WelcomeModal />,
+					<WelcomeModalComponent />,
 					{
 						registry,
 					}
@@ -397,7 +482,7 @@ describe( 'WelcomeModal', () => {
 			} );
 
 			const { getByRole, waitForRegistry } = render(
-				<WelcomeModal />,
+				<WelcomeModalComponent />,
 				{
 					registry,
 				}
@@ -419,6 +504,14 @@ describe( 'WelcomeModal', () => {
 				content:
 					'You can always take the dashboard tour from the help menu',
 				dismissLabel: 'Got it',
+				floaterProps: {
+					styles: {
+						arrow: {
+							margin: 42,
+						},
+					},
+				},
+				isCenteredOnMobile: false,
 			} );
 
 			await waitFor( () => {
@@ -444,9 +537,12 @@ describe( 'WelcomeModal', () => {
 			status: 200,
 		} );
 
-		const { getByRole, waitForRegistry } = render( <WelcomeModal />, {
-			registry,
-		} );
+		const { getByRole, waitForRegistry } = render(
+			<WelcomeModalComponent />,
+			{
+				registry,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -481,10 +577,13 @@ describe( 'WelcomeModal', () => {
 			status: 200,
 		} );
 
-		const { getByRole, waitForRegistry } = render( <WelcomeModal />, {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-		} );
+		const { getByRole, waitForRegistry } = render(
+			<WelcomeModalComponent />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -539,7 +638,7 @@ describe( 'WelcomeModal', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		const { container, getByText, getByRole, waitForRegistry } = render(
-			<WelcomeModal />,
+			<WelcomeModalComponent />,
 			{
 				registry,
 			}
@@ -581,7 +680,7 @@ describe( 'WelcomeModal', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		const { container, getByText, getByRole, waitForRegistry } = render(
-			<WelcomeModal />,
+			<WelcomeModalComponent />,
 			{
 				registry,
 			}
@@ -602,6 +701,31 @@ describe( 'WelcomeModal', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should show the view-only gathering data description when setupFlowRefreshPhase4 is enabled', async () => {
+		provideGatheringDataVariantData();
+
+		const { getByText, queryByText, waitForRegistry } = render(
+			<WelcomeModalComponent />,
+			{
+				features: [ 'setupFlowRefreshPhase4' ],
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByText(
+				'Site Kit is gathering data and soon metrics for your site will show on your dashboard'
+			)
+		).toBeInTheDocument();
+
+		expect(
+			queryByText( /Initial setup complete!/ )
+		).not.toBeInTheDocument();
+	} );
+
 	describe.each( [ 'Get started', 'Close' ] )(
 		'when the "%s" button is clicked for the gathering data variant',
 		( buttonText ) => {
@@ -616,8 +740,12 @@ describe( 'WelcomeModal', () => {
 
 			// eslint-disable-next-line jest/no-identical-title -- The nested describe block distinguishes the test titles.
 			it( 'should close the modal', async () => {
-				const { container, getByRole, waitForRegistry } = render(
-					<WelcomeModal />,
+				const dismissNotification = jest.fn();
+				registry.dispatch( CORE_NOTIFICATIONS ).dismissNotification =
+					dismissNotification;
+
+				const { getByRole, waitForRegistry } = render(
+					<WelcomeModalComponent />,
 					{
 						registry,
 					}
@@ -635,12 +763,16 @@ describe( 'WelcomeModal', () => {
 					expect( fetchMock ).toHaveFetchedTimes( 2 );
 				} );
 
-				expect( container ).toBeEmptyDOMElement();
+				// Closing the modal now removes it from the notification queue
+				// rather than relying on local `isOpen` state.
+				expect( dismissNotification ).toHaveBeenCalledWith(
+					WELCOME_MODAL_NOTIFICATION
+				);
 			} );
 
 			it( 'should dismiss the item for the gathering data variant', async () => {
 				const { getByRole, waitForRegistry } = render(
-					<WelcomeModal />,
+					<WelcomeModalComponent />,
 					{
 						registry,
 					}
@@ -667,7 +799,7 @@ describe( 'WelcomeModal', () => {
 
 			it( 'should not show a tooltip', async () => {
 				const { getByRole, waitForRegistry } = render(
-					<WelcomeModal />,
+					<WelcomeModalComponent />,
 					{
 						registry,
 					}
@@ -724,7 +856,7 @@ describe( 'WelcomeModal', () => {
 			] );
 
 		const { container, getByText, getByRole, waitForRegistry } = render(
-			<WelcomeModal />,
+			<WelcomeModalComponent />,
 			{
 				registry,
 			}
@@ -777,7 +909,7 @@ describe( 'WelcomeModal', () => {
 			] );
 
 		const { container, getByText, getByRole, waitForRegistry } = render(
-			<WelcomeModal />,
+			<WelcomeModalComponent />,
 			{
 				registry,
 			}
@@ -815,8 +947,12 @@ describe( 'WelcomeModal', () => {
 
 			// eslint-disable-next-line jest/no-identical-title -- The nested describe block distinguishes the test titles.
 			it( 'should close the modal', async () => {
-				const { container, getByRole, waitForRegistry } = render(
-					<WelcomeModal />,
+				const dismissNotification = jest.fn();
+				registry.dispatch( CORE_NOTIFICATIONS ).dismissNotification =
+					dismissNotification;
+
+				const { getByRole, waitForRegistry } = render(
+					<WelcomeModalComponent />,
 					{
 						registry,
 					}
@@ -832,12 +968,16 @@ describe( 'WelcomeModal', () => {
 					expect( fetchMock ).toHaveFetchedTimes( 1 );
 				} );
 
-				expect( container ).toBeEmptyDOMElement();
+				// Closing the modal now removes it from the notification queue
+				// rather than relying on local `isOpen` state.
+				expect( dismissNotification ).toHaveBeenCalledWith(
+					WELCOME_MODAL_NOTIFICATION
+				);
 			} );
 
 			it( 'should dismiss the item for the with-tour variants', async () => {
 				const { getByRole, waitForRegistry } = render(
-					<WelcomeModal />,
+					<WelcomeModalComponent />,
 					{
 						registry,
 					}
@@ -875,7 +1015,7 @@ describe( 'WelcomeModal', () => {
 			} );
 
 			const { getByRole, waitForRegistry } = render(
-				<WelcomeModal />,
+				<WelcomeModalComponent />,
 				{
 					registry,
 				}
@@ -897,6 +1037,14 @@ describe( 'WelcomeModal', () => {
 				content:
 					'You can always take the dashboard tour from the help menu',
 				dismissLabel: 'Got it',
+				floaterProps: {
+					styles: {
+						arrow: {
+							margin: 42,
+						},
+					},
+				},
+				isCenteredOnMobile: false,
 			} );
 
 			await waitFor( () => {
@@ -938,9 +1086,12 @@ describe( 'WelcomeModal', () => {
 				WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
 			] );
 
-		const { container, waitForRegistry } = render( <WelcomeModal />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<WelcomeModalComponent />,
+			{
+				registry,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -955,9 +1106,12 @@ describe( 'WelcomeModal', () => {
 			status: 200,
 		} );
 
-		const { getByRole, waitForRegistry } = render( <WelcomeModal />, {
-			registry,
-		} );
+		const { getByRole, waitForRegistry } = render(
+			<WelcomeModalComponent />,
+			{
+				registry,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -1008,13 +1162,20 @@ describe( 'WelcomeModal', () => {
 			beforeEach( () => {
 				provideData();
 				freezeFetch( dismissItemEndpoint, { repeat: 3 } );
+
+				// The `view_notice` event is now emitted by the `Notification`
+				// wrapper once the notification is marked viewed. Seed the
+				// viewed state so it fires synchronously on mount.
+				registry
+					.dispatch( CORE_UI )
+					.setValue( 'notification/welcome-modal/viewed', true );
 			} );
 
 			it( 'should track the `setup_flow_v3_complete_site_setup` and `setup_flow_v3_complete_user_setup` events only once', async () => {
 				await setItem( 'start_site_setup', true );
 				await setItem( 'start_user_setup', true );
 
-				const { waitForRegistry } = render( <WelcomeModal />, {
+				const { waitForRegistry } = render( <WelcomeModalComponent />, {
 					registry,
 					viewContext: 'test-context',
 				} );
@@ -1034,7 +1195,7 @@ describe( 'WelcomeModal', () => {
 
 				mockTrackEvent.mockClear();
 
-				render( <WelcomeModal />, {
+				render( <WelcomeModalComponent />, {
 					registry,
 					viewContext: 'test-context',
 				} );
@@ -1044,12 +1205,13 @@ describe( 'WelcomeModal', () => {
 				expect( mockTrackEvent ).toHaveBeenCalledWith(
 					'test-context_welcome-modal',
 					'view_notice',
-					expectedLabel
+					expectedLabel,
+					undefined
 				);
 			} );
 
 			it( 'should track the `view_notice` event with the correct label', async () => {
-				const { waitForRegistry } = render( <WelcomeModal />, {
+				const { waitForRegistry } = render( <WelcomeModalComponent />, {
 					registry,
 					viewContext: 'test-context',
 				} );
@@ -1059,13 +1221,14 @@ describe( 'WelcomeModal', () => {
 				expect( mockTrackEvent ).toHaveBeenCalledWith(
 					'test-context_welcome-modal',
 					'view_notice',
-					expectedLabel
+					expectedLabel,
+					undefined
 				);
 			} );
 
 			it( `should track the \`confirm_notice\` event when the \`${ confirmationButton }\` button is clicked`, async () => {
 				const { getByRole, waitForRegistry } = render(
-					<WelcomeModal />,
+					<WelcomeModalComponent />,
 					{
 						registry,
 						viewContext: 'test-context',
@@ -1096,7 +1259,7 @@ describe( 'WelcomeModal', () => {
 				'should track the `dismiss_notice` event when the `%s` button is clicked',
 				async ( button ) => {
 					const { getByRole, waitForRegistry } = render(
-						<WelcomeModal />,
+						<WelcomeModalComponent />,
 						{
 							registry,
 							viewContext: 'test-context',
@@ -1143,7 +1306,7 @@ describe( 'WelcomeModal', () => {
 				body: { success: true },
 			} );
 
-			const { waitForRegistry } = render( <WelcomeModal />, {
+			const { waitForRegistry } = render( <WelcomeModalComponent />, {
 				registry,
 			} );
 
@@ -1165,7 +1328,7 @@ describe( 'WelcomeModal', () => {
 	it( 'should not dismiss the initial setup notification timeout when the modal variant is DATA_GATHERING_COMPLETE', async () => {
 		provideDataGatheringCompleteVariantData();
 
-		const { waitForRegistry } = render( <WelcomeModal />, {
+		const { waitForRegistry } = render( <WelcomeModalComponent />, {
 			registry,
 		} );
 

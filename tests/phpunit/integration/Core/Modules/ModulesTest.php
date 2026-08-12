@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Modules;
 
@@ -58,7 +56,8 @@ class ModulesTest extends TestCase {
 				'sign-in-with-google'    => 'Google\\Site_Kit\\Modules\\Sign_In_With_Google',
 				'reader-revenue-manager' => 'Google\\Site_Kit\\Modules\\Reader_Revenue_Manager',
 			),
-			$available
+			$available,
+			'Available modules should include expected core modules.'
 		);
 	}
 
@@ -85,7 +84,8 @@ class ModulesTest extends TestCase {
 				'sign-in-with-google'    => 'Google\\Site_Kit\\Modules\\Sign_In_With_Google',
 				'reader-revenue-manager' => 'Google\\Site_Kit\\Modules\\Reader_Revenue_Manager',
 			),
-			$available
+			$available,
+			'Available modules should include RRM when feature enabled.'
 		);
 	}
 
@@ -112,7 +112,8 @@ class ModulesTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			$always_on_modules + $default_active_modules,
-			array_map( 'get_class', $modules->get_active_modules() )
+			array_map( 'get_class', $modules->get_active_modules() ),
+			'Active modules should include expected module classes.'
 		);
 
 		// Active modules other than always-on modules are stored in an option.
@@ -124,7 +125,8 @@ class ModulesTest extends TestCase {
 			$always_on_modules + array(
 				'analytics-4' => 'Google\\Site_Kit\\Modules\\Analytics_4',
 			),
-			array_map( 'get_class', $modules->get_active_modules() )
+			array_map( 'get_class', $modules->get_active_modules() ),
+			'Active modules should include expected module classes.'
 		);
 
 		// If the modern option is set, it will take precedence over legacy (set or not).
@@ -134,7 +136,8 @@ class ModulesTest extends TestCase {
 			$always_on_modules + array(
 				'adsense' => 'Google\\Site_Kit\\Modules\\AdSense',
 			),
-			array_map( 'get_class', $modules->get_active_modules() )
+			array_map( 'get_class', $modules->get_active_modules() ),
+			'Modern active option should override legacy active option.'
 		);
 	}
 
@@ -149,16 +152,16 @@ class ModulesTest extends TestCase {
 
 		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
 
-		$this->assertFalse( $fake_module->is_registered() );
+		$this->assertFalse( $fake_module->is_registered(), 'Fake module should start unregistered before register().' );
 		$modules->register();
-		$this->assertTrue( $fake_module->is_registered() );
+		$this->assertTrue( $fake_module->is_registered(), 'Register should register contained module instances.' );
 
-		$this->assertTrue( has_filter( 'googlesitekit_features_request_data' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_module_exists' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_is_module_recoverable' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_is_module_connected' ) );
-		$this->assertTrue( apply_filters( 'googlesitekit_module_exists', null, 'fake-module' ) );
-		$this->assertFalse( apply_filters( 'googlesitekit_module_exists', null, 'non-existent-module' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_features_request_data' ), 'Register should add feature request data filter.' );
+		$this->assertTrue( has_filter( 'googlesitekit_module_exists' ), 'Register should add module existence filter.' );
+		$this->assertTrue( has_filter( 'googlesitekit_is_module_recoverable' ), 'Register should add module recoverability filter.' );
+		$this->assertTrue( has_filter( 'googlesitekit_is_module_connected' ), 'Register should add module connection filter.' );
+		$this->assertTrue( apply_filters( 'googlesitekit_module_exists', null, 'fake-module' ), 'Module existence filter should find registered fake module.' );
+		$this->assertFalse( apply_filters( 'googlesitekit_module_exists', null, 'non-existent-module' ), 'Module existence filter should reject missing module.' );
 	}
 
 	public function test_get_module() {
@@ -167,20 +170,20 @@ class ModulesTest extends TestCase {
 
 		$search_console_module = $modules->get_module( 'search-console' );
 
-		$this->assertEquals( $available['search-console'], $search_console_module );
+		$this->assertEquals( $available['search-console'], $search_console_module, 'get_module should return available module instance.' );
 	}
 
 	public function test_get_module_exception() {
 		$modules     = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$module_slug = 'non-existent-module';
 
-		$this->assertArrayNotHasKey( $module_slug, $modules->get_available_modules() );
+		$this->assertArrayNotHasKey( $module_slug, $modules->get_available_modules(), 'Missing module slug should not be registered.' );
 
 		try {
 			$modules->get_module( $module_slug );
 		} catch ( \Exception $exception ) {
 			// We expect an exception to be thrown, let's make sure it's the right one.
-			$this->assertStringContainsString( $module_slug, $exception->getMessage() );
+			$this->assertStringContainsString( $module_slug, $exception->getMessage(), 'Missing module error should mention requested slug.' );
 
 			return;
 		}
@@ -198,13 +201,13 @@ class ModulesTest extends TestCase {
 		$modules     = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$module_slug = 'non-existent-module';
 
-		$this->assertArrayNotHasKey( $module_slug, $modules->get_available_modules() );
+		$this->assertArrayNotHasKey( $module_slug, $modules->get_available_modules(), 'Missing dependency module slug should not be registered.' );
 
 		try {
 			$modules->get_module_dependencies( $module_slug );
 		} catch ( \Exception $exception ) {
 			// We expect an exception to be thrown, let's make sure it's the right one.
-			$this->assertStringContainsString( $module_slug, $exception->getMessage() );
+			$this->assertStringContainsString( $module_slug, $exception->getMessage(), 'Missing dependency error should mention requested slug.' );
 
 			return;
 		}
@@ -217,10 +220,10 @@ class ModulesTest extends TestCase {
 		$modules     = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
-		$this->assertTrue( $modules->module_exists( 'fake-module' ) );
+		$this->assertTrue( $modules->module_exists( 'fake-module' ), 'module_exists should find registered fake module.' );
 
 		$module_slug = 'non-existent-module';
-		$this->assertFalse( $modules->module_exists( $module_slug ) );
+		$this->assertFalse( $modules->module_exists( $module_slug ), 'module_exists should reject unknown module slug.' );
 	}
 
 	public function test_get_module_dependants() {
@@ -233,13 +236,13 @@ class ModulesTest extends TestCase {
 		$modules     = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$module_slug = 'non-existent-module';
 
-		$this->assertArrayNotHasKey( $module_slug, $modules->get_available_modules() );
+		$this->assertArrayNotHasKey( $module_slug, $modules->get_available_modules(), 'Missing dependant module slug should not be registered.' );
 
 		try {
 			$modules->get_module_dependants( $module_slug );
 		} catch ( \Exception $exception ) {
 			// We expect an exception to be thrown, let's make sure it's the right one.
-			$this->assertStringContainsString( $module_slug, $exception->getMessage() );
+			$this->assertStringContainsString( $module_slug, $exception->getMessage(), 'Missing dependant error should mention requested slug.' );
 
 			return;
 		}
@@ -254,17 +257,17 @@ class ModulesTest extends TestCase {
 
 		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
 
-		// Modules can be active by presence in active modules option
-		$this->assertFalse( $modules->is_module_active( 'fake-module' ) );
+		// Modules can be active by presence in active modules option.
+		$this->assertFalse( $modules->is_module_active( 'fake-module' ), 'Fake module should not be active before activation source.' );
 		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'fake-module' ) );
-		$this->assertTrue( $modules->is_module_active( 'fake-module' ) );
+		$this->assertTrue( $modules->is_module_active( 'fake-module' ), 'Fake module should be active when enabled or forced.' );
 
 		delete_option( Modules::OPTION_ACTIVE_MODULES );
 
-		// Some modules are always active
-		$this->assertFalse( $modules->is_module_active( 'fake-module' ) );
+		// Some modules are always active.
+		$this->assertFalse( $modules->is_module_active( 'fake-module' ), 'Fake module should not be active before activation source.' );
 		$fake_module->set_force_active( true );
-		$this->assertTrue( $modules->is_module_active( 'fake-module' ) );
+		$this->assertTrue( $modules->is_module_active( 'fake-module' ), 'Fake module should be active when enabled or forced.' );
 	}
 
 	public function test_is_module_connected() {
@@ -273,18 +276,18 @@ class ModulesTest extends TestCase {
 		$modules->register();
 
 		$valid_module_slug = 'search-console';
-		$this->assertArrayHasKey( $valid_module_slug, $modules->get_available_modules() );
-		$this->assertTrue( $modules->is_module_connected( $valid_module_slug ) );
-		$this->assertTrue( apply_filters( 'googlesitekit_is_module_connected', false, $valid_module_slug ) );
+		$this->assertArrayHasKey( $valid_module_slug, $modules->get_available_modules(), 'Available modules should include module before connection check.' );
+		$this->assertTrue( $modules->is_module_connected( $valid_module_slug ), 'Connected active module should report connected.' );
+		$this->assertTrue( apply_filters( 'googlesitekit_is_module_connected', false, $valid_module_slug ), 'Connection filter should report connected active module.' );
 
 		$non_existent_module_slug = 'non-existent-module';
-		$this->assertArrayNotHasKey( $non_existent_module_slug, $modules->get_available_modules() );
-		$this->assertFalse( $modules->is_module_connected( $non_existent_module_slug ) );
-		$this->assertFalse( apply_filters( 'googlesitekit_is_module_connected', false, $non_existent_module_slug ) );
+		$this->assertArrayNotHasKey( $non_existent_module_slug, $modules->get_available_modules(), 'Unknown module should be absent before connection check.' );
+		$this->assertFalse( $modules->is_module_connected( $non_existent_module_slug ), 'Unknown module should not report connected.' );
+		$this->assertFalse( apply_filters( 'googlesitekit_is_module_connected', false, $non_existent_module_slug ), 'Connection filter should reject unknown module.' );
 
 		$inactive_module_slug = 'adsense';
 
-		$this->assertArrayHasKey( $inactive_module_slug, $modules->get_available_modules() );
+		$this->assertArrayHasKey( $inactive_module_slug, $modules->get_available_modules(), 'Available modules should include module before connection check.' );
 
 		// Update the AdSense settings to be connected.
 		update_option(
@@ -296,22 +299,22 @@ class ModulesTest extends TestCase {
 		);
 
 		// It is not possible to connect a module without activating it.
-		$this->assertFalse( $modules->is_module_connected( $inactive_module_slug ) );
-		$this->assertFalse( apply_filters( 'googlesitekit_is_module_connected', false, $inactive_module_slug ) );
+		$this->assertFalse( $modules->is_module_connected( $inactive_module_slug ), 'Inactive module should not report connected even with completed settings.' );
+		$this->assertFalse( apply_filters( 'googlesitekit_is_module_connected', false, $inactive_module_slug ), 'Connection filter should reject inactive module even with completed settings.' );
 
 		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'adsense' ) );
 
 		// Activating the module allows it to be connected.
-		$this->assertTrue( $modules->is_module_connected( $inactive_module_slug ) );
-		$this->assertTrue( apply_filters( 'googlesitekit_is_module_connected', false, $inactive_module_slug ) );
+		$this->assertTrue( $modules->is_module_connected( $inactive_module_slug ), 'Activating module should make it report connected.' );
+		$this->assertTrue( apply_filters( 'googlesitekit_is_module_connected', false, $inactive_module_slug ), 'Connection filter should report activated module as connected.' );
 	}
 
 	public function test_activate_module() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		// Attempting to activate a non-existent module returns false
-		$this->assertArrayNotHasKey( 'fake-module', $modules->get_available_modules() );
-		$this->assertFalse( $modules->activate_module( 'fake-module' ) );
+		// Attempting to activate a non-existent module returns false.
+		$this->assertArrayNotHasKey( 'fake-module', $modules->get_available_modules(), 'Unknown module should be absent before activation.' );
+		$this->assertFalse( $modules->activate_module( 'fake-module' ), 'Activation should fail for unknown module.' );
 
 		$activation_invocations = 0;
 		$fake_module            = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -323,15 +326,15 @@ class ModulesTest extends TestCase {
 
 		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
 
-		$this->assertNotContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ) );
-		$this->assertEquals( 0, $activation_invocations );
-		$this->assertTrue( $modules->activate_module( 'fake-module' ) );
-		$this->assertEquals( 1, $activation_invocations );
-		$this->assertContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ) );
+		$this->assertNotContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ), 'Active modules option should omit fake module before activation.' );
+		$this->assertEquals( 0, $activation_invocations, 'Activation hook should run only on first activation.' );
+		$this->assertTrue( $modules->activate_module( 'fake-module' ), 'Activation should succeed for available fake module.' );
+		$this->assertEquals( 1, $activation_invocations, 'Activation hook should run only on first activation.' );
+		$this->assertContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ), 'Active modules option should include activated fake module.' );
 
-		// Subsequent calls to activate an active module do not call the on_activation method
-		$this->assertTrue( $modules->activate_module( 'fake-module' ) );
-		$this->assertEquals( 1, $activation_invocations );
+		// Subsequent calls to activate an active module do not call the on_activation method.
+		$this->assertTrue( $modules->activate_module( 'fake-module' ), 'Activation should succeed for available fake module.' );
+		$this->assertEquals( 1, $activation_invocations, 'Activation hook should run only on first activation.' );
 	}
 
 	public function test_activate_module__disconnected_modules_list() {
@@ -352,23 +355,23 @@ class ModulesTest extends TestCase {
 		// Add the module to the disconnected modules list.
 		update_option( Disconnected_Modules::OPTION, array( 'fake-module' => time() ) );
 
-		$this->assertArrayHasKey( 'fake-module', get_option( Disconnected_Modules::OPTION ) );
+		$this->assertArrayHasKey( 'fake-module', get_option( Disconnected_Modules::OPTION ), 'Disconnected list should contain fake module before reactivation.' );
 
-		$this->assertTrue( $modules->activate_module( 'fake-module' ) );
+		$this->assertTrue( $modules->activate_module( 'fake-module' ), 'Activation should remove module from disconnected list.' );
 
 		// The module should be removed from the disconnected modules list upon activation.
-		$this->assertArrayNotHasKey( 'fake-module', get_option( Disconnected_Modules::OPTION ) );
+		$this->assertArrayNotHasKey( 'fake-module', get_option( Disconnected_Modules::OPTION ), 'Disconnected list should omit reactivated module.' );
 
 		// Activating a module not in the disconnected modules list should work as well.
-		$this->assertTrue( $modules->activate_module( 'fake-module-2' ) );
+		$this->assertTrue( $modules->activate_module( 'fake-module-2' ), 'Activation should remove module from disconnected list.' );
 	}
 
 	public function test_deactivate_module() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		// Attempting to deactivate a non-existent module returns false
-		$this->assertArrayNotHasKey( 'fake-module', $modules->get_available_modules() );
-		$this->assertFalse( $modules->deactivate_module( 'fake-module' ) );
+		// Attempting to deactivate a non-existent module returns false.
+		$this->assertArrayNotHasKey( 'fake-module', $modules->get_available_modules(), 'Unknown module should be absent before deactivation.' );
+		$this->assertFalse( $modules->deactivate_module( 'fake-module' ), 'Deactivation should fail when module cannot be deactivated.' );
 
 		$deactivation_invocations = 0;
 		$fake_module              = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -381,22 +384,22 @@ class ModulesTest extends TestCase {
 		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
 		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'fake-module' ) );
 
-		$this->assertContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ) );
+		$this->assertContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ), 'Active modules option should contain fake module before deactivation.' );
 
-		// Force-active modules cannot be deactivated
+		// Force-active modules cannot be deactivated.
 		$fake_module->set_force_active( true );
-		$this->assertFalse( $modules->deactivate_module( 'fake-module' ) );
-		$this->assertEquals( 0, $deactivation_invocations );
-		$this->assertContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ) );
+		$this->assertFalse( $modules->deactivate_module( 'fake-module' ), 'Deactivation should fail when module cannot be deactivated.' );
+		$this->assertEquals( 0, $deactivation_invocations, 'Deactivation hook should run only on first deactivation.' );
+		$this->assertContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ), 'Active modules option should contain fake module before deactivation.' );
 
 		$fake_module->set_force_active( false );
-		$this->assertTrue( $modules->deactivate_module( 'fake-module' ) );
-		$this->assertEquals( 1, $deactivation_invocations );
-		$this->assertNotContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ) );
+		$this->assertTrue( $modules->deactivate_module( 'fake-module' ), 'Deactivation should succeed for active fake module.' );
+		$this->assertEquals( 1, $deactivation_invocations, 'Deactivation hook should run only on first deactivation.' );
+		$this->assertNotContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ), 'Active modules option should omit deactivated module.' );
 
-		// Subsequent calls to deactivate an inactive module do not call the on_deactivation method
-		$this->assertTrue( $modules->deactivate_module( 'fake-module' ) );
-		$this->assertEquals( 1, $deactivation_invocations );
+		// Subsequent calls to deactivate an inactive module do not call the on_deactivation method.
+		$this->assertTrue( $modules->deactivate_module( 'fake-module' ), 'Deactivation should succeed for active fake module.' );
+		$this->assertEquals( 1, $deactivation_invocations, 'Deactivation hook should run only on first deactivation.' );
 	}
 
 	public function test_deactivate_module__disconnected_modules_list() {
@@ -410,12 +413,12 @@ class ModulesTest extends TestCase {
 		$this->assertContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ), 'The active modules option should contain the fake module initially.' );
 		$this->assertFalse( get_option( Disconnected_Modules::OPTION ), 'The disconnected modules option should be empty initially.' );
 
-		$this->assertTrue( $modules->deactivate_module( 'fake-module', true ) );
+		$this->assertTrue( $modules->deactivate_module( 'fake-module', true ), 'Deactivation should add module to disconnected list when requested.' );
 
 		$this->assertNotContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ), 'The active modules option should not contain the fake module after deactivation.' );
 		$disconnected_modules = get_option( Disconnected_Modules::OPTION );
 		$this->assertArrayHasKey( 'fake-module', $disconnected_modules, 'The disconnected modules setting should contain the disconnected module.' );
-		$this->assertIsInt( $disconnected_modules['fake-module'] );
+		$this->assertIsInt( $disconnected_modules['fake-module'], 'Disconnected module in disconnected modules list has a timestamp.' );
 	}
 
 	/**
@@ -429,10 +432,10 @@ class ModulesTest extends TestCase {
 
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertCount( count( $expected ), array_keys( $modules->get_available_modules() ) );
+		$this->assertCount( count( $expected ), array_keys( $modules->get_available_modules() ), 'Available modules filter should control module count.' );
 
 		foreach ( $expected as $module_slug ) {
-			$this->assertArrayHasKey( $module_slug, $modules->get_available_modules() );
+			$this->assertArrayHasKey( $module_slug, $modules->get_available_modules(), 'Available modules filter should expose custom module slug.' );
 		}
 	}
 
@@ -541,9 +544,9 @@ class ModulesTest extends TestCase {
 
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertCount( count( $expected ), array_keys( $modules->get_available_modules() ) );
+		$this->assertCount( count( $expected ), array_keys( $modules->get_available_modules() ), 'Feature flags should control available module count.' );
 		foreach ( $expected as $slug ) {
-			$this->assertArrayHasKey( $slug, $modules->get_available_modules() );
+			$this->assertArrayHasKey( $slug, $modules->get_available_modules(), 'Feature flags should expose enabled module slug.' );
 		}
 	}
 
@@ -571,7 +574,8 @@ class ModulesTest extends TestCase {
 				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 			),
-			$shareable_modules
+			$shareable_modules,
+			'Shareable modules should include expected module classes.'
 		);
 
 		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'search-console', 'pagespeed-insights', 'adsense' ) );
@@ -584,7 +588,8 @@ class ModulesTest extends TestCase {
 				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 			),
-			$shareable_modules
+			$shareable_modules,
+			'Shareable modules should include expected module classes.'
 		);
 
 		// Update the AdSense settings to be connected.
@@ -605,7 +610,8 @@ class ModulesTest extends TestCase {
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
 			),
-			$shareable_modules
+			$shareable_modules,
+			'Shareable modules should include expected module classes.'
 		);
 	}
 
@@ -621,7 +627,8 @@ class ModulesTest extends TestCase {
 			array_map(
 				'get_class',
 				$modules->get_shared_ownership_modules()
-			)
+			),
+			'Shared ownership modules should include all-admin modules.'
 		);
 
 		// Activate non-sharable modules only.
@@ -635,7 +642,8 @@ class ModulesTest extends TestCase {
 		// Confirm that no modules are available with shared ownership.
 		$modules = new Modules( $context );
 		$this->assertEmpty(
-			$modules->get_shared_ownership_modules()
+			$modules->get_shared_ownership_modules(),
+			'Shared ownership modules should be empty when none configured.'
 		);
 	}
 
@@ -644,12 +652,12 @@ class ModulesTest extends TestCase {
 		$modules = new Modules( $context );
 
 		// Checks an invalid module returns false.
-		$this->assertFalse( $modules->is_module_recoverable( 'invalid-module' ) );
+		$this->assertFalse( $modules->is_module_recoverable( 'invalid-module' ), 'Recoverability should reject invalid or unrecoverable module.' );
 
 		// Checks Module isn't an instance of Module_With_Owner.
-		$this->assertFalse( $modules->is_module_recoverable( 'site-verification' ) );
+		$this->assertFalse( $modules->is_module_recoverable( 'site-verification' ), 'Recoverability should reject invalid or unrecoverable module.' );
 
-		// Tests with shared_roles
+		// Tests with shared_roles.
 		$test_sharing_settings = array(
 			'analytics-4'        => array(
 				'sharedRoles' => array( 'editor', 'subscriber' ),
@@ -663,18 +671,18 @@ class ModulesTest extends TestCase {
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
 		// Checks modules that don't have shared roles.
-		$this->assertFalse( $modules->is_module_recoverable( 'search-console' ) );
-		$this->assertFalse( $modules->is_module_recoverable( 'pagespeed-insights' ) );
+		$this->assertFalse( $modules->is_module_recoverable( 'search-console' ), 'Recoverability should reject invalid or unrecoverable module.' );
+		$this->assertFalse( $modules->is_module_recoverable( 'pagespeed-insights' ), 'Recoverability should reject invalid or unrecoverable module.' );
 		// Checks modules that has an owner.
-		$this->assertTrue( $modules->is_module_recoverable( 'analytics-4' ) );
+		$this->assertTrue( $modules->is_module_recoverable( 'analytics-4' ), 'Recoverability should allow active Analytics module.' );
 
-		$this->assertTrue( $modules->is_module_recoverable( new Analytics_4( $context ) ) );
+		$this->assertTrue( $modules->is_module_recoverable( new Analytics_4( $context ) ), 'Recoverability should allow active Analytics module.' );
 
 		$administrator = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$options       = new Options( $context );
 		$options->set( 'googlesitekit_analytics-4_settings', array( 'ownerID' => $administrator->ID ) );
 
-		$this->assertTrue( $modules->is_module_recoverable( 'analytics-4' ) );
+		$this->assertTrue( $modules->is_module_recoverable( 'analytics-4' ), 'Recoverability should allow active Analytics module.' );
 		$administrator_auth = new Authentication( $context, null, new User_Options( $context, $administrator->ID ) );
 		$administrator_auth->get_oauth_client()->set_token(
 			array(
@@ -683,7 +691,7 @@ class ModulesTest extends TestCase {
 		);
 
 		// Checks the default return false.
-		$this->assertFalse( $modules->is_module_recoverable( 'analytics-4' ) );
+		$this->assertFalse( $modules->is_module_recoverable( 'analytics-4' ), 'Recoverability should reject invalid or unrecoverable module.' );
 	}
 
 	private function setup_all_admin_module_ownership_change() {
@@ -719,7 +727,7 @@ class ModulesTest extends TestCase {
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], $first_admin_id );
+		$this->assertEquals( $settings['ownerID'], $first_admin_id, 'Adding all-admin settings should update owner ID when needed.' );
 
 		$second_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $second_admin->ID );
@@ -733,7 +741,7 @@ class ModulesTest extends TestCase {
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], $second_admin->ID );
+		$this->assertEquals( $settings['ownerID'], $second_admin->ID, 'Adding all-admin settings should update owner ID when needed.' );
 	}
 
 	public function test_all_admin_module_ownership_change__add_shared_roles() {
@@ -748,7 +756,7 @@ class ModulesTest extends TestCase {
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], $first_admin_id );
+		$this->assertEquals( $settings['ownerID'], $first_admin_id, 'Adding shared roles should update all-admin owner ID when needed.' );
 
 		$second_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $second_admin->ID );
@@ -763,7 +771,7 @@ class ModulesTest extends TestCase {
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], $second_admin->ID );
+		$this->assertEquals( $settings['ownerID'], $second_admin->ID, 'Adding shared roles should update all-admin owner ID when needed.' );
 	}
 
 	public function test_all_admin_module_ownership_change__reorder_shared_roles() {
@@ -778,7 +786,7 @@ class ModulesTest extends TestCase {
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], $first_admin_id );
+		$this->assertEquals( $settings['ownerID'], $first_admin_id, 'Reordering shared roles should preserve all-admin owner ID.' );
 
 		$second_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $second_admin->ID );
@@ -793,7 +801,7 @@ class ModulesTest extends TestCase {
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], $first_admin_id );
+		$this->assertEquals( $settings['ownerID'], $first_admin_id, 'Reordering shared roles should preserve all-admin owner ID.' );
 	}
 
 	public function test_all_admin_module_ownership_change__remove_shared_roles() {
@@ -808,7 +816,7 @@ class ModulesTest extends TestCase {
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], $first_admin_id );
+		$this->assertEquals( $settings['ownerID'], $first_admin_id, 'Removing shared roles should update all-admin owner ID when needed.' );
 
 		$second_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $second_admin->ID );
@@ -823,7 +831,7 @@ class ModulesTest extends TestCase {
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], $second_admin->ID );
+		$this->assertEquals( $settings['ownerID'], $second_admin->ID, 'Removing shared roles should update all-admin owner ID when needed.' );
 	}
 
 	public function test_all_admin_module_ownership_change__update_management() {
@@ -839,7 +847,7 @@ class ModulesTest extends TestCase {
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], $first_admin_id );
+		$this->assertEquals( $settings['ownerID'], $first_admin_id, 'Updating all-admin settings should update owner ID when needed.' );
 
 		$second_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $second_admin->ID );
@@ -853,7 +861,7 @@ class ModulesTest extends TestCase {
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
 		$settings = $pagespeed_insights_settings->get();
-		$this->assertEquals( $settings['ownerID'], $second_admin->ID );
+		$this->assertEquals( $settings['ownerID'], $second_admin->ID, 'Updating all-admin settings should update owner ID when needed.' );
 	}
 
 	public function test_non_all_admin_module_ownership_change() {
@@ -881,7 +889,7 @@ class ModulesTest extends TestCase {
 		$settings              = $module->get_settings()->get();
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
-		$this->assertEquals( $settings['ownerID'], 0 );
+		$this->assertEquals( $settings['ownerID'], 0, 'Owner-managed settings should not change owner ID.' );
 
 		$test_updated_sharing_settings = array(
 			'analytics-4' => array(
@@ -892,7 +900,7 @@ class ModulesTest extends TestCase {
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
 		$settings = $module->get_settings()->get();
-		$this->assertEquals( $settings['ownerID'], 0 );
+		$this->assertEquals( $settings['ownerID'], 0, 'Owner-managed settings should not change owner ID.' );
 	}
 
 	public function test_non_all_admin_module_ownership_change_shared_roles() {
@@ -923,7 +931,7 @@ class ModulesTest extends TestCase {
 		$settings              = $module->get_settings()->get();
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
-		$this->assertEquals( $settings['ownerID'], 0 );
+		$this->assertEquals( $settings['ownerID'], 0, 'Owner-managed shared roles should not change owner ID.' );
 
 		$test_updated_sharing_settings = array(
 			'analytics-4' => array(
@@ -934,7 +942,7 @@ class ModulesTest extends TestCase {
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
 		$settings = $module->get_settings()->get();
-		$this->assertEquals( $settings['ownerID'], 0 );
+		$this->assertEquals( $settings['ownerID'], 0, 'Owner-managed shared roles should not change owner ID.' );
 	}
 
 	public function test_non_all_admin_module_ownership_change_management() {
@@ -965,7 +973,7 @@ class ModulesTest extends TestCase {
 		$settings              = $module->get_settings()->get();
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
-		$this->assertEquals( $settings['ownerID'], 0 );
+		$this->assertEquals( $settings['ownerID'], 0, 'Owner-managed management changes should not change owner ID.' );
 
 		$test_updated_sharing_settings = array(
 			'analytics-4' => array(
@@ -976,7 +984,7 @@ class ModulesTest extends TestCase {
 		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
 
 		$settings = $module->get_settings()->get();
-		$this->assertEquals( $settings['ownerID'], 0 );
+		$this->assertEquals( $settings['ownerID'], 0, 'Owner-managed management changes should not change owner ID.' );
 	}
 
 	public function test_get_shareable_modules_owners() {
@@ -1021,7 +1029,7 @@ class ModulesTest extends TestCase {
 			'analytics-4'        => 2,
 			'pagespeed-insights' => 0,
 		);
-		$this->assertEqualSetsWithIndex( $expected_module_owners, $modules->get_shareable_modules_owners() );
+		$this->assertEqualSetsWithIndex( $expected_module_owners, $modules->get_shareable_modules_owners(), 'Shareable module owners should map slugs to owner IDs.' );
 	}
 
 	public function test_shared_ownership_module_default_settings() {
@@ -1039,10 +1047,10 @@ class ModulesTest extends TestCase {
 		);
 
 		$settings = apply_filters( 'option_' . Module_Sharing_Settings::OPTION, array() );
-		$this->assertEqualSetsWithIndex( $expected, $settings );
+		$this->assertEqualSetsWithIndex( $expected, $settings, 'Shared ownership module should get all-admin defaults.' );
 
 		$settings = apply_filters( 'default_option_' . Module_Sharing_Settings::OPTION, array(), '', '' );
-		$this->assertEqualSetsWithIndex( $expected, $settings );
+		$this->assertEqualSetsWithIndex( $expected, $settings, 'Shared ownership module should get all-admin defaults.' );
 	}
 
 	public function test_delete_dashboard_sharing_settings() {
@@ -1062,7 +1070,8 @@ class ModulesTest extends TestCase {
 		$settings = $sharing_settings->get();
 		$this->assertEqualSets(
 			$default_settings,
-			$settings
+			$settings,
+			'Deleting sharing settings should preserve expected modules.'
 		);
 
 		$updated_settings = array(
@@ -1076,14 +1085,16 @@ class ModulesTest extends TestCase {
 		$settings = $sharing_settings->get();
 		$this->assertEqualSets(
 			$updated_settings,
-			$settings
+			$settings,
+			'Deleting sharing settings should preserve expected modules.'
 		);
 
 		$modules->delete_dashboard_sharing_settings();
 		$settings = $sharing_settings->get();
 		$this->assertEqualSets(
 			$default_settings,
-			$settings
+			$settings,
+			'Deleting sharing settings should preserve expected modules.'
 		);
 	}
 
@@ -1098,7 +1109,8 @@ class ModulesTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			$default_connected_modules,
-			array_map( 'get_class', $modules->get_connected_modules() )
+			array_map( 'get_class', $modules->get_connected_modules() ),
+			'Connected modules should include active connected modules.'
 		);
 
 		update_option(
@@ -1119,7 +1131,8 @@ class ModulesTest extends TestCase {
 			$default_connected_modules + array(
 				'adsense' => 'Google\\Site_Kit\\Modules\\AdSense',
 			),
-			array_map( 'get_class', $modules->get_connected_modules() )
+			array_map( 'get_class', $modules->get_connected_modules() ),
+			'Connected modules should include active connected modules.'
 		);
 	}
 
@@ -1130,24 +1143,24 @@ class ModulesTest extends TestCase {
 		update_option( Modules::OPTION_ACTIVE_MODULES, array() );
 
 		$default_shareable_module = 'search-console';
-		$this->assertTrue( $modules->is_module_shareable( $default_shareable_module ) );
+		$this->assertTrue( $modules->is_module_shareable( $default_shareable_module ), 'Shareability check should allow configured shareable module.' );
 
 		// A disconnected module cannot be shareable.
-		$this->assertFalse( $modules->is_module_shareable( 'pagespeed-insights' ) );
+		$this->assertFalse( $modules->is_module_shareable( 'pagespeed-insights' ), 'Shareability check should reject non-shareable module by default.' );
 
 		// Connect a module. Note that the PageSpeed Insights module is connected
 		// as soon as it is activated.
 		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'pagespeed-insights' ) );
 
 		// Connecting the module makes it shareable.
-		$this->assertTrue( $modules->is_module_shareable( 'pagespeed-insights' ) );
+		$this->assertTrue( $modules->is_module_shareable( 'pagespeed-insights' ), 'Shareability check should allow configured shareable module.' );
 	}
 
 	public function test_list_shared_modules__no_shared_roles() {
 			$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 			// By default, no modules have shared roles, so list_shared_modules should return an empty array.
-			$this->assertEquals( array(), $modules->list_shared_modules() );
+			$this->assertEquals( array(), $modules->list_shared_modules(), 'Shared module list should be empty when no roles are shared.' );
 	}
 
 	public function test_list_shared_modules__single_module_has_shared_roles() {
@@ -1167,7 +1180,7 @@ class ModulesTest extends TestCase {
 		update_option( 'googlesitekit_dashboard_sharing', $sharing_settings );
 
 		// Should return pagespeed-insights as shared.
-		$this->assertEquals( array( 'pagespeed-insights' ), $modules->list_shared_modules() );
+		$this->assertEquals( array( 'pagespeed-insights' ), $modules->list_shared_modules(), 'Shared module list should include module with shared roles.' );
 	}
 
 	public function test_list_shared_modules__multiple_modules_has_shared_roles() {
@@ -1197,7 +1210,7 @@ class ModulesTest extends TestCase {
 		);
 		update_option( 'googlesitekit_dashboard_sharing', $sharing_settings );
 
-		$this->assertEqualsCanonicalizing( array( 'adsense', 'pagespeed-insights' ), $modules->list_shared_modules() );
+		$this->assertEqualsCanonicalizing( array( 'adsense', 'pagespeed-insights' ), $modules->list_shared_modules(), 'Shared module list should include all modules with shared roles.' );
 	}
 
 	public function test_list_shared_modules__ignore_disconnected_modules() {
@@ -1220,7 +1233,7 @@ class ModulesTest extends TestCase {
 		);
 		update_option( 'googlesitekit_dashboard_sharing', $sharing_settings );
 
-		$this->assertEquals( array( 'pagespeed-insights' ), $modules->list_shared_modules() );
+		$this->assertEquals( array( 'pagespeed-insights' ), $modules->list_shared_modules(), 'Shared module list should omit disconnected modules.' );
 	}
 
 	public function test_get_feature_metrics__no_shared_modules() {
@@ -1228,7 +1241,8 @@ class ModulesTest extends TestCase {
 		// By default, no modules have shared roles.
 		$this->assertEquals(
 			array( 'shared_modules' => array() ),
-			$modules->get_feature_metrics()
+			$modules->get_feature_metrics(),
+			'Feature metrics should show zero shared modules when none shared.'
 		);
 	}
 
@@ -1265,10 +1279,53 @@ class ModulesTest extends TestCase {
 		update_option( 'googlesitekit_dashboard_sharing', $sharing_settings );
 
 		$feature_metrics = $modules->get_feature_metrics();
-		$this->assertArrayHasKey( 'shared_modules', $feature_metrics );
+		$this->assertArrayHasKey( 'shared_modules', $feature_metrics, 'Feature metrics should include shared modules metric.' );
 		$shared = $feature_metrics['shared_modules'];
 		sort( $shared );
 		// Only adsense and pagespeed-insights are connected and shared.
-		$this->assertEquals( array( 'adsense', 'pagespeed-insights' ), $shared );
+		$this->assertEquals( array( 'adsense', 'pagespeed-insights' ), $shared, 'Feature metrics should count connected shared modules only.' );
+	}
+
+	public function test_inline_modules_data() {
+		remove_all_filters( 'googlesitekit_inline_modules_data' );
+
+		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$fake_module->set_force_active( true );
+
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
+
+		$modules->register();
+
+		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
+
+		$this->assertArrayHasKey( 'fake-module', $inline_modules_data, 'Inline module data should include fake module entry.' );
+		$this->assertEquals(
+			array(
+				'testInlineData' => true,
+			),
+			$inline_modules_data['fake-module'],
+			'Inline module data should include provided module fields.'
+		);
+
+		$inline_modules_data = apply_filters(
+			'googlesitekit_inline_modules_data',
+			array(
+				'fake-module' => array(
+					'existingData' => true,
+				),
+			)
+		);
+
+		$this->assertArrayHasKey( 'fake-module', $inline_modules_data, 'Inline module data should include fake module entry.' );
+		$this->assertEquals(
+			array(
+				'testInlineData' => true,
+				'existingData'   => true,
+			),
+			$inline_modules_data['fake-module'],
+			'Inline module data should include provided module fields.'
+		);
 	}
 }

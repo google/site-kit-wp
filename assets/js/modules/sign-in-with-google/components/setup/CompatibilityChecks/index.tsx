@@ -29,14 +29,14 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import { useSelect } from 'googlesitekit-data';
 import Notice from '@/js/components/Notice';
-import CompatibilityErrors from '@/js/modules/sign-in-with-google/components/common/CompatibilityErrors';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import Description from '@/js/components/Notice/Description';
+import CompatibilityErrors from '@/js/modules/sign-in-with-google/components/common/CompatibilityErrors';
 import { SignInWithGoogleCompatibilityErrors } from '@/js/modules/sign-in-with-google/components/types';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 
 const CompatibilityChecks: FC = () => {
 	const compatibilityChecks = useSelect( ( select ) => {

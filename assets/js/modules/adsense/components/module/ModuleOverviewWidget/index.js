@@ -25,30 +25,33 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import {
-	MODULES_ADSENSE,
-	DATE_RANGE_OFFSET,
-} from '@/js/modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
+import PreviewBlock from '@/js/components/PreviewBlock';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import {
 	SITE_STATUS_ADDED,
 	legacyAccountStatuses,
 } from '@/js/modules/adsense/util';
-import PreviewBlock from '@/js/components/PreviewBlock';
 import whenActive from '@/js/util/when-active';
-import Header from './Header';
 import Footer from './Footer';
+import Header from './Header';
 import Overview from './Overview';
+import {
+	MODULE_OVERVIEW_METRICS,
+	getCurrentRangeArgs,
+	getCurrentRangeChartArgs,
+	getPreviousRangeArgs,
+	getPreviousRangeChartArgs,
+} from './reportOptions';
 import Stats from './Stats';
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import StatusMigration from './StatusMigration';
-import useViewOnly from '@/js/hooks/useViewOnly';
 
 function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 	const viewOnlyDashboard = useViewOnly();
@@ -72,37 +75,16 @@ function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 		legacyAccountStatuses.includes( accountStatus ) ||
 		siteStatus === SITE_STATUS_ADDED;
 
-	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect(
-		( select ) =>
-			select( CORE_USER ).getDateRangeDates( {
-				compare: true,
-				offsetDays: DATE_RANGE_OFFSET,
-			} )
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} )
 	);
 
-	const currentRangeArgs = {
-		metrics: Object.keys( ModuleOverviewWidget.metrics ),
-		startDate,
-		endDate,
-		reportID: 'adsense_module-overview-widget_widget_currentRangeArgs',
-	};
-	const previousRangeArgs = {
-		metrics: Object.keys( ModuleOverviewWidget.metrics ),
-		startDate: compareStartDate,
-		endDate: compareEndDate,
-		reportID: 'adsense_module-overview-widget_widget_previousRangeArgs',
-	};
-	const currentRangeChartArgs = {
-		...currentRangeArgs,
-		dimensions: [ 'DATE' ],
-		reportID: 'adsense_module-overview-widget_widget_currentRangeChartArgs',
-	};
-	const previousRangeChartArgs = {
-		...previousRangeArgs,
-		dimensions: [ 'DATE' ],
-		reportID:
-			'adsense_module-overview-widget_widget_previousRangeChartArgs',
-	};
+	const currentRangeArgs = getCurrentRangeArgs( dates );
+	const previousRangeArgs = getPreviousRangeArgs( dates );
+	const currentRangeChartArgs = getCurrentRangeChartArgs( dates );
+	const previousRangeChartArgs = getPreviousRangeChartArgs( dates );
 
 	const currentRangeData = useInViewSelect(
 		( select ) => select( MODULES_ADSENSE ).getReport( currentRangeArgs ),
@@ -183,7 +165,7 @@ function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 		<Widget Header={ Header } Footer={ Footer } noPadding>
 			{ ! viewOnlyDashboard && legacyStatus && <StatusMigration /> }
 			<Overview
-				metrics={ ModuleOverviewWidget.metrics }
+				metrics={ MODULE_OVERVIEW_METRICS }
 				currentRangeData={ currentRangeData }
 				previousRangeData={ previousRangeData }
 				selectedStats={ selectedStats }
@@ -191,7 +173,7 @@ function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 			/>
 
 			<Stats
-				metrics={ ModuleOverviewWidget.metrics }
+				metrics={ MODULE_OVERVIEW_METRICS }
 				currentRangeData={ currentRangeChartData }
 				previousRangeData={ previousRangeChartData }
 				selectedStats={ selectedStats }
@@ -204,13 +186,6 @@ ModuleOverviewWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetReportZero: PropTypes.elementType.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
-};
-
-ModuleOverviewWidget.metrics = {
-	ESTIMATED_EARNINGS: __( 'Earnings', 'google-site-kit' ),
-	PAGE_VIEWS_RPM: __( 'Page RPM', 'google-site-kit' ),
-	IMPRESSIONS: __( 'Impressions', 'google-site-kit' ),
-	PAGE_VIEWS_CTR: __( 'Page CTR', 'google-site-kit' ),
 };
 
 export default whenActive( {

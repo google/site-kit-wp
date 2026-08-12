@@ -36,7 +36,32 @@ import type {
 	GroupedImports,
 	ImportNode,
 	LComment,
+	SourceLiteral,
 } from './types';
+
+/**
+ * Checks whether a source uses the bare tests alias.
+ *
+ * @since n.e.x.t
+ *
+ * @param source Import source.
+ * @return True if the source uses the bare tests alias.
+ */
+export function isBareTestsAlias( source: string ): boolean {
+	return source === 'tests' || source.startsWith( 'tests/' );
+}
+
+/**
+ * Canonicalizes a bare tests alias.
+ *
+ * @since n.e.x.t
+ *
+ * @param source Import source.
+ * @return The canonicalized import source.
+ */
+export function canonicalizeTestsAlias( source: string ): string {
+	return isBareTestsAlias( source ) ? `@${ source }` : source;
+}
 
 /**
  * Checks whether a comment text matches one of the dependency group headings.
@@ -54,6 +79,34 @@ export function isValidGroupComment( text: string ): boolean {
 	] as string[];
 
 	return validGroups.includes( text );
+}
+
+/**
+ * Checks whether a normalized comment text matches the shape of a dependency
+ * group heading (e.g. `External dependencies`, `Node dependencies`), regardless
+ * of whether the leading word is one of the three sanctioned values.
+ *
+ * @since 1.180.0
+ *
+ * @param text Normalized comment text.
+ * @return True if the text matches the group heading shape.
+ */
+export function isGroupHeading( text: string ): boolean {
+	return /^[A-Za-z][\w-]*\s+dependencies$/.test( text );
+}
+
+/**
+ * Checks whether a normalized comment text looks like a dependency group
+ * header (e.g. `Node dependencies`, `Build dependencies`) but isn't one of the
+ * three sanctioned headings recognized by `isValidGroupComment`.
+ *
+ * @since 1.180.0
+ *
+ * @param text Normalized comment text.
+ * @return True if `text` is a group-shaped header outside the sanctioned set.
+ */
+export function isOrphanGroupShapedComment( text: string ): boolean {
+	return ! isValidGroupComment( text ) && isGroupHeading( text );
 }
 
 /**
@@ -104,6 +157,7 @@ export function getImportGroup( source: string ): DependencyGroup {
 	if (
 		source.startsWith( 'googlesitekit-' ) ||
 		source.startsWith( '@/' ) ||
+		source.startsWith( '@tests/' ) ||
 		source.startsWith( '../' ) ||
 		source.startsWith( './' ) ||
 		source === '.'
@@ -189,7 +243,8 @@ export function normalizeCommentText( text: string ): string {
 		.split( '\n' )
 		.map( ( line ) => line.trim().replace( /^\*\s*/, '' ) )
 		.join( ' ' )
-		.trim();
+		.trim()
+		.replace( /\.$/, '' );
 }
 
 /**
@@ -222,14 +277,17 @@ export function normalizeImportSource( source: string ): string {
 	if ( source.startsWith( '@/' ) ) {
 		return '~1~' + source;
 	}
-	if ( source.startsWith( '../' ) ) {
+	if ( source.startsWith( '@tests/' ) ) {
 		return '~2~' + source;
 	}
-	if ( source.startsWith( './' ) ) {
+	if ( source.startsWith( '../' ) ) {
 		return '~3~' + source;
 	}
+	if ( source.startsWith( './' ) ) {
+		return '~4~' + source;
+	}
 	if ( source === '.' ) {
-		return '~3~.';
+		return '~5~.';
 	}
 	return source;
 }
@@ -277,6 +335,70 @@ export function compareImports(
 }
 
 /**
+ * Walks any `MemberExpression` chain wrapping a node and returns the inner
+ * `require( '...' )` `CallExpression` when present. Recognizes patterns such as
+ * `require( '...' ).default` and `require( '...' ).foo.bar` in addition to the
+ * bare `require( '...' )` call.
+ *
+ * @since 1.180.0
+ *
+ * @param node Expression node to inspect.
+ * @return The inner require `CallExpression`, or `null` when not a require call.
+ */
+export function unwrapRequireCall(
+	node: ESTree.Expression | ESTree.Pattern | null | undefined
+): ESTree.CallExpression | null {
+	if ( ! node ) {
+		return null;
+	}
+	let target: ESTree.Expression | ESTree.Pattern = node;
+	while ( target.type === 'MemberExpression' ) {
+		if ( target.object.type === 'Super' ) {
+			return null;
+		}
+		target = target.object;
+	}
+	if (
+		target.type === 'CallExpression' &&
+		target.callee.type === 'Identifier' &&
+		target.callee.name === 'require'
+	) {
+		return target;
+	}
+	return null;
+}
+
+/**
+ * Gets the source literal from an import or require node.
+ *
+ * @since n.e.x.t
+ *
+ * @param node Import/require node.
+ * @return Import source literal, or null when unavailable.
+ */
+export function getImportSourceLiteral(
+	node: ImportNode
+): SourceLiteral | null {
+	if ( node.type === 'ImportDeclaration' ) {
+		return node.source as SourceLiteral;
+	}
+
+	if ( node.declarations.length > 0 ) {
+		const declaration = node.declarations[ 0 ];
+		const requireCall = unwrapRequireCall( declaration.init );
+		if (
+			requireCall &&
+			requireCall.arguments.length > 0 &&
+			requireCall.arguments[ 0 ].type === 'Literal'
+		) {
+			return requireCall.arguments[ 0 ] as SourceLiteral;
+		}
+	}
+
+	return null;
+}
+
+/**
  * Gets the import source from a node.
  *
  * @since 1.179.0
@@ -285,24 +407,9 @@ export function compareImports(
  * @return Import source.
  */
 export function getImportSource( node: ImportNode ): string {
-	if ( node.type === 'ImportDeclaration' ) {
-		return String( node.source.value ?? '' );
-	}
+	const sourceLiteral = getImportSourceLiteral( node );
 
-	if ( node.declarations.length > 0 ) {
-		const declaration = node.declarations[ 0 ];
-		if (
-			declaration.init &&
-			declaration.init.type === 'CallExpression' &&
-			declaration.init.callee.type === 'Identifier' &&
-			declaration.init.callee.name === 'require' &&
-			declaration.init.arguments.length > 0 &&
-			declaration.init.arguments[ 0 ].type === 'Literal'
-		) {
-			return String( declaration.init.arguments[ 0 ].value ?? '' );
-		}
-	}
-	return '';
+	return String( sourceLiteral?.value ?? '' );
 }
 
 /**
@@ -319,10 +426,7 @@ export function isImportOrRequire( node: AnyNode ): node is ImportNode {
 	}
 	if ( node.type === 'VariableDeclaration' ) {
 		return node.declarations.some(
-			( declaration ) =>
-				declaration.init?.type === 'CallExpression' &&
-				declaration.init.callee.type === 'Identifier' &&
-				declaration.init.callee.name === 'require'
+			( declaration ) => unwrapRequireCall( declaration.init ) !== null
 		);
 	}
 	return false;
@@ -457,7 +561,7 @@ export function getNonDependencyComments(
 	for ( const comment of comments ) {
 		if ( comment.type === 'Block' ) {
 			const commentText = normalizeCommentText( comment.value );
-			if ( isValidGroupComment( commentText ) ) {
+			if ( isGroupHeading( commentText ) ) {
 				continue;
 			}
 		}
@@ -476,7 +580,7 @@ export function getNonDependencyComments(
 
 			if ( comment.type === 'Block' ) {
 				const commentText = normalizeCommentText( comment.value );
-				if ( isValidGroupComment( commentText ) ) {
+				if ( isGroupHeading( commentText ) ) {
 					continue;
 				}
 			}

@@ -6,6 +6,8 @@
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers;
@@ -28,6 +30,17 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	use Method_Proxy_Trait;
 
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'easy-digital-downloads';
+
+	/**
+	 * Gets the provider category.
+	 *
+	 * @since 1.181.0
+	 *
+	 * @return string Provider category.
+	 */
+	public function get_category() {
+		return self::CATEGORY_ECOMMERCE;
+	}
 
 	/**
 	 * Checks if the Easy Digital Downloads plugin is active.

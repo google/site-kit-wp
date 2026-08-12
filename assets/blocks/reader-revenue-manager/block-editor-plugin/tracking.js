@@ -25,10 +25,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { select, subscribe } from 'googlesitekit-data';
-import { trackEvent } from '@/js/util';
 import { CORE_EDITOR } from '@/blocks/reader-revenue-manager/common/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { VIEW_CONTEXT_WP_BLOCK_EDITOR } from '@/js/googlesitekit/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { trackEvent } from '@/js/util';
 
 /**
  * Tracks changes to the Reader Revenue Manager metadata in the post editor.

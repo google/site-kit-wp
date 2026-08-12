@@ -17,27 +17,55 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
+import lazyWithPreload from '@/js/components/pdf-export/lazy-with-preload';
+import {
+	CORE_USER,
+	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
 } from '@/js/googlesitekit/widgets/default-areas';
 import {
-	AdBlockingRecoverySetupCTAWidget,
 	AdBlockerWarningWidget,
+	AdBlockingRecoverySetupCTAWidget,
 	AdSenseConnectCTAWidget,
 	DashboardTopEarningPagesWidgetGA4,
 } from '@/js/modules/adsense/components/dashboard';
+import getTopEarningPagesPDFData from '@/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidgetGA4/getPDFData';
 import { ModuleOverviewWidget } from '@/js/modules/adsense/components/module';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import getModuleOverviewPDFData from '@/js/modules/adsense/components/module/ModuleOverviewWidget/getPDFData';
 import { TopEarningContentWidget } from '@/js/modules/adsense/components/widgets';
-import {
-	CORE_USER,
-	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-} from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+
+/**
+ * Lazy-loaded PDF component for the Top earning pages widget.
+ */
+const DashboardTopEarningPagesWidgetGA4PDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidgetGA4/indexPDF'
+	)
+);
+
+/**
+ * The Earning performance over time PDF component, loaded on demand.
+ */
+const ModuleOverviewWidgetPDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/adsense/components/module/ModuleOverviewWidget/ModuleOverviewWidgetPDF'
+	)
+);
 
 export function registerWidgets( widgets ) {
 	widgets.registerWidget(
@@ -107,6 +135,11 @@ export function registerWidgets( widgets ) {
 			priority: 2,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ADSENSE ],
+			pdf: {
+				Component: ModuleOverviewWidgetPDF,
+				getData: getModuleOverviewPDFData,
+				label: __( 'Earning performance', 'google-site-kit' ),
+			},
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
@@ -132,6 +165,13 @@ export function registerWidgets( widgets ) {
 			priority: 3,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ADSENSE, MODULE_SLUG_ANALYTICS_4 ],
+			pdf: {
+				Component: DashboardTopEarningPagesWidgetGA4PDF,
+				getData: getTopEarningPagesPDFData,
+				label: __( 'Top earning pages', 'google-site-kit' ),
+				isActive: ( select ) =>
+					select( MODULES_ANALYTICS_4 ).getAdSenseLinked() === true,
+			},
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);

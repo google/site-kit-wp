@@ -18,7 +18,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isString, isDate } from 'lodash';
+import { isDate, isString } from 'lodash';
 
 /**
  * WordPress dependencies

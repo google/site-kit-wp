@@ -19,9 +19,9 @@
 /**
  * External dependencies
  */
+import useMergedRef from '@react-hook/merged-ref';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import useMergedRef from '@react-hook/merged-ref';
 
 /**
  * WordPress dependencies

@@ -37,6 +37,7 @@
 					price,
 				},
 			],
+			googlesitekit_event_provider: 'easy-digital-downloads',
 		} );
 	} );
 
@@ -44,6 +45,7 @@
 		global._googlesitekit?.gtagEvent?.( 'purchase', {
 			currency,
 			...global._googlesitekit.edddata.purchase,
+			googlesitekit_event_provider: 'easy-digital-downloads',
 		} );
 	}
 } )( global.jQuery );

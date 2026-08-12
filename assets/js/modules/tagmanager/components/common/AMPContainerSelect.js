@@ -31,15 +31,15 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Option, Select } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
 	CONTAINER_CREATE,
 	MODULES_TAGMANAGER,
 } from '@/js/modules/tagmanager/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import ContainerSelect from './ContainerSelect';
 import { trackEvent } from '@/js/util/tracking';
-import useViewContext from '@/js/hooks/useViewContext';
+import ContainerSelect from './ContainerSelect';
 
 export default function AMPContainerSelect( { hasModuleAccess } ) {
 	const viewContext = useViewContext();

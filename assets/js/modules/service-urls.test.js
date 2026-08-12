@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry, provideUserInfo } from '../../../tests/js/utils';
+import { createTestRegistry, provideUserInfo } from '@tests/js/utils';
 
 function mapURLs( cases, getServiceURL ) {
 	return cases

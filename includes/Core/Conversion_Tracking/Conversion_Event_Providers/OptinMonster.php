@@ -25,6 +25,17 @@ class OptinMonster extends Conversion_Events_Provider {
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'optin-monster';
 
 	/**
+	 * Gets the provider category.
+	 *
+	 * @since 1.181.0
+	 *
+	 * @return string Provider category.
+	 */
+	public function get_category() {
+		return self::CATEGORY_LEAD;
+	}
+
+	/**
 	 * Checks if the OptinMonster plugin is active.
 	 *
 	 * @since 1.127.0

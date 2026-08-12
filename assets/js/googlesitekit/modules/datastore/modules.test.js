@@ -17,11 +17,26 @@
  */
 
 /**
+ * External dependencies
+ */
+import { cloneDeep } from 'lodash';
+
+/**
  * Internal dependencies
  */
 import { invalidateCache } from 'googlesitekit-api';
-import Modules from 'googlesitekit-modules';
 import { combineStores } from 'googlesitekit-data';
+import Modules from 'googlesitekit-modules';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as analytics4fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+import { convertArrayListToKeyedObjectMap } from '@/js/util/convert-array-to-keyed-object-map';
+import { sortByProperty } from '@/js/util/sort-by-property';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -32,32 +47,15 @@ import {
 	provideUserInfo,
 	untilResolved,
 	waitForDefaultTimeouts,
-} from '../../../../../tests/js/utils';
-import { sortByProperty } from '@/js/util/sort-by-property';
-import { convertArrayListToKeyedObjectMap } from '@/js/util/convert-array-to-keyed-object-map';
+} from '@tests/js/utils';
+import FIXTURES, { withActive } from './__fixtures__';
 import {
 	CORE_MODULES,
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
 } from './constants';
-import FIXTURES, { withActive } from './__fixtures__';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import * as analytics4fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
-import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 
 describe( 'core/modules modules', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
-	const sharedOwnershipModulesList = {
-		sharedOwnershipModules: [
-			MODULE_SLUG_ANALYTICS_4,
-			MODULE_SLUG_SEARCH_CONSOLE,
-			MODULE_SLUG_TAGMANAGER,
-		],
-	};
 
 	const allModules = [
 		{
@@ -134,6 +132,7 @@ describe( 'core/modules modules', () => {
 
 	let registry;
 	let store;
+	let sharedOwnershipModulesList;
 
 	beforeEach( async () => {
 		// Invalidate the cache before every request, but keep it enabled to
@@ -142,6 +141,14 @@ describe( 'core/modules modules', () => {
 
 		registry = createTestRegistry();
 		store = registry.stores[ CORE_MODULES ].store;
+
+		sharedOwnershipModulesList = {
+			sharedOwnershipModules: [
+				MODULE_SLUG_ANALYTICS_4,
+				MODULE_SLUG_SEARCH_CONSOLE,
+				MODULE_SLUG_TAGMANAGER,
+			],
+		};
 	} );
 
 	afterEach( () => {
@@ -251,6 +258,48 @@ describe( 'core/modules modules', () => {
 				expect(
 					response.moduleReauthURL.startsWith( connectURL )
 				).toBe( true );
+			} );
+
+			it( 'includes redirectQueryArgs in the moduleReauthURL', async () => {
+				provideUserAuthentication( registry );
+				provideModuleRegistrations( registry );
+				provideSiteInfo( registry );
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/activation'
+					),
+					{ body: { success: true } }
+				);
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/user/data/authentication'
+					),
+					{
+						body: {
+							authenticated: true,
+							needsReauthentication: false,
+						},
+					}
+				);
+				fetchMock.get(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{ body: withActive( MODULE_SLUG_ANALYTICS_4 ) }
+				);
+
+				const { response } = await registry
+					.dispatch( CORE_MODULES )
+					.activateModule( MODULE_SLUG_ANALYTICS_4, {
+						redirectQueryArgs: {
+							foo: 'bar',
+						},
+					} );
+
+				expect( response.moduleReauthURL ).toMatchQueryParameters( {
+					page: 'googlesitekit-dashboard',
+					slug: MODULE_SLUG_ANALYTICS_4,
+					reAuth: 'true',
+					foo: 'bar',
+				} );
 			} );
 
 			it( 'does not update status if the API encountered a failure', async () => {
@@ -891,6 +940,20 @@ describe( 'core/modules modules', () => {
 					store.getState().clientDefinitions[ moduleSlug ]
 						.SettingsStatusComponent
 				).toEqual( SettingsStatusComponent );
+			} );
+
+			it( 'accepts SetupLayout for the module', () => {
+				function SetupLayout() {
+					return 'layout';
+				}
+
+				registry.dispatch( CORE_MODULES ).registerModule( moduleSlug, {
+					SetupLayout,
+				} );
+
+				expect(
+					store.getState().clientDefinitions[ moduleSlug ].SetupLayout
+				).toEqual( SetupLayout );
 			} );
 
 			it( 'accepts DashboardMainEffectComponent and DashboardEntityEffectComponent components for the module', () => {
@@ -2341,6 +2404,36 @@ describe( 'core/modules modules', () => {
 					)
 				);
 			} );
+
+			it( 'uses a cloned copy of the global data so modifications to the original object are not reflected in the store', async () => {
+				global[ dashboardSharingDataBaseVar ] =
+					sharedOwnershipModulesList;
+
+				provideModules( registry, FIXTURES );
+
+				const sharedOwnershipModules = await registry
+					.resolveSelect( CORE_MODULES )
+					.getSharedOwnershipModules();
+
+				const expectedSharedOwnershipModules = cloneDeep(
+					getModulesBySlugList(
+						sharedOwnershipModulesList.sharedOwnershipModules,
+						fixturesKeyValue
+					)
+				);
+
+				expect( sharedOwnershipModules ).toMatchObject(
+					expectedSharedOwnershipModules
+				);
+
+				sharedOwnershipModulesList.sharedOwnershipModules.push(
+					'new-module'
+				);
+
+				expect( sharedOwnershipModules ).toMatchObject(
+					expectedSharedOwnershipModules
+				);
+			} );
 		} );
 
 		describe( 'getShareableModules', () => {
@@ -2541,6 +2634,33 @@ describe( 'core/modules modules', () => {
 					.getInlineModulesData();
 
 				expect( inlineData ).toEqual( mockData );
+			} );
+
+			it( 'uses a cloned copy of the global data so modifications to the original object are not reflected in the store', async () => {
+				const mockData = {
+					[ MODULE_SLUG_ANALYTICS_4 ]: { test: 'data' },
+				};
+
+				global[ inlineModulesDataVar ] = mockData;
+
+				registry.select( CORE_MODULES ).getInlineModulesData();
+
+				await untilResolved(
+					registry,
+					CORE_MODULES
+				).getInlineModulesData();
+
+				const inlineData = registry
+					.select( CORE_MODULES )
+					.getInlineModulesData();
+
+				const expectedInlineData = cloneDeep( mockData );
+
+				expect( inlineData ).toEqual( expectedInlineData );
+
+				mockData[ MODULE_SLUG_ANALYTICS_4 ].test = 'new-data';
+
+				expect( inlineData ).toEqual( expectedInlineData );
 			} );
 		} );
 

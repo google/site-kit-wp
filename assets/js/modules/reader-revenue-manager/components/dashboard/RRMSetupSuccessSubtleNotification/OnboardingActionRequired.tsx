@@ -17,20 +17,20 @@
  */
 
 /**
+ * External dependencies
+ */
+import { ElementType, FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
 
 /**
- * External dependencies
- */
-import { FC, ElementType } from 'react';
-
-/**
  * Internal dependencies
  */
-import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 
 interface OnboardingActionRequiredProps {

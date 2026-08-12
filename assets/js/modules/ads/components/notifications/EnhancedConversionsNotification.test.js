@@ -19,13 +19,20 @@
 /**
  * Internal dependencies
  */
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '@tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	provideSiteInfo,
+	provideUserAuthentication,
 	render,
-} from '../../../../../../tests/js/test-utils';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+	waitFor,
+} from '@tests/js/test-utils';
 import EnhancedConversionsNotification, {
+	ECEE_ADS_SURVEY_TRIGGER_ID,
 	ENHANCED_CONVERSIONS_NOTIFICATION_ADS,
 } from './EnhancedConversionsNotification';
 
@@ -41,6 +48,9 @@ describe( 'Ads EnhancedConversionsNotification', () => {
 		registry = createTestRegistry();
 
 		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
+
+		mockSurveyEndpoints();
 	} );
 
 	it( 'should render the notification', async () => {
@@ -54,5 +64,27 @@ describe( 'Ads EnhancedConversionsNotification', () => {
 		await waitForRegistry();
 
 		expect( container ).toMatchSnapshot();
+	} );
+
+	it( `should dispatch the ${ ECEE_ADS_SURVEY_TRIGGER_ID } survey trigger when rendered`, async () => {
+		const { waitForRegistry } = render(
+			<EnhancedConversionsNotificationComponent />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched(
+				surveyTriggerEndpoint,
+				expect.objectContaining( {
+					body: {
+						data: { triggerID: ECEE_ADS_SURVEY_TRIGGER_ID },
+					},
+				} )
+			)
+		);
 	} );
 } );

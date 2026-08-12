@@ -17,7 +17,7 @@ runs:
   steps:
     - name: Find existing consolidated comment
       id: find-comment
-      uses: peter-evans/find-comment@v4
+      uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # ratchet:peter-evans/find-comment@v4
       with:
         issue-number: ${{ inputs.issue-number }}
         comment-author: github-actions[bot]
@@ -57,7 +57,7 @@ runs:
             fh.write(f'body<<{delimiter}\n{new_body}\n{delimiter}\n')
 
     - name: Create or update consolidated comment
-      uses: peter-evans/create-or-update-comment@v5
+      uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # ratchet:peter-evans/create-or-update-comment@v5
       with:
         comment-id: ${{ steps.find-comment.outputs.comment-id }}
         issue-number: ${{ inputs.issue-number }}

@@ -20,18 +20,18 @@
  * Internal dependencies
  */
 import { combineStores } from 'googlesitekit-data';
-import baseModuleStore from './base';
 import accounts from './accounts';
-import adunits from './adunits';
-import clients from './clients';
-import report from './report';
-import tags from './tags';
-import settings from './settings';
-import adblocker from './adblocker';
-import service from './service';
-import sites from './sites';
 import adBlockingRecovery from './ad-blocking-recovery';
+import adblocker from './adblocker';
+import adunits from './adunits';
+import baseModuleStore from './base';
+import clients from './clients';
 import { MODULES_ADSENSE } from './constants';
+import report from './report';
+import service from './service';
+import settings from './settings';
+import sites from './sites';
+import tags from './tags';
 
 const store = combineStores(
 	baseModuleStore,

@@ -25,22 +25,22 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { ProgressBar } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
 import DisplaySetting from '@/js/components/DisplaySetting';
-import { ProgressBar } from 'googlesitekit-components';
 import Link from '@/js/components/Link';
+import Typography from '@/js/components/Typography';
+import VisuallyHidden from '@/js/components/VisuallyHidden';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import { ErrorNotices } from '@/js/modules/adsense/components/common';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
 import {
 	getAccountStatusLabel,
+	getAutoAdsDisabledMessage,
 	getSiteStatusLabel,
 	getSnippetLabel,
-	getAutoAdsDisabledMessage,
 } from './utils';
-import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
-import VisuallyHidden from '@/js/components/VisuallyHidden';
-import Typography from '@/js/components/Typography';
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) =>

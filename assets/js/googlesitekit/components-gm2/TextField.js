@@ -19,11 +19,11 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import MaterialTextField, {
 	HelperText,
 	Input,
 } from '@material/react-text-field';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies

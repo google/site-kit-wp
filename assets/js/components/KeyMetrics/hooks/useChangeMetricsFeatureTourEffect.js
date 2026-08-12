@@ -17,17 +17,17 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
 import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import sharedKeyMetrics from '@/js/feature-tours/shared-key-metrics';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import sharedKeyMetrics from '@/js/feature-tours/shared-key-metrics';
 import { useFeature } from '@/js/hooks/useFeature';
 import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 

@@ -61,6 +61,7 @@
 
 			.googlesitekit-icon-wrapper {
 				// The use of `!important` is necessary to override the inline style in the `IconWrapper` component.
+				color: $c-surfaces-on-surface-variant;
 				margin-right: 16px !important;
 			}
 

@@ -31,5 +31,6 @@ module.exports = {
 		'sitekit/no-boolean-props-before-values': [ 'error' ],
 		'sitekit/no-direct-date': [ 'error' ],
 		'sitekit/no-yield-dispatch': [ 'error' ],
+		'sitekit/sort-import-groups': [ 'error' ],
 	},
 };

@@ -24,23 +24,23 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies.
  */
-import PrimaryUserSetupWidget from '.';
-import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import {
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import {
 	freezeFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
-} from '../../../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import {
-	EDIT_SCOPE,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
+import PrimaryUserSetupWidget from '.';
 
 const userAuthenticationEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/user/data/authentication'
@@ -92,6 +92,42 @@ InsufficientPermissionError.args = {
 	},
 };
 
+export const InsufficientPermissionErrorSetupFlowRefreshPhase4 = Template.bind(
+	{}
+);
+InsufficientPermissionErrorSetupFlowRefreshPhase4.storyName =
+	'Insufficient permission error, setupFlowRefreshPhase4 enabled';
+InsufficientPermissionErrorSetupFlowRefreshPhase4.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry, {
+			grantedScopes: EDIT_SCOPE,
+		} );
+		fetchMock.post( syncAvailableAudiencesEndpoint, {
+			body: availableAudiences.slice( 0, 2 ),
+			status: 200,
+		} );
+
+		fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
+			body: [ 'googlesitekit_post_author' ],
+			status: 200,
+		} );
+
+		const errorResponse = {
+			code: 'test_error',
+			message: 'Error message.',
+			data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+		};
+
+		fetchMock.post( createAudienceEndpoint, {
+			body: errorResponse,
+			status: 403,
+		} );
+	},
+};
+InsufficientPermissionErrorSetupFlowRefreshPhase4.parameters = {
+	features: [ 'setupFlowRefreshPhase4' ],
+};
+
 export const SetupError = Template.bind( {} );
 SetupError.storyName = 'Setup error';
 SetupError.args = {
@@ -111,6 +147,15 @@ SetupError.args = {
 	},
 };
 
+export const SetupErrorSetupFlowRefreshPhase4 = Template.bind( {} );
+SetupErrorSetupFlowRefreshPhase4.storyName =
+	'Setup error, setupFlowRefreshPhase4 enabled';
+SetupErrorSetupFlowRefreshPhase4.args = SetupError.args;
+SetupErrorSetupFlowRefreshPhase4.parameters = {
+	features: [ 'setupFlowRefreshPhase4' ],
+};
+SetupErrorSetupFlowRefreshPhase4.scenario = {};
+
 export const FailedAudience = Template.bind( {} );
 FailedAudience.storyName = 'Failed audience';
 FailedAudience.args = {
@@ -118,12 +163,12 @@ FailedAudience.args = {
 		provideUserAuthentication( registry, {
 			grantedScopes: EDIT_SCOPE,
 		} );
-		fetchMock.postOnce( syncAvailableAudiencesEndpoint, {
+		fetchMock.post( syncAvailableAudiencesEndpoint, {
 			body: availableAudiences.slice( 0, 2 ),
 			status: 200,
 		} );
 
-		fetchMock.postOnce( syncAvailableCustomDimensionsEndpoint, {
+		fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
 			body: [ 'googlesitekit_post_author' ],
 			status: 200,
 		} );
@@ -134,18 +179,29 @@ FailedAudience.args = {
 			data: { status: 500 },
 		};
 
-		fetchMock.postOnce( createAudienceEndpoint, {
+		fetchMock.post( createAudienceEndpoint, {
 			body: errorResponse,
 			status: 500,
 		} );
 	},
 };
 
+export const FailedAudienceSetupFlowRefreshPhase4 = Template.bind( {} );
+FailedAudienceSetupFlowRefreshPhase4.storyName =
+	'Failed audience, setupFlowRefreshPhase4 enabled';
+FailedAudienceSetupFlowRefreshPhase4.args = FailedAudience.args;
+FailedAudienceSetupFlowRefreshPhase4.parameters = {
+	features: [ 'setupFlowRefreshPhase4' ],
+};
+FailedAudienceSetupFlowRefreshPhase4.scenario = {};
+
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/PrimaryUserSetupWidget',
 	decorators: [
 		( Story, { args } ) => {
 			async function setupRegistry( registry ) {
+				fetchMock.reset();
+
 				provideModules( registry, [
 					{
 						active: true,

@@ -21,26 +21,25 @@
  */
 import { set } from 'googlesitekit-api';
 import {
-	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
-	MODULES_ANALYTICS_4,
-	CUSTOM_DIMENSION_DEFINITIONS,
-	DATE_RANGE_OFFSET,
-	SITE_KIT_AUDIENCE_DEFINITIONS,
-	RESOURCE_TYPE_AUDIENCE,
-} from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
 	combineStores,
+	commonActions,
 	createReducer,
 	createRegistrySelector,
-	commonActions,
 } from 'googlesitekit-data';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { validateAudience } from '@/js/modules/analytics-4/utils/validation';
 import { getPreviousDate } from '@/js/util';
 import { isInsufficientPermissionsError } from '@/js/util/errors';
-import { validateAudience } from '@/js/modules/analytics-4/utils/validation';
+import {
+	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
+	CUSTOM_DIMENSION_DEFINITIONS,
+	MODULES_ANALYTICS_4,
+	RESOURCE_TYPE_AUDIENCE,
+	SITE_KIT_AUDIENCE_DEFINITIONS,
+} from './constants';
 
 const MAX_INITIAL_AUDIENCES = 2;
 const START_AUDIENCES_SETUP = 'START_AUDIENCES_SETUP';
@@ -188,10 +187,7 @@ async function getInitialConfiguredAudiences( registry, availableAudiences ) {
 
 		const endDate = select( CORE_USER ).getReferenceDate();
 
-		const startDate = getPreviousDate(
-			endDate,
-			90 + DATE_RANGE_OFFSET // Add offset to ensure we have data for the entirety of the last 90 days.
-		);
+		const startDate = getPreviousDate( endDate, 90 );
 
 		const { audienceResourceNames, error } =
 			await getNonZeroDataAudiencesSortedByTotalUsers(
@@ -403,9 +399,10 @@ const baseActions = {
 	 *
 	 * @since 1.128.0
 	 * @since 1.131.0 Added `failedSiteKitAudienceSlugs` parameter to retry failed Site Kit audience creation.
+	 * @since 1.184.0 Added `isAudienceCreationError` to the return value.
 	 *
 	 * @param {Array} failedSiteKitAudienceSlugs List of failed Site Kit audience slugs to retry.
-	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs` and `error`.
+	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs`, `isAudienceCreationError` and `error`.
 	 */
 	*enableAudienceGroup( failedSiteKitAudienceSlugs ) {
 		yield { type: START_AUDIENCES_SETUP };
@@ -457,9 +454,10 @@ const baseActions = {
 	 * This contains the main logic for the `*enableAudienceGroup()` action above.
 	 *
 	 * @since 1.136.0
+	 * @since 1.184.0 Added `isAudienceCreationError` to the return value.
 	 *
 	 * @param {Array} failedSiteKitAudienceSlugs List of failed Site Kit audience slugs to retry.
-	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs` and `error`.
+	 * @return {Object} Object with `failedSiteKitAudienceSlugs`, `createdSiteKitAudienceSlugs`, `isAudienceCreationError` and `error`.
 	 */
 	*enableAudienceGroupMain( failedSiteKitAudienceSlugs ) {
 		const registry = yield commonActions.getRegistry();
@@ -519,7 +517,10 @@ const baseActions = {
 			} );
 
 			if ( insufficientPermissionsError ) {
-				return { error: insufficientPermissionsError };
+				return {
+					error: insufficientPermissionsError,
+					isAudienceCreationError: true,
+				};
 			}
 
 			yield commonActions.await(
@@ -584,7 +585,7 @@ const baseActions = {
 			);
 
 			if ( error ) {
-				return { error };
+				return { error, isAudienceCreationError: true };
 			}
 
 			// If the custom dimension was created successfully, mark it as gathering
@@ -977,9 +978,7 @@ const baseSelectors = {
 	getAudiencesUserCountReportOptions: createRegistrySelector(
 		( select ) =>
 			( state, audiences, { startDate, endDate } = {} ) => {
-				const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
-					offsetDays: DATE_RANGE_OFFSET,
-				} );
+				const dateRangeDates = select( CORE_USER ).getDateRangeDates();
 
 				return {
 					startDate: startDate || dateRangeDates.startDate,
@@ -1067,9 +1066,7 @@ const baseSelectors = {
 	 */
 	getSiteKitAudiencesUserCountReportOptions: createRegistrySelector(
 		( select ) => () => {
-			const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} );
+			const dateRangeDates = select( CORE_USER ).getDateRangeDates();
 
 			return {
 				startDate: dateRangeDates.startDate,

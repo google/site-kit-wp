@@ -24,11 +24,13 @@ import { withQuery } from '@storybook/addon-queryparams';
 /**
  * Internal dependencies
  */
-import KeyMetricsSetupApp from './KeyMetricsSetupApp';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { VIEW_CONTEXT_KEY_METRICS_SETUP } from '@/js/googlesitekit/constants';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { VIEW_CONTEXT_KEY_METRICS_SETUP } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
+import KeyMetricsSetupApp from './KeyMetricsSetupApp';
 
 function Template() {
 	return <KeyMetricsSetupApp />;
@@ -79,19 +81,47 @@ WithSaveInitialSetupError.args = {
 					reason: '',
 				},
 			},
-			'saveInitialSetupSettings',
-			[
-				{
-					isAnalyticsSetupComplete: true,
-				},
-			]
+			'saveInitialSetupSettings'
 		);
 	},
 };
 
 export const WithProgress = Template.bind( {} );
 WithProgress.storyName = 'With progress indicator';
+WithProgress.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
+	},
+};
 WithProgress.parameters = {
+	features: [ 'setupFlowRefreshPhase4' ],
+	query: {
+		showProgress: true,
+	},
+};
+
+export const WithProgressWithoutAnalytics = Template.bind( {} );
+WithProgressWithoutAnalytics.storyName =
+	'With progress indicator, Analytics not set up';
+WithProgressWithoutAnalytics.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+	},
+};
+WithProgressWithoutAnalytics.parameters = {
+	features: [ 'setupFlowRefreshPhase4' ],
 	query: {
 		showProgress: true,
 	},

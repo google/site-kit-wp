@@ -31,12 +31,14 @@ if ( empty( $notice_title ) && empty( $notice_body ) ) {
 					style="display:block; width:24px; height:24px;" />
 			</div>
 			<?php if ( ! empty( $notice_title ) ) : ?>
-			<div style="font-size:14px; line-height:20px; font-weight:600; color:#462083;">
+			<div class="googlesitekit-email-report-notice-text"
+				style="font-size:14px; line-height:20px; font-weight:600; color:#462083;">
 				<?php echo esc_html( $notice_title ); ?>
 			</div>
 			<?php endif; ?>
 			<?php if ( ! empty( $notice_body ) ) : ?>
-			<div style="font-size:14px; line-height:20px; letter-spacing: 0.25px; color:#462083; margin-bottom:16px;">
+			<div class="googlesitekit-email-report-notice-text"
+				style="font-size:14px; line-height:20px; letter-spacing: 0.25px; color:#462083; margin-bottom:16px;">
 				<?php echo esc_html( $notice_body ); ?>
 				<?php if ( ! empty( $learn_more_label ) && ! empty( $learn_more_url ) ) : ?>
 				<a href="<?php echo esc_url( $learn_more_url ); ?>" style="color:#462083; text-decoration:underline;"
@@ -48,7 +50,7 @@ if ( empty( $notice_title ) && empty( $notice_body ) ) {
 			<table role="presentation" width="100%">
 				<tr>
 					<td align="right">
-						<a href="<?php echo esc_url( $cta_url ); ?>"
+						<a href="<?php echo esc_url( $cta_url ); ?>" class="googlesitekit-email-report-notice-cta"
 							style="display:inline-block; background:#462083; color:#FFFFFF; font-size:14px; line-height:20px; font-weight:500; text-decoration:none; padding:6px 16px; border-radius:999px;"
 							rel="noopener" target="_blank">
 							<?php echo esc_html( $cta_label ); ?>

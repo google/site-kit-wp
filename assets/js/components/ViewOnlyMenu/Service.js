@@ -25,11 +25,11 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	CORE_USER,
 	PERMISSION_AUTHENTICATE,
 } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 export default function Service( { module } ) {
 	const canAuthenticate = useSelect( ( select ) =>

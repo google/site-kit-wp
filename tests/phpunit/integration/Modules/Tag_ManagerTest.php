@@ -6,6 +6,8 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Tests\Modules;
@@ -123,7 +125,7 @@ class Tag_ManagerTest extends TestCase {
 		$this->assertFalse( has_action( 'amp_post_template_footer' ), 'AMP post template footer action should not be hooked when tag is blocked.' );
 		$this->assertFalse( has_filter( 'amp_post_template_data' ), 'AMP post template data filter should not be hooked when tag is blocked.' );
 
-		// Tag not hooked when only AMP blocked
+		// Tag not hooked when only AMP blocked.
 		add_filter( 'googlesitekit_tagmanager_tag_blocked', '__return_false' );
 		add_filter( 'googlesitekit_tagmanager_tag_amp_blocked', '__return_true' );
 		do_action( 'template_redirect' );
@@ -760,14 +762,14 @@ class Tag_ManagerTest extends TestCase {
 
 	public function check_service_entity_access_provider() {
 		return array(
-			// Non-AMP - Success
+			// Non-AMP - Success.
 			array(
 				new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
 				'GTM-123456',
 				'',
 				true,
 			),
-			// Non-AMP - No Access
+			// Non-AMP - No Access.
 			array(
 				new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
 				'GTM-123459',

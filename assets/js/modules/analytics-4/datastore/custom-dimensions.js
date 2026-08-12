@@ -25,24 +25,29 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import { set } from 'googlesitekit-api';
+import { get, set } from 'googlesitekit-api';
 import {
-	createRegistrySelector,
-	createRegistryControl,
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
+	createRegistryControl,
+	createRegistrySelector,
 } from 'googlesitekit-data';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { isFeatureEnabled } from '@/js/features';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { isValidPropertyID } from '@/js/modules/analytics-4/utils/validation';
-import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { isValidPropertyID } from '@/js/modules/analytics-4/utils/validation';
+import {
+	CUSTOM_DIMENSION_DEFINITIONS,
+	MODULES_ANALYTICS_4,
+	SITE_GOALS_CUSTOM_DIMENSIONS,
+} from './constants';
 
 const customDimensionFields = [
 	'parameterName',
@@ -59,6 +64,25 @@ const fetchCreateCustomDimensionStore = createFetchStore( {
 			propertyID,
 			customDimension,
 		} ),
+	reducerCallback: createReducer(
+		( state, createdCustomDimension, { propertyID } ) => {
+			const parameterName = createdCustomDimension?.parameterName;
+			const propertyCustomDimensions =
+				state.propertyCustomDimensions?.[ propertyID ];
+
+			// Append the new dimension only when the property's list is already
+			// loaded. Otherwise the `getCustomDimensions` resolver loads it in full.
+			if (
+				! parameterName ||
+				! propertyCustomDimensions ||
+				propertyCustomDimensions.includes( parameterName )
+			) {
+				return;
+			}
+
+			propertyCustomDimensions.push( parameterName );
+		}
+	),
 	argsToParams: ( propertyID, customDimension ) => ( {
 		propertyID,
 		customDimension,
@@ -89,12 +113,44 @@ const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 	reducerCallback: createReducer( ( state, dimensions ) => {
 		state.settings = state.settings || {};
 		state.settings.availableCustomDimensions = dimensions;
+
+		// The `sync-custom-dimensions` request saves `availableCustomDimensions`
+		// on the server, so set it on `savedSettings` too. The form compares
+		// `settings` and `savedSettings` to know if there are unsaved changes.
+		// Without this, it would see the synced value as unsaved, and Cancel
+		// would drop it until the next page load.
+		state.savedSettings = state.savedSettings || {};
+		state.savedSettings.availableCustomDimensions = dimensions;
 	} ),
 	isAction: true,
 } );
 
+const fetchGetCustomDimensionsStore = createFetchStore( {
+	baseName: 'getCustomDimensions',
+	controlCallback: ( { propertyID } ) =>
+		get(
+			'modules',
+			MODULE_SLUG_ANALYTICS_4,
+			'custom-dimensions',
+			{ propertyID },
+			{ useCache: false }
+		),
+	reducerCallback: createReducer( ( state, dimensions, { propertyID } ) => {
+		state.propertyCustomDimensions = state.propertyCustomDimensions || {};
+		state.propertyCustomDimensions[ propertyID ] = dimensions;
+	} ),
+	argsToParams: ( propertyID ) => ( { propertyID } ),
+	validateParams: ( { propertyID } = {} ) => {
+		invariant(
+			isValidPropertyID( propertyID ),
+			'A valid GA4 propertyID is required.'
+		);
+	},
+} );
+
 const baseInitialState = {
 	customDimensionsBeingCreated: [],
+	propertyCustomDimensions: {},
 	syncTimeoutID: undefined,
 };
 
@@ -110,8 +166,13 @@ const baseActions = {
 	 * Creates custom dimensions and syncs them in the settings.
 	 *
 	 * @since 1.113.0
+	 * @since 1.181.0 Added the Site Goals custom dimensions when the `siteGoals` feature flag is on and advanced data breakdowns is enabled.
+	 * @since 1.182.0 Created the missing custom dimensions on the selected property, and added the Site Goals dimensions only when advanced data breakdowns is enabled for that property.
+	 *
+	 * @param {Array<string>} customDimensions Optional additional custom dimensions to create.
+	 * @return {Object} Object whose `error` property holds the available-dimensions sync error when the required dimensions already existed and that sync failed; otherwise an empty object.
 	 */
-	*createCustomDimensions() {
+	*createCustomDimensions( customDimensions = [] ) {
 		const registry = yield commonActions.getRegistry();
 
 		// Wait for the necessary settings to be loaded before checking.
@@ -123,45 +184,112 @@ const baseActions = {
 			] )
 		);
 
+		const propertyID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyID();
+
+		// Custom dimensions are created on the selected property, so there's
+		// nothing to create until a valid property is selected.
+		if ( ! isValidPropertyID( propertyID ) ) {
+			return {};
+		}
+
 		const selectedMetricTiles = registry
 			.select( CORE_USER )
 			.getKeyMetrics();
 
 		// Extract required custom dimensions from selected metric tiles.
-		const requiredCustomDimensions = selectedMetricTiles.flatMap(
+		const keyMetricsRequiredCustomDimensions = selectedMetricTiles.flatMap(
 			( tileName ) => {
 				const tile = KEY_METRICS_WIDGETS[ tileName ];
 				return tile?.requiredCustomDimensions || [];
 			}
 		);
+		const requiredCustomDimensions = [
+			...keyMetricsRequiredCustomDimensions,
+			...( Array.isArray( customDimensions ) ? customDimensions : [] ),
+		];
 
 		// Deduplicate if any custom dimensions are repeated among tiles.
 		const uniqueRequiredCustomDimensions = [
 			...new Set( requiredCustomDimensions ),
 		];
 
-		const availableCustomDimensions = registry
+		// Add the Site Goals custom dimensions when the Site Goals feature is on
+		// and advanced data breakdowns is enabled for the selected property. The
+		// breakdowns setting is read only inside this check, so flows with the
+		// feature off, like key metrics setup, never request it.
+		if ( isFeatureEnabled( 'siteGoals' ) ) {
+			const isAdvancedDataBreakdownsEnabled = registry
+				.select( MODULES_ANALYTICS_4 )
+				.isAdvancedDataBreakdownsEnabled( propertyID );
+
+			if ( isAdvancedDataBreakdownsEnabled ) {
+				SITE_GOALS_CUSTOM_DIMENSIONS.forEach( ( dimension ) => {
+					if (
+						! uniqueRequiredCustomDimensions.includes( dimension )
+					) {
+						uniqueRequiredCustomDimensions.push( dimension );
+					}
+				} );
+			}
+		}
+
+		// If no custom dimensions are required, there's nothing to create.
+		if ( ! uniqueRequiredCustomDimensions.length ) {
+			return {};
+		}
+
+		/**
+		 * The selected property's custom dimensions, read from the property
+		 * itself, not from the saved `availableCustomDimensions`, which only
+		 * holds the dimensions of the property saved in settings.
+		 */
+		// A finished resolver won't refetch, so a retry would reuse the stale
+		// error (e.g. missing GA4 permission). Invalidate first to force a
+		// fresh fetch that clears it.
+		const hasLoadError = registry
 			.select( MODULES_ANALYTICS_4 )
-			.getAvailableCustomDimensions();
+			.getCustomDimensionsError( propertyID );
+
+		if ( hasLoadError ) {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.invalidateResolution( 'getCustomDimensions', [ propertyID ] );
+		}
+
+		const propertyCustomDimensions = yield commonActions.await(
+			registry
+				.resolveSelect( MODULES_ANALYTICS_4 )
+				.getCustomDimensions( propertyID )
+		);
+
+		// Stop when the property's dimensions didn't load. Without the list, we
+		// can't tell which are missing, so creating them could add ones that
+		// already exist.
+		if ( ! Array.isArray( propertyCustomDimensions ) ) {
+			return {};
+		}
 
 		// Find out the missing custom dimensions.
 		const missingCustomDimensions = uniqueRequiredCustomDimensions.filter(
-			( dimension ) => ! availableCustomDimensions?.includes( dimension )
+			( dimension ) => ! propertyCustomDimensions.includes( dimension )
 		);
 
-		// If there are no missing custom dimensions, bail.
+		// No missing dimensions: the required ones already exist. Sync the saved
+		// `availableCustomDimensions` (which drives the success notice, not the
+		// property read) and return any sync error — a failed sync leaves the
+		// setting stale, so the notice can't render.
 		if ( ! missingCustomDimensions.length ) {
-			return;
+			const { error } =
+				yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions();
+			return { error };
 		}
 
 		yield {
 			type: SET_CUSTOM_DIMENSIONS_BEING_CREATED,
 			payload: { customDimensions: missingCustomDimensions },
 		};
-
-		const propertyID = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getPropertyID();
 
 		// Create missing custom dimensions.
 		for ( const dimension of missingCustomDimensions ) {
@@ -195,6 +323,8 @@ const baseActions = {
 			type: SET_CUSTOM_DIMENSIONS_BEING_CREATED,
 			payload: { customDimensions: [] },
 		};
+
+		return {};
 	},
 
 	/**
@@ -317,6 +447,24 @@ const baseResolvers = {
 
 		yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions();
 	},
+
+	*getCustomDimensions( propertyID ) {
+		if ( ! isValidPropertyID( propertyID ) ) {
+			return;
+		}
+
+		const registry = yield commonActions.getRegistry();
+
+		const propertyCustomDimensions = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getCustomDimensions( propertyID );
+
+		if ( propertyCustomDimensions === undefined ) {
+			yield fetchGetCustomDimensionsStore.actions.fetchGetCustomDimensions(
+				propertyID
+			);
+		}
+	},
 };
 
 const baseSelectors = {
@@ -357,6 +505,56 @@ const baseSelectors = {
 	),
 
 	/**
+	 * Gets the Site Kit custom dimensions available on the given property.
+	 *
+	 * Unlike `getAvailableCustomDimensions`, this reads any property's
+	 * dimensions, so it works for a property selected in a form but not yet
+	 * saved in settings.
+	 *
+	 * @since 1.182.0
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} propertyID GA4 property ID to get the custom dimensions for.
+	 * @return {(Array.<string>|undefined)} List of `googlesitekit_`-prefixed parameter names, or undefined if they aren't loaded yet.
+	 */
+	getCustomDimensions( state, propertyID ) {
+		return state.propertyCustomDimensions?.[ propertyID ];
+	},
+
+	/**
+	 * Checks whether the given property has all the provided custom dimensions.
+	 *
+	 * @since 1.182.0
+	 *
+	 * @param {Object}               state            Data store's state.
+	 * @param {string}               propertyID       GA4 property ID to check the custom dimensions on.
+	 * @param {string|Array<string>} customDimensions Custom dimensions to check.
+	 * @return {(boolean|undefined)} True if the property has all the provided dimensions, false if not. Undefined if they aren't loaded yet.
+	 */
+	hasCustomDimensionsForProperty: createRegistrySelector(
+		( select ) => ( state, propertyID, customDimensions ) => {
+			/**
+			 * The dimensions to check, as an array even when the caller passes
+			 * a single string.
+			 */
+			const dimensionsToCheck = Array.isArray( customDimensions )
+				? customDimensions
+				: [ customDimensions ];
+
+			const propertyCustomDimensions =
+				select( MODULES_ANALYTICS_4 ).getCustomDimensions( propertyID );
+
+			if ( propertyCustomDimensions === undefined ) {
+				return undefined;
+			}
+
+			return dimensionsToCheck.every( ( dimension ) =>
+				propertyCustomDimensions.includes( dimension )
+			);
+		}
+	),
+
+	/**
 	 * Checks whether the provided custom dimension is being created.
 	 *
 	 * @since 1.113.0
@@ -387,6 +585,28 @@ const baseSelectors = {
 			return select( MODULES_ANALYTICS_4 ).getErrorForAction(
 				'createCustomDimension',
 				[ propertyID, CUSTOM_DIMENSION_DEFINITIONS[ customDimension ] ]
+			);
+		}
+	),
+
+	/**
+	 * Returns the error encountered while loading the property's custom dimensions.
+	 *
+	 * Custom dimension creation aborts early when this load fails (e.g. the user
+	 * lacks permission on the GA4 property), before any create error is recorded,
+	 * so this exposes that earlier failure.
+	 *
+	 * @since 1.183.0
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} propertyID GA4 property ID to obtain the load error for.
+	 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
+	 */
+	getCustomDimensionsError: createRegistrySelector(
+		( select ) => ( state, propertyID ) => {
+			return select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+				'getCustomDimensions',
+				[ propertyID ]
 			);
 		}
 	),
@@ -426,6 +646,7 @@ const baseSelectors = {
 const store = combineStores(
 	fetchCreateCustomDimensionStore,
 	fetchSyncAvailableCustomDimensionsStore,
+	fetchGetCustomDimensionsStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

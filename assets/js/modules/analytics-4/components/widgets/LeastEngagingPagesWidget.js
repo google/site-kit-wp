@@ -24,40 +24,45 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import {
-	CORE_USER,
-	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
-} from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
 } from '@/js/components/KeyMetrics';
 import Link from '@/js/components/Link';
+import {
+	CORE_USER,
+	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
+} from '@/js/googlesitekit/datastore/user/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
 import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import useViewOnly from '@/js/hooks/useViewOnly';
-import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
 
-function LeastEngagingPagesWidget( props ) {
-	const { Widget } = props;
-
-	const viewOnlyDashboard = useViewOnly();
-
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
-	);
-
-	const pageViewsReportOptions = {
+/**
+ * Builds the GA4 `getReport` options for the Least engaging pages widget.
+ *
+ * Returns both reports the widget needs: the `pageViews` report that ranks every
+ * page by views so the caller can derive the median views, and the `report` that
+ * lists the least engaging pages by bounce rate, filtered to pages with at least
+ * the median views. The `report` filter depends on that median, so callers pass
+ * it once known.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates             The date range for the reports.
+ * @param {number} [medianPageViews] The median page views the `report` filters against. Defaults to `0`.
+ * @return {Object} The `pageViews` and `report` report options.
+ */
+export function getLeastEngagingPagesReportOptions(
+	dates,
+	medianPageViews = 0
+) {
+	const pageViews = {
 		...dates,
 		dimensions: [ 'pagePath' ],
 		metrics: [ { name: 'screenPageViews' } ],
@@ -71,20 +76,7 @@ function LeastEngagingPagesWidget( props ) {
 			'analytics-4_least-engaging-pages-widget_widget_pageViewsReportOptions',
 	};
 
-	const pageViewsReport = useInViewSelect(
-		( select ) =>
-			select( MODULES_ANALYTICS_4 ).getReport( pageViewsReportOptions ),
-		[ pageViewsReportOptions ]
-	);
-
-	const medianIndex = parseInt( pageViewsReport?.rowCount / 2, 10 );
-	const medianPageViews =
-		parseInt(
-			pageViewsReport?.rows?.[ medianIndex ]?.metricValues?.[ 0 ]?.value,
-			10
-		) || 0;
-
-	const reportOptions = {
+	const report = {
 		...dates,
 		dimensions: [ 'pagePath' ],
 		metrics: [ 'bounceRate', 'screenPageViews' ],
@@ -108,6 +100,39 @@ function LeastEngagingPagesWidget( props ) {
 		reportID:
 			'analytics-4_least-engaging-pages-widget_widget_reportOptions',
 	};
+
+	return { pageViews, report };
+}
+
+function LeastEngagingPagesWidget( props ) {
+	const { Widget } = props;
+
+	const viewOnlyDashboard = useViewOnly();
+
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates()
+	);
+
+	const { pageViews: pageViewsReportOptions } =
+		getLeastEngagingPagesReportOptions( dates );
+
+	const pageViewsReport = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getReport( pageViewsReportOptions ),
+		[ pageViewsReportOptions ]
+	);
+
+	const medianIndex = parseInt( pageViewsReport?.rowCount / 2, 10 );
+	const medianPageViews =
+		parseInt(
+			pageViewsReport?.rows?.[ medianIndex ]?.metricValues?.[ 0 ]?.value,
+			10
+		) || 0;
+
+	const { report: reportOptions } = getLeastEngagingPagesReportOptions(
+		dates,
+		medianPageViews
+	);
 
 	const loadedPageViewsReport = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [

@@ -31,20 +31,23 @@ import { getQueryArg } from '@wordpress/url';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { useFeature } from '@/js/hooks/useFeature';
 import LegacySplashContent from '@/js/components/setup/SetupUsingProxyWithSignIn/LegacySplashContent';
 import SplashContent from '@/js/components/setup/SetupUsingProxyWithSignIn/SplashContent';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
 } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { useFeature } from '@/js/hooks/useFeature';
 import { Grid } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 export default function Splash( { children } ) {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const setupFlowRefreshPhase4Enabled = useFeature(
+		'setupFlowRefreshPhase4'
+	);
 
 	const analyticsModuleAvailable = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleAvailable( MODULE_SLUG_ANALYTICS_4 )
@@ -55,18 +58,17 @@ export default function Splash( { children } ) {
 	const isSecondAdmin = useSelect( ( select ) =>
 		select( CORE_SITE ).hasConnectedAdmins()
 	);
+	const hasViewableModules = useSelect(
+		( select ) => !! select( CORE_USER ).getViewableModules()?.length
+	);
 	const siteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
-	const homeURL = useSelect( ( select ) => select( CORE_SITE ).getHomeURL() );
 	const secondAdminLearnMoreLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'already-configured' )
 	);
 	const disconnectedReason = useSelect( ( select ) =>
 		select( CORE_USER ).getDisconnectedReason()
-	);
-	const connectedProxyURL = useSelect( ( select ) =>
-		select( CORE_USER ).getConnectedProxyURL()
 	);
 	const changedURLHelpLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'url-has-changed' )
@@ -98,15 +100,32 @@ export default function Splash( { children } ) {
 
 		getHelpURL = changedURLHelpLink;
 	} else if ( isSecondAdmin ) {
-		title = __(
-			'Connect your Google account to Site Kit',
-			'google-site-kit'
-		);
-		description = __(
-			'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google services.',
-			'google-site-kit'
-		);
-		showLearnMoreLink = true;
+		if ( setupFlowRefreshEnabled ) {
+			title = __( "Let's get started!", 'google-site-kit' );
+
+			description =
+				setupFlowRefreshPhase4Enabled &&
+				analyticsModuleActive &&
+				hasViewableModules
+					? __(
+							'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the setup, you’ll see stats from all connected Google services that are shared with you:',
+							'google-site-kit'
+					  )
+					: __(
+							'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the setup, you’ll see stats from all connected Google services.',
+							'google-site-kit'
+					  );
+		} else {
+			title = __(
+				'Connect your Google account to Site Kit',
+				'google-site-kit'
+			);
+			description = __(
+				'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google services.',
+				'google-site-kit'
+			);
+			showLearnMoreLink = true;
+		}
 	} else if ( setupFlowRefreshEnabled ) {
 		title = __( 'Let’s get started!', 'google-site-kit' );
 	} else {
@@ -128,13 +147,10 @@ export default function Splash( { children } ) {
 	const splashProps = {
 		analyticsModuleActive,
 		secondAdminLearnMoreLink,
-		homeURL,
 		analyticsModuleAvailable,
-		disconnectedReason,
 		title,
 		description,
 		getHelpURL,
-		connectedProxyURL,
 		showLearnMoreLink,
 	};
 

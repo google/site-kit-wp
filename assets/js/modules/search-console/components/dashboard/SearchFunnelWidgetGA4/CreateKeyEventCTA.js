@@ -24,19 +24,19 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
+import { useSelect } from 'googlesitekit-data';
 import PreviewGraph from '@/js/components/PreviewGraph';
-import KeyEventsGraphIcon from '@/svg/graphics/cta-graph-goals.svg';
-import { trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import KeyEventsGraphIcon from '@/svg/graphics/cta-graph-goals.svg';
 
 export default function CreateKeyEventCTA() {
 	const viewContext = useViewContext();

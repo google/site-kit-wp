@@ -20,16 +20,16 @@
  * Internal dependencies
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserInfo,
 	render,
-} from '../../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import AudienceErrorModal from './AudienceErrorModal';
 
 describe( 'AudienceErrorModal', () => {

@@ -27,11 +27,11 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { isPendingAccountStatus } from '@/js/modules/adsense/util/status';
 import ModuleSettingsWarning from '@/js/components/notifications/ModuleSettingsWarning';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { isPendingAccountStatus } from '@/js/modules/adsense/util/status';
 
 export default function SettingsSetupIncomplete() {
 	const accountStatus = useSelect( ( select ) =>

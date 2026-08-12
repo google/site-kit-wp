@@ -31,13 +31,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Cell } from '@/js/material-components';
-import UserInputQuestionNotice from './UserInputQuestionNotice';
 import UserInputQuestionAuthor from './UserInputQuestionAuthor';
+import UserInputQuestionNotice from './UserInputQuestionNotice';
 import { getUserInputQuestions } from './util/constants';
-import P from '@/js/components/Typography/P';
 
 export default function UserInputQuestionInfo( { slug, questionNumber } ) {
 	const hasMultipleUser = useSelect( ( select ) =>

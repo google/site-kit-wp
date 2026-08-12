@@ -25,31 +25,31 @@ import { useMount } from 'react-use';
  * WordPress dependencies
  */
 import {
-	lazy,
 	Suspense,
 	createInterpolateElement,
-	useState,
+	lazy,
 	useEffect,
+	useState,
 } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import { useDispatch, useRegistry, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
+import MediaErrorHandler from '@/js/components/MediaErrorHandler';
+import PreviewBlock from '@/js/components/PreviewBlock';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
-import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
-import ClientIDTextField from '@/js/modules/sign-in-with-google/components/common/ClientIDTextField';
-import CompatibilityChecks from './CompatibilityChecks';
-import OneTapToggle from '@/js/modules/sign-in-with-google/components/common/OneTapToggle';
-import { Button } from 'googlesitekit-components';
-import Link from '@/js/components/Link';
-import ExternalIcon from '@/svg/icons/external.svg';
-import PreviewBlock from '@/js/components/PreviewBlock';
-import MediaErrorHandler from '@/js/components/MediaErrorHandler';
 import { ShowNextToCommentsToggle } from '@/js/modules/sign-in-with-google/components/common';
+import ClientIDTextField from '@/js/modules/sign-in-with-google/components/common/ClientIDTextField';
+import OneTapToggle from '@/js/modules/sign-in-with-google/components/common/OneTapToggle';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
+import ExternalIcon from '@/svg/icons/external.svg';
+import CompatibilityChecks from './CompatibilityChecks';
 const LazyGraphicSVG = lazy( () =>
 	import( '../../../../../svg/graphics/sign-in-with-google-setup.svg' )
 );
@@ -72,6 +72,9 @@ export default function SetupForm() {
 
 	const anyoneCanRegister = useSelect( ( select ) =>
 		select( CORE_SITE ).getAnyoneCanRegister()
+	);
+	const anyoneCanRegisterWooCommerce = useSelect( ( select ) =>
+		select( CORE_SITE ).getAnyoneCanRegisterWooCommerce()
 	);
 
 	// Ensure SiwG settings are resolved so defaults (shape/text/theme) are available.
@@ -98,9 +101,13 @@ export default function SetupForm() {
 	);
 
 	useEffect( () => {
+		// One Tap can create new accounts through either registration path, so
+		// default it on when either is open (unlike the WordPress-only "show
+		// next to comments" effect below, which mirrors `handle_comments_form()`
+		// in PHP, which only ever checks `users_can_register`).
 		if (
 			settingsLoaded &&
-			anyoneCanRegister &&
+			( anyoneCanRegister || anyoneCanRegisterWooCommerce ) &&
 			! hasSetDefaultOneTap &&
 			oneTapEnabled === false
 		) {
@@ -110,6 +117,7 @@ export default function SetupForm() {
 	}, [
 		settingsLoaded,
 		anyoneCanRegister,
+		anyoneCanRegisterWooCommerce,
 		hasSetDefaultOneTap,
 		oneTapEnabled,
 		setOneTapEnabled,
@@ -201,10 +209,12 @@ export default function SetupForm() {
 				>
 					{ __( 'Get your client ID', 'google-site-kit' ) }
 				</Button>
-				{ anyoneCanRegister && (
+				{ ( anyoneCanRegister || anyoneCanRegisterWooCommerce ) && (
 					<div className="googlesitekit-setup-module__inputs">
 						<OneTapToggle />
-						<ShowNextToCommentsToggle />
+						{ /* Mirrors handle_comments_form() in PHP, which only ever
+						checks the WordPress users_can_register option. */ }
+						{ anyoneCanRegister && <ShowNextToCommentsToggle /> }
 					</div>
 				) }
 			</div>

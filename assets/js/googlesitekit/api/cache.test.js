@@ -21,6 +21,7 @@
  */
 import {
 	STORAGE_KEY_PREFIX,
+	STORAGE_KEY_PREFIX_ROOT,
 	clearCache,
 	deleteItem,
 	getItem,
@@ -30,7 +31,6 @@ import {
 	setItem,
 	setSelectedStorageBackend,
 	setStorageOrder,
-	STORAGE_KEY_PREFIX_ROOT,
 } from './cache';
 
 describe( 'googlesitekit.api.cache', () => {

@@ -19,16 +19,16 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { PluginDocumentSettingPanel as EditPostSettingPanel } from '@wordpress-core/edit-post';
 import { PluginDocumentSettingPanel as EditorSettingPanel } from '@wordpress-core/editor';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Typography from '@/js/components/Typography';
 import GoogleLogoIcon from '@/svg/graphics/logo-g.svg';
 import SettingsForm from './SettingsForm';
-import Typography from '@/js/components/Typography';
 
 export default function SettingPanel() {
 	// The `PluginDocumentSettingPanel` component is deprecated/removed in `@wordpress-core/edit-post`, so

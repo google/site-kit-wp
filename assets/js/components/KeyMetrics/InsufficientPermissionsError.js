@@ -33,11 +33,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import Link from '@/js/components/Link';
-import MetricTileError from './MetricTileError';
-import { trackEvent, trackEventOnce } from '@/js/util';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent, trackEventOnce } from '@/js/util';
+import MetricTileError from './MetricTileError';
 
 export default function InsufficientPermissionsError( props ) {
 	const { moduleSlug, onRetry, infoTooltip, headerText } = props;

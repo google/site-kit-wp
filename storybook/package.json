@@ -17,7 +17,7 @@
 	"devDependencies": {
 		"@babel/preset-react": "^7.26.3",
 		"@storybook/addon-viewport": "^8.6.12",
-		"@storybook/addon-webpack5-compiler-babel": "^3.0.6",
+		"@storybook/addon-webpack5-compiler-babel": "^4.0.1",
 		"@storybook/react-webpack5": "^8.6.12",
 		"@storybook/test": "^8.6.12",
 		"@storybook/test-runner": "^0.23.0",

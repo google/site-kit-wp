@@ -17,95 +17,135 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
-import {
-	EngagedTrafficSourceWidget,
-	LeastEngagingPagesWidget,
-	MostEngagingPagesWidget,
-	NewVisitorsWidget,
-	PopularContentWidget,
-	PopularProductsWidget,
-	ReturningVisitorsWidget,
-	TopCitiesWidget,
-	TopCitiesDrivingLeadsWidget,
-	TopCitiesDrivingAddToCartWidget,
-	TopCitiesDrivingPurchasesWidget,
-	TopDeviceDrivingPurchasesWidget,
-	TopCountriesWidget,
-	TopTrafficSourceWidget,
-	TopTrafficSourceDrivingAddToCartWidget,
-	TopTrafficSourceDrivingLeadsWidget,
-	TopTrafficSourceDrivingPurchasesWidget,
-	TopConvertingTrafficSourceWidget,
-	PagesPerVisitWidget,
-	VisitLengthWidget,
-	TopReturningVisitorPages,
-	VisitsPerVisitorWidget,
-	TopRecentTrendingPagesWidget,
-	TopCategoriesWidget,
-	PopularAuthorsWidget,
-	TopPagesDrivingLeadsWidget,
-} from '@/js/modules/analytics-4/components/widgets';
-import {
-	LeadGenerationPerformanceWidget,
-	OnlineStorePerformanceWidget,
-} from '@/js/modules/analytics-4/components/site-goals/widgets';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
-	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
-	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
-	AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
-	AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY,
-} from '@/js/googlesitekit/widgets/default-areas';
+import lazyWithPreload from '@/js/components/pdf-export/lazy-with-preload';
+import { isFeatureEnabled } from '@/js/features';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
-	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_PAGES_PER_VISIT,
 	KM_ANALYTICS_POPULAR_AUTHORS,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
+	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
-	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
-	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_COUNTRIES,
+	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
-	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
-	KM_ANALYTICS_VISIT_LENGTH,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
+	KM_ANALYTICS_VISIT_LENGTH,
 } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
+	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+	AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY,
+	AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+} from '@/js/googlesitekit/widgets/default-areas';
+import {
+	AudienceSegmentationBackNotice,
+	AudienceTilesWidget,
+	ConnectAnalyticsCTAWidget,
+	InfoNoticeWidget,
+	PrimaryUserSetupWidget,
+	SecondaryUserSetupWidget,
+} from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
+import { AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationBackNotice';
+import { AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSelectionPanel/constants';
+import getAudienceTilesPDFData from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/getPDFData';
 import {
 	DashboardAllTrafficWidgetGA4,
 	DashboardOverallPageMetricsWidgetGA4,
 } from '@/js/modules/analytics-4/components/dashboard';
+import getAllTrafficPDFData from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/getPDFData';
 import { ModulePopularPagesWidgetGA4 } from '@/js/modules/analytics-4/components/module';
+import getModulePopularPagesPDFData from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/getPDFData';
+import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	AudienceTilesWidget,
-	ConnectAnalyticsCTAWidget,
-	InfoNoticeWidget,
-	SecondaryUserSetupWidget,
-	PrimaryUserSetupWidget,
-} from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+	LeadGenerationPerformanceWidget,
+	OnlineStorePerformanceWidget,
+} from '@/js/modules/analytics-4/components/site-goals/widgets';
+import {
+	EngagedTrafficSourceWidget,
+	LeastEngagingPagesWidget,
+	MostEngagingPagesWidget,
+	NewVisitorsWidget,
+	PagesPerVisitWidget,
+	PopularAuthorsWidget,
+	PopularContentWidget,
+	PopularProductsWidget,
+	ReturningVisitorsWidget,
+	TopCategoriesWidget,
+	TopCitiesDrivingAddToCartWidget,
+	TopCitiesDrivingLeadsWidget,
+	TopCitiesDrivingPurchasesWidget,
+	TopCitiesWidget,
+	TopConvertingTrafficSourceWidget,
+	TopCountriesWidget,
+	TopDeviceDrivingPurchasesWidget,
+	TopPagesDrivingLeadsWidget,
+	TopRecentTrendingPagesWidget,
+	TopReturningVisitorPages,
+	TopTrafficSourceDrivingAddToCartWidget,
+	TopTrafficSourceDrivingLeadsWidget,
+	TopTrafficSourceDrivingPurchasesWidget,
+	TopTrafficSourceWidget,
+	VisitLengthWidget,
+	VisitsPerVisitorWidget,
+} from '@/js/modules/analytics-4/components/widgets';
 import ConversionReportingNotificationCTAWidget from '@/js/modules/analytics-4/components/widgets/ConversionReportingNotificationCTAWidget';
-import { isFeatureEnabled } from '@/js/features';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+
+/**
+ * Lazy-loaded PDF component for the Your visitor groups widget.
+ */
+const PDFYourVisitorGroups = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/PDFYourVisitorGroups'
+	)
+);
+
+const DashboardAllTrafficWidgetGA4PDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/indexPDF'
+	)
+);
+
+/**
+ * Lazy-loaded PDF component for the Top content over time widget.
+ */
+const ModulePopularPagesWidgetGA4PDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/ModulePopularPagesWidgetGA4PDF'
+	)
+);
 
 export function registerWidgets( widgets ) {
 	// Register Analytics 4 Widgets.
@@ -117,12 +157,42 @@ export function registerWidgets( widgets ) {
 			priority: 1,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			pdf: {
+				Component: DashboardAllTrafficWidgetGA4PDF,
+				getData: getAllTrafficPDFData,
+				label: __( 'Site traffic over time', 'google-site-kit' ),
+			},
 		},
 		[
 			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
 			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 		]
 	);
+
+	if ( isFeatureEnabled( 'setupFlowRefresh' ) ) {
+		widgets.registerWidget(
+			'analyticsAudienceSegmentationBackNotice',
+			{
+				Component: AudienceSegmentationBackNotice,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 0,
+				wrapWidget: false,
+				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+				isActive: ( select ) => {
+					const isWidgetHidden =
+						select(
+							CORE_USER
+						).getRawAudienceSegmentationWidgetHidden();
+					const isDismissed = select( CORE_USER ).isItemDismissed(
+						AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG
+					);
+
+					return isWidgetHidden === true && isDismissed === false;
+				},
+			},
+			[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
+		);
+	}
 
 	widgets.registerWidget(
 		'analyticsAudienceTiles',
@@ -145,6 +215,17 @@ export function registerWidgets( widgets ) {
 					select( CORE_USER ).getConfiguredAudiences();
 				return !! configuredAudiences;
 			},
+			pdf: {
+				Component: PDFYourVisitorGroups,
+				getData: getAudienceTilesPDFData,
+				label: __( 'Visitor groups', 'google-site-kit' ),
+				// The PDF row needs two cards, so it renders only for two or
+				// more audiences. The dashboard tile keeps its own `isActive`,
+				// which allows a single audience.
+				isActive: ( select ) =>
+					( select( CORE_USER ).getConfiguredAudiences()?.length ??
+						0 ) >= 2,
+			},
 		},
 		[ AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION ]
 	);
@@ -158,11 +239,11 @@ export function registerWidgets( widgets ) {
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) => {
-				if (
-					! select( CORE_USER ).hasAccessToShareableModule(
-						MODULE_SLUG_ANALYTICS_4
-					)
-				) {
+				const hasAccessToShareableModule = select(
+					CORE_USER
+				).hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 );
+
+				if ( ! hasAccessToShareableModule ) {
 					return false;
 				}
 
@@ -171,6 +252,14 @@ export function registerWidgets( widgets ) {
 				).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 
 				if ( ! isAnalyticsConnected ) {
+					return false;
+				}
+
+				const isItemDismissed = select( CORE_USER ).isItemDismissed(
+					AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG
+				);
+
+				if ( isItemDismissed !== false ) {
 					return false;
 				}
 
@@ -208,11 +297,11 @@ export function registerWidgets( widgets ) {
 					return false;
 				}
 
-				if (
-					! select( CORE_USER ).hasAccessToShareableModule(
-						MODULE_SLUG_ANALYTICS_4
-					)
-				) {
+				const hasAccessToShareableModule = select(
+					CORE_USER
+				).hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 );
+
+				if ( ! hasAccessToShareableModule ) {
 					return false;
 				}
 
@@ -221,6 +310,14 @@ export function registerWidgets( widgets ) {
 				).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 
 				if ( ! isAnalyticsConnected ) {
+					return false;
+				}
+
+				const isItemDismissed = select( CORE_USER ).isItemDismissed(
+					AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG
+				);
+
+				if ( isItemDismissed !== false ) {
 					return false;
 				}
 
@@ -308,6 +405,11 @@ export function registerWidgets( widgets ) {
 			priority: 4,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			pdf: {
+				Component: ModulePopularPagesWidgetGA4PDF,
+				getData: getModulePopularPagesPDFData,
+				label: __( 'Top content', 'google-site-kit' ),
+			},
 		},
 		[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
 	);
@@ -758,6 +860,10 @@ export function registerWidgets( widgets ) {
 				priority: 1,
 				wrapWidget: false,
 				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+				isActive: ( select ) =>
+					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+						GOAL_TYPES.ECOMMERCE
+					) === true,
 			},
 			[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
 		);
@@ -770,6 +876,10 @@ export function registerWidgets( widgets ) {
 				priority: 2,
 				wrapWidget: false,
 				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+				isActive: ( select ) =>
+					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+						GOAL_TYPES.LEAD
+					) === true,
 			},
 			[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
 		);

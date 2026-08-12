@@ -16,11 +16,14 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { Cell, Grid, Row } from '@/js/material-components';
-import { provideSiteInfo } from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import SettingsView from './SettingsView';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
+import { provideSiteInfo } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
+import SettingsView from './SettingsView';
 
 function Template() {
 	return (
@@ -56,13 +59,27 @@ NewUserAccountsEnabled.args = {
 	anyoneCanRegister: true,
 };
 
+export const NewUserAccountsEnabledViaWooCommerce = Template.bind( null );
+NewUserAccountsEnabledViaWooCommerce.storyName =
+	'New Accounts Enabled via WooCommerce';
+NewUserAccountsEnabledViaWooCommerce.args = {
+	anyoneCanRegister: false,
+	anyoneCanRegisterWooCommerce: true,
+};
+
 export default {
 	title: 'Modules/SignInWithGoogle/Settings/SettingsView',
 	decorators: [
 		( Story, { args } ) => {
 			function setupRegistry( registry ) {
-				const { anyoneCanRegister = false } = args;
-				provideSiteInfo( registry, { anyoneCanRegister } );
+				const {
+					anyoneCanRegister = false,
+					anyoneCanRegisterWooCommerce = false,
+				} = args;
+				provideSiteInfo( registry, {
+					anyoneCanRegister,
+					anyoneCanRegisterWooCommerce,
+				} );
 
 				registry
 					.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )

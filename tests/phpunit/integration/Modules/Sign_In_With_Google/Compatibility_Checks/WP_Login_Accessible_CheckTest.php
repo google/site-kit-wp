@@ -34,7 +34,7 @@ class WP_Login_Accessible_CheckTest extends TestCase {
 	}
 
 	public function test_run_returns_false_when_login_accessible() {
-		// Mock wp_remote_head to return a 200 status code
+		// Mock wp_remote_head to return a 200 status code.
 		add_filter(
 			'pre_http_request',
 			function ( $preempt, $parsed_args, $url ) {
@@ -60,7 +60,7 @@ class WP_Login_Accessible_CheckTest extends TestCase {
 	}
 
 	public function test_run_returns_true_when_login_returns_404() {
-		// Mock wp_remote_head to return a 404 status code
+		// Mock wp_remote_head to return a 404 status code.
 		add_filter(
 			'pre_http_request',
 			function ( $preempt, $parsed_args, $url ) {
@@ -99,7 +99,7 @@ class WP_Login_Accessible_CheckTest extends TestCase {
 	 * @dataProvider status_code_provider
 	 */
 	public function test_run_returns_false_when_login_returns_other_status_codes( $status_code ) {
-		// Mock wp_remote_head to return various status codes
+		// Mock wp_remote_head to return various status codes.
 		add_filter(
 			'pre_http_request',
 			function ( $preempt, $parsed_args, $url ) use ( $status_code ) {
@@ -125,7 +125,7 @@ class WP_Login_Accessible_CheckTest extends TestCase {
 	}
 
 	public function test_run_returns_false_on_wp_error() {
-		// Mock wp_remote_head to return a WP_Error
+		// Mock wp_remote_head to return a WP_Error.
 		add_filter(
 			'pre_http_request',
 			function ( $preempt, $parsed_args, $url ) {
@@ -146,7 +146,7 @@ class WP_Login_Accessible_CheckTest extends TestCase {
 	public function test_run_uses_correct_login_url() {
 		$login_url_called = '';
 
-		// Mock wp_remote_head to capture the URL being called
+		// Mock wp_remote_head to capture the URL being called.
 		add_filter(
 			'pre_http_request',
 			function ( $preempt, $parsed_args, $url ) use ( &$login_url_called ) {

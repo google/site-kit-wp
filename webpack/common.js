@@ -17,13 +17,13 @@
  */
 
 /**
- * Node dependencies
+ * External dependencies
  */
 const fs = require( 'fs' );
 const path = require( 'path' );
 
 /**
- * External dependencies
+ * Internal dependencies
  */
 const features = require( '../feature-flags.json' );
 
@@ -49,9 +49,15 @@ exports.resolve = {
 		),
 		'@wordpress/api-fetch$': path.resolve(
 			rootDir,
-			'assets/js/api-fetch-shim.js'
+			'assets/js/api-fetch-shim.ts'
 		),
 		'@wordpress/i18n__non-shim': require.resolve( '@wordpress/i18n' ),
+		// React 17 ships `jsx-runtime` as a file but does not expose it via an
+		// `exports` field, so ESM packages (e.g. `@react-pdf/renderer`) that
+		// import `react/jsx-runtime` fail webpack's strict resolution. Pin the
+		// extension explicitly until React 18 is adopted.
+		'react/jsx-runtime$': require.resolve( 'react/jsx-runtime.js' ),
+		'react/jsx-dev-runtime$': require.resolve( 'react/jsx-dev-runtime.js' ),
 	},
 	extensions: [ '.tsx', '.ts', '.js', '.jsx', '.mjs' ],
 	modules: [ projectPath( '.' ), 'node_modules' ],
@@ -164,6 +170,55 @@ exports.siteKitExternals = siteKitExternals;
 
 exports.externals = { ...siteKitExternals };
 
+/**
+ * SVGR replaces its default SVGO configuration with a custom one rather than
+ * merging the two. So this object sets SVGR's own defaults,
+ * `removeViewBox: false` and `prefixIds`, next to the override below.
+ */
+const svgoConfig = {
+	plugins: [
+		{
+			name: 'preset-default',
+			params: {
+				overrides: {
+					removeViewBox: false,
+					// Curve-to-arc conversion is lossy and visibly distorts
+					// exactly overlapping shapes.
+					convertPathData: false,
+				},
+			},
+		},
+		'prefixIds',
+	],
+};
+
+/**
+ * Renders a source SVG file with `@react-pdf/renderer` primitives.
+ *
+ * The library parses no SVG markup and draws its own `Svg`, `Path`, and `G`
+ * components. SVGR's `native` mode already renames each element to that set, so
+ * this template only redirects the import. An element that the library doesn't
+ * export fails at render, rather than dropping a shape with no error.
+ *
+ * @since 1.184.0
+ *
+ * @param {Object}   variables               The component name and the JSX that SVGR built from the file.
+ * @param {string}   variables.componentName The generated component's name.
+ * @param {Object}   variables.jsx           The drawing, as JSX.
+ * @param {Object}   context                 SVGR's template helpers.
+ * @param {Function} context.tpl             SVGR's Babel template tag.
+ * @return {Object} The generated module's AST.
+ */
+function reactPDFTemplate( variables, { tpl } ) {
+	return tpl`
+import { Circle, ClipPath, Defs, Ellipse, G, Image, Line, LinearGradient, Path, Polygon, Polyline, RadialGradient, Rect, Stop, Svg, Text, Tspan } from '@react-pdf/renderer';
+
+const ${ variables.componentName } = ( props ) => ${ variables.jsx };
+
+export default ${ variables.componentName };
+`;
+}
+
 const svgRule = {
 	test: /\.svg$/,
 	oneOf: [
@@ -172,12 +227,34 @@ const svgRule = {
 			use: 'url-loader',
 		},
 		{
+			// A PDF icon imports its source SVG with `?pdf`. The report then
+			// renders the whole drawing: every shape, each shape's own fill,
+			// and the fill rule. `currentColor` becomes the caller's `color`.
+			resourceQuery: /pdf/,
 			use: [
 				{
 					loader: '@svgr/webpack',
 					options: {
-						// strip width & height to allow manual override using props
+						native: true,
 						dimensions: false,
+						template: reactPDFTemplate,
+						replaceAttrValues: {
+							currentColor: '{props.color}',
+						},
+						svgoConfig,
+					},
+				},
+			],
+		},
+		{
+			use: [
+				{
+					loader: '@svgr/webpack',
+					options: {
+						// Strip width & height attributes in SVGs to allow
+						// manual override using props.
+						dimensions: false,
+						svgoConfig,
 					},
 				},
 			],
@@ -187,8 +264,34 @@ const svgRule = {
 
 exports.svgRule = svgRule;
 
+const ttfRule = {
+	test: /\.ttf$/,
+	type: 'asset/resource',
+	generator: {
+		filename: 'fonts/[name]-[contenthash][ext]',
+	},
+};
+
+exports.ttfRule = ttfRule;
+
+/**
+ * An import of a PNG never reads the picture. Webpack copies the file into the
+ * build folder under a unique name, and the import holds the URL of that copy.
+ */
+const pngRule = {
+	test: /\.png$/,
+	type: 'asset/resource',
+	generator: {
+		filename: 'images/[name]-[contenthash][ext]',
+	},
+};
+
+exports.pngRule = pngRule;
+
 exports.createRules = ( mode ) => [
 	svgRule,
+	ttfRule,
+	pngRule,
 	{
 		test: /\.tsx?$/,
 		exclude: /node_modules/,

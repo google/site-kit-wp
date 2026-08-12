@@ -17,7 +17,7 @@
  */
 
 /**
- * Internal dependencies
+ * External dependencies
  */
 import PropTypes from 'prop-types';
 
@@ -25,8 +25,8 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import {
-	createInterpolateElement,
 	Fragment,
+	createInterpolateElement,
 	useCallback,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -34,16 +34,16 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import { SelectionPanelHeader } from '@/js/components/SelectionPanel';
+import P from '@/js/components/Typography/P';
+import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { SelectionPanelHeader } from '@/js/components/SelectionPanel';
-import useViewOnly from '@/js/hooks/useViewOnly';
-import Link from '@/js/components/Link';
-import P from '@/js/components/Typography/P';
 import useViewContext from '@/js/hooks/useViewContext';
-import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
-import PreviewBlock from '@/js/components/PreviewBlock';
+import useViewOnly from '@/js/hooks/useViewOnly';
 
 export default function Header( { closePanel, isLoading } ) {
 	const viewContext = useViewContext();

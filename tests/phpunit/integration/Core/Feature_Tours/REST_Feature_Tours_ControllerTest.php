@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Feature_Tours;
 
@@ -65,8 +63,8 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 
 		$this->controller->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ), 'Controller should register feature tours REST routes.' );
+		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ), 'Controller should register feature tours preload paths.' );
 	}
 
 	public function test_get_dismissed_tours() {
@@ -79,14 +77,15 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 
 		$request = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/dismissed-tours' );
 
-		$this->assertTrue( current_user_can( Permissions::SETUP ) );
+		$this->assertTrue( current_user_can( Permissions::SETUP ), 'Current user should be allowed to read dismissed tours.' );
 
 		$response = rest_get_server()->dispatch( $request );
 		/* @var WP_REST_Response $response Response instance. */
 
 		$this->assertEqualSets(
 			array( 'feature_x', 'feature_y' ),
-			$response->get_data()
+			$response->get_data(),
+			'Get dismissed tours should contain expected values.'
 		);
 	}
 
@@ -101,17 +100,18 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/dismiss-tour' );
 		$request->set_body_params(
 			array(
-				'data' => array(), // no slug
+				'data' => array(), // no slug.
 			)
 		);
-		$this->assertTrue( current_user_can( Permissions::SETUP ) );
+		$this->assertTrue( current_user_can( Permissions::SETUP ), 'Current user should be allowed to dismiss tours.' );
 		$response = rest_get_server()->dispatch( $request );
 		/* @var WP_REST_Response $response Response instance. */
 
-		$this->assertEquals( 400, $response->get_status() );
+		$this->assertEquals( 400, $response->get_status(), 'Dismiss tour endpoint should reject missing slug.' );
 		$this->assertEquals(
 			'missing_required_param',
-			$response->get_data()['code']
+			$response->get_data()['code'],
+			'Dismiss tour endpoint should report missing slug parameter.'
 		);
 
 		$request->set_body_params(
@@ -123,10 +123,11 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( 200, $response->get_status(), 'Dismiss tour endpoint should accept valid slug.' );
 		$this->assertEqualSets(
 			array( 'feature_x', 'feature_y', 'feature_z' ),
-			$response->get_data()
+			$response->get_data(),
+			'Dismiss tour endpoint should return updated dismissed tours.'
 		);
 	}
 }

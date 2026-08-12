@@ -6,6 +6,8 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Tests\Core\Authentication;
@@ -25,6 +27,7 @@ use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Migration_1_185_0;
 use Google\Site_Kit\Modules\PageSpeed_Insights\Settings as PageSpeed_Insights_Settings;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
@@ -520,7 +523,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertStringStartsWith( admin_url( 'index.php' ), $connect_url, 'Connect URL should start with admin index.php.' );
 		wp_parse_str( parse_url( $connect_url, PHP_URL_QUERY ), $params );
 		$this->assertEquals( 1, wp_verify_nonce( $params['nonce'], Authentication::ACTION_CONNECT ), 'Nonce should verify for connect action.' ); // PHPCS: line 520
-		$this->assertEquals( Authentication::ACTION_CONNECT, $params['action'], 'Action should be connect for connect URL.' ); // PHPCS: line 521
+		$this->assertEquals( Authentication::ACTION_CONNECT, $params['action'], 'Action should be connect for connect URL.' ); // PHPCS: line 521.
 	}
 
 	public function test_get_disconnect_url() {
@@ -531,7 +534,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertStringStartsWith( admin_url( 'index.php' ), $disconnect_url, 'Disconnect URL should start with admin index.php.' );
 		wp_parse_str( parse_url( $disconnect_url, PHP_URL_QUERY ), $params );
 		$this->assertEquals( 1, wp_verify_nonce( $params['nonce'], Authentication::ACTION_DISCONNECT ), 'Nonce should verify for disconnect action.' ); // PHPCS: line 531
-		$this->assertEquals( Authentication::ACTION_DISCONNECT, $params['action'], 'Action should be disconnect for disconnect URL.' ); // PHPCS: line 532
+		$this->assertEquals( Authentication::ACTION_DISCONNECT, $params['action'], 'Action should be disconnect for disconnect URL.' ); // PHPCS: line 532.
 	}
 
 	public function test_handle_connect() {
@@ -546,7 +549,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $connect_action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
-			$this->assertContains( $e->getMessage(), array( 'The link you followed has expired.', 'Are you sure you want to do this?' ), 'Should throw expired/disallowed link error for missing connect nonce.' ); // PHPCS: line 547
+			$this->assertContains( $e->getMessage(), array( 'The link you followed has expired.', 'Are you sure you want to do this?' ), 'Should throw expired/disallowed link error for missing connect nonce.' ); // PHPCS: line 547.
 		}
 
 		$_GET['nonce'] = wp_create_nonce( Authentication::ACTION_CONNECT );
@@ -557,7 +560,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $connect_action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
-			$this->assertStringContainsString( 'have permissions to authenticate', $e->getMessage(), 'Should indicate missing permissions for connect.' ); // PHPCS: line 558
+			$this->assertStringContainsString( 'have permissions to authenticate', $e->getMessage(), 'Should indicate missing permissions for connect.' ); // PHPCS: line 558.
 		}
 
 		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
@@ -568,7 +571,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $connect_action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
-			$this->assertStringContainsString( 'have permissions to authenticate', $e->getMessage(), 'Should indicate missing permissions for connect (editor).' ); // PHPCS: line 569
+			$this->assertStringContainsString( 'have permissions to authenticate', $e->getMessage(), 'Should indicate missing permissions for connect (editor).' ); // PHPCS: line 569.
 		}
 
 		// Administrators can authenticate.
@@ -580,7 +583,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $connect_action );
 			$this->fail( 'Expected redirection to connect URL' );
 		} catch ( RedirectException $e ) {
-			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/o/oauth2/auth/', $e->get_location(), 'Should redirect to proxy OAuth URL for admin.' ); // PHPCS: line 581
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/o/oauth2/auth/', $e->get_location(), 'Should redirect to proxy OAuth URL for admin.' ); // PHPCS: line 581.
 		}
 
 		// Additional scopes can be requested via the additional_scopes query parameter.
@@ -591,11 +594,11 @@ class AuthenticationTest extends TestCase {
 			$this->fail( 'Expected redirection to connect URL' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
-			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/o/oauth2/auth/', $redirect_url, 'Should redirect to proxy OAuth URL for additional scopes.' ); // PHPCS: line 592
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/o/oauth2/auth/', $redirect_url, 'Should redirect to proxy OAuth URL for additional scopes.' ); // PHPCS: line 592.
 			parse_str( wp_parse_url( $redirect_url, PHP_URL_QUERY ), $query_args );
 			$requested_scopes = explode( ' ', $query_args['scope'] );
 			$this->assertContains( $extra_scopes[0], $requested_scopes, 'First additional scope should be present in requested scopes.' ); // PHPCS: line 595
-			$this->assertContains( $extra_scopes[1], $requested_scopes, 'Second additional scope should be present in requested scopes.' ); // PHPCS: line 596
+			$this->assertContains( $extra_scopes[1], $requested_scopes, 'Second additional scope should be present in requested scopes.' ); // PHPCS: line 596.
 		}
 	}
 
@@ -611,7 +614,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $disconnect_action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
-			$this->assertContains( $e->getMessage(), array( 'The link you followed has expired.', 'Are you sure you want to do this?' ), 'Should throw expired/disallowed link error for missing disconnect nonce.' ); // PHPCS: line 612
+			$this->assertContains( $e->getMessage(), array( 'The link you followed has expired.', 'Are you sure you want to do this?' ), 'Should throw expired/disallowed link error for missing disconnect nonce.' ); // PHPCS: line 612.
 		}
 
 		$_GET['nonce'] = wp_create_nonce( Authentication::ACTION_DISCONNECT );
@@ -622,7 +625,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $disconnect_action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
-			$this->assertStringContainsString( 'have permissions to authenticate', $e->getMessage(), 'Should indicate missing permissions for disconnect.' ); // PHPCS: line 623
+			$this->assertStringContainsString( 'have permissions to authenticate', $e->getMessage(), 'Should indicate missing permissions for disconnect.' ); // PHPCS: line 623.
 		}
 
 		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
@@ -633,7 +636,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $disconnect_action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
-			$this->assertStringContainsString( 'have permissions to authenticate', $e->getMessage(), 'Should indicate missing permissions for disconnect (editor).' ); // PHPCS: line 634
+			$this->assertStringContainsString( 'have permissions to authenticate', $e->getMessage(), 'Should indicate missing permissions for disconnect (editor).' ); // PHPCS: line 634.
 		}
 
 		// Administrators can authenticate.
@@ -646,7 +649,7 @@ class AuthenticationTest extends TestCase {
 			$this->fail( 'Expected redirection to splash URL' );
 		} catch ( RedirectException $e ) {
 			$redirect_url = $e->get_location();
-			$this->assertStringStartsWith( $context->admin_url( 'splash' ), $redirect_url, 'Should redirect to splash page after disconnect.' ); // PHPCS: line 649
+			$this->assertStringStartsWith( $context->admin_url( 'splash' ), $redirect_url, 'Should redirect to splash page after disconnect.' ); // PHPCS: line 649.
 			wp_parse_str( parse_url( $redirect_url, PHP_URL_QUERY ), $params );
 			$this->assertEquals( 1, $params['googlesitekit_reset_session'], 'Reset session parameter should be set to 1 after disconnect.' );
 		}
@@ -662,7 +665,7 @@ class AuthenticationTest extends TestCase {
 			array()
 		);
 
-		$this->assertNotEmpty( filter_var( $url, FILTER_VALIDATE_URL ), 'Proxy setup URL should be a valid URL.' ); // PHPCS: line 663
+		$this->assertNotEmpty( filter_var( $url, FILTER_VALIDATE_URL ), 'Proxy setup URL should be a valid URL.' ); // PHPCS: line 663.
 		$this->assertStringStartsWith( admin_url(), $url, 'URL should start with admin URL.' );
 
 		$args = array();
@@ -670,7 +673,7 @@ class AuthenticationTest extends TestCase {
 
 		$this->assertArrayHasKey( 'action', $args, 'Proxy setup URL should have action param.' ); // PHPCS: line 669
 		$this->assertArrayHasKey( 'nonce', $args, 'Proxy setup URL should have nonce param.' ); // PHPCS: line 670
-		$this->assertEquals( Google_Proxy::ACTION_SETUP_START, $args['action'], 'Proxy setup URL action should match.' ); // PHPCS: line 672
+		$this->assertEquals( Google_Proxy::ACTION_SETUP_START, $args['action'], 'Proxy setup URL action should match.' ); // PHPCS: line 672.
 	}
 
 	public function test_set_connected_proxy_url() {
@@ -690,10 +693,16 @@ class AuthenticationTest extends TestCase {
 		do_action( 'googlesitekit_authorize_user', array(), array(), array() );
 		remove_filter( 'home_url', $home_url_hook );
 
-		$this->assertEquals( 'https://example.com/subsite/', $options->get( Connected_Proxy_URL::OPTION ), 'Connected proxy URL should be set to filtered home_url.' ); // PHPCS: line 692
+		$this->assertEquals( base64_encode( 'https://example.com/subsite/' ), $options->get( Connected_Proxy_URL::OPTION ), 'Authentication should store the connected proxy URL as a base64-encoded string built from the filtered home URL.' );
 	}
 
-	public function test_check_connected_proxy_url() {
+	/**
+	 * Sets up a proxy connected site with an administrator who can run setup.
+	 *
+	 * @return array Site arrangement, keyed `context`, `options`, `user_options`
+	 *               and `authentication`.
+	 */
+	private function set_up_proxy_connected_site() {
 		remove_all_actions( 'admin_init' );
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
@@ -706,13 +715,16 @@ class AuthenticationTest extends TestCase {
 		$authentication = new Authentication( $context, $options, $user_options );
 		$authentication->register();
 
-		// Set connected proxy URL to something else to emulate URL mismatch.
-		$options->set( Connected_Proxy_URL::OPTION, '/' );
+		( new Migration_1_185_0( $context, $options ) )->register();
+
+		// Roll back the database version, so the migration runs the way it does on
+		// a site that upgrades to this version.
+		$options->delete( Migration_1_185_0::DB_VERSION_OPTION );
 
 		// Emulate credentials.
 		$this->fake_proxy_site_connection();
 
-		// Emulate OAuth acccess token.
+		// Emulate OAuth access token.
 		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
 
 		// Ensure admin user has Permissions::SETUP cap regardless of authentication.
@@ -724,17 +736,126 @@ class AuthenticationTest extends TestCase {
 			}
 		);
 
-		do_action( 'admin_init' );
-
-		$this->assertEquals(
-			Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH,
-			$user_options->get( Disconnected_Reason::OPTION ),
-			'User option should be set to URL mismatch reason after admin_init.' // PHPCS: line 728
+		return array(
+			'context'        => $context,
+			'options'        => $options,
+			'user_options'   => $user_options,
+			'authentication' => $authentication,
 		);
 	}
 
+	public function test_check_connected_proxy_url__disconnects_a_site_whose_encoded_url_is_another_domain() {
+		$site         = $this->set_up_proxy_connected_site();
+		$options      = $site['options'];
+		$user_options = $site['user_options'];
+
+		// Set connected proxy URL to another site to emulate URL mismatch.
+		$options->set( Connected_Proxy_URL::OPTION, base64_encode( 'https://other.example.com/' ) );
+
+		do_action( 'admin_init' );
+
+		$this->assertEquals(
+			'connected_url_mismatch',
+			$user_options->get( Disconnected_Reason::OPTION ),
+			'Site Kit should record the connected URL mismatch as the disconnected reason when the stored encoded URL is for another domain.'
+		);
+	}
+
+	public function test_check_connected_proxy_url__disconnects_the_site_after_the_home_url_changes() {
+		$site           = $this->set_up_proxy_connected_site();
+		$context        = $site['context'];
+		$user_options   = $site['user_options'];
+		$authentication = $site['authentication'];
+
+		// Connect the site with the home URL it runs on.
+		$authentication->get_connected_proxy_url_instance()->set( $context->get_canonical_home_url() );
+
+		// Move the site to another domain, the way a search and replace over the
+		// database does.
+		update_option( 'home', 'https://new-domain.example.com' );
+
+		do_action( 'admin_init' );
+
+		$this->assertEquals(
+			'connected_url_mismatch',
+			$user_options->get( Disconnected_Reason::OPTION ),
+			'Site Kit should record the connected URL mismatch as the disconnected reason once the home URL moves to another domain.'
+		);
+	}
+
+	public function test_check_connected_proxy_url__disconnects_a_site_whose_plain_text_url_is_another_domain() {
+		$site         = $this->set_up_proxy_connected_site();
+		$options      = $site['options'];
+		$user_options = $site['user_options'];
+
+		// Store the URL the site connected with in plain text, the way plugin
+		// versions before the migration saved it.
+		$options->set( Connected_Proxy_URL::OPTION, 'https://old-domain.example.com/' );
+
+		do_action( 'admin_init' );
+
+		$this->assertEquals(
+			'connected_url_mismatch',
+			$user_options->get( Disconnected_Reason::OPTION ),
+			'Site Kit should still report the connected URL mismatch on a site that stored the URL in plain text before the upgrade.'
+		);
+		$this->assertEquals(
+			base64_encode( 'https://old-domain.example.com/' ),
+			$options->get( Connected_Proxy_URL::OPTION ),
+			'The migration should store the plain text URL base64-encoded before `Authentication::check_connected_proxy_url()` reads it.'
+		);
+	}
+
+	public function test_check_connected_proxy_url__keeps_a_site_connected_whose_plain_text_url_is_the_home_url() {
+		$site         = $this->set_up_proxy_connected_site();
+		$context      = $site['context'];
+		$options      = $site['options'];
+		$user_options = $site['user_options'];
+
+		// Store the URL the site runs on in plain text, the way plugin versions
+		// before the migration saved it.
+		$options->set( Connected_Proxy_URL::OPTION, $context->get_canonical_home_url() );
+
+		do_action( 'admin_init' );
+
+		$this->assertFalse(
+			$user_options->get( Disconnected_Reason::OPTION ),
+			'Site Kit should leave the site connected when the URL it stored in plain text is the URL the site runs on.'
+		);
+	}
+
+	public function test_get_reconnect_after_url_mismatch_notice__omits_the_url_pair_when_the_stored_url_fails_to_decode() {
+		remove_all_filters( 'googlesitekit_admin_notices' );
+
+		$site    = $this->set_up_proxy_connected_site();
+		$options = $site['options'];
+
+		// Store a value that doesn't start with `http`. The migration skips it,
+		// so the notice finds no old URL to print.
+		$options->set( Connected_Proxy_URL::OPTION, 'not*a*valid*value' );
+
+		do_action( 'admin_init' );
+
+		$output = '';
+
+		foreach ( apply_filters( 'googlesitekit_admin_notices', array() ) as $notice ) {
+			if ( ! $notice instanceof Notice
+				|| 'reconnect_after_url_mismatch' !== $notice->get_slug()
+				|| ! $notice->is_active( '' ) ) {
+				continue;
+			}
+
+			ob_start();
+			$notice->render();
+			$output = ob_get_clean();
+		}
+
+		$this->assertStringContainsString( 'Looks like the URL of your site has changed', $output, 'The notice should still ask the user to reconnect.' );
+		$this->assertStringNotContainsString( 'Old URL:', $output, 'The notice should leave the URL pair out when the stored value fails to decode, rather than print an empty old URL.' );
+	}
+
 	/**
-	 * Test handle_proxy_permissions()
+	 * Test handle_proxy_permissions().
 	 */
 	public function test_handle_proxy_permissions() {
 		$action = 'admin_action_' . Google_Proxy::ACTION_PERMISSIONS;
@@ -758,32 +879,32 @@ class AuthenticationTest extends TestCase {
 			do_action( $action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( Exception $e ) {
-			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again</a>. Retry didn’t work? <a href="https://sitekit.withgoogle.com/support?error_id=nonce_expired" target="_blank">Get help</a>.', $e->getMessage(), 'Should throw expired link error for missing proxy permissions nonce.' ); // PHPCS: line 759
+			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again</a>. Retry didn’t work? <a href="https://sitekit.withgoogle.com/support?error_id=nonce_expired" target="_blank">Get help</a>.', $e->getMessage(), 'Should throw expired link error for missing proxy permissions nonce.' ); // PHPCS: line 759.
 		}
 
 		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_PERMISSIONS );
 		$this->assertFalse( current_user_can( Permissions::AUTHENTICATE ), 'User should not have authenticate permission for proxy permissions.' );
 
-		// Requires Site Kit Authenticate permissions
+		// Requires Site Kit Authenticate permissions.
 		try {
 			do_action( $action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( Exception $e ) {
-			$this->assertStringContainsString( 'insufficient permissions to manage Site Kit permissions', $e->getMessage(), 'Should indicate insufficient permissions for proxy permissions.' ); // PHPCS: line 770
+			$this->assertStringContainsString( 'insufficient permissions to manage Site Kit permissions', $e->getMessage(), 'Should indicate insufficient permissions for proxy permissions.' ); // PHPCS: line 770.
 		}
 
 		wp_set_current_user( $admin_id );
 		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_PERMISSIONS );
 		$this->assertTrue( current_user_can( Permissions::AUTHENTICATE ), 'Administrator should have authenticate permission for proxy permissions.' );
 
-		// Requires Proxy Authentication
+		// Requires Proxy Authentication.
 		$this->fake_site_connection();
 
 		try {
 			do_action( $action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( Exception $e ) {
-			$this->assertStringContainsString( 'Site Kit is not configured to use the authentication proxy', $e->getMessage(), 'Should indicate proxy authentication is not configured.' ); // PHPCS: line 784
+			$this->assertStringContainsString( 'Site Kit is not configured to use the authentication proxy', $e->getMessage(), 'Should indicate proxy authentication is not configured.' ); // PHPCS: line 784.
 		}
 
 		list( $site_id ) = $this->fake_proxy_site_connection();
@@ -792,12 +913,12 @@ class AuthenticationTest extends TestCase {
 			do_action( $action );
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();
-			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/permissions/', $location, 'Should redirect to proxy permissions URL.' ); // PHPCS: line 793
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/permissions/', $location, 'Should redirect to proxy permissions URL.' ); // PHPCS: line 793.
 
 			$parsed = wp_parse_url( $location );
 			parse_str( $parsed['query'], $query_args );
 
-			$this->assertEquals( $site_id, $query_args['site_id'], 'Site ID in query args should match fake proxy site ID.' ); // PHPCS: line 798
+			$this->assertEquals( $site_id, $query_args['site_id'], 'Site ID in query args should match fake proxy site ID.' ); // PHPCS: line 798.
 		}
 	}
 
@@ -833,7 +954,7 @@ class AuthenticationTest extends TestCase {
 
 		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
 		$this->assertArrayHasKey( 'wpVersion', $data, 'Inline base data should have wpVersion key.' ); // PHPCS: line 833
-		$this->assertEquals( $version, $data['wpVersion']['version'], 'Inline base data wpVersion should match blog version.' ); // PHPCS: line 834
+		$this->assertEquals( $version, $data['wpVersion']['version'], 'Inline base data wpVersion should match blog version.' ); // PHPCS: line 834.
 
 		if ( version_compare( $version, '5.5', '>=' ) ) {
 			$this->assertTrue( $data['changePluginAutoUpdatesCapacity'], 'Plugin auto-updates capacity should be changeable when user has permission.' );
@@ -904,7 +1025,7 @@ class AuthenticationTest extends TestCase {
 
 		$this->assertEquals( '42', $js_inline_wp_version['version'], 'Inline JS WP version should match input version.' ); // PHPCS: line 903
 		$this->assertEquals( '42', $js_inline_wp_version['major'], 'Inline JS WP major version should match input version.' ); // PHPCS: line 904
-		$this->assertEquals( '0', $js_inline_wp_version['minor'], 'Inline JS WP minor version should be zero.' ); // PHPCS: line 905
+		$this->assertEquals( '0', $js_inline_wp_version['minor'], 'Inline JS WP minor version should be zero.' ); // PHPCS: line 905.
 	}
 
 	/**
@@ -931,7 +1052,7 @@ class AuthenticationTest extends TestCase {
 			// The test will fail if this isn't thrown so we can continue below.
 		}
 
-		$this->assertEquals( $expected_redirect, $redirect->get_location(), 'Allowed redirect host should match expected.' ); // PHPCS: line 932
+		$this->assertEquals( $expected_redirect, $redirect->get_location(), 'Allowed redirect host should match expected.' ); // PHPCS: line 932.
 	}
 
 	public function data_site_urls() {

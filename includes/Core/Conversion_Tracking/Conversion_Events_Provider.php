@@ -23,6 +23,9 @@ use Google\Site_Kit\Core\Assets\Script;
  */
 abstract class Conversion_Events_Provider {
 
+	const CATEGORY_LEAD      = 'lead';
+	const CATEGORY_ECOMMERCE = 'ecommerce';
+
 	/**
 	 * Plugin context.
 	 *
@@ -65,6 +68,15 @@ abstract class Conversion_Events_Provider {
 	}
 
 	/**
+	 * Gets the provider category.
+	 *
+	 * @since 1.181.0
+	 *
+	 * @return string Provider category, one of CATEGORY_LEAD or CATEGORY_ECOMMERCE.
+	 */
+	abstract public function get_category();
+
+	/**
 	 * Gets the event names.
 	 *
 	 * @since 1.125.0
@@ -72,6 +84,22 @@ abstract class Conversion_Events_Provider {
 	 * @return array List of event names.
 	 */
 	abstract public function get_event_names();
+
+	/**
+	 * Gets the conversion event names directly tracked by Site Kit's Plugin Conversion Reporting feature.
+	 *
+	 * By default this returns the same result as get_event_names(). Providers that delegate some
+	 * events to a third-party add-on (e.g. Google Analytics for WooCommerce) should override this
+	 * method to return only the events that Site Kit itself will track, so that internal feature
+	 * metrics accurately reflect Site Kit's own tracking rather than the add-on's coverage.
+	 *
+	 * @since 1.182.0
+	 *
+	 * @return array List of event names.
+	 */
+	public function get_site_kit_event_names() {
+		return $this->get_event_names();
+	}
 
 	/**
 	 * Gets the enhanced conversion event names.

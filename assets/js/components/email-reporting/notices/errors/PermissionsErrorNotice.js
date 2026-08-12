@@ -24,13 +24,13 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { useSelect } from '@/js/googlesitekit-data';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import { useSelect } from '@/js/googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export const EMAIL_REPORTS_PERMISSIONS_ERROR_NOTICE =
 	'email_reports_permissions_error_notice';

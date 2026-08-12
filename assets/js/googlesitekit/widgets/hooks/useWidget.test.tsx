@@ -24,11 +24,11 @@ import type { ReactNode } from 'react';
 /**
  * Internal dependencies
  */
-import { renderHook } from 'tests/js/test-utils';
 import {
 	Provider as WidgetContextProvider,
 	type WidgetContextValue,
 } from '@/js/googlesitekit/widgets/components/WidgetContext';
+import { renderHook } from '@tests/js/test-utils';
 import useWidget from './useWidget';
 
 describe( 'useWidget', () => {

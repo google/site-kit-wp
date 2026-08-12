@@ -25,11 +25,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import AnalyticsIcon from '@/svg/graphics/analytics.svg';
-import { MODULES_ANALYTICS_4 } from './datastore/constants';
-import { SettingsEdit, SettingsView } from './components/settings';
-import { SetupMain } from './components/setup';
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
+import { SettingsEdit, SettingsView } from './components/settings';
+import { SetupLayout, SetupMain } from './components/setup';
 import { MODULE_SLUG_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4 } from './datastore/constants';
 
 export { registerStore } from './datastore';
 export { registerWidgets } from './widgets';
@@ -40,6 +40,7 @@ export function registerModule( modules ) {
 		storeName: MODULES_ANALYTICS_4,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
+		SetupLayout,
 		SetupComponent: SetupMain,
 		DashboardMainEffectComponent,
 		Icon: AnalyticsIcon,

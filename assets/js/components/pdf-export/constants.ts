@@ -1,0 +1,122 @@
+/**
+ * PDF Generation constants.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import {
+	CONTEXT_MAIN_DASHBOARD_CONTENT,
+	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
+	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
+	CONTEXT_MAIN_DASHBOARD_SPEED,
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+} from '@/js/googlesitekit/widgets/default-contexts';
+
+export const PDF_DOWNLOAD_PANEL_OPENED_KEY = 'pdfDownloadPanelOpened';
+
+export const PDF_INTRODUCTION_OVERLAY_NOTIFICATION =
+	'pdf_introduction_overlay_notification';
+
+/**
+ * The dashboard asks for the survey written for a user who never opened the
+ * PDF export panel.
+ *
+ * The survey service holds that survey under this ID.
+ *
+ * @since n.e.x.t
+ */
+export const PDF_EXPORT_NOT_USED_SURVEY_TRIGGER_ID = 'view_pdf_export_not_used';
+
+/**
+ * The dashboard asks for the survey written for a user who opened the PDF
+ * export panel and never downloaded a report.
+ *
+ * The survey service holds that survey under this ID.
+ *
+ * @since n.e.x.t
+ */
+export const PDF_EXPORT_INCOMPLETE_SURVEY_TRIGGER_ID =
+	'view_pdf_export_incomplete';
+
+/**
+ * The dashboard asks for the survey written for a user who downloaded at
+ * least one PDF report.
+ *
+ * The survey service holds that survey under this ID.
+ *
+ * @since n.e.x.t
+ */
+export const PDF_EXPORT_DOWNLOADED_SURVEY_TRIGGER_ID =
+	'view_pdf_export_downloaded';
+
+/**
+ * The PDF export panel saves this slug to WordPress user meta the first time
+ * a user opens the panel.
+ *
+ * The `core/pdf` data store holds the export state in memory, and this slug
+ * persists. The survey trigger component reads the slug to pick a survey.
+ *
+ * @since n.e.x.t
+ */
+export const PDF_EXPORT_PANEL_OPENED_ITEM_SLUG = 'pdf-export-panel-opened';
+
+/**
+ * The export saves this slug to WordPress user meta the first time a user
+ * downloads a PDF report.
+ *
+ * @since n.e.x.t
+ */
+export const PDF_EXPORT_DOWNLOADED_ITEM_SLUG = 'pdf-export-downloaded';
+
+/**
+ * Main-dashboard context slugs in the dashboard's own order.
+ *
+ * The PDF report renders one section per selected context, in this order.
+ * Both the selection panel and the export orchestrator read this list, so the
+ * exported section order always follows the dashboard's order, whatever order
+ * the user selected the widgets in.
+ *
+ * @since 1.184.0
+ */
+export const ORDERED_MAIN_DASHBOARD_CONTEXTS = [
+	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
+	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+	CONTEXT_MAIN_DASHBOARD_CONTENT,
+	CONTEXT_MAIN_DASHBOARD_SPEED,
+	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+];
+
+export interface PDFSectionWidget {
+	slug: string;
+	label: string;
+}
+
+export interface PDFSection {
+	/** Widget area slug; identifies the section. */
+	slug: string;
+	/** Section heading, sourced from the area's `pdfTitle`. */
+	label: string;
+	/** Dashboard context the area belongs to (drives `core/pdf` contextSlugs). */
+	contextSlug: string;
+	/** Labelled PDF widgets rendered as child checkboxes; empty = collapsed section. */
+	widgets: PDFSectionWidget[];
+	/** All PDF widget slugs in the area; the unit of selection and parent state. */
+	widgetSlugs: string[];
+}

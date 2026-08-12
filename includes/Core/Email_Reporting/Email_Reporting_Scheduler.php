@@ -144,6 +144,31 @@ class Email_Reporting_Scheduler {
 	}
 
 	/**
+	 * Gets the next report timestamp for a frequency.
+	 *
+	 * Prefers the timestamp of the currently scheduled initiator event, since
+	 * that reflects the actual cron entry that will run. Falls back to a
+	 * freshly calculated occurrence when no initiator has been scheduled yet,
+	 * or when the scheduled initiator is already due/overdue (e.g. because
+	 * WP-Cron hasn't processed it yet) so callers never receive a stale,
+	 * already-past timestamp.
+	 *
+	 * @since 1.185.0
+	 *
+	 * @param string $frequency Frequency slug.
+	 * @return int Unix timestamp for the next report.
+	 */
+	public function get_next_report_timestamp( $frequency ) {
+		$scheduled = $this->get_initiator_timestamp_for_frequency( $frequency );
+
+		if ( false !== $scheduled && $scheduled > time() ) {
+			return $scheduled;
+		}
+
+		return $this->frequency_planner->next_occurrence( $frequency, time(), BC_Functions::wp_timezone() );
+	}
+
+	/**
 	 * Gets all initiator events for the provided frequency.
 	 *
 	 * We intentionally scan cron entries instead of using `wp_next_scheduled()`

@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
 import { registerBlockType } from '@wordpress-core/blocks';
 
 /**
  * Internal dependencies
  */
-import Edit from './Edit';
 import metadata from './block.json';
+import Edit from './Edit';
 
 /**
  * Registers the Sign in with Google block.

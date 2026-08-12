@@ -19,19 +19,19 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Checkbox } from 'googlesitekit-components';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { Cell, Grid, Row } from '@/js/material-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import Layout from '@/js/components/layout/Layout';
-import { trackEvent } from '@/js/util';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useViewContext from '@/js/hooks/useViewContext';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { trackEvent } from '@/js/util';
 
 export default function SettingsPlugin() {
 	const showAdminBar = useSelect( ( select ) =>
@@ -56,7 +56,7 @@ export default function SettingsPlugin() {
 	return (
 		<Layout
 			className="googlesitekit-settings-meta"
-			title={ __( 'Plugin Settings', 'google-site-kit' ) }
+			title={ __( 'Plugin settings', 'google-site-kit' ) }
 			header
 			fill
 			rounded

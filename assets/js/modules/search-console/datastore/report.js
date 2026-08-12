@@ -27,40 +27,44 @@ import { isPlainObject } from 'lodash';
  */
 import { get } from 'googlesitekit-api';
 import {
-	createRegistrySelector,
-	commonActions,
 	combineStores,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { DATE_RANGE_OFFSET, MODULES_SEARCH_CONSOLE } from './constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { stringifyObject } from '@/js/util';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createGetReportResolver } from '@/js/googlesitekit/data/create-get-report-resolver';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createGatheringDataStore } from '@/js/googlesitekit/modules/create-gathering-data-store';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { isZeroReport } from '@/js/modules/search-console/util';
+import {
+	getCacheableReportOptions,
+	getReportCacheKey,
+} from '@/js/util/report-options';
 import {
 	isValidDateRange,
 	isValidStringularItems,
 } from '@/js/util/report-validation';
-import { isZeroReport } from '@/js/modules/search-console/util';
-import { createGatheringDataStore } from '@/js/googlesitekit/modules/create-gathering-data-store';
+import { MODULES_SEARCH_CONSOLE } from './constants';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	storeName: MODULES_SEARCH_CONSOLE,
-	controlCallback: ( { options } ) => {
+	controlCallback: ( { options }, { signal } = {} ) => {
 		return get(
 			'modules',
 			MODULE_SLUG_SEARCH_CONSOLE,
 			'searchanalytics',
-			options
+			options,
+			{ signal }
 		);
 	},
 	reducerCallback: createReducer( ( state, report, { options } ) => {
-		state.reports[ stringifyObject( options ) ] = report;
+		state.reports[ getReportCacheKey( options ) ] = report;
 	} ),
 	argsToParams: ( options ) => {
-		return { options };
+		return { options: getCacheableReportOptions( options ) };
 	},
 	validateParams: ( { options } = {} ) => {
 		invariant(
@@ -126,20 +130,7 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	*getReport( options = {} ) {
-		const registry = yield commonActions.getRegistry();
-		const existingReport = registry
-			.select( MODULES_SEARCH_CONSOLE )
-			.getReport( options );
-
-		// If there are already alerts loaded in state, consider it fulfilled
-		// and don't make an API request.
-		if ( existingReport ) {
-			return;
-		}
-
-		yield fetchGetReportStore.actions.fetchGetReport( options );
-	},
+	getReport: createGetReportResolver( MODULES_SEARCH_CONSOLE ),
 };
 
 const baseSelectors = {
@@ -147,6 +138,8 @@ const baseSelectors = {
 	 * Gets a Search Console report for the given options.
 	 *
 	 * @since 1.15.0
+	 * @since 1.182.0 Accept optional fetch options as a second argument, such as `{ signal }` to cancel the report request.
+	 * @since 1.183.0 Treat report options that differ only in `reportID` as one report.
 	 *
 	 * @param {Object}         state                Data store's state.
 	 * @param {Object}         options              Options for generating the report.
@@ -155,12 +148,14 @@ const baseSelectors = {
 	 * @param {Array.<string>} [options.dimensions] Optional. List of {@link https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query#dimensionFilterGroups.filters.dimension|dimensions} to group results by. Default an empty array.
 	 * @param {string}         [options.url]        Optional. URL to get a report for only this URL. Default an empty string.
 	 * @param {number}         [options.limit]      Optional. Maximum number of entries to return. Default 1000.
+	 * @param {Object}         [fetchOptions]       Optional. Fetch options that change how the request runs, such as `{ signal }` to cancel it.
 	 * @return {(Array.<Object>|undefined)} A Search Console report; `undefined` if not loaded.
 	 */
-	getReport( state, options = {} ) {
+	// eslint-disable-next-line no-unused-vars -- The fetch options only change how the request runs, so the selector does not read them.
+	getReport( state, options, fetchOptions ) {
 		const { reports } = state;
 
-		return reports[ stringifyObject( options ) ];
+		return reports[ getReportCacheKey( options ) ];
 	},
 
 	/**
@@ -219,7 +214,6 @@ const baseSelectors = {
 			CORE_USER
 		).getDateRangeDates( {
 			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
 		} );
 
 		const args = {

@@ -19,28 +19,30 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, Fragment } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
-import Link from '@/js/components/Link';
-import PencilIcon from '@/svg/icons/pencil-alt.svg';
-import SetupCompletedSurveyTrigger from './SetupCompletedSurveyTrigger';
-import { trackEvent } from '@/js/util';
+import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import PencilIcon from '@/svg/icons/pencil-alt.svg';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import { useChangeMetricsFeatureTourEffect } from './hooks/useChangeMetricsFeatureTourEffect';
+import SetupCompletedSurveyTrigger from './SetupCompletedSurveyTrigger';
 
 export default function ChangeMetricsLink() {
 	const keyMetrics = useSelect( ( select ) =>
 		select( CORE_USER ).getKeyMetrics()
 	);
 	const viewContext = useViewContext();
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
 	const { setValue } = useDispatch( CORE_UI );
 
@@ -67,7 +69,9 @@ export default function ChangeMetricsLink() {
 				secondary
 				linkButton
 			>
-				{ __( 'Change metrics', 'google-site-kit' ) }
+				{ setupFlowRefreshEnabled
+					? __( 'Select metrics', 'google-site-kit' )
+					: __( 'Change metrics', 'google-site-kit' ) }
 			</Link>
 			<SetupCompletedSurveyTrigger />
 		</Fragment>

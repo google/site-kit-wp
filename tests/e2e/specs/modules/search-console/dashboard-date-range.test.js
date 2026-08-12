@@ -27,13 +27,13 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 import {
 	deactivateUtilityPlugins,
 	pageWait,
-	setSiteVerification,
 	setSearchConsoleProperty,
+	setSiteVerification,
 	switchDateRange,
 	useRequestInterception,
 } from '../../../utils';
-import * as mainDashboardRequests from './fixtures/main-dashboard';
 import * as entityDashboardRequests from './fixtures/entity-dashboard';
+import * as mainDashboardRequests from './fixtures/main-dashboard';
 
 // As part of https://github.com/google/site-kit-wp/issues/2586,
 // this can be refactored to use the new getSearchConsoleMockResponse utility.

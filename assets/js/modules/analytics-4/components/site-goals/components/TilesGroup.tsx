@@ -17,19 +17,31 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
 import classnames from 'classnames';
+import { FC, ReactNode } from 'react';
+
+/**
+ * Internal dependencies
+ */
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 
 export interface TilesGroupProps {
 	title: string;
 	className?: string;
+	headerCTA?: ReactNode;
+	badge?: ReactNode;
 }
 
 export const TilesGroup: FC< TilesGroupProps > = ( {
 	title,
 	className,
+	headerCTA,
+	badge,
 	children,
 } ) => {
+	const breakpoint = useBreakpoint();
+	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
+
 	return (
 		<div
 			className={ classnames(
@@ -37,12 +49,29 @@ export const TilesGroup: FC< TilesGroupProps > = ( {
 				className
 			) }
 		>
-			<p className="googlesitekit-site-goals-tiles-group__title">
-				{ title }
-			</p>
+			<div className="googlesitekit-site-goals-tiles-group__header">
+				<p className="googlesitekit-site-goals-tiles-group__title">
+					{ title }
+				</p>
+				{ ! isMobileBreakpoint && headerCTA && (
+					<div className="googlesitekit-site-goals-tiles-group__cta">
+						{ headerCTA }
+					</div>
+				) }
+			</div>
+			{ badge && (
+				<div className="googlesitekit-site-goals-tiles-group__badge">
+					{ badge }
+				</div>
+			) }
 			<div className="googlesitekit-site-goals-tiles-group__tiles">
 				{ children }
 			</div>
+			{ isMobileBreakpoint && headerCTA && (
+				<div className="googlesitekit-site-goals-tiles-group__footer-cta">
+					{ headerCTA }
+				</div>
+			) }
 		</div>
 	);
 };

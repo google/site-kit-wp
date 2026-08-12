@@ -71,7 +71,7 @@ export class WordPressCookies {
 	 * Adds the test cookies to the browser context.
 	 *
 	 * Always sets `_wp_test_db` to route WordPress to the per-test database.
-	 * Also sets `_wp_test_user` when the test carries an `_wp:as-user` annotation.
+	 * Also sets additional cookies for test annotations when present.
 	 *
 	 * @since 1.175.0
 	 *
@@ -98,7 +98,11 @@ export class WordPressCookies {
 
 		const user = this.getAnnotation( '_wp:as-user' );
 		if ( user ) {
-			cookies.push( { ...defaults, name: '_wp_test_user', value: user } );
+			cookies.push( {
+				...defaults,
+				name: '_wp_test_user',
+				value: encodeURIComponent( user ),
+			} );
 		}
 
 		const featureFlags = this.getAnnotation( '_wp:feature-flags' );
@@ -116,6 +120,56 @@ export class WordPressCookies {
 				...defaults,
 				name: '_wp_test_fixtures',
 				value: fixtures,
+			} );
+		}
+
+		const conversionTracking = this.getAnnotation(
+			'_wp:conversion-tracking'
+		);
+		if ( conversionTracking ) {
+			cookies.push( {
+				...defaults,
+				name: '_wp_test_conversion_tracking',
+				value: conversionTracking,
+			} );
+		}
+
+		const connectedModules = this.getAnnotation( '_wp:connected-modules' );
+		if ( connectedModules ) {
+			cookies.push( {
+				...defaults,
+				name: '_wp_test_connected_modules',
+				// Encoded because the value is JSON.
+				value: encodeURIComponent( connectedModules ),
+			} );
+		}
+
+		const sharedModules = this.getAnnotation( '_wp:shared-modules' );
+		if ( sharedModules ) {
+			cookies.push( {
+				...defaults,
+				name: '_wp_test_shared_modules',
+				value: encodeURIComponent( sharedModules ),
+			} );
+		}
+
+		const keyMetrics = this.getAnnotation( '_wp:key-metrics' );
+		if ( keyMetrics ) {
+			cookies.push( {
+				...defaults,
+				name: '_wp_test_key_metrics',
+				// Encoded because the value is JSON.
+				value: encodeURIComponent( keyMetrics ),
+			} );
+		}
+
+		const audiences = this.getAnnotation( '_wp:audiences' );
+		if ( audiences ) {
+			cookies.push( {
+				...defaults,
+				name: '_wp_test_audiences',
+				// Encoded because the value is JSON.
+				value: encodeURIComponent( audiences ),
 			} );
 		}
 

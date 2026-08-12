@@ -26,12 +26,12 @@ import invariant from 'invariant';
  */
 import { createReducer } from 'googlesitekit-data';
 import {
-	getPreviousDate,
-	getDateString,
-	isValidDateRange,
-	isValidDateString,
 	INVALID_DATE_RANGE_ERROR,
 	INVALID_DATE_STRING_ERROR,
+	getDateString,
+	getPreviousDate,
+	isValidDateRange,
+	isValidDateString,
 } from '@/js/util';
 
 export const initialState = {
@@ -146,27 +146,15 @@ export const selectors = {
 	 * @param {Object}  state                   The current data store's state.
 	 * @param {Object}  [options]               Options parameter. Default is: {}.
 	 * @param {boolean} [options.compare]       Set to true if date ranges to compare should be included. Default is: false.
-	 * @param {number}  [options.offsetDays]    Number of days to offset. Default is: 0.
 	 * @param {string}  [options.referenceDate] Used for testing to set a static date. Default is the datastore's reference date.
 	 * @return {DateRangeReturnObj}             Object containing dates for date ranges.
 	 */
 	getDateRangeDates(
 		state,
-		{
-			compare = false,
-			offsetDays,
-			referenceDate = state.referenceDate,
-		} = {}
+		{ compare = false, referenceDate = state.referenceDate } = {}
 	) {
-		if ( offsetDays === undefined ) {
-			global.console.warn(
-				'getDateRangeDates was called without offsetDays'
-			);
-			offsetDays = 0;
-		}
-
 		const dateRange = selectors.getDateRange( state );
-		const endDate = getPreviousDate( referenceDate, offsetDays );
+		const endDate = getPreviousDate( referenceDate, 0 );
 		const matches = dateRange.match( '-(.*)-' );
 		const numberOfDays = Number( matches ? matches[ 1 ] : 28 );
 		const startDate = getPreviousDate( endDate, numberOfDays - 1 );

@@ -21,17 +21,18 @@
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from './constants';
 import {
 	createTestRegistry,
+	createWaitForRegistry,
 	freezeFetch,
 	muteFetch,
 	provideSiteInfo,
 	subscribeUntil,
 	untilResolved,
-	createWaitForRegistry,
-} from '../../../../../tests/js/utils';
+	waitForDefaultTimeouts,
+} from '@tests/js/utils';
 import * as fixtures from './__fixtures__';
+import { MODULES_SEARCH_CONSOLE } from './constants';
 
 describe( 'modules/search-console report', () => {
 	const searchAnalyticsRegexp = new RegExp(
@@ -170,6 +171,133 @@ describe( 'modules/search-console report', () => {
 					registry,
 					MODULES_SEARCH_CONSOLE
 				).getReport( options );
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'forwards the abort signal from the fetch options to the report request', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, {
+					body: fixtures.report,
+				} );
+
+				const options = {
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
+				};
+				const { signal } = new AbortController();
+
+				await registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.fetchGetReport( options, { signal } );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBe( signal );
+			} );
+
+			it( 'sends no abort signal to the report request when the call has no fetch options', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, {
+					body: fixtures.report,
+				} );
+
+				const options = {
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
+				};
+
+				await registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.fetchGetReport( options );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBeUndefined();
+			} );
+
+			it( 'forwards the abort signal from a getReport call to the report request', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, {
+					body: fixtures.report,
+				} );
+
+				const options = {
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
+				};
+				const { signal } = new AbortController();
+
+				await registry
+					.resolveSelect( MODULES_SEARCH_CONSOLE )
+					.getReport( options, { signal } );
+
+				// The registry starts resolver runs from a timeout. Wait for
+				// those timeouts to finish, so a second run with the same
+				// options would send its request inside this test and make
+				// the test fail.
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBe( signal );
+			} );
+
+			it( 'sends one request and no abort signal when a getReport call has no fetch options', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, {
+					body: fixtures.report,
+				} );
+
+				const options = {
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
+				};
+
+				await registry
+					.resolveSelect( MODULES_SEARCH_CONSOLE )
+					.getReport( options );
+
+				// The registry starts resolver runs from a timeout. Wait for
+				// those timeouts to finish, so a second run with the same
+				// options would send its request inside this test and make
+				// the test fail.
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock.lastOptions().signal ).toBeUndefined();
+			} );
+
+			it( 'stores the error under the report options when a getReport call with an abort signal fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( searchAnalyticsRegexp, {
+					body: response,
+					status: 500,
+				} );
+
+				const options = {
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
+				};
+				const { signal } = new AbortController();
+
+				await registry
+					.resolveSelect( MODULES_SEARCH_CONSOLE )
+					.getReport( options, { signal } );
+
+				// The registry starts resolver runs from a timeout. Wait for
+				// those timeouts to finish, so a second run with the same
+				// options would send its request inside this test and make
+				// the test fail.
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				// The store saves the error under the report options only,
+				// so the same options that read the report also find the
+				// error.
+				expect(
+					registry
+						.select( MODULES_SEARCH_CONSOLE )
+						.getErrorForSelector( 'getReport', [ options ] )
+				).toEqual( response );
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -330,7 +458,6 @@ describe( 'modules/search-console report', () => {
 
 				const dates = registry.select( CORE_USER ).getDateRangeDates( {
 					compare: true,
-					offsetDays: DATE_RANGE_OFFSET,
 				} );
 
 				const args = registry

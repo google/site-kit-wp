@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
+import { createTestRegistry } from '@tests/js/utils';
 import { MODULES_TAGMANAGER } from './constants';
-import { createTestRegistry } from '../../../../../tests/js/utils';
 
 describe( 'modules/tagmanager', () => {
 	describe( 'renamed actions', () => {

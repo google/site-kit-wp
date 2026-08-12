@@ -57,7 +57,7 @@ class Reset {
 	 *
 	 * @since 1.30.0
 	 *
-	 * @return string
+	 * @return string The admin URL that triggers the reset action.
 	 */
 	public static function url() {
 		return add_query_arg(

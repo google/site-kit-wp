@@ -17,52 +17,54 @@
  */
 
 /**
- * External dependencies
- */
-import { useIntersection as mockUseIntersection } from 'react-use';
-
-/**
  * Internal dependencies
  */
-import {
-	render,
-	createTestRegistry,
-	provideModules,
-	provideUserCapabilities,
-	muteFetch,
-	provideUserAuthentication,
-	fireEvent,
-} from '../../../../tests/js/test-utils';
-import * as tracking from '@/js/util/tracking';
-import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	ANALYTICS_SETUP_ERROR,
+	MODULE_SLUG_ANALYTICS_4,
+} from '@/js/modules/analytics-4/constants';
+import * as tracking from '@/js/util/tracking';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
+import {
+	act,
+	createTestRegistry,
+	fireEvent,
+	muteFetch,
+	provideModules,
+	provideUserAuthentication,
+	provideUserCapabilities,
+	render,
+	waitFor,
+} from '@tests/js/test-utils';
 import AdminBarWidgets from './AdminBarWidgets';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
-} ) );
+const dismissItemEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/dismiss-item'
+);
+
+const activateEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/modules/data/activation'
+);
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+const { getObservedElements, simulateIntersection } =
+	mockIntersectionObserver();
 
 describe( 'AdminBarWidgets', () => {
 	let registry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: false,
-			intersectionRatio: 0,
-		} ) );
 
 		provideModules( registry );
 		provideUserCapabilities( registry );
@@ -77,6 +79,11 @@ describe( 'AdminBarWidgets', () => {
 		} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		fetchMock.post( dismissItemEndpoint, {
+			body: [ 'analytics-setup-cta-admin-bar' ],
+			status: 200,
+		} );
 
 		fetchMock.get(
 			new RegExp(
@@ -184,7 +191,7 @@ describe( 'AdminBarWidgets', () => {
 	} );
 
 	it( 'should track the `view_cta` event when the Activate Analytics CTA is viewed', async () => {
-		const { waitForRegistry, rerender } = render( <AdminBarWidgets />, {
+		const { waitForRegistry } = render( <AdminBarWidgets />, {
 			registry,
 			features: [ 'setupFlowRefresh' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -194,20 +201,28 @@ describe( 'AdminBarWidgets', () => {
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: true,
-			intersectionRatio: 1,
-		} ) );
-
-		rerender( <AdminBarWidgets /> );
-
-		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
-			'view_cta',
-			'admin_bar'
+		const activateAnalyticsObserver = getObservedElements().find(
+			( element ) =>
+				element.classList?.contains(
+					'googlesitekit-activate-analytics-cta'
+				)
 		);
+
+		expect( activateAnalyticsObserver ).toBeDefined();
+
+		act( () => {
+			simulateIntersection( activateAnalyticsObserver, true );
+		} );
+
+		await waitFor( () => {
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+				'view_cta',
+				'admin_bar'
+			);
+		} );
 	} );
 
 	it( 'should track the `dismiss_cta` event when the "Maybe later" button is clicked in the Activate Analytics CTA', async () => {
@@ -274,5 +289,73 @@ describe( 'AdminBarWidgets', () => {
 			'click_learn_more_link',
 			'admin_bar'
 		);
+	} );
+
+	it( 'should render normal CTA again when "Got it" is clicked from activation error state', async () => {
+		registry.dispatch( CORE_SITE ).setInternalServerError( {
+			id: ANALYTICS_SETUP_ERROR,
+			description: 'This is an error',
+		} );
+
+		const { getByText, getByRole, queryByText, waitForRegistry } = render(
+			<AdminBarWidgets />,
+			{
+				registry,
+				features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( getByText( 'Analytics setup failed' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Something went wrong, please try again' )
+		).toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'button', { name: 'Got it' } ) );
+
+		await waitFor( () => {
+			expect(
+				registry.select( CORE_SITE ).getInternalServerError()
+			).toBeUndefined();
+			expect(
+				registry
+					.select( CORE_USER )
+					.isItemDismissed( 'analytics-setup-cta-admin-bar' )
+			).toBe( false );
+			expect(
+				queryByText( 'Analytics setup failed' )
+			).not.toBeInTheDocument();
+			expect(
+				getByRole( 'button', { name: 'Set up Analytics' } )
+			).toBeInTheDocument();
+		} );
+	} );
+
+	it( 'should retry activation when "Retry Analytics setup" is clicked', async () => {
+		registry.dispatch( CORE_SITE ).setInternalServerError( {
+			id: ANALYTICS_SETUP_ERROR,
+			description: 'This is an error',
+		} );
+
+		fetchMock.postOnce( activateEndpoint, {
+			body: { message: 'Retry failed' },
+			status: 500,
+		} );
+
+		const { getByRole, waitForRegistry } = render( <AdminBarWidgets />, {
+			registry,
+			features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+		} );
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			getByRole( 'button', { name: 'Retry Analytics setup' } )
+		);
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( activateEndpoint );
+		} );
 	} );
 } );

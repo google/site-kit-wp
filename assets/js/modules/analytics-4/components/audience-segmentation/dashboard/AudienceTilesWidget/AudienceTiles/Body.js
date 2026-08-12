@@ -31,10 +31,6 @@ import { useCallback, useEffect } from '@wordpress/element';
  */
 import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { isInvalidCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
-import { reportRowsWithSetValues } from '@/js/modules/analytics-4/utils/report-rows-with-set-values';
-import useAudienceTilesReports from '@/js/modules/analytics-4/hooks/useAudienceTilesReports';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -42,11 +38,15 @@ import {
 } from '@/js/hooks/useBreakpoint';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import AudienceSegmentationErrorWidget from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationErrorWidget';
-import AudienceTileLoading from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile/AudienceTileLoading';
-import AudienceTileError from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile/AudienceTileError';
 import AudienceTile from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile';
+import AudienceTileError from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile/AudienceTileError';
+import AudienceTileLoading from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile/AudienceTileLoading';
 import AudienceTooltipMessage from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTooltipMessage';
 import MaybePlaceholderTile from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/MaybePlaceholderTile';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import useAudienceTilesReports from '@/js/modules/analytics-4/hooks/useAudienceTilesReports';
+import { isInvalidCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
+import { reportRowsWithSetValues } from '@/js/modules/analytics-4/utils/report-rows-with-set-values';
 
 function hasZeroDataForAudience( report, dimensionName ) {
 	const audienceData = report?.rows?.find(

@@ -6,6 +6,8 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Core\Site_Health;
@@ -204,10 +206,7 @@ class Debug_Data {
 		$fields = array_merge( $fields, $this->get_module_sharing_settings_fields() );
 		$fields = array_merge( $fields, $this->get_key_metrics_fields() );
 		$fields = array_merge( $fields, $this->get_gtg_fields() );
-
-		if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) ) {
-			$fields = array_merge( $fields, $this->get_email_reports_fields() );
-		}
+		$fields = array_merge( $fields, $this->get_email_reports_fields() );
 
 		$fields = array_filter(
 			array_merge(

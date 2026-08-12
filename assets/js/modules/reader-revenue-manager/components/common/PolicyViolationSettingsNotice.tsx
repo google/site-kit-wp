@@ -24,21 +24,21 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useState, useCallback, useEffect } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect, Select } from 'googlesitekit-data';
-import { useInView } from '@/js/hooks/useInView';
+import { Select, useSelect } from 'googlesitekit-data';
+import Notice from '@/js/components/Notice';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import { useInView } from '@/js/hooks/useInView';
+import { getPolicyViolationNotificationCopy } from '@/js/modules/reader-revenue-manager/components/dashboard/PolicyViolationNotification/get-policy-violation-notification-copy';
+import { RRM_POLICY_VIOLATION_NOTIFICATION_ID } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	POLICY_VIOLATION_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { RRM_POLICY_VIOLATION_NOTIFICATION_ID } from '@/js/modules/reader-revenue-manager/constants';
-import { getPolicyViolationNotificationCopy } from '@/js/modules/reader-revenue-manager/components/dashboard/PolicyViolationNotification/get-policy-violation-notification-copy';
-import Notice from '@/js/components/Notice';
 
 const PolicyViolationSettingsNotice: FC = () => {
 	const contentPolicyState = useSelect(

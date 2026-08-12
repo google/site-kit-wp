@@ -29,26 +29,26 @@ import { useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import {
-	MODULES_ADSENSE,
+	API_STATE_GETTING_READY,
 	API_STATE_NEEDS_ATTENTION,
 	API_STATE_REQUIRES_REVIEW,
-	API_STATE_GETTING_READY,
+	MODULES_ADSENSE,
 } from '@/js/modules/adsense/datastore/constants';
 import {
-	ACCOUNT_STATUS_NO_CLIENT,
-	ACCOUNT_STATUS_NEEDS_ATTENTION,
-	ACCOUNT_STATUS_READY,
 	ACCOUNT_STATUS_CLIENT_GETTING_READY,
 	ACCOUNT_STATUS_CLIENT_REQUIRES_REVIEW,
+	ACCOUNT_STATUS_NEEDS_ATTENTION,
+	ACCOUNT_STATUS_NO_CLIENT,
+	ACCOUNT_STATUS_READY,
 	SITE_STATUS_NONE,
 } from '@/js/modules/adsense/util/status';
-import SetupAccountSite from './SetupAccountSite';
-import SetupAccountNoClient from './SetupAccountNoClient';
 import SetupAccountCreateSite from './SetupAccountCreateSite';
+import SetupAccountNoClient from './SetupAccountNoClient';
 import SetupAccountPendingTasks from './SetupAccountPendingTasks';
+import SetupAccountSite from './SetupAccountSite';
 
 export default function SetupAccount( { account, finishSetup } ) {
 	const { _id: accountID, state: accountState } = account;

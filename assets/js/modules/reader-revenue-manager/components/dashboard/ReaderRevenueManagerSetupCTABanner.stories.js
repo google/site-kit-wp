@@ -24,13 +24,13 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import { provideModules } from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import ReaderRevenueManagerSetupCTABanner from './ReaderRevenueManagerSetupCTABanner';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { WEEK_IN_SECONDS } from '@/js/util';
+import { provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
+import ReaderRevenueManagerSetupCTABanner from './ReaderRevenueManagerSetupCTABanner';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'rrm-setup-notification'
@@ -43,6 +43,13 @@ function Template() {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {};
+
+export const ExpressSetup = Template.bind( {} );
+ExpressSetup.storyName = 'Express Setup';
+ExpressSetup.parameters = {
+	features: [ 'rrmExpressSetup' ],
+};
+ExpressSetup.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Components/Dashboard/ReaderRevenueManagerSetupCTABanner',
@@ -62,7 +69,7 @@ export default {
 					.dispatch( CORE_USER )
 					.finishResolution( 'getDismissedPrompts', [] );
 
-				fetchMock.postOnce(
+				fetchMock.post(
 					new RegExp(
 						'^/google-site-kit/v1/core/user/data/dismiss-prompt'
 					),
@@ -74,7 +81,8 @@ export default {
 							},
 						},
 						status: 200,
-					}
+					},
+					{ overwriteRoutes: true }
 				);
 			}
 

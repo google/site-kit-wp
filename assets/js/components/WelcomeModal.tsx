@@ -17,44 +17,51 @@
  */
 
 /**
+ * External dependencies
+ */
+import { ElementType, FC, ReactElement } from 'react';
+
+/**
  * WordPress dependencies
  */
 import {
 	createInterpolateElement,
 	useCallback,
 	useEffect,
-	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
- * External dependencies
- */
-import { ReactElement } from 'react';
-
-/**
  * Internal dependencies
  */
-import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import BannerModal from '@/js/components/BannerModal/index';
+import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
+import { deleteItem, getItem } from '@/js/googlesitekit/api/cache';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	CORE_USER,
+	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
-	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { useHasBeenViewed } from '@/js/googlesitekit/notifications/hooks/useHasBeenViewed';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import { useFeature } from '@/js/hooks/useFeature';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import BannerModal from '@/js/components/BannerModal/index';
-import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
-import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
+import { WEEK_IN_SECONDS, trackEvent } from '@/js/util';
 import WelcomeModalDataGatheringCompleteGraphic from '@/svg/graphics/welcome-modal-data-gathering-complete-graphic.svg';
-import useQueryArg from '@/js/hooks/useQueryArg';
-import { trackEvent, WEEK_IN_SECONDS } from '@/js/util';
-import { deleteItem, getItem } from '@/js/googlesitekit/api/cache';
-import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
-import useViewContext from '@/js/hooks/useViewContext';
+import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
+
+export const WELCOME_MODAL_NOTIFICATION = 'welcome-modal';
 
 enum MODAL_VARIANT {
 	DATA_AVAILABLE,
@@ -109,10 +116,66 @@ function shouldRenderModalVariant( {
 	return true;
 }
 
-export default function WelcomeModal() {
-	const viewContext = useViewContext();
+function getModalDescription( {
+	modalVariant,
+	isViewOnly,
+	setupFlowRefreshPhase4Enabled,
+}: {
+	modalVariant: MODAL_VARIANT;
+	isViewOnly: boolean;
+	setupFlowRefreshPhase4Enabled: boolean;
+} ): string | ReactElement {
+	if ( isViewOnly && setupFlowRefreshPhase4Enabled ) {
+		switch ( modalVariant ) {
+			case MODAL_VARIANT.DATA_AVAILABLE:
+				return __(
+					'Take a quick tour to see the most important parts of your dashboard',
+					'google-site-kit'
+				);
+			case MODAL_VARIANT.GATHERING_DATA:
+				return __(
+					'Site Kit is gathering data and soon metrics for your site will show on your dashboard',
+					'google-site-kit'
+				);
+		}
+	}
 
-	const [ isOpen, setIsOpen ] = useState( true );
+	switch ( modalVariant ) {
+		case MODAL_VARIANT.DATA_AVAILABLE:
+			return __(
+				'Initial setup complete! Take a look at the special features Site Kit added to your dashboard based on your site goals',
+				'google-site-kit'
+			);
+		case MODAL_VARIANT.GATHERING_DATA:
+			return createInterpolateElement(
+				__(
+					'Initial setup complete!<br />Site Kit is gathering data and soon metrics for your site will show on your dashboard',
+					'google-site-kit'
+				),
+				{
+					br: <br />,
+				}
+			);
+		case MODAL_VARIANT.DATA_GATHERING_COMPLETE:
+		default:
+			return __(
+				'Take this quick tour to see the most important parts of your dashboard. It will show you where to look to track your site’s success as you get more visitors.',
+				'google-site-kit'
+			);
+	}
+}
+
+interface WelcomeModalProps {
+	id: string;
+	Notification: ElementType;
+}
+
+const WelcomeModal: FC< WelcomeModalProps > = ( { id, Notification } ) => {
+	const setupFlowRefreshPhase4Enabled = useFeature(
+		'setupFlowRefreshPhase4'
+	);
+	const isViewOnly = useViewOnly();
+	const viewContext = useViewContext();
 
 	const analyticsConnected = useSelect(
 		( select: Select ) =>
@@ -159,7 +222,16 @@ export default function WelcomeModal() {
 	}
 
 	const { dismissItem, triggerOnDemandTour } = useDispatch( CORE_USER );
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+	const { setValue } = useDispatch( CORE_UI );
 	const [ , setNotification ] = useQueryArg( 'notification' );
+
+	// Pass null for the category to use the default category
+	// that is built from the view context and the notification slug.
+	const trackEvents = useNotificationEvents( id, null, {
+		confirmAction: 'confirm_notice',
+		dismissAction: 'dismiss_notice',
+	} );
 
 	useEffect( () => {
 		if (
@@ -181,12 +253,25 @@ export default function WelcomeModal() {
 		),
 		dismissLabel: __( 'Got it', 'google-site-kit' ),
 		gaTrackingEventLabel: VARIANT_TRACKING_LABELS[ modalVariant ],
+		floaterProps: {
+			styles: {
+				arrow: {
+					margin: 42,
+				},
+			},
+		},
+		isCenteredOnMobile: false,
 	};
 
 	const showTooltip = useShowTooltip( tooltipSettings );
 
 	const closeAndDismissModal = useCallback( async () => {
-		setIsOpen( false );
+		// Remove the modal from the notification queue so it stops rendering.
+		// The notification isn't dismissible, so this only updates the queue
+		// and doesn't persist the notification's own id as a dismissed item —
+		// the dismissed state is persisted via the slugs below, exactly as
+		// before.
+		dismissNotification( id );
 
 		if ( modalVariant !== MODAL_VARIANT.GATHERING_DATA ) {
 			await dismissItem( WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG );
@@ -201,7 +286,13 @@ export default function WelcomeModal() {
 
 		// Ensure the setup success notification won't be shown on page reload.
 		setNotification( undefined );
-	}, [ modalVariant, setNotification, dismissItem ] );
+	}, [
+		id,
+		dismissNotification,
+		modalVariant,
+		setNotification,
+		dismissItem,
+	] );
 
 	const closeAndDismissModalWithTooltip = useCallback( () => {
 		closeAndDismissModal();
@@ -219,11 +310,15 @@ export default function WelcomeModal() {
 	}, [ closeAndDismissModal, triggerOnDemandTour, welcomeTour ] );
 
 	const handleView = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_welcome-modal`,
-			'view_notice',
-			VARIANT_TRACKING_LABELS[ modalVariant ]
-		);
+		// The modal content renders inside a fixed-position Dialog, which is
+		// taken out of the flow of the `<Notification>` wrapper's `<section>`.
+		// That leaves the section with no reliable area for the framework's own
+		// intersection observer to flip the notification to "viewed", so the
+		// `view_notice` event can be missed. `BannerModal` observes its own
+		// visible content instead, so mark the notification viewed when the
+		// modal comes into view, which is what makes `<Notification>` fire the
+		// view event.
+		setValue( useHasBeenViewed.getKey( id ), true );
 
 		async function trackSetupEventsOnce() {
 			const startSiteSetup = await getItem( 'start_site_setup' );
@@ -246,23 +341,15 @@ export default function WelcomeModal() {
 		}
 
 		trackSetupEventsOnce();
-	}, [ viewContext, modalVariant ] );
+	}, [ id, setValue, viewContext ] );
 
 	const trackConfirmation = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_welcome-modal`,
-			'confirm_notice',
-			VARIANT_TRACKING_LABELS[ modalVariant ]
-		);
-	}, [ viewContext, modalVariant ] );
+		trackEvents.confirm( VARIANT_TRACKING_LABELS[ modalVariant ] );
+	}, [ trackEvents, modalVariant ] );
 
 	const trackDismissal = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_welcome-modal`,
-			'dismiss_notice',
-			VARIANT_TRACKING_LABELS[ modalVariant ]
-		);
-	}, [ viewContext, modalVariant ] );
+		trackEvents.dismiss( VARIANT_TRACKING_LABELS[ modalVariant ] );
+	}, [ trackEvents, modalVariant ] );
 
 	const handleClose = useCallback( () => {
 		trackDismissal();
@@ -289,42 +376,16 @@ export default function WelcomeModal() {
 		return null;
 	}
 
-	if ( ! isOpen ) {
-		return null;
-	}
-
 	const title =
 		modalVariant === MODAL_VARIANT.DATA_GATHERING_COMPLETE
 			? __( 'Data gathering complete!', 'google-site-kit' )
 			: __( 'Welcome to Site Kit', 'google-site-kit' );
 
-	let description: string | ReactElement;
-
-	switch ( modalVariant ) {
-		case MODAL_VARIANT.DATA_AVAILABLE:
-			description = __(
-				'Initial setup complete! Take a look at the special features Site Kit added to your dashboard based on your site goals',
-				'google-site-kit'
-			);
-			break;
-		case MODAL_VARIANT.GATHERING_DATA:
-			description = createInterpolateElement(
-				__(
-					'Initial setup complete!<br />Site Kit is gathering data and soon metrics for your site will show on your dashboard',
-					'google-site-kit'
-				),
-				{
-					br: <br />,
-				}
-			);
-			break;
-		case MODAL_VARIANT.DATA_GATHERING_COMPLETE:
-			description = __(
-				'Take this quick tour to see the most important parts of your dashboard. It will show you where to look to track your site’s success as you get more visitors.',
-				'google-site-kit'
-			);
-			break;
-	}
+	const description = getModalDescription( {
+		modalVariant,
+		isViewOnly,
+		setupFlowRefreshPhase4Enabled,
+	} );
 
 	const Graphic =
 		modalVariant === MODAL_VARIANT.DATA_GATHERING_COMPLETE
@@ -360,15 +421,24 @@ export default function WelcomeModal() {
 			: undefined;
 
 	return (
-		<BannerModal
-			className="googlesitekit-banner-modal--welcome-modal"
-			Graphic={ Graphic }
-			onView={ handleView }
-			onClose={ handleClose }
-			title={ title }
-			description={ description }
-			ctaButton={ ctaButton }
-			dismissButton={ dismissButton }
-		/>
+		<Notification
+			gaTrackingEventArgs={ {
+				viewAction: 'view_notice',
+				label: VARIANT_TRACKING_LABELS[ modalVariant ],
+			} }
+		>
+			<BannerModal
+				className="googlesitekit-banner-modal--welcome-modal"
+				Graphic={ Graphic }
+				onView={ handleView }
+				onClose={ handleClose }
+				title={ title }
+				description={ description }
+				ctaButton={ ctaButton }
+				dismissButton={ dismissButton }
+			/>
+		</Notification>
 	);
-}
+};
+
+export default WelcomeModal;

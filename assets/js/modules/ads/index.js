@@ -24,16 +24,16 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import AdsIcon from '@/svg/graphics/ads.svg';
-import { SettingsEdit, SettingsView } from './components/settings';
-import { SetupMain } from './components/setup';
-import { MODULES_ADS } from './datastore/constants';
-import { MODULE_SLUG_ADS } from './constants';
 import {
 	CORE_USER,
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 } from '@/js/googlesitekit/datastore/user/constants';
+import AdsIcon from '@/svg/graphics/ads.svg';
+import { SettingsEdit, SettingsView } from './components/settings';
 import SettingsDisconnectNote from './components/settings/SettingsDisconnectNote';
+import { SetupMain } from './components/setup';
+import { MODULE_SLUG_ADS } from './constants';
+import { MODULES_ADS } from './datastore/constants';
 
 export { registerStore } from './datastore';
 export { registerWidgets } from './widgets';

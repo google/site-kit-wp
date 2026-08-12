@@ -129,6 +129,22 @@
 		}
 	}
 
+	.googlesitekit-setup__notifications {
+
+		.googlesitekit-notice-container {
+			inline-size: auto;
+			margin: $grid-gap-phone $grid-gap-phone 0;
+
+			@media (min-width: $bp-nonMobile) {
+				margin: $grid-gap-desktop $grid-gap-desktop 0;
+			}
+
+			@media (min-width: $bp-desktop) {
+				margin: 0 10px 0 0;
+			}
+		}
+	}
+
 	.googlesitekit-initial-setup {
 		display: flex;
 		flex-direction: column;
@@ -147,14 +163,6 @@
 		.googlesitekit-setup__wrapper {
 			border-radius: 0;
 			flex-grow: 1;
-		}
-
-		.googlesitekit-setup__reset-notice {
-			margin-right: $grid-gap-phone;
-
-			@media (min-width: $bp-desktop) {
-				margin-right: $grid-gap-desktop;
-			}
 		}
 	}
 

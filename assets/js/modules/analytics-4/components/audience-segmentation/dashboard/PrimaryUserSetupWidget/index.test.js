@@ -19,28 +19,26 @@
 /**
  * Internal dependencies
  */
-import PrimaryUserSetupWidget from '.';
-import {
-	fireEvent,
-	render,
-	waitFor,
-} from '../../../../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	provideModules,
-	freezeFetch,
-	provideUserAuthentication,
-	provideModuleRegistrations,
-} from '../../../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSelectionPanel/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import { fireEvent, render, waitFor } from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	freezeFetch,
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+} from '@tests/js/utils';
+import PrimaryUserSetupWidget from '.';
 
 const syncAvailableCustomDimensionsEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
@@ -52,6 +50,10 @@ const syncAvailableAudiencesEndpoint = new RegExp(
 
 const createAudienceEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/create-audience'
+);
+
+const dismissItemEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/dismiss-item'
 );
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -84,6 +86,7 @@ describe( 'PrimaryUserSetupWidget', () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetUserAudienceSettings( audienceSettings );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		provideModules( registry, [
 			{
@@ -142,6 +145,94 @@ describe( 'PrimaryUserSetupWidget', () => {
 		} );
 
 		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the setup error widget when setupFlowRefreshPhase4 is enabled', async () => {
+		provideSiteInfo( registry );
+
+		fetchMock.post( syncAvailableAudiencesEndpoint, {
+			body: {
+				code: 'test_error',
+				message: 'Error message.',
+				data: { status: 500 },
+			},
+			status: 500,
+		} );
+
+		fetchMock.post( dismissItemEndpoint, {
+			body: [ AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG ],
+			status: 200,
+		} );
+
+		const { getByRole, getByText } = render( <WidgetWithComponentProps />, {
+			registry,
+			features: [ 'setupFlowRefreshPhase4' ],
+		} );
+
+		await waitFor( () => {
+			expect(
+				getByText( 'Visitor groups setup failed' )
+			).toBeInTheDocument();
+			expect(
+				getByRole( 'button', { name: 'Retry' } )
+			).toBeInTheDocument();
+			expect(
+				getByRole( 'button', { name: 'No thanks' } )
+			).toBeInTheDocument();
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: 'No thanks' } ) );
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+			expect(
+				registry
+					.select( CORE_USER )
+					.isItemDismissed(
+						AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG
+					)
+			).toBe( true );
+		} );
+	} );
+
+	it( 'should render the audience creation setup error widget when setupFlowRefreshPhase4 is enabled and audience creation fails', async () => {
+		provideSiteInfo( registry );
+
+		fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
+			body: [],
+			status: 200,
+		} );
+
+		fetchMock.post( syncAvailableAudiencesEndpoint, {
+			body: availableAudiences.slice( 0, 2 ),
+			status: 200,
+		} );
+
+		fetchMock.post( createAudienceEndpoint, {
+			body: {
+				code: 'test_error',
+				message: 'Error message.',
+				data: { status: 500 },
+			},
+			status: 500,
+		} );
+
+		const { getByRole, getByText } = render( <WidgetWithComponentProps />, {
+			registry,
+			features: [ 'setupFlowRefreshPhase4' ],
+		} );
+
+		await waitFor( () => {
+			expect(
+				getByText( 'Creating visitor groups failed' )
+			).toBeInTheDocument();
+			expect(
+				getByRole( 'button', { name: 'Retry' } )
+			).toBeInTheDocument();
+			expect(
+				getByRole( 'button', { name: 'No thanks' } )
+			).toBeInTheDocument();
+		} );
 	} );
 
 	it( 'should display the audiences that failed to be created', async () => {

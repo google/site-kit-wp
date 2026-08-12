@@ -17,33 +17,33 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { useThrottle } from '@wordpress/compose';
-import { __ } from '@wordpress/i18n';
-import { useCallback, useRef, useState } from '@wordpress/element';
-
-/**
  * External dependencies
  */
 import { useEvent } from 'react-use';
 
 /**
+ * WordPress dependencies
+ */
+import { useThrottle } from '@wordpress/compose';
+import { useCallback, useRef, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import BackspaceIcon from '@/svg/icons/keyboard-backspace.svg';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import Link from './Link';
-import P from './Typography/P';
-import { shortenURL } from '@/js/util/urls';
-import { trackEvent } from '@/js/util';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
 } from '@/js/hooks/useDashboardType';
 import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import { shortenURL } from '@/js/util/urls';
+import BackspaceIcon from '@/svg/icons/keyboard-backspace.svg';
+import Link from './Link';
+import P from './Typography/P';
 
 function EntityHeader() {
 	const viewContext = useViewContext();

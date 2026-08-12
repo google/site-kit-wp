@@ -21,14 +21,14 @@
  */
 import { combineStores } from 'googlesitekit-data';
 import { createSnapshotStore } from '@/js/googlesitekit/data/create-snapshot-store';
-import { MODULES_TAGMANAGER } from './constants';
-import baseModuleStore from './base';
 import accounts from './accounts';
+import baseModuleStore from './base';
+import { MODULES_TAGMANAGER } from './constants';
 import containers from './containers';
-import tags from './tags';
-import versions from './versions';
 import service from './service';
 import settings from './settings';
+import tags from './tags';
+import versions from './versions';
 
 const store = combineStores(
 	baseModuleStore,

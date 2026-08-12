@@ -30,25 +30,21 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Link from '@/js/components/Link';
 import ActivateAnalyticsNotice from '@/js/components/setup/ActivateAnalyticsNotice';
 import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
-import Link from '@/js/components/Link';
-import P from '@/js/components/Typography/P';
-import WelcomeSVG from '@/svg/graphics/welcome.svg';
-import WelcomeAnalyticsSVG from '@/svg/graphics/welcome-analytics.svg';
 import Typography from '@/js/components/Typography';
 import { Cell, Row } from '@/js/material-components';
-import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
+import WelcomeAnalyticsSVG from '@/svg/graphics/welcome-analytics.svg';
+import WelcomeSVG from '@/svg/graphics/welcome.svg';
+import ConnectedURLComparison from './ConnectedURLComparison';
 
 export default function LegacySplashContent( {
 	analyticsModuleActive,
 	analyticsModuleAvailable,
 	children,
-	connectedProxyURL,
 	description,
-	disconnectedReason,
 	getHelpURL,
-	homeURL,
 	secondAdminLearnMoreLink,
 	showLearnMoreLink,
 	title,
@@ -112,23 +108,7 @@ export default function LegacySplashContent( {
 						{ __( 'Get help', 'google-site-kit' ) }
 					</Link>
 				) }
-				{ DISCONNECTED_REASON_CONNECTED_URL_MISMATCH ===
-					disconnectedReason &&
-					connectedProxyURL !== homeURL && (
-						<P>
-							{ sprintf(
-								/* translators: %s: Previous Connected Proxy URL */
-								__( '— Old URL: %s', 'google-site-kit' ),
-								connectedProxyURL
-							) }
-							<br />
-							{ sprintf(
-								/* translators: %s: Connected Proxy URL */
-								__( '— New URL: %s', 'google-site-kit' ),
-								homeURL
-							) }
-						</P>
-					) }
+				<ConnectedURLComparison />
 
 				{ analyticsModuleAvailable && ! analyticsModuleActive && (
 					<ActivateAnalyticsNotice />
@@ -144,14 +124,8 @@ LegacySplashContent.propTypes = {
 	analyticsModuleActive: PropTypes.bool,
 	analyticsModuleAvailable: PropTypes.bool,
 	children: PropTypes.func,
-	connectedProxyURL: PropTypes.oneOfType( [
-		PropTypes.string,
-		PropTypes.bool,
-	] ),
 	description: PropTypes.string,
-	disconnectedReason: PropTypes.string,
 	getHelpURL: PropTypes.string,
-	homeURL: PropTypes.string,
 	secondAdminLearnMoreLink: PropTypes.string,
 	title: PropTypes.string.isRequired,
 };

@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { useEffect } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
@@ -25,20 +30,40 @@ import BannerNotification, {
 	TYPES,
 } from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 import Notification from '@/js/googlesitekit/notifications/components/Notification';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import { getNavigationalScrollTop } from '@/js/util/scroll';
+
+const NOTIFICATION_ID = 'internal-server-error';
 
 export default function InternalServerError() {
+	const breakpoint = useBreakpoint();
 	const error = useSelect( ( select ) =>
 		select( CORE_SITE ).getInternalServerError()
 	);
+
+	// Scroll to the notification when the error is present.
+	useEffect( () => {
+		if ( ! error ) {
+			return;
+		}
+
+		global.scrollTo( {
+			top: getNavigationalScrollTop(
+				`#${ NOTIFICATION_ID }`,
+				breakpoint
+			),
+			behavior: 'smooth',
+		} );
+	}, [ error, breakpoint ] );
 
 	if ( ! error ) {
 		return null;
 	}
 
 	return (
-		<Notification id="internal-server-error">
+		<Notification id={ NOTIFICATION_ID }>
 			<BannerNotification
-				notificationID="internal-server-error"
+				notificationID={ NOTIFICATION_ID }
 				type={ TYPES.ERROR }
 				title={ error.title }
 				description={ error.description }

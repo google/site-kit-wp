@@ -20,18 +20,15 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { MODULES_ADSENSE } from './constants';
+import { createCacheKey } from '@/js/googlesitekit/api';
+import { getItem, setItem } from '@/js/googlesitekit/api/cache';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import {
 	ACCOUNT_STATUS_APPROVED,
 	SITE_STATUS_ADDED,
 } from '@/js/modules/adsense/util/status';
-import {
-	createTestRegistry,
-	subscribeUntil,
-} from '../../../../../tests/js/utils';
-import { getItem, setItem } from '@/js/googlesitekit/api/cache';
-import { createCacheKey } from '@/js/googlesitekit/api';
+import { createTestRegistry, subscribeUntil } from '@tests/js/utils';
+import { MODULES_ADSENSE } from './constants';
 import {
 	INVARIANT_INVALID_ACCOUNT_ID,
 	INVARIANT_INVALID_CLIENT_ID,

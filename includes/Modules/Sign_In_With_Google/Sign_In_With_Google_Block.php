@@ -6,6 +6,8 @@
  * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Modules\Sign_In_With_Google;
@@ -92,8 +94,9 @@ class Sign_In_With_Google_Block {
 	 */
 	public function render_callback( $attributes = array() ) {
 		// If the user is already signed in, do not render a Sign in
-		// with Google button.
-		if ( is_user_logged_in() ) {
+		// with Google button. The post/page preview surface is exempt so
+		// authors can see how the button will appear to logged-out readers.
+		if ( is_user_logged_in() && ! is_preview() ) {
 			return '';
 		}
 
@@ -110,6 +113,10 @@ class Sign_In_With_Google_Block {
 			if ( ! empty( $attributes[ $key ] ) && in_array( $attributes[ $key ], $allowed_attributes[ $key ], true ) ) {
 				$button_args[ $key ] = $attributes[ $key ];
 			}
+		}
+
+		if ( ! empty( $attributes['width'] ) ) {
+			$button_args['width'] = $attributes['width'];
 		}
 
 		if ( ! empty( $attributes['buttonClassName'] ) && is_string( $attributes['buttonClassName'] ) ) {

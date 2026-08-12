@@ -21,8 +21,8 @@
  */
 import {
 	isValidConversionID,
-	isValidPaxConversionID,
 	isValidExtCustomerID,
+	isValidPaxConversionID,
 } from './validation';
 
 describe( 'modules/ads validations', () => {

@@ -33,8 +33,8 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import ModuleSettingsWarning from '@/js/components/notifications/ModuleSettingsWarning.js';
-import { Cell } from '@/js/material-components/layout';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { Cell } from '@/js/material-components/layout';
 
 export default function DefaultSettingsSetupIncomplete( { slug } ) {
 	const storeName = useSelect( ( select ) =>

@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { forwardRef, ReactNode } from 'react';
+import { ReactNode, forwardRef } from 'react';
 
 /**
  * Internal dependencies

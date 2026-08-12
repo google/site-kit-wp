@@ -30,7 +30,8 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Option, ProgressBar, Select } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
@@ -42,7 +43,6 @@ import {
 	isValidWebDataStreamSelection,
 } from '@/js/modules/analytics-4/utils/validation';
 import { trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
 
 export default function WebDataStreamSelect( props ) {
 	const { hasModuleAccess, isDisabled, className, onChange } = props;

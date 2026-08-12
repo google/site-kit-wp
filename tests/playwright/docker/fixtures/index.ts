@@ -17,12 +17,12 @@
 /**
  * External dependencies
  */
-import { createServer, IncomingMessage, ServerResponse } from 'node:http';
-import { createServer as createTLSServer } from 'node:https';
 import { execSync } from 'node:child_process';
 import { mkdtempSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { IncomingMessage, ServerResponse, createServer } from 'node:http';
+import { createServer as createTLSServer } from 'node:https';
 import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 type FixtureData = Record<
 	string,
@@ -176,6 +176,25 @@ function handler( req: IncomingMessage, res: ServerResponse ) {
 	const url = req.url || '/';
 
 	const jsonContentType = { 'Content-Type': 'application/json' };
+
+	// WordPress core update checks (version, plugins, themes, translations)
+	// resolve here on the offline network. Return a well-formed "no updates"
+	// payload with every key `wp-includes/update.php` iterates, so it does not
+	// emit `foreach()` / undefined-index warnings on an empty response.
+	if ( host === 'api.wordpress.org' ) {
+		req.resume(); // Drain the request body before responding.
+		res.writeHead( 200, jsonContentType );
+		res.end(
+			JSON.stringify( {
+				offers: [],
+				translations: [],
+				plugins: {},
+				themes: {},
+				no_update: {},
+			} )
+		);
+		return;
+	}
 
 	const fixturesHeader = req.headers[ 'x-wp-test-fixtures' ];
 	const fixtures = Array.isArray( fixturesHeader )

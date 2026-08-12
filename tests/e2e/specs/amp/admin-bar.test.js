@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { deactivatePlugin, createURL } from '@wordpress/e2e-test-utils';
+import { createURL, deactivatePlugin } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies

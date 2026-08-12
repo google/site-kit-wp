@@ -32,11 +32,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useRegistry } from 'googlesitekit-data';
-import PreviewBlock from '@/js/components/PreviewBlock';
+import { useRegistry, useSelect } from 'googlesitekit-data';
 import CTA from '@/js/components/notifications/CTA';
+import PreviewBlock from '@/js/components/PreviewBlock';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { DATE_RANGE_OFFSET } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	createPaxConfig,
 	createPaxServices,
@@ -62,9 +61,7 @@ export default function PAXEmbeddedApp( {
 			return {};
 		}
 
-		return select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
+		return select( CORE_USER ).getDateRangeDates();
 	} );
 
 	const isAdBlockerActive = useSelect( ( select ) =>

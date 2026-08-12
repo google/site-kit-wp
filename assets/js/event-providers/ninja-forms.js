@@ -43,10 +43,15 @@ import { classifyPII, getUserData } from './utils';
 				? getUserDataFromNinjaFormFields( event.data.fields )
 				: undefined;
 
-			global._googlesitekit?.gtagEvent?.(
-				'submit_lead_form',
-				userData ? { user_data: userData } : undefined
-			);
+			const formID = event.data?.form_id;
+
+			global._googlesitekit?.gtagEvent?.( 'submit_lead_form', {
+				googlesitekit_event_provider: 'ninja-forms',
+				...( formID
+					? { googlesitekit_form_id: String( formID ) }
+					: {} ),
+				...( userData ? { user_data: userData } : {} ),
+			} );
 		},
 	} );
 

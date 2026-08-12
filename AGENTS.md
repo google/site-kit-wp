@@ -3,6 +3,26 @@
 ## Project Overview
 WordPress plugin providing Google services integration. PHP backend (`includes/`) + React frontend (`assets/js/`) with modular architecture for each Google service (Analytics, AdSense, Search Console, etc.).
 
+## Implementing a GitHub issue
+When asked to implement, build, or work on a GitHub issue by number, follow the shared,
+tool-agnostic playbook **`docs/context/workflow/implement-issue.md`** (the single source of
+truth) and review against **`docs/context/workflow/review-checklist.md`**. Read only the
+`docs/context/{js,php}` convention docs the issue touches. Co-locate tests and Storybook
+stories; run lint, the specific test files touched, and `npm run build:dev`; and
+**never commit, push, or open a PR unless explicitly asked**. (Claude Code exposes this as
+the `implement-issue` skill; Gemini as `/implement`; Antigravity as the `/implement-issue`
+workflow.)
+
+## Reviewing a pull request
+When asked to review a pull request by number, follow the shared, tool-agnostic playbook
+**`docs/context/workflow/review-pr.md`** (the single source of truth) and grade against
+**`docs/context/workflow/review-checklist.md`**. Read the issue the PR links under "Addresses
+issue:" and check the diff against its acceptance criteria and Implementation Brief first, then
+read only the `docs/context/{js,php}` convention docs the PR touches. Stay **read-only** — do
+not post comments, approve, or change the PR state unless explicitly asked. (Claude Code
+exposes this as the `review-pr` skill; Gemini as `/review-pr`; Antigravity as the `/review-pr`
+workflow.)
+
 ## Architecture Essentials
 
 ### PHP Structure
@@ -40,6 +60,7 @@ WordPress plugin providing Google services integration. PHP backend (`includes/`
 ### JavaScript Conventions  
 - WordPress ESLint preset + custom rules
 - Function components, React Hooks patterns
+- **One component per file**: never define more than one React component in a single file. Extract each additional component (including small sub-components) into its own file and import it. Shared, non-component code (styles, constants, helpers) may live in a separate non-component module (e.g. `pdfStyles.ts`).
 - **Details**: See `.eslintrc.json` and custom ESLint plugin
 
 ## Testing Strategy

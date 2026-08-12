@@ -17,33 +17,33 @@
  */
 
 /**
+ * External dependencies
+ */
+import { ElementType, FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
- * External dependencies
- */
-import { FC, ElementType } from 'react';
-
-/**
  * Internal dependencies
  */
-import { useDispatch, useSelect, type Select } from '@/js/googlesitekit-data';
-import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import {
-	CONTENT_POLICY_STATES,
-	MODULES_READER_REVENUE_MANAGER,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import { Select, useDispatch, useSelect } from '@/js/googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { DAY_IN_SECONDS } from '@/js/util';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import {
 	RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
 	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
 } from '@/js/modules/reader-revenue-manager/constants';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import {
+	CONTENT_POLICY_STATES,
+	MODULES_READER_REVENUE_MANAGER,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
+import { DAY_IN_SECONDS } from '@/js/util';
 
 interface PolicyViolationProps {
 	id: string;

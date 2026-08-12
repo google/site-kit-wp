@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -30,15 +30,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
-import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
+import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { numFmt } from '@/js/util';
-import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
+import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
 import {
 	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
@@ -46,41 +40,36 @@ import {
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	getDimensionFiltersForEvents,
-	normalizePrimaryEvents,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
-import type {
 	GoalDriverComponentProps,
 	GoalDriverRow,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import {
+	getDimensionFiltersForEvents,
+	normalizePrimaryEvents,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
+import { numFmt } from '@/js/util';
 
 interface ReportRow {
 	dimensionValues?: Array< { value?: string } >;
 	metricValues?: Array< { value?: string } >;
 }
 
-const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
-	const {
-		goalType,
-		limit,
-		rows: providedRows,
-		loading: providedLoading,
-		error: providedError,
-		primaryEvent,
-		onExpandableRowsChange,
-	} = props;
-	let title = __( 'Top pages driving leads', 'google-site-kit' );
-
-	if ( goalType === GOAL_TYPES.ECOMMERCE ) {
-		title = __( 'Top pages driving sales', 'google-site-kit' );
-	}
-
+const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( {
+	title = '',
+	goalType,
+	limit,
+	rows: providedRows,
+	loading: providedLoading,
+	error: providedError,
+	primaryEvent,
+	breakdownFilter,
+	onExpandableRowsChange,
+} ) => {
 	const headerLabel = __( 'Events', 'google-site-kit' );
 	const dates = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} ),
+		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
 		[]
 	);
 	const reportOptions = useMemo( () => {
@@ -93,7 +82,10 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
 		return {
 			...dates,
 			dimensions: [ 'pagePath', 'eventName' ],
-			dimensionFilters: getDimensionFiltersForEvents( eventNames ),
+			dimensionFilters: getDimensionFiltersForEvents(
+				eventNames,
+				breakdownFilter
+			),
 			metrics: [ { name: 'eventCount' } ],
 			orderby: [
 				{
@@ -105,7 +97,7 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
 			keepEmptyRows: false,
 			reportID: `analytics-4_site-goals_top-pages_${ goalType }`,
 		};
-	}, [ dates, primaryEvent, goalType ] );
+	}, [ dates, primaryEvent, goalType, breakdownFilter ] );
 	const report = useSelect(
 		( select: Select ) =>
 			reportOptions
@@ -139,25 +131,11 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
 				return false;
 			}
 
-			const hasReportStarted = select(
-				MODULES_ANALYTICS_4
-			).hasStartedResolution( 'getReport', [ reportOptions ] );
-			const hasReportFinished = select(
-				MODULES_ANALYTICS_4
-			).hasFinishedResolution( 'getReport', [ reportOptions ] );
-
-			if ( hasReportStarted && ! hasReportFinished ) {
-				return true;
-			}
-
-			const currentReportError = select(
-				MODULES_ANALYTICS_4
-			).getErrorForSelector( 'getReport', [ reportOptions ] );
-
 			if (
-				hasReportStarted &&
-				report === undefined &&
-				! currentReportError
+				! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getReport',
+					[ reportOptions ]
+				)
 			) {
 				return true;
 			}
@@ -205,9 +183,7 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
 				return {};
 			}
 
-			const reportDates = select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} );
+			const reportDates = select( CORE_USER ).getDateRangeDates();
 
 			if ( ! reportDates ) {
 				return {};

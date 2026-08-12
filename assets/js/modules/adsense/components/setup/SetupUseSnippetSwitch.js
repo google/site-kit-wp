@@ -25,10 +25,10 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { UseSnippetSwitch } from '@/js/modules/adsense/components/common';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import { parseAccountID } from '@/js/modules/adsense/util/parsing';
-import { UseSnippetSwitch } from '@/js/modules/adsense/components/common';
 
 export default function SetupUseSnippetSwitch() {
 	const originalUseSnippet = useSelect( ( select ) =>

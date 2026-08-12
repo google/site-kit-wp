@@ -19,7 +19,17 @@
 /**
  * Internal dependencies
  */
-
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import UserSettingsSelectionPanel from '@/js/components/email-reporting/UserSettingsSelectionPanel';
+import SelectionPanelFooter from '@/js/components/email-reporting/UserSettingsSelectionPanel/SelectionPanelFooter';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -31,18 +41,7 @@ import {
 	provideUserInfo,
 	render,
 	waitFor,
-} from '../../../../../tests/js/test-utils';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '@/js/googlesitekit/constants';
-import UserSettingsSelectionPanel from '@/js/components/email-reporting/UserSettingsSelectionPanel';
-import SelectionPanelFooter from '@/js/components/email-reporting/UserSettingsSelectionPanel/SelectionPanelFooter';
-import { mockSurveyEndpoints } from '../../../../../tests/js/mock-survey-endpoints';
+} from '@tests/js/test-utils';
 
 // This suite tests panel behavior; mock the invite list to avoid async datastore
 // updates from child-level fetching that are covered in InviteOthersToSubscribe tests.
@@ -52,14 +51,23 @@ jest.mock(
 );
 
 describe( 'UserSettingsSelectionPanel', () => {
-	const features = [ 'proactiveUserEngagement' ];
 	const emailReportingSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/email-reporting-settings'
+	);
+	const emailReportingNextReportEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/email-reporting-next-report'
 	);
 	let registry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		// Saving settings invalidates the cached next report timestamp,
+		// triggering a refetch; keep this mocked so real (non-spied) saves
+		// in these tests don't hit the network unexpectedly.
+		fetchMock.get( emailReportingNextReportEndpoint, {
+			body: { timestamp: 0 },
+		} );
 
 		provideModules( registry );
 		provideSiteInfo( registry );
@@ -70,6 +78,10 @@ describe( 'UserSettingsSelectionPanel', () => {
 		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
 			subscribed: false,
 			frequency: 'monthly',
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingNextReport( {
+			timestamp: 0,
 		} );
 
 		registry
@@ -93,7 +105,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 	it( 'renders header subheading in admin view', () => {
 		const { getByText } = render( <UserSettingsSelectionPanel />, {
 			registry,
-			features,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -117,7 +128,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 			<UserSettingsSelectionPanel />,
 			{
 				registry,
-				features,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			}
 		);
@@ -132,7 +142,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 	it( 'displays the user email in the explanatory copy when available', () => {
 		const { getByText } = render( <UserSettingsSelectionPanel />, {
 			registry,
-			features,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -150,7 +159,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		const { getByRole } = render( <UserSettingsSelectionPanel />, {
 			registry,
-			features,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -168,7 +176,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		render( <UserSettingsSelectionPanel />, {
 			registry,
-			features,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -185,6 +192,68 @@ describe( 'UserSettingsSelectionPanel', () => {
 		);
 	} );
 
+	it( 'invalidates and re-fetches the next report timestamp each time the panel opens', async () => {
+		// The panel is opened by other components by setting the UI key to true,
+		// so we simulate that here.
+		//
+		// In case any developer looks at this later and wonders why we don't
+		// simulate a user clicking elements in this component to trigger the
+		// open/close behavior, it's because the panel is a side sheet that is
+		// rendered outside of the component tree of the button that opens it.
+		//
+		// This is the most direct way to test the behavior of the panel itself,
+		// without relying on other components to trigger it (which doesn't add
+		// any value as they'd just be triggering this CORE_UI update anyway).
+		registry
+			.dispatch( CORE_UI )
+			.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
+
+		const coreUserDispatch = registry.dispatch( CORE_USER );
+		const invalidateSpy = jest.spyOn(
+			coreUserDispatch,
+			'invalidateEmailReportingNextReport'
+		);
+
+		render( <UserSettingsSelectionPanel />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+		} );
+
+		await waitFor( () =>
+			expect( invalidateSpy ).toHaveBeenCalledTimes( 1 )
+		);
+		expect( fetchMock ).toHaveFetchedTimes(
+			1,
+			emailReportingNextReportEndpoint
+		);
+
+		act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
+		} );
+
+		act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+		} );
+
+		await waitFor( () =>
+			expect( invalidateSpy ).toHaveBeenCalledTimes( 2 )
+		);
+		expect( fetchMock ).toHaveFetchedTimes(
+			2,
+			emailReportingNextReportEndpoint
+		);
+	} );
+
 	it( 'calls saveEmailReportingSettings with subscribed true when subscribing', async () => {
 		const coreUserDispatch = registry.dispatch( CORE_USER );
 		const saveSpy = jest
@@ -193,7 +262,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		const { getByRole } = render( <UserSettingsSelectionPanel />, {
 			registry,
-			features,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -217,7 +285,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 			<UserSettingsSelectionPanel />,
 			{
 				registry,
-				features,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -258,7 +325,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		const { getByRole } = render( <UserSettingsSelectionPanel />, {
 			registry,
-			features,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -279,7 +345,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		const { getByRole } = render( <UserSettingsSelectionPanel />, {
 			registry,
-			features,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -308,7 +373,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		const { getByRole } = render( <UserSettingsSelectionPanel />, {
 			registry,
-			features,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -359,7 +423,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		render( <UserSettingsSelectionPanel />, {
 			registry,
-			features,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 

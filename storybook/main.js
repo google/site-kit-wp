@@ -17,16 +17,12 @@
  */
 
 /**
- * Node dependencies
- */
-const fs = require( 'fs' );
-const path = require( 'path' );
-
-/**
  * External dependencies
  */
-const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
+const fs = require( 'fs' );
 const { mapValues } = require( 'lodash' );
+const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
+const path = require( 'path' );
 const { ProvidePlugin } = require( 'webpack' );
 
 /**
@@ -61,7 +57,7 @@ const siteKitPackageAliases = mapValues(
 			}
 		}
 
-		return path.resolve( rootDir, `assets/js/${ global }-${ api }.js` );
+		return path.resolve( rootDir, `assets/js/${ global }-${ api }.ts` );
 	}
 );
 
@@ -103,8 +99,18 @@ module.exports = {
 			...config.resolve,
 			alias: {
 				'@': path.resolve( rootDir, 'assets' ),
+				'@tests': path.resolve( rootDir, 'tests' ),
 				...config.resolve.alias,
 				...siteKitPackageAliases,
+				// React 17 ships `jsx-runtime` as a file but does not expose
+				// it via an `exports` field, so ESM packages (e.g.
+				// `@react-pdf/renderer`) that import `react/jsx-runtime` fail
+				// webpack's strict resolution. Pin the extension explicitly
+				// until React 18 is adopted.
+				'react/jsx-runtime$': require.resolve( 'react/jsx-runtime.js' ),
+				'react/jsx-dev-runtime$': require.resolve(
+					'react/jsx-dev-runtime.js'
+				),
 			},
 			modules: [ rootDir, 'node_modules' ],
 		};

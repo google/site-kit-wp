@@ -6,6 +6,8 @@
  * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Core\Email_Reporting;
@@ -31,6 +33,8 @@ use WP_User;
  * @ignore
  */
 class REST_Email_Reporting_Controller {
+
+	use User_Role_Trait;
 
 	/**
 	 * Invite rate limit transient key prefix.
@@ -81,6 +85,14 @@ class REST_Email_Reporting_Controller {
 	private $eligible_subscribers_query;
 
 	/**
+	 * Subscribed_Users_Query instance.
+	 *
+	 * @since 1.185.0
+	 * @var Subscribed_Users_Query
+	 */
+	private $subscribed_users_query;
+
+	/**
 	 * Email_Log_Batch_Query instance.
 	 *
 	 * @since 1.172.0
@@ -120,6 +132,7 @@ class REST_Email_Reporting_Controller {
 	 * @since 1.173.0 Added eligible subscribers query and email sender dependencies and removed unused user options dependency.
 	 * @since 1.174.0 Added golinks dependency.
 	 * @since 1.176.0 Added cron health check dependency.
+	 * @since 1.185.0 Added subscribed users query dependency.
 	 *
 	 * @param Email_Reporting_Settings      $settings                       Email_Reporting_Settings instance.
 	 * @param Modules                       $modules                        Modules instance.
@@ -128,6 +141,7 @@ class REST_Email_Reporting_Controller {
 	 * @param Email                         $email_sender                   Email sender instance.
 	 * @param Golinks                       $golinks                        Golinks instance.
 	 * @param Cron_Health_Check             $health_check                   Cron health check instance.
+	 * @param Subscribed_Users_Query        $subscribed_users_query         Subscribed users query instance.
 	 */
 	public function __construct(
 		Email_Reporting_Settings $settings,
@@ -136,12 +150,14 @@ class REST_Email_Reporting_Controller {
 		Eligible_Subscribers_Query $eligible_subscribers_query,
 		Email $email_sender,
 		Golinks $golinks,
-		Cron_Health_Check $health_check
+		Cron_Health_Check $health_check,
+		Subscribed_Users_Query $subscribed_users_query
 	) {
 		$this->settings                      = $settings;
 		$this->modules                       = $modules;
 		$this->user_email_reporting_settings = $user_email_reporting_settings;
 		$this->eligible_subscribers_query    = $eligible_subscribers_query;
+		$this->subscribed_users_query        = $subscribed_users_query;
 		$this->email_log_batch_query         = new Email_Log_Batch_Query();
 		$this->email_sender                  = $email_sender;
 		$this->golinks                       = $golinks;
@@ -253,7 +269,7 @@ class REST_Email_Reporting_Controller {
 								)
 							);
 							$total          = $this->eligible_subscribers_query->get_eligible_users_count( $current_user_id, $search );
-							$total_pages    = $total > 0 ? (int) ceil( $total / $per_page ) : 0;
+							$total_pages    = $this->get_total_pages( $total, $per_page );
 
 							$data = array_map(
 								function ( WP_User $user ) use ( $meta_key ) {
@@ -287,6 +303,78 @@ class REST_Email_Reporting_Controller {
 								'type'              => 'string',
 								'default'           => '',
 								'sanitize_callback' => 'sanitize_text_field',
+							),
+						),
+					),
+				)
+			),
+			new REST_Route(
+				'core/site/data/email-reporting-subscribed-users',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function ( WP_REST_Request $request ) {
+							$per_page = (int) $request['per_page'];
+
+							$results = $this->subscribed_users_query->get_subscribed_users(
+								array(
+									'page'     => (int) $request['page'],
+									'per_page' => $per_page,
+									'search'   => (string) $request['search'],
+								)
+							);
+
+							$total       = (int) $results['total'];
+							$total_pages = $this->get_total_pages( $total, $per_page );
+
+							return new WP_REST_Response(
+								array(
+									'users'      => array_values( $results['users'] ),
+									'total'      => $total,
+									'totalPages' => $total_pages,
+								)
+							);
+						},
+						'permission_callback' => $can_manage,
+						'args'                => array(
+							'page'     => array(
+								'type'    => 'integer',
+								'default' => 1,
+								'minimum' => 1,
+							),
+							'per_page' => array(
+								'type'    => 'integer',
+								'default' => Subscribed_Users_Query::PER_PAGE,
+								'minimum' => 1,
+								'maximum' => Subscribed_Users_Query::MAX_PER_PAGE,
+							),
+							'search'   => array(
+								'type'              => 'string',
+								'default'           => '',
+								'sanitize_callback' => 'sanitize_text_field',
+							),
+						),
+					),
+				)
+			),
+			new REST_Route(
+				'core/site/data/email-reporting-unsubscribe-user',
+				array(
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => array( $this, 'unsubscribe_user' ),
+						'permission_callback' => $can_manage,
+						'args'                => array(
+							'data' => array(
+								'type'       => 'object',
+								'required'   => true,
+								'properties' => array(
+									'userID' => array(
+										'type'     => 'integer',
+										'required' => true,
+										'minimum'  => 1,
+									),
+								),
 							),
 						),
 					),
@@ -345,7 +433,7 @@ class REST_Email_Reporting_Controller {
 		$user_id = (int) $request['data']['userID'];
 
 		if ( $user_id <= 0 ) {
-			return $this->invite_error(
+			return $this->error_response(
 				'email_reporting_invalid_user_id',
 				__( 'Invalid user ID.', 'google-site-kit' ),
 				400
@@ -354,7 +442,7 @@ class REST_Email_Reporting_Controller {
 
 		$user = get_user_by( 'id', $user_id );
 		if ( ! $user instanceof WP_User ) {
-			return $this->invite_error(
+			return $this->error_response(
 				'email_reporting_invalid_user_id',
 				__( 'Invalid user ID.', 'google-site-kit' ),
 				400
@@ -362,7 +450,7 @@ class REST_Email_Reporting_Controller {
 		}
 
 		if ( $this->is_user_subscribed( $user_id ) ) {
-			return $this->invite_error(
+			return $this->error_response(
 				'email_reporting_user_already_subscribed',
 				__( 'The user is already subscribed to email reports.', 'google-site-kit' ),
 				400
@@ -370,7 +458,7 @@ class REST_Email_Reporting_Controller {
 		}
 
 		if ( ! $this->is_user_eligible_for_invite( $user_id ) ) {
-			return $this->invite_error(
+			return $this->error_response(
 				'email_reporting_ineligible_user',
 				__( 'The provided user is not eligible for invitation.', 'google-site-kit' ),
 				400
@@ -378,7 +466,7 @@ class REST_Email_Reporting_Controller {
 		}
 
 		if ( $this->is_invite_rate_limited( $user_id ) ) {
-			return $this->invite_error(
+			return $this->error_response(
 				'email_reporting_invite_rate_limited',
 				__( 'An invitation has already been sent to this user recently.', 'google-site-kit' ),
 				429
@@ -391,7 +479,7 @@ class REST_Email_Reporting_Controller {
 		$text_content      = $template_renderer->render_text( 'simple-email', $template_data );
 
 		if ( '' === trim( $html_content ) || '' === trim( $text_content ) ) {
-			return $this->invite_error(
+			return $this->error_response(
 				'email_reporting_invite_render_failed',
 				__( 'Unable to render invitation email content.', 'google-site-kit' ),
 				500
@@ -407,7 +495,7 @@ class REST_Email_Reporting_Controller {
 		);
 
 		if ( is_wp_error( $send_result ) ) {
-			return $this->invite_error(
+			return $this->error_response(
 				$send_result->get_error_code(),
 				$send_result->get_error_message(),
 				500
@@ -428,6 +516,77 @@ class REST_Email_Reporting_Controller {
 	}
 
 	/**
+	 * Unsubscribes a single user from email reports.
+	 *
+	 * @since 1.185.0
+	 *
+	 * @param WP_REST_Request $request Request object.
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function unsubscribe_user( WP_REST_Request $request ) {
+		$user_id = (int) $request['data']['userID'];
+
+		if ( $user_id <= 0 || ! ( get_user_by( 'id', $user_id ) instanceof WP_User ) ) {
+			return $this->error_response(
+				'email_reporting_invalid_user_id',
+				__( 'Invalid user ID.', 'google-site-kit' ),
+				400
+			);
+		}
+
+		if ( ! $this->is_user_subscribed( $user_id ) ) {
+			return $this->error_response(
+				'email_reporting_user_not_subscribed',
+				__( 'The user is not subscribed to email reports.', 'google-site-kit' ),
+				400
+			);
+		}
+
+		$restore_user = $this->user_email_reporting_settings->switch_user( $user_id );
+
+		// Finally executes even when returning, so the original user context is
+		// restored on both success and unexpected throws.
+		try {
+			$this->user_email_reporting_settings->merge( array( 'subscribed' => false ) );
+		} finally {
+			$restore_user();
+		}
+
+		// merge() reports failure when the stored value did not change, which is not the
+		// same as the user still being subscribed, so confirm against the stored settings.
+		if ( $this->is_user_subscribed( $user_id ) ) {
+			return $this->error_response(
+				'email_reporting_unsubscribe_failed',
+				__( 'Unable to unsubscribe the user from email reports.', 'google-site-kit' ),
+				500
+			);
+		}
+
+		return new WP_REST_Response(
+			array(
+				'success' => true,
+			)
+		);
+	}
+
+	/**
+	 * Calculates the number of pages a paginated user listing spans.
+	 *
+	 * @since 1.185.0
+	 *
+	 * @param int $total    Total number of matching users.
+	 * @param int $per_page Number of users per page.
+	 * @return int Number of pages, or 0 when there are no matches.
+	 */
+	private function get_total_pages( $total, $per_page ) {
+		if ( $total < 1 || $per_page < 1 ) {
+			return 0;
+		}
+
+		return (int) ceil( $total / $per_page );
+	}
+
+	/**
 	 * Maps a user to the REST response shape.
 	 *
 	 * @since 1.170.0
@@ -445,43 +604,9 @@ class REST_Email_Reporting_Controller {
 			'email'           => $user->user_email,
 			'role'            => $this->get_primary_role( $user ),
 			'roleDisplayName' => $this->get_primary_role_display_name( $user ),
-			'subscribed'      => is_array( $settings ) && ! empty( $settings['subscribed'] ),
+			'subscribed'      => User_Email_Reporting_Settings::is_subscribed( $settings ),
 			'invited'         => $this->is_invite_rate_limited( $user->ID ),
 		);
-	}
-
-	/**
-	 * Gets the primary role of the user.
-	 *
-	 * @since 1.170.0
-	 *
-	 * @param WP_User $user User object.
-	 * @return string
-	 */
-	private function get_primary_role( WP_User $user ) {
-		if ( empty( $user->roles ) ) {
-			return '';
-		}
-
-		$roles = array_values( $user->roles );
-
-		return (string) reset( $roles );
-	}
-
-	/**
-	 * Gets the primary role display name of the user.
-	 *
-	 * @since 1.178.0
-	 *
-	 * @param WP_User $user User object.
-	 * @return string
-	 */
-	private function get_primary_role_display_name( WP_User $user ) {
-		$role_slug = $this->get_primary_role( $user );
-
-		$role_name = wp_roles()->get_names()[ $role_slug ] ?? $role_slug;
-
-		return translate_user_role( $role_name );
 	}
 
 	/**
@@ -507,7 +632,7 @@ class REST_Email_Reporting_Controller {
 	private function is_user_subscribed( $user_id ) {
 		$settings = get_user_meta( $user_id, $this->user_email_reporting_settings->get_meta_key(), true );
 
-		return is_array( $settings ) && ! empty( $settings['subscribed'] );
+		return User_Email_Reporting_Settings::is_subscribed( $settings );
 	}
 
 	/**
@@ -535,7 +660,7 @@ class REST_Email_Reporting_Controller {
 	}
 
 	/**
-	 * Creates a standardized invite endpoint error response.
+	 * Creates a standardized endpoint error response.
 	 *
 	 * @since 1.173.0
 	 *
@@ -544,7 +669,7 @@ class REST_Email_Reporting_Controller {
 	 * @param int    $status  HTTP status code.
 	 * @return WP_Error
 	 */
-	private function invite_error( $code, $message, $status ) {
+	private function error_response( $code, $message, $status ) {
 		return new WP_Error(
 			$code,
 			$message,
@@ -597,7 +722,7 @@ class REST_Email_Reporting_Controller {
 			),
 			'body'                   => Content_Map::get_body( 'invitation-email' ),
 			'inviter_email'          => $inviter_email,
-			'learn_more_url'         => add_query_arg( 'doc', 'email-reporting', 'https://sitekit.withgoogle.com/support/' ),
+			'learn_more_url'         => 'https://sitekit.withgoogle.com/support/?doc=email-reporting',
 			'primary_call_to_action' => array(
 				'label' => __( 'Get your report', 'google-site-kit' ),
 				'url'   => $this->golinks->get_url( 'manage-subscription-email-reporting' ),

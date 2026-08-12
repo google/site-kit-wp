@@ -30,17 +30,17 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ExternalIcon from '@/svg/icons/external.svg';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import SupportLink from '@/js/components/SupportLink';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import OverlayNotification from '@/js/googlesitekit/notifications/components/layout/OverlayNotification';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { trackEvent } from '@/js/util';
 import ReaderRevenueManagerIntroductoryGraphicDesktop from '@/svg/graphics/reader-revenue-manager-monetize-graphic-desktop.svg';
 import ReaderRevenueManagerIntroductoryGraphicMobile from '@/svg/graphics/reader-revenue-manager-monetize-graphic-mobile.svg';
-import SupportLink from '@/js/components/SupportLink';
-import { useDispatch, useSelect } from 'googlesitekit-data';
-import useViewContext from '@/js/hooks/useViewContext';
-import { trackEvent } from '@/js/util';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import ExternalIcon from '@/svg/icons/external.svg';
 
 export const RRM_INTRODUCTORY_OVERLAY_NOTIFICATION =
 	'rrmIntroductoryOverlayNotification';

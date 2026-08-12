@@ -19,19 +19,11 @@
 /**
  * Internal dependencies
  */
-import {
-	provideModuleRegistrations,
-	provideModules,
-	provideSiteInfo,
-	provideUserAuthentication,
-	provideUserCapabilities,
-} from '../../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-	VIEW_CONTEXT_ENTITY_DASHBOARD,
 } from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
@@ -39,17 +31,25 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	provideAnalytics4MockReport,
 	provideAnalyticsReportWithoutDateRangeData,
 } from '@/js/modules/analytics-4/utils/data-mock';
-import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { DAY_IN_SECONDS } from '@/js/util';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { provideSearchConsoleMockReport } from '@/js/modules/search-console/util/data-mock';
+import { DAY_IN_SECONDS } from '@/js/util';
+import {
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserCapabilities,
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import SearchFunnelWidgetGA4 from './index';
 
 const { accountSummaries } = fixtures;

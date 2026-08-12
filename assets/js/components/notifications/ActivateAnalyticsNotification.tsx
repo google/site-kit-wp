@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC, ElementType } from 'react';
+import { ElementType, FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -29,20 +29,20 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
+import { Select, useSelect } from 'googlesitekit-data';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import useRetriableNotificationDismissButtonLabel from '@/js/components/notifications/useRetriableNotificationDismissButtonLabel';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { WEEK_IN_SECONDS } from '@/js/util';
 import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
-import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import useViewContext from '@/js/hooks/useViewContext';
-import ActivateAnalyticsSVG from '@/svg/graphics/activate-analytics-graphic.svg?url';
-import useRetriableNotificationDismissButtonLabel from '@/js/components/notifications/useRetriableNotificationDismissButtonLabel';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
+import { WEEK_IN_SECONDS } from '@/js/util';
+import ActivateAnalyticsSVG from '@/svg/graphics/activate-analytics-graphic.svg?url';
 
 interface ActivateAnalyticsNotificationProps {
 	id: string;

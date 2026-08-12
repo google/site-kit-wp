@@ -24,8 +24,19 @@ import { createElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { render } from '../../../../tests/js/test-utils';
+import { render } from '@tests/js/test-utils';
 import Banner from './index';
+
+let mockBreakpoint = 'desktop';
+
+jest.mock( '@/js/hooks/useBreakpoint', () => {
+	const actual = jest.requireActual( '@/js/hooks/useBreakpoint' );
+
+	return {
+		...actual,
+		useBreakpoint: () => mockBreakpoint,
+	};
+} );
 
 describe( 'Banner', () => {
 	describe( 'description prop', () => {
@@ -209,6 +220,51 @@ describe( 'Banner', () => {
 				'googlesitekit-banner'
 			);
 			expect( container.firstChild ).toHaveClass( 'custom-class' );
+		} );
+	} );
+
+	describe( 'svg prop', () => {
+		beforeEach( () => {
+			mockBreakpoint = 'desktop';
+		} );
+
+		it( 'renders tablet SVG at tablet breakpoint when provided', () => {
+			mockBreakpoint = 'tablet';
+
+			const { container } = render(
+				<Banner
+					title="Test Banner"
+					description="Test description"
+					svg={ {
+						desktop: 'desktop.svg',
+						mobile: 'mobile.svg',
+						tablet: 'tablet.svg',
+					} }
+				/>
+			);
+
+			expect(
+				container.querySelector( '.googlesitekit-banner__svg-wrapper' )
+			).toHaveStyle( 'background-image: url(tablet.svg)' );
+		} );
+
+		it( 'falls back to mobile SVG at tablet breakpoint when tablet SVG is not provided', () => {
+			mockBreakpoint = 'tablet';
+
+			const { container } = render(
+				<Banner
+					title="Test Banner"
+					description="Test description"
+					svg={ {
+						desktop: 'desktop.svg',
+						mobile: 'mobile.svg',
+					} }
+				/>
+			);
+
+			expect(
+				container.querySelector( '.googlesitekit-banner__svg-wrapper' )
+			).toHaveStyle( 'background-image: url(mobile.svg)' );
 		} );
 	} );
 } );

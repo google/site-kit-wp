@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import { get } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -30,34 +30,64 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
+import { MetricTileNumeric } from '@/js/components/KeyMetrics';
 import {
 	CORE_USER,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MetricTileNumeric } from '@/js/components/KeyMetrics';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import { numFmt } from '@/js/util';
 
-function VisitsPerVisitorWidget( { Widget } ) {
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-			compare: true,
-		} )
-	);
-
-	const reportOptions = {
+/**
+ * Builds the Analytics 4 report options for the Visits Per Visitor metric.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range, including the compare dates.
+ * @return {Object} The Analytics 4 `getReport` options.
+ */
+export function getVisitsPerVisitorReportOptions( dates ) {
+	return {
 		...dates,
 		metrics: [ { name: 'sessionsPerUser' }, { name: 'sessions' } ],
 		reportID: 'analytics-4_visits-per-visitor-widget_widget_reportOptions',
 	};
+}
+
+/**
+ * Builds the sub-text for the Visits Per Visitor metric tile.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the PDF tile display the same sub-text.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} totalSessions The total number of visits.
+ * @return {string} The formatted sub-text.
+ */
+export function getVisitsPerVisitorSubtext( totalSessions ) {
+	return sprintf(
+		/* translators: %s: Number of total visits to the site, such as "1,234". */
+		__( '%s total visits', 'google-site-kit' ),
+		numFmt( totalSessions, { style: 'decimal' } )
+	);
+}
+
+function VisitsPerVisitorWidget( { Widget } ) {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} )
+	);
+
+	const reportOptions = getVisitsPerVisitorReportOptions( dates );
 
 	const report = useInViewSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
@@ -102,11 +132,7 @@ function VisitsPerVisitorWidget( { Widget } ) {
 			Widget={ Widget }
 			widgetSlug={ KM_ANALYTICS_VISITS_PER_VISITOR }
 			metricValue={ currentVisitsPerVisitor }
-			subText={ sprintf(
-				/* translators: %d: Number of total visits to the site. */
-				__( '%s total visits', 'google-site-kit' ),
-				numFmt( currentTotalSessions, { style: 'decimal' } )
-			) }
+			subText={ getVisitsPerVisitorSubtext( currentTotalSessions ) }
 			previousValue={ Number( previousVisitsPerVisitor ) }
 			currentValue={ Number( currentVisitsPerVisitor ) }
 			loading={ loading }

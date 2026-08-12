@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import {
+	PII_TYPE,
 	classifyPII,
 	getAddress,
 	getEmail,
@@ -31,7 +32,6 @@ import {
 	normalizeEmail,
 	normalizePhone,
 	normalizeValue,
-	PII_TYPE,
 } from './utils';
 
 describe( 'Event Providers Utilities', () => {

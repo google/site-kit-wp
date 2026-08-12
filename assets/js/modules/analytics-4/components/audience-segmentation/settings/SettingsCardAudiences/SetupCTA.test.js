@@ -19,7 +19,17 @@
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { availableAudiences as audiencesFixture } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import {
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import * as tracking from '@/js/util/tracking';
 import {
 	act,
 	createTestRegistry,
@@ -33,17 +43,8 @@ import {
 	untilResolved,
 	waitFor,
 	waitForDefaultTimeouts,
-} from '../../../../../../../../tests/js/test-utils';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	EDIT_SCOPE,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import * as tracking from '@/js/util/tracking';
+	waitForTimeouts,
+} from '@tests/js/test-utils';
 import SetupCTA from './SetupCTA';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -85,6 +86,15 @@ describe( 'SettingsCardAudiences SetupCTA', () => {
 			availableCustomDimensions: [ 'googlesitekit_post_type' ],
 			propertyID: '123456789',
 		} );
+
+		// Set the audience settings directly to ensure the `getAudienceSettings()`
+		// and `getOrSyncAvailableAudiences()` resolvers don't trigger unmocked
+		// network requests in the background.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences: [],
+			audienceSegmentationSetupCompletedBy: null,
+		} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAvailableAudiences( [] );
 
 		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: null,
@@ -168,7 +178,12 @@ describe( 'SettingsCardAudiences SetupCTA', () => {
 			syncAvailableCustomDimensionsEndpoint
 		);
 
-		await act( waitForDefaultTimeouts );
+		// Ensure `saveUserAudienceSettings()` (which awaits several
+		// resolvers before hitting the frozen `audienceSettingsEndpoint`
+		// request) runs all actions until `audienceSettingsEndpoint`
+		// so it doesn't leak into, and pollute the shared `trackEvent`
+		// mock in a later test.
+		await act( () => waitForTimeouts( 100 ) );
 	} );
 
 	it( 'should track an event when the CTA is clicked', async () => {

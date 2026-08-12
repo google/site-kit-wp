@@ -19,17 +19,17 @@
 /**
  * External dependencies
  */
-import { useIntersection as mockUseIntersection } from 'react-use';
+import { intersectionObserver } from '@shopify/jest-dom-mocks';
 
 /**
  * Internal dependencies
  */
-import AudienceTileError from '.';
-import {
-	act,
-	fireEvent,
-	render,
-} from '../../../../../../../../../../tests/js/test-utils';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import * as tracking from '@/js/util/tracking';
+import { act, fireEvent, render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
@@ -37,17 +37,8 @@ import {
 	provideSiteInfo,
 	provideUserInfo,
 	waitForDefaultTimeouts,
-} from '../../../../../../../../../../tests/js/utils';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import * as tracking from '@/js/util/tracking';
-
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
-} ) );
+} from '@tests/js/utils';
+import AudienceTileError from '.';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -88,10 +79,7 @@ describe( 'AudienceTileError', () => {
 	};
 
 	beforeEach( () => {
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: false,
-			intersectionRatio: 0,
-		} ) );
+		intersectionObserver.mock();
 
 		registry = createTestRegistry();
 
@@ -115,6 +103,7 @@ describe( 'AudienceTileError', () => {
 	} );
 
 	afterEach( () => {
+		intersectionObserver.restore();
 		mockTrackEvent.mockClear();
 	} );
 
@@ -171,7 +160,7 @@ describe( 'AudienceTileError', () => {
 	} );
 
 	it( 'should track an event when the insufficient permissions error variant is viewed', async () => {
-		const { rerender, waitForRegistry } = render(
+		const { waitForRegistry } = render(
 			<AudienceTileError
 				audienceSlug={ audienceSlug }
 				errors={ [ insufficientPermissionsError ] }
@@ -185,17 +174,12 @@ describe( 'AudienceTileError', () => {
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 		// Simulate the CTA becoming visible.
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: true,
-			intersectionRatio: 1,
-		} ) );
-
-		rerender(
-			<AudienceTileError
-				audienceSlug={ audienceSlug }
-				errors={ [ insufficientPermissionsError ] }
-			/>
-		);
+		act( () => {
+			intersectionObserver.simulate( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} );
+		} );
 
 		await waitForRegistry();
 
@@ -245,7 +229,7 @@ describe( 'AudienceTileError', () => {
 	} );
 
 	it( 'should track an event when the generic error variant is viewed', async () => {
-		const { rerender, waitForRegistry } = render(
+		const { waitForRegistry } = render(
 			<AudienceTileError
 				audienceSlug={ audienceSlug }
 				errors={ [ notFoundError ] }
@@ -259,17 +243,12 @@ describe( 'AudienceTileError', () => {
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 		// Simulate the CTA becoming visible.
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: true,
-			intersectionRatio: 1,
-		} ) );
-
-		rerender(
-			<AudienceTileError
-				audienceSlug={ audienceSlug }
-				errors={ [ notFoundError ] }
-			/>
-		);
+		act( () => {
+			intersectionObserver.simulate( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} );
+		} );
 
 		await waitForRegistry();
 

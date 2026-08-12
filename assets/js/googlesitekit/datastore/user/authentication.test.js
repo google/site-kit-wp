@@ -25,7 +25,7 @@ import {
 	muteFetch,
 	subscribeUntil,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { CORE_USER } from './constants';
 
 describe( 'core/user authentication', () => {

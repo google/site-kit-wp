@@ -25,13 +25,13 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import SignInWithGoogleIcon from '@/svg/graphics/sign-in-with-google.svg';
-import SetupForm from './SetupForm';
 import Badge from '@/js/components/Badge';
 import HTTPSWarning from '@/js/components/notifications/HTTPSWarning';
-import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
 import Typography from '@/js/components/Typography';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
+import SignInWithGoogleIcon from '@/svg/graphics/sign-in-with-google.svg';
+import SetupForm from './SetupForm';
 
 export default function SetupMain() {
 	const homeURL = useSelect( ( select ) => select( CORE_SITE ).getHomeURL() );

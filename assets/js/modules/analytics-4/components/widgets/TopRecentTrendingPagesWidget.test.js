@@ -19,7 +19,26 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../../../../tests/js/test-utils';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
+import {
+	STRATEGY_ZIP,
+	getAnalytics4MockResponse,
+	provideAnalytics4MockReport,
+} from '@/js/modules/analytics-4/utils/data-mock';
+import {
+	ERROR_INTERNAL_SERVER_ERROR,
+	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+} from '@/js/util/errors';
+import { render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -27,30 +46,11 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
-} from '../../../../../../tests/js/utils';
-import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import {
-	CORE_USER,
-	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
-} from '@/js/googlesitekit/datastore/user/constants';
+} from '@tests/js/utils';
 import TopRecentTrendingPagesWidget, {
 	getDateRange,
 	getReportOptions,
 } from './TopRecentTrendingPagesWidget';
-import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	ERROR_INTERNAL_SERVER_ERROR,
-	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '@/js/util/errors';
-import {
-	getAnalytics4MockResponse,
-	provideAnalytics4MockReport,
-	STRATEGY_ZIP,
-} from '@/js/modules/analytics-4/utils/data-mock';
-import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
-import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 
 describe( 'TopRecentTrendingPagesWidget', () => {
 	let registry;

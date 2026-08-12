@@ -19,19 +19,21 @@
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { Select, useSelect } from 'googlesitekit-data';
+import { getWelcomeTour } from '@/js/feature-tours/welcome';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	PERMISSION_AUTHENTICATE,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
-import { getWelcomeTour } from '@/js/feature-tours/welcome';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 /**
  * Returns the welcome tour configuration based on the current user context.
@@ -50,9 +52,14 @@ export function useWelcomeTour() {
 		[]
 	);
 
-	const isAnalyticsConnected = useSelect(
+	const isAnalyticsViewable = useSelect(
 		( select: Select ) =>
-			select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+			select( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_ANALYTICS_4
+			) &&
+			select( CORE_USER ).hasAccessToShareableModule(
+				MODULE_SLUG_ANALYTICS_4
+			),
 		[]
 	);
 
@@ -77,10 +84,30 @@ export function useWelcomeTour() {
 		[ viewContext ]
 	);
 
+	const isKeyMetricsWidgetPresent = useSelect(
+		( select: Select ) =>
+			isAnalyticsViewable &&
+			!! select( CORE_SITE ).isKeyMetricsSetupCompleted() &&
+			! select( CORE_USER ).isKeyMetricsWidgetHidden(),
+		[ isAnalyticsViewable ]
+	);
+
+	const isAudienceSegmentationWidgetPresent = useSelect(
+		( select: Select ) =>
+			isAnalyticsViewable &&
+			!! select(
+				MODULES_ANALYTICS_4
+			).isAudienceSegmentationSetupCompleted() &&
+			! select( CORE_USER ).isAudienceSegmentationWidgetHidden(),
+		[ isAnalyticsViewable ]
+	);
+
 	return getWelcomeTour( {
 		isViewOnly,
 		canAuthenticate,
-		isAnalyticsConnected: !! isAnalyticsConnected,
+		isAnalyticsConnected: !! isAnalyticsViewable,
 		isActivateAnalyticsNotificationPresent,
+		isKeyMetricsWidgetPresent,
+		isAudienceSegmentationWidgetPresent,
 	} );
 }

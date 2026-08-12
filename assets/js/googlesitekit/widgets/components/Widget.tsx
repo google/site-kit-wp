@@ -33,14 +33,15 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ChevronDown from '@/svg/icons/chevron-down-v2.svg';
 import IconWrapper from '@/js/components/IconWrapper';
+import ChevronDown from '@/svg/icons/chevron-down-v2.svg';
 
 export interface WidgetProps {
 	className?: string;
 	collapsible?: boolean;
 	defaultCollapsed?: boolean;
 	isCollapsed?: boolean;
+	onToggleCollapsed?: ( isCollapsed: boolean ) => void;
 	Header?: ElementType;
 	headerContents?: ReactNode;
 	Footer?: ElementType;
@@ -56,6 +57,7 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 			collapsible = false,
 			defaultCollapsed,
 			isCollapsed: isCollapsedProp,
+			onToggleCollapsed,
 			Header,
 			headerContents,
 			Footer,
@@ -80,7 +82,11 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 
 		function toggleIsCollapsed() {
 			if ( collapsible ) {
-				setIsCollapsed( ( prevState ) => ! prevState );
+				setIsCollapsed( ( prevState ) => {
+					onToggleCollapsed?.( ! prevState );
+
+					return ! prevState;
+				} );
 			}
 		}
 
@@ -90,12 +96,12 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 				isCollapsedProp !== undefined
 			) {
 				// This console warning is meant to help developers understand
-				// that the `defaultCollapsed` prop should not be combibed with
+				// that the `defaultCollapsed` prop should not be combined with
 				// the `isCollapsed` prop, so this console statement should be
 				// allowed.
 				// eslint-disable-next-line no-console
 				console.warn(
-					`Error in \`Widget\` compoenent:The \`defaultCollapsed\` prop should not be used together with the \`isCollapsed\` prop. Providing the \`isCollapsed\` prop means the \`Widget\` component for slug "${ widgetSlug }" is controlled by its parent component, and the \`defaultCollapsed\` prop will be ignored.`
+					`Error in \`Widget\` component: The \`defaultCollapsed\` prop should not be used together with the \`isCollapsed\` prop. Providing the \`isCollapsed\` prop means the \`Widget\` component for slug "${ widgetSlug }" is controlled by its parent component, and the \`defaultCollapsed\` prop will be ignored.`
 				);
 			}
 		} );

@@ -20,34 +20,31 @@
  * Internal dependencies
  */
 import {
-	createTestRegistry,
-	provideModules,
-} from '../../../../../../tests/js/utils';
-import { renderHook } from '../../../../../../tests/js/test-utils';
-import useVisibleSections, { contexts } from './useVisibleSections';
-import {
 	ANCHOR_ID_CONTENT,
-	ANCHOR_ID_SITE_GOALS,
 	ANCHOR_ID_KEY_METRICS,
+	ANCHOR_ID_SITE_GOALS,
 	ANCHOR_ID_SPEED,
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
-	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
 	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
 	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { renderHook } from '@tests/js/test-utils';
+import { createTestRegistry, provideModules } from '@tests/js/utils';
+import useVisibleSections, { contexts } from './useVisibleSections';
 
 function provideWidgetContexts( registry, widgetContexts = [] ) {
 	const mapContextToModule = {

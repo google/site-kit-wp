@@ -20,87 +20,123 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { Fragment, useEffect, useState } from '@wordpress/element';
-import { useMount } from 'react-use';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import {
-	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
-	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
-	CONTEXT_MAIN_DASHBOARD_CONTENT,
-	CONTEXT_MAIN_DASHBOARD_SPEED,
-	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
-	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
-} from '@/js/googlesitekit/widgets/default-contexts';
-import { DAY_IN_SECONDS } from '@/js/util';
-import Header from './Header';
-import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
-import WidgetContextRenderer from '@/js/googlesitekit/widgets/components/WidgetContextRenderer';
-import { AudienceSelectionPanel } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
-import EntitySearchInput from './EntitySearchInput';
-import DateRangeSelector from './DateRangeSelector';
-import HelpMenu from './help/HelpMenu';
-import SurveyViewTrigger from './surveys/SurveyViewTrigger';
-import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
-import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
-import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
-import PUESurveyTriggers from './email-reporting/PUESurveyTriggers';
-import PDFDownloadButton from './pdf-generation/PDFDownloadButton';
-import PDFSectionsSelectionPanel from './pdf-generation/PDFSectionsSelectionPanel';
-import WelcomeModal from './WelcomeModal';
-import SiteGoalsIntroModalBanner from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
-import { useFeature } from '@/js/hooks/useFeature';
+import { WELCOME_TOUR } from '@/js/feature-tours/constants';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_KEY_METRICS,
 	ANCHOR_ID_MONETIZATION,
+	ANCHOR_ID_SITE_GOALS,
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
-	ANCHOR_ID_SITE_GOALS,
-	VIEW_CONTEXT_MAIN_DASHBOARD,
 } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import WidgetContextRenderer from '@/js/googlesitekit/widgets/components/WidgetContextRenderer';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
-import useViewOnly from '@/js/hooks/useViewOnly';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import OfflineNotification from './notifications/OfflineNotification';
-import ModuleDashboardEffects from './ModuleDashboardEffects';
-import CoreDashboardEffects from './CoreDashboardEffects';
+import {
+	CONTEXT_MAIN_DASHBOARD_CONTENT,
+	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
+	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
+	CONTEXT_MAIN_DASHBOARD_SPEED,
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+} from '@/js/googlesitekit/widgets/default-contexts';
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import { useFeature } from '@/js/hooks/useFeature';
+import useFormValue from '@/js/hooks/useFormValue';
 import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
 import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { AudienceSelectionPanel } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
+import SiteGoalsSelectionPanel from '@/js/modules/analytics-4/components/site-goals/selection-panel';
+import SiteGoalsSurveyTriggers from '@/js/modules/analytics-4/components/site-goals/SiteGoalsSurveyTriggers';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
 import { getNavigationalScrollTop } from '@/js/util/scroll';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import useDisplayCTAWidget from './KeyMetrics/hooks/useDisplayCTAWidget';
-import Notifications from './notifications/Notifications';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import {
-	NOTIFICATION_GROUPS,
-	NOTIFICATION_AREAS,
-} from '@/js/googlesitekit/notifications/constants';
 import { AdminScreenTooltip } from './AdminScreenTooltip';
-import useFormValue from '@/js/hooks/useFormValue';
-import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
-import { WELCOME_TOUR } from '@/js/feature-tours/constants';
+import CoreDashboardEffects from './CoreDashboardEffects';
+import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
+import DateRangeSelector from './DateRangeSelector';
+import PUESurveyTriggers from './email-reporting/PUESurveyTriggers';
+import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
+import EntitySearchInput from './EntitySearchInput';
+import Header from './Header';
+import HelpMenu from './help/HelpMenu';
+import useDisplayCTAWidget from './KeyMetrics/hooks/useDisplayCTAWidget';
+import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
+import ModuleDashboardEffects from './ModuleDashboardEffects';
+import Notifications from './notifications/Notifications';
+import OfflineNotification from './notifications/OfflineNotification';
+import PDFDownloadButton from './pdf-export/PDFDownloadButton';
+import PDFExportRoot from './pdf-export/PDFExportRoot';
+import PDFSectionsSelectionPanel from './pdf-export/PDFSectionsSelectionPanel';
+import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
+import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 
+function getLastWidgetAnchor( {
+	isMonetizationActive,
+	isSpeedActive,
+	isContentActive,
+	isSiteGoalsActive,
+	isTrafficActive,
+	isKeyMetricsActive,
+} ) {
+	if ( isMonetizationActive ) {
+		return ANCHOR_ID_MONETIZATION;
+	}
+	if ( isSpeedActive ) {
+		return ANCHOR_ID_SPEED;
+	}
+	if ( isContentActive ) {
+		return ANCHOR_ID_CONTENT;
+	}
+	if ( isSiteGoalsActive ) {
+		return ANCHOR_ID_SITE_GOALS;
+	}
+	if ( isTrafficActive ) {
+		return ANCHOR_ID_TRAFFIC;
+	}
+	if ( isKeyMetricsActive ) {
+		return ANCHOR_ID_KEY_METRICS;
+	}
+	return null;
+}
+
+// This component has a legitimately high level of complexity; it renders the
+// entire dashboard with a bunch of conditionals to determine what to show.
+//
+// Disabling this rule would obscure the contents of the dashboard and be
+// counterproductive, so we disable the ESLint rule around cyclomatic
+// complexity for this component.
+// eslint-disable-next-line complexity
 export default function DashboardMainApp() {
 	const siteGoalsEnabled = useFeature( 'siteGoals' );
 
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
+	const viewContext = useViewContext();
 	const viewOnlyDashboard = useViewOnly();
-
 	const breakpoint = useBreakpoint();
 
 	const [ widgetArea, setWidgetArea ] = useQueryArg( 'widgetArea' );
@@ -260,19 +296,12 @@ export default function DashboardMainApp() {
 		);
 	} );
 
-	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
-	const showWelcomeModal = useSelect( ( select ) => {
-		if ( ! setupFlowRefreshEnabled ) {
-			return false;
-		}
 
-		return (
-			select( CORE_USER ).isDataGatheringCompleteModalActive() ||
-			isInitialWelcomeModalActive()
-		);
-	} );
+	const hasAccessToFeatureTour = useSelect( ( select ) =>
+		select( CORE_USER ).hasAccessToFeatureTour()
+	);
 
 	const hideSetupCTAs = useSelect( ( select ) => {
 		if ( ! setupFlowRefreshEnabled ) {
@@ -284,10 +313,7 @@ export default function DashboardMainApp() {
 		).isItemDismissed( INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG );
 		const queuedHeaderNotifications = select(
 			CORE_NOTIFICATIONS
-		).getQueuedNotifications(
-			VIEW_CONTEXT_MAIN_DASHBOARD,
-			NOTIFICATION_GROUPS.DEFAULT
-		);
+		).getQueuedNotifications( viewContext, NOTIFICATION_GROUPS.DEFAULT );
 		const firstHeaderNotificationID =
 			queuedHeaderNotifications?.[ 0 ]?.id || null;
 
@@ -300,20 +326,36 @@ export default function DashboardMainApp() {
 
 	useMonitorInternetConnection();
 
-	const showSetupOverlays = useSelect( ( select ) => {
-		if ( hideSetupCTAs ) {
-			return false;
-		}
-
+	// The welcome tour renders its own overlay, so any queued overlays are
+	// hidden while it runs.
+	const isWelcomeTourActive = useSelect( ( select ) => {
 		const currentTour = select( CORE_USER ).getCurrentTour();
 
-		return ! [
+		return [
 			WELCOME_TOUR.WITHOUT_ANALYTICS,
 			WELCOME_TOUR.WITH_ANALYTICS,
 		].includes( currentTour?.slug );
 	} );
 
-	const lastWidgetAnchor = getLastWidgetAnchor();
+	// The setup modals (Welcome and Site Goals intro) are intentionally
+	// decoupled from `hideSetupCTAs`: unlike the feature-introduction overlays,
+	// they are meant to appear during the initial setup flow (that's when the
+	// Welcome modal shows). They're only hidden while the welcome tour runs.
+	const showSetupModals = ! isWelcomeTourActive;
+
+	// The feature-introduction overlays (PDF, email reporting, audience
+	// segmentation) stay suppressed on the first dashboard landing to avoid
+	// stacking with the setup CTAs.
+	const showSetupOverlays = ! hideSetupCTAs && ! isWelcomeTourActive;
+
+	const lastWidgetAnchor = getLastWidgetAnchor( {
+		isMonetizationActive,
+		isSpeedActive,
+		isContentActive,
+		isSiteGoalsActive,
+		isTrafficActive,
+		isKeyMetricsActive,
+	} );
 
 	return (
 		<Fragment>
@@ -327,7 +369,7 @@ export default function DashboardMainApp() {
 				<DateRangeSelector />
 				{ pdfGenerationEnabled && <PDFDownloadButton /> }
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
-				<HelpMenu showFeatureTour />
+				<HelpMenu showFeatureTour={ !! hasAccessToFeatureTour } />
 			</Header>
 
 			<div className="googlesitekit-page-content">
@@ -342,6 +384,13 @@ export default function DashboardMainApp() {
 					<Notifications
 						areaSlug={ NOTIFICATION_AREAS.DASHBOARD_TOP }
 						groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+					/>
+				) }
+
+				{ showSetupModals && (
+					<Notifications
+						areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+						groupID={ NOTIFICATION_GROUPS.SETUP_MODALS }
 					/>
 				) }
 
@@ -415,44 +464,26 @@ export default function DashboardMainApp() {
 
 			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
 
-			{ pdfGenerationEnabled && <PDFSectionsSelectionPanel /> }
-
-			{ emailReportingEnabled && (
+			{ pdfGenerationEnabled && (
 				<Fragment>
-					<UserSettingsSelectionPanel />
-					<PUESurveyTriggers />
+					<PDFSectionsSelectionPanel />
+					<PDFExportRoot />
 				</Fragment>
 			) }
 
+			<UserSettingsSelectionPanel />
+			<PUESurveyTriggers />
+
 			{ configuredAudiences && <AudienceSelectionPanel /> }
 
-			{ showWelcomeModal && <WelcomeModal /> }
-
-			{ siteGoalsEnabled && <SiteGoalsIntroModalBanner /> }
+			{ siteGoalsEnabled && hasAnalyticsAccess && (
+				<Fragment>
+					<SiteGoalsSelectionPanel />
+					<SiteGoalsSurveyTriggers />
+				</Fragment>
+			) }
 
 			<OfflineNotification />
 		</Fragment>
 	);
-
-	function getLastWidgetAnchor() {
-		if ( isMonetizationActive ) {
-			return ANCHOR_ID_MONETIZATION;
-		}
-		if ( isSpeedActive ) {
-			return ANCHOR_ID_SPEED;
-		}
-		if ( isContentActive ) {
-			return ANCHOR_ID_CONTENT;
-		}
-		if ( isSiteGoalsActive ) {
-			return ANCHOR_ID_SITE_GOALS;
-		}
-		if ( isTrafficActive ) {
-			return ANCHOR_ID_TRAFFIC;
-		}
-		if ( isKeyMetricsActive ) {
-			return ANCHOR_ID_KEY_METRICS;
-		}
-		return null;
-	}
 }

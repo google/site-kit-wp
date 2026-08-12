@@ -31,6 +31,10 @@ permissions:
   contents: read
   packages: write
 
+env:
+  # Update this date suffix (YYYYMMDD) whenever the bundled plugins in the playwright-wp Dockerfile change.
+  PLAYWRIGHT_WP_DATE_SUFFIX: '20260715'
+
 jobs:
   changes:
     name: Detect Changed Files
@@ -41,10 +45,10 @@ jobs:
       playwright-wp: ${{ steps.filter.outputs.playwright-wp }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - name: Detect changed paths
-        uses: dorny/paths-filter@v4
+        uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # ratchet:dorny/paths-filter@v4
         id: filter
         with:
           filters: |
@@ -68,7 +72,7 @@ jobs:
       (github.event_name == 'workflow_dispatch' && (github.event.inputs.image == 'all' || github.event.inputs.image == 'codegen'))
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - name: Load codegen library version
         id: library_version
@@ -96,7 +100,7 @@ jobs:
       (github.event_name == 'workflow_dispatch' && (github.event.inputs.image == 'all' || github.event.inputs.image == 'vrt'))
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - name: Build and push Docker image
         uses: ./.github/actions/build-push-docker-image
@@ -117,15 +121,15 @@ jobs:
       (github.event_name == 'workflow_dispatch' && (github.event.inputs.image == 'all' || github.event.inputs.image == 'playwright-wp'))
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - name: Build and push Docker image
         uses: ./.github/actions/build-push-docker-image
         with:
           context: tests/playwright/docker/wordpress
-          tags: ghcr.io/google/site-kit-wp/playwright-wp:5.2.21
+          tags: ghcr.io/google/site-kit-wp/playwright-wp:5.2.21-${{ env.PLAYWRIGHT_WP_DATE_SUFFIX }}
           build-args: WP_VERSION=5.2.21
-          labels: org.opencontainers.image.description=WordPress 5.2.21 Docker image for Site Kit Playwright tests.
+          labels: org.opencontainers.image.description=WordPress 5.2.21 Docker image (with bundled test plugins, e.g. WooCommerce) for Site Kit Playwright tests.
           registry-username: "github-actions[bot]"
           registry-password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -138,7 +142,7 @@ jobs:
       (github.event_name == 'workflow_dispatch' && (github.event.inputs.image == 'all' || github.event.inputs.image == 'playwright-wp'))
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - name: Resolve latest WordPress version
         id: wp_version
@@ -151,10 +155,10 @@ jobs:
         with:
           context: tests/playwright/docker/wordpress
           tags: |
-            ghcr.io/google/site-kit-wp/playwright-wp:${{ steps.wp_version.outputs.version }}
+            ghcr.io/google/site-kit-wp/playwright-wp:${{ steps.wp_version.outputs.version }}-${{ env.PLAYWRIGHT_WP_DATE_SUFFIX }}
             ghcr.io/google/site-kit-wp/playwright-wp:latest
           build-args: WP_VERSION=latest
-          skip-if-exists-tag: ghcr.io/google/site-kit-wp/playwright-wp:${{ steps.wp_version.outputs.version }}
+          skip-if-exists-tag: ghcr.io/google/site-kit-wp/playwright-wp:${{ steps.wp_version.outputs.version }}-${{ env.PLAYWRIGHT_WP_DATE_SUFFIX }}
           labels: org.opencontainers.image.description=WordPress latest Docker image for Site Kit Playwright tests.
           registry-username: "github-actions[bot]"
           registry-password: ${{ secrets.GITHUB_TOKEN }}
@@ -169,7 +173,7 @@ jobs:
       (github.event_name == 'workflow_dispatch' && (github.event.inputs.image == 'all' || github.event.inputs.image == 'playwright-wp'))
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - name: Build and push Docker image
         uses: ./.github/actions/build-push-docker-image

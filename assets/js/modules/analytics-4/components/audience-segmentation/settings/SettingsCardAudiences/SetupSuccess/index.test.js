@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useIntersection as mockUseIntersection } from 'react-use';
+import { intersectionObserver } from '@shopify/jest-dom-mocks';
 
 /**
  * WordPress dependencies
@@ -29,29 +29,25 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '@/js/googlesitekit/widgets/default-areas';
+import * as tracking from '@/js/util/tracking';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	provideSiteInfo,
 	render,
 	waitFor,
 	waitForDefaultTimeouts,
-} from '../../../../../../../../../tests/js/test-utils';
-import { mockLocation } from '../../../../../../../../../tests/js/mock-browser-utils';
-import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '@/js/googlesitekit/widgets/default-areas';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
-import * as tracking from '@/js/util/tracking';
+} from '@tests/js/test-utils';
 import SetupSuccess, {
 	SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION,
 } from '.';
-
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
-} ) );
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -63,10 +59,7 @@ describe( 'SettingsCardAudiences SetupSuccess', () => {
 	mockLocation();
 
 	beforeEach( () => {
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: false,
-			intersectionRatio: 0,
-		} ) );
+		intersectionObserver.mock();
 
 		registry = createTestRegistry();
 
@@ -88,6 +81,7 @@ describe( 'SettingsCardAudiences SetupSuccess', () => {
 	} );
 
 	afterEach( () => {
+		intersectionObserver.restore();
 		dismissItemSpy.mockReset();
 		mockTrackEvent.mockClear();
 	} );
@@ -113,7 +107,7 @@ describe( 'SettingsCardAudiences SetupSuccess', () => {
 	} );
 
 	it( 'should track an event when the notification is viewed', () => {
-		const { rerender } = render( <SetupSuccess />, {
+		render( <SetupSuccess />, {
 			registry,
 			viewContext: VIEW_CONTEXT_SETTINGS,
 		} );
@@ -121,12 +115,12 @@ describe( 'SettingsCardAudiences SetupSuccess', () => {
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 		// Simulate the CTA becoming visible.
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: true,
-			intersectionRatio: 1,
-		} ) );
-
-		rerender( <SetupSuccess /> );
+		act( () => {
+			intersectionObserver.simulate( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} );
+		} );
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		expect( mockTrackEvent ).toHaveBeenCalledWith(

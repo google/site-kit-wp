@@ -21,8 +21,8 @@
  */
 const CopyWebpackPlugin = require( 'copy-webpack-plugin' );
 const ESLintPlugin = require( 'eslint-webpack-plugin' );
-const { WebpackManifestPlugin } = require( 'webpack-manifest-plugin' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
+const { WebpackManifestPlugin } = require( 'webpack-manifest-plugin' );
 
 /**
  * Internal dependencies

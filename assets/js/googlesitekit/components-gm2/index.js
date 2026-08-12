@@ -20,9 +20,9 @@
  * External dependencies
  */
 import Dialog, {
-	DialogTitle,
 	DialogContent,
 	DialogFooter,
+	DialogTitle,
 } from '@material/react-dialog';
 import { Option } from '@material/react-select';
 import Tab from '@material/react-tab';
@@ -36,6 +36,7 @@ import Checkbox from './Checkbox';
 import Chip from './Chip';
 import CircularProgress from './CircularProgress';
 import Menu from './Menu';
+import Popper from './Popper';
 import ProgressBar from './ProgressBar';
 import Radio from './Radio';
 import Select from './Select';
@@ -56,6 +57,7 @@ const Components = {
 	HelperText,
 	Menu,
 	Option,
+	Popper,
 	ProgressBar,
 	Radio,
 	Select,

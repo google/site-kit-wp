@@ -19,13 +19,21 @@
 /**
  * Internal dependencies
  */
-import AudienceTilesWidget from '.';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
+import { getPreviousDate } from '@/js/util';
 import {
-	act,
-	fireEvent,
-	render,
-	waitFor,
-} from '../../../../../../../../tests/js/test-utils';
+	ERROR_REASON_BAD_REQUEST,
+	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+} from '@/js/util/errors';
+import * as tracking from '@/js/util/tracking';
+import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '@/js/util/zero-reports';
+import { act, fireEvent, render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -35,28 +43,9 @@ import {
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
 	waitForTimeouts,
-} from '../../../../../../../../tests/js/utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { getPreviousDate } from '@/js/util';
-import {
-	ERROR_REASON_BAD_REQUEST,
-	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '@/js/util/errors';
-import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import * as tracking from '@/js/util/tracking';
-import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
-import {
-	getViewportWidth,
-	setViewportWidth,
-} from '../../../../../../../../tests/js/viewport-utils';
-import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '@/js/util/zero-reports';
+} from '@tests/js/utils';
+import { getViewportWidth, setViewportWidth } from '@tests/js/viewport-utils';
+import AudienceTilesWidget from '.';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -81,7 +70,6 @@ function provideAudienceTilesMockReport(
 	} = {}
 ) {
 	const dates = registry.select( CORE_USER ).getDateRangeDates( {
-		offsetDays: DATE_RANGE_OFFSET,
 		compare: true,
 	} );
 
@@ -491,7 +479,6 @@ describe( 'AudienceTilesWidget', () => {
 		];
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 
@@ -607,7 +594,6 @@ describe( 'AudienceTilesWidget', () => {
 		];
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
 

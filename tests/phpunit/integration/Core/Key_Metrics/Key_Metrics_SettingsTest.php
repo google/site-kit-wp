@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Key_Metrics;
 
@@ -17,6 +15,7 @@ use Google\Site_Kit\Core\Key_Metrics\Key_Metrics;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Settings;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
+use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Is_Widget_Area_Hidden;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -43,6 +42,13 @@ class Key_Metrics_SettingsTest extends TestCase {
 	 */
 	private $key_metrics_setup_completed_by;
 
+	/**
+	 * Key_Metrics_Setup_Is_Widget_Area_Hidden instance.
+	 *
+	 * @var Key_Metrics_Setup_Is_Widget_Area_Hidden
+	 */
+	private $key_metrics_setup_is_widget_area_hidden;
+
 	public function set_up() {
 		parent::set_up();
 		$user_id      = $this->factory()->user->create();
@@ -55,9 +61,10 @@ class Key_Metrics_SettingsTest extends TestCase {
 		// Needed to unregister the instance registered during plugin bootstrap.
 		remove_all_filters( "sanitize_user_meta_{$meta_key}" );
 
-		$this->key_metrics                    = new Key_Metrics( $context, $user_options, $options );
-		$this->key_metrics_setup_completed_by = new Key_Metrics_Setup_Completed_By( $options );
-		$this->key_metrics_settings           = new Key_Metrics_Settings( $user_options );
+		$this->key_metrics                             = new Key_Metrics( $context, $user_options, $options );
+		$this->key_metrics_setup_completed_by          = new Key_Metrics_Setup_Completed_By( $options );
+		$this->key_metrics_setup_is_widget_area_hidden = new Key_Metrics_Setup_Is_Widget_Area_Hidden( $options );
+		$this->key_metrics_settings                    = new Key_Metrics_Settings( $user_options );
 
 		$this->key_metrics->register();
 		$this->key_metrics_settings->register();
@@ -151,7 +158,7 @@ class Key_Metrics_SettingsTest extends TestCase {
 	 */
 	public function test_get_sanitize_callback( $input, $expected ) {
 		$this->key_metrics_settings->set( $input );
-		$this->assertEquals( $expected, $this->key_metrics_settings->get() );
+		$this->assertEquals( $expected, $this->key_metrics_settings->get(), 'Key metrics settings should be sanitized on set.' );
 	}
 
 	public function test_merge() {
@@ -165,15 +172,15 @@ class Key_Metrics_SettingsTest extends TestCase {
 			'isWidgetHidden' => true,
 		);
 
-		// Make sure settings can be updated even without having them set initially
+		// Make sure settings can be updated even without having them set initially.
 		$this->key_metrics_settings->merge( $original_settings );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get() );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get(), 'Merge should initialize missing key metrics settings.' );
 
-		// Make sure invalid keys aren't set
+		// Make sure invalid keys aren't set.
 		$this->key_metrics_settings->merge( array( 'test_key' => 'test_value' ) );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get() );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get(), 'Merge should ignore invalid setting keys.' );
 
-		// Make sure that we can update settings partially
+		// Make sure that we can update settings partially.
 		$this->key_metrics_settings->set( $original_settings );
 		$this->key_metrics_settings->merge( array( 'isWidgetHidden' => true ) );
 		$this->assertEqualSetsWithIndex(
@@ -181,33 +188,43 @@ class Key_Metrics_SettingsTest extends TestCase {
 				'widgetSlugs'    => $original_settings['widgetSlugs'],
 				'isWidgetHidden' => true,
 			),
-			$this->key_metrics_settings->get()
+			$this->key_metrics_settings->get(),
+			'Merge should update provided key metrics settings only.'
 		);
 
-		// Make sure that we can update all settings at once
+		// Make sure that we can update all settings at once.
 		$this->key_metrics_settings->set( $original_settings );
 		$this->key_metrics_settings->merge( $changed_settings );
-		$this->assertEqualSetsWithIndex( $changed_settings, $this->key_metrics_settings->get() );
+		$this->assertEqualSetsWithIndex( $changed_settings, $this->key_metrics_settings->get(), 'Merge should update all key metrics settings.' );
 
-		// Make sure that we can't set wrong format for the isWidgetHidden property
+		// Make sure that we can't set wrong format for the isWidgetHidden property.
 		$this->key_metrics_settings->set( $original_settings );
 		$this->key_metrics_settings->merge( array( 'isWidgetHidden' => null ) );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get() );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get(), 'Merge should ignore invalid visibility value.' );
 
-		// Make sure that we can't set wrong format for the widgetSlugs property
+		// Make sure that we can't set wrong format for the widgetSlugs property.
 		$this->key_metrics_settings->set( $original_settings );
 		$this->key_metrics_settings->merge( array( 'widgetSlugs' => null ) );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get() );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->key_metrics_settings->get(), 'Merge should ignore invalid widget slugs value.' );
 	}
 
 	public function test_key_metrics_setup_completed_by_user_id() {
-		// Set ID of user who did initial setup
+		// Set ID of user who did initial setup.
 		$user_id = 100;
 		$this->key_metrics_setup_completed_by->set( $user_id );
 
 		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
 
-		$this->assertArrayHasKey( 'keyMetricsSetupCompletedBy', $data );
-		$this->assertEquals( $user_id, $data['keyMetricsSetupCompletedBy'] );
+		$this->assertArrayHasKey( 'keyMetricsSetupCompletedBy', $data, 'Inline base data should expose setup completed user ID.' );
+		$this->assertEquals( $user_id, $data['keyMetricsSetupCompletedBy'], 'Inline base data should include stored setup user ID.' );
+	}
+
+	public function test_key_metrics_setup_is_widget_area_hidden() {
+		$this->key_metrics_setup_is_widget_area_hidden->set( true );
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		$this->assertArrayHasKey( 'keyMetricsSetupIsWidgetAreaHidden', $data, 'Inline base data should expose setup widget area hidden state.' );
+		$this->assertTrue( $data['keyMetricsSetupIsWidgetAreaHidden'], 'Inline base data should include stored setup widget area hidden state.' );
 	}
 }

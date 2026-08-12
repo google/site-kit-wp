@@ -22,10 +22,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { TilesGroup, TilesGroupProps } from './TilesGroup';
-import { Tile } from './Tile';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { Story } from '@/js/types/Story';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
+import { Tile } from './Tile';
+import { TilesGroup, TilesGroupProps } from './TilesGroup';
 
 function Template( {
 	setupRegistry = () => {},
@@ -95,6 +95,7 @@ MultipleTiles.args = {
 		/>,
 	],
 };
+MultipleTiles.scenario = {};
 
 export const NegativeChanges = Template.bind( {} ) as Story< TilesGroupProps >;
 NegativeChanges.storyName = 'Negative Changes';

@@ -19,24 +19,24 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useRegistry } from 'googlesitekit-data';
+import { useRegistry, useSelect } from 'googlesitekit-data';
+import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import useViewContext from '@/js/hooks/useViewContext';
 import BannerNotification, {
 	TYPES,
 } from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
-import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store';
 import useFormValue from '@/js/hooks/useFormValue';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function SetupErrorMessageNotification( { Notification } ) {
 	const id = 'setup_error';

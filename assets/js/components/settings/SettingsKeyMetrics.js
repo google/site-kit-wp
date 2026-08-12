@@ -31,10 +31,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Switch } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import PreviewBlock from '@/js/components/PreviewBlock';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Cell, Grid, Row } from '@/js/material-components';
-import PreviewBlock from '@/js/components/PreviewBlock';
 
 export default function SettingsKeyMetrics( { loading = false } ) {
 	const keyMetricsWidgetHidden = useSelect( ( select ) =>

@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import { get } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -30,32 +30,31 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
+import { MetricTileText } from '@/js/components/KeyMetrics';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MetricTileText } from '@/js/components/KeyMetrics';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { numFmt } from '@/js/util';
-import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 import whenActive from '@/js/util/when-active';
+import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
-function EngagedTrafficSourceWidget( props ) {
-	const { Widget } = props;
-
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-			compare: true,
-		} )
-	);
-
-	const reportOptions = {
+/**
+ * Builds the Analytics 4 report options for the Engaged Traffic Source metric.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range, including the compare dates.
+ * @return {Object} The Analytics 4 `getReport` options.
+ */
+export function getEngagedTrafficSourceReportOptions( dates ) {
+	return {
 		...dates,
 		dimensions: [ 'sessionDefaultChannelGroup' ],
 		metrics: [ { name: 'engagedSessions' } ],
@@ -64,6 +63,45 @@ function EngagedTrafficSourceWidget( props ) {
 		reportID:
 			'analytics-4_engaged-traffic-source-widget_widget_reportOptions',
 	};
+}
+
+/**
+ * Builds the sub-text for the Engaged Traffic Source metric tile.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the PDF tile show the same sub-text.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} rate                 The engaged sessions rate for the top source.
+ * @param {number} totalEngagedSessions The total number of engaged sessions.
+ * @return {string} The metric tile sub-text.
+ */
+export function getEngagedTrafficSourceSubtext( rate, totalEngagedSessions ) {
+	const format = {
+		style: 'percent',
+		signDisplay: 'never',
+		maximumFractionDigits: 1,
+	};
+
+	return sprintf(
+		/* translators: 1. Percentage of total engaged sessions. 2: Total number of engaged sessions. */
+		__( '%1$s of %2$s engaged sessions', 'google-site-kit' ),
+		numFmt( rate, format ),
+		numFmt( totalEngagedSessions, { style: 'decimal' } )
+	);
+}
+
+function EngagedTrafficSourceWidget( props ) {
+	const { Widget } = props;
+
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} )
+	);
+
+	const reportOptions = getEngagedTrafficSourceReportOptions( dates );
 
 	const report = useInViewSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
@@ -133,11 +171,9 @@ function EngagedTrafficSourceWidget( props ) {
 			widgetSlug={ KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE }
 			metricValue={ topTrafficSource }
 			metricValueFormat={ format }
-			subText={ sprintf(
-				/* translators: 1. Percentage of total engaged sessions. 2: Total number of engaged sessions. */
-				__( '%1$s of %2$s engaged sessions', 'google-site-kit' ),
-				numFmt( currentEngagedSessionsRate, format ),
-				numFmt( currentTotalEngagedSessions, { style: 'decimal' } )
+			subText={ getEngagedTrafficSourceSubtext(
+				currentEngagedSessionsRate,
+				currentTotalEngagedSessions
 			) }
 			previousValue={ previousEngagedSessionsRate }
 			currentValue={ currentEngagedSessionsRate }

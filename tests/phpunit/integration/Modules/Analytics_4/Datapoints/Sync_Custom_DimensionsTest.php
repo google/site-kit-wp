@@ -171,6 +171,8 @@ class Sync_Custom_DimensionsTest extends TestCase {
 				'googlesitekit_post_author'     => false,
 				'googlesitekit_post_categories' => true,
 				'googlesitekit_post_type'       => false,
+				'googlesitekit_event_provider'  => false,
+				'googlesitekit_form_id'         => false,
 			),
 			$this->custom_dimensions_data_available->get_data_availability(),
 			'Syncing custom dimensions should reset data available state for missing custom dimensions.'

@@ -26,8 +26,8 @@ import { __ } from '@wordpress/i18n';
  */
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import {
-	CONTENT_POLICY_STATES,
 	ACTIVE_POLICY_VIOLATION_STATES,
+	CONTENT_POLICY_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
 const { CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE } =

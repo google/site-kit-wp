@@ -19,17 +19,17 @@
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { mockBrowserScrolling } from '@tests/js/mock-browser-utils';
+import { fireEvent, render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-} from 'tests/js/utils';
-import { fireEvent, render } from 'tests/js/test-utils';
-import { mockBrowserScrolling } from 'tests/js/mock-browser-utils';
+} from '@tests/js/utils';
 import FeatureTours from './FeatureTours';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 describe( 'FeatureTours', () => {
 	let registry;

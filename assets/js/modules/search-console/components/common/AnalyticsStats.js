@@ -30,14 +30,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { Grid, Row, Cell } from '@/js/material-components';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { extractAnalytics4DashboardData } from '@/js/modules/analytics-4/utils';
 import GoogleChart from '@/js/components/GoogleChart';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import useViewOnly from '@/js/hooks/useViewOnly';
-import { getDateString } from '@/js/util';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { extractAnalytics4DashboardData } from '@/js/modules/analytics-4/utils';
+import { getDateString } from '@/js/util';
 
 export default function AnalyticsStats( props ) {
 	const {

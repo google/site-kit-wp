@@ -17,23 +17,48 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
-import DashboardPopularKeywordsWidget from '@/js/modules/search-console/components/dashboard/DashboardPopularKeywordsWidget';
-import SearchFunnelWidgetGA4 from '@/js/modules/search-console/components/dashboard/SearchFunnelWidgetGA4';
-import {
-	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
-	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
-	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
-} from '@/js/googlesitekit/widgets/default-areas';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import PopularKeywordsWidget from '@/js/modules/search-console/components/widgets/PopularKeywordsWidget';
+import lazyWithPreload from '@/js/components/pdf-export/lazy-with-preload';
 import {
 	CORE_USER,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
+	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+} from '@/js/googlesitekit/widgets/default-areas';
+import DashboardPopularKeywordsWidget from '@/js/modules/search-console/components/dashboard/DashboardPopularKeywordsWidget';
+import getPopularKeywordsPDFData from '@/js/modules/search-console/components/dashboard/DashboardPopularKeywordsWidget/getPDFData';
+import SearchFunnelWidgetGA4 from '@/js/modules/search-console/components/dashboard/SearchFunnelWidgetGA4';
+import getSearchFunnelPDFData from '@/js/modules/search-console/components/dashboard/SearchFunnelWidgetGA4/getPDFData';
+import PopularKeywordsWidget from '@/js/modules/search-console/components/widgets/PopularKeywordsWidget';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+
+/**
+ * Lazy-loaded PDF component for the Top search queries widget.
+ */
+const DashboardPopularKeywordsWidgetPDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/search-console/components/dashboard/DashboardPopularKeywordsWidget/DashboardPopularKeywordsWidgetPDF'
+	)
+);
+
+const SearchFunnelWidgetGA4PDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/search-console/components/dashboard/SearchFunnelWidgetGA4/indexPDF'
+	)
+);
 
 export function registerWidgets( widgets ) {
 	widgets.registerWidget(
@@ -44,6 +69,11 @@ export function registerWidgets( widgets ) {
 			priority: 1,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
+			pdf: {
+				Component: DashboardPopularKeywordsWidgetPDF,
+				getData: getPopularKeywordsPDFData,
+				label: __( 'Top search queries', 'google-site-kit' ),
+			},
 		},
 		[
 			AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
@@ -60,6 +90,11 @@ export function registerWidgets( widgets ) {
 			priority: 3,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
+			pdf: {
+				Component: SearchFunnelWidgetGA4PDF,
+				getData: getSearchFunnelPDFData,
+				label: __( 'Search traffic', 'google-site-kit' ),
+			},
 		},
 		[
 			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,

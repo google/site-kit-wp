@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { fireEvent, render } from '../../../../tests/js/test-utils';
+import { fireEvent, render } from '@tests/js/test-utils';
 import SpinnerButton, { SPINNER_POSITION } from './SpinnerButton';
 
 describe( 'SpinnerButton', () => {

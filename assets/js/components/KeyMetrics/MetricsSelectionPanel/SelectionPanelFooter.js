@@ -37,11 +37,11 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import { safelySort } from '@/js/util';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { useSelect } from 'googlesitekit-data';
 import PreviewBlock from '@/js/components/PreviewBlock';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { safelySort } from '@/js/util';
 
 export default function SelectionPanelFooter( {
 	savedItemSlugs = [],

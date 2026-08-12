@@ -6,6 +6,8 @@
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Modules;
@@ -22,7 +24,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Inline_Data;
-use Google\Site_Kit\Core\Modules\Module_With_Inline_Data_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
@@ -32,13 +33,14 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Current_Screen;
 use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
-use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Existing_Client_ID;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Existing_User_Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Reader;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
@@ -73,7 +75,6 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 */
 	use Module_With_Settings_Trait;
 	use Module_With_Tag_Trait;
-	use Module_With_Inline_Data_Trait;
 	use Feature_Metrics_Trait;
 
 	/**
@@ -145,9 +146,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 *
 	 * @since 1.137.0
 	 * @since 1.141.0 Add functionality to allow users to disconnect their own account and admins to disconnect any user.
+	 * @since 1.182.0 Allow signed-in users to connect their existing WordPress account from their own profile page.
 	 */
 	public function register() {
-		$this->register_inline_data();
 		$this->register_feature_metrics();
 
 		add_filter( 'wp_login_errors', array( $this, 'handle_login_errors' ) );
@@ -163,12 +164,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 				$settings       = $this->get_settings();
 				$profile_reader = new Profile_Reader( $settings );
 
-				$integration = $this->context->input()->filter( INPUT_POST, 'integration' );
-
-				$authenticator_class = Authenticator::class;
-				if ( 'woocommerce' === $integration && class_exists( 'woocommerce' ) ) {
-					$authenticator_class = WooCommerce_Authenticator::class;
-				}
+				$integration         = $this->context->input()->filter( INPUT_POST, 'integration' );
+				$authenticator_class = $this->resolve_authenticator_class( $integration );
 
 				$this->handle_auth_callback( new $authenticator_class( $this->user_options, $profile_reader ) );
 			}
@@ -176,8 +173,28 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 
 		add_action( 'admin_action_' . self::ACTION_DISCONNECT, array( $this, 'handle_disconnect_user' ) );
 
-		add_action( 'show_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on the users own profile page.
-		add_action( 'edit_user_profile', $this->get_method_proxy( 'render_disconnect_profile' ) ); // This action shows the disconnect section on other users profile page to allow admins to disconnect others.
+		// Render the Sign in with Google profile section.
+		// If this profile belongs to the current user (eg. they're editing
+		// their own profile): show the "connect a Google account" if
+		// they don't have a Google Account associated with their profile,
+		// or the "Disconnect your Google account" option if they do have
+		// a Google Account associated with their profile
+		//
+		// If this profile belongs to another user (eg. we're an admin editing
+		// another user's profile), only the "Disconnect Google Account"
+		// option is shown.
+		add_action( 'show_user_profile', $this->get_method_proxy( 'render_sign_in_with_google_profile' ) );
+		add_action( 'edit_user_profile', $this->get_method_proxy( 'render_sign_in_with_google_profile' ) );
+
+		// Output the Sign in with Google init script so the placeholder above
+		// becomes a real button on the user's own, unlinked profile. Runs on
+		// `in_admin_footer` (which fires just before `admin_footer`) so the
+		// tag's own `admin_footer` render is queued in time. See the method docblock.
+		add_action( 'in_admin_footer', $this->get_method_proxy( 'maybe_render_profile_signinwithgoogle' ) );
+
+		// Show an error when a user tries to link a Google account that's
+		// already linked to a different WordPress user.
+		add_action( 'admin_notices', $this->get_method_proxy( 'render_profile_admin_errors' ) );
 
 		// Output the Sign in with Google <div> in the WooCommerce login form.
 		add_action( 'woocommerce_login_form_start', $this->get_method_proxy( 'render_signinwithgoogle_woocommerce' ) );
@@ -225,6 +242,57 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		if ( $this->is_connected() ) {
 			$this->sign_in_with_google_block->register();
 		}
+
+		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
+	}
+
+	/**
+	 * Adds the "anyone can register" flags, and whether the site is
+	 * multisite, to the most basic inline data passed to JS.
+	 *
+	 * These are owned here, rather than in `Assets::get_inline_base_data()`,
+	 * because Sign in with Google is their only consumer: `isMultisite` is
+	 * only read to decide who can reach the network-level "Anyone can
+	 * register" setting in the registration messaging below it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $data Base data.
+	 * @return array Filtered base data.
+	 */
+	protected function inline_js_base_data( $data ) {
+		$data['anyoneCanRegister']            = (bool) get_option( 'users_can_register' );
+		$data['anyoneCanRegisterWooCommerce'] = $this->is_woocommerce_active() && WooCommerce_Authenticator::is_woocommerce_registration_open();
+		$data['isMultisite']                  = is_multisite();
+
+		return $data;
+	}
+
+	/**
+	 * Get the authenticator class to use for the integration specified.
+	 *
+	 * Returns the name of the class to load for this Sign in with Google
+	 * authentication flow (eg. for WooCommerce, connecting an existing
+	 * user, etc.)
+	 *
+	 * Returns the base authenticator class's class name if no integration
+	 * matches the one supplied.
+	 *
+	 * @since 1.182.0
+	 *
+	 * @param string|null $integration Integration identifier from the auth request.
+	 * @return string Fully qualified authenticator class name.
+	 */
+	private function resolve_authenticator_class( $integration ): string {
+		if ( 'existing_user' === $integration && is_user_logged_in() ) {
+			return Existing_User_Authenticator::class;
+		}
+
+		if ( 'woocommerce' === $integration && class_exists( 'WooCommerce' ) ) {
+			return WooCommerce_Authenticator::class;
+		}
+
+		return Authenticator::class;
 	}
 
 	/**
@@ -287,6 +355,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * Adds custom errors if Google auth flow failed.
 	 *
 	 * @since 1.140.0
+	 * @since 1.185.0 Added the two-factor authentication error message.
 	 *
 	 * @param WP_Error $error WP_Error instance.
 	 * @return WP_Error $error WP_Error instance.
@@ -304,6 +373,16 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 				break;
 			case Authenticator::ERROR_SIGNIN_FAILED:
 				$error->add( self::MODULE_SLUG, __( 'The user is not registered on this site.', 'google-site-kit' ) );
+				break;
+			case Authenticator::ERROR_TWO_FACTOR_ENABLED:
+				$error->add(
+					self::MODULE_SLUG,
+					sprintf(
+						/* translators: %s: Sign in with Google service name */
+						__( 'An account with that email address uses two-factor authentication. To use %s, log in with your username and password, then connect your Google account on your profile page.', 'google-site-kit' ),
+						_x( 'Sign in with Google', 'Service name', 'google-site-kit' )
+					)
+				);
 				break;
 			default:
 				break;
@@ -563,7 +642,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			'class' => implode( ' ', $classes ),
 		);
 
-		$data_attributes = array( 'for-comment-form', 'post-id', 'shape', 'text', 'theme' );
+		$data_attributes = array( 'for-comment-form', 'post-id', 'shape', 'text', 'theme', 'width' );
 		foreach ( $data_attributes as $attribute ) {
 			if ( empty( $args[ $attribute ] ) || ! is_scalar( $args[ $attribute ] ) ) {
 				continue;
@@ -598,6 +677,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 				'shape' => '',
 				'text'  => '',
 				'theme' => '',
+				'width' => '',
 			),
 			$atts,
 			'site_kit_sign_in_with_google'
@@ -630,6 +710,18 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 				$this->user_options->get_meta_key( Hashed_User_ID::OPTION )
 			)
 		);
+	}
+
+	/**
+	 * Builds a `Hashed_User_ID` accessor scoped to a specific user.
+	 *
+	 * @since 1.182.0
+	 *
+	 * @param int $user_id User ID to use to build the hashed ID.
+	 * @return Hashed_User_ID
+	 */
+	private function get_hashed_user_id( $user_id ) {
+		return new Hashed_User_ID( new User_Options( $this->context, $user_id ) );
 	}
 
 	/**
@@ -696,27 +788,125 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * Registers the Sign in with Google tag.
 	 *
 	 * @since 1.159.0
+	 * @since 1.180.0 Skip on the WordPress email verification interstitial.
 	 */
 	public function register_tag() {
-		$settings  = $this->get_settings()->get();
-		$client_id = $settings['clientID'];
-
-		$tag = new Web_Tag( $client_id, self::MODULE_SLUG );
-
-		if ( $tag->is_tag_blocked() ) {
+		// Skip on the WordPress email verification interstitial (wp-login.php?action=confirm_admin_email).
+		$is_wp_login = false !== stripos( wp_login_url(), $_SERVER['SCRIPT_NAME'] ?? '' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		if ( $is_wp_login && 'confirm_admin_email' === $this->context->input()->filter( INPUT_GET, 'action' ) ) {
 			return;
 		}
 
-		$tag->use_guard( new Tag_Guard( $this->get_settings() ) );
-
-		if ( ! $tag->can_register() ) {
+		$tag = $this->build_registrable_tag();
+		if ( null === $tag ) {
 			return;
 		}
 
 		$tag->set_settings( $this->get_settings()->get() );
-		$tag->set_is_wp_login( false !== stripos( wp_login_url(), $_SERVER['SCRIPT_NAME'] ?? '' ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$tag->set_is_wp_login( $is_wp_login );
 		$tag->set_redirect_to( $this->context->input()->filter( INPUT_GET, 'redirect_to' ) );
 		$tag->register();
+	}
+
+	/**
+	 * Builds a `Web_Tag` instance and runs the shared registration guards.
+	 *
+	 * Returns `null` when the tag can't be rendered. A tag is blocked when
+	 * another integration turns tag output off for the current request. The
+	 * guard also rejects the tag when the module's settings are incomplete.
+	 * Callers can return early before setting any values on the tag and
+	 * rendering it.
+	 *
+	 * @since 1.182.0
+	 *
+	 * @return Web_Tag|null
+	 */
+	private function build_registrable_tag(): ?Web_Tag {
+		$settings  = $this->get_settings()->get();
+		$client_id = $settings['clientID'] ?? '';
+
+		$tag = new Web_Tag( $client_id, self::MODULE_SLUG );
+		if ( $tag->is_tag_blocked() ) {
+			return null;
+		}
+
+		$tag->use_guard( new Tag_Guard( $this->get_settings() ) );
+		if ( ! $tag->can_register() ) {
+			return null;
+		}
+
+		return $tag;
+	}
+
+	/**
+	 * Outputs the Sign in with Google init script that turns the placeholder
+	 * `<div>` from `render_sign_in_with_google_profile()` into a real button.
+	 *
+	 * Runs on `in_admin_footer`, which fires just before `admin_footer`
+	 * because:
+	 *
+	 * 1. `show_user_profile` has already fired, so
+	 *    `did_action( 'show_user_profile' )` returns whether the section
+	 *    rendered.
+	 * 2. The `Web_Tag` schedules its own output on `admin_footer`. If
+	 *    this callback itself ran on `admin_footer`, that render would be
+	 *    added to a hook already firing at the current priority, and
+	 *    WordPress would skip it.
+	 *
+	 * @since 1.182.0
+	 */
+	private function maybe_render_profile_signinwithgoogle() {
+		// `show_user_profile` only fires on the user's own profile.
+		// The connect button should never render for other users.
+		if ( ! did_action( 'show_user_profile' ) ) {
+			return;
+		}
+
+		$current_user_id = get_current_user_id();
+		if ( empty( $current_user_id ) ) {
+			return;
+		}
+
+		$hashed_user_id = $this->get_hashed_user_id( $current_user_id );
+		if ( ! empty( $hashed_user_id->get() ) ) {
+			return;
+		}
+
+		$tag = $this->build_registrable_tag();
+		if ( null === $tag ) {
+			return;
+		}
+
+		$tag->set_settings( $this->get_settings()->get() );
+		$tag->set_is_existing_user_flow( true );
+		$tag->register();
+	}
+
+	/**
+	 * Shows an error on the profile page when linking the Google account
+	 * fails (eg. it is already linked to another user).
+	 *
+	 * @since 1.182.0
+	 */
+	private function render_profile_admin_errors() {
+		$current_screen = Current_Screen::get();
+
+		if (
+			null === $current_screen
+			|| ! in_array( $current_screen->id, array( 'profile', 'user-edit' ), true )
+		) {
+			return;
+		}
+
+		$error_code = $this->context->input()->filter( INPUT_GET, Existing_User_Authenticator::ERROR_QUERY_ARG );
+		if ( Existing_User_Authenticator::ERROR_ACCOUNT_ALREADY_CONNECTED !== $error_code ) {
+			return;
+		}
+
+		printf(
+			'<div class="notice notice-error is-dismissible"><p>%s</p></div>',
+			esc_html__( 'Another user on this site already connected this Google account to their profile.', 'google-site-kit' )
+		);
 	}
 
 	/**
@@ -817,7 +1007,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 
 		// Only allow this action for admins or users own setting.
 		if ( current_user_can( 'edit_user', $user_id ) ) {
-			$hashed_user_id = new Hashed_User_ID( new User_Options( $this->context, $user_id ) );
+			$hashed_user_id = $this->get_hashed_user_id( $user_id );
 			$hashed_user_id->delete();
 			wp_safe_redirect( add_query_arg( 'updated', true, get_edit_user_link( $user_id ) ) );
 			exit;
@@ -828,53 +1018,78 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	}
 
 	/**
-	 * Displays a disconnect button on user profile pages.
+	 * Displays the Sign in with Google section on a user's profile page.
+	 *
+	 * Shows the disconnect control when the user has a linked Google account.
+	 * On the current user's own profile, also shows a connect button so they
+	 * can link their WordPress account to a Google account.
 	 *
 	 * @since 1.141.0
+	 * @since 1.182.0 Renamed from `render_disconnect_profile` and added the
+	 *                ability to connect an existing profile.
 	 *
 	 * @param WP_User $user WordPress user object.
 	 */
-	private function render_disconnect_profile( WP_User $user ) {
+	private function render_sign_in_with_google_profile( WP_User $user ) {
 		if ( ! current_user_can( 'edit_user', $user->ID ) ) {
 			return;
 		}
 
-		$hashed_user_id         = new Hashed_User_ID( new User_Options( $this->context, $user->ID ) );
+		$hashed_user_id         = $this->get_hashed_user_id( $user->ID );
 		$current_user_google_id = $hashed_user_id->get();
+		$is_own_profile         = get_current_user_id() === $user->ID;
+		$is_unlinked            = empty( $current_user_google_id );
 
-		// Don't show if the user does not have a Google ID saved in user meta.
-		if ( empty( $current_user_google_id ) ) {
+		// Skip when there's no linked account and the connect button shouldn't
+		// appear (eg. when on another user's profile or Sign in with Google is
+		// not connected).
+		if ( $is_unlinked && ( ! $is_own_profile || ! $this->is_connected() ) ) {
 			return;
 		}
 
 		?>
-<div id="googlesitekit-sign-in-with-google-disconnect">
+<div id="googlesitekit-sign-in-with-google-profile-settings">
 	<h2>
 		<?php
 		/* translators: %1$s: Sign in with Google service name, %2$s: Plugin name */
 		echo esc_html( sprintf( __( '%1$s (via %2$s)', 'google-site-kit' ), _x( 'Sign in with Google', 'Service name', 'google-site-kit' ), __( 'Site Kit by Google', 'google-site-kit' ) ) );
 		?>
 	</h2>
+		<?php if ( ! $is_unlinked ) : ?>
 	<p>
-		<?php
-		if ( get_current_user_id() === $user->ID ) {
-			esc_html_e(
-				'You can sign in with your Google account.',
-				'google-site-kit'
+			<?php
+			echo esc_html(
+				$is_own_profile
+					? __( 'You can sign in with your Google account.', 'google-site-kit' )
+					: __( 'This user can sign in with their Google account.', 'google-site-kit' )
 			);
-		} else {
-			esc_html_e(
-				'This user can sign in with their Google account.',
-				'google-site-kit'
-			);
-		}
-		?>
+			?>
 	</p>
 	<p>
 		<a class="button button-secondary" href="<?php echo esc_url( self::disconnect_url( $user->ID ) ); ?>">
 			<?php esc_html_e( 'Disconnect Google Account', 'google-site-kit' ); ?>
 		</a>
 	</p>
+	<?php else : ?>
+	<p>
+		<?php esc_html_e( 'Connect your account to Sign in with Google.', 'google-site-kit' ); ?>
+	</p>
+		<?php
+		/**
+		 * Renders the Sign in with Google button for the existing-user link flow.
+		 *
+		 * @since 1.182.0
+		 *
+		 * @param array $args Button attributes. Sets `class` for the existing-user link placement.
+		 */
+		do_action(
+			'googlesitekit_render_sign_in_with_google_button',
+			array(
+				'class' => 'googlesitekit-sign-in-with-google__existing-user-connect-button',
+			)
+		);
+		?>
+	<?php endif; ?>
 </div>
 		<?php
 	}
@@ -885,11 +1100,12 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * @since 1.142.0
 	 * @since 1.146.0 Added isWooCommerceActive and isWooCommerceRegistrationEnabled to the inline data.
 	 * @since 1.158.0 Renamed method to `get_inline_data()`, and modified it to return a new array rather than populating a passed filter value.
+	 * @since 1.160.0 Include $modules_data parameter to match the interface.
+	 * @since 1.181.0 Remove $modules_data parameter as per updated interface.
 	 *
-	 * @param array $modules_data Inline modules data.
 	 * @return array An array of the module's inline data.
 	 */
-	public function get_inline_data( $modules_data ) {
+	public function get_inline_data() {
 		$inline_data = array();
 
 		$existing_client_id = $this->existing_client_id->get();
@@ -904,9 +1120,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		$inline_data['isWooCommerceActive']              = $is_woocommerce_active;
 		$inline_data['isWooCommerceRegistrationEnabled'] = $is_woocommerce_active && 'yes' === $woocommerce_registration_enabled;
 
-		$modules_data[ self::MODULE_SLUG ] = $inline_data;
-
-		return $modules_data;
+		return $inline_data;
 	}
 
 	/**

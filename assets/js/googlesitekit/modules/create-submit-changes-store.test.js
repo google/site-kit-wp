@@ -24,7 +24,7 @@ import { createRegistry } from '@wordpress/data';
 /**
  * Internal dependencies.
  */
-import { commonStore, combineStores } from 'googlesitekit-data';
+import { combineStores, commonStore } from 'googlesitekit-data';
 import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
 import { createSubmitChangesStore } from './create-submit-changes-store';
 

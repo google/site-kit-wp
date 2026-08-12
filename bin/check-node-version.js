@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
 
+/**
+ * External dependencies
+ */
 const fs = require( 'fs' );
 const path = require( 'path' );
 

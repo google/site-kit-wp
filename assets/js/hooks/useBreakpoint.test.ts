@@ -19,11 +19,8 @@
 /**
  * Internal dependencies
  */
-import { renderHook, actHook as act } from '../../../tests/js/test-utils';
-import {
-	getViewportWidth,
-	setViewportWidth,
-} from '../../../tests/js/viewport-utils';
+import { actHook as act, renderHook } from '@tests/js/test-utils';
+import { getViewportWidth, setViewportWidth } from '@tests/js/viewport-utils';
 import { useBreakpoint } from './useBreakpoint';
 
 describe( 'useBreakpoint', () => {

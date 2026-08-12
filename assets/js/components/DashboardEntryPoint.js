@@ -29,19 +29,12 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import ModuleSetup from './setup/ModuleSetup';
 import DashboardMainApp from './DashboardMainApp';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
-import { useFeature } from '@/js/hooks/useFeature';
+import ModuleSetup from './setup/ModuleSetup';
 
 export default function DashboardEntryPoint( { setupModuleSlug } ) {
-	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
-
 	if ( !! setupModuleSlug ) {
-		if ( ! emailReportingEnabled ) {
-			return <ModuleSetup moduleSlug={ setupModuleSlug } />;
-		}
-
 		return (
 			<Fragment>
 				<ModuleSetup moduleSlug={ setupModuleSlug } />

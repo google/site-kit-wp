@@ -19,12 +19,12 @@
 /**
  * Internal dependencies
  */
-import ServerErrorNotice from './ServerErrorNotice';
 import {
 	createTestRegistry,
 	provideSiteInfo,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
+import ServerErrorNotice from './ServerErrorNotice';
 
 describe( 'ServerErrorNotice', () => {
 	let registry;

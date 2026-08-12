@@ -584,7 +584,8 @@ class REST_Modules_ControllerTest extends TestCase {
 			array(
 				'defaultKey' => 'default-value',
 			),
-			$response->get_data()
+			$response->get_data(),
+			'Admin settings endpoint should return writable defaults only.'
 		);
 	}
 
@@ -619,7 +620,8 @@ class REST_Modules_ControllerTest extends TestCase {
 				'defaultKey'  => 'default-value',
 				'viewOnlyKey' => 'default-value',
 			),
-			$response->get_data()
+			$response->get_data(),
+			'Admin settings endpoint should include view-only defaults.'
 		);
 	}
 
@@ -657,7 +659,8 @@ class REST_Modules_ControllerTest extends TestCase {
 				array(
 					'viewOnlyKey' => 'default-value',
 				),
-				$response->get_data()
+				$response->get_data(),
+				'Shared role settings endpoint should return view-only fields.'
 			);
 		}
 	}
@@ -741,6 +744,66 @@ class REST_Modules_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEquals( 'test-request', $response->get_data()->datapoint, 'POST datapoint should echo datapoint name.' );
+	}
+
+	public function test_datapoint_rest_endpoint__permission_aware_datapoint_overrides_default() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->setup_fake_module();
+
+		// An author has `edit_posts` but not `manage_options`.
+		$author_id = $this->factory()->user->create( array( 'role' => 'author' ) );
+		wp_set_current_user( $author_id );
+
+		// A default editable datapoint still requires `manage_options`.
+		$default_response = rest_get_server()->dispatch(
+			new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' )
+		);
+		$this->assertEquals( 403, $default_response->get_status(), 'A non-admin user should be forbidden from a default editable datapoint.' );
+
+		// The permission-aware datapoint uses its own (edit_posts) check instead.
+		$aware_response = rest_get_server()->dispatch(
+			new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/permission-aware-request' )
+		);
+		$this->assertEquals(
+			'permission-aware-request',
+			$aware_response->get_data()->datapoint,
+			'A permission-aware datapoint should allow the request via its own permission check.'
+		);
+	}
+
+	public function test_datapoint_rest_endpoint__permission_aware_datapoint_denies_without_capability() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->setup_fake_module();
+
+		// A subscriber has neither `edit_posts` nor `manage_options`.
+		$subscriber_id = $this->factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$response = rest_get_server()->dispatch(
+			new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/permission-aware-request' )
+		);
+
+		$this->assertEquals( 403, $response->get_status(), 'A user failing the datapoint permission check should be forbidden.' );
+	}
+
+	public function test_datapoint_rest_endpoint__permission_aware_datapoint_denies_when_callback_throws() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->setup_fake_module();
+
+		// The current user is an administrator, who would satisfy the default
+		// `manage_options` permission. A datapoint whose own permission check
+		// throws must deny access rather than fall back to that default.
+		$response = rest_get_server()->dispatch(
+			new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/throwing-permission-aware-request' )
+		);
+
+		$this->assertEquals( 403, $response->get_status(), 'A permission-aware datapoint whose permission check throws should deny access instead of reverting to the default permission.' );
 	}
 
 	public function test_datapoint_rest_endpoint__post_invalid_slug() {
@@ -851,7 +914,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		// Make search-console a recoverable module
+		// Make search-console a recoverable module.
 		$search_console = $this->modules->get_module( 'search-console' );
 		$search_console->get_settings()->merge(
 			array(
@@ -885,7 +948,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		// Make search-console a recoverable module
+		// Make search-console a recoverable module.
 		$search_console = $this->modules->get_module( 'search-console' );
 		$search_console->get_settings()->merge(
 			array(
@@ -900,7 +963,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
-		// Make search-console service requests accessible
+		// Make search-console service requests accessible.
 		FakeHttp::fake_google_http_handler( $search_console->get_client() );
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
@@ -931,7 +994,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		// Make analytics-4 a recoverable module
+		// Make analytics-4 a recoverable module.
 		$analytics_4 = $this->modules->get_module( 'analytics-4' );
 		$analytics_4->get_settings()->merge(
 			array(
@@ -953,7 +1016,7 @@ class REST_Modules_ControllerTest extends TestCase {
 			$analytics_4->get_scopes()
 		);
 
-		// Make analytics-4 service requests accessible
+		// Make analytics-4 service requests accessible.
 		FakeHttp::fake_google_http_handler( $analytics_4->get_client() );
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );

@@ -25,8 +25,8 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import InfoTooltip from '@/js/components/InfoTooltip';
-import VisuallyHidden from '@/js/components/VisuallyHidden';
 import Typography from '@/js/components/Typography';
+import VisuallyHidden from '@/js/components/VisuallyHidden';
 
 export default function MetricTileHeader( { title, infoTooltip, loading } ) {
 	return (

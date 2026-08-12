@@ -18,6 +18,7 @@
 
 export const GOAL_DRIVER_ROW_LIMIT_COLLAPSED = 3;
 export const GOAL_DRIVER_ROW_LIMIT_EXPANDED = 6;
+export const MAX_VISIBLE_GOAL_DRIVERS = 6;
 
 export const GOAL_TYPES = {
 	LEAD: 'lead',
@@ -26,6 +27,17 @@ export const GOAL_TYPES = {
 
 export const GOAL_DRIVER_IDS = {
 	TOP_TRAFFIC_CHANNELS: 'topTrafficChannels',
+	TOP_TRAFFIC_CHANNELS_RATE: 'topTrafficChannelsRate',
 	TOP_PAGES: 'topPages',
+	TOP_AUTHORS: 'topAuthors',
 	VISITOR_TYPE: 'visitorType',
+	CITIES: 'cities',
+	COUNTRIES: 'countries',
+	DEVICE_TYPE: 'deviceType',
 } as const;
+
+export const POST_AUTHOR_CUSTOM_DIMENSION = 'googlesitekit_post_author';
+
+export const TOP_AUTHORS_REQUIRED_CUSTOM_DIMENSIONS = [
+	POST_AUTHOR_CUSTOM_DIMENSION,
+];

@@ -20,6 +20,10 @@
  * WordPress dependencies
  */
 import { useContext } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
 import ViewContextContext from '@/js/components/Root/ViewContextContext';
 
 /**

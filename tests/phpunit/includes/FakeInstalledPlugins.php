@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
 
 namespace Google\Site_Kit\Tests;
 
@@ -9,7 +10,7 @@ trait FakeInstalledPlugins {
 	 */
 	protected function mock_installed_plugins() {
 		// Installed plugins are stored in cache as an array, under an empty string key.
-		// [ plugin-file ] => Array(data)
+		// [ plugin-file ] => Array(data).
 
 		$sk_plugin_data = get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE, false, false );
 		$installed      = array(

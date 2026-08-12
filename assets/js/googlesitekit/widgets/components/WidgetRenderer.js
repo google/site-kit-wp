@@ -19,26 +19,26 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import { intersection } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
-import { useMemo, Fragment } from '@wordpress/element';
+import { Fragment, useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import BaseWidget from './Widget';
-import WidgetRecoverableModules from './WidgetRecoverableModules';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { HIDDEN_CLASS } from '@/js/googlesitekit/widgets/util/constants';
-import useViewOnly from '@/js/hooks/useViewOnly';
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import BaseWidget from './Widget';
+import WidgetRecoverableModules from './WidgetRecoverableModules';
 
 function WidgetRenderer( { slug, OverrideComponent } ) {
 	const widget = useSelect( ( select ) =>

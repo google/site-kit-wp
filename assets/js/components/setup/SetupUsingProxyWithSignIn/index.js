@@ -24,44 +24,60 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
-import { addQueryArgs } from '@wordpress/url';
+import { Fragment, useCallback, useEffect } from '@wordpress/element';
+import { addQueryArgs, getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { trackEvent } from '@/js/util';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import Layout from '@/js/components/layout/Layout';
-import { Grid, Row, Cell } from '@/js/material-components';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	ANALYTICS_NOTICE_FORM_NAME,
-	ANALYTICS_NOTICE_CHECKBOX,
-} from '@/js/components/setup/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { setItem } from '@/js/googlesitekit/api/cache';
-import useViewContext from '@/js/hooks/useViewContext';
-import Header from './Header';
 import ProgressIndicator from '@/js/components/ProgressIndicator';
-import Splash from './Splash';
-import Actions from './Actions';
-import ResetNotice from './ResetNotice';
+import {
+	ANALYTICS_NOTICE_CHECKBOX,
+	ANALYTICS_NOTICE_FORM_NAME,
+} from '@/js/components/setup/constants';
+import AnalyticsActivationErrorNotification, {
+	ANALYTICS_ACTIVATION_ERROR_NOTIFICATION,
+} from '@/js/components/setup/SetupUsingProxyWithSignIn/AnalyticsActivationErrorNotification';
+import { setItem } from '@/js/googlesitekit/api/cache';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { useFeature } from '@/js/hooks/useFeature';
-import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useFormValue from '@/js/hooks/useFormValue';
+import useForwardableParams from '@/js/hooks/useForwardableParams';
+import useViewContext from '@/js/hooks/useViewContext';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { trackEvent } from '@/js/util';
+import Actions from './Actions';
+import Header from './Header';
+import ResetNotice, { RESET_SUCCESS_NOTIFICATION } from './ResetNotice';
+import Splash from './Splash';
 
 export default function SetupUsingProxyWithSignIn() {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const setupFlowRefreshPhase4Enabled = useFeature(
+		'setupFlowRefreshPhase4'
+	);
 	const forwardableParams = useForwardableParams();
 
 	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { activateModule } = useDispatch( CORE_MODULES );
-	const { saveInitialSetupSettings } = useDispatch( CORE_USER );
+	const {
+		saveInitialSetupSettings,
+		setIsAnalyticsSetupComplete,
+		setHasSitePurposeAnswer,
+	} = useDispatch( CORE_USER );
+	const { registerNotification } = useDispatch( CORE_NOTIFICATIONS );
 
 	const proxySetupURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxySetupURL()
@@ -80,37 +96,105 @@ export default function SetupUsingProxyWithSignIn() {
 		)
 	);
 
+	const showResetNotice =
+		getQueryArg( location.href, 'notification' ) === 'reset_success';
+
+	useEffect( () => {
+		if ( showResetNotice ) {
+			registerNotification( RESET_SUCCESS_NOTIFICATION, {
+				areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
+				Component: ResetNotice,
+				isDismissible: false,
+				priority: PRIORITY.INFO,
+				viewContexts: [ viewContext ],
+			} );
+		}
+	}, [ registerNotification, showResetNotice, viewContext ] );
+
+	const setup = useCallback( async () => {
+		let moduleReauthURL;
+		let shouldSaveInitialSetupSettings = false;
+
+		if ( connectAnalytics ) {
+			const { error, response } = await activateModule(
+				MODULE_SLUG_ANALYTICS_4
+			);
+
+			if ( error ) {
+				throw error;
+			}
+
+			await trackEvent(
+				`${ viewContext }_setup`,
+				setupFlowRefreshEnabled
+					? 'setup_flow_v3_start_with_analytics'
+					: 'start_setup_with_analytics'
+			);
+
+			moduleReauthURL = response.moduleReauthURL;
+
+			if ( setupFlowRefreshEnabled ) {
+				moduleReauthURL = addQueryArgs( moduleReauthURL, {
+					showProgress: true,
+				} );
+
+				setIsAnalyticsSetupComplete( false );
+				shouldSaveInitialSetupSettings = true;
+			}
+		}
+
+		if ( setupFlowRefreshPhase4Enabled ) {
+			setHasSitePurposeAnswer( false );
+			shouldSaveInitialSetupSettings = true;
+		}
+
+		if ( shouldSaveInitialSetupSettings ) {
+			const { error } = await saveInitialSetupSettings();
+
+			if ( error ) {
+				throw error;
+			}
+		}
+
+		return moduleReauthURL;
+	}, [
+		activateModule,
+		connectAnalytics,
+		saveInitialSetupSettings,
+		setHasSitePurposeAnswer,
+		setIsAnalyticsSetupComplete,
+		setupFlowRefreshEnabled,
+		setupFlowRefreshPhase4Enabled,
+		viewContext,
+	] );
+
 	const onButtonClick = useCallback(
 		async ( event ) => {
 			event.preventDefault();
 
 			let moduleReauthURL;
 
-			if ( connectAnalytics ) {
-				const { error, response } = await activateModule(
-					MODULE_SLUG_ANALYTICS_4
-				);
-
-				if ( ! error ) {
-					await trackEvent(
-						`${ viewContext }_setup`,
-						setupFlowRefreshEnabled
-							? 'setup_flow_v3_start_with_analytics'
-							: 'start_setup_with_analytics'
-					);
-
-					moduleReauthURL = response.moduleReauthURL;
-
-					if ( setupFlowRefreshEnabled ) {
-						moduleReauthURL = addQueryArgs( moduleReauthURL, {
-							showProgress: true,
-						} );
-
-						await saveInitialSetupSettings( {
-							isAnalyticsSetupComplete: false,
-						} );
-					}
+			try {
+				moduleReauthURL = await setup();
+			} catch {
+				if ( ! setupFlowRefreshPhase4Enabled ) {
+					return;
 				}
+
+				registerNotification( ANALYTICS_ACTIVATION_ERROR_NOTIFICATION, {
+					Component: () => (
+						<AnalyticsActivationErrorNotification
+							onRetry={ onButtonClick }
+						/>
+					),
+					priority: PRIORITY.ERROR_HIGH,
+					areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
+					viewContexts: [ viewContext ],
+					isDismissible: false,
+					featureFlag: 'setupFlowRefreshPhase4',
+				} );
+
+				return;
 			}
 
 			if ( proxySetupURL ) {
@@ -165,16 +249,16 @@ export default function SetupUsingProxyWithSignIn() {
 			}
 		},
 		[
-			connectAnalytics,
-			proxySetupURL,
-			postAuthDashboardURL,
-			isConnected,
-			activateModule,
 			forwardableParams,
-			viewContext,
-			setupFlowRefreshEnabled,
-			saveInitialSetupSettings,
+			isConnected,
 			navigateTo,
+			postAuthDashboardURL,
+			proxySetupURL,
+			registerNotification,
+			setup,
+			setupFlowRefreshEnabled,
+			setupFlowRefreshPhase4Enabled,
+			viewContext,
 		]
 	);
 
@@ -212,7 +296,8 @@ export default function SetupUsingProxyWithSignIn() {
 					<Grid>
 						<Row>
 							<Cell size={ 12 }>
-								<ResetNotice />
+								{ showResetNotice && <ResetNotice /> }
+								{ showResetNotice && <br /> }
 								{ splashSetupContent }
 							</Cell>
 						</Row>

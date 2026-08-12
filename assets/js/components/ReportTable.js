@@ -21,8 +21,8 @@
  */
 import classnames from 'classnames';
 import invariant from 'invariant';
-import PropTypes from 'prop-types';
 import { get } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -79,7 +79,11 @@ export default function ReportTable( props ) {
 					handleActiveIndexUpdate={ setActiveColumnIndex }
 				>
 					{ tabColumns.map( ( { title, badge } ) => (
-						<Tab key={ title } aria-label={ title }>
+						<Tab
+							key={ title }
+							aria-label={ title }
+							focusOnActivate={ false }
+						>
 							{ title }
 							{ badge }
 						</Tab>

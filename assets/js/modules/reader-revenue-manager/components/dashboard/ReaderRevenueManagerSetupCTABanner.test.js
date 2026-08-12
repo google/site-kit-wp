@@ -24,35 +24,35 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import ReaderRevenueManagerSetupCTABanner from './ReaderRevenueManagerSetupCTABanner';
-import {
-	act,
-	render,
-	createTestRegistry,
-	fireEvent,
-	provideModules,
-	waitFor,
-	provideUserAuthentication,
-	provideSiteInfo,
-} from '../../../../../../tests/js/test-utils';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	ERROR_CODE_NON_HTTPS_SITE,
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager/notifications';
 import { WEEK_IN_SECONDS } from '@/js/util';
+import { dismissPromptEndpoint } from '@tests/js/mock-dismiss-prompt-endpoints';
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
-} from '../../../../../../tests/js/mock-survey-endpoints';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager/notifications';
-import { dismissPromptEndpoint } from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
+} from '@tests/js/mock-survey-endpoints';
+import {
+	act,
+	createTestRegistry,
+	fireEvent,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	render,
+	waitFor,
+} from '@tests/js/test-utils';
+import ReaderRevenueManagerSetupCTABanner from './ReaderRevenueManagerSetupCTABanner';
 
 jest.mock( '../../../../hooks/useActivateModuleCallback' );
 
@@ -113,6 +113,26 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should render express setup copy when the feature flag is enabled', async () => {
+		mockSurveyEndpoints();
+
+		const { getByText, waitForRegistry } = render(
+			<ReaderRevenueManagerSetupCTABannerComponent />,
+			{
+				registry,
+				features: [ 'rrmExpressSetup' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByText( /Turn casual visitors into loyal readers/ )
+		).toBeInTheDocument();
+		expect( getByText( /Set up a sign-up form/i ) ).toBeInTheDocument();
+		expect( getByText( /Explore other features/i ) ).toBeInTheDocument();
+	} );
+
 	it( 'should call the "useActivateModuleCallback" hook and dismiss the notification when the setup CTA is clicked', async () => {
 		mockSurveyEndpoints();
 
@@ -150,6 +170,68 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 		expect( activateModuleCallbackMock ).toHaveBeenCalledTimes( 1 );
 		expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
+	} );
+
+	it( 'should call setup activation callback when express setup CTA is clicked', async () => {
+		mockSurveyEndpoints();
+
+		fetchMock.postOnce( dismissPromptEndpoint, {
+			body: {
+				'rrm-setup-notification': { expires: 0, count: 1 },
+			},
+		} );
+
+		const { getByRole, waitForRegistry } = render(
+			<ReaderRevenueManagerSetupCTABannerComponent />,
+			{
+				registry,
+				features: [ 'rrmExpressSetup' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click(
+				getByRole( 'button', {
+					name: /Set up a sign-up form/i,
+				} )
+			);
+		} );
+
+		expect( activateModuleCallbackMock ).toHaveBeenCalledTimes( 1 );
+		expect( activateModuleMock ).toHaveBeenCalledWith(
+			MODULE_SLUG_READER_REVENUE_MANAGER,
+			{
+				redirectQueryArgs: {
+					expressSetup: 'true',
+					cta: 'newsletter-signup',
+				},
+			}
+		);
+		expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
+	} );
+
+	it( 'should call useActivateModuleCallback when "Explore other features" is clicked', async () => {
+		mockSurveyEndpoints();
+
+		const { getByText, waitForRegistry } = render(
+			<ReaderRevenueManagerSetupCTABannerComponent />,
+			{
+				registry,
+				features: [ 'rrmExpressSetup' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByText( /Explore other features/i ) );
+		} );
+
+		expect( activateModuleCallbackMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	it( 'should call the dismiss item endpoint when the banner is dismissed', async () => {

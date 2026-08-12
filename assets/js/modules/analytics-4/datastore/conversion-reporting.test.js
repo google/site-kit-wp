@@ -20,15 +20,6 @@
  * Internal dependencies
  */
 import {
-	createTestRegistry,
-	freezeFetch,
-	provideKeyMetrics,
-	provideKeyMetricsUserInputSettings,
-	provideModules,
-	provideUserAuthentication,
-	untilResolved,
-} from '../../../../../tests/js/utils';
-import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_NEW_VISITORS,
@@ -36,13 +27,22 @@ import {
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	MODULES_ANALYTICS_4,
-	ENUM_CONVERSION_EVENTS,
+	createTestRegistry,
+	freezeFetch,
+	provideKeyMetrics,
+	provideKeyMetricsUserInputSettings,
+	provideModules,
+	provideUserAuthentication,
+	untilResolved,
+} from '@tests/js/utils';
+import {
 	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
 	CONVERSION_REPORTING_LEAD_EVENTS,
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 describe( 'modules/analytics-4 conversion-reporting', () => {
 	let registry;
@@ -219,6 +219,74 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					[ selector ]();
 
 				expect( selectorValue ).toEqual( undefined );
+			} );
+		} );
+
+		describe( 'hasEcommerceConversionReportingEventsOnly', () => {
+			it( 'returns true when only ecommerce events are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( CONVERSION_REPORTING_ECOMMERCE_EVENTS );
+
+				const selectorValue = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasEcommerceConversionReportingEventsOnly();
+
+				expect( selectorValue ).toBe( true );
+			} );
+
+			it( 'returns false when only lead events are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( CONVERSION_REPORTING_LEAD_EVENTS );
+
+				const selectorValue = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasEcommerceConversionReportingEventsOnly();
+
+				expect( selectorValue ).toBe( false );
+			} );
+
+			it( 'returns false when both ecommerce and lead events are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+					] );
+
+				const selectorValue = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasEcommerceConversionReportingEventsOnly();
+
+				expect( selectorValue ).toBe( false );
+			} );
+
+			it( 'returns false when no events are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [] );
+
+				const selectorValue = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasEcommerceConversionReportingEventsOnly();
+
+				expect( selectorValue ).toBe( false );
+			} );
+
+			it( 'returns undefined when detected events have not loaded yet', () => {
+				// Prevent network request/resolver from running to avoid console errors.
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
+					)
+				);
+
+				const selectorValue = registry
+					.select( MODULES_ANALYTICS_4 )
+					.hasEcommerceConversionReportingEventsOnly();
+
+				expect( selectorValue ).toBe( undefined );
 			} );
 		} );
 
@@ -642,6 +710,107 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 			} );
 		} );
 
+		describe( 'getSecondaryEcommerceEvents', () => {
+			it( 'should return undefined when detected events are not yet loaded', () => {
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
+					)
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getSecondaryEcommerceEvents(
+							ENUM_CONVERSION_EVENTS.PURCHASE
+						)
+				).toBeUndefined();
+			} );
+
+			it( 'should return ["add_to_cart"] when primary is "purchase" and add_to_cart is detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getSecondaryEcommerceEvents(
+							ENUM_CONVERSION_EVENTS.PURCHASE
+						)
+				).toEqual( [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ] );
+			} );
+
+			it( 'should return [] when primary is "purchase" and add_to_cart is not detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getSecondaryEcommerceEvents(
+							ENUM_CONVERSION_EVENTS.PURCHASE
+						)
+				).toEqual( [] );
+			} );
+
+			it( 'should return [] when primary is "add_to_cart" (no secondary ecommerce events)', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getSecondaryEcommerceEvents(
+							ENUM_CONVERSION_EVENTS.ADD_TO_CART
+						)
+				).toEqual( [] );
+			} );
+
+			it( 'should preserve hierarchy order: purchase as primary yields add_to_cart in order', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+					] );
+
+				// When primaryEvent is purchase, only add_to_cart (which comes after in hierarchy) is secondary.
+				const secondary = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getSecondaryEcommerceEvents(
+						ENUM_CONVERSION_EVENTS.PURCHASE
+					);
+
+				// Should return only add_to_cart in hierarchy order.
+				expect( secondary ).toEqual( [
+					ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+				] );
+			} );
+
+			it( 'should return [] when detected events is an empty array', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getSecondaryEcommerceEvents(
+							ENUM_CONVERSION_EVENTS.PURCHASE
+						)
+				).toEqual( [] );
+			} );
+		} );
+
 		describe( 'getDetectedLeadEvents', () => {
 			it( 'should return undefined when detected events are not yet loaded', () => {
 				freezeFetch(
@@ -700,6 +869,187 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.getDetectedLeadEvents()
 				).toEqual( [] );
+			} );
+		} );
+
+		describe( 'getPrimaryActionPanelLabel', () => {
+			it( 'should return undefined for ecommerce when detected events are not yet loaded', () => {
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
+					)
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionPanelLabel( 'ecommerce' )
+				).toBeUndefined();
+			} );
+
+			it( 'should return "Purchase" when ecommerce primary event is purchase', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionPanelLabel( 'ecommerce' )
+				).toBe( 'Purchase' );
+			} );
+
+			it( 'should return "Products added to cart" when ecommerce primary event is add_to_cart', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionPanelLabel( 'ecommerce' )
+				).toBe( 'Products added to cart' );
+			} );
+
+			it( 'should return undefined for ecommerce when no ecommerce events are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionPanelLabel( 'ecommerce' )
+				).toBeUndefined();
+			} );
+
+			it( 'should return undefined for lead when detected events are not yet loaded', () => {
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
+					)
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionPanelLabel( 'lead' )
+				).toBeUndefined();
+			} );
+
+			it( 'should return "Form completion" when any lead event is detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+					] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionPanelLabel( 'lead' )
+				).toBe( 'Form completion' );
+			} );
+
+			it( 'should return undefined for lead when no lead events are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionPanelLabel( 'lead' )
+				).toBeUndefined();
+			} );
+
+			it( 'should return undefined for an unknown goal type', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionPanelLabel( 'unknown' )
+				).toBeUndefined();
+			} );
+		} );
+
+		describe( 'getPrimaryActionEventSlug', () => {
+			it( 'should return undefined for ecommerce when detected events are not yet loaded', () => {
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
+					)
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionEventSlug( 'ecommerce' )
+				).toBeUndefined();
+			} );
+
+			it( 'should return the primary ecommerce event', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionEventSlug( 'ecommerce' )
+				).toBe( ENUM_CONVERSION_EVENTS.PURCHASE );
+			} );
+
+			it( 'should return undefined for lead when detected events are not yet loaded', () => {
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
+					)
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionEventSlug( 'lead' )
+				).toBeUndefined();
+			} );
+
+			it( 'should return the first detected lead event', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+					] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionEventSlug( 'lead' )
+				).toBe( ENUM_CONVERSION_EVENTS.GENERATE_LEAD );
+			} );
+
+			it( 'should return undefined for lead when no lead events are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryActionEventSlug( 'lead' )
+				).toBeUndefined();
 			} );
 		} );
 	} );

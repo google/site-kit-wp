@@ -20,12 +20,12 @@
  * Internal dependencies
  */
 import { combineStores } from 'googlesitekit-data';
-import { MODULES_ADS } from './constants';
-import baseModuleStore from './base';
 import adblocker from './adblocker';
+import baseModuleStore from './base';
+import { MODULES_ADS } from './constants';
 import moduleData from './module-data';
-import woocommerce from './woocommerce';
 import service from './service';
+import woocommerce from './woocommerce';
 
 const store = combineStores(
 	baseModuleStore,

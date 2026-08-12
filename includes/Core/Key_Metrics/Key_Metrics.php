@@ -6,6 +6,8 @@
  * @copyright 2023 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Core\Key_Metrics;
@@ -47,6 +49,14 @@ class Key_Metrics implements Provides_Feature_Metrics {
 	protected $key_metrics_setup_completed_by;
 
 	/**
+	 * Key_Metrics_Setup_Is_Widget_Area_Hidden instance.
+	 *
+	 * @since 1.184.0
+	 * @var Key_Metrics_Setup_Is_Widget_Area_Hidden
+	 */
+	protected $key_metrics_setup_is_widget_area_hidden;
+
+	/**
 	 * REST_Key_Metrics_Controller instance.
 	 *
 	 * @since 1.93.0
@@ -72,10 +82,14 @@ class Key_Metrics implements Provides_Feature_Metrics {
 	 * @param Options      $options        Optional. Option API instance. Default is a new instance.
 	 */
 	public function __construct( Context $context, ?User_Options $user_options = null, ?Options $options = null ) {
-		$this->key_metrics_settings           = new Key_Metrics_Settings( $user_options ?: new User_Options( $context ) );
-		$this->key_metrics_setup_completed_by = new Key_Metrics_Setup_Completed_By( $options ?: new Options( $context ) );
-		$this->key_metrics_setup_new          = new Key_Metrics_Setup_New( new Transients( $context ) );
-		$this->rest_controller                = new REST_Key_Metrics_Controller( $this->key_metrics_settings, $this->key_metrics_setup_completed_by );
+		$user_options = $user_options ?: new User_Options( $context );
+		$options      = $options ?: new Options( $context );
+
+		$this->key_metrics_settings                    = new Key_Metrics_Settings( $user_options );
+		$this->key_metrics_setup_completed_by          = new Key_Metrics_Setup_Completed_By( $options );
+		$this->key_metrics_setup_is_widget_area_hidden = new Key_Metrics_Setup_Is_Widget_Area_Hidden( $options );
+		$this->key_metrics_setup_new                   = new Key_Metrics_Setup_New( new Transients( $context ) );
+		$this->rest_controller                         = new REST_Key_Metrics_Controller( $this->key_metrics_settings, $this->key_metrics_setup_completed_by );
 	}
 
 	/**
@@ -86,6 +100,7 @@ class Key_Metrics implements Provides_Feature_Metrics {
 	public function register() {
 		$this->key_metrics_settings->register();
 		$this->key_metrics_setup_completed_by->register();
+		$this->key_metrics_setup_is_widget_area_hidden->register();
 		$this->key_metrics_setup_new->register();
 		$this->rest_controller->register();
 		$this->register_feature_metrics();
@@ -103,7 +118,8 @@ class Key_Metrics implements Provides_Feature_Metrics {
 	 * @return array Filtered $data.
 	 */
 	private function inline_js_base_data( $data ) {
-		$data['keyMetricsSetupCompletedBy'] = (int) $this->key_metrics_setup_completed_by->get();
+		$data['keyMetricsSetupCompletedBy']        = (int) $this->key_metrics_setup_completed_by->get();
+		$data['keyMetricsSetupIsWidgetAreaHidden'] = (bool) $this->key_metrics_setup_is_widget_area_hidden->get();
 
 		return $data;
 	}

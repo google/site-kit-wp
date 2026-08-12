@@ -22,10 +22,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { Tile, TileProps } from './Tile';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Story } from '@/js/types/Story';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
+import { Tile, TileProps } from './Tile';
 
 function Template( {
 	setupRegistry = () => {},
@@ -40,6 +40,7 @@ function Template( {
 					backgroundColor: 'white',
 					padding: '20px',
 					display: 'inline-block',
+					minWidth: '330px',
 				} }
 			>
 				<Tile { ...props } />
@@ -126,6 +127,17 @@ NegativeChange.args = {
 	format: { style: 'decimal' },
 };
 
+export const NoChange = Template.bind( {} ) as Story< TileProps >;
+NoChange.storyName = 'No Change';
+NoChange.args = {
+	title: 'Form Submissions',
+	subtitle: 'Total submissions',
+	currentValue: 980,
+	previousValue: 980,
+	format: { style: 'decimal' },
+};
+NoChange.scenario = {};
+
 export const ZeroDataPreviousRange = Template.bind( {} ) as Story< TileProps >;
 ZeroDataPreviousRange.storyName = 'Zero Data (Previous Range)';
 ZeroDataPreviousRange.args = {
@@ -135,6 +147,17 @@ ZeroDataPreviousRange.args = {
 	previousValue: 0,
 	format: { style: 'decimal' },
 };
+
+export const ZeroDataBothRanges = Template.bind( {} ) as Story< TileProps >;
+ZeroDataBothRanges.storyName = 'Zero Data (Both Ranges)';
+ZeroDataBothRanges.args = {
+	title: 'Form Submissions',
+	subtitle: 'Total submissions',
+	currentValue: 0,
+	previousValue: 0,
+	format: { style: 'decimal' },
+};
+ZeroDataBothRanges.scenario = {};
 
 export const CustomDateRange = Template.bind( {} ) as Story< TileProps >;
 CustomDateRange.storyName = 'Custom Date Range (90 days)';

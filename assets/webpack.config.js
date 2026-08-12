@@ -36,7 +36,7 @@ function* webpackConfig( env, argv ) {
 	yield modulesConfig( mode, rules );
 
 	// Build basic modules that don't require advanced optimizations, splitting chunks, and so on...
-	yield basicModulesConfig( mode );
+	yield basicModulesConfig( mode, rules );
 
 	// Build modules that will be used on the frontend, that require wider browser support.
 	yield frontendModules( mode );

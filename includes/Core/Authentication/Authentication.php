@@ -6,6 +6,8 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Core\Authentication;
@@ -72,7 +74,7 @@ final class Authentication implements Provides_Feature_Metrics {
 	private $user_options = null;
 
 	/**
-	 * User_Input
+	 * User_Input.
 	 *
 	 * @since 1.90.0
 	 *
@@ -996,7 +998,7 @@ final class Authentication implements Provides_Feature_Metrics {
 	}
 
 	/**
-	 * Add allowed redirect host to safe wp_safe_redirect
+	 * Add allowed redirect host to safe wp_safe_redirect.
 	 *
 	 * @since 1.0.0
 	 *
@@ -1077,7 +1079,11 @@ final class Authentication implements Provides_Feature_Metrics {
 
 					// Only show the comparison if URLs don't match as it is possible
 					// they could already match again at this point, although they most likely won't.
-					if ( ! $this->connected_proxy_url->matches_url( $current_url ) ) {
+					// A stored value the plugin can't decode reads as no URL.
+					// Ensure the currently-connected URL isn't empty;
+					// if it is, we shouldn't output the old/new URLs, because the
+					// old URL will be blank.
+					if ( ! empty( $connected_url ) && ! $this->connected_proxy_url->matches_url( $current_url ) ) {
 						$content .= sprintf(
 							'<ul><li>%s</li><li>%s</li></ul>',
 							sprintf(

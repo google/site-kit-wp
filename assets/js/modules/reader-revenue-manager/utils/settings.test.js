@@ -20,10 +20,10 @@
  * Internal dependencies
  */
 import {
+	getPaymentOption,
 	getPostTypesString,
 	getProductIDLabel,
 	getProductIDs,
-	getPaymentOption,
 } from './settings';
 
 describe( 'getPostTypesString', () => {

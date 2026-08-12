@@ -16,7 +16,6 @@ use WP_Post;
 use WP_Term;
 use WP_User;
 use WP_Post_Type;
-use WP_Screen;
 
 /**
  * Class providing access to entities.
@@ -46,8 +45,8 @@ final class Entity_Factory {
 
 		// If currently in WP admin, run admin-specific checks.
 		if ( is_admin() ) {
-			$screen = get_current_screen();
-			if ( ! $screen instanceof WP_Screen || 'post' !== $screen->base ) {
+			$screen = Current_Screen::get();
+			if ( null === $screen || 'post' !== $screen->base ) {
 				return null;
 			}
 
@@ -533,12 +532,12 @@ final class Entity_Factory {
 		if ( ! empty( $url_parts['path'] ) ) {
 			// We need to correctly add trailing slash if the original url had trailing slash.
 			// That's the reason why we need to check for both version.
-			if ( '/amp' === substr( $url_parts['path'], -4 ) ) { // -strlen('/amp') is -4
+			if ( '/amp' === substr( $url_parts['path'], -4 ) ) { // -strlen('/amp') is -4.
 				$new_url = untrailingslashit( $current_url ) . '/amp';
 				return self::convert_to_amp_entity( $new_url, $entity );
 			}
 
-			if ( '/amp/' === substr( $url_parts['path'], -5 ) ) { // -strlen('/amp/') is -5
+			if ( '/amp/' === substr( $url_parts['path'], -5 ) ) { // -strlen('/amp/') is -5.
 				$new_url = untrailingslashit( $current_url ) . '/amp/';
 				return self::convert_to_amp_entity( $new_url, $entity );
 			}
@@ -587,7 +586,7 @@ final class Entity_Factory {
 	 * Paginates an entity URL.
 	 *
 	 * Logic extracted from `paginate_links` in WordPress core.
-	 * https://github.com/WordPress/WordPress/blob/7f5d7f1b56087c3eb718da4bd81deb06e077bbbb/wp-includes/general-template.php#L4203
+	 * https://github.com/WordPress/WordPress/blob/7f5d7f1b56087c3eb718da4bd81deb06e077bbbb/wp-includes/general-template.php#L4203.
 	 *
 	 * @since 1.68.0
 	 *
@@ -647,7 +646,7 @@ final class Entity_Factory {
 	 * Paginates a post URL.
 	 *
 	 * Logic extracted from `_wp_link_page` in WordPress core.
-	 * https://github.com/WordPress/WordPress/blob/7f5d7f1b56087c3eb718da4bd81deb06e077bbbb/wp-includes/post-template.php#L1031
+	 * https://github.com/WordPress/WordPress/blob/7f5d7f1b56087c3eb718da4bd81deb06e077bbbb/wp-includes/post-template.php#L1031.
 	 *
 	 * @since 1.68.0
 	 *

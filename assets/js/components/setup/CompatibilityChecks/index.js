@@ -17,31 +17,31 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * External dependencies
  */
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
-import { useRegistry } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import Warning from '@/svg/icons/warning.svg';
-import { Grid } from '@/js/material-components';
-import { useChecks } from '@/js/hooks/useChecks';
-import CompatibilityErrorNotice from './CompatibilityErrorNotice';
+import { useRegistry } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { useChecks } from '@/js/hooks/useChecks';
+import { Grid } from '@/js/material-components';
+import Warning from '@/svg/icons/warning.svg';
 import {
 	checkAMPConnectivity,
 	checkHealthChecks,
 	checkHostname,
 	registryCheckSetupTag,
 } from './checks';
+import CompatibilityErrorNotice from './CompatibilityErrorNotice';
 
 function createCompatibilityChecks( registry ) {
 	if ( registry.select( CORE_SITE ).isConnected() ) {

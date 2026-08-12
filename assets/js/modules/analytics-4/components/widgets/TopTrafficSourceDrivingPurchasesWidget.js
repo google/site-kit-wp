@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import { get } from 'lodash';
 import PropTypes from 'prop-types';
 
 /**
@@ -29,26 +30,87 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import MetricTileText from '@/js/components/KeyMetrics/MetricTileText';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { numFmt } from '@/js/util';
-import { get } from 'lodash';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+
+/**
+ * Builds the Analytics 4 report options for the Top Traffic Source Driving
+ * Purchases metric.
+ *
+ * Returns both the total-purchases report and the per-channel report the tile
+ * combines. Both this widget and the metric's PDF tile import this, so the
+ * dashboard tile and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range, including the compare dates.
+ * @return {Object} The `totalPurchases` and `trafficSource` `getReport` options.
+ */
+export function getTopTrafficSourceDrivingPurchasesReportOptions( dates ) {
+	return {
+		totalPurchases: {
+			...dates,
+			metrics: [
+				{
+					name: 'ecommercePurchases',
+				},
+			],
+			reportID:
+				'analytics-4_top-traffic-source-driving-purchases-widget_widget_totalPurchasesReportOptions',
+		},
+		trafficSource: {
+			...dates,
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			metrics: [
+				{
+					name: 'ecommercePurchases',
+				},
+			],
+			limit: 1,
+			orderBy: 'ecommercePurchases',
+			reportID:
+				'analytics-4_top-traffic-source-driving-purchases-widget_widget_trafficSourceReportOptions',
+		},
+	};
+}
+
+/**
+ * Builds the sub-text for the Top Traffic Source Driving Purchases metric tile.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the PDF tile show the same sub-text.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} rate The relative share of total purchases for the top source.
+ * @return {string} The metric tile sub-text.
+ */
+export function getTopTrafficSourceDrivingPurchasesSubtext( rate ) {
+	const format = {
+		style: 'percent',
+		signDisplay: 'never',
+		maximumFractionDigits: 1,
+	};
+
+	return sprintf(
+		/* translators: %s: Percentage of purchases for the current top traffic source compared to the number of total purchases for all traffic sources. */
+		__( '%s of total purchases', 'google-site-kit' ),
+		numFmt( rate, format )
+	);
+}
 
 function TopTrafficSourceDrivingPurchasesWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} )
 	);
@@ -58,30 +120,10 @@ function TopTrafficSourceDrivingPurchasesWidget( { Widget } ) {
 	);
 	const hasDetectedEvent = detectedEvents?.includes( 'purchase' );
 
-	const totalPurchasesReportOptions = {
-		...dates,
-		metrics: [
-			{
-				name: 'ecommercePurchases',
-			},
-		],
-		reportID:
-			'analytics-4_top-traffic-source-driving-purchases-widget_widget_totalPurchasesReportOptions',
-	};
-
-	const trafficSourceReportOptions = {
-		...dates,
-		dimensions: [ 'sessionDefaultChannelGroup' ],
-		metrics: [
-			{
-				name: 'ecommercePurchases',
-			},
-		],
-		limit: 1,
-		orderBy: 'ecommercePurchases',
-		reportID:
-			'analytics-4_top-traffic-source-driving-purchases-widget_widget_trafficSourceReportOptions',
-	};
+	const {
+		totalPurchases: totalPurchasesReportOptions,
+		trafficSource: trafficSourceReportOptions,
+	} = getTopTrafficSourceDrivingPurchasesReportOptions( dates );
 
 	const totalPurchasesReport = useInViewSelect(
 		( select ) =>
@@ -210,10 +252,8 @@ function TopTrafficSourceDrivingPurchasesWidget( { Widget } ) {
 			widgetSlug={ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES }
 			metricValue={ topTrafficSource }
 			metricValueFormat={ format }
-			subText={ sprintf(
-				/* translators: %s: Percentage of purchases for the current top traffic source compared to the number of total purchases for all traffic sources. */
-				__( '%s of total purchases', 'google-site-kit' ),
-				numFmt( relativeCurrentTopTrafficSourcePurchases, format )
+			subText={ getTopTrafficSourceDrivingPurchasesSubtext(
+				relativeCurrentTopTrafficSourcePurchases
 			) }
 			previousValue={ relativePreviousTopTrafficSourcePurchases }
 			currentValue={ relativeCurrentTopTrafficSourcePurchases }

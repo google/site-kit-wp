@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
 
 namespace Google\Site_Kit\Tests\Core\Authentication;
 

@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import MetricTileNumeric from './MetricTileNumeric';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import MetricTileNumeric from './MetricTileNumeric';
 
 const WidgetWithComponentProps =
 	withWidgetComponentProps( 'test' )( MetricTileNumeric );

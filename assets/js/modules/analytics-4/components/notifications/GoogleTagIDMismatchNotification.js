@@ -19,22 +19,22 @@
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { isValidMeasurementID } from '@/js/modules/analytics-4/utils/validation';
+import { ProgressBar } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { getBestTagID } from '@/js/modules/analytics-4/utils/google-tag';
 import BannerNotification, {
 	TYPES,
 } from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
-import { ProgressBar } from 'googlesitekit-components';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { getBestTagID } from '@/js/modules/analytics-4/utils/google-tag';
+import { isValidMeasurementID } from '@/js/modules/analytics-4/utils/validation';
 
 export default function GoogleTagIDMismatchNotification( {
 	id,

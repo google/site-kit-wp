@@ -20,14 +20,14 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { CORE_USER } from './constants';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideModules,
 	untilResolved,
 	waitForDefaultTimeouts,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
+import { CORE_USER } from './constants';
 
 describe( 'core/user initial setup settings', () => {
 	let registry;
@@ -70,17 +70,7 @@ describe( 'core/user initial setup settings', () => {
 					.finishResolution( 'getInitialSetupSettings', [] );
 			} );
 
-			it( 'should throw if settings is not an object', () => {
-				expect( () =>
-					registry
-						.dispatch( CORE_USER )
-						.saveInitialSetupSettings( 'invalid' )
-				).toThrow(
-					'Initial setup settings should be an object to save.'
-				);
-			} );
-
-			it( 'should save settings from the store when no arguments are provided', async () => {
+			it( 'should save settings from the store', async () => {
 				const existingSettings = {
 					isAnalyticsSetupComplete: false,
 				};
@@ -126,78 +116,32 @@ describe( 'core/user initial setup settings', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
-			it( 'should save provided settings and update the store', async () => {
-				const settingsToSave = {
-					isAnalyticsSetupComplete: false,
-				};
-
-				fetchMock.postOnce( initialSetupSettingsEndpoint, {
-					body: settingsToSave,
-					status: 200,
-				} );
-
-				await registry
-					.dispatch( CORE_USER )
-					.saveInitialSetupSettings( settingsToSave );
-
-				expect( fetchMock ).toHaveFetched(
-					initialSetupSettingsEndpoint,
-					{
-						body: {
-							data: {
-								settings: settingsToSave,
-							},
-						},
-					}
-				);
-
-				expect( store.getState().initialSetupSettings ).toEqual(
-					settingsToSave
-				);
-			} );
-
 			it( 'should dispatch an error if the request fails', async () => {
-				const existingSettings = {
-					isAnalyticsSetupComplete: false,
-				};
-				const settingsToSave = {
-					isAnalyticsSetupComplete: true,
-				};
-				const finalSettings = {
-					...existingSettings,
-					...settingsToSave,
-				};
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
 
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetInitialSetupSettings( existingSettings );
-
-				registry
-					.dispatch( CORE_USER )
-					.finishResolution( 'getInitialSetupSettings', [] );
-
 				fetchMock.post( initialSetupSettingsEndpoint, {
 					body: response,
 					status: 500,
 				} );
 
+				registry
+					.dispatch( CORE_USER )
+					.setIsAnalyticsSetupComplete( true );
+
 				const { error } = await registry
 					.dispatch( CORE_USER )
-					.saveInitialSetupSettings( settingsToSave );
+					.saveInitialSetupSettings();
 
 				expect( console ).toHaveErrored();
 				expect( error ).toEqual( response );
 				expect(
 					registry
 						.select( CORE_USER )
-						.getErrorForAction( 'saveInitialSetupSettings', [
-							finalSettings,
-						] )
+						.getErrorForAction( 'saveInitialSetupSettings' )
 				).toMatchObject( response );
 			} );
 		} );
@@ -221,6 +165,24 @@ describe( 'core/user initial setup settings', () => {
 				expect(
 					store.getState().initialSetupSettings
 						.isAnalyticsSetupComplete
+				).toBe( true );
+			} );
+		} );
+
+		describe( 'setHasSitePurposeAnswer', () => {
+			it( 'should throw when value is not a boolean', () => {
+				expect( () =>
+					registry
+						.dispatch( CORE_USER )
+						.setHasSitePurposeAnswer( 'yes' )
+				).toThrow( 'Site purpose answer status should be a boolean.' );
+			} );
+
+			it( 'should set the value in the store', () => {
+				registry.dispatch( CORE_USER ).setHasSitePurposeAnswer( true );
+
+				expect(
+					store.getState().initialSetupSettings.hasSitePurposeAnswer
 				).toBe( true );
 			} );
 		} );
@@ -322,6 +284,18 @@ describe( 'core/user initial setup settings', () => {
 				expect(
 					registry.select( CORE_USER ).isAnalyticsSetupComplete()
 				).toBe( true );
+			} );
+		} );
+
+		describe( 'hasSitePurposeAnswer', () => {
+			it( 'should return the stored value when settings are available', () => {
+				registry.dispatch( CORE_USER ).receiveGetInitialSetupSettings( {
+					hasSitePurposeAnswer: false,
+				} );
+
+				expect(
+					registry.select( CORE_USER ).hasSitePurposeAnswer()
+				).toBe( false );
 			} );
 		} );
 	} );

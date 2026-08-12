@@ -24,26 +24,37 @@ import { withQuery } from '@storybook/addon-queryparams';
 /**
  * Internal dependencies
  */
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import SetupUsingProxyWithSignIn from '@/js/components/setup/SetupUsingProxyWithSignIn';
+import AnalyticsActivationErrorNotification, {
+	ANALYTICS_ACTIVATION_ERROR_NOTIFICATION,
+} from '@/js/components/setup/SetupUsingProxyWithSignIn/AnalyticsActivationErrorNotification';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
-	PERMISSION_READ_SHARED_MODULE_DATA,
 	PERMISSION_AUTHENTICATE,
+	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	provideSiteConnection,
-	provideUserAuthentication,
-	provideModules,
-	provideUserCapabilities,
-	provideSiteInfo,
-} from '../../../../../tests/js/utils';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
-import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import {
+	NOTIFICATION_AREAS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import AnalyticsIcon from '@/svg/graphics/analytics.svg';
+import SearchConsoleIcon from '@/svg/graphics/search-console.svg';
+import {
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteConnection,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserCapabilities,
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 
 function Template() {
 	return (
@@ -251,6 +262,126 @@ WithAnalyticsActive.args = {
 	},
 };
 WithAnalyticsActive.scenario = {};
+
+export const SecondaryAdminAnalyticsNotActive = Template.bind( {} );
+SecondaryAdminAnalyticsNotActive.storyName =
+	'Secondary admin, Analytics not setup (setupFlowRefreshPhase4 enabled)';
+SecondaryAdminAnalyticsNotActive.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: true,
+			hasMultipleAdmins: true,
+			resettable: false,
+		} );
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+	},
+};
+SecondaryAdminAnalyticsNotActive.parameters = {
+	features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+};
+SecondaryAdminAnalyticsNotActive.scenario = {};
+
+export const SecondaryAdminWithSharedServices = Template.bind( {} );
+SecondaryAdminWithSharedServices.storyName =
+	'Secondary admin with shared services (setupFlowRefreshPhase4 enabled)';
+SecondaryAdminWithSharedServices.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: true,
+			hasMultipleAdmins: true,
+			resettable: false,
+		} );
+
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: true,
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				MODULE_SLUG_ANALYTICS_4
+			) ]: true,
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				MODULE_SLUG_SEARCH_CONSOLE
+			) ]: true,
+		} );
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
+				active: true,
+				connected: true,
+				shareable: true,
+			},
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+				shareable: true,
+			},
+		] );
+
+		provideModuleRegistrations( registry, [
+			{
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
+				Icon: SearchConsoleIcon,
+			},
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				Icon: AnalyticsIcon,
+			},
+		] );
+	},
+};
+SecondaryAdminWithSharedServices.parameters = {
+	features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+};
+SecondaryAdminWithSharedServices.scenario = {};
+
+export const AnalyticsActivationError = Template.bind( {} );
+AnalyticsActivationError.storyName = 'Analytics activation error';
+AnalyticsActivationError.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: false,
+			resettable: false,
+		} );
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification( ANALYTICS_ACTIVATION_ERROR_NOTIFICATION, {
+				Component: () => (
+					<AnalyticsActivationErrorNotification
+						onRetry={ () => null }
+					/>
+				),
+				priority: PRIORITY.ERROR_HIGH,
+				areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
+				viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+				isDismissible: false,
+				featureFlag: 'setupFlowRefreshPhase4',
+			} );
+	},
+};
+
+AnalyticsActivationError.parameters = {
+	features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+};
+
+AnalyticsActivationError.scenario = {};
 
 export default {
 	title: 'Setup / Using Proxy With Sign-in and setupFlowRefresh enabled',

@@ -19,35 +19,35 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 import { useMutationObserver } from 'react-use-observer';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import Logo from './Logo';
-import UserMenu from './UserMenu';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { Grid, Row, Cell } from '@/js/material-components';
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
+import useDashboardType from '@/js/hooks/useDashboardType';
+import { useGlobalTrackingEffect } from '@/js/hooks/useGlobalTrackingEffect';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { Cell, Grid, Row } from '@/js/material-components';
 import DashboardNavigation from './DashboardNavigation';
 import EntityHeader from './EntityHeader';
-import ViewOnlyMenu from './ViewOnlyMenu';
-import useViewOnly from '@/js/hooks/useViewOnly';
-import useDashboardType from '@/js/hooks/useDashboardType';
 import Link from './Link';
+import Logo from './Logo';
 import LegacyNotifications from './notifications/LegacyNotifications';
 import Notifications from './notifications/Notifications';
-import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { useGlobalTrackingEffect } from '@/js/hooks/useGlobalTrackingEffect';
+import UserMenu from './UserMenu';
+import ViewOnlyMenu from './ViewOnlyMenu';
 
 function Header( { children, subHeader, showNavigation } ) {
 	const isDashboard = !! useDashboardType();

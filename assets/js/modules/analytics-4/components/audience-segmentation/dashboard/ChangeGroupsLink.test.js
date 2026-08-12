@@ -16,17 +16,16 @@
  * limitations under the License.
  */
 
-import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './AudienceSelectionPanel/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+/**
+ * Internal dependencies
+ */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
-import {
-	createTestRegistry,
-	fireEvent,
-	render,
-} from '../../../../../../../tests/js/test-utils';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
+import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
+import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './AudienceSelectionPanel/constants';
 import ChangeGroupsLink from './ChangeGroupsLink';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -86,6 +85,30 @@ describe( 'ChangeGroupsLink', () => {
 		const button = queryByRole( 'button' );
 		expect( button ).toBeInTheDocument();
 		expect( button ).toHaveTextContent( 'Change groups' );
+	} );
+
+	it( 'should render a button to select groups when setupFlowRefresh is enabled', () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences,
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
+				audience: availableAudiences.reduce( ( acc, { name } ) => {
+					acc[ name ] = 20201220;
+					return acc;
+				}, {} ),
+				customDimension: {},
+				property: {},
+			},
+		} );
+
+		const { getByRole } = render( <ChangeGroupsLink />, {
+			registry,
+			features: [ 'setupFlowRefresh' ],
+		} );
+
+		expect( getByRole( 'button' ) ).toHaveTextContent( 'Select groups' );
 	} );
 
 	it( 'should set UI store key correctly when button is clicked', () => {

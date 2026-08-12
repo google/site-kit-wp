@@ -26,11 +26,11 @@ import invariant from 'invariant';
  */
 import { invalidateCache } from 'googlesitekit-api';
 import { createRegistrySelector } from 'googlesitekit-data';
-import { createStrictSelect } from '@/js/googlesitekit/data/utils';
-import { isValidPropertyID } from '@/js/modules/search-console/util';
 import { INVARIANT_SETTINGS_NOT_CHANGED } from '@/js/googlesitekit/data/create-settings-store';
-import { MODULES_SEARCH_CONSOLE } from './constants';
+import { createStrictSelect } from '@/js/googlesitekit/data/utils';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { isValidPropertyID } from '@/js/modules/search-console/util';
+import { MODULES_SEARCH_CONSOLE } from './constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION =

@@ -26,17 +26,19 @@ import { isPlainObject } from 'lodash';
  */
 import { get, set } from 'googlesitekit-api';
 import {
+	combineStores,
+	commonActions,
 	createReducer,
 	createRegistrySelector,
-	commonActions,
-	combineStores,
 } from 'googlesitekit-data';
-import { CORE_USER } from './constants';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_USER } from './constants';
+const { clearActionError, setErrorForAction } = errorStoreActions;
 
 // Actions
 const SET_IS_ANALYTICS_SETUP_COMPLETE = 'SET_IS_ANALYTICS_SETUP_COMPLETE';
+const SET_HAS_SITE_PURPOSE_ANSWER = 'SET_HAS_SITE_PURPOSE_ANSWER';
 
 const baseInitialState = {
 	initialSetupSettings: undefined,
@@ -76,6 +78,12 @@ const fetchSaveInitialSetupSettingsStore = createFetchStore( {
 				'isAnalyticsSetupComplete should be a boolean.'
 			);
 		}
+		if ( settings.hasSitePurposeAnswer !== undefined ) {
+			invariant(
+				typeof settings.hasSitePurposeAnswer === 'boolean',
+				'hasSitePurposeAnswer should be a boolean.'
+			);
+		}
 	},
 	isAction: true,
 } );
@@ -86,32 +94,32 @@ const baseActions = {
 	 *
 	 * @since 1.164.0
 	 *
-	 * @param {Object} settings Optional. By default, this saves whatever there is in the store. Use this object to save additional settings.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	saveInitialSetupSettings: createValidatedAction(
-		( settings = {} ) => {
-			invariant(
-				isPlainObject( settings ),
-				'Initial setup settings should be an object to save.'
-			);
-		},
-		function* ( settings = {} ) {
-			const registry = yield commonActions.getRegistry();
-			const initialSetupSettings = yield commonActions.await(
-				registry.resolveSelect( CORE_USER ).getInitialSetupSettings()
+	*saveInitialSetupSettings() {
+		const registry = yield commonActions.getRegistry();
+
+		yield clearActionError( 'saveInitialSetupSettings' );
+
+		const initialSetupSettings =
+			registry.select( CORE_USER ).getInitialSetupSettings() || {};
+
+		invariant(
+			isPlainObject( initialSetupSettings ),
+			'Initial setup settings should be an object.'
+		);
+
+		const { response, error } =
+			yield fetchSaveInitialSetupSettingsStore.actions.fetchSaveInitialSetupSettings(
+				initialSetupSettings
 			);
 
-			const finalSettings = {
-				...initialSetupSettings,
-				...settings,
-			};
-
-			return yield fetchSaveInitialSetupSettingsStore.actions.fetchSaveInitialSetupSettings(
-				finalSettings
-			);
+		if ( error ) {
+			yield setErrorForAction( error, 'saveInitialSetupSettings' );
 		}
-	),
+
+		return { response, error };
+	},
 
 	/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
 	/**
@@ -133,6 +141,27 @@ const baseActions = {
 			payload: { isAnalyticsSetupComplete },
 		};
 	},
+
+	/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
+	/**
+	 * Sets whether the user has answered the site purpose question.
+	 *
+	 * @since 1.183.0
+	 *
+	 * @param {boolean} hasSitePurposeAnswer Whether or not the user has answered the site purpose question.
+	 * @return {Object} Redux-style action.
+	 */
+	setHasSitePurposeAnswer( hasSitePurposeAnswer ) {
+		invariant(
+			typeof hasSitePurposeAnswer === 'boolean',
+			'Site purpose answer status should be a boolean.'
+		);
+
+		return {
+			type: SET_HAS_SITE_PURPOSE_ANSWER,
+			payload: { hasSitePurposeAnswer },
+		};
+	},
 };
 
 const baseReducer = createReducer( ( state, { type, payload } ) => {
@@ -143,6 +172,17 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 			state.initialSetupSettings = {
 				...state.initialSetupSettings,
 				isAnalyticsSetupComplete,
+			};
+
+			break;
+		}
+
+		case SET_HAS_SITE_PURPOSE_ANSWER: {
+			const { hasSitePurposeAnswer } = payload;
+
+			state.initialSetupSettings = {
+				...state.initialSetupSettings,
+				hasSitePurposeAnswer,
 			};
 
 			break;
@@ -194,6 +234,21 @@ const baseSelectors = {
 			select( CORE_USER ).getInitialSetupSettings();
 
 		return initialSetupSettings?.isAnalyticsSetupComplete;
+	} ),
+
+	/**
+	 * Returns whether the user has answered the site purpose question.
+	 *
+	 * @since 1.183.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|null|undefined)} Whether the site purpose question has been answered; `undefined` if not loaded or `null` if not set yet.
+	 */
+	hasSitePurposeAnswer: createRegistrySelector( ( select ) => () => {
+		const initialSetupSettings =
+			select( CORE_USER ).getInitialSetupSettings();
+
+		return initialSetupSettings?.hasSitePurposeAnswer;
 	} ),
 };
 

@@ -29,10 +29,10 @@ import { createInterpolateElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { Cell, Grid, Row } from '@/js/material-components';
-import Notice from '.';
 import Link from '@/js/components/Link';
+import { Cell, Grid, Row } from '@/js/material-components';
 import { NOTICE_TYPES } from './constants';
+import Notice from '.';
 
 function Template() {
 	return (

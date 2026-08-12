@@ -20,8 +20,8 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { cloneDeep, get, mapValues } from 'lodash';
 import memize from 'memize';
-import { mapValues } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -430,4 +430,26 @@ export function createValidatedAction( validate, actionCreator ) {
 
 		return actionCreator( ...args );
 	};
+}
+
+/**
+ * Gets a global data object by path.
+ *
+ * Returns a deep clone to avoid mutating the original object.
+ *
+ * @since 1.183.0
+ *
+ * @param {string} path      Path to a value in the global object.
+ * @param {Object} [_global] Optional. The global object to use. Default is `global`.
+ * @return {*} The value at the path in the global data object.
+ * @throws {Error} If the value is not found / undefined.
+ */
+export function getGlobalData( path, _global = global ) {
+	const value = get( _global, path );
+
+	if ( value === undefined ) {
+		throw new Error( `Global data value not found at path ${ path }.` );
+	}
+
+	return cloneDeep( value );
 }

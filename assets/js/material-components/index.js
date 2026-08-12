@@ -19,14 +19,14 @@
 /**
  * External dependencies
  */
-import { MDCRipple } from '@material/ripple';
-import { MDCFormField } from '@material/form-field';
-import { MDCRadio } from '@material/radio';
-import { MDCSwitch } from '@material/switch';
-import { MDCDialog } from '@material/dialog';
 import { MDCCheckbox } from '@material/checkbox';
+import { MDCDialog } from '@material/dialog';
+import { MDCFormField } from '@material/form-field';
 import { MDCMenu } from '@material/menu';
+import { MDCRadio } from '@material/radio';
 import Dialog, { DialogContent, DialogFooter } from '@material/react-dialog';
+import { MDCRipple } from '@material/ripple';
+import { MDCSwitch } from '@material/switch';
 
 export * from './layout';
 export {

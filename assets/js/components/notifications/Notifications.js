@@ -25,10 +25,10 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import useViewContext from '@/js/hooks/useViewContext';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { getNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function Notifications( {
 	areaSlug,

@@ -1,5 +1,11 @@
+/**
+ * WordPress dependencies
+ */
 import { useCallback } from '@wordpress/element';
 
+/**
+ * Internal dependencies
+ */
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 

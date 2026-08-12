@@ -24,43 +24,41 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import {
-	CORE_USER,
-	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
-} from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-	ENUM_CONVERSION_EVENTS,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
 } from '@/js/components/KeyMetrics';
 import Link from '@/js/components/Link';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+} from '@/js/googlesitekit/datastore/user/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
 import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import useViewOnly from '@/js/hooks/useViewOnly';
-import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
 
-function TopPagesDrivingLeadsWidget( props ) {
-	const { Widget } = props;
-
-	const viewOnlyDashboard = useViewOnly();
-
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
-	);
-
-	const detectedEvents = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
-	);
+/**
+ * Resolves the lead conversion event names to filter the report by, from the
+ * property's detected events.
+ *
+ * Mirrors the dashboard widget: it keeps the detected lead events, and drops
+ * `CONTACT` when `SUBMIT_LEAD_FORM` is also present to avoid double-counting.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string[]} [detectedEvents] The property's detected conversion events.
+ * @return {string[]} The lead event names to filter by.
+ */
+export function getTopPagesDrivingLeadsEventNames( detectedEvents ) {
 	const eventNames = [
 		ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
 		ENUM_CONVERSION_EVENTS.CONTACT,
@@ -77,7 +75,23 @@ function TopPagesDrivingLeadsWidget( props ) {
 		);
 	}
 
-	const reportOptions = {
+	return eventNames;
+}
+
+/**
+ * Builds the Analytics 4 report options for the Top Pages Driving Leads metric.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}   dates      The date range.
+ * @param {string[]} eventNames The lead event names to filter by.
+ * @return {Object} The `getReport` options.
+ */
+export function getTopPagesDrivingLeadsReportOptions( dates, eventNames ) {
+	return {
 		...dates,
 		dimensions: [ 'pagePath', 'eventName' ],
 		dimensionFilters: {
@@ -98,6 +112,26 @@ function TopPagesDrivingLeadsWidget( props ) {
 		reportID:
 			'analytics-4_top-pages-driving-leads-widget_widget_reportOptions',
 	};
+}
+
+function TopPagesDrivingLeadsWidget( props ) {
+	const { Widget } = props;
+
+	const viewOnlyDashboard = useViewOnly();
+
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates()
+	);
+
+	const detectedEvents = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
+	);
+	const eventNames = getTopPagesDrivingLeadsEventNames( detectedEvents );
+
+	const reportOptions = getTopPagesDrivingLeadsReportOptions(
+		dates,
+		eventNames
+	);
 
 	const report = useInViewSelect(
 		( select ) =>

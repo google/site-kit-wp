@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -32,11 +32,14 @@ import { __ } from '@wordpress/i18n';
  */
 import Link from '@/js/components/Link';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import {
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+	MAX_VISIBLE_GOAL_DRIVERS,
 } from './constants';
-import type {
+import {
 	GoalDriverComponentProps,
 	GoalDriverTilesDriver,
 	GoalType,
@@ -47,6 +50,7 @@ interface GoalDriverTilesProps {
 	hasExpandableRows?: boolean;
 	primaryEvent?: string | string[];
 	goalType: GoalType;
+	breakdownFilter?: Record< string, unknown >;
 }
 
 interface RenderableGoalDriver extends GoalDriverTilesDriver {
@@ -64,17 +68,29 @@ const GoalDriverTiles: FC< GoalDriverTilesProps > = ( {
 	hasExpandableRows,
 	primaryEvent,
 	goalType,
+	breakdownFilter,
 } ) => {
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
+	const viewContext = useViewContext();
 	const [ isExpanded, setIsExpanded ] = useState( false );
 	const [ expandableDrivers, setExpandableDrivers ] = useState<
 		Record< string, boolean >
 	>( {} );
 
 	const onShowMoreClick = useCallback( () => {
-		setIsExpanded( ( currentState ) => ! currentState );
-	}, [] );
+		setIsExpanded( ( currentState ) => {
+			const nextState = ! currentState;
+
+			trackEvent(
+				`${ viewContext }_site-goals-sidebar`,
+				'toggle_extended_view',
+				nextState ? 'on' : 'off'
+			);
+
+			return nextState;
+		} );
+	}, [ viewContext ] );
 	const onExpandableRowsChange = useCallback(
 		( driverID: string, canExpand: boolean ) => {
 			setExpandableDrivers( ( currentState ) => {
@@ -95,7 +111,13 @@ const GoalDriverTiles: FC< GoalDriverTilesProps > = ( {
 		isExpanded && ! isMobileBreakpoint
 			? GOAL_DRIVER_ROW_LIMIT_EXPANDED
 			: GOAL_DRIVER_ROW_LIMIT_COLLAPSED;
-	const filteredDrivers = drivers.filter( isRenderableGoalDriver );
+	const filteredDrivers = drivers
+		.filter( isRenderableGoalDriver )
+		.slice( 0, MAX_VISIBLE_GOAL_DRIVERS );
+	const emptySlots =
+		filteredDrivers.length > GOAL_DRIVER_ROW_LIMIT_COLLAPSED
+			? Math.max( 0, MAX_VISIBLE_GOAL_DRIVERS - filteredDrivers.length )
+			: 0;
 	const hasExpandableDrivers =
 		typeof hasExpandableRows === 'boolean'
 			? hasExpandableRows
@@ -113,6 +135,7 @@ const GoalDriverTiles: FC< GoalDriverTilesProps > = ( {
 							<DriverComponent
 								goalType={ goalType }
 								primaryEvent={ primaryEvent }
+								breakdownFilter={ breakdownFilter }
 								limit={ limit }
 								onExpandableRowsChange={
 									onExpandableRowsChange
@@ -122,6 +145,14 @@ const GoalDriverTiles: FC< GoalDriverTilesProps > = ( {
 						</div>
 					)
 				) }
+
+				{ Array.from( { length: emptySlots } ).map( ( _, index ) => (
+					<div
+						key={ `empty-slot-${ index }` }
+						className="googlesitekit-site-goals-goal-drivers-section__tile googlesitekit-site-goals-goal-drivers-section__tile--empty"
+						aria-hidden="true"
+					/>
+				) ) }
 			</div>
 
 			{ hasExpandableDrivers && ! isMobileBreakpoint && (

@@ -25,21 +25,21 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import SupportLink from '@/js/components/SupportLink';
+import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { useInView } from '@/js/hooks/useInView';
 import useViewContext from '@/js/hooks/useViewContext';
-import { DAY_IN_SECONDS, trackEvent } from '@/js/util';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import {
 	ACCOUNT_STATUS_READY,
 	SITE_STATUS_READY,
 } from '@/js/modules/adsense/util';
-import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
-import Notice from '@/js/components/Notice';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import { DAY_IN_SECONDS, trackEvent } from '@/js/util';
 
 export default function AdBlockingRecoverySetupCTANotice() {
 	const inView = useInView();

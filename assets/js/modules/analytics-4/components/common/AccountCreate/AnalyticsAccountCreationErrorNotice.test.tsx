@@ -24,14 +24,18 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import * as tracking from '@/js/util/tracking';
 import {
 	createTestRegistry,
 	fireEvent,
 	provideSiteInfo,
 	render,
-} from 'tests/js/test-utils';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+} from '@tests/js/test-utils';
 import AnalyticsAccountCreationErrorNotice from './AnalyticsAccountCreationErrorNotice';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AnalyticsAccountCreationErrorNotice', () => {
 	let registry: WPDataRegistry;
@@ -39,6 +43,12 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
+		mockTrackEvent.mockClear();
+		global.history.replaceState(
+			null,
+			'',
+			'/wp-admin/admin.php?page=googlesitekit-dashboard'
+		);
 	} );
 
 	describe( 'user_cancel', () => {
@@ -66,15 +76,13 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'should call global.history.back when the Go to Analytics button is clicked', () => {
-			const backSpy = jest
-				.spyOn( global.history, 'back' )
-				.mockImplementation( () => {} );
+		it( 'should call onRetry when the Go to Analytics button is clicked', () => {
+			const onRetry = jest.fn();
 
 			const { getByRole } = render(
 				<AnalyticsAccountCreationErrorNotice
 					errorCode="user_cancel"
-					onRetry={ () => {} }
+					onRetry={ onRetry }
 				/>,
 				{ registry }
 			);
@@ -82,60 +90,6 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 			fireEvent.click(
 				getByRole( 'button', { name: /go to analytics/i } )
 			);
-
-			expect( backSpy ).toHaveBeenCalled();
-
-			backSpy.mockRestore();
-		} );
-	} );
-
-	describe( 'max_accounts_reached', () => {
-		it( 'should render with a get help link', () => {
-			const expectedHelpURL = registry
-				.select( CORE_SITE )
-				.getGoogleSupportURL( {
-					path: '/analytics/',
-					hash: 'topic=14090456',
-				} );
-
-			const { getByRole, getByText } = render(
-				<AnalyticsAccountCreationErrorNotice
-					errorCode="max_accounts_reached"
-					onRetry={ () => {} }
-				/>,
-				{ registry }
-			);
-
-			expect(
-				getByText( 'Analytics account creation failed' )
-			).toBeInTheDocument();
-
-			expect(
-				getByText(
-					'Creating a new Analytics account failed because the Analytics account limit has been reached. Try again or'
-				)
-			).toBeInTheDocument();
-
-			const getHelpLink = getByRole( 'link', { name: /get help/i } );
-			expect( getHelpLink ).toHaveAttribute( 'href', expectedHelpURL );
-
-			expect(
-				getByRole( 'button', { name: /^retry$/i } )
-			).toBeInTheDocument();
-		} );
-
-		it( 'should call onRetry when the Retry button is clicked', () => {
-			const onRetry = jest.fn();
-
-			const { getByRole } = render(
-				<AnalyticsAccountCreationErrorNotice
-					errorCode="max_accounts_reached"
-					onRetry={ onRetry }
-				/>,
-				{ registry }
-			);
-
-			fireEvent.click( getByRole( 'button', { name: /^retry$/i } ) );
 
 			expect( onRetry ).toHaveBeenCalled();
 		} );
@@ -185,6 +139,52 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 			fireEvent.click( getByRole( 'button', { name: /^retry$/i } ) );
 
 			expect( onRetry ).toHaveBeenCalled();
+		} );
+	} );
+
+	describe( 'tracking', () => {
+		it( 'tracks analytics_account_creation_error in initial setup flow when showProgress is present', () => {
+			global.history.replaceState(
+				null,
+				'',
+				'/wp-admin/admin.php?page=googlesitekit-dashboard&showProgress=true'
+			);
+
+			render(
+				<AnalyticsAccountCreationErrorNotice
+					errorCode="backend_error"
+					onRetry={ () => {} }
+				/>,
+				{ registry, viewContext: 'test-context' }
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'test-context_setup',
+				'analytics_account_creation_error',
+				'backend_error'
+			);
+		} );
+
+		it( 'tracks analytics_account_creation_error in module setup flow when showProgress is not present', () => {
+			global.history.replaceState(
+				null,
+				'',
+				'/wp-admin/admin.php?page=googlesitekit-dashboard'
+			);
+
+			render(
+				<AnalyticsAccountCreationErrorNotice
+					errorCode="backend_error"
+					onRetry={ () => {} }
+				/>,
+				{ registry, viewContext: 'test-context' }
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'test-context',
+				'analytics_account_creation_error',
+				'backend_error'
+			);
 		} );
 	} );
 } );

@@ -17,7 +17,7 @@
 /**
  * WordPress dependencies
  */
-import { useBlockProps, InspectorControls } from '@wordpress-core/block-editor';
+import { InspectorControls, useBlockProps } from '@wordpress-core/block-editor';
 import {
 	PanelBody,
 	SelectControl,

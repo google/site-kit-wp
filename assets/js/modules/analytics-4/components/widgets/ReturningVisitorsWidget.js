@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import { get } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -30,35 +30,65 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
+import { MetricTileNumeric } from '@/js/components/KeyMetrics';
 import {
 	CORE_USER,
 	KM_ANALYTICS_RETURNING_VISITORS,
 } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MetricTileNumeric } from '@/js/components/KeyMetrics';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
-function ReturningVisitorsWidget( { Widget } ) {
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-			compare: true,
-		} )
-	);
-
-	const reportOptions = {
+/**
+ * Builds the Analytics 4 report options for the Returning Visitors metric.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the report request the same data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dates The date range, including the compare dates.
+ * @return {Object} The Analytics 4 `getReport` options.
+ */
+export function getReturningVisitorsReportOptions( dates ) {
+	return {
 		...dates,
 		dimensions: [ 'newVsReturning' ],
 		metrics: [ { name: 'activeUsers' } ],
 		reportID: 'analytics-4_returning-visitors-widget_widget_reportOptions',
 	};
+}
+
+/**
+ * Builds the sub-text for the Returning Visitors metric tile.
+ *
+ * Both this widget and the metric's PDF tile import this, so the dashboard tile
+ * and the PDF tile display the same sub-text.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} total The total number of visitors.
+ * @return {string} The formatted sub-text.
+ */
+export function getReturningVisitorsSubtext( total ) {
+	return sprintf(
+		/* translators: %s: Number of total visitors visiting the site, such as "1,234". */
+		__( 'of %s total visitors', 'google-site-kit' ),
+		numFmt( total, { style: 'decimal' } )
+	);
+}
+
+function ReturningVisitorsWidget( { Widget } ) {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} )
+	);
+
+	const reportOptions = getReturningVisitorsReportOptions( dates );
 
 	const report = useInViewSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
@@ -114,11 +144,7 @@ function ReturningVisitorsWidget( { Widget } ) {
 			widgetSlug={ KM_ANALYTICS_RETURNING_VISITORS }
 			metricValue={ currentPercentage }
 			metricValueFormat={ format }
-			subText={ sprintf(
-				/* translators: %d: Number of total visitors visiting the site. */
-				__( 'of %s total visitors', 'google-site-kit' ),
-				numFmt( total, { style: 'decimal' } )
-			) }
+			subText={ getReturningVisitorsSubtext( total ) }
 			previousValue={ prevPercentage }
 			currentValue={ currentPercentage }
 			loading={ loading }

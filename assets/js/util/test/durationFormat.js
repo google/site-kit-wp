@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { createDurationFormat } from '@/js/util/i18n';
 
 describe( 'durationFormat', () => {

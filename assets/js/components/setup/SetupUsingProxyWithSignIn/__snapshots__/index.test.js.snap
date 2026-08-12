@@ -193,6 +193,27 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                 </li>
                 <li
                   class="mdc-list-item"
+                  id="manage-email-reports"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage email reports
+                    </span>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
                   id="manage-sites"
                   role="menuitem"
                   tabindex="-1"
@@ -548,6 +569,27 @@ exports[`SetupUsingProxyWithSignIn should not render the progress indicator when
                         wapuu.wordpress@gmail.com
                       </p>
                     </div>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
+                  id="manage-email-reports"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage email reports
+                    </span>
                   </div>
                 </li>
                 <li
@@ -966,6 +1008,27 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                 </li>
                 <li
                   class="mdc-list-item"
+                  id="manage-email-reports"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage email reports
+                    </span>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
                   id="manage-sites"
                   role="menuitem"
                   tabindex="-1"
@@ -1299,6 +1362,27 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 </li>
                 <li
                   class="mdc-list-item"
+                  id="manage-email-reports"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage email reports
+                    </span>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
                   id="manage-sites"
                   role="menuitem"
                   tabindex="-1"
@@ -1370,20 +1454,13 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
           class="mdc-layout-grid"
         >
           <div
+            class="googlesitekit-setup__notifications"
+          />
+          <div
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
-            >
-              <svg />
-              <div
-                class="googlesitekit-setup__splash-graphic-screenshot"
-              >
-                <svg />
-              </div>
-            </div>
-            <div
-              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
+              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
             >
               <h1
                 class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--medium"
@@ -1393,6 +1470,21 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
               <div
                 class="googlesitekit-setup__analytics-opt-in-wrapper"
               >
+                <div
+                  class="googlesitekit-setup__analytics-opt-in-wrapper-header"
+                >
+                  <svg />
+                  <span
+                    class="googlesitekit-typography googlesitekit-setup__analytics-opt-in-wrapper-header-title googlesitekit-typography--body googlesitekit-typography--small"
+                  >
+                    Analytics
+                  </span>
+                  <span
+                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                  >
+                    Recommended
+                  </span>
+                </div>
                 <div
                   class="mdc-form-field"
                 >
@@ -1441,7 +1533,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                       <a
                         aria-label="Learn more (opens in a new tab)"
                         class="googlesitekit-cta-link"
-                        href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
+                        href="https://sitekit.withgoogle.com/support/?doc=why-set-up-ga4"
                         rel="noopener noreferrer"
                         target="_blank"
                       >
@@ -1450,19 +1542,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                         >
                           Learn more
                         </span>
-                        <span
-                          class="googlesitekit-icon-wrapper"
-                          style="margin-left: 5px;"
-                        >
-                          <svg />
-                        </span>
                       </a>
-                       
-                      <span
-                        class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
-                      >
-                        Recommended
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -1542,6 +1622,16 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 >
                   <svg />
                 </span>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-setup__screenshot mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <svg />
+              <div
+                class="googlesitekit-setup__splash-graphic-screenshot"
+              >
+                <svg />
               </div>
             </div>
           </div>
@@ -1664,6 +1754,27 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 </li>
                 <li
                   class="mdc-list-item"
+                  id="manage-email-reports"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage email reports
+                    </span>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
                   id="manage-sites"
                   role="menuitem"
                   tabindex="-1"
@@ -1735,18 +1846,11 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
           class="mdc-layout-grid"
         >
           <div
+            class="googlesitekit-setup__notifications"
+          />
+          <div
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
-            <div
-              class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
-            >
-              <svg />
-              <div
-                class="googlesitekit-setup__splash-graphic-screenshot"
-              >
-                <svg />
-              </div>
-            </div>
             <div
               class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-4-phone"
             >
@@ -1830,6 +1934,16 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 >
                   <svg />
                 </span>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-setup__screenshot mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <svg />
+              <div
+                class="googlesitekit-setup__splash-graphic-screenshot"
+              >
+                <svg />
               </div>
             </div>
           </div>
@@ -1952,6 +2066,27 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 </li>
                 <li
                   class="mdc-list-item"
+                  id="manage-email-reports"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage email reports
+                    </span>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
                   id="manage-sites"
                   role="menuitem"
                   tabindex="-1"
@@ -2023,20 +2158,13 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
           class="mdc-layout-grid"
         >
           <div
+            class="googlesitekit-setup__notifications"
+          />
+          <div
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
-            >
-              <svg />
-              <div
-                class="googlesitekit-setup__splash-graphic-screenshot"
-              >
-                <svg />
-              </div>
-            </div>
-            <div
-              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
+              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
             >
               <h1
                 class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--medium"
@@ -2046,6 +2174,21 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
               <div
                 class="googlesitekit-setup__analytics-opt-in-wrapper"
               >
+                <div
+                  class="googlesitekit-setup__analytics-opt-in-wrapper-header"
+                >
+                  <svg />
+                  <span
+                    class="googlesitekit-typography googlesitekit-setup__analytics-opt-in-wrapper-header-title googlesitekit-typography--body googlesitekit-typography--small"
+                  >
+                    Analytics
+                  </span>
+                  <span
+                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                  >
+                    Recommended
+                  </span>
+                </div>
                 <div
                   class="mdc-form-field"
                 >
@@ -2094,7 +2237,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                       <a
                         aria-label="Learn more (opens in a new tab)"
                         class="googlesitekit-cta-link"
-                        href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
+                        href="https://sitekit.withgoogle.com/support/?doc=why-set-up-ga4"
                         rel="noopener noreferrer"
                         target="_blank"
                       >
@@ -2103,19 +2246,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                         >
                           Learn more
                         </span>
-                        <span
-                          class="googlesitekit-icon-wrapper"
-                          style="margin-left: 5px;"
-                        >
-                          <svg />
-                        </span>
                       </a>
-                       
-                      <span
-                        class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
-                      >
-                        Recommended
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -2195,6 +2326,16 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 >
                   <svg />
                 </span>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-setup__screenshot mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <svg />
+              <div
+                class="googlesitekit-setup__splash-graphic-screenshot"
+              >
+                <svg />
               </div>
             </div>
           </div>
@@ -2317,6 +2458,27 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 </li>
                 <li
                   class="mdc-list-item"
+                  id="manage-email-reports"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage email reports
+                    </span>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
                   id="manage-sites"
                   role="menuitem"
                   tabindex="-1"
@@ -2388,20 +2550,13 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
           class="mdc-layout-grid"
         >
           <div
+            class="googlesitekit-setup__notifications"
+          />
+          <div
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
-            >
-              <svg />
-              <div
-                class="googlesitekit-setup__splash-graphic-screenshot"
-              >
-                <svg />
-              </div>
-            </div>
-            <div
-              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
+              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
             >
               <h1
                 class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--medium"
@@ -2411,6 +2566,21 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
               <div
                 class="googlesitekit-setup__analytics-opt-in-wrapper"
               >
+                <div
+                  class="googlesitekit-setup__analytics-opt-in-wrapper-header"
+                >
+                  <svg />
+                  <span
+                    class="googlesitekit-typography googlesitekit-setup__analytics-opt-in-wrapper-header-title googlesitekit-typography--body googlesitekit-typography--small"
+                  >
+                    Analytics
+                  </span>
+                  <span
+                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                  >
+                    Recommended
+                  </span>
+                </div>
                 <div
                   class="mdc-form-field"
                 >
@@ -2459,7 +2629,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                       <a
                         aria-label="Learn more (opens in a new tab)"
                         class="googlesitekit-cta-link"
-                        href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
+                        href="https://sitekit.withgoogle.com/support/?doc=why-set-up-ga4"
                         rel="noopener noreferrer"
                         target="_blank"
                       >
@@ -2468,19 +2638,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                         >
                           Learn more
                         </span>
-                        <span
-                          class="googlesitekit-icon-wrapper"
-                          style="margin-left: 5px;"
-                        >
-                          <svg />
-                        </span>
                       </a>
-                       
-                      <span
-                        class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
-                      >
-                        Recommended
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -2560,6 +2718,16 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 >
                   <svg />
                 </span>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-setup__screenshot mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <svg />
+              <div
+                class="googlesitekit-setup__splash-graphic-screenshot"
+              >
+                <svg />
               </div>
             </div>
           </div>
@@ -2682,6 +2850,27 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 </li>
                 <li
                   class="mdc-list-item"
+                  id="manage-email-reports"
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  <div
+                    class="googlesitekit-user-menu__item"
+                  >
+                    <div
+                      class="googlesitekit-user-menu__item-icon"
+                    >
+                      <svg />
+                    </div>
+                    <span
+                      class="googlesitekit-user-menu__item-label"
+                    >
+                      Manage email reports
+                    </span>
+                  </div>
+                </li>
+                <li
+                  class="mdc-list-item"
                   id="manage-sites"
                   role="menuitem"
                   tabindex="-1"
@@ -2753,20 +2942,13 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
           class="mdc-layout-grid"
         >
           <div
+            class="googlesitekit-setup__notifications"
+          />
+          <div
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
-            >
-              <svg />
-              <div
-                class="googlesitekit-setup__splash-graphic-screenshot"
-              >
-                <svg />
-              </div>
-            </div>
-            <div
-              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
+              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
             >
               <h1
                 class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--medium"
@@ -2776,6 +2958,21 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
               <div
                 class="googlesitekit-setup__analytics-opt-in-wrapper"
               >
+                <div
+                  class="googlesitekit-setup__analytics-opt-in-wrapper-header"
+                >
+                  <svg />
+                  <span
+                    class="googlesitekit-typography googlesitekit-setup__analytics-opt-in-wrapper-header-title googlesitekit-typography--body googlesitekit-typography--small"
+                  >
+                    Analytics
+                  </span>
+                  <span
+                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                  >
+                    Recommended
+                  </span>
+                </div>
                 <div
                   class="mdc-form-field"
                 >
@@ -2824,7 +3021,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                       <a
                         aria-label="Learn more (opens in a new tab)"
                         class="googlesitekit-cta-link"
-                        href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
+                        href="https://sitekit.withgoogle.com/support/?doc=why-set-up-ga4"
                         rel="noopener noreferrer"
                         target="_blank"
                       >
@@ -2833,19 +3030,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                         >
                           Learn more
                         </span>
-                        <span
-                          class="googlesitekit-icon-wrapper"
-                          style="margin-left: 5px;"
-                        >
-                          <svg />
-                        </span>
                       </a>
-                       
-                      <span
-                        class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
-                      >
-                        Recommended
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -2925,6 +3110,16 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 >
                   <svg />
                 </span>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-setup__screenshot mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <svg />
+              <div
+                class="googlesitekit-setup__splash-graphic-screenshot"
+              >
+                <svg />
               </div>
             </div>
           </div>

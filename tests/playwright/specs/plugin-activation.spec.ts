@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { test, expect, TestDetails, WordPressFixture } from '../playwright';
+import { TestDetails, WordPressFixture, expect, test } from '../playwright';
 import { asUser, withPlugins } from '../wordpress';
 
 /**
@@ -32,10 +32,22 @@ import { asUser, withPlugins } from '../wordpress';
  */
 function makeSetupTest( name: string ) {
 	return async ( { wp }: WordPressFixture ) => {
-		await test.step( 'Click `Start setup` button', () => {
-			return wp.page
-				.getByRole( 'button', { name: 'Start setup' } )
-				.click();
+		await test.step( 'Click `Start setup` button', async () => {
+			const startSetupButton = wp.page.getByRole( 'button', {
+				name: 'Start setup',
+			} );
+
+			await expect( startSetupButton ).toBeVisible();
+
+			// Once the activation notice has rendered, `plugins.php` is a
+			// fully-static page: nothing on it schedules further paints, so
+			// headless Chromium stops producing animation frames. Playwright's
+			// default click waits for the element to be "stable" via
+			// `requestAnimationFrame`, which never fires in that state and makes
+			// the click hang until it times out. Force the click to skip the
+			// frame-based actionability wait — the button is already asserted
+			// visible above and navigates the page on click.
+			await startSetupButton.click( { force: true } );
 		} );
 
 		await test.step( 'Check the screen title', () => {
@@ -77,7 +89,7 @@ test.describe( 'plugin activation', details, () => {
 
 	test(
 		'should lead to the splash screen',
-		makeSetupTest( 'Set up Site Kit' )
+		makeSetupTest( 'Let’s get started!' )
 	);
 
 	test(

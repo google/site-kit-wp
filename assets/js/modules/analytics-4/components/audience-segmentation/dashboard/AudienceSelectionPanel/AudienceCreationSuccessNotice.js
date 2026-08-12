@@ -25,16 +25,16 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
+import CheckFill from '@/svg/icons/check-fill.svg';
 import {
 	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { Button } from 'googlesitekit-components';
-import CheckFill from '@/svg/icons/check-fill.svg';
 
 export default function AudienceCreationSuccessNotice() {
 	const viewContext = useViewContext();

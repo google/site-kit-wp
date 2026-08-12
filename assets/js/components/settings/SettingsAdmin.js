@@ -25,31 +25,36 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import Layout from '@/js/components/layout/Layout';
-import { Grid, Cell, Row } from '@/js/material-components';
 import OptIn from '@/js/components/OptIn';
-import ResetButton from '@/js/components/ResetButton';
-import SettingsCardConsentMode from './SettingsCardConsentMode';
-import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
-import SettingsCardEmailReporting from './SettingsCardEmailReporting';
-import SettingsPlugin from './SettingsPlugin';
-import ConnectedIcon from '@/svg/icons/connected.svg';
 import PreviewBlock from '@/js/components/PreviewBlock';
-import SettingsCardAudiences from '@/js/modules/analytics-4/components/audience-segmentation/settings/SettingsCardAudiences';
+import ResetButton from '@/js/components/ResetButton';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { useFeature } from '@/js/hooks/useFeature';
+import { Cell, Grid, Row } from '@/js/material-components';
+import SettingsCardAudiences from '@/js/modules/analytics-4/components/audience-segmentation/settings/SettingsCardAudiences';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import ConnectedIcon from '@/svg/icons/connected.svg';
+import SettingsCardConsentMode from './SettingsCardConsentMode';
+import SettingsCardEmailReporting from './SettingsCardEmailReporting';
+import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
+import SettingsPlugin from './SettingsPlugin';
 
 export default function SettingsAdmin() {
-	const proactiveUserEngagementEnabled = useFeature(
-		'proactiveUserEngagement'
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const setupFlowRefreshPhase4Enabled = useFeature(
+		'setupFlowRefreshPhase4'
 	);
-
 	const configuredAudiences = useSelect( ( select ) =>
 		select( CORE_USER ).getConfiguredAudiences()
+	);
+	const hasSitePurposeAnswer = useSelect(
+		( select ) =>
+			!! select( CORE_USER ).getUserInputSettings()?.purpose?.values
+				?.length
 	);
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
@@ -65,10 +70,14 @@ export default function SettingsAdmin() {
 		return select( MODULES_ANALYTICS_4 ).isGatheringData();
 	} );
 
-	const showKeyMetricsSettings =
-		isAnalyticsConnected &&
+	const hasAvailableKeyMetricsData =
 		isSearchConsoleGatheringData === false &&
 		isAnalyticsGatheringData === false;
+
+	const showKeyMetricsSettings =
+		( isAnalyticsConnected && hasAvailableKeyMetricsData ) ||
+		( isAnalyticsConnected && setupFlowRefreshEnabled ) ||
+		( hasSitePurposeAnswer && setupFlowRefreshPhase4Enabled );
 
 	const showKeyMetricsSettingsLoading = useSelect( ( select ) => {
 		if (
@@ -92,9 +101,10 @@ export default function SettingsAdmin() {
 			! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
 				'isGatheringData'
 			) ||
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'isGatheringData'
-			)
+			( isAnalyticsConnected &&
+				! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'isGatheringData'
+				) )
 		) {
 			return true;
 		}
@@ -154,21 +164,20 @@ export default function SettingsAdmin() {
 				</Cell>
 			) }
 
-			{ ( isAnalyticsConnected || !! configuredAudiences ) && (
-				<Cell size={ 12 }>
-					<SettingsCardAudiences />
-				</Cell>
-			) }
+			{ ! setupFlowRefreshEnabled &&
+				( isAnalyticsConnected || !! configuredAudiences ) && (
+					<Cell size={ 12 }>
+						<SettingsCardAudiences />
+					</Cell>
+				) }
 
-			{ proactiveUserEngagementEnabled && (
-				<Cell size={ 12 }>
-					<SettingsCardEmailReporting />
-				</Cell>
-			) }
+			<Cell size={ 12 }>
+				<SettingsCardEmailReporting />
+			</Cell>
 
 			<Cell size={ 12 }>
 				<Layout
-					title={ __( 'Plugin Status', 'google-site-kit' ) }
+					title={ __( 'Plugin status', 'google-site-kit' ) }
 					header
 					rounded
 				>

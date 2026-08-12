@@ -1,0 +1,230 @@
+/**
+ * Site Goals Selection Panel Footer component.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import { useCallback } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { SelectionPanelFooter } from '@/js/components/SelectionPanel';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import useViewContext from '@/js/hooks/useViewContext';
+import {
+	SITE_GOALS_MAX_SELECTED_DRIVERS,
+	SITE_GOALS_MIN_SELECTED_DRIVERS,
+	SITE_GOALS_SELECTED_DRIVERS,
+	SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT,
+	SITE_GOALS_SELECTION_FORM,
+} from '@/js/modules/analytics-4/components/site-goals/constants';
+import {
+	GOAL_TYPES,
+	resolveGoalDriverSelectionState,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import {
+	GoalDriverSelectionState,
+	GoalType,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { getSelectedDriverIDs } from '@/js/modules/analytics-4/components/site-goals/utils/selectedDrivers';
+import { resolveVisitorEngagementSelectionState } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { trackEvent } from '@/js/util';
+
+interface FooterProps {
+	isOpen: boolean;
+	closePanel: () => void;
+	hasEcommerceGoalDrivers: boolean;
+	hasLeadGoalDrivers: boolean;
+}
+
+function flattenSelections( selections: GoalDriverSelectionState ): string[] {
+	return [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ].flatMap( ( goalType ) =>
+		getSelectedDriverIDs( selections, goalType ).map(
+			( goalDriverID ) => `${ goalType }:${ goalDriverID }`
+		)
+	);
+}
+
+function hasInvalidSelection(
+	selectedDrivers: GoalDriverSelectionState,
+	hasEcommerceGoalDrivers: boolean,
+	hasLeadGoalDrivers: boolean
+): boolean {
+	const goalTypesToValidate: GoalType[] = [];
+
+	if ( hasEcommerceGoalDrivers ) {
+		goalTypesToValidate.push( GOAL_TYPES.ECOMMERCE );
+	}
+
+	if ( hasLeadGoalDrivers ) {
+		goalTypesToValidate.push( GOAL_TYPES.LEAD );
+	}
+
+	return goalTypesToValidate.some( ( goalType ) => {
+		const selectedCount = getSelectedDriverIDs(
+			selectedDrivers,
+			goalType
+		).length;
+
+		return (
+			selectedCount < SITE_GOALS_MIN_SELECTED_DRIVERS ||
+			selectedCount > SITE_GOALS_MAX_SELECTED_DRIVERS
+		);
+	} );
+}
+
+const Footer: FC< FooterProps > = ( {
+	isOpen,
+	closePanel,
+	hasEcommerceGoalDrivers,
+	hasLeadGoalDrivers,
+} ) => {
+	const viewContext = useViewContext();
+
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { saveSiteGoalsSettings } = useDispatch( MODULES_ANALYTICS_4 );
+
+	const isSavingSiteGoalsSettings = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).isSavingSiteGoalsSettings(),
+		[]
+	);
+	const savedDrivers: GoalDriverSelectionState | undefined = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getSiteGoalsGoalDrivers(),
+		[]
+	);
+
+	const [ selectedDrivers ] = useFormValue(
+		SITE_GOALS_SELECTION_FORM,
+		SITE_GOALS_SELECTED_DRIVERS
+	);
+	const selectedDriverState = selectedDrivers as
+		| GoalDriverSelectionState
+		| undefined;
+	const [ selectedVisitorEngagement ] = useFormValue(
+		SITE_GOALS_SELECTION_FORM,
+		SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT
+	);
+	const selectedDriverSlugs = flattenSelections(
+		selectedDriverState || {
+			[ GOAL_TYPES.ECOMMERCE ]: [],
+			[ GOAL_TYPES.LEAD ]: [],
+		}
+	);
+	const hasSelectionError = hasInvalidSelection(
+		selectedDriverState || {
+			[ GOAL_TYPES.ECOMMERCE ]: [],
+			[ GOAL_TYPES.LEAD ]: [],
+		},
+		hasEcommerceGoalDrivers,
+		hasLeadGoalDrivers
+	);
+
+	async function saveSettings() {
+		const sanitizedSelectionState =
+			resolveGoalDriverSelectionState( selectedDriverState );
+		const sanitizedVisitorEngagementSelectionState =
+			resolveVisitorEngagementSelectionState( selectedVisitorEngagement );
+
+		const { error } = await saveSiteGoalsSettings( {
+			goalDrivers: sanitizedSelectionState,
+			visitorEngagement: sanitizedVisitorEngagementSelectionState,
+		} );
+
+		if ( error ) {
+			return { error };
+		}
+
+		setValues( SITE_GOALS_SELECTION_FORM, {
+			[ SITE_GOALS_SELECTED_DRIVERS ]: sanitizedSelectionState,
+			[ SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT ]:
+				sanitizedVisitorEngagementSelectionState,
+		} );
+
+		return { error };
+	}
+
+	const onSaveSuccess = useCallback( () => {
+		const visitorEngagementState = ( selectedVisitorEngagement || {
+			[ GOAL_TYPES.ECOMMERCE ]: [],
+			[ GOAL_TYPES.LEAD ]: [],
+		} ) as Record< GoalType, string[] >;
+		const selectedVisitorEngagementSlugs = [
+			GOAL_TYPES.ECOMMERCE,
+			GOAL_TYPES.LEAD,
+		].flatMap( ( goalType ) =>
+			( visitorEngagementState[ goalType ] || [] ).map(
+				( eventSlug ) => `${ goalType }:${ eventSlug }`
+			)
+		);
+
+		trackEvent(
+			`${ viewContext }_site-goals-sidebar`,
+			'site_goals_sidebar_save',
+			[ ...selectedDriverSlugs, ...selectedVisitorEngagementSlugs ].join(
+				','
+			)
+		);
+	}, [ viewContext, selectedDriverSlugs, selectedVisitorEngagement ] );
+
+	const onCancel = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_site-goals-sidebar`,
+			'site_goals_sidebar_cancel'
+		);
+	}, [ viewContext ] );
+
+	return (
+		<SelectionPanelFooter
+			isOpen={ isOpen }
+			closePanel={ closePanel }
+			saveSettings={ saveSettings }
+			onSaveSuccess={ onSaveSuccess }
+			onCancel={ onCancel }
+			isBusy={ isSavingSiteGoalsSettings }
+			// @ts-expect-error - `SelectionPanelFooter` prop typing is currently incomplete.
+			savedItemSlugs={
+				savedDrivers
+					? flattenSelections(
+							resolveGoalDriverSelectionState( savedDrivers )
+					  )
+					: []
+			}
+			// @ts-expect-error - `SelectionPanelFooter` prop typing is currently incomplete.
+			selectedItemSlugs={ selectedDriverSlugs }
+			minSelectedItemCount={
+				hasSelectionError ? SITE_GOALS_MIN_SELECTED_DRIVERS : 0
+			}
+			maxSelectedItemCount={
+				hasSelectionError ? 0 : SITE_GOALS_MAX_SELECTED_DRIVERS * 2
+			}
+		/>
+	);
+};
+
+export default Footer;

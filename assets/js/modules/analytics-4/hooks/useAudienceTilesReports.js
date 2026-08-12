@@ -21,10 +21,15 @@
  */
 import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+	getAudienceTilesMetricsReportOptions,
+	getAudienceTilesSiteKitAudiencesReportOptions,
+	getAudienceTilesTopCitiesReportOptions,
+	getAudienceTilesTopContentPageTitlesReportOptions,
+	getAudienceTilesTopContentReportOptions,
+	getAudienceTilesTotalPageviewsReportOptions,
+} from '@/js/modules/analytics-4/utils/audienceTilesReportOptions';
 
 /**
  * Checks if the audience reports are loaded for the given report options.
@@ -151,18 +156,11 @@ export default function useAudienceTilesReports( {
 		select( CORE_USER ).getConfiguredAudiences()
 	);
 
-	const audiencesDimensionFilter = {
-		audienceResourceName: configuredAudiences,
-	};
-
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} )
 	);
-
-	const { startDate, endDate } = dates;
 
 	const shouldFetchReport =
 		isSiteKitAudiencePartialData === undefined
@@ -172,19 +170,10 @@ export default function useAudienceTilesReports( {
 	const shouldFetchSiteKitAudiencesReport =
 		siteKitAudiences.length > 0 ? isSiteKitAudiencePartialData : false;
 
-	const reportOptions = {
-		...dates,
-		dimensions: [ { name: 'audienceResourceName' } ],
-		dimensionFilters: audiencesDimensionFilter,
-		metrics: [
-			{ name: 'totalUsers' },
-			{ name: 'sessionsPerUser' },
-			{ name: 'screenPageViewsPerSession' },
-			{ name: 'screenPageViews' },
-		],
-		reportID:
-			'audience-segmentation_use-audience-tiles-reports_hook_reportOptions',
-	};
+	const reportOptions = getAudienceTilesMetricsReportOptions(
+		dates,
+		configuredAudiences
+	);
 	const report = useInViewSelect(
 		( select ) => {
 			if ( shouldFetchReport === undefined ) {
@@ -223,19 +212,8 @@ export default function useAudienceTilesReports( {
 			reportOptions,
 		] );
 	} );
-	const newVsReturningReportOptions = {
-		...dates,
-		dimensions: [ { name: 'newVsReturning' } ],
-		dimensionFilters: { newVsReturning: [ 'new', 'returning' ] },
-		metrics: [
-			{ name: 'totalUsers' },
-			{ name: 'sessionsPerUser' },
-			{ name: 'screenPageViewsPerSession' },
-			{ name: 'screenPageViews' },
-		],
-		reportID:
-			'audience-segmentation_use-audience-tiles-reports_hook_newVsReturningReportOptions',
-	};
+	const newVsReturningReportOptions =
+		getAudienceTilesSiteKitAudiencesReportOptions( dates );
 	const siteKitAudiencesReport = useInViewSelect(
 		( select ) => {
 			if ( shouldFetchSiteKitAudiencesReport === undefined ) {
@@ -275,13 +253,8 @@ export default function useAudienceTilesReports( {
 		] );
 	} );
 
-	const totalPageviewsReportOptions = {
-		startDate,
-		endDate,
-		metrics: [ { name: 'screenPageViews' } ],
-		reportID:
-			'audience-segmentation_use-audience-tiles-reports_hook_totalPageviewsReportOptions',
-	};
+	const totalPageviewsReportOptions =
+		getAudienceTilesTotalPageviewsReportOptions( dates );
 	const totalPageviewsReport = useInViewSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).getReport(
 			totalPageviewsReportOptions
@@ -303,23 +276,8 @@ export default function useAudienceTilesReports( {
 			totalPageviewsReport?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value
 		) || 0;
 
-	const topCitiesReportOptions = {
-		startDate,
-		endDate,
-		dimensions: [ 'city' ],
-		metrics: [ { name: 'totalUsers' } ],
-		orderby: [
-			{
-				metric: {
-					metricName: 'totalUsers',
-				},
-				desc: true,
-			},
-		],
-		limit: 4, // Limit is set to 4 so that (not set) can be filtered out and 3 cities remain to display.
-		reportID:
-			'audience-segmentation_use-audience-tiles-reports_hook_topCitiesReportOptions',
-	};
+	const topCitiesReportOptions =
+		getAudienceTilesTopCitiesReportOptions( dates );
 
 	const topCitiesReport = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
@@ -338,23 +296,8 @@ export default function useAudienceTilesReports( {
 		configuredAudiences
 	);
 
-	const topContentReportOptions = {
-		startDate,
-		endDate,
-		dimensions: [ 'pagePath' ],
-		metrics: [ { name: 'screenPageViews' } ],
-		dimensionFilters: {
-			'customEvent:googlesitekit_post_type': {
-				filterType: 'stringFilter',
-				matchType: 'EXACT',
-				value: 'post',
-			},
-		},
-		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
-		limit: 3,
-		reportID:
-			'audience-segmentation_use-audience-tiles-reports_hook_topContentReportOptions',
-	};
+	const topContentReportOptions =
+		getAudienceTilesTopContentReportOptions( dates );
 	const topContentReport = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
 			topContentReportOptions,
@@ -371,23 +314,8 @@ export default function useAudienceTilesReports( {
 		configuredAudiences
 	);
 
-	const topContentPageTitlesReportOptions = {
-		startDate,
-		endDate,
-		dimensions: [ 'pagePath', 'pageTitle' ],
-		metrics: [ { name: 'screenPageViews' } ],
-		dimensionFilters: {
-			'customEvent:googlesitekit_post_type': {
-				filterType: 'stringFilter',
-				matchType: 'EXACT',
-				value: 'post',
-			},
-		},
-		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
-		limit: 15,
-		reportID:
-			'audience-segmentation_use-audience-tiles-reports_hook_topContentPageTitlesReportOptions',
-	};
+	const topContentPageTitlesReportOptions =
+		getAudienceTilesTopContentPageTitlesReportOptions( dates );
 	const topContentPageTitlesReport = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
 			topContentPageTitlesReportOptions,

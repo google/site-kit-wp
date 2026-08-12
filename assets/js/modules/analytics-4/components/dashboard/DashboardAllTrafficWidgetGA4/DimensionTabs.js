@@ -32,16 +32,16 @@ import { __ } from '@wordpress/i18n';
  */
 import { Option, Select, Tab, TabBar } from 'googlesitekit-components';
 import { useDispatch } from 'googlesitekit-data';
+import PreviewBlock from '@/js/components/PreviewBlock';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
+	UI_ACTIVE_ROW_INDEX,
 	UI_DIMENSION_COLOR,
 	UI_DIMENSION_NAME,
 	UI_DIMENSION_VALUE,
-	UI_ACTIVE_ROW_INDEX,
 } from '@/js/modules/analytics-4/datastore/constants';
-import PreviewBlock from '@/js/components/PreviewBlock';
 import { trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
 
 const tabs = [
 	{

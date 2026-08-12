@@ -19,20 +19,19 @@
 /**
  * Internal dependencies
  */
-
-import EmailReportingErrorNotices from './EmailReportingErrorNotices';
-import {
-	fireEvent,
-	render,
-	createTestRegistry,
-	provideUserAuthentication,
-	provideModules,
-} from '../../../../../tests/js/test-utils';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { defaultSettings as analytics4DefaultSettings } from '@/js/modules/analytics-4/datastore/__fixtures__';
-import * as tracking from '@/js/util/tracking';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { defaultSettings as analytics4DefaultSettings } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import * as tracking from '@/js/util/tracking';
+import {
+	createTestRegistry,
+	fireEvent,
+	provideModules,
+	provideUserAuthentication,
+	render,
+} from '@tests/js/test-utils';
+import EmailReportingErrorNotices from './EmailReportingErrorNotices';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

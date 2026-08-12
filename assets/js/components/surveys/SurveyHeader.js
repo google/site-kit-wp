@@ -31,8 +31,8 @@ import { Icon, closeSmall } from '@wordpress/icons';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import Logo from '@/svg/graphics/logo-g.svg';
 import Typography from '@/js/components/Typography';
+import Logo from '@/svg/graphics/logo-g.svg';
 
 function SurveyHeader( { title, dismissSurvey } ) {
 	return (

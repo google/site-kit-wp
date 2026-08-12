@@ -19,28 +19,23 @@
 /**
  * External dependencies
  */
-import { useIntersection as mockUseIntersection } from 'react-use';
+import { intersectionObserver } from '@shopify/jest-dom-mocks';
 
 /**
  * Internal dependencies
  */
-import {
-	render,
-	createTestRegistry,
-	muteFetch,
-	freezeFetch,
-	act,
-	waitForDefaultTimeouts,
-} from '../../../../tests/js/test-utils';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import * as tracking from '@/js/util/tracking';
+import {
+	act,
+	createTestRegistry,
+	freezeFetch,
+	muteFetch,
+	render,
+	waitForDefaultTimeouts,
+} from '@tests/js/test-utils';
 import GoogleTagGatewayToggle from './GoogleTagGatewayToggle';
-
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
-} ) );
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -53,10 +48,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 	);
 
 	beforeEach( () => {
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: false,
-			intersectionRatio: 0,
-		} ) );
+		intersectionObserver.mock();
 
 		registry = createTestRegistry();
 
@@ -68,6 +60,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 	} );
 
 	afterEach( () => {
+		intersectionObserver.restore();
 		jest.clearAllMocks();
 	} );
 
@@ -166,11 +159,13 @@ describe( 'GoogleTagGatewayToggle', () => {
 			status: 200,
 		} );
 
-		const { getByLabelText, queryByText, rerender, waitForRegistry } =
-			render( <GoogleTagGatewayToggle />, {
+		const { getByLabelText, queryByText, waitForRegistry } = render(
+			<GoogleTagGatewayToggle />,
+			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			} );
+			}
+		);
 
 		await waitForRegistry();
 
@@ -185,12 +180,12 @@ describe( 'GoogleTagGatewayToggle', () => {
 		).not.toBeInTheDocument();
 
 		// Simulate the warning notice becoming visible if it were present.
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: true,
-			intersectionRatio: 1,
-		} ) );
-
-		rerender( <GoogleTagGatewayToggle /> );
+		act( () => {
+			intersectionObserver.simulate( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} );
+		} );
 
 		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );
@@ -205,7 +200,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 			status: 200,
 		} );
 
-		const { getByLabelText, getByText, rerender, waitForRegistry } = render(
+		const { getByLabelText, getByText, waitForRegistry } = render(
 			<GoogleTagGatewayToggle />,
 			{
 				registry,
@@ -225,13 +220,13 @@ describe( 'GoogleTagGatewayToggle', () => {
 			)
 		).toBeInTheDocument();
 
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: true,
-			intersectionRatio: 1,
-		} ) );
-
 		// Simulate the warning notice becoming visible.
-		rerender( <GoogleTagGatewayToggle /> );
+		act( () => {
+			intersectionObserver.simulate( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} );
+		} );
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		expect( mockTrackEvent ).toHaveBeenCalledWith(

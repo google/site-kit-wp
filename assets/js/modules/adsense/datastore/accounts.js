@@ -21,14 +21,14 @@
  */
 import { get } from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
 } from 'googlesitekit-data';
-import { MODULES_ADSENSE } from './constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULES_ADSENSE } from './constants';
 
 // Actions
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';

@@ -25,15 +25,15 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
-import { ErrorNotices } from '@/js/modules/adsense/components/common';
-import { trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
+import { useSelect } from 'googlesitekit-data';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import useViewContext from '@/js/hooks/useViewContext';
+import { ErrorNotices } from '@/js/modules/adsense/components/common';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { trackEvent } from '@/js/util';
+import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
 
 export default function SetupAccountPendingTasks() {
 	const viewContext = useViewContext();

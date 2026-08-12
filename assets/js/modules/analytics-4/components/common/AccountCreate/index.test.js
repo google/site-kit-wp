@@ -19,6 +19,25 @@
 /**
  * Internal dependencies
  */
+import { createCacheKey } from '@/js/googlesitekit/api';
+import { getKeys, setItem } from '@/js/googlesitekit/api/cache';
+import {
+	VIEW_CONTEXT_MODULE_SETUP,
+	VIEW_CONTEXT_SETTINGS,
+} from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	ACCOUNT_CREATE,
+	EDIT_SCOPE,
+	GTM_SCOPE,
+	MODULES_ANALYTICS_4,
+	PROVISIONING_SCOPE,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import * as tracking from '@/js/util/tracking';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import { mockUseInstanceID } from '@tests/js/mock-use-instance-id';
 import {
 	cleanup,
 	createTestRegistry,
@@ -29,24 +48,8 @@ import {
 	provideUserAuthentication,
 	provideUserInfo,
 	render,
-} from '../../../../../../../tests/js/test-utils';
-import { mockLocation } from '../../../../../../../tests/js/mock-browser-utils';
-import { mockUseInstanceID } from '../../../../../../../tests/js/mock-use-instance-id';
-
-import {
-	EDIT_SCOPE,
-	GTM_SCOPE,
-	MODULES_ANALYTICS_4,
-	PROVISIONING_SCOPE,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { createCacheKey } from '@/js/googlesitekit/api';
-import { getKeys, setItem } from '@/js/googlesitekit/api/cache';
+} from '@tests/js/test-utils';
 import AccountCreate from '.';
-import * as tracking from '@/js/util/tracking';
-import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -183,9 +186,21 @@ describe( 'AccountCreate', () => {
 			await waitForRegistry();
 
 			// Verify the cache is cleared for the `analytics-4` module.
+			// Note: the `core/forms` snapshot cache entry is also expected
+			// here because navigating to the Terms of Service URL persists
+			// the form values (so they can be restored if the user returns
+			// with an account creation error).
 			const cacheKeys = await getKeys();
-			expect( cacheKeys ).toHaveLength( 1 );
-			expect( cacheKeys[ 0 ] ).toContain( searchConsoleItemCacheKey );
+			expect(
+				cacheKeys.some( ( key ) =>
+					key.includes( searchConsoleItemCacheKey )
+				)
+			).toBe( true );
+			expect(
+				cacheKeys.some( ( key ) =>
+					key.includes( MODULE_SLUG_ANALYTICS_4 )
+				)
+			).toBe( false );
 		} );
 
 		it( 'should make a request to the `create-account-ticket` endpoint when clicking the Create Account button', async () => {
@@ -375,6 +390,312 @@ describe( 'AccountCreate', () => {
 					'proxy'
 				);
 				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			} );
+		} );
+	} );
+
+	describe( 'account creation error state', () => {
+		it( 'should render the AnalyticsAccountCreationErrorNotice when an error code is present', async () => {
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&accountCreationErrorCode=user_cancel';
+
+			const { getByText, waitForRegistry } = render( <AccountCreate />, {
+				registry,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			await waitForRegistry();
+
+			expect(
+				getByText( 'Analytics account creation failed' )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should not render the error notice when the `setupFlowRefresh` feature flag is disabled', async () => {
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&accountCreationErrorCode=user_cancel';
+
+			const { queryByText, waitForRegistry } = render(
+				<AccountCreate />,
+				{ registry }
+			);
+
+			await waitForRegistry();
+
+			expect(
+				queryByText( 'Analytics account creation failed' )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should retry the account creation process when the Retry button is clicked', async () => {
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&accountCreationErrorCode=max_accounts_reached';
+
+			fetchMock.post(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
+				),
+				{
+					body: { accountTicketId: 'abc123' }, // eslint-disable-line sitekit/acronym-case
+					status: 200,
+				}
+			);
+			muteFetch( REGEX_REST_CONVERSION_TRACKING_SETTINGS );
+
+			const { getByRole, waitForRegistry } = render( <AccountCreate />, {
+				registry,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			await waitForRegistry();
+
+			fireEvent.click( getByRole( 'button', { name: /^retry$/i } ) );
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetched(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
+				)
+			);
+		} );
+
+		it( 'should clear the error query arg and rollback settings when the Back button is clicked', async () => {
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&accountCreationErrorCode=user_cancel';
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				accountID: ACCOUNT_CREATE,
+				propertyID: '',
+				webDataStreamID: '',
+			} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAccountSummaries( {
+					accountSummaries: [
+						{
+							_id: '123',
+							displayName: 'Existing account',
+						},
+					],
+					nextPageToken: null,
+				} );
+
+			const rollbackSettingsSpy = jest.spyOn(
+				registry.dispatch( MODULES_ANALYTICS_4 ),
+				'rollbackSettings'
+			);
+
+			const { getByRole, waitForRegistry } = render( <AccountCreate />, {
+				registry,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			await waitForRegistry();
+
+			fireEvent.click( getByRole( 'button', { name: /back/i } ) );
+
+			expect( rollbackSettingsSpy ).toHaveBeenCalled();
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getAccountID()
+			).toBeUndefined();
+			expect( global.location.href ).not.toContain(
+				'accountCreationErrorCode=user_cancel'
+			);
+
+			rollbackSettingsSpy.mockRestore();
+		} );
+
+		it( 'should clear the error query arg and keep the settings route when Back is clicked on a settings URL', async () => {
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-settings&accountCreationErrorCode=user_cancel#/connected-services/analytics-4/edit';
+
+			const savedAccountID = '123';
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				accountID: savedAccountID,
+			} );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				accountID: ACCOUNT_CREATE,
+			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAccountSummaries( {
+					accountSummaries: [
+						{
+							_id: savedAccountID,
+							displayName: 'Existing account',
+						},
+					],
+					nextPageToken: null,
+				} );
+
+			const { getByRole, waitForRegistry } = render( <AccountCreate />, {
+				registry,
+				features: [ 'setupFlowRefresh' ],
+				viewContext: VIEW_CONTEXT_SETTINGS,
+			} );
+
+			await waitForRegistry();
+
+			fireEvent.click( getByRole( 'button', { name: /back/i } ) );
+
+			expect( global.location.href ).not.toContain(
+				'accountCreationErrorCode=user_cancel'
+			);
+			expect( global.location.href ).toContain(
+				'#/connected-services/analytics-4/edit'
+			);
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getAccountID()
+			).toBe( savedAccountID );
+		} );
+
+		describe( 'Continue without Analytics button', () => {
+			it( 'should render the button when an error is present and the user is in the initial setup flow', async () => {
+				global.location.href =
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true&accountCreationErrorCode=user_cancel';
+
+				const { getByRole, waitForRegistry } = render(
+					<AccountCreate />,
+					{
+						registry,
+						features: [ 'setupFlowRefresh' ],
+					}
+				);
+
+				await waitForRegistry();
+
+				expect(
+					getByRole( 'button', {
+						name: /continue without analytics/i,
+					} )
+				).toBeInTheDocument();
+			} );
+
+			it( 'should not render the button when the user is not in the initial setup flow', async () => {
+				global.location.href =
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&accountCreationErrorCode=user_cancel';
+
+				const { queryByRole, waitForRegistry } = render(
+					<AccountCreate />,
+					{
+						registry,
+						features: [ 'setupFlowRefresh' ],
+					}
+				);
+
+				await waitForRegistry();
+
+				expect(
+					queryByRole( 'button', {
+						name: /continue without analytics/i,
+					} )
+				).not.toBeInTheDocument();
+			} );
+
+			it( 'should navigate to the dashboard when clicked', async () => {
+				global.location.href =
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true&accountCreationErrorCode=user_cancel';
+
+				const initialSetupSettingsEndpoint = new RegExp(
+					'^/google-site-kit/v1/core/user/data/initial-setup-settings'
+				);
+				fetchMock.postOnce( initialSetupSettingsEndpoint, {
+					body: { isAnalyticsSetupComplete: true },
+					status: 200,
+				} );
+
+				const { getByRole, waitForRegistry } = render(
+					<AccountCreate />,
+					{
+						registry,
+						features: [ 'setupFlowRefresh' ],
+					}
+				);
+
+				await waitForRegistry();
+
+				fireEvent.click(
+					getByRole( 'button', {
+						name: /continue without analytics/i,
+					} )
+				);
+
+				await waitForRegistry();
+
+				// Verify the initial setup settings were saved before navigation.
+				expect( fetchMock ).toHaveFetched(
+					initialSetupSettingsEndpoint,
+					{
+						method: 'POST',
+						body: {
+							data: {
+								settings: {
+									isAnalyticsSetupComplete: true,
+								},
+							},
+						},
+					}
+				);
+
+				expect( global.location.assign ).toHaveBeenCalledWith(
+					expect.stringContaining( 'page=googlesitekit-dashboard' )
+				);
+			} );
+
+			it( 'should navigate to the key metrics setup when clicked with the setupFlowRefreshPhase4 feature flag enabled', async () => {
+				global.location.href =
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true&accountCreationErrorCode=user_cancel';
+
+				const initialSetupSettingsEndpoint = new RegExp(
+					'^/google-site-kit/v1/core/user/data/initial-setup-settings'
+				);
+				fetchMock.postOnce( initialSetupSettingsEndpoint, {
+					body: { isAnalyticsSetupComplete: true },
+					status: 200,
+				} );
+
+				const { getByRole, waitForRegistry } = render(
+					<AccountCreate />,
+					{
+						registry,
+						features: [
+							'setupFlowRefresh',
+							'setupFlowRefreshPhase4',
+						],
+					}
+				);
+
+				await waitForRegistry();
+
+				fireEvent.click(
+					getByRole( 'button', {
+						name: /continue without analytics/i,
+					} )
+				);
+
+				await waitForRegistry();
+
+				// Verify the initial setup settings were saved before navigation.
+				expect( fetchMock ).toHaveFetched(
+					initialSetupSettingsEndpoint,
+					{
+						method: 'POST',
+						body: {
+							data: {
+								settings: {
+									isAnalyticsSetupComplete: true,
+								},
+							},
+						},
+					}
+				);
+
+				expect( global.location.assign ).toHaveBeenCalledWith(
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup&showProgress=true'
+				);
 			} );
 		} );
 	} );

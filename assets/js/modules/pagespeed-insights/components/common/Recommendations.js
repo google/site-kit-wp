@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -31,8 +31,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
-	STRATEGY_MOBILE,
 	STRATEGY_DESKTOP,
+	STRATEGY_MOBILE,
 } from '@/js/modules/pagespeed-insights/datastore/constants';
 import Recommendation from './Recommendation';
 

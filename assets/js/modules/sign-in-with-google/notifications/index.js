@@ -24,25 +24,25 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
-import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
-import SignInWithGoogleSetupCTABanner from '@/js/modules/sign-in-with-google/components/dashboard/SignInWithGoogleSetupCTABanner';
-import {
-	NOTIFICATION_GROUPS,
-	NOTIFICATION_AREAS,
-	PRIORITY,
-} from '@/js/googlesitekit/notifications/constants';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_SETTINGS,
 } from '@/js/googlesitekit/constants';
-import SetupSuccessSubtleNotification from '@/js/modules/sign-in-with-google/components/dashboard/SetupSuccessSubtleNotification';
-import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
-import CompatibilityWarningSubtleNotification from '@/js/modules/sign-in-with-google/components/dashboard/CompatibilityWarningSubtleNotification';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
 import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
+import CompatibilityWarningSubtleNotification from '@/js/modules/sign-in-with-google/components/dashboard/CompatibilityWarningSubtleNotification';
+import SetupSuccessSubtleNotification from '@/js/modules/sign-in-with-google/components/dashboard/SetupSuccessSubtleNotification';
+import SignInWithGoogleSetupCTABanner from '@/js/modules/sign-in-with-google/components/dashboard/SignInWithGoogleSetupCTABanner';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
+import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
 
 export const SIGN_IN_WITH_GOOGLE_NOTIFICATIONS = {
 	'sign-in-with-google-setup-cta': {

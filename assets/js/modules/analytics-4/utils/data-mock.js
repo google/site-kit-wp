@@ -19,20 +19,20 @@
 /**
  * External dependencies
  */
-import md5 from 'md5';
 import faker from 'faker';
 import invariant from 'invariant';
 import { castArray, cloneDeep, isPlainObject, zip } from 'lodash';
-import { Observable, merge, from } from 'rxjs';
-import { map, reduce, take, toArray, mergeMap } from 'rxjs/operators';
+import md5 from 'md5';
+import { Observable, from, merge } from 'rxjs';
+import { map, mergeMap, reduce, take, toArray } from 'rxjs/operators';
 
 /**
  * Internal dependencies
  */
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { isValidDateString, stringifyObject, stringToDate } from '@/js/util';
-import { isValidDimensionFilters } from './report-validation';
+import { isValidDateString, stringToDate, stringifyObject } from '@/js/util';
 import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '@/js/util/zero-reports';
+import { isValidDimensionFilters } from './report-validation';
 
 export const STRATEGY_CARTESIAN = 'cartesian';
 export const STRATEGY_ZIP = 'zip';

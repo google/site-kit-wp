@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { renderHook, actHook } from '../../../tests/js/test-utils';
+import { actHook, renderHook } from '@tests/js/test-utils';
 import useQueryArg from './useQueryArg';
 
 describe( 'useQueryArg', () => {
@@ -83,6 +83,26 @@ describe( 'useQueryArg', () => {
 			null,
 			'',
 			updatedURL
+		);
+	} );
+
+	it( 'should preserve the URL hash when setQuery is called', () => {
+		mockGlobal.location.href =
+			'http://example.com/path?page=demo&error=foo#/connected-services/analytics-4/edit';
+
+		const { result } = renderHook( () =>
+			useQueryArg( 'error', '', mockGlobal )
+		);
+		const [ , setQuery ] = result.current;
+
+		actHook( () => {
+			setQuery( undefined );
+		} );
+
+		expect( historyReplaceStateMock ).toHaveBeenCalledWith(
+			null,
+			'',
+			'http://example.com/path?page=demo#/connected-services/analytics-4/edit'
 		);
 	} );
 } );

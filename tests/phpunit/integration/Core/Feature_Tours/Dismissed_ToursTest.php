@@ -6,9 +6,9 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 
 namespace Google\Site_Kit\Tests\Core\Feature_Tours;
 
@@ -39,24 +39,26 @@ class Dismissed_ToursTest extends TestCase {
 		$dismissed_tours = new Dismissed_Tours( $this->user_options );
 		$dismissed_tours->register();
 
-		$this->assertEmpty( $this->get_value() );
+		$this->assertEmpty( $this->get_value(), 'Dismissed tours should start with no stored slugs.' );
 
 		$dismissed_tours->add( 'feature_a' );
 
-		$this->assertEquals( array( 'feature_a' ), $this->get_value() );
+		$this->assertEquals( array( 'feature_a' ), $this->get_value(), 'First dismissed tour slug should be stored.' );
 
 		// Calling add again will only add to the saved value.
 		$dismissed_tours->add( 'feature_b' );
 		$this->assertEqualSets(
 			array( 'feature_a', 'feature_b' ),
-			$this->get_value()
+			$this->get_value(),
+			'Adding a second tour should preserve existing dismissed tour.'
 		);
 
 		// Supports adding multiple slugs at once.
 		$dismissed_tours->add( 'feature_c', 'feature_d' );
 		$this->assertEqualSets(
 			array( 'feature_a', 'feature_b', 'feature_c', 'feature_d' ),
-			$this->get_value()
+			$this->get_value(),
+			'Adding multiple tours should append all dismissed tour slugs.'
 		);
 	}
 
@@ -64,28 +66,28 @@ class Dismissed_ToursTest extends TestCase {
 		$dismissed_tours = new Dismissed_Tours( $this->user_options );
 		$dismissed_tours->register();
 
-		$this->assertFalse( $this->get_value() );
+		$this->assertFalse( $this->get_value(), 'Dismissed tours option should be unset before sanitization.' );
 
-		// Setting the value to a non-array will result in an empty array
+		// Setting the value to a non-array will result in an empty array.
 		$this->set_value( false );
 
-		$this->assertEquals( array(), $this->get_value() );
+		$this->assertEquals( array(), $this->get_value(), 'Sanitizer should convert false value to empty list.' );
 
 		$this->set_value( 123 );
 
-		$this->assertEquals( array(), $this->get_value() );
+		$this->assertEquals( array(), $this->get_value(), 'Sanitizer should convert scalar value to empty list.' );
 
 		// Setting with an array works as expected.
 		$this->set_value( array( 'feature_a' ) );
-		$this->assertEquals( array( 'feature_a' ), $this->get_value() );
+		$this->assertEquals( array( 'feature_a' ), $this->get_value(), 'Sanitizer should preserve valid dismissed tour list.' );
 
 		// Updating with a non-array will preserve the current value.
 		$this->set_value( 'not an array' );
-		$this->assertEquals( array( 'feature_a' ), $this->get_value() );
+		$this->assertEquals( array( 'feature_a' ), $this->get_value(), 'Invalid update should preserve dismissed tour list.' );
 
 		// Duplicates are ignored.
 		$this->set_value( array( 'feature_a', 'feature_a' ) );
-		$this->assertEquals( array( 'feature_a' ), $this->get_value() );
+		$this->assertEquals( array( 'feature_a' ), $this->get_value(), 'Sanitizer should remove duplicate dismissed tour slugs.' );
 	}
 
 	public function test_get() {
@@ -93,16 +95,16 @@ class Dismissed_ToursTest extends TestCase {
 		// Intentionally not registered here to isolate `get` behavior.
 
 		// An empty value returns the default (empty array).
-		$this->assertFalse( $this->get_value() );
-		$this->assertEquals( array(), $dismissed_tours->get() );
+		$this->assertFalse( $this->get_value(), 'Dismissed tours option should be unset before get.' );
+		$this->assertEquals( array(), $dismissed_tours->get(), 'Getter should return empty list for unset option.' );
 
 		// A non-array value (e.g. DB manipulated) returns an empty array.
 		$this->set_value( 'not an array' );
-		$this->assertEquals( array(), $dismissed_tours->get() );
+		$this->assertEquals( array(), $dismissed_tours->get(), 'Getter should return empty list for invalid option.' );
 
 		// Returns the saved array when saved.
 		$this->set_value( array( 'feature_a', 'feature_b' ) );
-		$this->assertEquals( array( 'feature_a', 'feature_b' ), $dismissed_tours->get() );
+		$this->assertEquals( array( 'feature_a', 'feature_b' ), $dismissed_tours->get(), 'Getter should return stored dismissed tour slugs.' );
 	}
 
 	/**

@@ -56,6 +56,7 @@ import { HOUR_IN_SECONDS } from '@/js/util';
  * @param {?string}    props.learnMoreLabel      Label for the "Learn More" link. Optional.
  * @param {?string}    props.learnMoreURL        URL for the "Learn More" link. Optional.
  * @param {?Function}  props.onCTAClick          Callback to run when CTA is clicked. Optional.
+ * @param {?boolean}   props.ctaInProgress       Whether the CTA button is in progress. Optional.
  * @param {?Function}  props.onDismissClick      Callback to run when the Dismiss button is clicked. Optional.
  * @param {?Object}    props.gaTrackingEventArgs Custom GA tracking event category and label options. Optional.
  * @return {JSX.Element} Notification component.
@@ -73,6 +74,7 @@ function NotificationFromServer( {
 	learnMoreLabel,
 	learnMoreURL,
 	onCTAClick,
+	ctaInProgress,
 	onDismissClick,
 	gaTrackingEventArgs,
 } ) {
@@ -105,6 +107,7 @@ function NotificationFromServer( {
 				label: ctaLabel,
 				href: ctaURL,
 				onClick: onCTAClick,
+				inProgress: ctaInProgress,
 				dismissOptions,
 				// In the case of notifications, other `target="_blank"` CTA URLs
 				// are external, and adding a new, more explicit/clear `external`
@@ -142,6 +145,7 @@ NotificationFromServer.propTypes = {
 	learnMoreLabel: PropTypes.string,
 	learnMoreURL: PropTypes.string,
 	onCTAClick: PropTypes.func,
+	ctaInProgress: PropTypes.bool,
 	onDismissClick: PropTypes.func,
 	gaTrackingEventArgs: PropTypes.object,
 };

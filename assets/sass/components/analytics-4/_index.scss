@@ -19,6 +19,8 @@
 @import "googlesitekit-analytics-settings-module";
 @import "googlesitekit-analytics-setup-module";
 @import "googlesitekit-site-goals";
+@import "site-goals/googlesitekit-site-goals-selection-panel";
+@import "site-goals/googlesitekit-site-goals-tour";
 @import "audience-segmentation/googlesitekit-audience-segmentation-tile";
 @import "audience-segmentation/googlesitekit-audience-segmentation-tile-loading";
 @import "audience-segmentation/googlesitekit-audience-segmentation-tile-error";
@@ -30,3 +32,4 @@
 @import "audience-segmentation/googlesitekit-audience-widget-area";
 @import "audience-segmentation/googlesitekit-partial-data-notice";
 @import "audience-segmentation/googlesitekit-audience-selection-panel";
+@import "audience-segmentation/googlesitekit-audience-segmentation-back-notice";

@@ -25,9 +25,9 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { trackingExclusionLabels } from '@/js/modules/analytics-4/components/common/TrackingExclusionSwitches';
 import Typography from '@/js/components/Typography';
+import { trackingExclusionLabels } from '@/js/modules/analytics-4/components/common/TrackingExclusionSwitches';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 export default function OptionalSettingsView() {
 	const trackingDisabled = useSelect(

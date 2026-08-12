@@ -25,21 +25,21 @@ import { identity } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { __, sprintf, _x } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { getLocale } from '@/js/util/i18n';
 import {
-	convertSecondsToArray,
-	numFmt,
-	getChartDifferenceArrow,
 	calculateDifferenceBetweenChartValues,
+	convertSecondsToArray,
+	getChartDifferenceArrow,
+	numFmt,
 	stringToDate,
 } from '@/js/util';
-import { partitionAnalytics4Report } from './partition-report';
+import { getLocale } from '@/js/util/i18n';
 import parseDimensionStringToDate from './parseDimensionStringToDate';
+import { partitionAnalytics4Report } from './partition-report';
 
 /**
  * Reduces and processes an array of analytics-4 row data.
