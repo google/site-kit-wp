@@ -51,25 +51,27 @@ site traffic graph. The widget hosts an internal tab shell with two panels:
    insight, the daily traffic chart annotated with recently published content that is gaining
    traffic, and a traffic breakdown section.
 2. **Traffic Insights** — a generated insight, a chart of actual traffic against an expected
-   baseline, a section explaining what affected the traffic, and an "Is this helpful?" feedback
-   prompt.
+   baseline that continues 28 days past the end of the period as a forecast, a line saying whether
+   those days read as a seasonal boom or a lull, a section explaining what affected the traffic, and
+   an "Is this helpful?" feedback prompt.
 
-A third tab, **Recent Activities**, appears in the same Figma frame and is out of scope here; it
-will be added by a later epic into the same shell.
-
-Behind the widget, four new pieces:
+Behind the widget, five new pieces:
 
 1. **Proxy access to the generative endpoint.** `Google_Proxy` gains a method that posts to the
    service's `/v1/ai/benchmarking` endpoint and returns the generated insight from that same
    response.
-2. **A module datapoint that assembles its own request.** `Analytics_4` gains a `GET` datapoint that
-   runs the GA4 reports, collects Search Console rows through a filter, derives the request payload,
-   calls the proxy, and returns the insight together with the series and rows the widget renders.
+2. **A module datapoint that assembles its own request.** `Analytics_4` gains a shareable `GET`
+   datapoint that runs the GA4 reports, collects Search Console rows through a filter, derives the
+   request payload, calls the proxy, and returns the insight together with the series and rows the
+   widget renders.
 3. **The expected-baseline model.** PHP that derives the expected daily traffic range the Traffic
-   Insights chart plots from the site's own GA4 daily history, described under
-   [Expected baseline](#expected-baseline).
+   Insights chart plots from the site's own GA4 daily history, and runs the same model 28 days
+   forward for the look-ahead, described under [Expected baseline](#expected-baseline).
 4. **A datastore slice.** `modules/analytics-4` gains a `benchmarking` slice that requests that one
    response through the API layer's cache and exposes it to the widget.
+5. **A site-wide cache in front of the datapoint.** Transients holding the composed response and the
+   generated insight against the request's arguments, so the second reader of a date range costs
+   neither a report call nor a rate-limit token — see [Site-wide cache](#site-wide-cache).
 
 **The browser assembles nothing.** The widget calls the datapoint with the selected date range and
 receives a single object carrying the generated insight, the daily series, the expected band and the
@@ -78,23 +80,31 @@ issued from the front end. The service narrates; it does not query, and it does 
 expected baseline is closed-form arithmetic over the site's own daily series, computed in PHP
 alongside the payload it travels in and returned whether or not the generative call succeeds.
 
+**The whole widget, insight included, works in the view-only dashboard.** The datapoint is shareable,
+so the reports and the generative call both run under the module owner's credentials on a shared
+request, exactly as every other shared report does, and the site-wide cache makes the result one
+site-level artifact rather than one per user — see [Dashboard sharing](#dashboard-sharing).
+
 ```mermaid
 sequenceDiagram
     participant W as Widget
     participant S as benchmarking store
     participant C as API cache
     participant D as Analytics_4 datapoint
+    participant T as Site transients
     participant G as GA4 Data API
     participant SC as Search Console
     participant X as Site Kit Service
     W->>S: getBenchmarking( startDate, endDate )
     S->>C: GET benchmarking
-    C->>D: on a cache miss
-    D->>G: batched reports
-    D->>SC: contextual_data filter
-    D->>X: POST /v1/ai/benchmarking
+    C->>D: on a browser cache miss
+    D->>T: look up the response and the insight
+    D->>G: batched reports, on a response miss
+    D->>SC: contextual_data filter, on a response miss
+    D->>X: POST /v1/ai/benchmarking, on an insight miss
     X-->>D: scenario, top_dimensions, text, driver, recommendation
-    D-->>C: insight, daily series, baseline, breakdown rows
+    D->>T: store the response and the insight
+    D-->>C: insight, daily series, baseline, forecast, breakdown rows
     C-->>S: response
     S-->>W: response
 ```
@@ -107,22 +117,26 @@ and debug-field traits are the ones the rest of the dashboard uses, wired up the
 server-side half has a working precedent in Email Reporting, which already runs GA4 and Search
 Console reports to compose a payload rather than to answer a single report request.
 
-Seven reuses carry weight in the design, because it depends on a particular property of each:
+Nine reuses carry weight in the design, because it depends on a particular property of each:
 
 * **`Module::get_data()` and `Module::set_data()` dispatch a datapoint in-process.** That is how the
   new datapoint runs its reports: no HTTP hop and no REST round trip, using the module's own service
   client — see [Report gathering](#report-gathering).
+* **`Module::get_oauth_client_for_datapoint()` resolves the client per datapoint**, including for a
+  nested in-process dispatch, which is what carries the whole pipeline into the view-only dashboard —
+  see [Dashboard sharing](#dashboard-sharing).
 * **`GET:batch-report` on `Analytics_4` runs up to five report requests per GA4 call.** The reports
   the payload needs therefore cost two round trips rather than eight, chunked the way
   `Email_Reporting_Data_Requests::collect_batch_reports()` chunks them.
 * **`POST:searchanalytics-batch` on `Search_Console`** answers the query rows the same way, which is
-  what the [contextual-data filter](#cross-module-contextual-data) hands back.
+  what the [contextual-data filter](#cross-module-contextual-data) hands back, and it answers them on
+  a shared request too.
+* **`Core\Storage\Transients`** is the whole of the storage the
+  [site-wide cache](#site-wide-cache) needs, on a network install as on a single site.
 * **`GoogleChart` passes Google Charts interval roles through untouched.** That is what draws the
-  expected-range band, with no new chart type and no change to the shared component — see
-  [Traffic Insights tab](#traffic-insights-tab).
+  expected-range band — see [Traffic Insights tab](#traffic-insights-tab).
 * **The API layer caches `GET` responses only.** That is why the insight is a read datapoint: a
-  cache hit is the only request that does not spend a rate-limit token — see
-  [Datastore slice](#datastore-slice).
+  browser cache hit does not reach the server at all — see [Datastore slice](#datastore-slice).
 * **`Google_Proxy::request()`** already injects `site_id`/`site_secret` and the bearer header, which
   keeps the new proxy method thin. Its 15-second default timeout is a constraint the design has to
   work around — see [One request, and its latency budget](#latency-budget).
@@ -149,22 +163,25 @@ enabled, and Search Console adds its
 [contextual-data callback](#cross-module-contextual-data) under the same check — with the flag off
 neither module carries any benchmarking code into a request.
 
+Two additions sit outside the flag: `sessionSource` among the
+[shareable dimensions](#report-gathering) and `propertyCreateTime` among the
+[view-only settings keys](#gating-and-visibility). Both are single entries in allow-lists the rest of
+the plugin reads on every request, and making what a shared report may query depend on a feature flag
+is a worse property than the widening itself. Neither is reachable by the widget with the flag off.
+
 ### **Widget registration and placement** {#widget-registration-and-placement}
 
 `PerformanceBenchmarkingWidget` registers at full width into `AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY` at
 priority 2, behind `analyticsAllTrafficGA4` at priority 1, so it renders immediately after the traffic
-graph and before the visitor-groups area. **No new widget area, widget context or navigation chip is
-introduced** — the widget lives inside the Traffic section the PRD asks for, and the Traffic chip
-already exists.
+graph and before the visitor-groups area.
 
-It registers with `wrapWidget: false` and renders its own `Widget` wrapper, so that it can supply
-`Header`, `headerContents` and the tab shell. `modules` carries
+It registers with `wrapWidget: false` and renders its own `Widget` wrapper, so that it can pass
+`noPadding` and lay the tab bar flush across the top of the card. `modules` carries
 `MODULE_SLUG_ANALYTICS_4`, leaving the not-connected and recoverable-module cases to the Widgets API,
 and `isActive` resolves the [gating conditions](#gating-and-visibility).
 
-The widget registers only for the main dashboard. It is not added to
-`AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY`: the analysis is a whole-site one, and the year-over-year
-comparisons the endpoint needs are not meaningful for a single URL.
+The widget registers only for the main dashboard: the analysis is a whole-site one, and the
+year-over-year comparisons the endpoint needs are not meaningful for a single URL.
 
 ### **Gating and visibility** {#gating-and-visibility}
 
@@ -177,6 +194,12 @@ The widget's `isActive` requires all of:
 4. The property has enough history: `getPropertyCreateTime()` on `modules/analytics-4` is at least
    13 months back. A younger property cannot support the year-over-year comparison the endpoint's
    `visitors` array expects.
+
+**Conditions 3 and 4 both hold in the view-only dashboard, and nothing is relaxed for it.** Condition 3
+admits view-only users and the [datapoint behind the widget is shareable](#dashboard-sharing).
+Condition 4 needs `propertyCreateTime` added to `Analytics_4\Settings::get_view_only_keys()` — without
+it a view-only user resolves `getPropertyCreateTime()` to nothing and the condition can never pass, and
+with it the age gate stays one condition evaluated the same way for everyone.
 
 Conditions 1 to 3 return `WidgetNull`, and the Traffic area is unaffected — `analyticsAllTrafficGA4`
 keeps the area alive on its own, so there is no cascade to worry about.
@@ -199,7 +222,7 @@ table, and they put the check in different places:
   months after `getPropertyCreateTime()`. The user dismisses the message and it comes back — or
   rather, the widget does — on the day the data supports it.
 
-**Neither is confirmed. Both need a product decision before issue 4 is built**, and the choice
+**Neither is confirmed. Both need a product decision before the widget is built**, and the choice
 also decides whether the eligibility arithmetic lives in `isActive` or in the shell — see
 [the open question](#what-does-the-widget-do-when-the-property-is-too-young).
 
@@ -218,9 +241,15 @@ leaves a baseline worth drawing at all — see the
 
 ### **Widget shell** {#widget-shell}
 
-The widget renders a `Widget` wrapper with `Header={ WidgetHeaderTitle }` and a tab bar beneath it.
+The widget renders a `Widget` wrapper with no `Header`, which makes the tab bar the first element in
+the card. The heading copy is the Traffic area's own — "Find out how your audience is growing" over
+"Track your site’s traffic over time", already registered on `AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY`
+and rendered at the top of the section this widget sits in — so the widget introduces no title
+string of its own and repeats none of it.
+
 The tab bar reuses `TabBar` and `Tab` from `googlesitekit-components` inside `ScrollableTabs`, so tab
 overflow, keyboard navigation and the desktop scroll arrows all behave as they already do elsewhere.
+It carries the two tabs above.
 
 The active tab is component state. Each tab panel is its own component under
 `performance-benchmarking/tabs/` and is unmounted when inactive. The shell resolves the one
@@ -267,6 +296,8 @@ with its loading state. Everything both panels render is a field of that respons
 | `insightUnavailableReason` | `rate_limited`, `timed_out`, `forbidden` or `errored`; omitted on success | the [Reporting state](#widget-shell) and the `insight_unavailable` event |
 | `visitors` | `{ current, previous }` totals for the selected period | `TotalVisitors` |
 | `dailyTraffic` | one row per plotted day: `{ date, visitors, expectedMin, expectedMax }` | both charts |
+| `forecast` | one row per projected day: `{ date, predicted, expectedMin, expectedMax }`; omitted below the full baseline tier | the Insights chart's forward half |
+| `lookahead` | `{ direction, projectedVisitors, changePercent }`; omitted with `forecast` | `LookaheadSummary` |
 | `baseline` | `{ periodMonths, expectedRangeMin, expectedRangeMax, trendDirection, statusVsBaseline, isSeasonalPeriod, tier }` | `TrafficFactors` for `HISTORICAL_BASELINE`, and the band's copy |
 | `contentMarkers` | `{ date, urls, visitors }` per publish date, already capped and ranked | the Overview chart's `dateMarkers` |
 | `contextualData` | the dimension arrays, each row `{ label, current, previous }` | `TrafficBreakdown` and `TrafficFactors` |
@@ -274,6 +305,13 @@ with its loading state. Everything both panels render is a field of that respons
 `dailyTraffic` carries the plotted days only. The 392-day lookback the
 [baseline](#expected-baseline) reads is consumed server-side and never crosses the wire, so the
 28-day range returns 28 rows rather than 420.
+
+`forecast` is its own array rather than 28 more rows on `dailyTraffic`, and it is 28 rows at every
+date range the selector offers. **Every other consumer of `dailyTraffic` reads days that happened** —
+the Overview chart, the content markers, the totals — and a forward row carrying no `visitors` value
+would have to be filtered out by each of them. Keeping the two apart is also what lets the horizon
+stay fixed while the window behind it changes: 28 days ahead is 28 days ahead whether the chart in
+front of it plots 28 days or 90.
 
 The response is camelCase and flat — the plugin's own shape, not the service's. The snake_case
 contract in the [appendix](#request-and-response-field-mapping) describes what the datapoint sends
@@ -406,14 +444,15 @@ shared row component in the plugin has a column for the change.
 
 ### **Traffic Insights tab** {#traffic-insights-tab}
 
-`TrafficInsightsTab.tsx` renders four sections against the same insight the Overview panel receives
+`TrafficInsightsTab.tsx` renders five sections against the same insight the Overview panel receives
 from the shell
 ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-10410&m=dev)).
 
 | Section | Component | Fed by |
 | :---- | :---- | :---- |
 | Generated insight | `GeneratedInsight` | `insight` |
-| Actual traffic vs expected baseline | `ExpectedBaselineChart` | `dailyTraffic` |
+| Actual traffic vs expected baseline | `ExpectedBaselineChart` | `dailyTraffic`, `forecast` |
+| Look-ahead projection | `LookaheadSummary` | `lookahead` |
 | What affected your traffic | `TrafficFactors` | `contextualData`, `baseline`, `insight.topDimensions` |
 | Is this helpful? | `FeedbackPrompt` | — |
 
@@ -431,25 +470,60 @@ This matters — the service rate-limits to a burst of 10 with a refill of 2 per
 
 `ExpectedBaselineChart`
 ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-11363&m=dev))
-renders one `GoogleChart` `LineChart` carrying both series: actual daily visitors as a line, and the
-expected range for the same days as a shaded band behind it. Both come from `dailyTraffic`, one row
-per plotted day carrying the actual and both bounds, so the line and the band cannot disagree about a
-day — the model that produced the bounds is specified under [Expected baseline](#expected-baseline).
+renders one `GoogleChart` `LineChart` carrying the measured period and the projected one: actual daily
+visitors as a line under a shaded band of the expected range, continuing past the end of the period
+into a dashed forecast line under a band that widens with distance. The measured half comes from
+`dailyTraffic` and the projected half from `forecast`, one row per day carrying the value and both
+bounds, so no line and band can disagree about a day — the model behind both is specified under
+[Expected baseline](#expected-baseline).
 
-The band is drawn with Google Charts interval roles rather than a second chart type. The data table
-is four columns — date, actual visitors, then `expectedMin` and `expectedMax` as two columns declared
-with `role: 'interval'` immediately after the series they annotate — and the chart options set
-`intervals: { style: 'area' }`. The chart passes no `selectedStats`, so `getFilteredChartData()`
-hands the table through untouched, and `getChartOptions()` does not touch `intervals`: `chartType`
-stays `LineChart` and `GoogleChart` needs no change. Building that table is a pure function over the
-rows in `utils/`, which puts the column order the interval role depends on under a unit test rather
-than under inspection.
+The bands are drawn with Google Charts interval roles rather than a second chart type. Each series is
+followed by the two columns that annotate it: date, actual visitors, `expectedMin` and `expectedMax`
+declared with `role: 'interval'`, then the forecast series with an interval pair of its own — seven
+columns — and the chart options set `intervals: { style: 'area' }`. Interval columns bind to the
+series column they follow, which is what lets one table carry two bands whose widths are computed
+differently. The chart passes no `selectedStats`, so `getFilteredChartData()` hands the table through
+untouched, and `getChartOptions()` does not touch `intervals`: `chartType` stays `LineChart` and
+`GoogleChart` needs no change.
 
-The chart is unaffected by the generative call: `dailyTraffic` is derived before the proxy request
-and returned whether that request succeeds, times out or is rate-limited. Where the property's
-history is too short for the full model, the band renders from whichever [tier](#expected-baseline)
-the available history supports rather than disappearing, and this section carries the support link
-explaining what the band is — the least self-evident thing in the widget.
+The two halves meet on a row rather than across a gap. The last measured row carries values in the
+forecast column and its interval pair as well — that day's actual, and that day's own bounds — so the
+dashed line and the widening band start where the solid line and the measured band end instead of a
+day later. Every other forecast cell is null on a measured row and every other measured cell is null
+on a forecast row, which is how one domain column carries two lines. Building the table is a pure
+function over the two arrays in `utils/`, which puts the column order the interval roles depend on,
+and the joining row, under a unit test rather than under inspection.
+
+**The forecast is drawn so that it cannot be mistaken for a measurement**: the second series renders
+dashed through `series: { 1: { lineDashStyle } }` and its band is the lighter of the two. Below the
+full [tier](#expected-baseline) the response carries no `forecast`, the table stops at the four
+measured columns and the chart is the measured half alone — where the measured band itself renders at
+whichever tier the property's history supports rather than disappearing with the forecast.
+
+The chart is unaffected by the generative call: `dailyTraffic` and `forecast` are both derived before
+the proxy request and returned whether that request succeeds, times out or is rate-limited. This
+section carries the support link explaining what the band is — the least self-evident thing in the
+widget.
+
+#### *Look-ahead projection* {#look-ahead-projection}
+
+`LookaheadSummary` renders directly beneath the chart as its caption, and says in one line what the
+next 28 days are projected to do: the `lookahead` object's `direction` selects the copy, and
+`projectedVisitors` and `changePercent` fill it in. `BOOM` and `LULL` each read as a heads-up;
+`STEADY` says the next four weeks look like an ordinary four weeks for this site, which is the honest
+answer on most days and therefore the one this section renders most often.
+
+**The line is the plugin's copy, not the service's.** It is a translated pattern filled with
+`sprintf` over two numbers formatted through `numFmt`, built the same way the Overview chart's marker
+text is. The request payload carries no forward-looking field, so the service cannot state a
+projected figure even though `LOOKAHEAD` and `CURRENT_PERIOD_FORECAST` are in its scenario set —
+which is precisely what stops the two narrations contradicting each other on a number only one of
+them holds. Sending the projection instead is an
+[alternative we considered](#narrating-the-look-ahead-in-the-service).
+
+The component renders nothing when `lookahead` is absent. That is the same condition that drops the
+chart's forward half, so a site below the full baseline tier gets a measured chart and no caption
+dangling under it rather than an empty block.
 
 #### *What affected your traffic* {#what-affected-your-traffic}
 
@@ -473,17 +547,21 @@ only a `contextualData` key.**
 `FeedbackPrompt`
 ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-10477&m=dev)),
 promoted to a global component by [Shared feedback prompt](#shared-feedback-prompt) and rendered here
-with this widget's tracking event category and label and its own `downvoteFormURL`.
+with this widget's tracking event category and label. It renders the thumbs and the thank-you popper
+and nothing else — there is no "Tell us more" link and no follow-up form URL.
 
-This prompt is also the feature's post-launch quality signal. Negative feedback is only actionable
-if it can be attributed to the scenario that produced it, which means the vote needs to carry the
-`scenario` code — something `triggerSurvey( 'vote:<voteID>:<direction>' )` has no room for today.
-See the [open question](#how-does-the-scenario-code-reach-the-feedback-telemetry).
+This prompt is also the feature's post-launch quality signal. The vote leaves the plugin as
+`triggerSurvey( 'vote:<voteID>:<direction>' )` and the service stores that trigger against the user,
+which is what lets it survey the users who voted down — the follow-up is a survey the service serves
+back into the dashboard, not a link out of the plugin. The widget passes a vote ID of its own,
+alongside the existing `site_goals_widget_*` constants, so its votes aggregate separately and the
+follow-up reaches only the people this feature disappointed.
 
 ### **Expected baseline** {#expected-baseline}
 
 The expected range is a stateless, closed-form calculation over the site's own daily `totalUsers`
-history, evaluated in PHP for every day the Traffic Insights chart plots. It stores nothing, trains
+history, evaluated in PHP for every day the Traffic Insights chart plots and for each of the 28 days
+it projects beyond them. It stores nothing, trains
 nothing, and is arithmetic over a few hundred rows — negligible against the API calls in the same
 request.
 
@@ -500,8 +578,9 @@ with zeros before computing anything. A missing day must not shorten a week or d
 average.
 
 The span covers the selected range as well, so the actual series the chart plots, the `visitors`
-totals and the baseline all come out of this one report. Only the plotted days leave the server: the
-lookback rows are inputs to the calculation and are not part of the response.
+totals, the baseline and the [look-ahead](#look-ahead) all come out of this one report. Only the
+plotted days and the projected ones leave the server: the lookback rows are inputs to the calculation
+and are not part of the response.
 
 #### *The point prediction*
 
@@ -564,6 +643,52 @@ The model degrades in place rather than failing:
 3. **Fewer than 9 weeks** — the prediction for a day is the average of that same weekday across
    whatever weeks are available.
 
+#### *The 28-day look-ahead* {#look-ahead}
+
+The same three factors run forward. For a day `t` in the 28 days after the selected range's
+`endDate`:
+
+`predicted( t ) = daily_base_level * weekday_factor( weekday( t ) ) * annual_seasonality( t )`
+
+Two of the three are frozen and one is live. `daily_base_level` and `weekday_factor` hold at the
+values measured up to `endDate`, which makes the projection a "hold steady" statement about the
+site's operating scale; **feeding seasonally adjusted predictions back into the EWMA is what must not
+happen**, because a holiday spike folded into the level stays in it for months afterward.
+`annual_seasonality( t )` is computed exactly as it is for a plotted day, since `t - 364` is in the
+past even when `t` is not. The curve therefore holds today's scale and takes last year's shape, which
+is the whole of what it claims.
+
+The projection needs no additional report rows. Day +28 reads `endDate - 336`, and day +1's trailing
+four-week average reaches back to `endDate - 391` — both inside the 392-day lookback the earliest
+plotted day already forces. The forward window starts the day after `endDate`, which at the
+dashboard's usual one-day offset makes the first projected day the current one.
+
+Uncertainty grows with distance, so the band widens by 5% per week across the horizon, with
+`k = CEIL( days_ahead / 7 )` the week a day falls in:
+
+`lookahead_ribbon_width( t ) = MAX( 5, 3 * SQRT( predicted( t ) ) ) * ( 1 + 0.05 * k )`
+
+Day +1 is drawn at `1.05x` the width an identical prediction would get today, and day +28 at `1.20x`.
+The band never narrows toward the boundary, which is the failure mode worth naming: a forecast
+starting at zero width on day +1 asserts perfect knowledge of tomorrow, and then makes ordinary
+day-+2 variance look like a broken model.
+
+The horizon is 28 days at every date range, and so is the comparison behind
+[the projection line](#look-ahead-projection): the 28 forward predictions are summed and tested
+against the 28 days of actuals ending on `endDate`, at a threshold of ±15%. Above it the next four
+weeks are a `BOOM`, below it a `LULL`, inside it `STEADY` — that direction, the projected total and
+the signed percentage are the three fields `lookahead` carries. Taking the comparison window from the
+selected range instead would put four weeks against thirteen on the 90-day view and report a lull on
+every site on earth, so it is fixed at 28 days on both sides.
+
+**The look-ahead runs at the full tier only.** Below it there is no `annual_seasonality`, and the
+projection collapses to the weekday shape at today's level repeated four times — a line carrying no
+forward information, under a comparison decided by how unusual the last 28 days were rather than by
+anything about the next 28. Where the tier is weekday-only or the same-weekday average, the response
+omits `forecast` and `lookahead` entirely. This is the one place the model does not degrade in place,
+and deliberately so: the degraded version is not a weaker forecast but a statement about the future
+assembled out of the recent past.
+
 #### *What the service is told* {#baseline-payload}
 
 The baseline is not only drawn. The request payload carries a `baseline` object built from the same
@@ -596,14 +721,16 @@ real choice — send a weekday-only baseline with `period_months: 2`, or send no
 
 The computation is one class under `includes/Modules/Analytics_4/Benchmarking/`,
 `Expected_Baseline`, taking the zero-filled daily series and the plotted range and returning the
-per-day bounds and the period-scale `baseline` fields. The zero-filled series builder, each of the
-three factors, the band and the tier selection are methods on it with no dependencies beyond the
-rows — no settings, no options, no service client — so the whole model is unit-testable against
-fixed daily fixtures in PHPUnit.
+per-day bounds, the forward projection and the period-scale `baseline` fields. The zero-filled series
+builder, each of the three factors, the band, the tier selection and the forward loop are methods on
+it with no dependencies beyond the rows — no settings, no options, no service client — so the whole
+model is unit-testable against fixed daily fixtures in PHPUnit.
 
-Its result feeds two consumers in the same request: the `dailyTraffic` rows the chart plots, and the
-`baseline` object the payload carries to the service. The reference date comes from the same
-`Context` the rest of the datapoint uses, which is what keeps the fixtures deterministic.
+Its result feeds three consumers in the same request: the `dailyTraffic` rows the chart plots, the
+`forecast` rows and `lookahead` object it continues into, and the `baseline` object the payload
+carries to the service. The reference date comes from the same `Context` the rest of the datapoint
+uses, which is what keeps the fixtures deterministic — a projection is a claim about days that have
+not happened, so a model reading the clock itself would have no fixed answer to assert against.
 
 ### **Generative endpoint infrastructure** {#generative-endpoint-infrastructure}
 
@@ -624,50 +751,58 @@ which is the [caveat the slice carries](#datastore-slice).
 
 #### *Module datapoint* {#module-datapoint}
 
-One new `GET:benchmarking` datapoint on `Analytics_4`, an `Executable_Datapoint` class under
-`includes/Modules/Analytics_4/Datapoints/`, taking the module instance, the `Google_Proxy` instance,
-`Credentials`, the OAuth client and `Context` through its `$definition` array.
+One new `GET:benchmarking` datapoint on `Analytics_4`, a `Shareable_Datapoint` implementing
+`Executable_Datapoint` under `includes/Modules/Analytics_4/Datapoints/`, taking the module instance,
+the `Google_Proxy` instance, `Credentials`, a callable resolving the `OAuth_Client` for the datapoint,
+the [cache](#site-wide-cache) and `Context` through its `$definition` array.
 
 **Its only request parameters are `startDate` and `endDate`**, the two every report datapoint
 already takes. The comparison window, the prior-year windows, the reports, the baseline, the payload
 and the rendered rows are all derived from them.
 
 Unlike the module's other datapoints it is not a wrapper over one service call, so it does not use
-`create_request()`/`parse_response()` to shape a single Google API call. It runs a four-step
-pipeline, and the steps fail differently:
+`create_request()`/`parse_response()` to shape a single Google API call. It returns a closure, and runs
+a five-step pipeline whose steps fail differently:
 
-1. **Gather.** Two batched GA4 report calls, and one Search Console call through the filter — see
+1. **Look up.** The [site-wide cache](#site-wide-cache), under the key derived from the request
+   arguments. A stored composed response is returned as it stands, and the pipeline ends here —
+   no report call, no generation, no rate-limit token. A stored insight without a stored response
+   skips step 4 only.
+2. **Gather.** Two batched GA4 report calls, and one Search Console call through the filter — see
    [Report gathering](#report-gathering). A GA4 failure ends the request with the module's own
    `WP_Error`, which is what puts the widget in its Error state. A Search Console failure costs one
    `contextual_data` key and nothing else.
-2. **Derive.** The zero-filled daily series, the `visitors` totals, the
+3. **Derive.** The zero-filled daily series, the `visitors` totals, the
    [expected baseline](#expected-baseline), the ranked `contextual_data` arrays and the content
    markers — see [Payload assembly](#payload-assembly).
-3. **Generate.** One `Google_Proxy` call carrying the assembled payload. **Its failure is recorded,
-   not propagated**: the datapoint keeps everything from step 2, omits `insight`, and sets
+4. **Generate.** One `Google_Proxy` call carrying the assembled payload. **Its failure is recorded,
+   not propagated**: the datapoint keeps everything from step 3, omits `insight`, and sets
    `insightUnavailableReason` from the status — 429, a timeout, 403 or anything else.
-4. **Compose.** The camelCase response the [panels read](#panel-data-flow).
+5. **Compose and store.** The camelCase response the [panels read](#panel-data-flow), written back to
+   the cache before it is returned.
 
 **It is a `GET` datapoint even though the call it forwards is a `POST` to the service**, so that the
 response is cacheable — the same shape as `GET:report`, which answers a read by POSTing `runReport`.
 With the payload assembled server-side, nothing rides in the query string but the two dates, and
 those two are what the API cache keys on.
 
-Because step 3 fails into a 200, a rate-limited or timed-out generation is cached like any other
+Because step 4 fails into a 200, a rate-limited or timed-out generation is cached like any other
 response and the insight does not come back on its own. The datapoint therefore returns
 `insightRetryAfter` alongside the reason — the service's `Retry-After` where the 429 carries one, and
-otherwise a fixed cool-down — and the [slice](#datastore-slice) invalidates and refetches once that
-time has passed. Without it, one 429 costs the insight for the length of the cache TTL.
+otherwise an hour, which is when the limiter has refilled — and the [slice](#datastore-slice)
+invalidates and refetches once that time has passed. The [site-wide cache](#site-wide-cache) holds the failure for the same period rather
+than for the success TTL, so the refetch is not answered by the stored failure it is trying to get
+past. Without both halves, one 429 costs the insight for the length of a cache TTL.
 
-The route's default permission for a read is the view-insights capability rather than the
-manage-options capability a write gets, which is why the datapoint implements
-`Permission_Aware_Datapoint` rather than relying on the default.
+The datapoint implements `Permission_Aware_Datapoint`, and the check it declares is the
+dashboard-viewing capability rather than the authenticated-dashboard one, so a view-only user reaches
+it.
 
-The generative call needs the caller's own Google access token, because the service identifies the
-user from the bearer token and checks that user's membership of the site. **Now that the numbers
-travel through the same datapoint as the narration, making it non-shareable would take the whole
-widget away from view-only users, not just the insight** — which is the sharpest form of the
-[view-only open question](#what-does-the-view-only-dashboard-show).
+**Step 4 takes its bearer token from the same `OAuth_Client` the reports run under** — the caller's own
+on a normal request, the module owner's on a shared one. The client arrives as a closure in the
+definition array, so the resolution rules stay in `Module`. Nothing in the pipeline special-cases the
+view-only dashboard, and where no token resolves at all — a disconnected owner — step 4 is skipped with
+a reason of `forbidden` rather than calling the endpoint to be refused.
 
 It lives on the Analytics module rather than in a new core controller because every input is GA4
 and Search Console data and every consumer is an Analytics widget. A later feature needing the same
@@ -696,6 +831,14 @@ GA4 reports go through `GET:batch-report`, which takes up to five report request
 Each report carries its current and comparison window as two date ranges in one request rather than
 as two requests. The last two are requested only when `Custom_Dimensions_Data_Available` says the
 dimension is gathering data, so a site without either issues six reports rather than eight.
+
+**`sessionSource` is added to the shareable dimension list in
+`RequestHelpers::validate_shared_dimensions()`.** Every other dimension above is already in it;
+without this one a shared request fails as a whole batch rather than losing the `referrers` rows, and
+the widget's Error state is what a view-only user sees. Widening the list is the deliberate choice over
+dropping `referrers` on a shared request, which would make the payload, the narration and the cached
+response depend on which kind of user loaded the dashboard first. A traffic-source name is the same
+class of data as the channel grouping already on the list.
 
 The report options live in `includes/Modules/Analytics_4/Benchmarking/Report_Options.php`, following
 the `Email_Reporting/Report_Options.php` precedent, which keeps every window and dimension in one
@@ -727,6 +870,13 @@ omits the key — the same degradation the payload already defines for a missing
 Search Console is force-active, so its `register()` always runs and the connection check is the only
 gate that matters.
 
+Sharing is the second gate, and it is Search Console's own rather than Analytics'. The callback's report
+runs under the Search Console owner's credentials for a view-only caller, but only where
+`search-console` is shared with that caller's role; where it is not, the report fails and
+`search_query_shifts` is omitted for that request. **Which is why whether the caller can read Search
+Console data is part of the [cache key](#site-wide-cache)**: two callers who assemble different
+payloads must not share one stored response.
+
 **No module holds a reference to another.** Analytics owns the extension point and the payload
 shape; Search Console owns its own reports, credentials and connection state; a later module with
 something to contribute adds a callback rather than an edit to the Analytics datapoint. The cost is
@@ -756,7 +906,7 @@ generation alone.
 
 `Google_Proxy::request()` defaults `timeout` to 15 seconds, which is below what a cold generation can
 take; the benchmarking method passes a higher `timeout` through the `$args` the helper already
-accepts. A generation that outruns it surfaces as a `WP_Error` from `wp_remote_post()`, which step 3
+accepts. A generation that outruns it surfaces as a `WP_Error` from `wp_remote_post()`, which step 4
 of the [pipeline](#module-datapoint) turns into a data-only response rather than a failure — the
 widget drops to the [Reporting state](#widget-shell) with the numbers intact.
 
@@ -770,6 +920,76 @@ capping the generation timeout against the remaining budget, and treating the re
 that must always complete. The values are an
 [open question](#what-is-the-latency-budget-for-the-insight-request).
 
+The [site-wide cache](#site-wide-cache) is what keeps that exposure to the first reader of a date
+range rather than to every reader of it. It does not reduce the worst case, which is why the budget
+above still has to be respected.
+
+#### *Site-wide cache* {#site-wide-cache}
+
+The composed response and the generated insight are both cached for the site rather than for the
+user, by a `Benchmarking\Response_Cache` over `Core\Storage\Transients`.
+
+Two entries under one key, because they have different reasons to expire:
+
+| Entry | Holds | TTL |
+| :---- | :---- | :---- |
+| Response | the whole composed response, insight included | `HOUR_IN_SECONDS` |
+| Insight | the five generated fields, or a failure marker | `DAY_IN_SECONDS`; `HOUR_IN_SECONDS` for a failure |
+
+A response hit ends the [pipeline](#module-datapoint) at step 1: no GA4 call, no Search Console call,
+no generation. A response miss inside the insight's window re-runs the reports and re-attaches the
+stored insight, so the numbers are at most an hour old while the narration can be up to a day old.
+**That asymmetry is the whole point.** The reports have to stay current, because `TotalVisitors` sits
+directly beneath an All Visitors figure that refreshes hourly, and the generation is the part the
+service meters. Each value comes from the reason it expires rather than from a measurement: the hour
+is the cadence the rest of the dashboard's reports refresh on, and the day is the service's own cache
+window and what holds a site to one generation per date range per locale per day.
+
+**The key is derived from what would go into the request, not from what came out of the reports:**
+
+* `startDate` and `endDate`, the datapoint's only request parameters.
+* The user's locale, which is what the service generates in and part of the service's own cache key,
+  so a second admin language produces its own entry rather than an insight in the wrong language.
+* A source signature — which `contextual_data` keys this request can gather at all: the custom
+  dimensions `Custom_Dimensions_Data_Available` reports on, and whether the caller can read
+  [Search Console data](#cross-module-contextual-data).
+
+All three are known before any outbound call, which is what lets step 1 answer without one. They are
+hashed into the transient names — `googlesitekit_benchmarking_response_<hash>` and
+`googlesitekit_benchmarking_insight_<hash>` — since the parts spell out longer than a transient name
+should be. A site holds one pair per date range per locale, and a second pair only where some roles
+have Analytics shared without Search Console.
+
+**Deliberately not in the key: the report figures.** Keying on the serialized payload the way the
+service keys its own cache would miss on every still-open day, since the figures move between
+requests, and each miss would spend a rate-limit token before the service ever consulted that cache.
+Keying on the arguments accepts a narration written earlier in the day being served against figures
+gathered later in it. **The entry survives that movement outright**, with no threshold treating a
+large enough swing in the period total as a miss: a threshold would buy back the accuracy at the price
+of a token on every still-open day it fires, which is the day-long TTL given away for the case the
+narration is least likely to be wrong about — a swing that large is the thing it is describing.
+
+A generation failure stores a marker rather than nothing, holding the reason and `insightRetryAfter`,
+under `HOUR_IN_SECONDS` — the limiter refills two tokens in an hour, so a retry at that point arrives
+with budget to spend rather than into the same 429 — or under the service's `Retry-After` where the
+429 supplies one. While it is present the pipeline skips step 4 and returns the
+data-only response, so a 429 is not answered by hammering the endpoint from every dashboard on the
+site; when it expires, the next request generates. The Error path stores nothing at all — a request
+whose reports failed leaves no entry to serve.
+
+Nothing invalidates either entry explicitly. Successes expire, failures expire on their cool-down,
+and a date range whose `endDate` rolls over to a new day is a new key. The
+[last-outcome record](#site-health) the debug fields read is written next to them, which is the one
+place that already knows the outcome and the timings.
+
+**What this buys, in rate-limit terms.** The service allows a burst of 10 refilling at 2 per hour per
+site and user, and checks the limiter before its own cache, so every request that reaches it costs a
+token whether or not it generates. With the insight cached for a day against the arguments, a site
+spends at most one token per date range per locale per day, no matter how many users load the
+dashboard or how often. Without it, each user spends their own tokens on the same insight, and
+[generating for view-only users](#dashboard-sharing) would multiply that by the number of people the
+dashboard is shared with.
+
 #### *Datastore slice* {#datastore-slice}
 
 A new `assets/js/modules/analytics-4/datastore/benchmarking.ts` slice, combined into the module store,
@@ -777,8 +997,11 @@ over one `createFetchStore`:
 
 * `baseName` — `getBenchmarking`.
 * `controlCallback` —
-  `get( 'modules', MODULE_SLUG_ANALYTICS_4, 'benchmarking', { startDate, endDate }, { cacheTTL: DAY_IN_SECONDS } )`.
-  The 24-hour TTL matches the service's own cache window.
+  `get( 'modules', MODULE_SLUG_ANALYTICS_4, 'benchmarking', { startDate, endDate }, { cacheTTL: HOUR_IN_SECONDS } )`.
+  The hour matches the API layer's default for reports and keeps the widget's totals in step with the
+  traffic graph above it. The rate limit is protected by the
+  [site-wide cache](#site-wide-cache) for every user at once, so the browser layer is free to be the
+  short one.
 * `argsToParams` — `{ startDate, endDate }`. The store's key and the API cache key are those two
   dates and nothing else.
 * `validateParams` — both dates present and in `YYYY-MM-DD`.
@@ -795,16 +1018,19 @@ Selectors on `modules/analytics-4`:
 One action: `clearBenchmarking( startDate, endDate )`, dropping the stored response and the cached
 one through `invalidateCache()`. It runs on the error path's retry, and when a response whose
 `insightRetryAfter` has passed is read back from the cache — the only way a rate-limited insight
-returns before the entry expires.
+returns before the entry expires. **It clears the browser's copy only**, which is why the server's
+failure marker carries the same cool-down: a refetch that arrives after `insightRetryAfter` finds the
+marker gone as well and generates, and one that arrives before it is answered from the marker without
+reaching the service.
 
-Two consequences of keying on the dates alone. Repeat loads are free regardless of whether the
-underlying GA4 figures moved, where a payload-derived key missed the cache on every still-open day.
-And the locale is not in the key: the datapoint resolves `hl` from the user's admin language, so a
-language change surfaces when the entry expires or is cleared rather than immediately.
+Keying on the dates alone means the locale is not in the browser key. The server key carries it, so a
+language change produces a newly generated insight rather than a cached one in the wrong language, but
+it surfaces when the browser entry expires or is cleared rather than on the next render.
 
-The payload the datapoint assembles still has to be deterministic, since the *service* keys its own
-24-hour cache over the serialized payload. That is a PHP concern — stable ordering, stable rounding,
-stable row caps — and it has no bearing on whether the browser's cache hits.
+The payload the datapoint assembles still has to be deterministic — stable ordering, stable rounding,
+stable row caps — because the *service* keys its own 24-hour cache over the serialized payload. With
+the [site-wide cache](#site-wide-cache) in front of it that cache is rarely the one answering, and
+determinism is worth holding anyway: it is what makes the PHP derivation testable against fixtures.
 
 #### *Payload assembly* {#payload-assembly}
 
@@ -845,8 +1071,8 @@ spans 392 days beyond the selected window at every range the selector offers. On
 entry falls outside that span and needs its own totals report.
 
 `recent_content_momentum` and `category_resonance` depend on the `googlesitekit_post_date` and
-`googlesitekit_post_categories` custom dimensions, which Site Kit already defines and creates. No new
-custom dimension is introduced. Where `Custom_Dimensions_Data_Available` reports one is absent or
+`googlesitekit_post_categories` custom dimensions, which Site Kit already defines and creates.
+Where `Custom_Dimensions_Data_Available` reports one is absent or
 still gathering data, its report is not requested and its `contextual_data` key is omitted — every
 key is optional in the request schema — and the insight degrades rather than failing. Which keys are
 present also constrains which scenario can come back: `SEARCH_QUERY_SHIFTS`, `TRAFFIC_CHANNEL_SURGES`,
@@ -897,14 +1123,21 @@ those checks is a 500, not a degraded insight. The plugin's responsibility is na
 specifics: a `goalType` prop used only to label the tracking event, and the
 `SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL` constant.
 
-It moves to `assets/js/components/FeedbackPrompt.tsx` with those two specifics turned into
-props: a tracking event category and label supplied by the caller, and a `downvoteFormURL`. The two
-Site Goals call sites — `OnlineStorePerformanceWidget` and `LeadGenerationPerformanceWidget` — pass
-their existing values, so their behavior is unchanged. The existing breakpoint-aware popper
-placement logic moves with the component.
+It moves to `assets/js/components/FeedbackPrompt.tsx` with only the tracking specifics turned into
+props: an event category and label supplied by the caller. The `SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL`
+import does not become a prop — it is dropped. No caller passes a follow-up URL, because the
+follow-up is a survey the service serves off the stored `vote:<voteID>:down` trigger rather than a
+form linked from the popper. `downvoteFormURL` is optional on `ThumbsSurveyTrigger` and the
+"Tell us more" link renders only when it is set, so omitting it needs no change to that component.
 
-`SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL` is currently `'#'`. This epic needs a real URL for its own
-prompt, which is an [open question](#what-is-the-downvote-follow-up-url).
+The two Site Goals call sites — `OnlineStorePerformanceWidget` and `LeadGenerationPerformanceWidget`
+— pass their existing vote IDs and tracking labels; the only visible change for them is that the
+link to the `'#'` placeholder stops rendering. The existing breakpoint-aware popper placement logic
+moves with the component.
+
+`SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL` then survives only in `PrimaryActionRow`, which passes it to
+`ThumbsSurveyTrigger` directly. Retiring it there is Site Goals' call — the same service-side survey
+is expected to replace that link too — and is out of this epic's scope.
 
 ### **Architecture requirements**
 
@@ -918,11 +1151,17 @@ only — the chart data tables and the marker strings — since no analytical de
 bundle.
 
 New PHP lives in three places: `includes/Modules/Analytics_4/Datapoints/` for the datapoint,
-`includes/Modules/Analytics_4/Benchmarking/` for the report options, the baseline model and the
-payload builder, and `includes/Modules/Search_Console/Benchmarking/` for the callback that answers
-the [contextual-data filter](#cross-module-contextual-data) — the same per-module layout
-`Email_Reporting/` already uses on both modules. The transport method is added to
+`includes/Modules/Analytics_4/Benchmarking/` for the report options, the baseline model, the payload
+builder and the [cache](#site-wide-cache), and `includes/Modules/Search_Console/Benchmarking/` for the
+callback that answers the [contextual-data filter](#cross-module-contextual-data) — the same per-module
+layout `Email_Reporting/` already uses on both modules. The transport method is added to
 `includes/Core/Authentication/Google_Proxy.php`.
+
+Three existing files gain one line each, and they are the ones to call out at review because each
+changes behavior outside this feature: `Analytics_4\Settings::get_view_only_keys()` gains
+`propertyCreateTime`, `Analytics_4\Report\RequestHelpers::validate_shared_dimensions()` gains
+`sessionSource`, and `Analytics_4::get_datapoint_definitions()` gains the datapoint under the flag
+check.
 
 The widget wraps its export in `withIntersectionObserver` and reads reports through
 `useInViewSelect`, so neither the view event nor the report requests fire for a widget below the
@@ -930,17 +1169,19 @@ fold.
 
 ### **REST infrastructure**
 
-One new datapoint and no new route. `GET:benchmarking` is dispatched by the `READABLE` branch of the
+One new datapoint. `GET:benchmarking` is dispatched by the `READABLE` branch of the
 module datapoint route like any other read, and implements `Permission_Aware_Datapoint` for its own
 permission check. The reports behind it are dispatched in-process rather than over REST, so the GA4
 and Search Console report routes are involved only in the dashboard's other widgets. `triggerSurvey`
 carries the feedback votes as it already does.
 
-No new user or site setting is introduced, and nothing about the widget is written to the database:
-the active tab is component state and there is no dismissal. The response lives in the API cache and
-the insight inside it in the service's own, both for 24 hours; the service keys its copy over the
+Three caches sit between the widget and the model, and they key differently. The API cache holds the
+response in the browser for an hour under the two dates. The [site-wide cache](#site-wide-cache) holds
+the composed response for an hour and the insight for a day, under the dates, the locale and the
+contextual-data sources the request can reach. The service holds its own copy for a day under the
 site, the user, `end_date`, the locale and the serialized payload — `days_in_period`, `visitors`,
-`contextual_data` and `baseline` included.
+`contextual_data` and `baseline` included — and checks its rate limiter before consulting it, which is
+why the middle one exists.
 
 ## **Common considerations**
 
@@ -952,19 +1193,33 @@ with a user's role the widget does not render.
 
 **One datapoint decides what a view-only user sees.** Every number the widget draws arrives through
 `GET:benchmarking`, so its shareability is the difference between a working widget and an empty slot,
-not between a narrated widget and a bare one. The generative call is the part that cannot be shared:
-the service authenticates the user by bearer token and a view-only user has none.
+not between a narrated widget and a bare one. **`GET:benchmarking` is shareable, and a view-only user
+gets the whole widget, insight included.**
 
-The shape that follows from the [pipeline](#module-datapoint) is a shareable datapoint that skips
-step 3. The GA4 reports run under the module owner's credentials the way every shared report does,
-the derived data is composed as usual, and a shared request omits `insight` with a reason of its own
-rather than calling the proxy — the [Reporting state](#widget-shell) the widget already has. Two
-things have to be confirmed before that is more than a direction: whether a view-only user should get
-an insight at all, generated with the owner's token and cached site-wide, and whether the Search
-Console rows can be gathered under a shared request, since `POST:searchanalytics-batch` is not a read
-datapoint. Both sit in the [view-only open question](#what-does-the-view-only-dashboard-show).
+The pipeline needs no branch for it. The reports and the generative call both run under the module
+owner's credentials, so the service sees the owner — a user it can verify and one registered against
+the site. Three changes are what make that work, specified where each belongs: the
+[owner's token for the generative call](#module-datapoint), `sessionSource` in the
+[shareable dimension list](#report-gathering), and `propertyCreateTime` among the
+[view-only settings keys](#gating-and-visibility).
 
-No new sharing capability is introduced.
+**The insight is a site-level artifact, not a per-user one.** It is generated from the site's own
+aggregate figures and says nothing about the user reading it, so the
+[site-wide cache](#site-wide-cache) serves one narration to everyone with access — which is also what
+keeps a shared dashboard from spending the owner's rate-limit budget once per viewer. Two boundaries
+that cache has to respect, and does:
+
+* **Search Console.** A view-only user with Analytics but not Search Console shared assembles a
+  payload without `search_query_shifts`, and the narration built on it must not be served to them
+  either. Whether the caller can read Search Console data is therefore part of the cache key rather
+  than a field filtered out on the way past, because the narration cannot be filtered.
+* **Analytics itself.** Nothing else needs to be in the key. An entry only ever reaches a user whose
+  route permission and `isActive` have already established access to this site's Analytics data —
+  their own, through authentication, or their role's, through sharing — and what the entry holds is
+  that data.
+
+The alternative — a shareable datapoint that skips generation on a shared request — is discussed under
+[Alternatives considered](#skipping-generation-on-a-shared-request).
 
 ### **Tester plugin** {#tester-plugin}
 
@@ -982,10 +1237,20 @@ reachable without a young property.
 Assembling server-side makes this cheaper than it was: the datapoint composes one response, so a
 filter over that response is the single point where every state is reachable, including the ones the
 front end cannot fabricate — an empty `contextualData` key, a short-history baseline tier, a
-`topDimensions` code with no rows behind it.
+`topDimensions` code with no rows behind it, and each of the three
+[look-ahead directions](#look-ahead), which otherwise need a property whose last year happens to
+contain a seasonal swing in the right place.
 
-Reaching any of those states needs the API cache out of the way — `setUsingCache( false )` or a
-cleared session store — since a cached response for the same dates is served without a request.
+Reaching any of those states needs both caches out of the way: the API cache, through
+`setUsingCache( false )` or a cleared session store, and the
+[site-wide entries](#site-wide-cache), which the tester plugin should be able to delete on demand.
+Without the second, a response stored by an earlier load is served without a request, and a forced
+state appears to have no effect.
+
+The view-only path needs its own coverage, since it is now the same path rather than a reduced one: a
+shared request generating under the owner's token, a shared request whose caller cannot read Search
+Console data, and both against the same date range, so the [cache key](#site-wide-cache) is exercised
+rather than assumed.
 
 ### **Site Health**
 
@@ -998,19 +1263,12 @@ Debug fields worth adding through `Analytics_4::get_debug_fields()`, alongside t
   explain a thin insight.
 * The outcome of the last benchmarking request — completed, rate-limited, timed out or errored — the
   `scenario` code it returned, and how long the request took, which is what separates a slow host
-  from a slow generation.
+  from a slow generation, and whether it was served from the [site-wide cache](#site-wide-cache),
+  which is what separates a slow generation from one that never happened.
 
 The last two require persisting the last outcome, which nothing currently does. The datapoint is the
-one place that knows it and the only one that sees the timings, so it is where the record is written;
-whether that record is a site option or a transient is a judgement call for the Site Health issue.
-
-### **Feature Discovery**
-
-The widget appears in a section users already visit, directly under a chart they already read, so it
-is not a surface anyone has to be led to. Whether it still warrants an introduction —
-an intro notification, a feature tour over the tabs, or a `WidgetNewBadge` on the header — is an
-[open question](#how-is-the-feature-introduced-to-users). All three ride on infrastructure that is
-already in place, so the choice is a product one rather than a technical one.
+one place that knows it and the only one that sees the timings, so it is where the record is written,
+next to the cache entries it already writes.
 
 ### **Internal Measurement: GA4 Events**
 
@@ -1040,8 +1298,8 @@ A tracking sheet for the epic should be created before the measurement issue is 
 * `performance_benchmarking_dimensions` — which of the optional custom dimensions backing
   `contextual_data` are available, which predicts insight richness across the install base.
 
-Per-user engagement and per-scenario feedback are covered by the GA4 events and the thumbs
-telemetry rather than by site-wide feature metrics.
+Per-user engagement and feedback are covered by the GA4 events and the thumbs telemetry rather than
+by site-wide feature metrics.
 
 ## **Alternatives considered** {#alternatives-considered}
 
@@ -1093,7 +1351,7 @@ badly behaved callback is inside the request's latency budget. The first is answ
 the keys and row shapes under [Payload assembly](#payload-assembly); the second is the same exposure
 any `apply_filters()` in a request path carries.
 
-### **Returning the expected baseline from the service instead of computing it in the plugin**
+### **Returning the expected baseline from the service instead of computing it in the plugin** {#baseline-in-the-plugin}
 
 The alternative was to grow the response schema with a per-day expected series, so the model lived in
 one place, next to the reasoning that narrates it, and the plugin only plotted what it was handed.
@@ -1115,6 +1373,26 @@ need stored history and batch inference for accuracy that does not change what a
 and the MAD band needs residual sorting and medians to reach the same ~95% coverage the square-root
 ribbon gets in one expression. The
 [derivation of each constant](./expected-baseline-range-implementation.md) carries the detail.
+
+### **Narrating the look-ahead in the service rather than in the plugin** {#narrating-the-look-ahead-in-the-service}
+
+`LOOKAHEAD` and `CURRENT_PERIOD_FORECAST` are already in the service's scenario set, and a generated
+sentence is a better sentence than a template: given the forward totals in the request payload, the
+model could name the weeks that are rising, tie them to what the site did last year and say it in the
+user's language, leaving the tab with one narrative voice instead of a generated paragraph followed by
+a plugin-formatted line.
+
+We narrate it in the plugin. The request has no forward-looking field, so this is a service change
+before it is a plugin one, and it would gate an otherwise finished feature on another team's schedule —
+the same reasoning that [keeps the baseline in the plugin](#baseline-in-the-plugin), one step further
+along. The line is also the weakest case for generation there is: a direction and two numbers, which
+`sprintf` over a translated pattern renders exactly and Site Kit already translates, where generating
+it would attach a figure the plugin computed locally to the rate-limited, timed-out and failed paths
+of the [Reporting state](#widget-shell).
+
+If the request later grows a forecast field, the line becomes the service's to narrate and
+`LookaheadSummary` gives way to the insight block. Nothing else moves: the projection is already
+computed in the place it would be sent from.
 
 ### **Polling a long-running operation instead of waiting for one response**
 
@@ -1139,18 +1417,46 @@ comes back — and `POST:` is the verb that describes it.
 It would make the response uncacheable. Every mount, reload and return to a date range already viewed
 would reach the service, and each would spend one of the ten tokens the burst allows, on top of
 re-running the reports behind it. A `GET` costs nothing, since the payload is assembled server-side:
-the request is two dates, and the API layer caches what comes back for a day.
+the request is two dates, and both the API layer and the [site-wide cache](#site-wide-cache) answer it
+without reaching the service at all.
+
+### **Skipping generation on a shared request** {#skipping-generation-on-a-shared-request}
+
+The narrower reading of dashboard sharing is that the generative call belongs to the user who owns the
+token: a shared request runs the reports, composes the data and omits `insight` with a reason of its
+own, landing the view-only dashboard in the [Reporting state](#widget-shell) the widget already
+implements. It needs no new decision about whose identity leaves the site, and no view-only user can
+cause a generation.
+
+We generate on a shared request, under the owner's token. Every shared report in Site Kit already
+leaves the site under the owner's credentials, and the insight is derived from the same figures those
+reports return, so treating the narration differently from the numbers it narrates draws a line the
+data does not support. The cost of the narrow reading is the feature: the interpretation *is* the
+widget, and a view-only dashboard showing two tabs of charts with the explanation removed is the state
+this epic exists to replace. The exposure it avoids is bounded to begin with — the
+[site-wide cache](#site-wide-cache) allows one generation per date range per locale per day however
+many viewers a dashboard has.
+
+### **One site-wide cache entry instead of two**
+
+A single entry holding the composed response would be less machinery than a response entry and an
+insight entry with different lifetimes.
+
+Neither TTL works alone. At a day, the totals freeze for a day while the All Visitors figure directly
+above them refreshes hourly, so the two disagree for most of the day on every still-open period. At an
+hour, the insight is regenerated hourly, which is 24 tokens a day against a refill of 2 per hour and
+exhausts the budget on a site whose users open more than one date range. Splitting them lets each
+expire on its own terms — the reports on the dashboard's own cadence, the generation on the service's.
 
 ### **One widget per tab instead of one widget with a tab shell**
 
 Registering each tab as its own widget in a new widget area would let the Widgets API gate each tab
 independently, with `WidgetNull` bubbling up to hide the area.
 
-Figma shows one card with one header and one tab bar, which the Widgets API cannot express across
-separate widgets: each registered widget renders in its own grid cell. The tab shell also keeps the
-Recent Activities epic to adding one panel component rather than registering another widget and
-re-splitting the layout. Independent gating is not needed, because both tabs depend on the same
-data and the same eligibility.
+Figma shows one card with one tab bar, which the Widgets API cannot express across separate widgets:
+each registered widget renders in its own grid cell. A tab shell also takes a new panel as one
+component rather than as another widget registration and a re-split layout. Independent gating is
+not needed, because both tabs depend on the same data and the same eligibility.
 
 ### **Importing the feedback prompt from the Site Goals directory**
 
@@ -1164,33 +1470,20 @@ importing from a neutral location under a name that does not tie the prompt to w
 
 ## **Future Work**
 
-### **Recent Activities tab**
+### **A look-ahead the model cannot currently support**
 
-The third tab in the Figma frame is out of scope for this epic and will be added by a later epic
-into the [tab shell](#widget-shell) this epic builds.
-
-### **Look-ahead forecast**
-
-Users should also get a forward-looking element — "your busiest period of the year tends to happen in
-the next month". The [baseline model](#expected-baseline) already reaches it without a service change,
-because `t - 364` is in the past even when `t` is not: hold `daily_base_level` and `weekday_factor`
-frozen at today's level, apply `annual_seasonality( t )` for each of the next 28 days, and widen the
-band by 5% per week across the horizon so day +28 is not asserted with day +1's confidence. Feeding
-seasonally adjusted predictions back into the level is what must not happen — that traps a holiday
-spike in the structural baseline permanently.
-
-What is left to build is the forward days on `dailyTraffic`, the chart's forward extension, the copy,
-and the comparison that decides whether the next 28 days read as a seasonal boom or a lull: summing
-the 28 forward predictions and testing them against the past 28 days of actuals at a ±15% threshold.
-The prediction and the comparison are both `Expected_Baseline` work; the widget renders rows it is
-handed either way. Whether that lands in this epic is an
-[open question](#does-the-look-ahead-forecast-land-in-this-epic).
+The [look-ahead](#look-ahead) is built in this epic, and it runs at the full baseline tier only. What
+is left for later is the two cases beneath it: a property with 9 weeks of history but no year-ago
+window, which can carry a weekday-shaped projection but nothing seasonal, and the horizon beyond four
+weeks, where the frozen level stops being a defensible assumption about the site's operating scale.
+Both need a forward model that is not simply this one run further, so neither is a matter of raising
+a limit.
 
 ### **Richer feedback than thumbs up / down**
 
 Letting users say *why* an insight was not relevant — wrong data, out of date, not useful — is a
-stretch goal beyond the thumbs signal. The downvote follow-up link is the hook for it; a structured
-in-product form is future work.
+stretch goal beyond the thumbs signal. The service's survey to downvoters is the hook for it; a
+structured in-product form is future work.
 
 ### **Low-traffic handling**
 
@@ -1201,11 +1494,6 @@ whole weeks rather than days, and the band's square-root scaling plus its floor 
 narration's language, which is generated service-side from the same payload and belongs in the
 service's prompt and heuristics, and the treatment of the totals and the breakdown on the Overview
 tab, which is a follow-up.
-
-### **Entity dashboard**
-
-The widget is main-dashboard only. A per-URL version would need a different analytical shape and is
-not planned.
 
 ## **Dependencies**
 
@@ -1224,11 +1512,12 @@ payload shape strictly and failing on a field it has never seen.
 The service rate-limits to a burst of 10 tokens refilling at 2 per hour per site and user, and caches
 successful responses for 24 hours. **The limiter is checked before the cache**, so a repeat request
 spends a token even when the service answers it from that cache — which is why the insight is fetched
-through a `GET` datapoint and why one request serves both tabs. The plugin's cache keys on the date
-range, so it absorbs every repeat load regardless of whether the figures moved; the service's keys on
-the serialized payload, so it only helps when the assembly is deterministic, which is a property the
-PHP derivation has to hold rather than one the browser can affect. A 429 still reaches the widget on
-a genuinely new request, and the widget degrades to its Reporting state rather than treating it as an
+through a `GET` datapoint, why one request serves both tabs, and why the plugin keeps its own
+[site-wide copy of the insight](#site-wide-cache) for the same 24 hours rather than relying on the
+service's. The plugin's copies key on the request arguments, so they absorb every repeat load
+regardless of whether the figures moved; the service's keys on the serialized payload, so it only
+helps when the assembly is deterministic. A 429 still reaches the widget on a genuinely new date range
+with the budget gone, and the widget degrades to its Reporting state rather than treating it as an
 error.
 
 When the service is unavailable, the widget renders everything except the insight — the reports run
@@ -1238,25 +1527,24 @@ section.
 
 ## **Migrations**
 
-No migrations are required. The feature introduces no new setting, option or user meta, and changes
-no existing stored data. Promoting `WidgetFeedbackPrompt` to `FeedbackPrompt` renames a file, moves
-it and updates two imports; no persisted value refers to it.
+No migrations are required. Promoting `WidgetFeedbackPrompt` to `FeedbackPrompt` renames a file,
+moves it and updates two imports; no persisted value refers to it.
 
 ## **Technical debt**
 
-Three items:
+Two items:
 
 1. **The request holds a PHP worker for several report calls and a generation.** This is accepted
    rather than solved: the endpoint returns the insight in its own response, and the reports have to
-   run before it. If the service moves the endpoint onto the operation framework it already ships,
-   the plugin should follow rather than keep paying for a long request — see the
+   run before it. The [site-wide cache](#site-wide-cache) makes that the first reader's request rather
+   than everyone's, which lowers how often the worst case is paid without lowering the worst case
+   itself. If the service moves the endpoint onto the operation framework it already ships, the plugin
+   should follow rather than keep paying for a long request — see the
    [latency budget](#latency-budget).
 2. **The plugin derives analytical inputs for a model it does not own.** If the service later grows
    the ability to query GA4 itself, `Benchmarking/` becomes dead weight and should be removed rather
    than maintained. Keeping the derivation in classes with no REST or widget dependencies is what
    makes that removal a deletion rather than an unpicking.
-3. **`SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL` is `'#'`.** Promoting the feedback prompt is the moment
-   to fix the placeholder rather than propagate it to a second caller.
 
 # **Quality attributes**
 
@@ -1284,11 +1572,22 @@ before they select a treatment.
 **Authorization.** The datapoint implements `Permission_Aware_Datapoint`, so the existing
 `REST_Modules_Controller` permission dispatch applies. Being a `GET` datapoint, what it would
 otherwise inherit is the route's broader view-insights default, which is precisely why the check is
-defined on the datapoint rather than left to the route. The generative call is made only for a
-request that carries the caller's own token: a shared request skips it, so no path exists for a
-view-only user to trigger a generation with someone else's. The service independently verifies the
-bearer token, resolves it to a hashed Google user ID and requires that user to be registered against
-the requesting site, so a valid `site_id`/`site_secret` pair alone cannot buy an insight.
+defined on the datapoint rather than left to the route. The service independently verifies the bearer
+token, resolves it to a hashed Google user ID and requires that user to be registered against the
+requesting site, so a valid `site_id`/`site_secret` pair alone cannot buy an insight.
+
+**A view-only user's request generates under the owner's identity**, which is the one genuinely new
+exposure here. It is the same delegation every shared GA4 report already performs, under the same
+conditions and widened by nothing in this datapoint. What the delegation can be spent on is bounded by
+the [site-wide cache](#site-wide-cache) — one generation per date range per locale per day for the
+whole site, so a dashboard shared with fifty people costs the owner's rate-limit budget no more than
+one person's does.
+
+**Pooling one response across users is a sharing boundary in its own right.** The cache key carries the
+contextual-data sources the request can reach, so a caller without Search Console access is never
+served a response — or a narration — assembled from Search Console rows. Everything else in an entry is
+`analytics-4` data, and every reader of an entry has already established access to it, by
+authentication or by sharing role, before the datapoint runs.
 
 ## **Reliability**
 
@@ -1306,14 +1605,17 @@ to cut the request during the reports takes the whole widget down, which is the 
 [Site Health](#site-health) exists to make diagnosable.
 
 Ordinary navigation does not consume the rate-limit budget: a repeat load over the same dates is
-answered from the API cache without reaching the datapoint at all, and the service's own cache does
-not help there, since its limiter runs first. What no cache covers is a new date range once the
-budget is gone — what the widget shows then is an
+answered from the API cache without reaching the datapoint at all, and a load by anyone else on the
+site is answered from the [site-wide cache](#site-wide-cache) without reaching the service. The
+service's own cache does not help there, since its limiter runs first. What no cache covers is a new
+date range once the budget is gone — what the widget shows then is an
 [open question](#what-does-the-widget-show-when-the-rate-limit-is-hit).
 
 Local data loss is not a concern: nothing about the feature is persisted in the plugin beyond the
-last-outcome record the debug fields read, and a cache entry that is evicted or expires costs one
-request rather than anything the user notices.
+cache entries and the last-outcome record the debug fields read. A transient that is evicted early — by
+an object cache under pressure, or a host that drops them — costs one report round trip and, at worst,
+one rate-limit token, not correctness, and the pipeline treats every lookup as a miss it can recover
+from rather than as state it depends on.
 
 ## **Privacy**
 
@@ -1324,24 +1626,31 @@ the dashboard.
 
 No personally identifiable information is sent. Search queries are Search Console's already
 aggregated and anonymized queries. Raw requests and model responses are not logged persistently by
-the service; the only retained telemetry is the privacy-safe thumbs signal — scenario code, feedback
-state and locale.
+the service; the only retained telemetry is the privacy-safe thumbs signal — the widget's vote ID,
+feedback direction and locale.
 
 No new OAuth scope is requested. No new custom dimension is created, so no additional data is
 collected from site visitors.
 
 The composed response — the daily series, the breakdown rows and the insight — is held in browser
 storage by the API cache, which scopes its keys to the WordPress user and session, so none of it
-outlives a logout or reaches another user of the same browser. The request payload itself is
-assembled and discarded inside the PHP request and is never stored.
+outlives a logout or reaches another user of the same browser.
+
+It is also held on the site, in the [site-wide cache](#site-wide-cache), for an hour and a day
+respectively. That is aggregate site data in a transient, so it is readable by anything that can read
+the site's options — but none of it is personal data: the payload contains no PII, and neither the
+insight nor the rows say anything about the user who fetched them. It is bounded rather than
+accumulating — a fixed number of entries per date range, all of which expire — and the request payload
+itself is still assembled and discarded inside the PHP request rather than stored.
 
 ## **Scalability**
 
-**One browser request per date range per day, and one PHP request behind it.** A cache miss costs two
-batched GA4 calls, one Search Console call and one generation; every repeat over the same dates is
-answered by the [API cache](#datastore-slice) without reaching the server. The unit that scales is
-therefore the number of distinct date ranges a user opens, not the number of times they load the
-dashboard.
+**One generation per date range per locale per day, for the whole site.** A full miss costs two
+batched GA4 calls, one Search Console call and one generation; a repeat over the same dates by the same
+user is answered by the [API cache](#datastore-slice) without reaching the server, and by anyone else
+on the site from the [site-wide cache](#site-wide-cache) without reaching Google or the service. The
+unit that scales is therefore the number of distinct date ranges opened across the site, not the number
+of users or the number of times they load the dashboard.
 
 Report count does not grow with the size of the site: every query is aggregated, each carries its
 current and comparison window as two date ranges in one request, and the
@@ -1399,58 +1708,76 @@ absorb the longest case rather than being tuned to the English one.
 | 3 | Gather the GA4 reports and assemble the benchmarking payload in PHP | 19 |  |
 | 4 | Add the `googlesitekit_benchmarking_contextual_data` filter and Search Console's callback | 11 |  |
 | 5 | Compute the expected baseline range from the GA4 daily series in PHP | 19 |  |
-| 6 | Add the `benchmarking` datastore slice | 7 |  |
-| 7 | Register the Performance Benchmarking widget with its tab shell and gating | 19 |  |
-| 8 | Traffic Overview: total visitors with period comparison | 7 |  |
-| 9 | Traffic Overview: generated insight block | 15 |  |
-| 10 | Traffic Overview: traffic chart with content markers | 11 |  |
-| 11 | Traffic Overview: traffic breakdown section | 15 |  |
-| 12 | Traffic Insights: generated insight block | 11 |  |
-| 13 | Traffic Insights: actual traffic vs expected baseline chart | 11 |  |
-| 14 | Traffic Insights: what affected your traffic section | 15 |  |
-| 15 | Promote `WidgetFeedbackPrompt` to a global `FeedbackPrompt` component | 7 |  |
-| 16 | Add the "Is this helpful?" prompt to the Traffic Insights tab | 3 |  |
-| 17 | Loading, unavailable-insight, rate-limited and error states | 11 |  |
-| 18 | Introduce the feature to users | 15 |  |
-| 19 | Performance Benchmarking GA4 tracking events | 15 |  |
-| 20 | Performance Benchmarking internal feature metrics | 11 |  |
-| 21 | Performance Benchmarking Site Health debug fields | 7 |  |
-| 22 | Add support links to the Performance Benchmarking widget | 7 |  |
+| 6 | Extend the baseline model with the 28-day look-ahead projection and its comparison | 11 |  |
+| 7 | Make `GET:benchmarking` shareable and cache its response site-wide | 15 |  |
+| 8 | Add the `benchmarking` datastore slice | 7 |  |
+| 9 | Register the Performance Benchmarking widget with its tab shell and gating | 19 |  |
+| 10 | Traffic Overview: total visitors with period comparison | 7 |  |
+| 11 | Traffic Overview: generated insight block | 15 |  |
+| 12 | Traffic Overview: traffic chart with content markers | 11 |  |
+| 13 | Traffic Overview: traffic breakdown section | 15 |  |
+| 14 | Traffic Insights: generated insight block | 11 |  |
+| 15 | Traffic Insights: actual traffic vs expected baseline chart | 11 |  |
+| 16 | Traffic Insights: look-ahead forecast on the chart and its projection line | 11 |  |
+| 17 | Traffic Insights: what affected your traffic section | 15 |  |
+| 18 | Promote `WidgetFeedbackPrompt` to a global `FeedbackPrompt` component | 7 |  |
+| 19 | Add the "Is this helpful?" prompt to the Traffic Insights tab | 3 |  |
+| 20 | Loading, unavailable-insight, rate-limited and error states | 11 |  |
+| 21 | Performance Benchmarking GA4 tracking events | 15 |  |
+| 22 | Performance Benchmarking internal feature metrics | 11 |  |
+| 23 | Performance Benchmarking Site Health debug fields | 7 |  |
+| 24 | Add support links to the Performance Benchmarking widget | 7 |  |
 
-**TOTAL: 254 STORY POINTS across 22 issues**
+**TOTAL: 276 STORY POINTS across 24 issues**
 
-**The response shape is the contract that splits this epic in two.** Issues 2 to 6 build the
-datapoint and the store; issues 7 to 17 build against the response, from a fixture rather than from a
-running service. Agreeing that shape in issue 2 is what lets the two halves proceed in parallel, and
-the [panel data flow](#panel-data-flow) table is the version to agree.
+**The response shape is the contract that splits this epic in two.** The datapoint, the derivation,
+the cache and the store are built against it on one side, and every panel and section against it on
+the other, from a fixture rather than from a running service. Agreeing that shape while the datapoint
+is built is what lets the two halves proceed in parallel, and the
+[panel data flow](#panel-data-flow) table is the version to agree.
 
-Issue 7 is sized for the four `isActive` conditions and nothing more. Whichever way the
-[too-young state](#what-does-the-widget-do-when-the-property-is-too-young) is confirmed adds to it —
-a panel in the shell, or a `core/notifications` registration with the dismissal arithmetic — and
+The widget registration is sized for the four `isActive` conditions and nothing more. Whichever way
+the [too-young state](#what-does-the-widget-do-when-the-property-is-too-young) is confirmed adds to
+it — a panel in the shell, or a `core/notifications` registration with the dismissal arithmetic — and
 neither is costed in the total above.
 
-Issue 5 is the baseline model itself — the series builder, the three factors, the band, the fallback
-tiers and the [`baseline` payload object](#baseline-payload), as PHP with its own fixtures — and
-issue 13 is only the chart that plots the bounds the response carries. They are split because the
-model is the analytically substantial part and is verifiable on its own, while the chart is four
-columns and an `intervals` option. Issue 5 feeds issue 3 as well, so it lands before payload
-assembly is finished rather than after it.
+The baseline is the model itself — the series builder, the three factors, the band, the fallback tiers
+and the [`baseline` payload object](#baseline-payload), as PHP with its own fixtures — where the
+Insights chart is only the columns and the `intervals` option that plot the bounds the response
+carries. They are split because the model is the analytically substantial part and is verifiable on
+its own. The model feeds payload assembly as well, so it lands before that is finished rather than
+after it.
 
-Issue 3 is the one most likely to need splitting when its brief is written: it owns the report
-options for every dimension, the batching, the ranking, the
+The [look-ahead](#look-ahead) splits along the same line and lands after both halves of it: the
+forward loop, the widening band, the tier rule and the boom-or-lull comparison as PHP, then the
+chart's forward columns, the joining row, the dashed series and `LookaheadSummary` on top of a chart
+that already renders. Building the chart once with both halves would be marginally cheaper than
+building it twice, and is not worth holding the measured half — the part the tab is named for — behind
+a projection only the full baseline tier can produce. The response is the seam here as everywhere: the
+chart issue reads `forecast` and `lookahead` off a fixture whether or not the PHP filling them has
+landed.
+
+Report gathering and payload assembly is the one most likely to need splitting when its brief is
+written: it owns the report options for every dimension, the batching, the ranking, the
 [row caps](#how-many-rows-does-each-contextual-data-dimension-carry) and the composition of the
 response. Splitting it by report group — the daily series and visitor totals first, the dimension
 reports second — is the obvious line if it is needed.
 
-Issues 11 and 14 share the dimension catalog described under
+The traffic breakdown and "what affected your traffic" share the dimension catalog described under
 [Traffic breakdown](#traffic-breakdown): whichever lands first builds `breakdown/registry.ts` and the
 second adds its renderer to the existing entries, so the two sections cannot end up ordering or
 naming the dimensions differently.
 
-Issues 1 through 6 are the critical path. Everything from issue 7 on can be built and tested against
-a fixture of the response before the service endpoint is available in production; issues 9, 12, 14
-and 17 are the ones whose acceptance needs the live endpoint, since `topDimensions` and the scenario
-codes drive what they order and render.
+Sharing and the cache are critical path rather than a follow-up: without them every dashboard load
+spends a rate-limit token and the view-only dashboard shows nothing. They are separate from the
+datapoint pipeline because they are verifiable on their own — against a mocked proxy and a dispatch as
+a view-only user — and because the two allow-list additions need reviewing as what they are.
+
+The server-side half is the critical path in full. Every panel and section can be built and tested
+against a fixture of the response before the service endpoint is available in production; the two
+insight blocks, "what affected your traffic" and the unavailable-insight states are the ones whose
+acceptance needs the live endpoint, since `topDimensions` and the scenario codes drive what they order
+and render.
 
 ## **Documentation in-product**
 
@@ -1466,7 +1793,7 @@ The widget needs support links in three places, resolved through `getDocumentati
 3. An explanation of why the widget does not appear for properties with insufficient history,
    reachable from support rather than from the dashboard, since the widget is absent in that case.
 
-The support team drafts these before rollout; the slugs are added in issue 22.
+The support team drafts these before rollout; the slugs are added with the links.
 
 ## **Testing plan considerations**
 
@@ -1497,9 +1824,27 @@ omitted entirely, a year-ago window that ends mid-range, and each of the three h
 Storybook should carry the Insights chart at small, medium and large traffic so the band's
 proportional behavior is in VRT, along with the weekday-only and same-weekday-average tiers.
 
+The [look-ahead](#look-ahead) is asserted the same way and adds four PHPUnit cases: a forward day
+whose seasonal multiplier is known by construction, the band's `1.05x` to `1.20x` widening across the
+four weeks, each side of the ±15% boom-or-lull threshold, and a weekday-only tier that must return no
+`forecast` at all. Its front-end case is the joining row — the last measured day and the first
+projected one drawn as one continuous line and one continuous band — which belongs in a unit test over
+the table builder and a Storybook story rather than in a visual check.
+
 Search Console is a soft dependency: QA needs to verify the widget behaves when Search Console is
 disconnected and `search_query_shifts` is omitted, which is a matter of the filter callback declining
-rather than of a failed request.
+rather than of a failed request. The view-only equivalent — Analytics shared with a role, Search
+Console not — is the case that exercises the [cache key](#site-wide-cache), and the assertion is that
+the two callers are served different entries rather than one.
+
+**The [cache](#site-wide-cache) needs PHPUnit coverage of its own**, because most of what it does is
+invisible from the front end: a second request under the same arguments issuing no outbound call, a
+different locale or a different contextual-data source signature missing the entry, a stored insight
+being re-attached to freshly gathered reports after the response entry expires, a failure marker
+suppressing the generative call for its hour and not beyond it, and a failed report run leaving
+nothing stored. The view-only path belongs here too rather than only in manual QA: a shared request
+must resolve the owner's client for the reports and for the generative call, which is assertable by
+dispatching the datapoint as a view-only user against a mocked proxy.
 
 Two response-driven cases are worth naming because they are easy to miss and awkward to reach
 naturally: a `topDimensions` list naming a dimension whose `contextualData` key is absent, and
@@ -1526,26 +1871,6 @@ An issue to remove the `performanceBenchmarking` flag and its conditional logic 
 once the feature is stable at 100%.
 
 # **Open questions**
-
-## **What does the view-only dashboard show?** {#what-does-the-view-only-dashboard-show}
-
-The generative endpoint identifies the user by bearer token, and a view-only dashboard-sharing user
-has none, yet the feature is meant to reach everyone with access to Analytics data. The options
-are to render the tabs without the insight, to generate with the module owner's token and cache the
-result site-wide, or to hide the widget entirely in the view-only dashboard.
-
-Server-side assembly raises the stakes: every number the widget draws arrives through the same
-datapoint as the narration, so a non-shareable datapoint costs a view-only user the whole widget
-rather than one block of text. The [direction](#dashboard-sharing) is a shareable datapoint whose
-pipeline skips the generative step on a shared request, which needs confirming rather than assuming.
-
-Undecided with it: whether the Search Console rows can be gathered at all under a shared request,
-since the callback reaches for `POST:searchanalytics-batch` and shared access is defined over read
-datapoints. If they cannot, `search_query_shifts` is simply absent for view-only users, which the
-payload already tolerates — but that should be a decision rather than a discovery in QA.
-
-Blocked on this: the widget's `isActive` conditions, whether the datapoint is shareable, and whether
-a site-level insight cache is needed at all.
 
 ## **What is the latency budget for the insight request?** {#what-is-the-latency-budget-for-the-insight-request}
 
@@ -1589,26 +1914,26 @@ no definition in the daily model:
 Also undecided: whether the short-history tiers send a `baseline` with `period_months: 2` or omit the
 object and let the service narrate against the previous period instead.
 
-Blocked on this: the payload half of issue 5, and the scenario mix QA will actually see.
+Blocked on this: the payload half of the baseline model, and the scenario mix QA will actually see.
 
 ## **What does the widget show when the rate limit is hit?** {#what-does-the-widget-show-when-the-rate-limit-is-hit}
 
 The service allows a burst of 10 with a refill of 2 per hour per site and user, and returns 429 beyond
-that. Keying the cache on the date range narrows what a 429 means: only a range the browser has not
-held recently reaches the service at all, so several date-range changes in one sitting is the way to
-hit it.
+that. The two caches narrow what a 429 means considerably: the site spends at most one token per date
+range per locale per day, so reaching the limit takes a run of date ranges nobody on the site has
+opened that day.
 
 The numbers stay on screen either way. What is open is the insight block: rendering the tab without
 it, or saying in its place that the insight is temporarily unavailable and will be back shortly, are
 materially different experiences, and the choice decides whether a 429 is tracked as an error.
 
-The mechanics need settling with it, because a rate-limited response is a **successful** response
-with `insight` omitted, and the API cache holds it for the full 24 hours like any other. Left alone,
-one 429 costs that date range its insight for a day. The design's answer is `insightRetryAfter` and a
-[store-side invalidation](#datastore-slice) once it passes, which leaves two things to decide:
-whether the service's 429 carries a `Retry-After` the datapoint can pass through, or the plugin
-picks a cool-down; and whether the refetch happens silently on the next mount after that time or only
-when the user does something.
+The mechanics are settled: a rate-limited response is a **successful** response with `insight`
+omitted, so `insightRetryAfter` travels with it, the [site-wide cache](#site-wide-cache) holds the
+failure for an hour rather than for the success TTL — which is when the limiter has refilled two
+tokens — and the [store](#datastore-slice) invalidates its own copy once that time has passed. What is
+left to decide is whether the service's 429 carries a `Retry-After` the datapoint should pass through
+in place of that hour, and whether the refetch happens silently on the next mount after the time or
+only when the user does something.
 
 ## **How many rows does each `contextual_data` dimension carry?** {#how-many-rows-does-each-contextual-data-dimension-carry}
 
@@ -1642,10 +1967,12 @@ Undecided beyond the choice itself:
    the property age stops being queued once the property matures, so a permanent dismissal reaches
    the same place; the exact `expiresInSeconds` matters only if the dismissal is also meant to
    suppress something that does not check the age itself.
-3. Whether either treatment appears in the view-only dashboard, which has its own
-   [open question](#what-does-the-view-only-dashboard-show).
+3. Whether either treatment appears in the view-only dashboard. The widget itself does, and the age
+   gate is now evaluable there, so a zero-data panel reaches view-only users as a matter of course
+   while a notification has to be decided for them on purpose.
 
-Blocked on this: the scope and points of issue 4, and whether the epic needs a notification at all.
+Blocked on this: the scope and points of the widget registration, and whether the epic needs a
+notification at all.
 
 ## **What are the minimum data thresholds for each level of analysis?** {#what-are-the-minimum-data-thresholds-for-each-level-of-analysis}
 
@@ -1658,7 +1985,8 @@ The [baseline](#expected-baseline) has thresholds of its own and they do not lin
 Its full tier needs history 392 days before the earliest plotted day — 420 days at the default range,
 482 at the 90-day range — where the widget gate asks for 13 months; its weekday-only tier needs 9
 weeks; and below that it falls back to a same-weekday average. The band is drawn at whichever tier the
-history supports rather than hidden, so what is open is the floor rather than the fallbacks. A property
+history supports rather than hidden — only the [look-ahead](#look-ahead) is withheld below the full
+tier, and for a reason of its own — so what is open is the floor rather than the fallbacks. A property
 between 9 weeks and 13 months old could carry a weekday baseline that the 13-month gate withholds
 along with everything else. Volume is a second axis the gate does not look at at all: the band's floor
 of 5 visitors keeps a very small site's expectations honest, but nothing currently declines to draw a
@@ -1680,53 +2008,8 @@ selected range — and of a higher bar for the short-history tiers, which would 
 *before* the earliest plotted day rather than 63 days in total. The report span is unaffected either
 way: the seasonality lookback already reaches deeper than both windows.
 
-Blocked on this: the window arithmetic in issue 5, and the history each fallback tier requires.
-
-## **How does the scenario code reach the feedback telemetry?** {#how-does-the-scenario-code-reach-the-feedback-telemetry}
-
-The service's post-launch quality process aggregates thumbs feedback per scenario code. The plugin's
-thumbs prompt sends `vote:<voteID>:<direction>` through `triggerSurvey`, which carries no metadata,
-so the scenario would have to be encoded in the `voteID` or the survey trigger extended.
-
-Blocked on this: issue 16, and the definition of the vote IDs.
-
-## **How is the feature introduced to users?** {#how-is-the-feature-introduced-to-users}
-
-The widget appears in a section users already read, so it may need no introduction at all. If it
-does, the options are an intro notification, a feature tour over the two tabs, or a "New" badge on
-the widget header. Issue 18 is sized on the assumption that something is needed.
-
-## **What is the downvote follow-up URL?** {#what-is-the-downvote-follow-up-url}
-
-`SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL` is `'#'`. The promoted component needs a real URL for the
-"Tell us more" link, for this feature and for Site Goals.
-
-## **Is the widget collapsible, and does the active tab persist?**
-
-The Figma frames do not show a collapse affordance, and nothing in the design persists the selected
-tab across reloads. Both are cheap to add now and awkward to add later.
-
-## **Does the look-ahead forecast land in this epic?** {#does-the-look-ahead-forecast-land-in-this-epic}
-
-The next-28-days projection is listed under Future Work on the assumption that it needed a forecast
-field in the benchmarking response. It does not: the [baseline model](#expected-baseline) produces it
-from reports the datapoint already runs, and what is left is the forward rows, the chart's forward
-extension, the boom-or-lull comparison and the copy — one issue about the size of issue 13, not an
-epic of its own.
-
-Blocked on this: the issue list and the total, and whether the Insights chart is built once with a
-forward half or built now and extended later.
-
-## **Does the Recent Activities tab appear before its epic ships?**
-
-Figma shows three tabs. A two-tab shell with the third appearing later is one option; a disabled or
-"coming soon" third tab is another. The former is assumed.
-
-## **What is the exact widget title and section copy?**
-
-"Understand your traffic patterns" is a working placeholder. The final title, the tab labels,
-and the section headings inside each tab come from Figma and need confirming against the current
-frames.
+Blocked on this: the window arithmetic in the baseline model, and the history each fallback tier
+requires.
 
 # **Appendices**
 
@@ -1748,6 +2031,10 @@ for the five fields inside `insight`.
 | `insightRetryAfter` | `integer`, Unix timestamp | With a reason that can clear |
 | `visitors` | `{ current: int, previous: int }` | Always |
 | `dailyTraffic` | `Array<{ date, visitors, expectedMin, expectedMax }>`, one row per plotted day | Always |
+| `forecast` | `Array<{ date, predicted, expectedMin, expectedMax }>`, 28 rows from the day after `endDate` | At the full baseline tier |
+| `lookahead.direction` | `BOOM` \| `LULL` \| `STEADY` | At the full baseline tier |
+| `lookahead.projectedVisitors` | `integer`, the 28 forward predictions summed | At the full baseline tier |
+| `lookahead.changePercent` | `float`, signed, against the 28 days of actuals ending on `endDate` | At the full baseline tier |
 | `baseline.periodMonths` | `integer` | Always |
 | `baseline.expectedRangeMin`, `baseline.expectedRangeMax` | `integer`, period totals | Always |
 | `baseline.trendDirection` | `UP` \| `DOWN` \| `STABLE` | Always |
@@ -1764,7 +2051,7 @@ is not a label and two numbers.
 
 ### **Request and response field mapping** {#request-and-response-field-mapping}
 
-The service contract, for reference while implementing the derivation in issue 3. Every
+The service contract, for reference while implementing the derivation. Every
 `contextual_data` key is optional, and each `MetricPair` is `{ current, previous }`:
 
 | Request field | Type | Required |
@@ -1814,6 +2101,16 @@ failure.
 
 | Date | Author(s) | Description |
 | :---- | :---- | :---- |
+| Aug 12, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Brought the [look-ahead](#look-ahead) into the epic and closed the question of whether it belongs here: the model runs 28 days past `endDate` on a frozen level and last year's shape, out of the report span it already reads; the Insights chart continues into a dashed forward half under a band widening 5% per week; `LookaheadSummary` states the boom-or-lull comparison in the plugin's own copy rather than the service's, since the request carries no forward field; and the projection runs at the full baseline tier only, because below it the line would carry no forward information. Two issues and 22 points |
+| Aug 12, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Dropped the feature-introduction question and the Feature Discovery section along with the issue that carried them: the widget lands in a section users already read and is introduced by nothing — no notification, tour or badge — which takes 15 points off the epic. Dropped the collapse-and-persistence question with them: the card renders no collapse affordance, and the active tab stays component state that resets on reload |
+| Aug 12, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Closed the copy question: the card carries no title of its own and renders no `Header` at all, since the Traffic area already heads the section with "Find out how your audience is growing" over "Track your site’s traffic over time" — the tab bar is the first element in the card, and the collapse question inherits the consequence that `Widget`'s own affordance lives in the header this widget does not render |
+| Aug 12, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Dropped the third Figma tab from the doc: the shell this epic builds carries the two tabs it builds, and the tab another epic adds is that epic's to describe |
+| Aug 12, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Closed the downvote-follow-up-URL question: there is no follow-up URL and none is needed, since the service surveys the users who voted down off the stored trigger. `downvoteFormURL` is dropped from the promoted `FeedbackPrompt` rather than becoming a prop, the Site Goals widgets lose their link to the `'#'` placeholder, and the placeholder's remaining use in `PrimaryActionRow` is left to Site Goals |
+| Aug 12, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Closed the cache-TTL question: an hour for the composed response and a day for the insight stand as designed, a failure marker is held for an hour so the retry lands once the limiter has refilled, and the insight entry survives a movement in the report figures rather than being missed on a threshold |
+| Aug 12, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Added the [site-wide cache](#site-wide-cache): the composed response for an hour and the generated insight for a day, keyed on the request arguments, the locale and the contextual-data sources the caller can reach, with a generation failure stored for its own cool-down — so a site spends one rate-limit token per date range per day however many users load the dashboard, and the browser's copy drops to an hour so the widget's totals stay in step with the traffic graph above them |
+| Aug 12, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Closed the view-only question: `GET:benchmarking` is shareable and generates under the module owner's token on a shared request, so the view-only dashboard gets the whole widget rather than a version with the insight removed. Named the three changes that makes necessary — the owner's token for the generative call, `sessionSource` in the shareable dimension list, and `propertyCreateTime` among the view-only settings keys — and settled that the Search Console rows are gathered on a shared request too, where that module is shared with the caller's role |
+| Aug 12, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Closed the feedback-telemetry question: the existing `vote:<voteID>:<direction>` trigger is stored service-side and is what the downvote follow-up survey targets, so the widget only needs a vote ID of its own |
+| Aug 12, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Dropped the passages declaring what the epic does not introduce — widget area, widget context, navigation chip, chart type, custom dimension, REST route, setting and sharing capability — so the doc states only what is built |
 | Aug 12, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Moved report gathering, payload assembly and the expected-baseline model into the `GET:benchmarking` datapoint: the widget calls it with the selected date range and renders one composed response, and Search Console contributes its rows through `googlesitekit_benchmarking_contextual_data` rather than through a request issued by an Analytics widget |
 | Aug 12, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Made the insight datapoint a `GET` so its response is cached under the payload hash, since the service spends a rate-limit token before consulting its own cache; specified the fetch store, selectors and action the slice adds, and the row caps the query string now requires |
 | Aug 12, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Dropped the Site Goals comparisons throughout, stating what this epic builds directly instead |
