@@ -28,10 +28,9 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import InitialSetupLayout from './InitialSetupLayout';
 
 export default function SetupLayout( { moduleSlug }: ModuleSetupLayoutProps ) {
-	const isInitialSetupFlow =
-		useIsInitialSetupFlow() && moduleSlug === MODULE_SLUG_ANALYTICS_4;
+	const isInitialSetupFlow = useIsInitialSetupFlow();
 
-	if ( ! isInitialSetupFlow ) {
+	if ( ! isInitialSetupFlow || moduleSlug !== MODULE_SLUG_ANALYTICS_4 ) {
 		return <DefaultModuleSetup moduleSlug={ moduleSlug } />;
 	}
 
