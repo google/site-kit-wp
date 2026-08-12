@@ -10,7 +10,7 @@
 ***Author(s):** [Eugene Manuilov](mailto:eugene.manuilov@fueled.com)*
 ***PRD:** [Performance intelligence: site benchmarking & forecasts in Site Kit \[PRD\]](https://docs.google.com/document/d/1zwM9ogRlrFO__rLFVYT6SE1qqsjIwzfFUELBiLnYHUQ/edit?usp=sharing)*
 ***Figma Designs:** [Performance benchmarking](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-11454&m=dev)*
-***Last Major Revision:** Aug 11, 2026 ([Revision history](#revision-history))*
+***Last Major Revision:** Aug 12, 2026 ([Revision history](#revision-history))*
 
 # **Context**
 
@@ -22,10 +22,9 @@ needed to reach the Site Kit Service's generative endpoints.
 
 ## **Background**
 
-Site Kit already answers "how many visitors did I get?" The `analyticsAllTrafficGA4` widget renders
-a `totalUsers` figure with a period-over-period change in `TotalUserCount`, a daily line chart in
-`UserCountGraph`, and dimension pie charts in `UserDimensionsPieChart`. What it cannot answer is
-whether the number is good.
+Site Kit already answers "how many visitors did I get?" — `analyticsAllTrafficGA4` renders the
+`totalUsers` figure, its period-over-period change, a daily line chart and dimension pie charts.
+What it cannot answer is whether the number is good.
 
 Most site owners have neither the analytics background nor the historical context to judge a 12%
 dip. Without a sense of their own seasonality, a normal January decline reads as a crisis and a
@@ -123,39 +122,25 @@ endpoint; the GA4 Data API and the Search Console API are reached the way they a
 
 ### **Feature flag**
 
-The epic is built behind a new `performanceBenchmarking` feature flag, added to
-`feature-flags.json` and read through `isFeatureEnabled( 'performanceBenchmarking' )` in JS and
-`Feature_Flags::enabled( 'performanceBenchmarking' )` in PHP.
+The epic is built behind a new `performanceBenchmarking` feature flag.
 
-Widget registration is wrapped in the flag check, following the pattern the Site Goals widgets use
-in `assets/js/modules/analytics-4/widgets/index.js`: with the flag off, the widget is never
-registered, so nothing about the Traffic area changes. The new datapoints are likewise registered
-only when the flag is enabled, matching how `GET:advanced-data-breakdowns-settings` and
-`GET:form-metadata` are conditionally added in `Analytics_4::get_datapoint_definitions()`.
+Widget registration is wrapped in the flag check, as the Site Goals widgets are in
+`assets/js/modules/analytics-4/widgets/index.js`: with the flag off the widget is never registered,
+so nothing about the Traffic area changes. The new datapoint is likewise added to
+`Analytics_4::get_datapoint_definitions()` only when the flag is enabled.
 
 ### **Widget registration and placement** {#widget-registration-and-placement}
 
-`CONTEXT_MAIN_DASHBOARD_TRAFFIC` currently holds three areas:
-`AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY` at priority 1,
-`AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION` at priority 2, and
-`AREA_MAIN_DASHBOARD_TRAFFIC_READER_REVENUE_MANAGER` at priority 3. Within the primary area,
-`analyticsAllTrafficGA4` is registered at priority 1.
+`PerformanceBenchmarkingWidget` registers at full width into `AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY` at
+priority 2, behind `analyticsAllTrafficGA4` at priority 1, so it renders immediately after the traffic
+graph and before the visitor-groups area. **No new widget area, widget context or navigation chip is
+introduced** — the widget lives inside the Traffic section the PRD asks for, and the Traffic chip
+already exists.
 
-The new widget joins `AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY` at priority 2, so it renders immediately
-after the traffic graph and before the visitor-groups area. **No new widget area, widget context or
-navigation chip is introduced** — the widget lives inside the Traffic section the PRD asks for, and
-the Traffic chip already exists.
-
-Registration properties:
-
-* `Component`: the new `PerformanceBenchmarkingWidget`.
-* `width`: `widgets.WIDGET_WIDTHS.FULL`.
-* `priority`: `2`.
-* `wrapWidget`: `false` — the widget renders its own `Widget` wrapper so it can supply `Header`,
-  `headerContents` and the tab shell, as the Site Goals widgets do.
-* `modules`: `[ MODULE_SLUG_ANALYTICS_4 ]`, so the Widgets API handles the not-connected and
-  recoverable-module cases.
-* `isActive`: resolves the [gating conditions](#gating-and-visibility).
+It registers with `wrapWidget: false` and renders its own `Widget` wrapper, so that it can supply
+`Header`, `headerContents` and the tab shell, as the Site Goals widgets do. `modules` carries
+`MODULE_SLUG_ANALYTICS_4`, leaving the not-connected and recoverable-module cases to the Widgets API,
+and `isActive` resolves the [gating conditions](#gating-and-visibility).
 
 The widget registers only for the main dashboard. It is not added to
 `AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY`: the analysis is a whole-site one, and the year-over-year
@@ -169,23 +154,47 @@ The widget's `isActive` requires all of:
 2. Analytics is connected, via `isModuleConnected( MODULE_SLUG_ANALYTICS_4 )` on `core/modules`.
 3. The user has access to Analytics data, via
    `hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 )` on `core/user`.
-4. The property has enough history. `getPropertyCreateTime()` on `modules/analytics-4` returns the
-   GA4 property's creation timestamp; a property created fewer than 13 months ago cannot support
-   the year-over-year comparison the endpoint's `visitors` array expects, and the widget returns
-   `WidgetNull`.
+4. The property has enough history: `getPropertyCreateTime()` on `modules/analytics-4` is at least
+   13 months back. A younger property cannot support the year-over-year comparison the endpoint's
+   `visitors` array expects.
 
-The [expected baseline](#expected-baseline) needs a deeper history than the gate does — 392 days
-before the *earliest* day it plots, so 420 days for the default 28-day range — and it degrades tier
-by tier when that history is not there. Whether the widget-level gate should soften to match, so that
-a nine-week-old property still gets a weekday baseline and a chart while the year-over-year insight
-stays hidden, is an [open question](#❓-what-are-the-minimum-data-thresholds-for-each-level-of-analysis).
-
-When the widget returns `WidgetNull`, the Traffic area is unaffected — `analyticsAllTrafficGA4`
+Conditions 1 to 3 return `WidgetNull`, and the Traffic area is unaffected — `analyticsAllTrafficGA4`
 keeps the area alive on its own, so there is no cascade to worry about.
 
-**The widget is not user-dismissible and has no on/off toggle in Admin Settings**, consistent with
-the Site Goals decision: the point of the feature is to give context to users who would not think
-to go looking for it.
+**Condition 4 is different: a too-young property is a state the user should be told about, not one
+to hide.** Someone who connected Analytics last month should learn that the feature is waiting on
+history rather than find nothing where the widget will eventually be. Two treatments are on the
+table, and they put the check in different places:
+
+* **A zero-data state in the widget.** The widget registers and renders, and the shell shows a
+  zero-data panel explaining that 13 months of history are needed. Condition 4 then moves out of
+  `isActive` into the shell, and the widget holds its slot in the Traffic area from the day Analytics
+  is connected. `WidgetReportZero`'s copy is the generic "*Analytics data is not yet available,
+  please check back later*", so property-age copy means the widget renders a `CTA` of its own and
+  does not signal `ReportZero` widget state to the Widgets API.
+* **A dismissible notification, and no widget.** Condition 4 stays in `isActive`, the widget is
+  absent, and a `core/notifications` notification carries the explanation. What makes this option
+  workable is that the eligibility date is known exactly rather than guessed:
+  `dismissNotification()` takes `expiresInSeconds`, and the value is the seconds between now and 13
+  months after `getPropertyCreateTime()`. The user dismisses the message and it comes back — or
+  rather, the widget does — on the day the data supports it.
+
+**Neither is confirmed. Both need a product decision before issue 4 is built**, and the choice
+also decides whether the eligibility arithmetic lives in `isActive` or in the shell — see
+[the open question](#❓-what-does-the-widget-do-when-the-property-is-too-young).
+
+The gate and the [expected baseline](#expected-baseline) do not measure the same history. The gate asks
+for 13 months; the baseline's full tier needs 392 days before the *earliest* day it plots — 420 days
+at the default 28-day range, 482 at the 90-day range — so a property that has only just passed the gate
+cannot apply annual seasonality across a 90-day window.
+
+**That difference is one of precision, not of availability: whenever the widget renders, the band
+renders with it, at whichever tier the history supports.** Short of the full tier the prediction drops
+`annual_seasonality` and keeps the weekday shape; shorter still it falls back to a same-weekday
+average. Those tiers are the ordinary state of a newly eligible property, not a reason to withhold the
+chart. What is still open is the floor beneath them — how little history, and how little daily volume,
+leaves a baseline worth drawing at all — see the
+[open question](#❓-what-are-the-minimum-data-thresholds-for-each-level-of-analysis).
 
 ### **Widget shell** {#widget-shell}
 
@@ -204,7 +213,7 @@ The shell owns the states shared by both tabs:
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Hidden: property < 13 months
+    [*] --> InsufficientHistory: property < 13 months
     [*] --> Loading
     Loading --> Ready: reports + insight resolved
     Loading --> Reporting: insight failed, reports resolved
@@ -212,6 +221,9 @@ stateDiagram-v2
     Ready --> Reporting: rate limit reached
 ```
 
+* **InsufficientHistory** — the property is too young for the year-over-year comparison. Whether
+  this is a panel the shell renders, or the widget never mounting at all, is the
+  [gating decision](#❓-what-does-the-widget-do-when-the-property-is-too-young) still to be confirmed.
 * **Loading** — `PreviewBlock` placeholders sized per section, as the Site Goals widgets do while
   `areReportsLoading` is true.
 * **Ready** — metrics, charts and generated insight all present.
@@ -271,13 +283,12 @@ of the daily series the baseline already fetched rather than issuing a second re
 cannot disagree with the chart below it.
 
 `totalUsers` is the metric, not `activeUsers`, so the figure agrees with the All Visitors count in
-the widget directly above it — `TOTAL_USERS_METRIC` in that widget's `reportOptions.ts` is
-`totalUsers`.
+the widget directly above it, which reports the same metric.
 
-`ChangeBadge` derives the delta from the two values it is handed and renders nothing when the
-previous value is zero, which is the behavior this section wants: a site with no traffic in the
-previous period shows a total and no badge rather than an unbounded percentage. The section renders
-in every state but Error, since it depends on one report and on no insight.
+`ChangeBadge` renders nothing when the previous value is zero, which is the behavior this section
+wants: a site with no traffic in the previous period shows a total and no badge rather than an
+unbounded percentage. The section renders in every state but Error, since it depends on one report
+and on no insight.
 
 #### *Generated insight*
 
@@ -309,10 +320,9 @@ report shape is the one `getGraphReportOptions()` produces for the All Traffic g
 `date` dimension ordered ascending.
 
 Recently published content that is gaining traffic is annotated through the chart's existing
-`dateMarkers` prop, which takes `{ date, text }` entries, draws a dotted vertical line with a tooltip
-per entry via `DateMarker`, and discards entries outside the plotted range itself, so posts published
-before the selected range need no filtering here. `UserCountGraph` uses the same prop today to mark
-the property creation date.
+`dateMarkers` prop — the one `UserCountGraph` marks the property creation date with. It discards
+entries outside the plotted range itself, so posts published before the selected range need no
+filtering here.
 
 A pure function in `utils/` builds the marker list from the same rows that become
 `recent_content_momentum` in the payload, so the annotations and the narration describe the same
@@ -571,37 +581,28 @@ keeps those fixtures deterministic.
 
 #### *Google_Proxy additions*
 
-`Google_Proxy` gains a URI constant for the generative endpoint alongside the existing
-`SURVEY_TRIGGER_URI` and `FEATURES_URI` constants, and one public method: it submits a benchmarking
-request, taking `Credentials`, the user's access token and the derived payload, calls the private
-`request()` helper with `json_request => true`, and returns the generated insight from that same
-response. The helper already injects `site_id` and `site_secret` from credentials and sets the
-`Authorization: Bearer` header from the access token, which is exactly what the endpoint validates —
-it rejects a mismatched `site_secret` with a 400 and an unverifiable token, or a user not registered
-against that site, with a 403.
+`Google_Proxy` gains a URI constant for the generative endpoint and one public method, which posts
+the derived payload through `request()` with `json_request => true` and returns the insight from that
+same response. The credentials and bearer header the helper already sends are exactly what the
+endpoint validates: a mismatched `site_secret` is a 400, and an unverifiable token or a user not
+registered against that site is a 403.
 
 The user's locale travels as an `hl` **query parameter**, which is the only place the service looks
-for it — not a body field. `request()` takes no query arguments and JSON-encodes the body when
-`json_request` is set, so the new method appends `hl` to the URI it hands the helper.
-`Google_Proxy` already resolves the value through `$this->context->get_locale( 'user' )` for
-`permissions_url()` and `get_metadata_fields()`. The locale is part of the service's cache key, so
-switching the admin language produces a newly generated insight rather than a cached one in the
-wrong language.
+for it — not a body field. `request()` takes no query arguments, so the new method appends `hl`,
+resolved from `$this->context->get_locale( 'user' )`, to the URI it hands the helper. The locale is
+part of the service's cache key, so switching the admin language produces a newly generated insight
+rather than a cached one in the wrong language.
 
 #### *Module datapoint*
 
-One new datapoint on `Analytics_4`, registered in `get_datapoint_definitions()`:
-`POST:benchmarking-insight`, which submits the payload and returns the insight. It is a new class
-under `includes/Modules/Analytics_4/Datapoints/`, following the `Executable_Datapoint` contract:
-`create_request()` validates input and returns a closure. The `Google_Proxy` instance, `Credentials`
-and the OAuth client are injected through the `$definition` array at registration, the way
-`Create_Account_Ticket` receives `$this->authentication->credentials()->get()`.
+One new `POST:benchmarking-insight` datapoint on `Analytics_4`, an `Executable_Datapoint` class under
+`includes/Modules/Analytics_4/Datapoints/`, taking the `Google_Proxy` instance, `Credentials` and the
+OAuth client through its `$definition` array.
 
 The datapoint requires the caller's own Google access token, because the service identifies the
 user from the bearer token and checks that user's membership of the site. That makes it **not** a
-`Shareable_Datapoint` — the same constraint that makes `REST_User_Surveys_Controller` gate its routes
-on `is_authenticated() && credentials()->using_proxy()`. The consequence for the view-only dashboard
-is an [open question](#❓-what-does-the-view-only-dashboard-show).
+`Shareable_Datapoint`, and the consequence for the view-only dashboard is an
+[open question](#❓-what-does-the-view-only-dashboard-show).
 
 It lives on the Analytics module rather than in a new core controller because every input is GA4
 and Search Console data and every consumer is an Analytics widget. If Site Goals insights later
@@ -628,19 +629,16 @@ rate-limit token, is an [open question](#❓-what-is-the-latency-budget-for-the-
 
 #### *Datastore slice*
 
-A new `assets/js/modules/analytics-4/datastore/benchmarking.ts` slice, combined into the module
-store in `datastore/index.js`. It uses `createFetchStore` from
-`@/js/googlesitekit/data/create-fetch-store` for the one request, and exposes a selector returning
-`{ scenario, topDimensions, text, driver, actionableRecommendation }` for a given payload plus the
-usual loading and error state. Because the insight is keyed by the derived payload, both tabs and any
-re-render read one resolved value.
+A new `assets/js/modules/analytics-4/datastore/benchmarking.ts` slice, combined into the module store,
+exposing a selector that returns `{ scenario, topDimensions, text, driver, actionableRecommendation }`
+for a given payload. It is an ordinary `createFetchStore` over the one POST, with no machinery of its
+own.
 
-This is an ordinary `createFetchStore` slice with no machinery of its own — the request is a plain
-POST that returns the result. What makes it more than a `createFetchStore` call is the key: the
-payload is large and derived, so the slice keys on a stable hash of it rather than on the object, and
-the derivation must be deterministic for the same reports or the same dashboard view will look like a
-new request. The service's own 24-hour cache is keyed the same way, over the whole payload including
-`baseline`, so an unstable derivation costs a rate-limit token every time.
+The one thing that is not routine is the key. The payload is large and derived, so the slice keys on
+a stable hash of it rather than on the object, and the derivation has to be deterministic for the
+same reports or the same dashboard view looks like a new request. The service's own 24-hour cache is
+keyed the same way, over the whole payload including `baseline`, so an unstable derivation costs a
+rate-limit token every time. Keyed that way, both tabs and any re-render read one resolved value.
 
 #### *Payload assembly* {#payload-assembly}
 
@@ -677,10 +675,9 @@ has rather than fetched a second time. Longer date ranges and any earlier year f
 and need their own totals report.
 
 `recent_content_momentum` and `category_resonance` depend on the `googlesitekit_post_date` and
-`googlesitekit_post_categories` custom dimensions, which Site Kit already defines in
-`CUSTOM_DIMENSION_DEFINITIONS` and creates through the existing `POST:create-custom-dimension`
-datapoint. No new custom dimension is introduced. Where a dimension is absent or still gathering
-data, its `contextual_data` key is omitted — every key is optional in the request schema — and the
+`googlesitekit_post_categories` custom dimensions, which Site Kit already defines and creates. No new
+custom dimension is introduced. Where a dimension is absent or still gathering data, its
+`contextual_data` key is omitted — every key is optional in the request schema — and the
 insight degrades rather than failing. Which keys are present also constrains which scenario can come
 back: `SEARCH_QUERY_SHIFTS`, `TRAFFIC_CHANNEL_SURGES`, `CATEGORY_RESONANCE`, `REFERRING_SITE_SHIFTS`
 and `RECENT_CONTENT_MOMENTUM` are each conditional on their own key being sent, so a site missing the
@@ -736,27 +733,20 @@ section components both panels are assembled from, `breakdown/` for the dimensio
 renderers, `hooks/`, `utils/` and `constants.ts`. Components are TypeScript function components, one
 component per file, with co-located tests and Storybook stories.
 
-New PHP lives in `includes/Modules/Analytics_4/Datapoints/` for the two datapoints, with the
-transport methods added to `includes/Core/Authentication/Google_Proxy.php`.
+New PHP lives in `includes/Modules/Analytics_4/Datapoints/` for the datapoint, with the transport
+method added to `includes/Core/Authentication/Google_Proxy.php`.
 
-The widget wraps its export in `withIntersectionObserver` so the view event fires once the widget
-is actually seen, as the Site Goals widgets do, and reads reports through `useInViewSelect` so
-report requests are not issued for a widget below the fold.
+The widget wraps its export in `withIntersectionObserver`, as the Site Goals widgets do, and reads
+reports through `useInViewSelect`, so neither the view event nor the report requests fire for a
+widget below the fold.
 
 ### **REST infrastructure**
 
-Existing routes cover everything except the generative call:
-
-* GA4 report queries use the existing `GET:report` datapoint on `modules/analytics-4`.
-* Search Console query data uses the existing report datapoint on `modules/search-console`.
-* Feedback votes use the existing `core/user/data/survey-trigger` route through `triggerSurvey`.
-* Custom-dimension availability and creation use the existing `GET:custom-dimensions` and
-  `POST:create-custom-dimension` datapoints.
-
-The new datapoint is dispatched by the existing
-`modules/(?P<slug>[a-z0-9\-]+)/data/(?P<datapoint>[a-z\-]+)` route in `REST_Modules_Controller`;
-no new REST route object is registered. Per-datapoint permissions are enforced by implementing
-`Permission_Aware_Datapoint`, which the controller already honors.
+Existing routes cover everything except the generative call: the GA4 and Search Console report
+datapoints, `triggerSurvey` for the feedback votes, and the custom-dimension availability and
+creation datapoints. `POST:benchmarking-insight` is dispatched by the module datapoint route like
+any other, so no new REST route object is registered, and it implements
+`Permission_Aware_Datapoint` for its own permission check.
 
 No new user or site setting is introduced. Nothing about the widget is persisted: the active tab is
 component state, there is no dismissal, and the insight is cached by the service for 24 hours against
@@ -812,10 +802,8 @@ worth a site option is a judgement call for the Site Health issue.
 The widget appears in a section users already visit, directly under a chart they already read, which
 is a materially easier introduction than Site Goals had. Whether it still warrants an introduction —
 an intro notification, a feature tour over the tabs, or a `WidgetNewBadge` on the header — is an
-[open question](#❓-how-is-the-feature-introduced-to-users). The existing infrastructure for all
-three options is in place: `assets/js/components/FeatureTours.js` and the module's
-`feature-tours/` directory, the notifications datastore, and
-`assets/js/googlesitekit/widgets/components/WidgetNewBadge.js`.
+[open question](#❓-how-is-the-feature-introduced-to-users). All three ride on infrastructure that is
+already in place, so the choice is a product one rather than a technical one.
 
 ### **Internal Measurement: GA4 Events**
 
@@ -1104,10 +1092,7 @@ thumbs prompt already exposes a labelled `role="group"` with `aria-pressed` stat
 
 ## **Internationalization (i18n)**
 
-All plugin-side strings use the standard WordPress translation functions with the
-`google-site-kit` text domain.
-
-The generated insight is a different matter: `text`, `driver` and `actionable_recommendation` are
+Plugin-side strings are translated as usual. The generated insight is a different matter: `text`, `driver` and `actionable_recommendation` are
 produced by the model, in the language the plugin declares through the `hl` parameter, and none of
 them passes through the WordPress translation pipeline. Where plugin chrome wraps generated text, the
 two must not be concatenated into one translatable string. Numbers inside the insight are formatted by
@@ -1149,6 +1134,11 @@ absorb the longest case rather than being tuned to the English one.
 
 **TOTAL: 275 STORY POINTS across 21 issues**
 
+Issue 4 is sized for the four `isActive` conditions and nothing more. Whichever way the
+[too-young state](#❓-what-does-the-widget-do-when-the-property-is-too-young) is confirmed adds to it —
+a panel in the shell, or a `core/notifications` registration with the dismissal arithmetic — and
+neither is costed in the total above.
+
 Issue 11 is the baseline model itself — the series builder, the three factors, the band, the fallback
 tiers and the [`baseline` payload object](#baseline-payload), as pure functions with their own tests —
 and issue 12 is only the chart that plots what it returns. They are split because the model is the
@@ -1189,8 +1179,10 @@ The support team drafts these before rollout; the slugs are added in issue 21.
 The hard part is data. The feature needs a property with 13+ months of history and a real seasonal
 shape to produce a meaningful insight, and the `contextual_data` inputs need the
 `googlesitekit_post_date` and `googlesitekit_post_categories` custom dimensions to have been
-collecting for long enough to return rows. A freshly provisioned test property produces an empty
-widget for a year.
+collecting for long enough to return rows. A freshly provisioned test property produces nothing for a
+year — which is itself a case to verify rather than a blocker, once the
+[too-young treatment](#❓-what-does-the-widget-do-when-the-property-is-too-young) is confirmed: a new
+property is the one scenario QA can reach without any setup at all.
 
 QA therefore depends on tester-plugin support for forcing the response and the failure modes, listed
 under [Tester plugin](#tester-plugin), plus access to an Analytics property with genuine history.
@@ -1347,6 +1339,28 @@ beyond that. A user changing the date range repeatedly can reach this in normal 
 dropping the insight block and telling the user to come back later are materially different
 experiences, and the choice affects whether a 429 is tracked as an error.
 
+## **❓ What does the widget do when the property is too young?** {#❓-what-does-the-widget-do-when-the-property-is-too-young}
+
+A property younger than 13 months cannot support the year-over-year comparison, and the two
+treatments described under [Gating and visibility](#gating-and-visibility) — a zero-data state inside
+the widget, or a dismissible notification with no widget — are both candidates. Neither has been
+confirmed with product, and they differ in more than presentation: the first keeps the widget mounted
+and moves the age check into the shell, the second keeps it in `isActive` and puts a message in the
+notification queue instead.
+
+Undecided beyond the choice itself:
+
+1. The copy, in either treatment. "Not enough data" and "available from March 2027" are different
+   promises, and only the second uses the fact that the eligibility date is exactly computable.
+2. Whether the dismissal needs an expiry at all. A notification whose `checkRequirements` re-reads
+   the property age stops being queued once the property matures, so a permanent dismissal reaches
+   the same place; the exact `expiresInSeconds` matters only if the dismissal is also meant to
+   suppress something that does not check the age itself.
+3. Whether either treatment appears in the view-only dashboard, which has its own
+   [open question](#❓-what-does-the-view-only-dashboard-show).
+
+Blocked on this: the scope and points of issue 4, and whether the epic needs a notification at all.
+
 ## **❓ What are the minimum data thresholds for each level of analysis?** {#❓-what-are-the-minimum-data-thresholds-for-each-level-of-analysis}
 
 This is unresolved: how many months and how much daily volume are needed before
@@ -1357,15 +1371,15 @@ age alone. Whether the gate belongs in the plugin or in the service — which co
 The [baseline](#expected-baseline) has thresholds of its own and they do not line up with the gate.
 Its full tier needs history 392 days before the earliest plotted day — 420 days at the default range,
 482 at the 90-day range — where the widget gate asks for 13 months; its weekday-only tier needs 9
-weeks; and below that it falls back to a same-weekday average. So a property between 9 weeks and 13
-months old could support a chart the widget currently hides, and a property just over 13 months old
-passes the gate while the full baseline tier still cannot evaluate the start of a 90-day range. Volume
-is a separate axis the gate does not look at at all: the band's floor of 5 visitors keeps a very small
-site's expectations honest, but nothing currently declines to draw a baseline for a site averaging two
-visitors a day.
+weeks; and below that it falls back to a same-weekday average. The band is drawn at whichever tier the
+history supports rather than hidden, so what is open is the floor rather than the fallbacks. A property
+between 9 weeks and 13 months old could carry a weekday baseline that the 13-month gate withholds
+along with everything else. Volume is a second axis the gate does not look at at all: the band's floor
+of 5 visitors keeps a very small site's expectations honest, but nothing currently declines to draw a
+baseline for a site averaging two visitors a day.
 
-Blocked on this: the widget's `isActive`, and whether the fallback tiers are a normal state or a
-reason to hide the chart.
+Blocked on this: the widget's `isActive`, and whether a site can be too small for a baseline
+regardless of how long it has been collecting.
 
 ## **❓ Does the baseline's trailing window include the days it judges?** {#❓-does-the-baselines-trailing-window-include-the-days-it-judges}
 
@@ -1501,6 +1515,9 @@ failure.
 
 | Date | Author(s) | Description |
 | :---- | :---- | :---- |
+| Aug 12, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Settled that the expected band is drawn at whichever history tier the property supports rather than hidden when the full tier is out of reach, leaving only the floor beneath the tiers open |
+| Aug 12, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Designed the too-young-property case as a state the user is told about — a zero-data panel or a dismissible notification whose dismissal expires on the exact eligibility date — with the choice left as an open question |
+| Aug 12, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Named the shared feedback prompt `FeedbackPrompt` rather than `WidgetFeedbackPrompt`, and trimmed the passages that explained existing plugin infrastructure a Site Kit engineer already knows |
 | Aug 11, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Rewrote the two tab sections as implementation plans — the components each panel is built from, the hooks between them and the datastore under [Panel data flow](#panel-data-flow), and the dimension catalog the breakdown and the "what affected your traffic" sections share |
 | Aug 10, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Aligned with the implemented endpoint: the call is one synchronous request rather than a polled operation, so the operation datapoint and the polling slice are gone; the response's `top_dimensions`, `driver` and `actionable_recommendation` are designed for; the request gains `baseline` and three more `contextual_data` dimensions |
 | Aug 10, 2026 | [Eugene Manuilov](mailto:eugene.manuilov@fueled.com) | Expected baseline resolved as a client-side computation: added [Expected baseline](#expected-baseline), rewrote the Traffic Insights chart section, split the baseline model out of the chart issue, and reworked the look-ahead forecast as an extension of the same model |
