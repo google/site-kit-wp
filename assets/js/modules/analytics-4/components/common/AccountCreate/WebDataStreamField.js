@@ -55,6 +55,10 @@ export default function WebDataStreamField() {
 				label={ __( 'Web data stream', 'google-site-kit' ) }
 				value={ value }
 				hasError={ ! value }
+				errorMessage={ __(
+					'A web data stream name is required.',
+					'google-site-kit'
+				) }
 				setValue={ setValue }
 				name="dataStream"
 			/>
