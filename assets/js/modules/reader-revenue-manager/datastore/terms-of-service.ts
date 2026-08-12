@@ -22,6 +22,11 @@
 import invariant from 'invariant';
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { get } from 'googlesitekit-api';
@@ -34,9 +39,17 @@ import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 
+interface TermsOfServiceParams {
+	tosURL: string;
+}
+
+interface TermsOfServiceState {
+	termsOfService: Record< string, string >;
+}
+
 const fetchGetTermsOfServiceStore = createFetchStore( {
 	baseName: 'getTermsOfService',
-	controlCallback: ( { tosURL } ) =>
+	controlCallback: ( { tosURL }: TermsOfServiceParams ) =>
 		get(
 			'modules',
 			MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -44,12 +57,20 @@ const fetchGetTermsOfServiceStore = createFetchStore( {
 			{ tosURL },
 			{ useCache: false }
 		),
-	reducerCallback: createReducer( ( state, termsOfService, { tosURL } ) => {
-		state.termsOfService = state.termsOfService || {};
-		state.termsOfService[ tosURL ] = termsOfService;
+	reducerCallback: createReducer(
+		(
+			state: TermsOfServiceState,
+			termsOfService: string,
+			{ tosURL }: TermsOfServiceParams
+		) => {
+			state.termsOfService = state.termsOfService || {};
+			state.termsOfService[ tosURL ] = termsOfService;
+		}
+	),
+	argsToParams: ( { tosURL }: Partial< TermsOfServiceParams > = {} ) => ( {
+		tosURL,
 	} ),
-	argsToParams: ( { tosURL } = {} ) => ( { tosURL } ),
-	validateParams: ( { tosURL } = {} ) => {
+	validateParams: ( { tosURL }: Partial< TermsOfServiceParams > = {} ) => {
 		invariant(
 			typeof tosURL === 'string' && tosURL.length > 0,
 			'tosURL is required and must be a string.'
@@ -57,22 +78,30 @@ const fetchGetTermsOfServiceStore = createFetchStore( {
 	},
 } );
 
-const baseInitialState = {
+const baseInitialState: TermsOfServiceState = {
 	termsOfService: {},
 };
 
 const baseResolvers = {
-	*getTermsOfService( { tosURL } = {} ) {
+	*getTermsOfService( {
+		tosURL,
+	}: Partial< TermsOfServiceParams > = {} ): Generator<
+		unknown,
+		void,
+		unknown
+	> {
 		if ( ! tosURL ) {
 			return;
 		}
 
-		const registry = yield commonActions.getRegistry();
+		const registryResult = yield commonActions.getRegistry();
+		const registry = registryResult as WPDataRegistry;
 		const termsOfService = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
 			.getTermsOfService( { tosURL } );
 
 		if ( termsOfService === undefined ) {
+			// @ts-expect-error createFetchStore is not properly typed yet.
 			yield fetchGetTermsOfServiceStore.actions.fetchGetTermsOfService( {
 				tosURL,
 			} );
@@ -91,7 +120,10 @@ const baseSelectors = {
 	 * @param {string} params.tosURL Terms of Service URL.
 	 * @return {(string|undefined)} Terms of Service HTML; `undefined` if not loaded.
 	 */
-	getTermsOfService( state, { tosURL } = {} ) {
+	getTermsOfService(
+		state: TermsOfServiceState,
+		{ tosURL }: Partial< TermsOfServiceParams > = {}
+	) {
 		if ( ! tosURL ) {
 			return undefined;
 		}
@@ -100,11 +132,20 @@ const baseSelectors = {
 	},
 };
 
+interface Store {
+	initialState: TermsOfServiceState;
+	actions: Record< string, unknown >;
+	controls: Record< string, unknown >;
+	reducer: Record< string, unknown >;
+	resolvers: Record< string, unknown >;
+	selectors: Record< string, unknown >;
+}
+
 const store = combineStores( fetchGetTermsOfServiceStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,
-} );
+} ) as Store;
 
 export const initialState = store.initialState;
 export const actions = store.actions;

@@ -24,6 +24,11 @@ import fetchMock from 'fetch-mock';
 import { cloneDeep } from 'lodash';
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
@@ -45,7 +50,7 @@ import {
 } from './constants';
 
 describe( 'modules/reader-revenue-manager publications', () => {
-	let registry;
+	let registry: WPDataRegistry;
 
 	const getModulesEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/modules/data/list'
@@ -399,7 +404,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			it.each( [ 'publicationId', 'onboardingState' ] )(
 				'should throw an error if the publication object does not contain %s',
 				( key ) => {
-					const publication = {
+					const publication: Record< string, unknown > = {
 						publicationPredicates: {},
 						verifiedDomains: [],
 					};
@@ -539,13 +544,12 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			} );
 
 			it( 'should set an empty product IDs array when products array is empty', () => {
-				const products = [];
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.selectPublication( {
 						publicationId: 'publication-id',
 						onboardingState: 'onboarding-state',
-						products,
+						products: [],
 					} );
 
 				expect(

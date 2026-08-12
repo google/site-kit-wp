@@ -23,10 +23,16 @@ import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies.
  */
 import { get, set } from 'googlesitekit-api';
 import {
+	Select,
 	combineStores,
 	commonActions,
 	createReducer,
@@ -47,6 +53,63 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
 
+interface Publication {
+	/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
+	publicationId: string;
+	organizationId?: string;
+	/* eslint-enable sitekit/acronym-case */
+	onboardingState: string;
+	paymentOptions?: Record< string, boolean >;
+	products?: Array< { name: string } >;
+	contentPolicyStatus?: {
+		contentPolicyState: string;
+		policyInfoLink?: string;
+	};
+}
+
+interface ReaderRevenueManagerSettings {
+	publicationID?: string;
+	publicationOnboardingState?: string;
+	publicationOnboardingStateChanged?: boolean;
+	publicationOnboardingStateLastSyncedAtMs?: number;
+	productIDs?: string[];
+	paymentOption?: string;
+	productID?: string;
+	organizationID?: string;
+	contentPolicyState?: string;
+	policyInfoLink?: string;
+}
+
+interface ReaderRevenueManagerState {
+	publications: Publication[] | undefined;
+	settings: ReaderRevenueManagerSettings;
+	savedSettings: ReaderRevenueManagerSettings;
+}
+
+interface CreatePublicationParams {
+	displayName: string;
+	languageCode: string;
+	regionCode: string;
+}
+
+interface PublicationParams {
+	organizationID: string;
+	publicationID: string;
+}
+
+interface UpdatePublicationParams extends PublicationParams {
+	data: Record< string, unknown >;
+}
+
+interface SyncPublicationOnboardingStateParams {
+	publicationID: string;
+	publicationOnboardingState: string;
+}
+
+type ReaderRevenueManagerRegistry = WPDataRegistry & {
+	resolveSelect: WPDataRegistry[ 'select' ];
+};
+
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
 	controlCallback: () =>
@@ -57,44 +120,52 @@ const fetchGetPublicationsStore = createFetchStore( {
 			{},
 			{ useCache: false }
 		),
-	reducerCallback: createReducer( ( state, publications ) => {
-		state.publications = publications;
+	reducerCallback: createReducer(
+		( state: ReaderRevenueManagerState, publications: Publication[] ) => {
+			state.publications = publications;
 
-		if ( state.settings?.publicationID ) {
-			const publication = publications?.find(
-				// eslint-disable-next-line sitekit/acronym-case
-				( { publicationId: id } ) => id === state.settings.publicationID
-			);
+			if ( state.settings?.publicationID ) {
+				const publication = publications?.find(
+					// eslint-disable-next-line sitekit/acronym-case
+					( { publicationId: id } ) =>
+						id === state.settings.publicationID
+				);
 
-			if ( publication ) {
-				const newSettings = {
-					publicationOnboardingState: publication.onboardingState,
-					productIDs: getProductIDs( publication.products ),
-					paymentOption: getPaymentOption(
-						publication.paymentOptions
-					),
-				};
+				if ( publication ) {
+					const newSettings: ReaderRevenueManagerSettings = {
+						publicationOnboardingState: publication.onboardingState,
+						productIDs: getProductIDs( publication.products! ),
+						paymentOption: getPaymentOption(
+							publication.paymentOptions!
+						),
+					};
 
-				if ( publication.contentPolicyStatus ) {
-					newSettings.contentPolicyState =
-						publication.contentPolicyStatus.contentPolicyState;
-					newSettings.policyInfoLink =
-						publication.contentPolicyStatus.policyInfoLink || '';
-				}
+					if ( publication.contentPolicyStatus ) {
+						newSettings.contentPolicyState =
+							publication.contentPolicyStatus.contentPolicyState;
+						newSettings.policyInfoLink =
+							publication.contentPolicyStatus.policyInfoLink ||
+							'';
+					}
 
-				Object.assign( state.settings, newSettings );
+					Object.assign( state.settings, newSettings );
 
-				if ( state.savedSettings ) {
-					Object.assign( state.savedSettings, newSettings );
+					if ( state.savedSettings ) {
+						Object.assign( state.savedSettings, newSettings );
+					}
 				}
 			}
 		}
-	} ),
+	),
 } );
 
 const fetchCreatePublicationStore = createFetchStore( {
 	baseName: 'createPublication',
-	controlCallback: ( { displayName, languageCode, regionCode } ) =>
+	controlCallback: ( {
+		displayName,
+		languageCode,
+		regionCode,
+	}: CreatePublicationParams ) =>
 		set(
 			'modules',
 			MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -105,12 +176,20 @@ const fetchCreatePublicationStore = createFetchStore( {
 				regionCode,
 			}
 		),
-	argsToParams: ( { displayName, languageCode, regionCode } = {} ) => ( {
+	argsToParams: ( {
+		displayName,
+		languageCode,
+		regionCode,
+	}: Partial< CreatePublicationParams > = {} ) => ( {
 		displayName,
 		languageCode,
 		regionCode,
 	} ),
-	validateParams: ( { displayName, languageCode, regionCode } = {} ) => {
+	validateParams: ( {
+		displayName,
+		languageCode,
+		regionCode,
+	}: Partial< CreatePublicationParams > = {} ) => {
 		invariant(
 			typeof displayName === 'string' && displayName.length > 0,
 			'displayName is required and must be a string.'
@@ -129,7 +208,7 @@ const fetchCreatePublicationStore = createFetchStore( {
 
 const fetchGetPublicationStore = createFetchStore( {
 	baseName: 'getPublication',
-	controlCallback: ( { organizationID, publicationID } ) =>
+	controlCallback: ( { organizationID, publicationID }: PublicationParams ) =>
 		get(
 			'modules',
 			MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -138,7 +217,11 @@ const fetchGetPublicationStore = createFetchStore( {
 			{ useCache: false }
 		),
 	reducerCallback: createReducer(
-		( state, publication, { publicationID } ) => {
+		(
+			state: ReaderRevenueManagerState,
+			publication: Publication,
+			{ publicationID }: PublicationParams
+		) => {
 			state.publications = state.publications || [];
 
 			const publicationIndex = state.publications.findIndex(
@@ -153,11 +236,17 @@ const fetchGetPublicationStore = createFetchStore( {
 			}
 		}
 	),
-	argsToParams: ( { organizationID, publicationID } = {} ) => ( {
+	argsToParams: ( {
+		organizationID,
+		publicationID,
+	}: Partial< PublicationParams > = {} ) => ( {
 		organizationID,
 		publicationID,
 	} ),
-	validateParams: ( { organizationID, publicationID } = {} ) => {
+	validateParams: ( {
+		organizationID,
+		publicationID,
+	}: Partial< PublicationParams > = {} ) => {
 		invariant(
 			typeof organizationID === 'string' && organizationID.length > 0,
 			'organizationID is required and must be a string.'
@@ -171,7 +260,7 @@ const fetchGetPublicationStore = createFetchStore( {
 
 const fetchUpdatePublicationStore = createFetchStore( {
 	baseName: 'updatePublication',
-	controlCallback: ( publicationData ) =>
+	controlCallback: ( publicationData: UpdatePublicationParams ) =>
 		set(
 			'modules',
 			MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -179,7 +268,11 @@ const fetchUpdatePublicationStore = createFetchStore( {
 			publicationData
 		),
 	reducerCallback: createReducer(
-		( state, publication, { publicationID } ) => {
+		(
+			state: ReaderRevenueManagerState,
+			publication: Publication,
+			{ publicationID }: PublicationParams
+		) => {
 			state.publications = state.publications || [];
 
 			const publicationIndex = state.publications.findIndex(
@@ -194,8 +287,14 @@ const fetchUpdatePublicationStore = createFetchStore( {
 			}
 		}
 	),
-	argsToParams: ( publicationData = {} ) => publicationData,
-	validateParams: ( { organizationID, publicationID, data } = {} ) => {
+	argsToParams: (
+		publicationData: Partial< UpdatePublicationParams > = {}
+	) => publicationData,
+	validateParams: ( {
+		organizationID,
+		publicationID,
+		data,
+	}: Partial< UpdatePublicationParams > = {} ) => {
 		invariant(
 			typeof organizationID === 'string' && organizationID.length > 0,
 			'organizationID is required and must be a string.'
@@ -205,7 +304,8 @@ const fetchUpdatePublicationStore = createFetchStore( {
 			'publicationID is required and must be a string.'
 		);
 		invariant(
-			isPlainObject( data ) && Object.keys( data ).length > 0,
+			isPlainObject( data ) &&
+				Object.keys( data as Record< string, unknown > ).length > 0,
 			'data is required and must be a non-empty object.'
 		);
 	},
@@ -214,7 +314,10 @@ const fetchUpdatePublicationStore = createFetchStore( {
 
 const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 	baseName: 'getSyncPublicationOnboardingState',
-	controlCallback: ( { publicationID, publicationOnboardingState } ) =>
+	controlCallback: ( {
+		publicationID,
+		publicationOnboardingState,
+	}: SyncPublicationOnboardingStateParams ) =>
 		set(
 			'modules',
 			MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -224,10 +327,16 @@ const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 				publicationOnboardingState,
 			}
 		),
-	argsToParams: ( { publicationID, publicationOnboardingState } ) => {
+	argsToParams: ( {
+		publicationID,
+		publicationOnboardingState,
+	}: SyncPublicationOnboardingStateParams ) => {
 		return { publicationID, publicationOnboardingState };
 	},
-	validateParams: ( { publicationID, publicationOnboardingState } = {} ) => {
+	validateParams: ( {
+		publicationID,
+		publicationOnboardingState,
+	}: Partial< SyncPublicationOnboardingStateParams > = {} ) => {
 		invariant(
 			typeof publicationID === 'string' && publicationID.length > 0,
 			'publicationID is required and must be string.'
@@ -240,7 +349,13 @@ const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 		);
 	},
 	reducerCallback: createReducer(
-		( state, { publicationID, publicationOnboardingState } ) => {
+		(
+			state: ReaderRevenueManagerState,
+			{
+				publicationID,
+				publicationOnboardingState,
+			}: SyncPublicationOnboardingStateParams
+		) => {
 			if ( ! publicationID ) {
 				return;
 			}
@@ -275,7 +390,7 @@ const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 	isAction: true,
 } );
 
-const baseInitialState = {
+const baseInitialState: Pick< ReaderRevenueManagerState, 'publications' > = {
 	publications: undefined,
 };
 
@@ -292,9 +407,10 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	createPublication: createValidatedAction(
-		( params ) => {
+		( params: unknown ) => {
 			invariant( isPlainObject( params ), 'params must be an object.' );
-			const { displayName, languageCode, regionCode } = params;
+			const { displayName, languageCode, regionCode } =
+				params as Partial< CreatePublicationParams >;
 			invariant(
 				typeof displayName === 'string' && displayName.length > 0,
 				'displayName is required and must be a string.'
@@ -308,7 +424,10 @@ const baseActions = {
 				'regionCode is required and must be a string.'
 			);
 		},
-		function* ( params ) {
+		function* (
+			params: CreatePublicationParams
+		): Generator< unknown, unknown, unknown > {
+			// @ts-expect-error createFetchStore is not properly typed yet.
 			return yield fetchCreatePublicationStore.actions.fetchCreatePublication(
 				params
 			);
@@ -327,9 +446,10 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	updatePublication: createValidatedAction(
-		( params ) => {
+		( params: unknown ) => {
 			invariant( isPlainObject( params ), 'params must be an object.' );
-			const { organizationID, publicationID, data } = params;
+			const { organizationID, publicationID, data } =
+				params as Partial< UpdatePublicationParams >;
 			invariant(
 				typeof organizationID === 'string' && organizationID.length > 0,
 				'organizationID is required and must be a string.'
@@ -339,11 +459,15 @@ const baseActions = {
 				'publicationID is required and must be a string.'
 			);
 			invariant(
-				isPlainObject( data ) && Object.keys( data ).length > 0,
+				isPlainObject( data ) &&
+					Object.keys( data as Record< string, unknown > ).length > 0,
 				'data is required and must be a non-empty object.'
 			);
 		},
-		function* ( params ) {
+		function* (
+			params: UpdatePublicationParams
+		): Generator< unknown, unknown, unknown > {
+			// @ts-expect-error createFetchStore is not properly typed yet.
 			return yield fetchUpdatePublicationStore.actions.fetchUpdatePublication(
 				params
 			);
@@ -358,8 +482,9 @@ const baseActions = {
 	 *
 	 * @return {void}
 	 */
-	*syncPublicationOnboardingState() {
-		const registry = yield commonActions.getRegistry();
+	*syncPublicationOnboardingState(): Generator< unknown, unknown, unknown > {
+		const registryResult = yield commonActions.getRegistry();
+		const registry = registryResult as ReaderRevenueManagerRegistry;
 
 		yield commonActions.await(
 			registry
@@ -384,6 +509,7 @@ const baseActions = {
 			return {};
 		}
 
+		// @ts-expect-error createFetchStore is not properly typed yet.
 		return yield fetchGetSyncPublicationOnboardingStateStore.actions.fetchGetSyncPublicationOnboardingState(
 			{
 				publicationID,
@@ -399,11 +525,19 @@ const baseActions = {
 	 *
 	 * @return {Object|null} Matched publication; `null` if none found.
 	 */
-	*findMatchedPublication() {
-		const { resolveSelect } = yield commonActions.getRegistry();
-		const publications = yield commonActions.await(
-			resolveSelect( MODULES_READER_REVENUE_MANAGER ).getPublications()
+	*findMatchedPublication(): Generator<
+		unknown,
+		Publication | null,
+		unknown
+	> {
+		const registryResult = yield commonActions.getRegistry();
+		const registry = registryResult as ReaderRevenueManagerRegistry;
+		const publicationsResult = yield commonActions.await(
+			registry
+				.resolveSelect( MODULES_READER_REVENUE_MANAGER )
+				.getPublications()
 		);
+		const publications = publicationsResult as Publication[];
 
 		if ( publications.length === 0 ) {
 			return null;
@@ -429,8 +563,9 @@ const baseActions = {
 	 *
 	 * @return {Object} The dispatched action results.
 	 */
-	*resetPublications() {
-		const registry = yield commonActions.getRegistry();
+	*resetPublications(): Generator< unknown, unknown, unknown > {
+		const registryResult = yield commonActions.getRegistry();
+		const registry = registryResult as WPDataRegistry;
 
 		yield {
 			type: 'RESET_PUBLICATIONS',
@@ -452,7 +587,7 @@ const baseActions = {
 	 * @return {Object} A Generator function.
 	 */
 	selectPublication: createValidatedAction(
-		( publication ) => {
+		( publication: unknown ) => {
 			invariant(
 				isPlainObject( publication ),
 				'A valid publication object is required.'
@@ -460,7 +595,9 @@ const baseActions = {
 
 			[ 'publicationId', 'onboardingState' ].forEach( ( key ) => {
 				invariant(
-					publication.hasOwnProperty( key ),
+					( publication as Record< string, unknown > ).hasOwnProperty(
+						key
+					),
 					`The publication object must contain ${ key }`
 				);
 			} );
@@ -474,15 +611,16 @@ const baseActions = {
 			paymentOptions,
 			products,
 			contentPolicyStatus,
-		} ) {
-			const registry = yield commonActions.getRegistry();
+		}: Publication ): Generator< unknown, unknown, unknown > {
+			const registryResult = yield commonActions.getRegistry();
+			const registry = registryResult as WPDataRegistry;
 
-			const settings = {
+			const settings: ReaderRevenueManagerSettings = {
 				publicationID,
 				publicationOnboardingState: onboardingState,
 				publicationOnboardingStateChanged: false,
-				productIDs: getProductIDs( products ),
-				paymentOption: getPaymentOption( paymentOptions ),
+				productIDs: getProductIDs( products! ),
+				paymentOption: getPaymentOption( paymentOptions! ),
 				productID: 'openaccess',
 			};
 
@@ -506,40 +644,53 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = createReducer( ( state, { type } ) => {
-	switch ( type ) {
-		case 'RESET_PUBLICATIONS':
-			state.publications = baseInitialState.publications;
-			break;
+const baseReducer = createReducer(
+	( state: ReaderRevenueManagerState, { type }: { type: string } ) => {
+		switch ( type ) {
+			case 'RESET_PUBLICATIONS':
+				state.publications = baseInitialState.publications;
+				break;
 
-		default:
-			break;
+			default:
+				break;
+		}
 	}
-} );
+);
 
 const baseResolvers = {
-	*getPublications() {
-		const registry = yield commonActions.getRegistry();
+	*getPublications(): Generator< unknown, void, unknown > {
+		const registryResult = yield commonActions.getRegistry();
+		const registry = registryResult as WPDataRegistry;
 		// Only fetch publications if there are none in the store.
 		const publications = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
 			.getPublications();
 		if ( publications === undefined ) {
+			// @ts-expect-error createFetchStore is not properly typed yet.
 			yield fetchGetPublicationsStore.actions.fetchGetPublications();
 		}
 	},
 
-	*getPublication( { organizationID, publicationID } = {} ) {
+	*getPublication( {
+		organizationID,
+		publicationID,
+	}: Partial< PublicationParams > = {} ): Generator<
+		unknown,
+		void,
+		unknown
+	> {
 		if ( ! organizationID || ! publicationID ) {
 			return;
 		}
 
-		const registry = yield commonActions.getRegistry();
+		const registryResult = yield commonActions.getRegistry();
+		const registry = registryResult as WPDataRegistry;
 		const publication = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
 			.getPublication( { organizationID, publicationID } );
 
 		if ( publication === undefined ) {
+			// @ts-expect-error createFetchStore is not properly typed yet.
 			yield fetchGetPublicationStore.actions.fetchGetPublication( {
 				organizationID,
 				publicationID,
@@ -557,7 +708,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Array.<Object>|undefined)} An array of publications; `undefined` if not loaded.
 	 */
-	getPublications( state ) {
+	getPublications( state: ReaderRevenueManagerState ) {
 		return state.publications;
 	},
 
@@ -572,7 +723,10 @@ const baseSelectors = {
 	 * @param {string} params.publicationID  Publication ID.
 	 * @return {(Object|undefined)} Publication resource; `undefined` if not loaded.
 	 */
-	getPublication( state, { organizationID, publicationID } = {} ) {
+	getPublication(
+		state: ReaderRevenueManagerState,
+		{ organizationID, publicationID }: Partial< PublicationParams > = {}
+	) {
 		if ( ! organizationID || ! publicationID ) {
 			return undefined;
 		}
@@ -591,34 +745,38 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Array.<string> | undefined)} An array of product IDs; `undefined` if publications are not loaded.
 	 */
-	getCurrentProductIDs: createRegistrySelector( ( select ) => ( state ) => {
-		const publications = select(
-			MODULES_READER_REVENUE_MANAGER
-		).getPublications();
+	getCurrentProductIDs: createRegistrySelector(
+		( select: Select ) => ( state: ReaderRevenueManagerState ) => {
+			const publications = select(
+				MODULES_READER_REVENUE_MANAGER
+			).getPublications();
 
-		if ( publications === undefined ) {
-			return undefined;
+			if ( publications === undefined ) {
+				return undefined;
+			}
+
+			const publicationID = select(
+				MODULES_READER_REVENUE_MANAGER
+			).getPublicationID();
+
+			if ( ! publicationID ) {
+				return [];
+			}
+
+			const selectedPublication = state.publications!.find(
+				// eslint-disable-next-line sitekit/acronym-case
+				( { publicationId: id } ) => id === publicationID
+			);
+
+			if ( ! selectedPublication || ! selectedPublication.products ) {
+				return [];
+			}
+
+			return selectedPublication.products.map(
+				( product ) => product.name
+			);
 		}
-
-		const publicationID = select(
-			MODULES_READER_REVENUE_MANAGER
-		).getPublicationID();
-
-		if ( ! publicationID ) {
-			return [];
-		}
-
-		const selectedPublication = state.publications.find(
-			// eslint-disable-next-line sitekit/acronym-case
-			( { publicationId: id } ) => id === publicationID
-		);
-
-		if ( ! selectedPublication || ! selectedPublication.products ) {
-			return [];
-		}
-
-		return selectedPublication.products.map( ( product ) => product.name );
-	} ),
+	),
 
 	/**
 	 * Gets the policy info URL wrapped with the account chooser URL.
@@ -628,26 +786,39 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(string|null|undefined)} The policy info URL wrapped with the account chooser URL; `null` if `policyInfoLink` is empty; `undefined` if not available.
 	 */
-	getPolicyInfoURL: createRegistrySelector( ( select ) => () => {
-		const settings = select( MODULES_READER_REVENUE_MANAGER ).getSettings();
+	getPolicyInfoURL: createRegistrySelector(
+		( select: Select ) => (): string | null | undefined => {
+			const settings = select(
+				MODULES_READER_REVENUE_MANAGER
+			).getSettings();
 
-		if ( ! settings ) {
-			return undefined;
+			if ( ! settings ) {
+				return undefined;
+			}
+
+			const { policyInfoLink } = settings;
+
+			if ( policyInfoLink === undefined ) {
+				return undefined;
+			}
+
+			if ( ! policyInfoLink ) {
+				return null;
+			}
+
+			return select( CORE_USER ).getAccountChooserURL( policyInfoLink );
 		}
-
-		const { policyInfoLink } = settings;
-
-		if ( policyInfoLink === undefined ) {
-			return undefined;
-		}
-
-		if ( ! policyInfoLink ) {
-			return null;
-		}
-
-		return select( CORE_USER ).getAccountChooserURL( policyInfoLink );
-	} ),
+	),
 };
+
+interface Store {
+	initialState: typeof baseInitialState;
+	actions: Record< string, unknown >;
+	controls: Record< string, unknown >;
+	reducer: Record< string, unknown >;
+	resolvers: Record< string, unknown >;
+	selectors: Record< string, unknown >;
+}
 
 const store = combineStores(
 	fetchGetPublicationsStore,
@@ -663,7 +834,7 @@ const store = combineStores(
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}
-);
+) as Store;
 
 export const initialState = store.initialState;
 export const actions = store.actions;

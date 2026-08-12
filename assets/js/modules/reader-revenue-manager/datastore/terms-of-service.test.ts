@@ -22,6 +22,11 @@
 import fetchMock from 'fetch-mock';
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
@@ -34,7 +39,7 @@ import {
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 
 describe( 'modules/reader-revenue-manager Terms of Service', () => {
-	let registry;
+	let registry: WPDataRegistry;
 
 	const termsOfServiceEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/terms-of-service'
