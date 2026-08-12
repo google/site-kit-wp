@@ -29,7 +29,7 @@ import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import type { PDFChangeType } from '@/js/components/pdf-export/types';
 import PDFChangeBadge from './PDFChangeBadge';
-import PDFTypography from './PDFTypography';
+import PDFTypography, { PDFTypographySize } from './PDFTypography';
 
 const tileStyles = createPDFStyles( {
 	container: {
@@ -41,7 +41,7 @@ const tileStyles = createPDFStyles( {
 		flexDirection: 'column',
 	},
 	title: {
-		marginBottom: 1,
+		marginBottom: 6,
 	},
 	aside: {
 		flexDirection: 'column',
@@ -51,6 +51,10 @@ const tileStyles = createPDFStyles( {
 		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
 		marginTop: 4,
 	},
+	subtitle: {
+		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
+		marginTop: 1,
+	},
 } );
 
 export interface PDFMetricTileProps {
@@ -58,6 +62,10 @@ export interface PDFMetricTileProps {
 	title: string;
 	/** Pre-formatted metric value to display prominently, e.g. "32.6K". */
 	value: string;
+	/** Size of the value's `headline` typography. Defaults to `'medium'`. */
+	valueSize?: PDFTypographySize;
+	/** Optional caption rendered below the value, e.g. "of 3,579 total sessions". */
+	subtitle?: string;
 	/** Pre-formatted, signed change string for the badge, e.g. "+5.1%". Hides the badge when omitted. */
 	change?: string;
 	/** The change's direction. Controls the badge color. */
@@ -69,6 +77,8 @@ export interface PDFMetricTileProps {
 const PDFMetricTile: FC< PDFMetricTileProps > = ( {
 	title,
 	value,
+	valueSize = 'medium',
+	subtitle,
 	change,
 	changeType = 'positive',
 	changeLabel,
@@ -83,7 +93,14 @@ const PDFMetricTile: FC< PDFMetricTileProps > = ( {
 				>
 					{ title }
 				</PDFTypography>
-				<PDFTypography type="headline">{ value }</PDFTypography>
+				<PDFTypography type="headline" size={ valueSize }>
+					{ value }
+				</PDFTypography>
+				{ !! subtitle && (
+					<PDFTypography size="small" style={ tileStyles.subtitle }>
+						{ subtitle }
+					</PDFTypography>
+				) }
 			</View>
 			<View style={ tileStyles.aside }>
 				{ !! change && (
