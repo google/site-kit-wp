@@ -60,32 +60,21 @@ class Update_Publication extends Datapoint implements Executable_Datapoint {
 			$tos_acceptance = new TosAcceptance();
 			$tos_acceptance->setUserAccepted( ! empty( $tos_acceptance_data['userAccepted'] ) );
 
-			if ( array_key_exists( 'signerTitle', $tos_acceptance_data ) ) {
-				$tos_acceptance->setSignerTitle( $tos_acceptance_data['signerTitle'] );
-			}
-
-			// These fields are not yet exposed by setters in the generated client.
-			foreach ( array( 'signerFullName', 'emailOptIn' ) as $field ) {
-				if ( array_key_exists( $field, $tos_acceptance_data ) ) {
-					$tos_acceptance[ $field ] = $tos_acceptance_data[ $field ];
-				}
-			}
-
 			$rrm_product = new RrmProduct();
 			$rrm_product->setTosAcceptance( $tos_acceptance );
 
 			$publication->setRrmProduct( $rrm_product );
-			$update_mask[] = 'rrm_product.tos_acceptance';
+			$update_mask[] = 'rrmProduct.tosAcceptance.userAccepted';
 		}
 
 		if ( array_key_exists( 'publicationTosURL', $publication_data ) ) {
 			$publication->setPublicationTosUrl( $publication_data['publicationTosURL'] );
-			$update_mask[] = 'publication_tos_url';
+			$update_mask[] = 'publicationTosUrl';
 		}
 
 		if ( array_key_exists( 'publicationPrivacyPolicyURL', $publication_data ) ) {
 			$publication->setPublicationPrivacyPolicyUrl( $publication_data['publicationPrivacyPolicyURL'] );
-			$update_mask[] = 'publication_privacy_policy_url';
+			$update_mask[] = 'publicationPrivacyPolicyUrl';
 		}
 
 		$name = sprintf(

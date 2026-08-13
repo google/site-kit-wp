@@ -67,10 +67,7 @@ class Update_PublicationTest extends TestCase {
 					'data'           => array(
 						'rrmProduct' => array(
 							'tosAcceptance' => array(
-								'userAccepted'   => true,
-								'signerFullName' => 'Site Owner',
-								'signerTitle'    => 'Publisher',
-								'emailOptIn'     => true,
+								'userAccepted' => true,
 							),
 						),
 					),
@@ -86,16 +83,13 @@ class Update_PublicationTest extends TestCase {
 		);
 
 		parse_str( $request->getUri()->getQuery(), $query );
-		$this->assertSame( 'rrm_product.tos_acceptance', $query['updateMask'], 'The request should update the ToS acceptance.' );
+		$this->assertSame( 'rrmProduct.tosAcceptance.userAccepted', $query['updateMask'], 'The request should update the ToS acceptance.' );
 		$this->assertJsonStringEqualsJsonString(
 			wp_json_encode(
 				array(
 					'rrmProduct' => array(
 						'tosAcceptance' => array(
-							'emailOptIn'     => true,
-							'signerFullName' => 'Site Owner',
-							'signerTitle'    => 'Publisher',
-							'userAccepted'   => true,
+							'userAccepted' => true,
 						),
 					),
 				)
@@ -121,7 +115,7 @@ class Update_PublicationTest extends TestCase {
 
 		parse_str( $request->getUri()->getQuery(), $query );
 		$this->assertSame(
-			'publication_tos_url,publication_privacy_policy_url',
+			'publicationTosUrl,publicationPrivacyPolicyUrl',
 			$query['updateMask'],
 			'The request should update both publication policy URLs.'
 		);
