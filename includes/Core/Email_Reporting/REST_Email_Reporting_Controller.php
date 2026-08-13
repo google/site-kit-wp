@@ -184,7 +184,6 @@ class REST_Email_Reporting_Controller {
 					$paths,
 					array(
 						'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting',
-						'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-eligible-subscribers',
 						'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-errors',
 					)
 				);
