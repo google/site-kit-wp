@@ -168,28 +168,32 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					registry
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
 						.updatePublication( {
-							publicationID: params.publicationID,
-							data: params.data,
-						} )
-				).toThrow( 'organizationID is required and must be a string.' );
-
-				expect( () =>
-					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.updatePublication( {
-							organizationID: params.organizationID,
-							data: params.data,
-						} )
-				).toThrow( 'publicationID is required and must be a string.' );
-
-				expect( () =>
-					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.updatePublication( {
 							organizationID: params.organizationID,
 							publicationID: params.publicationID,
 						} )
 				).toThrow( 'data is required and must be a non-empty object.' );
+
+				expect( () =>
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.updatePublication( {
+							organizationID: '',
+							data: params.data,
+						} )
+				).toThrow(
+					'organizationID must be a non-empty string when provided.'
+				);
+
+				expect( () =>
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.updatePublication( {
+							publicationID: '',
+							data: params.data,
+						} )
+				).toThrow(
+					'publicationID must be a non-empty string when provided.'
+				);
 			} );
 
 			it( 'should call the update publication endpoint', async () => {
@@ -971,6 +975,43 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				expect( fetchMock ).toHaveFetched( publicationEndpoint, {
 					query: {
 						...params,
+						_locale: 'user',
+					},
+				} );
+			} );
+
+			it( 'should use a resolver to fetch a publication without IDs', async () => {
+				const publication = {
+					displayName: 'Example Publication',
+					publicationId: params.publicationID,
+				};
+				fetchMock.getOnce( publicationEndpoint, {
+					body: publication,
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( params );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublication()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublication();
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublication()
+				).toEqual( publication );
+				expect( fetchMock ).toHaveFetched( publicationEndpoint, {
+					query: {
 						_locale: 'user',
 					},
 				} );

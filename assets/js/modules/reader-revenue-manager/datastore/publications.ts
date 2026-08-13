@@ -97,13 +97,38 @@ interface PublicationParams {
 	publicationID: string;
 }
 
-interface UpdatePublicationParams extends PublicationParams {
+interface UpdatePublicationParams extends Partial< PublicationParams > {
 	data: Record< string, unknown >;
 }
 
 interface SyncPublicationOnboardingStateParams {
 	publicationID: string;
 	publicationOnboardingState: string;
+}
+
+/**
+ * Validates optional publication parameters.
+ *
+ * @since n.e.x.t
+ *
+ * @param  params Publication parameters to validate.
+ * @return {void}
+ */
+function validateOptionalPublicationParams(
+	params: Partial< PublicationParams > = {}
+): void {
+	const { organizationID, publicationID } = params;
+
+	invariant(
+		organizationID === undefined ||
+			( typeof organizationID === 'string' && organizationID.length > 0 ),
+		'organizationID must be a non-empty string when provided.'
+	);
+	invariant(
+		publicationID === undefined ||
+			( typeof publicationID === 'string' && publicationID.length > 0 ),
+		'publicationID must be a non-empty string when provided.'
+	);
 }
 
 type ReaderRevenueManagerRegistry = WPDataRegistry & {
@@ -207,16 +232,14 @@ const fetchCreatePublicationStore = createFetchStore( {
 } );
 
 const fetchPublicationStoreReducerCallback = createReducer(
-	(
-		state: ReaderRevenueManagerState,
-		publication: Publication,
-		{ publicationID }: PublicationParams
-	) => {
+	( state: ReaderRevenueManagerState, publication: Publication ) => {
 		state.publications = state.publications || [];
+		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+		const publicationID = publication.publicationId;
 
 		const publicationIndex = state.publications.findIndex(
 			// eslint-disable-next-line sitekit/acronym-case
-			( { publicationId } ) => publicationId === publicationID
+			( { publicationId: id } ) => id === publicationID
 		);
 
 		if ( publicationIndex === -1 ) {
@@ -229,7 +252,10 @@ const fetchPublicationStoreReducerCallback = createReducer(
 
 const fetchGetPublicationStore = createFetchStore( {
 	baseName: 'getPublication',
-	controlCallback: ( { organizationID, publicationID }: PublicationParams ) =>
+	controlCallback: ( {
+		organizationID,
+		publicationID,
+	}: Partial< PublicationParams > = {} ) =>
 		get(
 			'modules',
 			MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -245,19 +271,7 @@ const fetchGetPublicationStore = createFetchStore( {
 		organizationID,
 		publicationID,
 	} ),
-	validateParams: ( {
-		organizationID,
-		publicationID,
-	}: Partial< PublicationParams > = {} ) => {
-		invariant(
-			typeof organizationID === 'string' && organizationID.length > 0,
-			'organizationID is required and must be a string.'
-		);
-		invariant(
-			typeof publicationID === 'string' && publicationID.length > 0,
-			'publicationID is required and must be a string.'
-		);
-	},
+	validateParams: validateOptionalPublicationParams,
 } );
 
 const fetchUpdatePublicationStore = createFetchStore( {
@@ -273,19 +287,11 @@ const fetchUpdatePublicationStore = createFetchStore( {
 	argsToParams: (
 		publicationData: Partial< UpdatePublicationParams > = {}
 	) => publicationData,
-	validateParams: ( {
-		organizationID,
-		publicationID,
-		data,
-	}: Partial< UpdatePublicationParams > = {} ) => {
-		invariant(
-			typeof organizationID === 'string' && organizationID.length > 0,
-			'organizationID is required and must be a string.'
-		);
-		invariant(
-			typeof publicationID === 'string' && publicationID.length > 0,
-			'publicationID is required and must be a string.'
-		);
+	validateParams: ( params: Partial< UpdatePublicationParams > = {} ) => {
+		const { data } = params;
+
+		validateOptionalPublicationParams( params );
+
 		invariant(
 			isPlainObject( data ) &&
 				Object.keys( data as Record< string, unknown > ).length > 0,
@@ -422,25 +428,22 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} params                Publication update parameters.
-	 * @param {string} params.publicationID  Publication ID.
-	 * @param {string} params.organizationID Organization ID.
-	 * @param {Object} params.data           Publication fields to update.
+	 * @param {Object} params                  Publication update parameters.
+	 * @param {string} [params.publicationID]  Publication ID. Defaults to the configured setting on the server.
+	 * @param {string} [params.organizationID] Organization ID. Defaults to the configured setting on the server.
+	 * @param {Object} params.data             Publication fields to update.
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	updatePublication: createValidatedAction(
 		( params: unknown ) => {
 			invariant( isPlainObject( params ), 'params must be an object.' );
-			const { organizationID, publicationID, data } =
+			const publicationParams =
 				params as Partial< UpdatePublicationParams >;
-			invariant(
-				typeof organizationID === 'string' && organizationID.length > 0,
-				'organizationID is required and must be a string.'
-			);
-			invariant(
-				typeof publicationID === 'string' && publicationID.length > 0,
-				'publicationID is required and must be a string.'
-			);
+
+			validateOptionalPublicationParams( publicationParams );
+
+			const { data } = publicationParams;
+
 			invariant(
 				isPlainObject( data ) &&
 					Object.keys( data as Record< string, unknown > ).length > 0,
@@ -654,30 +657,20 @@ const baseResolvers = {
 		}
 	},
 
-	*getPublication( {
-		organizationID,
-		publicationID,
-	}: Partial< PublicationParams > = {} ): Generator<
-		unknown,
-		void,
-		unknown
-	> {
-		if ( ! organizationID || ! publicationID ) {
-			return;
-		}
-
+	*getPublication(
+		params: Partial< PublicationParams > = {}
+	): Generator< unknown, void, unknown > {
 		const registryResult = yield commonActions.getRegistry();
 		const registry = registryResult as WPDataRegistry;
 		const publication = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
-			.getPublication( { organizationID, publicationID } );
+			.getPublication( params );
 
 		if ( publication === undefined ) {
 			// @ts-expect-error createFetchStore is not properly typed yet.
-			yield fetchGetPublicationStore.actions.fetchGetPublication( {
-				organizationID,
-				publicationID,
-			} );
+			yield fetchGetPublicationStore.actions.fetchGetPublication(
+				params
+			);
 		}
 	},
 };
@@ -700,23 +693,27 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state                 Data store's state.
-	 * @param {Object} params                Publication parameters.
-	 * @param {string} params.organizationID Organization ID.
-	 * @param {string} params.publicationID  Publication ID.
+	 * @param {Object} state                   Data store's state.
+	 * @param {Object} params                  Publication parameters.
+	 * @param {string} [params.organizationID] Organization ID. Defaults to the configured setting on the server.
+	 * @param {string} [params.publicationID]  Publication ID. Defaults to the configured setting on the server.
 	 * @return {(Object|undefined)} Publication resource; `undefined` if not loaded.
 	 */
 	getPublication(
 		state: ReaderRevenueManagerState,
-		{ organizationID, publicationID }: Partial< PublicationParams > = {}
+		params: Partial< PublicationParams > = {}
 	) {
-		if ( ! organizationID || ! publicationID ) {
+		const { publicationID } = params;
+		const selectedPublicationID =
+			publicationID || state.settings?.publicationID;
+
+		if ( ! selectedPublicationID ) {
 			return undefined;
 		}
 
 		return state.publications?.find(
 			// eslint-disable-next-line sitekit/acronym-case
-			( { publicationId } ) => publicationId === publicationID
+			( { publicationId: id } ) => id === selectedPublicationID
 		);
 	},
 
