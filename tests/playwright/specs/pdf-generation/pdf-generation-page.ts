@@ -18,7 +18,7 @@
  * External dependencies
  */
 import { Download, Locator, Page, TestInfo, expect } from '@playwright/test';
-import { statSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
 import { pdfToPng } from 'pdf-to-png-converter';
 
 /**
@@ -284,6 +284,23 @@ export class PDFGenerationPage {
 		);
 
 		await expect( this.page ).toHaveScreenshot( { fullPage: true } );
+	}
+
+	/**
+	 * Reads the downloaded PDF report into a string, one character per byte.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Download} download The completed download from `download()`.
+	 * @return {Promise<string>} The report's contents, byte for byte.
+	 */
+	async readPDFReport( download: Download ): Promise< string > {
+		const path = ( await download.path() ) as string;
+
+		// A PDF report is binary, and `latin1` copies every byte into the
+		// string exactly as it is, while `utf8` would change the bytes
+		// that are not letters.
+		return readFileSync( path, 'latin1' );
 	}
 
 	/**
