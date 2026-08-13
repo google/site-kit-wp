@@ -182,9 +182,10 @@ class Email_Report_Section_Builder {
 	}
 
 	/**
-	 * Normalize trend values to localized percentage strings.
+	 * Normalize trend values to floats.
 	 *
 	 * @since 1.167.0
+	 * @since n.e.x.t Returns floats instead of locale-formatted percentage strings.
 	 *
 	 * @param array $trends Trend values.
 	 * @return array|null Normalized trend values.
@@ -210,11 +211,7 @@ class Email_Report_Section_Builder {
 				$trend = floatval( preg_replace( '/[^0-9+\-.]/', '', $trend ) );
 			}
 
-			$number = floatval( $trend );
-
-			$formatted = number_format_i18n( $number, 2 );
-
-			$output[] = sprintf( '%s%%', $formatted );
+			$output[] = floatval( $trend );
 		}
 
 		return $output;

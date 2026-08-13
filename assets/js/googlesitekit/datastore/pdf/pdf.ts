@@ -441,6 +441,18 @@ export const selectors = {
 	isExporting( state: PDFState ): boolean {
 		return state.isExporting;
 	},
+
+	/**
+	 * Determines whether a report is generating.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {PDFState} state Data store's state.
+	 * @return {boolean} `true` while a report is generating.
+	 */
+	isGeneratingReport( state: PDFState ): boolean {
+		return state.isExporting || state.status === 'progress';
+	},
 };
 
 export default {

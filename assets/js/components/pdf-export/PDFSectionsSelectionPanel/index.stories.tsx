@@ -30,9 +30,13 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
+import {
+	PDF_DOWNLOAD_PANEL_OPENED_KEY,
+	PDF_EXPORT_PANEL_OPENED_ITEM_SLUG,
+} from '@/js/components/pdf-export/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { CONTEXT_MAIN_DASHBOARD_TRAFFIC } from '@/js/googlesitekit/widgets/default-contexts';
 import { provideModules } from '@tests/js/test-utils';
@@ -63,6 +67,16 @@ function EmptyTemplate() {
 	return <PDFSectionsSelectionPanel />;
 }
 
+function GeneratingTemplate() {
+	const { startExporting } = useDispatch( CORE_PDF );
+
+	useEffect( () => {
+		startExporting();
+	}, [ startExporting ] );
+
+	return <PDFSectionsSelectionPanel />;
+}
+
 export const Default = DefaultTemplate.bind( {} );
 Default.storyName = 'Default (all selected)';
 Default.scenario = {};
@@ -70,6 +84,10 @@ Default.scenario = {};
 export const Empty = EmptyTemplate.bind( {} );
 Empty.storyName = 'All deselected (error state)';
 Empty.scenario = {};
+
+export const Generating = GeneratingTemplate.bind( {} );
+Generating.storyName = 'While a report is generating';
+Generating.scenario = {};
 
 export default {
 	title: 'Components/PDFGeneration/PDFSectionsSelectionPanel',
@@ -84,6 +102,16 @@ export default {
 				// The panel lists a section only when its widgets' modules are
 				// connected, so provide module state for the story.
 				provideModules( registry );
+
+				// The story opens the panel, and an open panel saves
+				// `pdf-export-panel-opened` to WordPress user meta. The slug
+				// is already in this story's registry, and the panel sends
+				// no request.
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetDismissedItems( [
+						PDF_EXPORT_PANEL_OPENED_ITEM_SLUG,
+					] );
 
 				const widgets = registry.dispatch( CORE_WIDGETS );
 				widgets.registerWidgetArea( 'pdfTrafficArea', {
