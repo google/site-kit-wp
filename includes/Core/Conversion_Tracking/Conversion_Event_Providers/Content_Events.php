@@ -46,7 +46,7 @@ class Content_Events extends Conversion_Events_Provider {
 	/**
 	 * Checks if the provider is active.
 	 *
-	 * Content events are always active and not gated on any third-party plugin or feature flag.
+	 * Content events are always active and not conditional on any third-party plugin or feature flag.
 	 *
 	 * @since n.e.x.t
 	 *
