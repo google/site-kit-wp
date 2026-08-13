@@ -146,7 +146,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		} );
 
 		describe( 'updatePublication', () => {
-			const publicationData = {
+			const params = {
 				organizationID: 'organization-1',
 				publicationID: 'publication-1',
 				data: {
@@ -168,8 +168,8 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					registry
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
 						.updatePublication( {
-							publicationID: publicationData.publicationID,
-							data: publicationData.data,
+							publicationID: params.publicationID,
+							data: params.data,
 						} )
 				).toThrow( 'organizationID is required and must be a string.' );
 
@@ -177,8 +177,8 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					registry
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
 						.updatePublication( {
-							organizationID: publicationData.organizationID,
-							data: publicationData.data,
+							organizationID: params.organizationID,
+							data: params.data,
 						} )
 				).toThrow( 'publicationID is required and must be a string.' );
 
@@ -186,16 +186,16 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					registry
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
 						.updatePublication( {
-							organizationID: publicationData.organizationID,
-							publicationID: publicationData.publicationID,
+							organizationID: params.organizationID,
+							publicationID: params.publicationID,
 						} )
 				).toThrow( 'data is required and must be a non-empty object.' );
 			} );
 
 			it( 'should call the update publication endpoint', async () => {
 				const publication = {
-					publicationId: publicationData.publicationID,
-					rrmProduct: publicationData.data.rrmProduct,
+					publicationId: params.publicationID,
+					rrmProduct: params.data.rrmProduct,
 				};
 				fetchMock.postOnce( publicationEndpoint, {
 					body: publication,
@@ -204,17 +204,17 @@ describe( 'modules/reader-revenue-manager publications', () => {
 
 				const { response, error } = await registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.updatePublication( publicationData );
+					.updatePublication( params );
 
 				expect( error ).toBeUndefined();
 				expect( response ).toEqual( publication );
 				expect( fetchMock ).toHaveFetched( publicationEndpoint, {
-					body: { data: publicationData },
+					body: { data: params },
 				} );
 				expect(
 					registry
 						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublication( publicationData )
+						.getPublication( params )
 				).toEqual( publication );
 				expect(
 					registry

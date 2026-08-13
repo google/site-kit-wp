@@ -439,10 +439,10 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} publicationData                Publication update parameters.
-	 * @param {string} publicationData.publicationID  Publication ID.
-	 * @param {string} publicationData.organizationID Organization ID.
-	 * @param {Object} publicationData.data           Publication fields to update.
+	 * @param {Object} params                Publication update parameters.
+	 * @param {string} params.publicationID  Publication ID.
+	 * @param {string} params.organizationID Organization ID.
+	 * @param {Object} params.data           Publication fields to update.
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	updatePublication: createValidatedAction(
