@@ -206,6 +206,27 @@ const fetchCreatePublicationStore = createFetchStore( {
 	isAction: true,
 } );
 
+const fetchPublicationStoreReducerCallback = createReducer(
+	(
+		state: ReaderRevenueManagerState,
+		publication: Publication,
+		{ publicationID }: PublicationParams
+	) => {
+		state.publications = state.publications || [];
+
+		const publicationIndex = state.publications.findIndex(
+			// eslint-disable-next-line sitekit/acronym-case
+			( { publicationId } ) => publicationId === publicationID
+		);
+
+		if ( publicationIndex === -1 ) {
+			state.publications.push( publication );
+		} else {
+			state.publications[ publicationIndex ] = publication;
+		}
+	}
+);
+
 const fetchGetPublicationStore = createFetchStore( {
 	baseName: 'getPublication',
 	controlCallback: ( { organizationID, publicationID }: PublicationParams ) =>
@@ -216,26 +237,7 @@ const fetchGetPublicationStore = createFetchStore( {
 			{ organizationID, publicationID },
 			{ useCache: false }
 		),
-	reducerCallback: createReducer(
-		(
-			state: ReaderRevenueManagerState,
-			publication: Publication,
-			{ publicationID }: PublicationParams
-		) => {
-			state.publications = state.publications || [];
-
-			const publicationIndex = state.publications.findIndex(
-				// eslint-disable-next-line sitekit/acronym-case
-				( { publicationId } ) => publicationId === publicationID
-			);
-
-			if ( publicationIndex === -1 ) {
-				state.publications.push( publication );
-			} else {
-				state.publications[ publicationIndex ] = publication;
-			}
-		}
-	),
+	reducerCallback: fetchPublicationStoreReducerCallback,
 	argsToParams: ( {
 		organizationID,
 		publicationID,
@@ -267,26 +269,7 @@ const fetchUpdatePublicationStore = createFetchStore( {
 			'publication',
 			publicationData
 		),
-	reducerCallback: createReducer(
-		(
-			state: ReaderRevenueManagerState,
-			publication: Publication,
-			{ publicationID }: PublicationParams
-		) => {
-			state.publications = state.publications || [];
-
-			const publicationIndex = state.publications.findIndex(
-				// eslint-disable-next-line sitekit/acronym-case
-				( { publicationId } ) => publicationId === publicationID
-			);
-
-			if ( publicationIndex === -1 ) {
-				state.publications.push( publication );
-			} else {
-				state.publications[ publicationIndex ] = publication;
-			}
-		}
-	),
+	reducerCallback: fetchPublicationStoreReducerCallback,
 	argsToParams: (
 		publicationData: Partial< UpdatePublicationParams > = {}
 	) => publicationData,
