@@ -32,7 +32,7 @@ describe( 'TextField', () => {
 		name: 'clientID',
 	};
 
-	it( 'adds `mdc-text-field--error`, shows the warning icon, and shows the message under the field when `errorMessage` holds text', () => {
+	it( 'shows the error outline, the warning icon, and the message under the field when `errorMessage` holds text', () => {
 		const { container, getByText } = render(
 			<TextField
 				{ ...defaultProps }
@@ -65,13 +65,17 @@ describe( 'TextField', () => {
 			'aria-errormessage',
 			errorMessageID
 		);
+		expect( getByRole( 'textbox' ) ).toHaveAttribute(
+			'aria-describedby',
+			errorMessageID
+		);
 		expect( getByText( 'A valid Client ID is required.' ) ).toHaveAttribute(
 			'id',
 			errorMessageID
 		);
 	} );
 
-	it( 'shows the error outline and the warning icon, renders no helper text, and leaves `aria-errormessage` off when `hasError` is true and `errorMessage` is empty', () => {
+	it( 'shows the error outline and the warning icon, renders no helper text, and leaves `aria-errormessage` off when `hasError` is true and the render passes no `errorMessage`', () => {
 		const { container, getByRole } = render(
 			<TextField { ...defaultProps } hasError />
 		);
@@ -115,9 +119,13 @@ describe( 'TextField', () => {
 			'aria-errormessage',
 			errorMessageID
 		);
+		expect( getByRole( 'textbox' ) ).toHaveAttribute(
+			'aria-describedby',
+			errorMessageID
+		);
 	} );
 
-	it( 'shows `helperText` under the field, leaves `mdc-text-field--error` and the warning icon off, and sets no `aria-invalid`, when `errorMessage` is empty and `hasError` is false', () => {
+	it( 'shows `helperText` under the field, with no error outline, no warning icon, and no `aria-invalid`, when the render passes neither `errorMessage` nor `hasError`', () => {
 		const { container, getByRole, getByText } = render(
 			<TextField
 				{ ...defaultProps }
@@ -135,6 +143,9 @@ describe( 'TextField', () => {
 			container.querySelector( '.googlesitekit-text-field-icon--error' )
 		).not.toBeInTheDocument();
 		expect( getByRole( 'textbox' ) ).not.toHaveAttribute( 'aria-invalid' );
+		expect( getByRole( 'textbox' ) ).not.toHaveAttribute(
+			'aria-describedby'
+		);
 	} );
 
 	it( 'shows `errorMessage` in place of `helperText` when both hold text', () => {
@@ -154,12 +165,12 @@ describe( 'TextField', () => {
 
 	it.each( [
 		{
-			errorProp: 'errorMessage',
+			errorPropName: 'errorMessage',
 			errorProps: { errorMessage: 'A valid Client ID is required.' },
 		},
-		{ errorProp: 'hasError', errorProps: { hasError: true } },
+		{ errorPropName: 'hasError', errorProps: { hasError: true } },
 	] )(
-		'shows the warning icon in place of `trailingIcon` when `$errorProp` is set',
+		'shows the warning icon in place of `trailingIcon` when `$errorPropName` is set',
 		( { errorProps } ) => {
 			const { container } = render(
 				<TextField

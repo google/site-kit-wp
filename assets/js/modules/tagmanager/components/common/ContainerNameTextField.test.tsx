@@ -101,6 +101,10 @@ describe( 'ContainerNameTextField', () => {
 
 		expect( errorMessage ).toBeVisible();
 		expect( getByRole( 'textbox' ) ).toHaveAttribute(
+			'aria-invalid',
+			'true'
+		);
+		expect( getByRole( 'textbox' ) ).toHaveAttribute(
 			'aria-errormessage',
 			errorMessage.id
 		);

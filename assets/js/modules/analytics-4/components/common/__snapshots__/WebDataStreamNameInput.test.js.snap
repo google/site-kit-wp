@@ -48,6 +48,7 @@ exports[`WebDataStreamNameInput should show error state if web data stream name 
       class="mdc-text-field mdc-text-field--error mdc-text-field--outlined mdc-text-field--with-trailing-icon"
     >
       <input
+        aria-describedby="googlesitekit-textfield-2-error-message"
         aria-errormessage="googlesitekit-textfield-2-error-message"
         aria-invalid="true"
         class="mdc-text-field__input"
@@ -114,6 +115,7 @@ exports[`WebDataStreamNameInput should show error state if web data stream name 
       class="mdc-text-field mdc-text-field--error mdc-text-field--outlined mdc-text-field--with-trailing-icon"
     >
       <input
+        aria-describedby="googlesitekit-textfield-3-error-message"
         aria-errormessage="googlesitekit-textfield-3-error-message"
         aria-invalid="true"
         class="mdc-text-field__input"

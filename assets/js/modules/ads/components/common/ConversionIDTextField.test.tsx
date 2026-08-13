@@ -24,9 +24,6 @@ import { createTestRegistry, render } from '@tests/js/test-utils';
 import ConversionIDTextField from './ConversionIDTextField';
 
 describe( 'ConversionIDTextField', () => {
-	const invalidConversionIDMessage =
-		'Tracking for your Ads campaigns won’t work until you insert a valid ID';
-
 	let registry: ReturnType< typeof createTestRegistry >;
 
 	beforeEach( () => {
@@ -37,7 +34,7 @@ describe( 'ConversionIDTextField', () => {
 		registry.dispatch( MODULES_ADS ).receiveGetSettings( { conversionID } );
 
 		return render(
-			// @ts-expect-error - `ConversionIDTextField` reads `helperText` as required until the component is typed.
+			// @ts-expect-error - TypeScript reads `helperText` as required, because `ConversionIDTextField` is JavaScript and gives the prop no default value.
 			<ConversionIDTextField hideHeading />,
 			{ registry }
 		);
@@ -50,14 +47,20 @@ describe( 'ConversionIDTextField', () => {
 		expect( container.querySelector( '.mdc-text-field' ) ).toHaveClass(
 			'mdc-text-field--error'
 		);
-		expect( getByText( invalidConversionIDMessage ) ).toBeVisible();
+		expect(
+			getByText(
+				'Tracking for your Ads campaigns won’t work until you insert a valid ID'
+			)
+		).toBeVisible();
 		expect( getByRole( 'textbox' ) ).toHaveAttribute(
 			'aria-invalid',
 			'true'
 		);
 		expect( getByRole( 'textbox' ) ).toHaveAttribute(
 			'aria-errormessage',
-			getByText( invalidConversionIDMessage ).id
+			getByText(
+				'Tracking for your Ads campaigns won’t work until you insert a valid ID'
+			).id
 		);
 	} );
 
@@ -69,7 +72,9 @@ describe( 'ConversionIDTextField', () => {
 			'mdc-text-field--error'
 		);
 		expect(
-			queryByText( invalidConversionIDMessage )
+			queryByText(
+				'Tracking for your Ads campaigns won’t work until you insert a valid ID'
+			)
 		).not.toBeInTheDocument();
 		expect( getByRole( 'textbox' ) ).not.toHaveAttribute( 'aria-invalid' );
 	} );

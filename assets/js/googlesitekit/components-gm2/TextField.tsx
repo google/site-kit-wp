@@ -41,7 +41,7 @@ import VisuallyHidden from '@/js/components/VisuallyHidden';
 export interface TextFieldProps {
 	/** Class names merged onto the field's outer element, along with `mdc-text-field`. */
 	className?: string;
-	/** The `name` attribute the field writes onto its outer element, not onto the input. */
+	/** The `name` attribute the field writes onto its outer element rather than the input. */
 	name?: string;
 	/** The field's label, such as "Client ID". */
 	label?: string;
@@ -49,27 +49,24 @@ export interface TextFieldProps {
 	noLabel?: boolean;
 	/** Whether the field takes the outlined style, with a border around the input. */
 	outlined?: boolean;
-	/** Whether the field takes the `textarea` style. Pair it with `inputType`. */
+	/** Whether the field takes the `textarea` style, so the input renders as a multi-line box rather than a single line. */
 	textarea?: boolean;
-	/**
-	 * Element shown before the input. The field adds the `mdc-text-field__icon`
-	 * class to it. The Ads conversion ID field passes the constant `AW-` prefix
-	 * as text.
-	 */
+	/** Element shown before the input, which the field marks with the `mdc-text-field__icon` class. */
 	leadingIcon?: ReactElement;
 	/** Icon element shown after the input. The warning icon takes its place while the field holds an error. */
 	trailingIcon?: ReactElement;
 	/** Text shown under the field. A visible `errorMessage` takes the helper line instead. */
 	helperText?: ReactNode;
 	/**
-	 * Error shown under the field, with the error outline and the warning icon.
-	 * The input points at the error message through `aria-errormessage`.
+	 * Error the field shows under the input, with the error outline and the
+	 * warning icon. With `hasError` set too, the message moves off the screen.
+	 * The input names the message in `aria-errormessage` and `aria-describedby`.
 	 */
 	errorMessage?: ReactNode;
 	/**
 	 * Whether the field holds an error. The field adds the error outline and the
-	 * warning icon, and keeps any `errorMessage` off the screen for a screen
-	 * reader.
+	 * warning icon, and moves any `errorMessage` off the screen, where only a
+	 * screen reader reads it.
 	 */
 	hasError?: boolean;
 	/** The input's `id`, which also builds the error message's id. Defaults to a generated one. */
@@ -84,11 +81,11 @@ export interface TextFieldProps {
 	maxLength?: number;
 	/** The input's `tabindex` attribute, which sets its place in the keyboard order. */
 	tabIndex?: number;
-	/** Whether the input takes `disabled`. */
+	/** Whether the input stops taking typing and focus. */
 	disabled?: boolean;
 	/** Called when the input's value changes, so the caller can store the new value. */
 	onChange?: ( event: ChangeEvent< HTMLInputElement > ) => void;
-	/** Called when the input fires `keydown`, so the caller can act on that key before the input's value changes. It receives the keyboard event. */
+	/** Called when the input fires `keydown`, so the caller can act on that key before the input's value changes. */
 	onKeyDown?: ( event: KeyboardEvent< HTMLInputElement > ) => void;
 }
 
@@ -122,9 +119,9 @@ const TextField: FC< TextFieldProps > = ( {
 	const errorMessageID = `${ inputID }-error-message`;
 
 	const isInvalid = !! hasError || !! errorMessage;
-	// An `errorMessage` alone sits under the field. With `hasError` set too, the
-	// field shows the outline and the warning icon and moves that message where
-	// only a screen reader reads it.
+	// The error outline and the warning icon come from `isInvalid`, so these two props
+	// only decide where the error message goes: under the field when `errorMessage` is
+	// set on its own, and off screen when `hasError` is set too.
 	const isErrorMessageVisible = !! errorMessage && ! hasError;
 	const isErrorMessageHidden = !! errorMessage && !! hasError;
 
@@ -174,6 +171,9 @@ const TextField: FC< TextFieldProps > = ( {
 					onKeyDown={ onKeyDown }
 					aria-invalid={ isInvalid || undefined }
 					aria-errormessage={
+						errorMessage ? errorMessageID : undefined
+					}
+					aria-describedby={
 						errorMessage ? errorMessageID : undefined
 					}
 				/>

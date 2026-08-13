@@ -24,11 +24,6 @@ import { createTestRegistry, render } from '@tests/js/test-utils';
 import ClientIDTextField from './ClientIDTextField';
 
 describe( 'ClientIDTextField', () => {
-	const invalidClientIDMessage =
-		'A valid Client ID is required to use Sign in with Google';
-	const existingClientIDMessage =
-		'Sign in with Google was already set up on this site. We recommend using your existing Client ID.';
-
 	let registry: ReturnType< typeof createTestRegistry >;
 
 	beforeEach( () => {
@@ -48,18 +43,24 @@ describe( 'ClientIDTextField', () => {
 		expect( container.querySelector( '.mdc-text-field' ) ).toHaveClass(
 			'mdc-text-field--error'
 		);
-		expect( getByText( invalidClientIDMessage ) ).toBeVisible();
+		expect(
+			getByText(
+				'A valid Client ID is required to use Sign in with Google'
+			)
+		).toBeVisible();
 		expect( getByRole( 'textbox' ) ).toHaveAttribute(
 			'aria-invalid',
 			'true'
 		);
 		expect( getByRole( 'textbox' ) ).toHaveAttribute(
 			'aria-errormessage',
-			getByText( invalidClientIDMessage ).id
+			getByText(
+				'A valid Client ID is required to use Sign in with Google'
+			).id
 		);
 	} );
 
-	it( 'shows the existing Client ID recommendation with no error outline and no `aria-invalid` when an existing Client ID fills the field', () => {
+	it( 'shows the existing Client ID recommendation, with no error outline and no `aria-invalid`, when the site holds an existing Client ID and the field is empty', () => {
 		const existingClientID = 'existing.apps.example.com';
 
 		registry
@@ -71,7 +72,11 @@ describe( 'ClientIDTextField', () => {
 			{ registry }
 		);
 
-		expect( getByText( existingClientIDMessage ) ).toBeVisible();
+		expect(
+			getByText(
+				'Sign in with Google was already set up on this site. We recommend using your existing Client ID.'
+			)
+		).toBeVisible();
 		expect( container.querySelector( '.mdc-text-field' ) ).not.toHaveClass(
 			'mdc-text-field--error'
 		);

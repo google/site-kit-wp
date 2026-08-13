@@ -61,7 +61,7 @@ function Template() {
 
 				<div style={ { marginBottom: '50px' } }>
 					<TextField
-						label="With Error Icon Only"
+						label="With Error Message Off the Screen"
 						name="textfield"
 						value="https://www.sitekitbygoogle.com"
 						errorMessage="Only a screen reader reads this error message."
