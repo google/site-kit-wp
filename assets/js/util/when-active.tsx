@@ -24,7 +24,7 @@ import type { ComponentType } from 'react';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { Select, useSelect } from 'googlesitekit-data';
 import { hyphenCaseToPascalCase } from '@/js/googlesitekit/data/transform-case';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
@@ -64,7 +64,8 @@ export default function whenActive< P extends WhenActiveProps >( {
 	return ( WrappedComponent: ComponentType< P > ) => {
 		function WhenActiveComponent( props: P ) {
 			const module = useSelect(
-				( select ) => select( CORE_MODULES ).getModule( moduleName ),
+				( select: Select ) =>
+					select( CORE_MODULES ).getModule( moduleName ),
 				[ moduleName ]
 			);
 
@@ -75,8 +76,10 @@ export default function whenActive< P extends WhenActiveProps >( {
 
 			// This component isn't widget-specific but widgets need to use `WidgetNull`
 			// from props when rendering "null" output.
-			const DefaultFallbackComponent =
-				FallbackComponent || props.WidgetNull || null;
+			const DefaultFallbackComponent: ComponentType< P > | null =
+				FallbackComponent ||
+				( props.WidgetNull as ComponentType< P > | null ) ||
+				null;
 
 			// Return a fallback if the module is not active.
 			if ( module.active === false ) {

@@ -34,7 +34,9 @@ export default function createInitializeSnippet(
 	config: TrackingConfig,
 	dataLayerTarget: DataLayerTarget
 ) {
-	const dataLayerPush = createDataLayerPush( dataLayerTarget );
+	const dataLayerPush = createDataLayerPush( dataLayerTarget ) as (
+		...args: unknown[]
+	) => void;
 
 	let hasInsertedTag: boolean | undefined;
 

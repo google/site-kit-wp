@@ -17,19 +17,29 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
-import { Children, ReactNode, isValidElement } from '@wordpress/element';
+import { Children, isValidElement } from 'react';
+
+type ChildTextInput = unknown;
+
+interface ChildrenProps {
+	children?: ChildTextInput;
+}
+
+interface ChildElementShape {
+	props: ChildrenProps;
+}
 
 /**
  * Gets text from React children including all descendants. Returns a flat array of strings.
  *
  * @since 1.92.0
  *
- * @param {ReactNode} children Children to extract text from.
+ * @param {unknown} children Children to extract text from.
  * @return {Array.<string>} Array of text strings.
  */
-function getTextFromChildren( children: ReactNode ): string[] {
+function getTextFromChildren( children: ChildTextInput ): string[] {
 	const text: string[] = [];
 
 	Children.map( children, ( child ) => {
@@ -38,7 +48,8 @@ function getTextFromChildren( children: ReactNode ): string[] {
 		}
 
 		if ( isValidElement( child ) ) {
-			text.push( ...getTextFromChildren( child.props.children ) );
+			const childElement = child as ChildElementShape;
+			text.push( ...getTextFromChildren( childElement.props.children ) );
 		} else {
 			// If child is not an element, it's a string or a number.
 			text.push( child.toString() );
@@ -53,10 +64,10 @@ function getTextFromChildren( children: ReactNode ): string[] {
  *
  * @since 1.92.0
  *
- * @param {ReactNode} children Children to extract text from.
+ * @param {unknown} children Children to extract text from.
  * @return {string} Single string of text.
  */
-export function getLabelFromChildren( children: ReactNode ): string {
+export function getLabelFromChildren( children: ChildTextInput ): string {
 	const labels = getTextFromChildren( children );
 
 	return labels

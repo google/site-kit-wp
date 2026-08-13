@@ -47,7 +47,9 @@ interface WhenInViewContextOptions {
  * @param {boolean} options.excludeList    Array of view contexts that the component should render when not present.
  * @return {Function} Enhancing function.
  */
-export default function whenInViewContext< P >( {
+export default function whenInViewContext<
+	P extends Record< string, unknown >
+>( {
 	allViewOnly,
 	allNonViewOnly,
 	includeList,

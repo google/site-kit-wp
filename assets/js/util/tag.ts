@@ -87,16 +87,13 @@ export const getExistingTagURLs = memoize(
 
 		if ( AMP_MODE_SECONDARY === ampMode ) {
 			try {
-				const ampPostURL = await apiFetch( {
+				const posts = ( await apiFetch( {
 					path: '/wp/v2/posts?per_page=1',
-				} ).then( ( posts: Post[] ) =>
-					posts
-						.slice( 0, 1 )
-						.map( ( post ) =>
-							addQueryArgs( post.link, { amp: 1 } )
-						)
-						.pop()
-				);
+				} ) ) as Post[];
+				const ampPostURL = posts
+					.slice( 0, 1 )
+					.map( ( post ) => addQueryArgs( post.link, { amp: 1 } ) )
+					.pop();
 
 				if ( ampPostURL ) {
 					urls.push( ampPostURL );

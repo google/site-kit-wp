@@ -7,6 +7,8 @@ interface DataLayerTarget {
 	[ DATA_LAYER ]?: IArguments[];
 }
 
+type DataLayerPush = ( ...args: unknown[] ) => void;
+
 /**
  * Returns a function which, when invoked will initialize the dataLayer and push data onto it.
  *
@@ -15,7 +17,9 @@ interface DataLayerTarget {
  * @param {Object} target Object to enhance with dataLayer data.
  * @return {Function} Function that pushes data onto the dataLayer.
  */
-export default function createDataLayerPush( target: DataLayerTarget ) {
+export default function createDataLayerPush(
+	target: DataLayerTarget
+): DataLayerPush {
 	/**
 	 * Pushes data onto the data layer.
 	 *
@@ -31,6 +35,6 @@ export default function createDataLayerPush( target: DataLayerTarget ) {
 		target[ DATA_LAYER ] = target[ DATA_LAYER ] || [];
 		// `arguments` must be passed through verbatim to match the current dataLayer contract.
 		target[ DATA_LAYER ]?.push( arguments as IArguments );
-	};
+	} as DataLayerPush;
 	/* eslint-enable prefer-rest-params */
 }

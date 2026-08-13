@@ -19,7 +19,8 @@
 /**
  * External dependencies
  */
-import md5 from 'md5';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const md5 = require( 'md5' ) as ( value: string ) => string;
 
 /**
  * Transforms an object into a hash string.

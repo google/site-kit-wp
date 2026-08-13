@@ -22,22 +22,21 @@
 import { createIncrementalArrayBySize } from './create-incremental-array-by-size';
 
 describe( 'createIncrementalArrayBySize', () => {
-	// [ size, expectedReturnValue ]
-	const valuesToTest = [
-		[ undefined, [] ],
-		[ null, [] ],
-		[ 0, [] ],
-		[ 1, [ 0 ] ],
-		[ 2, [ 0, 1 ] ],
-		[ 3, [ 0, 1, 2 ] ],
-		[ 4, [ 0, 1, 2, 3 ] ],
-		[ 5, [ 0, 1, 2, 3, 4 ] ],
-	];
-
-	it.each( valuesToTest )(
-		'with size equal to %s, should return %s',
-		( size, expected ) => {
+	function registerCase(
+		size: number | null | undefined,
+		expected: number[]
+	): void {
+		it( `with size equal to ${ size }, should return ${ expected }`, () => {
 			expect( createIncrementalArrayBySize( size ) ).toEqual( expected );
-		}
-	);
+		} );
+	}
+
+	registerCase( undefined, [] );
+	registerCase( null, [] );
+	registerCase( 0, [] );
+	registerCase( 1, [ 0 ] );
+	registerCase( 2, [ 0, 1 ] );
+	registerCase( 3, [ 0, 1, 2 ] );
+	registerCase( 4, [ 0, 1, 2, 3 ] );
+	registerCase( 5, [ 0, 1, 2, 3, 4 ] );
 } );

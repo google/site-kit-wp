@@ -25,10 +25,24 @@ interface ReactInternals {
 	};
 }
 
+type ReactWithInternals = typeof React & {
+	__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: ReactInternals;
+};
+
+const reactWithInternals = React as unknown as ReactWithInternals;
+const reactInternalsRecord = reactWithInternals as unknown as Record<
+	string,
+	unknown
+>;
+
 // Grab React's internal dispatcher symbol
+/* eslint-disable dot-notation */
 const REACT_CURRENT_DISPATCHER = (
-	React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED as ReactInternals
+	reactInternalsRecord[
+		'__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED'
+	] as ReactInternals
  ).ReactCurrentDispatcher;
+/* eslint-enable dot-notation */
 
 /**
  * Wraps the given render function to fail if any React hook is used.

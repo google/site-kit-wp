@@ -149,12 +149,21 @@ describe( 'Error Utilities', () => {
 		} );
 	} );
 
-	describe.each( [
-		[ 'isWPError', isWPError ],
-		[ 'isPermissionScopeError', isPermissionScopeError ],
-		[ 'isInsufficientPermissionsError', isInsufficientPermissionsError ],
-		[ 'isAuthError', isAuthError ],
-	] )( '%s', ( fnName, fn ) => {
+	const errorPredicates: Array< [ string, ( value: unknown ) => boolean ] > =
+		[
+			[ 'isWPError', ( value ) => isWPError( value ) ],
+			[
+				'isPermissionScopeError',
+				( value ) => isPermissionScopeError( value as never ),
+			],
+			[
+				'isInsufficientPermissionsError',
+				( value ) => isInsufficientPermissionsError( value as never ),
+			],
+			[ 'isAuthError', ( value ) => isAuthError( value as never ) ],
+		];
+
+	describe.each( errorPredicates )( '%s', ( fnName, fn ) => {
 		it( 'should return FALSE for non-plain objects', () => {
 			expect( fn( new Error() ) ).toBe( false );
 			// This case specifically verifies a Date-like non-plain object is rejected.

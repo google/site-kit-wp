@@ -27,7 +27,7 @@ interface APIErrorData {
 }
 
 interface APIError {
-	code?: string;
+	code?: string | number;
 	data?: APIErrorData;
 	message?: string;
 }
@@ -38,6 +38,20 @@ interface TrackAPIErrorArgs {
 	identifier: string;
 	method: string;
 	type: string;
+}
+
+function getTrackableEventValue( error: APIError ): number | undefined {
+	const status = error.data?.status;
+
+	if ( typeof status === 'number' ) {
+		return status;
+	}
+
+	if ( typeof error.code === 'number' ) {
+		return error.code;
+	}
+
+	return undefined;
 }
 
 // Error codes in excludedErrorCodes will not be tracked by trackAPIError.
@@ -73,7 +87,7 @@ export async function trackAPIError(
 	}
 
 	// Exclude certain errors from tracking based on error code.
-	if ( ! error || excludedErrorCodes.includes( error?.code || '' ) ) {
+	if ( ! error || error.code === 'fetch_error' ) {
 		return;
 	}
 
@@ -86,6 +100,6 @@ export async function trackAPIError(
 		'api_error',
 		`${ method }:${ type }/${ identifier }/data/${ datapoint }`,
 		`${ error.message } (${ labelMeta })`,
-		error.data?.status || error.code
+		getTrackableEventValue( error )
 	);
 }

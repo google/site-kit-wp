@@ -22,6 +22,14 @@
 import { BREAKPOINT_SMALL } from '@/js/hooks/useBreakpoint';
 import { finiteNumberOrZero } from './finite-number-or-zero';
 
+function getElementOffsetHeight( element: Element | null ): number {
+	const candidate = element as Element & { offsetHeight?: unknown };
+
+	return typeof candidate.offsetHeight === 'number'
+		? candidate.offsetHeight
+		: 0;
+}
+
 /**
  * Gets the y coordinate to scroll to the top of a context element, taking the sticky admin bar, header and navigation height into account.
  *
@@ -63,7 +71,7 @@ export function getStickyHeaderHeight( breakpoint: string ): number {
 	);
 
 	headerHeight += Array.from( navigation ).reduce(
-		( height, element ) => height + element.offsetHeight,
+		( height, element ) => height + getElementOffsetHeight( element ),
 		0
 	);
 
@@ -83,7 +91,7 @@ export function getWordPressAdminBarHeight( breakpoint: string ): number {
 	const wpAdminBar = document.querySelector( '#wpadminbar' );
 
 	if ( wpAdminBar && breakpoint !== BREAKPOINT_SMALL ) {
-		return wpAdminBar.offsetHeight;
+		return getElementOffsetHeight( wpAdminBar );
 	}
 
 	return 0;
@@ -104,7 +112,7 @@ function getGoogleSiteKitHeaderHeight( breakpoint: string ): number {
 		// If the breakpoint is BREAKPOINT_SMALL, the WordPress admin bar is not sticky and we can return the height of the Site Kit header alone.
 		// Otherwise, we use the value of the bottom of the Site Kit header's bounding box as this will take into account the sticky WordPress admin bar.
 		if ( breakpoint === BREAKPOINT_SMALL ) {
-			return header.offsetHeight;
+			return getElementOffsetHeight( header );
 		}
 
 		const headerBottom = header.getBoundingClientRect().bottom;

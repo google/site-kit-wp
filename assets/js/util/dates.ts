@@ -44,6 +44,10 @@ interface DateRangeDefinition {
 	slug: string;
 }
 
+function isValidDateInstance( value: unknown ): value is Date {
+	return isDate( value ) && ! Number.isNaN( value.getTime() );
+}
+
 /**
  * Gets the hash of available date ranges.
  *
@@ -59,7 +63,7 @@ export function getAvailableDateRanges(): Record<
 		return sprintf(
 			/* translators: %s: number of days */
 			_n( 'Last %s day', 'Last %s days', days, 'google-site-kit' ),
-			days
+			String( days )
 		);
 	}
 
@@ -128,7 +132,7 @@ export function isValidDateString( dateString = '' ): boolean {
 	// eslint-disable-next-line sitekit/no-direct-date
 	const date = new Date( dateString );
 
-	return isDate( date ) && ! isNaN( date );
+	return isValidDateInstance( date );
 }
 
 /**
@@ -141,7 +145,7 @@ export function isValidDateString( dateString = '' ): boolean {
  * @return {string} The parsed date string (YYYY-MM-DD).
  */
 export function getDateString( date: Date ): string {
-	invariant( isDate( date ) && ! isNaN( date ), INVALID_DATE_INSTANCE_ERROR );
+	invariant( isValidDateInstance( date ), INVALID_DATE_INSTANCE_ERROR );
 
 	const month = `${ date.getMonth() + 1 }`;
 	const day = `${ date.getDate() }`;
@@ -226,13 +230,13 @@ export function isValidDateRange( dateRange: string ): boolean {
 export function dateSub( relativeDate: Date | string, duration: number ): Date {
 	invariant(
 		isValidDateString( relativeDate as string ) ||
-			( isDate( relativeDate ) && ! isNaN( relativeDate ) ),
+			isValidDateInstance( relativeDate ),
 		INVALID_DATE_STRING_ERROR
 	);
 
 	const timestamp = isValidDateString( relativeDate as string )
 		? stringToDate( relativeDate as string ).getTime()
-		: relativeDate.getTime();
+		: ( relativeDate as Date ).getTime();
 
 	// Valid use of `new Date()` using calculations.
 	// eslint-disable-next-line sitekit/no-direct-date

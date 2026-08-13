@@ -81,22 +81,28 @@ export function replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
 		);
 	}
 
+	function mapDateRangeToZero( cells: any[] ) {
+		return cells.map( ( cell ) => {
+			if ( matchesDateRange( cell ) ) {
+				return {
+					...cell,
+					metricValues: cell.metricValues.map( () => {
+						return { value: '0' };
+					} ),
+				};
+			}
+			return cell;
+		} );
+	}
+
+	function removeDateRangeEntirely( cells: any[] ) {
+		return cells.filter( ( cell ) => {
+			return ! matchesDateRange( cell );
+		} );
+	}
+
 	// If emptyRowBehavior is 'zero', keep the rows but zero the value for each row and aggregate key in the specified date range.
 	if ( emptyRowBehavior === 'zero' ) {
-		function mapDateRangeToZero( cells: any[] ) {
-			return cells.map( ( cell ) => {
-				if ( matchesDateRange( cell ) ) {
-					return {
-						...cell,
-						metricValues: cell.metricValues.map( () => {
-							return { value: '0' };
-						} ),
-					};
-				}
-				return cell;
-			} );
-		}
-
 		return {
 			...report,
 			rows: mapDateRangeToZero( rows ),
@@ -107,12 +113,6 @@ export function replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
 	}
 
 	// If emptyRowBehavior is 'remove', remove the rows and aggregate data that has a dimensionValues[].value equal to dateRangeKey.
-	function removeDateRangeEntirely( cells: any[] ) {
-		return cells.filter( ( cell ) => {
-			return ! matchesDateRange( cell );
-		} );
-	}
-
 	const filteredRows = removeDateRangeEntirely( rows );
 
 	return {

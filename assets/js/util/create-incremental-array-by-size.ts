@@ -28,5 +28,11 @@
 export function createIncrementalArrayBySize(
 	size: number | null | undefined
 ): number[] {
-	return new Array( size ?? 0 ).fill().map( ( _, index ) => index );
+	const values = new Array< number >( size ?? 0 );
+
+	for ( let index = 0; index < ( size ?? 0 ); index++ ) {
+		values[ index ] = index;
+	}
+
+	return values;
 }

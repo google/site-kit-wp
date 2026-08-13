@@ -24,7 +24,7 @@ import type { ComponentType } from 'react';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 interface WhenScopesGrantedProps {
@@ -64,7 +64,7 @@ export default function whenScopesGranted< P extends WhenScopesGrantedProps >( {
 	return ( WrappedComponent: ComponentType< P > ) => {
 		function WhenScopesGranted( props: P ) {
 			const allScopeResults = useSelect(
-				( select ) => {
+				( select: Select ) => {
 					return scopes.map( ( scope ) => {
 						return select( CORE_USER ).hasScope( scope );
 					} );
@@ -83,8 +83,10 @@ export default function whenScopesGranted< P extends WhenScopesGrantedProps >( {
 
 			// This component isn't widget-specific but widgets need to use
 			// `WidgetNull` from props when rendering "null" output.
-			const DefaultFallbackComponent =
-				FallbackComponent || props.WidgetNull || null;
+			const DefaultFallbackComponent: ComponentType< P > | null =
+				FallbackComponent ||
+				( props.WidgetNull as ComponentType< P > | null ) ||
+				null;
 
 			// Return a fallback (by default, `<WidgetNull />`) if any scopes are
 			// not present for this user.

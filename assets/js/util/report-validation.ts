@@ -113,16 +113,19 @@ export function isValidOrders( orders: unknown ): boolean {
 		return isValidFieldName && isValidSortOrder;
 	}
 
+	function isObjectRecord(
+		value: unknown
+	): value is Record< string, unknown > {
+		return typeof value === 'object' && value !== null;
+	}
+
 	if ( Array.isArray( orders ) ) {
 		return orders.every(
-			( item ) =>
-				typeof item === 'object' &&
-				item !== null &&
-				isValidOrder( item )
+			( item ) => isObjectRecord( item ) && isValidOrder( item )
 		);
 	}
 
-	if ( typeof orders === 'object' && orders !== null ) {
+	if ( isObjectRecord( orders ) ) {
 		return isValidOrder( orders );
 	}
 

@@ -32,10 +32,25 @@ export function sortByProperty< T extends SortableObject >(
 	property: keyof T & string
 ): T[] {
 	return arrayData.sort( ( objectA, objectB ) => {
-		if ( objectA[ property ] > objectB[ property ] ) {
+		const valueA = objectA?.[ property ];
+		const valueB = objectB?.[ property ];
+
+		if ( valueA === undefined && valueB === undefined ) {
+			return 0;
+		}
+
+		if ( valueA === undefined ) {
 			return 1;
 		}
-		if ( objectA[ property ] < objectB[ property ] ) {
+
+		if ( valueB === undefined ) {
+			return -1;
+		}
+
+		if ( valueA > valueB ) {
+			return 1;
+		}
+		if ( valueA < valueB ) {
 			return -1;
 		}
 		return 0;

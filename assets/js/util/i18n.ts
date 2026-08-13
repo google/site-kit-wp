@@ -27,11 +27,23 @@ import memize from 'memize';
  */
 import { __, _x, sprintf } from '@wordpress/i18n';
 
-type DurationFormatOptions = Intl.NumberFormatOptions & {
+type NumberFormatStyle = NonNullable< Intl.NumberFormatOptions[ 'style' ] >;
+type DurationUnit = 'second' | 'minute' | 'hour';
+type ListFormatStyle = 'long' | 'short' | 'narrow';
+type ListFormatType = 'conjunction' | 'disjunction' | 'unit';
+
+type NumberFormatOptionsWithLocale = Intl.NumberFormatOptions & {
+	locale?: string;
+	style?: NumberFormatStyle;
+	unit?: DurationUnit;
+	unitDisplay?: 'short' | 'long' | 'narrow';
+};
+
+type DurationFormatOptions = Omit< NumberFormatOptionsWithLocale, 'style' > & {
 	style?: Intl.NumberFormatOptions[ 'style' ] | 'duration';
 };
 
-type NumFmtOptions = Intl.NumberFormatOptions & {
+type NumFmtOptions = Omit< NumberFormatOptionsWithLocale, 'style' > & {
 	style?:
 		| Intl.NumberFormatOptions[ 'style' ]
 		| 'metric'
@@ -42,8 +54,19 @@ type NumFmtOptions = Intl.NumberFormatOptions & {
 
 type ListFmtOptions = {
 	locale?: string;
-	style?: Intl.ListFormatOptions[ 'style' ];
-	type?: Intl.ListFormatOptions[ 'type' ];
+	style?: ListFormatStyle;
+	type?: ListFormatType;
+};
+
+type IntlListFormatInstance = {
+	format: ( list: string[] ) => string;
+};
+
+type IntlWithListFormat = typeof Intl & {
+	ListFormat?: new (
+		locale?: string | string[],
+		options?: { style?: ListFormatStyle; type?: ListFormatType }
+	) => IntlListFormatInstance;
 };
 
 type GlobalLike = typeof globalThis & {
@@ -51,6 +74,44 @@ type GlobalLike = typeof globalThis & {
 		locale?: string;
 	};
 };
+
+function isNumberFormatOptionsObject(
+	value: unknown
+): value is NumberFormatOptionsWithLocale {
+	return isPlainObject( value );
+}
+
+function toDurationFormatOptions(
+	options: NumFmtOptions
+): DurationFormatOptions {
+	const { style: _style, ...rest } = options;
+	void _style;
+
+	return {
+		...rest,
+		style: 'duration',
+	};
+}
+
+function toNumberFormatOptions(
+	options: NumFmtOptions
+): NumberFormatOptionsWithLocale {
+	const { style, ...rest } = options;
+
+	if (
+		style &&
+		style !== 'metric' &&
+		style !== 'duration' &&
+		style !== 'durationISO'
+	) {
+		return {
+			...rest,
+			style,
+		};
+	}
+
+	return rest;
+}
 
 /**
  * Converts seconds to a display ready string indicating
@@ -99,15 +160,14 @@ function durationFormat(
  * @return {string} Human readable string indicating time elapsed.
  */
 function durationISOFormat( durationInSeconds: number ): string {
-	let { hours, minutes, seconds } = parseDuration( durationInSeconds );
+	const { hours, minutes, seconds } = parseDuration( durationInSeconds );
+	const paddedSeconds = ( '0' + seconds ).slice( -2 );
+	const paddedMinutes = ( '0' + minutes ).slice( -2 );
+	const paddedHours = ( '0' + hours ).slice( -2 );
 
-	seconds = ( '0' + seconds ).slice( -2 );
-	minutes = ( '0' + minutes ).slice( -2 );
-	hours = ( '0' + hours ).slice( -2 );
-
-	return hours === '00'
-		? `${ minutes }:${ seconds }`
-		: `${ hours }:${ minutes }:${ seconds }`;
+	return paddedHours === '00'
+		? `${ paddedMinutes }:${ paddedSeconds }`
+		: `${ paddedHours }:${ paddedMinutes }:${ paddedSeconds }`;
 }
 
 /**
@@ -168,8 +228,13 @@ export function createDurationFormat(
 		minutes,
 		seconds,
 		formatUnit() {
-			const { unitDisplay = 'short', ...restOptions } = options;
-			const commonOptions = {
+			const {
+				unitDisplay = 'short',
+				style: _style,
+				...restOptions
+			} = options;
+			void _style;
+			const commonOptions: NumberFormatOptionsWithLocale = {
 				unitDisplay,
 				...restOptions,
 				style: 'unit',
@@ -284,10 +349,12 @@ export function prepareForReadableLargeNumber( number: number ): number {
  * @return {string} The formatted number.
  */
 export function readableLargeNumber( number: number ): string {
-	const withSingleDecimal: Intl.NumberFormatOptions = {
+	const withSingleDecimal: NumberFormatOptionsWithLocale = {
 		minimumFractionDigits: 1,
 		maximumFractionDigits: 1,
 	};
+	const maybeDecimalOptions =
+		number % 10 === 0 ? undefined : withSingleDecimal;
 
 	if ( 1000000 <= number ) {
 		return sprintf(
@@ -295,7 +362,7 @@ export function readableLargeNumber( number: number ): string {
 			__( '%sM', 'google-site-kit' ),
 			numberFormat(
 				prepareForReadableLargeNumber( number ),
-				number % 10 === 0 ? {} : withSingleDecimal
+				maybeDecimalOptions
 			)
 		);
 	}
@@ -314,7 +381,7 @@ export function readableLargeNumber( number: number ): string {
 			__( '%sK', 'google-site-kit' ),
 			numberFormat(
 				prepareForReadableLargeNumber( number ),
-				number % 10 === 0 ? {} : withSingleDecimal
+				maybeDecimalOptions
 			)
 		);
 	}
@@ -334,7 +401,7 @@ export function readableLargeNumber( number: number ): string {
  * @return {Object} Formatting options.
  */
 export function expandNumFmtOptions(
-	options: string | Intl.NumberFormatOptions
+	options: string | NumberFormatOptionsWithLocale
 ): NumFmtOptions {
 	let formatOptions: NumFmtOptions = {};
 
@@ -353,7 +420,7 @@ export function expandNumFmtOptions(
 			style: 'currency',
 			currency: options,
 		};
-	} else if ( isPlainObject( options ) ) {
+	} else if ( isNumberFormatOptionsObject( options ) ) {
 		formatOptions = { ...options };
 	}
 
@@ -379,32 +446,35 @@ export function expandNumFmtOptions(
  */
 export function numFmt(
 	number: number | string,
-	options: string | Intl.NumberFormatOptions = {}
+	options: string | NumberFormatOptionsWithLocale = {}
 ): string {
-	number = isFinite( number ) ? number : Number( number );
+	let numericValue = isFinite( number ) ? Number( number ) : Number( number );
 
-	if ( ! isFinite( number ) ) {
+	if ( ! isFinite( numericValue ) ) {
 		// eslint-disable-next-line no-console
 		console.warn( 'Invalid number', number, typeof number );
-		number = 0;
+		numericValue = 0;
 	}
 
 	const formatOptions = expandNumFmtOptions( options );
 	const { style = 'metric' } = formatOptions;
 
 	if ( 'metric' === style ) {
-		return readableLargeNumber( number );
+		return readableLargeNumber( numericValue );
 	}
 
 	if ( 'duration' === style ) {
-		return durationFormat( number, formatOptions );
+		return durationFormat(
+			numericValue,
+			toDurationFormatOptions( formatOptions )
+		);
 	}
 
 	if ( 'durationISO' === style ) {
-		return durationISOFormat( number );
+		return durationISOFormat( numericValue );
 	}
 
-	return numberFormat( number, formatOptions );
+	return numberFormat( numericValue, toNumberFormatOptions( formatOptions ) );
 }
 
 // Warn once for a given message.
@@ -423,7 +493,7 @@ const warnOnce = memize( console.warn ); // eslint-disable-line no-console
  */
 export function numberFormat(
 	number: number,
-	options: Intl.NumberFormatOptions = {}
+	options: NumberFormatOptionsWithLocale = {}
 ): string {
 	const { locale = getLocale(), ...formatOptions } = options;
 
@@ -500,8 +570,12 @@ export function listFormat(
 		type = 'conjunction',
 	} = options;
 
-	if ( Intl.ListFormat ) {
-		const formatter = new Intl.ListFormat( locale, { style, type } );
+	const intlWithListFormat = Intl as IntlWithListFormat;
+	if ( intlWithListFormat.ListFormat ) {
+		const formatter = new intlWithListFormat.ListFormat( locale, {
+			style,
+			type,
+		} );
 		return formatter.format( list );
 	}
 

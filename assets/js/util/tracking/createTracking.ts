@@ -28,6 +28,7 @@ import createTrackEvent from './createTrackEvent';
 interface TrackingConfig {
 	activeModules: string[];
 	isAuthenticated: boolean;
+	isSiteKitScreen: boolean;
 	referenceSiteURL: string;
 	trackingEnabled: boolean;
 	trackingID: string;
@@ -42,6 +43,7 @@ interface TrackingDataLayerTarget {
 const DEFAULT_CONFIG: TrackingConfig = {
 	activeModules: [],
 	isAuthenticated: false,
+	isSiteKitScreen: false,
 	referenceSiteURL: '',
 	trackingEnabled: false,
 	trackingID: '',

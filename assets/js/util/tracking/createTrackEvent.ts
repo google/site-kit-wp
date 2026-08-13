@@ -36,7 +36,12 @@ export default function createTrackEvent(
 	initializeSnippet: () => false | { scriptTagSrc: string },
 	_global: TrackEventGlobal
 ) {
-	const dataLayerPush = createDataLayerPush( dataLayerTarget );
+	const rawDataLayerPush = createDataLayerPush( dataLayerTarget );
+	function dataLayerPush( ...args: unknown[] ): void {
+		( rawDataLayerPush as unknown as ( ...callArgs: unknown[] ) => void )(
+			...args
+		);
+	}
 
 	/**
 	 * Send an Analytics tracking event.

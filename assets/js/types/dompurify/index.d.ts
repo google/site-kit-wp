@@ -1,7 +1,5 @@
 /**
- * Utility function related to checking if a given value is numeric.
- *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +14,18 @@
  * limitations under the License.
  */
 
-/**
- * Checks if a given value is numeric.
- *
- * @since 1.80.0
- *
- * @param {unknown} value The value to check.
- * @return {boolean} TRUE if a value is numeric FALSE otherwise.
- */
-export function isNumeric( value: unknown ): boolean {
-	if ( typeof value === 'number' ) {
-		return true;
+declare namespace DOMPurify {
+	interface Config {
+		[ key: string ]: unknown;
 	}
 
-	const string = ( value || '' ).toString();
-
-	if ( ! string ) {
-		return false;
+	interface DOMPurifyI {
+		sanitize: ( dirty: string, config?: Config ) => string;
 	}
+}
 
-	return ! Number.isNaN( Number( string ) );
+declare module 'dompurify' {
+	export default function createDOMPurify(
+		window?: Window & typeof globalThis
+	): DOMPurify.DOMPurifyI;
 }
