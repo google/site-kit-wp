@@ -50,7 +50,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return bool True if active, false otherwise.
+	 * @return bool Content Events are always enabled, so this is always `true`.
 	 */
 	public function is_active() {
 		return true;
