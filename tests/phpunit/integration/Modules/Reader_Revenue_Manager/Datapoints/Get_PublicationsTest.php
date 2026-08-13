@@ -37,8 +37,8 @@ class Get_PublicationsTest extends TestCase {
 		$request   = $datapoint->create_request( $this->get_data_request() );
 
 		$this->assertSame(
-			'/v1/organizations/*/publications',
-			$request->getUri()->getPath(),
+			'webcontentpublisher.googleapis.com',
+			$request->getUri()->getHost(),
 			'The Web Content Publisher list publications endpoint should be used.'
 		);
 		$this->assertSame(
