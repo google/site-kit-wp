@@ -31,7 +31,7 @@ class Content_EventsTest extends TestCase {
 	}
 
 	public function test_is_active() {
-		$this->assertTrue( $this->content_events->is_active(), 'Content_Events provider should be active on a bare install.' );
+		$this->assertTrue( $this->content_events->is_active(), 'Content_Events provider should always be active.' );
 	}
 
 	public function test_get_category() {
