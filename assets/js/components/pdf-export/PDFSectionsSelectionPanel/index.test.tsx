@@ -24,10 +24,14 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
+import {
+	PDF_DOWNLOAD_PANEL_OPENED_KEY,
+	PDF_EXPORT_PANEL_OPENED_ITEM_SLUG,
+} from '@/js/components/pdf-export/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
@@ -36,6 +40,10 @@ import {
 } from '@/js/googlesitekit/widgets/default-contexts';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as tracking from '@/js/util/tracking';
+import {
+	dismissItemEndpoint,
+	dismissedItemsEndpoint,
+} from '@tests/js/mock-dismiss-item-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -113,18 +121,30 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		// so every test needs modules in the store.
 		provideModules( registry );
 		registerSections( registry );
+
+		// An open panel saves `pdf-export-panel-opened` to WordPress user
+		// meta, and every test needs the saved slugs in the store plus a
+		// reply for that request.
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		fetchMock.post( dismissItemEndpoint, {
+			body: [ PDF_EXPORT_PANEL_OPENED_ITEM_SLUG ],
+		} );
 	} );
 
 	afterEach( () => {
 		mockTrackEvent.mockClear();
 	} );
 
-	function openPanel() {
+	function setPanelOpen( isOpen: boolean ) {
 		act( () => {
 			registry
 				.dispatch( CORE_UI )
-				.setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, true );
+				.setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, isOpen );
 		} );
+	}
+
+	function openPanel() {
+		setPanelOpen( true );
 	}
 
 	it( 'omits a section when every pdf widget in it has pdf.isActive returning false', async () => {
@@ -590,6 +610,69 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		).toBe( false );
 	} );
 
+	it( 'shows the "generating report" notice and disables the "Download report" button when closing, then opening the panel mid-export', async () => {
+		const { findByRole, getByRole, getByText, queryByText } = render(
+			<PDFSectionsSelectionPanel />,
+			{ registry }
+		);
+
+		openPanel();
+
+		await findByRole( 'checkbox', { name: 'Traffic' } );
+
+		fireEvent.click(
+			await findByRole( 'button', { name: 'Download report' } )
+		);
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).isExporting() ).toBe( true );
+		} );
+
+		// The panel closed, so the notice shouldn't be on screen.
+		expect(
+			queryByText( 'Your report is being generated' )
+		).not.toBeInTheDocument();
+
+		openPanel();
+
+		expect(
+			getByText( 'Your report is being generated' )
+		).toBeInTheDocument();
+		expect(
+			getByRole( 'button', { name: 'Download report' } )
+		).toBeDisabled();
+	} );
+
+	it( 'enables the "Download report" button and clears the "generating report" notice when the export is finished (with the panel open)', async () => {
+		registry.dispatch( CORE_PDF ).startExporting();
+
+		const { findByRole, getByRole, getByText, queryByText } = render(
+			<PDFSectionsSelectionPanel />,
+			{ registry }
+		);
+
+		openPanel();
+
+		await findByRole( 'checkbox', { name: 'Traffic' } );
+
+		expect(
+			getByText( 'Your report is being generated' )
+		).toBeInTheDocument();
+
+		// The real export ends in two steps, which this test runs in order.
+		act( () => {
+			registry.dispatch( CORE_PDF ).setStatus( 'success' );
+			registry.dispatch( CORE_PDF ).finishExporting();
+		} );
+
+		expect(
+			queryByText( 'Your report is being generated' )
+		).not.toBeInTheDocument();
+		expect(
+			getByRole( 'button', { name: 'Download report' } )
+		).toBeEnabled();
+	} );
+
 	it( 'fires pdf_generation_sidebar_view once when the panel opens', async () => {
 		const { findByRole } = render( <PDFSectionsSelectionPanel />, {
 			registry,
@@ -633,6 +716,93 @@ describe( 'PDFSectionsSelectionPanel', () => {
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pdf_generation_section_selection-sidebar`,
 			'pdf_generation_sidebar_close'
 		);
+	} );
+
+	it( "should save 'pdf-export-panel-opened' to WordPress user meta when the panel opens", async () => {
+		render( <PDFSectionsSelectionPanel />, { registry } );
+
+		openPanel();
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+				body: {
+					data: {
+						slug: PDF_EXPORT_PANEL_OPENED_ITEM_SLUG,
+						expiration: 0,
+					},
+				},
+			} )
+		);
+	} );
+
+	it( "should save 'pdf-export-panel-opened' once when the user closes the panel and opens it again", async () => {
+		const { waitForRegistry } = render( <PDFSectionsSelectionPanel />, {
+			registry,
+		} );
+
+		openPanel();
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetchedTimes( 1, dismissItemEndpoint )
+		);
+
+		setPanelOpen( false );
+		openPanel();
+
+		await waitForRegistry();
+
+		expect( fetchMock ).toHaveFetchedTimes( 1, dismissItemEndpoint );
+	} );
+
+	it( "should save 'pdf-export-panel-opened' once when the user reopens the panel before the first save lands", async () => {
+		// This request never resolves, so `dismissedItems` stays empty and
+		// `hasAlreadyOpenedPDFExportPanel` never turns true. Only
+		// `panelOpenedItemDismissedRef` can stop the second request.
+		fetchMock.post( dismissItemEndpoint, new Promise( () => {} ), {
+			overwriteRoutes: true,
+		} );
+
+		const { waitForRegistry } = render( <PDFSectionsSelectionPanel />, {
+			registry,
+		} );
+
+		openPanel();
+		setPanelOpen( false );
+		openPanel();
+
+		await waitForRegistry();
+
+		expect( fetchMock ).toHaveFetchedTimes( 1, dismissItemEndpoint );
+	} );
+
+	it( "should save no 'pdf-export-panel-opened' while the panel stays closed", async () => {
+		const { waitForRegistry } = render( <PDFSectionsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
+	} );
+
+	it( "should save no 'pdf-export-panel-opened' while the saved slugs are still loading", async () => {
+		// This fresh registry has none of the slugs `beforeEach` adds, and
+		// the promise never resolves. The request for the saved slugs never
+		// finishes.
+		registry = createTestRegistry();
+		provideModules( registry );
+		registerSections( registry );
+		fetchMock.get( dismissedItemsEndpoint, new Promise( () => {} ) );
+
+		const { waitForRegistry } = render( <PDFSectionsSelectionPanel />, {
+			registry,
+		} );
+
+		openPanel();
+
+		await waitForRegistry();
+
+		expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
 	} );
 
 	it( 'does not fire pdf_generation_sidebar_close when Download is clicked', async () => {

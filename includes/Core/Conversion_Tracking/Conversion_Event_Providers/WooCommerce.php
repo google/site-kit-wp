@@ -620,7 +620,11 @@ class WooCommerce extends Conversion_Events_Provider {
 		// If there isn't a valid order for this ID, or if this order
 		// already has a purchase event tracked for it, return early
 		// and don't output the script tag to track the purchase event.
-		if ( ! $order || $order->get_meta( '_googlesitekit_ga_purchase_event_tracked' ) === '1' ) {
+		if (
+			! $order ||
+			! $order instanceof WC_Order ||
+			$order->get_meta( '_googlesitekit_ga_purchase_event_tracked' ) === '1'
+		) {
 			return;
 		}
 

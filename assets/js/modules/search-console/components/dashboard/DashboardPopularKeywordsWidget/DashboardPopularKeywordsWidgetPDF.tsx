@@ -89,15 +89,15 @@ const DashboardPopularKeywordsWidgetPDF: FC< PDFWidgetComponentProps > = ( {
 			// 66.7% of the 1084px row (723px).
 			width: '66.7%',
 			// Show the rank number before the query. The query links to its
-			// Search Console report, like the dashboard widget. When the query
-			// has no link, `PDFLink` renders it as plain text instead of as a
-			// link.
+			// Search Console report, like the dashboard widget.
 			cell: ( row ) => (
 				<View style={ styles.queryCell }>
 					<PDFTypography style={ styles.rank }>
 						{ `${ row.rank }.` }
 					</PDFTypography>
-					<PDFLink href={ row.queryURL }>{ row.query }</PDFLink>
+					<PDFTypography truncateContent>
+						<PDFLink href={ row.queryURL }>{ row.query }</PDFLink>
+					</PDFTypography>
 				</View>
 			),
 		},

@@ -218,6 +218,7 @@ export function provideSiteInfo(
 		keyMetricsSetupCompletedBy: 0,
 		keyMetricsSetupNew: false,
 		anyoneCanRegister: false,
+		anyoneCanRegisterWooCommerce: false,
 		isMultisite: false,
 		hasActiveLeadEventProviders: undefined,
 		hasActiveEcommerceEventProviders: undefined,
