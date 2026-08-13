@@ -296,7 +296,7 @@ describe( 'DashboardReport', () => {
 		expect( reportJSON ).toContain( `"size":[${ PDF_PAGE_WIDTH },` );
 	} );
 
-	it( 'leaves the padding the design sets under the footer links', () => {
+	it( 'leaves the padding the design under the footer links', () => {
 		const reportJSON = renderDashboardReportJSON();
 
 		expect( reportJSON ).toContain(
