@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publications
+ * Class Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publications_Legacy
  *
  * @package   Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints
  * @copyright 2026 Google LLC
@@ -14,7 +14,6 @@ use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\URL;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Publication_Normalizer;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_Publication;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
@@ -22,13 +21,13 @@ use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\PaymentOptio
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
 
 /**
- * Class for the publications retrieval datapoint.
+ * Class for the legacy publications retrieval datapoint.
  *
  * @since n.e.x.t
  * @access private
  * @ignore
  */
-class Get_Publications extends Datapoint implements Executable_Datapoint {
+class Get_Publications_Legacy extends Datapoint implements Executable_Datapoint {
 
 	/**
 	 * Search Console settings.
@@ -69,8 +68,7 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	 * @return mixed Request object.
 	 */
 	public function create_request( Data_Request $data_request ) {
-		return $this->get_service()->organizations_publications->listOrganizationsPublications(
-			'organizations/*',
+		return $this->get_service()->publications->listPublications(
 			array( 'filter' => $this->get_publication_filter() )
 		);
 	}
@@ -85,15 +83,9 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	 * @return array Publication resources.
 	 */
 	public function parse_response( $response, Data_Request $data ) {
-		$publications = array_values( (array) $response->getPublications() );
-		$publications = array_map( array( Publication_Normalizer::class, 'normalize' ), $publications );
+		$publications = array_values( $response->getPublications() );
 
-		$legacy_publications = array_map(
-			fn( $publication ) => new Publication( $publication ),
-			$publications
-		);
-
-		$this->synchronize_publication_data( $legacy_publications );
+		$this->synchronize_publication_data( $publications );
 
 		return $publications;
 	}
