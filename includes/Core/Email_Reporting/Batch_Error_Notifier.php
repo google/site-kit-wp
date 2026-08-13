@@ -289,7 +289,12 @@ class Batch_Error_Notifier {
 			'body'                   => $body,
 			'primary_call_to_action' => Content_Map::get_cta( $content_key, $this->golinks ),
 			'footer'                 => array(
-				'copy'            => __( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can unsubscribe', 'google-site-kit' ),
+				'copy'            => sprintf(
+					/* translators: 1: Unsubscribe link URL, 2: Unsubscribe link inline style CSS. */
+					__( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can <a class="link" href="%1$s" style="%2$s">unsubscribe</a>.', 'google-site-kit' ),
+					$email_settings_url,
+					'text-decoration:none;'
+				),
 				'unsubscribe_url' => $email_settings_url,
 			),
 			'graphic'                => Content_Map::get_graphic_config( 'error-email' ),
