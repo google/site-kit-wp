@@ -16,14 +16,20 @@
  * limitations under the License.
  */
 
+type SiteKitGlobal = typeof global._googlesitekit;
+
+function deleteSiteKitGlobal() {
+	delete ( global as { _googlesitekit?: SiteKitGlobal } )._googlesitekit;
+}
+
 describe( 'content-events', () => {
-	let addEventListenerSpy;
-	let gtagEventMock;
+	let addEventListenerSpy: jest.SpyInstance;
+	let gtagEventMock: jest.Mock;
 
 	beforeEach( () => {
 		addEventListenerSpy = jest.spyOn( global.document, 'addEventListener' );
 		gtagEventMock = jest.fn();
-		delete global._googlesitekit;
+		deleteSiteKitGlobal();
 		jest.resetModules();
 	} );
 
@@ -31,10 +37,10 @@ describe( 'content-events', () => {
 		addEventListenerSpy.mockRestore();
 	} );
 
-	it( 'imports cleanly when global._googlesitekit is undefined and returns default config', () => {
-		delete global._googlesitekit;
+	it( 'imports cleanly when global._googlesitekit is undefined and returns default config', async () => {
+		deleteSiteKitGlobal();
 
-		const { getContentEventsConfig } = require( './content-events' );
+		const { getContentEventsConfig } = await import( './content-events' );
 
 		expect( getContentEventsConfig() ).toEqual( {
 			postID: 0,
@@ -44,12 +50,12 @@ describe( 'content-events', () => {
 		expect( gtagEventMock ).not.toHaveBeenCalled();
 	} );
 
-	it( 'imports cleanly when global._googlesitekit is present without contentEvents key and returns default config', () => {
+	it( 'imports cleanly when global._googlesitekit is present without contentEvents key and returns default config', async () => {
 		global._googlesitekit = {
 			gtagEvent: gtagEventMock,
 		};
 
-		const { getContentEventsConfig } = require( './content-events' );
+		const { getContentEventsConfig } = await import( './content-events' );
 
 		expect( getContentEventsConfig() ).toEqual( {
 			postID: 0,
@@ -59,7 +65,7 @@ describe( 'content-events', () => {
 		expect( gtagEventMock ).not.toHaveBeenCalled();
 	} );
 
-	it( 'returns published config values when contentEvents is provided', () => {
+	it( 'returns published config values when contentEvents is provided', async () => {
 		global._googlesitekit = {
 			contentEvents: {
 				postID: 42,
@@ -68,7 +74,7 @@ describe( 'content-events', () => {
 			gtagEvent: gtagEventMock,
 		};
 
-		const { getContentEventsConfig } = require( './content-events' );
+		const { getContentEventsConfig } = await import( './content-events' );
 
 		expect( getContentEventsConfig() ).toEqual( {
 			postID: 42,

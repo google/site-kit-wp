@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
+/** The Content Events configuration published by PHP on the frontend. */
+export interface ContentEventsConfig {
+	/** ID of the queried post, or `0` when there isn't one. */
+	postID: number;
+	/** Whether the current request is for a single post. */
+	isSinglePost: boolean;
+}
+
 /**
  * Gets the Content Events configuration.
  *
  * @since n.e.x.t
  *
- * @return {Object} Content events configuration object.
+ * @return {ContentEventsConfig} Content events configuration object.
  */
-export function getContentEventsConfig() {
+export function getContentEventsConfig(): ContentEventsConfig {
 	return {
 		postID: 0,
 		isSinglePost: false,
