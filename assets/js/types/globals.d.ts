@@ -17,6 +17,7 @@
 /**
  * Internal dependencies
  */
+import type { ContentEventsConfig } from '@/js/event-providers/content-events';
 import { GATrackingEventArgs } from './GATrackingEventArgs';
 
 /* eslint-disable no-var */
@@ -37,6 +38,18 @@ declare global {
 
 	// eslint-disable-next-line camelcase
 	var __webpack_public_path__: string;
+
+	// The frontend global shared by the event providers. This is not fully typed
+	// yet. We will keep improving it as we migrate more files that use it.
+	var _googlesitekit:
+		| {
+				contentEvents?: ContentEventsConfig;
+				gtagEvent?: (
+					name: string,
+					data?: Record< string, unknown >
+				) => void;
+		  }
+		| undefined;
 
 	var _googlesitekitAPIFetchData: {
 		nonce: string;
