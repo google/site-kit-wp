@@ -28,8 +28,11 @@ You are writing exactly two sections:
 - **Implementation Brief** — between `## Implementation Brief` and `### Test Coverage`.
 - **Test Coverage** — between `### Test Coverage` and `## QA Brief`.
 
-The **Acceptance criteria** are the contract. Everything in the brief must trace back to one,
-and nothing in the brief may quietly extend them.
+The **Acceptance criteria** are the contract, and they describe observable behavior only: what a
+tester can see by using the feature. The mechanism that produces that behavior is the brief's to
+specify, so expect to add detail the criteria do not carry. Everything in the brief must serve a
+criterion, and the brief may not add behavior a user or a tester would notice that no criterion
+asks for.
 
 **Stop and ask the user** if the acceptance criteria are missing, ambiguous, or contradict each
 other. A brief written over guessed criteria is worse than no brief. Writing the criteria is a
@@ -64,6 +67,14 @@ confirm, by reading it:
 - Hook ordering and firing conditions, whenever the brief depends on them — trace the hook to
   its `do_action()` / `apply_filters()` call site rather than trusting the design doc.
 - Which existing tests, fixtures, snapshots or inline data the change will move.
+- **That the build can compile the kind of file you are about to name.** Open the build config
+  that will include the new file, plus the lint config and `tsconfig.json`. A bundle can define
+  its own rules instead of using the shared `createRules()`:
+  `assets/webpack/frontendModules.config.js` defines a `babel-loader` rule that matches `.js`
+  only, so the first `.ts` file in that bundle needs a new rule, and adding that rule is part of
+  the brief. Check the globals the new file reads in the same pass: `_googlesitekit` has no
+  declaration in `assets/js/types/globals.d.ts`, so a TypeScript file that reads it fails
+  `npm run typecheck` until a declaration is added.
 
 Where the code contradicts the design doc, the code wins: write the brief against reality and
 report the discrepancy (Step 7).
@@ -133,6 +144,33 @@ colon:
 
 ### Content
 
+**Write in plain, simple words — this matters more than anything else in this section.** The
+brief is read by people: the engineer who implements it, the reviewer who grades the PR against
+it, and a moderator who has never read the design doc. Many of them do not speak English as a
+first language. Every sentence must be clear on the first reading:
+
+- **Use the simplest word that is still accurate.** Short sentences. One idea per sentence. No
+  decoration, no "notably", "crucially", "simply", "of course", "elegant", "robust".
+- **No idioms, metaphors, or cultural references.** Not "standard furniture", "dead weight",
+  "burns the flag", "under the hood", "out of the box", "for free", "a natural no-op". Write what
+  actually happens instead: "the listener finds no matching elements, so it does nothing".
+- **Explain a technical term the first time you use it, or do not use it.** "the value lands in
+  an opaque `pathname`" says nothing to the reader. "`hostname` is empty and the whole recipient
+  stays in `pathname` as one unsplit string with no leading slash — `tel:+15551234567` gives
+  `pathname` `+15551234567`" says all of it.
+- **Finish every sentence.** "`https://notwa.me/1555` must not classify" leaves out *as what*.
+  Write "…is not a contact link, so nothing is emitted".
+- **Name who does what to what.** "the classifier short-circuits `outbound_link_click`" can be
+  read in two opposite directions. "when a link is classified as a contact link, the listener
+  emits `contact_link_click` and returns, so the outbound handler never receives that anchor"
+  can be read in only one.
+- **List the members of any set you name.** If you write "an allowlist", "the excluded hosts",
+  "the usual guards", write out what is in it, inline. A set the reader has to guess at is the
+  same as no set at all.
+
+Read each bullet once more before you finish, and rewrite every sentence that needs a second
+reading. This applies to your reply to the user (Step 7) as much as to the issue text.
+
 **Say what to do, and nothing else.** Every bullet is an instruction. Leave a genuine
 implementation choice open rather than inventing a detail, but never leave the implementer to
 search for something the codebase has already decided.
@@ -146,6 +184,14 @@ search for something the codebase has already decided.
   and CSS class names (`mdc-text-field--error`);
 - inline-data globals and keys (`wpPrivacyURL` on `_googlesitekitBaseData`);
 - user-facing strings, quoted verbatim — headings, descriptions, CTA labels, error text.
+
+**Spell out every name you invent.** A brief names things that do not exist yet: constants, config
+keys, event params, methods, variables, types. Write each of them in full words — no abbreviations,
+no truncations, no initials. `readThresholdPct` and `readMinSeconds` each cost the reader a guess:
+what does `Pct` stand for, and is `Min` "minutes" or "minimum"? `readTimeThresholdPercent` and
+`minimumReadTimeSeconds` cost nothing and can only be read one way. The short forms that stay are
+the ones already used across the codebase (`ID`, `URL`, `HTML`) and any existing name, which you
+copy exactly as it is. See `docs/context/php/naming-conventions.md`.
 
 **Point at an exemplar instead of describing one.** "following the pattern in
 `includes/Modules/Analytics_4/Datapoints/`", "following `publications.js`", "following how
@@ -184,6 +230,13 @@ Do **not** include:
 
 Do include, when they apply:
 
+- **The right extension on every new frontend file.** New files on the JavaScript side are
+  written in TypeScript: `.ts`, or `.tsx` when the file returns JSX, with co-located tests as
+  `.test.ts` / `.test.tsx`. Never ask for a new `.js` or `.jsx` file. Name the types the new file
+  exports the same way you name any other symbol — the union of allowed values, the interface a
+  table row must match, the function signature with its return type
+  (`classifyContactLink( anchor: HTMLAnchorElement ): ContactLinkType | null`). An existing `.js`
+  file that the issue only edits stays as it is, unless the issue asks for a rename.
 - The concrete shape of any data the change publishes — array keys, JSON payload, inline-script
   global, selector signature.
 - The exact insertion point when ordering matters: hook priority, array position, above or below
@@ -199,12 +252,14 @@ Keep it short — a handful of bullets, not a test plan. Two shapes, both in use
   * <case>
   * <case>
 
-* JS tests in `<file>.test.js` covering the `<name>` action and the `<name>` selector.
+* JS tests in `<file>.test.ts` covering the `<name>` action and the `<name>` selector.
 ```
 
 - One bullet per test file or area, with the cases nested under it. Name the test file when it
-  exists or its name follows from the source: co-located `*.test.js` / `*.test.tsx` next to the
-  source, `*Test.php` under the mirroring path in `tests/phpunit/integration/`.
+  exists or its name follows from the source: co-located next to the source — `*.test.ts` /
+  `*.test.tsx` for every new test file, `*.test.js` only when you are adding cases to a JavaScript
+  test file that already exists — and `*Test.php` under the mirroring path in
+  `tests/phpunit/integration/`.
 - Phrase each case as the behavior or outcome, not the mechanics — "the privacy policy field
   falls back to the WordPress privacy policy URL when the publication value is missing", not
   "mock the store and assert the input value".
@@ -237,6 +292,12 @@ reply to the user — not in the issue:
 
 - **Write only the two sections.** Leave Feature Description, Acceptance criteria, QA Brief and
   Changelog entry untouched.
+- **Plain, simple words.** No idioms, no metaphors, no unexplained jargon, no half sentences.
+  Name who does what to what, and list the members of every set you name — see Step 5.
+- **New frontend files are TypeScript.** `.ts` / `.tsx` sources, `.test.ts` / `.test.tsx` tests,
+  and a build-config change whenever the bundle cannot compile them yet.
+- **Names are full words.** Every constant, key, param, method and type the brief invents is
+  spelled out — no `Pct`, no `Min`, no initials — see Step 5.
 - **Don't publish.** Do not edit the GitHub issue or post a comment unless the user explicitly
   asks. Produce the text — or update the local issue file you were given — and let them place it.
 - **Don't expand scope.** If a change looks necessary but no acceptance criterion covers it,

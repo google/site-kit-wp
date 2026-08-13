@@ -137,15 +137,46 @@ problem does it solve" for someone who will never read the design doc.
 - **Open with the gap.** What happens today, and where it falls short. Name the concrete thing
   that doesn't cover the case — the existing component, the class, the API behavior.
 - **State what the issue adds**, in one sentence.
-- **Break out the halves** when the work has more than one (server + frontend, two surfaces,
-  markup + asset) using bold run-in headings.
-- **Carry over the load-bearing decisions** the design doc made, and why — the constraint that
-  an acceptance criterion compresses into a single line. "Why the value is stored per-user rather
-  than per-site" lives here.
+- **Split the description** when the work has more than one part (server + frontend, two
+  surfaces, markup + asset), using bold run-in headings.
+- **Carry over the decisions the issue depends on**, and why — the constraint that an acceptance
+  criterion compresses into a single line. "Why the value is stored per-user rather than
+  per-site" lives here.
 - **Prose paragraphs.** No bullets of criteria, no implementation instructions, no file trees.
+
+### Write in plain, simple words
+
+This matters more than anything else in the section. The description is read by people:
+reviewers, moderators, engineers picking the issue up months later. Many of them do not speak
+English as a first language, and none of them should have to read a sentence twice.
+
+- **Use the simplest word that is still accurate.** Short sentences, one idea each. No
+  decoration, no "notably", "crucially", "simply", "of course", "elegant", "robust".
+- **No idioms, metaphors, or cultural references.** "A WhatsApp button is now standard furniture
+  on business sites" is a phrase a reviewer has to decode; "A WhatsApp button is common on
+  business sites" is not. The same goes for "under the hood", "out of the box", "for free",
+  "dead weight", "poisoned", "leaks into".
+- **Explain a technical term the first time you use it, or leave it out.**
+- **Finish every sentence, and name who does what to what.** "the classifier short-circuits
+  `outbound_link_click`" can be read in two opposite directions. "when a link is classified as a
+  contact link, the listener emits `contact_link_click` and stops, so the same click is never
+  also reported as an outbound click" can be read in only one.
+- **Cut the sentence that only sounds good.** If removing it loses no information, remove it.
+
+Read the finished description once more and rewrite every sentence that needs a second reading.
+The same rules apply to the acceptance criteria (Step 6) and to your reply to the user (Step 7).
 
 Do **not** include:
 
+- **Rationale for the shape of the code.** The description says why the feature *behaves* the way
+  it does, for someone who will use it or verify it. Why one listener serves two events, why a
+  check sits in one place rather than two, what the code would have looked like otherwise — that
+  is the Implementation Brief's material, and only where the implementer needs it. "This is a
+  second consumer of one resolution — not a second `closest()` call" and "the short-circuit exists
+  for that privacy reason, not for tidiness" leave the reader with nothing they can act on. Write
+  the behavior and its reason in ordinary words instead: "when a link is already a contact link it
+  sends `contact_link_click` and nothing else, so the phone number in its address is never sent to
+  GA".
 - **Links or paths to local design docs and specs.** They don't resolve for someone reading the
   issue on GitHub. Restate the constraint in a clause instead. External links — Figma, a hosted
   doc, public vendor documentation — are fine.
@@ -157,7 +188,17 @@ Do **not** include:
 ## Step 6 — Write the Acceptance criteria
 
 The criteria are the contract: the Implementation Brief is written against them and the PR is
-graded on them. Every criterion must be checkable by reading the diff or exercising the feature.
+graded on them. Write them for the person who **verifies** the finished feature — the QA engineer
+who will click through the site, and the reviewer checking that nothing is missing. That person
+does not need to know how the code works, so each criterion states something they can observe by
+using the feature: what the user does, what the plugin then does, and what the result contains.
+
+**Keep the mechanism out.** Which class holds the logic, that one delegated listener serves every
+click, that a lookup table drives the matching, which browser API parses the URL — that is the
+Implementation Brief's job, and none of it can be checked by using the feature. "Matching uses
+the parsed `URL.hostname` against an allowlist" tells a tester nothing; "clicking a link to
+`https://notwa.me/1555` sends no event" tells them exactly what to try and what to expect. When
+the criteria drop a rule the implementer still needs, put it in the brief.
 
 ### Shape
 
@@ -175,8 +216,20 @@ Each bullet states an outcome:
 
 - **Lead with the precondition** when the behavior is conditional — "When the module is
   connected and the user has view access (#12345), …".
-- **Name the real thing**: the event name, the config key, the inline-data global, the CSS
-  selector, the param names, the hook, the class.
+- **Name the real thing** — the parts of it that appear in the outcome: the event name and its
+  params, the config key, the inline-data global, the user-facing string, the page it renders on.
+  Name a class, hook or filter when the outcome itself is server behavior someone verifies on the
+  server; do not name the internals that merely produce a visible result. Names the issue invents
+  are spelled out in full words — `character_count`, never `char_cnt`.
+- **Give the input that produces the outcome**, in the form a tester can paste or click: the
+  exact `href`, URL, setting value or sequence of clicks. `https://wa.me/15551234567` is
+  verifiable; "a WhatsApp link with a recipient" is not.
+- **State the whole outcome, not half of it.** "`https://notwa.me/1555` must not classify" leaves
+  out *as what*; "clicking it sends no event" is complete. A criterion the reader has to
+  interpret cannot be graded.
+- **List every case you refer to as a group.** "Share links are excluded" is not checkable until
+  the criterion writes out the share links it means. Give the members inline, or in a table the
+  criterion carries.
 - **Give the values**: `viewContext: 'mainDashboard'`, `dateRange: 'last-28-days'`, `limit: 3`,
   a 300-second cache TTL.
 - **State cardinality** when it matters: "at most once per request", "exactly once per page
@@ -190,10 +243,11 @@ A criterion states the outcome of implementing the brief, and nothing else. Cut:
 
 - **Rationale.** No "because", "since", "so that", "— the same reasoning as X". If a bullet
   explains itself, the explanation belongs in the Feature Description.
-- **Technique.** *How* to match, parse or store something is the brief's job. "The value falls
-  back to the site default when the user setting is unset" is an outcome; "read with
-  `array_key_exists()` rather than `isset()`" is a technique note — keep the outcome and its
-  counter-example ("an explicit `null` is preserved"), drop the note.
+- **Technique and mechanism.** *How* the plugin matches, parses, stores or listens is the brief's
+  job. "The value falls back to the site default when the user setting is unset" is an outcome;
+  "read with `array_key_exists()` rather than `isset()`", "a single delegated listener on
+  `document`", "driven by one lookup table keyed by scheme and host" are mechanism — keep the
+  outcome and its counter-example ("an explicit `null` is preserved"), drop the rest.
 - **Negative parentheticals.** No "(not an `id`)", "(not the raw response)", "rather than
   assumed to be the first entry". State what it *is*.
 - **Restatements.** Name the thing once, in the bullet that defines when it happens. Never add
@@ -227,6 +281,11 @@ Everything you decided, cut or discovered belongs in your reply to the user — 
 
 - **Two sections only.** Leave Implementation Brief, Test Coverage, QA Brief and Changelog entry
   as the template's placeholder comments.
+- **Plain, simple words.** No idioms, no metaphors, no unexplained jargon, no half sentences.
+  Name who does what to what, and list the members of every set you name — see Steps 5 and 6.
+- **Criteria are observable behavior.** Written for whoever verifies the feature by using it, not
+  for whoever writes the code. Anything that can only be checked by reading the source belongs in
+  the Implementation Brief.
 - **An existing Feature Description is untouchable.** When asked to add criteria to an issue that
   already has one, read it and leave it exactly as it is unless explicitly told otherwise.
 - **Don't publish.** Never run `gh issue create` or `gh issue edit`, and never post a comment,
