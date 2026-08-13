@@ -142,7 +142,12 @@ export default function KeyMetricsSetupApp() {
 
 	// Trigger resolution of data availability state before the user proceeds to the dashboard.
 	useSelect( ( select ) => {
-		select( MODULES_ANALYTICS_4 ).isGatheringData();
+		const isConnected = select( CORE_MODULES ).isModuleConnected(
+			MODULE_SLUG_ANALYTICS_4
+		);
+		if ( isConnected ) {
+			select( MODULES_ANALYTICS_4 ).isGatheringData();
+		}
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData();
 	} );
 
@@ -155,7 +160,11 @@ export default function KeyMetricsSetupApp() {
 		const isSyncingAudiences =
 			select( MODULES_ANALYTICS_4 ).isSyncingAudiences();
 
+		const isConnected = select( CORE_MODULES ).isModuleConnected(
+			MODULE_SLUG_ANALYTICS_4
+		);
 		const hasResolvedAnalytics4DataAvailability =
+			! isConnected ||
 			select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'isGatheringData'
 			);

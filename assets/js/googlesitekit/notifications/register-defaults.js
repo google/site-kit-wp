@@ -103,17 +103,39 @@ export const DEFAULT_NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
-		checkRequirements: asyncRequireAll(
-			asyncRequire(
-				false,
-				requireModuleGatheringData( MODULES_ANALYTICS_4 )
-			),
-			asyncRequire(
-				false,
-				requireModuleGatheringData( MODULES_SEARCH_CONSOLE )
-			),
-			requireIsAuthenticatedUser()
-		),
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await resolveSelect( CORE_MODULES ).getModules();
+
+			const isAuthenticated = await requireIsAuthenticatedUser()( {
+				select,
+				resolveSelect,
+			} );
+			if ( ! isAuthenticated ) {
+				return false;
+			}
+
+			const isSearchConsoleGatheringData = await resolveSelect(
+				MODULES_SEARCH_CONSOLE
+			).isGatheringData();
+			if ( isSearchConsoleGatheringData ) {
+				return false;
+			}
+
+			const isAnalyticsConnected = select(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+
+			if ( isAnalyticsConnected ) {
+				const isAnalyticsGatheringData = await resolveSelect(
+					MODULES_ANALYTICS_4
+				).isGatheringData();
+				if ( isAnalyticsGatheringData ) {
+					return false;
+				}
+			}
+
+			return true;
+		},
 		featureFlag: 'setupFlowRefresh',
 	},
 	'activate-analytics-notification': {
