@@ -77,6 +77,8 @@ class Get_PublicationTest extends TestCase {
 
 	/**
 	 * @dataProvider data_missing_required_params
+	 *
+	 * @param string $param The missing parameter.
 	 */
 	public function test_create_request__requires_ids( $param ) {
 		$data = array(
