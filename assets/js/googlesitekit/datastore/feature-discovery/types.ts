@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { ComponentType, LazyExoticComponent, ReactNode } from 'react';
+import type { ComponentType, LazyExoticComponent } from 'react';
 
 /**
  * Internal dependencies
@@ -31,7 +31,7 @@ import type {
 	FEATURE_SETUP_TYPES,
 } from './constants';
 
-export type FeatureCategory =
+export type FeatureCategorySlug =
 	typeof FEATURE_CATEGORIES[ keyof typeof FEATURE_CATEGORIES ];
 
 export type FeatureEffort =
@@ -42,15 +42,30 @@ export type FeatureSetupType =
 
 export interface FeatureScreenshot {
 	src: string;
-	alt?: string;
+	alt: string;
+	width: number;
+	height: number;
 }
 
 export interface FeatureDetail {
-	description?: ReactNode;
-	requirements?: ReactNode;
+	description?: {
+		whatIs?: string;
+		whyUseHeading?: string;
+		whyUseList?: {
+			term: string;
+			description: string;
+		}[];
+	};
+	requirements?: {
+		serviceRequirements?: string;
+		setupList?: string[];
+		setupComplete?: string;
+	};
 	screenshots?: FeatureScreenshot[];
 }
 
+// TODO: Replace this with the success notice component's own props once that
+// component exists, so the entry mirrors them directly.
 export interface FeatureSuccessNotice {
 	title: string;
 	description?: string;
@@ -66,13 +81,13 @@ export interface FeatureSuccessNotice {
 export interface FeatureSetup {
 	type: FeatureSetupType;
 	ctaLabel?: string;
-	// `setup-flow`: the module to activate.
+	// The module to activate, for `setup-flow` features.
 	moduleSlug?: string;
-	// `setup-flow`: target override for flows that are not module activation.
+	// Target override for `setup-flow` features that are not module activation.
 	getSetupURL?: ( select: Select ) => string | undefined;
-	// `background-toggle`: the feature's enable routine.
+	// The enable routine for `background-toggle` features.
 	activate?: ( ...args: never[] ) => unknown;
-	// `in-place-panel`: opens the feature's existing surface over the hub.
+	// Opens the existing surface over the hub, for `in-place-panel` features.
 	open?: ( ...args: never[] ) => unknown;
 	// Completion check, overriding the default module-connected check.
 	isEnabled?: ( select: Select ) => boolean | undefined;
@@ -89,7 +104,7 @@ export interface FeatureSettings {
 	// The modules the feature depends on but does not itself set up.
 	prerequisiteModules?: string[];
 	// In order, the first being the feature's primary category.
-	goalCategories: FeatureCategory[];
+	goalCategories: FeatureCategorySlug[];
 	addedInVersion: string;
 	setup: FeatureSetup;
 	// Hides the feature entirely when it returns false. Visible by default.
@@ -106,8 +121,8 @@ export interface Feature extends FeatureSettings {
 	badges: string[];
 }
 
-export interface FeatureCategoryDefinition {
-	slug: FeatureCategory;
+export interface FeatureCategory {
+	slug: FeatureCategorySlug;
 	title: string;
 }
 
