@@ -1716,6 +1716,110 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).not.toBeInTheDocument();
 	} );
 
+	it( 'renders the deactivated plugin notice on a tab whose form plugin is no longer active', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [ 'contact-form-7' ],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedBreakdown( {
+			formIDs: [ '5' ],
+			formProviders: { 5: 'wpforms' },
+		} );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: { 5: { title: 'Contact' } },
+			status: 200,
+		} );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
+
+		const { getByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Form plugin no longer found' )
+		).toBeInTheDocument();
+	} );
+
+	it( "renders no deactivated plugin notice while the tab's form plugin is active", async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [ 'wpforms' ],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedBreakdown( {
+			formIDs: [ '5' ],
+			formProviders: { 5: 'wpforms' },
+		} );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: { 5: { title: 'Contact' } },
+			status: 200,
+		} );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
+
+		const { queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			queryByText( 'Form plugin no longer found' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders no deactivated plugin notice for a tab whose form has no known plugin', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedBreakdown( { formIDs: [ '5' ] } );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: { 5: { title: 'Contact' } },
+			status: 200,
+		} );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
+
+		const { queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			queryByText( 'Form plugin no longer found' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders no deactivated plugin notice in the aggregated state', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		// The `beforeEach` block stores an empty breakdown discovery report, so
+		// the widget finds no form value and draws no tab bar.
+		seedReadyReports();
+
+		const { queryByRole, queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( queryByRole( 'tab' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Form plugin no longer found' )
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'keeps the same widget element across re-renders', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )

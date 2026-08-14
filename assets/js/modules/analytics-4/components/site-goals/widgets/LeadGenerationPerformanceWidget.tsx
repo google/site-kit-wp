@@ -46,6 +46,7 @@ import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goal
 import BreakdownTabs, {
 	BreakdownTab,
 } from '@/js/modules/analytics-4/components/site-goals/components/BreakdownTabs';
+import EventProviderDeactivatedNotice from '@/js/modules/analytics-4/components/site-goals/components/EventProviderDeactivatedNotice';
 import GatheringBreakdownDataBadge from '@/js/modules/analytics-4/components/site-goals/components/GatheringBreakdownDataBadge';
 import KeyActionTiles from '@/js/modules/analytics-4/components/site-goals/components/KeyActionTiles';
 import OtherSourcesNotice from '@/js/modules/analytics-4/components/site-goals/components/OtherSourcesNotice';
@@ -53,6 +54,7 @@ import PartialDataBadge from '@/js/modules/analytics-4/components/site-goals/com
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import {
 	BREAKDOWN_ORIGIN_WIDGET,
+	SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS,
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
@@ -84,20 +86,6 @@ interface LeadGenerationPerformanceWidgetProps extends WidgetComponentProps {
 	/** Set by `withIntersectionObserver` once the widget is in view. */
 	hasBeenInView?: boolean;
 }
-
-// Maps a lead-form event provider slug (the `googlesitekit_event_provider`
-// dimension value carried on every form conversion event) to its plugin's
-// display name, so the form tooltip can name the source from the report alone.
-// Keep this in sync with the lead-form providers in `assets/js/event-providers/`:
-// a slug missing here silently omits the form tab's source tooltip.
-const LEAD_PROVIDER_LABELS: Record< string, string > = {
-	'contact-form-7': 'Contact Form 7',
-	'ninja-forms': 'Ninja Forms',
-	wpforms: 'WPForms',
-	mailchimp: 'Mailchimp for WordPress',
-	'popup-maker': 'Popup Maker',
-	'optin-monster': 'OptinMonster',
-};
 
 // Builds the info-tooltip for a form tab. Has three variants depending on how
 // many pages the form was seen on, and falls back to the plugin-only variant
@@ -189,7 +177,7 @@ function getFormBreakdownTabs(
 		// display name for the tooltip.
 		const providerSlug = formProviders?.[ formID ];
 		const plugin = providerSlug
-			? LEAD_PROVIDER_LABELS[ providerSlug ]
+			? SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS[ providerSlug ]
 			: undefined;
 
 		return {
@@ -393,6 +381,7 @@ const LeadGenerationPerformanceWidget = forwardRef<
 			activeTabID,
 			setSelectedTab,
 			isOtherSourcesTab,
+			isBreakdownValueTab,
 			hasOtherSources,
 			otherSourcesCount,
 			otherSourcesPreviousCount,
@@ -599,16 +588,29 @@ const LeadGenerationPerformanceWidget = forwardRef<
 				collapsible
 			>
 				{ breakdownTabs && (
-					<BreakdownTabs
-						tabs={ breakdownTabs }
-						activeTabID={ activeTabID }
-						onTabChange={ handleTabChange }
-						showOtherSources={ hasOtherSources }
-						otherSourcesLabel={ __(
-							'Other form completions',
-							'google-site-kit'
+					<Fragment>
+						<BreakdownTabs
+							tabs={ breakdownTabs }
+							activeTabID={ activeTabID }
+							onTabChange={ handleTabChange }
+							showOtherSources={ hasOtherSources }
+							otherSourcesLabel={ __(
+								'Other form completions',
+								'google-site-kit'
+							) }
+						/>
+
+						{ /* `breakdownTabs` stays undefined until the form titles
+					     resolve, so the notice sits inside it and reaches the
+					     screen with the tab bar. Each tab is one form, and
+					     `formProviders` gives the slug of the plugin that made
+					     that form. */ }
+						{ isBreakdownValueTab && (
+							<EventProviderDeactivatedNotice
+								providerSlug={ formProviders?.[ activeTabID ] }
+							/>
 						) }
-					/>
+					</Fragment>
 				) }
 
 				{ isOtherSourcesTab && (
