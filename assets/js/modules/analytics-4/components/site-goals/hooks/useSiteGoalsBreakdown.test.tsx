@@ -173,9 +173,22 @@ describe( 'useSiteGoalsBreakdown', () => {
 		);
 
 		expect( result.current.activeTabID ).toBe( '5' );
+		expect( result.current.isBreakdownValueTab ).toBe( true );
 		expect( result.current.breakdownFilter ).toEqual( {
 			[ FORM_DIMENSION ]: '5',
 		} );
+	} );
+
+	it( 'reports no value tab in the aggregated state', () => {
+		seedDiscoveryReport( [] );
+
+		const { result } = renderHook(
+			() => useSiteGoalsBreakdown( GOAL_TYPES.LEAD ),
+			{ registry }
+		);
+
+		expect( result.current.hasBreakdownTabs ).toBe( false );
+		expect( result.current.isBreakdownValueTab ).toBe( false );
 	} );
 
 	it( 'exposes the unattributed count and no section filter for the Other sources tab', () => {
@@ -201,6 +214,7 @@ describe( 'useSiteGoalsBreakdown', () => {
 		} );
 
 		expect( result.current.isOtherSourcesTab ).toBe( true );
+		expect( result.current.isBreakdownValueTab ).toBe( false );
 		// The Other sources tab drives its single metric from the count, so it
 		// produces no section filter.
 		expect( result.current.breakdownFilter ).toBeUndefined();
