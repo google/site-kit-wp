@@ -387,9 +387,9 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 		$datapoints['GET:publications'] = new Get_Publications_Legacy(
 			array(
-				'options'                 => $this->options,
-				'service'                 => fn() => $this->get_service( 'subscribewithgoogle' ),
-				'settings'                => $settings,
+				'options'  => $this->options,
+				'service'  => fn() => $this->get_service( 'subscribewithgoogle' ),
+				'settings' => $settings,
 			)
 		);
 
@@ -407,9 +407,9 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 			$datapoints['GET:publications'] = new Get_Publications(
 				array(
-					'options'                 => $this->options,
-					'service'                 => fn() => $this->get_service( 'webcontentpublisher' ),
-					'settings'                => $settings,
+					'options'  => $this->options,
+					'service'  => fn() => $this->get_service( 'webcontentpublisher' ),
+					'settings' => $settings,
 				)
 			);
 
