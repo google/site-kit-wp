@@ -218,7 +218,7 @@
 	 * @since 1.158.0
 	 * @since n.e.x.t Changed to read the store's decimal places from the page data.
 	 *
-	 * @param {string} price The price to parse.
+	 * @param {number} price The price to parse.
 	 * @return {number} The price of the product with decimals.
 	 */
 	function formatPrice( price ) {

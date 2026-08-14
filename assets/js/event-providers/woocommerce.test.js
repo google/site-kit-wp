@@ -65,14 +65,20 @@ function createOrder( price ) {
  *
  * @since n.e.x.t
  *
- * @param {Object} wcdata The page data, as `window._googlesitekit.wcdata`.
+ * @param {Object} wcdata     The page data, as `window._googlesitekit.wcdata`.
+ * @param {Object} [handlers] Filled with each handler the script binds, keyed by event name.
  * @return {Function} The `gtagEvent` mock, with one call per event the script sent.
  */
-async function loadEventScript( wcdata ) {
+async function loadEventScript( wcdata, handlers = {} ) {
 	const gtagEvent = jest.fn();
 
 	// The script returns at once when `jQuery` is missing, so every case needs this fake.
-	global.jQuery = () => ( { on: jest.fn(), each: jest.fn() } );
+	global.jQuery = () => ( {
+		on: ( eventName, handler ) => {
+			handlers[ eventName ] = handler;
+		},
+		each: jest.fn(),
+	} );
 	global._googlesitekit = { gtagEvent, wcdata };
 
 	await import( './woocommerce' );
@@ -164,6 +170,42 @@ describe( 'WooCommerce conversion event provider', () => {
 			'add_to_cart',
 			expect.objectContaining( { value: 49.99 } )
 		);
+		expect( gtagEvent ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	it( 'should send an `add_to_cart` value at four decimals on the AJAX `added_to_cart` event', async () => {
+		const handlers = {};
+		const gtagEvent = await loadEventScript(
+			{
+				currency: 'USD',
+				currencyMinorUnit: 4,
+				eventsToTrack: [ 'add_to_cart', 'purchase' ],
+				products: [ createProduct( 123456 ) ],
+			},
+			handlers
+		);
+
+		expect( gtagEvent ).not.toHaveBeenCalled();
+
+		handlers.added_to_cart( {}, {}, '', {
+			jquery: '3.7.1',
+			data: () => 42,
+		} );
+
+		expect( gtagEvent ).toHaveBeenCalledWith( 'add_to_cart', {
+			value: 12.3456,
+			currency: 'USD',
+			items: [
+				{
+					item_id: 42,
+					item_name: 'Site Kit T-Shirt',
+					item_category: 'Clothing',
+					price: 12.3456,
+					quantity: 1,
+				},
+			],
+			googlesitekit_event_provider: 'woocommerce',
+		} );
 		expect( gtagEvent ).toHaveBeenCalledTimes( 1 );
 	} );
 } );
