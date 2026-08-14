@@ -28,14 +28,17 @@ jest.mock(
 	'@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/PoweredBy',
 	() => () => null
 );
+jest.mock(
+	'@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationPolicies',
+	() => () => <p>Publication policies</p>
+);
 
 const STEP_CONTENT = {
 	[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]:
 		'RRM express setup placeholder: publication setup step.',
 	[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]:
 		'RRM express setup placeholder: terms of service step.',
-	[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]:
-		'RRM express setup placeholder: publication policies step.',
+	[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: 'Publication policies',
 	[ EXPRESS_SETUP_STEPS.SETUP_CTA ]:
 		'RRM express setup placeholder: newsletter CTA setup step.',
 	[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]:

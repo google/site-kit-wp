@@ -811,6 +811,7 @@ final class Assets {
 			'webStoriesActive' => defined( 'WEBSTORIES_VERSION' ),
 			'postTypes'        => $this->get_post_types(),
 			'storagePrefix'    => $this->get_storage_prefix(),
+			'wpPrivacyURL'     => get_privacy_policy_url(),
 			'referenceDate'    => Date::reference_date(),
 			'productPostType'  => $this->get_product_post_type(),
 		);

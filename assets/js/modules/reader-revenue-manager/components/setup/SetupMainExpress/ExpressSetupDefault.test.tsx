@@ -25,14 +25,16 @@ import { render } from '@tests/js/test-utils';
 import ExpressSetupDefault from './ExpressSetupDefault';
 
 jest.mock( './PoweredBy', () => () => null );
+jest.mock( './common-steps/StepPublicationPolicies', () => () => (
+	<p>Publication policies</p>
+) );
 
 const STEP_CONTENT = {
 	[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]:
 		'RRM express setup placeholder: publication setup step.',
 	[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]:
 		'RRM express setup placeholder: terms of service step.',
-	[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]:
-		'RRM express setup placeholder: publication policies step.',
+	[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: 'Publication policies',
 	[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]:
 		'RRM express setup placeholder: setup complete step.',
 };
