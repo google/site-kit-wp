@@ -85,9 +85,11 @@ if ( ! function_exists( 'is_wc_endpoint_url' ) ) {
 	 *
 	 * @since n.e.x.t
 	 *
+	 * @param string|false $endpoint The endpoint to look for, such as `order-received`. This fake ignores it.
 	 * @return bool WooCommerce registers no endpoint here, so this is always `false`.
 	 */
-	function is_wc_endpoint_url() {
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- The fake takes the argument to match WooCommerce, and never reads it.
+	function is_wc_endpoint_url( $endpoint = false ) {
 		return false;
 	}
 }
