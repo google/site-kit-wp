@@ -291,9 +291,28 @@ class Conversion_TrackingTest extends TestCase {
 		$this->assertArrayHasKey( 'hasActiveLeadEventProviders', $data, 'Inline base data should include active lead provider flag.' );
 		$this->assertArrayHasKey( 'hasActiveEcommerceEventProviders', $data, 'Inline base data should include active ecommerce provider flag.' );
 		$this->assertArrayHasKey( 'hasMultipleActiveEcommerceEventProviders', $data, 'Inline base data should include multiple ecommerce provider flag.' );
+		$this->assertArrayHasKey( 'activeConversionEventProviders', $data, 'Inline base data should include the active provider slugs.' );
 		$this->assertFalse( $data['hasActiveLeadEventProviders'], 'Lead provider flag should be false with no active providers.' );
 		$this->assertFalse( $data['hasActiveEcommerceEventProviders'], 'Ecommerce provider flag should be false with no active providers.' );
 		$this->assertFalse( $data['hasMultipleActiveEcommerceEventProviders'], 'Multiple ecommerce flag should be false with no active providers.' );
+		$this->assertEquals( array(), $data['activeConversionEventProviders'], 'inline_js_base_data() should list no slugs with no active providers.' );
+	}
+
+	public function test_inline_js_base_data__leaves_out_an_inactive_provider_slug() {
+		Conversion_Tracking::$providers = array(
+			FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG        => FakeConversionEventProvider::class,
+			FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeConversionEventProvider_Active::class,
+		);
+
+		$this->conversion_tracking->register();
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		$this->assertEquals(
+			array( 'fake-conversion-event-provider-active' ),
+			$data['activeConversionEventProviders'],
+			'inline_js_base_data() should list the slug of the active provider and leave out the inactive one.'
+		);
 	}
 
 	public function test_inline_js_base_data__with_active_lead_provider() {
@@ -307,6 +326,7 @@ class Conversion_TrackingTest extends TestCase {
 
 		$this->assertTrue( $data['hasActiveLeadEventProviders'], 'Lead provider flag should be true with active lead provider.' );
 		$this->assertFalse( $data['hasActiveEcommerceEventProviders'], 'Ecommerce provider flag should be false with only lead provider.' );
+		$this->assertEquals( array( 'contact-form-7' ), $data['activeConversionEventProviders'], 'inline_js_base_data() should list the active lead provider slug.' );
 	}
 
 	public function test_inline_js_base_data__with_active_ecommerce_provider() {
@@ -336,6 +356,11 @@ class Conversion_TrackingTest extends TestCase {
 
 		$this->assertTrue( $data['hasActiveEcommerceEventProviders'], 'Ecommerce provider flag should be true with active providers.' );
 		$this->assertTrue( $data['hasMultipleActiveEcommerceEventProviders'], 'Multiple ecommerce flag should be true with multiple providers.' );
+		$this->assertEquals(
+			array( 'woocommerce', 'easy-digital-downloads' ),
+			$data['activeConversionEventProviders'],
+			'inline_js_base_data() should list a slug for each active ecommerce provider.'
+		);
 	}
 
 	public function test_inline_js_base_data__with_both_active_providers() {
@@ -350,6 +375,11 @@ class Conversion_TrackingTest extends TestCase {
 
 		$this->assertTrue( $data['hasActiveLeadEventProviders'], 'Lead provider flag should be true with both provider types.' );
 		$this->assertTrue( $data['hasActiveEcommerceEventProviders'], 'Ecommerce provider flag should be true with both provider types.' );
+		$this->assertEquals(
+			array( 'contact-form-7', 'woocommerce' ),
+			$data['activeConversionEventProviders'],
+			'inline_js_base_data() should list a slug for an active provider of either category.'
+		);
 	}
 
 	public function test_get_active_provider_categories__no_active_providers() {
