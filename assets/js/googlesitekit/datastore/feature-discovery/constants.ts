@@ -39,10 +39,11 @@ export const FEATURE_CATEGORY_ORDER = [
 	FEATURE_CATEGORIES.PRODUCTIVITY,
 ] as const;
 
+// Low is "Just a few clicks", medium "A short setup", high "In depth setup".
 export const FEATURE_EFFORTS = {
-	JUST_A_FEW_CLICKS: 1,
-	SHORT_SETUP: 2,
-	IN_DEPTH_SETUP: 3,
+	LOW: 1,
+	MEDIUM: 2,
+	HIGH: 3,
 } as const;
 
 export const FEATURE_SETUP_TYPES = {
