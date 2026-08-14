@@ -1,7 +1,7 @@
 /**
- * Email Reporting constants
+ * Features Menu constants
  *
- * Site Kit by Google, Copyright 2025 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,12 @@
  * limitations under the License.
  */
 
-export const USER_SETTINGS_SELECTION_PANEL_OPENED_KEY =
-	'emailReportingUserSettingsSelectionPanelOpened';
-
 /**
- * Class name on the header button that opens the email reports panel.
+ * Class name on the header button that opens the features menu.
  *
- * The setup tooltip anchors to this button, so the class is shared rather than
- * repeated as a selector string.
+ * The email reports setup tooltip anchors to this button on mobile and
+ * tablet, so the class is shared rather than repeated as a selector string.
  *
  * @since n.e.x.t
  */
-export const MANAGE_EMAIL_REPORTS_BUTTON_CLASS =
-	'googlesitekit-manage-email-reports__button';
+export const FEATURES_MENU_BUTTON_CLASS = 'googlesitekit-features-menu__button';

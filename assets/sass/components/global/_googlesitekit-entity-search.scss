@@ -143,9 +143,14 @@
 		}
 
 		.mdc-button__label {
+			// The label truncates rather than wrapping when the crowded header
+			// squeezes it; a zero line height would clip the truncated text.
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
 
 			@media (min-width: $bp-tablet) {
-				line-height: 0;
+				line-height: 1;
 			}
 
 			+ svg {
