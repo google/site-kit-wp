@@ -1811,6 +1811,127 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		).not.toBeInTheDocument();
 	} );
 
+	it( 'renders the deactivated plugin notice on a tab whose plugin is no longer active', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [ 'easy-digital-downloads' ],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		seedBreakdown( { providerValues: [ 'woocommerce' ] } );
+		seedTabbedReports( { [ PROVIDER_DIMENSION ]: 'woocommerce' } );
+
+		const { getByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Online store plugin no longer found' )
+		).toBeInTheDocument();
+	} );
+
+	it( "renders no deactivated plugin notice while the tab's plugin is active", async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [ 'woocommerce' ],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		seedBreakdown( { providerValues: [ 'woocommerce' ] } );
+		seedTabbedReports( { [ PROVIDER_DIMENSION ]: 'woocommerce' } );
+
+		const { queryByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			queryByText( 'Online store plugin no longer found' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders no deactivated plugin notice on the Other sources tab', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		seedBreakdown( { providerValues: [ 'woocommerce' ] } );
+		seedTabbedReports( { [ PROVIDER_DIMENSION ]: 'woocommerce' } );
+		const dates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( { compare: true } );
+		provideAnalytics4MockReport(
+			registry,
+			buildPrimaryEventReportOptions(
+				dates,
+				ENUM_CONVERSION_EVENTS.PURCHASE
+			)
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+
+		const { getByRole, getByText, queryByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Online store plugin no longer found' )
+		).toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'tab', { name: 'Other sources' } ) );
+
+		await waitFor( () => {
+			expect(
+				queryByText( 'Online store plugin no longer found' )
+			).not.toBeInTheDocument();
+		} );
+	} );
+
+	it( 'renders no deactivated plugin notice in the aggregated state', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const dates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( { compare: true } );
+		provideAnalytics4MockReport(
+			registry,
+			buildPrimaryEventReportOptions(
+				dates,
+				ENUM_CONVERSION_EVENTS.PURCHASE
+			)
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const { queryByRole, queryByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( queryByRole( 'tab' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Online store plugin no longer found' )
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'keeps the same widget element across re-renders', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )

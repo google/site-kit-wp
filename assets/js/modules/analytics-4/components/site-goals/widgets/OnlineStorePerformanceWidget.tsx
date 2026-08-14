@@ -44,6 +44,7 @@ import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import useViewContext from '@/js/hooks/useViewContext';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import BreakdownTabs from '@/js/modules/analytics-4/components/site-goals/components/BreakdownTabs';
+import EventProviderDeactivatedNotice from '@/js/modules/analytics-4/components/site-goals/components/EventProviderDeactivatedNotice';
 import GatheringBreakdownDataBadge from '@/js/modules/analytics-4/components/site-goals/components/GatheringBreakdownDataBadge';
 import KeyActionTiles from '@/js/modules/analytics-4/components/site-goals/components/KeyActionTiles';
 import OtherSourcesNotice from '@/js/modules/analytics-4/components/site-goals/components/OtherSourcesNotice';
@@ -311,6 +312,7 @@ const OnlineStorePerformanceWidget = forwardRef<
 			activeTabID,
 			setSelectedTab,
 			isOtherSourcesTab,
+			isBreakdownValueTab,
 			hasOtherSources,
 			otherSourcesCount,
 			otherSourcesPreviousCount,
@@ -480,6 +482,14 @@ const OnlineStorePerformanceWidget = forwardRef<
 							'Other sources',
 							'google-site-kit'
 						) }
+					/>
+				) }
+
+				{ /* Each tab is one ecommerce provider, so the tab ID is that
+			     provider's slug. */ }
+				{ isBreakdownValueTab && (
+					<EventProviderDeactivatedNotice
+						providerSlug={ activeTabID }
 					/>
 				) }
 
