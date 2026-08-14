@@ -382,14 +382,12 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		$settings                = $this->get_settings();
-		$search_console_settings = new Search_Console_Settings( $this->options );
-
+		$settings   = $this->get_settings();
 		$datapoints = array();
 
 		$datapoints['GET:publications'] = new Get_Publications_Legacy(
 			array(
-				'search_console_settings' => $search_console_settings,
+				'options'                 => $this->options,
 				'service'                 => fn() => $this->get_service( 'subscribewithgoogle' ),
 				'settings'                => $settings,
 			)
@@ -409,7 +407,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 			$datapoints['GET:publications'] = new Get_Publications(
 				array(
-					'search_console_settings' => $search_console_settings,
+					'options'                 => $this->options,
 					'service'                 => fn() => $this->get_service( 'webcontentpublisher' ),
 					'settings'                => $settings,
 				)

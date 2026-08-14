@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints;
 use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Publication_Normalizer;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
@@ -31,12 +32,12 @@ use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
 class Get_Publications extends Datapoint implements Executable_Datapoint {
 
 	/**
-	 * Search Console settings.
+	 * Options instance.
 	 *
 	 * @since n.e.x.t
-	 * @var Search_Console_Settings
+	 * @var Options
 	 */
-	private $search_console_settings;
+	private $options;
 
 	/**
 	 * Reader Revenue Manager settings.
@@ -56,8 +57,8 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	public function __construct( array $definition ) {
 		parent::__construct( $definition );
 
-		$this->search_console_settings = $definition['search_console_settings'];
-		$this->settings                = $definition['settings'];
+		$this->options  = $definition['options'];
+		$this->settings = $definition['settings'];
 	}
 
 	/**
@@ -151,7 +152,8 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	 * @return string Permutations for site hosts or URL.
 	 */
 	private function get_publication_filter() {
-		$property_id = $this->search_console_settings->get()['propertyID'];
+		$sc_settings = $this->options->get( Search_Console_Settings::OPTION );
+		$property_id = $sc_settings['propertyID'];
 
 		if ( 0 === strpos( $property_id, 'sc-domain:' ) ) { // Domain property.
 			$host   = str_replace( 'sc-domain:', '', $property_id );

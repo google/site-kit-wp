@@ -318,15 +318,15 @@ class Get_PublicationsTest extends TestCase {
 	}
 
 	private function get_datapoint( Reader_Revenue_Manager $module, $property_id = 'https://example.com' ) {
-		$client                  = $module->get_client();
-		$search_console_settings = new Search_Console_Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$search_console_settings->set( array( 'propertyID' => $property_id ) );
+		$client  = $module->get_client();
+		$options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$options->set( Search_Console_Settings::OPTION, array( 'propertyID' => $property_id ) );
 
 		return new Get_Publications(
 			array(
-				'search_console_settings' => $search_console_settings,
-				'service'                 => fn () => new Webcontentpublisher( $client ),
-				'settings'                => $module->get_settings(),
+				'options'  => $options,
+				'service'  => fn () => new Webcontentpublisher( $client ),
+				'settings' => $module->get_settings(),
 			)
 		);
 	}
