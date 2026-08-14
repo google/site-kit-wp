@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { Story } from '@/js/types/Story';
 import TextField from './TextField';
 
 function Template() {
@@ -55,13 +56,12 @@ function Template() {
 						value="https://www.sitekitbygoogle.com"
 						helperText="Helper Text"
 						outlined
-						helperTextPersistent
 					/>
 				</div>
 
 				<div style={ { marginBottom: '50px' } }>
 					<TextField
-						label="With Error Message Off the Screen"
+						label="With Screen Reader Error Message"
 						name="textfield"
 						value="https://www.sitekitbygoogle.com"
 						errorMessage="Only a screen reader reads this error message."
@@ -94,7 +94,7 @@ function Template() {
 	);
 }
 
-export const Default = Template.bind( {} );
+export const Default = Template.bind( {} ) as Story;
 Default.storyName = 'Text Fields';
 Default.scenario = {};
 

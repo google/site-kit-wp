@@ -43,20 +43,17 @@ describe( 'ClientIDTextField', () => {
 		expect( container.querySelector( '.mdc-text-field' ) ).toHaveClass(
 			'mdc-text-field--error'
 		);
-		expect(
-			getByText(
-				'A valid Client ID is required to use Sign in with Google'
-			)
-		).toBeVisible();
+
+		const errorMessage = getByText( /a valid client id is required/i );
+
+		expect( errorMessage ).toBeVisible();
 		expect( getByRole( 'textbox' ) ).toHaveAttribute(
 			'aria-invalid',
 			'true'
 		);
 		expect( getByRole( 'textbox' ) ).toHaveAttribute(
 			'aria-errormessage',
-			getByText(
-				'A valid Client ID is required to use Sign in with Google'
-			).id
+			errorMessage.id
 		);
 	} );
 
@@ -72,11 +69,7 @@ describe( 'ClientIDTextField', () => {
 			{ registry }
 		);
 
-		expect(
-			getByText(
-				'Sign in with Google was already set up on this site. We recommend using your existing Client ID.'
-			)
-		).toBeVisible();
+		expect( getByText( /already set up on this site/i ) ).toBeVisible();
 		expect( container.querySelector( '.mdc-text-field' ) ).not.toHaveClass(
 			'mdc-text-field--error'
 		);

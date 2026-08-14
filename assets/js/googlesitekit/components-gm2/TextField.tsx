@@ -55,12 +55,13 @@ export interface TextFieldProps {
 	leadingIcon?: ReactElement;
 	/** Icon element shown after the input. The warning icon takes its place while the field holds an error. */
 	trailingIcon?: ReactElement;
-	/** Text shown under the field. A visible `errorMessage` takes the helper line instead. */
+	/** Text shown under the field. A visible `errorMessage` replaces it. */
 	helperText?: ReactNode;
 	/**
 	 * Error the field shows under the input, with the error outline and the
-	 * warning icon. With `hasError` set too, the message moves off the screen.
-	 * The input names the message in `aria-errormessage` and `aria-describedby`.
+	 * warning icon. With `hasError` set too, only a screen reader reads the
+	 * message. The input names the message in `aria-errormessage` and
+	 * `aria-describedby`.
 	 */
 	errorMessage?: ReactNode;
 	/**
@@ -81,7 +82,7 @@ export interface TextFieldProps {
 	maxLength?: number;
 	/** The input's `tabindex` attribute, which sets its place in the keyboard order. */
 	tabIndex?: number;
-	/** Whether the input stops taking typing and focus. */
+	/** Whether the input is disabled, so nobody can type in it or focus it. */
 	disabled?: boolean;
 	/** Called when the input's value changes, so the caller can store the new value. */
 	onChange?: ( event: ChangeEvent< HTMLInputElement > ) => void;
@@ -117,11 +118,12 @@ const TextField: FC< TextFieldProps > = ( {
 	const idFallback = useInstanceId( TextField, 'googlesitekit-textfield' );
 	const inputID = id || `${ idFallback }`;
 	const errorMessageID = `${ inputID }-error-message`;
+	const linkedErrorMessageID = errorMessage ? errorMessageID : undefined;
 
 	const isInvalid = !! hasError || !! errorMessage;
-	// The error outline and the warning icon come from `isInvalid`, so these two props
-	// only decide where the error message goes: under the field when `errorMessage` is
-	// set on its own, and off screen when `hasError` is set too.
+	// The error outline and the warning icon come from `isInvalid`, so `errorMessage`
+	// and `hasError` only decide where the error message goes: under the field when
+	// `errorMessage` is set on its own, and off screen when `hasError` is set too.
 	const isErrorMessageVisible = !! errorMessage && ! hasError;
 	const isErrorMessageHidden = !! errorMessage && !! hasError;
 
@@ -170,12 +172,8 @@ const TextField: FC< TextFieldProps > = ( {
 					onChange={ onChange }
 					onKeyDown={ onKeyDown }
 					aria-invalid={ isInvalid || undefined }
-					aria-errormessage={
-						errorMessage ? errorMessageID : undefined
-					}
-					aria-describedby={
-						errorMessage ? errorMessageID : undefined
-					}
+					aria-errormessage={ linkedErrorMessageID }
+					aria-describedby={ linkedErrorMessageID }
 				/>
 			</MaterialTextField>
 			{ isErrorMessageHidden && (

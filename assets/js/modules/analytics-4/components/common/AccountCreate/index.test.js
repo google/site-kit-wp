@@ -60,6 +60,12 @@ const REGEX_REST_CONVERSION_TRACKING_SETTINGS = new RegExp(
 	'^/google-site-kit/v1/core/site/data/conversion-tracking'
 );
 
+const FIELD_ERRORS = [
+	[ 'Account', 'An account name is required.' ],
+	[ 'Property', 'A property name is required.' ],
+	[ 'Web data stream', 'A web data stream name is required.' ],
+];
+
 describe( 'AccountCreate', () => {
 	mockLocation();
 	// Provide our own version of the `useInstanceId()` hook to avoid instability in test snapshots.
@@ -135,12 +141,8 @@ describe( 'AccountCreate', () => {
 		).toBeInTheDocument();
 	} );
 
-	it.each( [
-		[ 'Account', 'An account name is required.' ],
-		[ 'Property', 'A property name is required.' ],
-		[ 'Web data stream', 'A web data stream name is required.' ],
-	] )(
-		'keeps the message for the %s field off the screen and marks the input invalid when the field is empty',
+	it.each( FIELD_ERRORS )(
+		'should hide the %s field message from sight and mark the input invalid when the field is empty',
 		async ( label, message ) => {
 			registry.dispatch( CORE_FORMS ).setValues( FORM_ACCOUNT_CREATE, {
 				accountName: '',
@@ -171,12 +173,8 @@ describe( 'AccountCreate', () => {
 		}
 	);
 
-	it.each( [
-		[ 'Account', 'An account name is required.' ],
-		[ 'Property', 'A property name is required.' ],
-		[ 'Web data stream', 'A web data stream name is required.' ],
-	] )(
-		'leaves the %s field valid and renders no error message when the field holds a name',
+	it.each( FIELD_ERRORS )(
+		'should leave the %s field valid and render no error message when the field holds a name',
 		async ( label, message ) => {
 			const { getByRole, queryByText, waitForRegistry } = render(
 				<AccountCreate />,

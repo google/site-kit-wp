@@ -44,6 +44,7 @@ import {
 	isValidPropertyID,
 	isValidWebDataStreamName,
 } from '@/js/modules/analytics-4/utils/validation';
+import { WEB_DATA_STREAM_NAME_REQUIRED_MESSAGE } from './constants';
 
 export default function WebDataStreamNameInput() {
 	const propertyID = useSelect( ( select ) =>
@@ -97,10 +98,7 @@ export default function WebDataStreamNameInput() {
 			'google-site-kit'
 		);
 	} else if ( ! webDataStreamName ) {
-		errorMessage = __(
-			'A web data stream name is required.',
-			'google-site-kit'
-		);
+		errorMessage = WEB_DATA_STREAM_NAME_REQUIRED_MESSAGE;
 	} else if ( ! isValidWebDataStreamName( webDataStreamName ) ) {
 		errorMessage = __(
 			'This is not a valid web data stream name.',

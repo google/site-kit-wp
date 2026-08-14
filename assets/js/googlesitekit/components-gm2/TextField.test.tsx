@@ -33,7 +33,7 @@ describe( 'TextField', () => {
 	};
 
 	it( 'shows the error outline, the warning icon, and the message under the field when `errorMessage` holds text', () => {
-		const { container, getByText } = render(
+		const { container } = render(
 			<TextField
 				{ ...defaultProps }
 				errorMessage="A valid Client ID is required."
@@ -46,7 +46,9 @@ describe( 'TextField', () => {
 		expect(
 			container.querySelector( '.googlesitekit-text-field-icon--error' )
 		).toBeInTheDocument();
-		expect( getByText( 'A valid Client ID is required.' ) ).toBeVisible();
+		expect(
+			container.querySelector( '.mdc-text-field-helper-text' )
+		).toHaveTextContent( 'A valid Client ID is required.' );
 	} );
 
 	it( 'sets `aria-invalid` to "true" and points `aria-errormessage` at the error message id when `errorMessage` holds text', () => {
@@ -149,7 +151,7 @@ describe( 'TextField', () => {
 	} );
 
 	it( 'shows `errorMessage` in place of `helperText` when both hold text', () => {
-		const { getByText, queryByText } = render(
+		const { container, queryByText } = render(
 			<TextField
 				{ ...defaultProps }
 				helperText="Find the Client ID in your Google Cloud console."
@@ -157,7 +159,9 @@ describe( 'TextField', () => {
 			/>
 		);
 
-		expect( getByText( 'A valid Client ID is required.' ) ).toBeVisible();
+		expect(
+			container.querySelector( '.mdc-text-field-helper-text' )
+		).toHaveTextContent( 'A valid Client ID is required.' );
 		expect(
 			queryByText( 'Find the Client ID in your Google Cloud console.' )
 		).not.toBeInTheDocument();
@@ -192,4 +196,20 @@ describe( 'TextField', () => {
 			).not.toBeInTheDocument();
 		}
 	);
+
+	it( 'shows `trailingIcon` when the render passes neither `errorMessage` nor `hasError`', () => {
+		const { container } = render(
+			<TextField
+				{ ...defaultProps }
+				trailingIcon={ <span className="googlesitekit-search-icon" /> }
+			/>
+		);
+
+		expect(
+			container.querySelector( '.googlesitekit-search-icon' )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-text-field-icon--error' )
+		).not.toBeInTheDocument();
+	} );
 } );

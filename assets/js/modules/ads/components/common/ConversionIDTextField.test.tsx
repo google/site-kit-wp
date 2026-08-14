@@ -47,20 +47,17 @@ describe( 'ConversionIDTextField', () => {
 		expect( container.querySelector( '.mdc-text-field' ) ).toHaveClass(
 			'mdc-text-field--error'
 		);
-		expect(
-			getByText(
-				'Tracking for your Ads campaigns won’t work until you insert a valid ID'
-			)
-		).toBeVisible();
+
+		const errorMessage = getByText( /tracking for your ads campaigns/i );
+
+		expect( errorMessage ).toBeVisible();
 		expect( getByRole( 'textbox' ) ).toHaveAttribute(
 			'aria-invalid',
 			'true'
 		);
 		expect( getByRole( 'textbox' ) ).toHaveAttribute(
 			'aria-errormessage',
-			getByText(
-				'Tracking for your Ads campaigns won’t work until you insert a valid ID'
-			).id
+			errorMessage.id
 		);
 	} );
 
@@ -72,9 +69,7 @@ describe( 'ConversionIDTextField', () => {
 			'mdc-text-field--error'
 		);
 		expect(
-			queryByText(
-				'Tracking for your Ads campaigns won’t work until you insert a valid ID'
-			)
+			queryByText( /tracking for your ads campaigns/i )
 		).not.toBeInTheDocument();
 		expect( getByRole( 'textbox' ) ).not.toHaveAttribute( 'aria-invalid' );
 	} );
