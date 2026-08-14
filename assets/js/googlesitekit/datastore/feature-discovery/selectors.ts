@@ -39,7 +39,7 @@ import {
 import type {
 	Feature,
 	FeatureCategory,
-	FeatureCategoryDefinition,
+	FeatureCategorySlug,
 	FeatureDiscoveryState,
 } from './types';
 
@@ -78,7 +78,7 @@ export const selectors = {
 	 *
 	 * @return {Array.<Object>} Categories, each with its `slug` and `title`.
 	 */
-	getFeatureCategories(): FeatureCategoryDefinition[] {
+	getFeatureCategories(): FeatureCategory[] {
 		const titles = {
 			[ FEATURE_CATEGORIES.AUDIENCE ]: __(
 				'Get to know your audience',
@@ -206,11 +206,50 @@ export const selectors = {
 	),
 
 	/**
-	 * Gets the features to show under a goal category.
+	 * Gets the features that are available to show.
 	 *
-	 * Features are listed under their primary goal category, and only while
-	 * they are not set up, their prerequisite modules are connected, and their
-	 * own `checkRequirements()` passes.
+	 * A feature is available while it is not set up, its prerequisite modules
+	 * are connected, and its own `checkRequirements()` passes.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Array.<Object>} Available features, in registration order.
+	 */
+	getAvailableFeatures: createRegistrySelector(
+		( select: Select ) => (): Feature[] => {
+			const {
+				getFeatures,
+				isFeatureConnected,
+				isFeaturePrerequisiteMet,
+			} = select( CORE_FEATURE_DISCOVERY );
+
+			return getFeatures().filter( ( feature: Feature ) => {
+				if ( isFeatureConnected( feature.slug ) !== false ) {
+					return false;
+				}
+
+				if ( isFeaturePrerequisiteMet( feature.slug ) !== true ) {
+					return false;
+				}
+
+				const { checkRequirements } = feature;
+
+				if (
+					typeof checkRequirements === 'function' &&
+					! checkRequirements( select )
+				) {
+					return false;
+				}
+
+				return true;
+			} );
+		}
+	),
+
+	/**
+	 * Gets the available features to show under a goal category.
+	 *
+	 * Features are listed under their primary goal category only.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -222,43 +261,19 @@ export const selectors = {
 		( select: Select ) =>
 			(
 				state: FeatureDiscoveryState,
-				category: FeatureCategory
+				category: FeatureCategorySlug
 			): Feature[] => {
 				invariant(
 					category,
 					'category is required to get features by goal.'
 				);
 
-				const {
-					getFeatures,
-					isFeatureConnected,
-					isFeaturePrerequisiteMet,
-				} = select( CORE_FEATURE_DISCOVERY );
-
-				return getFeatures().filter( ( feature: Feature ) => {
-					if ( feature.goalCategories?.[ 0 ] !== category ) {
-						return false;
-					}
-
-					if ( isFeatureConnected( feature.slug ) !== false ) {
-						return false;
-					}
-
-					if ( isFeaturePrerequisiteMet( feature.slug ) !== true ) {
-						return false;
-					}
-
-					const { checkRequirements } = feature;
-
-					if (
-						typeof checkRequirements === 'function' &&
-						! checkRequirements( select )
-					) {
-						return false;
-					}
-
-					return true;
-				} );
+				return select( CORE_FEATURE_DISCOVERY )
+					.getAvailableFeatures()
+					.filter(
+						( feature: Feature ) =>
+							feature.goalCategories?.[ 0 ] === category
+					);
 			}
 	),
 };

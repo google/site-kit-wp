@@ -39,7 +39,7 @@ function createSettings(
 	return {
 		title: 'Test feature',
 		shortDescription: 'A feature used in tests.',
-		effort: FEATURE_EFFORTS.JUST_A_FEW_CLICKS,
+		effort: FEATURE_EFFORTS.LOW,
 		goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
 		addedInVersion: '1.100.0',
 		setup: {
