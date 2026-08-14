@@ -43,7 +43,7 @@ function createSettings(
 	return {
 		title: 'Test feature',
 		shortDescription: 'A feature used in tests.',
-		effort: FEATURE_EFFORTS.JUST_A_FEW_CLICKS,
+		effort: FEATURE_EFFORTS.LOW,
 		goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
 		addedInVersion: '1.100.0',
 		setup: {
@@ -303,6 +303,64 @@ describe( 'core/feature-discovery selectors', () => {
 					.select( CORE_FEATURE_DISCOVERY )
 					.isFeatureConnected( 'no-completion-state' )
 			).toBe( false );
+		} );
+	} );
+
+	describe( 'getAvailableFeatures', () => {
+		beforeEach( () => {
+			provideModules( registry, [
+				{ slug: 'analytics-4', active: false, connected: false },
+				{ slug: 'search-console', active: true, connected: true },
+			] );
+		} );
+
+		it( 'should return features from every category, in registration order', () => {
+			registerFeature( 'audience-one' );
+			registerFeature( 'monetization-one', {
+				goalCategories: [ FEATURE_CATEGORIES.MONETIZATION ],
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getAvailableFeatures()
+					.map( ( { slug }: { slug: string } ) => slug )
+			).toEqual( [ 'audience-one', 'monetization-one' ] );
+		} );
+
+		it( 'should exclude features that are already set up', () => {
+			registerFeature( 'already-set-up', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+					moduleSlug: 'search-console',
+				},
+			} );
+
+			expect(
+				registry.select( CORE_FEATURE_DISCOVERY ).getAvailableFeatures()
+			).toEqual( [] );
+		} );
+
+		it( 'should exclude features whose prerequisite modules are not connected', () => {
+			registerFeature( 'needs-analytics', {
+				prerequisiteModules: [ 'analytics-4' ],
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+				},
+			} );
+
+			expect(
+				registry.select( CORE_FEATURE_DISCOVERY ).getAvailableFeatures()
+			).toEqual( [] );
+		} );
+
+		it( 'should exclude features hidden by their own checkRequirements', () => {
+			registerFeature( 'hidden', { checkRequirements: () => false } );
+
+			expect(
+				registry.select( CORE_FEATURE_DISCOVERY ).getAvailableFeatures()
+			).toEqual( [] );
 		} );
 	} );
 
