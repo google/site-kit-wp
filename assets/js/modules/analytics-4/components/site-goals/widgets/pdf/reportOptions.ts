@@ -29,12 +29,17 @@ import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
  * The compare dates are what make the reports return `date_range_0` and
  * `date_range_1` rows, which the shaping turns into trends.
  */
-export interface SiteGoalsPDFDateRange {
-	startDate: string;
-	endDate: string;
-	compareStartDate?: string;
-	compareEndDate?: string;
-}
+export type SiteGoalsPDFDateRange = Pick<
+	ReportOptions,
+	'startDate' | 'endDate' | 'compareStartDate' | 'compareEndDate'
+>;
+
+/**
+ * A single `dimensionFilters` entry's value, e.g. the `eventName` filter.
+ */
+export type SiteGoalsPDFEventFilter = NonNullable<
+	ReportOptions[ 'dimensionFilters' ]
+>[ string ];
 
 /**
  * The pair of reports a Site Goals PDF widget needs.
@@ -73,7 +78,7 @@ export const LEAD_BREAKDOWN_DIMENSION = `customEvent:${
  */
 function getSiteGoalsPDFReportOptions(
 	dates: SiteGoalsPDFDateRange,
-	eventFilter: unknown,
+	eventFilter: SiteGoalsPDFEventFilter,
 	breakdownDimension: string | undefined,
 	reportIDSuffix: string
 ): SiteGoalsPDFReportOptions {
@@ -90,13 +95,13 @@ function getSiteGoalsPDFReportOptions(
 				eventName: eventFilter,
 			},
 			reportID: `analytics-4_site-goals-pdf_${ reportIDSuffix }EventsReportOptions`,
-		} as ReportOptions,
+		},
 		engagementReportOptions: {
 			...dates,
 			...dimensions,
 			metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
 			reportID: `analytics-4_site-goals-pdf_${ reportIDSuffix }EngagementReportOptions`,
-		} as ReportOptions,
+		},
 	};
 }
 

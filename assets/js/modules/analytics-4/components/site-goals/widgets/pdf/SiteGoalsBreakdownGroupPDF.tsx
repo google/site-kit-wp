@@ -36,13 +36,9 @@ import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import { PDF_CHANGE_COLORS } from '@/js/components/pdf-export/shared-react-pdf-components/PDFChangeBadge';
 import PDFMetricTile from '@/js/components/pdf-export/shared-react-pdf-components/PDFMetricTile';
 import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
+import { PERCENT_FORMAT } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { numFmt } from '@/js/util';
 import { SiteGoalsPDFGroup, SiteGoalsPDFMetric } from './shapeSiteGoalsPDFData';
-
-const PERCENT_FORMAT = {
-	style: 'percent',
-	maximumFractionDigits: 1,
-} as const;
 
 const styles = createPDFStyles( {
 	container: {
@@ -137,24 +133,6 @@ export interface SiteGoalsBreakdownGroupPDFProps {
 	showLabel?: boolean;
 }
 
-/**
- * Renders one Site Goals breakdown group: an optional heading and up to three
- * metric tiles.
- *
- * The "Other sources" group carries a total only, so it renders that tile alone
- * rather than padding the row with empty tiles.
- *
- * @since n.e.x.t
- *
- * @param props                 Component props.
- * @param props.group           The group to render.
- * @param props.rateLabel       Title for the rate tile.
- * @param props.totalLabel      Title for the total tile.
- * @param props.totalSubtitle   Caption rendered under the total.
- * @param props.comparisonLabel Caption rendered under each change badge.
- * @param props.showLabel       Whether to render the group heading.
- * @return React-PDF element.
- */
 const SiteGoalsBreakdownGroupPDF: FC< SiteGoalsBreakdownGroupPDFProps > = ( {
 	group,
 	rateLabel,

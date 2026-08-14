@@ -24,6 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { SITE_GOALS_BREAKDOWN_OTHER_SOURCES_TAB_ID } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
 
 /**
@@ -55,7 +56,7 @@ export interface SiteGoalsPDFGroup {
 	sessions?: SiteGoalsPDFMetric;
 }
 
-export const OTHER_SOURCES_GROUP_ID = 'other-sources';
+export const OTHER_SOURCES_GROUP_ID = SITE_GOALS_BREAKDOWN_OTHER_SOURCES_TAB_ID;
 export const AGGREGATED_GROUP_ID = 'aggregated';
 
 /** Metric index in the events report. */

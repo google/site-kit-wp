@@ -41,7 +41,7 @@ const tileStyles = createPDFStyles( {
 		flexDirection: 'column',
 	},
 	title: {
-		marginBottom: 6,
+		marginBottom: 1,
 	},
 	aside: {
 		flexDirection: 'column',
