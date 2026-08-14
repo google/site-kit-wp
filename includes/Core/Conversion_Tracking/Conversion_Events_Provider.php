@@ -25,6 +25,7 @@ abstract class Conversion_Events_Provider {
 
 	const CATEGORY_LEAD      = 'lead';
 	const CATEGORY_ECOMMERCE = 'ecommerce';
+	const CATEGORY_CONTENT   = 'content';
 
 	/**
 	 * Plugin context.
@@ -72,7 +73,7 @@ abstract class Conversion_Events_Provider {
 	 *
 	 * @since 1.181.0
 	 *
-	 * @return string Provider category, one of CATEGORY_LEAD or CATEGORY_ECOMMERCE.
+	 * @return string Provider category, one of CATEGORY_LEAD, CATEGORY_ECOMMERCE, or CATEGORY_CONTENT.
 	 */
 	abstract public function get_category();
 

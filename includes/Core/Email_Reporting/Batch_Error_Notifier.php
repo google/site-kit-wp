@@ -259,6 +259,8 @@ class Batch_Error_Notifier {
 	 * Builds template data for the error-email template.
 	 *
 	 * @since 1.175.0
+	 * @since n.e.x.t Set `subject` from `get_subject()` and `primary_call_to_action` from
+	 *                `get_cta()` instead of hardcoding a "Go to dashboard" CTA.
 	 *
 	 * @param string $content_key Content_Map key for title and body.
 	 * @return array Template data matching the error-email contract.
@@ -269,6 +271,7 @@ class Batch_Error_Notifier {
 			$title = Content_Map::get_title( 'error-email' );
 		}
 
+		$subject   = Content_Map::get_subject( $content_key );
 		$body_args = Content_Map::get_body_args( $content_key, $this->golinks );
 		$body      = Content_Map::get_body_with_args( $content_key, $body_args );
 		$domain    = $this->get_site_domain();
@@ -276,7 +279,7 @@ class Batch_Error_Notifier {
 		$email_settings_url = $this->golinks->get_url( 'manage-subscription-email-reporting' );
 
 		return array(
-			'subject'                => $title,
+			'subject'                => $subject,
 			'preheader'              => $title,
 			'site'                   => array(
 				'domain' => $domain,
@@ -284,12 +287,14 @@ class Batch_Error_Notifier {
 			),
 			'title'                  => $title,
 			'body'                   => $body,
-			'primary_call_to_action' => array(
-				'url'   => $this->golinks->get_url( 'dashboard' ),
-				'label' => __( 'Go to dashboard', 'google-site-kit' ),
-			),
+			'primary_call_to_action' => Content_Map::get_cta( $content_key, $this->golinks ),
 			'footer'                 => array(
-				'copy'            => __( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can unsubscribe', 'google-site-kit' ),
+				'copy'            => sprintf(
+					/* translators: 1: Unsubscribe link URL, 2: Unsubscribe link inline style CSS. */
+					__( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can <a class="link" href="%1$s" style="%2$s">unsubscribe</a>.', 'google-site-kit' ),
+					$email_settings_url,
+					'text-decoration:none;'
+				),
 				'unsubscribe_url' => $email_settings_url,
 			),
 			'graphic'                => Content_Map::get_graphic_config( 'error-email' ),

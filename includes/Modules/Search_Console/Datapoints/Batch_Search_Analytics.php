@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Search_Console\Datapoints\SearchAnalyticsBatch
+ * Class Google\Site_Kit\Modules\Search_Console\Datapoints\Batch_Search_Analytics
  *
  * @package   Google\Site_Kit\Modules\Search_Console\Datapoints
  * @copyright 2025 Google LLC
@@ -16,46 +16,19 @@ use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exception;
-use Google\Site_Kit_Dependencies\Google\Service\SearchConsole as Google_Service_SearchConsole;
-use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SearchAnalyticsQueryResponse;
 use WP_Error;
 
 /**
  * Datapoint class for Search Console search analytics batch requests.
  *
  * @since 1.170.0
+ * @since n.e.x.t Renamed from `SearchAnalyticsBatch` and refactored onto `Search_Analytics_Trait`.
  * @access private
  * @ignore
  */
-class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
+class Batch_Search_Analytics extends Datapoint implements Executable_Datapoint {
 
-	const REQUEST_METHODS = array( 'POST' );
-	const REST_METHODS    = array( 'POST' );
-	const DATAPOINT       = 'searchanalytics-batch';
-
-	/**
-	 * Callback to obtain the Search Console service.
-	 *
-	 * @since 1.170.0
-	 * @var callable|\Closure
-	 */
-	private $get_service;
-
-	/**
-	 * Callback to prepare single search analytics request arguments.
-	 *
-	 * @since 1.170.0
-	 * @var callable|\Closure
-	 */
-	private $prepare_args;
-
-	/**
-	 * Callback to build a search analytics request.
-	 *
-	 * @since 1.170.0
-	 * @var callable|\Closure
-	 */
-	private $create_request;
+	use Search_Analytics_Trait;
 
 	/**
 	 * Identifiers for the requested payloads.
@@ -77,15 +50,15 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 	 * Constructor.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Replaced request callbacks with the module settings and context.
 	 *
 	 * @param array $definition Datapoint definition.
 	 */
 	public function __construct( array $definition ) {
 		parent::__construct( $definition );
 
-		$this->get_service    = isset( $definition['get_service'] ) ? $definition['get_service'] : null;
-		$this->prepare_args   = isset( $definition['prepare_args'] ) ? $definition['prepare_args'] : null;
-		$this->create_request = isset( $definition['create_request'] ) ? $definition['create_request'] : null;
+		$this->settings = $definition['settings'];
+		$this->context  = $definition['context'];
 	}
 
 	/**
@@ -94,7 +67,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 	 * @since 1.170.0
 	 *
 	 * @param Data_Request $data_request Data request object.
-	 * @return callable|WP_Error Callable to execute the batch request, or WP_Error.
+	 * @return callable Callable to execute the batch request, resolving to an empty array when no entry could be prepared.
 	 * @throws Missing_Required_Param_Exception Thrown when required parameters are missing.
 	 */
 	public function create_request( Data_Request $data_request ) {
@@ -107,8 +80,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 		$this->request_identifiers = array();
 		$this->request_errors      = array();
 
-		$service            = $this->get_searchconsole_service();
-		$batch              = $service->createBatch();
+		$batch              = $this->get_service()->createBatch();
 		$has_valid_requests = false;
 
 		foreach ( $requests as $request_data ) {
@@ -116,33 +88,14 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 			$this->request_identifiers[] = $identifier;
 
 			try {
-				$args = $this->prepare_request_args( $request_data );
-				if ( is_wp_error( $args ) ) {
-					$this->request_errors[ $identifier ] = $args;
-					continue;
-				}
-
-				$single_request = $this->build_single_request( $args );
-
-				if ( is_wp_error( $single_request ) ) {
-					$this->request_errors[ $identifier ] = $single_request;
-					continue;
-				}
+				$args           = $this->prepare_search_analytics_request_args( $request_data );
+				$single_request = $this->create_search_analytics_request( $args );
 
 				$batch->add( $single_request, $identifier );
 				$has_valid_requests = true;
 			} catch ( Exception $exception ) {
 				$this->request_errors[ $identifier ] = $this->exception_to_error( $exception );
 			}
-		}
-
-		if ( empty( $this->request_identifiers ) ) {
-			return new WP_Error(
-				'missing_required_param',
-				/* translators: %s: Missing parameter name */
-				sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'requests' ),
-				array( 'status' => 400 )
-			);
 		}
 
 		if ( ! $has_valid_requests ) {
@@ -221,69 +174,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 			return $this->exception_to_error( $response );
 		}
 
-		if ( $response instanceof SearchAnalyticsQueryResponse ) {
-			return $response->getRows();
-		}
-
-		if ( is_object( $response ) && method_exists( $response, 'getRows' ) ) {
-			return $response->getRows();
-		}
-
-		return $response;
-	}
-
-	/**
-	 * Builds a single request.
-	 *
-	 * @since 1.170.0
-	 *
-	 * @param array $args Prepared request arguments.
-	 * @return mixed Request instance or WP_Error.
-	 */
-	private function build_single_request( array $args ) {
-		if ( ! is_callable( $this->create_request ) ) {
-			return new WP_Error(
-				'invalid_request_callback',
-				__( 'Invalid Search Console request callback.', 'google-site-kit' )
-			);
-		}
-
-		return call_user_func( $this->create_request, $args );
-	}
-
-	/**
-	 * Prepares request arguments for a single search analytics request.
-	 *
-	 * @since 1.170.0
-	 *
-	 * @param array $request_data Raw request data.
-	 * @return array|WP_Error Prepared arguments or WP_Error.
-	 */
-	private function prepare_request_args( array $request_data ) {
-		if ( ! is_callable( $this->prepare_args ) ) {
-			return new WP_Error(
-				'invalid_request_args_callback',
-				__( 'Invalid Search Console request arguments.', 'google-site-kit' )
-			);
-		}
-
-		return call_user_func( $this->prepare_args, $request_data );
-	}
-
-	/**
-	 * Gets the Search Console service instance.
-	 *
-	 * @since 1.170.0
-	 *
-	 * @return Google_Service_SearchConsole Search Console service instance.
-	 * @throws Missing_Required_Param_Exception When the service callback is missing.
-	 */
-	private function get_searchconsole_service() {
-		if ( is_callable( $this->get_service ) ) {
-			return call_user_func( $this->get_service );
-		}
-
-		throw new Missing_Required_Param_Exception( 'service' );
+		return $this->parse_search_analytics_rows( $response );
 	}
 
 	/**

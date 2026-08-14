@@ -41,12 +41,14 @@ import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import {
 	ORDERED_MAIN_DASHBOARD_CONTEXTS,
 	PDFSection,
+	PDF_DOWNLOAD_PANEL_OPENED_KEY,
 } from '@/js/components/pdf-export/constants';
 import { isActivePDFWidget } from '@/js/components/pdf-export/pdf-widget-eligibility';
 import { SelectionPanelContent } from '@/js/components/SelectionPanel';
 import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
 import Typography from '@/js/components/Typography';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
@@ -146,6 +148,21 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 		( select: Select ) => select( CORE_PDF ).getSelectedWidgetSlugs(),
 		[]
 	);
+
+	/**
+	 * Only show the notice when the panel should be open and visible to the
+	 * user _and_ a report is generating.
+	 *
+	 * This prevents the "Your report is being generated" notice from appearing
+	 * when the user first clicks the "Download report" button and the panel
+	 * closes.
+	 */
+	const showGeneratingReportNotice = useSelect( ( select: Select ) => {
+		return (
+			select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY ) &&
+			select( CORE_PDF ).isGeneratingReport()
+		);
+	}, [] );
 
 	const { setSelection } = useDispatch( CORE_PDF );
 
@@ -282,6 +299,22 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 							) }
 						</Typography>
 					}
+				/>
+			) }
+			{ showGeneratingReportNotice && (
+				<SelectionPanelNotice
+					// @ts-expect-error - The `SelectionPanelNotice` component isn't typed yet.
+					className="googlesitekit-notice--side-panel googlesitekit-pdf-download-panel__notice"
+					type={ NOTICE_TYPES.WARNING }
+					title={ __(
+						'Your report is being generated',
+						'google-site-kit'
+					) }
+					description={ __(
+						'To create another report, please wait for the current download to complete.',
+						'google-site-kit'
+					) }
+					hideIcon
 				/>
 			) }
 			<Footer closePanel={ closePanel } hasSelection={ hasSelection } />

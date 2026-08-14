@@ -129,6 +129,13 @@ describe( 'DashboardPopularKeywordsWidgetPDF', () => {
 		expect( json ).toContain( '#108080' );
 	} );
 
+	it( 'truncates each query to one line with an ellipsis', () => {
+		const json = renderJSON( { data: DATA } );
+
+		expect( json ).toContain( '"maxLines":1' );
+		expect( json ).toContain( '"textOverflow":"ellipsis"' );
+	} );
+
 	it( 'formats Clicks and Impressions with thousands separators', () => {
 		const json = renderJSON( { data: DATA } );
 

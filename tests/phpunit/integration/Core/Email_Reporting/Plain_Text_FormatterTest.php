@@ -196,7 +196,7 @@ class Plain_Text_FormatterTest extends TestCase {
 		);
 
 		$footer = array(
-			'copy'            => 'You received this email because you signed up.',
+			'copy'            => 'You received this email because you signed up. If you do not want to receive these emails in the future you can <a class="link" href="https://example.com/unsubscribe" style="text-decoration:none;">unsubscribe</a>.',
 			'unsubscribe_url' => 'https://example.com/unsubscribe',
 		);
 
@@ -217,7 +217,9 @@ class Plain_Text_FormatterTest extends TestCase {
 
 		$this->assertStringContainsString( str_repeat( '-', 50 ), $result, 'Footer should contain separator line.' );
 		$this->assertStringContainsString( 'View dashboard: https://example.com/dashboard', $result, 'Footer should contain CTA link.' );
-		$this->assertStringContainsString( 'You received this email because you signed up.', $result, 'Footer should contain copy text.' );
+		$this->assertStringContainsString( 'you can unsubscribe (https://example.com/unsubscribe).', $result, 'Footer copy link should be rendered as "unsubscribe (URL)" in plain text.' );
+		$this->assertStringNotContainsString( '<a', $result, 'Footer copy should not contain raw HTML tags.' );
+		$this->assertStringNotContainsString( '</a>', $result, 'Footer copy should not contain raw HTML tags.' );
 		$this->assertStringContainsString( $expected_footer_block, $result, 'Footer utility links should appear as a separate-line list preceded by a blank separator line.' );
 	}
 
@@ -340,7 +342,7 @@ class Plain_Text_FormatterTest extends TestCase {
 				'url'   => 'https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard',
 			),
 			'footer'                 => array(
-				'copy'            => 'You received this email because your site admin invited you to use Site Kit email reports feature',
+				'copy'            => 'You received this email because you signed up. If you do not want to receive these emails in the future you can <a class="link" href="https://example.com/unsubscribe" style="text-decoration:none;">unsubscribe</a>.',
 				'unsubscribe_url' => 'https://example.com/unsubscribe',
 			),
 		);
@@ -368,7 +370,9 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( 'You can easily unsubscribe or change the reports frequency', $result, 'Simple email should contain second body paragraph.' );
 		$this->assertStringContainsString( 'Learn more: https://sitekit.withgoogle.com/support/?doc=email-reporting', $result, 'Simple email should contain Learn more link.' );
 		$this->assertStringContainsString( 'Get your report: https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard', $result, 'Simple email should contain CTA link.' );
-		$this->assertStringContainsString( 'You received this email because your site admin invited you', $result, 'Simple email should contain footer copy.' );
+		$this->assertStringContainsString( 'you can unsubscribe (https://example.com/unsubscribe).', $result, 'Footer copy link should be rendered as "unsubscribe (URL)" in plain text.' );
+		$this->assertStringNotContainsString( '<a', $result, 'Footer copy should not contain raw HTML tags.' );
+		$this->assertStringNotContainsString( '</a>', $result, 'Footer copy should not contain raw HTML tags.' );
 		$this->assertStringContainsString( $expected_footer_block, $result, 'Footer utility links should appear as a separate-line list preceded by a blank separator line.' );
 	}
 

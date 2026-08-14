@@ -168,6 +168,27 @@ EntityDashboardLoaded.args = {
 				provideAnalytics4MockReport( registry, options );
 			}
 		} );
+
+		// Set the property creation timestamp to two days ago, so that
+		// the property is not considered to be in the gathering data state.
+		const now = registry.select( CORE_USER ).getReferenceDate();
+		const createTime = dateSub( now, 3 * DAY_IN_SECONDS ).toISOString();
+
+		const property = {
+			...__fixtures__.properties[ 0 ],
+			createTime,
+		};
+		const propertyID = property._id;
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( { propertyCreateTime: createTime } );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetProperty( property, { propertyID } );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 	},
 };
 EntityDashboardLoaded.scenario = {
