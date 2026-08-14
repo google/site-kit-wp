@@ -90,4 +90,63 @@ class Publication_NormalizerTest extends TestCase {
 			'The OK content policy state should use the legacy value.'
 		);
 	}
+
+	public function test_map_onboarding_state() {
+		$this->assertSame(
+			'ONBOARDING_ACTION_REQUIRED',
+			Publication_Normalizer::map_onboarding_state( 'ACTION_REQUIRED' ),
+			'ACTION_REQUIRED should map to the legacy onboarding state.'
+		);
+		$this->assertSame(
+			'ONBOARDING_COMPLETE',
+			Publication_Normalizer::map_onboarding_state( 'COMPLETE' ),
+			'COMPLETE should map to the legacy onboarding state.'
+		);
+		$this->assertSame(
+			'PENDING_VERIFICATION',
+			Publication_Normalizer::map_onboarding_state( 'PENDING_VERIFICATION' ),
+			'Unmapped onboarding states should pass through unchanged.'
+		);
+	}
+
+	public function test_map_payment_option() {
+		$this->assertSame(
+			'contributions',
+			Publication_Normalizer::map_payment_option( 'CONTRIBUTIONS' ),
+			'CONTRIBUTIONS should map to the legacy payment option.'
+		);
+		$this->assertSame(
+			'noPayment',
+			Publication_Normalizer::map_payment_option( 'NONE' ),
+			'NONE should map to the legacy payment option.'
+		);
+		$this->assertSame(
+			'subscriptions',
+			Publication_Normalizer::map_payment_option( 'SUBSCRIPTIONS' ),
+			'SUBSCRIPTIONS should map to the legacy payment option.'
+		);
+		$this->assertSame(
+			'',
+			Publication_Normalizer::map_payment_option( 'UNKNOWN' ),
+			'Unknown payment options should map to an empty string.'
+		);
+	}
+
+	public function test_map_content_policy_state() {
+		$this->assertSame(
+			'CONTENT_POLICY_STATE_OK',
+			Publication_Normalizer::map_content_policy_state( 'OK' ),
+			'OK should map to the legacy content policy state.'
+		);
+		$this->assertSame(
+			'CONTENT_POLICY_VIOLATION_ACTIVE',
+			Publication_Normalizer::map_content_policy_state( 'VIOLATION_ACTIVE' ),
+			'Unprefixed states should gain the CONTENT_POLICY_ prefix.'
+		);
+		$this->assertSame(
+			'CONTENT_POLICY_VIOLATION_ACTIVE',
+			Publication_Normalizer::map_content_policy_state( 'CONTENT_POLICY_VIOLATION_ACTIVE' ),
+			'Already-prefixed states should pass through unchanged.'
+		);
+	}
 }

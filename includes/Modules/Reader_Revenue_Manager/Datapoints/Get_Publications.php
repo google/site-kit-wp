@@ -19,8 +19,7 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Publication_Normalizer;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_Publication;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
-use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\PaymentOptions;
-use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
+use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Publication;
 
 /**
  * Class for the publications retrieval datapoint.
@@ -87,16 +86,10 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	 */
 	public function parse_response( $response, Data_Request $data ) {
 		$publications = array_values( (array) $response->getPublications() );
-		$publications = array_map( array( Publication_Normalizer::class, 'normalize' ), $publications );
 
-		$legacy_publications = array_map(
-			fn( $publication ) => new Publication( $publication ),
-			$publications
-		);
+		$this->synchronize_publication_data( $publications );
 
-		$this->synchronize_publication_data( $legacy_publications );
-
-		return $publications;
+		return array_map( array( Publication_Normalizer::class, 'normalize' ), $publications );
 	}
 
 	/**
@@ -105,22 +98,16 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	 * @since n.e.x.t
 	 *
 	 * @param Publication $publication Publication object.
-	 * @return string Payment option.
+	 * @return string Payment option for settings.
 	 */
 	private function get_payment_option( Publication $publication ) {
-		$payment_options = $publication->getPaymentOptions();
-		$payment_option  = '';
+		$payment_option = $publication->getPaymentOption();
 
-		if ( $payment_options instanceof PaymentOptions ) {
-			foreach ( $payment_options as $option => $value ) {
-				if ( true === $value ) {
-					$payment_option = $option;
-					break;
-				}
-			}
+		if ( empty( $payment_option ) ) {
+			return '';
 		}
 
-		return $payment_option;
+		return Publication_Normalizer::map_payment_option( $payment_option );
 	}
 
 	/**
@@ -132,16 +119,18 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	 * @return array Product IDs.
 	 */
 	private function get_product_ids( Publication $publication ) {
-		$products    = $publication->getProducts();
-		$product_ids = array();
+		$products = $publication->getProducts();
 
-		if ( ! empty( $products ) ) {
-			foreach ( $products as $product ) {
-				$product_ids[] = $product->getName();
-			}
+		if ( empty( $products ) || ! is_array( $products ) ) {
+			return array();
 		}
 
-		return $product_ids;
+		return array_values(
+			array_filter(
+				$products,
+				'is_string'
+			)
+		);
 	}
 
 	/**
@@ -186,7 +175,7 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $publications Array of Publication objects.
+	 * @param Publication[] $publications Array of WCP Publication objects.
 	 * @return void No return value.
 	 */
 	private function synchronize_publication_data( $publications ) {
@@ -203,8 +192,9 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 
 		$filtered_publications = array_filter(
 			$publications,
-			function ( $pub ) use ( $publication_id ) {
-				return $pub->getPublicationId() === $publication_id;
+			function ( $publication ) use ( $publication_id ) {
+				return $publication instanceof Publication
+					&& $publication->getPublicationId() === $publication_id;
 			}
 		);
 
@@ -216,7 +206,9 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 		$publication           = $filtered_publications[0];
 
 		$onboarding_state     = $settings['publicationOnboardingState'];
-		$new_onboarding_state = $publication->getOnboardingState();
+		$new_onboarding_state = Publication_Normalizer::map_onboarding_state(
+			$publication->getOnboardingState() ?? ''
+		);
 
 		$new_settings = array(
 			'publicationOnboardingState' => $new_onboarding_state,
@@ -227,8 +219,12 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 		$content_policy_status = $publication->getContentPolicyStatus();
 
 		if ( $content_policy_status ) {
-			$new_settings['contentPolicyState'] = $content_policy_status->getContentPolicyState() ?? '';
-			$new_settings['policyInfoLink']     = $content_policy_status->getPolicyInfoLink() ?? '';
+			$state = $content_policy_status->getState();
+
+			$new_settings['contentPolicyState'] = ! empty( $state )
+				? Publication_Normalizer::map_content_policy_state( $state )
+				: '';
+			$new_settings['policyInfoLink']     = $content_policy_status->getPolicyInfoUrl() ?? '';
 		}
 
 		if ( $new_onboarding_state !== $onboarding_state ) {

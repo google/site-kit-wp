@@ -45,6 +45,59 @@ class Publication_Normalizer {
 	}
 
 	/**
+	 * Maps a WCP onboarding state to the value persisted in settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $onboarding_state WCP onboarding state.
+	 * @return string Settings onboarding state.
+	 */
+	public static function map_onboarding_state( $onboarding_state ) {
+		$state_map = array(
+			'ACTION_REQUIRED' => Settings::ONBOARDING_STATE_ACTION_REQUIRED,
+			'COMPLETE'        => Settings::ONBOARDING_STATE_COMPLETE,
+		);
+
+		return $state_map[ $onboarding_state ] ?? $onboarding_state;
+	}
+
+	/**
+	 * Maps a WCP payment option enum to the value persisted in settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $payment_option WCP payment option.
+	 * @return string Settings payment option.
+	 */
+	public static function map_payment_option( $payment_option ) {
+		$payment_option_map = array(
+			'CONTRIBUTIONS' => 'contributions',
+			'NONE'          => 'noPayment',
+			'SUBSCRIPTIONS' => 'subscriptions',
+		);
+
+		return $payment_option_map[ $payment_option ] ?? '';
+	}
+
+	/**
+	 * Maps a WCP content policy state to the value persisted in settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $state WCP content policy state.
+	 * @return string Settings content policy state.
+	 */
+	public static function map_content_policy_state( $state ) {
+		if ( 'OK' === $state ) {
+			return 'CONTENT_POLICY_STATE_OK';
+		}
+
+		return 0 === strpos( $state, 'CONTENT_POLICY_' )
+			? $state
+			: 'CONTENT_POLICY_' . $state;
+	}
+
+	/**
 	 * Normalizes onboarding state values.
 	 *
 	 * @since n.e.x.t
@@ -56,14 +109,9 @@ class Publication_Normalizer {
 			return;
 		}
 
-		$state_map = array(
-			'ACTION_REQUIRED' => 'ONBOARDING_ACTION_REQUIRED',
-			'COMPLETE'        => 'ONBOARDING_COMPLETE',
+		$publication['onboardingState'] = self::map_onboarding_state(
+			$publication['onboardingState']
 		);
-
-		if ( isset( $state_map[ $publication['onboardingState'] ] ) ) {
-			$publication['onboardingState'] = $state_map[ $publication['onboardingState'] ];
-		}
 	}
 
 	/**
@@ -98,15 +146,11 @@ class Publication_Normalizer {
 			return;
 		}
 
-		$payment_option_map = array(
-			'CONTRIBUTIONS' => 'contributions',
-			'NONE'          => 'noPayment',
-			'SUBSCRIPTIONS' => 'subscriptions',
-		);
+		$payment_option = self::map_payment_option( $publication['paymentOption'] );
 
-		if ( isset( $payment_option_map[ $publication['paymentOption'] ] ) ) {
+		if ( ! empty( $payment_option ) ) {
 			$publication['paymentOptions'] = array(
-				$payment_option_map[ $publication['paymentOption'] ] => true,
+				$payment_option => true,
 			);
 		}
 
@@ -128,14 +172,7 @@ class Publication_Normalizer {
 		$status = (array) $publication['contentPolicyStatus'];
 
 		if ( isset( $status['state'] ) ) {
-			if ( 'OK' === $status['state'] ) {
-				$status['contentPolicyState'] = 'CONTENT_POLICY_STATE_OK';
-			} else {
-				$status['contentPolicyState'] = 0 === strpos( $status['state'], 'CONTENT_POLICY_' )
-					? $status['state']
-					: 'CONTENT_POLICY_' . $status['state'];
-			}
-
+			$status['contentPolicyState'] = self::map_content_policy_state( $status['state'] );
 			unset( $status['state'] );
 		}
 
