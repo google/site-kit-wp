@@ -47,14 +47,6 @@ export const PDF_FONT_FAMILY_TEXT = 'GoogleSansText';
 export const PDF_MEASURE_PAGE_HEIGHT = 14400;
 
 /**
- * The padding, in points, added below the measured content height when
- * sizing the final single page.
- *
- * @since 1.185.0
- */
-export const PDF_PAGE_BOTTOM_PADDING = 60;
-
-/**
  * Shared colors for the PDF report.
  *
  * `@react-pdf` builds the PDF from JavaScript values and can't read the

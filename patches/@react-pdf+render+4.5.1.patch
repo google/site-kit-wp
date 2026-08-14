@@ -1,0 +1,13 @@
+diff --git a/node_modules/@react-pdf/render/lib/index.js b/node_modules/@react-pdf/render/lib/index.js
+index 028cf37..f41404d 100644
+--- a/node_modules/@react-pdf/render/lib/index.js
++++ b/node_modules/@react-pdf/render/lib/index.js
+@@ -2249,7 +2249,7 @@ const setDestination = (ctx, node) => {
+     if (!node.props)
+         return;
+     if ('id' in node.props) {
+-        ctx.addNamedDestination(node.props.id, 'XYZ', null, node.box.top, null);
++        ctx.addNamedDestination(node.props.id, 'XYZ', node.box.left ?? 0, node.box.top, null);
+     }
+ };
+ 
