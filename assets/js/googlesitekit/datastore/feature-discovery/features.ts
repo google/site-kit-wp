@@ -33,7 +33,7 @@ import {
 } from './constants';
 import type {
 	Feature,
-	FeatureCategory,
+	FeatureCategorySlug,
 	FeatureDiscoveryState,
 	FeatureSettings,
 } from './types';
@@ -106,7 +106,7 @@ export const actions = {
 			Array.isArray( goalCategories ) && goalCategories.length > 0,
 			'goalCategories is required to register a feature.'
 		);
-		goalCategories.forEach( ( category: FeatureCategory ) => {
+		goalCategories.forEach( ( category: FeatureCategorySlug ) => {
 			invariant(
 				FEATURE_CATEGORY_ORDER.includes( category ),
 				`Feature goal category should be one of: ${ FEATURE_CATEGORY_ORDER.join(
