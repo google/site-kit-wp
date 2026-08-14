@@ -168,27 +168,20 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ), 'Expected API fetch preload paths filter to be registered' );
 	}
 
-	public function test_register__adds_email_reporting_and_errors_paths_but_not_eligible_subscribers() {
+	public function test_register__adds_email_reporting_and_errors_paths() {
 		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
 
 		$this->controller->register();
 
 		$paths = apply_filters( 'googlesitekit_apifetch_preload_paths', array() );
 
-		$this->assertContains(
-			'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting',
+		$this->assertEqualSets(
+			array(
+				'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting',
+				'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-errors',
+			),
 			$paths,
-			'register() should add the email-reporting route to the preload paths.'
-		);
-		$this->assertContains(
-			'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-errors',
-			$paths,
-			'register() should add the email-reporting-errors route to the preload paths.'
-		);
-		$this->assertNotContains(
-			'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-eligible-subscribers',
-			$paths,
-			'register() should keep the email-reporting-eligible-subscribers route out of the preload paths, so a page load never runs its user queries.'
+			'register() should add only the email-reporting and email-reporting-errors preload paths.'
 		);
 	}
 
