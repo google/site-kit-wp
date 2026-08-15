@@ -129,5 +129,30 @@ describe( 'module/pagespeed-insights service store', () => {
 				} );
 			} );
 		} );
+
+		describe( 'getDetailsLinkURL', () => {
+			it( 'should return the service report URL for the reference site', () => {
+				const referenceSiteURL = 'https://example.com/';
+
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					referenceSiteURL,
+				} );
+
+				const detailsLinkURL = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getDetailsLinkURL();
+
+				const expectedURL = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getServiceURL( {
+						path: 'report',
+						query: { url: referenceSiteURL },
+					} );
+
+				expect( new URL( detailsLinkURL ) ).toEqual(
+					new URL( expectedURL )
+				);
+			} );
+		} );
 	} );
 } );
