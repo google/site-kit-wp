@@ -42,11 +42,18 @@ import useViewContext from './useViewContext';
  *
  * @since 1.70.0
  *
- * @param {string} moduleSlug Module slug.
- * @param {Object} [options]  Optional. Activation options with `redirectQueryArgs`.
+ * @param {string} moduleSlug                           Module slug.
+ * @param {Object} [options]                            Optional. Activation options.
+ * @param {Object} [options.redirectQueryArgs]
+ *                                                      Optional. Query args appended to reauth URL.
+ * @param {Object} [options.internalServerErrorOptions]
+ *                                                      Optional. Extra properties merged into the internal server error payload
+ *                                                      on activation failure.
  * @return {Function|null} Callback to activate module, null if the module doesn't exist or the user can't manage options.
  */
 export default function useActivateModuleCallback( moduleSlug, options = {} ) {
+	const { internalServerErrorOptions, ...activationOptions } = options;
+
 	const viewContext = useViewContext();
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
@@ -60,7 +67,10 @@ export default function useActivateModuleCallback( moduleSlug, options = {} ) {
 	const { setInternalServerError } = useDispatch( CORE_SITE );
 
 	const activateModuleCallback = useCallback( async () => {
-		const { error, response } = await activateModule( moduleSlug, options );
+		const { error, response } = await activateModule(
+			moduleSlug,
+			activationOptions
+		);
 
 		if ( ! error ) {
 			await trackEvent(
@@ -76,12 +86,14 @@ export default function useActivateModuleCallback( moduleSlug, options = {} ) {
 			setInternalServerError( {
 				id: `${ moduleSlug }-setup-error`,
 				description: error.message,
+				...internalServerErrorOptions,
 			} );
 		}
 	}, [
 		activateModule,
+		activationOptions,
+		internalServerErrorOptions,
 		moduleSlug,
-		options,
 		navigateTo,
 		setInternalServerError,
 		viewContext,

@@ -94,7 +94,14 @@ export default function ActivateAnalyticsCTA( {
 	} );
 
 	const activateModuleCallback = useActivateModuleCallback(
-		MODULE_SLUG_ANALYTICS_4
+		MODULE_SLUG_ANALYTICS_4,
+		setupFlowRefreshEnabled && setupFlowRefreshPhase4Enabled
+			? {
+					internalServerErrorOptions: {
+						showGlobalNotification: false,
+					},
+			  }
+			: undefined
 	);
 	const completeModuleActivationCallback =
 		useCompleteModuleActivationCallback( MODULE_SLUG_ANALYTICS_4 );

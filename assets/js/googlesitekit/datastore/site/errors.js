@@ -46,12 +46,14 @@ const baseActions = {
 	 *
 	 * @since 1.38.0
 	 *
-	 * @param {Object} error             Internal server error object.
-	 * @param {string} error.id          Error notification ID.
-	 * @param {string} [error.title]     Optional. Error notification title. Default is "Internal Server Error".
-	 * @param {string} error.description Error notification message.
-	 * @param {string} [error.format]    Optional. Error notification format. Valid values "small" and "large". Default is "small".
-	 * @param {string} [error.type]      Optional. Error notification type. Valid values "win-warning" and "win-error". Default is "win-error".
+	 * @param {Object}  error                          Internal server error object.
+	 * @param {string}  error.id                       Error notification ID.
+	 * @param {string}  [error.title]                  Optional. Error notification title. Default is "Internal Server Error".
+	 * @param {string}  error.description              Error notification message.
+	 * @param {string}  [error.format]                 Optional. Error notification format. Valid values "small" and "large". Default is "small".
+	 * @param {string}  [error.type]                   Optional. Error notification type. Valid values "win-warning" and "win-error". Default is "win-error".
+	 * @param {boolean} [error.showGlobalNotification]
+	 *                                                 Optional. Whether to render the global InternalServerError banner. Default is true.
 	 * @return {Object} Redux-style action.
 	 */
 	setInternalServerError( error ) {
@@ -64,6 +66,7 @@ const baseActions = {
 			title = __( 'Internal Server Error', 'google-site-kit' ),
 			format = 'small',
 			type = 'win-error',
+			showGlobalNotification = true,
 			...props
 		} = error;
 
@@ -74,6 +77,7 @@ const baseActions = {
 					title,
 					format,
 					type,
+					showGlobalNotification,
 					...props,
 				},
 			},
