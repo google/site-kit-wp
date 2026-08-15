@@ -32,6 +32,7 @@ import useFormValue from '@/js/hooks/useFormValue';
 import { useRefocus } from '@/js/hooks/useRefocus';
 import useViewContext from '@/js/hooks/useViewContext';
 import {
+	CONTENT_POLICY_STATES,
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 	READER_REVENUE_MANAGER_NOTICES_FORM,
@@ -57,6 +58,10 @@ export default function PublicationOnboardingStateNotice() {
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
 
+	const contentPolicyState = useSelect( ( select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getContentPolicyState()
+	);
+
 	const serviceURL = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
 			path: 'reader-revenue-manager',
@@ -79,7 +84,9 @@ export default function PublicationOnboardingStateNotice() {
 
 	const showNotice =
 		onboardingState &&
-		actionableOnboardingStates.includes( onboardingState );
+		actionableOnboardingStates.includes( onboardingState ) &&
+		contentPolicyState !==
+			CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE;
 
 	const onCTAClick = useCallback( () => {
 		// Set publication data to be reset when user re-focuses window.

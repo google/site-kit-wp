@@ -37,9 +37,9 @@ import { useRefocus } from '@/js/hooks/useRefocus';
 import PolicyViolation from '@/js/modules/reader-revenue-manager/components/dashboard/RRMSetupSuccessSubtleNotification/PolicyViolation';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
-	ACTIVE_POLICY_VIOLATION_STATES,
 	MODULES_READER_REVENUE_MANAGER,
 	PENDING_POLICY_VIOLATION_STATES,
+	POLICY_VIOLATION_STATES,
 	PUBLICATION_ONBOARDING_STATES,
 	READER_REVENUE_MANAGER_NOTICES_FORM,
 	SYNC_PUBLICATION,
@@ -200,8 +200,7 @@ const RRMSetupSuccessSubtleNotification: FC<
 
 	if (
 		contentPolicyState &&
-		( PENDING_POLICY_VIOLATION_STATES.includes( contentPolicyState ) ||
-			ACTIVE_POLICY_VIOLATION_STATES.includes( contentPolicyState ) )
+		POLICY_VIOLATION_STATES.includes( contentPolicyState )
 	) {
 		const policyViolationType = PENDING_POLICY_VIOLATION_STATES.includes(
 			contentPolicyState

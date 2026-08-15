@@ -299,7 +299,11 @@ export const NOTIFICATIONS = {
 				return false;
 			}
 
-			const { publicationOnboardingState, paymentOption } =
+			const {
+				publicationOnboardingState,
+				paymentOption,
+				contentPolicyState,
+			} =
 				( await resolveSelect(
 					MODULES_READER_REVENUE_MANAGER
 				).getSettings() ) || {};
@@ -308,6 +312,8 @@ export const NOTIFICATIONS = {
 				publicationOnboardingState ===
 					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE &&
 				[ 'noPayment', '' ].includes( paymentOption ) &&
+				contentPolicyState !==
+					CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE &&
 				! isShowingSuccessNotification()
 			) {
 				return true;
