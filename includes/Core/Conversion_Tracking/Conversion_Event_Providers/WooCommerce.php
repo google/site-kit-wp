@@ -278,6 +278,7 @@ class WooCommerce extends Conversion_Events_Provider {
 						sprintf( 'window._googlesitekit.wcdata.products = %s;', wp_json_encode( $this->products ) ),
 						sprintf( 'window._googlesitekit.wcdata.add_to_cart = %s;', wp_json_encode( $this->add_to_cart ) ),
 						sprintf( 'window._googlesitekit.wcdata.currency = "%s";', esc_js( get_woocommerce_currency() ) ),
+						sprintf( 'window._googlesitekit.wcdata.currency_minor_unit = %d;', absint( wc_get_price_decimals() ) ),
 						sprintf( 'window._googlesitekit.wcdata.eventsToTrack = %s;', wp_json_encode( $events_to_track ) ),
 					)
 				);
@@ -651,6 +652,7 @@ class WooCommerce extends Conversion_Events_Provider {
 				"\n",
 				array(
 					'window._googlesitekit.wcdata = window._googlesitekit.wcdata || {};',
+					sprintf( 'window._googlesitekit.wcdata.currency_minor_unit = %d;', absint( wc_get_price_decimals() ) ),
 					sprintf( 'window._googlesitekit.wcdata.purchase = %s;', wp_json_encode( $this->get_formatted_order( $order ) ) ),
 				)
 			),
