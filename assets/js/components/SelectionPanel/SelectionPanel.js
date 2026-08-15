@@ -23,9 +23,16 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { useEffect } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
+import { useDispatch } from 'googlesitekit-data';
 import SideSheet from '@/js/components/SideSheet';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 
 export default function SelectionPanel( {
 	children,
@@ -35,6 +42,16 @@ export default function SelectionPanel( {
 	closePanel,
 	className,
 } ) {
+	const { setValue } = useDispatch( CORE_UI );
+
+	useEffect( () => {
+		setValue( 'selectionPanelOpen', !! isOpen );
+
+		return () => {
+			setValue( 'selectionPanelOpen', false );
+		};
+	}, [ isOpen, setValue ] );
+
 	const classNameSelector = className
 		?.split( /\s+/ )
 		.map( ( name ) => `.${ name }` )
