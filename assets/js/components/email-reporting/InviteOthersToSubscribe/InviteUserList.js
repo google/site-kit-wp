@@ -29,14 +29,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import EmptyMessage, {
+	getNoSearchResultsText,
+} from '@/js/components/email-reporting/UserList/EmptyMessage';
+import UserListSkeleton from '@/js/components/email-reporting/UserList/UserListSkeleton';
 import InviteUserRow from './InviteUserRow';
-import InviteUserSkeletonList from './InviteUserSkeletonList';
-
-function EmptyMessage( { text } ) {
-	return (
-		<div className="googlesitekit-invite-user-list__empty">{ text }</div>
-	);
-}
 
 export default function InviteUserList( {
 	users,
@@ -46,19 +43,12 @@ export default function InviteUserList( {
 	isLoading = false,
 } ) {
 	if ( isLoading ) {
-		return <InviteUserSkeletonList visibleItems={ 3 } />;
+		return <UserListSkeleton visibleItems={ 3 } />;
 	}
 
 	if ( users.length === 0 ) {
 		if ( searchTerm ) {
-			return (
-				<EmptyMessage
-					text={ __(
-						'No users match your search.',
-						'google-site-kit'
-					) }
-				/>
-			);
+			return <EmptyMessage text={ getNoSearchResultsText() } />;
 		}
 
 		return (
@@ -72,7 +62,7 @@ export default function InviteUserList( {
 	}
 
 	return (
-		<div className="googlesitekit-invite-user-list">
+		<div className="googlesitekit-user-list">
 			{ users.map( ( user ) => (
 				<InviteUserRow
 					key={ user.id }
