@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { intersectionObserver } from '@shopify/jest-dom-mocks';
+import type { MutableRefObject, RefObject } from 'react';
 
 /**
  * WordPress dependencies
@@ -32,17 +33,23 @@ import { createRef } from '@wordpress/element';
 import { act, actHook, render, renderHook } from '@tests/js/test-utils';
 import useLatestIntersection from './useLatestIntersection';
 
+interface IntersectionProps {
+	refToUse: RefObject< Element | null >;
+	options: IntersectionObserverInit;
+}
+
 describe( 'useLatestIntersection', () => {
 	const container = global.document.createElement( 'div' );
-	let targetRef;
+	let targetRef: MutableRefObject< HTMLDivElement | null >;
 
 	beforeEach( () => {
 		intersectionObserver.mock();
 		const IO = global.IntersectionObserver;
 		jest.spyOn( IO.prototype, 'disconnect' );
 		global.IntersectionObserver = jest.fn(
-			( ...args ) => new IO( ...args )
-		);
+			( ...args: ConstructorParameters< typeof IntersectionObserver > ) =>
+				new IO( ...args )
+		) as unknown as typeof IntersectionObserver;
 		global.IntersectionObserver.prototype = IO.prototype;
 	} );
 
@@ -52,8 +59,8 @@ describe( 'useLatestIntersection', () => {
 
 	it( 'should setup an IntersectionObserver targeting the ref element and using the options provided', () => {
 		act( () => {
-			targetRef = createRef();
-			render( <div ref={ targetRef } />, container );
+			targetRef = createRef< HTMLDivElement >();
+			render( <div ref={ targetRef } /> );
 		} );
 
 		expect( intersectionObserver.observers ).toHaveLength( 0 );
@@ -71,7 +78,7 @@ describe( 'useLatestIntersection', () => {
 	} );
 
 	it( 'should return null if a ref without a current value is provided', () => {
-		targetRef = createRef();
+		targetRef = createRef< HTMLDivElement >();
 
 		const { result } = renderHook( () =>
 			useLatestIntersection( targetRef, { root: null, threshold: 1 } )
@@ -81,8 +88,8 @@ describe( 'useLatestIntersection', () => {
 
 	it( 'should reset an intersectionObserverEntry when the ref changes', () => {
 		act( () => {
-			targetRef = createRef();
-			render( <div ref={ targetRef } />, container );
+			targetRef = createRef< HTMLDivElement >();
+			render( <div ref={ targetRef } /> );
 		} );
 
 		const { result, rerender } = renderHook( () =>
@@ -93,12 +100,12 @@ describe( 'useLatestIntersection', () => {
 		);
 
 		const mockIntersectionObserverEntry = {
-			boundingClientRect: targetRef.current.getBoundingClientRect(),
+			boundingClientRect: targetRef.current!.getBoundingClientRect(),
 			intersectionRatio: 0.81,
 			intersectionRect: container.getBoundingClientRect(),
 			isIntersecting: true,
 			rootBounds: container.getBoundingClientRect(),
-			target: targetRef.current,
+			target: targetRef.current!,
 			time: 300,
 		};
 		actHook( () => {
@@ -114,8 +121,9 @@ describe( 'useLatestIntersection', () => {
 	} );
 
 	it( 'should return null if IntersectionObserver is not supported', () => {
-		targetRef = createRef();
+		targetRef = createRef< HTMLDivElement >();
 		targetRef.current = global.document.createElement( 'div' );
+		// @ts-expect-error - Removing the global emulates a browser without `IntersectionObserver`.
 		delete global.IntersectionObserver;
 
 		expect( () =>
@@ -124,7 +132,7 @@ describe( 'useLatestIntersection', () => {
 	} );
 
 	it( 'should disconnect an old IntersectionObserver instance when the ref changes', () => {
-		targetRef = createRef();
+		targetRef = createRef< HTMLDivElement >();
 		targetRef.current = global.document.createElement( 'div' );
 
 		const { rerender } = renderHook( () =>
@@ -145,8 +153,8 @@ describe( 'useLatestIntersection', () => {
 
 	it( 'should return the last IntersectionObserverEntry when the IntersectionObserver registers an intersection', () => {
 		act( () => {
-			targetRef = createRef();
-			render( <div ref={ targetRef } />, container );
+			targetRef = createRef< HTMLDivElement >();
+			render( <div ref={ targetRef } /> );
 		} );
 
 		const { result } = renderHook( () =>
@@ -157,22 +165,22 @@ describe( 'useLatestIntersection', () => {
 		);
 
 		const mockIntersectionObserverEntry1 = {
-			boundingClientRect: targetRef.current.getBoundingClientRect(),
+			boundingClientRect: targetRef.current!.getBoundingClientRect(),
 			intersectionRatio: 0.31,
 			intersectionRect: container.getBoundingClientRect(),
 			isIntersecting: true,
 			rootBounds: container.getBoundingClientRect(),
-			target: targetRef.current,
+			target: targetRef.current!,
 			time: 300,
 		};
 
 		const mockIntersectionObserverEntry2 = {
-			boundingClientRect: targetRef.current.getBoundingClientRect(),
+			boundingClientRect: targetRef.current!.getBoundingClientRect(),
 			intersectionRatio: 0.61,
 			intersectionRect: container.getBoundingClientRect(),
 			isIntersecting: true,
 			rootBounds: container.getBoundingClientRect(),
-			target: targetRef.current,
+			target: targetRef.current!,
 			time: 400,
 		};
 		actHook( () => {
@@ -185,20 +193,22 @@ describe( 'useLatestIntersection', () => {
 	} );
 
 	it( 'should setup a new IntersectionObserver when the ref changes', () => {
-		let newRef;
+		let newRef!: MutableRefObject< HTMLSpanElement | null >;
 		act( () => {
-			targetRef = createRef();
-			newRef = createRef();
+			targetRef = createRef< HTMLDivElement >();
+			newRef = createRef< HTMLSpanElement >();
 			render(
 				<div ref={ targetRef }>
 					<span ref={ newRef } />
-				</div>,
-				container
+				</div>
 			);
 		} );
 
 		const observerOptions = { root: null, threshold: 0.8 };
-		const { rerender } = renderHook(
+		const { rerender } = renderHook<
+			IntersectionProps,
+			IntersectionObserverEntry | null
+		>(
 			( { refToUse, options } ) =>
 				useLatestIntersection( refToUse, options ),
 			{
@@ -221,12 +231,15 @@ describe( 'useLatestIntersection', () => {
 
 	it( 'should setup a new IntersectionObserver when the options change', () => {
 		act( () => {
-			targetRef = createRef();
-			render( <div ref={ targetRef } />, container );
+			targetRef = createRef< HTMLDivElement >();
+			render( <div ref={ targetRef } /> );
 		} );
 
 		const initialObserverOptions = { root: null, threshold: 0.8 };
-		const { rerender } = renderHook(
+		const { rerender } = renderHook<
+			IntersectionProps,
+			IntersectionObserverEntry | null
+		>(
 			( { refToUse, options } ) =>
 				useLatestIntersection( refToUse, options ),
 			{

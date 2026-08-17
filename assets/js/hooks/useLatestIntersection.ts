@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import type { RefObject } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { useEffect, useState } from '@wordpress/element';
@@ -34,19 +39,22 @@ import { useEffect, useState } from '@wordpress/element';
  * @param {Object} options Options for the Intersection Observer.
  * @return {IntersectionObserverEntry | null} The latest Intersection Observer entry.
  */
-function useLatestIntersection( ref, options ) {
+function useLatestIntersection(
+	ref: RefObject< Element | null >,
+	options: IntersectionObserverInit
+): IntersectionObserverEntry | null {
 	const [ intersectionObserverEntry, setIntersectionObserverEntry ] =
-		useState( null );
+		useState< IntersectionObserverEntry | null >( null );
 
 	useEffect( () => {
+		function handler( entries: IntersectionObserverEntry[] ) {
+			setIntersectionObserverEntry( entries[ entries.length - 1 ] );
+		}
+
 		if (
 			ref.current &&
 			typeof global.IntersectionObserver === 'function'
 		) {
-			function handler( entries ) {
-				setIntersectionObserverEntry( entries[ entries.length - 1 ] );
-			}
-
 			const observer = new global.IntersectionObserver(
 				handler,
 				options
