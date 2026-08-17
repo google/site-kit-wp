@@ -24,26 +24,35 @@ import { useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import {
+	Select,
+	UseSelect,
+	useSelect as useSelectWithRequiredDeps,
+} from 'googlesitekit-data';
 import { deleteItem, getItem } from '@/js/googlesitekit/api/cache';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { trackEvent } from '@/js/util';
 import { useFeature } from './useFeature';
 import useViewContext from './useViewContext';
 
+// These selectors deliberately omit `deps`. See the `UseSelect` type.
+const useSelect = useSelectWithRequiredDeps as UseSelect;
+
 /**
  * Tracks the successful user and site setup.
  *
  * @since 1.132.0
+ *
+ * @return {void}
  */
-export function useGlobalTrackingEffect() {
+export function useGlobalTrackingEffect(): void {
 	const viewContext = useViewContext();
 
-	const isUsingProxy = useSelect( ( select ) =>
+	const isUsingProxy = useSelect( ( select: Select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
 
-	const setupErrorMessage = useSelect( ( select ) =>
+	const setupErrorMessage = useSelect( ( select: Select ) =>
 		select( CORE_SITE ).getSetupErrorMessage()
 	);
 

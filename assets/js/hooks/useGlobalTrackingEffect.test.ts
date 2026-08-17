@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { getStorage, setItem } from '@/js/googlesitekit/api/cache';
@@ -35,13 +40,13 @@ const mockTrackEvent = jest
 	.mockImplementation( () => Promise.resolve() );
 
 describe( 'useGlobalTrackingEffect', () => {
-	let registry;
-	let storage;
+	let registry: WPDataRegistry;
+	let storage: NonNullable< Awaited< ReturnType< typeof getStorage > > >;
 
 	beforeEach( async () => {
 		registry = createTestRegistry();
 		mockTrackEvent.mockClear();
-		storage = await getStorage();
+		storage = ( await getStorage() )!;
 
 		provideSiteInfo( registry );
 	} );
