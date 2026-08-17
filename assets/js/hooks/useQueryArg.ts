@@ -46,15 +46,26 @@ interface QueryArgGlobal {
  */
 function useQueryArg< T = string >(
 	key: string,
+	initialValue: T,
+	_global?: QueryArgGlobal
+): [ T, ( newValue?: T ) => void ];
+function useQueryArg< T = string >(
+	key: string,
+	initialValue?: T,
+	_global?: QueryArgGlobal
+): [ T | undefined, ( newValue?: T ) => void ];
+function useQueryArg< T = string >(
+	key: string,
 	initialValue?: T,
 	_global: QueryArgGlobal = global
-): [ T, ( newValue?: T ) => void ] {
-	const [ value, setValue ] = useState(
-		( getQueryArg( _global.location.href, key ) || initialValue ) as T
+): [ T | undefined, ( newValue?: T ) => void ] {
+	const [ value, setValue ] = useState< T | undefined >(
+		( getQueryArg( _global.location.href, key ) as T | undefined ) ||
+			initialValue
 	);
 
 	function onSetValue( newValue?: T ) {
-		setValue( newValue as T );
+		setValue( newValue );
 
 		const url = new URL( _global.location.href );
 		const { hash } = url;
