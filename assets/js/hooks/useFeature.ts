@@ -35,7 +35,7 @@ import { isFeatureEnabled } from '@/js/features';
  * @param {string} feature The feature flag name to check enabled state for.
  * @return {boolean} `true` if the feature is enabled, `false` otherwise.
  */
-export function useFeature( feature ) {
+export function useFeature( feature: string ): boolean {
 	const enabledFeatures = useContext( FeaturesContext );
 
 	return isFeatureEnabled( feature, enabledFeatures );
