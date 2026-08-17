@@ -40,22 +40,16 @@ import {
 } from '@/js/googlesitekit/data/utils';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
+import { type CTA, type CreateCTAData, getCTATypeHandler } from './cta-types';
 
 const { setErrorForAction, clearActionError } = errorStoreActions;
-
-type CTA = Record< string, unknown >;
-
-type NewsletterConfig = Record< string, unknown >;
 
 interface PublicationParams {
 	organizationID: string;
 	publicationID: string;
 }
 
-interface CreateCTAParams extends PublicationParams {
-	newsletterConfig: NewsletterConfig;
-	displayName?: string;
-}
+type CreateCTAParams = PublicationParams & CreateCTAData;
 
 interface CTAsState {
 	ctas: Record< string, CTA[] | undefined >;
@@ -99,11 +93,13 @@ function validatePublicationParams( params: unknown ): void {
 function validateCreateCTAParams( params: unknown ): void {
 	validatePublicationParams( params );
 
-	const { newsletterConfig } = params as Record< string, unknown >;
+	const { type, config, displayName } = params as Record< string, unknown >;
+
+	getCTATypeHandler( type ).validateConfig( config );
 
 	invariant(
-		isPlainObject( newsletterConfig ),
-		'newsletterConfig is required and must be an object.'
+		displayName === undefined || typeof displayName === 'string',
+		'displayName must be a string.'
 	);
 }
 
@@ -141,25 +137,29 @@ const fetchCreateCTAStore = createFetchStore( {
 	controlCallback: ( {
 		organizationID,
 		publicationID,
-		newsletterConfig,
+		type,
+		config,
 		displayName,
 	}: CreateCTAParams ) =>
 		set( 'modules', MODULE_SLUG_READER_REVENUE_MANAGER, 'create-cta', {
 			organizationID,
 			publicationID,
-			newsletterConfig,
+			type,
+			config,
 			displayName,
 		} ),
 	reducerCallback: createReducer( () => {} ),
 	argsToParams: ( {
 		organizationID,
 		publicationID,
-		newsletterConfig,
+		type,
+		config,
 		displayName,
 	}: CreateCTAParams ) => ( {
 		organizationID,
 		publicationID,
-		newsletterConfig,
+		type,
+		config,
 		displayName,
 	} ),
 	validateParams: validateCreateCTAParams,
@@ -172,15 +172,16 @@ const baseInitialState: CTAsState = {
 
 const baseActions = {
 	/**
-	 * Creates a newsletter sign-up CTA for the given publication.
+	 * Creates a CTA for the given publication.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param  params                  Parameters.
-	 * @param  params.organizationID   Organization ID.
-	 * @param  params.publicationID    Publication ID.
-	 * @param  params.newsletterConfig Newsletter sign-up configuration.
-	 * @param  params.displayName      Optional internal display name.
+	 * @param  params                Parameters.
+	 * @param  params.organizationID Organization ID.
+	 * @param  params.publicationID  Publication ID.
+	 * @param  params.type           CTA type.
+	 * @param  params.config         Type-specific CTA configuration.
+	 * @param  params.displayName    Optional internal display name.
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	createCTA: createValidatedAction(
