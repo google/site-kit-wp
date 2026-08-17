@@ -76,7 +76,7 @@ describe( 'InviteUserList', () => {
 		);
 
 		expect(
-			getByText( 'No users are eligible to receive invitations.' )
+			getByText( /no users are eligible to receive invitations/i )
 		).toBeInTheDocument();
 	} );
 
@@ -91,7 +91,7 @@ describe( 'InviteUserList', () => {
 		);
 
 		expect(
-			getByText( 'No users match your search.' )
+			getByText( /no users match your search/i )
 		).toBeInTheDocument();
 	} );
 
@@ -106,7 +106,7 @@ describe( 'InviteUserList', () => {
 		);
 
 		expect(
-			container.querySelector( '.googlesitekit-invite-user-row--loading' )
+			container.querySelector( '.googlesitekit-user-row--loading' )
 		).toBeInTheDocument();
 	} );
 
@@ -125,7 +125,7 @@ describe( 'InviteUserList', () => {
 			{ registry }
 		);
 
-		expect( getByText( 'Invitation sent' ) ).toBeInTheDocument();
-		expect( getByText( 'Failed to send invite.' ) ).toBeInTheDocument();
+		expect( getByText( /invitation sent/i ) ).toBeInTheDocument();
+		expect( getByText( /failed to send invite/i ) ).toBeInTheDocument();
 	} );
 } );
