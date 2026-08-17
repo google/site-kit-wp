@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
@@ -28,10 +33,18 @@ import {
 } from '@tests/js/test-utils';
 import { useMonitorInternetConnection } from './useMonitorInternetConnection';
 
+interface UIStore {
+	getState: () => { isOnline: boolean };
+}
+
+// The registry exposes its stores at runtime, but `WPDataRegistry` doesn't
+// declare them.
+type RegistryWithStores = { stores: Record< string, { store: UIStore } > };
+
 describe( 'useMonitorInternetConnection', () => {
-	let registry;
-	let store;
-	let originalNavigatorOnline;
+	let registry: WPDataRegistry;
+	let store: UIStore;
+	let originalNavigatorOnline: boolean;
 
 	function setNavigatorOnlineStatus( status = true ) {
 		Object.defineProperty( navigator, 'onLine', {
@@ -49,7 +62,8 @@ describe( 'useMonitorInternetConnection', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
-		store = registry.stores[ CORE_UI ].store;
+		store = ( registry as unknown as RegistryWithStores ).stores[ CORE_UI ]
+			.store;
 
 		setNavigatorOnlineStatus( true );
 	} );
@@ -171,7 +185,7 @@ describe( 'useMonitorInternetConnection', () => {
 
 		await act( async () => {
 			jest.advanceTimersByTime( 1 );
-			await new Promise( ( resolve ) => resolve() );
+			await new Promise< void >( ( resolve ) => resolve() );
 		} );
 
 		expect( fetchMock ).toHaveFetchedTimes( 1 );

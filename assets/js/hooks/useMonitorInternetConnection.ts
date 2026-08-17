@@ -30,19 +30,29 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import {
+	Select,
+	UseSelect,
+	useDispatch,
+	useSelect as useSelectWithRequiredDeps,
+} from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+
+// This selector deliberately omits `deps`. See the `UseSelect` type.
+const useSelect = useSelectWithRequiredDeps as UseSelect;
 
 /**
  * Monitors the user's internet connection status.
  *
  * @since 1.118.0
  * @since 1.136.0 Changed the connection check endpoint.
+ *
+ * @return {void}
  */
-export function useMonitorInternetConnection() {
+export function useMonitorInternetConnection(): void {
 	const { setIsOnline } = useDispatch( CORE_UI );
 
-	const isOnline = useSelect( ( select ) => {
+	const isOnline = useSelect( ( select: Select ) => {
 		return select( CORE_UI ).getIsOnline();
 	} );
 
