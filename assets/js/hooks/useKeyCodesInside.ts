@@ -38,9 +38,11 @@ export function useKeyCodesInside(
 	handler: ( event: KeyboardEvent ) => void
 ): void {
 	useKey( ( event ) => {
+		// `useKey` listens globally as soon as this hook runs, which can be
+		// before the ref is attached, so the current element may be missing.
 		return (
 			keyCodes.includes( event.keyCode ) &&
-			ref.current!.contains( event.target as Node )
+			!! ref.current?.contains( event.target as Node )
 		);
 	}, handler );
 }

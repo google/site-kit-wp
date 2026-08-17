@@ -30,11 +30,20 @@ import { useKeyCodesInside } from './useKeyCodesInside';
 
 interface TestComponentProps {
 	onKeyCodeInside: () => void;
+	/** Set to `false` to return early, leaving the ref unattached. */
+	renderTarget?: boolean;
 }
 
-function TestComponent( { onKeyCodeInside }: TestComponentProps ) {
+function TestComponent( {
+	onKeyCodeInside,
+	renderTarget = true,
+}: TestComponentProps ) {
 	const wrapperRef = useRef< HTMLDivElement >( null );
 	useKeyCodesInside( [ ESCAPE, TAB ], wrapperRef, onKeyCodeInside );
+
+	if ( ! renderTarget ) {
+		return null;
+	}
 
 	return <div ref={ wrapperRef }>TestComponent</div>;
 }
@@ -80,6 +89,24 @@ describe( 'useKeyCodesInside', () => {
 		fireEvent.keyDown( testComponent, { keyCode: SPACE } );
 		fireEvent.keyDown( document, { keyCode: ENTER } );
 		fireEvent.keyDown( document, { keyCode: SPACE } );
+
+		expect( onKeyCodeInsideMock ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should not call handler or throw when the ref has no current element', () => {
+		// Components that call the hook and then return early never attach the
+		// ref, but the key listener is registered as soon as the hook runs.
+		render(
+			<TestComponent
+				onKeyCodeInside={ onKeyCodeInsideMock }
+				renderTarget={ false }
+			/>
+		);
+
+		expect( () => {
+			fireEvent.keyDown( document, { keyCode: ESCAPE } );
+			fireEvent.keyDown( document, { keyCode: TAB } );
+		} ).not.toThrow();
 
 		expect( onKeyCodeInsideMock ).not.toHaveBeenCalled();
 	} );
