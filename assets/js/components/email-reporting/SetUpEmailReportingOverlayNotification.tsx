@@ -75,6 +75,7 @@ const SetUpEmailReportingOverlayNotification: FC<
 		<Notification>
 			<OverlayNotification
 				notificationID={ id }
+				className="googlesitekit-email-reporting-introduction-overlay"
 				anchorID={ `.${ MANAGE_EMAIL_REPORTS_BUTTON_CLASS }` }
 				title={ __(
 					'Get site insights in your inbox',
