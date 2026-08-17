@@ -30,6 +30,10 @@ import useViewContext from './useViewContext';
 export const DASHBOARD_TYPE_MAIN = VIEW_CONTEXT_MAIN_DASHBOARD;
 export const DASHBOARD_TYPE_ENTITY = VIEW_CONTEXT_ENTITY_DASHBOARD;
 
+export type DashboardType =
+	| typeof DASHBOARD_TYPE_MAIN
+	| typeof DASHBOARD_TYPE_ENTITY;
+
 /**
  * Determines dashboard type from the view context.
  *
@@ -37,7 +41,7 @@ export const DASHBOARD_TYPE_ENTITY = VIEW_CONTEXT_ENTITY_DASHBOARD;
  *
  * @return {string|null} The type of dashboard (either `DASHBOARD_TYPE_MAIN` or `DASHBOARD_TYPE_ENTITY`; `null` if not a Unified Dashboard page).
  */
-export default function useDashboardType() {
+export default function useDashboardType(): DashboardType | null {
 	const viewContext = useViewContext();
 
 	if (
