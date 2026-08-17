@@ -25,42 +25,11 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { findTextStrings } from '@/js/components/pdf-export/test-utils';
 import { PERCENT_FORMAT } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { numFmt } from '@/js/util';
 import { OTHER_SOURCES_GROUP_ID } from './shapeSiteGoalsPDFData';
 import SiteGoalsBreakdownGroupPDF from './SiteGoalsBreakdownGroupPDF';
-
-function findTextStrings( tree: TestRenderer.ReactTestRendererJSON ): string[] {
-	const textOutput: string[] = [];
-
-	function visit(
-		node:
-			| string
-			| number
-			| TestRenderer.ReactTestRendererJSON
-			| null
-			| undefined
-	) {
-		if ( node === null || node === undefined ) {
-			return;
-		}
-		if ( typeof node === 'string' ) {
-			textOutput.push( node );
-			return;
-		}
-		if ( typeof node === 'number' ) {
-			textOutput.push( String( node ) );
-			return;
-		}
-		const children = node.children;
-		if ( Array.isArray( children ) ) {
-			children.forEach( visit );
-		}
-	}
-
-	visit( tree );
-	return textOutput;
-}
 
 function renderGroup(
 	props: ComponentProps< typeof SiteGoalsBreakdownGroupPDF >
