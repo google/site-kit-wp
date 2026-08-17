@@ -21,13 +21,21 @@
 /**
  * External dependencies
  */
-import { debounce } from 'lodash';
+import { Cancelable, DebounceSettings, debounce } from 'lodash';
 import { useMemoOne } from 'use-memo-one';
 
 /**
  * WordPress dependencies
  */
 import { useEffect } from '@wordpress/element';
+
+type DebounceableFunction = ( ...args: never[] ) => unknown;
+
+type DebounceArgs< T extends DebounceableFunction > = [
+	func: T,
+	wait?: number,
+	options?: DebounceSettings
+];
 
 /**
  * Debounces a function with Lodash's `debounce`.
@@ -41,7 +49,9 @@ import { useEffect } from '@wordpress/element';
  * @param {...any} args Arguments passed to Lodash's `debounce`.
  * @return {Function} Debounced function.
  */
-export function useDebounce( ...args ) {
+export function useDebounce< T extends DebounceableFunction >(
+	...args: DebounceArgs< T >
+): T & Cancelable {
 	const debounced = useMemoOne( () => debounce( ...args ), args );
 	useEffect( () => () => debounced.cancel(), [ debounced ] );
 	return debounced;
