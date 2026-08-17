@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { mocked } from 'jest-mock';
+
+/**
  * Internal dependencies
  */
 import { renderHook } from '@tests/js/test-utils';
@@ -26,11 +31,15 @@ import useQueryArg from './useQueryArg';
 jest.mock( './useQueryArg', () => jest.fn() );
 
 describe( 'useForwardableParams', () => {
-	let queryArgs;
+	let queryArgs: Record< string, string | undefined >;
 
 	beforeEach( () => {
 		queryArgs = {};
-		useQueryArg.mockImplementation( ( key ) => [ queryArgs[ key ] ] );
+		// `useQueryArg` is generic over the query arg value, so its mock
+		// implementation is cast to the hook's own signature.
+		mocked( useQueryArg ).mockImplementation( ( ( key: string ) => [
+			queryArgs[ key ],
+		] ) as unknown as typeof useQueryArg );
 	} );
 
 	afterEach( () => {

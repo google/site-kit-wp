@@ -26,6 +26,11 @@ import { useMemo } from '@wordpress/element';
  */
 import useQueryArg from '@/js/hooks/useQueryArg';
 
+export interface ForwardableParams {
+	notification?: string;
+	panel?: string;
+}
+
 /**
  * Gets splash/auth params that should be forwarded to dashboard URLs.
  *
@@ -33,7 +38,7 @@ import useQueryArg from '@/js/hooks/useQueryArg';
  *
  * @return {Object} Forwardable query params.
  */
-export default function useForwardableParams() {
+export default function useForwardableParams(): ForwardableParams {
 	const [ notification ] = useQueryArg( 'notification' );
 	const [ panel ] = useQueryArg( 'panel' );
 
@@ -41,7 +46,7 @@ export default function useForwardableParams() {
 	// components that consume this hook when the query params
 	// haven't changed.
 	return useMemo( () => {
-		const params = {};
+		const params: ForwardableParams = {};
 
 		if ( notification ) {
 			params.notification = notification;
