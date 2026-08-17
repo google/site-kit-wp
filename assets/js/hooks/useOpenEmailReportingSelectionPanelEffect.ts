@@ -29,7 +29,7 @@ import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
 
-export default function useOpenEmailReportingSelectionPanelEffect() {
+export default function useOpenEmailReportingSelectionPanelEffect(): void {
 	const [ panel, setPanel ] = useQueryArg( 'panel' );
 	const { setValue: setUIValue } = useDispatch( CORE_UI );
 
