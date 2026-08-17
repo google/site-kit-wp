@@ -83,7 +83,7 @@ describe( 'useInViewSelect', () => {
 		expect( mapSelectMock ).toHaveBeenCalledTimes( 0 );
 
 		// Mark the provider as in-view.
-		act( () => setInView( true ) );
+		act( () => setInView!( true ) );
 
 		// Now the selector should be run and return the correct value.
 		expect( result.current ).toBe( '123' );
@@ -107,7 +107,7 @@ describe( 'useInViewSelect', () => {
 		expect( result.current ).toBe( '123' );
 		expect( mapSelectMock ).toHaveBeenCalledTimes( 2 );
 
-		act( () => setInView( false ) );
+		act( () => setInView!( false ) );
 
 		// The selector should still be run and return the correct value.
 		expect( result.current ).toBe( '123' );
@@ -131,7 +131,7 @@ describe( 'useInViewSelect', () => {
 		expect( result.current ).toBe( '123' );
 		expect( mapSelectMock ).toHaveBeenCalledTimes( 2 );
 
-		act( () => setInView( false ) );
+		act( () => setInView!( false ) );
 		await act( () => registry.dispatch( CORE_UI ).resetInViewHook() );
 
 		// The selector should still be run and return the correct value.
@@ -147,7 +147,7 @@ describe( 'useInViewSelect', () => {
 		expect( result.current ).toBe( '123' );
 		expect( mapSelectMock ).toHaveBeenCalledTimes( 3 );
 
-		act( () => setInView( true ) );
+		act( () => setInView!( true ) );
 
 		// The result updates to the value in the datastore once it is in view again.
 		expect( result.current ).toBe( '999' );

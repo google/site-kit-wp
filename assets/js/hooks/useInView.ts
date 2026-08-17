@@ -26,14 +26,27 @@ import { useUpdateEffect } from 'react-use';
  */
 // Imported directly from `@wordpress/data` to avoid circular
 // dependency/imports.
-import { useSelect } from '@wordpress/data';
+import { useSelect as useSelectWithRequiredDeps } from '@wordpress/data';
 import { useContext, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import type { Select, UseSelect } from 'googlesitekit-data';
 import InViewContext from '@/js/components/InViewProvider/InViewContext';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+
+// These selectors deliberately omit `deps`. See the `UseSelect` type.
+const useSelect = useSelectWithRequiredDeps as UseSelect;
+
+interface InViewState {
+	key: string;
+	value: boolean;
+}
+
+interface UseInViewOptions {
+	sticky?: boolean;
+}
 
 /**
  * Returns whether the nearest parent component tracking viewport detection is in-view.
@@ -44,15 +57,19 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
  * @param {boolean} options.sticky Set to `true` to always return `true` after the nearest viewport-detecting component has been in-view once. Defaults to `false`.
  * @return {boolean} `true` if the nearest parent component is in-view (or if `sticky` is `true`, if the component has ever been in-view); `false` if not..
  */
-export function useInView( { sticky = false } = {} ) {
-	const inView = useContext( InViewContext );
+export function useInView( {
+	sticky = false,
+}: UseInViewOptions = {} ): boolean {
+	// `InViewContext` is not typed yet: its provider supplies the in-view state
+	// object rather than the boolean the context is created with.
+	const inView = useContext( InViewContext ) as unknown as InViewState;
 
 	const [ hasBeenInViewOnce, setHasBeenInViewOnce ] = useState( false );
 
-	const resetCount = useSelect( ( select ) =>
+	const resetCount = useSelect( ( select: Select ) =>
 		select( CORE_UI ).getInViewResetCount()
 	);
-	const forceInView = useSelect( ( select ) =>
+	const forceInView = useSelect( ( select: Select ) =>
 		select( CORE_UI ).getValue( 'forceInView' )
 	);
 

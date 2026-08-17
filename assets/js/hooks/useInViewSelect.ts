@@ -17,15 +17,24 @@
  */
 
 /**
+ * External dependencies
+ */
+import type { DependencyList } from 'react';
+
+/**
  * WordPress dependencies
  */
-import { useSelect } from '@wordpress/data';
+import { useSelect as useSelectWithRequiredDeps } from '@wordpress/data';
 import { useCallback, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import type { Select, UseSelect } from 'googlesitekit-data';
 import { useInView } from './useInView';
+
+// This selector deliberately omits `deps`. See the `UseSelect` type.
+const useSelect = useSelectWithRequiredDeps as UseSelect;
 
 /**
  * Returns undefined when the component is not in view.
@@ -48,14 +57,17 @@ function notInViewCallback() {
  * @param {Array}    deps      Deps passed to `useInViewSelect`'s `deps` argument.
  * @return {*} The result of the selector if in-view; `undefined` if not in-view.
  */
-export function useInViewSelect( mapSelect, deps ) {
+export function useInViewSelect< T >(
+	mapSelect: ( select: Select ) => T,
+	deps?: DependencyList
+): T | undefined {
 	const isInView = useInView( { sticky: true } );
-	const latestSelectorResult = useRef();
+	const latestSelectorResult = useRef< T | undefined >();
 
 	// These are "pass-through" dependencies from the parent hook,
 	// and the parent should catch any hook rule violations.
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const mapSelectCallback = useCallback( mapSelect, deps );
+	const mapSelectCallback = useCallback( mapSelect, deps as DependencyList );
 
 	const selectorResult = useSelect(
 		isInView ? mapSelectCallback : notInViewCallback

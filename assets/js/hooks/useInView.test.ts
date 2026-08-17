@@ -43,7 +43,7 @@ describe( 'useInView', () => {
 
 		expect( result.current ).toBe( false );
 
-		act( () => setInView( true ) );
+		act( () => setInView!( true ) );
 
 		expect( result.current ).toBe( true );
 	} );
@@ -58,7 +58,7 @@ describe( 'useInView', () => {
 
 		expect( result.current ).toBe( true );
 
-		act( () => setInView( false ) );
+		act( () => setInView!( false ) );
 
 		expect( result.current ).toBe( true );
 	} );
@@ -73,7 +73,7 @@ describe( 'useInView', () => {
 
 		expect( result.current ).toBe( true );
 
-		act( () => setInView( false ) );
+		act( () => setInView!( false ) );
 
 		expect( result.current ).toBe( false );
 	} );
@@ -90,7 +90,7 @@ describe( 'useInView', () => {
 
 		expect( result.current ).toBe( true );
 
-		act( () => setInView( false ) );
+		act( () => setInView!( false ) );
 
 		expect( result.current ).toBe( true );
 
@@ -110,7 +110,7 @@ describe( 'useInView', () => {
 
 		expect( result.current ).toBe( true );
 
-		act( () => setInView( false ) );
+		act( () => setInView!( false ) );
 
 		expect( result.current ).toBe( true );
 
@@ -118,11 +118,11 @@ describe( 'useInView', () => {
 
 		expect( result.current ).toBe( false );
 
-		act( () => setInView( true ) );
+		act( () => setInView!( true ) );
 
 		expect( result.current ).toBe( true );
 
-		act( () => setInView( false ) );
+		act( () => setInView!( false ) );
 
 		expect( result.current ).toBe( true );
 	} );
