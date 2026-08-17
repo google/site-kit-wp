@@ -294,6 +294,38 @@ class Batch_Error_NotifierTest extends TestCase {
 		$this->assertSame( 1, $shared_count, 'Duplicate admin emails should be deduplicated.' );
 	}
 
+	public function test_fully_failed_batch_with_server_error_category_still_notifies_every_admin() {
+		self::factory()->user->create(
+			array(
+				'role'       => 'administrator',
+				'user_email' => 'admin-a@example.com',
+			)
+		);
+		self::factory()->user->create(
+			array(
+				'role'       => 'administrator',
+				'user_email' => 'admin-b@example.com',
+			)
+		);
+		$this->set_up_batch_with_category( 'server_error' );
+
+		$sent_to = array();
+
+		$this->email_sender->method( 'build_headers' )->willReturn( array() );
+		$this->email_sender->method( 'send' )
+			->willReturnCallback(
+				function ( $email ) use ( &$sent_to ) {
+					$sent_to[] = $email;
+					return true;
+				}
+			);
+
+		$this->create_notifier()->maybe_notify( 'batch-1' );
+
+		$this->assertContains( 'admin-a@example.com', $sent_to, 'Removing the unreachable server_error map entry should not stop a fully failed batch from notifying every admin via the generic fallback content.' );
+		$this->assertContains( 'admin-b@example.com', $sent_to, 'Removing the unreachable server_error map entry should not stop a fully failed batch from notifying every admin via the generic fallback content.' );
+	}
+
 	/**
 	 * @dataProvider data_module_specific_categories
 	 */

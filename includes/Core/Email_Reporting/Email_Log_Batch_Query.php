@@ -19,6 +19,7 @@
 
 namespace Google\Site_Kit\Core\Email_Reporting;
 
+use WP_Post;
 use WP_Query;
 
 /**
@@ -294,32 +295,62 @@ class Email_Log_Batch_Query {
 	}
 
 	/**
-	 * Gets the error details of the first email log
-	 * if ALL emails in the latest batch failed.
+	 * Gets the error details of the requesting user's own log within the latest batch.
+	 *
+	 * Scoped to the given user's own log so one administrator's failure doesn't
+	 * surface an error for another administrator whose own report succeeded.
 	 *
 	 * @since 1.172.0
+	 * @since n.e.x.t Scoped the read to the requesting user's own log instead of the
+	 *                site-level first post in the batch.
 	 *
-	 * @return string|null Error details or null if no error.
+	 * @param int $user_id Optional. User ID to read the error for. Default current user.
+	 * @return string|null Error details or null if the user has no failed log after max attempts.
 	 */
-	public function get_latest_batch_error() {
+	public function get_latest_batch_error( $user_id = 0 ) {
+		$user_id = $user_id > 0 ? (int) $user_id : get_current_user_id();
+
 		$batch_post_ids = $this->get_latest_batch_post_ids();
 
 		if ( empty( $batch_post_ids ) ) {
 			return null;
 		}
 
-		foreach ( $batch_post_ids as $post_id ) {
-			$status = get_post_status( $post_id );
+		$user_post_id = $this->find_batch_post_id_for_user( $batch_post_ids, $user_id );
 
-			$attempts = (int) get_post_meta( $post_id, Email_Log::META_SEND_ATTEMPTS, true );
+		if ( null === $user_post_id ) {
+			return null;
+		}
 
-			if ( Email_Log::STATUS_FAILED !== $status || $attempts < self::MAX_ATTEMPTS ) {
-				return null;
+		$status   = get_post_status( $user_post_id );
+		$attempts = (int) get_post_meta( $user_post_id, Email_Log::META_SEND_ATTEMPTS, true );
+
+		if ( Email_Log::STATUS_FAILED !== $status || $attempts < self::MAX_ATTEMPTS ) {
+			return null;
+		}
+
+		return get_post_meta( $user_post_id, Email_Log::META_ERROR_DETAILS, true );
+	}
+
+	/**
+	 * Finds the post ID within a batch authored by the given user.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array<int> $post_ids Batch post IDs.
+	 * @param int        $user_id  User ID to match against `post_author`.
+	 * @return int|null Matching post ID or null if the user has no log in the batch.
+	 */
+	private function find_batch_post_id_for_user( array $post_ids, $user_id ) {
+		foreach ( $post_ids as $post_id ) {
+			$post = get_post( $post_id );
+
+			if ( $post instanceof WP_Post && (int) $post->post_author === $user_id ) {
+				return (int) $post_id;
 			}
 		}
 
-		$first_post_id = min( $batch_post_ids );
-		return get_post_meta( $first_post_id, Email_Log::META_ERROR_DETAILS, true );
+		return null;
 	}
 
 	/**

@@ -41,12 +41,13 @@ class Batch_Error_Notifier {
 	 * Category ID to Content_Map key mapping.
 	 *
 	 * @since 1.175.0
+	 * @since n.e.x.t Removed the unreachable server_error entry; no PHP path sets that
+	 *                category and no error-email-server-* body content exists.
 	 * @var array
 	 */
 	const CATEGORY_CONTENT_MAP = array(
 		'permissions_error' => 'permissions',
 		'report_error'      => 'report',
-		'server_error'      => 'server',
 	);
 
 	/**

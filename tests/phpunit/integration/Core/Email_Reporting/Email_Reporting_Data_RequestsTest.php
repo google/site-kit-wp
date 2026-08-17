@@ -327,7 +327,7 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertArrayNotHasKey( Search_Console::MODULE_SLUG, $payload, 'Recoverable Search Console should be skipped.' );
 	}
 
-	public function test_secondary_admin_without_service_entity_access_gets_no_module_payload_and_no_error() {
+	public function test_secondary_admin_without_service_entity_access_gets_permissions_error() {
 		$owner_id           = self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$secondary_admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$this->authenticate_and_grant_required_scopes_for_user( $secondary_admin_id );
@@ -349,8 +349,22 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 			)
 		);
 
-		$this->assertIsArray( $payload, 'Secondary admin with no service-entity access should not fail the request.' );
-		$this->assertSame( array(), $payload, 'Modules without service-entity access should be excluded from payload.' );
+		$this->assertWPError( $payload, 'Secondary admin denied access to every connected module should get a categorized error instead of a fatal error.' );
+		$this->assertEquals( 'permissions_error', $payload->get_error_data()['category_id'], 'Denied service-entity access should be categorized as a permissions error.' );
+		$this->assertEquals( Analytics_4::MODULE_SLUG, $payload->get_error_data()['module_slug'], 'Categorized error should carry the first denied module slug.' );
+	}
+
+	public function test_get_user_payload__empty_payload_without_denial_returns_empty_array() {
+		$viewer_id = self::factory()->user->create( array( 'role' => 'editor' ) );
+
+		$this->activate_modules( Search_Console::MODULE_SLUG );
+		$this->set_active_modules( array( Search_Console::MODULE_SLUG ) );
+		$this->set_search_console_settings_connected();
+
+		$data_requests = $this->create_data_requests();
+		$payload       = $data_requests->get_user_payload( $viewer_id, $this->date_range );
+
+		$this->assertSame( array(), $payload, 'A genuinely empty payload with no access denials should still return an empty array, not an error.' );
 	}
 
 	public function test_secondary_admin_with_partial_service_entity_access_gets_only_accessible_modules() {
