@@ -104,10 +104,12 @@
 
 		.googlesitekit-selection-panel-items__subheading {
 			color: $c-surfaces-on-surface-variant;
-			font-size: $fs-body-sm;
-			font-weight: $fw-medium;
-			line-height: $lh-body-sm;
 			margin: $grid-gap-phone 0 0 $grid-gap-phone;
+
+			/* TODO: 11266 -- Remove this override and update VRT refrences. */
+			&.googlesitekit-typography.googlesitekit-typography--label {
+				letter-spacing: $ls-s;
+			}
 
 			@media (min-width: $bp-tablet) {
 				margin: $grid-gap-desktop 0 0 $grid-gap-desktop;
@@ -188,22 +190,6 @@
 		margin-top: auto;
 		padding: $grid-gap-desktop / 2 $grid-gap-desktop $grid-gap-desktop;
 		width: 100%;
-
-		p {
-			font-size: $fs-body-sm;
-			letter-spacing: $ls-xs;
-			line-height: $lh-label-sm;
-
-			@media (min-width: $bp-tablet) {
-				font-size: $fs-title-sm;
-			}
-		}
-
-		.googlesitekit-error-text {
-			p {
-				font-size: $fs-label-md;
-			}
-		}
 	}
 
 	.googlesitekit-selection-panel-footer__content {
@@ -219,8 +205,11 @@
 	}
 
 	.googlesitekit-selection-panel-footer__item-count {
-		font-size: $fs-title-sm;
-		font-weight: $fw-medium;
+		/* TODO: 11266 -- Remove this override and update VRT refrences. */
+		&.googlesitekit-typography.googlesitekit-typography--label.googlesitekit-typography--medium {
+			letter-spacing: $ls-xs;
+			line-height: $lh-label-sm;
+		}
 
 		.googlesitekit-selection-panel-footer__item-count--max-count {
 			color: $c-surfaces-on-surface-variant;

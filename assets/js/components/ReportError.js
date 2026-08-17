@@ -33,6 +33,8 @@ import { removeQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import {
@@ -139,13 +141,13 @@ export default function ReportError( {
 						message={ errorForNotice.message }
 					/>
 				) : (
-					<p key={ errorForNotice.message }>
+					<P key={ errorForNotice.message } size={ SIZE_MEDIUM }>
 						{ purify.sanitize( errorForNotice.message, {
 							// Ensures no HTML tags are passed as they would be
 							// escaped by React and appear as strings.
 							ALLOWED_TAGS: [],
 						} ) }
-					</p>
+					</P>
 				);
 			} ) }
 		</Fragment>

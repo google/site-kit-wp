@@ -25,14 +25,26 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Typography from '@/js/components/Typography';
+import {
+	SIZE_MEDIUM,
+	SIZE_SMALL,
+	TYPE_HEADLINE,
+	TYPE_TITLE,
+} from '@/js/components/Typography/constants';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 
 export default function Title( { children } ) {
+	const breakpoint = useBreakpoint();
+
+	const size = breakpoint === BREAKPOINT_SMALL ? SIZE_MEDIUM : SIZE_SMALL;
+	const type = breakpoint === BREAKPOINT_SMALL ? TYPE_TITLE : TYPE_HEADLINE;
+
 	return (
 		<Typography
 			as="h3"
-			size="medium"
-			type="title"
 			className="googlesitekit-overlay-card__title"
+			size={ size }
+			type={ type }
 		>
 			{ children }
 		</Typography>

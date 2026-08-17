@@ -36,6 +36,8 @@ import Notifications from '@/js/components/notifications/Notifications';
 import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
 import Services from '@/js/components/setup/Services';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import {
 	BREAKPOINT_SMALL,
@@ -92,7 +94,10 @@ export default function SplashContent( {
 					</Typography>
 
 					{ ( showLearnMoreLink || description ) && (
-						<p className="googlesitekit-setup__description">
+						<P
+							className="googlesitekit-setup__description"
+							size={ SIZE_MEDIUM }
+						>
 							{ ! showLearnMoreLink && description }
 
 							{ showLearnMoreLink &&
@@ -117,7 +122,7 @@ export default function SplashContent( {
 										),
 									}
 								) }
-						</p>
+						</P>
 					) }
 
 					{ getHelpURL && (

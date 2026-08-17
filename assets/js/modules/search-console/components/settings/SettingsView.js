@@ -27,6 +27,8 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import DisplaySetting from '@/js/components/DisplaySetting';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 
 export default function SettingsView() {
@@ -44,9 +46,12 @@ export default function SettingsView() {
 			>
 				{ __( 'Connected Property', 'google-site-kit' ) }
 			</Typography>
-			<p className="googlesitekit-settings-module__meta-item-data">
+			<P
+				className="googlesitekit-settings-module__meta-item-data"
+				size={ SIZE_MEDIUM }
+			>
 				<DisplaySetting value={ propertyID } />
-			</p>
+			</P>
 		</div>
 	);
 }

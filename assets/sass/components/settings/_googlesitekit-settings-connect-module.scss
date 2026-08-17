@@ -58,10 +58,12 @@
 		}
 
 		.googlesitekit-settings-connect-module__text {
-			font-size: $fs-body-md;
-			letter-spacing: $ls-s;
-			line-height: $lh-body-md;
-			margin: 0;
+			margin-block-start: 0;
+		}
+
+		/* TODO: 11266 -- Remove this override and update VRT refrences. */
+		.googlesitekit-settings-connect-module__cta.googlesitekit-typography {
+			line-height: $lh-body-lg;
 		}
 
 		.googlesitekit-settings-connect-module__switch {
@@ -70,11 +72,6 @@
 			.spinner {
 				margin-top: -5px;
 			}
-		}
-
-		.googlesitekit-settings-connect-module__cta {
-			font-size: $fs-body-md;
-			letter-spacing: $ls-s;
 		}
 	}
 }

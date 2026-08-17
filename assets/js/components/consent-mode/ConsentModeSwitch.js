@@ -32,6 +32,7 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import ErrorNotice from '@/js/components/ErrorNotice';
 import Link from '@/js/components/Link';
 import LoadingWrapper from '@/js/components/LoadingWrapper';
+import { SIZE_SMALL } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -133,12 +134,15 @@ export default function ConsentModeSwitch( { loading } ) {
 				}
 				{ saveError && <ErrorNotice message={ saveError.message } /> }
 				{ ! loading && isConsentModeEnabled && (
-					<p className="googlesitekit-settings-consent-mode-switch__enabled-notice">
+					<P
+						className="googlesitekit-settings-consent-mode-switch__enabled-notice"
+						size={ SIZE_SMALL }
+					>
 						{ __(
 							'Site Kit added the necessary code to your tag to comply with consent mode.',
 							'google-site-kit'
 						) }
-					</p>
+					</P>
 				) }
 				{
 					<LoadingWrapper
@@ -151,7 +155,7 @@ export default function ConsentModeSwitch( { loading } ) {
 						tabletWidth="540px"
 						tabletHeight="84px"
 					>
-						<P>
+						<P className="googlesitekit-settings-consent-mode-switch-description">
 							{ createInterpolateElement(
 								__(
 									'Consent mode will help adjust tracking on your site, so only visitors who have explicitly given consent are tracked. <br />This is required in some parts of the world, like the European Economic Area. <a>Learn more</a>',
