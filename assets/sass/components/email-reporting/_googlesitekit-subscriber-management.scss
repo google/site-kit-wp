@@ -1,0 +1,43 @@
+/**
+ * Subscriber Management styles.
+ *
+ * The tab bar switching between "Invite others to subscribe" and
+ * "Subscribed users", and the "Subscribed users" tab's own content.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+	// Carries the spacing that used to belong to `.googlesitekit-invite-others-to-subscribe`
+	// alone, now that the tab bar sits above either tab's content.
+	.googlesitekit-subscriber-management {
+		display: flex;
+		flex: 1 0 auto;
+		flex-direction: column;
+		margin-top: 70px;
+		min-height: 0;
+
+		@media (height < 800px) {
+			margin-top: $grid-gap-phone;
+		}
+	}
+
+	.googlesitekit-subscribed-users {
+		display: flex;
+		flex: 1 0 auto;
+		flex-direction: column;
+		min-height: 0;
+	}
+}
