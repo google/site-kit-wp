@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import {
@@ -38,9 +43,13 @@ import {
 } from '@tests/js/test-utils';
 import useCompleteModuleActivationCallback from './useCompleteModuleActivationCallback';
 
+type CallbackResult = {
+	current: ReturnType< typeof useCompleteModuleActivationCallback >;
+};
+
 describe( 'useCompleteModuleActivationCallback', () => {
 	mockLocation();
-	let registry;
+	let registry: WPDataRegistry;
 
 	beforeEach( async () => {
 		registry = createTestRegistry();
@@ -60,7 +69,7 @@ describe( 'useCompleteModuleActivationCallback', () => {
 			{ body: { needsReauthentication: false } }
 		);
 
-		let result;
+		let result!: CallbackResult;
 		await act( async () => {
 			( { result } = await renderHook(
 				() =>
@@ -70,10 +79,10 @@ describe( 'useCompleteModuleActivationCallback', () => {
 				{ registry }
 			) );
 
-			return waitForDefaultTimeouts();
+			await waitForDefaultTimeouts();
 		} );
 
-		await result.current();
+		await result.current!();
 
 		const reauthURL = registry
 			.select( MODULES_ANALYTICS_4 )
@@ -100,7 +109,7 @@ describe( 'useCompleteModuleActivationCallback', () => {
 			[ PERMISSION_MANAGE_OPTIONS ]: false,
 		} );
 
-		let result;
+		let result!: CallbackResult;
 		await act( async () => {
 			( { result } = await renderHook(
 				() =>
@@ -110,7 +119,7 @@ describe( 'useCompleteModuleActivationCallback', () => {
 				{ registry }
 			) );
 
-			return waitForDefaultTimeouts();
+			await waitForDefaultTimeouts();
 		} );
 
 		expect( result.current ).toBeNull();

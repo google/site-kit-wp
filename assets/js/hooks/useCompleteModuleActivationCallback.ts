@@ -24,13 +24,21 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import {
+	Select,
+	UseSelect,
+	useDispatch,
+	useSelect as useSelectWithRequiredDeps,
+} from 'googlesitekit-data';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+
+// These selectors deliberately omit `deps`. See the `UseSelect` type.
+const useSelect = useSelectWithRequiredDeps as UseSelect;
 
 /**
  * Returns a callback to navigate users to the module's authentication URL.
@@ -42,14 +50,16 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
  * @param {string} moduleSlug Module slug.
  * @return {Function|null} Callback that navigates to a module's reauth URL, null if the module doesn't exist or the user can't manage options.
  */
-export default function useCompleteModuleActivationCallback( moduleSlug ) {
-	const canManageOptions = useSelect( ( select ) =>
+export default function useCompleteModuleActivationCallback(
+	moduleSlug: string
+): ( () => void ) | null {
+	const canManageOptions = useSelect( ( select: Select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
 	);
-	const moduleStoreName = useSelect( ( select ) =>
+	const moduleStoreName = useSelect( ( select: Select ) =>
 		select( CORE_MODULES ).getModuleStoreName( moduleSlug )
 	);
-	const adminReauthURL = useSelect( ( select ) =>
+	const adminReauthURL = useSelect( ( select: Select ) =>
 		select( moduleStoreName )?.getAdminReauthURL()
 	);
 	const { navigateTo } = useDispatch( CORE_LOCATION );
