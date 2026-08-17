@@ -26,11 +26,11 @@ import { useEffect, useState } from '@wordpress/element';
  *
  * @since 1.16.0
  *
- * @param {string} value The value to be debounced.
+ * @param {*}      value The value to be debounced.
  * @param {number} delay Number of milliseconds to debounce.
- * @return {string} The update value after the delay.
+ * @return {*} The update value after the delay.
  */
-export function useDebouncedState( value, delay ) {
+export function useDebouncedState< T >( value: T, delay: number ): T {
 	const [ debouncedValue, setDebouncedValue ] = useState( value );
 
 	useEffect( () => {
