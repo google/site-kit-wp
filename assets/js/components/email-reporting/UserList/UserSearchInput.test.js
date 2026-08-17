@@ -1,5 +1,5 @@
 /**
- * InviteSearchInput tests.
+ * UserSearchInput tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -25,9 +25,9 @@ import { fireEvent } from '@testing-library/react';
  * Internal dependencies
  */
 import { createTestRegistry, render } from '@tests/js/test-utils';
-import InviteSearchInput from './InviteSearchInput';
+import UserSearchInput from './UserSearchInput';
 
-describe( 'InviteSearchInput', () => {
+describe( 'UserSearchInput', () => {
 	let registry;
 
 	beforeEach( () => {
@@ -37,7 +37,7 @@ describe( 'InviteSearchInput', () => {
 	it( 'calls onChange on every keystroke', () => {
 		const onChange = jest.fn();
 		const { getByLabelText } = render(
-			<InviteSearchInput value="" onChange={ onChange } />,
+			<UserSearchInput value="" onChange={ onChange } />,
 			{ registry }
 		);
 		const searchInput = getByLabelText(
@@ -58,7 +58,7 @@ describe( 'InviteSearchInput', () => {
 	it( 'clears search when clear button is clicked', () => {
 		const onChange = jest.fn();
 		const { getByLabelText } = render(
-			<InviteSearchInput value="abc" onChange={ onChange } />,
+			<UserSearchInput value="abc" onChange={ onChange } />,
 			{ registry }
 		);
 
