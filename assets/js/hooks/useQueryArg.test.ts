@@ -22,8 +22,13 @@
 import { actHook, renderHook } from '@tests/js/test-utils';
 import useQueryArg from './useQueryArg';
 
+interface MockGlobal {
+	location: { href: string };
+	history: { replaceState: jest.Mock };
+}
+
 describe( 'useQueryArg', () => {
-	let mockGlobal;
+	let mockGlobal: MockGlobal;
 	const historyReplaceStateMock = jest.fn();
 
 	beforeAll( () => {

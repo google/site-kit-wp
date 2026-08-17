@@ -23,6 +23,18 @@ import { useState } from '@wordpress/element';
 import { addQueryArgs, getQueryArg } from '@wordpress/url';
 
 /**
+ * The parts of the global window object this hook reads from and writes to.
+ */
+interface QueryArgGlobal {
+	location: {
+		href: string;
+	};
+	history: {
+		replaceState: History[ 'replaceState' ];
+	};
+}
+
+/**
  * Uses a location query param as a variable in a component.
  *
  * @since 1.24.0
@@ -32,13 +44,17 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
  * @param {Object} [_global]      The global window object.
  * @return {Array} The getter and setter for the query param state.
  */
-function useQueryArg( key, initialValue, _global = global ) {
+function useQueryArg< T = string >(
+	key: string,
+	initialValue?: T,
+	_global: QueryArgGlobal = global
+): [ T, ( newValue?: T ) => void ] {
 	const [ value, setValue ] = useState(
-		getQueryArg( _global.location.href, key ) || initialValue
+		( getQueryArg( _global.location.href, key ) || initialValue ) as T
 	);
 
-	function onSetValue( newValue ) {
-		setValue( newValue );
+	function onSetValue( newValue?: T ) {
+		setValue( newValue as T );
 
 		const url = new URL( _global.location.href );
 		const { hash } = url;
