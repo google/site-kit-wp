@@ -22,7 +22,7 @@ export const USER_SETTINGS_SELECTION_PANEL_OPENED_KEY =
 /**
  * Class name on the header button that opens the email reports panel.
  *
- * The setup tooltip anchors to this button, so the class is shared rather than
+ * The setup overlay anchors to this button, so the class is shared rather than
  * repeated as a selector string.
  *
  * @since n.e.x.t
