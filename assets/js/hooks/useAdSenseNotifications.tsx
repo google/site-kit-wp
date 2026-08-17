@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import type { ElementType } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { useEffect, useState } from '@wordpress/element';
@@ -25,7 +30,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import {
+	Select,
+	UseSelect,
+	useDispatch,
+	useSelect as useSelectWithRequiredDeps,
+} from 'googlesitekit-data';
 import NotificationFromServer from '@/js/components/NotificationFromServer';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
@@ -35,22 +45,35 @@ import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import AdSenseCircularIcon from '@/svg/graphics/adsense-circular.svg';
 import useViewContext from './useViewContext';
 
-export default function useAdSenseNotifications() {
+// These selectors deliberately omit `deps`. See the `UseSelect` type.
+const useSelect = useSelectWithRequiredDeps as UseSelect;
+
+interface AdSenseServerNotification {
+	id: string;
+	title?: string;
+	content?: string;
+	description?: string;
+	dismissible?: boolean;
+	isDismissible?: boolean;
+	priority?: number;
+}
+
+export default function useAdSenseNotifications(): void {
 	const viewContext = useViewContext();
 
-	const adSenseModuleConnected = useSelect( ( select ) =>
+	const adSenseModuleConnected = useSelect( ( select: Select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE )
 	);
-	const accountID = useSelect( ( select ) =>
+	const accountID = useSelect( ( select: Select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
 	);
 
-	const [ registeredNotifications, setRegisteredNotifications ] = useState(
-		[]
-	);
+	const [ registeredNotifications, setRegisteredNotifications ] = useState<
+		string[]
+	>( [] );
 	const { registerNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const notifications = useSelect( ( select ) =>
+	const notifications = useSelect( ( select: Select ) =>
 		select( MODULES_ADSENSE ).getNotifications()
 	);
 
@@ -65,7 +88,7 @@ export default function useAdSenseNotifications() {
 		// registered.
 		//
 		// (Usually there will be one, if any, notification from the server.)
-		notifications?.forEach( ( notification ) => {
+		notifications?.forEach( ( notification: AdSenseServerNotification ) => {
 			if ( registeredNotifications.includes( notification.id ) ) {
 				return;
 			}
@@ -116,7 +139,7 @@ export default function useAdSenseNotifications() {
 			};
 
 			registerNotification( notification.id, {
-				Component( { Notification } ) {
+				Component( { Notification }: { Notification: ElementType } ) {
 					return (
 						<Notification
 							gaTrackingEventArgs={ gaTrackingEventArgs }
