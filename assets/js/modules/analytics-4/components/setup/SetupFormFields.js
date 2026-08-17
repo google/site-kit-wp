@@ -26,6 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
+import { SIZE_LARGE, SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { useFeature } from '@/js/hooks/useFeature';
 import {
@@ -88,12 +90,15 @@ export default function SetupFormFields() {
 	return (
 		<Fragment>
 			{ !! accounts.length && (
-				<p className="googlesitekit-setup-module__select_account">
+				<P
+					className="googlesitekit-setup-module__select_account"
+					size={ setupFlowRefreshEnabled ? SIZE_LARGE : SIZE_MEDIUM }
+				>
 					{ __(
 						'Please select the account information below. You can change this later in your settings.',
 						'google-site-kit'
 					) }
-				</p>
+				</P>
 			) }
 
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--grid-layout">

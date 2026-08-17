@@ -65,30 +65,19 @@
 		}
 
 		.googlesitekit-overlay-card__description {
-			font-size: $fs-body-sm;
-			font-weight: $fw-normal;
-			letter-spacing: $ls-xs;
-			line-height: $lh-body-sm;
 			margin: 0;
 		}
 
 		@media (min-width: $bp-tablet) {
 			padding: $grid-gap-desktop;
 
-			.googlesitekit-typography.googlesitekit-overlay-card__title {
-				font-family: $f-secondary;
-				font-size: $fs-headline-sm;
-				font-weight: $fw-normal;
-				letter-spacing: unset;
-				line-height: $lh-headline-sm;
+			.googlesitekit-overlay-card__title {
 				margin: 0 0 5px;
-			}
 
-			.googlesitekit-overlay-card__description {
-				font-size: $fs-body-md;
-				font-weight: $fw-normal;
-				letter-spacing: $ls-s;
-				line-height: $lh-body-md;
+				/* TODO: 11266 -- Remove this override and update VRT refrences. */
+				&.googlesitekit-typography {
+					letter-spacing: unset;
+				}
 			}
 		}
 	}

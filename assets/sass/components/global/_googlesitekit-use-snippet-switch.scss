@@ -20,7 +20,7 @@
 
 	.googlesitekit-analytics-usesnippet,
 	.googlesitekit-tagmanager-usesnippet {
-
+		/* TODO: 11266 -- Correct typography in components, remove this override and update VRT refrences. */
 		p {
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-xs;

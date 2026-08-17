@@ -19,6 +19,10 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-setup-module--analytics {
+		/* TODO: 11266 -- Remove this override and update VRT refrences. */
+		.googlesitekit-setup-module__select_account.googlesitekit-typography {
+			line-height: $lh-body-lg;
+		}
 
 		&.googlesitekit-feature--setupFlowRefresh {
 
@@ -122,8 +126,6 @@
 			}
 
 			.googlesitekit-setup-module__select_account {
-				font-size: $fs-body-lg;
-				letter-spacing: $ls-m;
 				margin-bottom: 0;
 
 				@media (max-width: $bp-desktop) {
@@ -171,7 +173,7 @@
 				}
 
 				.googlesitekit-analytics-enable-enhanced-measurement {
-
+					/* TODO: 11266 -- Correct typography in components, remove this override and update VRT refrences. */
 					.googlesitekit-module-settings-group__helper-text {
 						color: $c-surfaces-on-surface-variant;
 						font-size: $fs-body-sm;
@@ -179,6 +181,7 @@
 						margin: 8px 0 0;
 					}
 
+					/* TODO: 11266 -- Correct typography in components, remove this override and update VRT refrences. */
 					.googlesitekit-analytics-enable-enhanced-measurement__already-enabled-label {
 						font-size: $fs-body-sm;
 						letter-spacing: $ls-xs;

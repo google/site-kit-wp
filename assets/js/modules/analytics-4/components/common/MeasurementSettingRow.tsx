@@ -71,6 +71,7 @@ const MeasurementSettingRow: FC< MeasurementSettingRowProps > = ( {
 					<p className="googlesitekit-settings-measurement-row__title">
 						{ title }
 					</p>
+					{ /* TODO: 11266 -- Use P typography component and remove CSS overrides. */ }
 					<p className="googlesitekit-module-settings-group__helper-text">
 						{ description }
 					</p>

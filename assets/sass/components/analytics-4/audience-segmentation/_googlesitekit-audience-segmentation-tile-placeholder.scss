@@ -59,10 +59,12 @@
 
 	p.googlesitekit-audience-segmentation-tile-placeholder__description {
 		color: $c-surfaces-on-background-variant;
-		font-family: $f-primary;
-		font-size: $fs-body-sm;
-		line-height: $lh-body-sm;
 		margin: 0;
+
+		/* TODO: 11266 -- Remove this override and update VRT refrences. */
+		&.googlesitekit-typography.googlesitekit-typography {
+			letter-spacing: $ls-s;
+		}
 
 		.googlesitekit-cta-link {
 			font-weight: $fw-medium;

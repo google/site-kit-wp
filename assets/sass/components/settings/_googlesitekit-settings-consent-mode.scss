@@ -21,13 +21,11 @@
 		.googlesitekit-settings-consent-mode-switch__enabled-notice,
 		.googlesitekit-settings-consent-mode-requirements__description {
 			color: $c-surfaces-on-background-variant;
-			font-size: $fs-body-sm;
-			letter-spacing: $ls-xs;
-			line-height: $lh-body-sm;
 		}
 
+		.googlesitekit-settings-consent-mode-switch-description,
 		.googlesitekit-settings-consent-mode-switch-description--loading {
-			margin: 14px 0;
+			margin: 1em 0;
 		}
 
 		.googlesitekit-settings-consent-mode-requirements__grid {
@@ -45,20 +43,19 @@
 			@media (min-width: $bp-nonMobile) {
 				padding: $grid-gap-desktop;
 			}
+		}
 
-			.googlesitekit-typography {
-				font-size: $fs-title-md;
-				font-weight: $fw-medium;
-				line-height: $lh-title-md;
-				margin: 0;
+		.googlesitekit-settings-consent-mode-requirement__title {
+			margin: 0;
+
+			/* TODO: 11266 -- Remove this override and update VRT refrences. */
+			&.googlesitekit-typography {
+				letter-spacing: 0;
 			}
 		}
 
 		.googlesitekit-settings-consent-mode-requirement__description {
 			flex: 1;
-			font-size: $fs-body-sm;
-			letter-spacing: $ls-xs;
-			line-height: $lh-body-sm;
 		}
 
 		.googlesitekit-notice {

@@ -31,6 +31,8 @@ import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import Typography from '@/js/components/Typography';
+import { SIZE_SMALL, TYPE_LABEL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import SpinnerButton, {
 	SPINNER_POSITION,
 } from '@/js/googlesitekit/components-gm2/SpinnerButton';
@@ -261,12 +263,16 @@ export default function AudienceCreationNotice() {
 	return (
 		<div className="googlesitekit-audience-selection-panel__audience-creation-notice">
 			<div className="googlesitekit-audience-selection-panel__audience-creation-notice-header">
-				<p className="googlesitekit-audience-selection-panel__audience-creation-notice-title">
+				<P
+					className="googlesitekit-audience-selection-panel__audience-creation-notice-title"
+					size={ SIZE_SMALL }
+					type={ TYPE_LABEL }
+				>
 					{ __(
 						'Create groups suggested by Site Kit',
 						'google-site-kit'
 					) }
-				</p>
+				</P>
 			</div>
 			<div className="googlesitekit-audience-selection-panel__audience-creation-notice-body">
 				{ siteKitAvailableAudiences &&
@@ -283,13 +289,16 @@ export default function AudienceCreationNotice() {
 										].displayName
 									}
 								</Typography>
-								<p className="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description">
+								<P
+									className="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description"
+									size={ SIZE_SMALL }
+								>
 									{
 										SITE_KIT_AUDIENCE_DEFINITIONS[
 											audienceSlug
 										].description
 									}
-								</p>
+								</P>
 							</div>
 							<div className="googlesitekit-audience-selection-panel__audience-creation-notice-audience-button">
 								<SpinnerButton
