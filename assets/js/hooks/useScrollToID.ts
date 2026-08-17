@@ -35,8 +35,9 @@ import { getNavigationalScrollTop } from '@/js/util/scroll';
  * @since 1.175.0
  *
  * @param {string} id The ID to scroll to.
+ * @return {void}
  */
-export default function useScrollToID( id ) {
+export default function useScrollToID( id: string ): void {
 	const [ scrollTo ] = useQueryArg( 'scrollTo' );
 
 	const breakpoint = useBreakpoint();
