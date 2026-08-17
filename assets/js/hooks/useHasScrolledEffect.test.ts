@@ -35,9 +35,8 @@ describe( 'useHasScrolledEffect', () => {
 			100,
 			true,
 		],
-		,
 	] )( '%s', async ( _, args, expected ) => {
-		let result;
+		let result!: { current: boolean };
 
 		await act( async () => {
 			( { result } = await renderHook( () => {
