@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import type { RefObject } from 'react';
 import { useKey } from 'react-use';
 
 /**
@@ -29,12 +30,17 @@ import { useKey } from 'react-use';
  * @param {Array}    keyCodes Array of keyCodes.
  * @param {Object}   ref      React ref to element containing target.
  * @param {Function} handler  Callback function.
+ * @return {void}
  */
-export function useKeyCodesInside( keyCodes, ref, handler ) {
+export function useKeyCodesInside(
+	keyCodes: number[],
+	ref: RefObject< Element | null >,
+	handler: ( event: KeyboardEvent ) => void
+): void {
 	useKey( ( event ) => {
 		return (
 			keyCodes.includes( event.keyCode ) &&
-			ref.current.contains( event.target )
+			ref.current!.contains( event.target as Node )
 		);
 	}, handler );
 }

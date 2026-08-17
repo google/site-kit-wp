@@ -28,16 +28,20 @@ import { ENTER, ESCAPE, SPACE, TAB } from '@wordpress/keycodes';
 import { fireEvent, render } from '@tests/js/test-utils';
 import { useKeyCodesInside } from './useKeyCodesInside';
 
-function TestComponent( { onKeyCodeInside } ) {
-	const wrapperRef = useRef();
+interface TestComponentProps {
+	onKeyCodeInside: () => void;
+}
+
+function TestComponent( { onKeyCodeInside }: TestComponentProps ) {
+	const wrapperRef = useRef< HTMLDivElement >( null );
 	useKeyCodesInside( [ ESCAPE, TAB ], wrapperRef, onKeyCodeInside );
 
 	return <div ref={ wrapperRef }>TestComponent</div>;
 }
 
 describe( 'useKeyCodesInside', () => {
-	let getByText;
-	let testComponent;
+	let getByText: ReturnType< typeof render >[ 'getByText' ];
+	let testComponent: Element;
 	const onKeyCodeInsideMock = jest.fn();
 	beforeEach( () => {
 		onKeyCodeInsideMock.mockReset();
