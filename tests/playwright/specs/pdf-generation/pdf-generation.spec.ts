@@ -112,6 +112,27 @@ test.describe(
 					await expect( pageObject.errorSnackbar ).toBeHidden();
 				} );
 
+				await wp.step(
+					'Check the header chips can scroll to their sections in the Apple Preview app',
+					async () => {
+						const pdfReport = await pageObject.readPDFReport(
+							download
+						);
+
+						// Clicking a chip in the Apple Preview app scrolls to
+						// that section, and the scroll happens only when the
+						// section's anchor has a left coordinate. In the PDF
+						// report the anchor reads `(section-<slug>)`, and a
+						// missing coordinate shows up as `/XYZ null`.
+						// `patches/@react-pdf+render+4.5.1.patch` writes the
+						// coordinate.
+						expect( pdfReport ).toContain(
+							'(section-mainDashboardTraffic)'
+						);
+						expect( pdfReport ).not.toContain( '/XYZ null' );
+					}
+				);
+
 				await wp.step( 'Verify the downloaded PDF', async () => {
 					await pageObject.verifyPDF( download, testInfo );
 				} );

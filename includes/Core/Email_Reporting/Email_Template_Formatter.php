@@ -368,6 +368,7 @@ class Email_Template_Formatter {
 	 * Builds template data for the subscription confirmation email.
 	 *
 	 * @since 1.174.0
+	 * @since n.e.x.t Wrapped the unsubscribe link within the localized footer copy.
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @return array Template data.
@@ -404,7 +405,12 @@ class Email_Template_Formatter {
 				'url'   => $dashboard_url,
 			),
 			'footer'                 => array(
-				'copy'            => __( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can unsubscribe', 'google-site-kit' ),
+				'copy'            => sprintf(
+					/* translators: 1: Unsubscribe link URL, 2: Unsubscribe link inline style CSS. */
+					__( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can <a class="link" href="%1$s" style="%2$s">unsubscribe</a>.', 'google-site-kit' ),
+					$email_settings_url,
+					'text-decoration:none;'
+				),
 				'unsubscribe_url' => $email_settings_url,
 			),
 			'graphic'                => Content_Map::get_graphic_config( 'subscription-confirmation' ),
@@ -416,6 +422,7 @@ class Email_Template_Formatter {
 	 * Builds template data for rendering.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Wrapped the unsubscribe link within the localized footer copy.
 	 *
 	 * @param string  $frequency  Frequency slug.
 	 * @param array   $date_range Date range.
@@ -443,7 +450,12 @@ class Email_Template_Formatter {
 				'url'   => $dashboard_url,
 			),
 			'footer'                 => array(
-				'copy'            => __( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can unsubscribe', 'google-site-kit' ), // The space and unsubscribe link are handled in the template.
+				'copy'            => sprintf(
+					/* translators: 1: Unsubscribe link URL, 2: Unsubscribe link inline style CSS. */
+					__( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can <a class="link" href="%1$s" style="%2$s">unsubscribe</a>.', 'google-site-kit' ),
+					$email_settings_url,
+					'text-decoration:none;'
+				),
 				'unsubscribe_url' => $email_settings_url,
 			),
 		);
