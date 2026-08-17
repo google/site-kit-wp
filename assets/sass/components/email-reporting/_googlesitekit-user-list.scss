@@ -132,6 +132,13 @@
 		}
 	}
 
+	.googlesitekit-user-row__unsubscribe-icon {
+		display: inline-flex;
+		margin-bottom: 1px;
+		margin-left: 4px;
+		vertical-align: middle;
+	}
+
 	.googlesitekit-user-row__success {
 		align-items: center;
 		color: $c-surfaces-on-surface-variant;
@@ -184,5 +191,16 @@
 				text-decoration: none;
 			}
 		}
+	}
+
+	// `unsubscribe.svg` is a stroke-only icon; without the extra specificity
+	// here (the repeated class matches both the `<a>` and `<button>` shapes
+	// `Link` can render, without pinning a tag) it ties with, and sometimes
+	// loses to, `.googlesitekit-cta-link(:hover) svg { fill: currentColor }`,
+	// which fills its open paths and distorts the icon.
+	.googlesitekit-cta-link.googlesitekit-cta-link
+		.googlesitekit-user-row__unsubscribe-icon
+		svg {
+		fill: none;
 	}
 }

@@ -138,12 +138,14 @@ const SubscribedUserRow: FC< SubscribedUserRowProps > = ( { user } ) => {
 			<Link
 				onClick={ handleUnsubscribe }
 				disabled={ isUnsubscribing }
-				trailingIcon={ <UnsubscribeIcon width="16" height="16" /> }
 				danger
 			>
 				{ isUnsubscribing
 					? __( 'Unsubscribing…', 'google-site-kit' )
 					: __( 'Unsubscribe', 'google-site-kit' ) }
+				<span className="googlesitekit-user-row__unsubscribe-icon">
+					<UnsubscribeIcon width="22" height="22" />
+				</span>
 			</Link>
 		);
 	}
@@ -153,9 +155,11 @@ const SubscribedUserRow: FC< SubscribedUserRowProps > = ( { user } ) => {
 			<div className="googlesitekit-user-row__info">
 				<div className="googlesitekit-user-row__name">
 					{ name }
-					<span className="googlesitekit-user-row__role">
-						({ role })
-					</span>
+					{ role && (
+						<span className="googlesitekit-user-row__role">
+							({ role })
+						</span>
+					) }
 				</div>
 				<div className="googlesitekit-user-row__email">{ email }</div>
 			</div>
