@@ -29,7 +29,7 @@ import useViewContext from './useViewContext';
  *
  * @return {boolean} True if current context is a view-only dashboard context, false otherwise.
  */
-export default function useViewOnly() {
+export default function useViewOnly(): boolean {
 	const viewContext = useViewContext();
 
 	return SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
