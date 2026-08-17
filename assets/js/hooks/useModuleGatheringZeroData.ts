@@ -19,7 +19,12 @@
 /**
  * Internal dependencies
  */
-import { useInViewSelect, useSelect } from 'googlesitekit-data';
+import {
+	Select,
+	UseSelect,
+	useInViewSelect,
+	useSelect as useSelectWithRequiredDeps,
+} from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -28,6 +33,16 @@ import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constant
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import useViewOnly from './useViewOnly';
 
+// These selectors deliberately omit `deps`. See the `UseSelect` type.
+const useSelect = useSelectWithRequiredDeps as UseSelect;
+
+interface ModuleGatheringZeroData {
+	analyticsGatheringData: boolean | undefined;
+	searchConsoleGatheringData: boolean | undefined;
+	analyticsHasZeroData: boolean | undefined;
+	searchConsoleHasZeroData: boolean | undefined;
+}
+
 /**
  * Determines if either Search Console or Analytics is in gathering or zero data states.
  *
@@ -35,14 +50,14 @@ import useViewOnly from './useViewOnly';
  *
  * @return {Object} Individual boolean|undefined values for Gathering and Zero data states for both modules.
  */
-export default function useModuleGatheringZeroData() {
+export default function useModuleGatheringZeroData(): ModuleGatheringZeroData {
 	const viewOnly = useViewOnly();
 
-	const isAnalyticsConnected = useSelect( ( select ) =>
+	const isAnalyticsConnected = useSelect( ( select: Select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
-	const canViewSharedAnalytics = useSelect( ( select ) => {
+	const canViewSharedAnalytics = useSelect( ( select: Select ) => {
 		if ( ! viewOnly ) {
 			return true;
 		}
@@ -51,7 +66,7 @@ export default function useModuleGatheringZeroData() {
 			MODULE_SLUG_ANALYTICS_4
 		);
 	} );
-	const canViewSharedSearchConsole = useSelect( ( select ) => {
+	const canViewSharedSearchConsole = useSelect( ( select: Select ) => {
 		if ( ! viewOnly ) {
 			return true;
 		}
@@ -61,7 +76,7 @@ export default function useModuleGatheringZeroData() {
 		);
 	} );
 
-	const showRecoverableAnalytics = useSelect( ( select ) => {
+	const showRecoverableAnalytics = useSelect( ( select: Select ) => {
 		if ( ! viewOnly ) {
 			return false;
 		}
@@ -77,7 +92,7 @@ export default function useModuleGatheringZeroData() {
 			MODULE_SLUG_ANALYTICS_4
 		);
 	} );
-	const showRecoverableSearchConsole = useSelect( ( select ) => {
+	const showRecoverableSearchConsole = useSelect( ( select: Select ) => {
 		if ( ! viewOnly ) {
 			return false;
 		}
@@ -95,7 +110,7 @@ export default function useModuleGatheringZeroData() {
 	} );
 
 	const analyticsGatheringData = useInViewSelect(
-		( select ) =>
+		( select: Select ) =>
 			isAnalyticsConnected &&
 			canViewSharedAnalytics &&
 			false === showRecoverableAnalytics
@@ -108,7 +123,7 @@ export default function useModuleGatheringZeroData() {
 		]
 	);
 	const searchConsoleGatheringData = useInViewSelect(
-		( select ) =>
+		( select: Select ) =>
 			canViewSharedSearchConsole &&
 			false === showRecoverableSearchConsole &&
 			select( MODULES_SEARCH_CONSOLE ).isGatheringData(),
@@ -116,7 +131,7 @@ export default function useModuleGatheringZeroData() {
 	);
 
 	const analyticsHasZeroData = useInViewSelect(
-		( select ) =>
+		( select: Select ) =>
 			isAnalyticsConnected &&
 			canViewSharedAnalytics &&
 			false === showRecoverableAnalytics
@@ -129,7 +144,7 @@ export default function useModuleGatheringZeroData() {
 		]
 	);
 	const searchConsoleHasZeroData = useInViewSelect(
-		( select ) =>
+		( select: Select ) =>
 			canViewSharedSearchConsole &&
 			false === showRecoverableSearchConsole &&
 			select( MODULES_SEARCH_CONSOLE ).hasZeroData(),
