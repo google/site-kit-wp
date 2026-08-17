@@ -34,7 +34,7 @@ import ViewContextContext from '@/js/components/Root/ViewContextContext';
  *
  * @return {string} The current "viewing context" value for the plugin.
  */
-function useViewContext() {
+function useViewContext(): string {
 	const viewContext = useContext( ViewContextContext );
 
 	return viewContext;
