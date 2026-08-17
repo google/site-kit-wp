@@ -47,7 +47,11 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 		publicationID: 'ABCD_123-4',
 	};
 
-	const newsletterConfig = { title: 'Subscribe to our newsletter' };
+	const createArgs = {
+		...params,
+		type: 'NEWSLETTER_SIGNUP',
+		config: { title: 'Subscribe to our newsletter' },
+	} as const;
 
 	const cta = {
 		name: 'organizations/ABCD1234/publications/ABCD_123-4/ctas/1',
@@ -68,13 +72,13 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 
 				const { response, error } = await registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.createCTA( { ...params, newsletterConfig } );
+					.createCTA( createArgs );
 
 				expect( response ).toEqual( cta );
 				expect( error ).toBeUndefined();
 				expect( fetchMock ).toHaveFetched( createCTAEndpoint, {
 					body: {
-						data: { ...params, newsletterConfig },
+						data: createArgs,
 					},
 				} );
 			} );
@@ -92,7 +96,7 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 
 				const { response, error } = await registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.createCTA( { ...params, newsletterConfig } );
+					.createCTA( createArgs );
 
 				expect( console ).toHaveErrored();
 				expect( response ).toBeUndefined();
@@ -104,13 +108,16 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 				).toEqual( errorResponse );
 			} );
 
-			it( 'should validate the parameters', () => {
+			it( 'should validate the publication parameters', () => {
+				const { type, config } = createArgs;
+
 				expect( () =>
 					registry
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
 						.createCTA( {
-							publicationID: 'ABCD_123-4',
-							newsletterConfig,
+							publicationID: params.publicationID,
+							type,
+							config,
 						} )
 				).toThrow( 'organizationID is required and must be a string.' );
 
@@ -118,18 +125,50 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 					registry
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
 						.createCTA( {
-							organizationID: 'ABCD1234',
-							newsletterConfig,
+							organizationID: params.organizationID,
+							type,
+							config,
 						} )
 				).toThrow( 'publicationID is required and must be a string.' );
+			} );
+
+			it( 'should throw for an unsupported CTA type', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.createCTA( { ...createArgs, type: 'SUBSCRIPTION' } )
+				).toThrow( 'type is not supported.' );
+			} );
+
+			it( 'should validate the config via the CTA type handler', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.createCTA( { ...createArgs, config: undefined } )
+				).toThrow( 'config is required and must be an object.' );
 
 				expect( () =>
 					registry
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.createCTA( { ...params } )
-				).toThrow(
-					'newsletterConfig is required and must be an object.'
-				);
+						.createCTA( {
+							...createArgs,
+							config: { unknownSetting: 'value' },
+						} )
+				).toThrow( 'config contains unsupported fields.' );
+
+				expect( () =>
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.createCTA( { ...createArgs, config: { title: 123 } } )
+				).toThrow( 'config.title must be a string.' );
+			} );
+
+			it( 'should validate the display name', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.createCTA( { ...createArgs, displayName: 123 } )
+				).toThrow( 'displayName must be a string.' );
 			} );
 		} );
 	} );
