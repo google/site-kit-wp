@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Datapoints;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Create_CTA;
@@ -53,10 +54,11 @@ class Create_CTATest extends TestCase {
 		$request = $this->datapoint->create_request(
 			$this->get_data_request(
 				array(
-					'organizationID'   => 'organization-1',
-					'publicationID'    => 'publication-1',
-					'displayName'      => 'Newsletter sign-up',
-					'newsletterConfig' => array(
+					'organizationID' => 'organization-1',
+					'publicationID'  => 'publication-1',
+					'displayName'    => 'Newsletter sign-up',
+					'type'           => 'NEWSLETTER_SIGNUP',
+					'config'         => array(
 						'title'         => 'Subscribe to our newsletter',
 						'customMessage' => 'Join our mailing list.',
 					),
@@ -82,7 +84,7 @@ class Create_CTATest extends TestCase {
 				)
 			),
 			(string) $request->getBody(),
-			'The request body should include the newsletter sign-up CTA configuration.'
+			'The request body should map the config through the CTA type handler.'
 		);
 	}
 
@@ -90,9 +92,10 @@ class Create_CTATest extends TestCase {
 		$request = $this->datapoint->create_request(
 			$this->get_data_request(
 				array(
-					'organizationID'   => 'organization-1',
-					'publicationID'    => 'publication-1',
-					'newsletterConfig' => array( 'title' => 'Subscribe' ),
+					'organizationID' => 'organization-1',
+					'publicationID'  => 'publication-1',
+					'type'           => 'NEWSLETTER_SIGNUP',
+					'config'         => array( 'title' => 'Subscribe' ),
 				)
 			)
 		);
@@ -113,11 +116,7 @@ class Create_CTATest extends TestCase {
 	 * @dataProvider data_missing_required_params
 	 */
 	public function test_create_request__requires_params( $param ) {
-		$data = array(
-			'organizationID'   => 'organization-1',
-			'publicationID'    => 'publication-1',
-			'newsletterConfig' => array( 'title' => 'Subscribe' ),
-		);
+		$data = $this->get_valid_data();
 		unset( $data[ $param ] );
 
 		$this->expectException( Missing_Required_Param_Exception::class );
@@ -128,10 +127,51 @@ class Create_CTATest extends TestCase {
 
 	public function data_missing_required_params() {
 		return array(
-			'organizationID'   => array( 'organizationID' ),
-			'publicationID'    => array( 'publicationID' ),
-			'newsletterConfig' => array( 'newsletterConfig' ),
+			'organizationID' => array( 'organizationID' ),
+			'publicationID'  => array( 'publicationID' ),
+			'type'           => array( 'type' ),
+			'config'         => array( 'config' ),
 		);
+	}
+
+	public function test_create_request__rejects_unsupported_type() {
+		$this->expectException( Invalid_Param_Exception::class );
+		$this->expectExceptionMessage( 'Invalid parameter: type.' );
+
+		$data         = $this->get_valid_data();
+		$data['type'] = 'SUBSCRIPTION';
+
+		$this->datapoint->create_request( $this->get_data_request( $data ) );
+	}
+
+	public function test_create_request__rejects_non_array_config() {
+		$this->expectException( Invalid_Param_Exception::class );
+		$this->expectExceptionMessage( 'Invalid parameter: config.' );
+
+		$data           = $this->get_valid_data();
+		$data['config'] = 'not-an-array';
+
+		$this->datapoint->create_request( $this->get_data_request( $data ) );
+	}
+
+	public function test_create_request__rejects_non_string_display_name() {
+		$this->expectException( Invalid_Param_Exception::class );
+		$this->expectExceptionMessage( 'Invalid parameter: displayName.' );
+
+		$data                = $this->get_valid_data();
+		$data['displayName'] = 123;
+
+		$this->datapoint->create_request( $this->get_data_request( $data ) );
+	}
+
+	public function test_create_request__rejects_unsupported_config_fields() {
+		$this->expectException( Invalid_Param_Exception::class );
+		$this->expectExceptionMessage( 'Invalid parameter: config.' );
+
+		$data           = $this->get_valid_data();
+		$data['config'] = array( 'unknownSetting' => 'value' );
+
+		$this->datapoint->create_request( $this->get_data_request( $data ) );
 	}
 
 	public function test_is_not_shareable() {
@@ -141,21 +181,21 @@ class Create_CTATest extends TestCase {
 	public function test_parse_response() {
 		$response = new Cta( array( 'name' => 'organizations/organization-1/publications/publication-1/ctas/1' ) );
 
-		$cta = $this->datapoint->parse_response(
-			$response,
-			$this->get_data_request(
-				array(
-					'organizationID'   => 'organization-1',
-					'publicationID'    => 'publication-1',
-					'newsletterConfig' => array( 'title' => 'Subscribe' ),
-				)
-			)
-		);
+		$cta = $this->datapoint->parse_response( $response, $this->get_data_request( $this->get_valid_data() ) );
 
 		$this->assertSame(
 			'organizations/organization-1/publications/publication-1/ctas/1',
 			$cta->getName(),
 			'The created CTA resource should be returned unchanged.'
+		);
+	}
+
+	private function get_valid_data() {
+		return array(
+			'organizationID' => 'organization-1',
+			'publicationID'  => 'publication-1',
+			'type'           => 'NEWSLETTER_SIGNUP',
+			'config'         => array( 'title' => 'Subscribe' ),
 		);
 	}
 
