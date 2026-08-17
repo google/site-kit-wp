@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import { useEvent, useKey, useWindowScroll } from 'react-use';
 
 /**
@@ -50,6 +49,8 @@ import {
 import Link from '@/js/components/Link';
 import Portal from '@/js/components/Portal';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM, SIZE_SMALL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
@@ -58,6 +59,7 @@ import { Dialog, DialogContent, DialogFooter } from '@/js/material-components';
 import ShareIcon from '@/svg/icons/share.svg';
 import Footer from './Footer';
 
+// eslint-disable-next-line complexity -- TODO: -- 11266 Reduce complexity.
 export default function DashboardSharingDialog() {
 	const [ shouldFocusResetButton, setShouldFocusResetButton ] =
 		useState( false );
@@ -234,14 +236,11 @@ export default function DashboardSharingDialog() {
 								) }
 							</Typography>
 
-							<p
-								className={ classnames(
-									'googlesitekit-dialog__subtitle',
-									{
-										'googlesitekit-dialog__subtitle--emphasis':
-											resetDialogOpen,
-									}
-								) }
+							<P
+								className="googlesitekit-dialog__subtitle"
+								size={
+									resetDialogOpen ? SIZE_MEDIUM : SIZE_SMALL
+								}
 							>
 								{ settingsDialogOpen && (
 									<span>
@@ -276,7 +275,7 @@ export default function DashboardSharingDialog() {
 										) }
 									</span>
 								) }
-							</p>
+							</P>
 						</div>
 					</div>
 

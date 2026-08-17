@@ -42,6 +42,8 @@ import Link from '@/js/components/Link';
 import MediaErrorHandler from '@/js/components/MediaErrorHandler';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { ShowNextToCommentsToggle } from '@/js/modules/sign-in-with-google/components/common';
 import ClientIDTextField from '@/js/modules/sign-in-with-google/components/common/ClientIDTextField';
@@ -172,7 +174,10 @@ export default function SetupForm() {
 					moduleSlug={ MODULES_SIGN_IN_WITH_GOOGLE }
 					storeName={ MODULES_SIGN_IN_WITH_GOOGLE }
 				/>
-				<p className="googlesitekit-setup-module__step-description">
+				<P
+					className="googlesitekit-setup-module__step-description"
+					size={ SIZE_MEDIUM }
+				>
 					{ createInterpolateElement(
 						sprintf(
 							/* translators: %1$s: Sign in with Google service name */
@@ -190,13 +195,16 @@ export default function SetupForm() {
 							a: <Link href={ learnMoreURL } external />,
 						}
 					) }
-				</p>
-				<p className="googlesitekit-margin-bottom-0">
+				</P>
+				<P
+					className="googlesitekit-setup-module__step-description googlesitekit-margin-bottom-0"
+					size={ SIZE_MEDIUM }
+				>
 					{ __(
 						'Add your client ID here to complete setup:',
 						'google-site-kit'
 					) }
-				</p>
+				</P>
 				<div className="googlesitekit-setup-module__inputs">
 					<ClientIDTextField existingClientID={ existingClientID } />
 				</div>

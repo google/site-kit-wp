@@ -33,6 +33,7 @@ import { Button } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
 import SupportLink from '@/js/components/SupportLink';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useViewContext from '@/js/hooks/useViewContext';
@@ -92,7 +93,10 @@ export default function SetupCreateAccount() {
 				</Button>
 			</div>
 
-			<p className="googlesitekit-setup-module__footer-text">
+			<P
+				className="googlesitekit-setup-module__footer-text"
+				size={ SIZE_MEDIUM }
+			>
 				{ existingTag &&
 					sprintf(
 						/* translators: 1: client ID, 2: user email address, 3: account ID */
@@ -127,7 +131,7 @@ export default function SetupCreateAccount() {
 							),
 						}
 					) }
-			</p>
+			</P>
 		</Fragment>
 	);
 }

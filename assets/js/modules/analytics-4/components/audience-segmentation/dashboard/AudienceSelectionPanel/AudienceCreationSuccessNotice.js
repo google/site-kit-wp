@@ -27,6 +27,8 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
+import { SIZE_SMALL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
@@ -67,12 +69,15 @@ export default function AudienceCreationSuccessNotice() {
 			<div className="googlesitekit-audience-selection-panel__success-notice-icon">
 				<CheckFill width={ 24 } height={ 24 } />
 			</div>
-			<p className="googlesitekit-audience-selection-panel__success-notice-message">
+			<P
+				className="googlesitekit-audience-selection-panel__success-notice-message"
+				size={ SIZE_SMALL }
+			>
 				{ __(
 					'Visitor group created successfully!',
 					'google-site-kit'
 				) }
-			</p>
+			</P>
 			<div className="googlesitekit-audience-selection-panel__success-notice-actions">
 				<Button
 					onClick={ () => {

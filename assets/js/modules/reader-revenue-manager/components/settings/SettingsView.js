@@ -27,6 +27,8 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import DisplaySetting from '@/js/components/DisplaySetting';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
@@ -114,9 +116,12 @@ export default function SettingsView() {
 					>
 						{ __( 'Publication', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<P
+						className="googlesitekit-settings-module__meta-item-data"
+						size={ SIZE_MEDIUM }
+					>
 						<DisplaySetting value={ publicationID } />
-					</p>
+					</P>
 				</div>
 
 				<div className="googlesitekit-settings-module__meta-item">
@@ -128,9 +133,12 @@ export default function SettingsView() {
 					>
 						{ __( 'Default Product ID', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<P
+						className="googlesitekit-settings-module__meta-item-data"
+						size={ SIZE_MEDIUM }
+					>
 						<DisplaySetting value={ productID } />
-					</p>
+					</P>
 				</div>
 			</div>
 
@@ -147,13 +155,16 @@ export default function SettingsView() {
 					>
 						{ __( 'Display CTAs', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<P
+						className="googlesitekit-settings-module__meta-item-data"
+						size={ SIZE_MEDIUM }
+					>
 						<DisplaySetting
 							value={
 								SNIPPET_MODES[ snippetMode ] || snippetMode
 							}
 						/>
-					</p>
+					</P>
 				</div>
 
 				{ 'post_types' === snippetMode && (
@@ -169,9 +180,12 @@ export default function SettingsView() {
 								'google-site-kit'
 							) }
 						</Typography>
-						<p className="googlesitekit-settings-module__meta-item-data">
+						<P
+							className="googlesitekit-settings-module__meta-item-data"
+							size={ SIZE_MEDIUM }
+						>
 							<DisplaySetting value={ postTypes } />
-						</p>
+						</P>
 					</div>
 				) }
 			</div>

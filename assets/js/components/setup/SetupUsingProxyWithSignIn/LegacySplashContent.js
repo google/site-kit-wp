@@ -34,6 +34,8 @@ import Link from '@/js/components/Link';
 import ActivateAnalyticsNotice from '@/js/components/setup/ActivateAnalyticsNotice';
 import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { Cell, Row } from '@/js/material-components';
 import WelcomeAnalyticsSVG from '@/svg/graphics/welcome-analytics.svg';
 import WelcomeSVG from '@/svg/graphics/welcome.svg';
@@ -79,7 +81,10 @@ export default function LegacySplashContent( {
 					{ title }
 				</Typography>
 
-				<p className="googlesitekit-setup__description">
+				<P
+					className="googlesitekit-setup__description"
+					size={ SIZE_MEDIUM }
+				>
 					{ ! showLearnMoreLink && description }
 
 					{ showLearnMoreLink &&
@@ -102,7 +107,7 @@ export default function LegacySplashContent( {
 								),
 							}
 						) }
-				</p>
+				</P>
 				{ getHelpURL && (
 					<Link href={ getHelpURL } external>
 						{ __( 'Get help', 'google-site-kit' ) }

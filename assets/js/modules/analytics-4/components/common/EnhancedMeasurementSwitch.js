@@ -189,6 +189,7 @@ export default function EnhancedMeasurementSwitch( {
 					hideLabel={ false }
 				/>
 			) }
+			{ /* TODO: 11266 -- Use P typography component and remove CSS overrides. */ }
 			<p className="googlesitekit-module-settings-group__helper-text">
 				{ description }
 			</p>

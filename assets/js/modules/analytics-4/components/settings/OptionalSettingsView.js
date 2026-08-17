@@ -26,6 +26,8 @@ import { __, _x } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { trackingExclusionLabels } from '@/js/modules/analytics-4/components/common/TrackingExclusionSwitches';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
@@ -45,7 +47,10 @@ export default function OptionalSettingsView() {
 				>
 					{ __( 'Excluded from Analytics', 'google-site-kit' ) }
 				</Typography>
-				<p className="googlesitekit-settings-module__meta-item-data">
+				<P
+					className="googlesitekit-settings-module__meta-item-data"
+					size={ SIZE_MEDIUM }
+				>
 					{ !! trackingDisabled.length &&
 						trackingDisabled
 							.map(
@@ -60,7 +65,7 @@ export default function OptionalSettingsView() {
 							'Analytics is currently enabled for all visitors',
 							'google-site-kit'
 						) }
-				</p>
+				</P>
 			</div>
 		</div>
 	);
