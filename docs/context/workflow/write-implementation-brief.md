@@ -224,6 +224,17 @@ Do **not** include:
 - **Links to local design docs.** They don't resolve for someone reading the issue on GitHub;
   restate the constraint in one clause instead. External links — Figma, a hosted design doc —
   are fine.
+- **Plain-text line numbers.** No `includes/Core/Modules/Modules.php:212`, no "see line 212", no
+  `file:line` anywhere in the two sections. The number is wrong as soon as anyone edits the file,
+  and a reader on GitHub cannot click it. When a bullet has to point at an exact place in the
+  code, use a GitHub permalink instead — a URL pinned to a commit SHA, with the line or range on
+  the end:
+  `https://github.com/google/site-kit-wp/blob/<commit SHA>/includes/Core/Modules/Modules.php#L212-L218`.
+  Get one by opening the file on GitHub and pressing `y`, or with
+  `gh browse --no-browser --commit=<commit SHA> <path>` and adding the `#L<start>-L<end>` yourself.
+  A URL built on a branch name (`/blob/main/`, `/blob/develop/`) is **not** a permalink — it points
+  at different lines next week — so never use one. Naming the symbol is still better than linking
+  to it: link only when there is no name to give, such as an unnamed block inside a long function.
 - **Restated acceptance criteria**, a recap of the Feature Description, or background on how the
   existing system works.
 - Prose paragraphs.
@@ -304,4 +315,6 @@ reply to the user — not in the issue:
   raise it in Step 7 instead of adding it silently.
 - **No indirect issue references.** Every cross-reference is a real GitHub number you asked the
   user for, never a design-doc position, a relative pointer or a placeholder.
+- **No plain-text line numbers.** Every pointer into the code is a GitHub permalink pinned to a
+  commit SHA, never `path/to/File.php:212` and never a `/blob/<branch>/` URL — see Step 5.
 - **Verify before naming.** Never reference a symbol, path or hook you have not opened.
