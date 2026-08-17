@@ -18,7 +18,7 @@
  * External dependencies
  */
 import { Download, Locator, Page, TestInfo, expect } from '@playwright/test';
-import { statSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
 import { pdfToPng } from 'pdf-to-png-converter';
 
 /**
@@ -51,6 +51,30 @@ export class PDFGenerationPage {
 	 */
 	get openPanelButton() {
 		return this.page.getByRole( 'button', {
+			name: 'Download PDF report',
+		} );
+	}
+
+	/**
+	 * Gets the header button that opens the features menu on mobile and tablet.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return The features menu trigger button.
+	 */
+	get featuresMenuButton() {
+		return this.page.getByRole( 'button', { name: 'Features' } );
+	}
+
+	/**
+	 * Gets the features menu item that opens the export panel.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return The download PDF report menu item.
+	 */
+	get downloadPDFReportMenuItem() {
+		return this.page.getByRole( 'menuitem', {
 			name: 'Download PDF report',
 		} );
 	}
@@ -139,7 +163,20 @@ export class PDFGenerationPage {
 	 * @return {Promise<void>} Resolves once the panel is visible.
 	 */
 	async openPanel() {
-		await this.openPanelButton.click();
+		// On mobile and tablet the entry point lives in the features menu
+		// rather than a dedicated header icon.
+		await this.featuresMenuButton
+			.or( this.openPanelButton )
+			.first()
+			.waitFor();
+
+		if ( await this.featuresMenuButton.isVisible() ) {
+			await this.featuresMenuButton.click();
+			await this.downloadPDFReportMenuItem.click();
+		} else {
+			await this.openPanelButton.click();
+		}
+
 		await expect( this.panel ).toBeVisible();
 	}
 
@@ -284,6 +321,23 @@ export class PDFGenerationPage {
 		);
 
 		await expect( this.page ).toHaveScreenshot( { fullPage: true } );
+	}
+
+	/**
+	 * Reads the downloaded PDF report into a string, one character per byte.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Download} download The completed download from `download()`.
+	 * @return {Promise<string>} The report's contents, byte for byte.
+	 */
+	async readPDFReport( download: Download ): Promise< string > {
+		const path = ( await download.path() ) as string;
+
+		// A PDF report is binary, and `latin1` copies every byte into the
+		// string exactly as it is, while `utf8` would change the bytes
+		// that are not letters.
+		return readFileSync( path, 'latin1' );
 	}
 
 	/**

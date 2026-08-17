@@ -53,6 +53,7 @@ import { Cell, Grid, Row } from '@/js/material-components';
 import CoreDashboardEffects from './CoreDashboardEffects';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import DateRangeSelector from './DateRangeSelector';
+import ManageEmailReportsButton from './email-reporting/ManageEmailReportsButton';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
 import EntitySearchInput from './EntitySearchInput';
 import Header from './Header';
@@ -219,6 +220,7 @@ function DashboardEntityApp() {
 			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
+				<ManageEmailReportsButton />
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>

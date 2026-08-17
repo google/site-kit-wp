@@ -25,6 +25,7 @@ import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import ctas from './ctas';
 import publications from './publications';
 import service from './service';
+import termsOfService from './terms-of-service';
 import userSettings from './user-settings';
 
 const store = combineStores(
@@ -32,6 +33,7 @@ const store = combineStores(
 	ctas,
 	publications,
 	service,
+	termsOfService,
 	userSettings
 );
 

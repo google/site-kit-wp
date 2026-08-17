@@ -42,10 +42,12 @@ interface Props {
 	footer?: string;
 	popupContent?: ReactNode;
 	inlineContent?: ReactNode;
+	onTabChange?: ( tabIndex: number ) => void;
+	className?: string;
 }
 
-const CTA_PREVIEW_TAB_POPUP = 0;
-const CTA_PREVIEW_TAB_INLINE = 1;
+export const CTA_PREVIEW_TAB_POPUP = 0;
+export const CTA_PREVIEW_TAB_INLINE = 1;
 const POPUP_TAB_ID = 'googlesitekit-rrm-cta-preview-tab-popup';
 const INLINE_TAB_ID = 'googlesitekit-rrm-cta-preview-tab-inline';
 
@@ -61,16 +63,28 @@ export default function CTAPreview( {
 	),
 	popupContent,
 	inlineContent,
+	onTabChange,
+	className = '',
 }: Props ) {
 	const [ activeTab, setActiveTab ] = useState( CTA_PREVIEW_TAB_POPUP );
 
+	function handleTabChange( tabIndex: number ) {
+		setActiveTab( tabIndex );
+		onTabChange?.( tabIndex );
+	}
+
 	return (
-		<div className="googlesitekit-rrm-cta-preview">
+		<div
+			className={ classnames(
+				'googlesitekit-rrm-cta-preview',
+				className
+			) }
+		>
 			<div className="googlesitekit-rrm-cta-preview__header">
 				<Typography
 					as="h3"
-					type="title"
-					size="small"
+					type="label"
+					size="medium"
 					className="googlesitekit-rrm-cta-preview__title"
 				>
 					{ title }
@@ -87,7 +101,7 @@ export default function CTAPreview( {
 			<div className="googlesitekit-rrm-cta-preview__tabs">
 				<TabBar
 					activeIndex={ activeTab }
-					handleActiveIndexUpdate={ setActiveTab }
+					handleActiveIndexUpdate={ handleTabChange }
 				>
 					<Tab id={ POPUP_TAB_ID } focusOnActivate={ false }>
 						<span className="mdc-tab__text-label">
@@ -104,16 +118,14 @@ export default function CTAPreview( {
 			<div className="googlesitekit-rrm-cta-preview__stage">
 				{ activeTab === CTA_PREVIEW_TAB_POPUP && (
 					<div
-						className={ classnames(
-							'googlesitekit-rrm-cta-preview__panel',
-							'googlesitekit-rrm-cta-preview__panel--popup'
-						) }
+						className="googlesitekit-rrm-cta-preview__panel googlesitekit-rrm-cta-preview__panel--popup"
 						role="tabpanel"
 						aria-labelledby={ POPUP_TAB_ID }
 					>
 						<PopupBackgroundSVG
 							width="288"
 							height="350"
+							preserveAspectRatio="none"
 							className="googlesitekit-rrm-cta-preview__background-image"
 							aria-hidden="true"
 						/>
@@ -124,16 +136,14 @@ export default function CTAPreview( {
 				) }
 				{ activeTab === CTA_PREVIEW_TAB_INLINE && (
 					<div
-						className={ classnames(
-							'googlesitekit-rrm-cta-preview__panel',
-							'googlesitekit-rrm-cta-preview__panel--inline'
-						) }
+						className="googlesitekit-rrm-cta-preview__panel googlesitekit-rrm-cta-preview__panel--inline"
 						role="tabpanel"
 						aria-labelledby={ INLINE_TAB_ID }
 					>
 						<InlineBackgroundSVG
 							width="288"
 							height="350"
+							preserveAspectRatio="none"
 							className="googlesitekit-rrm-cta-preview__background-image"
 							aria-hidden="true"
 						/>

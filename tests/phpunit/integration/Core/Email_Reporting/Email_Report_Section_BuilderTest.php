@@ -119,8 +119,69 @@ class Email_Report_Section_BuilderTest extends TestCase {
 		$this->assertSame( 'How many visitors do I have?', $ga4_section->get_title(), 'GA4 section title should come from payload.' );
 		$this->assertSame( array( 'Total visitors' ), $ga4_section->get_labels(), 'GA4 labels should be translated when a translation exists.' );
 		$this->assertSame( array( '123' ), $ga4_section->get_values(), 'GA4 totals should be normalized.' );
-		$this->assertSame( array( '23.00%' ), $ga4_section->get_trends(), 'GA4 trends should represent percentage change from previous period.' );
+		$this->assertSame( array( 23.0 ), $ga4_section->get_trends(), 'GA4 trends should represent percentage change from previous period.' );
 		$this->assertSame( $expected_date_range, $ga4_section->get_date_range(), 'GA4 date range should come from email log meta.' );
+	}
+
+	public function test_build_sections__trends_are_locale_independent_floats() {
+		global $wp_locale;
+
+		$original_number_format   = $wp_locale->number_format;
+		$wp_locale->number_format = array(
+			'decimal_point' => ',',
+			'thousands_sep' => '.',
+		);
+
+		try {
+			$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+			$builder = new Email_Report_Section_Builder( $context );
+
+			$payloads = array(
+				array(
+					'total_visitors' => array(
+						array(
+							'dimensionHeaders' => array(
+								array( 'name' => 'dateRange' ),
+							),
+							'metricHeaders'    => array(
+								array(
+									'name' => 'totalUsers',
+									'type' => 'TYPE_INTEGER',
+								),
+							),
+							'rows'             => array(
+								array(
+									'dimensionValues' => array(
+										array( 'value' => 'date_range_0' ),
+									),
+									'metricValues'    => array(
+										array( 'value' => '10652' ),
+									),
+								),
+								array(
+									'dimensionValues' => array(
+										array( 'value' => 'date_range_1' ),
+									),
+									'metricValues'    => array(
+										array( 'value' => '10000' ),
+									),
+								),
+							),
+							'rowCount'         => 2,
+						),
+					),
+				),
+			);
+
+			// Simulate the `es_CO` locale, which uses commas
+			// for decimals (eg. `6,52`, not `6.52`).
+			$sections = $builder->build_sections( 'analytics-4', $payloads, 'es_CO' );
+			$section  = $sections[0];
+
+			$this->assertSame( array( 6.52 ), $section->get_trends(), "Trend should be a plain float, unaffected by the active locale's number format." );
+		} finally {
+			$wp_locale->number_format = $original_number_format;
+		}
 	}
 
 	public function test_build_sections__returns_wp_error_for_search_console_error_payload() {

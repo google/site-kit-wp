@@ -43,6 +43,17 @@ export const PDF_SCALE =
 	( PDF_PAGE_WIDTH - 2 * PDF_PAGE_PADDING ) / PDF_FIGMA_CONTENT_WIDTH;
 
 /**
+ * The padding under the footer links, in points.
+ *
+ * The Figma design sets the padding to 44 frame pixels, and `scalePDFValue`
+ * converts that length to points. The final page height is the measured
+ * height plus the padding.
+ *
+ * @since 1.185.0
+ */
+export const PDF_PAGE_BOTTOM_PADDING = scalePDFValue( 44 );
+
+/**
  * Style properties whose numeric value is a length.
  *
  * `createPDFStyles` multiplies these values by `PDF_SCALE`. Every other

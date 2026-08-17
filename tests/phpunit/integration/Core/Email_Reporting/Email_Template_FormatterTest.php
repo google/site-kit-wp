@@ -134,6 +134,116 @@ class Email_Template_FormatterTest extends TestCase {
 		$this->assertSame( 'email_report_no_data', $payload->get_error_code(), 'Expected no data error code when report has no data sections.' );
 	}
 
+	public function test_build_template_payload__footer_copy_contains_accessible_unsubscribe_link() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$user    = get_user_by( 'id', $user_id );
+
+		$payload = $this->formatter->build_template_payload(
+			array( $this->get_total_visitors_section() ),
+			Email_Reporting_Settings::FREQUENCY_WEEKLY,
+			$this->get_date_range(),
+			$user
+		);
+
+		$footer_copy = $payload['template_data']['footer']['copy'];
+
+		$this->assertStringContainsString( '<a class="link" href="', $footer_copy, 'Expected footer copy to contain an accessible unsubscribe link.' );
+		$this->assertStringContainsString( '>unsubscribe</a>.', $footer_copy, 'Expected footer copy to use descriptive unsubscribe link text.' );
+		$this->assertStringNotContainsString( '>here</a>', $footer_copy, 'Expected footer copy to not use inaccessible "here" link text.' );
+		$this->assertStringNotContainsString( '&#038;', $footer_copy, 'Expected the unsubscribe URL to stay unescaped in the copy so the plain text variant keeps a usable URL; escaping happens at render time via wp_kses().' );
+	}
+
+	public function test_prepare_subscription_confirmation_template_data__footer_copy_contains_accessible_unsubscribe_link() {
+		$data        = $this->formatter->prepare_subscription_confirmation_template_data( Email_Reporting_Settings::FREQUENCY_WEEKLY );
+		$footer_copy = $data['footer']['copy'];
+
+		$this->assertStringContainsString( '<a class="link" href="', $footer_copy, 'Expected footer copy to contain an accessible unsubscribe link.' );
+		$this->assertStringContainsString( '>unsubscribe</a>.', $footer_copy, 'Expected footer copy to use descriptive unsubscribe link text.' );
+		$this->assertStringNotContainsString( '>here</a>', $footer_copy, 'Expected footer copy to not use inaccessible "here" link text.' );
+		$this->assertStringNotContainsString( '&#038;', $footer_copy, 'Expected the unsubscribe URL to stay unescaped in the copy so the plain text variant keeps a usable URL; escaping happens at render time via wp_kses().' );
+	}
+
+	/**
+	 * @dataProvider data_parse_change_value
+	 */
+	public function test_parse_change_value( $locale, $change, $expected ) {
+		$method = new \ReflectionMethod( Email_Template_Formatter::class, 'parse_change_value' );
+		$method->setAccessible( true );
+
+		$result = $this->with_locale_number_format(
+			$locale,
+			function () use ( $method, $change ) {
+				return $method->invoke( $this->formatter, $change );
+			}
+		);
+
+		$this->assertSame( $expected, $result, "Expected '$change' to parse to the given value under the $locale number format." );
+	}
+
+	public function data_parse_change_value() {
+		$cases  = array();
+		$values = array(
+			'6.52%'          => 6.52,
+			'-0.85%'         => -0.85,
+			'6,52%'          => 6.52,
+			'-0,85%'         => -0.85,
+			'0%'             => 0.0,
+			'1,832,234.56%'  => 1832234.56,
+			'15.655.234,56%' => 15655234.56,
+			'-9.110.234,56%' => -9110234.56,
+			'1,234.56%'      => 1234.56,
+			'1.234,56%'      => 1234.56,
+			'-1.234,56%'     => -1234.56,
+		);
+
+		foreach ( array( 'en_US', 'es_CO', 'de_DE' ) as $locale ) {
+			foreach ( $values as $change => $expected ) {
+				$cases[ "$locale: $change" ] = array( $locale, $change, $expected );
+			}
+
+			$cases[ "$locale: null" ]         = array( $locale, null, null );
+			$cases[ "$locale: empty string" ] = array( $locale, '', null );
+			$cases[ "$locale: unparseable" ]  = array( $locale, 'n/a%', null );
+		}
+
+		return $cases;
+	}
+
+	/**
+	 * Runs a callback with the global `$wp_locale` number format set to match
+	 * the given locale's convention.
+	 *
+	 * `es_CO` and `de_DE` are not installed as real test locales, so this
+	 * simulates their decimal-comma, period-thousands number format directly
+	 * rather than relying on `switch_to_locale()`, which proceeds without warnings
+	 * for locales without an installed translation file.
+	 *
+	 * @param string   $locale   Locale name (eg. `'en_US'`, etc.).
+	 * @param callable $callback Callback to run under the simulated locale.
+	 * @return mixed The callback's return value.
+	 */
+	private function with_locale_number_format( $locale, callable $callback ) {
+		global $wp_locale;
+
+		$original = $wp_locale->number_format;
+
+		$wp_locale->number_format = in_array( $locale, array( 'es_CO', 'de_DE' ), true )
+			? array(
+				'decimal_point' => ',',
+				'thousands_sep' => '.',
+			)
+			: array(
+				'decimal_point' => '.',
+				'thousands_sep' => ',',
+			);
+
+		try {
+			return $callback();
+		} finally {
+			$wp_locale->number_format = $original;
+		}
+	}
+
 	/**
 	 * Gets a minimal valid date range.
 	 *
@@ -160,7 +270,7 @@ class Email_Template_FormatterTest extends TestCase {
 				'title'  => 'Visitors',
 				'labels' => array( 'Total visitors' ),
 				'values' => array( '100' ),
-				'trends' => array( '10.5' ),
+				'trends' => array( 10.5 ),
 			)
 		);
 	}

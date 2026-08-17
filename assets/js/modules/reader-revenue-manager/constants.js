@@ -35,6 +35,8 @@ export const RRM_EXPRESS_SETUP_TRAFFIC_CTA_WIDGET_SLUG =
 	'rrmExpressSetupTrafficCTA';
 export const RRM_EXPRESS_SETUP_TRAFFIC_CTA_DISMISSED_KEY =
 	'rrm-express-setup-traffic-cta';
+export const RRM_EXPRESS_SETUP_RESUME_NEWSLETTER_NOTIFICATION_ID =
+	'rrm-express-setup-resume-newsletter-notification';
 export const RRM_SETUP_SUCCESS_NOTIFICATION_ID =
 	'setup-success-notification-rrm';
 export const RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID =

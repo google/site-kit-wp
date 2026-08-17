@@ -33,13 +33,17 @@ import { __ } from '@wordpress/i18n';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import { FEATURES_MENU_BUTTON_CLASS } from '@/js/components/FeaturesMenu/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import OverlayNotification from '@/js/googlesitekit/notifications/components/layout/OverlayNotification';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import EmailReportingOverlayGraphicDesktop from '@/svg/graphics/email-reporting-overlay-desktop.svg';
 import EmailReportingOverlayGraphicMobile from '@/svg/graphics/email-reporting-overlay-mobile.svg';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from './constants';
+import {
+	MANAGE_EMAIL_REPORTS_BUTTON_CLASS,
+	USER_SETTINGS_SELECTION_PANEL_OPENED_KEY,
+} from './constants';
 
 export const SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION =
 	'email_reports_setup_overlay_notification';
@@ -74,12 +78,13 @@ export default function SetUpEmailReportingOverlayNotification( {
 	}, [ dismissItem, setValue ] );
 
 	const tooltipSettings = {
-		target: '.googlesitekit-user-selector',
+		// On mobile and tablet the email reports button collapses into the
+		// features menu, so the tooltip anchors to whichever trigger exists.
+		target: `.${ MANAGE_EMAIL_REPORTS_BUTTON_CLASS }, .${ FEATURES_MENU_BUTTON_CLASS }`,
 		placement: 'bottom-end',
-		className: 'googlesitekit-tour-tooltip--user-menu',
 		tooltipSlug: SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
 		title: __(
-			'You can always manage your email reports subscription from the user menu',
+			'You can always manage your email reports subscription here',
 			'google-site-kit'
 		),
 		dismissLabel: __( 'Got it', 'google-site-kit' ),
