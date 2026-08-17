@@ -44,6 +44,7 @@ const START_UNSUBSCRIBING_USER = 'START_UNSUBSCRIBING_USER';
 const FINISH_UNSUBSCRIBING_USER = 'FINISH_UNSUBSCRIBING_USER';
 const RESET_ELIGIBLE_SUBSCRIBERS = 'RESET_ELIGIBLE_SUBSCRIBERS';
 const RESET_SUBSCRIBED_USERS = 'RESET_SUBSCRIBED_USERS';
+const DISMISS_UNSUBSCRIBED_USER = 'DISMISS_UNSUBSCRIBED_USER';
 const DEFAULT_USER_LIST_ARGS = {
 	page: 1,
 	search: '',
@@ -95,6 +96,7 @@ const baseInitialState = {
 		savedSettings: undefined,
 		eligibleSubscribers: {},
 		subscribedUsers: {},
+		justUnsubscribedUsers: {},
 		errors: undefined,
 		invitingUsers: {},
 		unsubscribingUsers: {},
@@ -255,7 +257,9 @@ const fetchUnsubscribeUserStore = createFetchStore( {
 		} ),
 	// The store keeps one subscribed-users result per page and search term, so remove
 	// the user from every cached result. getSubscribedUsers then reports the change
-	// without a refetch.
+	// without a refetch. The removed user is also snapshotted into
+	// justUnsubscribedUsers, so getJustUnsubscribedUsers can keep reporting them to
+	// any consumer until dismissUnsubscribedUser is called for them.
 	reducerCallback: createReducer( ( state, response, { userID } ) => {
 		Object.values( state.emailReporting.subscribedUsers ).forEach(
 			( cachedResult ) => {
@@ -264,19 +268,26 @@ const fetchUnsubscribeUserStore = createFetchStore( {
 				}
 
 				const users = sanitizeUserListUsers( cachedResult.users );
-				const remainingUsers = users.filter(
-					( subscribedUser ) => subscribedUser.id !== userID
+				const unsubscribedUser = users.find(
+					( subscribedUser ) => subscribedUser.id === userID
 				);
 
-				if ( remainingUsers.length === users.length ) {
+				if ( ! unsubscribedUser ) {
 					return;
 				}
 
-				cachedResult.users = remainingUsers;
+				cachedResult.users = users.filter(
+					( subscribedUser ) => subscribedUser.id !== userID
+				);
 				cachedResult.total = Math.max(
 					sanitizeUserListTotal( cachedResult.total ) - 1,
 					0
 				);
+
+				if ( ! state.emailReporting.justUnsubscribedUsers[ userID ] ) {
+					state.emailReporting.justUnsubscribedUsers[ userID ] =
+						unsubscribedUser;
+				}
 			}
 		);
 	} ),
@@ -484,6 +495,9 @@ const baseActions = {
 	/**
 	 * Clears the subscribed users cache, so the next read fetches fresh data.
 	 *
+	 * Also clears justUnsubscribedUsers, since a full refetch supersedes any
+	 * pending unsubscribe snapshots taken from the stale cache.
+	 *
 	 * @since n.e.x.t
 	 *
 	 * @return {Object} Redux-style action.
@@ -499,6 +513,27 @@ const baseActions = {
 		return dispatch( CORE_SITE ).invalidateResolutionForStoreSelector(
 			'getSubscribedUsers'
 		);
+	},
+
+	/**
+	 * Dismisses a just-unsubscribed user, so `getJustUnsubscribedUsers` stops
+	 * reporting them.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {number} userID Subscribed user ID.
+	 * @return {Object} Redux-style action.
+	 */
+	dismissUnsubscribedUser( userID ) {
+		invariant(
+			Number.isInteger( userID ) && userID > 0,
+			'userID should be a positive integer.'
+		);
+
+		return {
+			type: DISMISS_UNSUBSCRIBED_USER,
+			payload: { userID },
+		};
 	},
 };
 
@@ -537,6 +572,12 @@ export const baseReducer = createReducer( ( state, action ) => {
 		case RESET_SUBSCRIBED_USERS: {
 			state.emailReporting.subscribedUsers =
 				baseInitialState.emailReporting.subscribedUsers;
+			state.emailReporting.justUnsubscribedUsers =
+				baseInitialState.emailReporting.justUnsubscribedUsers;
+			break;
+		}
+		case DISMISS_UNSUBSCRIBED_USER: {
+			delete state.emailReporting.justUnsubscribedUsers[ payload.userID ];
 			break;
 		}
 
@@ -840,6 +881,36 @@ const baseSelectors = {
 			),
 			total: sanitizeUserListTotal( subscribedUsers.total ),
 		};
+	},
+
+	/**
+	 * Gets users who were just unsubscribed and haven't been dismissed yet.
+	 *
+	 * `unsubscribeUser` removes a user from every cached `getSubscribedUsers`
+	 * result immediately, but keeps reporting them here, keyed by user ID,
+	 * until a `dismissUnsubscribedUser` call for them. This lets any
+	 * consumer of this store keep a just-unsubscribed user's row visible
+	 * (e.g. to show a confirmation) instead of the user simply vanishing.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Object} Just-unsubscribed users keyed by ID, in the same shape as `getSubscribedUsers().users` entries.
+	 */
+	getJustUnsubscribedUsers( state ) {
+		return Object.fromEntries(
+			Object.entries(
+				state.emailReporting?.justUnsubscribedUsers || {}
+			).map( ( [ userID, user ] ) => [
+				userID,
+				{
+					id: user.id,
+					name: user.displayName || user.name,
+					email: user.email,
+					role: user.roleDisplayName || user.role,
+				},
+			] )
+		);
 	},
 
 	/**
