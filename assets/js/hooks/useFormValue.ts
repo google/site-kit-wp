@@ -25,6 +25,7 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import type { Select } from 'googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 
 /**
@@ -37,7 +38,10 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
  * @param {string} key      The key of the form field.
  * @return {Array} An array containing the value and a function to update it.
  */
-export default function useFormValue( formName, key ) {
+export default function useFormValue< T = unknown >(
+	formName: string,
+	key: string
+): [ T | undefined, ( value: T ) => void ] {
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	/**
@@ -48,7 +52,7 @@ export default function useFormValue( formName, key ) {
 	 * @param {string|number|boolean|Array|Object|undefined} value The value of the form field.
 	 */
 	const setValue = useCallback(
-		( value ) => {
+		( value: T ) => {
 			setValues( formName, {
 				[ key ]: value,
 			} );
@@ -57,10 +61,10 @@ export default function useFormValue( formName, key ) {
 	);
 
 	const value = useSelect(
-		( select ) => {
+		( select: Select ) => {
 			const { getValue } = select( CORE_FORMS );
 
-			return getValue( formName, key );
+			return getValue( formName, key ) as T | undefined;
 		},
 		[ formName, key ]
 	);

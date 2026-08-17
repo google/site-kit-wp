@@ -17,14 +17,23 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { actHook, createTestRegistry, renderHook } from '@tests/js/test-utils';
 import useFormValue from './useFormValue';
 
+// The hook requires a form name and a key; these tests cover the values it
+// returns when either is missing at runtime.
+const missingArgument = undefined as unknown as string;
+
 describe( 'useFormValue', () => {
-	let registry;
+	let registry: WPDataRegistry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -71,9 +80,12 @@ describe( 'useFormValue', () => {
 
 	it( 'should return undefined if the form is not provided', () => {
 		const key = 'testKey';
-		const { result } = renderHook( () => useFormValue( undefined, key ), {
-			registry,
-		} );
+		const { result } = renderHook(
+			() => useFormValue( missingArgument, key ),
+			{
+				registry,
+			}
+		);
 
 		expect( result.current[ 0 ] ).toBeUndefined();
 	} );
@@ -81,7 +93,7 @@ describe( 'useFormValue', () => {
 	it( 'should return undefined if the key is not provided', () => {
 		const formName = 'testForm';
 		const { result } = renderHook(
-			() => useFormValue( formName, undefined ),
+			() => useFormValue( formName, missingArgument ),
 			{
 				registry,
 			}
@@ -91,7 +103,10 @@ describe( 'useFormValue', () => {
 	} );
 
 	it( 'should return undefined if both formName and key are not provided', () => {
-		const { result } = renderHook( () => useFormValue(), { registry } );
+		const { result } = renderHook(
+			() => useFormValue( missingArgument, missingArgument ),
+			{ registry }
+		);
 
 		expect( result.current[ 0 ] ).toBeUndefined();
 	} );
