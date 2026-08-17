@@ -487,6 +487,57 @@ describe( 'core/site Email Reporting', () => {
 				} );
 			} );
 
+			it( 'snapshots the unsubscribed user into getJustUnsubscribedUsers', async () => {
+				await resolveSubscribedUsers( [
+					subscribedUser,
+					otherSubscribedUser,
+				] );
+
+				fetchMock.postOnce( unsubscribeUserEndpointRegExp, {
+					body: { success: true },
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( CORE_SITE )
+					.unsubscribeUser( subscribedUser.id );
+
+				expect(
+					registry.select( CORE_SITE ).getJustUnsubscribedUsers()
+				).toEqual( {
+					[ subscribedUser.id ]: {
+						id: subscribedUser.id,
+						name: subscribedUser.displayName,
+						email: subscribedUser.email,
+						role: subscribedUser.role,
+					},
+				} );
+			} );
+
+			it( 'does not snapshot the user into getJustUnsubscribedUsers when the unsubscribe fails', async () => {
+				await resolveSubscribedUsers( [ subscribedUser ] );
+
+				fetchMock.postOnce( unsubscribeUserEndpointRegExp, {
+					body: {
+						code: 'email_reporting_unsubscribe_failed',
+						message:
+							'Unable to unsubscribe the user from email reports.',
+						data: { status: 500 },
+					},
+					status: 500,
+				} );
+
+				await registry
+					.dispatch( CORE_SITE )
+					.unsubscribeUser( subscribedUser.id );
+
+				expect(
+					registry.select( CORE_SITE ).getJustUnsubscribedUsers()
+				).toEqual( {} );
+
+				expect( console ).toHaveErrored();
+			} );
+
 			it( 'removes the user from every search cache that lists them and keeps the other terms as they were', async () => {
 				await resolveSubscribedUsers( [ subscribedUser ], {
 					search: 'subscribed',
@@ -603,6 +654,51 @@ describe( 'core/site Email Reporting', () => {
 				} ).toThrow( 'userID should be a positive integer.' );
 				expect( () => {
 					registry.dispatch( CORE_SITE ).unsubscribeUser( '1' );
+				} ).toThrow( 'userID should be a positive integer.' );
+			} );
+		} );
+
+		describe( 'dismissUnsubscribedUser', () => {
+			const subscribedUser = {
+				id: 123,
+				displayName: 'Subscribed User',
+				email: 'subscribed@example.com',
+				role: 'editor',
+			};
+
+			it( 'removes the user from getJustUnsubscribedUsers', async () => {
+				await resolveSubscribedUsers( [ subscribedUser ] );
+
+				fetchMock.postOnce( unsubscribeUserEndpointRegExp, {
+					body: { success: true },
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( CORE_SITE )
+					.unsubscribeUser( subscribedUser.id );
+
+				expect(
+					registry.select( CORE_SITE ).getJustUnsubscribedUsers()
+				).not.toEqual( {} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.dismissUnsubscribedUser( subscribedUser.id );
+
+				expect(
+					registry.select( CORE_SITE ).getJustUnsubscribedUsers()
+				).toEqual( {} );
+			} );
+
+			it( 'throws unless the user ID is a positive integer', () => {
+				expect( () => {
+					registry.dispatch( CORE_SITE ).dismissUnsubscribedUser();
+				} ).toThrow( 'userID should be a positive integer.' );
+				expect( () => {
+					registry
+						.dispatch( CORE_SITE )
+						.dismissUnsubscribedUser( -1 );
 				} ).toThrow( 'userID should be a positive integer.' );
 			} );
 		} );
@@ -740,6 +836,41 @@ describe( 'core/site Email Reporting', () => {
 				expect(
 					registry.stores[ CORE_SITE ].store.getState().emailReporting
 						.subscribedUsers
+				).toEqual( {} );
+			} );
+
+			it( 'clears getJustUnsubscribedUsers along with the cache', async () => {
+				const subscribedUser = {
+					id: 123,
+					displayName: 'Subscribed User',
+					email: 'subscribed@example.com',
+					role: 'editor',
+				};
+
+				await resolveSubscribedUsers( [ subscribedUser ] );
+
+				fetchMock.postOnce( unsubscribeUserEndpointRegExp, {
+					body: { success: true },
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( CORE_SITE )
+					.unsubscribeUser( subscribedUser.id );
+
+				expect(
+					registry.select( CORE_SITE ).getJustUnsubscribedUsers()
+				).not.toEqual( {} );
+
+				fetchMock.get( subscribedUsersEndpointRegExp, {
+					body: createUserListResponse( [] ),
+					status: 200,
+				} );
+
+				await registry.dispatch( CORE_SITE ).resetSubscribedUsers();
+
+				expect(
+					registry.select( CORE_SITE ).getJustUnsubscribedUsers()
 				).toEqual( {} );
 			} );
 
@@ -1547,6 +1678,46 @@ describe( 'core/site Email Reporting', () => {
 				);
 
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getJustUnsubscribedUsers', () => {
+			it( 'returns an empty object when nobody has just been unsubscribed', () => {
+				expect(
+					registry.select( CORE_SITE ).getJustUnsubscribedUsers()
+				).toEqual( {} );
+			} );
+
+			it( 'normalizes a snapshotted user the same way getSubscribedUsers does', async () => {
+				const subscribedUser = {
+					id: 123,
+					displayName: 'Subscribed User',
+					email: 'subscribed@example.com',
+					roleDisplayName: 'Editor',
+					role: 'editor',
+				};
+
+				await resolveSubscribedUsers( [ subscribedUser ] );
+
+				fetchMock.postOnce( unsubscribeUserEndpointRegExp, {
+					body: { success: true },
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( CORE_SITE )
+					.unsubscribeUser( subscribedUser.id );
+
+				expect(
+					registry.select( CORE_SITE ).getJustUnsubscribedUsers()
+				).toEqual( {
+					[ subscribedUser.id ]: {
+						id: subscribedUser.id,
+						name: subscribedUser.displayName,
+						email: subscribedUser.email,
+						role: subscribedUser.roleDisplayName,
+					},
+				} );
 			} );
 		} );
 
