@@ -23,6 +23,8 @@ import { actHook as act, renderHook } from '@tests/js/test-utils';
 import { muteFetch } from '@tests/js/utils';
 import { useChecks } from './useChecks';
 
+type ChecksResult = { current: ReturnType< typeof useChecks > };
+
 describe( 'useChecks', () => {
 	beforeEach( () => {
 		jest.useFakeTimers();
@@ -30,7 +32,7 @@ describe( 'useChecks', () => {
 
 	it( 'should return { complete:true, error: undefined } successful check runs.', async () => {
 		const checks = [ () => Promise.resolve() ];
-		let result;
+		let result!: ChecksResult;
 		await act( async () => {
 			( { result } = await renderHook( () => useChecks( checks ) ) );
 		} );
@@ -42,8 +44,8 @@ describe( 'useChecks', () => {
 	} );
 
 	it( 'should return { complete:true, error: undefined } with no checks to run.', async () => {
-		const checks = [];
-		let result;
+		const checks: ( () => unknown )[] = [];
+		let result!: ChecksResult;
 		await act( async () => {
 			( { result } = await renderHook( () => useChecks( checks ) ) );
 		} );

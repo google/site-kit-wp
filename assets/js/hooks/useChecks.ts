@@ -26,6 +26,13 @@ import { useMount } from 'react-use';
  */
 import { useState } from '@wordpress/element';
 
+type Check = () => unknown;
+
+interface UseChecksReturn {
+	complete: boolean;
+	error: unknown;
+}
+
 /**
  * Runs a series of checks returning the first encountered error.
  * All checks should be functions that throw their respective errors.
@@ -36,10 +43,10 @@ import { useState } from '@wordpress/element';
  * @param {Function[]} checks Array of functions to run.
  * @return {Object} An object containing complete and error properties.
  */
-export function useChecks( checks ) {
+export function useChecks( checks: Check[] ): UseChecksReturn {
 	const [ stableChecks ] = useState( checks );
 	const [ complete, setComplete ] = useState( ! stableChecks?.length );
-	const [ error, setError ] = useState( undefined );
+	const [ error, setError ] = useState< unknown >( undefined );
 
 	useMount( () => {
 		async function runChecks() {
