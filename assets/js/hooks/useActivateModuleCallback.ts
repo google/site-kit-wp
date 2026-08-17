@@ -24,7 +24,12 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import {
+	Select,
+	UseSelect,
+	useDispatch,
+	useSelect as useSelectWithRequiredDeps,
+} from 'googlesitekit-data';
 import { setItem } from '@/js/googlesitekit/api/cache';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -36,6 +41,13 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { trackEvent } from '@/js/util/tracking';
 import useViewContext from './useViewContext';
 
+// These selectors deliberately omit `deps`. See the `UseSelect` type.
+const useSelect = useSelectWithRequiredDeps as UseSelect;
+
+interface ActivateModuleOptions {
+	redirectQueryArgs?: Record< string, string >;
+}
+
 /**
  * Returns a callback to activate a module. If the call to activate the module is successful, navigate to the reauthentication URL.
  * Returns null if the module doesn't exist or the user can't manage options.
@@ -46,12 +58,15 @@ import useViewContext from './useViewContext';
  * @param {Object} [options]  Optional. Activation options with `redirectQueryArgs`.
  * @return {Function|null} Callback to activate module, null if the module doesn't exist or the user can't manage options.
  */
-export default function useActivateModuleCallback( moduleSlug, options = {} ) {
+export default function useActivateModuleCallback(
+	moduleSlug: string,
+	options: ActivateModuleOptions = {}
+): ( () => Promise< void > ) | null {
 	const viewContext = useViewContext();
-	const module = useSelect( ( select ) =>
+	const module = useSelect( ( select: Select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
-	const canManageOptions = useSelect( ( select ) =>
+	const canManageOptions = useSelect( ( select: Select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
 	);
 

@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { getItem } from '@/js/googlesitekit/api/cache';
@@ -49,7 +54,7 @@ mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'useActivateModuleCallback', () => {
 	mockLocation();
-	let registry;
+	let registry: WPDataRegistry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -85,7 +90,7 @@ describe( 'useActivateModuleCallback', () => {
 				.isDoingSetModuleActivation( MODULE_SLUG_ANALYTICS_4 )
 		).toBe( false );
 
-		await result.current();
+		await result.current!();
 
 		expect(
 			registry
@@ -113,7 +118,7 @@ describe( 'useActivateModuleCallback', () => {
 
 		expect( mockTrackEvent ).not.toHaveBeenCalled();
 
-		await result.current();
+		await result.current!();
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			'mainDashboard_widget-activation-cta',
@@ -147,7 +152,7 @@ describe( 'useActivateModuleCallback', () => {
 			{ body: { needsReauthentication: false } }
 		);
 
-		await result.current();
+		await result.current!();
 
 		const reauthURL = registry
 			.select( MODULES_ANALYTICS_4 )
@@ -182,7 +187,7 @@ describe( 'useActivateModuleCallback', () => {
 
 		expect( storageItem.value ).toBeUndefined();
 
-		await result.current();
+		await result.current!();
 
 		expect( sessionStorage.setItem ).toHaveBeenCalled();
 
@@ -202,7 +207,7 @@ describe( 'useActivateModuleCallback', () => {
 			{ body: { message: 'This is an error' }, status: 500 }
 		);
 
-		await result.current();
+		await result.current!();
 
 		expect( console ).toHaveErrored();
 
