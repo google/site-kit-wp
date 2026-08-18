@@ -40,7 +40,47 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 } from '@tests/js/utils';
-import PopularKeywordsWidget from './PopularKeywordsWidget';
+import PopularKeywordsWidget, {
+	getPopularKeywordReportURL,
+} from './PopularKeywordsWidget';
+
+describe( 'getPopularKeywordReportURL', () => {
+	const DATES = { startDate: '2025-01-01', endDate: '2025-01-28' };
+
+	it( 'reads the search analytics URL for an exact-match query on the keyword', () => {
+		const getServiceReportURL = jest.fn(
+			() => 'https://search-console.example.com/report'
+		);
+
+		const url = getPopularKeywordReportURL( {
+			getServiceReportURL,
+			dates: DATES,
+			keyword: 'site kit',
+			viewOnly: false,
+		} );
+
+		expect( url ).toBe( 'https://search-console.example.com/report' );
+		expect( getServiceReportURL ).toHaveBeenCalledWith(
+			expect.objectContaining( { query: '!site kit' } )
+		);
+	} );
+
+	it( 'returns undefined without reading the URL on a view-only dashboard', () => {
+		const getServiceReportURL = jest.fn(
+			() => 'https://search-console.example.com/report'
+		);
+
+		const url = getPopularKeywordReportURL( {
+			getServiceReportURL,
+			dates: DATES,
+			keyword: 'site kit',
+			viewOnly: true,
+		} );
+
+		expect( url ).toBeUndefined();
+		expect( getServiceReportURL ).not.toHaveBeenCalled();
+	} );
+} );
 
 describe( 'PopularKeywordsWidget', () => {
 	let registry;
