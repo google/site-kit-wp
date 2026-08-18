@@ -119,13 +119,6 @@
 		.googlesitekit-setup__intro-title {
 			color: $c-primary;
 			margin: 0 0 17px;
-
-			/* TODO: 11266 -- Correct typography in components, remove this override and update VRT refrences. */
-			&.googlesitekit-typography {
-				font-family: $f-secondary;
-				font-weight: $fw-bold;
-				letter-spacing: $ls-s;
-			}
 		}
 	}
 
@@ -194,11 +187,6 @@
 
 		.googlesitekit-setup__description {
 			margin: 0;
-
-			/* TODO: 11266 -- Remove this override and update VRT refrences. */
-			&.googlesitekit-typography {
-				line-height: $lh-body-lg;
-			}
 		}
 
 		.googlesitekit-opt-in {

@@ -59,7 +59,6 @@ import { Dialog, DialogContent, DialogFooter } from '@/js/material-components';
 import ShareIcon from '@/svg/icons/share.svg';
 import Footer from './Footer';
 
-// eslint-disable-next-line complexity -- TODO: -- 11266 Reduce complexity.
 export default function DashboardSharingDialog() {
 	const [ shouldFocusResetButton, setShouldFocusResetButton ] =
 		useState( false );
@@ -105,7 +104,7 @@ export default function DashboardSharingDialog() {
 	// the whole screen. But we have to move the box and adjust its height below the
 	// WP Admin bar of 46px which gradually scrolls off the screen.
 	if ( breakpoint === BREAKPOINT_SMALL ) {
-		dialogStyles.top = `${ y < 46 ? 46 - y : 0 }px`;
+		dialogStyles.top = `${ Math.max( 46 - y, 0 ) }px`;
 		dialogStyles.height = `calc(100% - 46px + ${ y < 46 ? y : 46 }px)`;
 	}
 
