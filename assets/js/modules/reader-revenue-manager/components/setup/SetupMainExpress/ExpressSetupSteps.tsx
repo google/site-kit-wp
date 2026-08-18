@@ -31,7 +31,6 @@ import { __ } from '@wordpress/i18n';
  */
 import Stepper from '@/js/components/Stepper';
 import Step from '@/js/components/Stepper/Step';
-import useQueryArg from '@/js/hooks/useQueryArg';
 import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
 interface ExpressSetupStepsProps {
@@ -43,9 +42,6 @@ const ExpressSetupSteps: FC< ExpressSetupStepsProps > = ( {
 	extraSteps = {},
 	step,
 } ) => {
-	const [ queryStep ] = useQueryArg( 'step' );
-	const activeStepID = step || queryStep;
-
 	const steps = {
 		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: __(
 			'Connect publication',
@@ -66,7 +62,7 @@ const ExpressSetupSteps: FC< ExpressSetupStepsProps > = ( {
 		),
 	};
 
-	const activeStep = Object.keys( steps ).indexOf( activeStepID );
+	const activeStep = step ? Object.keys( steps ).indexOf( step ) : -1;
 
 	return (
 		<Stepper activeStep={ activeStep } variant="rail">

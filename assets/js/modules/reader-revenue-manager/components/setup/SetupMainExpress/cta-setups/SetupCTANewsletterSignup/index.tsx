@@ -70,7 +70,7 @@ const SetupCTANewsletterSignup: FC = () => {
 		},
 	};
 
-	const { Component, nextStep } = stepConfig[ step ] ?? {};
+	const { Component, nextStep } = step ? stepConfig[ step ] ?? {} : {};
 
 	return (
 		<ExpressSetupLayout

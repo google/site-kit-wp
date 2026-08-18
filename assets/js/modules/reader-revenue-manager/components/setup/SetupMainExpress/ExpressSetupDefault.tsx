@@ -60,7 +60,7 @@ const ExpressSetupDefault: FC = () => {
 		},
 	};
 
-	const { Component, nextStep } = stepConfig[ step ] ?? {};
+	const { Component, nextStep } = step ? stepConfig[ step ] ?? {} : {};
 
 	return (
 		<ExpressSetupLayout sidebar={ <ExpressSetupSteps step={ step } /> }>
