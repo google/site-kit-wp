@@ -1480,14 +1480,17 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		} );
 	}
 
-	it( 'does not render breakdown tabs in aggregated mode (no form values)', async () => {
+	it( 'does not render breakdown tabs or the deactivated plugin notice in aggregated mode (no form values)', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [],
+		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 		// beforeEach seeds an empty breakdown discovery report (no form values).
 		seedReadyReports();
 
-		const { queryByRole, waitForRegistry } = render(
+		const { queryByRole, queryByText, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
@@ -1495,6 +1498,9 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 
 		// An empty value set must not render a lone "Other sources" tab.
 		expect( queryByRole( 'tab' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Form plugin no longer found' )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'renders form tabs with resolved titles and a Form #id fallback', async () => {
@@ -1792,27 +1798,6 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		);
 		await waitForRegistry();
 
-		expect(
-			queryByText( 'Form plugin no longer found' )
-		).not.toBeInTheDocument();
-	} );
-
-	it( 'renders no tab bar and no deactivated plugin notice in the aggregated state', async () => {
-		provideSiteInfo( registry, {
-			activeConversionEventProviders: [],
-		} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
-		seedReadyReports();
-
-		const { queryByRole, queryByText, waitForRegistry } = render(
-			<LeadGenerationPerformanceWidget { ...widgetProps } />,
-			{ registry }
-		);
-		await waitForRegistry();
-
-		expect( queryByRole( 'tab' ) ).not.toBeInTheDocument();
 		expect(
 			queryByText( 'Form plugin no longer found' )
 		).not.toBeInTheDocument();

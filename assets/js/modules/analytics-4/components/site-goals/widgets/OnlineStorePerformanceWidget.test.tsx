@@ -1663,7 +1663,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		} );
 	}
 
-	it( 'stays in aggregated mode without tabs when no provider values exist', async () => {
+	it( 'stays in aggregated mode without tabs or the deactivated plugin notice when no provider values exist', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [],
+		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
@@ -1684,13 +1687,16 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
-		const { queryByRole, waitForRegistry } = render(
+		const { queryByRole, queryByText, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
 
 		expect( queryByRole( 'tab' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Online store plugin no longer found' )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'renders breakdown tabs with provider labels and an Other sources tab', async () => {
@@ -1894,42 +1900,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 				queryByText( 'Online store plugin no longer found' )
 			).not.toBeInTheDocument();
 		} );
-	} );
-
-	it( 'renders no tab bar and no deactivated plugin notice in the aggregated state', async () => {
-		provideSiteInfo( registry, {
-			activeConversionEventProviders: [],
-		} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
-
-		const dates = registry
-			.select( CORE_USER )
-			.getDateRangeDates( { compare: true } );
-		provideAnalytics4MockReport(
-			registry,
-			buildPrimaryEventReportOptions(
-				dates,
-				ENUM_CONVERSION_EVENTS.PURCHASE
-			)
-		);
-		provideAnalytics4MockReport(
-			registry,
-			buildEngagementReportOptions( dates )
-		);
-		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
-
-		const { queryByRole, queryByText, waitForRegistry } = render(
-			<OnlineStorePerformanceWidget { ...widgetProps } />,
-			{ registry }
-		);
-		await waitForRegistry();
-
-		expect( queryByRole( 'tab' ) ).not.toBeInTheDocument();
-		expect(
-			queryByText( 'Online store plugin no longer found' )
-		).not.toBeInTheDocument();
 	} );
 
 	it( 'keeps the same widget element across re-renders', async () => {

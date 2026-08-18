@@ -299,11 +299,6 @@ class Conversion_TrackingTest extends TestCase {
 	}
 
 	public function test_inline_js_base_data__with_one_active_and_one_inactive_provider() {
-		Conversion_Tracking::$providers = array(
-			FakeConversionEventProvider::CONVERSION_EVENT_PROVIDER_SLUG        => FakeConversionEventProvider::class,
-			FakeConversionEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeConversionEventProvider_Active::class,
-		);
-
 		$this->conversion_tracking->register();
 
 		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
@@ -447,6 +442,7 @@ class Conversion_TrackingTest extends TestCase {
 		$this->assertTrue( $data['hasActiveLeadEventProviders'], 'Lead provider flag should be true with active lead provider.' );
 		$this->assertFalse( $data['hasActiveEcommerceEventProviders'], 'Ecommerce provider flag should be false with only lead provider.' );
 		$this->assertFalse( $data['hasMultipleActiveEcommerceEventProviders'], 'Multiple ecommerce flag should be false with only lead provider.' );
+		$this->assertEquals( array( 'contact-form-7' ), $data['activeConversionEventProviders'], 'Inline base data should still list the active provider slug when conversion tracking is off.' );
 	}
 
 	public function test_content_event_provider__does_not_affect_conversion_event_getters_and_categories() {

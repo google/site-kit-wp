@@ -25,27 +25,21 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
-import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { Story } from '@/js/types/Story';
 import { provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
-import EventProviderDeactivatedNotice from './EventProviderDeactivatedNotice';
-
-interface EventProviderDeactivatedNoticeStoryProps {
-	goalType: GoalType;
-	providerSlug: string;
-}
+import EventProviderDeactivatedNotice, {
+	EventProviderDeactivatedNoticeProps,
+} from './EventProviderDeactivatedNotice';
 
 function Template( {
 	goalType,
 	providerSlug,
-}: EventProviderDeactivatedNoticeStoryProps ) {
+}: EventProviderDeactivatedNoticeProps ) {
 	return (
 		<WithRegistrySetup
 			func={ ( registry: WPDataRegistry ) =>
-				// An empty activeConversionEventProviders list makes every slug
-				// read as deactivated, so each story renders the notice for the
-				// slug it passes in.
+				// An empty active provider list makes both stories show the notice.
 				provideSiteInfo( registry, {
 					activeConversionEventProviders: [],
 				} )
@@ -61,7 +55,7 @@ function Template( {
 
 export const OnlineStore = Template.bind(
 	{}
-) as Story< EventProviderDeactivatedNoticeStoryProps >;
+) as Story< EventProviderDeactivatedNoticeProps >;
 OnlineStore.storyName = 'Online store plugin deactivated';
 OnlineStore.args = {
 	goalType: GOAL_TYPES.ECOMMERCE,
@@ -71,7 +65,7 @@ OnlineStore.scenario = {};
 
 export const LeadForm = Template.bind(
 	{}
-) as Story< EventProviderDeactivatedNoticeStoryProps >;
+) as Story< EventProviderDeactivatedNoticeProps >;
 LeadForm.storyName = 'Form plugin deactivated';
 LeadForm.args = {
 	goalType: GOAL_TYPES.LEAD,
