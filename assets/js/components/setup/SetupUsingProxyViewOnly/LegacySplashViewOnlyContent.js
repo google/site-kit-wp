@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -42,6 +43,12 @@ export default function LegacySplashViewOnlyContent( {
 	documentationURL,
 	onButtonClick,
 } ) {
+	// The style sheet reads `googlesitekit-setup-splash` off <body>, so the header
+	// keeps the words "Site Kit" beside the logo under 450 pixels.
+	useMount( () => {
+		global.document.body.classList.add( 'googlesitekit-setup-splash' );
+	} );
+
 	return (
 		<Row className="googlesitekit-setup__content">
 			<Cell
