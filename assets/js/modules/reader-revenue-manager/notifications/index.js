@@ -290,12 +290,25 @@ export const NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
-		checkRequirements: async ( { resolveSelect } ) => {
+		checkRequirements: async ( { select, resolveSelect } ) => {
 			const rrmConnected = await resolveSelect(
 				CORE_MODULES
 			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
 
 			if ( ! rrmConnected ) {
+				return false;
+			}
+
+			await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
+
+			const contentPolicyState = select(
+				MODULES_READER_REVENUE_MANAGER
+			).getContentPolicyState();
+
+			if (
+				contentPolicyState ===
+				CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
+			) {
 				return false;
 			}
 
