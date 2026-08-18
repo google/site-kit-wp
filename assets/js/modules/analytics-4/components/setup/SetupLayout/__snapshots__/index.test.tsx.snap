@@ -27,7 +27,6 @@ exports[`Analytics SetupLayout initial setup flow renders initial setup-specific
                 class="googlesitekit-logo"
               >
                 <svg />
-                <svg />
                 <span
                   class="screen-reader-text"
                 >
@@ -525,7 +524,6 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                 aria-hidden="true"
                 class="googlesitekit-logo"
               >
-                <svg />
                 <svg />
                 <span
                   class="screen-reader-text"
