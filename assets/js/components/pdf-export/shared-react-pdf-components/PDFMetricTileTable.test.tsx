@@ -160,27 +160,54 @@ describe( 'PDFMetricTileTable', () => {
 		expect( json ).toContain( '"flexGrow":1' );
 	} );
 
-	it( 'colours the label like a link only when the dashboard tile links it', () => {
-		const linked = JSON.stringify(
-			TestRenderer.create(
-				<PDFMetricTileTable
-					title="Top pages"
-					rows={ [ { primary: '/home', metric: '37' } ] }
-					linked
-				/>
-			).toJSON()
-		);
-		const plain = JSON.stringify(
-			TestRenderer.create(
-				<PDFMetricTileTable
-					title="Top cities"
-					rows={ [ { primary: 'Dublin', metric: '37' } ] }
-				/>
-			).toJSON()
-		);
+	it( 'renders the label as a link to primaryURL when the row has one', () => {
+		const tree = TestRenderer.create(
+			<PDFMetricTileTable
+				title="Top pages"
+				rows={ [
+					{
+						primary: '/home',
+						metric: '37',
+						primaryURL: 'https://analytics.example.com/report',
+					},
+				] }
+			/>
+		).toJSON();
+		const json = JSON.stringify( tree );
 
-		expect( linked ).toContain( '#108080' );
-		expect( plain ).not.toContain( '#108080' );
+		expect( json ).toContain( '"type":"pdf-link"' );
+		expect( json ).toContain(
+			'"src":"https://analytics.example.com/report"'
+		);
+		expect( json ).toContain( '#108080' );
+	} );
+
+	it( 'renders the label as plain text when the row has no primaryURL', () => {
+		const tree = TestRenderer.create(
+			<PDFMetricTileTable
+				title="Top cities"
+				rows={ [ { primary: 'Dublin', metric: '37' } ] }
+			/>
+		).toJSON();
+		const json = JSON.stringify( tree );
+
+		expect( json ).not.toContain( '"type":"pdf-link"' );
+		expect( json ).not.toContain( '#108080' );
+	} );
+
+	it( 'renders the label as plain text when primaryURL is null', () => {
+		const tree = TestRenderer.create(
+			<PDFMetricTileTable
+				title="Top cities"
+				rows={ [
+					{ primary: 'Dublin', metric: '37', primaryURL: null },
+				] }
+			/>
+		).toJSON();
+		const json = JSON.stringify( tree );
+
+		expect( json ).not.toContain( '"type":"pdf-link"' );
+		expect( json ).not.toContain( '#108080' );
 	} );
 
 	it( 'renders only the title when there are no rows', () => {
