@@ -195,6 +195,21 @@ describe( 'PDFMetricTileTable', () => {
 		expect( json ).not.toContain( '#108080' );
 	} );
 
+	it( 'renders the label as plain text when primaryURL is null', () => {
+		const tree = TestRenderer.create(
+			<PDFMetricTileTable
+				title="Top cities"
+				rows={ [
+					{ primary: 'Dublin', metric: '37', primaryURL: null },
+				] }
+			/>
+		).toJSON();
+		const json = JSON.stringify( tree );
+
+		expect( json ).not.toContain( '"type":"pdf-link"' );
+		expect( json ).not.toContain( '#108080' );
+	} );
+
 	it( 'renders only the title when there are no rows', () => {
 		const strings = renderTable( { title: 'Top cities', rows: [] } );
 

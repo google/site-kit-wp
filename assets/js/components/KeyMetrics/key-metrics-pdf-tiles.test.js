@@ -364,7 +364,7 @@ describe( 'KEY_METRICS_PDF_TILES smoke test', () => {
 			KM_ANALYTICS_POPULAR_CONTENT,
 			KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 		] )(
-			'returns no primaryURL for any row of %s when viewOnly is true',
+			'returns a null primaryURL for any row of %s when viewOnly is true',
 			async ( slug ) => {
 				const registry = smokeRegistry();
 				const { getTileData } = KEY_METRICS_PDF_TILES[ slug ];
@@ -380,7 +380,7 @@ describe( 'KEY_METRICS_PDF_TILES smoke test', () => {
 					registry.select().getServiceReportURL
 				).not.toHaveBeenCalled();
 				data.rows.forEach( ( row ) => {
-					expect( row.primaryURL ).toBeUndefined();
+					expect( row.primaryURL ).toBeNull();
 				} );
 			}
 		);

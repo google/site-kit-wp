@@ -65,7 +65,7 @@ describe( 'getPopularKeywordReportURL', () => {
 		);
 	} );
 
-	it( 'returns undefined without reading the URL on a view-only dashboard', () => {
+	it( 'returns null without reading the URL on a view-only dashboard', () => {
 		const getServiceReportURL = jest.fn(
 			() => 'https://search-console.example.com/report'
 		);
@@ -77,7 +77,7 @@ describe( 'getPopularKeywordReportURL', () => {
 			viewOnly: true,
 		} );
 
-		expect( url ).toBeUndefined();
+		expect( url ).toBeNull();
 		expect( getServiceReportURL ).not.toHaveBeenCalled();
 	} );
 } );

@@ -138,6 +138,16 @@ describe( 'PDFLink', () => {
 		expect( treeJSON ).not.toContain( PDF_COLORS.CONTENT_SECONDARY );
 	} );
 
+	it( 'renders plain text in the default color when the href is null', () => {
+		const tree = renderLink( { href: null, children: 'View dashboard' } );
+
+		expect( tree.type ).toBe( 'pdf-text' );
+
+		const treeJSON = JSON.stringify( tree );
+		expect( treeJSON ).toContain( 'View dashboard' );
+		expect( treeJSON ).not.toContain( PDF_COLORS.CONTENT_SECONDARY );
+	} );
+
 	it( 'truncates the linked text to one line when truncateContent is set', () => {
 		const tree = renderLink( {
 			href: 'https://example.com/dashboard',
@@ -149,12 +159,9 @@ describe( 'PDFLink', () => {
 		expect( json ).toContain( '"maxLines":1' );
 		expect( json ).toContain( '"textOverflow":"ellipsis"' );
 
-		// The `<Link>` itself — not just the text inside it — must grow to
-		// fill the row's available width, or the truncation box nested
-		// inside it has nothing to constrain its width against and the text
-		// collapses to a few characters instead of filling the row. This
-		// regressed once before: the box sizing lived only on the inner
-		// `PDFTypography`, which the `Link` wrapper doesn't inherit.
+		// If the `<Link>` doesn't stretch to the row's width, react-pdf has
+		// nothing to measure the ellipsis against and renders only the first
+		// few characters instead of the full (truncated) label.
 		expect( tree.props.style ).toContainEqual(
 			expect.objectContaining( {
 				flexGrow: 1,

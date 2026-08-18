@@ -65,8 +65,8 @@ export interface PDFMetricTileTableRow {
 	primary: string;
 	/** The pre-formatted metric, e.g. "1.2K" or "34%". */
 	metric: string;
-	/** The destination the primary label links to, matching the dashboard row. Empty or omitted renders the label as plain text. */
-	primaryURL?: string;
+	/** The destination the primary label links to, matching the dashboard row. Empty, `null`, or omitted renders the label as plain text. */
+	primaryURL?: string | null;
 }
 
 export interface PDFMetricTileTableProps {

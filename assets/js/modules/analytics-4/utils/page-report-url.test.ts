@@ -81,7 +81,7 @@ describe( 'getPageReportURL', () => {
 		);
 	} );
 
-	it( 'returns undefined without reading the URL on a view-only export', () => {
+	it( 'returns null without reading the URL on a view-only export', () => {
 		const getServiceReportURL = jest.fn(
 			() => 'https://analytics.example.com/report'
 		);
@@ -93,7 +93,7 @@ describe( 'getPageReportURL', () => {
 			viewOnly: true,
 		} );
 
-		expect( url ).toBeUndefined();
+		expect( url ).toBeNull();
 		expect( getServiceReportURL ).not.toHaveBeenCalled();
 	} );
 } );

@@ -64,8 +64,8 @@ export function getPopularKeywordsReportOptions( dates ) {
 
 /**
  * Builds the Search Console URL a popular-keyword row links to: the search
- * analytics report for an exact match on that keyword. Returns `undefined`
- * on a view-only export/dashboard, where the row renders no link.
+ * analytics report for an exact match on that keyword. Returns `null` on a
+ * view-only export/dashboard, where the row renders no link.
  *
  * The exclamation mark at the beginning of the query specifies that the term
  * should be treated as an exact match on the SC search results page.
@@ -77,7 +77,7 @@ export function getPopularKeywordsReportOptions( dates ) {
  * @param {Object}   params.dates               The date range dates, e.g. `startDate` and `endDate`.
  * @param {string}   params.keyword             The keyword to filter to.
  * @param {boolean}  params.viewOnly            Whether the dashboard/export is view-only.
- * @return {string|undefined} The report URL, or `undefined` when unlinked.
+ * @return {string|null|undefined} The report URL; `null` when unlinked, or `undefined` before the service URL loads.
  */
 export function getPopularKeywordReportURL( {
 	getServiceReportURL,
@@ -86,7 +86,7 @@ export function getPopularKeywordReportURL( {
 	viewOnly,
 } ) {
 	if ( viewOnly ) {
-		return undefined;
+		return null;
 	}
 
 	return getServiceReportURL( {

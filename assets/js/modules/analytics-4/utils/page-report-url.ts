@@ -58,7 +58,7 @@ export function getAllPagesReportURL(
 
 /**
  * Builds the All pages and screens report URL a page title links to, or
- * `undefined` on a view-only export, where a loader leaves out the links an
+ * `null` on a view-only export, where a loader leaves out the links an
  * administrator sees.
  *
  * @since n.e.x.t
@@ -70,7 +70,7 @@ export function getAllPagesReportURL(
  * @param {string}          params.dates.startDate The first day of the range (YYYY-MM-DD).
  * @param {string}          params.dates.endDate   The last day of the range (YYYY-MM-DD).
  * @param {boolean}         params.viewOnly        Whether the export runs on a view-only dashboard.
- * @return {string|undefined} The report URL, or `undefined` when unlinked or before the Analytics property loads.
+ * @return {string|null|undefined} The report URL; `null` when unlinked, or `undefined` before the Analytics property loads.
  */
 export function getPageReportURL( {
 	analytics,
@@ -82,8 +82,6 @@ export function getPageReportURL( {
 	pagePath: string;
 	dates: { startDate: string; endDate: string };
 	viewOnly: boolean;
-} ): string | undefined {
-	return viewOnly
-		? undefined
-		: getAllPagesReportURL( analytics, pagePath, dates );
+} ): string | null | undefined {
+	return viewOnly ? null : getAllPagesReportURL( analytics, pagePath, dates );
 }
