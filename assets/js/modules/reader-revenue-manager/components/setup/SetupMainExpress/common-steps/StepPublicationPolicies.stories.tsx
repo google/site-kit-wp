@@ -71,7 +71,7 @@ function setupRegistry( registry: Registry, withExistingValues = false ) {
 }
 
 function Template() {
-	return <StepPublicationPolicies />;
+	return <StepPublicationPolicies onSetStep={ () => {} } />;
 }
 
 export const Default = Template.bind( {} ) as Story;

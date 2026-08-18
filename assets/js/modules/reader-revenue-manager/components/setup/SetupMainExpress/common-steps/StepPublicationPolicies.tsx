@@ -42,7 +42,6 @@ import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import useQueryArg from '@/js/hooks/useQueryArg';
 import {
 	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
@@ -71,8 +70,15 @@ function isValidPolicyURL( value: string ) {
 
 const FIELD_ERROR_MESSAGE = __( 'A valid link is required', 'google-site-kit' );
 
-const StepPublicationPolicies: FC = () => {
-	const [ , setStep ] = useQueryArg( 'step' );
+interface StepPublicationPoliciesProps {
+	onSetStep: ( step: string ) => void;
+	nextStep?: string;
+}
+
+const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
+	onSetStep,
+	nextStep = EXPRESS_SETUP_STEPS.SETUP_CTA,
+} ) => {
 	const [ termsOfServiceURL, setTermsOfServiceURL ] = useState( '' );
 	const [ privacyPolicyURL, setPrivacyPolicyURL ] = useState(
 		global._googlesitekitBaseData.wpPrivacyURL || ''
@@ -212,14 +218,15 @@ const StepPublicationPolicies: FC = () => {
 			}
 
 			setShowSubmissionFieldError( false );
-			setStep( EXPRESS_SETUP_STEPS.SETUP_CTA );
+			onSetStep( nextStep );
 		},
 		[
 			canSubmit,
+			nextStep,
+			onSetStep,
 			organizationID,
 			privacyPolicyURL,
 			publicationID,
-			setStep,
 			termsOfServiceURL,
 			updatePublication,
 		]

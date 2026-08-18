@@ -36,19 +36,22 @@ import ExpressSetupLayout from './ExpressSetupLayout';
 import ExpressSetupSteps from './ExpressSetupSteps';
 
 const ExpressSetupDefault: FC = () => {
-	const [ step ] = useQueryArg( 'step' );
+	const [ step, setStep ] = useQueryArg( 'step' );
 
 	const stepContent: Record< string, ReactNode > = {
 		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: <StepPublicationSetup />,
 		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: <StepTermsOfService />,
 		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: (
-			<StepPublicationPolicies />
+			<StepPublicationPolicies
+				onSetStep={ setStep }
+				nextStep={ EXPRESS_SETUP_STEPS.SETUP_COMPLETE }
+			/>
 		),
 		[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: <StepSetupComplete />,
 	};
 
 	return (
-		<ExpressSetupLayout sidebar={ <ExpressSetupSteps /> }>
+		<ExpressSetupLayout sidebar={ <ExpressSetupSteps step={ step } /> }>
 			{ stepContent[ step ] }
 		</ExpressSetupLayout>
 	);

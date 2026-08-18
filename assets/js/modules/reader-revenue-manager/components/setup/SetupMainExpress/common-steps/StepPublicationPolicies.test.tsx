@@ -43,11 +43,13 @@ const PUBLICATION_PRIVACY_POLICY_URL_KEY = 'publicationPrivacyPolicyUrl';
 
 describe( 'StepPublicationPolicies', () => {
 	let registry: WPDataRegistry;
+	let onSetStep: jest.Mock< void, [ string ] >;
 
 	mockLocation();
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		onSetStep = jest.fn();
 		global.location.href =
 			'http://example.com/?step=publication-policies&cta=newsletter-signup';
 		global._googlesitekitBaseData.wpPrivacyURL =
@@ -55,7 +57,9 @@ describe( 'StepPublicationPolicies', () => {
 	} );
 
 	function renderStep() {
-		return render( <StepPublicationPolicies />, { registry } );
+		return render( <StepPublicationPolicies onSetStep={ onSetStep } />, {
+			registry,
+		} );
 	}
 
 	function receiveSettingsAndPublication( {
@@ -178,9 +182,9 @@ describe( 'StepPublicationPolicies', () => {
 			} );
 		} );
 
-		expect(
-			new URL( global.location.href ).searchParams.get( 'step' )
-		).toBe( EXPRESS_SETUP_STEPS.SETUP_CTA );
+		expect( onSetStep ).toHaveBeenCalledWith(
+			EXPRESS_SETUP_STEPS.SETUP_CTA
+		);
 	} );
 
 	it( 'renders error UI on failed submit and keeps user-entered values', async () => {

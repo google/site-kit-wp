@@ -42,13 +42,13 @@ import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datasto
 import StepSignupForm from './StepSignupForm';
 
 const SetupCTANewsletterSignup: FC = () => {
-	const [ step ] = useQueryArg( 'step' );
+	const [ step, setStep ] = useQueryArg( 'step' );
 
 	const stepContent: Record< string, ReactNode > = {
 		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: <StepPublicationSetup />,
 		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: <StepTermsOfService />,
 		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: (
-			<StepPublicationPolicies />
+			<StepPublicationPolicies onSetStep={ setStep } />
 		),
 		[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: <StepSignupForm />,
 		[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: <StepSetupComplete />,
@@ -58,6 +58,7 @@ const SetupCTANewsletterSignup: FC = () => {
 		<ExpressSetupLayout
 			sidebar={
 				<ExpressSetupSteps
+					step={ step }
 					extraSteps={ {
 						[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: __(
 							'Set up a sign-up form',
