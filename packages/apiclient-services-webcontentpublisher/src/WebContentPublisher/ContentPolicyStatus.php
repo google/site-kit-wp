@@ -15,32 +15,59 @@
  * the License.
  */
 
-namespace Google\Service\Webcontentpublisher;
+namespace Google\Service\WebContentPublisher;
 
 class ContentPolicyStatus extends \Google\Model
 {
-  public const STATE_STATE_UNSPECIFIED = 'STATE_UNSPECIFIED';
-  public const STATE_OK = 'OK';
-  public const STATE_VIOLATION_GRACE_PERIOD = 'VIOLATION_GRACE_PERIOD';
-  public const STATE_VIOLATION_ACTIVE = 'VIOLATION_ACTIVE';
-  public const STATE_ORGANIZATION_VIOLATION_GRACE_PERIOD = 'ORGANIZATION_VIOLATION_GRACE_PERIOD';
-  public const STATE_ORGANIZATION_VIOLATION_ACTIVE = 'ORGANIZATION_VIOLATION_ACTIVE';
-  public const STATE_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE = 'ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE';
-
   /**
-   * The current policy details URL.
+   * State is unspecified.
+   */
+  public const STATE_STATE_UNSPECIFIED = 'STATE_UNSPECIFIED';
+  /**
+   * Content policy is in a good state; no violations.
+   */
+  public const STATE_OK = 'OK';
+  /**
+   * The publication has a content policy violation but is within a grace
+   * period.
+   */
+  public const STATE_VIOLATION_GRACE_PERIOD = 'VIOLATION_GRACE_PERIOD';
+  /**
+   * The publication has an active content policy violation.
+   */
+  public const STATE_VIOLATION_ACTIVE = 'VIOLATION_ACTIVE';
+  /**
+   * The organization has a content policy violation but is within a grace
+   * period.
+   */
+  public const STATE_ORGANIZATION_VIOLATION_GRACE_PERIOD = 'ORGANIZATION_VIOLATION_GRACE_PERIOD';
+  /**
+   * The organization has an active content policy violation.
+   */
+  public const STATE_ORGANIZATION_VIOLATION_ACTIVE = 'ORGANIZATION_VIOLATION_ACTIVE';
+  /**
+   * The organization has an active content policy violation requiring immediate
+   * action.
+   */
+  public const STATE_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE = 'ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE';
+  /**
+   * Output only. URL pointing to more details about the policy violation or
+   * status.
    *
    * @var string
    */
   public $policyInfoUrl;
   /**
-   * The current policy state.
+   * Output only. The current policy state.
    *
    * @var string
    */
   public $state;
 
   /**
+   * Output only. URL pointing to more details about the policy violation or
+   * status.
+   *
    * @param string $policyInfoUrl
    */
   public function setPolicyInfoUrl($policyInfoUrl)
@@ -55,6 +82,12 @@ class ContentPolicyStatus extends \Google\Model
     return $this->policyInfoUrl;
   }
   /**
+   * Output only. The current policy state.
+   *
+   * Accepted values: STATE_UNSPECIFIED, OK, VIOLATION_GRACE_PERIOD,
+   * VIOLATION_ACTIVE, ORGANIZATION_VIOLATION_GRACE_PERIOD,
+   * ORGANIZATION_VIOLATION_ACTIVE, ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
+   *
    * @param self::STATE_* $state
    */
   public function setState($state)
@@ -70,4 +103,5 @@ class ContentPolicyStatus extends \Google\Model
   }
 }
 
-class_alias(ContentPolicyStatus::class, 'Google_Service_Webcontentpublisher_ContentPolicyStatus');
+// Adding a class alias for backwards compatibility with the previous class name.
+class_alias(ContentPolicyStatus::class, 'Google_Service_WebContentPublisher_ContentPolicyStatus');
