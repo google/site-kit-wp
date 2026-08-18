@@ -28,6 +28,7 @@ import { FC } from 'react';
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFCard from './PDFCard';
+import PDFLink from './PDFLink';
 import PDFTypography from './PDFTypography';
 
 const styles = createPDFStyles( {
@@ -52,10 +53,6 @@ const styles = createPDFStyles( {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 	},
-	// A label the dashboard renders as a link keeps that link colour.
-	primaryLink: {
-		color: PDF_COLORS.CONTENT_SECONDARY,
-	},
 	// The metric hugs the right edge and is never truncated.
 	metric: {
 		flexShrink: 0,
@@ -68,6 +65,8 @@ export interface PDFMetricTileTableRow {
 	primary: string;
 	/** The pre-formatted metric, e.g. "1.2K" or "34%". */
 	metric: string;
+	/** The destination the primary label links to, matching the dashboard row. Empty or omitted renders the label as plain text. */
+	primaryURL?: string;
 }
 
 export interface PDFMetricTileTableProps {
@@ -77,15 +76,12 @@ export interface PDFMetricTileTableProps {
 	rows: PDFMetricTileTableRow[];
 	/** The maximum number of rows to render. Defaults to every row. */
 	limit?: number;
-	/** Whether the dashboard tile renders its labels as links, which colours them. */
-	linked?: boolean;
 }
 
 const PDFMetricTileTable: FC< PDFMetricTileTableProps > = ( {
 	title,
 	rows,
 	limit,
-	linked = false,
 } ) => {
 	const visibleRows =
 		typeof limit === 'number' ? rows.slice( 0, limit ) : rows;
@@ -98,14 +94,14 @@ const PDFMetricTileTable: FC< PDFMetricTileTableProps > = ( {
 			<View style={ styles.table }>
 				{ visibleRows.map( ( row, index ) => (
 					<View key={ index } style={ styles.row }>
-						<PDFTypography
+						<PDFLink
+							href={ row.primaryURL }
 							type="body"
 							size="small"
-							style={ linked ? styles.primaryLink : undefined }
 							truncateContent
 						>
 							{ row.primary }
-						</PDFTypography>
+						</PDFLink>
 						<PDFTypography
 							type="body"
 							size="small"
