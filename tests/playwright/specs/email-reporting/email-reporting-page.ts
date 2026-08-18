@@ -46,15 +46,62 @@ export class EmailReportingPage {
 	/**
 	 * Open the email reporting settings page.
 	 *
+	 * On mobile and tablet the entry point lives in the features menu rather
+	 * than a dedicated header icon, so this opens whichever trigger exists.
+	 *
 	 * @since 1.177.0
 	 *
 	 * @return {Promise<void>} The promise that resolves when the email reporting settings page is opened.
 	 */
 	async openSettings() {
-		await this.page.getByRole( 'button', { name: 'Account' } ).click();
-		await this.page
-			.getByRole( 'menuitem', { name: 'Manage email reports' } )
-			.click();
+		await this.featuresMenuButton
+			.or( this.manageEmailReportsButton )
+			.first()
+			.waitFor();
+
+		if ( await this.featuresMenuButton.isVisible() ) {
+			await this.featuresMenuButton.click();
+			await this.manageEmailReportsMenuItem.click();
+		} else {
+			await this.manageEmailReportsButton.click();
+		}
+	}
+
+	/**
+	 * Get the header button that opens the email reports panel.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Locator} The manage email reports header button.
+	 */
+	get manageEmailReportsButton() {
+		return this.page.getByRole( 'button', {
+			name: 'Manage email reports',
+		} );
+	}
+
+	/**
+	 * Get the header button that opens the features menu on mobile and tablet.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Locator} The features menu trigger button.
+	 */
+	get featuresMenuButton() {
+		return this.page.getByRole( 'button', { name: 'Features' } );
+	}
+
+	/**
+	 * Get the features menu item that opens the email reports panel.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Locator} The manage email reports menu item.
+	 */
+	get manageEmailReportsMenuItem() {
+		return this.page.getByRole( 'menuitem', {
+			name: 'Manage email reports',
+		} );
 	}
 
 	/**

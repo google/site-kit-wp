@@ -24,12 +24,14 @@ import baseModuleStore from './base';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import publications from './publications';
 import service from './service';
+import termsOfService from './terms-of-service';
 import userSettings from './user-settings';
 
 const store = combineStores(
 	baseModuleStore,
 	publications,
 	service,
+	termsOfService,
 	userSettings
 );
 

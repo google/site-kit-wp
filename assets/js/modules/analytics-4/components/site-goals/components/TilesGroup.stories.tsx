@@ -53,7 +53,7 @@ SingleTile.args = {
 	title: 'Conversions',
 	children: (
 		<Tile
-			title="Form Submissions"
+			title="Form submissions"
 			subtitle="Total submissions"
 			currentValue={ 1234 }
 			previousValue={ 1100 }
@@ -70,7 +70,7 @@ MultipleTiles.args = {
 	children: [
 		<Tile
 			key="form-submissions"
-			title="Form Submissions"
+			title="Form submissions"
 			subtitle="Total submissions"
 			currentValue={ 1234 }
 			previousValue={ 1100 }
@@ -79,7 +79,7 @@ MultipleTiles.args = {
 		/>,
 		<Tile
 			key="conversion-rate"
-			title="Conversion Rate"
+			title="Conversion rate"
 			subtitle="Of sessions"
 			currentValue={ 0.042 }
 			previousValue={ 0.038 }
@@ -87,7 +87,7 @@ MultipleTiles.args = {
 		/>,
 		<Tile
 			key="add-to-cart"
-			title="Add to Cart"
+			title="Add to cart"
 			subtitle="Total events"
 			currentValue={ 874 }
 			previousValue={ 920 }
@@ -104,7 +104,7 @@ NegativeChanges.args = {
 	children: [
 		<Tile
 			key="form-submissions"
-			title="Form Submissions"
+			title="Form submissions"
 			subtitle="Total submissions"
 			currentValue={ 980 }
 			previousValue={ 1200 }
@@ -113,7 +113,7 @@ NegativeChanges.args = {
 		/>,
 		<Tile
 			key="conversion-rate"
-			title="Conversion Rate"
+			title="Conversion rate"
 			subtitle="Of sessions"
 			currentValue={ 0.031 }
 			previousValue={ 0.042 }

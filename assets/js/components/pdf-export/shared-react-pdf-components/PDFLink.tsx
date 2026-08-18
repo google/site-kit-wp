@@ -40,11 +40,16 @@ const styles = createPDFStyles( {
 		alignItems: 'center',
 		textDecoration: 'none',
 	},
+	truncatedLink: {
+		flexGrow: 1,
+		flexShrink: 1,
+		flexBasis: 0,
+	},
 } );
 
 export interface PDFLinkProps {
-	/** Link target URL. When an empty string: plaintext is still rendered (in the default text color and with no trailing icon). */
-	href?: string;
+	/** Link target URL. When empty, `null`, or `undefined`: plaintext is still rendered (in the default text color and with no trailing icon). */
+	href?: string | null;
 	/** Typography type for the link text. */
 	type?: PDFTypographyType;
 	/** Typography size for the link text. */
@@ -53,6 +58,8 @@ export interface PDFLinkProps {
 	trailingIcon?: ReactNode;
 	/** Style merged over the link color on the text. */
 	style?: Style | Style[];
+	/** Ends the text in an ellipsis when it's too long, and limits it to one line unless the text's own `maxLines` sets another limit. */
+	truncateContent?: boolean;
 }
 
 const PDFLink: FC< PDFLinkProps > = ( {
@@ -61,24 +68,34 @@ const PDFLink: FC< PDFLinkProps > = ( {
 	size,
 	trailingIcon,
 	style,
+	truncateContent,
 	children,
 } ) => {
 	if ( ! href ) {
 		return (
-			<PDFTypography type={ type } size={ size } style={ style }>
+			<PDFTypography
+				type={ type }
+				size={ size }
+				style={ style }
+				truncateContent={ truncateContent }
+			>
 				{ children }
 			</PDFTypography>
 		);
 	}
 
 	const linkColor: Style = { color: PDF_COLORS.CONTENT_SECONDARY };
+	const linkStyle = truncateContent
+		? [ styles.link, styles.truncatedLink ]
+		: styles.link;
 
 	return (
-		<Link src={ href } style={ styles.link }>
+		<Link src={ href } style={ linkStyle }>
 			<PDFTypography
 				type={ type }
 				size={ size }
 				style={ style ? [ linkColor ].concat( style ) : linkColor }
+				truncateContent={ truncateContent }
 			>
 				{ children }
 			</PDFTypography>
