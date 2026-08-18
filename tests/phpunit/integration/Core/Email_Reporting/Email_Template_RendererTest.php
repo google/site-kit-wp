@@ -238,6 +238,32 @@ class Email_Template_RendererTest extends TestCase {
 		$this->assertStringNotContainsString( 'class="badge-positive"', $html_output, 'Expected no positive badge to be rendered.' );
 	}
 
+	public function test_page_metrics_hides_change_column_when_no_row_has_a_comparison() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$golinks = new Golinks( $context );
+		$golinks->register_handler( 'dashboard', new Dashboard_Golink_Handler() );
+
+		$payload = array(
+			'traffic_channels' => array(
+				'label'            => 'Traffic channels by visitor count',
+				'change_context'   => 'Compared to previous 7 days',
+				'dimension_values' => array( 'Organic Search', 'Direct' ),
+				'values'           => array( '120', '80' ),
+				'changes'          => array( null, null ),
+			),
+		);
+
+		$sections_map  = new Sections_Map( $context, $payload, $golinks );
+		$renderer      = new Email_Template_Renderer( $sections_map );
+		$template_data = $this->get_minimal_template_data();
+
+		$html_output = $renderer->render( 'email-report', $template_data );
+
+		$this->assertStringContainsString( 'Organic Search', $html_output, 'Expected the row labels to still render.' );
+		$this->assertStringNotContainsString( 'Compared to previous 7 days', $html_output, 'Expected the change context column header to be hidden when no row has a comparison value.' );
+		$this->assertStringNotContainsString( '<td style="text-align:right; width:80px;">', $html_output, 'Expected the change badge column cell to be omitted, not just left empty, when no row has a comparison value.' );
+	}
+
 	public function test_dashboard_link_renders_outlook_vml_and_html_anchor_branches() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$golinks = new Golinks( $context );
