@@ -29,7 +29,10 @@ import { addQueryArgs } from '@wordpress/url';
 import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import {
+	NOTICE_TYPES,
+	NOTICE_VARIANTS,
+} from '@/js/components/Notice/constants';
 import Typography from '@/js/components/Typography';
 import { SIZE_SMALL, TYPE_LABEL } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
@@ -331,7 +334,6 @@ export default function AudienceCreationNotice() {
 			</div>
 			{ ! hasAnalytics4EditScope && ! isEditScopeNoticeDismissed && (
 				<Notice
-					type={ NOTICE_TYPES.WARNING }
 					description={ __(
 						'Creating these groups require more data tracking. You will be directed to update your Analytics property.',
 						'google-site-kit'
@@ -339,6 +341,8 @@ export default function AudienceCreationNotice() {
 					dismissButton={ {
 						onClick: handleDismissEditScopeNotice,
 					} }
+					type={ NOTICE_TYPES.WARNING }
+					variant={ NOTICE_VARIANTS.SMALL }
 					hideIcon
 				/>
 			) }

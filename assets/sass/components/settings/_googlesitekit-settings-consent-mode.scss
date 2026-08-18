@@ -57,25 +57,6 @@
 		.googlesitekit-settings-consent-mode-requirement__description {
 			flex: 1;
 		}
-
-		.googlesitekit-notice {
-			display: flex;
-			flex-direction: column;
-
-			@media (min-width: $bp-nonMobile) {
-				flex-direction: row;
-			}
-
-			.googlesitekit-notice__icon {
-				align-self: start;
-				margin-bottom: 6px;
-
-				@media (min-width: $bp-nonMobile) {
-					align-self: center;
-					margin-bottom: 0;
-				}
-			}
-		}
 	}
 
 	.googlesitekit-settings-consent-mode__recommendation-notice {
