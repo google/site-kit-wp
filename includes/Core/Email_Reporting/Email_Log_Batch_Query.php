@@ -304,11 +304,11 @@ class Email_Log_Batch_Query {
 	 * @since n.e.x.t Scoped the read to the requesting user's own log instead of the
 	 *                site-level first post in the batch.
 	 *
-	 * @param int $user_id Optional. User ID to read the error for. Default current user.
+	 * @param int $user_id User ID to read the error for.
 	 * @return string|null Error details or null if the user has no failed log after max attempts.
 	 */
-	public function get_latest_batch_error( $user_id = 0 ) {
-		$user_id = $user_id > 0 ? (int) $user_id : get_current_user_id();
+	public function get_latest_batch_error( $user_id ) {
+		$user_id = (int) $user_id;
 
 		$batch_post_ids = $this->get_latest_batch_post_ids();
 
@@ -342,6 +342,10 @@ class Email_Log_Batch_Query {
 	 * @return int|null Matching post ID or null if the user has no log in the batch.
 	 */
 	private function find_batch_post_id_for_user( array $post_ids, $user_id ) {
+		// $post_ids come from an ids-only WP_Query, so priming the post cache here
+		// avoids one uncached DB query per post in the loop below.
+		_prime_post_caches( $post_ids, false, false );
+
 		foreach ( $post_ids as $post_id ) {
 			$post = get_post( $post_id );
 
