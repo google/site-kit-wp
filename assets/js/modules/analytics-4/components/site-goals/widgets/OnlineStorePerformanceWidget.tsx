@@ -101,12 +101,12 @@ interface DateRange {
 }
 
 const EVENT_RATE_LABELS = {
-	purchase: __( 'Sales Rate', 'google-site-kit' ),
-	add_to_cart: __( 'Add to Cart Rate', 'google-site-kit' ),
+	purchase: __( 'Sales rate', 'google-site-kit' ),
+	add_to_cart: __( 'Add to cart rate', 'google-site-kit' ),
 };
 
 const EVENT_TOTAL_LABELS = {
-	purchase: __( 'Total Sales', 'google-site-kit' ),
+	purchase: __( 'Total sales', 'google-site-kit' ),
 	add_to_cart: __( 'Products added to cart', 'google-site-kit' ),
 };
 
