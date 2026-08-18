@@ -99,9 +99,6 @@
 
 			&.googlesitekit-typography {
 				font-weight: $fw-medium;
-
-				/* TODO: 11266 -- Remove this override and update VRT refrences. */
-				line-height: $lh-body-lg;
 			}
 
 			span {
