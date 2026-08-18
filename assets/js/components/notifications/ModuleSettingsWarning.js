@@ -21,7 +21,10 @@
  */
 import { useSelect } from 'googlesitekit-data';
 import Notice from '@/js/components/Notice';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import {
+	NOTICE_TYPES,
+	NOTICE_VARIANTS,
+} from '@/js/components/Notice/constants';
 import { ERROR_CODE_ADBLOCKER_ACTIVE } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import AdBlockerWarning from './AdBlockerWarning';
@@ -43,9 +46,9 @@ export default function ModuleSettingsWarning( { slug } ) {
 
 	return (
 		<Notice
-			className="googlesitekit-notice--small"
-			type={ NOTICE_TYPES.WARNING }
 			description={ error.message }
+			type={ NOTICE_TYPES.WARNING }
+			variant={ NOTICE_VARIANTS.SMALL }
 			hideIcon
 		/>
 	);

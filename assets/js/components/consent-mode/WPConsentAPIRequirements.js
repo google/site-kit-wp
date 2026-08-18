@@ -31,7 +31,10 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import ErrorNotice from '@/js/components/ErrorNotice';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import {
+	NOTICE_TYPES,
+	NOTICE_VARIANTS,
+} from '@/js/components/Notice/constants';
 import { SIZE_SMALL } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import SpinnerButton from '@/js/googlesitekit/components-gm2/SpinnerButton';
@@ -283,12 +286,12 @@ export default function WPConsentAPIRequirements() {
 							) }
 							footer={
 								<Notice
-									type={ NOTICE_TYPES.INFO }
-									className="googlesitekit-notice--small"
 									description={ __(
 										"Make sure you have installed a plugin compatible with WP Consent API (Site Kit isn't able to verify the compatibility of all WP plugins).",
 										'google-site-kit'
 									) }
+									type={ NOTICE_TYPES.INFO }
+									variant={ NOTICE_VARIANTS.SMALL }
 								/>
 							}
 						/>

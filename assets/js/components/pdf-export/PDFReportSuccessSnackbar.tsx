@@ -32,7 +32,11 @@ import { __ } from '@wordpress/i18n';
  */
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import {
+	NOTICE_TYPES,
+	NOTICE_VARIANTS,
+} from '@/js/components/Notice/constants';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import CloseIcon from '@/svg/icons/close.svg';
 
 export interface PDFReportSuccessSnackbarProps {
@@ -56,6 +60,8 @@ const PDFReportSuccessSnackbar: FC< PDFReportSuccessSnackbarProps > = ( {
 	description,
 	dismissAriaLabel = __( 'Dismiss PDF report success', 'google-site-kit' ),
 } ) => {
+	const breakpoint = useBreakpoint();
+
 	useEffect( () => {
 		if ( disableAutoDismiss ) {
 			return () => {};
@@ -87,9 +93,7 @@ const PDFReportSuccessSnackbar: FC< PDFReportSuccessSnackbarProps > = ( {
 
 	return (
 		<Notice
-			type={ NOTICE_TYPES.SUCCESS }
-			className="googlesitekit-notice-snackbar googlesitekit-notice-snackbar--bottom-right googlesitekit-pdf-report-success-snackbar googlesitekit-notice-snackbar--content--small"
-			title={ title }
+			className="googlesitekit-pdf-report-success-snackbar"
 			description={ description || defaultDescription }
 			dismissButton={ {
 				variant: 'icon',
@@ -97,6 +101,9 @@ const PDFReportSuccessSnackbar: FC< PDFReportSuccessSnackbarProps > = ( {
 				ariaLabel: dismissAriaLabel,
 				onClick: onDismiss,
 			} }
+			title={ breakpoint === BREAKPOINT_SMALL ? undefined : title }
+			type={ NOTICE_TYPES.SUCCESS }
+			variant={ NOTICE_VARIANTS.SNACKBAR }
 		/>
 	);
 };
