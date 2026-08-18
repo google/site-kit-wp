@@ -49,7 +49,7 @@ const ExpressSetupDefault: FC = () => {
 
 	return (
 		<ExpressSetupLayout sidebar={ <ExpressSetupSteps /> }>
-			{ stepContent[ step ] }
+			{ step ? stepContent[ step ] : null }
 		</ExpressSetupLayout>
 	);
 };

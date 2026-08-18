@@ -32,6 +32,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { formatDateString } from '@/js/components/pdf-export/formatDateString';
 import {
+	PDF_PAGE_BOTTOM_PADDING,
 	PDF_PAGE_PADDING,
 	PDF_PAGE_WIDTH,
 	createPDFStyles,
@@ -40,7 +41,6 @@ import {
 	PDF_COLORS,
 	PDF_FONT_FAMILY_TEXT,
 	PDF_MEASURE_PAGE_HEIGHT,
-	PDF_PAGE_BOTTOM_PADDING,
 } from '@/js/components/pdf-export/pdf-theme';
 import PDFFooter from '@/js/components/pdf-export/shared-react-pdf-components/PDFFooter';
 import {

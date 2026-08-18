@@ -41,6 +41,24 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 	protected $analytics_4;
 	/** @var Context */
 	protected $context;
+	/**
+	 * Default providers list.
+	 *
+	 * @var array
+	 */
+	private static $default_providers = array();
+
+	public static function set_up_before_class() {
+		parent::set_up_before_class();
+
+		self::$default_providers = Conversion_Tracking::$providers;
+	}
+
+	public static function tear_down_after_class() {
+		parent::tear_down_after_class();
+
+		Conversion_Tracking::$providers = self::$default_providers;
+	}
 
 	public function set_up() {
 		parent::set_up();
@@ -300,6 +318,6 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 
 	public function tear_down() {
 		parent::tear_down();
-		Conversion_Tracking::$providers = array();
+		Conversion_Tracking::$providers = self::$default_providers;
 	}
 }
