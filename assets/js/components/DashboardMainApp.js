@@ -61,7 +61,11 @@ import {
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
-import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '@/js/hooks/useBreakpoint';
 import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
@@ -78,9 +82,11 @@ import { AdminScreenTooltip } from './AdminScreenTooltip';
 import CoreDashboardEffects from './CoreDashboardEffects';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import DateRangeSelector from './DateRangeSelector';
+import ManageEmailReportsButton from './email-reporting/ManageEmailReportsButton';
 import PUESurveyTriggers from './email-reporting/PUESurveyTriggers';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
 import EntitySearchInput from './EntitySearchInput';
+import FeaturesMenu from './FeaturesMenu';
 import Header from './Header';
 import HelpMenu from './help/HelpMenu';
 import useDisplayCTAWidget from './KeyMetrics/hooks/useDisplayCTAWidget';
@@ -348,6 +354,11 @@ export default function DashboardMainApp() {
 	// stacking with the setup CTAs.
 	const showSetupOverlays = ! hideSetupCTAs && ! isWelcomeTourActive;
 
+	// On mobile and tablet the individual feature action icons collapse into
+	// the single three-dots features menu.
+	const isMobileOrTabletBreakpoint =
+		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
+
 	const lastWidgetAnchor = getLastWidgetAnchor( {
 		isMonetizationActive,
 		isSpeedActive,
@@ -367,9 +378,25 @@ export default function DashboardMainApp() {
 			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
-				{ pdfGenerationEnabled && <PDFDownloadButton /> }
-				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
-				<HelpMenu showFeatureTour={ !! hasAccessToFeatureTour } />
+				{ isMobileOrTabletBreakpoint ? (
+					<Fragment>
+						<HelpMenu
+							showFeatureTour={ !! hasAccessToFeatureTour }
+						/>
+						<FeaturesMenu />
+					</Fragment>
+				) : (
+					<Fragment>
+						<ManageEmailReportsButton />
+						{ pdfGenerationEnabled && <PDFDownloadButton /> }
+						{ ! viewOnlyDashboard && (
+							<DashboardSharingSettingsButton />
+						) }
+						<HelpMenu
+							showFeatureTour={ !! hasAccessToFeatureTour }
+						/>
+					</Fragment>
+				) }
 			</Header>
 
 			<div className="googlesitekit-page-content">

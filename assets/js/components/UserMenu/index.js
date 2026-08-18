@@ -33,35 +33,24 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
  */
 import { Button, Menu } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import { MenuItem, MenuSection } from '@/js/components/HeaderMenu';
 import ModalDialog from '@/js/components/ModalDialog';
 import Portal from '@/js/components/Portal';
 import { clearCache } from '@/js/googlesitekit/api/cache';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
-import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
 import { AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE } from '@/js/modules/analytics-4/datastore/constants';
 import { trackEvent } from '@/js/util';
 import DisconnectIcon from '@/svg/icons/disconnect.svg';
-import ManageEmailReportsIcon from '@/svg/icons/manage-email-reports.svg';
 import ManageSitesIcon from '@/svg/icons/manage-sites.svg';
 import Details from './Details';
 import { getAccountLabel } from './utils';
 
 export default function UserMenu() {
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-	const [ showProgress ] = useQueryArg( 'showProgress' );
-
-	const isInitialSetupFlow =
-		setupFlowRefreshEnabled && showProgress === 'true';
-
 	const proxyPermissionsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxyPermissionsURL()
 	);
@@ -82,21 +71,12 @@ export default function UserMenu() {
 		'isAutoCreatingCustomDimensionsForAudience'
 	);
 
-	const { isTooltipVisible = false, className } = useSelect(
-		( select ) =>
-			select( CORE_UI ).getValue( 'admin-screen-tooltip' ) || {
-				isTooltipVisible: false,
-			}
-	);
-
 	const [ dialogActive, toggleDialog ] = useState( false );
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
 	const menuButtonRef = useRef();
 	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-
-	const showManageEmailReports = ! isInitialSetupFlow;
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
 	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () => {
@@ -110,21 +90,13 @@ export default function UserMenu() {
 		setMenuOpen( false );
 	}, [ toggleDialog, setMenuOpen ] );
 
-	const { setValue } = useDispatch( CORE_UI );
 	const handleMenu = useCallback( () => {
 		if ( ! menuOpen ) {
 			trackEvent( `${ viewContext }_headerbar`, 'open_usermenu' );
-
-			if (
-				isTooltipVisible &&
-				className?.includes( 'googlesitekit-tour-tooltip--user-menu' )
-			) {
-				setValue( 'admin-screen-tooltip', undefined );
-			}
 		}
 
 		setMenuOpen( ! menuOpen );
-	}, [ menuOpen, viewContext, setValue, isTooltipVisible, className ] );
+	}, [ menuOpen, viewContext ] );
 
 	const handleDialog = useCallback( () => {
 		toggleDialog( ! dialogActive );
@@ -150,9 +122,6 @@ export default function UserMenu() {
 				case 'disconnect':
 					handleDialog();
 					break;
-				case 'manage-email-reports':
-					setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-					break;
 				default:
 					handleMenu();
 			}
@@ -162,7 +131,6 @@ export default function UserMenu() {
 			handleMenu,
 			handleDialog,
 			navigateTo,
-			setValue,
 			viewContext,
 		]
 	);
@@ -256,19 +224,6 @@ export default function UserMenu() {
 					<MenuSection>
 						<Details />
 					</MenuSection>
-					{ showManageEmailReports && (
-						<MenuItem
-							id="manage-email-reports"
-							icon={ <ManageEmailReportsIcon width="24" /> }
-							label={ __(
-								'Manage email reports',
-								'google-site-kit'
-							) }
-							itemClassName="googlesitekit-user-menu__item"
-							iconClassName="googlesitekit-user-menu__item-icon"
-							labelClassName="googlesitekit-user-menu__item-label"
-						/>
-					) }
 					{ !! proxyPermissionsURL && (
 						<MenuItem
 							id="manage-sites"

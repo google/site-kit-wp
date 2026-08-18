@@ -773,9 +773,9 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		).toBeInTheDocument();
 		expect(
 			container.querySelectorAll( '.googlesitekit-site-goals-tile' )
-		).toHaveLength( 3 ); // Sales Rate + Total Sales + Engagement rate
-		expect( getByText( 'Sales Rate' ) ).toBeInTheDocument();
-		expect( getByText( 'Total Sales' ) ).toBeInTheDocument();
+		).toHaveLength( 3 ); // Sales rate + Total sales + Engagement rate
+		expect( getByText( 'Sales rate' ) ).toBeInTheDocument();
+		expect( getByText( 'Total sales' ) ).toBeInTheDocument();
 		expect( getByText( '“purchase” events' ) ).toBeInTheDocument();
 		expect( getByText( 'Engagement rate' ) ).toBeInTheDocument();
 		expect(
@@ -853,7 +853,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 		await waitForRegistry();
 
-		expect( getByText( 'Add to Cart Rate' ) ).toBeInTheDocument();
+		expect( getByText( 'Add to cart rate' ) ).toBeInTheDocument();
 		expect( getByText( 'Products added to cart' ) ).toBeInTheDocument();
 		expect( getByText( '“add_to_cart” events' ) ).toBeInTheDocument();
 		expect(
@@ -898,8 +898,8 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 		await waitForRegistry();
 
-		expect( getByText( 'Sales Rate' ) ).toBeInTheDocument();
-		expect( getByText( 'Total Sales' ) ).toBeInTheDocument();
+		expect( getByText( 'Sales rate' ) ).toBeInTheDocument();
+		expect( getByText( 'Total sales' ) ).toBeInTheDocument();
 		expect(
 			getByText( 'Top traffic channels by total sales' )
 		).toBeInTheDocument();
@@ -1308,8 +1308,8 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 		await waitForRegistry();
 
-		expect( getByText( 'Sales Rate' ) ).toBeInTheDocument();
-		expect( getByText( 'Total Sales' ) ).toBeInTheDocument();
+		expect( getByText( 'Sales rate' ) ).toBeInTheDocument();
+		expect( getByText( 'Total sales' ) ).toBeInTheDocument();
 		expect( getByText( 'Products added to cart' ) ).toBeInTheDocument();
 		expect(
 			container.querySelector(
@@ -1367,8 +1367,8 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 		await waitForRegistry();
 
-		expect( getByText( 'Sales Rate' ) ).toBeInTheDocument();
-		expect( getByText( 'Total Sales' ) ).toBeInTheDocument();
+		expect( getByText( 'Sales rate' ) ).toBeInTheDocument();
+		expect( getByText( 'Total sales' ) ).toBeInTheDocument();
 		expect( getByText( 'Products added to cart' ) ).toBeInTheDocument();
 		expect( getByText( 'Data loading failed' ) ).toBeInTheDocument();
 	} );
