@@ -57,6 +57,9 @@ describe( 'PDFLink', () => {
 		expect( tree.type ).toBe( 'pdf-link' );
 		expect( tree.props.src ).toBe( 'https://example.com/dashboard' );
 		expect( tree.props.style ).toMatchObject( { textDecoration: 'none' } );
+		// Without truncateContent, the link keeps its natural content width
+		// rather than growing to fill the row.
+		expect( tree.props.style ).not.toHaveProperty( 'flexGrow' );
 	} );
 
 	it( 'uses the link color when no style sets a color', () => {
@@ -133,6 +136,45 @@ describe( 'PDFLink', () => {
 		const treeJSON = JSON.stringify( tree );
 		expect( treeJSON ).toContain( 'View dashboard' );
 		expect( treeJSON ).not.toContain( PDF_COLORS.CONTENT_SECONDARY );
+	} );
+
+	it( 'truncates the linked text to one line when truncateContent is set', () => {
+		const tree = renderLink( {
+			href: 'https://example.com/dashboard',
+			truncateContent: true,
+			children: 'View dashboard',
+		} );
+		const json = JSON.stringify( tree );
+
+		expect( json ).toContain( '"maxLines":1' );
+		expect( json ).toContain( '"textOverflow":"ellipsis"' );
+
+		// The `<Link>` itself — not just the text inside it — must grow to
+		// fill the row's available width, or the truncation box nested
+		// inside it has nothing to constrain its width against and the text
+		// collapses to a few characters instead of filling the row. This
+		// regressed once before: the box sizing lived only on the inner
+		// `PDFTypography`, which the `Link` wrapper doesn't inherit.
+		expect( tree.props.style ).toContainEqual(
+			expect.objectContaining( {
+				flexGrow: 1,
+				flexShrink: 1,
+				flexBasis: 0,
+			} )
+		);
+	} );
+
+	it( 'truncates the plain text to one line when truncateContent is set and href is empty', () => {
+		const json = JSON.stringify(
+			renderLink( {
+				href: '',
+				truncateContent: true,
+				children: 'View dashboard',
+			} )
+		);
+
+		expect( json ).toContain( '"maxLines":1' );
+		expect( json ).toContain( '"textOverflow":"ellipsis"' );
 	} );
 
 	it( 'omits the trailing icon when the href is empty', () => {
