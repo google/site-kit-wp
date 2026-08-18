@@ -34,11 +34,6 @@
 
 		.googlesitekit-setup-module__description {
 			margin-bottom: 0;
-
-			/* TODO: 11266 -- Remove this override and update VRT refrences. */
-			&.googlesitekit-typography {
-				line-height: $lh-body-lg;
-			}
 		}
 	}
 
@@ -50,11 +45,6 @@
 
 		.googlesitekit-setup-module__description {
 			margin-top: 3px;
-
-			/* TODO: 11266 -- Remove this override and update VRT refrences. */
-			&.googlesitekit-typography {
-				line-height: $lh-body-md;
-			}
 		}
 
 		.googlesitekit-setup-module__action {

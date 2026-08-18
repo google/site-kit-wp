@@ -49,11 +49,9 @@
 			top: -2px;
 		}
 
-		/* TODO: 11266 -- Correct typography in components, remove this override and update VRT refrences. */
 		.googlesitekit-module-settings-group__helper-text {
 			color: $c-surfaces-on-surface-variant;
 			flex-basis: 100%;
-			font-size: $fs-label-sm;
 			margin: 6px 0 0 $mdc-switch-track-width + $mdc-switch-label-margin-left;
 		}
 

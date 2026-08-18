@@ -32,6 +32,8 @@ import { Switch } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import ErrorNotice from '@/js/components/ErrorNotice';
 import LoadingWrapper from '@/js/components/LoadingWrapper';
+import { SIZE_SMALL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
@@ -93,9 +95,12 @@ export default function ConversionTrackingToggle( { children, loading } ) {
 				tabletWidth="540px"
 				tabletHeight="84px"
 			>
-				<p className="googlesitekit-module-settings-group__helper-text">
+				<P
+					className="googlesitekit-module-settings-group__helper-text"
+					size={ SIZE_SMALL }
+				>
 					{ children }
-				</p>
+				</P>
 			</LoadingWrapper>
 			{ showConfirmDialog && (
 				<ConfirmDisableConversionTrackingDialog

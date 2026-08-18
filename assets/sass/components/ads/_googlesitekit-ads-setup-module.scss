@@ -59,11 +59,6 @@
 
 			.instructions {
 				margin-top: 5px;
-
-				/* TODO: 11266 -- Remove this override and update VRT refrences. */
-				&.googlesitekit-typography {
-					line-height: $lh-body-lg;
-				}
 			}
 
 			.divider {
