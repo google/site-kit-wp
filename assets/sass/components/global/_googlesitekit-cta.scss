@@ -79,15 +79,6 @@
 		p:first-child {
 			margin-top: 0;
 		}
-
-		/* TODO: 11266 -- Remove this override and update VRT refrences. */
-		&.googlesitekit-typography.googlesitekit-typography,
-		& p.googlesitekit-typography--body.googlesitekit-typography--medium {
-
-			&:not(.googlesitekit-googlechart-error-handler *) {
-				line-height: $lh-body-lg;
-			}
-		}
 	}
 
 	&.googlesitekit-cta--error {
