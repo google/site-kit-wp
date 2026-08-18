@@ -25,14 +25,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { SIZE_SMALL } from '@/js/components/Typography/constants';
-import P from '@/js/components/Typography/P';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
-import CheckFill from '@/svg/icons/check-fill.svg';
 import {
 	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
@@ -65,37 +63,25 @@ export default function AudienceCreationSuccessNotice() {
 	}
 
 	return (
-		<div className="googlesitekit-audience-selection-panel__success-notice">
-			<div className="googlesitekit-audience-selection-panel__success-notice-icon">
-				<CheckFill width={ 24 } height={ 24 } />
-			</div>
-			<P
-				className="googlesitekit-audience-selection-panel__success-notice-message"
-				size={ SIZE_SMALL }
-			>
-				{ __(
-					'Visitor group created successfully!',
-					'google-site-kit'
-				) }
-			</P>
-			<div className="googlesitekit-audience-selection-panel__success-notice-actions">
-				<Button
-					onClick={ () => {
-						trackEvent(
-							`${ viewContext }_audiences-sidebar-create-audiences-success`,
-							'dismiss_notification'
-						).finally( () => {
-							setValue(
-								AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
-								false
-							);
-						} );
-					} }
-					tertiary
-				>
-					{ __( 'Got it', 'google-site-kit' ) }
-				</Button>
-			</div>
-		</div>
+		<SelectionPanelNotice
+			description={ __(
+				'Visitor group created successfully!',
+				'google-site-kit'
+			) }
+			dismissButton={ {
+				onClick: () => {
+					trackEvent(
+						`${ viewContext }_audiences-sidebar-create-audiences-success`,
+						'dismiss_notification'
+					).finally( () => {
+						setValue(
+							AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
+							false
+						);
+					} );
+				},
+			} }
+			type={ NOTICE_TYPES.SUCCESS }
+		/>
 	);
 }

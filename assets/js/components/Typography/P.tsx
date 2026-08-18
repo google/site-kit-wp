@@ -17,7 +17,7 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import type { FC } from 'react';
 
 /**
  * Internal dependencies
@@ -27,30 +27,27 @@ import {
 	SIZE_MEDIUM,
 	SIZE_SMALL,
 	TYPE_BODY,
-	VALID_SIZES,
-	VALID_TYPES,
+	TypographySize,
+	TypographyType,
 } from './constants';
-import Typography from '.';
+import Typography, { type TypographyProps } from '.';
 
-export default function P( { type = TYPE_BODY, size, children, ...props } ) {
-	const breakpoint = useBreakpoint();
-
-	return (
-		<Typography
-			as="p"
-			type={ type }
-			size={
-				size ||
-				( breakpoint === BREAKPOINT_SMALL ? SIZE_SMALL : SIZE_MEDIUM )
-			}
-			{ ...props }
-		>
-			{ children }
-		</Typography>
-	);
+interface PPOwnProps {
+	size?: TypographySize;
+	type?: TypographyType;
 }
 
-P.propTypes = {
-	type: PropTypes.oneOf( VALID_TYPES ),
-	size: PropTypes.oneOf( VALID_SIZES ),
+type PProps = PPOwnProps &
+	Omit< TypographyProps< 'p' >, 'as' | keyof PPOwnProps >;
+
+const P: FC< PProps > = ( { size, type, ...props } ) => {
+	const breakpoint = useBreakpoint();
+
+	const pSize =
+		size || ( breakpoint === BREAKPOINT_SMALL ? SIZE_SMALL : SIZE_MEDIUM );
+	const pType = type || TYPE_BODY;
+
+	return <Typography as="p" size={ pSize } type={ pType } { ...props } />;
 };
+
+export default P;

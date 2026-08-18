@@ -30,6 +30,7 @@ import { useEffect, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import ErrorNotice from '@/js/components/ErrorNotice';
+import { NOTICE_VARIANTS } from '@/js/components/Notice/constants';
 import { elementsOverlap } from '@/js/util/geometry';
 
 export default function SelectionPanelError( {
@@ -64,10 +65,10 @@ export default function SelectionPanelError( {
 	return (
 		<div ref={ noticeRef }>
 			<ErrorNotice
-				className="googlesitekit-notice--square googlesitekit-notice--side-panel"
 				error={ error }
 				noPrefix={ noPrefix }
 				skipRetryMessage={ skipRetryMessage }
+				variant={ NOTICE_VARIANTS.SIDE_PANEL }
 			/>
 		</div>
 	);

@@ -34,6 +34,7 @@ import { __ } from '@wordpress/i18n';
 import { Button } from 'googlesitekit-components';
 import NewBadge from '@/js/components/NewBadge';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { Dialog, DialogContent, DialogFooter } from '@/js/material-components';
 import CloseIcon from '@/svg/icons/close.svg';
@@ -135,9 +136,8 @@ const BannerModal: FC< BannerModalProps > = ( {
 					</Typography>
 
 					<P
-						type="body"
-						size="medium"
 						className="googlesitekit-banner-modal__description"
+						size={ SIZE_MEDIUM }
 					>
 						{ description }
 					</P>
