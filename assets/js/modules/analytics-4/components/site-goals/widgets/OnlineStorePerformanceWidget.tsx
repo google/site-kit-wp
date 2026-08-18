@@ -489,6 +489,7 @@ const OnlineStorePerformanceWidget = forwardRef<
 			     provider's slug. */ }
 				{ isBreakdownValueTab && (
 					<EventProviderDeactivatedNotice
+						goalType={ GOAL_TYPES.ECOMMERCE }
 						providerSlug={ activeTabID }
 					/>
 				) }

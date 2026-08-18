@@ -1820,6 +1820,59 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).not.toBeInTheDocument();
 	} );
 
+	it( 'renders no deactivated plugin notice on the Other sources tab', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedBreakdown( {
+			formIDs: [ '5' ],
+			formProviders: { 5: 'wpforms' },
+		} );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: { 5: { title: 'Contact' } },
+			status: 200,
+		} );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
+		// The Other sources tab applies no section filter, so it falls back to
+		// the unfiltered reports.
+		const otherTabDates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( { compare: true } );
+		provideAnalytics4MockReport(
+			registry,
+			buildLeadEventsReportOptions( otherTabDates, [
+				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+			] )
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( otherTabDates )
+		);
+
+		const { getByRole, getByText, queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Form plugin no longer found' )
+		).toBeInTheDocument();
+
+		fireEvent.click(
+			getByRole( 'tab', { name: 'Other form completions' } )
+		);
+
+		await waitFor( () => {
+			expect(
+				queryByText( 'Form plugin no longer found' )
+			).not.toBeInTheDocument();
+		} );
+	} );
+
 	it( 'keeps the same widget element across re-renders', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )

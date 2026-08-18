@@ -24,16 +24,20 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { Story } from '@/js/types/Story';
 import { provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import EventProviderDeactivatedNotice from './EventProviderDeactivatedNotice';
 
 interface EventProviderDeactivatedNoticeStoryProps {
+	goalType: GoalType;
 	providerSlug: string;
 }
 
 function Template( {
+	goalType,
 	providerSlug,
 }: EventProviderDeactivatedNoticeStoryProps ) {
 	return (
@@ -46,7 +50,10 @@ function Template( {
 				} )
 			}
 		>
-			<EventProviderDeactivatedNotice providerSlug={ providerSlug } />
+			<EventProviderDeactivatedNotice
+				goalType={ goalType }
+				providerSlug={ providerSlug }
+			/>
 		</WithRegistrySetup>
 	);
 }
@@ -56,6 +63,7 @@ export const OnlineStore = Template.bind(
 ) as Story< EventProviderDeactivatedNoticeStoryProps >;
 OnlineStore.storyName = 'Online store plugin';
 OnlineStore.args = {
+	goalType: GOAL_TYPES.ECOMMERCE,
 	providerSlug: 'woocommerce',
 };
 OnlineStore.scenario = {};
@@ -65,6 +73,7 @@ export const LeadForm = Template.bind(
 ) as Story< EventProviderDeactivatedNoticeStoryProps >;
 LeadForm.storyName = 'Form plugin';
 LeadForm.args = {
+	goalType: GOAL_TYPES.LEAD,
 	providerSlug: 'wpforms',
 };
 LeadForm.scenario = {};

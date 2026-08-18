@@ -65,7 +65,10 @@ export const SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDERS = Object.keys(
  * Maps a lead form event provider slug to the plugin's display name.
  *
  * The slug is the value the `googlesitekit_event_provider` dimension holds on a
- * form conversion event, and a slug this map leaves out has no display name.
+ * form conversion event. Keep this map in sync with the lead form providers in
+ * `assets/js/event-providers/`. A slug this map leaves out hides the source line
+ * in the form tab's tooltip, and it also hides the notice that warns the form's
+ * plugin is no longer active.
  */
 export const SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS: Record<
 	string,

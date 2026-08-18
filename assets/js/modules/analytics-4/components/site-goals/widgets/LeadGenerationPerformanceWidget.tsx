@@ -607,6 +607,7 @@ const LeadGenerationPerformanceWidget = forwardRef<
 					     that form. */ }
 						{ isBreakdownValueTab && (
 							<EventProviderDeactivatedNotice
+								goalType={ GOAL_TYPES.LEAD }
 								providerSlug={ formProviders?.[ activeTabID ] }
 							/>
 						) }

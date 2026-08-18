@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { render } from '@tests/js/test-utils';
 import { createTestRegistry, provideSiteInfo } from '@tests/js/utils';
 import EventProviderDeactivatedNotice from './EventProviderDeactivatedNotice';
@@ -41,7 +42,10 @@ describe( 'EventProviderDeactivatedNotice', () => {
 		} );
 
 		const { getByRole, getByText } = render(
-			<EventProviderDeactivatedNotice providerSlug="woocommerce" />,
+			<EventProviderDeactivatedNotice
+				goalType={ GOAL_TYPES.ECOMMERCE }
+				providerSlug="woocommerce"
+			/>,
 			{ registry }
 		);
 
@@ -62,7 +66,10 @@ describe( 'EventProviderDeactivatedNotice', () => {
 		} );
 
 		const { getByText } = render(
-			<EventProviderDeactivatedNotice providerSlug="wpforms" />,
+			<EventProviderDeactivatedNotice
+				goalType={ GOAL_TYPES.LEAD }
+				providerSlug="wpforms"
+			/>,
 			{ registry }
 		);
 
@@ -78,7 +85,10 @@ describe( 'EventProviderDeactivatedNotice', () => {
 		} );
 
 		const { getByText, queryByText } = render(
-			<EventProviderDeactivatedNotice providerSlug="woocommerce" />,
+			<EventProviderDeactivatedNotice
+				goalType={ GOAL_TYPES.ECOMMERCE }
+				providerSlug="woocommerce"
+			/>,
 			{ registry }
 		);
 
@@ -94,7 +104,10 @@ describe( 'EventProviderDeactivatedNotice', () => {
 		} );
 
 		const { container } = render(
-			<EventProviderDeactivatedNotice providerSlug="woocommerce" />,
+			<EventProviderDeactivatedNotice
+				goalType={ GOAL_TYPES.ECOMMERCE }
+				providerSlug="woocommerce"
+			/>,
 			{ registry }
 		);
 
@@ -105,7 +118,10 @@ describe( 'EventProviderDeactivatedNotice', () => {
 		provideSiteInfo( registry );
 
 		const { container } = render(
-			<EventProviderDeactivatedNotice providerSlug="woocommerce" />,
+			<EventProviderDeactivatedNotice
+				goalType={ GOAL_TYPES.ECOMMERCE }
+				providerSlug="woocommerce"
+			/>,
 			{ registry }
 		);
 
@@ -117,9 +133,12 @@ describe( 'EventProviderDeactivatedNotice', () => {
 			activeConversionEventProviders: [],
 		} );
 
-		const { container } = render( <EventProviderDeactivatedNotice />, {
-			registry,
-		} );
+		const { container } = render(
+			<EventProviderDeactivatedNotice
+				goalType={ GOAL_TYPES.ECOMMERCE }
+			/>,
+			{ registry }
+		);
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
@@ -130,7 +149,26 @@ describe( 'EventProviderDeactivatedNotice', () => {
 		} );
 
 		const { container } = render(
-			<EventProviderDeactivatedNotice providerSlug="content-events" />,
+			<EventProviderDeactivatedNotice
+				goalType={ GOAL_TYPES.ECOMMERCE }
+				providerSlug="content-events"
+			/>,
+			{ registry }
+		);
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'renders nothing when the slug belongs to the other goal type', () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [],
+		} );
+
+		const { container } = render(
+			<EventProviderDeactivatedNotice
+				goalType={ GOAL_TYPES.ECOMMERCE }
+				providerSlug="wpforms"
+			/>,
 			{ registry }
 		);
 

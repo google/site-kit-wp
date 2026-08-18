@@ -342,6 +342,7 @@ class Conversion_TrackingTest extends TestCase {
 		$this->assertTrue( $data['hasActiveEcommerceEventProviders'], 'Ecommerce provider flag should be true with active provider.' );
 		// A single active ecommerce provider is not "multiple".
 		$this->assertFalse( $data['hasMultipleActiveEcommerceEventProviders'], 'Multiple ecommerce flag should be false with one provider.' );
+		$this->assertEquals( array( 'woocommerce' ), $data['activeConversionEventProviders'], 'inline_js_base_data() should list the active ecommerce provider slug.' );
 	}
 
 	public function test_inline_js_base_data__with_multiple_active_ecommerce_providers() {

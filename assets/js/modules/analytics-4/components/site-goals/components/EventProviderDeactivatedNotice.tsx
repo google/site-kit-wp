@@ -43,36 +43,15 @@ import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 
 interface EventProviderDeactivatedNoticeProps {
+	/** The goal type of the widget that renders the notice. */
+	goalType: GoalType;
 	/** The slug of the plugin that supplies the active tab's data, such as `woocommerce`. */
 	providerSlug?: string;
 }
 
-/**
- * Gets the goal type a provider slug belongs to.
- *
- * The goal type decides which of the two wordings the notice renders. A slug
- * neither label map holds belongs to no goal type.
- *
- * @since n.e.x.t
- *
- * @param {string} providerSlug The slug of the event provider plugin, such as `woocommerce`.
- * @return {(GoalType|undefined)} The goal type, or `undefined` when neither label map holds the slug.
- */
-function getGoalTypeForProvider( providerSlug: string ): GoalType | undefined {
-	if ( SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDER_LABELS[ providerSlug ] ) {
-		return GOAL_TYPES.ECOMMERCE;
-	}
-
-	if ( SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS[ providerSlug ] ) {
-		return GOAL_TYPES.LEAD;
-	}
-
-	return undefined;
-}
-
 const EventProviderDeactivatedNotice: FC<
 	EventProviderDeactivatedNoticeProps
-> = ( { providerSlug } ) => {
+> = ( { goalType, providerSlug } ) => {
 	const activeConversionEventProviders = useSelect(
 		( select: Select ) =>
 			select( CORE_SITE ).getActiveConversionEventProviders(),
@@ -98,17 +77,21 @@ const EventProviderDeactivatedNotice: FC<
 		return null;
 	}
 
-	const goalType = getGoalTypeForProvider( providerSlug );
+	const isEcommerce = goalType === GOAL_TYPES.ECOMMERCE;
 
-	if ( ! goalType ) {
+	const providerLabels = isEcommerce
+		? SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDER_LABELS
+		: SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS;
+
+	// The label map holds every plugin this goal type's tabs can name. A slug it
+	// leaves out names no plugin Site Goals knows, so the notice stays silent.
+	if ( ! providerLabels[ providerSlug ] ) {
 		return null;
 	}
 
 	const learnMore = (
 		<Link href={ learnMoreURL } external hideExternalIndicator />
 	);
-
-	const isEcommerce = goalType === GOAL_TYPES.ECOMMERCE;
 
 	const title = isEcommerce
 		? __( 'Online store plugin no longer found', 'google-site-kit' )
