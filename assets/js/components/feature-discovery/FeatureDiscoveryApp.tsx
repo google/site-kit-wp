@@ -16,9 +16,14 @@
  * limitations under the License.
  */
 
-function FeatureDiscoveryApp() {
-	// @ToDO: Replace this with the actual Feature Discovery Hub app once it's implemented.
+/**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+const FeatureDiscoveryApp: FC = () => {
+	// @todo Replace this with the actual Feature Discovery Hub app once it's implemented.
 	return <p>FDH App</p>;
-}
+};
 
 export default FeatureDiscoveryApp;
