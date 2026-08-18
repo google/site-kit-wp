@@ -182,10 +182,10 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	}
 
 	/**
-	 * Adds the active event provider categories and their slugs to the inline base data.
+	 * Adds the active event provider category flags and slugs to the inline base data.
 	 *
 	 * @since 1.181.0
-	 * @since n.e.x.t Added the active provider slugs.
+	 * @since n.e.x.t Added the active conversion event provider slugs.
 	 *
 	 * @param array $data Inline base data.
 	 * @return array Filtered $data.
@@ -206,7 +206,6 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 
 		$data['hasMultipleActiveEcommerceEventProviders'] = $active_ecommerce_providers > 1;
 
-		// `get_active_providers()` keys its array by the provider slug, such as `woocommerce`, so the keys are the list the dashboard needs.
 		$data['activeConversionEventProviders'] = array_keys( $active_providers );
 
 		return $data;

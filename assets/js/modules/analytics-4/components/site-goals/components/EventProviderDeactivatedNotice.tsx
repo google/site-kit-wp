@@ -43,9 +43,9 @@ import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 
 interface EventProviderDeactivatedNoticeProps {
-	/** The goal type of the widget that renders the notice. */
+	/** The widget that shows the event provider deactivated notice, either the online store widget or the lead generation widget. */
 	goalType: GoalType;
-	/** The slug of the plugin that supplies the active tab's data, such as `woocommerce`. */
+	/** The slug of the plugin the active tab gets its data from, such as `woocommerce` in the online store widget and `wpforms` in the lead generation widget. */
 	providerSlug?: string;
 }
 
@@ -66,9 +66,6 @@ const EventProviderDeactivatedNotice: FC<
 		[]
 	) as string;
 
-	// `getActiveConversionEventProviders()` is `undefined` until the site info
-	// resolves. Reading `undefined` as an empty list would flash the notice for
-	// a plugin that is still active.
 	if ( ! providerSlug || activeConversionEventProviders === undefined ) {
 		return null;
 	}
@@ -83,8 +80,6 @@ const EventProviderDeactivatedNotice: FC<
 		? SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDER_LABELS
 		: SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS;
 
-	// The label map holds every plugin this goal type's tabs can name. A slug it
-	// leaves out names no plugin Site Goals knows, so the notice stays silent.
 	if ( ! providerLabels[ providerSlug ] ) {
 		return null;
 	}

@@ -1094,12 +1094,12 @@ export const selectors = {
 	),
 
 	/**
-	 * Gets the slug of every active conversion event provider plugin.
+	 * Gets a slug for each conversion event provider plugin that is active.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array.<string>|undefined)} The slugs, such as `woocommerce`. Returns `undefined` if not yet loaded.
+	 * @return {(Array.<string>|undefined)} An array of active provider slugs, such as `woocommerce`. Returns `undefined` if not yet loaded.
 	 */
 	getActiveConversionEventProviders: getSiteInfoProperty(
 		'activeConversionEventProviders'

@@ -124,8 +124,6 @@ $site-goals-tile-connector-offset: 3.5px;
 		margin-top: 34px;
 	}
 
-	// Two stacked `googlesitekit-site-goals-tiles-group` blocks sit 34px apart, so
-	// a notice between them takes 34px on each stacked side to keep that spacing.
 	.googlesitekit-notice-container:has(
 			.googlesitekit-site-goals-breakdown-notice
 		),

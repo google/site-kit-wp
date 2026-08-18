@@ -43,8 +43,9 @@ function Template( {
 	return (
 		<WithRegistrySetup
 			func={ ( registry: WPDataRegistry ) =>
-				// The empty list makes every slug read as deactivated, so each
-				// story renders the notice for the slug it passes in.
+				// An empty activeConversionEventProviders list makes every slug
+				// read as deactivated, so each story renders the notice for the
+				// slug it passes in.
 				provideSiteInfo( registry, {
 					activeConversionEventProviders: [],
 				} )
@@ -61,7 +62,7 @@ function Template( {
 export const OnlineStore = Template.bind(
 	{}
 ) as Story< EventProviderDeactivatedNoticeStoryProps >;
-OnlineStore.storyName = 'Online store plugin';
+OnlineStore.storyName = 'Online store plugin deactivated';
 OnlineStore.args = {
 	goalType: GOAL_TYPES.ECOMMERCE,
 	providerSlug: 'woocommerce',
@@ -71,7 +72,7 @@ OnlineStore.scenario = {};
 export const LeadForm = Template.bind(
 	{}
 ) as Story< EventProviderDeactivatedNoticeStoryProps >;
-LeadForm.storyName = 'Form plugin';
+LeadForm.storyName = 'Form plugin deactivated';
 LeadForm.args = {
 	goalType: GOAL_TYPES.LEAD,
 	providerSlug: 'wpforms',

@@ -855,8 +855,6 @@ TabbedBreakdownDeactivatedPlugin.args = {
 	selectedGoalDriverIDs: THREE_VISIBLE_GOAL_DRIVERS,
 	setupRegistry: ( registry ) => {
 		commonSetup( registry );
-		// The empty list makes the WooCommerce tab read as deactivated, so the
-		// warning notice renders between the tab bar and the first tile group.
 		provideSiteInfo( registry, {
 			activeConversionEventProviders: [],
 		} );

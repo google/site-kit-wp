@@ -1811,7 +1811,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'renders the deactivated plugin notice on a tab whose plugin is no longer active', async () => {
+	it( 'renders the deactivated plugin notice on a store tab whose plugin is not in the active list', async () => {
 		provideSiteInfo( registry, {
 			activeConversionEventProviders: [ 'easy-digital-downloads' ],
 		} );
@@ -1832,7 +1832,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( "renders no deactivated plugin notice while the tab's plugin is active", async () => {
+	it( "renders no deactivated plugin notice when the store tab's plugin is in the active list", async () => {
 		provideSiteInfo( registry, {
 			activeConversionEventProviders: [ 'woocommerce' ],
 		} );
@@ -1853,7 +1853,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'renders no deactivated plugin notice on the Other sources tab', async () => {
+	it( 'renders no deactivated plugin notice after a click on the Other sources tab', async () => {
 		provideSiteInfo( registry, {
 			activeConversionEventProviders: [],
 		} );
@@ -1896,7 +1896,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		} );
 	} );
 
-	it( 'renders no deactivated plugin notice in the aggregated state', async () => {
+	it( 'renders no tab bar and no deactivated plugin notice in the aggregated state', async () => {
 		provideSiteInfo( registry, {
 			activeConversionEventProviders: [],
 		} );

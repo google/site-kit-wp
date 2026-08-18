@@ -141,8 +141,6 @@ export function useSiteGoalsBreakdown(
 	const isOtherSourcesTab =
 		activeTabID === SITE_GOALS_BREAKDOWN_OTHER_SOURCES_TAB_ID;
 
-	// False in the aggregated state, which renders no tabs, and on the "Other
-	// sources" tab, which stands for no single breakdown value.
 	const isBreakdownValueTab = hasBreakdownTabs && ! isOtherSourcesTab;
 
 	// Scopes every section report to the selected value tab. The "Other sources"

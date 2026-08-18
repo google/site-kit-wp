@@ -600,11 +600,6 @@ const LeadGenerationPerformanceWidget = forwardRef<
 							) }
 						/>
 
-						{ /* `breakdownTabs` stays undefined until the form titles
-					     resolve, so the notice sits inside it and reaches the
-					     screen with the tab bar. Each tab is one form, and
-					     `formProviders` gives the slug of the plugin that made
-					     that form. */ }
 						{ isBreakdownValueTab && (
 							<EventProviderDeactivatedNotice
 								goalType={ GOAL_TYPES.LEAD }
