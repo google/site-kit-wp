@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Util\URL;
 /**
  * Class for handling generic content engagement events.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  * @access private
  * @ignore
  */
@@ -42,7 +42,7 @@ class Content_Events extends Conversion_Events_Provider {
 	/**
 	 * Flag indicating whether content hooks have been bootstrapped.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 * @var bool
 	 */
 	protected $bootstrapped = false;
@@ -58,7 +58,7 @@ class Content_Events extends Conversion_Events_Provider {
 	/**
 	 * Gets the provider category.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return string Provider category.
 	 */
@@ -71,7 +71,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 *
 	 * Content events are always active and not conditional on any third-party plugin or feature flag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return bool Content Events are always enabled, so this is always `true`.
 	 */
@@ -85,7 +85,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 * Content engagement events are not conversion actions and should not be included
 	 * in conversion-event enumerations for Ads or ACR.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return array List of event names.
 	 */
@@ -96,7 +96,7 @@ class Content_Events extends Conversion_Events_Provider {
 	/**
 	 * Registers the script for the provider.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return Script Script instance.
 	 */
@@ -117,7 +117,7 @@ class Content_Events extends Conversion_Events_Provider {
 	/**
 	 * Registers any actions/hooks for this provider.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 */
 	public function register_hooks() {
 		$bootstrap = function () {
@@ -134,7 +134,7 @@ class Content_Events extends Conversion_Events_Provider {
 	/**
 	 * Registers content hooks once tag initialization occurs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 */
 	protected function register_content_hooks() {
 		add_filter( 'embed_oembed_html', array( $this, 'filter_embed_html' ) );
@@ -241,7 +241,7 @@ class Content_Events extends Conversion_Events_Provider {
 	/**
 	 * Gets the inline config data for content events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return array Inline config data.
 	 */
