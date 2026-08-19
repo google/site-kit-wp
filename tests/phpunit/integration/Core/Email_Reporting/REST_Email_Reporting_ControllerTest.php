@@ -168,7 +168,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ), 'Expected API fetch preload paths filter to be registered' );
 	}
 
-	public function test_register__adds_email_reporting_and_errors_paths() {
+	public function test_register__adds_only_the_email_reporting_and_email_reporting_errors_paths() {
 		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
 
 		$this->controller->register();
@@ -181,7 +181,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 				'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-errors',
 			),
 			$paths,
-			'register() should add only the email-reporting and email-reporting-errors preload paths.'
+			'The preload paths should hold email-reporting and email-reporting-errors and nothing else.'
 		);
 	}
 
