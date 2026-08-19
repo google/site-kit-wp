@@ -430,7 +430,7 @@ exports[`Analytics SetupLayout initial setup flow renders initial setup-specific
                       Enable enhanced measurement
                     </label>
                     <p
-                      class="googlesitekit-module-settings-group__helper-text"
+                      class="googlesitekit-typography googlesitekit-module-settings-group__helper-text googlesitekit-typography--body googlesitekit-typography--small"
                     >
                       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
                       <a
@@ -869,7 +869,7 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                             Enable enhanced measurement
                           </label>
                           <p
-                            class="googlesitekit-module-settings-group__helper-text"
+                            class="googlesitekit-typography googlesitekit-module-settings-group__helper-text googlesitekit-typography--body googlesitekit-typography--small"
                           >
                             This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
                             <a
