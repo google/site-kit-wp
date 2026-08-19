@@ -98,6 +98,8 @@ class Newsletter_Signup_CTA_Type_HandlerTest extends TestCase {
 
 	/**
 	 * @dataProvider data_invalid_string_fields
+	 *
+	 * @param string $field Name of the string configuration field to test.
 	 */
 	public function test_configure_cta__rejects_non_string_values( $field ) {
 		$this->expectException( Invalid_Param_Exception::class );
