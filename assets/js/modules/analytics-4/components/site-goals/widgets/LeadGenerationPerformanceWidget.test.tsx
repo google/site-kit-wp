@@ -1270,7 +1270,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		await waitForRegistry();
 
 		// No secondary ecommerce tiles should appear in lead generation widget.
-		expect( queryByText( 'Total Sales' ) ).not.toBeInTheDocument();
+		expect( queryByText( 'Total sales' ) ).not.toBeInTheDocument();
 		expect(
 			queryByText( 'Products added to cart' )
 		).not.toBeInTheDocument();

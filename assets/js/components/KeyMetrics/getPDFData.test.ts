@@ -120,12 +120,13 @@ describe( 'Key Metrics getPDFData', () => {
 			viewOnly: false,
 		} );
 
-		// The aggregate loader has no view-only branch, so each tile loader
-		// receives only the registry, dates, and signal.
+		// Each tile loader receives the registry, dates, signal, and viewOnly,
+		// so a tile can leave out the links an administrator sees.
 		expect( getTileDataA ).toHaveBeenCalledWith( {
 			registry,
 			dates: DATES,
 			signal,
+			viewOnly: false,
 		} );
 		expect( result.data?.tiles ).toEqual( [
 			{
@@ -141,6 +142,30 @@ describe( 'Key Metrics getPDFData', () => {
 				data: { value: 'B' },
 			},
 		] );
+	} );
+
+	it( 'passes viewOnly through to getTileData', async () => {
+		const getTileDataA = jest.fn( () => Promise.resolve( { value: 'A' } ) );
+
+		widgets.metricA = { title: 'Metric A' };
+		tiles.metricA = { TileComponent: TileA, getTileData: getTileDataA };
+
+		const registry = createRegistry( [ 'metricA' ] );
+		const { signal } = new AbortController();
+
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal,
+			viewOnly: true,
+		} );
+
+		expect( getTileDataA ).toHaveBeenCalledWith( {
+			registry,
+			dates: DATES,
+			signal,
+			viewOnly: true,
+		} );
 	} );
 
 	it( 'orders tiles by the area widgets, not by the raw key metric selection', async () => {

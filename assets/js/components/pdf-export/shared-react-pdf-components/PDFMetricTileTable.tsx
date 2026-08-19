@@ -28,6 +28,7 @@ import { FC } from 'react';
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFCard from './PDFCard';
+import PDFLink from './PDFLink';
 import PDFTypography from './PDFTypography';
 
 const styles = createPDFStyles( {
@@ -52,24 +53,6 @@ const styles = createPDFStyles( {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 	},
-	// The label cell takes the width the metric leaves. Truncation needs a
-	// bounded box, so the text is measured against this cell rather than growing
-	// past the metric. The dashboard uses a 10px gutter here, but react-pdf's
-	// truncation reserves less room for the ellipsis than CSS `text-overflow`
-	// does, so a wider gutter keeps the label clear of the metric.
-	primaryCell: {
-		flexGrow: 1,
-		flexShrink: 1,
-		marginRight: 20,
-	},
-	// Truncates on a single line, matching the dashboard's `text-overflow`.
-	primary: {
-		textOverflow: 'ellipsis',
-	},
-	// A label the dashboard renders as a link keeps that link colour.
-	primaryLink: {
-		color: PDF_COLORS.CONTENT_SECONDARY,
-	},
 	// The metric hugs the right edge and is never truncated.
 	metric: {
 		flexShrink: 0,
@@ -82,6 +65,8 @@ export interface PDFMetricTileTableRow {
 	primary: string;
 	/** The pre-formatted metric, e.g. "1.2K" or "34%". */
 	metric: string;
+	/** The destination the primary label links to, matching the dashboard row. Empty, `null`, or omitted renders the label as plain text. */
+	primaryURL?: string | null;
 }
 
 export interface PDFMetricTileTableProps {
@@ -91,22 +76,15 @@ export interface PDFMetricTileTableProps {
 	rows: PDFMetricTileTableRow[];
 	/** The maximum number of rows to render. Defaults to every row. */
 	limit?: number;
-	/** Whether the dashboard tile renders its labels as links, which colours them. */
-	linked?: boolean;
 }
 
 const PDFMetricTileTable: FC< PDFMetricTileTableProps > = ( {
 	title,
 	rows,
 	limit,
-	linked = false,
 } ) => {
 	const visibleRows =
 		typeof limit === 'number' ? rows.slice( 0, limit ) : rows;
-
-	const primaryStyles = linked
-		? [ styles.primary, styles.primaryLink ]
-		: styles.primary;
 
 	return (
 		<PDFCard style={ styles.card }>
@@ -116,16 +94,14 @@ const PDFMetricTileTable: FC< PDFMetricTileTableProps > = ( {
 			<View style={ styles.table }>
 				{ visibleRows.map( ( row, index ) => (
 					<View key={ index } style={ styles.row }>
-						<View style={ styles.primaryCell }>
-							<PDFTypography
-								type="body"
-								size="small"
-								style={ primaryStyles }
-								maxLines={ 1 }
-							>
-								{ row.primary }
-							</PDFTypography>
-						</View>
+						<PDFLink
+							href={ row.primaryURL }
+							type="body"
+							size="small"
+							truncateContent
+						>
+							{ row.primary }
+						</PDFLink>
 						<PDFTypography
 							type="body"
 							size="small"

@@ -30,7 +30,10 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 import { WebDataStreamHint } from '@/js/modules/analytics-4/components/common';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	MODULE_SLUG_ANALYTICS_4,
+	WEB_DATA_STREAM_NAME_REQUIRED_MESSAGE,
+} from '@/js/modules/analytics-4/constants';
 import { FORM_ACCOUNT_CREATE } from '@/js/modules/analytics-4/datastore/constants';
 import CreateAccountField from './CreateAccountField';
 
@@ -55,6 +58,7 @@ export default function WebDataStreamField() {
 				label={ __( 'Web data stream', 'google-site-kit' ) }
 				value={ value }
 				hasError={ ! value }
+				errorMessage={ WEB_DATA_STREAM_NAME_REQUIRED_MESSAGE }
 				setValue={ setValue }
 				name="dataStream"
 			/>

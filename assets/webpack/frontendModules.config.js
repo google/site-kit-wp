@@ -39,6 +39,8 @@ module.exports = ( mode ) => ( {
 		// Event Providers
 		'googlesitekit-events-provider-contact-form-7':
 			'./js/event-providers/contact-form-7.ts',
+		'googlesitekit-events-provider-content-events':
+			'./js/event-providers/content-events.ts',
 		'googlesitekit-events-provider-easy-digital-downloads':
 			'./js/event-providers/easy-digital-downloads.ts',
 		'googlesitekit-events-provider-mailchimp':

@@ -31,9 +31,13 @@ import { useCallback, useEffect, useRef } from '@wordpress/element';
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import InViewProvider from '@/js/components/InViewProvider';
-import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
+import {
+	PDF_DOWNLOAD_PANEL_OPENED_KEY,
+	PDF_EXPORT_PANEL_OPENED_ITEM_SLUG,
+} from '@/js/components/pdf-export/constants';
 import SelectionPanel from '@/js/components/SelectionPanel';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 import PanelContent from './PanelContent';
@@ -44,10 +48,19 @@ const PDFSectionsSelectionPanel: FC = () => {
 			select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY ),
 		[]
 	);
+	const hasAlreadyOpenedPDFExportPanel = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).isItemDismissed(
+				PDF_EXPORT_PANEL_OPENED_ITEM_SLUG
+			),
+		[]
+	);
 
 	const { setValue } = useDispatch( CORE_UI );
+	const { dismissItem } = useDispatch( CORE_USER );
 	const viewContext = useViewContext();
 	const viewEventFiredRef = useRef( false );
+	const panelOpenedItemDismissedRef = useRef( false );
 
 	useEffect( () => {
 		if ( isOpen && ! viewEventFiredRef.current ) {
@@ -61,6 +74,21 @@ const PDFSectionsSelectionPanel: FC = () => {
 			viewEventFiredRef.current = false;
 		}
 	}, [ isOpen, viewContext ] );
+
+	useEffect( () => {
+		// `dismissItem` saves `pdf-export-panel-opened` in WordPress user meta,
+		// and `hasAlreadyOpenedPDFExportPanel` keeps reading `false` until that
+		// save finishes. Without `panelOpenedItemDismissedRef`, a user who
+		// reopens the panel during the save would start a second one.
+		if (
+			isOpen &&
+			hasAlreadyOpenedPDFExportPanel === false &&
+			! panelOpenedItemDismissedRef.current
+		) {
+			panelOpenedItemDismissedRef.current = true;
+			dismissItem( PDF_EXPORT_PANEL_OPENED_ITEM_SLUG );
+		}
+	}, [ isOpen, hasAlreadyOpenedPDFExportPanel, dismissItem ] );
 
 	const closePanel = useCallback( () => {
 		if ( isOpen ) {
