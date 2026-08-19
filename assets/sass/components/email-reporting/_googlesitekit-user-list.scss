@@ -71,15 +71,23 @@
 
 	.googlesitekit-user-list {
 		flex: 1 1 auto;
-		max-height: 200px;
 		min-height: 0;
 		overflow-y: auto;
 	}
 
 	.googlesitekit-user-list__empty {
+		align-items: center;
 		color: $c-surfaces-on-surface-variant;
+		display: flex;
 		font-size: $fs-body-sm;
+		gap: 8px;
 		padding: $grid-gap-phone 0;
+
+		.googlesitekit-info-tooltip {
+			color: $c-content-secondary;
+			flex-shrink: 0;
+			height: 18px;
+		}
 	}
 
 	.googlesitekit-user-row {
@@ -87,6 +95,14 @@
 		display: flex;
 		justify-content: space-between;
 		padding: 12px 0;
+
+		// Below tablet, stack the action under the name/email instead of
+		// squeezing it into the same row, matching the mobile designs.
+		@media (max-width: $bp-mobileOnly) {
+			align-items: flex-start;
+			flex-direction: column;
+			row-gap: 6px;
+		}
 
 		&:not(:last-child) {
 			border-bottom: 1px solid $c-utility-divider;
@@ -99,6 +115,10 @@
 		flex-direction: column;
 		gap: 6px;
 		min-width: 0;
+
+		@media (max-width: $bp-mobileOnly) {
+			gap: 1px;
+		}
 	}
 
 	.googlesitekit-user-row__name {
@@ -119,24 +139,37 @@
 		color: $c-surfaces-on-surface;
 		font-size: $fs-body-sm;
 		word-break: break-word;
+
+		@media (max-width: $bp-mobileOnly) {
+			font-size: 12px;
+		}
 	}
 
 	.googlesitekit-user-row__action {
 		flex-shrink: 0;
 		margin-left: $grid-gap-phone;
 
+		@media (max-width: $bp-mobileOnly) {
+			margin-left: 0;
+		}
+
 		.mdc-button {
 			color: $c-content-secondary;
 			gap: 4px;
 			white-space: nowrap;
-		}
-	}
 
-	.googlesitekit-user-row__unsubscribe-icon {
-		display: inline-flex;
-		margin-bottom: 1px;
-		margin-left: 4px;
-		vertical-align: middle;
+			// Strip the button's own box on mobile so it sits flush with the
+			// name and email above it, as its own line in the stacked row.
+			@media (max-width: $bp-mobileOnly) {
+				height: auto;
+				min-height: 0;
+				padding: 0;
+			}
+		}
+
+		.googlesitekit-user-row__unsubscribe-button {
+			color: $c-error;
+		}
 	}
 
 	.googlesitekit-user-row__success {
@@ -191,16 +224,5 @@
 				text-decoration: none;
 			}
 		}
-	}
-
-	// `unsubscribe.svg` is a stroke-only icon; without the extra specificity
-	// here (the repeated class matches both the `<a>` and `<button>` shapes
-	// `Link` can render, without pinning a tag) it ties with, and sometimes
-	// loses to, `.googlesitekit-cta-link(:hover) svg { fill: currentColor }`,
-	// which fills its open paths and distorts the icon.
-	.googlesitekit-cta-link.googlesitekit-cta-link
-		.googlesitekit-user-row__unsubscribe-icon
-		svg {
-		fill: none;
 	}
 }

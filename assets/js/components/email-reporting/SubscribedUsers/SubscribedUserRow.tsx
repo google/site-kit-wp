@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -135,18 +136,18 @@ const SubscribedUserRow: FC< SubscribedUserRowProps > = ( { user } ) => {
 		}
 
 		return (
-			<Link
+			// @ts-expect-error - `Button` component typing is incomplete.
+			<Button
+				className="googlesitekit-user-row__unsubscribe-button"
 				onClick={ handleUnsubscribe }
 				disabled={ isUnsubscribing }
-				danger
+				trailingIcon={ <UnsubscribeIcon width="18" height="18" /> }
+				tertiary
 			>
 				{ isUnsubscribing
 					? __( 'Unsubscribing…', 'google-site-kit' )
 					: __( 'Unsubscribe', 'google-site-kit' ) }
-				<span className="googlesitekit-user-row__unsubscribe-icon">
-					<UnsubscribeIcon width="22" height="22" />
-				</span>
-			</Link>
+			</Button>
 		);
 	}
 

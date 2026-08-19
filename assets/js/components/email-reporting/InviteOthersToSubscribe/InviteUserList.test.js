@@ -95,6 +95,36 @@ describe( 'InviteUserList', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'shows the noEligibleUsersIcon next to the no-eligible-users empty state', () => {
+		const { getByText, getByTestID } = render(
+			<InviteUserList
+				users={ [] }
+				onInviteResult={ mockOnInviteResult }
+				noEligibleUsersIcon={ <span data-testid="empty-icon" /> }
+			/>,
+			{ registry }
+		);
+
+		expect( getByTestID( 'empty-icon' ) ).toBeInTheDocument();
+		expect(
+			getByText( /no users are eligible to receive invitations/i )
+		).toBeInTheDocument();
+	} );
+
+	it( 'does not show the noEligibleUsersIcon in the no-search-matches empty state', () => {
+		const { queryByTestID } = render(
+			<InviteUserList
+				users={ [] }
+				searchTerm="john"
+				onInviteResult={ mockOnInviteResult }
+				noEligibleUsersIcon={ <span data-testid="empty-icon" /> }
+			/>,
+			{ registry }
+		);
+
+		expect( queryByTestID( 'empty-icon' ) ).not.toBeInTheDocument();
+	} );
+
 	it( 'shows loading state when isLoading is true', () => {
 		const { container } = render(
 			<InviteUserList

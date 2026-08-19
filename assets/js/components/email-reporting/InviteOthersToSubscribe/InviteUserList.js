@@ -41,6 +41,7 @@ export default function InviteUserList( {
 	inviteResults = {},
 	onInviteResult,
 	isLoading = false,
+	noEligibleUsersIcon,
 } ) {
 	if ( isLoading ) {
 		return <UserListSkeleton visibleItems={ 3 } />;
@@ -53,6 +54,7 @@ export default function InviteUserList( {
 
 		return (
 			<EmptyMessage
+				icon={ noEligibleUsersIcon }
 				text={ __(
 					'No users are eligible to receive invitations.',
 					'google-site-kit'
@@ -93,4 +95,5 @@ InviteUserList.propTypes = {
 	),
 	onInviteResult: PropTypes.func.isRequired,
 	isLoading: PropTypes.bool,
+	noEligibleUsersIcon: PropTypes.node,
 };

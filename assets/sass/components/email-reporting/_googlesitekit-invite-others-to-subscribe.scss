@@ -20,25 +20,8 @@
 
 	.googlesitekit-invite-others-to-subscribe {
 		display: flex;
-		flex: 1 0 auto;
+		flex: 1 1 auto;
 		flex-direction: column;
 		min-height: 0;
-	}
-
-	.googlesitekit-invite-others-to-subscribe__header {
-		align-items: center;
-		display: flex;
-		gap: 8px;
-		margin-bottom: $grid-gap-phone;
-
-		.googlesitekit-info-tooltip {
-			color: $c-content-secondary;
-			height: 18px;
-		}
-	}
-
-	.googlesitekit-invite-others-to-subscribe__title {
-		color: $c-surfaces-on-surface-variant;
-		font-size: $fs-body-sm;
 	}
 }

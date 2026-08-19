@@ -510,6 +510,7 @@ describe( 'core/site Email Reporting', () => {
 						name: subscribedUser.displayName,
 						email: subscribedUser.email,
 						role: subscribedUser.role,
+						index: 0,
 					},
 				} );
 			} );
@@ -636,6 +637,65 @@ describe( 'core/site Email Reporting', () => {
 				] );
 				expect( total ).toBe( 2 );
 
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'invalidates the eligible subscribers cache after a successful unsubscribe', async () => {
+				await resolveSubscribedUsers( [ subscribedUser ] );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetEligibleSubscribers(
+						createUserListResponse( [] ),
+						{ page: 1, search: '' }
+					);
+
+				fetchMock.postOnce( unsubscribeUserEndpointRegExp, {
+					body: { success: true },
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( CORE_SITE )
+					.unsubscribeUser( subscribedUser.id );
+
+				// Read the raw cache instead of the `getEligibleSubscribers`
+				// selector, since selecting would kick off its resolver and
+				// leave an unmocked, unawaited fetch running past this test.
+				expect(
+					registry.stores[ CORE_SITE ].store.getState().emailReporting
+						.eligibleSubscribers
+				).toEqual( {} );
+			} );
+
+			it( 'keeps the eligible subscribers cache when the unsubscribe fails', async () => {
+				await resolveSubscribedUsers( [ subscribedUser ] );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetEligibleSubscribers(
+						createUserListResponse( [] ),
+						{ page: 1, search: '' }
+					);
+
+				fetchMock.postOnce( unsubscribeUserEndpointRegExp, {
+					body: {
+						code: 'email_reporting_unsubscribe_failed',
+						message:
+							'Unable to unsubscribe the user from email reports.',
+						data: { status: 500 },
+					},
+					status: 500,
+				} );
+
+				await registry
+					.dispatch( CORE_SITE )
+					.unsubscribeUser( subscribedUser.id );
+
+				expect(
+					registry.stores[ CORE_SITE ].store.getState().emailReporting
+						.eligibleSubscribers
+				).not.toEqual( {} );
 				expect( console ).toHaveErrored();
 			} );
 
@@ -1716,6 +1776,7 @@ describe( 'core/site Email Reporting', () => {
 						name: subscribedUser.displayName,
 						email: subscribedUser.email,
 						role: subscribedUser.roleDisplayName,
+						index: 0,
 					},
 				} );
 			} );

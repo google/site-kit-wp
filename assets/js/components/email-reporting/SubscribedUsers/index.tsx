@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { useEffect, useState } from '@wordpress/element';
@@ -40,7 +45,11 @@ import { useDebounce } from '@/js/hooks/useDebounce';
 import SubscribedUserList from './SubscribedUserList';
 import { SubscribedUser } from './SubscribedUserRow';
 
-export default function SubscribedUsers() {
+// `getJustUnsubscribedUsers` entries carry the index they were removed
+// from, so their row can be reinserted where it used to be.
+type PendingDismissalUser = SubscribedUser & { index?: number };
+
+const SubscribedUsers: FC = () => {
 	const hasManageOptionsCapability = useSelect(
 		( select: Select ) =>
 			select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ),
@@ -159,10 +168,23 @@ export default function SubscribedUsers() {
 	// A user unsubscribed while a search is active must still show its
 	// confirmation row, so pending-dismiss rows aren't filtered by the
 	// current search term — only by whether they're still undismissed.
-	const pendingDismissalUsers = Object.values(
-		justUnsubscribedUsers || {}
-	).filter( ( user: SubscribedUser ) => ! liveUserIDs.has( user.id ) );
-	const users = [ ...liveUsers, ...pendingDismissalUsers ];
+	const pendingDismissalUsers = (
+		Object.values( justUnsubscribedUsers || {} ) as PendingDismissalUser[]
+	 ).filter( ( user ) => ! liveUserIDs.has( user.id ) );
+	// Reinsert each pending-dismissal row at the index it was unsubscribed
+	// from, so its "User unsubscribed" confirmation stays where the row
+	// was instead of jumping to the end of the list.
+	const users: PendingDismissalUser[] = [ ...liveUsers ];
+	pendingDismissalUsers
+		.slice()
+		.sort( ( userA, userB ) => ( userA.index ?? 0 ) - ( userB.index ?? 0 ) )
+		.forEach( ( user ) => {
+			const insertAt = Math.min(
+				user.index ?? users.length,
+				users.length
+			);
+			users.splice( insertAt, 0, user );
+		} );
 	const showSearch = ( unfilteredTotal ?? 0 ) > SEARCH_THRESHOLD;
 
 	return (
@@ -181,4 +203,6 @@ export default function SubscribedUsers() {
 			/>
 		</div>
 	);
-}
+};
+
+export default SubscribedUsers;

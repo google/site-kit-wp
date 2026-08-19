@@ -149,6 +149,7 @@ class Subscribed_Users_Query {
 	 * Retrieves a paginated, searchable list of subscribed users.
 	 *
 	 * @since 1.185.0
+	 * @since n.e.x.t Added the $exclude_user_id parameter.
 	 *
 	 * @param array $args {
 	 *     Optional. Arguments to filter and paginate subscribed users.
@@ -189,6 +190,7 @@ class Subscribed_Users_Query {
 	 * Gets all subscribed users matching the given search term.
 	 *
 	 * @since 1.185.0
+	 * @since n.e.x.t Added the $exclude_user_id parameter.
 	 *
 	 * @param string $search          Search term for display name, email or role.
 	 * @param int    $exclude_user_id Optional. User ID to leave out of the results. Default 0 (none).

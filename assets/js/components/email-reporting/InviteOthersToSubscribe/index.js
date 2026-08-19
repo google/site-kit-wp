@@ -185,13 +185,6 @@ export default function InviteOthersToSubscribe() {
 
 	return (
 		<div className="googlesitekit-invite-others-to-subscribe">
-			<div className="googlesitekit-invite-others-to-subscribe__header">
-				<span className="googlesitekit-invite-others-to-subscribe__title">
-					{ __( 'Invite others to subscribe', 'google-site-kit' ) }
-				</span>
-				<InfoTooltip title={ tooltipContent } />
-			</div>
-
 			{ showSearch && (
 				<UserSearchInput
 					value={ searchTerm }
@@ -205,6 +198,7 @@ export default function InviteOthersToSubscribe() {
 				inviteResults={ inviteResults }
 				onInviteResult={ handleInviteResult }
 				isLoading={ isLoading }
+				noEligibleUsersIcon={ <InfoTooltip title={ tooltipContent } /> }
 			/>
 		</div>
 	);

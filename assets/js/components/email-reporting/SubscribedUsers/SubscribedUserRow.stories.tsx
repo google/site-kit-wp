@@ -17,28 +17,32 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { Story } from '@/js/types/Story';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
-import SubscribedUserRow from './SubscribedUserRow';
+import SubscribedUserRow, { SubscribedUser } from './SubscribedUserRow';
 
-const mockUser = {
+interface SubscribedUserRowStoryProps {
+	setupRegistry?: ( registry: WPDataRegistry ) => void;
+}
+
+const mockUser: SubscribedUser = {
 	id: 2,
 	name: 'MainAdminName',
 	email: 'someone@anybusiness.com',
 	role: 'administrator',
 };
 
-function Template( { ...args } ) {
-	function setupRegistry( registry ) {
-		if ( args?.setupRegistry ) {
-			args.setupRegistry( registry );
-		}
-	}
-
+function Template( { setupRegistry }: SubscribedUserRowStoryProps ) {
 	return (
-		<WithRegistrySetup func={ setupRegistry }>
+		<WithRegistrySetup func={ setupRegistry || ( () => {} ) }>
 			<div
 				style={ {
 					maxWidth: '600px',
@@ -52,11 +56,17 @@ function Template( { ...args } ) {
 	);
 }
 
-export const Default = Template.bind( {} );
+export const Default = Template.bind(
+	{}
+) as Story< SubscribedUserRowStoryProps >;
 Default.storyName = 'Default State';
+Default.scenario = {};
 
-export const Success = Template.bind( {} );
+export const Success = Template.bind(
+	{}
+) as Story< SubscribedUserRowStoryProps >;
 Success.storyName = 'Success State';
+Success.scenario = {};
 Success.args = {
 	// Mirrors what `unsubscribeUser` does on a real success: seed the cache
 	// so the reducer can find the user, then run the same fetch-store
@@ -78,8 +88,11 @@ Success.args = {
 	},
 };
 
-export const Error = Template.bind( {} );
+export const Error = Template.bind(
+	{}
+) as Story< SubscribedUserRowStoryProps >;
 Error.storyName = 'Error State';
+Error.scenario = {};
 Error.args = {
 	setupRegistry: ( registry ) => {
 		registry

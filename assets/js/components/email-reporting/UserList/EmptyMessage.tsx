@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import { FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -37,14 +37,22 @@ import { __ } from '@wordpress/i18n';
  *
  * @return {string} The empty-search message.
  */
-export function getNoSearchResultsText() {
+export function getNoSearchResultsText(): string {
 	return __( 'No users match your search.', 'google-site-kit' );
 }
 
-export default function EmptyMessage( { text } ) {
-	return <div className="googlesitekit-user-list__empty">{ text }</div>;
+interface EmptyMessageProps {
+	text: string;
+	icon?: ReactNode;
 }
 
-EmptyMessage.propTypes = {
-	text: PropTypes.string.isRequired,
+const EmptyMessage: FC< EmptyMessageProps > = ( { text, icon } ) => {
+	return (
+		<div className="googlesitekit-user-list__empty">
+			{ icon }
+			{ text }
+		</div>
+	);
 };
+
+export default EmptyMessage;

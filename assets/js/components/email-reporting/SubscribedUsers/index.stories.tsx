@@ -17,16 +17,35 @@
  */
 
 /**
+ * External dependencies
+ */
+import { ReactElement } from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { Story } from '@/js/types/Story';
 import { provideUserCapabilities, provideUserInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
+import { SubscribedUser } from './SubscribedUserRow';
 import SubscribedUsers from '.';
 
-const mockSubscribedUsers = [
+interface SubscribedUsersStoryProps {
+	setupRegistry?: ( registry: WPDataRegistry ) => void;
+	// VRT scenarios pause CSS animations, but the "Loading" state's skeleton
+	// shimmer is only paused by this class, not the shared VRT stylesheet.
+	pauseAnimation?: boolean;
+}
+
+const mockSubscribedUsers: SubscribedUser[] = [
 	{
 		id: 2,
 		name: 'MainAdminName',
@@ -47,7 +66,7 @@ const mockSubscribedUsers = [
 	},
 ];
 
-const manyUsers = [
+const manyUsers: SubscribedUser[] = [
 	...mockSubscribedUsers,
 	{
 		id: 5,
@@ -75,13 +94,13 @@ const manyUsers = [
 	},
 ];
 
-function Template( { ...args } ) {
-	return <SubscribedUsers { ...args } />;
+function Template() {
+	return <SubscribedUsers />;
 }
 
 const defaultQueryArgs = { search: '' };
 
-function createSubscribedUsersResponse( users ) {
+function createSubscribedUsersResponse( users: SubscribedUser[] ) {
 	return {
 		users,
 		total: users.length,
@@ -89,8 +108,11 @@ function createSubscribedUsersResponse( users ) {
 	};
 }
 
-export const Default = Template.bind( {} );
+export const Default = Template.bind(
+	{}
+) as Story< SubscribedUsersStoryProps >;
 Default.storyName = 'Default (3 users, no search)';
+Default.scenario = {};
 Default.args = {
 	setupRegistry: ( registry ) => {
 		registry
@@ -105,7 +127,9 @@ Default.args = {
 	},
 };
 
-export const WithSearch = Template.bind( {} );
+export const WithSearch = Template.bind(
+	{}
+) as Story< SubscribedUsersStoryProps >;
 WithSearch.storyName = 'With Search (7+ users)';
 WithSearch.args = {
 	setupRegistry: ( registry ) => {
@@ -121,8 +145,9 @@ WithSearch.args = {
 	},
 };
 
-export const Empty = Template.bind( {} );
+export const Empty = Template.bind( {} ) as Story< SubscribedUsersStoryProps >;
 Empty.storyName = 'Empty State (no subscribed users)';
+Empty.scenario = {};
 Empty.args = {
 	setupRegistry: ( registry ) => {
 		registry
@@ -137,9 +162,13 @@ Empty.args = {
 	},
 };
 
-export const Loading = Template.bind( {} );
+export const Loading = Template.bind(
+	{}
+) as Story< SubscribedUsersStoryProps >;
 Loading.storyName = 'Loading State';
+Loading.scenario = {};
 Loading.args = {
+	pauseAnimation: true,
 	setupRegistry: ( registry ) => {
 		// Start resolution but never finish it so the component stays in loading state.
 		registry
@@ -147,20 +176,16 @@ Loading.args = {
 			.startResolution( 'getSubscribedUsers', [ defaultQueryArgs ] );
 	},
 };
-Loading.decorators = [
-	( Story ) => (
-		<div className="googlesitekit-vrt-animation-paused">
-			<Story />
-		</div>
-	),
-];
 
 export default {
 	title: 'Components/EmailReporting/SubscribedUsers',
 	component: SubscribedUsers,
 	decorators: [
-		( Story, { args } ) => {
-			function setupRegistry( registry ) {
+		(
+			StoryComponent: () => ReactElement,
+			{ args }: { args: SubscribedUsersStoryProps }
+		) => {
+			function setupRegistry( registry: WPDataRegistry ) {
 				provideUserCapabilities( registry );
 				provideUserInfo( registry, { id: 1 } );
 				registry
@@ -172,20 +197,30 @@ export default {
 				}
 			}
 
+			const content = (
+				<div
+					style={ {
+						display: 'flex',
+						flexDirection: 'column',
+						maxWidth: '600px',
+						height: '600px',
+						padding: '24px',
+						backgroundColor: '#fff',
+					} }
+				>
+					<StoryComponent />
+				</div>
+			);
+
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
-					<div
-						style={ {
-							display: 'flex',
-							flexDirection: 'column',
-							maxWidth: '600px',
-							height: '600px',
-							padding: '24px',
-							backgroundColor: '#fff',
-						} }
-					>
-						<Story />
-					</div>
+					{ args?.pauseAnimation ? (
+						<div className="googlesitekit-vrt-animation-paused">
+							{ content }
+						</div>
+					) : (
+						content
+					) }
 				</WithRegistrySetup>
 			);
 		},

@@ -24,7 +24,7 @@
 	// alone, now that the tab bar sits above either tab's content.
 	.googlesitekit-subscriber-management {
 		display: flex;
-		flex: 1 0 auto;
+		flex: 1 1 auto;
 		flex-direction: column;
 		margin-top: 70px;
 		min-height: 0;
@@ -36,7 +36,7 @@
 
 	.googlesitekit-subscribed-users {
 		display: flex;
-		flex: 1 0 auto;
+		flex: 1 1 auto;
 		flex-direction: column;
 		min-height: 0;
 	}
