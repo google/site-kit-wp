@@ -9,7 +9,7 @@ exports[`SetupForm should render existing client ID message when there is an exi
       class="googlesitekit-setup-module__panel-item"
     >
       <p
-        class="googlesitekit-setup-module__step-description"
+        class="googlesitekit-typography googlesitekit-setup-module__step-description googlesitekit-typography--body googlesitekit-typography--medium"
       >
         To set up Sign in with Google, Site Kit will help you create an “OAuth Client ID“ that will be used to enable Sign in with Google on your website. You will be directed to a page that will allow you to generate an “OAuth Client ID“. 
         <a
@@ -33,7 +33,7 @@ exports[`SetupForm should render existing client ID message when there is an exi
         </a>
       </p>
       <p
-        class="googlesitekit-margin-bottom-0"
+        class="googlesitekit-typography googlesitekit-setup-module__step-description googlesitekit-margin-bottom-0 googlesitekit-typography--body googlesitekit-typography--medium"
       >
         Add your client ID here to complete setup:
       </p>
@@ -117,7 +117,7 @@ exports[`SetupForm should render the form correctly 1`] = `
       class="googlesitekit-setup-module__panel-item"
     >
       <p
-        class="googlesitekit-setup-module__step-description"
+        class="googlesitekit-typography googlesitekit-setup-module__step-description googlesitekit-typography--body googlesitekit-typography--medium"
       >
         To set up Sign in with Google, Site Kit will help you create an “OAuth Client ID“ that will be used to enable Sign in with Google on your website. You will be directed to a page that will allow you to generate an “OAuth Client ID“. 
         <a
@@ -141,7 +141,7 @@ exports[`SetupForm should render the form correctly 1`] = `
         </a>
       </p>
       <p
-        class="googlesitekit-margin-bottom-0"
+        class="googlesitekit-typography googlesitekit-setup-module__step-description googlesitekit-margin-bottom-0 googlesitekit-typography--body googlesitekit-typography--medium"
       >
         Add your client ID here to complete setup:
       </p>
@@ -215,7 +215,7 @@ exports[`SetupForm should render the one tap and show next to comments toggles w
       class="googlesitekit-setup-module__panel-item"
     >
       <p
-        class="googlesitekit-setup-module__step-description"
+        class="googlesitekit-typography googlesitekit-setup-module__step-description googlesitekit-typography--body googlesitekit-typography--medium"
       >
         To set up Sign in with Google, Site Kit will help you create an “OAuth Client ID“ that will be used to enable Sign in with Google on your website. You will be directed to a page that will allow you to generate an “OAuth Client ID“. 
         <a
@@ -239,7 +239,7 @@ exports[`SetupForm should render the one tap and show next to comments toggles w
         </a>
       </p>
       <p
-        class="googlesitekit-margin-bottom-0"
+        class="googlesitekit-typography googlesitekit-setup-module__step-description googlesitekit-margin-bottom-0 googlesitekit-typography--body googlesitekit-typography--medium"
       >
         Add your client ID here to complete setup:
       </p>

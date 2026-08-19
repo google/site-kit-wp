@@ -41,7 +41,7 @@ exports[`TopCitiesDrivingPurchasesWidget should render correctly with the expect
                 class="googlesitekit-table__body-item"
               >
                 <p
-                  class="googlesitekit-km-widget-tile__table-plain-text"
+                  class="googlesitekit-typography googlesitekit-km-widget-tile__table-plain-text googlesitekit-typography--body googlesitekit-typography--small"
                 >
                   Berlin
                 </p>
@@ -61,7 +61,7 @@ exports[`TopCitiesDrivingPurchasesWidget should render correctly with the expect
                 class="googlesitekit-table__body-item"
               >
                 <p
-                  class="googlesitekit-km-widget-tile__table-plain-text"
+                  class="googlesitekit-typography googlesitekit-km-widget-tile__table-plain-text googlesitekit-typography--body googlesitekit-typography--small"
                 >
                   Cork
                 </p>
@@ -81,7 +81,7 @@ exports[`TopCitiesDrivingPurchasesWidget should render correctly with the expect
                 class="googlesitekit-table__body-item"
               >
                 <p
-                  class="googlesitekit-km-widget-tile__table-plain-text"
+                  class="googlesitekit-typography googlesitekit-km-widget-tile__table-plain-text googlesitekit-typography--body googlesitekit-typography--small"
                 >
                   Dublin
                 </p>
