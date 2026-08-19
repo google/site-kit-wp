@@ -54,7 +54,6 @@ const ErrorCTAContent = forwardRef< HTMLDivElement, ErrorCTAContentProps >(
 				>
 					{ __( 'Analytics setup failed', 'google-site-kit' ) }
 				</Typography>
-				{ /* @ts-expect-error `P` component type currently requires `size` prop. */ }
 				<P className="googlesitekit-activate-analytics-cta__description">
 					{ __(
 						'Something went wrong, please try again',

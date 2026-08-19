@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import type { ComponentPropsWithoutRef, ComponentRef } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { forwardRef } from '@wordpress/element';
@@ -25,11 +30,15 @@ import { forwardRef } from '@wordpress/element';
  * Internal dependencies
  */
 import Notice from '@/js/components/Notice';
+import { NOTICE_VARIANTS } from '@/js/components/Notice/constants';
 
-const SelectionPanelNotice = forwardRef( ( props, ref ) => {
+const SelectionPanelNotice = forwardRef<
+	ComponentRef< typeof Notice >,
+	ComponentPropsWithoutRef< typeof Notice >
+>( ( props, ref ) => {
 	return (
 		<Notice
-			className="googlesitekit-notice--square googlesitekit-notice--side-panel"
+			variant={ NOTICE_VARIANTS.SIDE_PANEL }
 			{ ...props }
 			ref={ ref }
 		/>
@@ -37,7 +46,3 @@ const SelectionPanelNotice = forwardRef( ( props, ref ) => {
 } );
 
 export default SelectionPanelNotice;
-
-SelectionPanelNotice.propTypes = {
-	...Notice.propTypes,
-};

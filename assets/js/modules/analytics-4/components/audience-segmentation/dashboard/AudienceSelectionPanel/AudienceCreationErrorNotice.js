@@ -151,10 +151,6 @@ export default function AudienceCreationErrorNotice( {
 
 	return (
 		<Notice
-			className="googlesitekit-audience-creation-error-notice"
-			type={ NOTICE_TYPES.ERROR }
-			title={ errorTitle }
-			description={ errorDescription }
 			ctaButton={
 				hasInsufficientPermissionsError
 					? {
@@ -169,6 +165,9 @@ export default function AudienceCreationErrorNotice( {
 					  }
 					: undefined
 			}
+			description={ errorDescription }
+			title={ errorTitle }
+			type={ NOTICE_TYPES.ERROR }
 			hideIcon
 		/>
 	);

@@ -18,29 +18,37 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { ElementType, FC } from 'react';
+import { FC } from 'react';
+
+/**
+ * Internal dependencies
+ */
+import {
+	SIZE_MEDIUM,
+	TypographySize,
+} from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 
 interface DescriptionProps {
-	as?: ElementType;
 	className?: string;
+	size?: TypographySize;
 }
 
 const Description: FC< DescriptionProps > = ( {
-	as = 'p',
 	className,
 	children,
+	size = SIZE_MEDIUM,
 } ) => {
-	const Component = as;
-
 	return (
-		<Component
+		<P
 			className={ classnames(
 				'googlesitekit-notice__description',
 				className
 			) }
+			size={ size }
 		>
 			{ children }
-		</Component>
+		</P>
 	);
 };
 
