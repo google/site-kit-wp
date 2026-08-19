@@ -26,12 +26,13 @@ import type { FC } from 'react';
  * WordPress dependencies
  */
 import {
-	createElement,
+	createInterpolateElement,
 	useCallback,
 	useEffect,
 	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -55,20 +56,8 @@ const PUBLICATION_TOS_URL_KEY = 'publicationTosUrl';
 const PUBLICATION_PRIVACY_POLICY_URL_KEY = 'publicationPrivacyPolicyUrl';
 
 function isValidPolicyURL( value: string ) {
-	if ( ! value ) {
-		return false;
-	}
-
-	try {
-		const parsedURL = new URL( value );
-
-		return [ 'http:', 'https:' ].includes( parsedURL.protocol );
-	} catch {
-		return false;
-	}
+	return isURL( value );
 }
-
-const FIELD_ERROR_MESSAGE = __( 'A valid link is required', 'google-site-kit' );
 
 interface StepPublicationPoliciesProps {
 	onSetStep: ( step: string ) => void;
@@ -162,17 +151,6 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 		( ( privacyPolicyTouched || didAttemptSubmit ) &&
 			! privacyPolicyValid );
 
-	const submitPoliciesButton = createElement(
-		SpinnerButton as unknown as (
-			props: Record< string, unknown >
-		) => JSX.Element,
-		{
-			disabled: ! canSubmit || isSaving,
-			isSaving,
-		},
-		__( 'Submit policies', 'google-site-kit' )
-	);
-
 	const onChangeTermsOfServiceURL = useCallback( ( { currentTarget } ) => {
 		setTermsOfServiceURL( currentTarget.value );
 		setTermsOfServiceTouched( true );
@@ -212,8 +190,10 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 
 			if ( error ) {
 				setShowSubmissionFieldError( true );
-				setSubmitError( error.message || FIELD_ERROR_MESSAGE );
-
+				setSubmitError(
+					error.message ||
+						__( 'An error occurred.', 'google-site-kit' )
+				);
 				return;
 			}
 
@@ -238,17 +218,21 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 				{ __( 'Publication policies', 'google-site-kit' ) }
 			</h2>
 			<p className="googlesitekit-rrm-publication-policies__description">
-				{ __(
-					'To set up a newsletter using Reader Revenue Manager, you will need to add links to your publication’s policies.',
-					'google-site-kit'
-				) }{ ' ' }
-				<Link
-					href={ documentationLinkURL }
-					external
-					hideExternalIndicator
-				>
-					{ __( 'Learn more', 'google-site-kit' ) }
-				</Link>
+				{ createInterpolateElement(
+					__(
+						"To set up a newsletter using Reader Revenue Manager, you will need to add links to your publication's policies. <a>Learn more</a>",
+						'google-site-kit'
+					),
+					{
+						a: (
+							<Link
+								href={ documentationLinkURL }
+								external
+								hideExternalIndicator
+							/>
+						),
+					}
+				) }
 			</p>
 
 			{ !! submitError && (
@@ -276,9 +260,10 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 							'mdc-text-field--error': showTermsError,
 						} ) }
 						helperText={
-							showTermsError ? FIELD_ERROR_MESSAGE : undefined
+							showTermsError
+								? __( 'An error occurred.', 'google-site-kit' )
+								: undefined
 						}
-						inputType="url"
 						value={ termsOfServiceURL }
 						onChange={ onChangeTermsOfServiceURL }
 						outlined
@@ -298,9 +283,10 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 							'mdc-text-field--error': showPrivacyError,
 						} ) }
 						helperText={
-							showPrivacyError ? FIELD_ERROR_MESSAGE : undefined
+							showPrivacyError
+								? __( 'An error occurred.', 'google-site-kit' )
+								: undefined
 						}
-						inputType="url"
 						value={ privacyPolicyURL }
 						onChange={ onChangePrivacyPolicyURL }
 						outlined
@@ -308,7 +294,13 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 				</div>
 
 				<div className="googlesitekit-rrm-publication-policies__actions">
-					{ submitPoliciesButton }
+					{ /* @ts-expect-error `SpinnerButton` component is not yet typed. */ }
+					<SpinnerButton
+						disabled={ ! canSubmit || isSaving }
+						isSaving={ isSaving }
+					>
+						{ __( 'Submit policies', 'google-site-kit' ) }
+					</SpinnerButton>
 				</div>
 			</form>
 		</div>

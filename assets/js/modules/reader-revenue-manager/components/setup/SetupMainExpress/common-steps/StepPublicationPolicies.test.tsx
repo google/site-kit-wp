@@ -65,12 +65,14 @@ describe( 'StepPublicationPolicies', () => {
 	function receiveSettingsAndPublication( {
 		organizationID = 'organization-1',
 		publicationID = 'publication-1',
-		publicationTOSURL,
+		// eslint-disable-next-line sitekit/acronym-case
+		publicationTosUrl,
 		publicationPrivacyPolicyURL,
 	}: {
 		organizationID?: string;
 		publicationID?: string;
-		publicationTOSURL?: string;
+		// eslint-disable-next-line sitekit/acronym-case
+		publicationTosUrl?: string;
 		publicationPrivacyPolicyURL?: string;
 	} = {} ) {
 		registry
@@ -85,7 +87,8 @@ describe( 'StepPublicationPolicies', () => {
 			.receiveGetPublication(
 				{
 					[ PUBLICATION_ID_KEY ]: publicationID,
-					[ PUBLICATION_TOS_URL_KEY ]: publicationTOSURL,
+					// eslint-disable-next-line sitekit/acronym-case
+					[ PUBLICATION_TOS_URL_KEY ]: publicationTosUrl,
 					[ PUBLICATION_PRIVACY_POLICY_URL_KEY ]:
 						publicationPrivacyPolicyURL,
 				},
@@ -98,7 +101,8 @@ describe( 'StepPublicationPolicies', () => {
 
 	it( 'renders existing publication policy URLs', () => {
 		receiveSettingsAndPublication( {
-			publicationTOSURL: 'https://example.com/terms',
+			// eslint-disable-next-line sitekit/acronym-case
+			publicationTosUrl: 'https://example.com/terms',
 			publicationPrivacyPolicyURL: 'https://example.com/privacy',
 		} );
 
@@ -114,7 +118,8 @@ describe( 'StepPublicationPolicies', () => {
 
 	it( 'falls back to the WordPress privacy policy URL when publication value is empty', () => {
 		receiveSettingsAndPublication( {
-			publicationTOSURL: 'https://example.com/terms',
+			// eslint-disable-next-line sitekit/acronym-case
+			publicationTosUrl: 'https://example.com/terms',
 			publicationPrivacyPolicyURL: '',
 		} );
 

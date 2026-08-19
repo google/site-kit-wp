@@ -19,10 +19,10 @@
 .googlesitekit-rrm-publication-policies {
 
 	.googlesitekit-rrm-publication-policies__title {
-        color: $c-surfaces-on-surface;
+		color: $c-surfaces-on-surface;
 		font-size: $fs-headline-md;
 		font-weight: $fw-normal;
-        margin: 0;
+		margin: 0;
 	}
 
 	.googlesitekit-rrm-publication-policies__description {
@@ -40,7 +40,7 @@
 	}
 
 	.googlesitekit-rrm-publication-policies__field-label {
-		font-size: 24px;
+		font-size: $fs-headline-sm;
 		font-weight: $fw-medium;
 		letter-spacing: 0;
 		line-height: 1.25;
