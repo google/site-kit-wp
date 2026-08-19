@@ -159,7 +159,7 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
       class="googlesitekit-notice-container"
     >
       <div
-        class="googlesitekit-notice googlesitekit-notice--warning"
+        class="googlesitekit-notice googlesitekit-notice--warning googlesitekit-notice--warning"
         role="status"
       >
         <div
@@ -168,10 +168,10 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
           <svg />
         </div>
         <div
-          class="googlesitekit-notice__content"
+          class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
         >
           <p
-            class="googlesitekit-notice__title"
+            class="googlesitekit-typography googlesitekit-notice__title googlesitekit-typography--label googlesitekit-typography--medium"
           >
             Your server’s current settings prevent Google tag gateway for advertisers from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. 
             <a
