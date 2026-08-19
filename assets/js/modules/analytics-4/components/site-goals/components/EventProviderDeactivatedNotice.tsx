@@ -22,16 +22,9 @@
 import { FC } from 'react';
 
 /**
- * WordPress dependencies
- */
-import { createInterpolateElement } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
-import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -41,6 +34,7 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { useEventProviderDeactivatedNoticeCopy } from './useEventProviderDeactivatedNoticeCopy';
 
 export interface EventProviderDeactivatedNoticeProps {
 	/** The goal type of the widget that shows the notice. `GOAL_TYPES.ECOMMERCE` picks the online store wording and `GOAL_TYPES.LEAD` picks the form wording. */
@@ -58,13 +52,8 @@ const EventProviderDeactivatedNotice: FC<
 		[]
 	) as string[] | undefined;
 
-	const learnMoreURL = useSelect(
-		( select: Select ) =>
-			select( CORE_SITE ).getDocumentationLinkURL(
-				'plugin-conversion-tracking'
-			),
-		[]
-	) as string;
+	const { title, description } =
+		useEventProviderDeactivatedNoticeCopy( goalType );
 
 	if ( ! providerSlug || activeConversionEventProviders === undefined ) {
 		return null;
@@ -74,39 +63,14 @@ const EventProviderDeactivatedNotice: FC<
 		return null;
 	}
 
-	const isEcommerce = goalType === GOAL_TYPES.ECOMMERCE;
+	const providerLabel =
+		goalType === GOAL_TYPES.ECOMMERCE
+			? SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDER_LABELS[ providerSlug ]
+			: SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS[ providerSlug ];
 
-	const providerLabels = isEcommerce
-		? SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDER_LABELS
-		: SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS;
-
-	if ( ! providerLabels[ providerSlug ] ) {
+	if ( ! providerLabel ) {
 		return null;
 	}
-
-	const learnMore = (
-		<Link href={ learnMoreURL } external hideExternalIndicator />
-	);
-
-	const title = isEcommerce
-		? __( 'Online store plugin no longer found', 'google-site-kit' )
-		: __( 'Form plugin no longer found', 'google-site-kit' );
-
-	const description = isEcommerce
-		? createInterpolateElement(
-				__(
-					'Site Kit can no longer find the plugin used to track your online store, which means the data in this section is no longer updating. If you’ve stopped using that plugin, it will automatically be removed from this section soon. <a>Learn more</a>',
-					'google-site-kit'
-				),
-				{ a: learnMore }
-		  )
-		: createInterpolateElement(
-				__(
-					'Site Kit can no longer find the plugin used to track your forms, which means the form data in this section is no longer updating. If you’ve stopped using that plugin, this form will automatically be removed from this section. <a>Learn more</a>',
-					'google-site-kit'
-				),
-				{ a: learnMore }
-		  );
 
 	return (
 		<Notice

@@ -1859,6 +1859,42 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		).not.toBeInTheDocument();
 	} );
 
+	it( 'shows the deactivated plugin notice on the WooCommerce tab and hides it after a click on the Easy Digital Downloads tab', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [ 'easy-digital-downloads' ],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		seedBreakdown( {
+			providerValues: [ 'woocommerce', 'easy-digital-downloads' ],
+		} );
+		seedTabbedReports( { [ PROVIDER_DIMENSION ]: 'woocommerce' } );
+		seedTabbedReports( {
+			[ PROVIDER_DIMENSION ]: 'easy-digital-downloads',
+		} );
+
+		const { getByRole, getByText, queryByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Online store plugin no longer found' )
+		).toBeInTheDocument();
+
+		fireEvent.click(
+			getByRole( 'tab', { name: 'Easy Digital Downloads' } )
+		);
+
+		await waitFor( () => {
+			expect(
+				queryByText( 'Online store plugin no longer found' )
+			).not.toBeInTheDocument();
+		} );
+	} );
+
 	it( 'hides the deactivated plugin notice after a click on the Other sources tab', async () => {
 		provideSiteInfo( registry, {
 			activeConversionEventProviders: [],

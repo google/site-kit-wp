@@ -1803,6 +1803,43 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).not.toBeInTheDocument();
 	} );
 
+	it( 'shows the deactivated plugin notice on the form tab whose plugin is not active and hides it after a click on the tab whose plugin is active', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [ 'ninja-forms' ],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedBreakdown( {
+			formIDs: [ '5', '12' ],
+			formProviders: { 5: 'wpforms', 12: 'ninja-forms' },
+		} );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: { 5: { title: 'Contact' }, 12: { title: 'Newsletter' } },
+			status: 200,
+		} );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '12' } );
+
+		const { getByRole, getByText, queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Form plugin no longer found' )
+		).toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'tab', { name: /Newsletter/ } ) );
+
+		await waitFor( () => {
+			expect(
+				queryByText( 'Form plugin no longer found' )
+			).not.toBeInTheDocument();
+		} );
+	} );
+
 	it( 'hides the deactivated plugin notice after a click on the Other form completions tab', async () => {
 		provideSiteInfo( registry, {
 			activeConversionEventProviders: [],
