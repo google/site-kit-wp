@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Modules\Analytics_4\Email_Reporting;
 
+use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Report_Options as Analytics_Report_Options;
 
 /**
@@ -44,6 +46,7 @@ class Report_Request_Assembler {
 	 * Builds Analytics 4 batch report requests.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Added the Site Goals report requests.
 	 *
 	 * @param array $custom_titles Optional. Custom titles keyed by request key.
 	 * @return array Array of report requests keyed by payload key.
@@ -64,15 +67,57 @@ class Report_Request_Assembler {
 			$custom_titles = array_merge( $custom_titles, $custom_titles_map );
 		}
 
-		if ( $this->report_options->has_custom_dimension_data( 'postAuthor' ) ) {
+		if ( $this->report_options->has_custom_dimension_data( Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR ) ) {
 			$requests['top_authors'] = $this->report_options->get_top_authors_options();
 		}
 
-		if ( $this->report_options->has_custom_dimension_data( 'postCategories' ) ) {
+		if ( $this->report_options->has_custom_dimension_data( Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES ) ) {
 			$requests['top_categories'] = $this->report_options->get_top_categories_options();
 		}
 
+		if ( Feature_Flags::enabled( 'siteGoals' ) ) {
+			$requests = array_merge( $requests, $this->build_site_goals_requests() );
+		}
+
 		return array( $requests, $custom_titles );
+	}
+
+	/**
+	 * Builds the Site Goals requests for each widget whose events Analytics has detected.
+	 *
+	 * The online store widget and the lead generation widget each need their own key
+	 * action count, plus the engagement rate and the session count. Two widgets with no
+	 * breakdown dimension write the same `site_goals_engagement` key, so the batch asks
+	 * for that report once.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Report requests keyed by payload key.
+	 */
+	private function build_site_goals_requests() {
+		$requests = array();
+
+		if ( $this->report_options->has_ecommerce_events() ) {
+			if ( $this->report_options->has_custom_dimension_data( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER ) ) {
+				$requests['site_goals_online_store_primary_by_provider'] = $this->report_options->get_online_store_primary_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
+				$requests['site_goals_engagement_by_provider']           = $this->report_options->get_engagement_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
+			} else {
+				$requests['site_goals_online_store_primary'] = $this->report_options->get_online_store_primary_options();
+				$requests['site_goals_engagement']           = $this->report_options->get_engagement_options();
+			}
+		}
+
+		if ( $this->report_options->has_lead_events() ) {
+			if ( $this->report_options->has_custom_dimension_data( Analytics_4::CUSTOM_DIMENSION_FORM_ID ) ) {
+				$requests['site_goals_lead_primary_by_form'] = $this->report_options->get_lead_primary_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID );
+				$requests['site_goals_engagement_by_form']   = $this->report_options->get_engagement_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID );
+			} else {
+				$requests['site_goals_lead_primary'] = $this->report_options->get_lead_primary_options();
+				$requests['site_goals_engagement']   = $this->report_options->get_engagement_options();
+			}
+		}
+
+		return $requests;
 	}
 
 	/**
