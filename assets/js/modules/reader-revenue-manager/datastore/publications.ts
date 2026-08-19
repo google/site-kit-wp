@@ -114,7 +114,7 @@ interface SyncPublicationOnboardingStateParams {
  * @param  params Publication parameters to validate.
  * @return {void}
  */
-function validateOptionalPublicationParams(
+export function validateOptionalPublicationParams(
 	params: Partial< PublicationParams > = {}
 ): void {
 	const { organizationID, publicationID } = params;

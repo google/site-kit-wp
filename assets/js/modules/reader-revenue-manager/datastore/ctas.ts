@@ -32,7 +32,6 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { get, set } from 'googlesitekit-api';
 import { commonActions, createReducer } from 'googlesitekit-data';
-import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import {
 	combineStores,
@@ -40,46 +39,27 @@ import {
 } from '@/js/googlesitekit/data/utils';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
-import { type CTA, type CreateCTAData, getCTATypeHandler } from './cta-types';
-
-const { setErrorForAction, clearActionError } = errorStoreActions;
+import {
+	type CTA,
+	type CreateCTAData,
+	getCTATypeHandler,
+	isCTAType,
+} from './cta-types';
+import { validateOptionalPublicationParams } from './publications';
 
 interface PublicationParams {
 	organizationID: string;
 	publicationID: string;
 }
 
-type CreateCTAParams = PublicationParams & CreateCTAData;
+type GetCTAsParams = Partial< PublicationParams >;
+
+type CreateCTAParams = Partial< PublicationParams > & {
+	data: CreateCTAData;
+};
 
 interface CTAsState {
-	ctas: Record< string, CTA[] | undefined >;
-}
-
-/**
- * Validates the organization and publication identifiers.
- *
- * @since n.e.x.t
- *
- * @param  params Parameters to validate.
- * @return {void}
- */
-function validatePublicationParams( params: unknown ): void {
-	invariant( isPlainObject( params ), 'params should be an object.' );
-
-	const { organizationID, publicationID } = params as Record<
-		string,
-		unknown
-	>;
-
-	invariant(
-		typeof organizationID === 'string' && organizationID.length > 0,
-		'organizationID is required and must be a string.'
-	);
-
-	invariant(
-		typeof publicationID === 'string' && publicationID.length > 0,
-		'publicationID is required and must be a string.'
-	);
+	ctas?: CTA[];
 }
 
 /**
@@ -91,83 +71,67 @@ function validatePublicationParams( params: unknown ): void {
  * @return {void}
  */
 function validateCreateCTAParams( params: unknown ): void {
-	validatePublicationParams( params );
+	invariant( isPlainObject( params ), 'params must be an object.' );
 
-	const { type, config, displayName } = params as Record< string, unknown >;
+	const createParams = params as Partial< CreateCTAParams >;
+
+	validateOptionalPublicationParams( createParams );
+
+	const { data } = createParams;
+
+	invariant(
+		isPlainObject( data ) && Object.keys( data as object ).length > 0,
+		'data is required and must be a non-empty object.'
+	);
+
+	const { type, config, displayName } = data as Record< string, unknown >;
+
+	invariant( isCTAType( type ), 'data.type is not supported.' );
 
 	getCTATypeHandler( type ).validateConfig( config );
 
 	invariant(
 		displayName === undefined || typeof displayName === 'string',
-		'displayName must be a string.'
+		'data.displayName must be a string.'
 	);
 }
 
 const fetchGetCTAsStore = createFetchStore( {
 	baseName: 'getCTAs',
-	controlCallback: ( { organizationID, publicationID }: PublicationParams ) =>
-		get(
-			'modules',
-			MODULE_SLUG_READER_REVENUE_MANAGER,
-			'ctas',
-			{ organizationID, publicationID },
-			{ useCache: false }
-		),
-	reducerCallback: createReducer(
-		(
-			state: CTAsState,
-			ctas: CTA[],
-			{ publicationID }: PublicationParams
-		) => {
-			state.ctas[ publicationID ] = ctas;
-		}
-	),
-	argsToParams: ( {
-		organizationID,
-		publicationID,
-	}: PublicationParams ) => ( {
-		organizationID,
-		publicationID,
+	controlCallback: ( params: GetCTAsParams ) =>
+		get( 'modules', MODULE_SLUG_READER_REVENUE_MANAGER, 'ctas', params, {
+			useCache: false,
+		} ),
+	reducerCallback: createReducer( ( state: CTAsState, ctas: CTA[] ) => {
+		state.ctas = ctas;
 	} ),
-	validateParams: validatePublicationParams,
+	argsToParams: ( params: GetCTAsParams = {} ) => params,
+	validateParams: validateOptionalPublicationParams,
 } );
 
 const fetchCreateCTAStore = createFetchStore( {
 	baseName: 'createCTA',
-	controlCallback: ( {
-		organizationID,
-		publicationID,
-		type,
-		config,
-		displayName,
-	}: CreateCTAParams ) =>
-		set( 'modules', MODULE_SLUG_READER_REVENUE_MANAGER, 'create-cta', {
-			organizationID,
-			publicationID,
-			type,
-			config,
-			displayName,
-		} ),
-	reducerCallback: createReducer( () => {} ),
-	argsToParams: ( {
-		organizationID,
-		publicationID,
-		type,
-		config,
-		displayName,
-	}: CreateCTAParams ) => ( {
-		organizationID,
-		publicationID,
-		type,
-		config,
-		displayName,
+	controlCallback: ( params: CreateCTAParams ) =>
+		set(
+			'modules',
+			MODULE_SLUG_READER_REVENUE_MANAGER,
+			'create-cta',
+			params
+		),
+	reducerCallback: createReducer( ( state: CTAsState, cta: CTA ) => {
+		// Only extend an already loaded list, otherwise the resolver would
+		// treat the single created CTA as the complete set.
+		if ( state.ctas ) {
+			state.ctas.push( cta );
+		}
 	} ),
+	argsToParams: ( params: CreateCTAParams ) => params,
 	validateParams: validateCreateCTAParams,
 	isAction: true,
 } );
 
 const baseInitialState: CTAsState = {
-	ctas: {},
+	ctas: undefined,
 };
 
 const baseActions = {
@@ -176,50 +140,38 @@ const baseActions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param  params                Parameters.
-	 * @param  params.organizationID Organization ID.
-	 * @param  params.publicationID  Publication ID.
-	 * @param  params.type           CTA type.
-	 * @param  params.config         Type-specific CTA configuration.
-	 * @param  params.displayName    Optional internal display name.
+	 * @param  params                  Parameters.
+	 * @param  params.organizationID   Optional. Organization ID. Defaults to the configured setting on the server.
+	 * @param  params.publicationID    Optional. Publication ID. Defaults to the configured setting on the server.
+	 * @param  params.data             CTA data.
+	 * @param  params.data.type        CTA type.
+	 * @param  params.data.config      Type-specific CTA configuration.
+	 * @param  params.data.displayName Optional. Internal display name.
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	createCTA: createValidatedAction(
 		validateCreateCTAParams,
-		function* ( params: CreateCTAParams ) {
-			yield clearActionError( 'createCTA', [] );
-
-			const createResult =
-				// @ts-expect-error createFetchStore is not properly typed yet.
-				yield fetchCreateCTAStore.actions.fetchCreateCTA( params );
-
-			const { response, error } = createResult;
-
-			if ( error ) {
-				yield setErrorForAction( error, 'createCTA', [] );
-			}
-
-			return { response, error };
+		function* (
+			params: CreateCTAParams
+		): Generator< unknown, unknown, unknown > {
+			// @ts-expect-error createFetchStore is not properly typed yet.
+			return yield fetchCreateCTAStore.actions.fetchCreateCTA( params );
 		}
 	),
 };
 
 const baseResolvers = {
 	*getCTAs(
-		params?: PublicationParams
+		params: GetCTAsParams = {}
 	): Generator< unknown, void, unknown > {
-		if ( ! params?.organizationID || ! params?.publicationID ) {
-			return;
-		}
-
 		const registryResult = yield commonActions.getRegistry();
 		const registry = registryResult as WPDataRegistry;
 
-		if (
-			registry
-				.select( MODULES_READER_REVENUE_MANAGER )
-				.getCTAs( params ) === undefined
-		) {
+		const ctas = registry
+			.select( MODULES_READER_REVENUE_MANAGER )
+			.getCTAs();
+
+		if ( ctas === undefined ) {
 			// @ts-expect-error createFetchStore is not properly typed yet.
 			yield fetchGetCTAsStore.actions.fetchGetCTAs( params );
 		}
@@ -228,23 +180,15 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Gets the configured CTAs for the given publication.
+	 * Gets the CTAs for the publication.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param  state                Data store's state.
-	 * @param  params               Parameters, including the `organizationID` and `publicationID`.
-	 * @param  params.publicationID Publication ID.
-	 * @return {(Array.<Object>|undefined)} The configured CTAs; `undefined` if not loaded or the publication ID is missing.
+	 * @param  state Data store's state.
+	 * @return {(Array.<Object>|undefined)} The CTAs; `undefined` if not loaded yet.
 	 */
-	getCTAs( state: CTAsState, params?: PublicationParams ): CTA[] | undefined {
-		const publicationID = params?.publicationID;
-
-		if ( ! publicationID ) {
-			return undefined;
-		}
-
-		return state.ctas[ publicationID ];
+	getCTAs( state: CTAsState ): CTA[] | undefined {
+		return state.ctas;
 	},
 };
 

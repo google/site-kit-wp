@@ -47,11 +47,15 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 		publicationID: 'ABCD_123-4',
 	};
 
-	const createArgs = {
-		...params,
+	const ctaData = {
 		type: 'NEWSLETTER_SIGNUP',
 		config: { title: 'Subscribe to our newsletter' },
 	} as const;
+
+	const createArgs = {
+		...params,
+		data: ctaData,
+	};
 
 	const cta = {
 		name: 'organizations/ABCD1234/publications/ABCD_123-4/ctas/1',
@@ -83,6 +87,67 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 				} );
 			} );
 
+			it( 'should create the CTA without the publication identifiers', async () => {
+				fetchMock.postOnce( createCTAEndpoint, {
+					body: cta,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.createCTA( { data: ctaData } );
+
+				expect( fetchMock ).toHaveFetched( createCTAEndpoint, {
+					body: {
+						data: { data: ctaData },
+					},
+				} );
+			} );
+
+			it( 'should add the created CTA to the loaded CTAs', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetCTAs( [], params );
+
+				fetchMock.postOnce( createCTAEndpoint, {
+					body: cta,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.createCTA( createArgs );
+
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toEqual( [ cta ] );
+			} );
+
+			it( 'should not add the created CTA before the CTAs are loaded', async () => {
+				fetchMock.postOnce( createCTAEndpoint, {
+					body: cta,
+					status: 200,
+				} );
+				fetchMock.getOnce( ctasEndpoint, { body: [], status: 200 } );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.createCTA( createArgs );
+
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getCTAs();
+
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toEqual( [] );
+			} );
+
 			it( 'should set an action error when the request fails', async () => {
 				const errorResponse = {
 					code: 'internal_server_error',
@@ -104,47 +169,55 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 				expect(
 					registry
 						.select( MODULES_READER_REVENUE_MANAGER )
-						.getErrorForAction( 'createCTA', [] )
+						.getErrorForAction( 'createCTA', [ createArgs ] )
 				).toEqual( errorResponse );
 			} );
 
-			it( 'should validate the publication parameters', () => {
-				const { type, config } = createArgs;
+			it( 'should validate the publication parameters when provided', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.createCTA( { ...createArgs, organizationID: '' } )
+				).toThrow(
+					'organizationID must be a non-empty string when provided.'
+				);
 
 				expect( () =>
 					registry
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.createCTA( {
-							publicationID: params.publicationID,
-							type,
-							config,
-						} )
-				).toThrow( 'organizationID is required and must be a string.' );
+						.createCTA( { ...createArgs, publicationID: 123 } )
+				).toThrow(
+					'publicationID must be a non-empty string when provided.'
+				);
+			} );
 
+			it( 'should require the CTA data', () => {
 				expect( () =>
 					registry
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.createCTA( {
-							organizationID: params.organizationID,
-							type,
-							config,
-						} )
-				).toThrow( 'publicationID is required and must be a string.' );
+						.createCTA( params )
+				).toThrow( 'data is required and must be a non-empty object.' );
 			} );
 
 			it( 'should throw for an unsupported CTA type', () => {
 				expect( () =>
 					registry
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.createCTA( { ...createArgs, type: 'SUBSCRIPTION' } )
-				).toThrow( 'type is not supported.' );
+						.createCTA( {
+							...createArgs,
+							data: { ...ctaData, type: 'SUBSCRIPTION' },
+						} )
+				).toThrow( 'data.type is not supported.' );
 			} );
 
 			it( 'should validate the config via the CTA type handler', () => {
 				expect( () =>
 					registry
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.createCTA( { ...createArgs, config: undefined } )
+						.createCTA( {
+							...createArgs,
+							data: { type: ctaData.type },
+						} )
 				).toThrow( 'config is required and must be an object.' );
 
 				expect( () =>
@@ -152,14 +225,20 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
 						.createCTA( {
 							...createArgs,
-							config: { unknownSetting: 'value' },
+							data: {
+								...ctaData,
+								config: { unknownSetting: 'value' },
+							},
 						} )
 				).toThrow( 'config contains unsupported fields.' );
 
 				expect( () =>
 					registry
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.createCTA( { ...createArgs, config: { title: 123 } } )
+						.createCTA( {
+							...createArgs,
+							data: { ...ctaData, config: { title: 123 } },
+						} )
 				).toThrow( 'config.title must be a string.' );
 			} );
 
@@ -167,8 +246,11 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 				expect( () =>
 					registry
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.createCTA( { ...createArgs, displayName: 123 } )
-				).toThrow( 'displayName must be a string.' );
+						.createCTA( {
+							...createArgs,
+							data: { ...ctaData, displayName: 123 },
+						} )
+				).toThrow( 'data.displayName must be a string.' );
 			} );
 		} );
 	} );
@@ -192,7 +274,9 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 					MODULES_READER_REVENUE_MANAGER
 				).getCTAs( params );
 
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched( ctasEndpoint, {
+					query: params,
+				} );
 				expect(
 					registry
 						.select( MODULES_READER_REVENUE_MANAGER )
@@ -200,7 +284,12 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 				).toEqual( [ cta ] );
 			} );
 
-			it( 'should return undefined without fetching when called with no params', async () => {
+			it( 'should fetch the CTAs when called with no params', async () => {
+				fetchMock.getOnce( ctasEndpoint, {
+					body: [ cta ],
+					status: 200,
+				} );
+
 				expect(
 					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
 				).toBeUndefined();
@@ -210,7 +299,10 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 					MODULES_READER_REVENUE_MANAGER
 				).getCTAs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toEqual( [ cta ] );
 			} );
 
 			it( 'should not fetch CTAs that are already loaded', async () => {
