@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-
-/**
  * WordPress dependencies
  */
 import { useCallback, useState } from '@wordpress/element';
@@ -33,11 +28,9 @@ import { __ } from '@wordpress/i18n';
 import { TextField } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import Typography from '@/js/components/Typography';
-import VisuallyHidden from '@/js/components/VisuallyHidden';
 import { useDebounce } from '@/js/hooks/useDebounce';
 import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 import { isValidConversionID } from '@/js/modules/ads/utils/validation';
-import WarningIcon from '@/svg/icons/warning-v2.svg';
 
 export default function ConversionIDTextField( {
 	helperText,
@@ -94,18 +87,14 @@ export default function ConversionIDTextField( {
 
 			<TextField
 				label={ __( 'Conversion ID', 'google-site-kit' ) }
-				className={ classnames(
-					'googlesitekit-text-field-conversion-tracking-id',
-					{
-						'mdc-text-field--error': ! isValid,
-					}
-				) }
-				helperText={
-					! isValid &&
-					__(
-						'Tracking for your Ads campaigns won’t work until you insert a valid ID',
-						'google-site-kit'
-					)
+				className="googlesitekit-text-field-conversion-tracking-id"
+				errorMessage={
+					! isValid
+						? __(
+								'Tracking for your Ads campaigns won’t work until you insert a valid ID',
+								'google-site-kit'
+						  )
+						: undefined
 				}
 				// The "AW-" prefix is constant throughout all Conversion Tracking IDs,
 				// so we don't localize it.
@@ -113,16 +102,6 @@ export default function ConversionIDTextField( {
 					<span className="googlesitekit-text-field-conversion-tracking-id-prefix">
 						AW-
 					</span>
-				}
-				trailingIcon={
-					! isValid && (
-						<span className="googlesitekit-text-field-icon--error">
-							<VisuallyHidden>
-								{ __( 'Error', 'google-site-kit' ) }
-							</VisuallyHidden>
-							<WarningIcon width={ 14 } height={ 12 } />
-						</span>
-					)
 				}
 				value={ conversionID?.replace( /^(AW)?-?/, '' ) }
 				onChange={ onChange }

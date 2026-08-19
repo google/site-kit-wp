@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import WarningIcon from '@/svg/icons/warning-v2.svg';
+import { Story } from '@/js/types/Story';
 import TextField from './TextField';
 
 function Template() {
@@ -56,36 +56,26 @@ function Template() {
 						value="https://www.sitekitbygoogle.com"
 						helperText="Helper Text"
 						outlined
-						helperTextPersistent
 					/>
 				</div>
 
 				<div style={ { marginBottom: '50px' } }>
 					<TextField
-						label="With Icon"
+						label="With Hidden Error Message"
 						name="textfield"
 						value="https://www.sitekitbygoogle.com"
-						trailingIcon={
-							<span className="googlesitekit-text-field-icon--error">
-								<WarningIcon width={ 14 } height={ 12 } />
-							</span>
-						}
+						errorMessage="Only a screen reader reads this message."
+						hasError
 						outlined
 					/>
 				</div>
 
 				<div style={ { marginBottom: '50px' } }>
 					<TextField
-						className="mdc-text-field--error"
-						label="With Error"
+						label="With Error Message"
 						name="textfield"
 						value="https://www.sitekitbygoogle.com"
-						helperText="This is the error message."
-						trailingIcon={
-							<span className="googlesitekit-text-field-icon--error">
-								<WarningIcon width={ 14 } height={ 12 } />
-							</span>
-						}
+						errorMessage="This is the error message."
 						outlined
 					/>
 				</div>
@@ -104,7 +94,7 @@ function Template() {
 	);
 }
 
-export const Default = Template.bind( {} );
+export const Default = Template.bind( {} ) as Story;
 Default.storyName = 'Text Fields';
 Default.scenario = {};
 
