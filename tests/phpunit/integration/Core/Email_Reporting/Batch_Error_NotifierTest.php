@@ -322,8 +322,8 @@ class Batch_Error_NotifierTest extends TestCase {
 
 		$this->create_notifier()->maybe_notify( 'batch-1' );
 
-		$this->assertContains( 'admin-a@example.com', $sent_to, 'Removing the unreachable server_error map entry should not stop a fully failed batch from notifying every admin via the generic fallback content.' );
-		$this->assertContains( 'admin-b@example.com', $sent_to, 'Removing the unreachable server_error map entry should not stop a fully failed batch from notifying every admin via the generic fallback content.' );
+		$this->assertContains( 'admin-a@example.com', $sent_to, 'First admin should receive the notification.' );
+		$this->assertContains( 'admin-b@example.com', $sent_to, 'Second admin should receive the notification.' );
 	}
 
 	/**

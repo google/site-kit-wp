@@ -158,7 +158,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		// This ensures the REST server is initialized fresh for each test using it.
 		unset( $GLOBALS['wp_rest_server'] );
 
-		if ( post_type_exists( Email_Log::POST_TYPE ) && function_exists( 'unregister_post_type' ) ) {
+		if ( post_type_exists( Email_Log::POST_TYPE ) ) {
 			unregister_post_type( Email_Log::POST_TYPE );
 		}
 	}
