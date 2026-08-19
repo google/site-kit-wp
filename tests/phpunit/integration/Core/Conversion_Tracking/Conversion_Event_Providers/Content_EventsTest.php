@@ -345,6 +345,17 @@ class Content_EventsTest extends TestCase {
 		$this->assertStringContainsString( 'enablejsapi=1', $filtered, 'A core/embed block iframe should be rewritten.' );
 	}
 
+	public function test_filter_embed_html__core_embed_sub_block_rewrites_youtube_iframe() {
+		$this->bootstrap_content_hooks();
+
+		$block = array( 'blockName' => 'core-embed/youtube' );
+		$html  = '<iframe src="https://www.youtube.com/embed/abc123"></iframe>';
+
+		$filtered = apply_filters( 'render_block', $html, $block );
+
+		$this->assertStringContainsString( 'enablejsapi=1', $filtered, 'A core-embed/youtube block iframe should be rewritten.' );
+	}
+
 	public function test_filter_embed_html__non_embed_block_passes_through_untouched() {
 		$this->bootstrap_content_hooks();
 
