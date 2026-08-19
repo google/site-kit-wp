@@ -142,7 +142,7 @@ class Email_Log_Processor {
 	/**
 	 * Builds and sends an email.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param int     $post_id     Email log post ID.
 	 * @param WP_Post $email_log   Email log post.
@@ -286,7 +286,7 @@ class Email_Log_Processor {
 	 * Builds sections for a log payload.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Removed $user parameter, locale switching is now handled by this class.
+	 * @since 1.186.0 Removed $user parameter, locale switching is now handled by this class.
 	 *
 	 * @param WP_Post $email_log   Email log post.
 	 * @param array   $raw_payload Raw payload.

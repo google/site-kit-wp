@@ -14,7 +14,7 @@ namespace Google\Site_Kit\Tests;
  * Fakes the Ninja Forms `NF_Database_Models_Form` class, which returns the title
  * from `get_setting()`, and the default for every other setting.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Ninja_Forms_Form_Model_Fake {
 	 * The title `get_setting()` returns, or an empty string when the form has no
 	 * title.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 * @var string
 	 */
 	private $title;
@@ -32,7 +32,7 @@ class Ninja_Forms_Form_Model_Fake {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param string $title The title `get_setting()` returns, or an empty string when the form has no title.
 	 */
@@ -43,7 +43,7 @@ class Ninja_Forms_Form_Model_Fake {
 	/**
 	 * Gets the title for the `title` setting, or the default for every other setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param string $setting       The setting name.
 	 * @param mixed  $default_value Optional. The value to return for any setting other than `title`. Default false.

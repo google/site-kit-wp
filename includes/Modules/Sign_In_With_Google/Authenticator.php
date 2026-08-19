@@ -356,7 +356,7 @@ class Authenticator implements Authenticator_Interface {
 	 * too for that flow to open registration.
 	 *
 	 * @since 1.145.0
-	 * @since n.e.x.t Also opens registration through WooCommerce's own
+	 * @since 1.186.0 Also opens registration through WooCommerce's own
 	 *                account-creation settings, when WooCommerce is active.
 	 *
 	 * @return bool True if registration is open, false otherwise.
@@ -375,7 +375,7 @@ class Authenticator implements Authenticator_Interface {
 	 *
 	 * @since 1.141.0
 	 * @since 1.145.0 Updated the function visibility to protected.
-	 * @since n.e.x.t Returns WooCommerce's `customer` role as a fallback when
+	 * @since 1.186.0 Returns WooCommerce's `customer` role as a fallback when
 	 *                only WooCommerce's own registration setting is open.
 	 *
 	 * @return string Default role.
@@ -396,7 +396,7 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Checks if WordPress's own "Anyone can register" setting is open.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return bool True if registration is open, false otherwise.
 	 */
@@ -418,7 +418,7 @@ class Authenticator implements Authenticator_Interface {
 	 * error, even though private methods aren't supposed to
 	 * participate in override compatibility checks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return bool True if WooCommerce is active and registration is open through it, false otherwise.
 	 */
