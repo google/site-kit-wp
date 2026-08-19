@@ -55,3 +55,33 @@ export function getAllPagesReportURL(
 		dates,
 	} );
 }
+
+/**
+ * Builds the All pages and screens report URL a page title links to, or
+ * `null` on a view-only export, where a loader leaves out the links an
+ * administrator sees.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}          params                 Link parameters.
+ * @param {ReportURLSelect} params.analytics       The Analytics 4 store's selectors.
+ * @param {string}          params.pagePath        The page path to filter the report to.
+ * @param {Object}          params.dates           The report's date range.
+ * @param {string}          params.dates.startDate The first day of the range (YYYY-MM-DD).
+ * @param {string}          params.dates.endDate   The last day of the range (YYYY-MM-DD).
+ * @param {boolean}         params.viewOnly        Whether the export runs on a view-only dashboard.
+ * @return {string|null|undefined} The report URL; `null` when unlinked, or `undefined` before the Analytics property loads.
+ */
+export function getPageReportURL( {
+	analytics,
+	pagePath,
+	dates,
+	viewOnly,
+}: {
+	analytics: ReportURLSelect;
+	pagePath: string;
+	dates: { startDate: string; endDate: string };
+	viewOnly: boolean;
+} ): string | null | undefined {
+	return viewOnly ? null : getAllPagesReportURL( analytics, pagePath, dates );
+}

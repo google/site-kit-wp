@@ -15,6 +15,7 @@ namespace Google\Site_Kit\Core\Conversion_Tracking;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Contact_Form_7;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Content_Events;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Easy_Digital_Downloads;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Mailchimp;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Ninja_Forms;
@@ -70,10 +71,12 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	 *
 	 * @since 1.126.0
 	 * @since 1.130.0 Added Ninja Forms class.
+	 * @since n.e.x.t Added Content_Events class.
 	 * @var array
 	 */
 	public static $providers = array(
 		Contact_Form_7::CONVERSION_EVENT_PROVIDER_SLUG => Contact_Form_7::class,
+		Content_Events::CONVERSION_EVENT_PROVIDER_SLUG => Content_Events::class,
 		Easy_Digital_Downloads::CONVERSION_EVENT_PROVIDER_SLUG => Easy_Digital_Downloads::class,
 		Mailchimp::CONVERSION_EVENT_PROVIDER_SLUG      => Mailchimp::class,
 		Ninja_Forms::CONVERSION_EVENT_PROVIDER_SLUG    => Ninja_Forms::class,
@@ -108,9 +111,13 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 		$this->rest_conversion_tracking_controller->register();
 		$this->register_feature_metrics();
 
-		add_action( 'wp_enqueue_scripts', fn () => $this->maybe_enqueue_scripts(), 30 );
-
 		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
+
+		if ( ! $this->conversion_tracking_settings->is_conversion_tracking_enabled() ) {
+			return;
+		}
+
+		add_action( 'wp_enqueue_scripts', fn () => $this->maybe_enqueue_scripts(), 30 );
 
 		$active_providers = $this->get_active_providers();
 
@@ -129,7 +136,6 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 		if (
 			// Do nothing if neither Ads nor Analytics *web* snippet has been inserted.
 			! ( did_action( 'googlesitekit_ads_init_tag' ) || did_action( 'googlesitekit_analytics-4_init_tag' ) )
-			|| ! $this->conversion_tracking_settings->is_conversion_tracking_enabled()
 		) {
 			return;
 		}

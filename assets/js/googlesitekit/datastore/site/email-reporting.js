@@ -40,13 +40,25 @@ import { CORE_SITE } from './constants';
 
 const START_INVITING_USER = 'START_INVITING_USER';
 const FINISH_INVITING_USER = 'FINISH_INVITING_USER';
+const START_UNSUBSCRIBING_USER = 'START_UNSUBSCRIBING_USER';
+const FINISH_UNSUBSCRIBING_USER = 'FINISH_UNSUBSCRIBING_USER';
 const RESET_ELIGIBLE_SUBSCRIBERS = 'RESET_ELIGIBLE_SUBSCRIBERS';
-const DEFAULT_ELIGIBLE_SUBSCRIBERS_ARGS = {
+const RESET_SUBSCRIBED_USERS = 'RESET_SUBSCRIBED_USERS';
+const DEFAULT_USER_LIST_ARGS = {
 	page: 1,
 	search: '',
 };
 
-function normalizeEligibleSubscribersArgs( args = {} ) {
+/**
+ * Normalizes user list args to a whole page number and a string search term.
+ *
+ * @since 1.175.0
+ * @since n.e.x.t Renamed from normalizeEligibleSubscribersArgs.
+ *
+ * @param {Object} [args] Page and search args.
+ * @return {Object} Object with a positive integer `page` and a string `search`.
+ */
+function normalizeUserListArgs( args = {} ) {
 	const normalizedArgs = isPlainObject( args ) ? args : {};
 	const page = Number.parseInt( normalizedArgs.page, 10 );
 
@@ -54,18 +66,27 @@ function normalizeEligibleSubscribersArgs( args = {} ) {
 		page:
 			Number.isInteger( page ) && page > 0
 				? page
-				: DEFAULT_ELIGIBLE_SUBSCRIBERS_ARGS.page,
+				: DEFAULT_USER_LIST_ARGS.page,
 		search:
 			typeof normalizedArgs.search === 'string'
 				? normalizedArgs.search
-				: DEFAULT_ELIGIBLE_SUBSCRIBERS_ARGS.search,
+				: DEFAULT_USER_LIST_ARGS.search,
 	};
 }
 
-function getEligibleSubscribersCacheKey( args = {} ) {
+/**
+ * Builds the cache key a user list result is stored under.
+ *
+ * @since 1.175.0
+ * @since n.e.x.t Renamed from getEligibleSubscribersCacheKey.
+ *
+ * @param {Object} [args] Page and search args.
+ * @return {string} Cache key for the normalized args.
+ */
+function getUserListCacheKey( args = {} ) {
 	// Normalize args first so equivalent requests share one key (e.g. {} and { page: 1, search: '' }).
 	// This lets the selector/resolver reuse previously fetched results and prevents mixing results across different page/search queries.
-	return stringifyObject( normalizeEligibleSubscribersArgs( args ) );
+	return stringifyObject( normalizeUserListArgs( args ) );
 }
 
 const baseInitialState = {
@@ -73,8 +94,10 @@ const baseInitialState = {
 		settings: undefined,
 		savedSettings: undefined,
 		eligibleSubscribers: {},
+		subscribedUsers: {},
 		errors: undefined,
 		invitingUsers: {},
+		unsubscribingUsers: {},
 	},
 };
 
@@ -123,9 +146,7 @@ const fetchGetEligibleSubscribersStore = createFetchStore( {
 		} ),
 	reducerCallback: createReducer(
 		( state, eligibleSubscribers, eligibleSubscribersArgs ) => {
-			const cacheKey = getEligibleSubscribersCacheKey(
-				eligibleSubscribersArgs
-			);
+			const cacheKey = getUserListCacheKey( eligibleSubscribersArgs );
 			// Persist the response under its query key so future identical requests can be served from store state.
 			state.emailReporting.eligibleSubscribers[ cacheKey ] =
 				eligibleSubscribers;
@@ -137,7 +158,36 @@ const fetchGetEligibleSubscribersStore = createFetchStore( {
 			'eligibleSubscribersArgs should be an object.'
 		);
 
-		return normalizeEligibleSubscribersArgs( eligibleSubscribersArgs );
+		return normalizeUserListArgs( eligibleSubscribersArgs );
+	},
+	validateParams: ( { page, search } = {} ) => {
+		invariant(
+			Number.isInteger( page ) && page > 0,
+			'page should be a positive integer.'
+		);
+		invariant( typeof search === 'string', 'search should be a string.' );
+	},
+} );
+
+const fetchGetSubscribedUsersStore = createFetchStore( {
+	baseName: 'getSubscribedUsers',
+	controlCallback: ( params ) =>
+		get( 'core', 'site', 'email-reporting-subscribed-users', params, {
+			useCache: false,
+		} ),
+	reducerCallback: createReducer(
+		( state, subscribedUsers, subscribedUsersArgs ) => {
+			const cacheKey = getUserListCacheKey( subscribedUsersArgs );
+			state.emailReporting.subscribedUsers[ cacheKey ] = subscribedUsers;
+		}
+	),
+	argsToParams: ( subscribedUsersArgs ) => {
+		invariant(
+			isPlainObject( subscribedUsersArgs ),
+			'subscribedUsersArgs should be an object.'
+		);
+
+		return normalizeUserListArgs( subscribedUsersArgs );
 	},
 	validateParams: ( { page, search } = {} ) => {
 		invariant(
@@ -175,9 +225,7 @@ const fetchInviteUserStore = createFetchStore( {
 					return;
 				}
 
-				const users = sanitizeEligibleSubscribersUsers(
-					cachedResult.users
-				);
+				const users = sanitizeUserListUsers( cachedResult.users );
 				const user = users.find(
 					( potentialNewlyInvitedUser ) =>
 						potentialNewlyInvitedUser.id === userID
@@ -186,6 +234,49 @@ const fetchInviteUserStore = createFetchStore( {
 				if ( user ) {
 					user.invited = true;
 				}
+			}
+		);
+	} ),
+	argsToParams: ( userID ) => ( { userID } ),
+	validateParams: ( { userID } = {} ) => {
+		invariant(
+			Number.isInteger( userID ) && userID > 0,
+			'userID should be a positive integer.'
+		);
+	},
+	isAction: true,
+} );
+
+const fetchUnsubscribeUserStore = createFetchStore( {
+	baseName: 'unsubscribeUser',
+	controlCallback: ( { userID } ) =>
+		set( 'core', 'site', 'email-reporting-unsubscribe-user', {
+			userID,
+		} ),
+	// The store keeps one subscribed-users result per page and search term, so remove
+	// the user from every cached result. getSubscribedUsers then reports the change
+	// without a refetch.
+	reducerCallback: createReducer( ( state, response, { userID } ) => {
+		Object.values( state.emailReporting.subscribedUsers ).forEach(
+			( cachedResult ) => {
+				if ( ! isPlainObject( cachedResult ) ) {
+					return;
+				}
+
+				const users = sanitizeUserListUsers( cachedResult.users );
+				const remainingUsers = users.filter(
+					( subscribedUser ) => subscribedUser.id !== userID
+				);
+
+				if ( remainingUsers.length === users.length ) {
+					return;
+				}
+
+				cachedResult.users = remainingUsers;
+				cachedResult.total = Math.max(
+					sanitizeUserListTotal( cachedResult.total ) - 1,
+					0
+				);
 			}
 		);
 	} ),
@@ -256,6 +347,41 @@ const baseActions = {
 	),
 
 	/**
+	 * Unsubscribes a user from email reports and removes them from every cached subscribed-users listing.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {number} userID Subscribed user ID.
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	unsubscribeUser: createValidatedAction(
+		( userID ) => {
+			invariant(
+				Number.isInteger( userID ) && userID > 0,
+				'userID should be a positive integer.'
+			);
+		},
+		function* ( userID ) {
+			const registry = yield commonActions.getRegistry();
+
+			registry.dispatch( CORE_SITE ).startUnsubscribingUser( userID );
+
+			try {
+				const result =
+					yield fetchUnsubscribeUserStore.actions.fetchUnsubscribeUser(
+						userID
+					);
+
+				return result;
+			} finally {
+				registry
+					.dispatch( CORE_SITE )
+					.finishUnsubscribingUser( userID );
+			}
+		}
+	),
+
+	/**
 	 * Sets email reporting enabled state.
 	 *
 	 * @since 1.165.0
@@ -306,6 +432,36 @@ const baseActions = {
 	},
 
 	/**
+	 * Marks an unsubscribe request as in progress for a user.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {number} userID User ID.
+	 * @return {Object} Redux-style action.
+	 */
+	startUnsubscribingUser( userID ) {
+		return {
+			type: START_UNSUBSCRIBING_USER,
+			payload: { userID },
+		};
+	},
+
+	/**
+	 * Marks a user's unsubscribe request as finished.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {number} userID User ID.
+	 * @return {Object} Redux-style action.
+	 */
+	finishUnsubscribingUser( userID ) {
+		return {
+			type: FINISH_UNSUBSCRIBING_USER,
+			payload: { userID },
+		};
+	},
+
+	/**
 	 * Resets the eligible subscribers cache.
 	 *
 	 * @since 1.177.0
@@ -322,6 +478,26 @@ const baseActions = {
 
 		return dispatch( CORE_SITE ).invalidateResolutionForStoreSelector(
 			'getEligibleSubscribers'
+		);
+	},
+
+	/**
+	 * Clears the subscribed users cache, so the next read fetches fresh data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	*resetSubscribedUsers() {
+		const { dispatch } = yield commonActions.getRegistry();
+
+		yield {
+			type: RESET_SUBSCRIBED_USERS,
+			payload: {},
+		};
+
+		return dispatch( CORE_SITE ).invalidateResolutionForStoreSelector(
+			'getSubscribedUsers'
 		);
 	},
 };
@@ -345,9 +521,22 @@ export const baseReducer = createReducer( ( state, action ) => {
 			state.emailReporting.invitingUsers[ payload.userID ] = false;
 			break;
 		}
+		case START_UNSUBSCRIBING_USER: {
+			state.emailReporting.unsubscribingUsers[ payload.userID ] = true;
+			break;
+		}
+		case FINISH_UNSUBSCRIBING_USER: {
+			state.emailReporting.unsubscribingUsers[ payload.userID ] = false;
+			break;
+		}
 		case RESET_ELIGIBLE_SUBSCRIBERS: {
 			state.emailReporting.eligibleSubscribers =
 				baseInitialState.emailReporting.eligibleSubscribers;
+			break;
+		}
+		case RESET_SUBSCRIBED_USERS: {
+			state.emailReporting.subscribedUsers =
+				baseInitialState.emailReporting.subscribedUsers;
 			break;
 		}
 
@@ -356,15 +545,42 @@ export const baseReducer = createReducer( ( state, action ) => {
 	}
 } );
 
-function sanitizeEligibleSubscribersUsers( users ) {
+/**
+ * Returns the given users when they form an array, and an empty array otherwise.
+ *
+ * @since 1.175.0
+ * @since n.e.x.t Renamed from sanitizeEligibleSubscribersUsers.
+ *
+ * @param {Array} users Users from a user list response.
+ * @return {Array} The given users, or an empty array.
+ */
+function sanitizeUserListUsers( users ) {
 	return Array.isArray( users ) ? users : [];
 }
 
-function sanitizeEligibleSubscribersTotal( total ) {
+/**
+ * Returns the given total when it reads as a whole number of zero or more, and zero otherwise.
+ *
+ * @since 1.175.0
+ * @since n.e.x.t Renamed from sanitizeEligibleSubscribersTotal.
+ *
+ * @param {number} total Total from a user list response.
+ * @return {number} The given total, or zero.
+ */
+function sanitizeUserListTotal( total ) {
 	return Number.isInteger( total ) && total >= 0 ? total : 0;
 }
 
-function sanitizeEligibleSubscribersTotalPages( totalPages ) {
+/**
+ * Returns the given page count when it reads as a whole number of zero or more, and zero otherwise.
+ *
+ * @since 1.175.0
+ * @since n.e.x.t Renamed from sanitizeEligibleSubscribersTotalPages.
+ *
+ * @param {number} totalPages Page count from a user list response.
+ * @return {number} The given page count, or zero.
+ */
+function sanitizeUserListTotalPages( totalPages ) {
 	return Number.isInteger( totalPages ) && totalPages >= 0 ? totalPages : 0;
 }
 
@@ -382,9 +598,7 @@ const baseResolvers = {
 	},
 	*getEligibleSubscribers( eligibleSubscribersArgs = {} ) {
 		const registry = yield commonActions.getRegistry();
-		const normalizedArgs = normalizeEligibleSubscribersArgs(
-			eligibleSubscribersArgs
-		);
+		const normalizedArgs = normalizeUserListArgs( eligibleSubscribersArgs );
 		const isFetchingGetEligibleSubscribers = registry
 			.select( CORE_SITE )
 			.isFetchingGetEligibleSubscribers( normalizedArgs );
@@ -410,17 +624,17 @@ const baseResolvers = {
 			return;
 		}
 
-		const totalPages = sanitizeEligibleSubscribersTotalPages(
+		const totalPages = sanitizeUserListTotalPages(
 			firstPageResponse.totalPages
 		);
 		const shouldFetchAllPages =
-			normalizedArgs.page === DEFAULT_ELIGIBLE_SUBSCRIBERS_ARGS.page;
+			normalizedArgs.page === DEFAULT_USER_LIST_ARGS.page;
 
 		if ( ! shouldFetchAllPages || totalPages <= normalizedArgs.page ) {
 			return;
 		}
 
-		let users = sanitizeEligibleSubscribersUsers( firstPageResponse.users );
+		let users = sanitizeUserListUsers( firstPageResponse.users );
 
 		for ( let page = normalizedArgs.page + 1; page <= totalPages; page++ ) {
 			const { response } =
@@ -431,18 +645,77 @@ const baseResolvers = {
 					}
 				);
 
-			users = users.concat(
-				sanitizeEligibleSubscribersUsers( response?.users )
-			);
+			users = users.concat( sanitizeUserListUsers( response?.users ) );
 		}
 
 		if ( totalPages > normalizedArgs.page ) {
 			yield fetchGetEligibleSubscribersStore.actions.receiveGetEligibleSubscribers(
 				{
 					users,
-					total: sanitizeEligibleSubscribersTotal(
-						firstPageResponse.total
-					),
+					total: sanitizeUserListTotal( firstPageResponse.total ),
+					totalPages,
+				},
+				normalizedArgs
+			);
+		}
+	},
+	*getSubscribedUsers( subscribedUsersArgs = {} ) {
+		const registry = yield commonActions.getRegistry();
+		const normalizedArgs = normalizeUserListArgs( subscribedUsersArgs );
+		const isFetchingGetSubscribedUsers = registry
+			.select( CORE_SITE )
+			.isFetchingGetSubscribedUsers( normalizedArgs );
+
+		if ( isFetchingGetSubscribedUsers ) {
+			return;
+		}
+
+		const subscribedUsers = registry
+			.select( CORE_SITE )
+			.getSubscribedUsers( normalizedArgs );
+
+		if ( subscribedUsers !== undefined ) {
+			return;
+		}
+
+		const { response: firstPageResponse } =
+			yield fetchGetSubscribedUsersStore.actions.fetchGetSubscribedUsers(
+				normalizedArgs
+			);
+
+		if ( ! firstPageResponse ) {
+			return;
+		}
+
+		const totalPages = sanitizeUserListTotalPages(
+			firstPageResponse.totalPages
+		);
+		const shouldFetchAllPages =
+			normalizedArgs.page === DEFAULT_USER_LIST_ARGS.page;
+
+		if ( ! shouldFetchAllPages || totalPages <= normalizedArgs.page ) {
+			return;
+		}
+
+		let users = sanitizeUserListUsers( firstPageResponse.users );
+
+		for ( let page = normalizedArgs.page + 1; page <= totalPages; page++ ) {
+			const { response } =
+				yield fetchGetSubscribedUsersStore.actions.fetchGetSubscribedUsers(
+					{
+						...normalizedArgs,
+						page,
+					}
+				);
+
+			users = users.concat( sanitizeUserListUsers( response?.users ) );
+		}
+
+		if ( totalPages > normalizedArgs.page ) {
+			yield fetchGetSubscribedUsersStore.actions.receiveGetSubscribedUsers(
+				{
+					users,
+					total: sanitizeUserListTotal( firstPageResponse.total ),
 					totalPages,
 				},
 				normalizedArgs
@@ -500,12 +773,12 @@ const baseSelectors = {
 	getEligibleSubscribers: createRegistrySelector(
 		( select ) =>
 			( state, eligibleSubscribersArgs = {} ) => {
-				const normalizedArgs = normalizeEligibleSubscribersArgs(
+				const normalizedArgs = normalizeUserListArgs(
 					eligibleSubscribersArgs
 				);
 				const eligibleSubscribers =
 					state.emailReporting?.eligibleSubscribers?.[
-						getEligibleSubscribersCacheKey( normalizedArgs )
+						getUserListCacheKey( normalizedArgs )
 					];
 
 				if ( eligibleSubscribers === undefined ) {
@@ -515,9 +788,7 @@ const baseSelectors = {
 				const currentUserID = select( CORE_USER ).getID();
 
 				return {
-					users: sanitizeEligibleSubscribersUsers(
-						eligibleSubscribers.users
-					)
+					users: sanitizeUserListUsers( eligibleSubscribers.users )
 						.filter(
 							( user ) =>
 								Number( user.id ) !== Number( currentUserID )
@@ -530,15 +801,46 @@ const baseSelectors = {
 							subscribed: user.subscribed,
 							invited: user.invited,
 						} ) ),
-					total: sanitizeEligibleSubscribersTotal(
-						eligibleSubscribers.total
-					),
-					totalPages: sanitizeEligibleSubscribersTotalPages(
+					total: sanitizeUserListTotal( eligibleSubscribers.total ),
+					totalPages: sanitizeUserListTotalPages(
 						eligibleSubscribers.totalPages
 					),
 				};
 			}
 	),
+
+	/**
+	 * Gets the subscribed users list and its total for the given page and search args.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state                 Data store's state.
+	 * @param {Object} [subscribedUsersArgs] Page and search args.
+	 * @return {(Object|undefined)} The subscribed users and their total count; `undefined` if not loaded.
+	 */
+	getSubscribedUsers( state, subscribedUsersArgs = {} ) {
+		const normalizedArgs = normalizeUserListArgs( subscribedUsersArgs );
+		const subscribedUsers =
+			state.emailReporting?.subscribedUsers?.[
+				getUserListCacheKey( normalizedArgs )
+			];
+
+		if ( subscribedUsers === undefined ) {
+			return undefined;
+		}
+
+		return {
+			users: sanitizeUserListUsers( subscribedUsers.users ).map(
+				( user ) => ( {
+					id: user.id,
+					name: user.displayName || user.name,
+					email: user.email,
+					role: user.roleDisplayName || user.role,
+				} )
+			),
+			total: sanitizeUserListTotal( subscribedUsers.total ),
+		};
+	},
 
 	/**
 	 * Gets the email reporting errors.
@@ -589,14 +891,29 @@ const baseSelectors = {
 	isInvitingUser( state, userID ) {
 		return !! state.emailReporting?.invitingUsers?.[ userID ];
 	},
+
+	/**
+	 * Checks whether a user's unsubscribe request is still running.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state  Data store's state.
+	 * @param {number} userID User ID.
+	 * @return {boolean} True if an unsubscribe request is in progress, otherwise false.
+	 */
+	isUnsubscribingUser( state, userID ) {
+		return !! state.emailReporting?.unsubscribingUsers?.[ userID ];
+	},
 };
 
 const store = combineStores(
 	fetchGetEmailReportingSettingsStore,
 	fetchSaveEmailReportingSettingsStore,
 	fetchGetEligibleSubscribersStore,
+	fetchGetSubscribedUsersStore,
 	fetchGetEmailReportingErrorsStore,
 	fetchInviteUserStore,
+	fetchUnsubscribeUserStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

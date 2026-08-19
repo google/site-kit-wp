@@ -1,0 +1,110 @@
+/**
+ * `useActivateModuleCallback` hook.
+ *
+ * Site Kit by Google, Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * WordPress dependencies
+ */
+import { useCallback } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import {
+	Select,
+	UseSelect,
+	useDispatch,
+	useSelect as useSelectWithRequiredDeps,
+} from 'googlesitekit-data';
+import { setItem } from '@/js/googlesitekit/api/cache';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	CORE_USER,
+	PERMISSION_MANAGE_OPTIONS,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { trackEvent } from '@/js/util/tracking';
+import useViewContext from './useViewContext';
+
+// These selectors deliberately omit `deps`. See the `UseSelect` type.
+const useSelect = useSelectWithRequiredDeps as UseSelect;
+
+interface ActivateModuleOptions {
+	redirectQueryArgs?: Record< string, string >;
+}
+
+/**
+ * Returns a callback to activate a module. If the call to activate the module is successful, navigate to the reauthentication URL.
+ * Returns null if the module doesn't exist or the user can't manage options.
+ *
+ * @since 1.70.0
+ *
+ * @param {string} moduleSlug Module slug.
+ * @param {Object} [options]  Optional. Activation options with `redirectQueryArgs`.
+ * @return {Function|null} Callback to activate module, null if the module doesn't exist or the user can't manage options.
+ */
+export default function useActivateModuleCallback(
+	moduleSlug: string,
+	options: ActivateModuleOptions = {}
+): ( () => Promise< void > ) | null {
+	const viewContext = useViewContext();
+	const module = useSelect( ( select: Select ) =>
+		select( CORE_MODULES ).getModule( moduleSlug )
+	);
+	const canManageOptions = useSelect( ( select: Select ) =>
+		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
+	);
+
+	const { activateModule } = useDispatch( CORE_MODULES );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { setInternalServerError } = useDispatch( CORE_SITE );
+
+	const activateModuleCallback = useCallback( async () => {
+		const { error, response } = await activateModule( moduleSlug, options );
+
+		if ( ! error ) {
+			await trackEvent(
+				`${ viewContext }_widget-activation-cta`,
+				'activate_module',
+				moduleSlug
+			);
+
+			await setItem( 'module_setup', moduleSlug, { ttl: 300 } );
+
+			navigateTo( response.moduleReauthURL );
+		} else {
+			setInternalServerError( {
+				id: `${ moduleSlug }-setup-error`,
+				description: error.message,
+			} );
+		}
+	}, [
+		activateModule,
+		moduleSlug,
+		options,
+		navigateTo,
+		setInternalServerError,
+		viewContext,
+	] );
+
+	if ( ! module?.name || ! canManageOptions ) {
+		return null;
+	}
+
+	return activateModuleCallback;
+}
