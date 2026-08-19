@@ -130,4 +130,29 @@ describe( 'useRefocus', () => {
 		expect( initialCallbackSpy ).toHaveBeenCalledTimes( 0 );
 		expect( latestCallbackSpy ).toHaveBeenCalledTimes( 1 );
 	} );
+
+	it( 'should continue timer when callback changes before timer expires', () => {
+		const initialCallbackSpy = jest.fn();
+		const latestCallbackSpy = jest.fn();
+		let callback = initialCallbackSpy;
+
+		const { rerender } = renderHook( () => useRefocus( callback, 1000 ) );
+
+		act( () => {
+			global.window.dispatchEvent( new Event( 'blur' ) );
+		} );
+		act( () => jest.advanceTimersByTime( 500 ) );
+
+		callback = latestCallbackSpy;
+		rerender();
+
+		act( () => jest.advanceTimersByTime( 500 ) );
+
+		act( () => {
+			global.window.dispatchEvent( new Event( 'focus' ) );
+		} );
+
+		expect( initialCallbackSpy ).toHaveBeenCalledTimes( 0 );
+		expect( latestCallbackSpy ).toHaveBeenCalledTimes( 1 );
+	} );
 } );
