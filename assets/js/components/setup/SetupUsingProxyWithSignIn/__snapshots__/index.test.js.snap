@@ -178,13 +178,13 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                       class="googlesitekit-user-menu__details-info"
                     >
                       <p
-                        class="googlesitekit-user-menu__details-info__name"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__name googlesitekit-typography--label googlesitekit-typography--medium"
                       >
                         Wapuu WordPress PhD
                       </p>
                       <p
                         aria-label="Email"
-                        class="googlesitekit-user-menu__details-info__email"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__email googlesitekit-typography--body googlesitekit-typography--small"
                       >
                         wapuu.wordpress@gmail.com
                       </p>
@@ -281,7 +281,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                       Set up Site Kit
                     </h1>
                     <p
-                      class="googlesitekit-setup__description"
+                      class="googlesitekit-typography googlesitekit-setup__description googlesitekit-typography--body googlesitekit-typography--medium"
                     >
                       Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard
                     </p>
@@ -537,13 +537,13 @@ exports[`SetupUsingProxyWithSignIn should not render the progress indicator when
                       class="googlesitekit-user-menu__details-info"
                     >
                       <p
-                        class="googlesitekit-user-menu__details-info__name"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__name googlesitekit-typography--label googlesitekit-typography--medium"
                       >
                         Wapuu WordPress PhD
                       </p>
                       <p
                         aria-label="Email"
-                        class="googlesitekit-user-menu__details-info__email"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__email googlesitekit-typography--body googlesitekit-typography--small"
                       >
                         wapuu.wordpress@gmail.com
                       </p>
@@ -640,7 +640,7 @@ exports[`SetupUsingProxyWithSignIn should not render the progress indicator when
                       Set up Site Kit
                     </h1>
                     <p
-                      class="googlesitekit-setup__description"
+                      class="googlesitekit-typography googlesitekit-setup__description googlesitekit-typography--body googlesitekit-typography--medium"
                     >
                       Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard
                     </p>
@@ -951,13 +951,13 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                       class="googlesitekit-user-menu__details-info"
                     >
                       <p
-                        class="googlesitekit-user-menu__details-info__name"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__name googlesitekit-typography--label googlesitekit-typography--medium"
                       >
                         Wapuu WordPress PhD
                       </p>
                       <p
                         aria-label="Email"
-                        class="googlesitekit-user-menu__details-info__email"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__email googlesitekit-typography--body googlesitekit-typography--small"
                       >
                         wapuu.wordpress@gmail.com
                       </p>
@@ -1054,7 +1054,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                       Set up Site Kit
                     </h1>
                     <p
-                      class="googlesitekit-setup__description"
+                      class="googlesitekit-typography googlesitekit-setup__description googlesitekit-typography--body googlesitekit-typography--medium"
                     >
                       Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard
                     </p>
@@ -1284,13 +1284,13 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                       class="googlesitekit-user-menu__details-info"
                     >
                       <p
-                        class="googlesitekit-user-menu__details-info__name"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__name googlesitekit-typography--label googlesitekit-typography--medium"
                       >
                         Wapuu WordPress PhD
                       </p>
                       <p
                         aria-label="Email"
-                        class="googlesitekit-user-menu__details-info__email"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__email googlesitekit-typography--body googlesitekit-typography--small"
                       >
                         wapuu.wordpress@gmail.com
                       </p>
@@ -1528,7 +1528,9 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
               <div
                 class="googlesitekit-setup__step-hint"
               >
-                <p>
+                <p
+                  class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+                >
                   Why is this required?
                 </p>
                 <span
@@ -1655,13 +1657,13 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                       class="googlesitekit-user-menu__details-info"
                     >
                       <p
-                        class="googlesitekit-user-menu__details-info__name"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__name googlesitekit-typography--label googlesitekit-typography--medium"
                       >
                         Wapuu WordPress PhD
                       </p>
                       <p
                         aria-label="Email"
-                        class="googlesitekit-user-menu__details-info__email"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__email googlesitekit-typography--body googlesitekit-typography--small"
                       >
                         wapuu.wordpress@gmail.com
                       </p>
@@ -1819,7 +1821,9 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
               <div
                 class="googlesitekit-setup__step-hint"
               >
-                <p>
+                <p
+                  class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+                >
                   Why is this required?
                 </p>
                 <span
@@ -1946,13 +1950,13 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                       class="googlesitekit-user-menu__details-info"
                     >
                       <p
-                        class="googlesitekit-user-menu__details-info__name"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__name googlesitekit-typography--label googlesitekit-typography--medium"
                       >
                         Wapuu WordPress PhD
                       </p>
                       <p
                         aria-label="Email"
-                        class="googlesitekit-user-menu__details-info__email"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__email googlesitekit-typography--body googlesitekit-typography--small"
                       >
                         wapuu.wordpress@gmail.com
                       </p>
@@ -2190,7 +2194,9 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
               <div
                 class="googlesitekit-setup__step-hint"
               >
-                <p>
+                <p
+                  class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+                >
                   Why is this required?
                 </p>
                 <span
@@ -2317,13 +2323,13 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                       class="googlesitekit-user-menu__details-info"
                     >
                       <p
-                        class="googlesitekit-user-menu__details-info__name"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__name googlesitekit-typography--label googlesitekit-typography--medium"
                       >
                         Wapuu WordPress PhD
                       </p>
                       <p
                         aria-label="Email"
-                        class="googlesitekit-user-menu__details-info__email"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__email googlesitekit-typography--body googlesitekit-typography--small"
                       >
                         wapuu.wordpress@gmail.com
                       </p>
@@ -2561,7 +2567,9 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
               <div
                 class="googlesitekit-setup__step-hint"
               >
-                <p>
+                <p
+                  class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+                >
                   Why is this required?
                 </p>
                 <span
@@ -2688,13 +2696,13 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                       class="googlesitekit-user-menu__details-info"
                     >
                       <p
-                        class="googlesitekit-user-menu__details-info__name"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__name googlesitekit-typography--label googlesitekit-typography--medium"
                       >
                         Wapuu WordPress PhD
                       </p>
                       <p
                         aria-label="Email"
-                        class="googlesitekit-user-menu__details-info__email"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__email googlesitekit-typography--body googlesitekit-typography--small"
                       >
                         wapuu.wordpress@gmail.com
                       </p>
@@ -2932,7 +2940,9 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
               <div
                 class="googlesitekit-setup__step-hint"
               >
-                <p>
+                <p
+                  class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+                >
                   Why is this required?
                 </p>
                 <span

@@ -272,7 +272,7 @@ exports[`MetricsSelectionPanel Header should render correctly 1`] = `
                 </span>
               </button>
               <p
-                class="googlesitekit-selection-panel-footer__item-count"
+                class="googlesitekit-typography googlesitekit-selection-panel-footer__item-count googlesitekit-typography--label googlesitekit-typography--medium"
               >
                 2 selected 
                 <span
@@ -575,7 +575,7 @@ exports[`MetricsSelectionPanel Header should render correctly with the \`setupFl
                 </span>
               </button>
               <p
-                class="googlesitekit-selection-panel-footer__item-count"
+                class="googlesitekit-typography googlesitekit-selection-panel-footer__item-count googlesitekit-typography--label googlesitekit-typography--medium"
               >
                 2 selected 
                 <span
