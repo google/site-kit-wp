@@ -18,6 +18,13 @@
 
 .googlesitekit-pdf-report-success-snackbar {
 
+	@media (max-width: $bp-tablet) {
+
+		.googlesitekit-notice__title {
+			display: none;
+		}
+	}
+
 	.googlesitekit-notice__dismiss--icon {
 		path {
 			color: $c-utility-on-success-container;
