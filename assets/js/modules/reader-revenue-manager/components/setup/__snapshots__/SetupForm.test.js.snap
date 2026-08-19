@@ -7,7 +7,7 @@ exports[`SetupForm should not silently fail when there is an error 1`] = `
       class="googlesitekit-notice-container"
     >
       <div
-        class="googlesitekit-notice googlesitekit-notice--error"
+        class="googlesitekit-notice googlesitekit-notice--error googlesitekit-notice--default"
         role="status"
       >
         <div
@@ -16,10 +16,10 @@ exports[`SetupForm should not silently fail when there is an error 1`] = `
           <svg />
         </div>
         <div
-          class="googlesitekit-notice__content"
+          class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
         >
           <p
-            class="googlesitekit-notice__description"
+            class="googlesitekit-typography googlesitekit-notice__description googlesitekit-typography--body googlesitekit-typography--medium"
           >
             <span>
               Error: Test error message (Please try again.)
