@@ -55,6 +55,10 @@ export default function PropertyField() {
 				label={ __( 'Property', 'google-site-kit' ) }
 				value={ value }
 				hasError={ ! value }
+				errorMessage={ __(
+					'A property name is required.',
+					'google-site-kit'
+				) }
 				setValue={ setValue }
 				name="property"
 			/>
