@@ -451,13 +451,15 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 			$datapoints['GET:ctas'] = new Get_CTAs(
 				array(
-					'service' => fn() => $this->get_service( 'webcontentpublisher' ),
+					'service'  => fn() => $this->get_service( 'webcontentpublisher' ),
+					'settings' => $settings,
 				)
 			);
 
 			$datapoints['POST:create-cta'] = new Create_CTA(
 				array(
-					'service' => fn() => $this->get_service( 'webcontentpublisher' ),
+					'service'  => fn() => $this->get_service( 'webcontentpublisher' ),
+					'settings' => $settings,
 				)
 			);
 		}

@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints;
 use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
+use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
 
 /**
  * Class for the CTAs retrieval datapoint.
@@ -25,25 +25,53 @@ use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 class Get_CTAs extends Datapoint implements Executable_Datapoint {
 
 	/**
+	 * Reader Revenue Manager settings.
+	 *
+	 * @since n.e.x.t
+	 * @var \Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings
+	 */
+	private $settings;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $definition Definition fields.
+	 */
+	public function __construct( array $definition ) {
+		parent::__construct( $definition );
+
+		$this->settings = $definition['settings'];
+	}
+
+	/**
 	 * Creates a request object.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
-	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing.
+	 * @throws Missing_Required_Setting_Exception Thrown if a fallback setting is missing.
 	 */
 	public function create_request( Data_Request $data_request ) {
-		foreach ( array( 'organizationID', 'publicationID' ) as $required_param ) {
-			if ( empty( $data_request[ $required_param ] ) ) {
-				throw new Missing_Required_Param_Exception( $required_param );
-			}
+		$settings = $this->settings->get();
+
+		$organization_id = $data_request['organizationID'] ?? $settings['organizationID'];
+		$publication_id  = $data_request['publicationID'] ?? $settings['publicationID'];
+
+		if ( empty( $organization_id ) ) {
+			throw new Missing_Required_Setting_Exception( 'organizationID' );
+		}
+
+		if ( empty( $publication_id ) ) {
+			throw new Missing_Required_Setting_Exception( 'publicationID' );
 		}
 
 		$parent = sprintf(
 			'organizations/%s/publications/%s',
-			$data_request['organizationID'],
-			$data_request['publicationID']
+			$organization_id,
+			$publication_id
 		);
 
 		return $this->get_service()->organizations_publications_ctas->listOrganizationsPublicationsCtas( $parent );
