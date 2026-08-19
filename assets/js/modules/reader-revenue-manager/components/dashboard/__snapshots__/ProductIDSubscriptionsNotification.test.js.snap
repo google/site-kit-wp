@@ -18,7 +18,7 @@ exports[`ProductIDSubscriptionsNotification should render correctly 1`] = `
             class="googlesitekit-notice-container"
           >
             <div
-              class="googlesitekit-notice googlesitekit-notice--warning"
+              class="googlesitekit-notice googlesitekit-notice--warning googlesitekit-notice--default"
               role="status"
             >
               <div
@@ -27,10 +27,10 @@ exports[`ProductIDSubscriptionsNotification should render correctly 1`] = `
                 <svg />
               </div>
               <div
-                class="googlesitekit-notice__content"
+                class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
               >
                 <p
-                  class="googlesitekit-notice__description"
+                  class="googlesitekit-typography googlesitekit-notice__description googlesitekit-typography--body googlesitekit-typography--medium"
                 >
                   To complete your Reader Revenue Manager paywall setup, add your product IDs in settings
                 </p>
