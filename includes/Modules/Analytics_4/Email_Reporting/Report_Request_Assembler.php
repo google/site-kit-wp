@@ -46,7 +46,8 @@ class Report_Request_Assembler {
 	 * Builds Analytics 4 batch report requests.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Added the Site Goals report requests.
+	 * @since n.e.x.t Added the Site Goals report requests, and fixed the author and
+	 *                category dimension keys, which never matched the availability map.
 	 *
 	 * @param array $custom_titles Optional. Custom titles keyed by request key.
 	 * @return array Array of report requests keyed by payload key.

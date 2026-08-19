@@ -262,7 +262,7 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 		$this->assertArrayNotHasKey(
 			'keepEmptyRows',
 			$options,
-			'get_online_store_primary_options() should keep no empty row when it returns one row per event name.'
+			'get_online_store_primary_options() should add no keepEmptyRows option when it groups by event name alone.'
 		);
 		$this->assertSame(
 			'purchase',
@@ -384,7 +384,7 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 		$this->assertArrayNotHasKey(
 			'keepEmptyRows',
 			$options,
-			'get_engagement_options() should keep no empty row when it returns one row for the whole site.'
+			'get_engagement_options() should add no keepEmptyRows option when it adds no breakdown dimension.'
 		);
 		$this->assert_report_covers_both_periods( $options, 'get_engagement_options()' );
 	}

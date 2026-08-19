@@ -486,6 +486,17 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertArrayHasKey( 'total_visitors', $payload, 'get_user_payload() should still return the total visitors report when Analytics detected no conversion event.' );
 	}
 
+	public function test_get_user_payload__adds_the_author_and_category_reports_when_the_post_dimensions_have_data() {
+		$custom_dimension_data = new Custom_Dimensions_Data_Available( $this->transients );
+		$custom_dimension_data->set_data_available( Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR );
+		$custom_dimension_data->set_data_available( Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES );
+
+		$payload = $this->get_analytics_payload_for_detected_events( array() );
+
+		$this->assertArrayHasKey( 'top_authors', $payload, 'get_user_payload() should return the top authors report when the post author dimension has data.' );
+		$this->assertArrayHasKey( 'top_categories', $payload, 'get_user_payload() should return the top categories report when the post categories dimension has data.' );
+	}
+
 	/**
 	 * Gets the Analytics payload for an owner whose Analytics settings hold the given detected events.
 	 *
