@@ -149,9 +149,9 @@ function shouldDisplayWidgetWithCustomDimensions( {
  *   wrapped with `lazyWithPreload` so this module stays free of the PDF renderer
  *   on the dashboard bundle. It receives the tile `title` plus the fields
  *   returned by `getTileData`.
- * - `pdfTile.getTileData( { registry, dates, signal } )`: resolves the report(s)
- *   the tile needs and returns the normalised data the `TileComponent` consumes,
- *   or `null` when the export is canceled.
+ * - `pdfTile.getTileData( { registry, dates, signal, viewOnly } )`: resolves the
+ *   report(s) the tile needs and returns the normalised data the `TileComponent`
+ *   consumes, or `null` when the export is canceled.
  *
  * Entries without a `pdfTile` field do not render in the PDF and are skipped.
  *

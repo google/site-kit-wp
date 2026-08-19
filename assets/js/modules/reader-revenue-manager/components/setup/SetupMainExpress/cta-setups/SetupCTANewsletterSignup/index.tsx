@@ -67,7 +67,7 @@ const SetupCTANewsletterSignup: FC = () => {
 				/>
 			}
 		>
-			{ stepContent[ step ] }
+			{ step ? stepContent[ step ] : null }
 		</ExpressSetupLayout>
 	);
 };
