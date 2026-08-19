@@ -194,4 +194,32 @@ class Has_Multiple_AdminsTest extends TestCase {
 		// (One regular admin + two super admins = three admins.).
 		$this->assertEquals( 3, $this->transients->get( Has_Multiple_Admins::OPTION ), 'Transient should be updated to three admins' );
 	}
+
+	public function test_get__multisite_super_admins_non_sequential_keys() {
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'This test only runs on multisite.' );
+		}
+
+		// Two administrators; the first is also treated as the super admin.
+		$super_admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$super_admin    = get_userdata( $super_admin_id );
+		$this->factory()->user->create( array( 'role' => 'administrator' ) );
+
+		// A plugin can filter get_super_admins() to a non-sequentially-keyed
+		// array; reading index 0 then misses the entry. Force that shape.
+		$GLOBALS['super_admins'] = array( 5 => $super_admin->user_login );
+
+		$has_multiple_admins = new Has_Multiple_Admins( $this->transients );
+		$has_multiple_admins->register();
+
+		$result = $has_multiple_admins->get();
+
+		unset( $GLOBALS['super_admins'] );
+
+		// The super admin at the non-zero key must be excluded from the local
+		// admin query rather than double-counted: one super admin + one other
+		// administrator = two.
+		$this->assertTrue( $result, 'Should report multiple admins.' );
+		$this->assertEquals( 2, $this->transients->get( Has_Multiple_Admins::OPTION ), 'Super admin at a non-zero key must be counted once, not twice.' );
+	}
 }
