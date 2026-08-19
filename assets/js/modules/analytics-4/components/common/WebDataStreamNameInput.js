@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import { useMount } from 'react-use';
 
 /**
@@ -34,9 +33,9 @@ import { isURL } from '@wordpress/url';
  */
 import { TextField } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
-import AccessibleWarningIcon from '@/js/components/AccessibleWarningIcon';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useFormValue from '@/js/hooks/useFormValue';
+import { WEB_DATA_STREAM_NAME_REQUIRED_MESSAGE } from '@/js/modules/analytics-4/constants';
 import {
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
@@ -91,25 +90,17 @@ export default function WebDataStreamNameInput() {
 		return null;
 	}
 
-	const error =
-		webDataStreamAlreadyExists ||
-		! webDataStreamName ||
-		! isValidWebDataStreamName( webDataStreamName );
-
-	let helperText = false;
+	let errorMessage;
 
 	if ( webDataStreamAlreadyExists ) {
-		helperText = __(
+		errorMessage = __(
 			'A web data stream with this name already exists.',
 			'google-site-kit'
 		);
 	} else if ( ! webDataStreamName ) {
-		helperText = __(
-			'A web data stream name is required.',
-			'google-site-kit'
-		);
+		errorMessage = WEB_DATA_STREAM_NAME_REQUIRED_MESSAGE;
 	} else if ( ! isValidWebDataStreamName( webDataStreamName ) ) {
-		helperText = __(
+		errorMessage = __(
 			'This is not a valid web data stream name.',
 			'google-site-kit'
 		);
@@ -118,18 +109,8 @@ export default function WebDataStreamNameInput() {
 	return (
 		<div className="googlesitekit-analytics-webdatastreamname">
 			<TextField
-				className={ classnames( {
-					'mdc-text-field--error': error,
-				} ) }
 				label={ __( 'Web data stream name', 'google-site-kit' ) }
-				helperText={ helperText }
-				trailingIcon={
-					error && (
-						<span className="googlesitekit-text-field-icon--error">
-							<AccessibleWarningIcon />
-						</span>
-					)
-				}
+				errorMessage={ errorMessage }
 				value={ webDataStreamName }
 				onChange={ onChange }
 				outlined
