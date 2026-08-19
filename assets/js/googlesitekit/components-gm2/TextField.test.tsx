@@ -32,7 +32,7 @@ describe( 'TextField', () => {
 		name: 'clientID',
 	};
 
-	it( 'shows the error outline, the warning icon, and the message under the field when `errorMessage` holds text', () => {
+	it( 'shows the error outline, the warning icon, and the message under the field when `errorMessage` is set', () => {
 		const { container } = render(
 			<TextField
 				{ ...defaultProps }
@@ -51,7 +51,7 @@ describe( 'TextField', () => {
 		).toHaveTextContent( 'A valid Client ID is required.' );
 	} );
 
-	it( 'sets `aria-invalid` to "true" and points `aria-errormessage` at the error message id when `errorMessage` holds text', () => {
+	it( 'marks the input invalid and points `aria-errormessage` and `aria-describedby` at the message when `errorMessage` is set', () => {
 		const { getByRole, getByText } = render(
 			<TextField
 				{ ...defaultProps }
@@ -77,7 +77,7 @@ describe( 'TextField', () => {
 		);
 	} );
 
-	it( 'shows the error outline and the warning icon, renders no helper text, and leaves `aria-errormessage` off when `hasError` is true and the render passes no `errorMessage`', () => {
+	it( 'shows the error outline and the warning icon with no message when `hasError` is set on its own', () => {
 		const { container, getByRole } = render(
 			<TextField { ...defaultProps } hasError />
 		);
@@ -100,7 +100,7 @@ describe( 'TextField', () => {
 		);
 	} );
 
-	it( 'renders the message with `screen-reader-text` in place of the helper line, and still points `aria-errormessage` at it, when `hasError` is true and `errorMessage` holds text', () => {
+	it( 'keeps the message off the screen when `hasError` and `errorMessage` are both set', () => {
 		const { container, getByRole, getByText } = render(
 			<TextField
 				{ ...defaultProps }
@@ -127,7 +127,7 @@ describe( 'TextField', () => {
 		);
 	} );
 
-	it( 'shows `helperText` under the field, with no error outline, no warning icon, and no `aria-invalid`, when the render passes neither `errorMessage` nor `hasError`', () => {
+	it( 'shows `helperText` under the field with no error outline when neither error prop is set', () => {
 		const { container, getByRole, getByText } = render(
 			<TextField
 				{ ...defaultProps }
@@ -150,7 +150,7 @@ describe( 'TextField', () => {
 		);
 	} );
 
-	it( 'shows `errorMessage` in place of `helperText` when both hold text', () => {
+	it( 'shows `errorMessage` in place of `helperText` when both are set', () => {
 		const { container, queryByText } = render(
 			<TextField
 				{ ...defaultProps }
@@ -197,7 +197,7 @@ describe( 'TextField', () => {
 		}
 	);
 
-	it( 'shows `trailingIcon` when the render passes neither `errorMessage` nor `hasError`', () => {
+	it( 'shows `trailingIcon` when neither error prop is set', () => {
 		const { container } = render(
 			<TextField
 				{ ...defaultProps }

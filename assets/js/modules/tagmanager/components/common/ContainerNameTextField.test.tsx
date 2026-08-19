@@ -58,7 +58,7 @@ describe( 'ContainerNameTextField', () => {
 		);
 	}
 
-	it( 'keeps "A container name is required." off the screen and marks the input invalid when the container name is empty', () => {
+	it( 'keeps the error message off the screen and marks the input invalid when the container name is empty', () => {
 		registry
 			.dispatch( CORE_FORMS )
 			.setValues( FORM_SETUP, { containerName: '' } );
@@ -83,7 +83,7 @@ describe( 'ContainerNameTextField', () => {
 		);
 	} );
 
-	it( 'shows "A container with this name already exists" when the container name matches an existing container', () => {
+	it( 'shows the error message when the container name matches an existing container', () => {
 		registry
 			.dispatch( CORE_FORMS )
 			.setValues( FORM_SETUP, { containerName: existingContainerName } );
@@ -110,7 +110,7 @@ describe( 'ContainerNameTextField', () => {
 		);
 	} );
 
-	it( 'shows no error message and leaves the input valid when the container name matches no existing container', () => {
+	it( 'shows no error message and leaves the input valid when no other container holds that name', () => {
 		registry
 			.dispatch( CORE_FORMS )
 			.setValues( FORM_SETUP, { containerName: 'A Free Name' } );

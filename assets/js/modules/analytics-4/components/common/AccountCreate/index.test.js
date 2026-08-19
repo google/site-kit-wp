@@ -142,7 +142,7 @@ describe( 'AccountCreate', () => {
 	} );
 
 	it.each( FIELD_ERRORS )(
-		'should hide the %s field message from sight and mark the input invalid when the field is empty',
+		'should keep the %s field error message off the screen and mark the input invalid when the field is empty',
 		async ( label, message ) => {
 			registry.dispatch( CORE_FORMS ).setValues( FORM_ACCOUNT_CREATE, {
 				accountName: '',
@@ -174,7 +174,7 @@ describe( 'AccountCreate', () => {
 	);
 
 	it.each( FIELD_ERRORS )(
-		'should leave the %s field valid and render no error message when the field holds a name',
+		'should leave the %s field valid and show no error message when the field holds a name',
 		async ( label, message ) => {
 			const { getByRole, queryByText, waitForRegistry } = render(
 				<AccountCreate />,

@@ -61,10 +61,10 @@ function Template() {
 
 				<div style={ { marginBottom: '50px' } }>
 					<TextField
-						label="With Screen Reader Error Message"
+						label="With Hidden Error Message"
 						name="textfield"
 						value="https://www.sitekitbygoogle.com"
-						errorMessage="Only a screen reader reads this error message."
+						errorMessage="Only a screen reader reads this message."
 						hasError
 						outlined
 					/>

@@ -30,7 +30,7 @@ describe( 'ClientIDTextField', () => {
 		registry = createTestRegistry();
 	} );
 
-	it( 'shows the invalid Client ID message and marks the input invalid when the Client ID holds a space', () => {
+	it( 'shows the error message and marks the input invalid when the Client ID holds a space', () => {
 		registry
 			.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
 			.receiveGetSettings( { clientID: 'client id.apps.example.com' } );
@@ -57,7 +57,7 @@ describe( 'ClientIDTextField', () => {
 		);
 	} );
 
-	it( 'shows the existing Client ID recommendation, with no error outline and no `aria-invalid`, when the site holds an existing Client ID and the field is empty', () => {
+	it( 'shows the recommendation to use the existing Client ID, with no error, when the field starts empty', () => {
 		const existingClientID = 'existing.apps.example.com';
 
 		registry

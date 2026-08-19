@@ -27,15 +27,19 @@ import { ChangeEvent, FC, ReactNode } from 'react';
 import { TextField } from 'googlesitekit-components';
 
 export interface CreateAccountFieldProps {
-	/** Whether the field holds an error, which shows the error outline and the warning icon. */
+	/** Whether the field holds an error. The field then draws the error outline and the warning icon. */
 	hasError?: boolean;
-	/** Error only a screen reader reads, since an account creation field shows no message on the screen. The field passes `errorMessage` on only while `hasError` is true. */
+	/**
+	 * The error message. An account creation field shows no message on the screen,
+	 * so only a screen reader reads the message. The field passes the message to
+	 * `TextField` only while `hasError` is true.
+	 */
 	errorMessage?: ReactNode;
-	/** The field's current value. The component renders nothing while the value is `undefined`. */
+	/** The field's current value. The field renders nothing while the value is `undefined`. */
 	value?: string;
 	/** Called when the input's value changes, with the new value and the field's name. */
 	setValue: ( value: string, name: string ) => void;
-	/** The field's name, such as `account`, which also builds the input's id. */
+	/** The field's name, such as `account`. The name also forms part of the input's id. */
 	name: string;
 	/** The field's label, such as "Account". */
 	label: string;

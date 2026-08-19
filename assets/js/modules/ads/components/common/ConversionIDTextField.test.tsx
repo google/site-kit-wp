@@ -34,13 +34,13 @@ describe( 'ConversionIDTextField', () => {
 		registry.dispatch( MODULES_ADS ).receiveGetSettings( { conversionID } );
 
 		return render(
-			// @ts-expect-error - TypeScript reads `helperText` as required, because `ConversionIDTextField` is JavaScript and gives the prop no default value.
+			// @ts-expect-error TypeScript reads `helperText` as required, because `ConversionIDTextField` is JavaScript and gives the prop no default value.
 			<ConversionIDTextField hideHeading />,
 			{ registry }
 		);
 	}
 
-	it( 'shows the invalid ID message and marks the input invalid when the conversion ID holds a letter after "AW-"', () => {
+	it( 'shows the error message and marks the input invalid when the conversion ID holds a letter', () => {
 		const { container, getByRole, getByText } =
 			renderConversionIDTextField( 'AW-1A2B3C' );
 
@@ -61,7 +61,7 @@ describe( 'ConversionIDTextField', () => {
 		);
 	} );
 
-	it( 'shows no message and leaves the input valid when the conversion ID holds only digits after "AW-"', () => {
+	it( 'shows no error message and leaves the input valid when the conversion ID holds only digits', () => {
 		const { container, getByRole, queryByText } =
 			renderConversionIDTextField( 'AW-123456789' );
 
