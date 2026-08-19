@@ -278,8 +278,9 @@ class WooCommerce extends Conversion_Events_Provider {
 						sprintf( 'window._googlesitekit.wcdata.products = %s;', wp_json_encode( $this->products ) ),
 						sprintf( 'window._googlesitekit.wcdata.add_to_cart = %s;', wp_json_encode( $this->add_to_cart ) ),
 						sprintf( 'window._googlesitekit.wcdata.currency = "%s";', esc_js( get_woocommerce_currency() ) ),
-						// Every price on this page is already multiplied by ten to the power of the store's
-						// decimal places, so `assets/js/event-providers/woocommerce.js` divides it back out.
+						// `get_formatted_price()` multiplies every price on this page by ten to the power
+						// of the store's decimal places. `assets/js/event-providers/woocommerce.js` needs
+						// this number to divide the price back out.
 						sprintf( 'window._googlesitekit.wcdata.currencyMinorUnit = %s;', wp_json_encode( absint( wc_get_price_decimals() ) ) ),
 						sprintf( 'window._googlesitekit.wcdata.eventsToTrack = %s;', wp_json_encode( $events_to_track ) ),
 					)

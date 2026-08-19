@@ -209,15 +209,15 @@ class WooCommerceTest extends TestCase {
 		$this->assertSame(
 			$expected,
 			$this->woocommerce->get_formatted_price( $price ),
-			'get_formatted_price() should return a whole number of minor units.'
+			'get_formatted_price() should return the price with the decimal point removed.'
 		);
 	}
 
 	public function prices_by_decimal_places() {
 		return array(
-			'no decimals'                           => array( 0, 1234, 1234 ),
-			'two decimals, the WooCommerce default' => array( 2, 12.34, 1234 ),
-			'four decimals'                         => array( 4, 12.3456, 123456 ),
+			'zero decimal places'                         => array( 0, 1234, 1234 ),
+			'two decimal places, the WooCommerce default' => array( 2, 12.34, 1234 ),
+			'four decimal places'                         => array( 4, 12.3456, 123456 ),
 		);
 	}
 
@@ -231,8 +231,8 @@ class WooCommerceTest extends TestCase {
 
 		$this->woocommerce->register_script();
 
-		// WordPress core and the active theme also hook `wp_footer`, so we clear
-		// it first and let only this provider write to the inline script.
+		// WordPress core and the active theme hook `wp_footer` too. Clear it, so the
+		// `do_action()` below runs only the callback `register_hooks()` adds.
 		remove_all_actions( 'wp_footer' );
 		$this->woocommerce->register_hooks();
 
@@ -243,15 +243,15 @@ class WooCommerceTest extends TestCase {
 		$this->assertStringContainsString(
 			$expected_line,
 			$inline_script,
-			'register_hooks() should print the decimal places wc_get_price_decimals() reports.'
+			'register_hooks() should print the decimal places that wc_get_price_decimals() returns.'
 		);
 	}
 
 	public function decimal_places_script_lines() {
 		return array(
-			'no decimals'                           => array( 0, 'window._googlesitekit.wcdata.currencyMinorUnit = 0;' ),
-			'two decimals, the WooCommerce default' => array( 2, 'window._googlesitekit.wcdata.currencyMinorUnit = 2;' ),
-			'four decimals'                         => array( 4, 'window._googlesitekit.wcdata.currencyMinorUnit = 4;' ),
+			'zero decimal places'                         => array( 0, 'window._googlesitekit.wcdata.currencyMinorUnit = 0;' ),
+			'two decimal places, the WooCommerce default' => array( 2, 'window._googlesitekit.wcdata.currencyMinorUnit = 2;' ),
+			'four decimal places'                         => array( 4, 'window._googlesitekit.wcdata.currencyMinorUnit = 4;' ),
 		);
 	}
 

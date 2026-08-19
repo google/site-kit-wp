@@ -1,5 +1,5 @@
 /**
- * WooCommerce conversion event provider tests.
+ * WooCommerce event provider script tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -17,12 +17,13 @@
  */
 
 /**
- * Builds a product in the shape `get_formatted_product()` writes into the page.
+ * Creates a product, shaped the way `get_formatted_product()` writes it into
+ * the page.
  *
  * @since n.e.x.t
  *
- * @param {number} price The price in minor units, such as `1234` for 12.34.
- * @return {Object} A product, shaped the way `get_formatted_product()` shapes one.
+ * @param {number} price The price in minor units, such as 1234 for 12.34.
+ * @return {Object} A product for `window._googlesitekit.wcdata`.
  */
 function createProduct( price ) {
 	return {
@@ -35,12 +36,13 @@ function createProduct( price ) {
 }
 
 /**
- * Builds an order in the shape `get_formatted_order()` writes into the order-received page.
+ * Creates an order holding a single product, shaped the way
+ * `get_formatted_order()` writes it into the order-received page.
  *
  * @since n.e.x.t
  *
- * @param {number} price The order total and its one item's price, both in minor units.
- * @return {Object} An order, shaped the way `get_formatted_order()` shapes one.
+ * @param {number} price The order total and the price of its one product, both in minor units.
+ * @return {Object} An order for `window._googlesitekit.wcdata`.
  */
 function createOrder( price ) {
 	return {
@@ -57,22 +59,22 @@ function createOrder( price ) {
 }
 
 /**
- * Loads the WooCommerce event provider script and returns the mock that caught
- * its events.
+ * Runs the event provider script over one set of page data.
  *
- * The script reads `global._googlesitekit` once, as it loads, so every case
- * imports the module again.
+ * The script reads `global._googlesitekit` as it loads, and only then, so each
+ * case has to import the module again.
  *
  * @since n.e.x.t
  *
  * @param {Object} wcdata     The page data, as `window._googlesitekit.wcdata`.
- * @param {Object} [handlers] Filled with each handler the script binds, keyed by event name.
- * @return {Function} The `gtagEvent` mock, with one call per event the script sent.
+ * @param {Object} [handlers] An object that receives every handler the script binds to `body`, keyed by event name.
+ * @return {Function} The `gtagEvent` mock, holding one call per event the script sent.
  */
 async function loadEventScript( wcdata, handlers = {} ) {
 	const gtagEvent = jest.fn();
 
-	// The script returns at once when `jQuery` is missing, so every case needs this fake.
+	// The script does nothing when `jQuery` is missing, so this fake has to exist
+	// before the import below.
 	global.jQuery = () => ( {
 		on: ( eventName, handler ) => {
 			handlers[ eventName ] = handler;
@@ -86,22 +88,23 @@ async function loadEventScript( wcdata, handlers = {} ) {
 	return gtagEvent;
 }
 
-describe( 'WooCommerce conversion event provider', () => {
+describe( 'WooCommerce event provider', () => {
 	afterEach( () => {
 		delete global.jQuery;
 		delete global._googlesitekit;
 		jest.resetModules();
 	} );
 
-	// `price` is what the page holds, already multiplied into minor units.
+	// Each row is the store's decimal places, the price the page holds in minor
+	// units, and the value the script should send.
 	const decimalPlaceCases = [
-		[ 'four decimals', 4, 123456, 12.3456 ],
-		[ 'no decimals', 0, 1234, 1234 ],
-		[ 'two decimals, the WooCommerce default', 2, 4999, 49.99 ],
+		[ 'four decimal places', 4, 123456, 12.3456 ],
+		[ 'zero decimal places', 0, 1234, 1234 ],
+		[ 'two decimal places, the WooCommerce default', 2, 4999, 49.99 ],
 	];
 
 	it.each( decimalPlaceCases )(
-		'should send an `add_to_cart` value and item price when the store keeps prices to %s',
+		'should send the `add_to_cart` value and item price for a store set to %s',
 		async ( _caseName, currencyMinorUnit, price, expectedPrice ) => {
 			const gtagEvent = await loadEventScript( {
 				currency: 'USD',
@@ -129,7 +132,7 @@ describe( 'WooCommerce conversion event provider', () => {
 	);
 
 	it.each( decimalPlaceCases )(
-		'should send a `purchase` value and item price when the store keeps prices to %s',
+		'should send the `purchase` value and item price for a store set to %s',
 		async ( _caseName, currencyMinorUnit, price, expectedPrice ) => {
 			const gtagEvent = await loadEventScript( {
 				currency: 'USD',
@@ -159,7 +162,7 @@ describe( 'WooCommerce conversion event provider', () => {
 		}
 	);
 
-	it( 'should send an `add_to_cart` value at two decimals when the page sends no `currencyMinorUnit`', async () => {
+	it( 'should fall back to two decimal places when the page data has no `currencyMinorUnit`', async () => {
 		const gtagEvent = await loadEventScript( {
 			currency: 'USD',
 			eventsToTrack: [ 'add_to_cart', 'purchase' ],
@@ -173,7 +176,7 @@ describe( 'WooCommerce conversion event provider', () => {
 		expect( gtagEvent ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'should send an `add_to_cart` value at four decimals on the AJAX `added_to_cart` event', async () => {
+	it( "should send the `add_to_cart` value at the store's decimal places when jQuery reports `added_to_cart`", async () => {
 		const handlers = {};
 		const gtagEvent = await loadEventScript(
 			{
