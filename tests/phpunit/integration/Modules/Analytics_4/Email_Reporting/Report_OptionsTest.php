@@ -87,6 +87,24 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 		$this->assertSame( '2024-01-31', $options['compareEndDate'], 'Compare end should match provided compare range.' );
 	}
 
+	public function test_top_authors_uses_custom_dimension() {
+		$builder = $this->create_builder();
+		$options = $builder->get_top_authors_options();
+
+		$expected_dimension = sprintf(
+			'customEvent:%s',
+			Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR
+		);
+
+		$this->assertSame(
+			$expected_dimension,
+			$options['dimensions'][0]['name'],
+			'Top authors report should reference the custom author dimension.'
+		);
+
+		$this->assertSame( 3, $options['limit'], 'Top authors report should limit to three rows.' );
+	}
+
 	public function test_top_categories_uses_custom_dimension() {
 		$builder = $this->create_builder();
 		$options = $builder->get_top_categories_options();
@@ -225,6 +243,229 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 			$result['audiences'],
 			'Custom audiences payload should return matching audience metadata.'
 		);
+	}
+
+	public function test_get_online_store_primary_options__counts_the_purchase_event() {
+		$builder = $this->create_builder_with_events( array( 'add_to_cart', 'purchase' ) );
+		$options = $builder->get_online_store_primary_options();
+
+		$this->assertEquals(
+			array( array( 'name' => 'eventCount' ) ),
+			$options['metrics'],
+			'get_online_store_primary_options() should request the eventCount metric.'
+		);
+		$this->assertEquals(
+			array( array( 'name' => 'eventName' ) ),
+			$options['dimensions'],
+			'get_online_store_primary_options() should group the count by event name alone.'
+		);
+		$this->assertArrayNotHasKey(
+			'keepEmptyRows',
+			$options,
+			'get_online_store_primary_options() should keep no empty row when it returns one row per event name.'
+		);
+		$this->assertSame(
+			'purchase',
+			$options['dimensionFilters']['eventName'],
+			'get_online_store_primary_options() should filter the count to purchase when the site sends both store events.'
+		);
+		$this->assert_report_covers_both_periods( $options, 'get_online_store_primary_options()' );
+	}
+
+	public function test_get_online_store_primary_options__counts_add_to_cart_when_the_site_sends_no_purchase() {
+		$builder = $this->create_builder_with_events( array( 'add_to_cart' ) );
+		$options = $builder->get_online_store_primary_options();
+
+		$this->assertSame(
+			'add_to_cart',
+			$options['dimensionFilters']['eventName'],
+			'get_online_store_primary_options() should filter the count to add_to_cart when the site sends no purchase event.'
+		);
+	}
+
+	public function test_get_online_store_primary_options__splits_the_count_by_event_provider() {
+		$builder = $this->create_builder_with_events( array( 'purchase' ) );
+		$options = $builder->get_online_store_primary_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
+
+		$this->assertEquals(
+			array(
+				array( 'name' => 'eventName' ),
+				array( 'name' => 'customEvent:googlesitekit_event_provider' ),
+			),
+			$options['dimensions'],
+			'get_online_store_primary_options() should group the count by event name and by event provider when given the event provider dimension.'
+		);
+		$this->assertTrue(
+			$options['keepEmptyRows'],
+			'get_online_store_primary_options() should keep an event provider that sent no event in the report.'
+		);
+		$this->assertSame(
+			'purchase',
+			$options['dimensionFilters']['eventName'],
+			'get_online_store_primary_options() should still filter the count to the purchase event when given the event provider dimension.'
+		);
+		$this->assert_report_covers_both_periods( $options, 'get_online_store_primary_options()' );
+	}
+
+	public function test_get_lead_primary_options__counts_every_lead_event_the_site_sends() {
+		$builder = $this->create_builder_with_events( array( 'submit_lead_form', 'purchase', 'contact' ) );
+		$options = $builder->get_lead_primary_options();
+
+		$this->assertEquals(
+			array( array( 'name' => 'eventCount' ) ),
+			$options['metrics'],
+			'get_lead_primary_options() should request the eventCount metric.'
+		);
+		$this->assertSame(
+			'inListFilter',
+			$options['dimensionFilters']['eventName']['filterType'],
+			'get_lead_primary_options() should filter the event name with an in-list filter, because a site can send several lead events.'
+		);
+		$this->assertSame(
+			array( 'contact', 'submit_lead_form' ),
+			$options['dimensionFilters']['eventName']['value'],
+			'get_lead_primary_options() should list the detected lead events in the order Conversion_Reporting_Events_Sync names them, and leave the purchase event out.'
+		);
+		$this->assert_report_covers_both_periods( $options, 'get_lead_primary_options()' );
+	}
+
+	public function test_get_lead_primary_options__lists_no_event_when_the_site_sends_none() {
+		$builder = $this->create_builder();
+		$options = $builder->get_lead_primary_options();
+
+		$this->assertSame(
+			array(),
+			$options['dimensionFilters']['eventName']['value'],
+			'get_lead_primary_options() should list no event before any detected event is set.'
+		);
+	}
+
+	public function test_get_lead_primary_options__splits_the_count_by_form() {
+		$builder = $this->create_builder_with_events( array( 'contact' ) );
+		$options = $builder->get_lead_primary_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID );
+
+		$this->assertEquals(
+			array(
+				array( 'name' => 'eventName' ),
+				array( 'name' => 'customEvent:googlesitekit_form_id' ),
+			),
+			$options['dimensions'],
+			'get_lead_primary_options() should group the count by event name and by form when given the form ID dimension.'
+		);
+		$this->assertTrue(
+			$options['keepEmptyRows'],
+			'get_lead_primary_options() should keep a form that got no lead event in the report.'
+		);
+		$this->assertSame(
+			array( 'contact' ),
+			$options['dimensionFilters']['eventName']['value'],
+			'get_lead_primary_options() should still list the detected lead events when given the form ID dimension.'
+		);
+		$this->assert_report_covers_both_periods( $options, 'get_lead_primary_options()' );
+	}
+
+	public function test_get_engagement_options__requests_the_engagement_rate_and_sessions_for_the_whole_site() {
+		$builder = $this->create_builder();
+		$options = $builder->get_engagement_options();
+
+		$this->assertEquals(
+			array(
+				array( 'name' => 'engagementRate' ),
+				array( 'name' => 'sessions' ),
+			),
+			$options['metrics'],
+			'get_engagement_options() should request the engagementRate and sessions metrics.'
+		);
+		$this->assertArrayNotHasKey(
+			'dimensions',
+			$options,
+			'get_engagement_options() should total the sessions for the whole site when given no dimension.'
+		);
+		$this->assertArrayNotHasKey(
+			'keepEmptyRows',
+			$options,
+			'get_engagement_options() should keep no empty row when it returns one row for the whole site.'
+		);
+		$this->assert_report_covers_both_periods( $options, 'get_engagement_options()' );
+	}
+
+	public function test_get_engagement_options__splits_the_sessions_by_event_provider() {
+		$builder = $this->create_builder();
+		$options = $builder->get_engagement_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
+
+		$this->assertEquals(
+			array( array( 'name' => 'customEvent:googlesitekit_event_provider' ) ),
+			$options['dimensions'],
+			'get_engagement_options() should group the sessions by event provider when given the event provider dimension.'
+		);
+		$this->assertTrue(
+			$options['keepEmptyRows'],
+			'get_engagement_options() should keep an event provider with no sessions in the report.'
+		);
+		$this->assert_report_covers_both_periods( $options, 'get_engagement_options()' );
+	}
+
+	public function test_has_ecommerce_events__is_true_when_the_site_sends_a_store_event() {
+		$builder = $this->create_builder_with_events( array( 'add_to_cart', 'contact' ) );
+
+		$this->assertTrue(
+			$builder->has_ecommerce_events(),
+			'has_ecommerce_events() should be true when the detected events hold a store event.'
+		);
+	}
+
+	public function test_has_ecommerce_events__is_false_when_the_site_sends_no_store_event() {
+		$builder = $this->create_builder_with_events( array( 'contact', 'generate_lead' ) );
+
+		$this->assertFalse(
+			$builder->has_ecommerce_events(),
+			'has_ecommerce_events() should be false when the detected events hold lead events alone.'
+		);
+	}
+
+	public function test_has_lead_events__is_true_when_the_site_sends_a_lead_event() {
+		$builder = $this->create_builder_with_events( array( 'purchase', 'generate_lead' ) );
+
+		$this->assertTrue(
+			$builder->has_lead_events(),
+			'has_lead_events() should be true when the detected events hold a lead event.'
+		);
+	}
+
+	public function test_has_lead_events__is_false_when_the_site_sends_no_lead_event() {
+		$builder = $this->create_builder_with_events( array( 'purchase' ) );
+
+		$this->assertFalse(
+			$builder->has_lead_events(),
+			'has_lead_events() should be false when the detected events hold store events alone.'
+		);
+	}
+
+	/**
+	 * Asserts that a report covers the report period and the period before it.
+	 *
+	 * @param array  $options        Report request options.
+	 * @param string $builder_method Name of the builder method under test, with its
+	 *                               parentheses. For example, `get_lead_primary_options()`.
+	 */
+	private function assert_report_covers_both_periods( array $options, $builder_method ) {
+		$this->assertSame( '2024-01-01', $options['startDate'], sprintf( '%s should request the report period start date.', $builder_method ) );
+		$this->assertSame( '2024-01-07', $options['endDate'], sprintf( '%s should request the report period end date.', $builder_method ) );
+		$this->assertSame( '2023-12-25', $options['compareStartDate'], sprintf( '%s should request the previous period start date.', $builder_method ) );
+		$this->assertSame( '2023-12-31', $options['compareEndDate'], sprintf( '%s should request the previous period end date.', $builder_method ) );
+	}
+
+	/**
+	 * Creates a builder that reports the given events as detected.
+	 *
+	 * @param array $detected_events Detected event names.
+	 * @return Analytics_4_Report_Options
+	 */
+	private function create_builder_with_events( array $detected_events ) {
+		$builder = $this->create_builder();
+		$builder->set_detected_events( $detected_events );
+
+		return $builder;
 	}
 
 	/**
