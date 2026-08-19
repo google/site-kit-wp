@@ -325,11 +325,6 @@ $site-goals-tile-connector-offset: 3.5px;
 		.googlesitekit-site-goals-tile__subtext {
 			color: $c-surfaces-on-background-variant;
 			margin: 1px 0 0;
-
-			/* TODO: 11266 -- Remove this override and update VRT reference. */
-			&.googlesitekit-typography {
-				line-height: 16px;
-			}
 		}
 
 		.googlesitekit-site-goals-tile__change-container {
@@ -351,11 +346,6 @@ $site-goals-tile-connector-offset: 3.5px;
 			color: $c-surfaces-on-background-variant;
 			margin: 2px 0 0;
 			text-align: right;
-
-			/* TODO: 11266 -- Remove this override and update VRT reference. */
-			&.googlesitekit-typography {
-				line-height: 16px;
-			}
 		}
 
 		// These states hide the connector and the dot, so padding sets
