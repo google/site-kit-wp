@@ -127,6 +127,7 @@ export default function GoogleTagGatewayToggle( { className } ) {
 					</div>
 				</div>
 			) }
+			{ /* TODO: 11266 -- Use P typography component and remove CSS overrides. */ }
 			<p className="googlesitekit-module-settings-group__helper-text">
 				{ createInterpolateElement(
 					__(

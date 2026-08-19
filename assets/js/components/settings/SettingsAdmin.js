@@ -29,6 +29,8 @@ import Layout from '@/js/components/layout/Layout';
 import OptIn from '@/js/components/OptIn';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import ResetButton from '@/js/components/ResetButton';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { useFeature } from '@/js/hooks/useFeature';
@@ -186,7 +188,10 @@ export default function SettingsAdmin() {
 							<Row>
 								<Cell size={ 12 }>
 									<div className="googlesitekit-settings-module__meta-items">
-										<p className="googlesitekit-settings-module__status">
+										<P
+											className="googlesitekit-settings-module__status"
+											size={ SIZE_MEDIUM }
+										>
 											{ __(
 												'Site Kit is connected',
 												'google-site-kit'
@@ -197,7 +202,7 @@ export default function SettingsAdmin() {
 													height={ 8 }
 												/>
 											</span>
-										</p>
+										</P>
 									</div>
 								</Cell>
 							</Row>

@@ -44,6 +44,8 @@ import Link from '@/js/components/Link';
 import NewBadge from '@/js/components/NewBadge';
 import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -328,7 +330,10 @@ export default function SetupMain( { finishSetup } ) {
 									) }
 									<NewBadge hasLeftSpacing />
 								</Typography>
-								<p className="instructions">
+								<P
+									className="instructions"
+									size={ SIZE_MEDIUM }
+								>
 									{ createInterpolateElement(
 										__(
 											'Create your first Ads campaign, add billing information, and choose your conversion goals. To create a new Ads account, you’ll need to grant Site Kit additional permissions during the account creation process. <a>Learn more</a>',
@@ -345,7 +350,7 @@ export default function SetupMain( { finishSetup } ) {
 											),
 										}
 									) }
-								</p>
+								</P>
 								<SpinnerButton
 									onClick={ onSetupCallback }
 									disabled={ isNavigatingToOAuthURL }
@@ -376,7 +381,10 @@ export default function SetupMain( { finishSetup } ) {
 										'google-site-kit'
 									) }
 								</Typography>
-								<p className="instructions">
+								<P
+									className="instructions"
+									size={ SIZE_MEDIUM }
+								>
 									{ createInterpolateElement(
 										__(
 											'To track conversions for your Ads campaign, you need to add your Conversion ID to Site Kit. You can always change the Conversion ID later in Site Kit Settings. <a>Learn more</a>',
@@ -394,7 +402,7 @@ export default function SetupMain( { finishSetup } ) {
 											br: <br />,
 										}
 									) }
-								</p>
+								</P>
 								<SetupForm
 									finishSetup={ finishSetup }
 									isNavigatingToOAuthURL={

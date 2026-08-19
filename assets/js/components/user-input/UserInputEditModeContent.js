@@ -28,6 +28,8 @@ import { __ } from '@wordpress/i18n';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import ErrorNotice from '@/js/components/ErrorNotice';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -147,7 +149,9 @@ export default function UserInputEditModeContent( {
 				alignLeftOptions
 			/>
 			{ errorMessage && ! ( setupFlowRefreshEnabled && settingsView ) && (
-				<p className="googlesitekit-error-text">{ errorMessage }</p>
+				<P className="googlesitekit-error-text" size={ SIZE_MEDIUM }>
+					{ errorMessage }
+				</P>
 			) }
 			{ settingsView && (
 				<Fragment>

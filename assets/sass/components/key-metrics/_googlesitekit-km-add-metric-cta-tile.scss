@@ -47,12 +47,12 @@
 
 		.googlesitekit-km-add-metric-cta-tile__text {
 			color: $c-surfaces-on-background-variant;
-			font-family: $f-secondary;
-			font-size: $fs-body-sm;
-			font-weight: $fw-medium;
-			letter-spacing: $ls-xs;
-			line-height: $lh-body-sm;
 			margin: 7px 0 0;
+
+			&.googlesitekit-typography {
+				font-family: $f-secondary;
+				font-weight: $fw-medium;
+			}
 		}
 	}
 }

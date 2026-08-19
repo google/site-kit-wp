@@ -85,16 +85,20 @@
 		}
 
 		.googlesitekit-km-widget-tile__subtext {
-			font-size: $fs-label-sm;
-			font-weight: $fw-medium;
-			line-height: $lh-label-sm;
 			margin: -1px 0 1px;
 
+			/* TODO: 11266 -- Remove this override and update VRT refrences. */
+			&.googlesitekit-typography {
+				letter-spacing: $ls-s;
+			}
+
 			@media (min-width: $bp-nonMobile) {
-				font-size: $fs-label-md;
-				font-weight: $fw-normal;
-				line-height: $lh-label-md;
 				margin: -4px 0 1px;
+
+				/* TODO: 11266 -- Remove this override and update VRT refrences. */
+				&.googlesitekit-typography {
+					font-weight: $fw-normal;
+				}
 			}
 		}
 	}
@@ -113,16 +117,20 @@
 		}
 
 		.googlesitekit-km-widget-tile__subtext {
-			font-size: $fs-label-sm;
-			font-weight: $fw-medium;
-			line-height: $lh-label-sm;
 			margin: 2px 0 0;
 
+			/* TODO: 11266 -- Remove this override and update VRT refrences. */
+			&.googlesitekit-typography {
+				letter-spacing: $ls-s;
+			}
+
 			@media (min-width: $bp-nonMobile) {
-				font-size: $fs-label-md;
-				font-weight: $fw-normal;
-				line-height: $lh-label-md;
 				margin: 0;
+
+				/* TODO: 11266 -- Remove this override and update VRT refrences. */
+				&.googlesitekit-typography {
+					font-weight: $fw-normal;
+				}
 			}
 		}
 	}
@@ -167,9 +175,6 @@
 
 		.googlesitekit-km-widget-tile__table-plain-text {
 			color: $c-surfaces-on-surface;
-			font-size: $fs-body-sm;
-			letter-spacing: $ls-xs;
-			line-height: $lh-body-sm;
 			margin: 0;
 			overflow: hidden;
 			text-overflow: ellipsis;
