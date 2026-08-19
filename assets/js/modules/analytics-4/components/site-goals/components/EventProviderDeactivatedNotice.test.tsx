@@ -36,7 +36,7 @@ describe( 'EventProviderDeactivatedNotice', () => {
 		registry = createTestRegistry();
 	} );
 
-	it( 'renders the online store title, text, and Learn more link when the store plugin is not active', () => {
+	it( 'renders the online store title, description, and Learn more link when the store plugin is not active', () => {
 		provideSiteInfo( registry, {
 			activeConversionEventProviders: [ 'wpforms' ],
 		} );
@@ -60,7 +60,7 @@ describe( 'EventProviderDeactivatedNotice', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'renders the form title and text when the form plugin is not active', () => {
+	it( 'renders the form title and description when the form plugin is not active', () => {
 		provideSiteInfo( registry, {
 			activeConversionEventProviders: [ 'woocommerce' ],
 		} );
@@ -98,7 +98,7 @@ describe( 'EventProviderDeactivatedNotice', () => {
 		expect( queryByText( 'Got it' ) ).not.toBeInTheDocument();
 	} );
 
-	it( "renders nothing when the active list still holds the tab's plugin slug", () => {
+	it( 'renders nothing when the tab plugin is still active', () => {
 		provideSiteInfo( registry, {
 			activeConversionEventProviders: [ 'woocommerce' ],
 		} );
@@ -114,7 +114,7 @@ describe( 'EventProviderDeactivatedNotice', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'renders nothing while the active provider list is still undefined', () => {
+	it( 'renders nothing before the active provider list loads', () => {
 		provideSiteInfo( registry );
 
 		const { container } = render(
@@ -128,7 +128,7 @@ describe( 'EventProviderDeactivatedNotice', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'renders nothing when no providerSlug is passed', () => {
+	it( 'renders nothing when the tab has no plugin slug', () => {
 		provideSiteInfo( registry, {
 			activeConversionEventProviders: [],
 		} );
@@ -143,7 +143,7 @@ describe( 'EventProviderDeactivatedNotice', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'renders nothing for a slug that neither label map holds', () => {
+	it( 'renders nothing for a slug no label map holds', () => {
 		provideSiteInfo( registry, {
 			activeConversionEventProviders: [],
 		} );
@@ -159,7 +159,7 @@ describe( 'EventProviderDeactivatedNotice', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'renders nothing when a lead form slug arrives with the ecommerce goal type', () => {
+	it( 'renders nothing for a form slug under the ecommerce goal type', () => {
 		provideSiteInfo( registry, {
 			activeConversionEventProviders: [],
 		} );

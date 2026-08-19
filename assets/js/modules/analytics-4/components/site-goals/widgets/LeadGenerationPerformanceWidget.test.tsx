@@ -1480,7 +1480,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		} );
 	}
 
-	it( 'does not render breakdown tabs or the deactivated plugin notice in aggregated mode (no form values)', async () => {
+	it( 'stays in aggregated mode with no tabs and no deactivated plugin notice when no form values exist', async () => {
 		provideSiteInfo( registry, {
 			activeConversionEventProviders: [],
 		} );
@@ -1722,7 +1722,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'renders the deactivated plugin notice on a form tab whose plugin is not in the active list', async () => {
+	it( 'renders the deactivated plugin notice on a form tab whose plugin is not active', async () => {
 		provideSiteInfo( registry, {
 			activeConversionEventProviders: [ 'contact-form-7' ],
 		} );
@@ -1750,7 +1750,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( "renders no deactivated plugin notice when the form tab's plugin is in the active list", async () => {
+	it( 'renders no deactivated plugin notice when the form tab plugin is still active', async () => {
 		provideSiteInfo( registry, {
 			activeConversionEventProviders: [ 'wpforms' ],
 		} );
@@ -1803,7 +1803,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'renders no deactivated plugin notice after a click on the Other form completions tab', async () => {
+	it( 'hides the deactivated plugin notice after a click on the Other form completions tab', async () => {
 		provideSiteInfo( registry, {
 			activeConversionEventProviders: [],
 		} );

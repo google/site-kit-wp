@@ -43,9 +43,9 @@ import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 
 export interface EventProviderDeactivatedNoticeProps {
-	/** The goal type of the widget that shows the event provider deactivated notice, either the online store widget or the lead generation widget. */
+	/** The goal type of the widget that shows the notice. `GOAL_TYPES.ECOMMERCE` picks the online store wording and `GOAL_TYPES.LEAD` picks the form wording. */
 	goalType: GoalType;
-	/** The slug of the plugin the active tab gets its data from, such as `woocommerce` in the online store widget and `wpforms` in the lead generation widget. */
+	/** The slug of the plugin whose data the active tab shows, such as `woocommerce` or `wpforms`. */
 	providerSlug?: string;
 }
 

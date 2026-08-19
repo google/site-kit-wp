@@ -182,10 +182,10 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	}
 
 	/**
-	 * Adds the active event provider category flags and slugs to the inline base data.
+	 * Adds the active event provider flags and slugs to the inline base data.
 	 *
 	 * @since 1.181.0
-	 * @since n.e.x.t Added the active conversion event provider slugs.
+	 * @since n.e.x.t Added the slugs of the active conversion event providers.
 	 *
 	 * @param array $data Inline base data.
 	 * @return array Filtered $data.

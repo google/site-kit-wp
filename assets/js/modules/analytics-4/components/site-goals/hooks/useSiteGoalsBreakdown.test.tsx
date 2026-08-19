@@ -179,7 +179,7 @@ describe( 'useSiteGoalsBreakdown', () => {
 		} );
 	} );
 
-	it( 'reports no breakdown tabs and no value tab when the discovery report is empty', () => {
+	it( 'reports no breakdown tabs and no value tab when the discovery report finds no values', () => {
 		seedDiscoveryReport( [] );
 
 		const { result } = renderHook(

@@ -39,7 +39,7 @@ function Template( {
 	return (
 		<WithRegistrySetup
 			func={ ( registry: WPDataRegistry ) =>
-				// An empty active provider list makes both stories show the notice.
+				// No provider is active, so both stories render the notice.
 				provideSiteInfo( registry, {
 					activeConversionEventProviders: [],
 				} )
