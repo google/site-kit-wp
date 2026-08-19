@@ -142,7 +142,11 @@ class Content_Events extends Conversion_Events_Provider {
 		add_filter(
 			'render_block',
 			function ( $block_content, $block ) {
-				if ( ! isset( $block['blockName'] ) || 'core/embed' !== $block['blockName'] ) {
+				$block_name = $block['blockName'] ?? '';
+
+				// `core/embed` is the consolidated block name; WordPress 5.2's original
+				// oEmbed block split by provider, e.g. `core-embed/youtube`.
+				if ( 'core/embed' !== $block_name && 0 !== strpos( $block_name, 'core-embed/' ) ) {
 					return $block_content;
 				}
 
