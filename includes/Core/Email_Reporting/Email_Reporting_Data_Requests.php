@@ -318,6 +318,7 @@ class Email_Reporting_Data_Requests {
 	 * Collects Analytics 4 payloads keyed by section-part identifiers.
 	 *
 	 * @since 1.168.0
+	 * @since n.e.x.t Added the detected events and every custom dimension's availability to the report options.
 	 *
 	 * @param object $module     Module instance.
 	 * @param array  $date_range Date range payload.
@@ -327,12 +328,8 @@ class Email_Reporting_Data_Requests {
 		$report_options = new Analytics_4_Report_Options( $date_range, array(), $this->context );
 
 		$report_options->set_audience_segmentation_enabled( $this->is_audience_segmentation_enabled() );
-		$report_options->set_custom_dimension_availability(
-			array(
-				Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR => $this->has_custom_dimension_data( Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR ),
-				Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES => $this->has_custom_dimension_data( Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES ),
-			)
-		);
+		$report_options->set_custom_dimension_availability( $this->custom_dimensions_data_available->get_data_availability() );
+		$report_options->set_detected_events( $module->get_settings()->get()['detectedEvents'] ?? array() );
 
 		$request_assembler                = new Analytics_4_Report_Request_Assembler( $report_options );
 		list( $requests, $custom_titles ) = $request_assembler->build_requests();
@@ -462,19 +459,6 @@ class Email_Reporting_Data_Requests {
 	private function is_audience_segmentation_enabled() {
 		$settings = $this->audience_settings->get();
 		return ! empty( $settings['audienceSegmentationSetupCompletedBy'] );
-	}
-
-	/**
-	 * Determines whether data is available for a custom dimension.
-	 *
-	 * @since 1.168.0
-	 *
-	 * @param string $custom_dimension Custom dimension slug.
-	 * @return bool True if data is available, false otherwise.
-	 */
-	private function has_custom_dimension_data( $custom_dimension ) {
-		$availability = $this->custom_dimensions_data_available->get_data_availability();
-		return ! empty( $availability[ $custom_dimension ] );
 	}
 
 	/**
