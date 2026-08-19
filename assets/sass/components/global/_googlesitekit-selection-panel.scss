@@ -106,11 +106,6 @@
 			color: $c-surfaces-on-surface-variant;
 			margin: $grid-gap-phone 0 0 $grid-gap-phone;
 
-			/* TODO: 11266 -- Remove this override and update VRT refrences. */
-			&.googlesitekit-typography.googlesitekit-typography--label {
-				letter-spacing: $ls-s;
-			}
-
 			@media (min-width: $bp-tablet) {
 				margin: $grid-gap-desktop 0 0 $grid-gap-desktop;
 			}
@@ -205,11 +200,6 @@
 	}
 
 	.googlesitekit-selection-panel-footer__item-count {
-		/* TODO: 11266 -- Remove this override and update VRT refrences. */
-		&.googlesitekit-typography.googlesitekit-typography--label.googlesitekit-typography--medium {
-			letter-spacing: $ls-xs;
-			line-height: $lh-label-sm;
-		}
 
 		.googlesitekit-selection-panel-footer__item-count--max-count {
 			color: $c-surfaces-on-surface-variant;
