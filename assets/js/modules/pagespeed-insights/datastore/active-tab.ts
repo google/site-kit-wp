@@ -30,6 +30,7 @@ import { STRATEGY_DESKTOP, STRATEGY_MOBILE } from './constants';
 export type ActiveTab = typeof STRATEGY_MOBILE | typeof STRATEGY_DESKTOP;
 
 interface ActiveTabState {
+	/** Active device tab shown by the PageSpeed Insights widget. */
 	activeTab: ActiveTab;
 }
 
@@ -50,8 +51,8 @@ export const actions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param activeTab Device tab to activate: `STRATEGY_MOBILE` or `STRATEGY_DESKTOP`.
-	 * @return Redux-style action.
+	 * @param {string} activeTab Device tab to activate: `STRATEGY_MOBILE` or `STRATEGY_DESKTOP`.
+	 * @return {Object} Redux-style action.
 	 */
 	setActiveTab( activeTab: ActiveTab ) {
 		invariant(
@@ -89,8 +90,8 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param state Data store's state.
-	 * @return Active device tab: `STRATEGY_MOBILE` or `STRATEGY_DESKTOP`.
+	 * @param {Object} state Data store's state.
+	 * @return {string} Active device tab: `STRATEGY_MOBILE` or `STRATEGY_DESKTOP`.
 	 */
 	getActiveTab( state: ActiveTabState ): ActiveTab {
 		return state.activeTab;

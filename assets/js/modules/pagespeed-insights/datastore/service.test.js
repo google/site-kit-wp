@@ -40,7 +40,7 @@ describe( 'module/pagespeed-insights service store', () => {
 
 	let registry;
 
-	beforeAll( () => {
+	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveUserInfo( userData );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -65,19 +65,11 @@ describe( 'module/pagespeed-insights service store', () => {
 			} );
 
 			it( 'returns the desktop report URL once the desktop tab is selected', () => {
-				const desktopRegistry = createTestRegistry();
-				desktopRegistry
-					.dispatch( CORE_USER )
-					.receiveUserInfo( userData );
-				desktopRegistry.dispatch( CORE_SITE ).receiveSiteInfo( {
-					referenceSiteURL: 'https://example.com/',
-					currentEntityURL: null,
-				} );
-				desktopRegistry
+				registry
 					.dispatch( MODULES_PAGESPEED_INSIGHTS )
 					.setActiveTab( STRATEGY_DESKTOP );
 
-				const detailsLinkURL = desktopRegistry
+				const detailsLinkURL = registry
 					.select( MODULES_PAGESPEED_INSIGHTS )
 					.getDetailsLinkURL();
 
@@ -89,14 +81,12 @@ describe( 'module/pagespeed-insights service store', () => {
 			} );
 
 			it( 'returns the report URL for the page a user is viewing', () => {
-				const pageRegistry = createTestRegistry();
-				pageRegistry.dispatch( CORE_USER ).receiveUserInfo( userData );
-				pageRegistry.dispatch( CORE_SITE ).receiveSiteInfo( {
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 					referenceSiteURL: 'https://example.com/',
 					currentEntityURL: 'https://example.com/example-page/',
 				} );
 
-				const detailsLinkURL = pageRegistry
+				const detailsLinkURL = registry
 					.select( MODULES_PAGESPEED_INSIGHTS )
 					.getDetailsLinkURL();
 
