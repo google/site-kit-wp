@@ -17,9 +17,7 @@
 		"import/no-unresolved": [
 			"error",
 			{
-				"ignore": [
-					"^@wordpress-core/?.*"
-				]
+				"ignore": [ "^@wordpress-core/?.*" ]
 			}
 		],
 		"jsdoc/check-tag-names": "error",
@@ -29,13 +27,7 @@
 			"always",
 			{
 				"preserveMainDescriptionPostDelimiter": true,
-				"tags": [
-					"param",
-					"arg",
-					"argument",
-					"prop",
-					"returns"
-				]
+				"tags": [ "param", "arg", "argument", "prop", "returns" ]
 			}
 		],
 		"jsdoc/require-description": "error",
@@ -52,10 +44,7 @@
 		"jsdoc/no-undefined-types": "error",
 		"jsdoc/tag-lines": "off",
 		"jsdoc/valid-types": "error",
-		"lodash/import-scope": [
-			"error",
-			"member"
-		],
+		"lodash/import-scope": [ "error", "member" ],
 		"require-await": "error",
 		"react/function-component-definition": [
 			"error",
@@ -64,10 +53,7 @@
 				"unnamedComponents": "function-expression"
 			}
 		],
-		"react/jsx-boolean-value": [
-			"error",
-			"never"
-		],
+		"react/jsx-boolean-value": [ "error", "never" ],
 		"react/jsx-curly-brace-presence": "error",
 		"no-invalid-regexp": "error",
 		"no-useless-escape": "error",
@@ -79,10 +65,7 @@
 				"prefix": "@"
 			}
 		],
-		"complexity": [
-			"error",
-			15
-		],
+		"complexity": [ "error", 15 ],
 		"no-use-before-define": [
 			"error",
 			{
@@ -91,10 +74,7 @@
 				"variables": false
 			}
 		],
-		"react/jsx-fragments": [
-			"error",
-			"element"
-		],
+		"react/jsx-fragments": [ "error", "element" ],
 		"valid-jsdoc": [
 			"error",
 			{
@@ -114,10 +94,7 @@
 				"avoidEscape": true
 			}
 		],
-		"curly": [
-			"error",
-			"all"
-		],
+		"curly": [ "error", "all" ],
 		"prettier/prettier": [
 			"error",
 			{},
@@ -151,9 +128,7 @@
 						"value": true
 					}
 				},
-				"ignore": [
-					"^_?e2e"
-				],
+				"ignore": [ "^_?e2e" ],
 				"allowList": {
 					"jQuery": true
 				}
@@ -168,39 +143,23 @@
 			"googlesitekit-widgets",
 			"googlesitekit-components",
 			"googlesitekit-notifications",
+			"googlesitekit-feature-discovery",
 			"@wordpress/i18n__non-shim",
 			"@wordpress/api-fetch__non-shim"
 		],
 		"import/parsers": {
-			"@typescript-eslint/parser": [
-				".ts",
-				".tsx"
-			]
+			"@typescript-eslint/parser": [ ".ts", ".tsx" ]
 		},
 		"import/resolver": {
 			"alias": {
 				"map": [
-					[
-						"@/(.*\\.svg)\\?url",
-						"assets/"
-					],
-					[
-						"@/(.*)",
-						"assets/"
-					],
-					[
-						"@wordpress-core",
-						"@wordpress"
-					]
+					[ "@/(.*\\.svg)\\?url", "assets/" ],
+					[ "@/(.*)", "assets/" ],
+					[ "@wordpress-core", "@wordpress" ]
 				]
 			},
 			"node": {
-				"extensions": [
-					".js",
-					".jsx",
-					".ts",
-					".tsx"
-				]
+				"extensions": [ ".js", ".jsx", ".ts", ".tsx" ]
 			},
 			"typescript": {
 				"alwaysTryTypes": true
@@ -209,13 +168,8 @@
 	},
 	"overrides": [
 		{
-			"files": [
-				"**/*.ts",
-				"**/*.tsx"
-			],
-			"extends": [
-				"plugin:@typescript-eslint/recommended"
-			],
+			"files": [ "**/*.ts", "**/*.tsx" ],
+			"extends": [ "plugin:@typescript-eslint/recommended" ],
 			"parser": "@typescript-eslint/parser",
 			"parserOptions": {
 				"ecmaVersion": 2024
@@ -244,9 +198,7 @@
 			}
 		},
 		{
-			"files": [
-				"tests/e2e/**/*.js"
-			],
+			"files": [ "tests/e2e/**/*.js" ],
 			"env": {
 				"browser": true
 			},
@@ -277,9 +229,7 @@
 				"assets/js/components/legacy*/**/*.js"
 			],
 			"rules": {
-				"filenames/match-exported": [
-					"off"
-				]
+				"filenames/match-exported": [ "off" ]
 			}
 		},
 		{

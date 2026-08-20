@@ -159,6 +159,7 @@ exports.manifestArgs = ( mode ) => ( {
 const siteKitExternals = {
 	'googlesitekit-api': [ 'googlesitekit', 'api' ],
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
+	'googlesitekit-feature-discovery': [ 'googlesitekit', 'featureDiscovery' ],
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
 	'googlesitekit-notifications': [ 'googlesitekit', 'notifications' ],

@@ -20,10 +20,12 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import FeatureDiscovery from 'googlesitekit-feature-discovery';
 import Modules from 'googlesitekit-modules';
 import Notifications from 'googlesitekit-notifications';
 import Widgets from 'googlesitekit-widgets';
 import {
+	registerFeatures,
 	registerModule,
 	registerNotifications,
 	registerStore,
@@ -34,3 +36,4 @@ registerStore( Data );
 registerModule( Modules );
 registerWidgets( Widgets );
 registerNotifications( Notifications );
+registerFeatures( FeatureDiscovery );
