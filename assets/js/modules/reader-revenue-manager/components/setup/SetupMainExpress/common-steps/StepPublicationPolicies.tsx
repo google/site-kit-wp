@@ -220,7 +220,7 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 			<p className="googlesitekit-rrm-publication-policies__description">
 				{ createInterpolateElement(
 					__(
-						"To set up a newsletter using Reader Revenue Manager, you will need to add links to your publication's policies. <a>Learn more</a>",
+						'To set up a newsletter using Reader Revenue Manager, you will need to add links to your publication’s policies. <a>Learn more</a>',
 						'google-site-kit'
 					),
 					{
