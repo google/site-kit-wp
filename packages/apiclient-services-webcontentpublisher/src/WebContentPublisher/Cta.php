@@ -15,24 +15,39 @@
  * the License.
  */
 
-namespace Google\Service\Webcontentpublisher;
+namespace Google\Service\WebContentPublisher;
 
 class Cta extends \Google\Model
 {
-  public const STATE_STATE_UNSPECIFIED = 'STATE_UNSPECIFIED';
-  public const STATE_DRAFT = 'DRAFT';
-  public const STATE_ACTIVE = 'ACTIVE';
-  public const TYPE_TYPE_UNSPECIFIED = 'TYPE_UNSPECIFIED';
-  public const TYPE_NEWSLETTER_SIGNUP = 'NEWSLETTER_SIGNUP';
-
   /**
-   * The user-visible display name.
+   * Unspecified CTA state.
+   */
+  public const STATE_STATE_UNSPECIFIED = 'STATE_UNSPECIFIED';
+  /**
+   * The CTA is a draft and not yet visible to users.
+   */
+  public const STATE_DRAFT = 'DRAFT';
+  /**
+   * The CTA is active and visible to users.
+   */
+  public const STATE_ACTIVE = 'ACTIVE';
+  /**
+   * Unspecified CTA type.
+   */
+  public const TYPE_TYPE_UNSPECIFIED = 'TYPE_UNSPECIFIED';
+  /**
+   * CTA for newsletter subscription signup.
+   */
+  public const TYPE_NEWSLETTER_SIGNUP = 'NEWSLETTER_SIGNUP';
+  /**
+   * Required. The user-visible display name of the CTA.
    *
    * @var string
    */
   public $displayName;
   /**
-   * The resource name.
+   * Identifier. The resource name of the Cta. Format:
+   * organizations/{organization}/publications/{publication}/ctas/{cta}
    *
    * @var string
    */
@@ -40,58 +55,105 @@ class Cta extends \Google\Model
   protected $newsletterConfigType = NewsletterConfig::class;
   protected $newsletterConfigDataType = '';
   /**
-   * The CTA state.
+   * Output only. The current state of this CTA.
    *
    * @var string
    */
   public $state;
   /**
-   * The CTA type.
+   * Required. The type of this CTA.
    *
    * @var string
    */
   public $type;
 
+  /**
+   * Required. The user-visible display name of the CTA.
+   *
+   * @param string $displayName
+   */
   public function setDisplayName($displayName)
   {
     $this->displayName = $displayName;
   }
+  /**
+   * @return string
+   */
   public function getDisplayName()
   {
     return $this->displayName;
   }
+  /**
+   * Identifier. The resource name of the Cta. Format:
+   * organizations/{organization}/publications/{publication}/ctas/{cta}
+   *
+   * @param string $name
+   */
   public function setName($name)
   {
     $this->name = $name;
   }
+  /**
+   * @return string
+   */
   public function getName()
   {
     return $this->name;
   }
+  /**
+   * Optional. Configuration specific to newsletter signup CTAs. Only populated
+   * if type is `NEWSLETTER_SIGNUP`.
+   *
+   * @param NewsletterConfig $newsletterConfig
+   */
   public function setNewsletterConfig(NewsletterConfig $newsletterConfig)
   {
     $this->newsletterConfig = $newsletterConfig;
   }
+  /**
+   * @return NewsletterConfig
+   */
   public function getNewsletterConfig()
   {
     return $this->newsletterConfig;
   }
+  /**
+   * Output only. The current state of this CTA.
+   *
+   * Accepted values: STATE_UNSPECIFIED, DRAFT, ACTIVE
+   *
+   * @param self::STATE_* $state
+   */
   public function setState($state)
   {
     $this->state = $state;
   }
+  /**
+   * @return self::STATE_*
+   */
   public function getState()
   {
     return $this->state;
   }
+  /**
+   * Required. The type of this CTA.
+   *
+   * Accepted values: TYPE_UNSPECIFIED, NEWSLETTER_SIGNUP
+   *
+   * @param self::TYPE_* $type
+   */
   public function setType($type)
   {
     $this->type = $type;
   }
+  /**
+   * @return self::TYPE_*
+   */
   public function getType()
   {
     return $this->type;
   }
 }
 
-class_alias(Cta::class, 'Google_Service_Webcontentpublisher_Cta');
+// Adding a class alias for backwards compatibility with the previous class name.
+class_alias(Cta::class, 'Google_Service_WebContentPublisher_Cta');
