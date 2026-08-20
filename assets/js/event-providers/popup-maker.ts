@@ -66,7 +66,7 @@ const HANDLED_PROVIDERS = [ 'wpforms', 'contactform7', 'ninjaforms', 'mc4wp' ];
  * @return {boolean} Whether this provider's submission should be handled here or not.
  */
 function shouldHandleProvider( provider: string | undefined ): boolean {
-	return provider !== undefined && ! HANDLED_PROVIDERS.includes( provider );
+	return provider === undefined || ! HANDLED_PROVIDERS.includes( provider );
 }
 
 /**
