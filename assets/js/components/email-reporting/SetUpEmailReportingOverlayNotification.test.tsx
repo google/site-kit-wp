@@ -29,6 +29,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import type { Registry } from '@/js/googlesitekit/data/types';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -68,15 +69,6 @@ jest.mock( '@/js/hooks/useActivateModuleCallback', () =>
 	jest.fn( () => jest.fn() )
 );
 
-// The `WPDataRegistry` type is missing the `resolveSelect` property.
-type TestRegistry = ReturnType< typeof createTestRegistry > & {
-	resolveSelect: ReturnType< typeof createTestRegistry >[ 'select' ];
-};
-
-function createRequirementsRegistry() {
-	return createTestRegistry() as TestRegistry;
-}
-
 describe( 'SetUpEmailReportingOverlayNotification', () => {
 	const notification =
 		DEFAULT_NOTIFICATIONS[ SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION ];
@@ -87,7 +79,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 
 	describe( 'checkRequirements', () => {
 		it( 'returns false when user is already subscribed', async () => {
-			const registry = createRequirementsRegistry();
+			const registry = createTestRegistry() as Registry;
 			registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 				enabled: true,
 			} );
@@ -104,7 +96,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 		} );
 
 		it( 'returns true when user is not subscribed (authenticated users always have access)', async () => {
-			const registry = createRequirementsRegistry();
+			const registry = createTestRegistry() as Registry;
 			registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 				enabled: true,
 			} );
@@ -121,7 +113,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 		} );
 
 		it( 'returns false when email reporting is disabled at site level', async () => {
-			const registry = createRequirementsRegistry();
+			const registry = createTestRegistry() as Registry;
 			registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 				enabled: false,
 			} );
@@ -152,7 +144,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			];
 
 			function setupViewableModules(
-				registry: TestRegistry,
+				registry: Registry,
 				viewableModuleSlugs: string[] = []
 			) {
 				registry
@@ -172,7 +164,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			}
 
 			it( 'returns true when view-only user can view Analytics', async () => {
-				const registry = createRequirementsRegistry();
+				const registry = createTestRegistry() as Registry;
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetEmailReportingSettings( {
@@ -197,7 +189,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			} );
 
 			it( 'returns true when view-only user can view Search Console', async () => {
-				const registry = createRequirementsRegistry();
+				const registry = createTestRegistry() as Registry;
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetEmailReportingSettings( {
@@ -222,7 +214,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			} );
 
 			it( 'returns false when view-only user cannot view Analytics or Search Console', async () => {
-				const registry = createRequirementsRegistry();
+				const registry = createTestRegistry() as Registry;
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetEmailReportingSettings( {
@@ -351,7 +343,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'opens the setup panel and flags the CTA when Try it is clicked', async () => {
+		it( 'opens the setup panel and flags the CTA when "Try it" is clicked', async () => {
 			fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
 			fetchMock.post( fetchDismissItem, {
 				body: [
@@ -390,7 +382,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			);
 		} );
 
-		it( 'dismisses the notification without a follow-up tooltip when Got it is clicked', async () => {
+		it( 'dismisses the notification without a follow-up tooltip when "Got it" is clicked', async () => {
 			fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
 			fetchMock.postOnce( fetchDismissItem, {
 				body: [ SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION ],
