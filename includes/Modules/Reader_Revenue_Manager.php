@@ -65,7 +65,7 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Update_Publication
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Subscribe_With_Google_Block;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_Publication;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Periodic_Synchronization;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Matchers;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\User_Settings;
@@ -195,11 +195,11 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			$this->user_settings->register();
 		}
 
-		$synchronize_publication = new Synchronize_Publication(
+		$periodic_synchronization = new Periodic_Synchronization(
 			$this,
 			$this->user_options
 		);
-		$synchronize_publication->register();
+		$periodic_synchronization->register();
 
 		if ( $this->is_connected() ) {
 			$this->post_product_id->register();
@@ -232,8 +232,8 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			}
 		}
 
-		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $synchronize_publication, 'maybe_schedule_synchronize_publication' ) );
-		add_action( 'load-toplevel_page_googlesitekit-settings', array( $synchronize_publication, 'maybe_schedule_synchronize_publication' ) );
+		add_action( 'load-toplevel_page_googlesitekit-dashboard', array( $periodic_synchronization, 'maybe_schedule_synchronize_publication' ) );
+		add_action( 'load-toplevel_page_googlesitekit-settings', array( $periodic_synchronization, 'maybe_schedule_synchronize_publication' ) );
 
 		// Reader Revenue Manager tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );

@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_Publication
+ * Class Google\Site_Kit\Modules\Reader_Revenue_Manager\Periodic_Synchronization
  *
  * @package   Google\Site_Kit\Modules\Reader_Revenue_Manager
  * @copyright 2025 Google LLC
@@ -17,13 +17,14 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 
 /**
- * Class for synchronizing the onboarding state.
+ * Class for scheduling and running periodic Reader Revenue Manager synchronization.
  *
  * @since 1.146.0
+ * @since n.e.x.t Renamed from Synchronize_Publication.
  * @access private
  * @ignore
  */
-class Synchronize_Publication {
+class Periodic_Synchronization {
 	/**
 	 * Cron event name for synchronizing the publication info.
 	 */
@@ -76,8 +77,8 @@ class Synchronize_Publication {
 	 * Cron callback for synchronizing the publication.
 	 *
 	 * Fetches publications via `GET:publications`, which triggers
-	 * synchronization of the connected publication data in
-	 * {@see Reader_Revenue_Manager::synchronize_publication_data()}.
+	 * synchronization of the connected publication data in the
+	 * publications datapoint response handling.
 	 *
 	 * @since 1.146.0
 	 *

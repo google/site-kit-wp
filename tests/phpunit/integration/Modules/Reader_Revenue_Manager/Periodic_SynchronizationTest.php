@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Synchronize_PublicationTest
+ * Class Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Periodic_SynchronizationTest
  *
  * @package   Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager
  * @copyright 2025 Google LLC
@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_Publication;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Periodic_Synchronization;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\ModulesHelperTrait;
@@ -33,13 +33,13 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
  * @group Modules
  * @group Reader_Revenue_Manager
  */
-class Synchronize_PublicationTest extends TestCase {
+class Periodic_SynchronizationTest extends TestCase {
 
 	use Fake_Site_Connection_Trait;
 	use ModulesHelperTrait;
 
 	/**
-	 * @var Synchronize_Publication
+	 * @var Periodic_Synchronization
 	 */
 	protected $synchronize_publication;
 
@@ -98,7 +98,7 @@ class Synchronize_PublicationTest extends TestCase {
 			),
 		);
 
-		$this->synchronize_publication = new Synchronize_Publication( $this->reader_revenue_manager, $this->user_options );
+		$this->synchronize_publication = new Periodic_Synchronization( $this->reader_revenue_manager, $this->user_options );
 	}
 
 	public function fake_sync_publication() {
@@ -153,10 +153,10 @@ class Synchronize_PublicationTest extends TestCase {
 	}
 
 	public function test_register() {
-		remove_all_actions( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+		remove_all_actions( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
 		$this->synchronize_publication->register();
 
-		$this->assertEquals( 10, has_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION ), 'Synchronize_Publication should register the cron action.' );
+		$this->assertEquals( 10, has_action( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION ), 'Periodic_Synchronization should register the cron action.' );
 	}
 
 	public function test_synchronize_onboarding_state() {
@@ -174,7 +174,7 @@ class Synchronize_PublicationTest extends TestCase {
 		);
 		$this->assertFalse( $settings['publicationOnboardingStateChanged'], 'Onboarding state changed should be false before sync.' );
 
-		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+		do_action( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 
@@ -207,7 +207,7 @@ class Synchronize_PublicationTest extends TestCase {
 			),
 		);
 
-		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+		do_action( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 
@@ -229,7 +229,7 @@ class Synchronize_PublicationTest extends TestCase {
 
 		$this->assertEmpty( $settings['productIDs'], 'Product IDs should be empty before sync.' );
 
-		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+		do_action( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 		$this->assertEquals( array( 'testpubID:basic', 'testpubID:advanced' ), $settings['productIDs'], 'Product IDs should be updated after sync.' );
@@ -251,7 +251,7 @@ class Synchronize_PublicationTest extends TestCase {
 
 		$this->assertEmpty( $settings['productIDs'], 'Product IDs should remain empty for non-existent publication.' );
 
-		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+		do_action( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 		$this->assertEmpty( $settings['productIDs'], 'Product IDs should remain empty after sync for non-existent publication.' );
@@ -267,7 +267,7 @@ class Synchronize_PublicationTest extends TestCase {
 
 		$this->assertEmpty( $settings['paymentOption'], 'Payment option should be empty before sync.' );
 
-		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+		do_action( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 		$this->assertEquals( 'subscriptions', $settings['paymentOption'], 'Payment option should be updated after sync.' );
@@ -289,7 +289,7 @@ class Synchronize_PublicationTest extends TestCase {
 
 		$this->assertEmpty( $settings['paymentOption'], 'Payment option should remain empty for non-existent publication.' );
 
-		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+		do_action( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 		$this->assertEmpty( $settings['paymentOption'], 'Payment option should remain empty after sync for non-existent publication.' );
@@ -306,7 +306,7 @@ class Synchronize_PublicationTest extends TestCase {
 		$this->assertEquals( '', $settings['contentPolicyState'], 'Content policy state should be empty before sync.' );
 		$this->assertEquals( '', $settings['policyInfoLink'], 'Policy info link should be empty before sync.' );
 
-		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+		do_action( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 		$this->assertEquals(
@@ -322,11 +322,11 @@ class Synchronize_PublicationTest extends TestCase {
 	}
 
 	public function test_maybe_schedule_synchronize_publication() {
-		$this->assertFalse( wp_next_scheduled( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION ), 'No cron should be scheduled before maybe_schedule_synchronize_publication.' );
+		$this->assertFalse( wp_next_scheduled( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION ), 'No cron should be scheduled before maybe_schedule_synchronize_publication.' );
 		$this->synchronize_publication->maybe_schedule_synchronize_publication();
 
 		$this->assertTrue(
-			(bool) wp_next_scheduled( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION ),
+			(bool) wp_next_scheduled( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION ),
 			'Cron should be scheduled after maybe_schedule_synchronize_publication.'
 		);
 	}
