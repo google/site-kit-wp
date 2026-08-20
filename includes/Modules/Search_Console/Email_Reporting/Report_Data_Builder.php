@@ -321,6 +321,7 @@ class Report_Data_Builder {
 	 * Builds list payload using current/compare Search Console rows.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Returns `null` instead of `0` when there is no comparison data, avoiding a misleading `0%` badge.
 	 *
 	 * @param string $section_key   Section key.
 	 * @param array  $current_rows  Current period rows.
@@ -366,7 +367,7 @@ class Report_Data_Builder {
 				$values[] = $current_value;
 			}
 
-			$trend    = $compare_value > 0 ? ( ( $current_value - $compare_value ) / $compare_value ) * 100 : 0;
+			$trend    = $compare_value > 0 ? ( ( $current_value - $compare_value ) / $compare_value ) * 100 : null;
 			$trends[] = $trend;
 
 			$dimension_values[] = $this->processor->format_dimension_value( $key );
@@ -395,6 +396,7 @@ class Report_Data_Builder {
 	 * Builds list payload for biggest increases (CTR or clicks) using current/compare rows.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Returns `null` instead of `0` when there is no comparison data, avoiding a misleading `0%` badge.
 	 *
 	 * @param string $section_key  Section key.
 	 * @param array  $current_rows Current period rows.
@@ -437,7 +439,7 @@ class Report_Data_Builder {
 				'label'           => $key,
 				'value'           => $current_value,
 				'delta'           => $delta,
-				'percent_change'  => $compare_value > 0 ? ( $delta / $compare_value ) * 100 : 0,
+				'percent_change'  => $compare_value > 0 ? ( $delta / $compare_value ) * 100 : null,
 				'dimension_value' => $this->processor->format_dimension_value( $key ),
 			);
 		}
@@ -467,7 +469,7 @@ class Report_Data_Builder {
 				$trends[] = round( $entry['delta'] * 100, 1 );
 			} else {
 				$values[] = $entry['delta'];
-				$trends[] = round( $entry['percent_change'], 1 );
+				$trends[] = null === $entry['percent_change'] ? null : round( $entry['percent_change'], 1 );
 			}
 			$dimension_values[] = $entry['dimension_value'];
 		}
