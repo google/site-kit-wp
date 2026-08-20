@@ -361,7 +361,16 @@ class Plain_Text_Formatter {
 
 		// Get change context from first part.
 		$first_part = reset( $section_parts );
-		if ( ! empty( $first_part['data']['change_context'] ) ) {
+
+		// The change context is only meaningful when at least one metric has a comparison value.
+		$has_any_change = ! empty(
+			array_filter(
+				$section_parts,
+				static fn( $part_config ) => isset( $part_config['data']['change'] )
+			)
+		);
+
+		if ( $has_any_change && ! empty( $first_part['data']['change_context'] ) ) {
 			$output .= $first_part['data']['change_context'] . "\n\n";
 		}
 
