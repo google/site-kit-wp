@@ -159,6 +159,7 @@ type RenderHookResult< Props, Result > = {
 	rerender: ( props?: Props ) => void;
 	unmount: () => void;
 	waitForNextUpdate?: () => Promise< void >;
+	waitForValueToChange: ( selector: () => unknown ) => Promise< void >;
 };
 
 type CustomRenderHookResult< Props, Result > = RenderHookResult<
@@ -191,7 +192,7 @@ type CustomRenderHookResult< Props, Result > = RenderHookResult<
  */
 function customRenderHook< Props, Result >(
 	callback: ( props: Props ) => Result,
-	options: CustomRenderOptions = {}
+	options: CustomRenderOptions & { initialProps?: Props } = {}
 ): CustomRenderHookResult< Props, Result > {
 	setEnabledFeatures( options.features || [] );
 

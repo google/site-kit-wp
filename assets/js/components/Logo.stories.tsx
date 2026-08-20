@@ -53,6 +53,13 @@ SetupFlow.args = {
 };
 SetupFlow.scenario = {};
 
+export const SetupSplash = Template.bind( {} ) as Story< LogoStoryProps >;
+SetupSplash.storyName = 'Setup Splash';
+SetupSplash.args = {
+	className: 'googlesitekit-setup-splash',
+};
+SetupSplash.scenario = {};
+
 export default {
 	title: 'Components/Logo',
 	component: Logo,

@@ -104,6 +104,7 @@ module.exports = function ( mode, rules ) {
 				'./js/googlesitekit-metric-selection.tsx',
 			'googlesitekit-key-metrics-setup':
 				'./js/googlesitekit-key-metrics-setup.tsx',
+			'googlesitekit-features': './js/googlesitekit-features.tsx',
 			// Old Modules
 			'googlesitekit-activation': './js/googlesitekit-activation.tsx',
 			'googlesitekit-adminbar': './js/googlesitekit-adminbar.tsx',

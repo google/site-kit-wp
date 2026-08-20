@@ -179,6 +179,18 @@ describe( 'SetupUsingProxyViewOnly', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'keeps the words "Site Kit" in the splash header, by adding `googlesitekit-setup-splash` to the body', () => {
+		render( <SetupUsingProxyViewOnly />, {
+			registry,
+			viewContext: VIEW_CONTEXT_SPLASH,
+			features: [],
+		} );
+
+		expect( global.document.body ).toHaveClass(
+			'googlesitekit-setup-splash'
+		);
+	} );
+
 	describe( 'with the `setupFlowRefreshPhase4` feature flag enabled', () => {
 		it( 'renders phase4 splash content and progress indicator', async () => {
 			registry.dispatch( CORE_MODULES ).receiveGetModules(

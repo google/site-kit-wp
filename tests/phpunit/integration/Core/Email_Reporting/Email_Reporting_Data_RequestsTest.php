@@ -327,7 +327,7 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertArrayNotHasKey( Search_Console::MODULE_SLUG, $payload, 'Recoverable Search Console should be skipped.' );
 	}
 
-	public function test_secondary_admin_without_service_entity_access_gets_no_module_payload_and_no_error() {
+	public function test_get_user_payload__denied_service_entity_access_returns_permissions_error() {
 		$owner_id           = self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$secondary_admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$this->authenticate_and_grant_required_scopes_for_user( $secondary_admin_id );
@@ -349,8 +349,34 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 			)
 		);
 
-		$this->assertIsArray( $payload, 'Secondary admin with no service-entity access should not fail the request.' );
-		$this->assertSame( array(), $payload, 'Modules without service-entity access should be excluded from payload.' );
+		$this->assertWPError( $payload, 'Secondary admin denied access to every connected module should get a categorized error instead of a fatal error.' );
+		$this->assertEquals( 'permissions_error', $payload->get_error_data()['category_id'], 'Denied service-entity access should be categorized as a permissions error.' );
+		$this->assertEquals( 'analytics-4', $payload->get_error_data()['module_slug'], 'Categorized error should carry the first denied module slug.' );
+	}
+
+	public function test_get_user_payload__service_entity_access_check_error_returns_empty_array() {
+		$owner_id           = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$secondary_admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->authenticate_and_grant_required_scopes_for_user( $secondary_admin_id );
+		$modules = $this->create_modules_with_fake_service_entity_access(
+			array(
+				Analytics_4::MODULE_SLUG    => new WP_Error( 'missing_required_setting', 'No connected Google Analytics property ID.', array( 'status' => 500 ) ),
+				Search_Console::MODULE_SLUG => new WP_Error( 'missing_required_setting', 'No connected Search Console property.', array( 'status' => 500 ) ),
+			),
+			$owner_id
+		);
+
+		$data_requests = $this->create_data_requests_with_modules( $modules );
+		$payload       = $data_requests->get_user_payload(
+			$secondary_admin_id,
+			$this->date_range,
+			array(
+				Analytics_4::MODULE_SLUG    => array( 'total_visitors' => array( 'value' => 10 ) ),
+				Search_Console::MODULE_SLUG => array( 'total_impressions' => array( 'value' => 10 ) ),
+			)
+		);
+
+		$this->assertSame( array(), $payload, 'A service-entity access check that errors out should return an empty payload, not a permissions error.' );
 	}
 
 	public function test_secondary_admin_with_partial_service_entity_access_gets_only_accessible_modules() {

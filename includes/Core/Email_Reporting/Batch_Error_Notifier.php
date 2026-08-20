@@ -41,12 +41,13 @@ class Batch_Error_Notifier {
 	 * Category ID to Content_Map key mapping.
 	 *
 	 * @since 1.175.0
+	 * @since n.e.x.t Removed the unreachable server_error entry; no PHP path sets that
+	 *                category and no error-email-server-* body content exists.
 	 * @var array
 	 */
 	const CATEGORY_CONTENT_MAP = array(
 		'permissions_error' => 'permissions',
 		'report_error'      => 'report',
-		'server_error'      => 'server',
 	);
 
 	/**
@@ -259,7 +260,7 @@ class Batch_Error_Notifier {
 	 * Builds template data for the error-email template.
 	 *
 	 * @since 1.175.0
-	 * @since n.e.x.t Set `subject` from `get_subject()` and `primary_call_to_action` from
+	 * @since 1.186.0 Set `subject` from `get_subject()` and `primary_call_to_action` from
 	 *                `get_cta()` instead of hardcoding a "Go to dashboard" CTA.
 	 *
 	 * @param string $content_key Content_Map key for title and body.

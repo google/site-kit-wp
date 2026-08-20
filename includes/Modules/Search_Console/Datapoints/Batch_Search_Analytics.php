@@ -22,7 +22,7 @@ use WP_Error;
  * Datapoint class for Search Console search analytics batch requests.
  *
  * @since 1.170.0
- * @since n.e.x.t Renamed from `SearchAnalyticsBatch` and refactored onto `Search_Analytics_Trait`.
+ * @since 1.186.0 Renamed from `SearchAnalyticsBatch` and refactored onto `Search_Analytics_Trait`.
  * @access private
  * @ignore
  */
@@ -50,7 +50,7 @@ class Batch_Search_Analytics extends Datapoint implements Executable_Datapoint {
 	 * Constructor.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Replaced request callbacks with the module settings and context.
+	 * @since 1.186.0 Replaced request callbacks with the module settings and context.
 	 *
 	 * @param array $definition Datapoint definition.
 	 */
