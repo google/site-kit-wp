@@ -25,6 +25,9 @@
 		purchase,
 		add_to_cart: addToCart,
 		eventsToTrack,
+		// An older cached page sends no `currencyMinorUnit`. Fall back to two,
+		// the WooCommerce default.
+		currencyMinorUnit = 2,
 	} = global._googlesitekit?.wcdata || {};
 	const canTrackAddToCart = eventsToTrack?.includes( 'add_to_cart' );
 	const canTrackPurchase = eventsToTrack?.includes( 'purchase' );
@@ -213,12 +216,12 @@
 	 * Returns the price of a product formatted with decimal places if necessary.
 	 *
 	 * @since 1.158.0
+	 * @since n.e.x.t Reads the store's decimal places from the page data.
 	 *
-	 * @param {string} price                 The price to parse.
-	 * @param {number} [currencyMinorUnit=2] The number decimals to show in the currency.
+	 * @param {number} price The price in minor units, such as 4999 for 49.99.
 	 * @return {number} The price of the product with decimals.
 	 */
-	function formatPrice( price, currencyMinorUnit = 2 ) {
+	function formatPrice( price ) {
 		return parseInt( price, 10 ) / 10 ** currencyMinorUnit;
 	}
 } )( global.jQuery );

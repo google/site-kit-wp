@@ -25,6 +25,17 @@ import TestRenderer from 'react-test-renderer';
  * Internal dependencies
  */
 import { findTextStrings } from '@/js/components/pdf-export/test-utils';
+import {
+	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
+	KM_ANALYTICS_MOST_ENGAGING_PAGES,
+	KM_ANALYTICS_POPULAR_CONTENT,
+	KM_ANALYTICS_POPULAR_PRODUCTS,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { KEY_METRICS_PDF_TILES } from './key-metrics-pdf-tiles';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
@@ -108,12 +119,17 @@ function smokeRegistry() {
 		getReferenceDate: jest.fn( () => Promise.resolve( '2025-02-04' ) ),
 	};
 
+	// A single shared object, rather than a fresh one per `select()` call, so a
+	// test can inspect `getServiceReportURL`'s calls after `getTileData` resolves.
+	const selected = {
+		getAccountID: jest.fn( () => 'pub-1234567890' ),
+		getReferenceDate: jest.fn( () => '2025-02-04' ),
+		getServiceReportURL: jest.fn( () => 'https://example.com/report' ),
+	};
+
 	return {
 		resolveSelect: jest.fn( () => resolved ),
-		select: jest.fn( () => ( {
-			getAccountID: jest.fn( () => 'pub-1234567890' ),
-			getReferenceDate: jest.fn( () => '2025-02-04' ),
-		} ) ),
+		select: jest.fn( () => selected ),
 		// Search Console reports are a flat array of rows, unlike the Analytics 4
 		// `{ rows, totals }` shape, so answer each store with its own shape.
 		dispatch: jest.fn( ( store ) => ( {
@@ -191,4 +207,159 @@ describe( 'KEY_METRICS_PDF_TILES smoke test', () => {
 			expect( text.length ).toBeGreaterThan( 1 );
 		}
 	);
+
+	describe( 'row links', () => {
+		// The table tiles narrow the export's compare-range dates to a single
+		// period before building a report, so a row's link is built from this.
+		const SINGLE_PERIOD_DATES = {
+			startDate: DATES.startDate,
+			endDate: DATES.endDate,
+		};
+
+		it( 'builds a page tile row URL from its page path and the single-period dates', async () => {
+			const registry = smokeRegistry();
+			const { getTileData } =
+				KEY_METRICS_PDF_TILES[ KM_ANALYTICS_POPULAR_CONTENT ];
+
+			const data = await getTileData( {
+				registry,
+				dates: DATES,
+				signal: new AbortController().signal,
+			} );
+
+			expect(
+				registry.select().getServiceReportURL
+			).toHaveBeenCalledWith( 'all-pages-and-screens', {
+				filters: { unifiedPagePathScreen: '/alpha' },
+				dates: SINGLE_PERIOD_DATES,
+			} );
+			expect( data.rows[ 0 ].primaryURL ).toBe(
+				'https://example.com/report'
+			);
+		} );
+
+		it( 'builds the top earning content tile row URL from the Analytics page report', async () => {
+			const registry = smokeRegistry();
+			const { getTileData } =
+				KEY_METRICS_PDF_TILES[
+					KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT
+				];
+
+			const data = await getTileData( {
+				registry,
+				dates: DATES,
+				signal: new AbortController().signal,
+			} );
+
+			expect(
+				registry.select().getServiceReportURL
+			).toHaveBeenCalledWith( 'all-pages-and-screens', {
+				filters: { unifiedPagePathScreen: '/alpha' },
+				dates: SINGLE_PERIOD_DATES,
+			} );
+			expect( data.rows[ 0 ].primaryURL ).toBe(
+				'https://example.com/report'
+			);
+		} );
+
+		it.each( [
+			KM_ANALYTICS_POPULAR_PRODUCTS,
+			KM_ANALYTICS_MOST_ENGAGING_PAGES,
+			KM_ANALYTICS_LEAST_ENGAGING_PAGES,
+			KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+			KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+		] )(
+			'%s builds each row URL from its page path and the single-period dates',
+			async ( slug ) => {
+				const registry = smokeRegistry();
+				const { getTileData } = KEY_METRICS_PDF_TILES[ slug ];
+
+				const data = await getTileData( {
+					registry,
+					dates: DATES,
+					signal: new AbortController().signal,
+				} );
+
+				expect(
+					registry.select().getServiceReportURL
+				).toHaveBeenCalledWith( 'all-pages-and-screens', {
+					filters: { unifiedPagePathScreen: '/alpha' },
+					dates: SINGLE_PERIOD_DATES,
+				} );
+				expect( data.rows[ 0 ].primaryURL ).toBe(
+					'https://example.com/report'
+				);
+			}
+		);
+
+		it( 'builds the trending pages tile row URL from its own fixed 3-day window, not the export date range', async () => {
+			const registry = smokeRegistry();
+			const { getTileData } =
+				KEY_METRICS_PDF_TILES[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ];
+
+			await getTileData( {
+				registry,
+				dates: DATES,
+				signal: new AbortController().signal,
+			} );
+
+			// The smoke registry resolves the reference date to '2025-02-04', so
+			// the tile's own fixed window (yesterday to 3 days ago) is
+			// 2025-02-01–2025-02-03 — distinct from the export's DATES range
+			// above, proving the row link doesn't use the export's date range.
+			expect(
+				registry.select().getServiceReportURL
+			).toHaveBeenCalledWith( 'all-pages-and-screens', {
+				filters: { unifiedPagePathScreen: '/alpha' },
+				dates: { startDate: '2025-02-01', endDate: '2025-02-03' },
+			} );
+		} );
+
+		it( 'builds an exact-match Search Console URL for the keywords tile', async () => {
+			const registry = smokeRegistry();
+			const { getTileData } =
+				KEY_METRICS_PDF_TILES[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ];
+
+			const data = await getTileData( {
+				registry,
+				dates: DATES,
+				signal: new AbortController().signal,
+			} );
+
+			// The exclamation mark forces an exact match on the query.
+			expect(
+				registry.select().getServiceReportURL
+			).toHaveBeenCalledWith(
+				expect.objectContaining( { query: '!site kit' } )
+			);
+			expect( data.rows[ 0 ].primaryURL ).toBe(
+				'https://example.com/report'
+			);
+		} );
+
+		it.each( [
+			KM_ANALYTICS_POPULAR_CONTENT,
+			KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+		] )(
+			'returns a null primaryURL for any row of %s when viewOnly is true',
+			async ( slug ) => {
+				const registry = smokeRegistry();
+				const { getTileData } = KEY_METRICS_PDF_TILES[ slug ];
+
+				const data = await getTileData( {
+					registry,
+					dates: DATES,
+					signal: new AbortController().signal,
+					viewOnly: true,
+				} );
+
+				expect(
+					registry.select().getServiceReportURL
+				).not.toHaveBeenCalled();
+				data.rows.forEach( ( row ) => {
+					expect( row.primaryURL ).toBeNull();
+				} );
+			}
+		);
+	} );
 } );

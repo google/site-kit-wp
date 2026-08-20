@@ -255,7 +255,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * only read to decide who can reach the network-level "Anyone can
 	 * register" setting in the registration messaging below it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param array $data Base data.
 	 * @return array Filtered base data.

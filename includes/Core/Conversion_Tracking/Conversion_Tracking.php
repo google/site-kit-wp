@@ -71,7 +71,7 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	 *
 	 * @since 1.126.0
 	 * @since 1.130.0 Added Ninja Forms class.
-	 * @since n.e.x.t Added Content_Events class.
+	 * @since 1.186.0 Added Content_Events class.
 	 * @var array
 	 */
 	public static $providers = array(

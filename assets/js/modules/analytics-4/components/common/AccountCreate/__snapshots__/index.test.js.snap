@@ -51,7 +51,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
         class="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--account mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
       >
         <div
-          class="mdc-text-field mdc-text-field mdc-text-field--outlined"
+          class="mdc-text-field mdc-text-field--outlined"
           name="account"
         >
           <input
@@ -86,7 +86,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
         class="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--property mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
       >
         <div
-          class="mdc-text-field mdc-text-field mdc-text-field--outlined"
+          class="mdc-text-field mdc-text-field--outlined"
           name="property"
         >
           <input
@@ -121,7 +121,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
         class="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--webdatastream mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
       >
         <div
-          class="mdc-text-field mdc-text-field mdc-text-field--outlined"
+          class="mdc-text-field mdc-text-field--outlined"
           name="dataStream"
         >
           <input

@@ -13,6 +13,8 @@ use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooComme
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\WC_Countries_Fake;
 
+require_once TESTS_PLUGIN_DIR . '/tests/phpunit/includes/wc-function-fakes.php';
+
 class WooCommerceTest extends TestCase {
 
 	/**
@@ -196,6 +198,61 @@ class WooCommerceTest extends TestCase {
 		$script = $this->woocommerce->register_script();
 		$this->assertInstanceOf( Script::class, $script, 'Expected script to be an instance of Script.' );
 		$this->assertTrue( wp_script_is( $handle, 'registered' ), 'Expected script to be registered.' );
+	}
+
+	/**
+	 * @dataProvider prices_by_decimal_places
+	 */
+	public function test_get_formatted_price__minor_units( $decimal_places, $price, $expected ) {
+		add_filter( 'wc_get_price_decimals', fn() => $decimal_places );
+
+		$this->assertSame(
+			$expected,
+			$this->woocommerce->get_formatted_price( $price ),
+			'get_formatted_price() should return the price with the decimal point removed.'
+		);
+	}
+
+	public function prices_by_decimal_places() {
+		return array(
+			'zero decimal places'                         => array( 0, 1234, 1234 ),
+			'two decimal places, the WooCommerce default' => array( 2, 12.34, 1234 ),
+			'four decimal places'                         => array( 4, 12.3456, 123456 ),
+		);
+	}
+
+	/**
+	 * @dataProvider decimal_places_script_lines
+	 */
+	public function test_register_hooks__sends_currency_minor_unit( $decimal_places, $expected_line ) {
+		add_filter( 'wc_get_price_decimals', fn() => $decimal_places );
+
+		$handle = 'googlesitekit-events-provider-' . WooCommerce::CONVERSION_EVENT_PROVIDER_SLUG;
+
+		$this->woocommerce->register_script();
+
+		// WordPress core and the active theme hook `wp_footer` too. Clear it, so the
+		// `do_action()` below runs only the callback `register_hooks()` adds.
+		remove_all_actions( 'wp_footer' );
+		$this->woocommerce->register_hooks();
+
+		do_action( 'wp_footer' );
+
+		$inline_script = implode( "\n", wp_scripts()->registered[ $handle ]->extra['before'] );
+
+		$this->assertStringContainsString(
+			$expected_line,
+			$inline_script,
+			'register_hooks() should print the decimal places that wc_get_price_decimals() returns.'
+		);
+	}
+
+	public function decimal_places_script_lines() {
+		return array(
+			'zero decimal places'                         => array( 0, 'window._googlesitekit.wcdata.currencyMinorUnit = 0;' ),
+			'two decimal places, the WooCommerce default' => array( 2, 'window._googlesitekit.wcdata.currencyMinorUnit = 2;' ),
+			'four decimal places'                         => array( 4, 'window._googlesitekit.wcdata.currencyMinorUnit = 4;' ),
+		);
 	}
 
 	public function test_register_hooks() {

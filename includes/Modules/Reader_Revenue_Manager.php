@@ -276,7 +276,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * for the first time.
 	 *
 	 * @since 1.131.0
-	 * @since n.e.x.t Added webcontentpublisher service behind rrmExpressSetup.
+	 * @since 1.186.0 Added webcontentpublisher service behind rrmExpressSetup.
 	 *
 	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
