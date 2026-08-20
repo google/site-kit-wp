@@ -19,6 +19,21 @@
  */
 import { classifyPII, getUserData } from './utils';
 
+type NinjaFormField = {
+	label?: string;
+	type?: string;
+	value?: string;
+	key?: string;
+};
+
+type NinjaFormsSubmitEvent = {
+	data: {
+		fields: Record< string, NinjaFormField >;
+		// eslint-disable-next-line camelcase
+		form_id?: string | number;
+	};
+};
+
 ( ( jQuery, Marionette, Backbone ) => {
 	// eslint-disable-next-line no-undef
 	if ( ! jQuery || ! Marionette || ! Backbone ) {
@@ -36,7 +51,7 @@ import { classifyPII, getUserData } from './utils';
 			);
 		},
 
-		actionSubmit( event ) {
+		actionSubmit( event: NinjaFormsSubmitEvent ) {
 			const gtagUserDataEnabled = global._googlesitekit?.gtagUserData;
 
 			const userData = gtagUserDataEnabled
@@ -73,13 +88,18 @@ const NINJA_FORMS_TYPES = {
  * @param {Object<string, Object>} fields The submitted Ninja Form fields.
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
  */
-function getUserDataFromNinjaFormFields( fields ) {
+function getUserDataFromNinjaFormFields(
+	fields: Record< string, NinjaFormField >
+) {
 	const detectedFields = Object.values( fields )
 		.map( ( field ) => {
 			const { label, type: nfType, value, key: name } = field;
 
 			// Ninja Forms types are not standard HTML input types, so we map them before calling classifyPII, which relies on standard HTML types.
-			const type = NINJA_FORMS_TYPES[ nfType ] ?? nfType;
+			const type =
+				( NINJA_FORMS_TYPES as Record< string, string | undefined > )[
+					nfType ?? ''
+				] ?? nfType;
 
 			return classifyPII( {
 				label,
@@ -88,7 +108,7 @@ function getUserDataFromNinjaFormFields( fields ) {
 				name,
 			} );
 		} )
-		.filter( Boolean );
+		.filter( ( f ): f is NonNullable< typeof f > => f !== null );
 
 	return getUserData( detectedFields );
 }

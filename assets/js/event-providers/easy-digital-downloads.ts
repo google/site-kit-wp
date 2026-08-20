@@ -21,30 +21,41 @@
 	}
 
 	const body = jQuery( 'body' );
-	const currency = global._googlesitekit.easyDigitalDownloadsCurrency;
+	const currency = global._googlesitekit?.easyDigitalDownloadsCurrency;
 
-	body.on( 'edd_cart_item_added', ( event, details ) => {
-		const value = parseAmount( details.total );
-		const { id, name, price } = parseCartItemHTML( details.cart_item );
+	body.on(
+		'edd_cart_item_added',
+		// eslint-disable-next-line camelcase
+		( event: unknown, details: { total: string; cart_item: string } ) => {
+			const value = parseAmount( details.total );
+			const { id, name, price } = parseCartItemHTML( details.cart_item );
 
-		global._googlesitekit?.gtagEvent?.( 'add_to_cart', {
-			currency,
-			value,
-			items: [
-				{
-					item_id: id,
-					item_name: name,
-					price,
-				},
-			],
-			googlesitekit_event_provider: 'easy-digital-downloads',
-		} );
-	} );
+			global._googlesitekit?.gtagEvent?.( 'add_to_cart', {
+				currency,
+				value,
+				items: [
+					{
+						item_id: id,
+						item_name: name,
+						price,
+					},
+				],
+				googlesitekit_event_provider: 'easy-digital-downloads',
+			} );
+		}
+	);
 
-	if ( global._googlesitekit?.edddata?.purchase ) {
+	if (
+		( global._googlesitekit?.edddata as { purchase?: unknown } | undefined )
+			?.purchase
+	) {
 		global._googlesitekit?.gtagEvent?.( 'purchase', {
 			currency,
-			...global._googlesitekit.edddata.purchase,
+			...(
+				global._googlesitekit?.edddata as {
+					purchase: Record< string, unknown >;
+				}
+			 ).purchase,
 			googlesitekit_event_provider: 'easy-digital-downloads',
 		} );
 	}
@@ -58,13 +69,18 @@
  * @param {string} cartItemHTML The HTML string for the cart item.
  * @return {Object} An object containing the item's `id`, `name` and `price`.
  */
-export function parseCartItemHTML( cartItemHTML ) {
+export function parseCartItemHTML( cartItemHTML: string ) {
 	const parser = new DOMParser();
 	const doc = parser.parseFromString( cartItemHTML, 'text/html' );
 
-	const id =
+	const id = ( () => {
 		// eslint-disable-next-line sitekit/acronym-case
-		doc.querySelector( '.edd-remove-from-cart' )?.dataset.downloadId || '';
+		const element = doc.querySelector< HTMLElement >(
+			'.edd-remove-from-cart'
+		);
+		// eslint-disable-next-line sitekit/acronym-case
+		return element?.dataset.downloadId || '';
+	} )();
 	const name =
 		doc.querySelector( '.edd-cart-item-title' )?.textContent.trim() || '';
 	const price =
@@ -85,7 +101,7 @@ export function parseCartItemHTML( cartItemHTML ) {
  * @param {string} amount The amount string.
  * @return {number} The amount as a number.
  */
-function parseAmount( amount ) {
+function parseAmount( amount: string ): number {
 	let normalizedNumericPrice = amount.replace( /[^\d.,]/g, '' ).trim();
 
 	const lastComma = normalizedNumericPrice.lastIndexOf( ',' );

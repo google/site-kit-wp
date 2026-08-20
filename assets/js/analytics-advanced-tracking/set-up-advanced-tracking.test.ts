@@ -20,8 +20,9 @@
  * Internal dependencies
  */
 import setUpAdvancedTracking from './set-up-advanced-tracking';
+import { AdvancedTrackingEvent } from './types';
 
-function createDOMEvent( on ) {
+function createDOMEvent( on: string ) {
 	const event = document.createEvent( 'HTMLEvents' );
 	event.initEvent( on, false, true );
 	return event;
@@ -30,7 +31,7 @@ function createDOMEvent( on ) {
 describe( 'setUpAdvancedTracking', () => {
 	const button1DOMString = '<button class="button1">Button 1</button>';
 	const button2DOMString = '<button class="button2">Button 2</button>';
-	const button1EventConfig = {
+	const button1EventConfig: AdvancedTrackingEvent = {
 		action: 'click_button_1',
 		selector: '.button1',
 		on: 'click',
@@ -39,7 +40,7 @@ describe( 'setUpAdvancedTracking', () => {
 			event_label: 'Button 1',
 		},
 	};
-	const button2EventConfig = {
+	const button2EventConfig: AdvancedTrackingEvent = {
 		action: 'click_button_2',
 		selector: '.button2',
 		on: 'click',
@@ -49,8 +50,8 @@ describe( 'setUpAdvancedTracking', () => {
 		},
 	};
 
-	let sendEvent;
-	let destroyAdvancedTracking;
+	let sendEvent: jest.Mock;
+	let destroyAdvancedTracking: ( () => void ) | undefined;
 
 	beforeEach( () => {
 		sendEvent = jest.fn();
@@ -73,7 +74,7 @@ describe( 'setUpAdvancedTracking', () => {
 
 		// Click button 2.
 		document
-			.querySelector( button2EventConfig.selector )
+			.querySelector( button2EventConfig.selector )!
 			.dispatchEvent( createDOMEvent( button2EventConfig.on ) );
 		expect( sendEvent ).toHaveBeenCalledWith(
 			button2EventConfig.action,
@@ -82,7 +83,7 @@ describe( 'setUpAdvancedTracking', () => {
 
 		// Click button 1.
 		document
-			.querySelector( button1EventConfig.selector )
+			.querySelector( button1EventConfig.selector )!
 			.dispatchEvent( createDOMEvent( button1EventConfig.on ) );
 		expect( sendEvent ).toHaveBeenCalledWith(
 			button1EventConfig.action,
@@ -102,13 +103,13 @@ describe( 'setUpAdvancedTracking', () => {
 
 		// Click button 2 (nothing should happen because no event is configured).
 		document
-			.querySelector( button2EventConfig.selector )
+			.querySelector( button2EventConfig.selector )!
 			.dispatchEvent( createDOMEvent( button2EventConfig.on ) );
 		expect( sendEvent ).not.toHaveBeenCalled();
 
 		// Click button 1 (event should not have metadata).
 		document
-			.querySelector( button1EventConfig.selector )
+			.querySelector( button1EventConfig.selector )!
 			.dispatchEvent( createDOMEvent( button1EventConfig.on ) );
 		expect( sendEvent ).toHaveBeenCalledWith(
 			button1EventConfig.action,
@@ -129,7 +130,7 @@ describe( 'setUpAdvancedTracking', () => {
 
 		// Click button 2 (should result in event even though injected afterwards).
 		document
-			.querySelector( button2EventConfig.selector )
+			.querySelector( button2EventConfig.selector )!
 			.dispatchEvent( createDOMEvent( button2EventConfig.on ) );
 		expect( sendEvent ).toHaveBeenCalledWith(
 			button2EventConfig.action,
@@ -138,7 +139,7 @@ describe( 'setUpAdvancedTracking', () => {
 
 		// Click button 1 (as usual).
 		document
-			.querySelector( button1EventConfig.selector )
+			.querySelector( button1EventConfig.selector )!
 			.dispatchEvent( createDOMEvent( button1EventConfig.on ) );
 		expect( sendEvent ).toHaveBeenCalledWith(
 			button1EventConfig.action,
