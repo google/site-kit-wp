@@ -140,7 +140,7 @@ describe( 'buildTopContent', () => {
 	/**
 	 * Maps a page path to a stable link fixture.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {string} pagePath Page path of a top content row.
 	 * @return {string} The link fixture for the page.

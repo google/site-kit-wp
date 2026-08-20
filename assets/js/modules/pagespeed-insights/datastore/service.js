@@ -32,7 +32,7 @@ export const selectors = {
 	/**
 	 * Gets the details link URL for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return {(string|undefined)} Details link URL, or `undefined` if not loaded.
 	 */

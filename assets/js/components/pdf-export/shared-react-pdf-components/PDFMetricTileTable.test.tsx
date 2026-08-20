@@ -31,7 +31,7 @@ import PDFMetricTileTable from './PDFMetricTileTable';
  * Collects every text string rendered in a react-test-renderer tree, so a test
  * can assert on the tile copy without walking the tree itself.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {(string|number|Object|null)} node   The current tree node.
  * @param {string[]}                    output The strings collected so far.
@@ -67,7 +67,7 @@ function findTextStrings(
  * Renders `PDFMetricTileTable` with the given props and returns its collected
  * text strings.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object} props The tile props.
  * @return {string[]} The rendered text strings.

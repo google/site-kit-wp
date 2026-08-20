@@ -25,7 +25,7 @@ export interface ContentEventsConfig {
 /**
  * Gets the Content Events configuration.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @return {ContentEventsConfig} Content events configuration object.
  */

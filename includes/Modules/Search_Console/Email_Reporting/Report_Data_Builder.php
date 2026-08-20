@@ -321,7 +321,7 @@ class Report_Data_Builder {
 	 * Builds list payload using current/compare Search Console rows.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Returns `null` instead of `0` when there is no comparison data, avoiding a misleading `0%` badge.
+	 * @since 1.186.0 Returns `null` instead of `0` when there is no comparison data, avoiding a misleading `0%` badge.
 	 *
 	 * @param string $section_key   Section key.
 	 * @param array  $current_rows  Current period rows.
@@ -396,7 +396,7 @@ class Report_Data_Builder {
 	 * Builds list payload for biggest increases (CTR or clicks) using current/compare rows.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Returns `null` instead of `0` when there is no comparison data, avoiding a misleading `0%` badge.
+	 * @since 1.186.0 Returns `null` instead of `0` when there is no comparison data, avoiding a misleading `0%` badge.
 	 *
 	 * @param string $section_key  Section key.
 	 * @param array  $current_rows Current period rows.

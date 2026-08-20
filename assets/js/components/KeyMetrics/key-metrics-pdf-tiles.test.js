@@ -43,7 +43,7 @@ import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
  * Collects every text string rendered in a react-test-renderer tree, so the
  * smoke test can assert a tile actually painted its heading and values.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object|string|number|null} node   The current tree node.
  * @param {string[]}                  output The strings collected so far.
@@ -121,7 +121,7 @@ const SEARCH_CONSOLE_REPORT = [
  * Builds a registry that answers every selector and fetch a PDF tile can reach,
  * so each tile's `getTileData` can run end to end without real network access.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @return {Object} A mock registry.
  */

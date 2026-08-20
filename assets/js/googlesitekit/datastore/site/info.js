@@ -1010,7 +1010,7 @@ export const selectors = {
 	 *  - WooCommerce is active but account-creation in WooCommerce is
 	 *    disabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} `true` if WooCommerce registration is open; `false` if not. Returns `undefined` if not yet loaded.
@@ -1024,7 +1024,7 @@ export const selectors = {
 	 * "Anyone can register" setting or WooCommerce's own account-creation
 	 * setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return {boolean|undefined} `true` if registration is open via either path; `false` if neither is open. Returns `undefined` if not yet loaded.
 	 */

@@ -39,7 +39,7 @@ export const PDF_INTRODUCTION_OVERLAY_NOTIFICATION =
  *
  * The survey service holds that survey under this ID.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  */
 export const PDF_EXPORT_NOT_USED_SURVEY_TRIGGER_ID = 'view_pdf_export_not_used';
 
@@ -49,7 +49,7 @@ export const PDF_EXPORT_NOT_USED_SURVEY_TRIGGER_ID = 'view_pdf_export_not_used';
  *
  * The survey service holds that survey under this ID.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  */
 export const PDF_EXPORT_INCOMPLETE_SURVEY_TRIGGER_ID =
 	'view_pdf_export_incomplete';
@@ -60,7 +60,7 @@ export const PDF_EXPORT_INCOMPLETE_SURVEY_TRIGGER_ID =
  *
  * The survey service holds that survey under this ID.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  */
 export const PDF_EXPORT_DOWNLOADED_SURVEY_TRIGGER_ID =
 	'view_pdf_export_downloaded';
@@ -72,7 +72,7 @@ export const PDF_EXPORT_DOWNLOADED_SURVEY_TRIGGER_ID =
  * The `core/pdf` data store holds the export state in memory, and this slug
  * persists. The survey trigger component reads the slug to pick a survey.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  */
 export const PDF_EXPORT_PANEL_OPENED_ITEM_SLUG = 'pdf-export-panel-opened';
 
@@ -80,7 +80,7 @@ export const PDF_EXPORT_PANEL_OPENED_ITEM_SLUG = 'pdf-export-panel-opened';
  * The export saves this slug to WordPress user meta the first time a user
  * downloads a PDF report.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  */
 export const PDF_EXPORT_DOWNLOADED_ITEM_SLUG = 'pdf-export-downloaded';
 

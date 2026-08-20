@@ -58,7 +58,7 @@ export class PDFGenerationPage {
 	/**
 	 * Gets the header button that opens the features menu on mobile and tablet.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return The features menu trigger button.
 	 */
@@ -69,7 +69,7 @@ export class PDFGenerationPage {
 	/**
 	 * Gets the features menu item that opens the export panel.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return The download PDF report menu item.
 	 */
@@ -211,7 +211,7 @@ export class PDFGenerationPage {
 	 * top earning pages). This keeps the parent section but leaves only the given
 	 * widget checked, so the export renders that widget on its own.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param  sectionSlug The parent section (dashboard context) slug to keep.
 	 * @param  widgetSlug  The widget slug to leave selected within that section.
@@ -326,7 +326,7 @@ export class PDFGenerationPage {
 	/**
 	 * Reads the downloaded PDF report into a string, one character per byte.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Download} download The completed download from `download()`.
 	 * @return {Promise<string>} The report's contents, byte for byte.

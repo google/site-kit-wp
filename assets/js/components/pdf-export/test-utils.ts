@@ -45,7 +45,7 @@ type Registry = ReturnType< typeof createTestRegistry >;
  * A style passed as an array and a prop on a `@react-pdf` primitive never reach
  * the rendered DOM, so an assertion on either one reads the JSON tree.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param element The PDF element to render.
  * @return The rendered tree, as a JSON string.
@@ -59,7 +59,7 @@ export function renderJSON( element: ReactElement ) {
  * survey trigger needs, and mocks the trigger endpoint.
  *
  * @since 1.184.0
- * @since n.e.x.t Added the `dismissedItems` parameter.
+ * @since 1.186.0 Added the `dismissedItems` parameter.
  *
  * @param  registry       The test registry the component under test renders with.
  * @param  dismissedItems The slugs already in WordPress user meta. They pick one of the three PDF export surveys.
@@ -97,7 +97,7 @@ export function setPDFExportStatus( registry: Registry, status: PDFStatus ) {
  * trigger ID and time to live.
  *
  * @since 1.184.0
- * @since n.e.x.t Added the `ttl` parameter.
+ * @since 1.186.0 Added the `ttl` parameter.
  *
  * @param triggerID The survey trigger ID the request body holds, such as `'view_pdf_export_downloaded'`.
  * @param ttl       The seconds the survey service waits before it offers the same survey again.
