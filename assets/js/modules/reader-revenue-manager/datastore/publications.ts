@@ -53,7 +53,7 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
 
-interface Publication {
+export interface Publication {
 	/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
 	publicationId: string;
 	organizationId?: string;
@@ -64,6 +64,13 @@ interface Publication {
 	contentPolicyStatus?: {
 		contentPolicyState: string;
 		policyInfoLink?: string;
+	};
+	languageCode?: string;
+	regionCode?: string;
+	rrmProduct?: {
+		tosAcceptance?: {
+			userAccepted: boolean;
+		};
 	};
 }
 

@@ -498,3 +498,51 @@ export function getLocale( _global = global ) {
 
 	return _global.navigator.language;
 }
+
+/**
+ * Formats a language code for display.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} languageCode     Language code to format.
+ * @param {Object} [options]        Formatting options.
+ * @param {string} [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit.
+ * @return {string} Language name if it exists, otherwise the raw code.
+ */
+export function languageCodeFormat( languageCode, options = {} ) {
+	const { locale = getLocale() } = options;
+
+	const displayNames = new Intl.DisplayNames( [ locale ], {
+		type: 'language',
+	} );
+
+	try {
+		return displayNames.of( languageCode );
+	} catch {
+		return languageCode;
+	}
+}
+
+/**
+ * Formats a region code for display.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} regionCode       Region code to format.
+ * @param {Object} [options]        Formatting options.
+ * @param {string} [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit.
+ * @return {string} Region name if it exists, otherwise the raw code.
+ */
+export function regionCodeFormat( regionCode, options = {} ) {
+	const { locale = getLocale() } = options;
+
+	const displayNames = new Intl.DisplayNames( [ locale ], {
+		type: 'region',
+	} );
+
+	try {
+		return displayNames.of( regionCode );
+	} catch {
+		return regionCode;
+	}
+}
