@@ -450,8 +450,6 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 	}
 
 	public function test_get_user_payload__adds_the_site_goals_breakdown_reports_when_the_breakdown_dimensions_have_data() {
-		$this->enable_feature( 'siteGoals' );
-
 		$custom_dimension_data = new Custom_Dimensions_Data_Available( $this->transients );
 		$custom_dimension_data->set_data_available( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
 		$custom_dimension_data->set_data_available( Analytics_4::CUSTOM_DIMENSION_FORM_ID );
@@ -465,8 +463,6 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 	}
 
 	public function test_get_user_payload__adds_the_site_wide_site_goals_reports_when_the_breakdown_dimensions_have_no_data() {
-		$this->enable_feature( 'siteGoals' );
-
 		$payload = $this->get_analytics_payload_for_detected_events( array( 'purchase', 'contact' ) );
 
 		$this->assertArrayHasKey( 'site_goals_online_store_primary', $payload, 'get_user_payload() should return the site-wide store count when the event provider dimension has no data.' );
@@ -477,8 +473,6 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 	}
 
 	public function test_get_user_payload__adds_no_site_goals_report_when_analytics_detected_no_conversion_event() {
-		$this->enable_feature( 'siteGoals' );
-
 		$payload = $this->get_analytics_payload_for_detected_events( array() );
 
 		$this->assertArrayNotHasKey( 'site_goals_online_store_primary', $payload, 'get_user_payload() should return no store report when Analytics detected no store event.' );

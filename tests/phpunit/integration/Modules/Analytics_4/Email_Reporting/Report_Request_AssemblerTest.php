@@ -48,8 +48,6 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 	}
 
 	public function test_build_requests__registers_the_store_count_and_sessions_split_by_provider_when_the_event_provider_dimension_has_data() {
-		$this->enable_feature( 'siteGoals' );
-
 		$requests = $this->build_requests_for_events(
 			array( 'purchase' ),
 			array( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER => true )
@@ -72,8 +70,6 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 	}
 
 	public function test_build_requests__registers_the_site_wide_store_count_and_sessions_when_the_event_provider_dimension_has_no_data() {
-		$this->enable_feature( 'siteGoals' );
-
 		$requests = $this->build_requests_for_events( array( 'purchase' ) );
 
 		$this->assertArrayHasKey( 'site_goals_online_store_primary', $requests, 'build_requests() should register the site-wide store count when the event provider dimension has no data.' );
@@ -93,8 +89,6 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 	}
 
 	public function test_build_requests__registers_the_lead_count_and_sessions_split_by_form_when_the_form_id_dimension_has_data() {
-		$this->enable_feature( 'siteGoals' );
-
 		$requests = $this->build_requests_for_events(
 			array( 'contact' ),
 			array( Analytics_4::CUSTOM_DIMENSION_FORM_ID => true )
@@ -117,8 +111,6 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 	}
 
 	public function test_build_requests__registers_the_site_wide_lead_count_and_sessions_when_the_form_id_dimension_has_no_data() {
-		$this->enable_feature( 'siteGoals' );
-
 		$requests = $this->build_requests_for_events( array( 'contact' ) );
 
 		$this->assertArrayHasKey( 'site_goals_lead_primary', $requests, 'build_requests() should register the site-wide lead count when the form ID dimension has no data.' );
@@ -138,8 +130,6 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 	}
 
 	public function test_build_requests__registers_no_store_request_when_the_site_sends_no_store_event() {
-		$this->enable_feature( 'siteGoals' );
-
 		$requests = $this->build_requests_for_events(
 			array( 'contact' ),
 			array( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER => true )
@@ -153,8 +143,6 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 	}
 
 	public function test_build_requests__registers_no_lead_request_when_the_site_sends_no_lead_event() {
-		$this->enable_feature( 'siteGoals' );
-
 		$requests = $this->build_requests_for_events(
 			array( 'purchase' ),
 			array( Analytics_4::CUSTOM_DIMENSION_FORM_ID => true )
@@ -167,22 +155,7 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 		);
 	}
 
-	public function test_build_requests__registers_no_site_goals_request_when_the_feature_flag_is_off() {
-		$requests = $this->build_requests_for_events(
-			array( 'purchase', 'contact' ),
-			$this->breakdown_dimension_availability()
-		);
-
-		$this->assertSame(
-			array(),
-			$this->request_keys_starting_with( $requests, 'site_goals' ),
-			'build_requests() should register no Site Goals request when the siteGoals feature flag is off.'
-		);
-	}
-
 	public function test_build_requests__registers_one_engagement_report_for_the_store_and_lead_widgets_when_neither_breakdown_dimension_has_data() {
-		$this->enable_feature( 'siteGoals' );
-
 		$requests = $this->build_requests_for_events( array( 'purchase', 'contact' ) );
 
 		$this->assertSame(
@@ -198,8 +171,6 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 	}
 
 	public function test_build_requests__registers_one_engagement_report_for_each_breakdown_dimension() {
-		$this->enable_feature( 'siteGoals' );
-
 		$requests = $this->build_requests_for_events(
 			array( 'purchase', 'contact' ),
 			$this->breakdown_dimension_availability()
@@ -243,8 +214,6 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 	}
 
 	public function test_build_requests__still_registers_the_reports_outside_site_goals() {
-		$this->enable_feature( 'siteGoals' );
-
 		$requests = $this->build_requests_for_events( array( 'purchase', 'contact' ) );
 
 		$this->assertArrayHasKey( 'total_visitors', $requests, 'build_requests() should still register the total visitors report alongside the Site Goals reports.' );

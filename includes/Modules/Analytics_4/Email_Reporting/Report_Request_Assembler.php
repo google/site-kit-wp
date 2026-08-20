@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Modules\Analytics_4\Email_Reporting;
 
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Report_Options as Analytics_Report_Options;
 
@@ -76,9 +75,7 @@ class Report_Request_Assembler {
 			$requests['top_categories'] = $this->report_options->get_top_categories_options();
 		}
 
-		if ( Feature_Flags::enabled( 'siteGoals' ) ) {
-			$requests = array_merge( $requests, $this->build_site_goals_requests() );
-		}
+		$requests = array_merge( $requests, $this->build_site_goals_requests() );
 
 		return array( $requests, $custom_titles );
 	}
