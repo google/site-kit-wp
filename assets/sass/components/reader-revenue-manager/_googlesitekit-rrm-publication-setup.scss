@@ -1,0 +1,47 @@
+.googlesitekit-rrm-publication-setup {
+	display: grid;
+	gap: 36px;
+}
+
+.googlesitekit-rrm-publication-setup__form {
+	display: grid;
+	gap: inherit;
+	justify-items: start;
+}
+
+.googlesitekit-rrm-publication-setup__description,
+.googlesitekit-rrm-publication-setup__heading,
+.googlesitekit-rrm-publication-setup__details {
+	margin: 0;
+}
+
+.googlesitekit-rrm-publication-setup__form-content {
+	display: grid;
+	gap: $grid-gap-desktop;
+	justify-self: stretch;
+}
+
+.googlesitekit-rrm-publication-setup__form-controls {
+	display: grid;
+	gap: $grid-gap-phone;
+	max-inline-size: 500px;
+}
+
+.googlesitekit-rrm-publication-setup__details {
+	display: grid;
+	gap: 10px;
+}
+
+.googlesitekit-rrm-publication-setup__details-item {
+	display: grid;
+	gap: 4px;
+	padding-block-end: 8px;
+}
+
+.googlesitekit-rrm-publication-setup__details-term {
+	color: $c-surfaces-on-surface-variant;
+}
+
+.googlesitekit-rrm-publication-setup__details-description {
+	margin: 0;
+}
