@@ -366,9 +366,7 @@ class Plain_Text_Formatter {
 		$has_any_change = ! empty(
 			array_filter(
 				$section_parts,
-				static function ( $part_config ) {
-					return isset( $part_config['data']['change'] ) && null !== $part_config['data']['change'];
-				}
+				static fn( $part_config ) => isset( $part_config['data']['change'] )
 			)
 		);
 

@@ -25,13 +25,12 @@ $first_part = reset( $section_parts );
 $subtitle   = $first_part['data']['change_context'] ?? '';
 
 // The subtitle and change column are only meaningful when at least one metric has a comparison value.
-$has_any_change = false;
-foreach ( $section_parts as $part_config ) {
-	if ( isset( $part_config['data']['change'] ) && null !== $part_config['data']['change'] ) {
-		$has_any_change = true;
-		break;
-	}
-}
+$has_any_change = ! empty(
+	array_filter(
+		$section_parts,
+		static fn( $part_config ) => isset( $part_config['data']['change'] )
+	)
+);
 ?>
 <table role="presentation" width="100%" style="margin-bottom:24px;">
 	<tr>
