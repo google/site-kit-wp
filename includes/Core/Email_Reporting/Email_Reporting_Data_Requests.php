@@ -132,6 +132,8 @@ class Email_Reporting_Data_Requests {
 	 *
 	 * @since 1.168.0
 	 * @since 1.172.0 Adds optional shared payloads to reuse per-module data.
+	 * @since n.e.x.t Returns a categorized permissions_error when the payload is empty
+	 *                because the recipient's own service-entity access check failed.
 	 *
 	 * @param int   $user_id              User ID.
 	 * @param array $date_range           Date range array.
@@ -174,9 +176,20 @@ class Email_Reporting_Data_Requests {
 				$shareable_modules = array_intersect_key( $shareable_modules, array_flip( $allowed_module_slugs ) );
 			}
 
-			$available_modules = $this->filter_modules_for_user( $shareable_modules, $user );
+			list( $available_modules, $denied_module_slugs ) = $this->filter_modules_for_user( $shareable_modules, $user );
 
 			if ( empty( $available_modules ) ) {
+				if ( ! empty( $denied_module_slugs ) ) {
+					return $this->categorize_error(
+						new WP_Error(
+							'email_reporting_module_access_denied',
+							__( 'The recipient does not have access to the connected service.', 'google-site-kit' ),
+							array( 'status' => 403 )
+						),
+						$denied_module_slugs[0]
+					);
+				}
+
 				return array();
 			}
 
@@ -383,13 +396,16 @@ class Email_Reporting_Data_Requests {
 	 * Filters modules to those accessible to the provided user.
 	 *
 	 * @since 1.168.0
+	 * @since n.e.x.t Also returns the slugs of modules dropped because the recipient's
+	 *                own service-entity access check explicitly denied access.
 	 *
 	 * @param array   $modules Active modules.
 	 * @param WP_User $user    Target user.
-	 * @return array Filtered modules.
+	 * @return array List with the filtered modules and the denied module slugs.
 	 */
 	private function filter_modules_for_user( array $modules, WP_User $user ) {
-		$allowed = array();
+		$allowed             = array();
+		$denied_module_slugs = array();
 
 		foreach ( $modules as $slug => $module ) {
 			if ( $module->is_recoverable() ) {
@@ -418,6 +434,14 @@ class Email_Reporting_Data_Requests {
 				if ( $module instanceof Module_With_Service_Entity ) {
 					$access = $module->check_service_entity_access();
 
+					// Only a definitive `false` means the recipient's own access check
+					// ran and denied access; a WP_Error is a different failure mode
+					// (e.g. misconfiguration) and isn't treated as a permissions denial.
+					if ( false === $access ) {
+						$denied_module_slugs[] = $slug;
+						continue;
+					}
+
 					if ( true !== $access ) {
 						continue;
 					}
@@ -427,7 +451,7 @@ class Email_Reporting_Data_Requests {
 			}
 		}
 
-		return $allowed;
+		return array( $allowed, $denied_module_slugs );
 	}
 
 	/**

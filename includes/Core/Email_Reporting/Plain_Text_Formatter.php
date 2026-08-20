@@ -77,7 +77,7 @@ class Plain_Text_Formatter {
 	 * Simple emails share a common structure with customizable content.
 	 *
 	 * @since 1.173.0
-	 * @since n.e.x.t Footer copy is now routed through `convert_links_to_text()` since it may contain an inline unsubscribe link.
+	 * @since 1.186.0 Footer copy is now routed through `convert_links_to_text()` since it may contain an inline unsubscribe link.
 	 *
 	 * @param array $data The simple email data containing site, title, learn_more_url,
 	 *                    primary_call_to_action, body, and footer.
@@ -271,7 +271,7 @@ class Plain_Text_Formatter {
 	 * Formats the email footer with CTA and links.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Footer copy is now routed through `convert_links_to_text()` since it may contain an inline unsubscribe link.
+	 * @since 1.186.0 Footer copy is now routed through `convert_links_to_text()` since it may contain an inline unsubscribe link.
 	 *
 	 * @param array $cta    Primary CTA configuration with 'url' and 'label'.
 	 * @param array $footer Footer configuration with 'copy' and 'unsubscribe_url'.
