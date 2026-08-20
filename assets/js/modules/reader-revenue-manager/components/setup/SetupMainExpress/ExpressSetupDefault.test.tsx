@@ -25,6 +25,10 @@ import { render } from '@tests/js/test-utils';
 import ExpressSetupDefault from './ExpressSetupDefault';
 
 jest.mock( './PoweredBy', () => () => null );
+jest.mock(
+	'./common-steps/StepPublicationSetup',
+	() => () => 'RRM express setup placeholder: publication setup step.'
+);
 
 const STEP_CONTENT = {
 	[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]:
