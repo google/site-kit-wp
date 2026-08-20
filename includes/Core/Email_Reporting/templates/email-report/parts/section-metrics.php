@@ -23,6 +23,15 @@ $section_parts = $section['section_parts'];
 // Get the first metric's change_context for the subtitle.
 $first_part = reset( $section_parts );
 $subtitle   = $first_part['data']['change_context'] ?? '';
+
+// The subtitle and change column are only meaningful when at least one metric has a comparison value.
+$has_any_change = false;
+foreach ( $section_parts as $part_config ) {
+	if ( isset( $part_config['data']['change'] ) && null !== $part_config['data']['change'] ) {
+		$has_any_change = true;
+		break;
+	}
+}
 ?>
 <table role="presentation" width="100%" style="margin-bottom:24px;">
 	<tr>
@@ -41,6 +50,7 @@ $subtitle   = $first_part['data']['change_context'] ?? '';
 			?>
 
 			<table role="presentation" width="100%" style="margin-bottom:12px;">
+				<?php if ( $has_any_change ) : ?>
 				<tr>
 					<td>&nbsp;</td>
 					<td class="text-secondary subtitle" width="110"
@@ -48,6 +58,7 @@ $subtitle   = $first_part['data']['change_context'] ?? '';
 						<?php echo esc_html( $subtitle ); ?>
 					</td>
 				</tr>
+				<?php endif; ?>
 				<?php
 				$total_parts = count( $section_parts );
 				$current     = 0;
@@ -74,6 +85,7 @@ $subtitle   = $first_part['data']['change_context'] ?? '';
 							<?php echo esc_html( $data['value'] ); ?>
 						</div>
 					</td>
+					<?php if ( $has_any_change ) : ?>
 					<td class="border"
 						style="text-align: right; vertical-align: middle; border-bottom: <?php echo esc_attr( $border_style ); ?>; padding: 12px 0;">
 						<?php
@@ -85,6 +97,7 @@ $subtitle   = $first_part['data']['change_context'] ?? '';
 							);
 						?>
 					</td>
+					<?php endif; ?>
 				</tr>
 					<?php
 				}

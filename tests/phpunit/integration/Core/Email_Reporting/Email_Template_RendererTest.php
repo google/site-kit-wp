@@ -212,6 +212,37 @@ class Email_Template_RendererTest extends TestCase {
 		$this->assertStringNotContainsString( 'class="badge-negative"', $html_output_without_change, 'Expected no change badge when the change value is null.' );
 	}
 
+	public function test_metrics_section_hides_change_column_when_no_metric_has_a_comparison() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$golinks = new Golinks( $context );
+		$golinks->register_handler( 'dashboard', new Dashboard_Golink_Handler() );
+
+		$payload = array(
+			'total_visitors' => array(
+				'label'          => 'Total visitors',
+				'value'          => '2',
+				'change'         => null,
+				'change_context' => 'Compared to previous 30 days',
+			),
+			'new_visitors'   => array(
+				'label'  => 'New visitors',
+				'value'  => '1',
+				'change' => null,
+			),
+		);
+
+		$sections_map  = new Sections_Map( $context, $payload, $golinks );
+		$renderer      = new Email_Template_Renderer( $sections_map );
+		$template_data = $this->get_minimal_template_data();
+
+		$html_output = $renderer->render( 'email-report', $template_data );
+
+		$this->assertStringContainsString( 'Total visitors', $html_output, 'Expected the metric rows to still render.' );
+		$this->assertStringNotContainsString( 'Compared to previous 30 days', $html_output, 'Expected the change context subtitle to be hidden when no metric has a comparison value.' );
+		$this->assertStringNotContainsString( 'class="badge-positive"', $html_output, 'Expected no badges to be rendered.' );
+		$this->assertStringNotContainsString( 'class="badge-negative"', $html_output, 'Expected no badges to be rendered.' );
+	}
+
 	public function test_page_metrics_change_badge_shows_signed_value_and_is_omitted_when_change_is_null() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$golinks = new Golinks( $context );
