@@ -104,24 +104,4 @@ declare global {
 	var Backbone: any;
 	var PUM: any;
 	/* eslint-enable @typescript-eslint/no-explicit-any */
-
-	namespace NodeJS {
-		interface Global {
-			gtag?: Window[ 'gtag' ];
-			_googlesitekitAnalyticsTrackingData?: Window[ '_googlesitekitAnalyticsTrackingData' ];
-			_googlesitekit?: {
-				gtagUserData?: boolean;
-				gtagEvent?: (
-					eventName: string,
-					eventData?: Record< string, unknown >
-				) => void;
-				[ key: string ]: unknown;
-			};
-			_googlesitekitConsentCategoryMap?: Record< string, string[] >;
-			_googlesitekitConsents?: Record< string, string >;
-			googlesitekit: typeof googlesitekit;
-			_googlesitekitLegacyData: typeof _googlesitekitLegacyData;
-			_googlesitekitBaseData: typeof _googlesitekitBaseData;
-		}
-	}
 }
