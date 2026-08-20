@@ -95,15 +95,11 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 		[]
 	);
 
-	const organizationID = useSelect( ( select: Select ) => {
-		const store = select( MODULES_READER_REVENUE_MANAGER );
-
-		if ( typeof store.getOrganizationID === 'function' ) {
-			return store.getOrganizationID();
-		}
-
-		return store.getSettings()?.organizationID;
-	}, [] );
+	const organizationID = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getOrganizationID(),
+		[]
+	);
 
 	const publication = useSelect(
 		( select: Select ) =>

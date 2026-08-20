@@ -30,7 +30,7 @@ import {
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
-	createTestRegistry,
+	createTestRegistryWithFeatures,
 	fireEvent,
 	render,
 	waitFor,
@@ -48,7 +48,7 @@ describe( 'StepPublicationPolicies', () => {
 	mockLocation();
 
 	beforeEach( () => {
-		registry = createTestRegistry();
+		registry = createTestRegistryWithFeatures( [ 'rrmExpressSetup' ] );
 		onSetStep = jest.fn();
 		global.location.href =
 			'http://example.com/?step=publication-policies&cta=newsletter-signup';
