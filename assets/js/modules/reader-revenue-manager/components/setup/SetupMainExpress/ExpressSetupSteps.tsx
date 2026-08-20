@@ -36,12 +36,15 @@ import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datasto
 
 interface ExpressSetupStepsProps {
 	extraSteps?: Record< string, string >;
+	step?: string;
 }
 
 const ExpressSetupSteps: FC< ExpressSetupStepsProps > = ( {
 	extraSteps = {},
+	step,
 } ) => {
-	const [ step ] = useQueryArg( 'step' );
+	const [ queryStep ] = useQueryArg( 'step' );
+	const activeStepID = step || queryStep;
 
 	const steps = {
 		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: __(
@@ -63,7 +66,9 @@ const ExpressSetupSteps: FC< ExpressSetupStepsProps > = ( {
 		),
 	};
 
-	const activeStep = step ? Object.keys( steps ).indexOf( step ) : -1;
+	const activeStep = activeStepID
+		? Object.keys( steps ).indexOf( activeStepID )
+		: -1;
 
 	return (
 		<Stepper activeStep={ activeStep } variant="rail">

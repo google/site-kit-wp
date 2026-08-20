@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC, ReactNode } from 'react';
+import type { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -42,22 +42,41 @@ import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datasto
 import StepSignupForm from './StepSignupForm';
 
 const SetupCTANewsletterSignup: FC = () => {
-	const [ step ] = useQueryArg( 'step' );
+	const [ step, setStep ] = useQueryArg( 'step' );
 
-	const stepContent: Record< string, ReactNode > = {
-		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: <StepPublicationSetup />,
-		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: <StepTermsOfService />,
-		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: (
-			<StepPublicationPolicies />
-		),
-		[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: <StepSignupForm />,
-		[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: <StepSetupComplete />,
+	const stepConfig: Record<
+		string,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		{ Component: FC< any >; nextStep?: string }
+	> = {
+		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: {
+			Component: StepPublicationSetup,
+			nextStep: EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE,
+		},
+		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: {
+			Component: StepTermsOfService,
+			nextStep: EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES,
+		},
+		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: {
+			Component: StepPublicationPolicies,
+			nextStep: EXPRESS_SETUP_STEPS.SETUP_CTA,
+		},
+		[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: {
+			Component: StepSignupForm,
+			nextStep: EXPRESS_SETUP_STEPS.SETUP_COMPLETE,
+		},
+		[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: {
+			Component: StepSetupComplete,
+		},
 	};
+
+	const { Component, nextStep } = step ? stepConfig[ step ] ?? {} : {};
 
 	return (
 		<ExpressSetupLayout
 			sidebar={
 				<ExpressSetupSteps
+					step={ step }
 					extraSteps={ {
 						[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: __(
 							'Set up a sign-up form',
@@ -67,7 +86,9 @@ const SetupCTANewsletterSignup: FC = () => {
 				/>
 			}
 		>
-			{ step ? stepContent[ step ] : null }
+			{ Component && (
+				<Component onSetStep={ setStep } nextStep={ nextStep } />
+			) }
 		</ExpressSetupLayout>
 	);
 };

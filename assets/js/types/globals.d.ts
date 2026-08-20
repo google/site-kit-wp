@@ -72,5 +72,6 @@ declare global {
 	// This is not fully typed yet. We will keep improving it as we migrate more files that use it.
 	var _googlesitekitBaseData: {
 		assetsURL: string;
+		wpPrivacyURL?: string;
 	};
 }
