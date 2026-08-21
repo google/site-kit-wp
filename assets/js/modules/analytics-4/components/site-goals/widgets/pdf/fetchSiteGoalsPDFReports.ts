@@ -30,7 +30,7 @@ interface FetchAnalyticsReportResult {
 	/** The Analytics report, or `undefined` when the request failed. */
 	response?: Report;
 	/** The error the request returned, or `undefined` when the request worked. */
-	error?: unknown;
+	error?: { message: string };
 }
 
 /**
@@ -86,8 +86,14 @@ export default async function fetchSiteGoalsPDFReports( {
 		)
 	);
 
-	if ( reportResults.some( ( { error } ) => error !== undefined ) ) {
-		throw new Error( 'Site Kit: Site Goals report unavailable.' );
+	const reportError = reportResults.find(
+		( { error } ) => error !== undefined
+	)?.error;
+
+	if ( reportError ) {
+		throw new Error(
+			`Site Kit: Site Goals report unavailable. ${ reportError.message }`
+		);
 	}
 
 	const [

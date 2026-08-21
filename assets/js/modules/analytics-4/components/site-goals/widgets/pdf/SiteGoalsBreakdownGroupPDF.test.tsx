@@ -179,7 +179,7 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 		expect( noChangeRateJSON ).toContain( PDF_COLORS.NEUTRAL_N_10 );
 	} );
 
-	it( 'gives the rate panel no background color when the previous rate is zero', () => {
+	it( 'gives the rate panel a green background when the rate rises from zero', () => {
 		const zeroPreviousRateJSON = renderBreakdownGroupJSON( {
 			group: {
 				...FULL_GROUP,
@@ -189,9 +189,22 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 			totalLabel: 'Total sales',
 		} );
 
-		expect( zeroPreviousRateJSON ).not.toContain( PDF_COLORS.GREEN_G_10 );
-		expect( zeroPreviousRateJSON ).not.toContain( PDF_COLORS.RED_R_10 );
-		expect( zeroPreviousRateJSON ).not.toContain( PDF_COLORS.NEUTRAL_N_10 );
+		expect( zeroPreviousRateJSON ).toContain( PDF_COLORS.GREEN_G_10 );
+	} );
+
+	it( 'gives the rate panel no background color when the rate is zero in both periods', () => {
+		const zeroRateJSON = renderBreakdownGroupJSON( {
+			group: {
+				...FULL_GROUP,
+				rate: { current: 0, previous: 0 },
+			},
+			rateLabel: 'Sales rate',
+			totalLabel: 'Total sales',
+		} );
+
+		expect( zeroRateJSON ).not.toContain( PDF_COLORS.GREEN_G_10 );
+		expect( zeroRateJSON ).not.toContain( PDF_COLORS.RED_R_10 );
+		expect( zeroRateJSON ).not.toContain( PDF_COLORS.NEUTRAL_N_10 );
 	} );
 
 	it( 'hides the change caption on a tile with no change badge', () => {

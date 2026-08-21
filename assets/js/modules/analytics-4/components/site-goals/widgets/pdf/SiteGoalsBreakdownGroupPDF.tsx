@@ -30,7 +30,9 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import getPDFTileChange from '@/js/components/pdf-export/getPDFTileChange';
+import getPDFTileChange, {
+	getPDFChangeType,
+} from '@/js/components/pdf-export/getPDFTileChange';
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFMetricTile from '@/js/components/pdf-export/shared-react-pdf-components/PDFMetricTile';
@@ -106,21 +108,25 @@ function getChange( metric: SiteGoalsPDFMetric | undefined ) {
 /**
  * Picks the background color behind the Site Goals rate tile.
  *
- * The color follows the change badge's direction, so the panel and the badge
- * tell the reader the same thing. A rate tile with no badge takes no panel
- * color.
+ * The color follows the direction the rate moved, matching the dashboard's
+ * `Tile`. A rate that rose from zero takes the green panel, even though the
+ * tile shows no change badge.
  *
  * @since n.e.x.t
  *
  * @param {(Object|undefined)} rate The Key action rate for the current and the previous period, or `undefined` when the tile has none.
- * @return {(string|undefined)} The background color behind the rate tile, or `undefined` when the rate tile shows no change badge.
+ * @return {(string|undefined)} The background color behind the rate tile, or `undefined` when the rate is zero in both periods.
  */
 function getRatePanelColor(
 	rate: SiteGoalsPDFMetric | undefined
 ): string | undefined {
-	const { changeType } = getChange( rate );
+	if ( ! rate || ( rate.current === 0 && rate.previous === 0 ) ) {
+		return undefined;
+	}
 
-	return changeType && RATE_PANEL_COLOR_BY_CHANGE_TYPE[ changeType ];
+	return RATE_PANEL_COLOR_BY_CHANGE_TYPE[
+		getPDFChangeType( rate.current - rate.previous )
+	];
 }
 
 /**

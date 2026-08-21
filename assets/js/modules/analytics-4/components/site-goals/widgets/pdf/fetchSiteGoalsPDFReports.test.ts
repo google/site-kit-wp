@@ -152,7 +152,7 @@ describe( 'fetchSiteGoalsPDFReports', () => {
 		);
 
 		await expect( fetchOnlineStorePDFReports( registry ) ).rejects.toThrow(
-			/Site Goals report unavailable/
+			'Site Kit: Site Goals report unavailable. Report request failed.'
 		);
 
 		expect( console ).toHaveErrored();
