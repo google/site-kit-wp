@@ -104,5 +104,6 @@ export const getExistingTagURLs = memoize(
 		}
 
 		return urls;
-	}
+	},
+	( args ) => `${ args.homeURL }:${ args.ampMode }`
 );

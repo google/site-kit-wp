@@ -20,6 +20,7 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
+import type { MemoizedFunction } from 'lodash';
 
 /**
  * Internal dependencies
@@ -38,6 +39,11 @@ describe( 'modules/tagmanager existing-tag', () => {
 	} );
 
 	describe( 'getExistingTagURLs', () => {
+		beforeEach( () => {
+			( getExistingTagURLs as MemoizedFunction ).cache.clear!();
+			fetchMock.reset();
+		} );
+
 		it( 'gets the home URL if AMP mode is not secondary', async () => {
 			const homeURL = 'http://example.com/';
 			const expectedURLs = [ homeURL ];
@@ -89,6 +95,92 @@ describe( 'modules/tagmanager existing-tag', () => {
 			const existingTagURLs = await getExistingTagURLs( { homeURL } );
 
 			expect( existingTagURLs ).toEqual( expectedURLs );
+		} );
+
+		it( 'returns cached result when called with the same arguments', async () => {
+			const homeURL = 'http://example.com/';
+			const expectedURLs = [ homeURL, 'http://example.com/amp/?amp=1' ];
+
+			fetchMock.getOnce( new RegExp( '^/wp/v2/posts' ), {
+				body: [ { link: 'http://example.com/amp/' } ],
+				status: 200,
+			} );
+
+			const firstResult = await getExistingTagURLs( {
+				homeURL,
+				ampMode: AMP_MODE_SECONDARY,
+			} );
+			const secondResult = await getExistingTagURLs( {
+				homeURL,
+				ampMode: AMP_MODE_SECONDARY,
+			} );
+
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
+			expect( firstResult ).toEqual( expectedURLs );
+			expect( secondResult ).toEqual( expectedURLs );
+		} );
+
+		it( 'fetches again when called with a different homeURL', async () => {
+			const firstHomeURL = 'http://example.com/';
+			const secondHomeURL = 'http://other.example.com/';
+
+			fetchMock
+				.getOnce( new RegExp( '^/wp/v2/posts' ), {
+					body: [ { link: 'http://example.com/amp/' } ],
+					status: 200,
+				} )
+				.getOnce( new RegExp( '^/wp/v2/posts' ), {
+					body: [ { link: 'http://other.example.com/amp/' } ],
+					status: 200,
+				} );
+
+			const firstResult = await getExistingTagURLs( {
+				homeURL: firstHomeURL,
+				ampMode: AMP_MODE_SECONDARY,
+			} );
+			const secondResult = await getExistingTagURLs( {
+				homeURL: secondHomeURL,
+				ampMode: AMP_MODE_SECONDARY,
+			} );
+
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
+			expect( firstResult ).toEqual( [
+				firstHomeURL,
+				'http://example.com/amp/?amp=1',
+			] );
+			expect( secondResult ).toEqual( [
+				secondHomeURL,
+				'http://other.example.com/amp/?amp=1',
+			] );
+		} );
+
+		it( 'caches results separately for different AMP modes', async () => {
+			const homeURL = 'http://example.com/';
+			const expectedURLsWithAMP = [
+				homeURL,
+				'http://example.com/amp/?amp=1',
+			];
+			const expectedURLsWithoutAMP = [ homeURL ];
+
+			fetchMock.getOnce( new RegExp( '^/wp/v2/posts' ), {
+				body: [ { link: 'http://example.com/amp/' } ],
+				status: 200,
+			} );
+
+			const withAMP = await getExistingTagURLs( {
+				homeURL,
+				ampMode: AMP_MODE_SECONDARY,
+			} );
+			const withoutAMP = await getExistingTagURLs( { homeURL } );
+			const withAMPAgain = await getExistingTagURLs( {
+				homeURL,
+				ampMode: AMP_MODE_SECONDARY,
+			} );
+
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
+			expect( withAMP ).toEqual( expectedURLsWithAMP );
+			expect( withoutAMP ).toEqual( expectedURLsWithoutAMP );
+			expect( withAMPAgain ).toEqual( expectedURLsWithAMP );
 		} );
 	} );
 } );
