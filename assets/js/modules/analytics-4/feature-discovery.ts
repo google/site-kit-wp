@@ -24,6 +24,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import keyMetricsWidgetScreenshotURL from '@/images/feature-discovery-hub/analytics/Key-metrics-widget.png';
+import siteGoalsWidgetScreenshotURL from '@/images/feature-discovery-hub/analytics/Site-goals-widget.png';
+import topContentWidgetScreenshotURL from '@/images/feature-discovery-hub/analytics/Top-content-widget-1.png';
+import trafficWidgetScreenshotURL from '@/images/feature-discovery-hub/analytics/Traffic-widget.png';
+import visitorGroupsWidgetScreenshotURL from '@/images/feature-discovery-hub/analytics/Visitor-groups-widget.png';
 import {
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
@@ -44,16 +49,135 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'analytics', {
-		title: __( 'Analytics', 'google-site-kit' ),
-		shortDescription: __(
+		title: __(
 			'Understand how visitors interact with your content',
 			'google-site-kit'
 		),
+		shortDescription: __(
+			'Track your traffic, see which pages perform best, and learn what keeps your audience coming back. Analytics gives you the clear data you need to optimize your user experience and turn casual visitors into loyal customers.',
+			'google-site-kit'
+		),
+		detail: {
+			description: {
+				whatIs: __(
+					"Analytics turns your site’s traffic into a clear story. It doesn't just count visitors, it reveals which pages are most engaging, where your audience discovers your site, and how they move through your content. Site Kit brings these insights into a single dashboard, removing the need for extra browser tabs or complex data tools so you can focus on what’s actually working.",
+					'google-site-kit'
+				),
+				whyUseHeading: __( 'Why use Analytics?', 'google-site-kit' ),
+				whyUseList: [
+					{
+						term: __( 'Decide with data:', 'google-site-kit' ),
+						description: __(
+							'Replace guesswork with clear insights. ',
+							'google-site-kit'
+						),
+					},
+					{
+						term: __( 'Track what works:', 'google-site-kit' ),
+						description: __(
+							'Pinpoint your most popular content and traffic sources.',
+							'google-site-kit'
+						),
+					},
+					{
+						term: __( 'Boost performance:', 'google-site-kit' ),
+						description: __(
+							'Optimize your site based on real visitor behavior.',
+							'google-site-kit'
+						),
+					},
+				],
+			},
+			requirements: {
+				serviceRequirements: __(
+					'A "gathering data" message will be displayed to users with newly created Analytics properties. All Anallytics data is subject to processing delays, which typically take 2 to 6 hours to process new traffic information.',
+					'google-site-kit'
+				),
+				setupList: [
+					__(
+						'Create a new Analytics account or use your existing account.',
+						'google-site-kit'
+					),
+					__(
+						'Select your preferred property and web data stream.',
+						'google-site-kit'
+					),
+					__(
+						'Enable enhanced measurements (optional).',
+						'google-site-kit'
+					),
+				],
+				setupComplete: __(
+					'Analytics is set up! You are now capturing useful data for your site.',
+					'google-site-kit'
+				),
+			},
+			screenshots: [
+				{
+					src: keyMetricsWidgetScreenshotURL,
+					alt: __(
+						'Analytics 4 Key Metrics widget showing selected key metrics and trends.',
+						'google-site-kit'
+					),
+					width: 1488,
+					height: 608,
+				},
+				{
+					src: siteGoalsWidgetScreenshotURL,
+					alt: __(
+						'Analytics 4 Site Goals widget showing progress for configured goals.',
+						'google-site-kit'
+					),
+					width: 817,
+					height: 662,
+				},
+				{
+					src: topContentWidgetScreenshotURL,
+					alt: __(
+						'Analytics 4 Top Content widget showing top pages and engagement data.',
+						'google-site-kit'
+					),
+					width: 1476,
+					height: 826,
+				},
+				{
+					src: trafficWidgetScreenshotURL,
+					alt: __(
+						'Analytics 4 Traffic widget showing traffic trends and channels.',
+						'google-site-kit'
+					),
+					width: 1488,
+					height: 819,
+				},
+				{
+					src: visitorGroupsWidgetScreenshotURL,
+					alt: __(
+						'Analytics 4 Visitor Groups widget showing audience segment performance.',
+						'google-site-kit'
+					),
+					width: 1488,
+					height: 824,
+				},
+			],
+		},
+		successNotice: {
+			title: __( 'Success! Analytics is set up', 'google-site-kit' ),
+			description: __(
+				'Analytics data is now on your dashboard.',
+				'google-site-kit'
+			),
+			cta: {
+				label: __( 'Show me', 'google-site-kit' ),
+			},
+			dismissLabel: __( 'Got it', 'google-site-kit' ),
+		},
 		effort: FEATURE_EFFORTS.MEDIUM,
 		goalCategories: [
 			FEATURE_CATEGORIES.AUDIENCE,
+			FEATURE_CATEGORIES.ENGAGEMENT,
 			FEATURE_CATEGORIES.TRAFFIC,
 			FEATURE_CATEGORIES.PERFORMANCE,
+			FEATURE_CATEGORIES.PRODUCTIVITY,
 		],
 		addedInVersion: '1.0.0',
 		setup: {
