@@ -35,33 +35,25 @@ at requirements.
 
 ## Read every issue this one references — before writing any code
 
-Site Kit issues lean on their siblings: a brief says `(added in #12950)` for the store it
-builds on, `(see #13005)` for the extension point it leaves open, "the create variant is
-#13022" for the half that isn't yours. Those references carry requirements that the issue
-in front of you does not repeat.
+A brief's `(added in #12950)`, `(see #13005)`, or "the create variant is #13022" carries
+requirements that the issue in front of you doesn't repeat.
 
-Collect every issue referenced anywhere in the Feature Description, Acceptance criteria,
-Implementation Brief and Test Coverage — `#12345`, a full `github.com/google/site-kit-wp/issues/…`
-URL, the parent epic, and anything GitHub lists as linked — and read each one with
-`gh issue view <number> --json title,body,state,url` **before** you start implementing. From
-each, take:
+Collect every issue referenced anywhere in the four sections — `#12345`, a full issue URL, the
+parent epic, anything GitHub lists as linked — and read each with
+`gh issue view <number> --json title,body,state,url` before implementing. Take from each:
 
-- **What it delivered**, when it is closed — the classes, selectors, hooks and constants your
-  brief expects to already be there. Confirm they exist in the branch you are on; a closed
-  issue whose PR has not been merged into your base leaves you building on nothing.
-- **What it will deliver**, when it is still open — the work that is *not* yours. Stop at that
-  boundary rather than implementing it, and don't duplicate a symbol it is going to add.
-- **Its acceptance criteria**, where they constrain yours — a shared payload shape, a naming
-  scheme, an ordering guarantee. Where a referenced issue and your brief disagree, the code
-  wins if it is already written; otherwise ask.
+- **If closed** — the classes, selectors, hooks and constants your brief expects to exist. Confirm
+  they're actually in your branch, not just merged elsewhere.
+- **If still open** — the work that isn't yours. Stop at that boundary; don't duplicate a symbol
+  it's going to add.
+- **Its acceptance criteria**, where they constrain yours (a shared payload shape, a naming
+  scheme, an ordering guarantee). Code wins if already written; otherwise ask.
 
-Read the referenced issues themselves, not their references — follow a second hop only when
-the first leaves a requirement genuinely unclear.
+Follow a second hop only when the first leaves a requirement genuinely unclear.
 
-**Stop and ask the user** if: a referenced issue can't be fetched; your brief depends on work
-that a referenced issue has not landed yet; or the issue refers to a sibling **indirectly**
-("the next issue", "issue 5", "the issue that adds the store") rather than by number — ask for
-the real number instead of guessing which issue is meant.
+**Stop and ask the user** if a referenced issue can't be fetched, your brief depends on work it
+hasn't landed yet, or a sibling is named indirectly ("the next issue", "issue 5") rather than by
+number.
 
 ## Step 2 — Determine scope
 
