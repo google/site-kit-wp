@@ -20,7 +20,7 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
-import type { MemoizedFunction } from 'lodash';
+import { MemoizedFunction } from 'lodash';
 
 /**
  * Internal dependencies
