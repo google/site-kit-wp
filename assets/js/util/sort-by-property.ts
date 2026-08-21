@@ -31,11 +31,15 @@ export function sortByProperty(
 	arrayData: SortablePropertyRecord[],
 	property?: string
 ): SortablePropertyRecord[] {
+	if ( ! property ) {
+		return arrayData;
+	}
+
 	return arrayData.sort( ( objectA, objectB ) => {
-		if ( objectA[ property as string ] > objectB[ property as string ] ) {
+		if ( objectA[ property ] > objectB[ property ] ) {
 			return 1;
 		}
-		if ( objectA[ property as string ] < objectB[ property as string ] ) {
+		if ( objectA[ property ] < objectB[ property ] ) {
 			return -1;
 		}
 		return 0;
