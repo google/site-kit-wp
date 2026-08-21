@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\Util\Sort;
 /**
  * Class for the accounts listing datapoint.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Get_Accounts extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
@@ -42,7 +42,7 @@ class Get_Accounts extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param mixed        $response API response.
 	 * @param Data_Request $data     Data request object.
@@ -59,7 +59,7 @@ class Get_Accounts extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Checks for the state of an Account, whether closed or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param object $account Account model.
 	 * @return bool Whether the account is not closed.
@@ -71,7 +71,7 @@ class Get_Accounts extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses account ID, adds it to the model object and returns updated model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param object $account Account model.
 	 * @param string $id_key Attribute name that contains account ID.

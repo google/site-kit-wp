@@ -23,7 +23,7 @@ use WP_Error;
 /**
  * Class for the report datapoint.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ class Get_Report extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Callable to check if shared data request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 * @var callable
 	 */
 	private $is_shared_data_request;
@@ -40,7 +40,7 @@ class Get_Report extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Callable to create AdSense earning data request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 * @var callable
 	 */
 	private $create_adsense_earning_data_request;
@@ -48,7 +48,7 @@ class Get_Report extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -65,7 +65,7 @@ class Get_Report extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object on success, or WP_Error on failure.
@@ -135,7 +135,7 @@ class Get_Report extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param mixed        $response API response.
 	 * @param Data_Request $data     Data request object.
@@ -148,7 +148,7 @@ class Get_Report extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses the string list into an array of strings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param string|array $items Items to parse.
 	 * @return array An array of string items.
@@ -187,7 +187,7 @@ class Get_Report extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Gets an array of dates for the given named date range.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param string $date_range Named date range.
 	 * @return array|WP_Error Array of [startDate, endDate] or WP_Error if invalid named range.
@@ -213,7 +213,7 @@ class Get_Report extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses the orderby value of the data request into an array of earning orderby format.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param array|null $orderby Data request orderby value.
 	 * @return string[] An array of reporting orderby strings.
@@ -252,7 +252,7 @@ class Get_Report extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Validates the report metrics for a shared request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param string[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
@@ -298,7 +298,7 @@ class Get_Report extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Validates the report dimensions for a shared request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param string[] $dimensions The dimensions to validate.
 	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.

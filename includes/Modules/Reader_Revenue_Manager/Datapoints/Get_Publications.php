@@ -24,7 +24,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Publication;
 /**
  * Class for the publications retrieval datapoint.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  * @access private
  * @ignore
  */
@@ -33,7 +33,7 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 * @var Options
 	 */
 	private $options;
@@ -41,7 +41,7 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Reader Revenue Manager settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 * @var Settings
 	 */
 	private $settings;
@@ -57,7 +57,7 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -72,7 +72,7 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
@@ -87,7 +87,7 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param mixed        $response Publications list response.
 	 * @param Data_Request $data     Data request object.
@@ -104,7 +104,7 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Gets the filter for retrieving publications for the current site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return string Permutations for site hosts or URL.
 	 */
@@ -141,7 +141,7 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Synchronizes the connected publication from a publications list response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param Publication[] $publications Array of WCP Publication objects.
 	 * @return void No return value.

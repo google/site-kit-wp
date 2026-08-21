@@ -63,9 +63,8 @@
 	}
 }
 
-.googlesitekit-setup-flow {
-	// The setup screens add `googlesitekit-setup-flow` to `<body>`. These rules
-	// show the Site Kit logo and hide the Google "G" at every width.
+.googlesitekit-setup-flow,
+.googlesitekit-setup-splash {
 	.googlesitekit-logo {
 
 		.googlesitekit-logo__logo-g {

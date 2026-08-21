@@ -19,7 +19,7 @@ class FakeContentEventProvider_Active extends FakeConversionEventProvider {
 	/**
 	 * Checks if the provider is active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return bool True if the provider is active, false otherwise.
 	 */
@@ -30,7 +30,7 @@ class FakeContentEventProvider_Active extends FakeConversionEventProvider {
 	/**
 	 * Gets the provider category.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return string Provider category.
 	 */
@@ -41,7 +41,7 @@ class FakeContentEventProvider_Active extends FakeConversionEventProvider {
 	/**
 	 * Gets the event names.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return array List of event names.
 	 */
@@ -52,7 +52,7 @@ class FakeContentEventProvider_Active extends FakeConversionEventProvider {
 	/**
 	 * Gets the enhanced conversion event names.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return array List of enhanced conversion event names.
 	 */
@@ -63,7 +63,7 @@ class FakeContentEventProvider_Active extends FakeConversionEventProvider {
 	/**
 	 * Registers the script for the provider.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 */
 	public function register_script() {
 		$base_url = $this->context->url( 'dist/assets/' );

@@ -103,7 +103,7 @@ class Get_Form_MetadataTest extends TestCase {
 	 * the global `Ninja_Forms()` function for the rest of the process once the
 	 * fake declares it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param array $form_titles Optional. Each form title, with the form ID as the key. Default empty array.
 	 */
