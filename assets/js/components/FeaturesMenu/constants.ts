@@ -19,9 +19,6 @@
 /**
  * Class name on the header button that opens the features menu.
  *
- * The email reports setup tooltip anchors to this button on mobile and
- * tablet, so the class is shared rather than repeated as a selector string.
- *
  * @since n.e.x.t
  */
 export const FEATURES_MENU_BUTTON_CLASS = 'googlesitekit-features-menu__button';
