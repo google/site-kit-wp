@@ -24,6 +24,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import siwgCustomPageScreenshotURL from '@/images/feature-discovery-hub/siwg/siwg-custom-page.png';
+import siwgLoginPageScreenshotURL from '@/images/feature-discovery-hub/siwg/siwg-WP-login-page.png';
 import {
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
@@ -44,11 +46,101 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'sign-in-with-google', {
-		title: __( 'Sign in with Google', 'google-site-kit' ),
-		shortDescription: __(
-			'Boost onboarding and security with one-click sign-in',
+		title: __(
+			'Boost onboarding, security, and trust on your site using Sign in with Google',
 			'google-site-kit'
 		),
+		shortDescription: __(
+			'Provide your site visitors with a simple, secure, and personalized experience by adding a Sign in with Google button to your login page',
+			'google-site-kit'
+		),
+		detail: {
+			description: {
+				whatIs: __(
+					'Sign in with Google replaces long, repetitive registration forms with a fast, secure, and familiar sign-in experience. By allowing visitors to use their existing Google credentials to access your site, you significantly reduce friction during the login process. It builds immediate trust with your audience while making it easier for you to grow a community of registered users, ultimately leading to higher engagement and more returning visitors.',
+					'google-site-kit'
+				),
+				whyUseHeading: __(
+					'Why use Sign in with Google?',
+					'google-site-kit'
+				),
+				whyUseList: [
+					{
+						term: __( 'Reduce friction:', 'google-site-kit' ),
+						description: __(
+							'Eliminate long registration forms and password fatigue.',
+							'google-site-kit'
+						),
+					},
+					{
+						term: __( 'Boost conversions:', 'google-site-kit' ),
+						description: __(
+							'Make signing up a simple, one-click process.',
+							'google-site-kit'
+						),
+					},
+					{
+						term: __( 'Grow your community:', 'google-site-kit' ),
+						description: __(
+							'Increase returning visitors and build deeper user connections.',
+							'google-site-kit'
+						),
+					},
+				],
+			},
+			requirements: {
+				serviceRequirements: __(
+					'Access to the Google Cloud Platform is required to create a project and obtain OAuth credentials (Client ID). Your site must allow user registration (Settings > General) if you want to use the Sign in with Google "One Tap" option.',
+					'google-site-kit'
+				),
+				setupList: [
+					__( 'Create a Google Cloud project', 'google-site-kit' ),
+					__(
+						'Enter your Google Cloud project client ID',
+						'google-site-kit'
+					),
+					__( 'Enable one-tap (optional).', 'google-site-kit' ),
+				],
+				setupComplete: __(
+					'Users can now sign in with Google to your site.',
+					'google-site-kit'
+				),
+			},
+			screenshots: [
+				{
+					src: siwgCustomPageScreenshotURL,
+					alt: __(
+						'Custom page showing Sign in with Google integration.',
+						'google-site-kit'
+					),
+					width: 1535,
+					height: 853,
+				},
+				{
+					src: siwgLoginPageScreenshotURL,
+					alt: __(
+						'WordPress login page showing Sign in with Google integration.',
+						'google-site-kit'
+					),
+					width: 409,
+					height: 644,
+				},
+			],
+		},
+		successNotice: {
+			title: __(
+				'Success! Sign in with Google is set up',
+				'google-site-kit'
+			),
+			description: __(
+				'Sign in with Google button was added to your site login page. You can customize the button appearance in settings.',
+				'google-site-kit'
+			),
+			cta: {
+				label: __( 'Customize settings', 'google-site-kit' ),
+			},
+			dismissLabel: __( 'Maybe later', 'google-site-kit' ),
+		},
 		effort: FEATURE_EFFORTS.MEDIUM,
 		goalCategories: [
 			FEATURE_CATEGORIES.ENGAGEMENT,
