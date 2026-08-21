@@ -269,49 +269,51 @@ export function prepareForReadableLargeNumber( number: number ): number {
  *
  * @since 1.0.0
  *
- * @param {number} number The large number to format.
+ * @param {(number|string)} number The large number to format.
  * @return {string} The formatted number.
  */
-export function readableLargeNumber( number: number ): string {
+export function readableLargeNumber( number: number | string ): string {
+	const numericValue = Number( number );
+
 	const withSingleDecimal = {
 		minimumFractionDigits: 1,
 		maximumFractionDigits: 1,
 	};
 
 	// Numbers over 1,000,000 round normally and display a single decimal unless the decimal is 0.
-	if ( 1000000 <= number ) {
+	if ( 1000000 <= numericValue ) {
 		return sprintf(
 			// translators: %s: an abbreviated number in millions.
 			__( '%sM', 'google-site-kit' ),
 			numberFormat(
-				prepareForReadableLargeNumber( number ),
-				number % 10 === 0 ? {} : withSingleDecimal
+				prepareForReadableLargeNumber( numericValue ),
+				numericValue % 10 === 0 ? {} : withSingleDecimal
 			)
 		);
 	}
 
 	// Numbers between 10,000 and 1,000,000 round normally and have no decimals
-	if ( 10000 <= number ) {
+	if ( 10000 <= numericValue ) {
 		return sprintf(
 			// translators: %s: an abbreviated number in thousands.
 			__( '%sK', 'google-site-kit' ),
-			numberFormat( prepareForReadableLargeNumber( number ) )
+			numberFormat( prepareForReadableLargeNumber( numericValue ) )
 		);
 	}
 
 	// Numbers between 1,000 and 10,000 round normally and display a single decimal unless the decimal is 0.
-	if ( 1000 <= number ) {
+	if ( 1000 <= numericValue ) {
 		return sprintf(
 			// translators: %s: an abbreviated number in thousands.
 			__( '%sK', 'google-site-kit' ),
 			numberFormat(
-				prepareForReadableLargeNumber( number ),
-				number % 10 === 0 ? {} : withSingleDecimal
+				prepareForReadableLargeNumber( numericValue ),
+				numericValue % 10 === 0 ? {} : withSingleDecimal
 			)
 		);
 	}
 
-	return numberFormat( number, {
+	return numberFormat( numericValue, {
 		signDisplay: 'never',
 		maximumFractionDigits: 1,
 	} );
@@ -387,7 +389,7 @@ export function numFmt(
 	const { style = 'metric' } = formatOptions; // Note: `metric` is our custom, default style.
 
 	if ( 'metric' === style ) {
-		return readableLargeNumber( number as number );
+		return readableLargeNumber( number );
 	}
 
 	if ( 'duration' === style ) {

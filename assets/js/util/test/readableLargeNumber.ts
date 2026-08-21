@@ -20,9 +20,7 @@ describe( 'readableLargeNumber', () => {
 		[ 123456789, '123.5M' ],
 	];
 	it.each( valuesToTest )( 'for %d should return %s', ( value, expected ) => {
-		expect( readableLargeNumber( value as number ) ).toStrictEqual(
-			expected
-		);
+		expect( readableLargeNumber( value ) ).toStrictEqual( expected );
 	} );
 
 	describe( 'Numbers below 1000 output the same value that was passed.', () => {
