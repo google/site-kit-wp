@@ -24,6 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import pageSpeedInsightsWidgetScreenshotURL from '@/images/feature-discovery-hub/pagespeed-insights/psi-widget.png';
 import {
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
@@ -44,11 +45,90 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'pagespeed-insights', {
-		title: __( 'PageSpeed Insights', 'google-site-kit' ),
-		shortDescription: __(
-			'Monitor your site speed and get actionable recommendations',
+		title: __(
+			'Make your web pages fast on all devices',
 			'google-site-kit'
 		),
+		shortDescription: __(
+			'PageSpeed Insights (PSI) reports on the user experience of a page on both mobile and desktop devices, and provides suggestions on how that page may be improved.',
+			'google-site-kit'
+		),
+		detail: {
+			description: {
+				whatIs: __(
+					"PageSpeed Insights acts as a performance coach, analyzing your site's load times and responsiveness for both mobile and desktop users. It gives you a clear performance score and, more importantly, provides a checklist of specific, actionable steps you can take to make your site faster, smoother, and more reliable for your readers. A fast website is essential for keeping visitors engaged and improving your search rankings.",
+					'google-site-kit'
+				),
+				whyUseHeading: __(
+					'Why use PageSpeed Insights?',
+					'google-site-kit'
+				),
+				whyUseList: [
+					{
+						term: __( 'Boost rankings:', 'google-site-kit' ),
+						description: __(
+							'Improve search visibility and user satisfaction with faster load times.',
+							'google-site-kit'
+						),
+					},
+					{
+						term: __( 'Retain visitors:', 'google-site-kit' ),
+						description: __(
+							'Reduce bounce rates by keeping your site snappy and responsive.',
+							'google-site-kit'
+						),
+					},
+					{
+						term: __(
+							'Fix performance issues:',
+							'google-site-kit'
+						),
+						description: __(
+							'Quickly identify and resolve bottlenecks for a competitive edge.',
+							'google-site-kit'
+						),
+					},
+				],
+			},
+			requirements: {
+				serviceRequirements: __(
+					'There are no service requirements for PageSpeed Insights.',
+					'google-site-kit'
+				),
+				setupList: [
+					__(
+						'Connect the PageSpeed Insights module.',
+						'google-site-kit'
+					),
+				],
+				setupComplete: __(
+					"PageSpeed Insights is set up! You can now see your site's load times and responsiveness for both mobile and desktop users.",
+					'google-site-kit'
+				),
+			},
+			screenshots: [
+				{
+					src: pageSpeedInsightsWidgetScreenshotURL,
+					alt: __(
+						'Analytics 4 Key Metrics widget showing selected key metrics and trends.',
+						'google-site-kit'
+					),
+					width: 1496,
+					height: 743,
+				},
+			],
+		},
+		successNotice: {
+			title: __(
+				'Success! PageSpeed Insights is set up',
+				'google-site-kit'
+			),
+			description: __( '', 'google-site-kit' ),
+			cta: {
+				label: __( 'Show me', 'google-site-kit' ),
+			},
+			dismissLabel: __( 'Got it', 'google-site-kit' ),
+		},
 		effort: FEATURE_EFFORTS.LOW,
 		goalCategories: [ FEATURE_CATEGORIES.PERFORMANCE ],
 		addedInVersion: '1.0.0',
