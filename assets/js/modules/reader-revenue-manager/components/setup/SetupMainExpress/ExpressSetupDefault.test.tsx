@@ -19,9 +19,14 @@
 /**
  * Internal dependencies
  */
+import { Registry } from '@/js/googlesitekit-data';
 import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { mockLocation } from '@tests/js/mock-browser-utils';
-import { render } from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	providePublications,
+	render,
+} from '@tests/js/test-utils';
 import ExpressSetupDefault from './ExpressSetupDefault';
 
 jest.mock( './PoweredBy', () => () => null );
@@ -39,6 +44,12 @@ const STEP_CONTENT = {
 
 describe( 'ExpressSetupDefault', () => {
 	mockLocation();
+
+	let registry: Registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry() as Registry;
+	} );
 
 	it( 'renders the default steps without a setup CTA step', () => {
 		global.location.href = 'http://example.com/';
@@ -62,10 +73,13 @@ describe( 'ExpressSetupDefault', () => {
 	it.each( Object.entries( STEP_CONTENT ) )(
 		'renders the %s step content',
 		( step, content ) => {
+			providePublications( registry, [] );
+
 			global.location.href = `http://example.com/?step=${ step }`;
 
 			const { getByText, queryByText } = render(
-				<ExpressSetupDefault />
+				<ExpressSetupDefault />,
+				{ registry }
 			);
 
 			expect( getByText( content ) ).toBeInTheDocument();

@@ -60,6 +60,8 @@ import * as modulesAdSense from '@/js/modules/adsense';
 import * as modulesAnalytics4 from '@/js/modules/analytics-4';
 import * as modulesPageSpeedInsights from '@/js/modules/pagespeed-insights';
 import * as modulesReaderRevenueManager from '@/js/modules/reader-revenue-manager';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { type Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import * as modulesSearchConsole from '@/js/modules/search-console';
 import * as modulesSignInWithGoogle from '@/js/modules/sign-in-with-google';
 import * as modulesTagManager from '@/js/modules/tagmanager';
@@ -922,4 +924,27 @@ export function unexpectedSuccess() {
 			'Some code (likely a Promise) succeeded unexpectedly; check your test.'
 		)
 	);
+}
+
+/**
+ * Provides publications to the given registry.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @param {WPDataRegistry} registry        Data registry.
+ * @param {Publication[]}  publicationList Publications.
+ * @return {void}
+ */
+export function providePublications(
+	registry: WPDataRegistry,
+	publicationList: Publication[]
+) {
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.receiveGetPublications( publicationList );
+
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.finishResolution( 'getPublications', [] );
 }
