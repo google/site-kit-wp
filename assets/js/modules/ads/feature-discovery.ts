@@ -119,12 +119,23 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				},
 			],
 		},
+		successNotice: {
+			title: __( 'Success! Ads is set up', 'google-site-kit' ),
+			description: __(
+				'You can now track conversions for your Ads campaigns.',
+				'google-site-kit'
+			),
+			cta: {
+				label: __( 'Manage account in Ads', 'google-site-kit' ),
+			},
+			dismissLabel: __( 'Got it', 'google-site-kit' ),
+		},
 		effort: FEATURE_EFFORTS.HIGH,
 		goalCategories: [ FEATURE_CATEGORIES.TRAFFIC ],
 		addedInVersion: '1.118.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.SETUP_FLOW,
-			ctaLabel: __( 'Set up Ads', 'google-site-kit' ),
+			ctaLabel: __( 'Set up Ad', 'google-site-kit' ),
 			moduleSlug: MODULE_SLUG_ADS,
 		},
 		badges: [ FEATURE_BADGES.PAID_SERVICE ],
