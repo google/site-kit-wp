@@ -25,23 +25,48 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
-import { findTextStrings } from '@/js/components/pdf-export/test-utils';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import {
+	findTextStrings,
+	renderJSON,
+} from '@/js/components/pdf-export/test-utils';
 import { PERCENT_FORMAT } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { numFmt } from '@/js/util';
 import { OTHER_SOURCES_GROUP_ID } from './shapeSiteGoalsPDFData';
 import SiteGoalsBreakdownGroupPDF from './SiteGoalsBreakdownGroupPDF';
 
-function renderGroup(
+/**
+ * Renders the Site Goals breakdown group and reads the text it holds.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} props The props to render the Site Goals breakdown group with.
+ * @return {Array<string>} The text strings the Site Goals breakdown group renders, in order.
+ */
+function renderBreakdownGroupText(
 	props: ComponentProps< typeof SiteGoalsBreakdownGroupPDF >
 ): string[] {
-	const renderer = TestRenderer.create(
+	const tree = TestRenderer.create(
 		<SiteGoalsBreakdownGroupPDF { ...props } />
-	);
-	const tree = renderer.toJSON();
+	).toJSON();
 	if ( ! tree || Array.isArray( tree ) ) {
 		throw new Error( 'Unexpected render output.' );
 	}
 	return findTextStrings( tree );
+}
+
+/**
+ * Renders the Site Goals breakdown group and returns its tree as a JSON string.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} props The props to render the Site Goals breakdown group with.
+ * @return {string} The rendered tree, as a JSON string.
+ */
+function renderBreakdownGroupJSON(
+	props: ComponentProps< typeof SiteGoalsBreakdownGroupPDF >
+): string {
+	return renderJSON( <SiteGoalsBreakdownGroupPDF { ...props } /> );
 }
 
 describe( 'SiteGoalsBreakdownGroupPDF', () => {
@@ -61,7 +86,7 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 	};
 
 	it( 'renders the group heading and every tile for a full breakdown group', () => {
-		const text = renderGroup( {
+		const text = renderBreakdownGroupText( {
 			group: FULL_GROUP,
 			rateLabel: 'Sales rate',
 			totalLabel: 'Total sales',
@@ -81,7 +106,7 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 	} );
 
 	it( 'hides the group heading when showLabel is false', () => {
-		const text = renderGroup( {
+		const text = renderBreakdownGroupText( {
 			group: FULL_GROUP,
 			rateLabel: 'Sales rate',
 			totalLabel: 'Total sales',
@@ -92,7 +117,7 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 	} );
 
 	it( 'renders only the total tile for the "Other sources" group', () => {
-		const text = renderGroup( {
+		const text = renderBreakdownGroupText( {
 			group: OTHER_SOURCES_GROUP,
 			rateLabel: 'Sales rate',
 			totalLabel: 'Total sales',
@@ -105,7 +130,7 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 	} );
 
 	it( 'renders the total subtitle and the sessions caption under the rate and engagement tiles', () => {
-		const text = renderGroup( {
+		const text = renderBreakdownGroupText( {
 			group: FULL_GROUP,
 			rateLabel: 'Sales rate',
 			totalLabel: 'Total sales',
@@ -122,8 +147,94 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 		).toBe( 2 );
 	} );
 
+	it( 'gives the rate panel a green background when the rate rises and a red one when it falls', () => {
+		const risingRateJSON = renderBreakdownGroupJSON( {
+			group: FULL_GROUP,
+			rateLabel: 'Sales rate',
+			totalLabel: 'Total sales',
+		} );
+		const fallingRateJSON = renderBreakdownGroupJSON( {
+			group: {
+				...FULL_GROUP,
+				rate: { current: 0.4, previous: 0.5 },
+			},
+			rateLabel: 'Sales rate',
+			totalLabel: 'Total sales',
+		} );
+
+		expect( risingRateJSON ).toContain( PDF_COLORS.GREEN_G_10 );
+		expect( fallingRateJSON ).toContain( PDF_COLORS.RED_R_10 );
+	} );
+
+	it( 'gives the rate panel a neutral background when the rate does not change', () => {
+		const noChangeRateJSON = renderBreakdownGroupJSON( {
+			group: {
+				...FULL_GROUP,
+				rate: { current: 0.5, previous: 0.5 },
+			},
+			rateLabel: 'Sales rate',
+			totalLabel: 'Total sales',
+		} );
+
+		expect( noChangeRateJSON ).toContain( PDF_COLORS.NEUTRAL_N_10 );
+	} );
+
+	it( 'gives the rate panel no background color when the previous rate is zero', () => {
+		const zeroPreviousRateJSON = renderBreakdownGroupJSON( {
+			group: {
+				...FULL_GROUP,
+				rate: { current: 0.5, previous: 0 },
+			},
+			rateLabel: 'Sales rate',
+			totalLabel: 'Total sales',
+		} );
+
+		expect( zeroPreviousRateJSON ).not.toContain( PDF_COLORS.GREEN_G_10 );
+		expect( zeroPreviousRateJSON ).not.toContain( PDF_COLORS.RED_R_10 );
+		expect( zeroPreviousRateJSON ).not.toContain( PDF_COLORS.NEUTRAL_N_10 );
+	} );
+
+	it( 'hides the change caption on a tile with no change badge', () => {
+		const text = renderBreakdownGroupText( {
+			group: {
+				id: 'woocommerce',
+				label: 'WooCommerce',
+				total: { current: 12, previous: 0 },
+				rate: { current: 0.5, previous: 0 },
+				engagementRate: { current: 0.75, previous: 0 },
+				sessions: { current: 24, previous: 0 },
+			},
+			rateLabel: 'Sales rate',
+			totalLabel: 'Total sales',
+			comparisonLabel: 'Vs. prev. 28 days',
+		} );
+
+		// Every metric has a previous value of zero, so no tile shows a change
+		// badge. A tile with no badge shows no caption either.
+		expect( text ).not.toContain( 'Vs. prev. 28 days' );
+	} );
+
+	it( 'hides the change badge and the caption on a tile whose metric is zero in both periods', () => {
+		const text = renderBreakdownGroupText( {
+			group: {
+				id: 'woocommerce',
+				label: 'WooCommerce',
+				total: { current: 0, previous: 0 },
+			},
+			rateLabel: 'Sales rate',
+			totalLabel: 'Total sales',
+			comparisonLabel: 'Vs. prev. 28 days',
+		} );
+
+		// The group has only the total, so the one tile renders its value as
+		// `0`. A "0%" in the text can then only come from a change badge, and
+		// zero sales in both periods leave nothing to compare against.
+		expect( text ).not.toContain( '0%' );
+		expect( text ).not.toContain( 'Vs. prev. 28 days' );
+	} );
+
 	it( 'renders the comparison label as the change caption for tiles with a change', () => {
-		const text = renderGroup( {
+		const text = renderBreakdownGroupText( {
 			group: FULL_GROUP,
 			rateLabel: 'Sales rate',
 			totalLabel: 'Total sales',
