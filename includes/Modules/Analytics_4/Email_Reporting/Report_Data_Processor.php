@@ -123,6 +123,70 @@ class Report_Data_Processor {
 	}
 
 	/**
+	 * Sums one metric for each group value and each date range.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array  $rows            Report rows, as `Email_Report_Payload_Processor::extract_report_rows()`
+	 *                                returns them.
+	 * @param string $group_dimension Dimension whose value names the group, such as
+	 *                                `customEvent:googlesitekit_event_provider`. An empty string
+	 *                                sums every row into one group whose name is an empty string.
+	 * @param string $metric_name     Metric to sum, such as `eventCount`.
+	 * @return array Map of group name to a map of date range key to the summed metric
+	 *               (e.g. `array( 'woocommerce' => array( 'date_range_0' => 116.0, 'date_range_1' => 121.0 ) )`).
+	 */
+	public function sum_metric_by_group( $rows, $group_dimension, $metric_name ) {
+		$totals = array();
+
+		if ( ! is_array( $rows ) ) {
+			return $totals;
+		}
+
+		foreach ( $rows as $row ) {
+			$metric_value = $row['metrics'][ $metric_name ] ?? null;
+			if ( ! is_numeric( $metric_value ) ) {
+				continue;
+			}
+
+			$group_name = '' === $group_dimension
+				? ''
+				: ( $row['dimensions'][ $group_dimension ] ?? '' );
+
+			$date_range_key = $row['dimensions']['dateRange'] ?? 'date_range_0';
+
+			$totals[ $group_name ][ $date_range_key ] = ( $totals[ $group_name ][ $date_range_key ] ?? 0.0 ) + (float) $metric_value;
+		}
+
+		return $totals;
+	}
+
+	/**
+	 * Computes the percentage change from the previous value to the current one.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed $current  Current period value.
+	 * @param mixed $previous Previous period value.
+	 * @return float|null Percentage change, such as `7.2` for a rise from `100` to `107.2`. Null when
+	 *                    either value is not a number, and when the previous value is zero, because
+	 *                    a change from zero has no percentage.
+	 */
+	public function compute_trend( $current, $previous ) {
+		if ( ! is_numeric( $current ) || ! is_numeric( $previous ) ) {
+			return null;
+		}
+
+		$previous_value = (float) $previous;
+
+		if ( 0.0 === $previous_value ) {
+			return null;
+		}
+
+		return ( (float) $current - $previous_value ) / $previous_value * 100;
+	}
+
+	/**
 	 * Applies per-dimension aggregates to values and trends when available.
 	 *
 	 * @since 1.170.0
