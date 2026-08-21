@@ -24,6 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import AdsSettingsScreenshotURL from '@/images/feature-discovery-hub/ads/ads-settings.png';
 import {
 	FEATURE_BADGES,
 	FEATURE_CATEGORIES,
@@ -45,11 +46,79 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'ads', {
-		title: __( 'Google Ads', 'google-site-kit' ),
+		title: __( 'Increase your visibility in Search', 'google-site-kit' ),
 		shortDescription: __(
-			'Increase your visibility in search results and reach more customers',
+			"Appear in search results when people look for keywords related to what you offer. Ads helps you connect with people at the moment they're actively interested in your services or products.",
 			'google-site-kit'
 		),
+		detail: {
+			description: {
+				whatIs: __(
+					'Ads is designed to help you grow your reach by connecting you with people actively searching for your content, services, or products. Instead of manually managing tracking codes, Site Kit handles the technical heavy lifting of implementing conversion tracking for you. This ensures you can measure exactly how your ads drive results, helping you optimize your budget and reach your target audience more efficiently.',
+					'google-site-kit'
+				),
+				whyUseHeading: __( 'Why use Ads?', 'google-site-kit' ),
+				whyUseList: [
+					{
+						term: __( 'Accelerate growth:', 'google-site-kit' ),
+						description: __(
+							'Reach your target audience instantly, bypassing organic wait times.',
+							'google-site-kit'
+						),
+					},
+					{
+						term: __( 'Drive quality traffic:', 'google-site-kit' ),
+						description: __(
+							'Send visitors directly to your most important pages.',
+							'google-site-kit'
+						),
+					},
+					{
+						term: __( 'Scale results:', 'google-site-kit' ),
+						description: __(
+							'Boost conversions while keeping full control of your budget.',
+							'google-site-kit'
+						),
+					},
+				],
+			},
+			requirements: {
+				serviceRequirements: __(
+					'When setting up a new Ads account you will need your business information, a conversion goal, ad information and images, preferred search terms, a geographical area to display the ad, a campaign budget, billing information and payment details.',
+					'google-site-kit'
+				),
+				setupList: [
+					__(
+						'Create a new Ads account or use your existing account.',
+						'google-site-kit'
+					),
+					__( 'Enter your Ads conversion ID.', 'google-site-kit' ),
+					__(
+						'Enable plugin conversion tracking (optional).',
+						'google-site-kit'
+					),
+					__(
+						'Enable Google tag gateway for advertisers (optional).',
+						'google-site-kit'
+					),
+				],
+				setupComplete: __(
+					'Ads is set up! You are growing your reach.',
+					'google-site-kit'
+				),
+			},
+			screenshots: [
+				{
+					src: AdsSettingsScreenshotURL,
+					alt: __(
+						'Ads settings page showing various configuration options.',
+						'google-site-kit'
+					),
+					width: 1286,
+					height: 542,
+				},
+			],
+		},
 		effort: FEATURE_EFFORTS.HIGH,
 		goalCategories: [ FEATURE_CATEGORIES.TRAFFIC ],
 		addedInVersion: '1.118.0',
