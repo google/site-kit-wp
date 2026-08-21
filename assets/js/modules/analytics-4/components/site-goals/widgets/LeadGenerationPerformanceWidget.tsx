@@ -30,7 +30,7 @@ import {
 	useEffect,
 	useState,
 } from '@wordpress/element';
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -56,6 +56,7 @@ import {
 	BREAKDOWN_ORIGIN_WIDGET,
 	SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS,
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
+	SITE_GOALS_LEAD_GENERATION_WIDGET_TITLE,
 	SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
@@ -71,6 +72,11 @@ import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goa
 import { useSiteGoalsBreakdown } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsBreakdown';
 import { useSiteGoalsWidgetViewAction } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsWidgetViewAction';
 import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
+import {
+	LEAD_RATE_LABEL,
+	LEAD_TOTAL_LABEL,
+	getLeadEventsSubtitle,
+} from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -191,28 +197,6 @@ function getFormBreakdownTabs(
 			),
 		};
 	} );
-}
-
-// The single/plural subtitle for the Total form completions tile.
-function getTotalSubtitle( detectedLeadEvents: string[] ): string {
-	if ( detectedLeadEvents.length === 1 ) {
-		return sprintf(
-			/* translators: %s: GA4 event name */
-			__( '“%s” events', 'google-site-kit' ),
-			detectedLeadEvents[ 0 ]
-		);
-	}
-
-	return sprintf(
-		/* translators: %d: number of detected event types */
-		_n(
-			'%d event type',
-			'%d event types',
-			detectedLeadEvents.length,
-			'google-site-kit'
-		),
-		detectedLeadEvents.length
-	);
 }
 
 function getWidgetReportOptions(
@@ -573,12 +557,7 @@ const LeadGenerationPerformanceWidget = forwardRef<
 				Header={ WidgetHeaderTitle }
 				headerContents={
 					<Fragment>
-						<span>
-							{ __(
-								'Lead generation performance',
-								'google-site-kit'
-							) }
-						</span>
+						<span>{ SITE_GOALS_LEAD_GENERATION_WIDGET_TITLE }</span>
 						<GatheringBreakdownDataBadge
 							goalType={ GOAL_TYPES.LEAD }
 							variant="widget"
@@ -626,15 +605,9 @@ const LeadGenerationPerformanceWidget = forwardRef<
 						<KeyActionTiles
 							isOtherSourcesTab={ isOtherSourcesTab }
 							supportURL={ keyActionDocumentationURL }
-							rateTitle={ __(
-								'Form completion rate',
-								'google-site-kit'
-							) }
-							totalTitle={ __(
-								'Total form completions',
-								'google-site-kit'
-							) }
-							totalSubtitle={ getTotalSubtitle(
+							rateTitle={ LEAD_RATE_LABEL }
+							totalTitle={ LEAD_TOTAL_LABEL }
+							totalSubtitle={ getLeadEventsSubtitle(
 								detectedLeadEvents
 							) }
 							currentRate={ currentRate }
