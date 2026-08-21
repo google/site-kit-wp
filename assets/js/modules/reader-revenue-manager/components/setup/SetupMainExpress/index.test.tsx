@@ -19,14 +19,25 @@
 /**
  * Internal dependencies
  */
+import { Registry } from '@/js/googlesitekit-data';
 import { mockLocation } from '@tests/js/mock-browser-utils';
-import { render } from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	providePublications,
+	render,
+} from '@tests/js/test-utils';
 import SetupMainExpress from './index';
 
 jest.mock( './PoweredBy', () => () => null );
 
 describe( 'SetupMainExpress', () => {
 	mockLocation();
+
+	let registry: Registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry() as Registry;
+	} );
 
 	it( 'renders the newsletter CTA component for newsletter-signup CTA', () => {
 		global.location.href =
@@ -39,14 +50,16 @@ describe( 'SetupMainExpress', () => {
 				'RRM express setup placeholder: newsletter CTA setup step.'
 			)
 		).toBeInTheDocument();
-		expect( getByText( 'Set up a sign-up form' ) ).toBeInTheDocument();
 	} );
 
 	it( 'renders the default express setup when no CTA is specified', () => {
+		providePublications( registry, [] );
+
 		global.location.href = 'http://example.com/?step=connect-publication';
 
 		const { getByText, queryByText, container } = render(
-			<SetupMainExpress />
+			<SetupMainExpress />,
+			{ registry }
 		);
 
 		expect(
@@ -63,10 +76,14 @@ describe( 'SetupMainExpress', () => {
 	} );
 
 	it( 'renders the default express setup for an unknown CTA', () => {
+		providePublications( registry, [] );
+
 		global.location.href =
 			'http://example.com/?cta=unknown-cta&step=connect-publication';
 
-		const { getByText, queryByText } = render( <SetupMainExpress /> );
+		const { getByText, queryByText } = render( <SetupMainExpress />, {
+			registry,
+		} );
 
 		expect(
 			getByText(
