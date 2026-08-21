@@ -1,9 +1,9 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Periodic_SynchronizationTest
+ * Class Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\SynchronizationTest
  *
  * @package   Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager
- * @copyright 2025 Google LLC
+ * @copyright 2026 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -11,323 +11,102 @@
 namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Periodic_Synchronization;
-use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
-use Google\Site_Kit\Tests\FakeHttp;
-use Google\Site_Kit\Tests\ModulesHelperTrait;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Publication;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\ContentPolicyStatus;
-use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\ListPublicationsResponse;
-use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\PaymentOptions;
-use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Product;
-use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 
 /**
  * @group Modules
  * @group Reader_Revenue_Manager
  */
-class Periodic_SynchronizationTest extends TestCase {
-
-	use Fake_Site_Connection_Trait;
-	use ModulesHelperTrait;
+class SynchronizationTest extends TestCase {
 
 	/**
-	 * @var Periodic_Synchronization
-	 */
-	protected $synchronize_publication;
-
-	/**
+	 * Reader Revenue Manager module.
+	 *
 	 * @var Reader_Revenue_Manager
 	 */
-	protected $reader_revenue_manager;
+	private $module;
 
 	/**
-	 * @var User_Options
+	 * Synchronization registrar.
+	 *
+	 * @var Synchronization
 	 */
-	protected $user_options;
-
-	/**
-	 * @var Options
-	 */
-	protected $options;
-
-	/**
-	 * @var Authentication
-	 */
-	protected $authentication;
+	private $synchronization;
 
 	public function set_up() {
 		parent::set_up();
-		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
 
-		$context              = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->options        = new Options( $context );
-		$this->user_options   = new User_Options( $context, $user_id );
-		$this->authentication = new Authentication( $context, $this->options, $this->user_options );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options      = new Options( $context );
+		$user_options = new User_Options( $context );
 
-		// Fake a valid authentication token on the client.
-		$this->authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
-		$this->authentication->verification()->set( true );
+		$this->module          = new Reader_Revenue_Manager( $context, $options, $user_options );
+		$this->synchronization = new Synchronization( $this->module, $user_options );
 
-		$this->fake_site_connection();
-		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
+		$this->module->get_settings()->register();
+		$this->module->get_settings()->merge( array( 'publicationID' => 'publication-1' ) );
 
-		$this->reader_revenue_manager = new Reader_Revenue_Manager( $context, $this->options, $this->user_options, $this->authentication );
-		$this->authentication->get_oauth_client()->set_granted_scopes(
-			$this->reader_revenue_manager->get_scopes()
-		);
-		$this->user_options->switch_user( 0 );
-		$this->reader_revenue_manager->get_settings()->register();
-
-		$this->reader_revenue_manager->get_settings()->merge(
-			array(
-				'publicationID'                     => '123456789',
-				'publicationOnboardingState'        => 'ONBOARDING_ACTION_REQUIRED',
-				'publicationOnboardingStateChanged' => false,
-				'productID'                         => 'openaccess',
-				'productIDs'                        => array(),
-				'paymentOption'                     => '',
-				'ownerID'                           => $user_id,
-			),
-		);
-
-		$this->synchronize_publication = new Periodic_Synchronization( $this->reader_revenue_manager, $this->user_options );
+		remove_all_actions( Publication::CRON_SYNCHRONIZE_PUBLICATION );
+		wp_clear_scheduled_hook( Publication::CRON_SYNCHRONIZE_PUBLICATION );
 	}
 
-	public function fake_sync_publication() {
-		$publication_id = $this->reader_revenue_manager->get_settings()->get()['publicationID'];
+	public function tear_down() {
+		wp_clear_scheduled_hook( Publication::CRON_SYNCHRONIZE_PUBLICATION );
 
-		FakeHttp::fake_google_http_handler(
-			$this->reader_revenue_manager->get_client(),
-			function ( Request $request ) use ( $publication_id ) {
-				$url = parse_url( $request->getUri() );
+		parent::tear_down();
+	}
 
-				if ( '/v1/publications' === $url['path'] ) {
-					$basic_product = new Product();
-					$basic_product->setName( 'testpubID:basic' );
+	public function test_register__registers_publication_cron() {
+		$this->assertFalse(
+			has_action( Publication::CRON_SYNCHRONIZE_PUBLICATION ),
+			'Publication cron should not be registered initially.'
+		);
 
-					$advanced_product = new Product();
-					$advanced_product->setName( 'testpubID:advanced' );
+		$this->synchronization->register();
 
-					$payment_options                = new PaymentOptions();
-					$payment_options->subscriptions = true;
-
-					$publication = new Publication();
-					$publication->setPublicationId( $publication_id );
-					$publication->setOnboardingState( 'ONBOARDING_COMPLETE' );
-					$publication->setProducts(
-						array(
-							$basic_product,
-							$advanced_product,
-						)
-					);
-					$publication->setPaymentOptions( $payment_options );
-
-					$content_policy_status = new ContentPolicyStatus();
-					$content_policy_status->setContentPolicyState( 'CONTENT_POLICY_VIOLATION_ACTIVE' );
-					$content_policy_status->setPolicyInfoLink( 'https://example.com/policy-info' );
-					$publication->setContentPolicyStatus( $content_policy_status );
-
-					$response = new ListPublicationsResponse();
-					$response->setPublications( array( $publication ) );
-
-					return new FulfilledPromise(
-						new Response(
-							200,
-							array( 'content-type' => 'application/json' ),
-							json_encode( $response )
-						)
-					);
-				}
-
-				return new FulfilledPromise( new Response( 200 ) );
-			}
+		$this->assertSame(
+			10,
+			has_action( Publication::CRON_SYNCHRONIZE_PUBLICATION ),
+			'Publication cron should be registered.'
 		);
 	}
 
-	public function test_register() {
-		remove_all_actions( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
-		$this->synchronize_publication->register();
+	/**
+	 * @dataProvider data_admin_page_load_hooks
+	 *
+	 * @param string $hook Admin page load hook.
+	 */
+	public function test_register__schedules_publication_cron_on_admin_page_load( $hook ) {
+		$this->synchronization->register();
+		do_action( $hook );
 
-		$this->assertEquals( 10, has_action( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION ), 'Periodic_Synchronization should register the cron action.' );
-	}
-
-	public function test_synchronize_onboarding_state() {
-		$this->fake_sync_publication();
-
-		$this->assertTrue( $this->reader_revenue_manager->is_connected(), 'Reader Revenue Manager should be connected.' );
-
-		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$this->synchronize_publication->register();
-
-		$this->assertEquals(
-			'ONBOARDING_ACTION_REQUIRED',
-			$settings['publicationOnboardingState'],
-			'Onboarding state should be required before sync.'
-		);
-		$this->assertFalse( $settings['publicationOnboardingStateChanged'], 'Onboarding state changed should be false before sync.' );
-
-		do_action( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
-
-		$settings = $this->reader_revenue_manager->get_settings()->get();
-
-		$this->assertEquals(
-			'ONBOARDING_COMPLETE',
-			$settings['publicationOnboardingState'],
-			'Onboarding state should be complete after sync.'
-		);
-		$this->assertTrue( $settings['publicationOnboardingStateChanged'], 'Onboarding state changed should be true after sync.' );
-	}
-
-	public function test_synchronize_onboarding_state_with_non_existent_publication() {
-		$this->fake_sync_publication();
-
-		$this->assertTrue( $this->reader_revenue_manager->is_connected(), 'Reader Revenue Manager should be connected.' );
-
-		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$this->synchronize_publication->register();
-
-		$this->assertEquals(
-			'ONBOARDING_ACTION_REQUIRED',
-			$settings['publicationOnboardingState'],
-			'Onboarding state should remain required for non-existent publication.'
-		);
-		$this->assertFalse( $settings['publicationOnboardingStateChanged'], 'Onboarding state changed should remain false for non-existent publication.' );
-
-		$this->reader_revenue_manager->get_settings()->merge(
-			array(
-				'publicationID' => '987654321',
-			),
-		);
-
-		do_action( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
-
-		$settings = $this->reader_revenue_manager->get_settings()->get();
-
-		$this->assertEquals(
-			'ONBOARDING_ACTION_REQUIRED',
-			$settings['publicationOnboardingState'],
-			'Onboarding state should remain required for non-existent publication.'
-		);
-		$this->assertFalse( $settings['publicationOnboardingStateChanged'], 'Onboarding state changed should remain false for non-existent publication.' );
-	}
-
-	public function test_synchronize_product_ids() {
-		$this->fake_sync_publication();
-
-		$this->assertTrue( $this->reader_revenue_manager->is_connected(), 'Reader Revenue Manager should be connected.' );
-
-		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$this->synchronize_publication->register();
-
-		$this->assertEmpty( $settings['productIDs'], 'Product IDs should be empty before sync.' );
-
-		do_action( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
-
-		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$this->assertEquals( array( 'testpubID:basic', 'testpubID:advanced' ), $settings['productIDs'], 'Product IDs should be updated after sync.' );
-	}
-
-	public function test_synchronize_product_ids_with_non_existent_publication() {
-		$this->fake_sync_publication();
-
-		$this->assertTrue( $this->reader_revenue_manager->is_connected(), 'Reader Revenue Manager should be connected.' );
-
-		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$this->synchronize_publication->register();
-
-		$this->reader_revenue_manager->get_settings()->merge(
-			array(
-				'publicationID' => '987654321',
-			),
-		);
-
-		$this->assertEmpty( $settings['productIDs'], 'Product IDs should remain empty for non-existent publication.' );
-
-		do_action( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
-
-		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$this->assertEmpty( $settings['productIDs'], 'Product IDs should remain empty after sync for non-existent publication.' );
-	}
-
-	public function test_synchronize_payment_option() {
-		$this->fake_sync_publication();
-
-		$this->assertTrue( $this->reader_revenue_manager->is_connected(), 'Reader Revenue Manager should be connected.' );
-
-		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$this->synchronize_publication->register();
-
-		$this->assertEmpty( $settings['paymentOption'], 'Payment option should be empty before sync.' );
-
-		do_action( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
-
-		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$this->assertEquals( 'subscriptions', $settings['paymentOption'], 'Payment option should be updated after sync.' );
-	}
-
-	public function test_synchronize_payment_option_with_non_existent_publication() {
-		$this->fake_sync_publication();
-
-		$this->assertTrue( $this->reader_revenue_manager->is_connected(), 'Reader Revenue Manager should be connected.' );
-
-		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$this->synchronize_publication->register();
-
-		$this->reader_revenue_manager->get_settings()->merge(
-			array(
-				'publicationID' => '987654321',
-			),
-		);
-
-		$this->assertEmpty( $settings['paymentOption'], 'Payment option should remain empty for non-existent publication.' );
-
-		do_action( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
-
-		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$this->assertEmpty( $settings['paymentOption'], 'Payment option should remain empty after sync for non-existent publication.' );
-	}
-
-	public function test_synchronize_content_policy_status() {
-		$this->fake_sync_publication();
-
-		$this->assertTrue( $this->reader_revenue_manager->is_connected(), 'Reader Revenue Manager should be connected.' );
-
-		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$this->synchronize_publication->register();
-
-		$this->assertEquals( '', $settings['contentPolicyState'], 'Content policy state should be empty before sync.' );
-		$this->assertEquals( '', $settings['policyInfoLink'], 'Policy info link should be empty before sync.' );
-
-		do_action( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
-
-		$settings = $this->reader_revenue_manager->get_settings()->get();
-		$this->assertEquals(
-			'CONTENT_POLICY_VIOLATION_ACTIVE',
-			$settings['contentPolicyState'],
-			'Content policy state should be updated after sync.'
-		);
-		$this->assertEquals(
-			'https://example.com/policy-info',
-			$settings['policyInfoLink'],
-			'Policy info link should be updated after sync.'
+		$this->assertNotFalse(
+			wp_next_scheduled( Publication::CRON_SYNCHRONIZE_PUBLICATION ),
+			'Publication cron should be scheduled after an applicable admin page loads.'
 		);
 	}
 
-	public function test_maybe_schedule_synchronize_publication() {
-		$this->assertFalse( wp_next_scheduled( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION ), 'No cron should be scheduled before maybe_schedule_synchronize_publication.' );
-		$this->synchronize_publication->maybe_schedule_synchronize_publication();
+	public function data_admin_page_load_hooks() {
+		return array(
+			'dashboard' => array( 'load-toplevel_page_googlesitekit-dashboard' ),
+			'settings'  => array( 'load-toplevel_page_googlesitekit-settings' ),
+		);
+	}
 
-		$this->assertTrue(
-			(bool) wp_next_scheduled( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION ),
-			'Cron should be scheduled after maybe_schedule_synchronize_publication.'
+	public function test_register__does_not_schedule_publication_cron_when_disconnected() {
+		$this->module->get_settings()->merge( array( 'publicationID' => '' ) );
+
+		$this->synchronization->register();
+		do_action( 'load-toplevel_page_googlesitekit-dashboard' );
+
+		$this->assertFalse(
+			wp_next_scheduled( Publication::CRON_SYNCHRONIZE_PUBLICATION ),
+			'Publication cron should not be scheduled for a disconnected module.'
 		);
 	}
 }

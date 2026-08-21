@@ -16,6 +16,8 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Publication_Normalizer;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Publication as Publication_Synchronization;
+use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Publication;
 
 /**
  * Class for the publication retrieval datapoint.
@@ -35,6 +37,14 @@ class Get_Publication extends Datapoint implements Executable_Datapoint {
 	private $settings;
 
 	/**
+	 * Synchronization instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Publication_Synchronization
+	 */
+	private $synchronization;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -44,7 +54,8 @@ class Get_Publication extends Datapoint implements Executable_Datapoint {
 	public function __construct( array $definition ) {
 		parent::__construct( $definition );
 
-		$this->settings = $definition['settings'];
+		$this->settings        = $definition['settings'];
+		$this->synchronization = new Publication_Synchronization( $this->settings );
 	}
 
 	/**
@@ -89,6 +100,10 @@ class Get_Publication extends Datapoint implements Executable_Datapoint {
 	 * @return mixed Normalized publication resource.
 	 */
 	public function parse_response( $response, Data_Request $data ) {
+		if ( $response instanceof Publication ) {
+			$this->synchronization->synchronize( $response );
+		}
+
 		return Publication_Normalizer::normalize( $response );
 	}
 }

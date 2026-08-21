@@ -1,35 +1,29 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Reader_Revenue_Manager\Periodic_Synchronization
+ * Class Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization
  *
  * @package   Google\Site_Kit\Modules\Reader_Revenue_Manager
  * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
- *
- * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Modules\Reader_Revenue_Manager;
 
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Cron;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Publication;
 
 /**
- * Class for scheduling and running periodic Reader Revenue Manager synchronization.
+ * Class for registering Reader Revenue Manager synchronization.
  *
  * @since 1.146.0
  * @since n.e.x.t Renamed from Synchronize_Publication.
  * @access private
  * @ignore
  */
-class Periodic_Synchronization {
-	/**
-	 * Cron event name for synchronizing the publication info.
-	 */
-	const CRON_SYNCHRONIZE_PUBLICATION = 'googlesitekit_cron_synchronize_publication';
-
+class Synchronization {
 	/**
 	 * Reader_Revenue_Manager instance.
 	 *
@@ -47,12 +41,15 @@ class Periodic_Synchronization {
 	/**
 	 * Constructor.
 	 *
-	 * @since 1.146.0
+	 * @since n.e.x.t
 	 *
 	 * @param Reader_Revenue_Manager $reader_revenue_manager Reader Revenue Manager instance.
-	 * @param User_Options           $user_options           User_Options instance.
+	 * @param User_Options           $user_options           User Options instance.
 	 */
-	public function __construct( Reader_Revenue_Manager $reader_revenue_manager, User_Options $user_options ) {
+	public function __construct(
+		Reader_Revenue_Manager $reader_revenue_manager,
+		User_Options $user_options
+	) {
 		$this->reader_revenue_manager = $reader_revenue_manager;
 		$this->user_options           = $user_options;
 	}
@@ -62,61 +59,33 @@ class Periodic_Synchronization {
 	 *
 	 * @since 1.146.0
 	 *
-	 * @return void
+	 * @return void No return value.
 	 */
 	public function register() {
-		add_action(
-			self::CRON_SYNCHRONIZE_PUBLICATION,
-			function () {
-				$this->synchronize_publication_data();
-			}
+		$crons = array(
+			new Cron(
+				$this->reader_revenue_manager,
+				$this->user_options,
+				Publication::CRON_SYNCHRONIZE_PUBLICATION,
+				'publications'
+			),
 		);
-	}
 
-	/**
-	 * Cron callback for synchronizing the publication.
-	 *
-	 * Fetches publications via `GET:publications`, which triggers
-	 * synchronization of the connected publication data in the
-	 * publications datapoint response handling.
-	 *
-	 * @since 1.146.0
-	 *
-	 * @return void
-	 */
-	protected function synchronize_publication_data() {
-		$owner_id     = $this->reader_revenue_manager->get_owner_id();
-		$restore_user = $this->user_options->switch_user( $owner_id );
-
-		if ( user_can( $owner_id, Permissions::VIEW_AUTHENTICATED_DASHBOARD ) ) {
-			$connected = $this->reader_revenue_manager->is_connected();
-
-			if ( ! $connected ) {
-				$restore_user();
-				return;
-			}
-
-			$this->reader_revenue_manager->get_data( 'publications' );
+		foreach ( $crons as $cron ) {
+			$cron->register();
 		}
 
-		$restore_user();
-	}
-
-	/**
-	 * Maybe schedule the synchronize onboarding state cron event.
-	 *
-	 * @since 1.146.0
-	 *
-	 * @return void
-	 */
-	public function maybe_schedule_synchronize_publication() {
-		$connected              = $this->reader_revenue_manager->is_connected();
-		$cron_already_scheduled = wp_next_scheduled( self::CRON_SYNCHRONIZE_PUBLICATION );
-
-		if ( $connected && ! $cron_already_scheduled ) {
-			wp_schedule_single_event(
-				time() + HOUR_IN_SECONDS,
-				self::CRON_SYNCHRONIZE_PUBLICATION
+		foreach ( array(
+			'load-toplevel_page_googlesitekit-dashboard',
+			'load-toplevel_page_googlesitekit-settings',
+		) as $action ) {
+			add_action(
+				$action,
+				function () use ( $crons ) {
+					foreach ( $crons as $cron ) {
+						$cron->maybe_schedule();
+					}
+				}
 			);
 		}
 	}

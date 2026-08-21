@@ -135,6 +135,52 @@ type ReaderRevenueManagerRegistry = WPDataRegistry & {
 	resolveSelect: WPDataRegistry[ 'select' ];
 };
 
+/**
+ * Syncs connected publication fields into settings and savedSettings.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} state       Module state.
+ * @param {Object} publication Publication to sync from.
+ * @return {void}
+ */
+function syncConnectedPublicationSettings(
+	state: ReaderRevenueManagerState,
+	publication: Publication
+): void {
+	if (
+		! state.settings?.publicationID ||
+		// eslint-disable-next-line sitekit/acronym-case
+		publication.publicationId !== state.settings.publicationID
+	) {
+		return;
+	}
+
+	const newSettings: ReaderRevenueManagerSettings = {
+		publicationOnboardingState: publication.onboardingState,
+		productIDs: getProductIDs( publication.products! ),
+		paymentOption: getPaymentOption( publication.paymentOptions! ),
+	};
+
+	if ( publication.contentPolicyStatus ) {
+		newSettings.contentPolicyState =
+			publication.contentPolicyStatus.contentPolicyState;
+		newSettings.policyInfoLink =
+			publication.contentPolicyStatus.policyInfoLink || '';
+	}
+
+	if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
+		// eslint-disable-next-line sitekit/acronym-case
+		newSettings.organizationID = publication.organizationId || '';
+	}
+
+	Object.assign( state.settings, newSettings );
+
+	if ( state.savedSettings ) {
+		Object.assign( state.savedSettings, newSettings );
+	}
+}
+
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
 	controlCallback: () =>
@@ -149,36 +195,14 @@ const fetchGetPublicationsStore = createFetchStore( {
 		( state: ReaderRevenueManagerState, publications: Publication[] ) => {
 			state.publications = publications;
 
-			if ( state.settings?.publicationID ) {
-				const publication = publications?.find(
-					// eslint-disable-next-line sitekit/acronym-case
-					( { publicationId: id } ) =>
-						id === state.settings.publicationID
-				);
+			const publication = publications?.find(
+				// eslint-disable-next-line sitekit/acronym-case
+				( { publicationId: id } ) =>
+					id === state.settings?.publicationID
+			);
 
-				if ( publication ) {
-					const newSettings: ReaderRevenueManagerSettings = {
-						publicationOnboardingState: publication.onboardingState,
-						productIDs: getProductIDs( publication.products! ),
-						paymentOption: getPaymentOption(
-							publication.paymentOptions!
-						),
-					};
-
-					if ( publication.contentPolicyStatus ) {
-						newSettings.contentPolicyState =
-							publication.contentPolicyStatus.contentPolicyState;
-						newSettings.policyInfoLink =
-							publication.contentPolicyStatus.policyInfoLink ||
-							'';
-					}
-
-					Object.assign( state.settings, newSettings );
-
-					if ( state.savedSettings ) {
-						Object.assign( state.savedSettings, newSettings );
-					}
-				}
+			if ( publication ) {
+				syncConnectedPublicationSettings( state, publication );
 			}
 		}
 	),
@@ -247,6 +271,8 @@ const fetchPublicationStoreReducerCallback = createReducer(
 		} else {
 			state.publications[ publicationIndex ] = publication;
 		}
+
+		syncConnectedPublicationSettings( state, publication );
 	}
 );
 
