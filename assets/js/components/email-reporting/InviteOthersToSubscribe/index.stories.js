@@ -184,6 +184,7 @@ export default {
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
 					<div
+						className="googlesitekit-subscriber-management"
 						style={ {
 							display: 'flex',
 							flexDirection: 'column',

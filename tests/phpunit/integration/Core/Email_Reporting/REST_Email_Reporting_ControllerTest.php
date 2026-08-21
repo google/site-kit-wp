@@ -842,6 +842,34 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		);
 	}
 
+	public function test_get_subscribed_users__excludes_the_current_user() {
+		$other_subscriber_id = $this->create_admin_with_token( 'other-subscriber', 'Other Subscriber', 'other-subscriber@example.com' );
+		$this->subscribe_user( $other_subscriber_id );
+
+		// The viewing admin is subscribed too, but manages their own subscription
+		// elsewhere, so they should not show up in the list they use to manage
+		// everyone else's.
+		$this->subscribe_user( $this->primary_admin_id );
+
+		wp_set_current_user( $this->primary_admin_id );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request  = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-subscribed-users' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertEquals( 200, $response->get_status(), 'Subscribed users request should succeed for admins.' );
+		$this->assertSame( 1, $data['total'], 'Total should not count the viewing admin.' );
+		$this->assertSame(
+			array( $other_subscriber_id ),
+			wp_list_pluck( $data['users'], 'id' ),
+			'Subscribed users should exclude the viewing admin.'
+		);
+	}
+
 	public function test_get_subscribed_users__respects_pagination() {
 		$user_ids = array();
 

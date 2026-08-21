@@ -321,7 +321,8 @@ class REST_Email_Reporting_Controller {
 									'page'     => (int) $request['page'],
 									'per_page' => $per_page,
 									'search'   => (string) $request['search'],
-								)
+								),
+								get_current_user_id()
 							);
 
 							$total       = (int) $results['total'];

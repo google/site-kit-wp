@@ -1,5 +1,5 @@
 /**
- * InviteUserList component.
+ * SubscribedUserList component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import { FC, memo } from 'react';
 
 /**
  * WordPress dependencies
@@ -33,16 +33,19 @@ import EmptyMessage, {
 	getNoSearchResultsText,
 } from '@/js/components/email-reporting/UserList/EmptyMessage';
 import UserListSkeleton from '@/js/components/email-reporting/UserList/UserListSkeleton';
-import InviteUserRow from './InviteUserRow';
+import SubscribedUserRow, { SubscribedUser } from './SubscribedUserRow';
 
-export default function InviteUserList( {
+export interface SubscribedUserListProps {
+	users: SubscribedUser[];
+	searchTerm?: string;
+	isLoading?: boolean;
+}
+
+const SubscribedUserList: FC< SubscribedUserListProps > = ( {
 	users,
 	searchTerm = '',
-	inviteResults = {},
-	onInviteResult,
 	isLoading = false,
-	noEligibleUsersIcon,
-} ) {
+} ) => {
 	if ( isLoading ) {
 		return <UserListSkeleton visibleItems={ 3 } />;
 	}
@@ -54,11 +57,7 @@ export default function InviteUserList( {
 
 		return (
 			<EmptyMessage
-				icon={ noEligibleUsersIcon }
-				text={ __(
-					'No users are eligible to receive invitations.',
-					'google-site-kit'
-				) }
+				text={ __( 'No subscribed users yet', 'google-site-kit' ) }
 			/>
 		);
 	}
@@ -66,34 +65,10 @@ export default function InviteUserList( {
 	return (
 		<div className="googlesitekit-user-list">
 			{ users.map( ( user ) => (
-				<InviteUserRow
-					key={ user.id }
-					user={ user }
-					inviteResult={ inviteResults[ user.id ] }
-					onInviteResult={ onInviteResult }
-				/>
+				<SubscribedUserRow key={ user.id } user={ user } />
 			) ) }
 		</div>
 	);
-}
-
-InviteUserList.propTypes = {
-	users: PropTypes.arrayOf(
-		PropTypes.shape( {
-			id: PropTypes.number.isRequired,
-			name: PropTypes.string,
-			email: PropTypes.string.isRequired,
-			role: PropTypes.string,
-		} )
-	).isRequired,
-	searchTerm: PropTypes.string,
-	inviteResults: PropTypes.objectOf(
-		PropTypes.shape( {
-			status: PropTypes.oneOf( [ 'success', 'error' ] ),
-			message: PropTypes.string,
-		} )
-	),
-	onInviteResult: PropTypes.func.isRequired,
-	isLoading: PropTypes.bool,
-	noEligibleUsersIcon: PropTypes.node,
 };
+
+export default memo( SubscribedUserList );
