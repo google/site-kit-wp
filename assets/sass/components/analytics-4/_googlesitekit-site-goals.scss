@@ -126,6 +126,9 @@ $site-goals-tile-connector-offset: 3.5px;
 
 	.googlesitekit-notice-container:has(
 			.googlesitekit-site-goals-breakdown-notice
+		),
+	.googlesitekit-notice-container:has(
+			.googlesitekit-site-goals-event-provider-deactivated-notice
 		) {
 		margin: 34px 0;
 	}
