@@ -1,5 +1,7 @@
 /**
- * Site Kit by Google, Copyright 2026 Google LLC
+ * Negation utils.
+ *
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +16,18 @@
  * limitations under the License.
  */
 
-// Ambient declarations for untyped external modules. These ship no bundled
-// types and have no `@types/*` package installed, so `noImplicitAny` flags
-// every import. Declaring them keeps the modules usable (as `any`) until we
-// adopt proper types.
-declare module 'dompurify';
-declare module 'history';
-declare module 'md5';
-declare module 'react-router-dom';
+/**
+ * Negates a defined value.
+ *
+ * @since 1.99.0
+ *
+ * @param {*} value The value to negate.
+ * @return {(boolean|undefined)} The negated value, if defined.
+ */
+export function negateDefined( value: unknown ): boolean | undefined {
+	if ( value === undefined ) {
+		return undefined;
+	}
+
+	return ! value;
+}
