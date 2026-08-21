@@ -28,6 +28,10 @@ import {
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
 import { AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationBackNotice';
+import getLeadGenerationPerformancePDFData from '@/js/modules/analytics-4/components/site-goals/widgets/getLeadGenerationPerformancePDFData';
+import getOnlineStorePerformancePDFData from '@/js/modules/analytics-4/components/site-goals/widgets/getOnlineStorePerformancePDFData';
+import LeadGenerationPerformanceWidgetPDF from '@/js/modules/analytics-4/components/site-goals/widgets/LeadGenerationPerformanceWidgetPDF';
+import OnlineStorePerformanceWidgetPDF from '@/js/modules/analytics-4/components/site-goals/widgets/OnlineStorePerformanceWidgetPDF';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { createTestRegistry } from '../../../../../tests/js/utils';
 import { registerWidgets } from './index';
@@ -38,13 +42,11 @@ describe( 'Analytics 4 widget registrations', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		enabledFeatures.add( 'siteGoals' );
 		widgets = createWidgets( registry );
 		registerDefaultWidgets( widgets );
 	} );
 
 	afterEach( () => {
-		enabledFeatures.delete( 'siteGoals' );
 		enabledFeatures.delete( 'setupFlowRefresh' );
 	} );
 
@@ -185,6 +187,38 @@ describe( 'Analytics 4 widget registrations', () => {
 				expectedAbsent.forEach( ( slug ) => {
 					expect( slugs ).not.toContain( slug );
 				} );
+			}
+		);
+
+		it.each( [
+			[
+				'analyticsOnlineStorePerformance',
+				'Online store performance',
+				getOnlineStorePerformancePDFData,
+				OnlineStorePerformanceWidgetPDF,
+			],
+			[
+				'analyticsLeadGenerationPerformance',
+				'Lead generation performance',
+				getLeadGenerationPerformancePDFData,
+				LeadGenerationPerformanceWidgetPDF,
+			],
+		] )(
+			'should register the PDF label, loader, and component for %s',
+			async ( slug, label, getData, Component ) => {
+				registerWidgets( widgets );
+
+				const widget = registry
+					.select( CORE_WIDGETS )
+					.getWidget( slug );
+
+				expect( widget.pdf.label ).toBe( label );
+				expect( widget.pdf.getData ).toBe( getData );
+				// The `@react-pdf/renderer` package does not wait for a
+				// lazy component, so the PDF export calls `preload` before
+				// it renders the widget's section.
+				const loadedModule = await widget.pdf.Component.preload();
+				expect( loadedModule.default ).toBe( Component );
 			}
 		);
 	} );
