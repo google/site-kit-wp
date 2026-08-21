@@ -202,4 +202,65 @@ class Email_Report_Section_BuilderTest extends TestCase {
 		$this->assertWPError( $sections, 'Search Console errors should be propagated as WP_Error.' );
 		$this->assertSame( 'email_report_search_console_missing_result', $sections->get_error_code(), 'Expected original Search Console error code to be preserved.' );
 	}
+
+	public function test_build_sections__carries_the_groups_and_the_prompt_of_a_site_goals_section() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$builder = new Email_Report_Section_Builder( $context );
+
+		$payloads = array(
+			array(
+				'site_goals_online_store_primary' => array(
+					'dimensionHeaders' => array(
+						array( 'name' => 'eventName' ),
+						array( 'name' => 'dateRange' ),
+					),
+					'metricHeaders'    => array(
+						array(
+							'name' => 'eventCount',
+							'type' => 'TYPE_INTEGER',
+						),
+					),
+					'rows'             => array(
+						array(
+							'dimensionValues' => array( array( 'value' => 'purchase' ), array( 'value' => 'date_range_0' ) ),
+							'metricValues'    => array( array( 'value' => '116' ) ),
+						),
+					),
+				),
+				'site_goals_engagement'           => array(
+					'dimensionHeaders' => array( array( 'name' => 'dateRange' ) ),
+					'metricHeaders'    => array(
+						array(
+							'name' => 'engagementRate',
+							'type' => 'TYPE_FLOAT',
+						),
+						array(
+							'name' => 'sessions',
+							'type' => 'TYPE_INTEGER',
+						),
+					),
+					'rows'             => array(
+						array(
+							'dimensionValues' => array( array( 'value' => 'date_range_0' ) ),
+							'metricValues'    => array( array( 'value' => '0.55' ), array( 'value' => '2000' ) ),
+						),
+					),
+				),
+			),
+		);
+
+		$sections = $builder->build_sections( 'analytics-4', $payloads );
+
+		$this->assertCount( 1, $sections, 'The two Site Goals reports should build one section.' );
+		$this->assertSame(
+			array( 'Sales rate', 'Total sales' ),
+			array_column( $sections[0]->get_groups()[0]['metrics'], 'label' ),
+			'build_sections() should carry the tiles of each group into the section part.'
+		);
+		$this->assertSame(
+			'enable data breakdown',
+			$sections[0]->get_prompt()['link_text'],
+			'build_sections() should carry the prompt into the section part.'
+		);
+	}
 }
