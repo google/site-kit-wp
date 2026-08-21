@@ -22,13 +22,18 @@
 import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import P from '@/js/components/Typography/P';
+
 export default function DisclaimerText() {
 	const linkSpan = (
 		<span className="googlesitekit-rrm-newsletter-preview__link" />
 	);
 
 	return (
-		<p className="googlesitekit-rrm-newsletter-preview__disclaimer">
+		<P className="googlesitekit-rrm-newsletter-preview__disclaimer">
 			{ createInterpolateElement(
 				__(
 					'By continuing, you agree to provide your email and name (if applicable) to <em>YourSite</em> Test Publication through a Google service. Google delivers your information under its <tos>Terms of Service</tos> and <pp>Privacy Policy</pp>. <em>YourSite</em> Test Publication’s use of your data is subject to their own <terms>terms</terms> and <privacypolicy>privacy policy</privacypolicy>.',
@@ -42,6 +47,6 @@ export default function DisclaimerText() {
 					privacypolicy: linkSpan,
 				}
 			) }
-		</p>
+		</P>
 	);
 }
