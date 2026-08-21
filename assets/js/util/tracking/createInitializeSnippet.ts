@@ -17,8 +17,8 @@ import { TrackingConfig } from './createTracking';
  */
 export default function createInitializeSnippet(
 	config: TrackingConfig,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `dataLayerTarget` is the global window object in production, or an arbitrary mock object in tests.
-	dataLayerTarget: any
+	// `dataLayerTarget` is the global window object in production, or an arbitrary mock object in tests.
+	dataLayerTarget: Record< string, unknown >
 ): () => boolean | { scriptTagSrc: string } {
 	const dataLayerPush = createDataLayerPush( dataLayerTarget );
 

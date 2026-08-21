@@ -39,6 +39,16 @@ export interface TrackingConfig {
 	pluginVersion?: string;
 }
 
+// The subset of the global `window` object (or an arbitrary mock object in
+// tests) that the tracking utilities read directly, rather than via
+// `dataLayerTarget`.
+export interface TrackingGlobal {
+	console: Console;
+	_gaUserPrefs?: {
+		ioo?: () => unknown;
+	};
+}
+
 const DEFAULT_CONFIG: TrackingConfig = {
 	activeModules: [],
 	isAuthenticated: false,
@@ -61,10 +71,13 @@ const DEFAULT_CONFIG: TrackingConfig = {
  */
 export default function createTracking(
 	newConfig: Partial< TrackingConfig >,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `dataLayerTarget` is the global window object in production, or an arbitrary mock object in tests.
-	dataLayerTarget: any = global,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `_global` is the global window object in production, or an arbitrary mock object in tests.
-	_global: any = global
+	// `dataLayerTarget` is the global window object in production, or an arbitrary mock object in tests.
+	dataLayerTarget: Record< string, unknown > = global as unknown as Record<
+		string,
+		unknown
+	>,
+	// `_global` is the global window object in production, or an arbitrary mock object in tests.
+	_global: TrackingGlobal = global as unknown as TrackingGlobal
 ) {
 	const config: TrackingConfig = {
 		...DEFAULT_CONFIG,

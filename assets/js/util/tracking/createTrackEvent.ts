@@ -2,7 +2,7 @@
  * Internal dependencies
  */
 import createDataLayerPush from './createDataLayerPush';
-import { TrackingConfig } from './createTracking';
+import { TrackingConfig, TrackingGlobal } from './createTracking';
 
 /**
  * Returns a function which, when invoked tracks a single event.
@@ -17,11 +17,11 @@ import { TrackingConfig } from './createTracking';
  */
 export default function createTrackEvent(
 	config: TrackingConfig,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `dataLayerTarget` is the global window object in production, or an arbitrary mock object in tests.
-	dataLayerTarget: any,
+	// `dataLayerTarget` is the global window object in production, or an arbitrary mock object in tests.
+	dataLayerTarget: Record< string, unknown >,
 	initializeSnippet: () => unknown,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `_global` is the global window object in production, or an arbitrary mock object in tests.
-	_global: any
+	// `_global` is the global window object in production, or an arbitrary mock object in tests.
+	_global: TrackingGlobal
 ) {
 	const dataLayerPush = createDataLayerPush( dataLayerTarget );
 

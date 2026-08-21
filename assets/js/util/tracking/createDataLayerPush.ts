@@ -12,8 +12,8 @@ import { DATA_LAYER } from './constants';
  * @return {Function} Function that pushes data onto the dataLayer.
  */
 export default function createDataLayerPush(
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `target` is the global window object in production, or an arbitrary mock object in tests.
-	target: any
+	// `target` is the global window object in production, or an arbitrary mock object in tests.
+	target: Record< string, unknown >
 ): ( ...args: unknown[] ) => void {
 	/**
 	 * Pushes data onto the data layer.
@@ -30,6 +30,6 @@ export default function createDataLayerPush(
 	return function dataLayerPush() {
 		target[ DATA_LAYER ] = target[ DATA_LAYER ] || [];
 		// eslint-disable-next-line prefer-rest-params -- Must push an instance of `Arguments`, not an array; see the note above.
-		target[ DATA_LAYER ].push( arguments );
+		( target[ DATA_LAYER ] as unknown[] ).push( arguments );
 	};
 }
