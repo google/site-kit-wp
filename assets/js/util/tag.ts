@@ -85,9 +85,11 @@ export const getExistingTagURLs = memoize(
 		// Add first post in AMP mode if AMP mode is secondary.
 		if ( AMP_MODE_SECONDARY === ampMode ) {
 			try {
-				const ampPostURL: string | undefined = await apiFetch( {
+				const ampPostURL: string | undefined = await apiFetch<
+					{ link: string }[]
+				>( {
 					path: '/wp/v2/posts?per_page=1',
-				} ).then( ( posts: { link: string }[] ) =>
+				} ).then( ( posts ) =>
 					posts
 						.slice( 0, 1 )
 						.map( ( post ) =>
