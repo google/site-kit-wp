@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publications;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Periodic_Synchronization;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Publication as Publication_Synchronization;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher;
@@ -168,10 +168,10 @@ class Get_PublicationsTest extends TestCase {
 
 		wp_schedule_single_event(
 			time() + 600,
-			Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION
+			Publication_Synchronization::CRON_SYNCHRONIZE_PUBLICATION
 		);
 
-		$original_schedule = wp_next_scheduled( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
+		$original_schedule = wp_next_scheduled( Publication_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
 		$this->assertNotFalse( $original_schedule, 'Cron should be scheduled before fetching publications.' );
 
 		$this->get_datapoint( $module )->parse_response(
@@ -179,7 +179,7 @@ class Get_PublicationsTest extends TestCase {
 			$this->get_data_request()
 		);
 
-		$new_schedule = wp_next_scheduled( Periodic_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
+		$new_schedule = wp_next_scheduled( Publication_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
 
 		$this->assertNotFalse( $new_schedule, 'Cron should be rescheduled after fetching publications.' );
 		$this->assertNotEquals(
