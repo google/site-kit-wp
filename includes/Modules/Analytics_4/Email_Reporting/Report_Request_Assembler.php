@@ -23,6 +23,73 @@ use Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Report_Options as Analyt
 class Report_Request_Assembler {
 
 	/**
+	 * Payload key for the site-wide online store key action count.
+	 *
+	 * @since n.e.x.t
+	 */
+	const SITE_GOALS_ONLINE_STORE_PRIMARY_KEY = 'site_goals_online_store_primary';
+
+	/**
+	 * Payload key for the online store key action count split by event provider.
+	 *
+	 * @since n.e.x.t
+	 */
+	const SITE_GOALS_ONLINE_STORE_PRIMARY_BY_PROVIDER_KEY = 'site_goals_online_store_primary_by_provider';
+
+	/**
+	 * Payload key for the site-wide lead generation key action count.
+	 *
+	 * @since n.e.x.t
+	 */
+	const SITE_GOALS_LEAD_PRIMARY_KEY = 'site_goals_lead_primary';
+
+	/**
+	 * Payload key for the lead generation key action count split by form.
+	 *
+	 * @since n.e.x.t
+	 */
+	const SITE_GOALS_LEAD_PRIMARY_BY_FORM_KEY = 'site_goals_lead_primary_by_form';
+
+	/**
+	 * Payload key for the site-wide engagement rate and session count.
+	 *
+	 * @since n.e.x.t
+	 */
+	const SITE_GOALS_ENGAGEMENT_KEY = 'site_goals_engagement';
+
+	/**
+	 * Payload key for the engagement rate and session count split by event provider.
+	 *
+	 * @since n.e.x.t
+	 */
+	const SITE_GOALS_ENGAGEMENT_BY_PROVIDER_KEY = 'site_goals_engagement_by_provider';
+
+	/**
+	 * Payload key for the engagement rate and session count split by form.
+	 *
+	 * @since n.e.x.t
+	 */
+	const SITE_GOALS_ENGAGEMENT_BY_FORM_KEY = 'site_goals_engagement_by_form';
+
+	/**
+	 * Every payload key a Site Goals report sits under.
+	 *
+	 * Each Site Goals section reads more than one of these reports, so code that builds
+	 * one section per report skips every key in this list.
+	 *
+	 * @since n.e.x.t
+	 */
+	const SITE_GOALS_REQUEST_KEYS = array(
+		self::SITE_GOALS_ONLINE_STORE_PRIMARY_KEY,
+		self::SITE_GOALS_ONLINE_STORE_PRIMARY_BY_PROVIDER_KEY,
+		self::SITE_GOALS_LEAD_PRIMARY_KEY,
+		self::SITE_GOALS_LEAD_PRIMARY_BY_FORM_KEY,
+		self::SITE_GOALS_ENGAGEMENT_KEY,
+		self::SITE_GOALS_ENGAGEMENT_BY_PROVIDER_KEY,
+		self::SITE_GOALS_ENGAGEMENT_BY_FORM_KEY,
+	);
+
+	/**
 	 * Report options instance.
 	 *
 	 * @since 1.170.0
@@ -97,21 +164,21 @@ class Report_Request_Assembler {
 
 		if ( $this->report_options->has_ecommerce_events() ) {
 			if ( $this->report_options->has_custom_dimension_data( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER ) ) {
-				$requests['site_goals_online_store_primary_by_provider'] = $this->report_options->get_online_store_primary_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
-				$requests['site_goals_engagement_by_provider']           = $this->report_options->get_engagement_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
+				$requests[ self::SITE_GOALS_ONLINE_STORE_PRIMARY_BY_PROVIDER_KEY ] = $this->report_options->get_online_store_primary_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
+				$requests[ self::SITE_GOALS_ENGAGEMENT_BY_PROVIDER_KEY ]           = $this->report_options->get_engagement_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
 			} else {
-				$requests['site_goals_online_store_primary'] = $this->report_options->get_online_store_primary_options();
-				$requests['site_goals_engagement']           = $this->report_options->get_engagement_options();
+				$requests[ self::SITE_GOALS_ONLINE_STORE_PRIMARY_KEY ] = $this->report_options->get_online_store_primary_options();
+				$requests[ self::SITE_GOALS_ENGAGEMENT_KEY ]           = $this->report_options->get_engagement_options();
 			}
 		}
 
 		if ( $this->report_options->has_lead_events() ) {
 			if ( $this->report_options->has_custom_dimension_data( Analytics_4::CUSTOM_DIMENSION_FORM_ID ) ) {
-				$requests['site_goals_lead_primary_by_form'] = $this->report_options->get_lead_primary_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID );
-				$requests['site_goals_engagement_by_form']   = $this->report_options->get_engagement_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID );
+				$requests[ self::SITE_GOALS_LEAD_PRIMARY_BY_FORM_KEY ] = $this->report_options->get_lead_primary_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID );
+				$requests[ self::SITE_GOALS_ENGAGEMENT_BY_FORM_KEY ]   = $this->report_options->get_engagement_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID );
 			} else {
-				$requests['site_goals_lead_primary'] = $this->report_options->get_lead_primary_options();
-				$requests['site_goals_engagement']   = $this->report_options->get_engagement_options();
+				$requests[ self::SITE_GOALS_LEAD_PRIMARY_KEY ] = $this->report_options->get_lead_primary_options();
+				$requests[ self::SITE_GOALS_ENGAGEMENT_KEY ]   = $this->report_options->get_engagement_options();
 			}
 		}
 

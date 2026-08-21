@@ -104,12 +104,35 @@ class Email_Report_Data_Section_Part {
 	private $dimension_values = array();
 
 	/**
+	 * Groups the section shows its values under.
+	 *
+	 * A section that shows one flat list of values holds no group.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var array
+	 */
+	private $groups = array();
+
+	/**
+	 * Prompt the section shows above its values.
+	 *
+	 * A section that asks the reader nothing holds an empty array.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var array
+	 */
+	private $prompt = array();
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.167.0
+	 * @since n.e.x.t Added the groups and the prompt.
 	 *
 	 * @param string $section_key  Unique section key.
-	 * @param array  $section_data Section data (title, labels, values, optional trends, date_range, dashboard_link).
+	 * @param array  $section_data Section data (title, labels, values, optional trends, event_names, date_range, dashboard_link, dimensions, dimension_values, groups, prompt).
 	 *
 	 * @throws InvalidArgumentException When validation fails.
 	 */
@@ -131,6 +154,8 @@ class Email_Report_Data_Section_Part {
 		$this->set_dashboard_link( $section_data['dashboard_link'] ?? null );
 		$this->set_dimensions( $section_data['dimensions'] ?? null );
 		$this->set_dimension_values( $section_data['dimension_values'] ?? null );
+		$this->set_groups( $section_data['groups'] ?? null );
+		$this->set_prompt( $section_data['prompt'] ?? null );
 
 		$this->section_key = $section_key;
 	}
@@ -243,6 +268,28 @@ class Email_Report_Data_Section_Part {
 	 */
 	public function get_dimension_values() {
 		return $this->dimension_values;
+	}
+
+	/**
+	 * Gets groups.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Groups list.
+	 */
+	public function get_groups() {
+		return $this->groups;
+	}
+
+	/**
+	 * Gets prompt.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Prompt data.
+	 */
+	public function get_prompt() {
+		return $this->prompt;
 	}
 
 	/**
@@ -447,6 +494,50 @@ class Email_Report_Data_Section_Part {
 		}
 
 		$this->dimension_values = $dimension_values;
+	}
+
+	/**
+	 * Sets groups.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array|null $groups Groups.
+	 *
+	 * @throws InvalidArgumentException When validation fails.
+	 */
+	private function set_groups( $groups ) {
+		if ( null === $groups ) {
+			$this->groups = array();
+			return;
+		}
+
+		if ( ! is_array( $groups ) ) {
+			throw new InvalidArgumentException( 'groups must be an array' );
+		}
+
+		$this->groups = $groups;
+	}
+
+	/**
+	 * Sets prompt.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array|null $prompt Prompt data.
+	 *
+	 * @throws InvalidArgumentException When validation fails.
+	 */
+	private function set_prompt( $prompt ) {
+		if ( null === $prompt ) {
+			$this->prompt = array();
+			return;
+		}
+
+		if ( ! is_array( $prompt ) ) {
+			throw new InvalidArgumentException( 'prompt must be an array' );
+		}
+
+		$this->prompt = $prompt;
 	}
 
 	/**
