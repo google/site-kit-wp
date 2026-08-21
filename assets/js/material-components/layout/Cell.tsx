@@ -106,4 +106,6 @@ const Cell: FC< CellProps > = ( {
 	);
 };
 
+Cell.displayName = 'Cell';
+
 export default Cell;
