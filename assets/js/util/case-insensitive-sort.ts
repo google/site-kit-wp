@@ -31,11 +31,11 @@ export function caseInsensitiveListSort(
 ): unknown[] {
 	return [ ...listToSort ].sort( ( a, b ) => {
 		const nameA =
-			( a as Record< string | number, string | undefined > )[
+			( a as Record< string | number, string | undefined > )?.[ 
 				orderBy
 			]?.toLowerCase() || '';
 		const nameB =
-			( b as Record< string | number, string | undefined > )[
+			( b as Record< string | number, string | undefined > )?.[ 
 				orderBy
 			]?.toLowerCase() || '';
 

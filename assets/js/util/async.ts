@@ -43,7 +43,7 @@ export async function racePrioritizedAsyncTasks(
 	// Group tasks by priority
 	const priorityGroups = tasks.reduce(
 		( grouped: Record< string, Promise< AsyncTaskResult >[] >, task ) => {
-			const priority = parseInt( String( task.priority ), 10 );
+			const { priority } = task;
 			grouped[ priority ] = grouped[ priority ] || [];
 			grouped[ priority ].push(
 				task
