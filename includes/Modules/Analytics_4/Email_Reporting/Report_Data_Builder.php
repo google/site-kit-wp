@@ -52,19 +52,30 @@ class Report_Data_Builder {
 	protected $audience_display_map;
 
 	/**
+	 * Site Goals section builder instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Site_Goals_Section_Builder
+	 */
+	protected $site_goals_builder;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Added the $site_goals_builder parameter.
 	 *
 	 * @param Email_Report_Payload_Processor|null $report_processor     Optional. Report processor instance.
 	 * @param Report_Data_Processor|null          $data_processor       Optional. Analytics data processor.
 	 * @param array                               $audience_display_map Optional. Audience resource => display name map.
 	 * @param Context|null                        $context              Optional. Plugin context for audience lookup.
+	 * @param Site_Goals_Section_Builder|null     $site_goals_builder   Optional. Site Goals section builder.
 	 */
-	public function __construct( ?Email_Report_Payload_Processor $report_processor = null, ?Report_Data_Processor $data_processor = null, array $audience_display_map = array(), ?Context $context = null ) {
+	public function __construct( ?Email_Report_Payload_Processor $report_processor = null, ?Report_Data_Processor $data_processor = null, array $audience_display_map = array(), ?Context $context = null, ?Site_Goals_Section_Builder $site_goals_builder = null ) {
 		$this->report_processor     = $report_processor ?? new Email_Report_Payload_Processor();
 		$this->data_processor       = $data_processor ?? new Report_Data_Processor();
 		$this->audience_display_map = $audience_display_map;
+		$this->site_goals_builder   = $site_goals_builder ?? new Site_Goals_Section_Builder( $this->report_processor, $this->data_processor );
 
 		if ( empty( $this->audience_display_map ) && $context instanceof Context ) {
 			$audience_config            = new Audience_Config(
@@ -80,14 +91,22 @@ class Report_Data_Builder {
 	 *
 	 * @since 1.170.0
 	 * @since 1.177.0 Removed conversion event handling.
+	 * @since n.e.x.t Added the two Site Goals sections, each built from more than one report.
 	 *
 	 * @param array $module_payload Module payload keyed by section slug.
 	 * @return array Section payloads.
 	 */
 	public function build_sections_from_module_payload( $module_payload ) {
-		$sections = array();
+		$sections = $this->site_goals_builder->build_sections( $module_payload );
 
 		foreach ( $module_payload as $section_key => $section_data ) {
+			// This loop builds one section per report, and each Site Goals section holds more
+			// than one report. `Site_Goals_Section_Builder` built those sections above, so the
+			// loop skips the reports they read.
+			if ( in_array( $section_key, Report_Request_Assembler::SITE_GOALS_REQUEST_KEYS, true ) ) {
+				continue;
+			}
+
 			list( $reports ) = $this->normalize_section_input( $section_data );
 
 			foreach ( $reports as $report ) {
