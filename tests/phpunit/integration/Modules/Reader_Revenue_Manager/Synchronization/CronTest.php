@@ -51,6 +51,13 @@ class CronTest extends TestCase {
 	private $module;
 
 	/**
+	 * User_Options instance.
+	 *
+	 * @var User_Options
+	 */
+	private $user_options;
+
+	/**
 	 * Owner user ID.
 	 *
 	 * @var int
@@ -58,7 +65,7 @@ class CronTest extends TestCase {
 	private $owner_id;
 
 	/**
-	 * User ID that issued the faked publications request, if any.
+	 * User the faked publications request was issued for, if any.
 	 *
 	 * @var int|null
 	 */
@@ -69,12 +76,12 @@ class CronTest extends TestCase {
 
 		$this->owner_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
 
-		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options        = new Options( $context );
-		$user_options   = new User_Options( $context, $this->owner_id );
-		$authentication = new Authentication( $context, $options, $user_options );
-		$this->module   = new Reader_Revenue_Manager( $context, $options, $user_options, $authentication );
-		$this->cron     = new Cron( $this->module, $user_options, self::CRON_HOOK, 'publications' );
+		$context            = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options            = new Options( $context );
+		$this->user_options = new User_Options( $context, $this->owner_id );
+		$authentication     = new Authentication( $context, $options, $this->user_options );
+		$this->module       = new Reader_Revenue_Manager( $context, $options, $this->user_options, $authentication );
+		$this->cron         = new Cron( $this->module, $this->user_options, self::CRON_HOOK, 'publications' );
 
 		$this->fake_site_connection();
 		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
@@ -93,7 +100,7 @@ class CronTest extends TestCase {
 			)
 		);
 
-		$user_options->switch_user( 0 );
+		$this->user_options->switch_user( 0 );
 		remove_all_actions( self::CRON_HOOK );
 		wp_clear_scheduled_hook( self::CRON_HOOK );
 	}
@@ -109,7 +116,7 @@ class CronTest extends TestCase {
 
 		$this->cron->register();
 
-		$this->assertSame( 10, has_action( self::CRON_HOOK ), 'Cron callback should be registered.' );
+		$this->assertTrue( has_action( self::CRON_HOOK ), 'Cron callback should be registered.' );
 	}
 
 	public function test_maybe_schedule() {
@@ -150,7 +157,7 @@ class CronTest extends TestCase {
 			'Onboarding state should be synchronized after cron.'
 		);
 		$this->assertSame( $this->owner_id, $this->request_user_id, 'Datapoint should be fetched as the module owner.' );
-		$this->assertSame( 0, get_current_user_id(), 'The previous user should be restored after synchronization.' );
+		$this->assertSame( 0, $this->user_options->get_user_id(), 'The previous user should be restored after synchronization.' );
 	}
 
 	public function test_synchronize__does_not_fetch_datapoint_when_disconnected() {
@@ -166,7 +173,7 @@ class CronTest extends TestCase {
 			'Onboarding state should remain unchanged for a disconnected module.'
 		);
 		$this->assertNull( $this->request_user_id, 'Datapoint should not be fetched for a disconnected module.' );
-		$this->assertSame( 0, get_current_user_id(), 'The previous user should be restored after synchronization.' );
+		$this->assertSame( 0, $this->user_options->get_user_id(), 'The previous user should be restored after synchronization.' );
 	}
 
 	public function test_synchronize__does_not_fetch_datapoint_when_owner_lacks_permission() {
@@ -184,7 +191,7 @@ class CronTest extends TestCase {
 			'Onboarding state should remain unchanged when the owner lacks permission.'
 		);
 		$this->assertNull( $this->request_user_id, 'Datapoint should not be fetched when the owner lacks permission.' );
-		$this->assertSame( 0, get_current_user_id(), 'The previous user should be restored after synchronization.' );
+		$this->assertSame( 0, $this->user_options->get_user_id(), 'The previous user should be restored after synchronization.' );
 	}
 
 	private function fake_publications_response() {
@@ -194,7 +201,7 @@ class CronTest extends TestCase {
 				$url = parse_url( $request->getUri() );
 
 				if ( '/v1/publications' === $url['path'] ) {
-					$this->request_user_id = get_current_user_id();
+					$this->request_user_id = $this->user_options->get_user_id();
 
 					$publication = new Publication();
 					$publication->setPublicationId( 'publication-1' );

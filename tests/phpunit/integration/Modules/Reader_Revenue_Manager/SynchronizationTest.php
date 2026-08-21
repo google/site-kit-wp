@@ -69,8 +69,7 @@ class SynchronizationTest extends TestCase {
 
 		$this->synchronization->register();
 
-		$this->assertSame(
-			10,
+		$this->assertTrue(
 			has_action( Publication::CRON_SYNCHRONIZE_PUBLICATION ),
 			'Publication cron should be registered.'
 		);
