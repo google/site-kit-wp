@@ -877,6 +877,7 @@ describe( 'BreakdownNoticeArea', () => {
 
 		function simulateInView() {
 			const observedElements = getObservedElements();
+			expect( observedElements.length ).toBeGreaterThan( 0 );
 
 			act( () => {
 				simulateIntersection(
