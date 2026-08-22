@@ -45,13 +45,13 @@ import {
 	getCTATypeHandler,
 	isCTAType,
 } from './cta-types';
-import { validateOptionalPublicationParams } from './publications';
+import {
+	type PublicationParams,
+	getSelectedPublicationID,
+	maybeResolveSettings,
+	validateOptionalPublicationParams,
+} from './publications';
 import { type ReaderRevenueManagerSettings } from './types';
-
-interface PublicationParams {
-	organizationID: string;
-	publicationID: string;
-}
 
 type GetCTAsParams = Partial< PublicationParams >;
 
@@ -66,49 +66,6 @@ interface CTAsState {
 type Registry = WPDataRegistry & {
 	resolveSelect: WPDataRegistry[ 'select' ];
 };
-
-/**
- * Resolves the publication ID for a request, falling back to the saved setting.
- *
- * @since n.e.x.t
- *
- * @param  state  Store state.
- * @param  params Optional publication parameters.
- * @return {string|undefined} Publication ID, if one can be resolved.
- */
-function getSelectedPublicationID(
-	state: CTAsState,
-	params: Partial< PublicationParams > = {}
-): string | undefined {
-	return params.publicationID || state.settings?.publicationID;
-}
-
-/**
- * Resolves module settings when no publication ID was passed and settings
- * are not already in the store.
- *
- * @since n.e.x.t
- *
- * @param  registry Data registry.
- * @param  params   Optional publication parameters.
- * @return {Promise|undefined} Settings resolution, if needed.
- */
-function maybeResolveSettings(
-	registry: Registry,
-	params: Partial< PublicationParams > = {}
-): Promise< void > | undefined {
-	if (
-		params.publicationID ||
-		registry.select( MODULES_READER_REVENUE_MANAGER ).getSettings() !==
-			undefined
-	) {
-		return undefined;
-	}
-
-	return registry
-		.resolveSelect( MODULES_READER_REVENUE_MANAGER )
-		.getSettings();
-}
 
 /**
  * Validates the CTA creation parameters.
@@ -168,10 +125,10 @@ const fetchGetCTAsStore = createFetchStore( {
 			state: CTAsState,
 			{ ctas, params }: { ctas: CTA[]; params: GetCTAsParams }
 		) => {
-			const { publicationID } = params;
-
-			const selectedPublicationID =
-				publicationID || state.settings?.publicationID;
+			const selectedPublicationID = getSelectedPublicationID(
+				state,
+				params
+			);
 
 			if ( ! selectedPublicationID ) {
 				return;
@@ -264,7 +221,8 @@ const baseResolvers = {
 		const registryResult = yield commonActions.getRegistry();
 		const registry = registryResult as Registry;
 
-		// Resolve settings so that the store has the publication ID to key the list by.
+		// Conditionally resolve settings so that the fetch reducer has
+		// the publication ID to key the list by.
 		const settingsResolution = maybeResolveSettings( registry, params );
 
 		if ( settingsResolution ) {
