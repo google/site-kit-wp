@@ -162,6 +162,7 @@ final class PageSpeed_Insights extends Module implements Module_With_Scopes, Mod
 						'googlesitekit-vendor',
 						'googlesitekit-api',
 						'googlesitekit-data',
+						'googlesitekit-feature-discovery',
 						'googlesitekit-modules',
 						'googlesitekit-notifications',
 						'googlesitekit-datastore-site',

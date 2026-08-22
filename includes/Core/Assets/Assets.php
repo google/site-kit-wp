@@ -625,6 +625,17 @@ final class Assets {
 				)
 			),
 			new Script(
+				'googlesitekit-feature-discovery',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-feature-discovery.js',
+					'dependencies' => array(
+						'googlesitekit-data',
+						'googlesitekit-i18n',
+						'googlesitekit-components',
+					),
+				)
+			),
+			new Script(
 				'googlesitekit-user-input',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-user-input.js',

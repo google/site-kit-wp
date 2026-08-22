@@ -51,3 +51,7 @@ export const FEATURE_SETUP_TYPES = {
 	BACKGROUND_TOGGLE: 'background-toggle',
 	IN_PLACE_PANEL: 'in-place-panel',
 } as const;
+
+export const FEATURE_BADGES = {
+	PAID_SERVICE: 'paid-service',
+} as const;
