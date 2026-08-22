@@ -98,7 +98,7 @@ const SEARCH_CONSOLE_REPORT = [
  * Builds a registry that answers every selector and fetch a PDF tile can reach,
  * so each tile's `getTileData` can run end to end without real network access.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @return {Object} A mock registry.
  */

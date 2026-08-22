@@ -54,7 +54,7 @@ interface UserSettingsState {
 /**
  * Validates Reader Revenue Manager user settings.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param  settings User settings to validate.
  * @return {void}
@@ -135,7 +135,7 @@ const baseActions = {
 	/**
 	 * Saves Reader Revenue Manager user settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param  settings User settings to save.
 	 * @return {Object} Object with `response` and `error`.
@@ -182,7 +182,7 @@ const baseSelectors = {
 	/**
 	 * Gets Reader Revenue Manager user settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param  state Data store's state.
 	 * @return {UserSettings|undefined} User settings, or `undefined` if not loaded.

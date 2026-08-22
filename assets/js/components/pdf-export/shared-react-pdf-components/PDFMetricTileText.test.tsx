@@ -30,7 +30,7 @@ import PDFMetricTileText from './PDFMetricTileText';
 /**
  * Renders `PDFMetricTileText` with the given props and returns its JSON tree.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object} props The tile props.
  * @return {Object} The rendered tree.
@@ -50,7 +50,7 @@ function renderTextTree(
 /**
  * Renders `PDFMetricTileText` and returns its collected text, space-joined.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object} props The tile props.
  * @return {string} The rendered text.

@@ -109,7 +109,7 @@ interface SyncPublicationOnboardingStateParams {
 /**
  * Validates optional publication parameters.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param  params Publication parameters to validate.
  * @return {void}
@@ -387,7 +387,7 @@ const baseActions = {
 	/**
 	 * Creates a publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} params              Publication creation parameters.
 	 * @param {string} params.displayName  Publication display name.
@@ -426,7 +426,7 @@ const baseActions = {
 	/**
 	 * Updates a publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} params                  Publication update parameters.
 	 * @param {string} [params.publicationID]  Publication ID. Defaults to the configured setting on the server.
@@ -691,7 +691,7 @@ const baseSelectors = {
 	/**
 	 * Gets a publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} state                   Data store's state.
 	 * @param {Object} params                  Publication parameters.
