@@ -68,7 +68,7 @@ function getDateRangeIndex( reportRows, dateRangeSlug ) {
  * Mirrors the dashboard widget: it keeps the detected lead events, and drops
  * `CONTACT` when `SUBMIT_LEAD_FORM` is also present to avoid double-counting.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {string[]} [detectedEvents] The property's detected conversion events.
  * @return {string[]} The lead event names to filter by.
@@ -102,7 +102,7 @@ export function getTopTrafficSourceDrivingLeadsEventNames( detectedEvents ) {
  * the metric's PDF tile import this, so the dashboard tile and the report
  * request the same data.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object}   dates      The date range, including the compare dates.
  * @param {string[]} eventNames The lead event names to filter by.
@@ -158,7 +158,7 @@ export function getTopTrafficSourceDrivingLeadsReportOptions(
  * Both this widget and the metric's PDF tile import this, so the dashboard tile
  * and the PDF tile show the same sub-text.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {number} rate The relative share of total leads for the top source.
  * @return {string} The metric tile sub-text.

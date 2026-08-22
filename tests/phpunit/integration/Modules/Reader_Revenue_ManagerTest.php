@@ -211,9 +211,11 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'sync-publication-onboarding-state',
 				'terms-of-service',
 				'user-settings',
+				'ctas',
+				'create-cta',
 			),
 			$this->reader_revenue_manager->get_datapoints(),
-			'Reader Revenue Manager module should include the user settings datapoints when the express setup flag is enabled.'
+			'Reader Revenue Manager module should include the express setup datapoints when the express setup flag is enabled.'
 		);
 	}
 

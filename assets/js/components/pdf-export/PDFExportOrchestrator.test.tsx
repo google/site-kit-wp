@@ -97,7 +97,7 @@ const MOCKED_MEASURED_HEIGHT = 500;
  * Builds a `pdf()` implementation whose `toBlob()` fires the document's
  * `onRender` callback with the given layout, overriding the mock's fixture.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param layout The layout to pass to `onRender`.
  * @return The `pdf()` implementation.
@@ -238,7 +238,7 @@ describe( 'PDFExportOrchestrator', () => {
 	 * Renders the orchestrator under a dashboard view context.
 	 *
 	 * @since 1.181.0
-	 * @since n.e.x.t Added the `viewContext` parameter.
+	 * @since 1.186.0 Added the `viewContext` parameter.
 	 *
 	 * @param {string} viewContext The dashboard view context to render under.
 	 * @return {Object} The render result for the orchestrator.
@@ -999,7 +999,7 @@ describe( 'PDFExportOrchestrator', () => {
 	 *
 	 * The orchestrator then has one report to export.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {jest.Mock} getData The mock behind the widget's `pdf.getData`.
 	 * @return {void}

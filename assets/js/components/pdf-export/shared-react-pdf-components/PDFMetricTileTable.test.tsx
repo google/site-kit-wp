@@ -32,7 +32,7 @@ import PDFMetricTileTable from './PDFMetricTileTable';
  * Renders `PDFMetricTileTable` with the given props and returns its collected
  * text strings.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object} props The tile props.
  * @return {string[]} The rendered text strings.
