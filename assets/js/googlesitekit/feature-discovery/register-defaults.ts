@@ -32,6 +32,7 @@ import {
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
+import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
 
 /**
  * Registers default features from core Site Kit and modules.
@@ -159,21 +160,103 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 
 	// Enhanced measurement (depends on Analytics)
 	registerFeature( 'enhanced-measurement', {
-		title: __( 'Enhanced measurement', 'google-site-kit' ),
+		title: __( 'Enhance your site tracking', 'google-site-kit' ),
 		shortDescription: __(
-			'Get deeper insights into how visitors interact with your content',
+			'Better understand what visitors do on your site with detailed tracking.',
 			'google-site-kit'
 		),
+		detail: {
+			description: {
+				whatIs: __(
+					'Enhanced Measurement is a feature in Analytics that automatically tracks common user interactions on your website. Such user interactions include page views, scrolling events, clicking outbound links, viewing internal search results, form submissions, video plays and file downloads. Previously, capturing these measurements would require specific configuration for each event defining tags, triggers, and variables inside Google Tag Manager.',
+					'google-site-kit'
+				),
+				whyUseHeading: __(
+					'Why use enhanced measurement?',
+					'google-site-kit'
+				),
+				whyUseList: [
+					{
+						term: __( 'Saves time:', 'google-site-kit' ),
+						description: __(
+							'Automates event tracking immediately with a single toggle.',
+							'google-site-kit'
+						),
+					},
+					{
+						term: __( 'Zero coding:', 'google-site-kit' ),
+						description: __(
+							'Tracks file downloads, video plays, and outbound clicks without developer help.',
+							'google-site-kit'
+						),
+					},
+					{
+						term: __( 'Immediate data:', 'google-site-kit' ),
+						description: __(
+							'Collects baseline user behavior data from the moment it is turned on.',
+							'google-site-kit'
+						),
+					},
+					{
+						term: __( 'No Tag Manager needed:', 'google-site-kit' ),
+						description: __(
+							'Eliminates complex setup by running directly through your standard tracking.',
+							'google-site-kit'
+						),
+					},
+				],
+			},
+			requirements: {
+				serviceRequirements: __(
+					'There are no service requirements for enhanced measurement.',
+					'google-site-kit'
+				),
+				setupList: [
+					__(
+						'Enable enhanced measurement for Analytics.',
+						'google-site-kit'
+					),
+					__(
+						'View your enhanced measurement data in your Analytics account.',
+						'google-site-kit'
+					),
+				],
+				setupComplete: __(
+					'You are now tracking enhanced measurement data.',
+					'google-site-kit'
+				),
+			},
+			screenshots: [
+				{
+					src: splashScreenScreenshotURL,
+					alt: __(
+						'Analytics 4 Key Metrics widget showing selected key metrics and trends.',
+						'google-site-kit'
+					),
+					width: 1488,
+					height: 608,
+				},
+			],
+		},
+		successNotice: {
+			title: __(
+				'Success! Enhanced measurement is now active',
+				'google-site-kit'
+			),
+			description: __(
+				'You are now automatically tracking valuable interactions like file downloads and video plays.',
+				'google-site-kit'
+			),
+			dismissLabel: __( 'Got it', 'google-site-kit' ),
+		},
 		effort: FEATURE_EFFORTS.LOW,
 		goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
 		prerequisiteModules: [ 'analytics-4' ],
 		addedInVersion: '1.49.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
-			ctaLabel: __( 'Enable', 'google-site-kit' ),
+			ctaLabel: __( 'Enable enhanced measurements', 'google-site-kit' ),
 			activate: ( registry: WPDataRegistry ) => {
-				// Dispatches setEnhancedMeasurementStreamEnabled via the analytics module.
-				// The detailed enable logic is handled by the module's action.
 				return registry
 					.dispatch( 'modules/analytics-4' )
 					.setEnhancedMeasurementStreamEnabled( {
