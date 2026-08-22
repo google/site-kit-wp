@@ -19,7 +19,21 @@
  */
 import { classifyPII, getUserData } from './utils';
 
-global.document.addEventListener( 'om.Analytics.track', ( { detail } ) => {
+type OptinMonsterFormData = {
+	inputs?: HTMLInputElement[] | Record< string, HTMLInputElement >;
+};
+
+type OptinMonsterDetail = {
+	Analytics: { type: string };
+	Campaign: {
+		id: string | number;
+		type: string;
+		Form?: OptinMonsterFormData;
+	};
+};
+
+global.document.addEventListener( 'om.Analytics.track', ( event ) => {
+	const { detail } = event as CustomEvent< OptinMonsterDetail >;
 	if ( 'conversion' === detail.Analytics.type ) {
 		const gtagUserDataEnabled = global._googlesitekit?.gtagUserData;
 
@@ -28,7 +42,7 @@ global.document.addEventListener( 'om.Analytics.track', ( { detail } ) => {
 				? getUserDataFromOptinMonsterForm( detail.Campaign.Form )
 				: null;
 
-		const eventData = {
+		const eventData: Record< string, unknown > = {
 			campaignID: detail.Campaign.id,
 			campaignType: detail.Campaign.type,
 			googlesitekit_event_provider: 'optin-monster',
@@ -51,7 +65,9 @@ global.document.addEventListener( 'om.Analytics.track', ( { detail } ) => {
  * @param {Object} form OptinMonster form object.
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
  */
-function getUserDataFromOptinMonsterForm( form ) {
+function getUserDataFromOptinMonsterForm(
+	form: OptinMonsterFormData | null | undefined
+) {
 	if ( ! form || ! form.inputs ) {
 		return undefined;
 	}
@@ -86,7 +102,7 @@ function getUserDataFromOptinMonsterForm( form ) {
 				label,
 			} );
 		} )
-		.filter( Boolean );
+		.filter( ( f ): f is NonNullable< typeof f > => f !== null );
 
 	// Use shared utility function to extract user data.
 	return getUserData( detectedFields );

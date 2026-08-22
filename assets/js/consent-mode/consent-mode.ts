@@ -20,17 +20,19 @@
 import { isEqual } from 'lodash';
 
 ( function () {
-	function actionConsentChange( event ) {
+	function actionConsentChange(
+		event: CustomEvent< Record< string, string > >
+	) {
 		if ( event.detail ) {
-			const consentParameters = {};
+			const consentParameters: Record< string, string > = {};
 			let hasConsentParameters = false;
 			Object.keys( event.detail ).forEach( ( category ) => {
-				if ( global._googlesitekitConsentCategoryMap[ category ] ) {
+				const parameters =
+					global._googlesitekitConsentCategoryMap?.[ category ];
+				if ( parameters ) {
 					const status = event.detail[ category ];
 					const mappedStatus =
 						status === 'allow' ? 'granted' : 'denied';
-					const parameters =
-						global._googlesitekitConsentCategoryMap[ category ];
 					parameters.forEach( ( parameter ) => {
 						consentParameters[ parameter ] = mappedStatus;
 					} );
@@ -38,23 +40,23 @@ import { isEqual } from 'lodash';
 				}
 			} );
 			if ( hasConsentParameters ) {
-				global.gtag( 'consent', 'update', consentParameters );
+				global.gtag?.( 'consent', 'update', consentParameters );
 			}
 		}
 	}
 
 	global.document.addEventListener(
 		'wp_listen_for_consent_change',
-		actionConsentChange
+		actionConsentChange as EventListener
 	);
 
 	function updateGrantedConsent() {
 		if ( ! ( global.wp_consent_type || global.wp_fallback_consent_type ) ) {
 			return;
 		}
-		const consentParameters = {};
+		const consentParameters: Record< string, string > = {};
 		let hasConsentParameters = false;
-		Object.entries( global._googlesitekitConsentCategoryMap ).forEach(
+		Object.entries( global._googlesitekitConsentCategoryMap ?? {} ).forEach(
 			( [ category, parameters ] ) => {
 				if (
 					global.wp_has_consent &&
@@ -73,7 +75,7 @@ import { isEqual } from 'lodash';
 			// Prevent duplicate calls to gtag, only updating if the consent parameters have changed.
 			! isEqual( consentParameters, global._googlesitekitConsents )
 		) {
-			global.gtag( 'consent', 'update', consentParameters );
+			global.gtag?.( 'consent', 'update', consentParameters );
 			global._googlesitekitConsents = consentParameters;
 		}
 	}

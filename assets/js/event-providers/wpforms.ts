@@ -19,37 +19,44 @@
  */
 import { classifyPII, getUserData } from './utils';
 
-global.document.addEventListener( 'wpcf7mailsent', ( event ) => {
-	const gtagUserDataEnabled = global._googlesitekit?.gtagUserData;
+( ( jQuery ) => {
+	if ( ! jQuery ) {
+		return;
+	}
 
-	const userData = gtagUserDataEnabled
-		? getUserDataFromForm( event.target )
-		: null;
+	jQuery( global.document.body ).on(
+		'wpformsAjaxSubmitSuccess',
+		( event: Event ) => {
+			const gtagUserDataEnabled = global._googlesitekit?.gtagUserData;
 
-	// Disabled because the data/property names in this form are
-	// not controlled by Site Kit, thus don't conform to our ESLint
-	// rules on casing.
-	// eslint-disable-next-line sitekit/acronym-case
-	const { contactFormId: formID } = event.detail;
+			const userData = gtagUserDataEnabled
+				? getUserDataFromForm( event.target )
+				: null;
 
-	global._googlesitekit?.gtagEvent?.( 'contact', {
-		event_category: formID,
-		event_label: event.detail.unitTag,
-		googlesitekit_event_provider: 'contact-form-7',
-		googlesitekit_form_id: String( formID ),
-		...( userData ? { user_data: userData } : {} ),
-	} );
-} );
+			// eslint-disable-next-line sitekit/acronym-case
+			const formID = ( event.target as HTMLElement | null )?.dataset
+				?.formid;
+
+			global._googlesitekit?.gtagEvent?.( 'submit_lead_form', {
+				googlesitekit_event_provider: 'wpforms',
+				...( formID
+					? { googlesitekit_form_id: String( formID ) }
+					: {} ),
+				...( userData ? { user_data: userData } : {} ),
+			} );
+		}
+	);
+} )( global.jQuery );
 
 /**
- * Extracts and classifies user data from a Contact Form 7 form submission.
+ * Extracts and classifies user data from a WPForms form submission.
  *
  * @since 1.162.0 Renamed to `getUserDataFromForm` because `getUserData` was extracted into a generic utility function.
  *
  * @param {HTMLFormElement} form The submitted form element.
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
  */
-function getUserDataFromForm( form ) {
+function getUserDataFromForm( form: EventTarget | null ) {
 	// eslint-disable-next-line sitekit/acronym-case
 	if ( ! form || ! ( form instanceof HTMLFormElement ) ) {
 		return undefined;
@@ -58,12 +65,32 @@ function getUserDataFromForm( form ) {
 	const formData = new FormData( form );
 	const detectedFields = Array.from( formData.entries() )
 		.map( ( [ name, value ] ) => {
-			const input = form.querySelector( `[name='${ name }']` );
+			let input = form.querySelector< HTMLInputElement >(
+				`[name='${ name }']`
+			);
+
+			// WPForms creates dual inputs for special fields (e.g., phone numbers):
+			// - A visible input for UI/display purposes
+			// - A hidden input containing the actual raw value (positioned immediately after)
+			// When FormData gives us the hidden input, we switch to the visible input
+			// for better field type detection and label association.
+			if (
+				input?.type === 'hidden' &&
+				( input?.previousSibling as HTMLInputElement | null )?.type !==
+					'hidden'
+			) {
+				input = input.previousSibling as HTMLInputElement | null;
+			}
 
 			const type = input?.type;
 
 			// Skip hidden fields and submit buttons that don't contain user data.
 			if ( type === 'hidden' || type === 'submit' ) {
+				return null;
+			}
+
+			// Skip file inputs — only string values are classifiable as PII.
+			if ( typeof value !== 'string' ) {
 				return null;
 			}
 
@@ -79,7 +106,7 @@ function getUserDataFromForm( form ) {
 				value,
 			} );
 		} )
-		.filter( Boolean );
+		.filter( ( f ): f is NonNullable< typeof f > => f !== null );
 
 	return getUserData( detectedFields );
 }
