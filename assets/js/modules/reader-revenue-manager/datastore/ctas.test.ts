@@ -47,6 +47,11 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 		publicationID: 'ABCD_123-4',
 	};
 
+	const otherParams = {
+		organizationID: 'WXYZ5678',
+		publicationID: 'WXYZ_567-8',
+	};
+
 	const ctaData = {
 		type: 'NEWSLETTER_SIGNUP',
 		config: { title: 'Subscribe to our newsletter' },
@@ -62,8 +67,17 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 		type: 'NEWSLETTER_SIGNUP',
 	};
 
+	const otherCTA = {
+		name: 'organizations/WXYZ5678/publications/WXYZ_567-8/ctas/1',
+		type: 'NEWSLETTER_SIGNUP',
+	};
+
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( params );
 	} );
 
 	describe( 'actions', () => {
@@ -107,7 +121,7 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 			it( 'should add the created CTA to the loaded CTAs', async () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetCTAs( [], params );
+					.receiveGetCTAs( { ctas: [], params } );
 
 				fetchMock.postOnce( createCTAEndpoint, {
 					body: cta,
@@ -121,6 +135,52 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 				expect(
 					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
 				).toEqual( [ cta ] );
+			} );
+
+			it( 'should add the created CTA using the saved publication ID when none is passed', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetCTAs( { ctas: [], params: {} } );
+
+				fetchMock.postOnce( createCTAEndpoint, {
+					body: cta,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.createCTA( { data: ctaData } );
+
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toEqual( [ cta ] );
+			} );
+
+			it( 'should not add the created CTA to another publication list', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetCTAs( { ctas: [], params } );
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetCTAs( { ctas: [], params: otherParams } );
+
+				fetchMock.postOnce( createCTAEndpoint, {
+					body: cta,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.createCTA( createArgs );
+
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toEqual( [ cta ] );
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getCTAs( otherParams )
+				).toEqual( [] );
 			} );
 
 			it( 'should not add the created CTA before the CTAs are loaded', async () => {
@@ -305,23 +365,79 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 				).toEqual( [ cta ] );
 			} );
 
+			it( 'should not fetch CTAs when no publication ID is available', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.setPublicationID( '' );
+
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getCTAs();
+
+				expect( fetchMock ).not.toHaveFetched( ctasEndpoint );
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toBeUndefined();
+			} );
+
 			it( 'should not fetch CTAs that are already loaded', async () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetCTAs( [ cta ], params );
+					.receiveGetCTAs( { ctas: [ cta ], params } );
 
 				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getCTAs( params )
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
 				).toEqual( [ cta ] );
 
 				await untilResolved(
 					registry,
 					MODULES_READER_REVENUE_MANAGER
-				).getCTAs( params );
+				).getCTAs();
 
-				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( fetchMock ).not.toHaveFetched( ctasEndpoint );
+			} );
+
+			it( 'should not fetch CTAs when an empty list is already loaded', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetCTAs( { ctas: [], params } );
+
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toEqual( [] );
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getCTAs();
+
+				expect( fetchMock ).not.toHaveFetched( ctasEndpoint );
+			} );
+
+			it( 'should keep CTA lists for different publications separate', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetCTAs( { ctas: [ cta ], params } );
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetCTAs( {
+						ctas: [ otherCTA ],
+						params: otherParams,
+					} );
+
+				expect(
+					registry.select( MODULES_READER_REVENUE_MANAGER ).getCTAs()
+				).toEqual( [ cta ] );
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getCTAs( otherParams )
+				).toEqual( [ otherCTA ] );
 			} );
 		} );
 	} );

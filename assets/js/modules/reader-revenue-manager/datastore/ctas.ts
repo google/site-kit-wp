@@ -46,6 +46,7 @@ import {
 	isCTAType,
 } from './cta-types';
 import { validateOptionalPublicationParams } from './publications';
+import { type ReaderRevenueManagerSettings } from './types';
 
 interface PublicationParams {
 	organizationID: string;
@@ -57,9 +58,56 @@ type GetCTAsParams = Partial< PublicationParams >;
 type CreateCTAParams = Partial< PublicationParams > & {
 	data: CreateCTAData;
 };
-
 interface CTAsState {
-	ctas?: CTA[];
+	ctas: Record< string, CTA[] | undefined >;
+	settings?: ReaderRevenueManagerSettings;
+}
+
+type Registry = WPDataRegistry & {
+	resolveSelect: WPDataRegistry[ 'select' ];
+};
+
+/**
+ * Resolves the publication ID for a request, falling back to the saved setting.
+ *
+ * @since n.e.x.t
+ *
+ * @param  state  Store state.
+ * @param  params Optional publication parameters.
+ * @return {string|undefined} Publication ID, if one can be resolved.
+ */
+function getSelectedPublicationID(
+	state: CTAsState,
+	params: Partial< PublicationParams > = {}
+): string | undefined {
+	return params.publicationID || state.settings?.publicationID;
+}
+
+/**
+ * Resolves module settings when no publication ID was passed and settings
+ * are not already in the store.
+ *
+ * @since n.e.x.t
+ *
+ * @param  registry Data registry.
+ * @param  params   Optional publication parameters.
+ * @return {Promise|undefined} Settings resolution, if needed.
+ */
+function maybeResolveSettings(
+	registry: Registry,
+	params: Partial< PublicationParams > = {}
+): Promise< void > | undefined {
+	if (
+		params.publicationID ||
+		registry.select( MODULES_READER_REVENUE_MANAGER ).getSettings() !==
+			undefined
+	) {
+		return undefined;
+	}
+
+	return registry
+		.resolveSelect( MODULES_READER_REVENUE_MANAGER )
+		.getSettings();
 }
 
 /**
@@ -98,13 +146,40 @@ function validateCreateCTAParams( params: unknown ): void {
 
 const fetchGetCTAsStore = createFetchStore( {
 	baseName: 'getCTAs',
-	controlCallback: ( params: GetCTAsParams ) =>
-		get( 'modules', MODULE_SLUG_READER_REVENUE_MANAGER, 'ctas', params, {
-			useCache: false,
-		} ),
-	reducerCallback: createReducer( ( state: CTAsState, ctas: CTA[] ) => {
-		state.ctas = ctas;
-	} ),
+	controlCallback: async ( params: GetCTAsParams ) => {
+		const ctas = await get(
+			'modules',
+			MODULE_SLUG_READER_REVENUE_MANAGER,
+			'ctas',
+			params,
+			{ useCache: false }
+		);
+
+		// Optional params wipes `params` in `receiveGetCTAs` before the
+		// reducer runs. Stamp the params onto the response so the list can
+		// still be keyed.
+		return {
+			ctas,
+			params,
+		};
+	},
+	reducerCallback: createReducer(
+		(
+			state: CTAsState,
+			{ ctas, params }: { ctas: CTA[]; params: GetCTAsParams }
+		) => {
+			const { publicationID } = params;
+
+			const selectedPublicationID =
+				publicationID || state.settings?.publicationID;
+
+			if ( ! selectedPublicationID ) {
+				return;
+			}
+
+			state.ctas[ selectedPublicationID ] = ctas;
+		}
+	),
 	argsToParams: ( params: GetCTAsParams = {} ) => params,
 	validateParams: validateOptionalPublicationParams,
 } );
@@ -118,20 +193,32 @@ const fetchCreateCTAStore = createFetchStore( {
 			'create-cta',
 			params
 		),
-	reducerCallback: createReducer( ( state: CTAsState, cta: CTA ) => {
-		// Only extend an already loaded list, otherwise the resolver would
-		// treat the single created CTA as the complete set.
-		if ( state.ctas ) {
-			state.ctas.push( cta );
+	reducerCallback: createReducer(
+		( state: CTAsState, cta: CTA, params: CreateCTAParams ) => {
+			const selectedPublicationID = getSelectedPublicationID(
+				state,
+				params
+			);
+
+			// Only extend an already loaded list, otherwise the resolver would
+			// treat the single created CTA as the complete set.
+			if (
+				! selectedPublicationID ||
+				state.ctas[ selectedPublicationID ] === undefined
+			) {
+				return;
+			}
+
+			state.ctas[ selectedPublicationID ].push( cta );
 		}
-	} ),
+	),
 	argsToParams: ( params: CreateCTAParams ) => params,
 	validateParams: validateCreateCTAParams,
 	isAction: true,
 } );
 
 const baseInitialState: CTAsState = {
-	ctas: undefined,
+	ctas: {},
 };
 
 const baseActions = {
@@ -154,6 +241,16 @@ const baseActions = {
 		function* (
 			params: CreateCTAParams
 		): Generator< unknown, unknown, unknown > {
+			const registryResult = yield commonActions.getRegistry();
+			const registry = registryResult as Registry;
+
+			// Resolve settings so that the store has the publication ID to key the list by.
+			const settingsResolution = maybeResolveSettings( registry, params );
+
+			if ( settingsResolution ) {
+				yield commonActions.await( settingsResolution );
+			}
+
 			// @ts-expect-error createFetchStore is not properly typed yet.
 			return yield fetchCreateCTAStore.actions.fetchCreateCTA( params );
 		}
@@ -165,16 +262,37 @@ const baseResolvers = {
 		params: GetCTAsParams = {}
 	): Generator< unknown, void, unknown > {
 		const registryResult = yield commonActions.getRegistry();
-		const registry = registryResult as WPDataRegistry;
+		const registry = registryResult as Registry;
+
+		// Resolve settings so that the store has the publication ID to key the list by.
+		const settingsResolution = maybeResolveSettings( registry, params );
+
+		if ( settingsResolution ) {
+			yield commonActions.await( settingsResolution );
+		}
 
 		const ctas = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
-			.getCTAs();
+			.getCTAs( params );
 
-		if ( ctas === undefined ) {
-			// @ts-expect-error createFetchStore is not properly typed yet.
-			yield fetchGetCTAsStore.actions.fetchGetCTAs( params );
+		if ( ctas !== undefined ) {
+			return;
 		}
+
+		const publicationID =
+			params.publicationID ||
+			registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getPublicationID();
+
+		// No publication to key the list by; skip the fetch rather than
+		// looping on `undefined`.
+		if ( ! publicationID ) {
+			return;
+		}
+
+		// @ts-expect-error createFetchStore is not properly typed yet.
+		yield fetchGetCTAsStore.actions.fetchGetCTAs( params );
 	},
 };
 
@@ -184,11 +302,18 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param  state Data store's state.
+	 * @param  state  Data store's state.
+	 * @param  params Optional parameters.
 	 * @return {(Array.<Object>|undefined)} The CTAs; `undefined` if not loaded yet.
 	 */
-	getCTAs( state: CTAsState ): CTA[] | undefined {
-		return state.ctas;
+	getCTAs( state: CTAsState, params: GetCTAsParams = {} ): CTA[] | undefined {
+		const selectedPublicationID = getSelectedPublicationID( state, params );
+
+		if ( ! selectedPublicationID ) {
+			return undefined;
+		}
+
+		return state.ctas[ selectedPublicationID ];
 	},
 };
 
