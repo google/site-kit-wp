@@ -17,16 +17,12 @@
  */
 
 /**
- * External dependencies
- */
-import { intersectionObserver } from '@shopify/jest-dom-mocks';
-
-/**
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import * as tracking from '@/js/util/tracking';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
 	act,
 	createTestRegistry,
@@ -41,6 +37,7 @@ const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'GoogleTagGatewayToggle', () => {
+	const { simulateAllIntersections } = mockIntersectionObserver();
 	let registry;
 
 	const serverRequirementStatusEndpoint = new RegExp(
@@ -48,8 +45,6 @@ describe( 'GoogleTagGatewayToggle', () => {
 	);
 
 	beforeEach( () => {
-		intersectionObserver.mock();
-
 		registry = createTestRegistry();
 
 		registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
@@ -60,7 +55,6 @@ describe( 'GoogleTagGatewayToggle', () => {
 	} );
 
 	afterEach( () => {
-		intersectionObserver.restore();
 		jest.clearAllMocks();
 	} );
 
@@ -181,10 +175,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		// Simulate the warning notice becoming visible if it were present.
 		act( () => {
-			intersectionObserver.simulate( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} );
+			simulateAllIntersections();
 		} );
 
 		expect( mockTrackEvent ).not.toHaveBeenCalled();
@@ -222,10 +213,7 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		// Simulate the warning notice becoming visible.
 		act( () => {
-			intersectionObserver.simulate( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} );
+			simulateAllIntersections();
 		} );
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );

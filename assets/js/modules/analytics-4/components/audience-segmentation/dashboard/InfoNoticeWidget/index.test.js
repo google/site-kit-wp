@@ -17,12 +17,7 @@
  */
 
 /**
- * External dependencies
- */
-import { intersectionObserver } from '@shopify/jest-dom-mocks';
-
-/**
- * Internal dependencies.
+ * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -32,6 +27,7 @@ import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixture
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { WEEK_IN_SECONDS } from '@/js/util';
 import * as tracking from '@/js/util/tracking';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
 	act,
 	createTestRegistry,
@@ -48,13 +44,12 @@ const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'InfoNoticeWidget', () => {
+	const { simulateAllIntersections } = mockIntersectionObserver();
 	let registry;
 
 	let dismissPromptSpy;
 
 	beforeEach( () => {
-		intersectionObserver.mock();
-
 		registry = createTestRegistry();
 		provideModules( registry, [
 			{
@@ -71,7 +66,6 @@ describe( 'InfoNoticeWidget', () => {
 	} );
 
 	afterEach( () => {
-		intersectionObserver.restore();
 		mockTrackEvent.mockClear();
 	} );
 
@@ -409,10 +403,7 @@ describe( 'InfoNoticeWidget', () => {
 
 				// Simulate the notice coming into view.
 				act( () => {
-					intersectionObserver.simulate( {
-						isIntersecting: true,
-						intersectionRatio: 1,
-					} );
+					simulateAllIntersections();
 				} );
 
 				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );

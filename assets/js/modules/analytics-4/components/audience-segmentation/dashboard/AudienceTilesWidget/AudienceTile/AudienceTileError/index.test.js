@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { intersectionObserver } from '@shopify/jest-dom-mocks';
-
-/**
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
@@ -29,6 +24,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import * as tracking from '@/js/util/tracking';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import { act, fireEvent, render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -44,6 +40,7 @@ const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AudienceTileError', () => {
+	const { simulateAllIntersections } = mockIntersectionObserver();
 	let registry;
 
 	const audienceSlug = 'new-visitors';
@@ -79,8 +76,6 @@ describe( 'AudienceTileError', () => {
 	};
 
 	beforeEach( () => {
-		intersectionObserver.mock();
-
 		registry = createTestRegistry();
 
 		provideModules( registry, [
@@ -103,7 +98,6 @@ describe( 'AudienceTileError', () => {
 	} );
 
 	afterEach( () => {
-		intersectionObserver.restore();
 		mockTrackEvent.mockClear();
 	} );
 
@@ -175,10 +169,7 @@ describe( 'AudienceTileError', () => {
 
 		// Simulate the CTA becoming visible.
 		act( () => {
-			intersectionObserver.simulate( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} );
+			simulateAllIntersections();
 		} );
 
 		await waitForRegistry();
@@ -244,10 +235,7 @@ describe( 'AudienceTileError', () => {
 
 		// Simulate the CTA becoming visible.
 		act( () => {
-			intersectionObserver.simulate( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} );
+			simulateAllIntersections();
 		} );
 
 		await waitForRegistry();

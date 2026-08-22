@@ -17,7 +17,6 @@
 /**
  * External dependencies
  */
-import { intersectionObserver } from '@shopify/jest-dom-mocks';
 import fetchMock from 'fetch-mock';
 
 /**
@@ -54,6 +53,7 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { getPreviousDate } from '@/js/util';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -70,6 +70,7 @@ import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
 describe( 'LeadGenerationPerformanceWidget', () => {
+	const { getObservedElements } = mockIntersectionObserver();
 	let registry: WPDataRegistry;
 
 	const widgetProps: WidgetComponentProps = getWidgetComponentProps(
@@ -1918,8 +1919,6 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 	} );
 
 	it( 'observes the widget element after it renders', async () => {
-		intersectionObserver.mock();
-
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
@@ -1931,15 +1930,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		);
 		await waitForRegistry();
 
-		const observedTargets = intersectionObserver.observers.map(
-			( observer ) => observer.target
-		);
-		expect( observedTargets ).toContain(
+		expect( getObservedElements() ).toContain(
 			container.querySelector(
 				'.googlesitekit-widget--analyticsLeadGenerationPerformance'
 			)
 		);
-
-		intersectionObserver.restore();
 	} );
 } );
