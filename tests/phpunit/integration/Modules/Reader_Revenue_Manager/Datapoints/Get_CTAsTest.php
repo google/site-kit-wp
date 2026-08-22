@@ -119,7 +119,8 @@ class Get_CTAsTest extends TestCase {
 
 	public function test_parse_response() {
 		$cta = new Cta();
-		$cta->setName( 'organizations/organization-1/publications/publication-1/ctas/1' );
+		$cta->setName( 'organizations/organization-1/publications/publication-1/ctas/9d2418415-ab3a' );
+		$cta->setType( 'NEWSLETTER_SIGNUP' );
 
 		$response = new ListCtasResponse();
 		$response->setCtas( array( $cta ) );
@@ -128,9 +129,16 @@ class Get_CTAsTest extends TestCase {
 
 		$this->assertCount( 1, $ctas, 'The response should contain the publication CTAs.' );
 		$this->assertSame(
-			'organizations/organization-1/publications/publication-1/ctas/1',
+			'organizations/organization-1/publications/publication-1/ctas/9d2418415-ab3a',
 			$ctas[0]->getName(),
 			'The CTA resource should be returned unchanged.'
+		);
+		$this->assertSame(
+			array(
+				'9d2418415-ab3a' => 'NEWSLETTER_SIGNUP',
+			),
+			$this->module->get_settings()->get()['configuredCTAs'],
+			'The CTA response should be synchronized with module settings using CTA IDs.'
 		);
 	}
 
