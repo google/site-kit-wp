@@ -17,7 +17,6 @@
 /**
  * External dependencies
  */
-import { intersectionObserver } from '@shopify/jest-dom-mocks';
 import fetchMock from 'fetch-mock';
 
 /**
@@ -53,6 +52,7 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { getPreviousDate } from '@/js/util';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import { fireEvent, render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -67,6 +67,7 @@ import OnlineStorePerformanceWidget from './OnlineStorePerformanceWidget';
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
 describe( 'OnlineStorePerformanceWidget', () => {
+	const { getObservedElements } = mockIntersectionObserver();
 	let registry: WPDataRegistry;
 	const widgetProps: WidgetComponentProps = getWidgetComponentProps(
 		'analyticsOnlineStorePerformance'
@@ -1838,8 +1839,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 	} );
 
 	it( 'observes the widget element after it renders', async () => {
-		intersectionObserver.mock();
-
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
@@ -1851,15 +1850,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 		await waitForRegistry();
 
-		const observedTargets = intersectionObserver.observers.map(
-			( observer ) => observer.target
-		);
-		expect( observedTargets ).toContain(
+		expect( getObservedElements() ).toContain(
 			container.querySelector(
 				'.googlesitekit-widget--analyticsOnlineStorePerformance'
 			)
 		);
-
-		intersectionObserver.restore();
 	} );
 } );
