@@ -24,11 +24,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import keyMetricsWidgetScreenshotURL from '@/images/feature-discovery-hub/analytics/Key-metrics-widget.png';
-import siteGoalsWidgetScreenshotURL from '@/images/feature-discovery-hub/analytics/Site-goals-widget.png';
-import topContentWidgetScreenshotURL from '@/images/feature-discovery-hub/analytics/Top-content-widget-1.png';
-import trafficWidgetScreenshotURL from '@/images/feature-discovery-hub/analytics/Traffic-widget.png';
-import visitorGroupsWidgetScreenshotURL from '@/images/feature-discovery-hub/analytics/Visitor-groups-widget.png';
 import {
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
@@ -36,6 +31,7 @@ import {
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
 
 /**
  * Registers Analytics module features in the Feature Discovery catalog.
@@ -114,49 +110,49 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: keyMetricsWidgetScreenshotURL,
+					src: splashScreenScreenshotURL,
 					alt: __(
 						'Analytics 4 Key Metrics widget showing selected key metrics and trends.',
 						'google-site-kit'
 					),
-					width: 1488,
-					height: 608,
+					width: 659,
+					height: 577,
 				},
 				{
-					src: siteGoalsWidgetScreenshotURL,
+					src: splashScreenScreenshotURL,
 					alt: __(
 						'Analytics 4 Site Goals widget showing progress for configured goals.',
 						'google-site-kit'
 					),
-					width: 817,
-					height: 662,
+					width: 659,
+					height: 577,
 				},
 				{
-					src: topContentWidgetScreenshotURL,
+					src: splashScreenScreenshotURL,
 					alt: __(
 						'Analytics 4 Top Content widget showing top pages and engagement data.',
 						'google-site-kit'
 					),
-					width: 1476,
-					height: 826,
+					width: 659,
+					height: 577,
 				},
 				{
-					src: trafficWidgetScreenshotURL,
+					src: splashScreenScreenshotURL,
 					alt: __(
 						'Analytics 4 Traffic widget showing traffic trends and channels.',
 						'google-site-kit'
 					),
-					width: 1488,
-					height: 819,
+					width: 659,
+					height: 577,
 				},
 				{
-					src: visitorGroupsWidgetScreenshotURL,
+					src: splashScreenScreenshotURL,
 					alt: __(
 						'Analytics 4 Visitor Groups widget showing audience segment performance.',
 						'google-site-kit'
 					),
-					width: 1488,
-					height: 824,
+					width: 659,
+					height: 577,
 				},
 			],
 		},

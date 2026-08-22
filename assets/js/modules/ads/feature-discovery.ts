@@ -24,7 +24,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import AdsSettingsScreenshotURL from '@/images/feature-discovery-hub/ads/ads-settings.png';
 import {
 	FEATURE_BADGES,
 	FEATURE_CATEGORIES,
@@ -33,6 +32,7 @@ import {
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
 
 /**
  * Registers Ads module features in the Feature Discovery catalog.
@@ -109,13 +109,13 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: AdsSettingsScreenshotURL,
+					src: splashScreenScreenshotURL,
 					alt: __(
 						'Ads settings page showing various configuration options.',
 						'google-site-kit'
 					),
-					width: 1286,
-					height: 542,
+					width: 659,
+					height: 577,
 				},
 			],
 		},

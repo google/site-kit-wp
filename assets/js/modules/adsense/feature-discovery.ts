@@ -24,8 +24,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import topEarningPagesWidgetScreenshotURL from '@/images/feature-discovery-hub/analytics/Key-metrics-widget.png';
-import adSensePerformanceWidgetScreenshotURL from '@/images/feature-discovery-hub/analytics/Site-goals-widget.png';
 import {
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
@@ -33,6 +31,7 @@ import {
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
 
 /**
  * Registers AdSense module features in the Feature Discovery catalog.
@@ -111,22 +110,22 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: topEarningPagesWidgetScreenshotURL,
+					src: splashScreenScreenshotURL,
 					alt: __(
 						'Top earning pages widget showing top pages and earnings data.',
 						'google-site-kit'
 					),
-					width: 1371,
-					height: 421,
+					width: 659,
+					height: 577,
 				},
 				{
-					src: adSensePerformanceWidgetScreenshotURL,
+					src: splashScreenScreenshotURL,
 					alt: __(
 						'AdSense performance widget showing key metrics and trends.',
 						'google-site-kit'
 					),
-					width: 1478,
-					height: 825,
+					width: 659,
+					height: 577,
 				},
 			],
 		},

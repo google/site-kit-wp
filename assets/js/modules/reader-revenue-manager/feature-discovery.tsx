@@ -24,21 +24,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import rrm01ContributionScreenshotURL from '@/images/feature-discovery-hub/reader-revenue-manager/01_contribution.png';
-import rrm01PaywalledContentScreenshotURL from '@/images/feature-discovery-hub/reader-revenue-manager/01_paywalled_content.png';
-import promptNewsletterSignupScreenshotURL from '@/images/feature-discovery-hub/reader-revenue-manager/newsletter-signup/prompt_newsletter_signup.png';
-import signupFormDashboardScreenshotURL from '@/images/feature-discovery-hub/reader-revenue-manager/newsletter-signup/Sign-up-form-dashboard.png';
-import rrmPageLevelSettingsScreenshotURL from '@/images/feature-discovery-hub/reader-revenue-manager/page_level_settings.png';
-import rrmPromptAccessForRegisteredReadersScreenshotURL from '@/images/feature-discovery-hub/reader-revenue-manager/prompt_access_for_registered_readers.png';
-import rrmPromptCustomCTAScreenshotURL from '@/images/feature-discovery-hub/reader-revenue-manager/prompt_customCTA.png';
-import rrmPromptNewReaderPaywallScreenshotURL from '@/images/feature-discovery-hub/reader-revenue-manager/prompt_newreader_paywall.png';
-import rrmPromptNewsletterSignupScreenshotURL from '@/images/feature-discovery-hub/reader-revenue-manager/prompt_newsletter_signup.png';
-import rrmPromptPaywallScreenshotURL from '@/images/feature-discovery-hub/reader-revenue-manager/prompt_paywall.png';
-import rrmPromptReaderRegistrationScreenshotURL from '@/images/feature-discovery-hub/reader-revenue-manager/prompt_reader_registration.png';
-import rrmPromptSurveyScreenshotURL from '@/images/feature-discovery-hub/reader-revenue-manager/prompt_survey.png';
-import rrmSettingsScreenshotURL from '@/images/feature-discovery-hub/reader-revenue-manager/settings.png';
-import rrmWordPressEditorActiveButtonScreenshotURL from '@/images/feature-discovery-hub/reader-revenue-manager/wordpress_editor_active_button.png';
-import rrmWordPressEditorSelectingButtonScreenshotURL from '@/images/feature-discovery-hub/reader-revenue-manager/wordpress_editor_selecting_button.png';
 import { isFeatureEnabled } from '@/js/features';
 import {
 	FEATURE_CATEGORIES,
@@ -49,6 +34,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
 
 /**
  * Registers Reader Revenue Manager module features in the Feature Discovery catalog.
@@ -133,121 +119,13 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: rrm01ContributionScreenshotURL,
+					src: splashScreenScreenshotURL,
 					alt: __(
 						'Reader Revenue Manager contribution prompt screenshot.',
 						'google-site-kit'
 					),
 					width: 2285,
 					height: 1705,
-				},
-				{
-					src: rrm01PaywalledContentScreenshotURL,
-					alt: __(
-						'Reader Revenue Manager paywalled content screenshot.',
-						'google-site-kit'
-					),
-					width: 2565,
-					height: 1732,
-				},
-				{
-					src: rrmPageLevelSettingsScreenshotURL,
-					alt: __(
-						'Reader Revenue Manager page level settings screenshot.',
-						'google-site-kit'
-					),
-					width: 667,
-					height: 640,
-				},
-				{
-					src: rrmPromptAccessForRegisteredReadersScreenshotURL,
-					alt: __(
-						'Reader Revenue Manager registered readers prompt screenshot.',
-						'google-site-kit'
-					),
-					width: 1677,
-					height: 910,
-				},
-				{
-					src: rrmPromptCustomCTAScreenshotURL,
-					alt: __(
-						'Reader Revenue Manager custom CTA prompt screenshot.',
-						'google-site-kit'
-					),
-					width: 1365,
-					height: 924,
-				},
-				{
-					src: rrmPromptNewReaderPaywallScreenshotURL,
-					alt: __(
-						'Reader Revenue Manager new reader paywall prompt screenshot.',
-						'google-site-kit'
-					),
-					width: 1505,
-					height: 927,
-				},
-				{
-					src: rrmPromptNewsletterSignupScreenshotURL,
-					alt: __(
-						'Reader Revenue Manager newsletter signup prompt screenshot.',
-						'google-site-kit'
-					),
-					width: 1590,
-					height: 1012,
-				},
-				{
-					src: rrmPromptPaywallScreenshotURL,
-					alt: __(
-						'Reader Revenue Manager paywall prompt screenshot.',
-						'google-site-kit'
-					),
-					width: 1542,
-					height: 1445,
-				},
-				{
-					src: rrmPromptReaderRegistrationScreenshotURL,
-					alt: __(
-						'Reader Revenue Manager reader registration prompt screenshot.',
-						'google-site-kit'
-					),
-					width: 1590,
-					height: 1097,
-				},
-				{
-					src: rrmPromptSurveyScreenshotURL,
-					alt: __(
-						'Reader Revenue Manager survey prompt screenshot.',
-						'google-site-kit'
-					),
-					width: 2090,
-					height: 1626,
-				},
-				{
-					src: rrmSettingsScreenshotURL,
-					alt: __(
-						'Reader Revenue Manager settings screen screenshot.',
-						'google-site-kit'
-					),
-					width: 3262,
-					height: 1400,
-				},
-				{
-					src: rrmWordPressEditorActiveButtonScreenshotURL,
-					alt: __(
-						'Reader Revenue Manager WordPress editor active button screenshot.',
-						'google-site-kit'
-					),
-					width: 852,
-					height: 523,
-				},
-				{
-					src: rrmWordPressEditorSelectingButtonScreenshotURL,
-					alt: __(
-						'Reader Revenue Manager WordPress editor button selection screenshot.',
-						'google-site-kit'
-					),
-					width: 883,
-					height: 885,
 				},
 			],
 		},
@@ -349,22 +227,22 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				},
 				screenshots: [
 					{
-						src: promptNewsletterSignupScreenshotURL,
+						src: splashScreenScreenshotURL,
 						alt: __(
 							'Reader Revenue Manager newsletter sign-up prompt screenshot.',
 							'google-site-kit'
 						),
-						width: 1590,
-						height: 1012,
+						width: 659,
+						height: 577,
 					},
 					{
-						src: signupFormDashboardScreenshotURL,
+						src: splashScreenScreenshotURL,
 						alt: __(
 							'Reader Revenue Manager newsletter sign-up form dashboard screenshot.',
 							'google-site-kit'
 						),
-						width: 820,
-						height: 227,
+						width: 659,
+						height: 577,
 					},
 				],
 			},

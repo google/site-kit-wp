@@ -24,8 +24,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import siwgCustomPageScreenshotURL from '@/images/feature-discovery-hub/siwg/siwg-custom-page.png';
-import siwgLoginPageScreenshotURL from '@/images/feature-discovery-hub/siwg/siwg-WP-login-page.png';
 import {
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
@@ -33,6 +31,7 @@ import {
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
+import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
 
 /**
  * Registers Sign in with Google module features in the Feature Discovery catalog.
@@ -108,22 +107,22 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: siwgCustomPageScreenshotURL,
+					src: splashScreenScreenshotURL,
 					alt: __(
 						'Custom page showing Sign in with Google integration.',
 						'google-site-kit'
 					),
-					width: 1535,
-					height: 853,
+					width: 659,
+					height: 577,
 				},
 				{
-					src: siwgLoginPageScreenshotURL,
+					src: splashScreenScreenshotURL,
 					alt: __(
 						'WordPress login page showing Sign in with Google integration.',
 						'google-site-kit'
 					),
-					width: 409,
-					height: 644,
+					width: 659,
+					height: 577,
 				},
 			],
 		},
