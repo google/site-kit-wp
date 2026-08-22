@@ -52,6 +52,7 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
+import { type ReaderRevenueManagerSettings } from './types';
 
 interface Publication {
 	/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
@@ -65,19 +66,6 @@ interface Publication {
 		contentPolicyState: string;
 		policyInfoLink?: string;
 	};
-}
-
-interface ReaderRevenueManagerSettings {
-	publicationID?: string;
-	publicationOnboardingState?: string;
-	publicationOnboardingStateChanged?: boolean;
-	publicationOnboardingStateLastSyncedAtMs?: number;
-	productIDs?: string[];
-	paymentOption?: string;
-	productID?: string;
-	organizationID?: string;
-	contentPolicyState?: string;
-	policyInfoLink?: string;
 }
 
 interface ReaderRevenueManagerState {
