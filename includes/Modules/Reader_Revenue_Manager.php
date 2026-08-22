@@ -417,15 +417,13 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 			$datapoints['GET:publication'] = new Get_Publication(
 				array(
-					'service'  => fn() => $this->get_service( 'webcontentpublisher' ),
-					'settings' => $settings,
+					'service' => fn() => $this->get_service( 'webcontentpublisher' ),
 				)
 			);
 
 			$datapoints['POST:publication'] = new Update_Publication(
 				array(
-					'service'  => fn() => $this->get_service( 'webcontentpublisher' ),
-					'settings' => $settings,
+					'service' => fn() => $this->get_service( 'webcontentpublisher' ),
 				)
 			);
 
@@ -451,15 +449,13 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 			$datapoints['GET:ctas'] = new Get_CTAs(
 				array(
-					'service'  => fn() => $this->get_service( 'webcontentpublisher' ),
-					'settings' => $settings,
+					'service' => fn() => $this->get_service( 'webcontentpublisher' ),
 				)
 			);
 
 			$datapoints['POST:create-cta'] = new Create_CTA(
 				array(
-					'service'  => fn() => $this->get_service( 'webcontentpublisher' ),
-					'settings' => $settings,
+					'service' => fn() => $this->get_service( 'webcontentpublisher' ),
 				)
 			);
 		}

@@ -12,7 +12,7 @@ namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Datapoints;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
+use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_CTAs;
 use Google\Site_Kit\Tests\TestCase;
@@ -53,10 +53,9 @@ class Get_CTAsTest extends TestCase {
 		$service         = new Webcontentpublisher( $this->module->get_client() );
 		$this->datapoint = new Get_CTAs(
 			array(
-				'service'  => function () use ( $service ) {
+				'service' => function () use ( $service ) {
 					return $service;
 				},
-				'settings' => $this->module->get_settings(),
 			)
 		);
 	}
@@ -78,42 +77,28 @@ class Get_CTAsTest extends TestCase {
 		);
 	}
 
-	public function test_create_request__falls_back_to_saved_settings() {
-		$this->module->get_settings()->merge(
-			array(
-				'organizationID' => 'saved-organization',
-				'publicationID'  => 'saved-publication',
-			)
-		);
-
-		$request = $this->datapoint->create_request( $this->get_data_request( array() ) );
-
-		$this->assertSame(
-			'https://webcontentpublisher.googleapis.com/v1/organizations/saved-organization/publications/saved-publication/ctas',
-			(string) $request->getUri(),
-			'The request should fall back to the saved organization and publication IDs.'
-		);
-	}
-
 	/**
-	 * @dataProvider data_missing_settings
+	 * @dataProvider data_missing_required_params
 	 *
-	 * @param array  $settings Settings to save before the request.
-	 * @param string $missing  Name of the setting expected to be reported as missing.
+	 * @param string $param The missing parameter.
 	 */
-	public function test_create_request__requires_settings( $settings, $missing ) {
-		$this->module->get_settings()->merge( $settings );
+	public function test_create_request__requires_params( $param ) {
+		$data = array(
+			'organizationID' => 'organization-1',
+			'publicationID'  => 'publication-1',
+		);
+		unset( $data[ $param ] );
 
-		$this->expectException( Missing_Required_Setting_Exception::class );
-		$this->expectExceptionMessage( "Required setting is missing: {$missing}." );
+		$this->expectException( Missing_Required_Param_Exception::class );
+		$this->expectExceptionMessage( "Request parameter is empty: {$param}." );
 
-		$this->datapoint->create_request( $this->get_data_request( array() ) );
+		$this->datapoint->create_request( $this->get_data_request( $data ) );
 	}
 
-	public function data_missing_settings() {
+	public function data_missing_required_params() {
 		return array(
-			'no settings saved'    => array( array(), 'organizationID' ),
-			'only organization ID' => array( array( 'organizationID' => 'organization-1' ), 'publicationID' ),
+			'organizationID' => array( 'organizationID' ),
+			'publicationID'  => array( 'publicationID' ),
 		);
 	}
 

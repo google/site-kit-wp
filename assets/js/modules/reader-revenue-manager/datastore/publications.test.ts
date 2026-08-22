@@ -1012,6 +1012,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				).toEqual( publication );
 				expect( fetchMock ).toHaveFetched( publicationEndpoint, {
 					query: {
+						...params,
 						_locale: 'user',
 					},
 				} );
@@ -1045,6 +1046,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				expect( fetchMock ).toHaveFetched( settingsEndpoint );
 				expect( fetchMock ).toHaveFetched( publicationEndpoint, {
 					query: {
+						...params,
 						_locale: 'user',
 					},
 				} );

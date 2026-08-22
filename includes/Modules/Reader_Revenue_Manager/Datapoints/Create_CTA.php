@@ -15,7 +15,6 @@ use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\CTA\CTA_Type_Handler_Interface;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\CTA\Newsletter_Signup_CTA_Type_Handler;
 use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Cta;
@@ -28,27 +27,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Cta;
  * @ignore
  */
 class Create_CTA extends Datapoint implements Executable_Datapoint {
-
-	/**
-	 * Reader Revenue Manager settings.
-	 *
-	 * @since n.e.x.t
-	 * @var \Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings
-	 */
-	private $settings;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $definition Definition fields.
-	 */
-	public function __construct( array $definition ) {
-		parent::__construct( $definition );
-
-		$this->settings = $definition['settings'];
-	}
+	use Required_Publication_Params;
 
 	/**
 	 * Creates a request object.
@@ -57,27 +36,17 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
-	 * @throws Missing_Required_Param_Exception   Thrown if a required parameter is missing or empty.
-	 * @throws Missing_Required_Setting_Exception Thrown if a fallback setting is missing.
-	 * @throws Invalid_Param_Exception            Thrown if a parameter is invalid.
+	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing or empty.
+	 * @throws Invalid_Param_Exception          Thrown if a parameter is invalid.
 	 */
 	public function create_request( Data_Request $data_request ) {
 		if ( empty( $data_request->data['data'] ) ) {
 			throw new Missing_Required_Param_Exception( 'data' );
 		}
 
-		$settings = $this->settings->get();
-
-		$organization_id = $data_request['organizationID'] ?? $settings['organizationID'];
-		$publication_id  = $data_request['publicationID'] ?? $settings['publicationID'];
-
-		if ( empty( $organization_id ) ) {
-			throw new Missing_Required_Setting_Exception( 'organizationID' );
-		}
-
-		if ( empty( $publication_id ) ) {
-			throw new Missing_Required_Setting_Exception( 'publicationID' );
-		}
+		$params          = $this->get_required_publication_params( $data_request );
+		$organization_id = $params['organization_id'];
+		$publication_id  = $params['publication_id'];
 
 		$cta_data = $data_request['data'];
 
