@@ -35,6 +35,7 @@ import { ADS_NOTIFICATIONS } from '@/js/modules/ads/notifications';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import { dismissPromptEndpoint } from '@tests/js/mock-dismiss-prompt-endpoints';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	provideModuleRegistrations,
@@ -228,7 +229,9 @@ describe( 'AdsModuleSetupCTABanner', () => {
 
 			fireEvent.click( getByText( 'Set up Ads' ) );
 			await waitForRegistry();
-			fireEvent.click( getByText( 'Continue with Site Kit' ) );
+			await act( async () => {
+				await fireEvent.click( getByText( 'Continue with Site Kit' ) );
+			} );
 
 			expect( setCacheItemSpy ).toHaveBeenCalledWith(
 				ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,

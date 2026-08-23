@@ -174,7 +174,9 @@ describe( 'WooCommerceRedirectModal', () => {
 			/continue with site kit/i
 		);
 
-		fireEvent.click( continueWithSiteKitButton );
+		await act( async () => {
+			await fireEvent.click( continueWithSiteKitButton );
+		} );
 
 		expect( onDismiss ).toHaveBeenCalled();
 		expect( onClose ).toHaveBeenCalled();
@@ -205,7 +207,9 @@ describe( 'WooCommerceRedirectModal', () => {
 			/continue with site kit/i
 		);
 
-		fireEvent.click( continueWithSiteKitButton );
+		await act( async () => {
+			await fireEvent.click( continueWithSiteKitButton );
+		} );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pax_wc-redirect`,
@@ -238,7 +242,9 @@ describe( 'WooCommerceRedirectModal', () => {
 			/continue with site kit/i
 		);
 
-		fireEvent.click( continueWithSiteKitButton );
+		await act( async () => {
+			await fireEvent.click( continueWithSiteKitButton );
+		} );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_pax_wc-redirect`,
@@ -443,7 +449,9 @@ describe( 'WooCommerceRedirectModal', () => {
 			name: /create another account/i,
 		} );
 
-		fireEvent.click( createAnotherAccountButton );
+		await act( async () => {
+			await fireEvent.click( createAnotherAccountButton );
+		} );
 
 		expect( onDismiss ).toHaveBeenCalled();
 		expect( onClose ).toHaveBeenCalled();

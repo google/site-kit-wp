@@ -147,8 +147,8 @@ export default function WooCommerceRedirectModal( {
 		onClose?.();
 	}
 
-	function handleContinueWithSiteKit() {
-		trackEvent(
+	async function handleContinueWithSiteKit() {
+		await trackEvent(
 			`${ viewContext }_pax_wc-redirect`,
 			'choose_sk',
 			trackEventLabel
