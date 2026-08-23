@@ -51,6 +51,13 @@ class CronTest extends TestCase {
 	private $module;
 
 	/**
+	 * Authentication instance.
+	 *
+	 * @var Authentication
+	 */
+	private $authentication;
+
+	/**
 	 * User_Options instance.
 	 *
 	 * @var User_Options
@@ -76,19 +83,19 @@ class CronTest extends TestCase {
 
 		$this->owner_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
 
-		$context            = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options            = new Options( $context );
-		$this->user_options = new User_Options( $context, $this->owner_id );
-		$authentication     = new Authentication( $context, $options, $this->user_options );
-		$this->module       = new Reader_Revenue_Manager( $context, $options, $this->user_options, $authentication );
-		$this->cron         = new Cron( $this->module, $this->user_options, self::CRON_HOOK, 'publications' );
+		$context              = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options              = new Options( $context );
+		$this->user_options   = new User_Options( $context, $this->owner_id );
+		$this->authentication = new Authentication( $context, $options, $this->user_options );
+		$this->module         = new Reader_Revenue_Manager( $context, $options, $this->user_options, $this->authentication );
+		$this->cron           = new Cron( $this->module, $this->user_options, self::CRON_HOOK, 'publications' );
 
 		$this->fake_site_connection();
 		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
 
-		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
-		$authentication->verification()->set( true );
-		$authentication->get_oauth_client()->set_granted_scopes( $this->module->get_scopes() );
+		$this->authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
+		$this->authentication->verification()->set( true );
+		$this->authentication->get_oauth_client()->set_granted_scopes( $this->module->get_scopes() );
 
 		$options->set( Search_Console_Settings::OPTION, array( 'propertyID' => 'https://example.com' ) );
 		$this->module->get_settings()->register();
@@ -192,6 +199,35 @@ class CronTest extends TestCase {
 		);
 		$this->assertNull( $this->request_user_id, 'Datapoint should not be fetched when the owner lacks permission.' );
 		$this->assertSame( 0, $this->user_options->get_user_id(), 'The previous user should be restored after synchronization.' );
+	}
+
+	public function test_synchronize__passes_request_data_from_callback() {
+		$callback_invoked = false;
+		$this->cron       = new Cron(
+			$this->module,
+			$this->user_options,
+			self::CRON_HOOK,
+			'publications',
+			function () use ( &$callback_invoked ) {
+				$callback_invoked = true;
+
+				return array(
+					'organizationID' => 'organization-1',
+					'publicationID'  => 'publication-1',
+				);
+			}
+		);
+
+		$this->fake_publications_response();
+		$this->cron->register();
+		do_action( self::CRON_HOOK );
+
+		$this->assertTrue( $callback_invoked, 'The data callback should be invoked when the cron runs.' );
+		$this->assertSame(
+			'ONBOARDING_COMPLETE',
+			$this->module->get_settings()->get()['publicationOnboardingState'],
+			'The datapoint should still be fetched when a data callback is provided.'
+		);
 	}
 
 	private function fake_publications_response() {

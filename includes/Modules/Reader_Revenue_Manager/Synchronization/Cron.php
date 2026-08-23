@@ -56,6 +56,14 @@ class Cron {
 	private $datapoint;
 
 	/**
+	 * Callback that returns request data at fire time.
+	 *
+	 * @since n.e.x.t
+	 * @var callable|null
+	 */
+	private $data_callback;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -64,17 +72,20 @@ class Cron {
 	 * @param User_Options           $user_options           User Options instance.
 	 * @param string                 $hook                   Cron hook.
 	 * @param string                 $datapoint              Datapoint slug.
+	 * @param callable|null          $data_callback          Optional. Returns request data at fire time.
 	 */
 	public function __construct(
 		Reader_Revenue_Manager $reader_revenue_manager,
 		User_Options $user_options,
 		$hook,
-		$datapoint
+		$datapoint,
+		$data_callback = null
 	) {
 		$this->reader_revenue_manager = $reader_revenue_manager;
 		$this->user_options           = $user_options;
 		$this->hook                   = $hook;
 		$this->datapoint              = $datapoint;
+		$this->data_callback          = $data_callback;
 	}
 
 	/**
@@ -123,7 +134,12 @@ class Cron {
 				return;
 			}
 
-			$this->reader_revenue_manager->get_data( $this->datapoint );
+			$request_data = is_callable( $this->data_callback ) ? call_user_func( $this->data_callback ) : array();
+
+			$this->reader_revenue_manager->get_data(
+				$this->datapoint,
+				$request_data
+			);
 		}
 
 		$restore_user();
