@@ -11,7 +11,9 @@
 namespace Google\Site_Kit\Modules\Reader_Revenue_Manager;
 
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\CTA;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Cron;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Publication;
 
@@ -71,6 +73,16 @@ class Synchronization {
 			),
 		);
 
+		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
+			$crons[] = new Cron(
+				$this->reader_revenue_manager,
+				$this->user_options,
+				CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS,
+				'ctas',
+				array( $this, 'get_datapoint_data' )
+			);
+		}
+
 		foreach ( $crons as $cron ) {
 			$cron->register();
 		}
@@ -88,5 +100,23 @@ class Synchronization {
 				}
 			);
 		}
+	}
+
+	/**
+	 * Gets request data for datapoints that identify a publication.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Datapoint request data.
+	 */
+	private function get_datapoint_data() {
+		$settings = $this->reader_revenue_manager->get_settings()->get();
+
+		return array_filter(
+			array(
+				'organizationID' => $settings['organizationID'],
+				'publicationID'  => $settings['publicationID'],
+			)
+		);
 	}
 }

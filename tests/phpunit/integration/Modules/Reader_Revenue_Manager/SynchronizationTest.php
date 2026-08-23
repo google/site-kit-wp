@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\CTA;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Publication;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -53,10 +54,13 @@ class SynchronizationTest extends TestCase {
 
 		remove_all_actions( Publication::CRON_SYNCHRONIZE_PUBLICATION );
 		wp_clear_scheduled_hook( Publication::CRON_SYNCHRONIZE_PUBLICATION );
+		remove_all_actions( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
+		wp_clear_scheduled_hook( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
 	}
 
 	public function tear_down() {
 		wp_clear_scheduled_hook( Publication::CRON_SYNCHRONIZE_PUBLICATION );
+		wp_clear_scheduled_hook( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
 
 		parent::tear_down();
 	}
@@ -72,6 +76,26 @@ class SynchronizationTest extends TestCase {
 		$this->assertTrue(
 			has_action( Publication::CRON_SYNCHRONIZE_PUBLICATION ),
 			'Publication cron should be registered.'
+		);
+	}
+
+	public function test_register__registers_cta_cron_when_feature_is_enabled() {
+		$this->enable_feature( 'rrmExpressSetup' );
+
+		$this->synchronization->register();
+
+		$this->assertTrue(
+			has_action( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS ),
+			'CTA cron should be registered when the feature is enabled.'
+		);
+	}
+
+	public function test_register__does_not_register_cta_cron_when_feature_is_disabled() {
+		$this->synchronization->register();
+
+		$this->assertFalse(
+			has_action( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS ),
+			'CTA cron should not be registered when the feature is disabled.'
 		);
 	}
 
@@ -106,6 +130,18 @@ class SynchronizationTest extends TestCase {
 		$this->assertFalse(
 			wp_next_scheduled( Publication::CRON_SYNCHRONIZE_PUBLICATION ),
 			'Publication cron should not be scheduled for a disconnected module.'
+		);
+	}
+
+	public function test_register__schedules_cta_cron_when_feature_is_enabled() {
+		$this->enable_feature( 'rrmExpressSetup' );
+
+		$this->synchronization->register();
+		do_action( 'load-toplevel_page_googlesitekit-dashboard' );
+
+		$this->assertNotFalse(
+			wp_next_scheduled( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS ),
+			'CTA cron should be scheduled when the feature is enabled.'
 		);
 	}
 }
