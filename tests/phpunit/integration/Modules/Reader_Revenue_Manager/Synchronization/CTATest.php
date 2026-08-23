@@ -68,21 +68,22 @@ class CTATest extends TestCase {
 	public function test_synchronize__updates_configured_ctas() {
 		$this->synchronization->synchronize(
 			array(
-				$this->create_cta( 'organizations/1/publications/1/ctas/1', 'NEWSLETTER_SIGNUP' ),
-				$this->create_cta( 'organizations/1/publications/1/ctas/2', 'NEWSLETTER_SIGNUP' ),
+				$this->create_cta( 'organizations/1/publications/1/ctas/9d2418415-ab3a', 'NEWSLETTER_SIGNUP' ),
+				$this->create_cta( 'organizations/1/publications/1/ctas/8j8152411-cd4b', 'NEWSLETTER_SIGNUP' ),
 				$this->create_cta( '', 'NEWSLETTER_SIGNUP' ),
-				$this->create_cta( 'organizations/1/publications/1/ctas/3', '' ),
+				$this->create_cta( 'organizations/1/publications/1/ctas/', 'NEWSLETTER_SIGNUP' ),
+				$this->create_cta( 'organizations/1/publications/1/ctas/7f1042311-ef5c', '' ),
 				new \stdClass(),
 			)
 		);
 
 		$this->assertSame(
 			array(
-				'organizations/1/publications/1/ctas/1' => 'NEWSLETTER_SIGNUP',
-				'organizations/1/publications/1/ctas/2' => 'NEWSLETTER_SIGNUP',
+				'9d2418415-ab3a' => 'NEWSLETTER_SIGNUP',
+				'8j8152411-cd4b' => 'NEWSLETTER_SIGNUP',
 			),
 			$this->settings->get()['configuredCTAs'],
-			'Configured CTAs should contain only valid name-to-type entries.'
+			'Configured CTAs should contain only valid ID-to-type entries.'
 		);
 	}
 

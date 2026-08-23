@@ -58,15 +58,42 @@ class CTA {
 		$configured_ctas = array();
 
 		foreach ( $ctas as $cta ) {
-			if ( ! $cta instanceof WCP_CTA || empty( $cta->getName() ) || empty( $cta->getType() ) ) {
+			if ( ! $cta instanceof WCP_CTA ) {
 				continue;
 			}
 
-			$configured_ctas[ $cta->getName() ] = $cta->getType();
+			$cta_id = $this->get_cta_id( $cta );
+
+			if ( empty( $cta_id ) || empty( $cta->getType() ) ) {
+				continue;
+			}
+
+			$configured_ctas[ $cta_id ] = $cta->getType();
 		}
 
 		$this->settings->merge( array( 'configuredCTAs' => $configured_ctas ) );
 		$this->reschedule();
+	}
+
+	/**
+	 * Gets the CTA ID from a WCP CTA resource name.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WCP_CTA $cta WCP CTA object.
+	 * @return string CTA ID, or an empty string if none can be determined.
+	 */
+	private function get_cta_id( WCP_CTA $cta ) {
+		$name = $cta->getName();
+
+		if ( empty( $name ) ) {
+			return '';
+		}
+
+		$parts  = explode( '/', $name );
+		$cta_id = end( $parts );
+
+		return is_string( $cta_id ) ? $cta_id : '';
 	}
 
 	/**
