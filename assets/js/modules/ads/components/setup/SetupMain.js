@@ -412,7 +412,7 @@ export default function SetupMain( { finishSetup } ) {
 							? null
 							: () => setOpenDialog( false )
 					}
-					onContinue={ createAccount }
+					onContinueWithSiteKit={ createAccount }
 					dialogActive
 				/>
 			) }

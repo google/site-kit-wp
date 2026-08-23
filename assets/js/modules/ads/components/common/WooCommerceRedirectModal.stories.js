@@ -22,7 +22,12 @@
 import WooCommerceRedirectModal from './WooCommerceRedirectModal';
 
 function Template() {
-	return <WooCommerceRedirectModal dialogActive />;
+	return (
+		<WooCommerceRedirectModal
+			onContinueWithSiteKit={ () => {} }
+			dialogActive
+		/>
+	);
 }
 
 export const Default = Template.bind( null );

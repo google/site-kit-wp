@@ -22,9 +22,7 @@
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import {
 	ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
 	MODULES_ADS,
@@ -55,23 +53,19 @@ describe( 'WooCommerceRedirectModal', () => {
 
 	const onClose = jest.fn();
 	const onDismiss = jest.fn();
+	const onContinueWithSiteKit = jest.fn();
 
 	function ModalComponent() {
 		return (
 			<WooCommerceRedirectModal
 				onDismiss={ onDismiss }
 				onClose={ onClose }
+				onContinueWithSiteKit={ onContinueWithSiteKit }
 				dialogActive
 			/>
 		);
 	}
 
-	const moduleActivationEndpoint = RegExp(
-		'google-site-kit/v1/core/modules/data/activation'
-	);
-	const userAuthenticationEndpoint = RegExp(
-		'^/google-site-kit/v1/core/user/data/authentication'
-	);
 	const dismissItemEndpoint = RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
 	);
@@ -169,14 +163,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should trigger ads module activation and invoke the onDismiss callback when clicking "Continue with Site Kit"', async () => {
-		fetchMock.postOnce( moduleActivationEndpoint, {
-			body: { success: true },
-		} );
-		fetchMock.getOnce( userAuthenticationEndpoint, {
-			body: { needsReauthentication: false },
-		} );
-
+	it( 'should invoke the caller-owned callbacks when clicking "Continue with Site Kit"', async () => {
 		const { getByText, waitForRegistry } = render( <ModalComponent />, {
 			registry,
 		} );
@@ -190,45 +177,8 @@ describe( 'WooCommerceRedirectModal', () => {
 		fireEvent.click( continueWithSiteKitButton );
 
 		expect( onDismiss ).toHaveBeenCalled();
-
-		expect(
-			registry
-				.select( CORE_MODULES )
-				.isDoingSetModuleActivation( MODULE_SLUG_ADS )
-		).toBe( true );
-	} );
-
-	it( 'should invoke onBeforeSetupCallback if passed when clicking "Continue with Site Kit"', async () => {
-		fetchMock.postOnce( moduleActivationEndpoint, {
-			body: { success: true },
-		} );
-		fetchMock.getOnce( userAuthenticationEndpoint, {
-			body: { needsReauthentication: false },
-		} );
-
-		const onBeforeSetupCallback = jest.fn();
-
-		const { getByText, waitForRegistry } = render(
-			<WooCommerceRedirectModal
-				onDismiss={ onDismiss }
-				onClose={ onClose }
-				onBeforeSetupCallback={ onBeforeSetupCallback }
-				dialogActive
-			/>,
-			{
-				registry,
-			}
-		);
-		await waitForRegistry();
-
-		const continueWithSiteKitButton = getByText(
-			/continue with site kit/i
-		);
-
-		fireEvent.click( continueWithSiteKitButton );
-
-		expect( onDismiss ).toHaveBeenCalled();
-		expect( onBeforeSetupCallback ).toHaveBeenCalled();
+		expect( onClose ).toHaveBeenCalled();
+		expect( onContinueWithSiteKit ).toHaveBeenCalled();
 	} );
 
 	it( 'should trigger the correct internal tracking event when only WooCommerce is active and "Continue with Site Kit" is clicked', async () => {
@@ -242,13 +192,6 @@ describe( 'WooCommerceRedirectModal', () => {
 					adsConnected: false,
 				},
 			},
-		} );
-
-		fetchMock.postOnce( moduleActivationEndpoint, {
-			body: { success: true },
-		} );
-		fetchMock.getOnce( userAuthenticationEndpoint, {
-			body: { needsReauthentication: false },
 		} );
 
 		const { getByText, waitForRegistry } = render( <ModalComponent />, {
@@ -282,13 +225,6 @@ describe( 'WooCommerceRedirectModal', () => {
 					adsConnected: false,
 				},
 			},
-		} );
-
-		fetchMock.postOnce( moduleActivationEndpoint, {
-			body: { success: true },
-		} );
-		fetchMock.getOnce( userAuthenticationEndpoint, {
-			body: { needsReauthentication: false },
 		} );
 
 		const { getByText, waitForRegistry } = render( <ModalComponent />, {
@@ -482,14 +418,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		expect( onDismiss ).toHaveBeenCalled();
 	} );
 
-	it( 'should trigger ads module activation and dismiss the modal when "Create another account" is clicked', async () => {
-		fetchMock.postOnce( moduleActivationEndpoint, {
-			body: { success: true },
-		} );
-		fetchMock.getOnce( userAuthenticationEndpoint, {
-			body: { needsReauthentication: false },
-		} );
-
+	it( 'should invoke the caller-owned callbacks when "Create another account" is clicked', async () => {
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
 				[ PLUGINS.WOOCOMMERCE ]: {
@@ -516,12 +445,9 @@ describe( 'WooCommerceRedirectModal', () => {
 
 		fireEvent.click( createAnotherAccountButton );
 
-		expect(
-			registry
-				.select( CORE_MODULES )
-				.isDoingSetModuleActivation( MODULE_SLUG_ADS )
-		).toBe( true );
 		expect( onDismiss ).toHaveBeenCalled();
+		expect( onClose ).toHaveBeenCalled();
+		expect( onContinueWithSiteKit ).toHaveBeenCalled();
 	} );
 
 	it( 'should trigger the correct internal tracking event when Google for WooCommerce is active with no Ads account linked when "Continue with Google for WooCommerce" is clicked', async () => {

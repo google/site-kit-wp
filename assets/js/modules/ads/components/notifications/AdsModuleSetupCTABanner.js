@@ -101,6 +101,10 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	}, [ setCacheItem ] );
 
 	const activateModule = useActivateModuleCallback( MODULE_SLUG_ADS );
+	const continueWithSiteKit = useCallback( () => {
+		dismissWooCommerceRedirectModal();
+		activateModule();
+	}, [ dismissWooCommerceRedirectModal, activateModule ] );
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
@@ -209,7 +213,7 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 				<WooCommerceRedirectModal
 					onDismiss={ () => dismissNotification( id ) }
 					onClose={ onModalClose }
-					onBeforeSetupCallback={ dismissWooCommerceRedirectModal }
+					onContinueWithSiteKit={ continueWithSiteKit }
 					dialogActive
 				/>
 			) }

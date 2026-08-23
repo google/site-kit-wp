@@ -20,12 +20,17 @@
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
-import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
+import {
+	ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
+	MODULES_ADS,
+	PLUGINS,
+} from '@/js/modules/ads/datastore/constants';
 import { ADS_NOTIFICATIONS } from '@/js/modules/ads/notifications';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import { dismissPromptEndpoint } from '@tests/js/mock-dismiss-prompt-endpoints';
@@ -176,6 +181,65 @@ describe( 'AdsModuleSetupCTABanner', () => {
 
 			// Dismissal should be triggered when the modal is opened.
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
+		} );
+
+		it( 'should own Ads activation and modal dismissal when continuing with Site Kit', async () => {
+			provideModuleRegistrations( registry );
+
+			registry.dispatch( MODULES_ADS ).receiveModuleData( {
+				plugins: {
+					[ PLUGINS.WOOCOMMERCE ]: {
+						active: true,
+					},
+					[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+						active: false,
+						adsConnected: false,
+					},
+				},
+			} );
+
+			fetchMock.getOnce(
+				RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
+				{
+					body: { needsReauthentication: false },
+				}
+			);
+			fetchMock.postOnce(
+				RegExp( 'google-site-kit/v1/core/modules/data/activation' ),
+				{
+					body: { success: true },
+				}
+			);
+			fetchMock.post( dismissPromptEndpoint, {
+				body: {
+					[ NOTIFICATION_ID ]: { expires: 0, count: 1 },
+				},
+			} );
+
+			const setCacheItemSpy = jest.spyOn(
+				registry.dispatch( CORE_SITE ),
+				'setCacheItem'
+			);
+
+			const { getByText, waitForRegistry } = render(
+				<AdsModuleSetupCTABannerComponent />,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			fireEvent.click( getByText( 'Set up Ads' ) );
+			await waitForRegistry();
+			fireEvent.click( getByText( 'Continue with Site Kit' ) );
+
+			expect( setCacheItemSpy ).toHaveBeenCalledWith(
+				ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
+				true,
+				{ ttl: 300 }
+			);
+			expect(
+				registry
+					.select( CORE_MODULES )
+					.isDoingSetModuleActivation( MODULE_SLUG_ADS )
+			).toBe( true );
 		} );
 
 		it( 'should start Ads module activation when WooCommerce is not active', async () => {

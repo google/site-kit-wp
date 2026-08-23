@@ -25,13 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import {
-	Fragment,
-	useCallback,
-	useEffect,
-	useMemo,
-	useState,
-} from '@wordpress/element';
+import { Fragment, useEffect, useMemo, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
@@ -52,9 +46,7 @@ import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import useViewContext from '@/js/hooks/useViewContext';
-import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
 import { trackEvent } from '@/js/util';
 import WooLogoIcon from '@/svg/graphics/woo-logo.svg';
@@ -64,8 +56,7 @@ export default function WooCommerceRedirectModal( {
 	dialogActive,
 	onClose,
 	onDismiss = null,
-	onContinue = null,
-	onBeforeSetupCallback = null,
+	onContinueWithSiteKit,
 } ) {
 	const [ isSaving, setIsSaving ] = useState( '' );
 	const viewContext = useViewContext();
@@ -137,7 +128,7 @@ export default function WooCommerceRedirectModal( {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const handleGoogleForWooCommerceRedirect = useCallback( async () => {
+	async function handleGoogleForWooCommerceRedirect() {
 		if ( ! isAccountLinkedViaGoogleForWoocommerceNoticeDismissed ) {
 			dismissNotification( 'account-linked-via-google-for-woocommerce' );
 		}
@@ -154,52 +145,66 @@ export default function WooCommerceRedirectModal( {
 		}
 		onDismiss?.();
 		onClose?.();
-	}, [
-		isAccountLinkedViaGoogleForWoocommerceNoticeDismissed,
-		dismissNotification,
-		setIsSaving,
-		onDismiss,
-		onClose,
-		navigateTo,
-		googleForWooCommerceRedirectURI,
-		viewContext,
-		trackEventLabel,
-		isGoogleForWooCommerceAdsConnected,
-	] );
+	}
 
-	const onSetupCallback = useActivateModuleCallback( MODULE_SLUG_ADS );
-
-	const onContinueWithSiteKit = useCallback( () => {
+	function handleContinueWithSiteKit() {
 		trackEvent(
 			`${ viewContext }_pax_wc-redirect`,
 			'choose_sk',
 			trackEventLabel
 		);
 
-		if ( ! onContinue ) {
-			setIsSaving( 'tertiary' );
-			onDismiss?.();
-		}
+		setIsSaving( 'tertiary' );
+		onDismiss?.();
+		onClose?.();
+		onContinueWithSiteKit();
+	}
 
-		if ( onContinue ) {
-			// Override default module activation with custom callback.
-			onClose();
-			onContinue();
-			return;
-		}
-
-		onBeforeSetupCallback?.();
-		onSetupCallback();
-	}, [
-		setIsSaving,
-		onDismiss,
-		onClose,
-		onBeforeSetupCallback,
-		onSetupCallback,
-		onContinue,
-		viewContext,
-		trackEventLabel,
-	] );
+	const title = isGoogleForWooCommerceAdsConnected
+		? __(
+				'Are you sure you want to create another Ads account for this site?',
+				'google-site-kit'
+		  )
+		: __( 'Using the WooCommerce plugin?', 'google-site-kit' );
+	const description = isGoogleForWooCommerceAdsConnected ? (
+		<Fragment>
+			{ __(
+				'Site Kit has detected an already existing Ads account connected to this site via the Google for WooCommerce extension.',
+				'google-site-kit'
+			) }
+			<br />
+			{ __(
+				'Continue Ads setup with Site Kit only if you do want to create another account.',
+				'google-site-kit'
+			) }
+		</Fragment>
+	) : (
+		__(
+			'The Google for WooCommerce plugin can utilize your provided business information for advertising on Google and may be more suitable for your business.',
+			'google-site-kit'
+		)
+	);
+	const continueButtonLabel = isGoogleForWooCommerceAdsConnected
+		? __( 'Create another account', 'google-site-kit' )
+		: __( 'Continue with Site Kit', 'google-site-kit' );
+	const redirectButtonLabel = isGoogleForWooCommerceAdsConnected
+		? __( 'View current Ads account', 'google-site-kit' )
+		: __( 'Use Google for WooCommerce', 'google-site-kit' );
+	const redirectButtonHref = isGoogleForWooCommerceAdsConnected
+		? undefined
+		: googleForWooCommerceRedirectURI;
+	const redirectButtonTarget = redirectButtonHref ? '_blank' : undefined;
+	const onRedirectButtonClick = isWooCommerceActive
+		? handleGoogleForWooCommerceRedirect
+		: onClose;
+	const continueButtonIcon =
+		isSaving === 'tertiary' ? <CircularProgress size={ 14 } /> : undefined;
+	const redirectButtonIcon =
+		isSaving === 'primary' ? <CircularProgress size={ 14 } /> : undefined;
+	const redirectButtonTrailingIcon =
+		isGoogleForWooCommerceAdsConnected ? undefined : (
+			<ExternalIcon width={ 13 } height={ 13 } />
+		);
 
 	if ( isModalDismissed && ! isSaving ) {
 		return null;
@@ -222,90 +227,30 @@ export default function WooCommerceRedirectModal( {
 			<div className="googlesitekit-dialog-woocommerce-redirect__svg-wrapper">
 				<WooLogoIcon width={ 110 } height={ 46 } />
 			</div>
-			<DialogTitle>
-				{ isGoogleForWooCommerceAdsConnected
-					? __(
-							'Are you sure you want to create another Ads account for this site?',
-							'google-site-kit'
-					  )
-					: __( 'Using the WooCommerce plugin?', 'google-site-kit' ) }
-			</DialogTitle>
+			<DialogTitle>{ title }</DialogTitle>
 			<DialogContent>
-				<P>
-					{ isGoogleForWooCommerceAdsConnected ? (
-						<Fragment>
-							{ __(
-								'Site Kit has detected an already existing Ads account connected to this site via the Google for WooCommerce extension.',
-								'google-site-kit'
-							) }
-							<br />
-							{ __(
-								'Continue Ads setup with Site Kit only if you do want to create another account.',
-								'google-site-kit'
-							) }
-						</Fragment>
-					) : (
-						__(
-							'The Google for WooCommerce plugin can utilize your provided business information for advertising on Google and may be more suitable for your business.',
-							'google-site-kit'
-						)
-					) }
-				</P>
+				<P>{ description }</P>
 			</DialogContent>
 			<DialogFooter>
 				<Button
 					className="mdc-dialog__cancel-button"
-					onClick={ onContinueWithSiteKit }
-					icon={
-						isSaving === 'tertiary' ? (
-							<CircularProgress size={ 14 } />
-						) : undefined
-					}
+					onClick={ handleContinueWithSiteKit }
+					icon={ continueButtonIcon }
 					disabled={ !! isSaving }
 					tertiary
 				>
-					{ isGoogleForWooCommerceAdsConnected
-						? __( 'Create another account', 'google-site-kit' )
-						: __( 'Continue with Site Kit', 'google-site-kit' ) }
+					{ continueButtonLabel }
 				</Button>
 				<Button
-					trailingIcon={
-						isGoogleForWooCommerceAdsConnected ? undefined : (
-							<ExternalIcon width={ 13 } height={ 13 } />
-						)
-					}
-					icon={
-						isSaving === 'primary' ? (
-							<CircularProgress size={ 14 } />
-						) : undefined
-					}
-					onClick={ () => {
-						if (
-							isGoogleForWooCommerceAdsConnected ||
-							isWooCommerceActive
-						) {
-							handleGoogleForWooCommerceRedirect();
-						} else {
-							onClose();
-						}
-					} }
-					href={
-						isGoogleForWooCommerceAdsConnected
-							? null
-							: googleForWooCommerceRedirectURI
-					}
-					target={
-						isGoogleForWooCommerceAdsConnected ? '_self' : '_blank'
-					}
+					trailingIcon={ redirectButtonTrailingIcon }
+					icon={ redirectButtonIcon }
+					onClick={ onRedirectButtonClick }
+					href={ redirectButtonHref }
+					target={ redirectButtonTarget }
 					disabled={ !! isSaving }
 					tertiary={ ! isGoogleForWooCommerceAdsConnected }
 				>
-					{ isGoogleForWooCommerceAdsConnected
-						? __( 'View current Ads account', 'google-site-kit' )
-						: __(
-								'Use Google for WooCommerce',
-								'google-site-kit'
-						  ) }
+					{ redirectButtonLabel }
 				</Button>
 			</DialogFooter>
 		</Dialog>
@@ -316,6 +261,5 @@ WooCommerceRedirectModal.propTypes = {
 	dialogActive: PropTypes.bool.isRequired,
 	onDismiss: PropTypes.func,
 	onClose: PropTypes.func,
-	onContinue: PropTypes.func,
-	onBeforeSetupCallback: PropTypes.func,
+	onContinueWithSiteKit: PropTypes.func.isRequired,
 };
