@@ -15,9 +15,12 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Cron;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\CTA;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Publication;
 use Google\Site_Kit\Tests\TestCase;
+use ReflectionFunction;
+use ReflectionProperty;
 
 /**
  * @group Modules
@@ -143,5 +146,76 @@ class SynchronizationTest extends TestCase {
 			wp_next_scheduled( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS ),
 			'CTA cron should be scheduled when the feature is enabled.'
 		);
+	}
+
+	/**
+	 * @dataProvider data_cron_datapoints
+	 *
+	 * @param string $hook               Cron hook.
+	 * @param bool   $enable_feature     Whether to enable rrmExpressSetup.
+	 * @param array  $settings           Settings to save before registration.
+	 * @param string $expected_datapoint Expected datapoint slug.
+	 */
+	public function test_register__cron_uses_expected_datapoint( $hook, $enable_feature, $settings, $expected_datapoint ) {
+		if ( $enable_feature ) {
+			$this->enable_feature( 'rrmExpressSetup' );
+		}
+
+		$this->module->get_settings()->merge( $settings );
+
+		$this->synchronization->register();
+
+		$this->assertSame(
+			$expected_datapoint,
+			$this->get_registered_cron_datapoint( $hook ),
+			'The cron should use the datapoint selected during registration.'
+		);
+	}
+
+	public function data_cron_datapoints() {
+		return array(
+			'legacy publications' => array(
+				Publication::CRON_SYNCHRONIZE_PUBLICATION,
+				false,
+				array(),
+				'publications',
+			),
+			'wcp publications'    => array(
+				Publication::CRON_SYNCHRONIZE_PUBLICATION,
+				true,
+				array(),
+				'publications',
+			),
+			'wcp publication'     => array(
+				Publication::CRON_SYNCHRONIZE_PUBLICATION,
+				true,
+				array( 'organizationID' => 'organization-1' ),
+				'publication',
+			),
+			'ctas'                => array(
+				CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS,
+				true,
+				array(),
+				'ctas',
+			),
+		);
+	}
+
+	/**
+	 * Gets the datapoint registered for a cron hook.
+	 *
+	 * @param string $hook Cron hook.
+	 * @return string Datapoint slug.
+	 */
+	private function get_registered_cron_datapoint( $hook ) {
+		global $wp_filter;
+
+		$callback = array_column( $wp_filter[ $hook ]->callbacks[10], 'function' )[0];
+		$cron     = ( new ReflectionFunction( $callback ) )->getClosureThis();
+
+		$datapoint = new ReflectionProperty( Cron::class, 'datapoint' );
+		$datapoint->setAccessible( true );
+
+		return $datapoint->getValue( $cron );
 	}
 }

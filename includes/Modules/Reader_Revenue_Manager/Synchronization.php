@@ -64,12 +64,23 @@ class Synchronization {
 	 * @return void No return value.
 	 */
 	public function register() {
+		$settings              = $this->reader_revenue_manager->get_settings()->get();
+		$publication_datapoint = 'publications';
+		$data_callback         = null;
+
+		// Use the `GET:publication` datapoint if the organizationID is set.
+		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) && ! empty( $settings['organizationID'] ) ) {
+			$publication_datapoint = 'publication';
+			$data_callback         = array( $this, 'get_datapoint_data' );
+		}
+
 		$crons = array(
 			new Cron(
 				$this->reader_revenue_manager,
 				$this->user_options,
 				Publication::CRON_SYNCHRONIZE_PUBLICATION,
-				'publications'
+				$publication_datapoint,
+				$data_callback
 			),
 		);
 
