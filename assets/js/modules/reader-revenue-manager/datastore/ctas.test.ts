@@ -29,6 +29,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { enabledFeatures } from '@/js/features';
 import { createTestRegistry, untilResolved } from '@tests/js/utils';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 
@@ -63,16 +64,17 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 	};
 
 	const cta = {
-		name: 'organizations/ABCD1234/publications/ABCD_123-4/ctas/1',
+		name: 'organizations/ABCD1234/publications/ABCD_123-4/ctas/9d2418415-ab3a',
 		type: 'NEWSLETTER_SIGNUP',
 	};
 
 	const otherCTA = {
-		name: 'organizations/WXYZ5678/publications/WXYZ_567-8/ctas/1',
+		name: 'organizations/WXYZ5678/publications/WXYZ_567-8/ctas/8j8152411-cd4b',
 		type: 'NEWSLETTER_SIGNUP',
 	};
 
 	beforeEach( () => {
+		enabledFeatures.add( 'rrmExpressSetup' );
 		registry = createTestRegistry();
 
 		registry
@@ -342,6 +344,38 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getCTAs( params )
 				).toEqual( [ cta ] );
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSettings().configuredCTAs
+				).toEqual( {
+					'9d2418415-ab3a': cta.type,
+				} );
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.haveSettingsChanged()
+				).toBe( false );
+			} );
+
+			it( 'should not synchronize configured CTAs when the feature is disabled', () => {
+				enabledFeatures.delete( 'rrmExpressSetup' );
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						...params,
+						configuredCTAs: { existing: 'NEWSLETTER_SIGNUP' },
+					} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetCTAs( { ctas: [ cta ], params } );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSettings().configuredCTAs
+				).toEqual( { existing: 'NEWSLETTER_SIGNUP' } );
 			} );
 
 			it( 'should fetch the CTAs when called with no params', async () => {
