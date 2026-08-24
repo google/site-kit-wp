@@ -107,21 +107,23 @@ const visitorsArgs = getGA4VisitorsReportOptions( DATES );
  * Builds a 14-day Search Console report fixture.
  *
  * The 7 previous days (impressions 10, clicks 5) are followed by 7 current
- * days (impressions 20, clicks 10), so partitioning yields a clean +100%
- * change.
+ * days (impressions 20 by default, clicks 10). The default call gives a
+ * clean +100% change.
  *
  * @since 1.183.0
+ * @since n.e.x.t Added the current-period impressions argument.
  *
+ * @param [currentImpressions=20] Impressions on each of the 7 current days.
  * @return The report rows.
  */
-function buildSearchConsoleReport() {
+function buildSearchConsoleReport( currentImpressions = 20 ) {
 	return Array.from( { length: 14 }, ( _unused, index ) => {
 		const isCurrent = index >= 7;
 		const day = String( index + 1 ).padStart( 2, '0' );
 		return {
 			clicks: isCurrent ? 10 : 5,
 			ctr: 0.1,
-			impressions: isCurrent ? 20 : 10,
+			impressions: isCurrent ? currentImpressions : 10,
 			keys: [ `2025-01-${ day }` ],
 			position: 1,
 		};
@@ -162,14 +164,16 @@ function setGoogle( value: unknown ) {
  * resolves them without fetching.
  *
  * @since 1.183.0
+ * @since n.e.x.t Added the current-period impressions argument.
  *
- * @param  registry Test registry that receives the reports.
+ * @param  registry                Test registry that receives the reports.
+ * @param  [currentImpressions=20] Impressions on each of the 7 current days.
  * @return {void}
  */
-function provideReports( registry: Registry ) {
+function provideReports( registry: Registry, currentImpressions = 20 ) {
 	registry
 		.dispatch( MODULES_SEARCH_CONSOLE )
-		.receiveGetReport( buildSearchConsoleReport(), {
+		.receiveGetReport( buildSearchConsoleReport( currentImpressions ), {
 			options: searchConsoleArgs,
 		} );
 	registry
@@ -277,7 +281,15 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 				hAxis: {
 					textStyle: { fontName: 'Google Sans Text' },
 				},
-				vAxis: { textStyle: { fontName: 'Google Sans Text' } },
+				// Both series render against axis 1, so that axis carries the
+				// styling and the shortened number format. Axis 0 draws nothing.
+				vAxes: {
+					0: { textPosition: 'none' },
+					1: {
+						format: 'short',
+						textStyle: { fontName: 'Google Sans Text' },
+					},
+				},
 				series: {
 					0: { color, lineWidth: 8 },
 					1: { color, lineWidth: 8, lineDashStyle: [ 4, 20 ] },
@@ -285,6 +297,28 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 			} );
 		} );
 	} );
+
+	it.each( [
+		[ 20, 42 ],
+		[ 58000, 59 ],
+	] )(
+		'should reserve the label width a peak of %p impressions needs',
+		async ( currentImpressions, expectedGutter ) => {
+			provideReports( registry, currentImpressions );
+
+			await getPDFData( {
+				registry,
+				dates: DATES,
+				signal: new AbortController().signal,
+			} );
+
+			// Impressions render first. `58K` takes one character more than
+			// `20`, so its labels need a wider column beside the plot.
+			expect(
+				mockRenderGoogleChartToDataURI.mock.calls[ 0 ][ 0 ].options
+			).toMatchObject( { chartArea: { right: expectedGutter } } );
+		}
+	);
 
 	it( 'should isolate a single failing metric to its own card without aborting the others', async () => {
 		// Pre-populate every report except Unique Visitors, which fails to fetch.

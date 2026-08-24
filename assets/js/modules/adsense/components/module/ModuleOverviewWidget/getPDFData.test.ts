@@ -260,10 +260,12 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 	 * Dispatches fixtures where every metric has data in both periods.
 	 *
 	 * @since 1.184.0
+	 * @since n.e.x.t Added the daily impressions argument.
 	 *
+	 * @param  [dailyImpressions=600] Impressions on each day of the current period.
 	 * @return {void}
 	 */
-	function provideReportsWithData() {
+	function provideReportsWithData( dailyImpressions = 600 ) {
 		provideReports( {
 			currentTotals: buildTotalsReport( {
 				startDate: DATES.startDate,
@@ -277,7 +279,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 			} ),
 			currentChart: buildChartReport( {
 				days: CURRENT_RANGE_DAYS,
-				dailyValues: [ 1.5, 2.5, 600, 0.05 ],
+				dailyValues: [ 1.5, 2.5, dailyImpressions, 0.05 ],
 				totals: [ 10.5, 2.5, 4200, 0.05 ],
 			} ),
 			previousChart: buildChartReport( {
@@ -378,7 +380,15 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 				hAxis: {
 					textStyle: { fontName: 'Google Sans Text' },
 				},
-				vAxis: { textStyle: { fontName: 'Google Sans Text' } },
+				// Both series render against axis 1, so that axis carries the
+				// styling and the shortened number format. Axis 0 draws nothing.
+				vAxes: {
+					0: { textPosition: 'none' },
+					1: {
+						format: 'short',
+						textStyle: { fontName: 'Google Sans Text' },
+					},
+				},
 				series: {
 					0: { color, lineWidth: 8 },
 					1: { color, lineWidth: 8, lineDashStyle: [ 4, 20 ] },
@@ -386,6 +396,29 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 			} );
 		} );
 	} );
+
+	it.each( [
+		[ 600, 59 ],
+		[ 5500, 76 ],
+	] )(
+		'should reserve the label width a peak of %p impressions needs',
+		async ( dailyImpressions, expectedGutter ) => {
+			provideReportsWithData( dailyImpressions );
+
+			await getPDFData( {
+				registry,
+				dates: DATES,
+				signal: new AbortController().signal,
+				viewOnly: false,
+			} );
+
+			// Impressions is the third metric. `5.5K` takes one character more
+			// than `600`, so its labels need a wider column beside the plot.
+			expect(
+				mockRenderGoogleChartToDataURI.mock.calls[ 2 ][ 0 ].options
+			).toMatchObject( { chartArea: { right: expectedGutter } } );
+		}
+	);
 
 	it( 'should drop a metric with no data in either period, like its dashboard card', async () => {
 		// Page CTR is zero across both periods. The other metrics keep their data.
