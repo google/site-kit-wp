@@ -1,0 +1,62 @@
+/**
+ * Stringify function.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const md5 = require( 'md5' ) as ( value: string ) => string;
+
+/**
+ * Transforms an object into a hash string.
+ *
+ * This function can be used to e.g. generate cache keys, based on the given
+ * object. Object properties are sorted, so even if they are provided in
+ * different order, the hash will match. The function furthermore supports
+ * nested objects.
+ *
+ * @since 1.7.0
+ *
+ * @param {Object} obj The object to stringify.
+ * @return {string} Hash for the object.
+ */
+export function stringifyObject( obj: Record< string, unknown > ): string {
+	return md5( JSON.stringify( sortObjectProperties( obj ) ) );
+}
+
+function sortObjectProperties(
+	obj: Record< string, unknown >
+): Record< string, unknown > {
+	const orderedData: Record< string, unknown > = {};
+	Object.keys( obj )
+		.sort()
+		.forEach( ( key ) => {
+			let value = obj[ key ];
+			if (
+				value &&
+				'object' === typeof value &&
+				! Array.isArray( value )
+			) {
+				value = sortObjectProperties(
+					value as Record< string, unknown >
+				);
+			}
+			orderedData[ key ] = value;
+		} );
+	return orderedData;
+}
