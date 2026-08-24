@@ -15,24 +15,28 @@
  * the License.
  */
 
-namespace Google\Service\Webcontentpublisher;
+namespace Google\Service\WebContentPublisher;
 
 class DomainProperty extends \Google\Model
 {
   /**
-   * Whether domain ownership has been verified.
+   * Optional. Whether the domain ownership has been verified (e.g., via Google
+   * Search Console).
    *
    * @var bool
    */
   public $ownershipVerified;
   /**
-   * The URL of the domain property.
+   * Required. The URL of the domain property (e.g., "https://example.com").
    *
    * @var string
    */
   public $url;
 
   /**
+   * Optional. Whether the domain ownership has been verified (e.g., via Google
+   * Search Console).
+   *
    * @param bool $ownershipVerified
    */
   public function setOwnershipVerified($ownershipVerified)
@@ -47,6 +51,8 @@ class DomainProperty extends \Google\Model
     return $this->ownershipVerified;
   }
   /**
+   * Required. The URL of the domain property (e.g., "https://example.com").
+   *
    * @param string $url
    */
   public function setUrl($url)
@@ -62,4 +68,5 @@ class DomainProperty extends \Google\Model
   }
 }
 
-class_alias(DomainProperty::class, 'Google_Service_Webcontentpublisher_DomainProperty');
+// Adding a class alias for backwards compatibility with the previous class name.
+class_alias(DomainProperty::class, 'Google_Service_WebContentPublisher_DomainProperty');
