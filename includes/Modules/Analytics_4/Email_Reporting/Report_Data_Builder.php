@@ -52,6 +52,14 @@ class Report_Data_Builder {
 	protected $audience_display_map;
 
 	/**
+	 * Site Goals section builder instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Site_Goals_Section_Builder
+	 */
+	protected $site_goals_builder;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.170.0
@@ -65,6 +73,7 @@ class Report_Data_Builder {
 		$this->report_processor     = $report_processor ?? new Email_Report_Payload_Processor();
 		$this->data_processor       = $data_processor ?? new Report_Data_Processor();
 		$this->audience_display_map = $audience_display_map;
+		$this->site_goals_builder   = new Site_Goals_Section_Builder( $this->report_processor, $this->data_processor );
 
 		if ( empty( $this->audience_display_map ) && $context instanceof Context ) {
 			$audience_config            = new Audience_Config(
@@ -80,14 +89,21 @@ class Report_Data_Builder {
 	 *
 	 * @since 1.170.0
 	 * @since 1.177.0 Removed conversion event handling.
+	 * @since n.e.x.t Added the Site Goals sections, each built from more than one report.
 	 *
 	 * @param array $module_payload Module payload keyed by section slug.
 	 * @return array Section payloads.
 	 */
 	public function build_sections_from_module_payload( $module_payload ) {
-		$sections = array();
+		$sections = $this->site_goals_builder->build_sections( $module_payload );
 
 		foreach ( $module_payload as $section_key => $section_data ) {
+			// A Site Goals section reads more than one report, so
+			// `Site_Goals_Section_Builder` builds it above this loop.
+			if ( in_array( $section_key, Report_Request_Assembler::SITE_GOALS_REQUEST_KEYS, true ) ) {
+				continue;
+			}
+
 			list( $reports ) = $this->normalize_section_input( $section_data );
 
 			foreach ( $reports as $report ) {
