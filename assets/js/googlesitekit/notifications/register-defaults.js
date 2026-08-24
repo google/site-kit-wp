@@ -36,6 +36,7 @@ import ConnectMoreServicesNotification from '@/js/components/notifications/Conne
 import EnableAutoUpdateBannerNotification, {
 	ENABLE_AUTO_UPDATES_BANNER_SLUG,
 } from '@/js/components/notifications/EnableAutoUpdateBannerNotification';
+import createFeatureTourNotification from '@/js/components/notifications/FeatureTourNotification';
 import GA4AdSenseLinkedNotification from '@/js/components/notifications/GA4AdSenseLinkedNotification';
 import GatheringDataNotification from '@/js/components/notifications/GatheringDataNotification';
 import GoogleTagGatewaySetupBanner from '@/js/components/notifications/GoogleTagGatewaySetupBanner';
@@ -52,6 +53,7 @@ import SplashSetupErrorMessageNotification from '@/js/components/setup/SetupUsin
 import WelcomeModal, {
 	WELCOME_MODAL_NOTIFICATION,
 } from '@/js/components/WelcomeModal';
+import sharedKeyMetrics from '@/js/feature-tours/shared-key-metrics';
 import { isFeatureEnabled } from '@/js/features';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
@@ -117,6 +119,8 @@ import {
 } from '@/js/util/async';
 import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 import {
+	ACTIVATE_ANALYTICS_NOTIFICATION,
+	CONNECT_MORE_SERVICES_NOTIFICATION,
 	GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 	GTG_SETUP_CTA_BANNER_NOTIFICATION,
 	NOTIFICATION_AREAS,
@@ -125,6 +129,7 @@ import {
 	SITE_KIT_SETUP_SUCCESS_NOTIFICATION,
 } from './constants';
 import { CORE_NOTIFICATIONS } from './datastore/constants';
+import { requireSetupCTAsNotHidden } from './util/should-hide-setup-ctas';
 
 /**
  * Requires the current page load to be the one directly following the initial
@@ -184,7 +189,7 @@ function requireModuleDataAvailable( slug ) {
 }
 
 export const DEFAULT_NOTIFICATIONS = {
-	'connect-more-services-notification': {
+	[ CONNECT_MORE_SERVICES_NOTIFICATION ]: {
 		Component: ConnectMoreServicesNotification,
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
@@ -203,7 +208,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		),
 		featureFlag: 'setupFlowRefresh',
 	},
-	'activate-analytics-notification': {
+	[ ACTIVATE_ANALYTICS_NOTIFICATION ]: {
 		Component: ActivateAnalyticsNotification,
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
@@ -602,6 +607,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		],
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotHidden(),
 			// Check if email reporting is enabled at site level.
 			requireSiteEmailReportingNotDisabled(),
 			// The user's own email reporting settings need to have loaded
@@ -633,6 +639,52 @@ export const DEFAULT_NOTIFICATIONS = {
 		],
 		isDismissible: true,
 		featureFlag: 'pdfGeneration',
+		checkRequirements: requireSetupCTAsNotHidden(),
+	},
+	[ sharedKeyMetrics.slug ]: {
+		Component: createFeatureTourNotification( sharedKeyMetrics ),
+		priority: PRIORITY.FEATURE_TOUR,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: sharedKeyMetrics.contexts,
+		// `TourTooltips` records the dismissal itself through `dismissTour`, so
+		// this stays false to avoid writing a second dismissal record.
+		isDismissible: false,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			if ( isInitialWelcomeModalActive() ) {
+				return false;
+			}
+
+			await Promise.all( [
+				resolveSelect( CORE_USER ).getDismissedFeatureTourSlugs(),
+				resolveSelect( CORE_USER ).getKeyMetrics(),
+				resolveSelect( CORE_USER ).getUser(),
+				resolveSelect( CORE_SITE ).getSiteInfo(),
+			] );
+
+			if (
+				select( CORE_USER ).isTourDismissed( sharedKeyMetrics.slug )
+			) {
+				return false;
+			}
+
+			const keyMetrics = select( CORE_USER ).getKeyMetrics();
+
+			if ( ! Array.isArray( keyMetrics ) || keyMetrics.length === 0 ) {
+				return false;
+			}
+
+			const keyMetricsSetupCompletedBy =
+				select( CORE_SITE ).getKeyMetricsSetupCompletedBy();
+			const currentUserID = select( CORE_USER ).getID();
+
+			return (
+				Number.isInteger( keyMetricsSetupCompletedBy ) &&
+				keyMetricsSetupCompletedBy > 0 &&
+				Number.isInteger( currentUserID ) &&
+				currentUserID !== keyMetricsSetupCompletedBy
+			);
+		},
 	},
 	[ WELCOME_MODAL_NOTIFICATION ]: {
 		Component: WelcomeModal,
