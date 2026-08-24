@@ -48,17 +48,20 @@ const styles = createPDFStyles( {
 		flexDirection: 'column',
 	},
 	label: {
-		marginBottom: 16,
+		marginBottom: 18,
+		marginTop: 2,
 	},
 	tiles: {
 		flexDirection: 'row',
 		gap: 42,
 	},
 	tile: {
-		flex: 1,
+		flexBasis: 0,
+		flexGrow: 1,
+		minWidth: 0,
 	},
 	tileContent: {
-		paddingVertical: 14,
+		paddingVertical: 20.5,
 	},
 	primaryTile: {
 		paddingHorizontal: 18,
@@ -209,20 +212,28 @@ const SiteGoalsBreakdownGroupPDF: FC< SiteGoalsBreakdownGroupPDFProps > = ( {
 					<View
 						style={ [
 							styles.tile,
-							styles.tileContent,
-							styles.primaryTile,
 							{ backgroundColor: getRatePanelColor( rate ) },
 						] }
 					>
-						<PDFMetricTile
-							title={ rateLabel }
-							value={
-								numFmt( rate.current, PERCENT_FORMAT ) as string
-							}
-							valueSize="small"
-							subtitle={ sessionsSubtitle }
-							{ ...getTileChangeProps( rate, comparisonLabel ) }
-						/>
+						<View
+							style={ [ styles.tileContent, styles.primaryTile ] }
+						>
+							<PDFMetricTile
+								title={ rateLabel }
+								value={
+									numFmt(
+										rate.current,
+										PERCENT_FORMAT
+									) as string
+								}
+								valueSize="small"
+								subtitle={ sessionsSubtitle }
+								{ ...getTileChangeProps(
+									rate,
+									comparisonLabel
+								) }
+							/>
+						</View>
 					</View>
 				) }
 				<View style={ [ styles.tile, styles.connectedTile ] }>

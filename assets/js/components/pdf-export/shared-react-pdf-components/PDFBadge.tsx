@@ -31,7 +31,7 @@ import PDFTypography from './PDFTypography';
 
 const styles = createPDFStyles( {
 	badge: {
-		borderRadius: 100,
+		borderRadius: 4,
 		paddingVertical: 4,
 		paddingHorizontal: 8,
 	},

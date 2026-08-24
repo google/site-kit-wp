@@ -43,6 +43,9 @@ const tileStyles = createPDFStyles( {
 	title: {
 		marginBottom: 1,
 	},
+	titleBesideSmallValue: {
+		marginBottom: 2.3,
+	},
 	aside: {
 		flexDirection: 'column',
 		alignItems: 'flex-end',
@@ -53,7 +56,7 @@ const tileStyles = createPDFStyles( {
 	},
 	subtitle: {
 		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
-		marginTop: 1,
+		marginTop: 4.6,
 	},
 } );
 
@@ -83,13 +86,19 @@ const PDFMetricTile: FC< PDFMetricTileProps > = ( {
 	changeType = 'positive',
 	changeLabel,
 } ) => {
+	const hasSmallValue = valueSize === 'small';
+
 	return (
 		<View style={ tileStyles.container }>
 			<View style={ tileStyles.metric }>
 				<PDFTypography
-					type="title"
-					size="small"
-					style={ tileStyles.title }
+					type={ hasSmallValue ? 'body' : 'title' }
+					size={ hasSmallValue ? 'medium' : 'small' }
+					style={
+						hasSmallValue
+							? tileStyles.titleBesideSmallValue
+							: tileStyles.title
+					}
 				>
 					{ title }
 				</PDFTypography>
