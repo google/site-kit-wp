@@ -166,6 +166,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 */
 	const CUSTOM_DIMENSION_POST_AUTHOR     = 'googlesitekit_post_author';
 	const CUSTOM_DIMENSION_POST_CATEGORIES = 'googlesitekit_post_categories';
+	const CUSTOM_DIMENSION_EVENT_PROVIDER  = 'googlesitekit_event_provider';
+	const CUSTOM_DIMENSION_FORM_ID         = 'googlesitekit_form_id';
 
 	/**
 	 * Custom_Dimensions_Data_Available instance.

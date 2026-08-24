@@ -475,6 +475,82 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertEquals( Search_Console::MODULE_SLUG, $categorized_other_error->get_error_data()['module_slug'], 'Module slug should be set correctly in categorized error.' );
 	}
 
+	public function test_get_user_payload__adds_the_site_goals_breakdown_reports_when_the_breakdown_dimensions_have_data() {
+		$custom_dimension_data = new Custom_Dimensions_Data_Available( $this->transients );
+		$custom_dimension_data->set_data_available( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
+		$custom_dimension_data->set_data_available( Analytics_4::CUSTOM_DIMENSION_FORM_ID );
+
+		$payload = $this->get_analytics_payload_for_detected_events( array( 'purchase', 'contact' ) );
+
+		$this->assertArrayHasKey( 'site_goals_online_store_primary_by_provider', $payload, 'get_user_payload() should return the store count split by provider when the event provider dimension has data.' );
+		$this->assertArrayHasKey( 'site_goals_engagement_by_provider', $payload, 'get_user_payload() should return the sessions split by provider when the event provider dimension has data.' );
+		$this->assertArrayHasKey( 'site_goals_lead_primary_by_form', $payload, 'get_user_payload() should return the lead count split by form when the form ID dimension has data.' );
+		$this->assertArrayHasKey( 'site_goals_engagement_by_form', $payload, 'get_user_payload() should return the sessions split by form when the form ID dimension has data.' );
+	}
+
+	public function test_get_user_payload__adds_the_site_wide_site_goals_reports_when_the_breakdown_dimensions_have_no_data() {
+		$payload = $this->get_analytics_payload_for_detected_events( array( 'purchase', 'contact' ) );
+
+		$this->assertArrayHasKey( 'site_goals_online_store_primary', $payload, 'get_user_payload() should return the site-wide store count when the event provider dimension has no data.' );
+		$this->assertArrayHasKey( 'site_goals_lead_primary', $payload, 'get_user_payload() should return the site-wide lead count when the form ID dimension has no data.' );
+		$this->assertArrayHasKey( 'site_goals_engagement', $payload, 'get_user_payload() should return one site-wide sessions report for both widgets when neither breakdown dimension has data.' );
+		$this->assertArrayNotHasKey( 'site_goals_online_store_primary_by_provider', $payload, 'get_user_payload() should return no store breakdown when the event provider dimension has no data.' );
+		$this->assertArrayNotHasKey( 'site_goals_lead_primary_by_form', $payload, 'get_user_payload() should return no lead breakdown when the form ID dimension has no data.' );
+	}
+
+	public function test_get_user_payload__adds_no_site_goals_report_when_analytics_detected_no_conversion_event() {
+		$payload = $this->get_analytics_payload_for_detected_events( array() );
+
+		$this->assertArrayNotHasKey( 'site_goals_online_store_primary', $payload, 'get_user_payload() should return no store report when Analytics detected no store event.' );
+		$this->assertArrayNotHasKey( 'site_goals_lead_primary', $payload, 'get_user_payload() should return no lead report when Analytics detected no lead event.' );
+		$this->assertArrayHasKey( 'total_visitors', $payload, 'get_user_payload() should still return the total visitors report when Analytics detected no conversion event.' );
+	}
+
+	public function test_get_user_payload__adds_the_author_and_category_reports_when_the_post_dimensions_have_data() {
+		$custom_dimension_data = new Custom_Dimensions_Data_Available( $this->transients );
+		$custom_dimension_data->set_data_available( Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR );
+		$custom_dimension_data->set_data_available( Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES );
+
+		$payload = $this->get_analytics_payload_for_detected_events( array() );
+
+		$this->assertArrayHasKey( 'top_authors', $payload, 'get_user_payload() should return the top authors report when the post author dimension has data.' );
+		$this->assertArrayHasKey( 'top_categories', $payload, 'get_user_payload() should return the top categories report when the post categories dimension has data.' );
+	}
+
+	/**
+	 * Gets the Analytics payload for an owner whose Analytics settings hold the given detected events.
+	 *
+	 * @param array $detected_events Detected event names to store in the Analytics settings.
+	 * @return array Analytics payload keyed by request key.
+	 */
+	private function get_analytics_payload_for_detected_events( array $detected_events ) {
+		$admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->authenticate_and_grant_required_scopes_for_user( $admin_id );
+
+		$this->activate_modules( Analytics_4::MODULE_SLUG );
+		$this->set_analytics_settings_connected(
+			array(
+				'ownerID'        => $admin_id,
+				'detectedEvents' => $detected_events,
+			)
+		);
+
+		$analytics = $this->modules->get_module( Analytics_4::MODULE_SLUG );
+		$analytics->register();
+		$this->fake_analytics_report( $analytics );
+
+		$payload = $this->create_data_requests()->get_user_payload(
+			$admin_id,
+			$this->date_range,
+			array(),
+			array( Analytics_4::MODULE_SLUG )
+		);
+
+		$this->assertArrayHasKey( Analytics_4::MODULE_SLUG, $payload, 'get_user_payload() should return the Analytics data under the analytics-4 module key.' );
+
+		return $payload[ Analytics_4::MODULE_SLUG ];
+	}
+
 	private function create_data_requests() {
 		return new Email_Reporting_Data_Requests(
 			$this->context,

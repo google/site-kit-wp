@@ -54,7 +54,9 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Admin_Post_List;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Contribute_With_Google_Block;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Create_CTA;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Create_Publication;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_CTAs;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publication;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publications;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publications_Legacy;
@@ -444,6 +446,20 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				array(
 					'user_settings' => $this->user_settings,
 					'service'       => '',
+				)
+			);
+
+			$datapoints['GET:ctas'] = new Get_CTAs(
+				array(
+					'service'  => fn() => $this->get_service( 'webcontentpublisher' ),
+					'settings' => $settings,
+				)
+			);
+
+			$datapoints['POST:create-cta'] = new Create_CTA(
+				array(
+					'service'  => fn() => $this->get_service( 'webcontentpublisher' ),
+					'settings' => $settings,
 				)
 			);
 		}

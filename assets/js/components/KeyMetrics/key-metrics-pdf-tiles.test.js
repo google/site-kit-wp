@@ -24,6 +24,7 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { findTextStrings } from '@/js/components/pdf-export/test-utils';
 import {
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
@@ -38,30 +39,6 @@ import {
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { KEY_METRICS_PDF_TILES } from './key-metrics-pdf-tiles';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
-
-/**
- * Collects every text string rendered in a react-test-renderer tree, so the
- * smoke test can assert a tile actually painted its heading and values.
- *
- * @since n.e.x.t
- *
- * @param {Object|string|number|null} node   The current tree node.
- * @param {string[]}                  output The strings collected so far.
- * @return {string[]} The collected text strings.
- */
-function findTextStrings( node, output = [] ) {
-	if ( node === null || node === undefined ) {
-		return output;
-	}
-	if ( typeof node === 'string' || typeof node === 'number' ) {
-		output.push( String( node ) );
-		return output;
-	}
-	if ( Array.isArray( node.children ) ) {
-		node.children.forEach( ( child ) => findTextStrings( child, output ) );
-	}
-	return output;
-}
 
 const DATES = {
 	startDate: '2025-01-08',
@@ -121,7 +98,7 @@ const SEARCH_CONSOLE_REPORT = [
  * Builds a registry that answers every selector and fetch a PDF tile can reach,
  * so each tile's `getTileData` can run end to end without real network access.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @return {Object} A mock registry.
  */

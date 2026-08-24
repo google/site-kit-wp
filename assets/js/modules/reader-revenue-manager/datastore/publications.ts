@@ -52,6 +52,7 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
+import { type ReaderRevenueManagerSettings } from './types';
 
 interface Publication {
 	/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
@@ -67,19 +68,6 @@ interface Publication {
 	};
 }
 
-interface ReaderRevenueManagerSettings {
-	publicationID?: string;
-	publicationOnboardingState?: string;
-	publicationOnboardingStateChanged?: boolean;
-	publicationOnboardingStateLastSyncedAtMs?: number;
-	productIDs?: string[];
-	paymentOption?: string;
-	productID?: string;
-	organizationID?: string;
-	contentPolicyState?: string;
-	policyInfoLink?: string;
-}
-
 interface ReaderRevenueManagerState {
 	publications: Publication[] | undefined;
 	settings: ReaderRevenueManagerSettings;
@@ -92,7 +80,7 @@ interface CreatePublicationParams {
 	regionCode: string;
 }
 
-interface PublicationParams {
+export interface PublicationParams {
 	organizationID: string;
 	publicationID: string;
 }
@@ -109,12 +97,12 @@ interface SyncPublicationOnboardingStateParams {
 /**
  * Validates optional publication parameters.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param  params Publication parameters to validate.
  * @return {void}
  */
-function validateOptionalPublicationParams(
+export function validateOptionalPublicationParams(
 	params: Partial< PublicationParams > = {}
 ): void {
 	const { organizationID, publicationID } = params;
@@ -134,6 +122,51 @@ function validateOptionalPublicationParams(
 type ReaderRevenueManagerRegistry = WPDataRegistry & {
 	resolveSelect: WPDataRegistry[ 'select' ];
 };
+
+/**
+ * Resolves the publication ID for a request, falling back to the saved setting.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} state            Store state.
+ * @param {Object} [state.settings] Module settings.
+ * @param {Object} [params]         Optional publication parameters.
+ * @return {string|undefined} Publication ID, if one can be resolved.
+ */
+export function getSelectedPublicationID(
+	state: { settings?: ReaderRevenueManagerSettings },
+	params: Partial< PublicationParams > = {}
+): string | undefined {
+	return params.publicationID || state.settings?.publicationID;
+}
+
+/**
+ * Resolves module settings when no publication ID was passed and settings
+ * are not already in the store.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry               Data registry.
+ * @param {Object} [params]               Optional publication parameters.
+ * @param {string} [params.publicationID] Publication ID.
+ * @return {Promise|undefined} Settings resolution, if needed.
+ */
+export function maybeResolveSettings(
+	registry: ReaderRevenueManagerRegistry,
+	params: Partial< PublicationParams > = {}
+): Promise< void > | undefined {
+	if (
+		params.publicationID ||
+		registry.select( MODULES_READER_REVENUE_MANAGER ).getSettings() !==
+			undefined
+	) {
+		return undefined;
+	}
+
+	return registry
+		.resolveSelect( MODULES_READER_REVENUE_MANAGER )
+		.getSettings();
+}
 
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
@@ -387,7 +420,7 @@ const baseActions = {
 	/**
 	 * Creates a publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} params              Publication creation parameters.
 	 * @param {string} params.displayName  Publication display name.
@@ -426,7 +459,7 @@ const baseActions = {
 	/**
 	 * Updates a publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} params                  Publication update parameters.
 	 * @param {string} [params.publicationID]  Publication ID. Defaults to the configured setting on the server.
@@ -661,17 +694,37 @@ const baseResolvers = {
 		params: Partial< PublicationParams > = {}
 	): Generator< unknown, void, unknown > {
 		const registryResult = yield commonActions.getRegistry();
-		const registry = registryResult as WPDataRegistry;
+		const registry = registryResult as ReaderRevenueManagerRegistry;
+
+		// Conditionally resolve settings so that the fetch reducer has
+		// the publication ID to key the list by.
+		const settingsResolution = maybeResolveSettings( registry, params );
+
+		if ( settingsResolution ) {
+			yield commonActions.await( settingsResolution );
+		}
+
 		const publication = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
 			.getPublication( params );
 
-		if ( publication === undefined ) {
-			// @ts-expect-error createFetchStore is not properly typed yet.
-			yield fetchGetPublicationStore.actions.fetchGetPublication(
-				params
-			);
+		if ( publication !== undefined ) {
+			return;
 		}
+
+		const publicationID =
+			params.publicationID ||
+			registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getPublicationID();
+
+		// No publication to look up; skip the fetch rather than looping on `undefined`.
+		if ( ! publicationID ) {
+			return;
+		}
+
+		// @ts-expect-error createFetchStore is not properly typed yet.
+		yield fetchGetPublicationStore.actions.fetchGetPublication( params );
 	},
 };
 
@@ -691,7 +744,7 @@ const baseSelectors = {
 	/**
 	 * Gets a publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} state                   Data store's state.
 	 * @param {Object} params                  Publication parameters.
@@ -703,9 +756,7 @@ const baseSelectors = {
 		state: ReaderRevenueManagerState,
 		params: Partial< PublicationParams > = {}
 	) {
-		const { publicationID } = params;
-		const selectedPublicationID =
-			publicationID || state.settings?.publicationID;
+		const selectedPublicationID = getSelectedPublicationID( state, params );
 
 		if ( ! selectedPublicationID ) {
 			return undefined;

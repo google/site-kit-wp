@@ -196,7 +196,7 @@ const TILE_PERCENT_FORMAT = {
  * previous-period rows the table would then show. Table tiles build their report
  * options from this instead of the raw `dates`.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object} dates The export date range, including the compare dates.
  * @return {Object} The date range with only `startDate` and `endDate`.
@@ -216,7 +216,7 @@ function pdfTableDates( dates ) {
  * narrowed to the single period the tile's own report uses (most tiles via
  * `pdfTableDates`, "Top recent trending pages" via its own fixed window).
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object[]} rows               The report rows to map.
  * @param {Object}   context            Link-building context.
@@ -258,7 +258,7 @@ function mapPageRows(
  * source; its share is that source's metric over the total report's metric. The
  * change is the absolute point difference, matching the dashboard badge.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object}   totalReport  The total-metric report response.
  * @param {Object}   sourceReport The per-source report response.
@@ -325,7 +325,7 @@ function extractTopSourceShareTile( totalReport, sourceReport, buildSubtext ) {
  *   the tile needs and returns the data the `TileComponent` consumes, or `null`
  *   when the report has no data.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  */
 export const KEY_METRICS_PDF_TILES = {
 	[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
