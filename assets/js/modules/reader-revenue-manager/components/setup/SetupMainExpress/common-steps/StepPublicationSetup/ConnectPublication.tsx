@@ -40,6 +40,7 @@ import PublicationSelect from '@/js/modules/reader-revenue-manager/components/co
 import PublicationSetupDetails from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup/PublicationSetupDetails';
 import PublicationSetupErrorNotice from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup/PublicationSetupErrorNotice';
 import PublicationSetupHeadline from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup/PublicationSetupHeadline';
+import { useStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import {
 	EXPRESS_SETUP_CTAS,
 	EXPRESS_SETUP_STEPS,
@@ -70,7 +71,6 @@ const ConnectPublication: FC = () => {
 		useDispatch( MODULES_READER_REVENUE_MANAGER );
 
 	const [ cta ] = useQueryArg( 'cta', 'default' );
-	const [ , setStep ] = useQueryArg( 'step' );
 
 	const canSubmitChanges = useSelect(
 		( select: Select ) =>
@@ -115,6 +115,8 @@ const ConnectPublication: FC = () => {
 			),
 		[]
 	);
+
+	const [ , setStep ] = useStep();
 
 	const connectPublication = useCallback( async () => {
 		const { error } = await submitChanges();
