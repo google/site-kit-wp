@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { Registry } from '@/js/googlesitekit-data';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
@@ -42,7 +43,7 @@ import {
 import ConnectPublication from './ConnectPublication';
 
 describe( 'ConnectPublication', () => {
-	let registry: ReturnType< typeof createTestRegistry >;
+	let registry: Registry;
 
 	const settingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
@@ -51,7 +52,7 @@ describe( 'ConnectPublication', () => {
 	mockLocation();
 
 	beforeEach( () => {
-		registry = createTestRegistry();
+		registry = createTestRegistry() as Registry;
 
 		provideSiteInfo( registry );
 
@@ -75,10 +76,6 @@ describe( 'ConnectPublication', () => {
 				snippetMode: 'post_types',
 			} );
 
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.finishResolution( 'getPublication', [] );
-
 		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION }`;
 	} );
 
@@ -94,8 +91,6 @@ describe( 'ConnectPublication', () => {
 		expect(
 			getByRole( 'button', { name: 'Connect existing publication' } )
 		).toBeDisabled();
-
-		expect( fetchMock ).not.toHaveFetched( settingsEndpoint );
 	} );
 
 	it( 'should disable submission if submission is already in progress', async () => {

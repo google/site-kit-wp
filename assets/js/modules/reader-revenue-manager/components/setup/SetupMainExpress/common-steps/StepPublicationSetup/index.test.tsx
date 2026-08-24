@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { Registry } from '@/js/googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
@@ -41,14 +42,14 @@ import {
 import StepPublicationSetup from '.';
 
 describe( 'StepPublicationSetup', () => {
-	let registry: ReturnType< typeof createTestRegistry >;
+	let registry: Registry;
 
 	const publicationsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
 	);
 
 	beforeEach( () => {
-		registry = createTestRegistry();
+		registry = createTestRegistry() as Registry;
 
 		provideSiteInfo( registry );
 
@@ -62,6 +63,13 @@ describe( 'StepPublicationSetup', () => {
 
 		provideModules( registry, moduleData );
 		provideModuleRegistrations( registry, moduleData );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {
+				postTypes: [ 'post' ],
+				snippetMode: 'post_types',
+			} );
 	} );
 
 	it( 'renders as a progress bar if publications are loading', () => {

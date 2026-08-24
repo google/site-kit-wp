@@ -78,18 +78,34 @@ const ConnectPublication: FC = () => {
 		[]
 	);
 
+	const hasResolvedSettings = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
+				'getSettings'
+			),
+		[]
+	);
+
 	const isDoingSubmitChanges = useSelect(
 		( select: Select ) =>
 			select( MODULES_READER_REVENUE_MANAGER ).isDoingSubmitChanges(),
 		[]
 	);
 
-	const publication = useSelect(
+	const publicationID: string | undefined = useSelect(
 		( select: Select ) =>
-			select( MODULES_READER_REVENUE_MANAGER ).getPublication() as
-				| Publication
-				| undefined,
+			select( MODULES_READER_REVENUE_MANAGER ).getPublicationID(),
 		[]
+	);
+
+	const publication: Publication | undefined = useSelect(
+		( select: Select ) =>
+			publicationID
+				? select( MODULES_READER_REVENUE_MANAGER ).getPublication( {
+						publicationID,
+				  } )
+				: undefined,
+		[ publicationID ]
 	);
 
 	const submitChangesError = useSelect(
@@ -121,9 +137,6 @@ const ConnectPublication: FC = () => {
 		[ connectPublication ]
 	);
 
-	const isDisabled =
-		! canSubmitChanges || isDoingSubmitChanges || ! publication;
-
 	const languageCode = publication?.languageCode
 		? languageCodeFormat( publication.languageCode )
 		: __( 'Unknown', 'google-site-kit' );
@@ -133,7 +146,7 @@ const ConnectPublication: FC = () => {
 		: __( 'Unknown', 'google-site-kit' );
 
 	useEffect( () => {
-		if ( ! publication ) {
+		if ( hasResolvedSettings && ! publicationID ) {
 			( async () => {
 				const matchedPublication = await findMatchedPublication();
 
@@ -142,7 +155,12 @@ const ConnectPublication: FC = () => {
 				}
 			} )();
 		}
-	}, [ findMatchedPublication, publication, selectPublication ] );
+	}, [
+		findMatchedPublication,
+		hasResolvedSettings,
+		publicationID,
+		selectPublication,
+	] );
 
 	return (
 		<form
@@ -158,7 +176,7 @@ const ConnectPublication: FC = () => {
 					<PublicationSetupErrorNotice
 						error={ submitChangesError }
 						onRetry={
-							! isDisabled ? connectPublication : undefined
+							canSubmitChanges ? connectPublication : undefined
 						}
 						title={ __(
 							'Connecting your publication failed',
@@ -184,31 +202,33 @@ const ConnectPublication: FC = () => {
 				<div className="googlesitekit-rrm-publication-setup__form-controls">
 					<PublicationSelect />
 
-					<PublicationSetupDetails>
-						{ ( Item ) => (
-							<Fragment>
-								<Item
-									description={ languageCode }
-									term={ __(
-										'Primary language',
-										'google-site-kit'
-									) }
-								/>
-								<Item
-									description={ regionCode }
-									term={ __(
-										'Home country',
-										'google-site-kit'
-									) }
-								/>
-							</Fragment>
-						) }
-					</PublicationSetupDetails>
+					{ publication ? (
+						<PublicationSetupDetails>
+							{ ( Item ) => (
+								<Fragment>
+									<Item
+										description={ languageCode }
+										term={ __(
+											'Primary language',
+											'google-site-kit'
+										) }
+									/>
+									<Item
+										description={ regionCode }
+										term={ __(
+											'Home country',
+											'google-site-kit'
+										) }
+									/>
+								</Fragment>
+							) }
+						</PublicationSetupDetails>
+					) : null }
 				</div>
 			</div>
 			{ /* @ts-expect-error - The `SpinnerButton` component is not typed yet. */ }
 			<SpinnerButton
-				disabled={ isDisabled }
+				disabled={ ! canSubmitChanges }
 				isSaving={ isDoingSubmitChanges }
 				type="submit"
 			>
