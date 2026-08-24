@@ -51,7 +51,7 @@ interface FetchReportResult {
  * build a row's link (e.g. from `registry` and `dates`) rather than only
  * reading the report response.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  */
 export type TileExtractContext = Pick<
 	GetPDFDataParams,
@@ -76,7 +76,7 @@ export type TileExtractContext = Pick<
  * such a failure reads as no data, not as a thrown error.
  *
  * @since 1.184.0
- * @since n.e.x.t Passes `{ registry, dates, viewOnly }` to `extract` as a second argument.
+ * @since 1.186.0 Passes `{ registry, dates, viewOnly }` to `extract` as a second argument.
  *
  * @param buildReports Returns the reports to fetch for the date range. It receives the registry too, so a tile whose report options depend on resolved state can await it; it may return a promise.
  * @param extract      Maps the resolved report responses to the tile's data, or `null` when the report has no data. Receives `{ registry, dates, viewOnly }` as a second argument for tiles that build a row's link.

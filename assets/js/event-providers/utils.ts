@@ -67,6 +67,18 @@ export const PII_INDICATORS = {
 
 const PHONE_MIN_DIGIT_COUNT = 7;
 
+type FieldMeta = {
+	type?: string | null;
+	name?: string | null;
+	value?: string | null;
+	label?: string | null;
+};
+
+type PIIClassification = {
+	type: string;
+	value: string;
+};
+
 /**
  * Normalizes a value for use in conversion tracking.
  *
@@ -75,7 +87,7 @@ const PHONE_MIN_DIGIT_COUNT = 7;
  * @param {string} value The value to normalize.
  * @return {string} The normalized value.
  */
-export function normalizeValue( value ) {
+export function normalizeValue( value?: string | null ): string {
 	if ( ! value || typeof value !== 'string' ) {
 		return '';
 	}
@@ -91,7 +103,7 @@ export function normalizeValue( value ) {
  * @param {string} label The label to normalize.
  * @return {string} The normalized label.
  */
-export function normalizeLabel( label ) {
+export function normalizeLabel( label?: string | null ): string {
 	if ( ! label || typeof label !== 'string' ) {
 		return '';
 	}
@@ -116,7 +128,7 @@ export function normalizeLabel( label ) {
  * @param {string} email The email address to normalize.
  * @return {string} The normalized email address.
  */
-export function normalizeEmail( email ) {
+export function normalizeEmail( email?: string | null ): string {
 	const normalizedEmail = normalizeValue( email );
 
 	const atIndex = normalizedEmail.lastIndexOf( '@' );
@@ -149,7 +161,7 @@ export function normalizeEmail( email ) {
  * @param {string} value The string to validate.
  * @return {boolean} Whether the string passed has a phone-like pattern or not.
  */
-export function hasPhoneLikePattern( value ) {
+export function hasPhoneLikePattern( value: string ): boolean {
 	const digits = value.replace( /\D/g, '' );
 
 	if (
@@ -171,7 +183,7 @@ export function hasPhoneLikePattern( value ) {
  * @param {string} phone The phone number to normalize.
  * @return {string} The normalized phone number.
  */
-export function normalizePhone( phone ) {
+export function normalizePhone( phone?: string | null ): string {
 	const normalizedPhone = normalizeValue( phone );
 
 	// Remove all non-numeric characters.
@@ -193,7 +205,7 @@ export function normalizePhone( phone ) {
  * @param {string} value The value to check.
  * @return {boolean} True if the value is likely an email address, false otherwise.
  */
-export function isLikelyEmail( value ) {
+export function isLikelyEmail( value: string | null | undefined ): boolean {
 	if ( ! value ) {
 		return false;
 	}
@@ -213,7 +225,7 @@ export function isLikelyEmail( value ) {
  * @param {string} value The value to check.
  * @return {boolean} True if the value is likely a phone number, false otherwise.
  */
-export function isLikelyPhone( value ) {
+export function isLikelyPhone( value: string | null | undefined ): boolean {
 	if ( ! value ) {
 		return false;
 	}
@@ -251,7 +263,9 @@ export function isLikelyPhone( value ) {
  * @param {Object} fieldMeta The metadata of the field to classify.
  * @return {Object|null} An object containing the PII type and value, or null if not classified.
  */
-export function classifyPII( fieldMeta ) {
+export function classifyPII(
+	fieldMeta?: FieldMeta | null
+): PIIClassification | null {
 	let { type, name, value, label } = fieldMeta || {};
 
 	type = normalizeValue( type );
@@ -331,7 +345,7 @@ export function classifyPII( fieldMeta ) {
  * @param {Array<Object>} fields An array of detected PII fields.
  * @return {Object|undefined} An object containing normalized first_name and optionally last_name, or undefined if no names found.
  */
-export function getAddress( fields ) {
+export function getAddress( fields: PIIClassification[] ) {
 	const names = fields
 		.filter( ( { type } ) => type === PII_TYPE.NAME )
 		.map( ( { value } ) => normalizeValue( value ) )
@@ -360,7 +374,7 @@ export function getAddress( fields ) {
  * @param {Array<Object>} fields An array of detected PII fields.
  * @return {string|undefined} The email address if found, undefined otherwise.
  */
-export function getEmail( fields ) {
+export function getEmail( fields: PIIClassification[] ) {
 	return fields.find( ( { type } ) => type === PII_TYPE.EMAIL )?.value;
 }
 
@@ -372,7 +386,7 @@ export function getEmail( fields ) {
  * @param {Array<Object>} fields An array of detected PII fields.
  * @return {string|undefined} The phone number if found, undefined otherwise.
  */
-export function getPhoneNumber( fields ) {
+export function getPhoneNumber( fields: PIIClassification[] ) {
 	return fields.find( ( { type } ) => type === PII_TYPE.PHONE )?.value;
 }
 
@@ -384,7 +398,7 @@ export function getPhoneNumber( fields ) {
  * @param {Array<Object>} fields An array of detected PII fields.
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
  */
-export function getUserData( fields ) {
+export function getUserData( fields: PIIClassification[] ) {
 	const userDataFields = [
 		[ 'address', getAddress( fields ) ],
 		[ 'email', getEmail( fields ) ],

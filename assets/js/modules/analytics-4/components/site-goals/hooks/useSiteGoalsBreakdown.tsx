@@ -39,6 +39,7 @@ export interface SiteGoalsBreakdown {
 	activeTabID: string;
 	setSelectedTab: ( tabID: string ) => void;
 	isOtherSourcesTab: boolean;
+	isBreakdownValueTab: boolean;
 	hasOtherSources: boolean;
 	otherSourcesCount: number;
 	otherSourcesPreviousCount: number;
@@ -140,23 +141,20 @@ export function useSiteGoalsBreakdown(
 	const isOtherSourcesTab =
 		activeTabID === SITE_GOALS_BREAKDOWN_OTHER_SOURCES_TAB_ID;
 
+	const isBreakdownValueTab = hasBreakdownTabs && ! isOtherSourcesTab;
+
 	// Scopes every section report to the selected value tab. The "Other sources"
 	// tab has no server-side filter (its single metric comes from the
 	// unattributed counts above), so no filter is produced for it.
 	const breakdownFilter = useMemo( () => {
-		if ( ! hasBreakdownTabs || isOtherSourcesTab ) {
+		if ( ! isBreakdownValueTab ) {
 			return undefined;
 		}
 
 		return {
 			[ `customEvent:${ breakdownDimension }` ]: activeTabID,
 		};
-	}, [
-		hasBreakdownTabs,
-		isOtherSourcesTab,
-		activeTabID,
-		breakdownDimension,
-	] );
+	}, [ isBreakdownValueTab, activeTabID, breakdownDimension ] );
 
 	return {
 		breakdownDimension,
@@ -165,6 +163,7 @@ export function useSiteGoalsBreakdown(
 		activeTabID,
 		setSelectedTab,
 		isOtherSourcesTab,
+		isBreakdownValueTab,
 		hasOtherSources,
 		otherSourcesCount,
 		otherSourcesPreviousCount,

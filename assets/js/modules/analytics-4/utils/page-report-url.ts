@@ -36,7 +36,7 @@ interface ReportURLSelect {
 /**
  * Builds the All pages and screens report URL a page title links to.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {ReportURLSelect} analytics       The Analytics 4 store's selectors.
  * @param {string}          pagePath        The page path to filter the report to.
@@ -61,7 +61,7 @@ export function getAllPagesReportURL(
  * `null` on a view-only export, where a loader leaves out the links an
  * administrator sees.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object}          params                 Link parameters.
  * @param {ReportURLSelect} params.analytics       The Analytics 4 store's selectors.

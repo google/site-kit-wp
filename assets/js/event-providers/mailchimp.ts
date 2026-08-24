@@ -19,70 +19,65 @@
  */
 import { classifyPII, getUserData } from './utils';
 
-( ( jQuery ) => {
-	if ( ! jQuery ) {
+( ( mc4wp ) => {
+	if ( ! mc4wp ) {
 		return;
 	}
 
-	jQuery( global.document.body ).on(
-		'wpformsAjaxSubmitSuccess',
-		( event ) => {
+	mc4wp.forms.on(
+		'subscribed',
+		(
+			mc4wpForm: { element: HTMLFormElement; id: number },
+			data: Record< string, string >
+		) => {
 			const gtagUserDataEnabled = global._googlesitekit?.gtagUserData;
 
 			const userData = gtagUserDataEnabled
-				? getUserDataFromForm( event.target )
+				? getUserDataFromForm( mc4wpForm.element, data )
 				: null;
 
-			const formID = event.target?.dataset?.formid;
-
 			global._googlesitekit?.gtagEvent?.( 'submit_lead_form', {
-				googlesitekit_event_provider: 'wpforms',
-				...( formID
-					? { googlesitekit_form_id: String( formID ) }
-					: {} ),
+				event_category: 'mailchimp',
+				googlesitekit_event_provider: 'mailchimp',
+				googlesitekit_form_id: String( mc4wpForm.id ),
 				...( userData ? { user_data: userData } : {} ),
 			} );
 		}
 	);
-} )( global.jQuery );
+} )( global.mc4wp );
 
 /**
- * Extracts and classifies user data from a WPForms form submission.
+ * Extracts and classifies user data from a Mailchimp form submission.
  *
- * @since 1.162.0 Renamed to `getUserDataFromForm` because `getUserData` was extracted into a generic utility function.
+ * @since 1.164.0
  *
  * @param {HTMLFormElement} form The submitted form element.
+ * @param {Object}          data The submitted form's data.
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
  */
-function getUserDataFromForm( form ) {
+function getUserDataFromForm(
+	form: HTMLFormElement,
+	data: Record< string, string >
+) {
 	// eslint-disable-next-line sitekit/acronym-case
 	if ( ! form || ! ( form instanceof HTMLFormElement ) ) {
 		return undefined;
 	}
 
-	const formData = new FormData( form );
-	const detectedFields = Array.from( formData.entries() )
+	const detectedFields = Object.entries( data )
 		.map( ( [ name, value ] ) => {
-			let input = form.querySelector( `[name='${ name }']` );
-
-			// WPForms creates dual inputs for special fields (e.g., phone numbers):
-			// - A visible input for UI/display purposes
-			// - A hidden input containing the actual raw value (positioned immediately after)
-			// When FormData gives us the hidden input, we switch to the visible input
-			// for better field type detection and label association.
-			if (
-				input?.type === 'hidden' &&
-				input?.previousSibling?.type !== 'hidden'
-			) {
-				input = input.previousSibling;
-			}
-
-			const type = input?.type;
-
-			// Skip hidden fields and submit buttons that don't contain user data.
-			if ( type === 'hidden' || type === 'submit' ) {
+			// Mailchimp joins the individual name fields into a single field "NAME",
+			// but still provides the individual values in the data object.
+			// We only rely on "NAME" when neither "FNAME" nor "LNAME" are available.
+			if ( name === 'NAME' && ( 'FNAME' in data || 'LNAME' in data ) ) {
 				return null;
 			}
+
+			const input = form.querySelector< HTMLInputElement >(
+				`[name='${ name }']`
+			);
+
+			const type = input?.type;
 
 			const label = input?.id
 				? form.querySelector( `label[for='${ input?.id }']` )
@@ -96,7 +91,7 @@ function getUserDataFromForm( form ) {
 				value,
 			} );
 		} )
-		.filter( Boolean );
+		.filter( ( f ): f is NonNullable< typeof f > => f !== null );
 
 	return getUserData( detectedFields );
 }

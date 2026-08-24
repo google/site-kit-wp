@@ -35,7 +35,8 @@ const sharedKeyMetrics = {
 		VIEW_CONTEXT_MAIN_DASHBOARD,
 		VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	],
-	gaEventCategory: ( viewContext ) => `${ viewContext }_shared_key-metrics`,
+	gaEventCategory: ( viewContext: string ) =>
+		`${ viewContext }_shared_key-metrics`,
 	steps: [
 		{
 			target: '.googlesitekit-km-change-metrics-cta',

@@ -72,7 +72,7 @@ describe( 'core/site Email Reporting', () => {
 	 * Mocks one subscribed-users response with the given users and waits for
 	 * `getSubscribedUsers` to resolve, so a test starts from a filled cache.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Array}  users  Users the endpoint answers with.
 	 * @param {Object} [args] Page and search args to resolve.
