@@ -44,13 +44,12 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
 } from '@/js/googlesitekit/notifications/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { shouldHideSetupCTAs } from '@/js/googlesitekit/notifications/util/should-hide-setup-ctas';
 import WidgetContextRenderer from '@/js/googlesitekit/widgets/components/WidgetContextRenderer';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
@@ -302,33 +301,15 @@ export default function DashboardMainApp() {
 		);
 	} );
 
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
 
 	const hasAccessToFeatureTour = useSelect( ( select ) =>
 		select( CORE_USER ).hasAccessToFeatureTour()
 	);
 
-	const hideSetupCTAs = useSelect( ( select ) => {
-		if ( ! setupFlowRefreshEnabled ) {
-			return false;
-		}
-
-		const initialSetupNotificationTimeoutDismissed = select(
-			CORE_USER
-		).isItemDismissed( INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG );
-		const queuedHeaderNotifications = select(
-			CORE_NOTIFICATIONS
-		).getQueuedNotifications( viewContext, NOTIFICATION_GROUPS.DEFAULT );
-		const firstHeaderNotificationID =
-			queuedHeaderNotifications?.[ 0 ]?.id || null;
-
-		return (
-			initialSetupNotificationTimeoutDismissed ||
-			firstHeaderNotificationID === 'activate-analytics-notification' ||
-			firstHeaderNotificationID === 'connect-more-services-notification'
-		);
-	} );
+	const hideSetupCTAs = useSelect( ( select ) =>
+		shouldHideSetupCTAs( select, viewContext )
+	);
 
 	useMonitorInternetConnection();
 
@@ -348,11 +329,6 @@ export default function DashboardMainApp() {
 	// they are meant to appear during the initial setup flow (that's when the
 	// Welcome modal shows). They're only hidden while the welcome tour runs.
 	const showSetupModals = ! isWelcomeTourActive;
-
-	// The feature-introduction overlays (PDF, email reporting, audience
-	// segmentation) stay suppressed on the first dashboard landing to avoid
-	// stacking with the setup CTAs.
-	const showSetupOverlays = ! hideSetupCTAs && ! isWelcomeTourActive;
 
 	// On mobile and tablet the individual feature action icons collapse into
 	// the single three-dots features menu.
@@ -418,13 +394,6 @@ export default function DashboardMainApp() {
 					<Notifications
 						areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
 						groupID={ NOTIFICATION_GROUPS.SETUP_MODALS }
-					/>
-				) }
-
-				{ showSetupOverlays && (
-					<Notifications
-						areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
-						groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
 					/>
 				) }
 
