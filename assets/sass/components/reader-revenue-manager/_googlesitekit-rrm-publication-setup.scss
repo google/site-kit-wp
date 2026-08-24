@@ -9,9 +9,7 @@
 	justify-items: start;
 }
 
-.googlesitekit-rrm-publication-setup__description,
-.googlesitekit-rrm-publication-setup__heading,
-.googlesitekit-rrm-publication-setup__details {
+.googlesitekit-rrm-publication-setup__description {
 	margin: 0;
 }
 
@@ -27,21 +25,27 @@
 	max-inline-size: 500px;
 }
 
-.googlesitekit-rrm-publication-setup__details {
-	display: grid;
-	gap: 10px;
+.googlesitekit-rrm-publication-setup-headline {
+	margin-block: 0;
 }
 
-.googlesitekit-rrm-publication-setup__details-item {
+.googlesitekit-rrm-publication-setup-details {
+	display: grid;
+	gap: 10px;
+	grid-column: 1 / -1;
+	margin-block: 0;
+}
+
+.googlesitekit-rrm-publication-setup-details__item {
 	display: grid;
 	gap: 4px;
 	padding-block-end: 8px;
 }
 
-.googlesitekit-rrm-publication-setup__details-term {
+.googlesitekit-rrm-publication-setup-details__term {
 	color: $c-surfaces-on-surface-variant;
 }
 
-.googlesitekit-rrm-publication-setup__details-description {
+.googlesitekit-rrm-publication-setup-details__description {
 	margin: 0;
 }

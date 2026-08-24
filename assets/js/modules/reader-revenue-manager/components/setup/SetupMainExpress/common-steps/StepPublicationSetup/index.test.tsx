@@ -77,28 +77,23 @@ describe( 'StepPublicationSetup', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'renders as an error notice if getting publications fails', () => {
-		const error = {
-			code: 'publication_error',
-			message: 'Unable to retrieve publications.',
-			data: { status: 500 },
-		};
-
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.setErrorForSelector( error, 'getPublications', [] );
-
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.finishResolution( 'getPublications', [] );
+	it( 'renders as an error notice if getting publications fails', async () => {
+		fetchMock.getOnce( publicationsEndpoint, {
+			body: {},
+			status: 500,
+		} );
 
 		const { getByRole } = render( <StepPublicationSetup />, {
 			registry,
 		} );
 
-		expect( getByRole( 'status' ) ).toHaveTextContent(
-			'Getting your publications failed'
-		);
+		await waitFor( () => {
+			expect( getByRole( 'status' ) ).toHaveTextContent(
+				/Getting your publications failed/
+			);
+		} );
+
+		expect( console ).toHaveErrored();
 	} );
 
 	it( 'switches to the create form if no publications exist', async () => {

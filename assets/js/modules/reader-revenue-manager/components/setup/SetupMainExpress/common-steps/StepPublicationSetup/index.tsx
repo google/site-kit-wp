@@ -24,7 +24,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, useEffect } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,10 +33,8 @@ import { __ } from '@wordpress/i18n';
 import { ProgressBar } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
-import Notice from '@/js/components/Notice';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
-import TroubleshootingLink from '@/js/components/TroubleshootingLink';
 import useFormValue from '@/js/hooks/useFormValue';
+import PublicationSetupErrorNotice from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup/PublicationSetupErrorNotice';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
@@ -94,26 +92,13 @@ const StepPublicationSetup: FC = () => {
 
 	if ( getPublicationsError ) {
 		return (
-			<Notice
-				ctaButton={ {
-					label: __( 'Retry', 'google-site-kit' ),
-					onClick: resetPublications,
-				} }
-				description={ createInterpolateElement(
-					__( 'Try again or <a>get help</a>', 'google-site-kit' ),
-					{
-						a: (
-							<TroubleshootingLink
-								error={ getPublicationsError }
-							/>
-						),
-					}
-				) }
+			<PublicationSetupErrorNotice
+				error={ getPublicationsError }
+				onRetry={ resetPublications }
 				title={ __(
 					'Getting your publications failed',
 					'google-site-kit'
 				) }
-				type={ NOTICE_TYPES.ERROR }
 			/>
 		);
 	}

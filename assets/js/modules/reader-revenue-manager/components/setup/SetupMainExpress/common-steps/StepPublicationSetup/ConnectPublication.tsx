@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC, FormEvent, MouseEvent, useEffect } from 'react';
+import { FC, Fragment, useEffect } from 'react';
 
 /**
  * WordPress dependencies
@@ -33,24 +33,13 @@ import { __ } from '@wordpress/i18n';
 import { SpinnerButton } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import DocumentationLink from '@/js/components/DocumentationLink';
-import Notice from '@/js/components/Notice';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
-import TroubleshootingLink from '@/js/components/TroubleshootingLink';
-import Typography from '@/js/components/Typography';
-import {
-	SIZE_MEDIUM,
-	SIZE_SMALL,
-	TYPE_BODY,
-	TYPE_HEADLINE,
-} from '@/js/components/Typography/constants';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
-import {
-	BREAKPOINT_DESKTOP,
-	BREAKPOINT_XLARGE,
-	useBreakpoint,
-} from '@/js/hooks/useBreakpoint';
 import useQueryArg from '@/js/hooks/useQueryArg';
-import { PublicationSelect } from '@/js/modules/reader-revenue-manager/components/common';
+import PublicationSelect from '@/js/modules/reader-revenue-manager/components/common/PublicationSelect';
+import PublicationSetupDetails from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup/PublicationSetupDetails';
+import PublicationSetupErrorNotice from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup/PublicationSetupErrorNotice';
+import PublicationSetupHeadline from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup/PublicationSetupHeadline';
 import {
 	EXPRESS_SETUP_CTAS,
 	EXPRESS_SETUP_STEPS,
@@ -77,8 +66,6 @@ function getDescription( ctaType: string | undefined ) {
 }
 
 const ConnectPublication: FC = () => {
-	const breakpoint = useBreakpoint();
-
 	const { findMatchedPublication, selectPublication, submitChanges } =
 		useDispatch( MODULES_READER_REVENUE_MANAGER );
 
@@ -126,16 +113,8 @@ const ConnectPublication: FC = () => {
 		}
 	}, [ publication, setStep, submitChanges ] );
 
-	const onRetry = useCallback(
-		( event: MouseEvent< HTMLButtonElement > ) => {
-			event.preventDefault();
-			connectPublication();
-		},
-		[ connectPublication ]
-	);
-
 	const onSubmit = useCallback(
-		( event: FormEvent< HTMLFormElement > ) => {
+		( event ) => {
 			event.preventDefault();
 			connectPublication();
 		},
@@ -144,6 +123,14 @@ const ConnectPublication: FC = () => {
 
 	const isDisabled =
 		! canSubmitChanges || isDoingSubmitChanges || ! publication;
+
+	const languageCode = publication?.languageCode
+		? languageCodeFormat( publication.languageCode )
+		: __( 'Unknown', 'google-site-kit' );
+
+	const regionCode = publication?.regionCode
+		? regionCodeFormat( publication.regionCode )
+		: __( 'Unknown', 'google-site-kit' );
 
 	useEffect( () => {
 		if ( ! publication ) {
@@ -163,48 +150,20 @@ const ConnectPublication: FC = () => {
 			onSubmit={ onSubmit }
 		>
 			<div className="googlesitekit-rrm-publication-setup__form-content">
-				<Typography
-					as="h1"
-					className="googlesitekit-rrm-publication-setup__heading"
-					size={
-						breakpoint === BREAKPOINT_DESKTOP ||
-						breakpoint === BREAKPOINT_XLARGE
-							? SIZE_MEDIUM
-							: SIZE_SMALL
-					}
-					type={ TYPE_HEADLINE }
-				>
+				<PublicationSetupHeadline>
 					{ __( 'Connect your publication', 'google-site-kit' ) }
-				</Typography>
+				</PublicationSetupHeadline>
 
 				{ submitChangesError ? (
-					<Notice
-						ctaButton={
-							! isDisabled
-								? {
-										label: __( 'Retry', 'google-site-kit' ),
-										onClick: onRetry,
-								  }
-								: undefined
+					<PublicationSetupErrorNotice
+						error={ submitChangesError }
+						onRetry={
+							! isDisabled ? connectPublication : undefined
 						}
-						description={ createInterpolateElement(
-							__(
-								'Try again or <a>get help</a>',
-								'google-site-kit'
-							),
-							{
-								a: (
-									<TroubleshootingLink
-										error={ submitChangesError }
-									/>
-								),
-							}
-						) }
 						title={ __(
 							'Connecting your publication failed',
 							'google-site-kit'
 						) }
-						type={ NOTICE_TYPES.ERROR }
 					/>
 				) : null }
 
@@ -225,60 +184,26 @@ const ConnectPublication: FC = () => {
 				<div className="googlesitekit-rrm-publication-setup__form-controls">
 					<PublicationSelect />
 
-					{ publication && (
-						<dl className="googlesitekit-rrm-publication-setup__details">
-							{ publication.languageCode ? (
-								<div className="googlesitekit-rrm-publication-setup__details-item">
-									<Typography
-										as="dt"
-										className="googlesitekit-rrm-publication-setup__details-term"
-										size={ SIZE_SMALL }
-										type={ TYPE_BODY }
-									>
-										{ __(
-											'Primary language',
-											'google-site-kit'
-										) }
-									</Typography>
-									<Typography
-										as="dd"
-										className="googlesitekit-rrm-publication-setup__details-description"
-										size={ SIZE_MEDIUM }
-										type={ TYPE_BODY }
-									>
-										{ languageCodeFormat(
-											publication.languageCode
-										) }
-									</Typography>
-								</div>
-							) : null }
-							{ publication.regionCode ? (
-								<div className="googlesitekit-rrm-publication-setup__details-item">
-									<Typography
-										as="dt"
-										className="googlesitekit-rrm-publication-setup__details-term"
-										size={ SIZE_SMALL }
-										type={ TYPE_BODY }
-									>
-										{ __(
-											'Home country',
-											'google-site-kit'
-										) }
-									</Typography>
-									<Typography
-										as="dd"
-										className="googlesitekit-rrm-publication-setup__details-description"
-										size={ SIZE_MEDIUM }
-										type={ TYPE_BODY }
-									>
-										{ regionCodeFormat(
-											publication.regionCode
-										) }
-									</Typography>
-								</div>
-							) : null }
-						</dl>
-					) }
+					<PublicationSetupDetails>
+						{ ( Item ) => (
+							<Fragment>
+								<Item
+									description={ languageCode }
+									term={ __(
+										'Primary language',
+										'google-site-kit'
+									) }
+								/>
+								<Item
+									description={ regionCode }
+									term={ __(
+										'Home country',
+										'google-site-kit'
+									) }
+								/>
+							</Fragment>
+						) }
+					</PublicationSetupDetails>
 				</div>
 			</div>
 			{ /* @ts-expect-error - The `SpinnerButton` component is not typed yet. */ }

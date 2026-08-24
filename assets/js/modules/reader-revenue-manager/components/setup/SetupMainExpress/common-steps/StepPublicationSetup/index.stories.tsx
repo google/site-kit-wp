@@ -69,13 +69,9 @@ export const Error = Template.bind( {} ) as Story;
 Error.storyName = 'Error';
 Error.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setErrorForSelector(
-			{
-				data: { status: 500 },
-			},
-			'getPublications',
-			[]
-		);
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setErrorForSelector( {}, 'getPublications', [] );
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -84,64 +80,58 @@ Error.args = {
 };
 Error.scenario = {};
 
-export const ConnectPublication = Template.bind( {} ) as Story;
-ConnectPublication.storyName = 'Connect Publication';
-ConnectPublication.args = {
+export const WithPublications = Template.bind( {} ) as Story;
+WithPublications.storyName = 'With Publications';
+WithPublications.args = {
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetPublications( publications );
 	},
 };
-ConnectPublication.parameters = {
+WithPublications.parameters = {
 	query: {
 		cta: undefined,
 	},
 };
-ConnectPublication.scenario = {};
+WithPublications.scenario = {};
 
-export const ConnectPublicationWithError = Template.bind( {} ) as Story;
-ConnectPublicationWithError.storyName = 'Connect Publication with Error';
-ConnectPublicationWithError.args = {
+export const WithPublicationsWithError = Template.bind( {} ) as Story;
+WithPublicationsWithError.storyName = 'With Publications with Error';
+WithPublicationsWithError.args = {
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetPublications( publications );
 
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setErrorForAction(
-			{
-				code: 'save_publication_error',
-				message: 'Unable to save the publication.',
-				data: { status: 500 },
-			},
-			'submitChanges',
-			[]
-		);
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setErrorForAction( {}, 'submitChanges', [] );
 	},
 };
-ConnectPublicationWithError.parameters = {
+WithPublicationsWithError.parameters = {
 	query: {
 		cta: undefined,
 	},
 };
-ConnectPublicationWithError.scenario = {};
+WithPublicationsWithError.scenario = {};
 
-export const ConnectPublicationForNewsletterCTA = Template.bind( {} ) as Story;
-ConnectPublicationForNewsletterCTA.storyName =
-	'Connect Publication for Newsletter CTA';
-ConnectPublicationForNewsletterCTA.parameters = {
+export const WithPublicationsForNewsletterCTA = Template.bind( {} ) as Story;
+WithPublicationsForNewsletterCTA.storyName =
+	'With Publications for Newsletter CTA';
+WithPublicationsForNewsletterCTA.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( publications );
+	},
+};
+WithPublicationsForNewsletterCTA.parameters = {
 	query: {
 		cta: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
 	},
 };
-ConnectPublicationForNewsletterCTA.args = {
-	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetPublications( publications );
-	},
-};
-ConnectPublicationForNewsletterCTA.scenario = {};
+WithPublicationsForNewsletterCTA.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMainExpress/StepPublicationSetup',

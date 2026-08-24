@@ -204,11 +204,7 @@ describe( 'ConnectPublication', () => {
 
 	it( 'should display an error notice if the submission fails', async () => {
 		fetchMock.postOnce( settingsEndpoint, {
-			body: {
-				code: 'save_publication_error',
-				message: 'Unable to save the publication.',
-				data: { status: 500 },
-			},
+			body: {},
 			status: 500,
 		} );
 
@@ -226,7 +222,7 @@ describe( 'ConnectPublication', () => {
 
 		await waitFor( () => {
 			expect( getByRole( 'status' ) ).toHaveTextContent(
-				'Connecting your publication failed'
+				/Connecting your publication failed/
 			);
 		} );
 
@@ -259,7 +255,7 @@ describe( 'ConnectPublication', () => {
 
 		await waitFor( () => {
 			expect( getByRole( 'status' ) ).toHaveTextContent(
-				'Connecting your publication failed'
+				/Connecting your publication failed/
 			);
 		} );
 
@@ -279,6 +275,7 @@ describe( 'ConnectPublication', () => {
 		[ 'en', 'English', 'US', 'United States' ],
 		[ 'zh', 'Chinese', 'CN', 'China' ],
 		[ 'abc', 'abc', 'xyz', 'xyz' ],
+		[ undefined, 'Unknown', undefined, 'Unknown' ],
 	] )(
 		'should display %s language code as %s and %s region code as %s',
 		async ( languageCode, language, regionCode, region ) => {
@@ -306,7 +303,7 @@ describe( 'ConnectPublication', () => {
 			} );
 
 			const descriptions = container.querySelectorAll(
-				'.googlesitekit-rrm-publication-setup__details-description'
+				'.googlesitekit-rrm-publication-setup-details__item'
 			);
 
 			expect( descriptions.length ).toBe( 2 );
