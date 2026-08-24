@@ -352,6 +352,8 @@ class Site_Goals_Section_Builder {
 
 		return array(
 			'label' => $label,
+			// `Sections_Map::has_non_zero_value()` reads this value back through
+			// `is_numeric()`, so the rate keeps a dot and never the locale's separator.
 			'value' => round( $current_rate * 100, 1 ) . '%',
 			'trend' => $this->data_processor->compute_trend( $current_rate, $previous_rate ),
 		);
