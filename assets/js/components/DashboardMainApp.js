@@ -49,7 +49,7 @@ import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
 } from '@/js/googlesitekit/notifications/constants';
-import { shouldHideSetupCTAs } from '@/js/googlesitekit/notifications/util/should-hide-setup-ctas';
+import { shouldHideSetupCTAs } from '@/js/googlesitekit/notifications/util/setup-cta-visibility';
 import WidgetContextRenderer from '@/js/googlesitekit/widgets/components/WidgetContextRenderer';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {

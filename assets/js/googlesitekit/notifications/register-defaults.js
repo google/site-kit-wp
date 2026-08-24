@@ -129,7 +129,7 @@ import {
 	SITE_KIT_SETUP_SUCCESS_NOTIFICATION,
 } from './constants';
 import { CORE_NOTIFICATIONS } from './datastore/constants';
-import { requireSetupCTAsNotHidden } from './util/should-hide-setup-ctas';
+import { requireSetupCTAsNotHidden } from './util/setup-cta-visibility';
 
 /**
  * Requires the current page load to be the one directly following the initial
