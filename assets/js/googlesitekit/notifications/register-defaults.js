@@ -657,7 +657,10 @@ export const DEFAULT_NOTIFICATIONS = {
 
 			await Promise.all( [
 				resolveSelect( CORE_USER ).getDismissedFeatureTourSlugs(),
-				resolveSelect( CORE_USER ).getKeyMetrics(),
+				// These two back `getKeyMetrics()`, which returns before its own
+				// data arrives and would drop the tour for an eligible user.
+				resolveSelect( CORE_USER ).getKeyMetricsSettings(),
+				resolveSelect( CORE_USER ).getUserInputSettings(),
 				resolveSelect( CORE_USER ).getUser(),
 				resolveSelect( CORE_SITE ).getSiteInfo(),
 			] );
