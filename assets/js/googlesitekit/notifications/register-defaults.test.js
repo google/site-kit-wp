@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { WELCOME_MODAL_NOTIFICATION } from '@/js/components/WelcomeModal';
+import sharedKeyMetrics from '@/js/feature-tours/shared-key-metrics';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -40,6 +41,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserCapabilities,
+	provideUserInfo,
 } from '@tests/js/test-utils';
 import { DEFAULT_NOTIFICATIONS } from './register-defaults';
 
@@ -520,6 +522,66 @@ describe( 'DEFAULT_NOTIFICATIONS checkRequirements', () => {
 				] );
 
 			expect( await checkRequirements( registry ) ).toBe( true );
+		} );
+	} );
+
+	describe( 'sharedKeyMetrics', () => {
+		const { checkRequirements } =
+			DEFAULT_NOTIFICATIONS[ sharedKeyMetrics.slug ];
+
+		function provideTourConditions( {
+			keyMetrics = [ 'kmAnalyticsTopTrafficSource' ],
+			keyMetricsSetupCompletedBy = 2,
+			currentUserID = 1,
+			dismissedTours = [],
+		} = {} ) {
+			provideSiteInfo( registry, { keyMetricsSetupCompletedBy } );
+			provideUserInfo( registry, { id: currentUserID } );
+			provideUserAuthentication( registry );
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedTours( dismissedTours );
+			registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {} );
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetKeyMetricsSettings( { widgetSlugs: keyMetrics } );
+		}
+
+		it( 'should be active when another admin set up the key metrics', async () => {
+			provideTourConditions();
+
+			expect( await checkRequirements( registry ) ).toBe( true );
+		} );
+
+		it( 'should not be active when the tour is already dismissed', async () => {
+			provideTourConditions( {
+				dismissedTours: [ sharedKeyMetrics.slug ],
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should not be active when the current user set up the key metrics', async () => {
+			provideTourConditions( {
+				keyMetricsSetupCompletedBy: 1,
+				currentUserID: 1,
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should not be active when nobody has set up the key metrics', async () => {
+			provideTourConditions( { keyMetricsSetupCompletedBy: 0 } );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should not be active while the initial welcome modal is up', async () => {
+			provideTourConditions();
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&notification=initial_setup_success';
+
+			expect( await checkRequirements( registry ) ).toBe( false );
 		} );
 	} );
 } );
