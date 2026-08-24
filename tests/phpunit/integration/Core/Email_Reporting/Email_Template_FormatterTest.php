@@ -117,6 +117,59 @@ class Email_Template_FormatterTest extends TestCase {
 		$this->assertSame( array(), $payload['template_data']['header_notices'], 'Expected no header notices when analytics was previously connected/disconnected.' );
 	}
 
+	public function test_build_template_payload__carries_the_groups_and_the_prompt_of_a_site_goals_section() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$user    = get_user_by( 'id', $user_id );
+
+		$groups = array(
+			array(
+				'label'   => 'WooCommerce',
+				'metrics' => array(
+					array(
+						'label' => 'Total sales',
+						'value' => '116',
+						'trend' => 16.0,
+					),
+				),
+			),
+		);
+		$prompt = array(
+			'text'      => 'Your events data may be grouped together across plugins. To see separate results by plugin, %s.',
+			'link_text' => 'enable data breakdown',
+		);
+
+		$site_goals_section = new Email_Report_Data_Section_Part(
+			'site_goals_online_store',
+			array(
+				'title'  => 'How is my online store performing?',
+				'labels' => array( 'Total sales' ),
+				'values' => array( '116' ),
+				'trends' => array( 16.0 ),
+				'groups' => $groups,
+				'prompt' => $prompt,
+			)
+		);
+
+		$payload = $this->formatter->build_template_payload(
+			array( $this->get_total_visitors_section(), $site_goals_section ),
+			Email_Reporting_Settings::FREQUENCY_WEEKLY,
+			$this->get_date_range(),
+			$user
+		);
+
+		$this->assertNotWPError( $payload, 'build_template_payload() should build a payload rather than a WP_Error.' );
+		$this->assertSame(
+			$groups,
+			$payload['sections_payload']['site_goals_online_store']['groups'],
+			'build_template_payload() should carry the groups of a Site Goals section into the section payload the template reads.'
+		);
+		$this->assertSame(
+			$prompt,
+			$payload['sections_payload']['site_goals_online_store']['prompt'],
+			'build_template_payload() should carry the prompt of a Site Goals section into the section payload the template reads.'
+		);
+	}
+
 	public function test_build_template_payload__returns_no_data_error_when_report_has_no_sections() {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		$user    = get_user_by( 'id', $user_id );
