@@ -31,7 +31,7 @@ export const enabledFeatures = new Set(
  * @return {boolean} `true` if a feature is enabled; `false` otherwise.
  */
 export function isFeatureEnabled(
-	feature,
+	feature: string,
 	_enabledFeatures = enabledFeatures
 ) {
 	if ( ! ( _enabledFeatures instanceof Set ) ) {

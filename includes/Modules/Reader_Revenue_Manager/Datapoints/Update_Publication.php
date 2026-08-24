@@ -24,7 +24,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\TosAcceptanc
 /**
  * Class for the publication update datapoint.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  * @access private
  * @ignore
  */
@@ -33,7 +33,7 @@ class Update_Publication extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Reader Revenue Manager settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 * @var Settings
 	 */
 	private $settings;
@@ -41,7 +41,7 @@ class Update_Publication extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -54,7 +54,7 @@ class Update_Publication extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
@@ -122,7 +122,7 @@ class Update_Publication extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param mixed        $response Publication resource.
 	 * @param Data_Request $data     Data request object.

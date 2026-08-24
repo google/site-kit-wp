@@ -26,6 +26,7 @@ import TestRenderer from 'react-test-renderer';
  */
 import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import { findTextStrings } from '@/js/components/pdf-export/test-utils';
 import {
 	ScoredMetric,
 	extractFieldMetrics,
@@ -34,33 +35,6 @@ import {
 import * as fixtures from '@/js/modules/pagespeed-insights/datastore/__fixtures__';
 import { SpeedPDFData, StrategyData } from './getPDFData';
 import DashboardPageSpeedWidgetPDF from './indexPDF';
-
-/**
- * Collects every text string from a rendered test tree, walking nested
- * children.
- *
- * @since 1.183.0
- *
- * @param tree The rendered tree, a child node, or an empty leaf.
- * @return The text strings inside the tree, in render order.
- */
-function findTextStrings(
-	tree: TestRenderer.ReactTestRendererNode | null | undefined | boolean
-): string[] {
-	if ( ! tree || typeof tree === 'boolean' ) {
-		return [];
-	}
-	if ( typeof tree === 'string' ) {
-		return [ tree ];
-	}
-	const childResults: string[] = [];
-	if ( Array.isArray( tree.children ) ) {
-		for ( const child of tree.children ) {
-			childResults.push( ...findTextStrings( child ) );
-		}
-	}
-	return childResults;
-}
 
 /**
  * Extracts the lab and field metrics from a fixture report, shaped as one

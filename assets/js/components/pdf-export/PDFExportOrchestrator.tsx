@@ -368,7 +368,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		/**
 		 * Saves the `pdf-export-downloaded` slug to WordPress user meta.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.186.0
 		 *
 		 * @return {Promise<void>} A promise that resolves after the save.
 		 */
