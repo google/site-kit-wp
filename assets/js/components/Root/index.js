@@ -32,7 +32,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { StrictMode, useState } from '@wordpress/element';
+import { Fragment, StrictMode, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -42,6 +42,7 @@ import ErrorHandler from '@/js/components/ErrorHandler';
 import FeaturesProvider from '@/js/components/FeaturesProvider';
 import FeatureTours from '@/js/components/FeatureTours';
 import InViewProvider from '@/js/components/InViewProvider';
+import SetupCTAOverlays from '@/js/components/notifications/SetupCTAOverlays';
 import PermissionsModal from '@/js/components/PermissionsModal';
 import RestoreSnapshots from '@/js/components/RestoreSnapshots';
 import { enabledFeatures } from '@/js/features';
@@ -69,7 +70,12 @@ export default function Root( { children, registry, viewContext = null } ) {
 								<ErrorHandler>
 									<RestoreSnapshots>
 										{ children }
-										{ viewContext && <FeatureTours /> }
+										{ viewContext && (
+											<Fragment>
+												<FeatureTours />
+												<SetupCTAOverlays />
+											</Fragment>
+										) }
 									</RestoreSnapshots>
 									{ isSiteKitScreen( viewContext ) && (
 										<PermissionsModal />
