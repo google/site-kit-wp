@@ -1,0 +1,81 @@
+/**
+ * RRM terms of service step styles.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-rrm-terms-of-service-step {
+	max-width: 860px;
+	padding: $grid-gap-desktop 0;
+
+	h2 {
+		font-size: $fs-headline-md;
+		font-weight: $fw-normal;
+		line-height: $lh-headline-md;
+		margin: 0 0 $grid-gap-phone;
+	}
+
+	.googlesitekit-rrm-terms-of-service-step__description {
+		color: $c-surfaces-on-surface;
+		font-size: $fs-body-md;
+		line-height: $lh-body-md;
+		margin: 0 0 $grid-gap-desktop;
+	}
+
+	.googlesitekit-rrm-terms-of-service-step__content {
+		background: $c-surfaces-background;
+		border-radius: 4px;
+		box-sizing: border-box;
+		color: $c-surfaces-on-surface;
+		font-size: $fs-body-md;
+		line-height: $lh-body-md;
+		margin-bottom: $grid-gap-desktop;
+		max-height: 300px;
+		overflow-y: auto;
+		padding: $grid-gap-desktop;
+	}
+
+	.googlesitekit-rrm-terms-of-service-step__publication-status {
+		margin-bottom: $grid-gap-desktop;
+
+		h3 {
+			font-size: $fs-title-sm;
+			font-weight: $fw-medium;
+			line-height: $lh-title-sm;
+			margin: 0 0 4px;
+		}
+
+		p {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-sm;
+			line-height: $lh-body-sm;
+			margin: 0 0 $grid-gap-phone;
+		}
+	}
+
+	.googlesitekit-rrm-terms-of-service-step__publication-status-options {
+		display: flex;
+		flex-wrap: wrap;
+		gap: $grid-gap-desktop;
+	}
+
+	.googlesitekit-rrm-terms-of-service-step__error {
+		margin: 0 0 $grid-gap-desktop;
+	}
+
+	.googlesitekit-rrm-terms-of-service-step__submit {
+		margin-top: $grid-gap-phone;
+	}
+}
