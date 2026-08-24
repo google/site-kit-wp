@@ -32,7 +32,12 @@ import {
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
+import dashboardSharingScreenshotURL from '@/svg/graphics/dashboard-sharing.svg?path';
+import kmwWidgetScreenshotURL from '@/svg/graphics/kmw-widget.svg?path';
+import pdfReportFullScreenshotURL from '@/svg/graphics/pdf-report-full.svg?path';
+import pdfReportPanelScreenshotURL from '@/svg/graphics/pdf-report-panel.svg?path';
 import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
+import visitorGroupsScreenshotURL from '@/svg/graphics/visitor-groups.svg?path';
 
 /**
  * Registers default features from core Site Kit and modules.
@@ -134,9 +139,9 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: splashScreenScreenshotURL,
+					src: dashboardSharingScreenshotURL,
 					alt: __(
-						'Analytics 4 Key Metrics widget showing selected key metrics and trends.',
+						'Dashboard sharing screenshot showing the dashboard sharing panel.',
 						'google-site-kit'
 					),
 					width: 1488,
@@ -357,9 +362,18 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: splashScreenScreenshotURL,
+					src: pdfReportFullScreenshotURL,
 					alt: __(
-						'Analytics 4 Key Metrics widget showing selected key metrics and trends.',
+						'PDF report screenshot showing the full report with all selected metrics.',
+						'google-site-kit'
+					),
+					width: 1488,
+					height: 608,
+				},
+				{
+					src: pdfReportPanelScreenshotURL,
+					alt: __(
+						'PDF report screenshot showing the export panel with selected metrics.',
 						'google-site-kit'
 					),
 					width: 1488,
@@ -454,7 +468,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: splashScreenScreenshotURL,
+					src: kmwWidgetScreenshotURL,
 					alt: __(
 						'Analytics 4 Key Metrics widget showing selected key metrics and trends.',
 						'google-site-kit'
@@ -696,9 +710,9 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: splashScreenScreenshotURL,
+					src: visitorGroupsScreenshotURL,
 					alt: __(
-						'Analytics 4 Key Metrics widget showing selected key metrics and trends.',
+						'Visitor groups screenshot showing audiences tiles.',
 						'google-site-kit'
 					),
 					width: 1488,
