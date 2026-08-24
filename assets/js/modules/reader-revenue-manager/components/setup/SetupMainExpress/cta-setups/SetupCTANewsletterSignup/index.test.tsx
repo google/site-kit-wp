@@ -19,9 +19,14 @@
 /**
  * Internal dependencies
  */
+import { Registry } from '@/js/googlesitekit-data';
 import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { mockLocation } from '@tests/js/mock-browser-utils';
-import { render } from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	providePublications,
+	render,
+} from '@tests/js/test-utils';
 import SetupCTANewsletterSignup from './index';
 
 jest.mock(
@@ -45,10 +50,18 @@ const STEP_CONTENT = {
 describe( 'SetupCTANewsletterSignup', () => {
 	mockLocation();
 
+	let registry: Registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry() as Registry;
+	} );
+
 	it( 'renders the newsletter CTA step title in the sidebar', () => {
 		global.location.href = 'http://example.com/';
 
-		const { getByText, container } = render( <SetupCTANewsletterSignup /> );
+		const { getByText, container } = render( <SetupCTANewsletterSignup />, {
+			registry,
+		} );
 
 		expect( getByText( 'Set up a sign-up form' ) ).toBeInTheDocument();
 		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
@@ -63,10 +76,13 @@ describe( 'SetupCTANewsletterSignup', () => {
 	it.each( Object.entries( STEP_CONTENT ) )(
 		'renders the %s step content',
 		( step, content ) => {
+			providePublications( registry, [] );
+
 			global.location.href = `http://example.com/?step=${ step }`;
 
 			const { getByText, queryByText } = render(
-				<SetupCTANewsletterSignup />
+				<SetupCTANewsletterSignup />,
+				{ registry }
 			);
 
 			expect( getByText( content ) ).toBeInTheDocument();
@@ -85,7 +101,8 @@ describe( 'SetupCTANewsletterSignup', () => {
 		global.location.href = 'http://example.com/?step=unknown-step';
 
 		const { getByText, queryByText } = render(
-			<SetupCTANewsletterSignup />
+			<SetupCTANewsletterSignup />,
+			{ registry }
 		);
 
 		expect( getByText( 'Set up a sign-up form' ) ).toBeInTheDocument();
