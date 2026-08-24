@@ -30,6 +30,16 @@ import {
 
 export const PDF_DOWNLOAD_PANEL_OPENED_KEY = 'pdfDownloadPanelOpened';
 
+/**
+ * Class name on the header button that opens the PDF download panel.
+ *
+ * The introduction overlay anchors to this button, so the class is shared
+ * rather than repeated as a selector string.
+ *
+ * @since n.e.x.t
+ */
+export const PDF_DOWNLOAD_BUTTON_CLASS = 'googlesitekit-pdf-download__button';
+
 export const PDF_INTRODUCTION_OVERLAY_NOTIFICATION =
 	'pdf_introduction_overlay_notification';
 

@@ -69,6 +69,11 @@ interface OverlayNotificationProps {
 	GraphicMobile?: ComponentType;
 	newBadge?: boolean;
 	className?: string;
+	/**
+	 * Selector for the element to anchor to. Accepts a selector list, so an
+	 * overlay whose trigger collapses into another control at narrower
+	 * breakpoints can name each candidate and anchor to whichever exists.
+	 */
 	anchorID?: string;
 	gaTrackingEventArgs?: GATrackingEventArgs & {
 		confirmAction?: string;
@@ -107,7 +112,7 @@ const OverlayNotification: FC< OverlayNotificationProps > = ( {
 			// eslint-disable-next-line sitekit/acronym-case
 			anchorID ? document.querySelector< HTMLElement >( anchorID ) : null
 		);
-	}, [ anchorID ] );
+	}, [ anchorID, breakpoint ] );
 
 	const isAnchored =
 		Boolean( anchorElement ) && breakpoint !== BREAKPOINT_SMALL;
