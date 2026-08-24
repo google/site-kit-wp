@@ -42,11 +42,13 @@ describe( 'Analytics 4 widget registrations', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		enabledFeatures.add( 'siteGoals' );
 		widgets = createWidgets( registry );
 		registerDefaultWidgets( widgets );
 	} );
 
 	afterEach( () => {
+		enabledFeatures.delete( 'siteGoals' );
 		enabledFeatures.delete( 'setupFlowRefresh' );
 	} );
 

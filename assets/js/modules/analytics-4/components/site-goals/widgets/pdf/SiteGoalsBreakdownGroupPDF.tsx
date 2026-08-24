@@ -41,41 +41,30 @@ import { PDFChangeType } from '@/js/components/pdf-export/types';
 import { PERCENT_FORMAT } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { numFmt } from '@/js/util';
 import { SiteGoalsPDFGroup, SiteGoalsPDFMetric } from './shapeSiteGoalsPDFData';
+import SiteGoalsTileConnectorPDF from './SiteGoalsTileConnectorPDF';
 
 const styles = createPDFStyles( {
 	container: {
 		flexDirection: 'column',
 	},
 	label: {
-		marginBottom: 12,
+		marginBottom: 16,
 	},
 	tiles: {
 		flexDirection: 'row',
+		gap: 42,
 	},
-	// The flex slot each tile occupies in the row: the rate tile directly, or
-	// the connector + content pair for the other two.
 	tile: {
 		flex: 1,
 	},
-	// Every tile's own content box gets this padding, matching the dashboard's
-	// `.googlesitekit-site-goals-tile` padding for all three tile kinds.
 	tileContent: {
 		paddingVertical: 14,
-		paddingHorizontal: 18,
 	},
-	// The rate tile is tinted by its own direction and drops the connector the
-	// other tiles carry, matching `.googlesitekit-site-goals-tile--primary__*`
-	// on the dashboard.
 	primaryTile: {
-		borderRadius: 8,
+		paddingHorizontal: 18,
 	},
 	connectedTile: {
 		flexDirection: 'row',
-	},
-	connector: {
-		width: 1,
-		backgroundColor: PDF_COLORS.SURFACES_SURFACE_1,
-		marginRight: 16,
 	},
 } );
 
@@ -211,7 +200,7 @@ const SiteGoalsBreakdownGroupPDF: FC< SiteGoalsBreakdownGroupPDFProps > = ( {
 	return (
 		<View style={ styles.container }>
 			{ !! showLabel && !! label && (
-				<PDFTypography type="title" style={ styles.label }>
+				<PDFTypography type="title" size="large" style={ styles.label }>
 					{ label }
 				</PDFTypography>
 			) }
@@ -237,7 +226,7 @@ const SiteGoalsBreakdownGroupPDF: FC< SiteGoalsBreakdownGroupPDFProps > = ( {
 					</View>
 				) }
 				<View style={ [ styles.tile, styles.connectedTile ] }>
-					{ !! rate && <View style={ styles.connector } /> }
+					{ !! rate && <SiteGoalsTileConnectorPDF /> }
 					<View style={ [ styles.tile, styles.tileContent ] }>
 						<PDFMetricTile
 							title={ totalLabel }
@@ -250,7 +239,7 @@ const SiteGoalsBreakdownGroupPDF: FC< SiteGoalsBreakdownGroupPDFProps > = ( {
 				</View>
 				{ !! engagementRate && (
 					<View style={ [ styles.tile, styles.connectedTile ] }>
-						<View style={ styles.connector } />
+						<SiteGoalsTileConnectorPDF />
 						<View style={ [ styles.tile, styles.tileContent ] }>
 							<PDFMetricTile
 								title={ __(
