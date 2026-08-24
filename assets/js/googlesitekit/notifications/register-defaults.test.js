@@ -553,6 +553,37 @@ describe( 'DEFAULT_NOTIFICATIONS checkRequirements', () => {
 			expect( await checkRequirements( registry ) ).toBe( true );
 		} );
 
+		it( 'should be active when the key metrics settings arrive after the other requirements', async () => {
+			// Everything except the key metrics settings, which are left to the
+			// request below so they land last.
+			provideSiteInfo( registry, { keyMetricsSetupCompletedBy: 2 } );
+			provideUserInfo( registry, { id: 1 } );
+			provideUserAuthentication( registry );
+			registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+			registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {} );
+
+			fetchMock.getOnce(
+				new RegExp( '^/google-site-kit/v1/core/user/data/key-metrics' ),
+				() =>
+					new Promise( ( resolve ) =>
+						setTimeout(
+							() =>
+								resolve( {
+									body: {
+										widgetSlugs: [
+											'kmAnalyticsTopTrafficSource',
+										],
+									},
+									status: 200,
+								} ),
+							50
+						)
+					)
+			);
+
+			expect( await checkRequirements( registry ) ).toBe( true );
+		} );
+
 		it( 'should not be active when the tour is already dismissed', async () => {
 			provideTourConditions( {
 				dismissedTours: [ sharedKeyMetrics.slug ],
