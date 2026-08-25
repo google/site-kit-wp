@@ -24,7 +24,7 @@ import { ComponentProps, FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -77,7 +77,7 @@ export function getOptions() {
 const PublicationSetupLanguageSelect: FC<
 	PublicationSetupLanguageSelectProps
 > = ( { id, onChange, ...props } ) => {
-	const options = getOptions();
+	const options = useMemo( () => getOptions(), [] );
 
 	const onEnhancedChange = useCallback(
 		( value, item ) => {
