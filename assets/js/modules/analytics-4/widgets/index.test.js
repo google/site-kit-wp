@@ -28,8 +28,12 @@ import {
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
 import { AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationBackNotice';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	provideModules,
+} from '../../../../../tests/js/utils';
 import { registerWidgets } from './index';
 
 describe( 'Analytics 4 widget registrations', () => {
@@ -38,6 +42,15 @@ describe( 'Analytics 4 widget registrations', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		// The Site Goals settings resolver checks the module is connected
+		// before fetching, so the modules list has to be in place.
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
 		widgets = createWidgets( registry );
 		registerDefaultWidgets( widgets );
 	} );
