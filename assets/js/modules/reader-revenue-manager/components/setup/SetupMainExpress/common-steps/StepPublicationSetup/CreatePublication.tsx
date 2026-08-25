@@ -123,7 +123,7 @@ const CreatePublication: FC = () => {
 	const isDoingSubmitChanges: boolean | undefined = useSelect(
 		( select: Select ) =>
 			select( MODULES_READER_REVENUE_MANAGER ).isDoingSubmitChanges(),
-		[ displayName, languageCode, regionCode ]
+		[]
 	);
 
 	const isFetchingCreatePublication: boolean | undefined = useSelect(
