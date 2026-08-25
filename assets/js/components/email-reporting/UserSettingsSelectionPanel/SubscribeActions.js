@@ -34,6 +34,7 @@ import PreviewBlocks from '@/js/components/PreviewBlocks';
 import { useSelect } from '@/js/googlesitekit-data';
 import SpinnerButton from '@/js/googlesitekit/components-gm2/SpinnerButton';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 const ACTION_TYPE = {
 	SUBSCRIBE: 'subscribe',
@@ -53,6 +54,10 @@ export default function SubscribeActions( {
 
 	const isEmailReportingEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isEmailReportingEnabled()
+	);
+
+	const haveEmailReportingSettingsChanged = useSelect( ( select ) =>
+		select( CORE_USER ).haveEmailReportingSettingsChanged()
 	);
 
 	function handleClick( action ) {
@@ -109,7 +114,13 @@ export default function SubscribeActions( {
 						isSavingSettings &&
 						actionType !== ACTION_TYPE.UNSUBSCRIBE
 					}
-					disabled={ isSavingSettings }
+					// The "Subscribe" button saves the subscription itself,
+					// so only the "Update Settings" button is disabled when
+					// the settings have not changed.
+					disabled={
+						isSavingSettings ||
+						( isSubscribed && ! haveEmailReportingSettingsChanged )
+					}
 				>
 					{ isSubscribed
 						? __( 'Update Settings', 'google-site-kit' )
