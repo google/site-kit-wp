@@ -1,0 +1,312 @@
+/**
+ * Reader Revenue Manager connect publication component.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import { ChangeEvent, FC, useEffect } from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import {
+	createInterpolateElement,
+	useCallback,
+	useState,
+} from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { Checkbox, SpinnerButton, TextField } from 'googlesitekit-components';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import DocumentationLink from '@/js/components/DocumentationLink';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import PublicationSetupDetails from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup/PublicationSetupDetails';
+import PublicationSetupHeadline from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup/PublicationSetupHeadline';
+import PublicationSetupLanguageSelect from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup/PublicationSetupLanguageSelect';
+import PublicationSetupRegionSelect from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup/PublicationSetupRegionSelect';
+import { useStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
+import {
+	CREATE_PUBLICATION_FORM,
+	EXPRESS_SETUP_CTAS,
+	EXPRESS_SETUP_STEPS,
+	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_SETUP_FORM,
+	SHOW_PUBLICATION_CREATE,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+
+function getDescription( ctaType: string | undefined ) {
+	switch ( ctaType ) {
+		case EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP: {
+			return __(
+				'To set up a newsletter sign-up form using Reader Revenue Manager, you will need to create a publication. <a>Learn more</a>',
+				'google-site-kit'
+			);
+		}
+		default: {
+			return __(
+				'To use Reader Revenue Manager, you will need to create a publication. <a>Learn more</a>',
+				'google-site-kit'
+			);
+		}
+	}
+}
+
+const CreatePublication: FC = () => {
+	const [ isBusy, setIsBusy ] = useState( false );
+
+	const locale: string | undefined = useSelect(
+		( select: Select ) => select( CORE_SITE ).getSiteLocale(),
+		[]
+	);
+
+	const [ defaultLanguageCode, defaultRegionCode ] =
+		locale?.split( '-' ) || [];
+
+	const {
+		createPublication,
+		resetPublications,
+		selectPublication,
+		submitChanges,
+	} = useDispatch( MODULES_READER_REVENUE_MANAGER );
+
+	const [ cta ] = useQueryArg( 'cta', 'default' );
+
+	const [ languageCode = defaultLanguageCode, setLanguageCode ] =
+		useFormValue< string >(
+			READER_REVENUE_MANAGER_SETUP_FORM,
+			CREATE_PUBLICATION_FORM.LANGUAGE_CODE
+		);
+
+	const [ displayName, setDisplayName ] = useFormValue< string >(
+		READER_REVENUE_MANAGER_SETUP_FORM,
+		CREATE_PUBLICATION_FORM.DISPLAY_NAME
+	);
+
+	const [ regionCode = defaultRegionCode, setRegionCode ] =
+		useFormValue< string >(
+			READER_REVENUE_MANAGER_SETUP_FORM,
+			CREATE_PUBLICATION_FORM.REGION_CODE
+		);
+
+	const [ certifyRegion, setCertifyRegion ] = useFormValue< boolean >(
+		READER_REVENUE_MANAGER_SETUP_FORM,
+		CREATE_PUBLICATION_FORM.CERTIFY_REGION
+	);
+
+	const [ , setShowPublicationCreate ] = useFormValue< boolean >(
+		READER_REVENUE_MANAGER_SETUP_FORM,
+		SHOW_PUBLICATION_CREATE
+	);
+
+	const isDoingSubmitChanges: boolean | undefined = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).isDoingSubmitChanges(),
+		[ displayName, languageCode, regionCode ]
+	);
+
+	const isFetchingCreatePublication: boolean | undefined = useSelect(
+		( select: Select ) =>
+			select(
+				MODULES_READER_REVENUE_MANAGER
+			).isFetchingCreatePublication( {
+				displayName,
+				languageCode,
+				regionCode,
+			} ),
+		[ displayName, languageCode, regionCode ]
+	);
+
+	const siteName: string | undefined = useSelect(
+		( select: Select ) => select( CORE_SITE ).getSiteName(),
+		[]
+	);
+
+	const siteURL: string | undefined = useSelect(
+		( select: Select ) => select( CORE_SITE ).getReferenceSiteURL(),
+		[]
+	);
+
+	const createPublicationError: object | undefined = useSelect(
+		( select: Select ) => {
+			const { getErrorForAction } = select(
+				MODULES_READER_REVENUE_MANAGER
+			);
+
+			return getErrorForAction( 'createPublication', [
+				{
+					displayName,
+					languageCode,
+					regionCode,
+				},
+			] );
+		},
+		[ displayName, languageCode, regionCode ]
+	);
+
+	const [ , setStep ] = useStep();
+
+	const submit = useCallback( async () => {
+		setIsBusy( true );
+
+		const { response, error } = await createPublication( {
+			displayName,
+			languageCode,
+			regionCode,
+		} );
+
+		if ( error ) {
+			setIsBusy( false );
+			return;
+		}
+
+		selectPublication( response );
+
+		const { error: submitChangesError } = await submitChanges();
+
+		if ( submitChangesError ) {
+			resetPublications();
+			setShowPublicationCreate( false );
+			setIsBusy( false );
+			return;
+		}
+
+		setStep( EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE );
+	}, [
+		createPublication,
+		displayName,
+		languageCode,
+		regionCode,
+		resetPublications,
+		selectPublication,
+		setShowPublicationCreate,
+		setStep,
+		submitChanges,
+	] );
+
+	const onSubmit = useCallback(
+		( event ) => {
+			event.preventDefault();
+			submit();
+		},
+		[ submit ]
+	);
+
+	const isValid = certifyRegion && displayName && languageCode && regionCode;
+
+	const isSaving =
+		isDoingSubmitChanges || isFetchingCreatePublication || isBusy;
+
+	const isDisabled = isSaving || ! isValid;
+
+	useEffect( () => {
+		if ( siteName && displayName === undefined ) {
+			setDisplayName( siteName );
+		}
+	}, [ displayName, setDisplayName, siteName ] );
+
+	return (
+		<form
+			className="googlesitekit-rrm-publication-setup__form"
+			onSubmit={ onSubmit }
+		>
+			<div className="googlesitekit-rrm-publication-setup__form-content">
+				<PublicationSetupHeadline>
+					{ __( "Let's get started!", 'google-site-kit' ) }
+				</PublicationSetupHeadline>
+
+				<P
+					className="googlesitekit-rrm-publication-setup__description"
+					size={ SIZE_MEDIUM }
+				>
+					{ createInterpolateElement( getDescription( cta ), {
+						a: (
+							<DocumentationLink
+								slug="rrm-publication"
+								external
+							/>
+						),
+					} ) }
+				</P>
+
+				<div className="googlesitekit-rrm-publication-setup__form-controls googlesitekit-rrm-publication-setup__form-controls--create">
+					<PublicationSetupDetails>
+						{ ( Item ) => (
+							<Item
+								description={ siteURL }
+								term={ __( 'URL', 'google-site-kit' ) }
+							/>
+						) }
+					</PublicationSetupDetails>
+					<TextField
+						className="googlesitekit-rrm-publication-setup__field googlesitekit-rrm-publication-setup__field--full-width"
+						id={ CREATE_PUBLICATION_FORM.DISPLAY_NAME }
+						label={ __( 'Name', 'google-site-kit' ) }
+						onChange={ ( event ) =>
+							setDisplayName( event.target.value )
+						}
+						value={ displayName || '' }
+						outlined
+					/>
+					<PublicationSetupLanguageSelect
+						className="googlesitekit-rrm-publication-setup__field"
+						id={ CREATE_PUBLICATION_FORM.LANGUAGE_CODE }
+						onChange={ setLanguageCode }
+						value={ languageCode }
+					/>
+					<PublicationSetupRegionSelect
+						className="googlesitekit-rrm-publication-setup__field"
+						id={ CREATE_PUBLICATION_FORM.REGION_CODE }
+						onChange={ setRegionCode }
+						value={ regionCode }
+					/>
+				</div>
+				<Checkbox
+					checked={ certifyRegion }
+					id={ CREATE_PUBLICATION_FORM.CERTIFY_REGION }
+					name={ CREATE_PUBLICATION_FORM.CERTIFY_REGION }
+					onChange={ ( event: ChangeEvent< HTMLInputElement > ) =>
+						setCertifyRegion( event.target.checked )
+					}
+					value="1"
+				>
+					{ __(
+						'By checking this box, you certify that your publication is principally and permanently located in the country you selected',
+						'google-site-kit'
+					) }
+				</Checkbox>
+			</div>
+			{ /* @ts-expect-error - The `SpinnerButton` component is not typed yet. */ }
+			<SpinnerButton
+				disabled={ isDisabled }
+				isSaving={ isSaving }
+				type="submit"
+			>
+				{ __( 'Create publication', 'google-site-kit' ) }
+			</SpinnerButton>
+		</form>
+	);
+};
+
+export default CreatePublication;

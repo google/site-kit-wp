@@ -44,6 +44,7 @@ import {
 import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import PlusIcon from '@/svg/icons/plus.svg';
 import ConnectPublication from './ConnectPublication';
+import CreatePublication from './CreatePublication';
 
 interface StepPublicationSetupProps {
 	connectDescription?: string;
@@ -104,7 +105,7 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 	return (
 		<div className="googlesitekit-rrm-express-setup-step">
 			{ showPublicationCreate ? (
-				'RRM express setup placeholder: publication setup step.' // TODO: Implement <CreatePublication />.
+				<CreatePublication />
 			) : (
 				<ConnectPublication
 					description={ connectDescription }

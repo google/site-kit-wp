@@ -104,6 +104,55 @@ WithPublicationsWithError.args = {
 };
 WithPublicationsWithError.scenario = {};
 
+export const WithoutPublications = Template.bind( {} ) as Story;
+WithoutPublications.storyName = 'Without Publications';
+WithoutPublications.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( [] );
+	},
+};
+WithoutPublications.scenario = {};
+
+export const WithoutPublicationsWithError = Template.bind( {} ) as Story;
+WithoutPublicationsWithError.storyName = 'Without Publications with Error';
+WithoutPublicationsWithError.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( [] );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setErrorForAction( {}, 'createPublication', [
+				{
+					displayName: 'My Site Name',
+					languageCode: 'en',
+					regionCode: 'US',
+				},
+			] );
+	},
+};
+WithoutPublicationsWithError.scenario = {};
+
+export const WithoutPublicationsWithoutSiteInfo = Template.bind( {} ) as Story;
+WithoutPublicationsWithoutSiteInfo.storyName =
+	'Without Publications without Site Info';
+WithoutPublicationsWithoutSiteInfo.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteInfo( registry, {
+			siteName: undefined,
+			siteLocale: undefined,
+		} );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( [] );
+	},
+};
+WithoutPublications.scenario = {};
+
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMainExpress/StepPublicationSetup',
 	component: StepPublicationSetup,
@@ -118,7 +167,7 @@ export default {
 					},
 				];
 
-				provideSiteInfo( registry );
+				provideSiteInfo( registry, { siteLocale: 'en-US' } );
 				provideModules( registry, moduleData );
 				provideModuleRegistrations( registry, moduleData );
 

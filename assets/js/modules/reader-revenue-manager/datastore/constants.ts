@@ -76,10 +76,17 @@ export const EXPRESS_SETUP_CTAS = {
 	NEWSLETTER_SIGNUP: 'newsletter-signup',
 };
 
-export const EXPRESS_SETUP_STEPS = {
-	CONNECT_PUBLICATION: 'connect-publication',
-	TERMS_OF_SERVICE: 'terms-of-service',
-	PUBLICATION_POLICIES: 'publication-policies',
-	SETUP_CTA: 'setup-cta',
-	SETUP_COMPLETE: 'setup-complete',
-};
+export const enum EXPRESS_SETUP_STEPS {
+	CONNECT_PUBLICATION = 'connect-publication',
+	TERMS_OF_SERVICE = 'terms-of-service',
+	PUBLICATION_POLICIES = 'publication-policies',
+	SETUP_CTA = 'setup-cta',
+	SETUP_COMPLETE = 'setup-complete',
+}
+
+export const enum CREATE_PUBLICATION_FORM {
+	CERTIFY_REGION = 'certify',
+	DISPLAY_NAME = 'name',
+	LANGUAGE_CODE = 'languageCode',
+	REGION_CODE = 'regionCode',
+}
