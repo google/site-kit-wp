@@ -151,7 +151,7 @@ WithoutPublicationsWithoutSiteInfo.args = {
 			.receiveGetPublications( [] );
 	},
 };
-WithoutPublications.scenario = {};
+WithoutPublicationsWithoutSiteInfo.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMainExpress/StepPublicationSetup',
