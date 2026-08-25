@@ -72,7 +72,7 @@ const styles = createPDFStyles( {
 } );
 
 /** The background color behind the Site Goals rate tile, one per change type. */
-const RATE_PANEL_COLOR_BY_CHANGE_TYPE: Record< PDFChangeType, string > = {
+const RATE_TILE_BACKGROUND_BY_CHANGE_TYPE: Record< PDFChangeType, string > = {
 	positive: PDF_COLORS.GREEN_G_10,
 	negative: PDF_COLORS.RED_R_10,
 	noChange: PDF_COLORS.NEUTRAL_N_10,
@@ -101,22 +101,22 @@ function getChange( metric: SiteGoalsPDFMetric | undefined ) {
  * Picks the background color behind the Site Goals rate tile.
  *
  * The color follows the direction the rate moved, matching the dashboard's
- * `Tile`. A rate that rose from zero takes the green panel, even though the
- * tile shows no change badge.
+ * `Tile`. A rate that rose from zero takes the green background, even though
+ * the tile shows no change badge.
  *
  * @since n.e.x.t
  *
  * @param {(Object|undefined)} rate The Key action rate for the current and the previous period, or `undefined` when the tile has none.
  * @return {(string|undefined)} The background color behind the rate tile, or `undefined` when the rate is zero in both periods.
  */
-function getRatePanelColor(
+function getRateTileBackgroundColor(
 	rate: SiteGoalsPDFMetric | undefined
 ): string | undefined {
 	if ( ! rate || ( rate.current === 0 && rate.previous === 0 ) ) {
 		return undefined;
 	}
 
-	return RATE_PANEL_COLOR_BY_CHANGE_TYPE[
+	return RATE_TILE_BACKGROUND_BY_CHANGE_TYPE[
 		getPDFChangeType( rate.current - rate.previous )
 	];
 }
@@ -212,7 +212,10 @@ const SiteGoalsBreakdownGroupPDF: FC< SiteGoalsBreakdownGroupPDFProps > = ( {
 					<View
 						style={ [
 							styles.tile,
-							{ backgroundColor: getRatePanelColor( rate ) },
+							{
+								backgroundColor:
+									getRateTileBackgroundColor( rate ),
+							},
 						] }
 					>
 						<View

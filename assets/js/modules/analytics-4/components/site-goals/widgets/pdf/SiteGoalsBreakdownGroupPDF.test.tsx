@@ -147,7 +147,7 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 		).toBe( 2 );
 	} );
 
-	it( 'gives the rate panel a green background when the rate rises and a red one when it falls', () => {
+	it( 'gives the rate tile a green background when the rate rises and a red one when it falls', () => {
 		const risingRateJSON = renderBreakdownGroupJSON( {
 			group: FULL_GROUP,
 			rateLabel: 'Sales rate',
@@ -166,7 +166,7 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 		expect( fallingRateJSON ).toContain( PDF_COLORS.RED_R_10 );
 	} );
 
-	it( 'gives the rate panel a neutral background when the rate does not change', () => {
+	it( 'gives the rate tile a neutral background when the rate does not change', () => {
 		const noChangeRateJSON = renderBreakdownGroupJSON( {
 			group: {
 				...FULL_GROUP,
@@ -179,7 +179,7 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 		expect( noChangeRateJSON ).toContain( PDF_COLORS.NEUTRAL_N_10 );
 	} );
 
-	it( 'gives the rate panel a green background when the rate rises from zero', () => {
+	it( 'gives the rate tile a green background when the rate rises from zero', () => {
 		const zeroPreviousRateJSON = renderBreakdownGroupJSON( {
 			group: {
 				...FULL_GROUP,
@@ -192,7 +192,7 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 		expect( zeroPreviousRateJSON ).toContain( PDF_COLORS.GREEN_G_10 );
 	} );
 
-	it( 'gives the rate panel no background color when the rate is zero in both periods', () => {
+	it( 'gives the rate tile no background color when the rate is zero in both periods', () => {
 		const zeroRateJSON = renderBreakdownGroupJSON( {
 			group: {
 				...FULL_GROUP,

@@ -30,8 +30,8 @@ import { GOAL_DRIVER_IDS, GOAL_TYPES } from './goal-drivers/constants';
 /**
  * The Online store performance widget's title.
  *
- * Three places read this title: the dashboard widget's header, the widget's
- * checkbox in the PDF sections panel, and the PDF report's section heading.
+ * The dashboard and the PDF report both show this title. It lives here so the
+ * two cannot show different words.
  *
  * @since n.e.x.t
  */
@@ -43,8 +43,8 @@ export const SITE_GOALS_ONLINE_STORE_WIDGET_TITLE = __(
 /**
  * The Lead generation performance widget's title.
  *
- * Three places read this title: the dashboard widget's header, the widget's
- * checkbox in the PDF sections panel, and the PDF report's section heading.
+ * The dashboard and the PDF report both show this title. It lives here so the
+ * two cannot show different words.
  *
  * @since n.e.x.t
  */

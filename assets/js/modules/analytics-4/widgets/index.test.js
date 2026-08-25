@@ -162,7 +162,7 @@ describe( 'Analytics 4 widget registrations', () => {
 				[ 'analyticsLeadGenerationPerformance' ],
 			],
 		] )(
-			'should gate widgets correctly when %s',
+			'should show only the active Site Goals widgets when %s',
 			(
 				_,
 				siteGoalsSettings,

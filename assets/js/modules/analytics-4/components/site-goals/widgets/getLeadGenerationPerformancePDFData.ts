@@ -54,8 +54,8 @@ export interface LeadGenerationPerformancePDFData {
  * Loads the groups the Lead generation performance PDF section renders.
  *
  * The section holds one group per form. It adds one more group for the
- * completions that carried no form ID. When no form has completions in the date
- * range, the section falls back to a single group for the whole site.
+ * completions that belong to none of them. When no form has completions in the
+ * date range, the section falls back to a single group for the whole site.
  *
  * @since n.e.x.t
  *

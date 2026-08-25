@@ -43,7 +43,7 @@ const tileStyles = createPDFStyles( {
 	title: {
 		marginBottom: 1,
 	},
-	titleBesideSmallValue: {
+	titleAboveSmallValue: {
 		marginBottom: 2.3,
 	},
 	aside: {
@@ -96,7 +96,7 @@ const PDFMetricTile: FC< PDFMetricTileProps > = ( {
 					size={ hasSmallValue ? 'medium' : 'small' }
 					style={
 						hasSmallValue
-							? tileStyles.titleBesideSmallValue
+							? tileStyles.titleAboveSmallValue
 							: tileStyles.title
 					}
 				>

@@ -25,8 +25,8 @@ import { ORDERED_MAIN_DASHBOARD_CONTEXTS } from './constants';
 
 describe( 'ORDERED_MAIN_DASHBOARD_CONTEXTS', () => {
 	it( 'lists the sections in the order the dashboard navigation shows them', () => {
-		// `contexts` is the map the dashboard navigation renders, so this keeps
-		// the exported sections in the order a reader sees.
+		// `contexts` is the map the dashboard navigation renders, so it is the
+		// source of the order the PDF report follows.
 		expect( ORDERED_MAIN_DASHBOARD_CONTEXTS ).toEqual(
 			Object.values( contexts[ DASHBOARD_TYPE_MAIN ] )
 		);
