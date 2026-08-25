@@ -202,7 +202,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 		);
 		$this->assertSame(
 			array(
-				'text'      => 'Your events data may be grouped together across plugins. To see separate results by plugin, %s.',
+				'text'      => 'Your events data might be grouped together across plugins. To see separate results by plugin, %s.',
 				'link_text' => 'enable data breakdown',
 			),
 			$sections[0]['prompt'],
@@ -296,7 +296,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 				),
 			),
 			$sections[0]['groups'],
-			'build_sections() should give the online store one group for each plugin, biggest first, then count the sales that sit in no plugin group in an "Other sources" group holding the total alone.'
+			'build_sections() should give the online store one group for each plugin, biggest first, and put the rest in an "Other sources" group that holds the total alone.'
 		);
 		$this->assertSame(
 			array(),
@@ -436,11 +436,11 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 				),
 			),
 			$sections[0]['groups'],
-			'build_sections() should add up every lead event into one nameless group, so 30 contact events and 55 submit_lead_form events read as 85 form completions.'
+			'build_sections() should add up every lead event name into one nameless group.'
 		);
 		$this->assertSame(
 			array(
-				'text'      => 'Your events data may be grouped together across forms. To see separate results by form, %s.',
+				'text'      => 'Your events data might be grouped together across forms. To see separate results by form, %s.',
 				'link_text' => 'enable data breakdown',
 			),
 			$sections[0]['prompt'],
@@ -521,7 +521,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 				),
 			),
 			$sections[0]['groups'],
-			'build_sections() should name each form group by its stored title, show "Form #999999" when no form has that ID, and count the completions that sit in no form group in an "Other sources" group.'
+			'build_sections() should name each form group by its stored title, show "Form #999999" when no form has that ID, and put the rest in an "Other sources" group.'
 		);
 		$this->assertSame(
 			array(),
@@ -638,6 +638,71 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 			array(),
 			$sections,
 			'build_sections() should build no online store section when the report names no event, because both tile labels depend on that event.'
+		);
+	}
+
+	public function test_build_sections__shows_no_form_group_for_a_row_analytics_did_not_name() {
+		$form_dimension     = 'customEvent:googlesitekit_form_id';
+		$newsletter_form_id = $this->create_form( 'Newsletter signup form' );
+
+		$sections = $this->builder->build_sections(
+			array(
+				'site_goals_lead_primary_by_form' => $this->build_report(
+					array( 'eventName', $form_dimension, 'dateRange' ),
+					array( 'eventCount' ),
+					array(
+						array( array( 'contact', (string) $newsletter_form_id, 'date_range_0' ), array( '116' ) ),
+						array( array( 'contact', (string) $newsletter_form_id, 'date_range_1' ), array( '100' ) ),
+						array( array( 'contact', '(other)', 'date_range_0' ), array( '9' ) ),
+						array( array( 'contact', '(other)', 'date_range_1' ), array( '4' ) ),
+					)
+				),
+				'site_goals_engagement_by_form'   => $this->build_engagement_report_by_dimension(
+					$form_dimension,
+					array( $newsletter_form_id => array( '2000', '2600' ) )
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( 'Newsletter signup form', 'Other sources' ),
+			array_column( $sections[0]['groups'], 'label' ),
+			'build_sections() should show no form group for the "(other)" row, because Analytics writes that one row for every form it stopped naming.'
+		);
+		$this->assertSame(
+			'9',
+			$sections[0]['groups'][1]['metrics'][0]['value'],
+			'build_sections() should count the completions of the "(other)" row in the "Other sources" total.'
+		);
+	}
+
+	public function test_build_sections__shows_zero_form_completions_when_the_report_holds_no_row() {
+		$sections = $this->builder->build_sections(
+			array(
+				'site_goals_lead_primary' => $this->build_report(
+					array( 'eventName', 'dateRange' ),
+					array( 'eventCount' ),
+					array()
+				),
+				'site_goals_engagement'   => $this->build_engagement_report( '2000', '2600' ),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array(
+					'label' => 'Form completion rate',
+					'value' => '0%',
+					'trend' => null,
+				),
+				array(
+					'label' => 'Total form completions',
+					'value' => '0',
+					'trend' => null,
+				),
+			),
+			$sections[0]['groups'][0]['metrics'],
+			'build_sections() should read a lead report with no row as zero form completions.'
 		);
 	}
 }

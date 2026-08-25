@@ -95,7 +95,7 @@ class Email_Report_Data_Section_PartTest extends TestCase {
 
 	public function test_get_prompt__returns_the_prompt_the_section_receives() {
 		$prompt = array(
-			'text'      => 'Your events data may be grouped together across plugins. To see separate results by plugin, %s.',
+			'text'      => 'Your events data might be grouped together across plugins. To see separate results by plugin, %s.',
 			'link_text' => 'enable data breakdown',
 		);
 

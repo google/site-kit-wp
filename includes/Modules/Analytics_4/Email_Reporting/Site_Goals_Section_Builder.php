@@ -46,6 +46,14 @@ class Site_Goals_Section_Builder {
 	const UNSET_DIMENSION_VALUE = '(not set)';
 
 	/**
+	 * The value GA4 reports when a report holds more dimension values than it counts one
+	 * by one. This single row adds up every value it stopped naming.
+	 *
+	 * @since n.e.x.t
+	 */
+	const OTHER_DIMENSION_VALUE = '(other)';
+
+	/**
 	 * Group labels of a section that does not split its results. It holds one group,
 	 * whose name and label are both empty.
 	 *
@@ -179,7 +187,7 @@ class Site_Goals_Section_Builder {
 				'metric_labels' => $this->get_online_store_metric_labels( $primary_event ),
 				'prompt'        => $is_split_by_provider ? array() : $this->build_breakdown_prompt(
 					/* translators: %s: link text, "enable data breakdown". */
-					__( 'Your events data may be grouped together across plugins. To see separate results by plugin, %s.', 'google-site-kit' )
+					__( 'Your events data might be grouped together across plugins. To see separate results by plugin, %s.', 'google-site-kit' )
 				),
 			)
 		);
@@ -232,7 +240,7 @@ class Site_Goals_Section_Builder {
 				),
 				'prompt'        => $is_split_by_form ? array() : $this->build_breakdown_prompt(
 					/* translators: %s: link text, "enable data breakdown". */
-					__( 'Your events data may be grouped together across forms. To see separate results by form, %s.', 'google-site-kit' )
+					__( 'Your events data might be grouped together across forms. To see separate results by form, %s.', 'google-site-kit' )
 				),
 			)
 		);
@@ -243,7 +251,7 @@ class Site_Goals_Section_Builder {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $config {
+	 * @param array $section_input {
 	 *     What the section is built from.
 	 *
 	 *     @type string $section_key   Section key the payload sits under.
@@ -257,30 +265,31 @@ class Site_Goals_Section_Builder {
 	 * }
 	 * @return array Section payload.
 	 */
-	private function build_section( array $config ) {
+	private function build_section( array $section_input ) {
 		$groups = array();
 
-		foreach ( $config['group_labels'] as $group_name => $group_label ) {
+		foreach ( $section_input['group_labels'] as $group_name => $group_label ) {
 			$groups[] = $this->build_group(
 				$group_label,
-				$config['counts'][ $group_name ] ?? array(),
-				$config['sessions'][ $group_name ] ?? array(),
-				$config['metric_labels']
+				$section_input['counts'][ $group_name ] ?? array(),
+				$section_input['sessions'][ $group_name ] ?? array(),
+				$section_input['metric_labels']
 			);
 		}
 
-		$other_sources_counts = $this->sum_other_sources_counts( $config['counts'], array_keys( $config['group_labels'] ) );
+		$other_sources_counts = $this->sum_other_sources_counts( $section_input['counts'], array_keys( $section_input['group_labels'] ) );
 
 		if ( ( $other_sources_counts['date_range_0'] ?? 0.0 ) > 0.0 ) {
-			$groups[] = $this->build_other_sources_group( $other_sources_counts, $config['metric_labels']['total'] );
+			$groups[] = $this->build_other_sources_group( $other_sources_counts, $section_input['metric_labels']['total'] );
 		}
 
 		list( $labels, $values, $trends ) = $this->collect_flat_lists( $groups );
 
 		return array(
-			'section_key'      => $config['section_key'],
-			// `Email_Report_Section_Builder` fills an empty title with the section key.
-			// Every tile carries its own label, so the section needs no title of its own.
+			'section_key'      => $section_input['section_key'],
+			// The email never shows this title. `Email_Report_Section_Builder` fills an
+			// empty title with the section key, and `Email_Template_Formatter` labels the
+			// section from the first tile instead.
 			'title'            => '',
 			'labels'           => $labels,
 			'event_names'      => array(),
@@ -292,7 +301,7 @@ class Site_Goals_Section_Builder {
 			'dimension_values' => array(),
 			'date_range'       => null,
 			'groups'           => $groups,
-			'prompt'           => $config['prompt'],
+			'prompt'           => $section_input['prompt'],
 		);
 	}
 
@@ -389,11 +398,13 @@ class Site_Goals_Section_Builder {
 	 *               holds no session, because a rate needs a session to divide by.
 	 */
 	private function compute_rate( $count, $sessions ) {
-		if ( 0.0 === $sessions ) {
+		$session_count = (float) $sessions;
+
+		if ( 0.0 === $session_count ) {
 			return 0.0;
 		}
 
-		return $count / $sessions;
+		return (float) $count / $session_count;
 	}
 
 	/**
@@ -474,14 +485,19 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Names each form whose results get a group of their own.
 	 *
+	 * A row that names no form gets no group of its own, so its counts go into the
+	 * "Other sources" group.
+	 *
 	 * @since n.e.x.t
 	 *
 	 * @param array $counts Key action counts, by form ID and date range key.
 	 * @return array Map of form ID to its title, biggest count first.
 	 */
 	private function get_form_group_labels( array $counts ) {
+		$unnamed_forms = array( '', self::UNSET_DIMENSION_VALUE, self::OTHER_DIMENSION_VALUE );
+
 		$group_names = $this->sort_group_names(
-			array_values( array_diff( array_keys( $counts ), array( '', self::UNSET_DIMENSION_VALUE ) ) ),
+			array_values( array_diff( array_keys( $counts ), $unnamed_forms ) ),
 			$counts
 		);
 

@@ -63,17 +63,19 @@ class Report_Data_Builder {
 	 * Constructor.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Added the optional Site Goals section builder.
 	 *
 	 * @param Email_Report_Payload_Processor|null $report_processor     Optional. Report processor instance.
 	 * @param Report_Data_Processor|null          $data_processor       Optional. Analytics data processor.
 	 * @param array                               $audience_display_map Optional. Audience resource => display name map.
 	 * @param Context|null                        $context              Optional. Plugin context for audience lookup.
+	 * @param Site_Goals_Section_Builder|null     $site_goals_builder   Optional. Site Goals section builder instance.
 	 */
-	public function __construct( ?Email_Report_Payload_Processor $report_processor = null, ?Report_Data_Processor $data_processor = null, array $audience_display_map = array(), ?Context $context = null ) {
+	public function __construct( ?Email_Report_Payload_Processor $report_processor = null, ?Report_Data_Processor $data_processor = null, array $audience_display_map = array(), ?Context $context = null, ?Site_Goals_Section_Builder $site_goals_builder = null ) {
 		$this->report_processor     = $report_processor ?? new Email_Report_Payload_Processor();
 		$this->data_processor       = $data_processor ?? new Report_Data_Processor();
 		$this->audience_display_map = $audience_display_map;
-		$this->site_goals_builder   = new Site_Goals_Section_Builder( $this->report_processor, $this->data_processor );
+		$this->site_goals_builder   = $site_goals_builder ?? new Site_Goals_Section_Builder( $this->report_processor, $this->data_processor );
 
 		if ( empty( $this->audience_display_map ) && $context instanceof Context ) {
 			$audience_config            = new Audience_Config(

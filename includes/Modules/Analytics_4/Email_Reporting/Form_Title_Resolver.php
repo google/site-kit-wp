@@ -80,6 +80,11 @@ class Form_Title_Resolver {
 	/**
 	 * Reads the stored metadata of each form through the form metadata datapoint.
 	 *
+	 * This calls the datapoint directly rather than through its REST route, so
+	 * `permission_callback()` never runs. The email report builds on a cron event, which
+	 * has no request user to check, and the datapoint reads a form post title and nothing
+	 * else.
+	 *
 	 * @since n.e.x.t
 	 *
 	 * @param array $form_ids Form IDs the report grouped its rows by.
