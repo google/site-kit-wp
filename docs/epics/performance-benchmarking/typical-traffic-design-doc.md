@@ -32,9 +32,9 @@ Neither is a report the browser should be issuing. Thirteen months of daily rows
 
 We will add a second tab to the existing `analyticsTrafficOverview` widget, behind a new `typicalTraffic` feature flag. The tab renders three sections:
 
-1. **Typical traffic chart** — daily visitors across the trailing thirteen months, ending where the selected date range ends. It is the site's own shape over a year, not the 28 or 90 days the header selector offers.  
-2. **Key factors** — what moved traffic in the selected period, one section per dimension, ordered by how much of the site's movement each dimension accounts for.  
-3. **Is this helpful?** — a thumbs prompt, promoted out of Site Goals into a global component.
+1. **Is this helpful?** — a thumbs prompt at the top of the tab, above the chart.  
+2. **Typical traffic chart** — daily visitors across the trailing thirteen months, ending where the selected date range ends. It is the site's own shape over a year, not the 28 or 90 days the header selector offers.  
+3. **Key factors** — what moved traffic in the selected period, one section per dimension, ordered by how much of the site's movement each dimension accounts for.
 
 Behind it, four new pieces:
 
@@ -65,7 +65,7 @@ Seven reuses carry weight in the design, because it depends on a particular prop
 * **`POST:searchanalytics-batch` on `Search_Console`** answers the query rows the same way, which is what the [contextual-data filter](#cross-module-contextual-data) hands back, and it answers them on a shared request too.  
 * **The API layer caches `GET` responses in browser storage, keyed on the datapoint and an MD5 of its query parameters.** That is what holds the response, under the two dates it depends on, with no cache of the slice's own.  
 * **`Custom_Dimensions_Data_Available`** answers server-side whether `googlesitekit_post_date` and `googlesitekit_post_categories` are gathering data, which decides whether those two reports are run at all — see [Response assembly](#response-assembly).  
-* **`ThumbsSurveyTrigger` renders the "Tell us more" link only when `downvoteFormURL` is set**, which is what lets the promoted feedback prompt drop the Site Goals form URL without a change to that component — see [Shared feedback prompt](#shared-feedback-prompt).
+* **`ThumbsSurveyTrigger` renders the "Tell us more" link only when `downvoteFormURL` is set**, which is what lets the tab's feedback prompt carry no follow-up URL without a change to that component — see [Is this helpful?](#is-this-helpful).
 
 The new infrastructure is the gathering and the transport in front of it: one `Analytics_4` datapoint, the filter Search Console answers, the [wire format](#wire-format) both languages read, and the `benchmarking` datastore slice behind them. The external dependencies are the GA4 Data API and the Search Console API, reached the way they always are.
 
@@ -126,6 +126,12 @@ Both the response's shape and its field names are the plugin's own: camelCase, f
 
 Every section component takes rows and numbers as props and touches no store, which is what makes each of them renderable from a fixture in Storybook and testable without a registry. The fixture is one decoded object per state rather than a set of report responses per section.
 
+### **Is this helpful?** {#is-this-helpful}
+
+`TrafficFeedbackPrompt`, rendered at the top of the tab, above the chart, with this widget's tracking event category and label. It renders the "Is this section helpful?" label, a `ThumbsSurveyTrigger` and the thank-you popper, and nothing else — there is no "Tell us more" link and no follow-up form URL, since `downvoteFormURL` is left unset.
+
+This prompt is the tab's post-launch quality signal. The vote leaves the plugin as `triggerSurvey( 'vote:<voteID>:<direction>' )` and the service stores that trigger against the user, which is what lets it survey the users who voted down — the follow-up is a survey the service serves back into the dashboard, not a link out of the plugin. The tab passes a vote ID of its own, so its votes aggregate separately and the follow-up reaches only the people this tab disappointed.
+
 ### **Typical traffic chart** {#typical-traffic-chart}
 
 `TypicalTrafficChart` renders `GoogleChart` with `chartType="LineChart"` over a two-column table — date and daily visitors — built by a pure function in `traffic-overview/charts/`.
@@ -171,22 +177,6 @@ Each code maps to an entry in a catalog in `traffic-overview/factors/registry.ts
 Each section's copy is the plugin's own: translated patterns filled with `sprintf` over values formatted through `numFmt`, with a `ChangeBadge` per row. The rows carry a label, a value and a change, and no shared row component in the plugin has a column for the change, so the row list is a new component — shared with nothing, since the Overview tab's breakdown columns render a different shape.
 
 `SEARCH_QUERIES` is the one entry whose rows are not a label and two numbers: a query carries clicks and average position, and a position that *fell* numerically is an improvement. Its renderer is the reason a catalog entry carries a component rather than only a `contextualData` key.
-
-### **Is this helpful?**
-
-`FeedbackPrompt`, promoted to a global component by [Shared feedback prompt](#shared-feedback-prompt) and rendered at the foot of the tab with this widget's tracking event category and label. It renders the thumbs and the thank-you popper and nothing else — there is no "Tell us more" link and no follow-up form URL.
-
-This prompt is the tab's post-launch quality signal. The vote leaves the plugin as `triggerSurvey( 'vote:<voteID>:<direction>' )` and the service stores that trigger against the user, which is what lets it survey the users who voted down — the follow-up is a survey the service serves back into the dashboard, not a link out of the plugin. The tab passes a vote ID of its own, alongside the existing `site_goals_widget_*` constants, so its votes aggregate separately and the follow-up reaches only the people this tab disappointed.
-
-### **Shared feedback prompt** {#shared-feedback-prompt}
-
-`WidgetFeedbackPrompt` currently lives at `assets/js/modules/analytics-4/components/site-goals/widgets/WidgetFeedbackPrompt.tsx`, renders the "Is this section helpful?" label and a `ThumbsSurveyTrigger`, and hard-codes two Site Goals specifics: a `goalType` prop used only to label the tracking event, and the `SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL` constant.
-
-It moves to `assets/js/components/FeedbackPrompt.tsx` with only the tracking specifics turned into props: an event category and label supplied by the caller. The `SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL` import does not become a prop — it is dropped. No caller passes a follow-up URL, because the follow-up is a survey the service serves off the stored `vote:<voteID>:down` trigger rather than a form linked from the popper. `downvoteFormURL` is optional on `ThumbsSurveyTrigger` and the "Tell us more" link renders only when it is set, so omitting it needs no change to that component.
-
-The two Site Goals call sites — `OnlineStorePerformanceWidget` and `LeadGenerationPerformanceWidget` — pass their existing vote IDs and tracking labels; the only visible change for them is that the link to the `'#'` placeholder stops rendering. The existing breakpoint-aware popper placement logic moves with the component.
-
-`SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL` then survives only in `PrimaryActionRow`, which passes it to `ThumbsSurveyTrigger` directly. Retiring it there is Site Goals' call — the same service-side survey is expected to replace that link too — and is out of this epic's scope.
 
 ### **Data datapoint** {#data-datapoint}
 
@@ -327,7 +317,7 @@ There is no separate gathering-data state. A property gathering data cannot be 1
 
 ### **Architecture requirements**
 
-New front-end code joins the existing widget directory: `assets/js/modules/analytics-4/components/traffic-overview/` gains a panel under `tabs/`, its chart under `charts/`, the factor catalog and its renderers under `factors/`, one hook, and the format's field indices in `constants.ts` — where nothing outside that file holds a literal index. Components are TypeScript function components, one component per file, with co-located tests and Storybook stories. `FeedbackPrompt` lands at `assets/js/components/FeedbackPrompt.tsx`, outside the module.
+New front-end code joins the existing widget directory: `assets/js/modules/analytics-4/components/traffic-overview/` gains a panel under `tabs/`, its chart under `charts/`, the factor catalog and its renderers under `factors/`, one hook, `TrafficFeedbackPrompt`, and the format's field indices in `constants.ts` — where nothing outside that file holds a literal index. Components are TypeScript function components, one component per file, with co-located tests and Storybook stories.
 
 New PHP lives in two places: `includes/Modules/Analytics_4/Datapoints/` for the datapoint, and `includes/Modules/Analytics_4/Benchmarking/` for the report options, the response builder and the wire format's encoder — with `includes/Modules/Search_Console/Benchmarking/` for the callback that answers the [contextual-data filter](#cross-module-contextual-data), the same per-module layout `Email_Reporting/` already uses on both modules.
 
@@ -453,7 +443,7 @@ Search Console is a soft dependency rather than a hard one. Where it is disconne
 
 ## **Migrations**
 
-No migrations are required. Nothing the tab reads or draws is persisted: the response is composed and discarded inside the PHP request that produced it, and its only copy lives in browser storage. Promoting `WidgetFeedbackPrompt` to `FeedbackPrompt` renames a file, moves it and updates two imports; no persisted value refers to it.
+No migrations are required. Nothing the tab reads or draws is persisted: the response is composed and discarded inside the PHP request that produced it, and its only copy lives in browser storage.
 
 ## **Technical debt** {#technical-debt}
 
@@ -538,11 +528,10 @@ Three constraints worth naming:
 | 8 | Add the Typical Traffic tab to the widget shell with its history gate | 11 |  |
 | 9 | Typical Traffic: the thirteen-month traffic chart | 15 |  |
 | 10 | Typical Traffic: key factors section | 15 |  |
-| 11 | Promote `WidgetFeedbackPrompt` to a global `FeedbackPrompt` component | 7 |  |
-| 12 | Add the "Is this helpful?" prompt to the Typical Traffic tab | 3 |  |
-| 13 | Loading and error states for the Typical Traffic tab | 11 |  |
+| 11 | Add the "Is this helpful?" prompt to the Typical Traffic tab | 3 |  |
+| 12 | Loading and error states for the Typical Traffic tab | 11 |  |
 
-**TOTAL: 139 STORY POINTS across 13 issues**
+**TOTAL: 132 STORY POINTS across 12 issues**
 
 **The wire format is the first thing to land after the flag and the contract everything else is built against.** The encoder, the decoder and the [shared fixture](#wire-format) are a small, self-contained issue with no dependency on a report, a datapoint or a component, and once it exists the server-side half writes against the encoder while the panel and its sections read a decoded fixture. Agreeing the layout early is what lets the two halves proceed in parallel, and the [panel data flow](#panel-data-flow) table is the version to agree.
 
