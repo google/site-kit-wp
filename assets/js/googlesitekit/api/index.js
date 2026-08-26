@@ -187,6 +187,9 @@ export async function siteKitRequest(
 			throw error;
 		}
 
+		// A failed request can reject with a falsy value, e.g. when an error
+		// response has a body that parses to `false` or `0`. Substitute a
+		// generic error so that the error is always set and reported.
 		error = error || {
 			code: 'unknown_error',
 			message: __( 'An unknown error occurred.', 'google-site-kit' ),
