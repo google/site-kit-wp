@@ -33,14 +33,15 @@ import { __ } from '@wordpress/i18n';
 import { SpinnerButton } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import DocumentationLink from '@/js/components/DocumentationLink';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import PublicationSelect from '@/js/modules/reader-revenue-manager/components/common/PublicationSelect';
 import PublicationSetupDetails from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup/PublicationSetupDetails';
-import PublicationSetupErrorNotice from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup/PublicationSetupErrorNotice';
 import PublicationSetupHeadline from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup/PublicationSetupHeadline';
 import { useStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	EXPRESS_SETUP_CTAS,
 	EXPRESS_SETUP_STEPS,
@@ -108,14 +109,6 @@ const ConnectPublication: FC = () => {
 		[ publicationID ]
 	);
 
-	const submitChangesError = useSelect(
-		( select: Select ) =>
-			select( MODULES_READER_REVENUE_MANAGER ).getErrorForAction(
-				'submitChanges'
-			),
-		[]
-	);
-
 	const [ , setStep ] = useStep();
 
 	const connectPublication = useCallback( async () => {
@@ -174,18 +167,10 @@ const ConnectPublication: FC = () => {
 					{ __( 'Connect your publication', 'google-site-kit' ) }
 				</PublicationSetupHeadline>
 
-				{ submitChangesError ? (
-					<PublicationSetupErrorNotice
-						error={ submitChangesError }
-						onRetry={
-							canSubmitChanges ? connectPublication : undefined
-						}
-						title={ __(
-							'Connecting your publication failed',
-							'google-site-kit'
-						) }
-					/>
-				) : null }
+				<StoreErrorNotices
+					moduleSlug={ MODULE_SLUG_READER_REVENUE_MANAGER }
+					storeName={ MODULES_READER_REVENUE_MANAGER }
+				/>
 
 				<P
 					className="googlesitekit-rrm-publication-setup__description"

@@ -69,9 +69,15 @@ export const Error = Template.bind( {} ) as Story;
 Error.storyName = 'Error';
 Error.args = {
 	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.setErrorForSelector( {}, 'getPublications', [] );
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setErrorForSelector(
+			{
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
+			'getPublications',
+			[]
+		);
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -104,9 +110,15 @@ WithPublicationsWithError.args = {
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetPublications( publications );
 
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.setErrorForAction( {}, 'submitChanges', [] );
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setErrorForAction(
+			{
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
+			'submitChanges',
+			[]
+		);
 	},
 };
 WithPublicationsWithError.parameters = {

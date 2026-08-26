@@ -42,6 +42,10 @@ import {
 } from '@tests/js/test-utils';
 import ConnectPublication from './ConnectPublication';
 
+const TEST_DEFAULT_PUBLICATION = publications[ publications.length - 1 ];
+const TEST_PUBLICATION_WITH_ACCEPTED_TERMS = publications[ 3 ];
+const TEST_PUBLICATION_WITHOUT_ACCEPTED_TERMS = publications[ 2 ];
+
 describe( 'ConnectPublication', () => {
 	let registry: Registry;
 
@@ -76,24 +80,26 @@ describe( 'ConnectPublication', () => {
 				snippetMode: 'post_types',
 			} );
 
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.finishResolution( 'getSettings', [] );
+
 		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION }`;
 	} );
 
-	it( 'should disable submission if no publications exist', async () => {
+	it( 'should disable submission if no publications exist', () => {
 		providePublications( registry, [] );
 
-		const { getByRole, waitForRegistry } = render( <ConnectPublication />, {
+		const { getByRole } = render( <ConnectPublication />, {
 			registry,
 		} );
-
-		await waitForRegistry();
 
 		expect(
 			getByRole( 'button', { name: 'Connect existing publication' } )
 		).toBeDisabled();
 	} );
 
-	it( 'should disable submission if submission is already in progress', async () => {
+	it( 'should disable submission when submission is in progress', async () => {
 		freezeFetch( settingsEndpoint );
 
 		const { getByRole } = render( <ConnectPublication />, {
@@ -104,22 +110,14 @@ describe( 'ConnectPublication', () => {
 			name: 'Connect existing publication',
 		} );
 
-		await waitFor( () => expect( submitButton ).toBeEnabled() );
-
 		fireEvent.click( submitButton );
 
 		await waitFor( () => {
-			expect(
-				registry
-					.select( MODULES_READER_REVENUE_MANAGER )
-					.isDoingSubmitChanges()
-			).toBe( true );
+			expect( submitButton ).toBeDisabled();
 		} );
-
-		expect( submitButton ).toBeDisabled();
 	} );
 
-	it( 'should select a publication on load', async () => {
+	it( 'should select a default publication on load', async () => {
 		expect(
 			registry.select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 		).toBeUndefined();
@@ -129,20 +127,29 @@ describe( 'ConnectPublication', () => {
 		} );
 
 		await waitFor( () => {
-			const select = container.querySelector(
-				'.mdc-select__selected-text'
-			);
-
 			const publicationID = registry
 				.select( MODULES_READER_REVENUE_MANAGER )
 				.getPublicationID();
+
+			expect( publicationID ).toBe(
+				// eslint-disable-next-line sitekit/acronym-case
+				TEST_DEFAULT_PUBLICATION.publicationId
+			);
+
+			const select = container.querySelector(
+				'.mdc-select__selected-text'
+			);
 
 			expect( select ).toHaveTextContent( publicationID );
 		} );
 	} );
 
-	it( 'should navigate to the publication policies step on successful submission', async () => {
+	it( 'should navigate to the publication policies step on success if terms have been accepted', async () => {
 		fetchMock.postOnce( settingsEndpoint, {} );
+
+		providePublications( registry, [
+			TEST_PUBLICATION_WITH_ACCEPTED_TERMS,
+		] );
 
 		const { getByRole } = render( <ConnectPublication />, {
 			registry,
@@ -168,13 +175,9 @@ describe( 'ConnectPublication', () => {
 	it( 'should navigate to the terms of service step if the terms have not been accepted', async () => {
 		fetchMock.postOnce( settingsEndpoint, {} );
 
-		const publication = publications.find(
-			( p ) => p.rrmProduct.tosAcceptance.userAccepted === false
-		);
-
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.selectPublication( publication );
+		providePublications( registry, [
+			TEST_PUBLICATION_WITHOUT_ACCEPTED_TERMS,
+		] );
 
 		const { getByRole } = render( <ConnectPublication />, {
 			registry,
@@ -199,7 +202,11 @@ describe( 'ConnectPublication', () => {
 
 	it( 'should display an error notice if the submission fails', async () => {
 		fetchMock.postOnce( settingsEndpoint, {
-			body: {},
+			body: {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
 			status: 500,
 		} );
 
@@ -217,7 +224,7 @@ describe( 'ConnectPublication', () => {
 
 		await waitFor( () => {
 			expect( getByRole( 'status' ) ).toHaveTextContent(
-				/Connecting your publication failed/
+				/Internal server error/
 			);
 		} );
 
@@ -228,57 +235,21 @@ describe( 'ConnectPublication', () => {
 		expect( console ).toHaveErrored();
 	} );
 
-	it( 'should navigate to the next step if a retry is successful', async () => {
-		fetchMock
-			.postOnce( settingsEndpoint, {
-				body: {},
-				status: 500,
-			} )
-			.postOnce( settingsEndpoint, { body: {}, status: 200 } );
-
-		const { getByRole } = render( <ConnectPublication />, {
-			registry,
-		} );
-
-		const submitButton = getByRole( 'button', {
-			name: 'Connect existing publication',
-		} );
-
-		await waitFor( () => expect( submitButton ).toBeEnabled() );
-
-		fireEvent.click( submitButton );
-
-		await waitFor( () => {
-			expect( getByRole( 'status' ) ).toHaveTextContent(
-				/Connecting your publication failed/
-			);
-		} );
-
-		fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
-
-		await waitFor( () => {
-			expect( global.location.href ).toContain(
-				`step=${ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES }`
-			);
-		} );
-
-		expect( fetchMock ).toHaveFetchedTimes( 2, settingsEndpoint );
-		expect( console ).toHaveErrored();
-	} );
-
 	it.each( [
 		[ 'en', 'English', 'US', 'United States' ],
 		[ 'zh', 'Chinese', 'CN', 'China' ],
 		[ 'abc', 'abc', 'xyz', 'xyz' ],
 		[ undefined, 'Unknown', undefined, 'Unknown' ],
 	] )(
-		'should display %s language code as %s and %s region code as %s',
+		'should display language code %s as %s and region code %s as %s',
 		async ( languageCode, language, regionCode, region ) => {
+			const publicationID = 'ABCDE';
+
 			providePublications( registry, [
 				{
 					languageCode,
 					/* eslint-disable-next-line sitekit/acronym-case */
-					publicationId: 'ABCDE',
+					publicationId: publicationID,
 					onboardingState:
 						PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 					regionCode,
@@ -290,20 +261,14 @@ describe( 'ConnectPublication', () => {
 			} );
 
 			await waitFor( () => {
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublicationID()
-				).toBe( 'ABCDE' );
+				const descriptions = container.querySelectorAll(
+					'.googlesitekit-rrm-publication-setup-details__item'
+				);
+
+				expect( descriptions.length ).toBe( 2 );
+				expect( descriptions[ 0 ] ).toHaveTextContent( language );
+				expect( descriptions[ 1 ] ).toHaveTextContent( region );
 			} );
-
-			const descriptions = container.querySelectorAll(
-				'.googlesitekit-rrm-publication-setup-details__item'
-			);
-
-			expect( descriptions.length ).toBe( 2 );
-			expect( descriptions[ 0 ] ).toHaveTextContent( language );
-			expect( descriptions[ 1 ] ).toHaveTextContent( region );
 		}
 	);
 
@@ -319,7 +284,7 @@ describe( 'ConnectPublication', () => {
 				'To use Reader Revenue Manager, connect your publication or create a new one.',
 		},
 	] )(
-		'renders the expected description when the CTA is $cta',
+		'should renders the expected description when the CTA is $cta',
 		async ( { cta, description } ) => {
 			global.location.href = cta
 				? `http://example.com/?cta=${ cta }&step=${ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION }`
@@ -329,14 +294,8 @@ describe( 'ConnectPublication', () => {
 				registry,
 			} );
 
-			expect( getByText( description ) ).toBeInTheDocument();
-
 			await waitFor( () => {
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getPublicationID()
-				).toBeDefined();
+				expect( getByText( description ) ).toBeInTheDocument();
 			} );
 		}
 	);

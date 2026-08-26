@@ -31,10 +31,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { ProgressBar } from 'googlesitekit-components';
-import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import useFormValue from '@/js/hooks/useFormValue';
-import PublicationSetupErrorNotice from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup/PublicationSetupErrorNotice';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
@@ -44,8 +45,6 @@ import PlusIcon from '@/svg/icons/plus.svg';
 import ConnectPublication from './ConnectPublication';
 
 const StepPublicationSetup: FC = () => {
-	const { resetPublications } = useDispatch( MODULES_READER_REVENUE_MANAGER );
-
 	const [ showPublicationCreate, setShowPublicationCreate ] =
 		useFormValue< boolean >(
 			READER_REVENUE_MANAGER_SETUP_FORM,
@@ -76,8 +75,16 @@ const StepPublicationSetup: FC = () => {
 		[]
 	);
 
-	const hasPublications = hasResolvedPublications && publications?.length;
-	const hasNoPublications = hasResolvedPublications && ! publications?.length;
+	const hasPublications =
+		hasResolvedPublications &&
+		! getPublicationsError &&
+		publications?.length;
+
+	const hasNoPublications =
+		hasResolvedPublications &&
+		! getPublicationsError &&
+		! publications?.length;
+
 	const isCreatingPublication = hasNoPublications || showPublicationCreate;
 
 	useEffect( () => {
@@ -92,13 +99,10 @@ const StepPublicationSetup: FC = () => {
 
 	if ( getPublicationsError ) {
 		return (
-			<PublicationSetupErrorNotice
-				error={ getPublicationsError }
-				onRetry={ resetPublications }
-				title={ __(
-					'Getting your publications failed',
-					'google-site-kit'
-				) }
+			<StoreErrorNotices
+				moduleSlug={ MODULE_SLUG_READER_REVENUE_MANAGER }
+				storeName={ MODULES_READER_REVENUE_MANAGER }
+				hasButton
 			/>
 		);
 	}
