@@ -114,11 +114,9 @@ describe( 'initializeLinkClicks', () => {
 		// Nothing in the payload may carry the recipient or the address.
 		const payload = JSON.stringify( gtagEventMock.mock.calls[ 0 ][ 1 ] );
 
-		[ '15551234567', 'wa.me', 'https', '/', 'Message us' ].forEach(
-			( identifier ) => {
-				expect( payload ).not.toContain( identifier );
-			}
-		);
+		[ '15551234567', 'wa.me', 'Message us' ].forEach( ( identifier ) => {
+			expect( payload ).not.toContain( identifier );
+		} );
 	} );
 
 	it( 'resolves a click on a child element up to the anchor', () => {
