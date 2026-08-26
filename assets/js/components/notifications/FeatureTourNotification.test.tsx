@@ -24,7 +24,9 @@ import { waitFor } from '@testing-library/react';
 /**
  * Internal dependencies
  */
-import createFeatureTourNotification from '@/js/components/notifications/FeatureTourNotification';
+import createFeatureTourNotification, {
+	TARGET_WAIT_TIMEOUT_MS,
+} from '@/js/components/notifications/FeatureTourNotification';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
@@ -66,6 +68,15 @@ describe( 'FeatureTourNotification', () => {
 				isDismissible: false,
 			} );
 	} );
+
+	function renderWithoutTarget() {
+		return render(
+			<div>
+				<FeatureTourNotification id={ TOUR_NOTIFICATION_ID } />
+			</div>,
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+		);
+	}
 
 	function renderNotification() {
 		return render(
@@ -111,5 +122,57 @@ describe( 'FeatureTourNotification', () => {
 				TOUR_NOTIFICATION_ID
 			);
 		} );
+	} );
+
+	it( 'waits for a target that arrives after it mounts', async () => {
+		const { container, getByText, queryByText, waitForRegistry } =
+			renderWithoutTarget();
+
+		await waitForRegistry();
+
+		// `TourTooltips` resolves its target on mount, so nothing may render
+		// while the target is still missing.
+		expect( queryByText( /test tour title/i ) ).not.toBeInTheDocument();
+
+		act( () => {
+			const target = global.document.createElement( 'div' );
+			target.className = 'googlesitekit-test-tour-target';
+			container.appendChild( target );
+		} );
+
+		await waitFor( () => {
+			expect( getByText( /test tour title/i ) ).toBeInTheDocument();
+		} );
+	} );
+
+	it( 'hands the queue slot back when the target never arrives', () => {
+		const dismissNotificationSpy = jest.spyOn(
+			registry.dispatch( CORE_NOTIFICATIONS ),
+			'dismissNotification'
+		);
+		const setTimeoutSpy = jest.spyOn( global, 'setTimeout' );
+
+		renderWithoutTarget();
+
+		expect( dismissNotificationSpy ).not.toHaveBeenCalled();
+
+		// Run the give-up callback directly rather than moving the clock, which
+		// this harness does not survive cleanly.
+		const [ giveUp ] =
+			setTimeoutSpy.mock.calls.find(
+				( [ , delay ] ) => delay === TARGET_WAIT_TIMEOUT_MS
+			) || [];
+
+		expect( giveUp ).toBeDefined();
+
+		act( () => {
+			( giveUp as () => void )();
+		} );
+
+		expect( dismissNotificationSpy ).toHaveBeenCalledWith(
+			TOUR_NOTIFICATION_ID
+		);
+
+		setTimeoutSpy.mockRestore();
 	} );
 } );

@@ -93,6 +93,7 @@ import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
 import Notifications from './notifications/Notifications';
 import OfflineNotification from './notifications/OfflineNotification';
+import SetupCTAOverlays from './notifications/SetupCTAOverlays';
 import PDFDownloadButton from './pdf-export/PDFDownloadButton';
 import PDFExportRoot from './pdf-export/PDFExportRoot';
 import PDFSectionsSelectionPanel from './pdf-export/PDFSectionsSelectionPanel';
@@ -396,6 +397,8 @@ export default function DashboardMainApp() {
 						groupID={ NOTIFICATION_GROUPS.SETUP_MODALS }
 					/>
 				) }
+
+				{ ! hideSetupCTAs && <SetupCTAOverlays /> }
 
 				{ isKeyMetricsWidgetHidden !== true && (
 					<WidgetContextRenderer

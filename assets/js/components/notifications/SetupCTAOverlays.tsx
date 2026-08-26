@@ -32,13 +32,6 @@ import {
 	NOTIFICATION_GROUPS,
 } from '@/js/googlesitekit/notifications/constants';
 
-/**
- * Renders the setup CTA overlays, except while an on-demand tour is running.
- *
- * @since n.e.x.t
- *
- * @return {JSX.Element|null} The overlays area, or `null` while a tour runs.
- */
 const SetupCTAOverlays: FC = () => {
 	// A running tour draws its own overlay, so anything queued here would land
 	// on top of it. Tours started from the queue never set `getCurrentTour()`,

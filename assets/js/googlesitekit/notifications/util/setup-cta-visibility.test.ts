@@ -29,7 +29,10 @@ import {
 import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { createTestRegistry } from '@tests/js/utils';
-import { shouldHideSetupCTAs } from './setup-cta-visibility';
+import {
+	requireSetupCTAsNotHidden,
+	shouldHideSetupCTAs,
+} from './setup-cta-visibility';
 
 describe( 'shouldHideSetupCTAs', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
@@ -103,5 +106,94 @@ describe( 'shouldHideSetupCTAs', () => {
 		receiveFirstHeaderNotification( 'some-other-notification' );
 
 		expect( callHelper() ).toBe( false );
+	} );
+} );
+
+describe( 'requireSetupCTAsNotHidden', () => {
+	let registry: ReturnType< typeof createTestRegistry >;
+
+	function callRequirement() {
+		return requireSetupCTAsNotHidden()(
+			registry as never,
+			VIEW_CONTEXT_MAIN_DASHBOARD
+		);
+	}
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+		enabledFeatures.add( 'setupFlowRefresh' );
+	} );
+
+	afterEach( () => {
+		enabledFeatures.delete( 'setupFlowRefresh' );
+	} );
+
+	it( 'returns a callback rather than a verdict', () => {
+		expect( typeof requireSetupCTAsNotHidden() ).toBe( 'function' );
+	} );
+
+	it( 'resolves true when nothing suppresses the setup CTAs', async () => {
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.receiveQueuedNotifications( [], NOTIFICATION_GROUPS.DEFAULT );
+
+		await expect( callRequirement() ).resolves.toBe( true );
+	} );
+
+	it( 'resolves false when the initial setup notification timeout is dismissed', async () => {
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [
+				INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
+			] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.receiveQueuedNotifications( [], NOTIFICATION_GROUPS.DEFAULT );
+
+		await expect( callRequirement() ).resolves.toBe( false );
+	} );
+
+	// The `await` is the only thing this adds over `shouldHideSetupCTAs`: both
+	// selectors it reads report `undefined` until they resolve, which reads as
+	// "nothing to hide" and would let the overlay through on the very load it is
+	// meant to stay off.
+	it( 'waits for the dismissed items to arrive before deciding', async () => {
+		// A delayed response is the whole point: read synchronously, the store
+		// still says nothing is dismissed, so an unawaited check would resolve
+		// `true` and let the overlay through.
+		// `get`, not `getOnce`: the synchronous read below starts the resolver,
+		// so the endpoint is asked for twice.
+		fetchMock.get(
+			new RegExp( '^/google-site-kit/v1/core/user/data/dismissed-items' ),
+			() =>
+				new Promise( ( resolve ) =>
+					setTimeout(
+						() =>
+							resolve( {
+								body: [
+									INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
+								],
+								status: 200,
+							} ),
+						50
+					)
+				)
+		);
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+		registry
+			.dispatch( CORE_NOTIFICATIONS )
+			.receiveQueuedNotifications( [], NOTIFICATION_GROUPS.DEFAULT );
+
+		expect(
+			shouldHideSetupCTAs(
+				registry.select as Select,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			)
+		).toBe( false );
+
+		await expect( callRequirement() ).resolves.toBe( false );
 	} );
 } );

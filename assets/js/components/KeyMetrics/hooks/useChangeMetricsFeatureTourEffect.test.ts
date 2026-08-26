@@ -27,11 +27,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import { renderHook } from '@tests/js/test-utils';
-import {
-	createTestRegistry,
-	provideSiteInfo,
-	provideUserInfo,
-} from '@tests/js/utils';
+import { createTestRegistry } from '@tests/js/utils';
 import { useChangeMetricsFeatureTourEffect } from './useChangeMetricsFeatureTourEffect';
 
 jest.mock( '@/js/feature-tours/shared-key-metrics', () => ( {
@@ -52,8 +48,6 @@ describe( 'useChangeMetricsFeatureTourEffect', () => {
 		global.location.href = DASHBOARD_URL;
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
-		provideUserInfo( registry, { id: 2 } );
-		provideSiteInfo( registry, { keyMetricsSetupCompletedBy: 1 } );
 		dismissTourSpy = jest.spyOn(
 			registry.dispatch( CORE_USER ),
 			'dismissTour'

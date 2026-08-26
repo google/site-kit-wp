@@ -69,11 +69,12 @@ export function shouldHideSetupCTAs(
 }
 
 /**
- * Returns a function that checks the setup CTAs are not hidden.
+ * Builds a `checkRequirements` callback that keeps a notification out of the
+ * queue while the setup CTAs are hidden.
  *
  * @since n.e.x.t
  *
- * @return {Function} Whether the setup CTAs are shown or not.
+ * @return {Function} Callback resolving to `true` when the setup CTAs are shown.
  */
 export function requireSetupCTAsNotHidden() {
 	return async (
