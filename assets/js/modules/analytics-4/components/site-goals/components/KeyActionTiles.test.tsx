@@ -19,8 +19,27 @@
 /**
  * Internal dependencies
  */
+import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { render } from '@tests/js/test-utils';
+import { KeyActionChartTileProps } from './KeyActionChartTile';
 import KeyActionTiles from './KeyActionTiles';
+
+const mockKeyActionChartTile = jest.fn();
+
+// `KeyActionChartTile.test.tsx` covers the chart tile's own report, so this
+// stub records the props `KeyActionTiles` passes it. It renders the title
+// under `googlesitekit-site-goals-tile__title`, which `GoalTile` adds to
+// every tile title, so a test can read all three titles in render order.
+jest.mock( './KeyActionChartTile', () => {
+	return function KeyActionChartTileStub( props: KeyActionChartTileProps ) {
+		mockKeyActionChartTile( props );
+		return (
+			<div className="googlesitekit-site-goals-tile__title">
+				{ props.title }
+			</div>
+		);
+	};
+} );
 
 describe( 'KeyActionTiles', () => {
 	const props = {
@@ -28,6 +47,7 @@ describe( 'KeyActionTiles', () => {
 		rateTitle: 'Sales Rate',
 		totalTitle: 'Total Sales',
 		totalSubtitle: '“purchase” events',
+		chartTitle: 'Total sales in the last 28 days',
 		currentRate: 0.5,
 		previousRate: 0.4,
 		currentSessions: 100,
@@ -35,27 +55,65 @@ describe( 'KeyActionTiles', () => {
 		previousCount: 30,
 		otherSourcesCount: 7,
 		otherSourcesPreviousCount: 3,
+		dates: { startDate: '2020-08-11', endDate: '2020-09-07' },
+		eventNames: [ 'purchase' ],
+		goalType: GOAL_TYPES.ECOMMERCE,
+		breakdownFilter: {
+			'customEvent:googlesitekit_event_provider': 'woocommerce',
+		},
 	};
 
-	it( 'renders the rate and total tiles, using the value-tab count, on a value tab', () => {
-		const { getByText, queryByText } = render(
+	afterEach( () => {
+		mockKeyActionChartTile.mockClear();
+	} );
+
+	it( "shows the rate, total, and chart tiles, with the tab's own count, on a value tab", () => {
+		const { container, getByText, queryByText } = render(
 			<KeyActionTiles { ...props } isOtherSourcesTab={ false } />
 		);
 
-		expect( getByText( 'Sales Rate' ) ).toBeInTheDocument();
-		expect( getByText( 'Total Sales' ) ).toBeInTheDocument();
+		const titles = Array.from(
+			container.querySelectorAll(
+				'.googlesitekit-site-goals-tile__title'
+			)
+		).map( ( title ) => title.textContent );
+
+		expect( titles ).toEqual( [
+			'Sales Rate',
+			'Total Sales',
+			'Total sales in the last 28 days',
+		] );
+
 		// The value-tab count is shown, not the Other sources count.
 		expect( getByText( '42' ) ).toBeInTheDocument();
 		expect( queryByText( '7' ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'omits the rate tile and uses the unattributed count on the Other sources tab', () => {
+	it( 'gives the chart tile the date range, events, goal, and tab filter', () => {
+		render( <KeyActionTiles { ...props } isOtherSourcesTab={ false } /> );
+
+		expect( mockKeyActionChartTile ).toHaveBeenCalledWith(
+			expect.objectContaining( {
+				dates: props.dates,
+				eventNames: props.eventNames,
+				goalType: props.goalType,
+				breakdownFilter: props.breakdownFilter,
+			} )
+		);
+	} );
+
+	it( 'shows only the total tile, with the unattributed count, on the Other sources tab', () => {
 		const { getByText, queryByText } = render(
 			<KeyActionTiles { ...props } isOtherSourcesTab />
 		);
 
 		// No rate tile (no per-source sessions to rate against).
 		expect( queryByText( 'Sales Rate' ) ).not.toBeInTheDocument();
+		// The chart tile doesn't appear either, because the Other sources tab
+		// has no filter for a daily count of unattributed events.
+		expect(
+			queryByText( 'Total sales in the last 28 days' )
+		).not.toBeInTheDocument();
 		expect( getByText( 'Total Sales' ) ).toBeInTheDocument();
 		// The unattributed count is shown instead of the value-tab count.
 		expect( getByText( '7' ) ).toBeInTheDocument();
