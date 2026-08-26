@@ -135,12 +135,12 @@ describe( 'classifyContactLink', () => {
 			],
 		],
 	] )( '%s', ( linkType, classified, unclassified ) => {
-		it.each( classified )( 'classifies %s', ( href ) => {
+		it.each( classified )( 'should classify %s', ( href ) => {
 			expect( classify( href ) ).toBe( linkType );
 		} );
 
 		if ( unclassified.length ) {
-			it.each( unclassified )( 'does not classify %s', ( href ) => {
+			it.each( unclassified )( 'should not classify %s', ( href ) => {
 				expect( classify( href ) ).toBeNull();
 			} );
 		}
@@ -151,16 +151,19 @@ describe( 'classifyContactLink', () => {
 		'https://notwa.me/1555',
 		'https://wa.me.evil.com/1555',
 		'https://sub.t.me/acme',
-	] )( 'matches hosts exactly, so %s classifies as nothing', ( href ) => {
-		expect( classify( href ) ).toBeNull();
-	} );
+	] )(
+		'should match hosts exactly, so %s classifies as nothing',
+		( href ) => {
+			expect( classify( href ) ).toBeNull();
+		}
+	);
 
 	it.each( [
 		'https://constructor/',
 		'https://__proto__/',
 		'https://www.constructor/x',
 	] )(
-		'returns null, not an inherited property, for the prototype-key host %s',
+		'should return null, not an inherited property, for the prototype-key host %s',
 		( href ) => {
 			// The parser lower-cases the host, so `toString` and friends can
 			// never reach the index — but `constructor` and `__proto__` can.
@@ -168,7 +171,7 @@ describe( 'classifyContactLink', () => {
 		}
 	);
 
-	it( 'returns null for a malformed href rather than throwing', () => {
+	it( 'should return null for a malformed href rather than throwing', () => {
 		const anchor = global.document.createElement( 'a' );
 		// An anchor with no href attribute reports an empty string, which the
 		// URL parser rejects.
@@ -191,13 +194,13 @@ describe( 'classifyContactLink', () => {
 			'line',
 		];
 
-		it( 'lists every documented type once, in order', () => {
+		it( 'should list every documented type once, in order', () => {
 			expect( CONTACT_LINK_MATCHERS.map( ( m ) => m.type ) ).toEqual(
 				DOCUMENTED_TYPES
 			);
 		} );
 
-		it( 'claims no host for more than one type', () => {
+		it( 'should claim no host for more than one type', () => {
 			const hosts = CONTACT_LINK_MATCHERS.flatMap(
 				( matcher ) => matcher.hosts || []
 			);
@@ -205,7 +208,7 @@ describe( 'classifyContactLink', () => {
 			expect( hosts ).toHaveLength( new Set( hosts ).size );
 		} );
 
-		it( 'claims no scheme for more than one type', () => {
+		it( 'should claim no scheme for more than one type', () => {
 			const schemes = CONTACT_LINK_MATCHERS.flatMap(
 				( matcher ) => matcher.schemes || []
 			);
@@ -213,7 +216,7 @@ describe( 'classifyContactLink', () => {
 			expect( schemes ).toHaveLength( new Set( schemes ).size );
 		} );
 
-		it( 'lists none of the share-only or group-only hosts', () => {
+		it( 'should list none of the share-only or group-only hosts', () => {
 			const hosts = CONTACT_LINK_MATCHERS.flatMap(
 				( matcher ) => matcher.hosts || []
 			);
