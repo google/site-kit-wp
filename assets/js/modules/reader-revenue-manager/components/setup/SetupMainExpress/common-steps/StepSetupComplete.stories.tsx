@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import { withQuery } from '@storybook/addon-queryparams';
 import { ComponentProps, ReactElement } from 'react';
 
 /**
@@ -35,8 +36,6 @@ import { Button } from 'googlesitekit-components';
 import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { Story } from '@/js/types/Story';
 import ExternalIcon from '@/svg/icons/external.svg';
-import { provideSiteInfo } from '@tests/js/utils';
-import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import StepSetupComplete from './StepSetupComplete';
 import StepSetupCompleteDetail from './StepSetupCompleteDetail';
 
@@ -75,33 +74,15 @@ WithCTADetails.args = {
 		</StepSetupCompleteDetail>
 	),
 };
+WithCTADetails.parameters = {
+	query: {
+		cta: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+	},
+};
 WithCTADetails.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMainExpress/StepSetupComplete',
 	component: StepSetupComplete,
-	decorators: [
-		( StoryComponent: () => ReactElement ) => {
-			// The CTA details are only rendered within a CTA-specific setup
-			// flow, which `StepSetupComplete` detects via the `cta` query
-			// argument, so emulate that flow here.
-			global.history.replaceState(
-				null,
-				'',
-				addQueryArgs( global.location.href, {
-					cta: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
-				} )
-			);
-
-			function setupRegistry( registry: WPDataRegistry ) {
-				provideSiteInfo( registry );
-			}
-
-			return (
-				<WithRegistrySetup func={ setupRegistry }>
-					<StoryComponent />
-				</WithRegistrySetup>
-			);
-		},
-	],
+	decorators: [ withQuery ],
 };
