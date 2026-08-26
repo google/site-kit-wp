@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC, ReactNode } from 'react';
+import { FC } from 'react';
 
 /**
  * Internal dependencies
@@ -28,7 +28,6 @@ import Typography from '@/js/components/Typography';
 
 interface StepSetupCompleteDetailProps {
 	title: string;
-	children: ReactNode;
 }
 
 const StepSetupCompleteDetail: FC< StepSetupCompleteDetailProps > = ( {

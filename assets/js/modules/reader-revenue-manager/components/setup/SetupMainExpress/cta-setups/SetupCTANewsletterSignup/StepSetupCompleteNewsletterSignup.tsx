@@ -40,17 +40,10 @@ import {
 } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
 import useHasPreExistingCTAs from './useHasPreExistingCTAs';
 
-const CONTENT_ACCESS_PATH = 'reader-revenue-manager/content-access';
 const SUPPORT_URL = 'https://wordpress.org/support/plugin/google-site-kit/';
 
 const StepSetupCompleteNewsletterSignup: FC = () => {
 	const hasPreExistingCTAs = useHasPreExistingCTAs();
-
-	const publicationID = useSelect(
-		( select: Select ) =>
-			select( MODULES_READER_REVENUE_MANAGER ).getPublicationID(),
-		[]
-	);
 
 	// The newsletter CTA created in this flow is the most recent one of its
 	// type; its identifier is the last segment of the CTA resource name.
@@ -68,25 +61,20 @@ const StepSetupCompleteNewsletterSignup: FC = () => {
 
 	const publisherCenterOverviewURL = useSelect(
 		( select: Select ) =>
-			select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
-				path: `${ CONTENT_ACCESS_PATH }/overview`,
-				query: { publication: publicationID },
-			} ),
-		[ publicationID ]
+			select(
+				MODULES_READER_REVENUE_MANAGER
+			).getPublisherCenterOverviewURL(),
+		[]
 	);
 
-	// TODO: Confirm the Publisher Center CTA edit screen path as part of #13031,
-	// which introduces the same link on the RRM settings screens. Until the CTA
-	// is known, fall back to the screen listing the publication's CTAs.
 	const publisherCenterCTAEditURL = useSelect(
 		( select: Select ) =>
 			newsletterCTAID
-				? select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
-						path: `${ CONTENT_ACCESS_PATH }/ctas/${ newsletterCTAID }`,
-						query: { publication: publicationID },
-				  } )
+				? select( MODULES_READER_REVENUE_MANAGER ).getCTAEditLinkURL(
+						newsletterCTAID
+				  )
 				: undefined,
-		[ newsletterCTAID, publicationID ]
+		[ newsletterCTAID ]
 	);
 
 	return (
