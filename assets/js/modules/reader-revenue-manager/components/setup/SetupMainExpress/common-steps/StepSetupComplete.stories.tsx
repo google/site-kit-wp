@@ -20,14 +20,12 @@
  * External dependencies
  */
 import { withQuery } from '@storybook/addon-queryparams';
-import { ComponentProps, ReactElement } from 'react';
+import { ComponentProps } from 'react';
 
 /**
  * WordPress dependencies
  */
-import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { __ } from '@wordpress/i18n';
-import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
