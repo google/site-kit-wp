@@ -615,7 +615,7 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly without 
                     </span>
                   </button>
                   <button
-                    class="mdc-button mdc-button--tertiary"
+                    class="mdc-button googlesitekit-rrm-express-setup-complete__view-on-site-cta mdc-button--tertiary"
                     target="_self"
                   >
                     <span
