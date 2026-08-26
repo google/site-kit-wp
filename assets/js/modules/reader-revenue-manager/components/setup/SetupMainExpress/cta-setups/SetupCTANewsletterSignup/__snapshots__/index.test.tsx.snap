@@ -251,7 +251,7 @@ exports[`SetupCTANewsletterSignup setup complete step matches the snapshot with 
                           <a
                             aria-label="Publisher center (opens in a new tab)"
                             class="googlesitekit-cta-link"
-                            href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fpublishercenter.google.com%2Freader-revenue-manager%2Fcontent-access%2Fctas%2F5%3Fpublication%3DABCD_123-4%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
+                            href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fpublishercenter.google.com%2Freader-revenue-manager%2Fcontent-access%2Fctas%2Fnewsletter%2F5%3Fpublication%3DABCD_123-4%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
                             rel="noopener noreferrer"
                             target="_blank"
                           >
@@ -547,7 +547,7 @@ exports[`SetupCTANewsletterSignup setup complete step matches the snapshot witho
                           <a
                             aria-label="Publisher center (opens in a new tab)"
                             class="googlesitekit-cta-link"
-                            href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fpublishercenter.google.com%2Freader-revenue-manager%2Fcontent-access%2Fctas%2F5%3Fpublication%3DABCD_123-4%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
+                            href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fpublishercenter.google.com%2Freader-revenue-manager%2Fcontent-access%2Fctas%2Fnewsletter%2F5%3Fpublication%3DABCD_123-4%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
                             rel="noopener noreferrer"
                             target="_blank"
                           >

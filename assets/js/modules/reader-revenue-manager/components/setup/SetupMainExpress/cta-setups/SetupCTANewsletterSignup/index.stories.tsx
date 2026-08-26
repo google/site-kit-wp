@@ -20,7 +20,7 @@
  * External dependencies
  */
 import { withQuery } from '@storybook/addon-queryparams';
-import { ElementType, FC, ReactNode } from 'react';
+import { ElementType } from 'react';
 
 /**
  * WordPress dependencies
@@ -88,9 +88,9 @@ function setupBaseRegistry( registry: WPDataRegistry ) {
 		.receiveGetCTAs( { ctas: [ NEWSLETTER_CTA ], params: {} } );
 }
 
-const Template: FC = () => {
+function Template() {
 	return <SetupCTANewsletterSignup />;
-};
+}
 
 export const ConnectPublication = Template.bind( {} ) as Story;
 ConnectPublication.storyName = '1. Connect Publication';
@@ -169,7 +169,7 @@ export default {
 		(
 			StoryComponent: ElementType,
 			{ args }: { args: Story[ 'args' ] }
-		): ReactNode => {
+		) => {
 			function setupRegistry( registry: WPDataRegistry ) {
 				setupBaseRegistry( registry );
 				args?.setupRegistry?.( registry );

@@ -166,8 +166,15 @@ describe( 'SetupCTANewsletterSignup', () => {
 	} );
 
 	describe( 'setup complete step', () => {
+		let originalHref: string;
+
 		beforeEach( () => {
+			originalHref = global.location.href;
 			global.location.href = SETUP_COMPLETE_URL;
+		} );
+
+		afterEach( () => {
+			global.location.href = originalHref;
 		} );
 
 		it( 'matches the snapshot without pre-existing CTAs', () => {
@@ -263,7 +270,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 				);
 
 				expect( serviceURL.pathname ).toBe(
-					'/reader-revenue-manager/content-access/ctas/5'
+					'/reader-revenue-manager/content-access/ctas/newsletter/5'
 				);
 				expect( serviceURL.searchParams.get( 'publication' ) ).toBe(
 					PUBLICATION_ID
