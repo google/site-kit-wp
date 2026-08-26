@@ -19,15 +19,12 @@
 /**
  * Internal dependencies
  */
+import { initializePagination } from './content-events/pagination';
 import { initializeVimeo } from './content-events/vimeo';
 
-/** The Content Events configuration published by PHP on the frontend. */
 export interface ContentEventsConfig {
-	/** ID of the queried post, or `0` when there isn't one. */
 	postID: number;
-	/** Whether the current request is for a single post. */
 	isSinglePost: boolean;
-	/** Whether the content rendered a Vimeo embed. */
 	hasVimeoEmbed: boolean;
 }
 
@@ -48,3 +45,13 @@ export function getContentEventsConfig(): ContentEventsConfig {
 }
 
 initializeVimeo( getContentEventsConfig() );
+
+try {
+	initializePagination( getContentEventsConfig() );
+} catch ( error ) {
+	// eslint-disable-next-line no-console
+	console.error(
+		'Site Kit: failed to initialize pagination click tracking.',
+		error
+	);
+}
