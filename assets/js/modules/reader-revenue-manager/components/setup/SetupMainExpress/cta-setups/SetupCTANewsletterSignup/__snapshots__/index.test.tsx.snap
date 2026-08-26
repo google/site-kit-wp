@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SetupCTANewsletterSignup setup complete step matches the snapshot with pre-existing CTAs 1`] = `
+exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre-existing CTAs 1`] = `
 <div>
   <div
     class="mdc-layout-grid googlesitekit-rrm-express-setup mdc-layout-grid--collapsed"
@@ -329,7 +329,7 @@ exports[`SetupCTANewsletterSignup setup complete step matches the snapshot with 
 </div>
 `;
 
-exports[`SetupCTANewsletterSignup setup complete step matches the snapshot without pre-existing CTAs 1`] = `
+exports[`SetupCTANewsletterSignup setup complete step renders correctly without pre-existing CTAs 1`] = `
 <div>
   <div
     class="mdc-layout-grid googlesitekit-rrm-express-setup mdc-layout-grid--collapsed"

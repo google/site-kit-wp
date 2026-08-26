@@ -177,52 +177,32 @@ describe( 'SetupCTANewsletterSignup', () => {
 			global.location.href = originalHref;
 		} );
 
-		it( 'matches the snapshot without pre-existing CTAs', () => {
-			const { container } = render( <SetupCTANewsletterSignup />, {
-				registry,
-			} );
+		it( 'renders correctly without pre-existing CTAs', () => {
+			const { container, queryByText } = render(
+				<SetupCTANewsletterSignup />,
+				{
+					registry,
+				}
+			);
 
 			expect( container ).toMatchSnapshot();
-		} );
-
-		it( 'matches the snapshot with pre-existing CTAs', () => {
-			setupRegistry( { ctas: [ PRE_EXISTING_CTA, NEWSLETTER_CTA ] } );
-
-			const { container } = render( <SetupCTANewsletterSignup />, {
-				registry,
-			} );
-
-			expect( container ).toMatchSnapshot();
-		} );
-
-		it( 'renders the CTA details in order', () => {
-			setupRegistry( { ctas: [ PRE_EXISTING_CTA, NEWSLETTER_CTA ] } );
-
-			const { container } = render( <SetupCTANewsletterSignup />, {
-				registry,
-			} );
-
-			const titles = Array.from(
-				container.querySelectorAll(
-					'.googlesitekit-rrm-express-setup-complete__detail-title'
-				)
-			).map( ( element ) => element.textContent );
-
-			expect( titles ).toEqual( [
-				'Display order',
-				'Placement settings',
-				'Content',
-				"Don't see it on your site?",
-			] );
-		} );
-
-		it( 'omits the display order detail without pre-existing CTAs', () => {
-			const { queryByText } = render( <SetupCTANewsletterSignup />, {
-				registry,
-			} );
 
 			expect( queryByText( 'Display order' ) ).not.toBeInTheDocument();
-			expect( queryByText( 'Placement settings' ) ).toBeInTheDocument();
+		} );
+
+		it( 'renders correctly with pre-existing CTAs', () => {
+			setupRegistry( { ctas: [ PRE_EXISTING_CTA, NEWSLETTER_CTA ] } );
+
+			const { container, getByText } = render(
+				<SetupCTANewsletterSignup />,
+				{
+					registry,
+				}
+			);
+
+			expect( container ).toMatchSnapshot();
+
+			expect( getByText( 'Display order' ) ).toBeInTheDocument();
 		} );
 
 		describe( 'links', () => {
