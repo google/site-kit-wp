@@ -57,6 +57,7 @@ const ViewOnSiteCTA: FC = () => {
 	return (
 		// @ts-expect-error `Button` component is not yet typed.
 		<Button
+			className="googlesitekit-rrm-express-setup-complete__view-on-site-cta"
 			onClick={ onClick }
 			trailingIcon={ <ExternalIcon width="15" height="15" /> }
 			tertiary
