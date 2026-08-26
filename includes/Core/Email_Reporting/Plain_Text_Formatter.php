@@ -77,6 +77,7 @@ class Plain_Text_Formatter {
 	 * Simple emails share a common structure with customizable content.
 	 *
 	 * @since 1.173.0
+	 * @since 1.186.0 Footer copy is now routed through `convert_links_to_text()` since it may contain an inline unsubscribe link.
 	 *
 	 * @param array $data The simple email data containing site, title, learn_more_url,
 	 *                    primary_call_to_action, body, and footer.
@@ -133,7 +134,7 @@ class Plain_Text_Formatter {
 
 		// Footer copy.
 		if ( ! empty( $footer_copy ) ) {
-			$lines[] = $footer_copy;
+			$lines[] = wp_strip_all_tags( self::convert_links_to_text( $footer_copy ) );
 		}
 
 		// Mirror the HTML `footer_type` branch: `inline` skips utility links.
@@ -270,6 +271,7 @@ class Plain_Text_Formatter {
 	 * Formats the email footer with CTA and links.
 	 *
 	 * @since 1.170.0
+	 * @since 1.186.0 Footer copy is now routed through `convert_links_to_text()` since it may contain an inline unsubscribe link.
 	 *
 	 * @param array $cta    Primary CTA configuration with 'url' and 'label'.
 	 * @param array $footer Footer configuration with 'copy' and 'unsubscribe_url'.
@@ -290,7 +292,7 @@ class Plain_Text_Formatter {
 
 		// Footer copy.
 		if ( ! empty( $footer['copy'] ) ) {
-			$lines[] = $footer['copy'];
+			$lines[] = wp_strip_all_tags( self::convert_links_to_text( $footer['copy'] ) );
 		}
 
 		$lines = self::append_footer_links( $lines, $footer['unsubscribe_url'] ?? '' );
@@ -359,7 +361,16 @@ class Plain_Text_Formatter {
 
 		// Get change context from first part.
 		$first_part = reset( $section_parts );
-		if ( ! empty( $first_part['data']['change_context'] ) ) {
+
+		// The change context is only meaningful when at least one metric has a comparison value.
+		$has_any_change = ! empty(
+			array_filter(
+				$section_parts,
+				static fn( $part_config ) => isset( $part_config['data']['change'] )
+			)
+		);
+
+		if ( $has_any_change && ! empty( $first_part['data']['change_context'] ) ) {
 			$output .= $first_part['data']['change_context'] . "\n\n";
 		}
 
@@ -404,8 +415,10 @@ class Plain_Text_Formatter {
 			$output .= $part_label . "\n";
 			$output .= str_repeat( '-', mb_strlen( $part_label ) ) . "\n";
 
-			// Change context.
-			if ( ! empty( $data['change_context'] ) ) {
+			// Change context is only meaningful when at least one row has a comparison value.
+			$has_any_change = ! empty( array_filter( $data['changes'] ?? array(), static fn( $change ) => null !== $change ) );
+
+			if ( $has_any_change && ! empty( $data['change_context'] ) ) {
 				$output .= $data['change_context'] . "\n";
 			}
 

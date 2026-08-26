@@ -161,6 +161,7 @@ SetupCTA.propTypes = {
 	svg: PropTypes.shape( {
 		desktop: PropTypes.elementType,
 		mobile: PropTypes.elementType,
+		tablet: PropTypes.elementType,
 		verticalPosition: PropTypes.oneOf( [ 'top', 'center', 'bottom' ] ),
 	} ),
 	footer: PropTypes.node,

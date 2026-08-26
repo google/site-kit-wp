@@ -102,7 +102,10 @@ import {
 	getTopPagesDrivingLeadsEventNames,
 	getTopPagesDrivingLeadsReportOptions,
 } from '@/js/modules/analytics-4/components/widgets/TopPagesDrivingLeadsWidget';
-import { getTopRecentTrendingPagesReportOptions } from '@/js/modules/analytics-4/components/widgets/TopRecentTrendingPagesWidget';
+import {
+	getDateRange,
+	getTopRecentTrendingPagesReportOptions,
+} from '@/js/modules/analytics-4/components/widgets/TopRecentTrendingPagesWidget';
 import { getTopReturningVisitorPagesReportOptions } from '@/js/modules/analytics-4/components/widgets/TopReturningVisitorPages';
 import {
 	getTopTrafficSourceDrivingAddToCartReportOptions,
@@ -134,13 +137,17 @@ import {
 	decodeAmpersand,
 	splitCategories,
 } from '@/js/modules/analytics-4/utils';
+import { getPageReportURL } from '@/js/modules/analytics-4/utils/page-report-url';
 import {
 	getPagePaths,
 	getPageTitleMap,
 	getPageTitlesReportOptions,
 } from '@/js/modules/analytics-4/utils/page-titles-report';
 import { reportRowsWithSetValues } from '@/js/modules/analytics-4/utils/report-rows-with-set-values';
-import { getPopularKeywordsReportOptions } from '@/js/modules/search-console/components/widgets/PopularKeywordsWidget';
+import {
+	getPopularKeywordReportURL,
+	getPopularKeywordsReportOptions,
+} from '@/js/modules/search-console/components/widgets/PopularKeywordsWidget';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { listFormat, numFmt } from '@/js/util';
 import createKeyMetricTileDataLoader from './create-key-metric-tile-data-loader';
@@ -189,13 +196,58 @@ const TILE_PERCENT_FORMAT = {
  * previous-period rows the table would then show. Table tiles build their report
  * options from this instead of the raw `dates`.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object} dates The export date range, including the compare dates.
  * @return {Object} The date range with only `startDate` and `endDate`.
  */
 function pdfTableDates( dates ) {
 	return { startDate: dates.startDate, endDate: dates.endDate };
+}
+
+/**
+ * Maps ranked report rows to `PDFMetricTileTable` rows for a page-based tile:
+ * resolves each row's page path to its Analytics report link (matching the
+ * dashboard row's own link) and delegates the primary label and metric
+ * formatting to the caller.
+ *
+ * The Analytics selector is the same for every row, so it is resolved once
+ * here rather than per row; callers pass the row link's date range already
+ * narrowed to the single period the tile's own report uses (most tiles via
+ * `pdfTableDates`, "Top recent trending pages" via its own fixed window).
+ *
+ * @since 1.186.0
+ *
+ * @param {Object[]} rows               The report rows to map.
+ * @param {Object}   context            Link-building context.
+ * @param {Object}   context.registry   WordPress data registry.
+ * @param {Object}   context.dates      The single-period date range the row's link filters to.
+ * @param {boolean}  context.viewOnly   Whether the export runs on a view-only dashboard.
+ * @param {Object}   formatters         Per-tile row formatters.
+ * @param {Function} formatters.primary Maps a row and its page path to the primary label.
+ * @param {Function} formatters.metric  Maps a row to the formatted metric.
+ * @return {Object[]} The mapped `PDFMetricTileTable` rows.
+ */
+function mapPageRows(
+	rows,
+	{ registry, dates, viewOnly },
+	{ primary, metric }
+) {
+	const analytics = registry.select( MODULES_ANALYTICS_4 );
+
+	return rows.map( ( row ) => {
+		const pagePath = row?.dimensionValues?.[ 0 ]?.value;
+		return {
+			primary: primary( row, pagePath ),
+			primaryURL: getPageReportURL( {
+				analytics,
+				pagePath,
+				dates,
+				viewOnly,
+			} ),
+			metric: metric( row ),
+		};
+	} );
 }
 
 /**
@@ -206,7 +258,7 @@ function pdfTableDates( dates ) {
  * source; its share is that source's metric over the total report's metric. The
  * change is the absolute point difference, matching the dashboard badge.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object}   totalReport  The total-metric report response.
  * @param {Object}   sourceReport The per-source report response.
@@ -269,11 +321,11 @@ function extractTopSourceShareTile( totalReport, sourceReport, buildSubtext ) {
  *
  * - `TileComponent`: the `@react-pdf/renderer` component for the tile, wrapped
  *   with `lazyWithPreload` so the renderer stays out of the dashboard bundle.
- * - `getTileData( { registry, dates, signal } )`: resolves the report(s) the tile
- *   needs and returns the data the `TileComponent` consumes, or `null` when the
- *   report has no data.
+ * - `getTileData( { registry, dates, signal, viewOnly } )`: resolves the report(s)
+ *   the tile needs and returns the data the `TileComponent` consumes, or `null`
+ *   when the report has no data.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  */
 export const KEY_METRICS_PDF_TILES = {
 	[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
@@ -322,7 +374,10 @@ export const KEY_METRICS_PDF_TILES = {
 					},
 				];
 			},
-			( [ earningsReport, titlesReport ] ) => {
+			(
+				[ earningsReport, titlesReport ],
+				{ registry, dates, viewOnly }
+			) => {
 				const { rows = [] } = earningsReport || {};
 
 				// No rows means the report has no data, so drop the tile.
@@ -337,14 +392,18 @@ export const KEY_METRICS_PDF_TILES = {
 				);
 
 				return {
-					linked: true,
-					rows: rows.map( ( row ) => ( {
-						primary: titles[ row.dimensionValues[ 0 ].value ],
-						metric: numFmt( row.metricValues[ 0 ].value, {
-							style: 'currency',
-							currency: currencyCode,
-						} ),
-					} ) ),
+					rows: mapPageRows(
+						rows,
+						{ registry, dates: pdfTableDates( dates ), viewOnly },
+						{
+							primary: ( row, pagePath ) => titles[ pagePath ],
+							metric: ( row ) =>
+								numFmt( row.metricValues[ 0 ].value, {
+									style: 'currency',
+									currency: currencyCode,
+								} ),
+						}
+					),
 				};
 			}
 		),
@@ -388,7 +447,7 @@ export const KEY_METRICS_PDF_TILES = {
 
 				return requests;
 			},
-			( [ pagesReport, titlesReport ] ) => {
+			( [ pagesReport, titlesReport ], { registry, viewOnly } ) => {
 				const { rows = [] } = pagesReport || {};
 
 				// No rows means the report has no data, so drop the tile.
@@ -403,14 +462,28 @@ export const KEY_METRICS_PDF_TILES = {
 					titlesReport
 				);
 
+				// The row link must use the report's own fixed 3-day window
+				// (see `buildReports` above), not the export's overall date
+				// range, to match the dashboard row's own link.
+				const referenceDate = registry
+					.select( CORE_USER )
+					.getReferenceDate();
+
 				return {
-					linked: true,
-					rows: rows.map( ( row ) => ( {
-						primary: decodeAmpersand(
-							titles[ row.dimensionValues?.[ 0 ]?.value ]
-						),
-						metric: numFmt( row.metricValues?.[ 0 ]?.value ),
-					} ) ),
+					rows: mapPageRows(
+						rows,
+						{
+							registry,
+							dates: getDateRange( referenceDate ),
+							viewOnly,
+						},
+						{
+							primary: ( row, pagePath ) =>
+								decodeAmpersand( titles[ pagePath ] ),
+							metric: ( row ) =>
+								numFmt( row.metricValues?.[ 0 ]?.value ),
+						}
+					),
 					limit: 3,
 				};
 			}
@@ -517,7 +590,7 @@ export const KEY_METRICS_PDF_TILES = {
 
 				return requests;
 			},
-			( [ report, titlesReport ] ) => {
+			( [ report, titlesReport ], { registry, dates, viewOnly } ) => {
 				const { rows = [] } = report || {};
 
 				// No rows means the report has no data, so drop the tile.
@@ -529,15 +602,18 @@ export const KEY_METRICS_PDF_TILES = {
 				const titles = getPageTitleMap( pagePaths, titlesReport );
 
 				return {
-					linked: true,
-					rows: rows.map( ( row ) => ( {
-						// The page path maps to its title, matching the
-						// dashboard tile's primary column.
-						primary: decodeAmpersand(
-							titles[ row.dimensionValues[ 0 ].value ]
-						),
-						metric: numFmt( row.metricValues[ 0 ].value ),
-					} ) ),
+					// The page path maps to its title, matching the
+					// dashboard tile's primary column.
+					rows: mapPageRows(
+						rows,
+						{ registry, dates: pdfTableDates( dates ), viewOnly },
+						{
+							primary: ( row, pagePath ) =>
+								decodeAmpersand( titles[ pagePath ] ),
+							metric: ( row ) =>
+								numFmt( row.metricValues[ 0 ].value ),
+						}
+					),
 				};
 			}
 		),
@@ -592,7 +668,7 @@ export const KEY_METRICS_PDF_TILES = {
 					},
 				];
 			},
-			( [ report, titlesReport ] ) => {
+			( [ report, titlesReport ], { registry, dates, viewOnly } ) => {
 				const { rows = [] } = report || {};
 
 				// No rows means the report has no data, so drop the tile.
@@ -608,13 +684,16 @@ export const KEY_METRICS_PDF_TILES = {
 				);
 
 				return {
-					linked: true,
-					rows: rows.map( ( row ) => ( {
-						primary: decodeAmpersand(
-							titles[ row.dimensionValues[ 0 ].value ]
-						),
-						metric: numFmt( row.metricValues[ 0 ].value ),
-					} ) ),
+					rows: mapPageRows(
+						rows,
+						{ registry, dates: pdfTableDates( dates ), viewOnly },
+						{
+							primary: ( row, pagePath ) =>
+								decodeAmpersand( titles[ pagePath ] ),
+							metric: ( row ) =>
+								numFmt( row.metricValues[ 0 ].value ),
+						}
+					),
 				};
 			}
 		),
@@ -810,7 +889,7 @@ export const KEY_METRICS_PDF_TILES = {
 
 				return requests;
 			},
-			( [ report, titlesReport ] ) => {
+			( [ report, titlesReport ], { registry, dates, viewOnly } ) => {
 				const { rows = [] } = report || {};
 
 				// No rows means the report has no data, so drop the tile.
@@ -824,16 +903,19 @@ export const KEY_METRICS_PDF_TILES = {
 				);
 
 				return {
-					linked: true,
-					rows: rows.map( ( row ) => ( {
-						primary: decodeAmpersand(
-							titles[ row.dimensionValues?.[ 0 ]?.value ]
-						),
-						metric: numFmt(
-							row.metricValues?.[ 0 ]?.value,
-							TILE_PERCENT_FORMAT
-						),
-					} ) ),
+					rows: mapPageRows(
+						rows,
+						{ registry, dates: pdfTableDates( dates ), viewOnly },
+						{
+							primary: ( row, pagePath ) =>
+								decodeAmpersand( titles[ pagePath ] ),
+							metric: ( row ) =>
+								numFmt(
+									row.metricValues?.[ 0 ]?.value,
+									TILE_PERCENT_FORMAT
+								),
+						}
+					),
 				};
 			}
 		),
@@ -896,7 +978,7 @@ export const KEY_METRICS_PDF_TILES = {
 					},
 				];
 			},
-			( [ report, titlesReport ] ) => {
+			( [ report, titlesReport ], { registry, dates, viewOnly } ) => {
 				const { rows = [] } = report || {};
 
 				// No rows means the report has no data, so drop the tile.
@@ -911,19 +993,21 @@ export const KEY_METRICS_PDF_TILES = {
 				const titles = getPageTitleMap( pagePaths, titlesReport );
 
 				return {
-					linked: true,
-					rows: rows.map( ( row ) => {
-						const pagePath = row?.dimensionValues?.[ 0 ]?.value;
-						return {
-							primary: decodeAmpersand( titles[ pagePath ] ),
+					rows: mapPageRows(
+						rows,
+						{ registry, dates: pdfTableDates( dates ), viewOnly },
+						{
+							primary: ( row, pagePath ) =>
+								decodeAmpersand( titles[ pagePath ] ),
 							// The metric is the bounce rate, formatted as a
 							// percent to match the dashboard tile.
-							metric: numFmt(
-								row?.metricValues?.[ 0 ]?.value,
-								TILE_PERCENT_FORMAT
-							),
-						};
-					} ),
+							metric: ( row ) =>
+								numFmt(
+									row?.metricValues?.[ 0 ]?.value,
+									TILE_PERCENT_FORMAT
+								),
+						}
+					),
 				};
 			}
 		),
@@ -963,7 +1047,7 @@ export const KEY_METRICS_PDF_TILES = {
 
 				return requests;
 			},
-			( [ report, titlesReport ] ) => {
+			( [ report, titlesReport ], { registry, dates, viewOnly } ) => {
 				const { rows = [] } = report || {};
 
 				// No rows means the report has no data, so drop the tile.
@@ -977,13 +1061,16 @@ export const KEY_METRICS_PDF_TILES = {
 				);
 
 				return {
-					linked: true,
-					rows: rows.map( ( row ) => ( {
-						primary: decodeAmpersand(
-							titles[ row.dimensionValues?.[ 0 ]?.value ]
-						),
-						metric: numFmt( row.metricValues?.[ 0 ]?.value ),
-					} ) ),
+					rows: mapPageRows(
+						rows,
+						{ registry, dates: pdfTableDates( dates ), viewOnly },
+						{
+							primary: ( row, pagePath ) =>
+								decodeAmpersand( titles[ pagePath ] ),
+							metric: ( row ) =>
+								numFmt( row.metricValues?.[ 0 ]?.value ),
+						}
+					),
 					limit: 3,
 				};
 			}
@@ -1622,27 +1709,50 @@ export const KEY_METRICS_PDF_TILES = {
 					),
 				},
 			],
-			( [ report ] ) => {
-				// The Search Console report is a flat array of rows; sort by clickthrough rate descending to match the dashboard tile.
-				const rows = [ ...( report || [] ) ].sort(
-					( { ctr: ctrA = 0 }, { ctr: ctrB = 0 } ) => ctrB - ctrA
-				);
+			( [ report ], { registry, dates, viewOnly } ) => {
+				const limit = 3;
+
+				// The Search Console report requests up to 100 rows for the
+				// client-side CTR sort (matching PopularKeywordsWidget), so
+				// slice to the displayed limit before building each row's
+				// link — building a URL for every fetched row here would
+				// waste dozens of unused Search Console URL builds per
+				// export.
+				const rows = [ ...( report || [] ) ]
+					.sort(
+						( { ctr: ctrA = 0 }, { ctr: ctrB = 0 } ) => ctrB - ctrA
+					)
+					.slice( 0, limit );
 
 				if ( ! rows.length ) {
 					return null;
 				}
 
+				const getServiceReportURL = registry.select(
+					MODULES_SEARCH_CONSOLE
+				).getServiceReportURL;
+				const singleDates = pdfTableDates( dates );
+
 				return {
-					linked: true,
-					rows: rows.map( ( row ) => ( {
-						primary: row.keys[ 0 ],
-						metric: sprintf(
-							/* translators: %s: clickthrough rate value. */
-							__( '%s CTR', 'google-site-kit' ),
-							numFmt( row.ctr, '%' )
-						),
-					} ) ),
-					limit: 3,
+					rows: rows.map( ( row ) => {
+						const keyword = row.keys[ 0 ];
+						return {
+							primary: keyword,
+							// Matches PopularKeywordsWidget's own row link.
+							primaryURL: getPopularKeywordReportURL( {
+								getServiceReportURL,
+								dates: singleDates,
+								keyword,
+								viewOnly,
+							} ),
+							metric: sprintf(
+								/* translators: %s: clickthrough rate value. */
+								__( '%s CTR', 'google-site-kit' ),
+								numFmt( row.ctr, '%' )
+							),
+						};
+					} ),
+					limit,
 				};
 			}
 		),
@@ -1696,7 +1806,7 @@ export const KEY_METRICS_PDF_TILES = {
 
 				return requests;
 			},
-			( [ report, titlesReport ] ) => {
+			( [ report, titlesReport ], { registry, dates, viewOnly } ) => {
 				const { rows = [] } = report || {};
 
 				// No ranked rows means the report has no data.
@@ -1712,13 +1822,16 @@ export const KEY_METRICS_PDF_TILES = {
 				);
 
 				return {
-					linked: true,
-					rows: rows.map( ( row ) => ( {
-						primary: decodeAmpersand(
-							titles[ row.dimensionValues?.[ 0 ]?.value ]
-						),
-						metric: numFmt( row.metricValues?.[ 0 ]?.value ),
-					} ) ),
+					rows: mapPageRows(
+						rows,
+						{ registry, dates: pdfTableDates( dates ), viewOnly },
+						{
+							primary: ( row, pagePath ) =>
+								decodeAmpersand( titles[ pagePath ] ),
+							metric: ( row ) =>
+								numFmt( row.metricValues?.[ 0 ]?.value ),
+						}
+					),
 				};
 			}
 		),

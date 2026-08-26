@@ -352,6 +352,22 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			);
 		} );
 
+		it( 'anchors the tooltip to the header button that opens the panel', () => {
+			render( <NotificationComponent />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			expect( useShowTooltip ).toHaveBeenCalledWith(
+				expect.objectContaining( {
+					target: '.googlesitekit-manage-email-reports__button, .googlesitekit-features-menu__button',
+					title: expect.stringMatching(
+						/manage your email reports subscription/i
+					),
+				} )
+			);
+		} );
+
 		it( 'anchors the tooltip on mobile', () => {
 			render( <NotificationComponent />, {
 				registry,

@@ -19,8 +19,10 @@
 /**
  * Internal dependencies
  */
+import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
@@ -152,6 +154,32 @@ describe( 'PanelContent', () => {
 		} );
 	}
 
+	/**
+	 * Sets the stored panel state to open.
+	 *
+	 * @since 1.186.0
+	 *
+	 * @return {void}
+	 */
+	function openPanel() {
+		registry
+			.dispatch( CORE_UI )
+			.setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, true );
+	}
+
+	/**
+	 * Sets the stored panel state to closed.
+	 *
+	 * @since 1.186.0
+	 *
+	 * @return {void}
+	 */
+	function closePanel() {
+		registry
+			.dispatch( CORE_UI )
+			.setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, false );
+	}
+
 	it( "stores the context slugs in the dashboard's own order when the panel first opens", async () => {
 		const { findByRole } = renderPanel();
 
@@ -200,5 +228,48 @@ describe( 'PanelContent', () => {
 				registry.select( CORE_PDF ).getSelectedContextSlugs()
 			).toEqual( DASHBOARD_ORDER );
 		} );
+	} );
+
+	it( 'shows the "generating report" notice when the panel is open and a report is being exported', async () => {
+		openPanel();
+		registry.dispatch( CORE_PDF ).startExporting();
+
+		const { findByRole, getByText } = renderPanel();
+
+		await findByRole( 'checkbox', { name: 'Traffic' } );
+
+		expect(
+			getByText( 'Your report is being generated' )
+		).toBeInTheDocument();
+		expect(
+			getByText(
+				'To create another report, please wait for the current download to complete.'
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'hides the "generating report" notice when the panel is closed and a report is being exported', async () => {
+		closePanel();
+		registry.dispatch( CORE_PDF ).startExporting();
+
+		const { findByRole, queryByText } = renderPanel();
+
+		await findByRole( 'checkbox', { name: 'Traffic' } );
+
+		expect(
+			queryByText( 'Your report is being generated' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'does not show the "generating report" notice when the panel is open but no report is being exported', async () => {
+		openPanel();
+
+		const { findByRole, queryByText } = renderPanel();
+
+		await findByRole( 'checkbox', { name: 'Traffic' } );
+
+		expect(
+			queryByText( 'Your report is being generated' )
+		).not.toBeInTheDocument();
 	} );
 } );

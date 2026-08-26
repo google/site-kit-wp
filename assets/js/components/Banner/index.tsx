@@ -58,9 +58,32 @@ export interface BannerProps {
 	svg?: {
 		desktop?: string;
 		mobile?: string;
+		tablet?: string;
 		verticalPosition?: 'top' | 'center' | 'bottom';
 	};
 	footer?: ReactChild;
+}
+
+function getSVGDataByBreakpoint(
+	breakpoint: string,
+	svg: BannerProps[ 'svg' ]
+): string | null {
+	const isMobile = breakpoint === BREAKPOINT_SMALL;
+	const isTablet = breakpoint === BREAKPOINT_TABLET;
+
+	if ( isTablet && svg?.tablet ) {
+		return svg.tablet;
+	}
+
+	if ( ( isMobile || isTablet ) && svg?.mobile ) {
+		return svg.mobile;
+	}
+
+	if ( ! isMobile && ! isTablet && svg?.desktop ) {
+		return svg.desktop;
+	}
+
+	return null;
 }
 
 const Banner: FC< BannerProps > = forwardRef< HTMLDivElement, BannerProps >(
@@ -82,15 +105,7 @@ const Banner: FC< BannerProps > = forwardRef< HTMLDivElement, BannerProps >(
 		ref
 	) => {
 		const breakpoint = useBreakpoint();
-		const isMobileOrTablet =
-			breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
-
-		let SVGData: string | null = null;
-		if ( isMobileOrTablet && svg?.mobile ) {
-			SVGData = svg.mobile;
-		} else if ( ! isMobileOrTablet && svg?.desktop ) {
-			SVGData = svg.desktop;
-		}
+		const SVGData = getSVGDataByBreakpoint( breakpoint, svg );
 
 		const svgMode = svg?.verticalPosition ? svg.verticalPosition : 'center';
 

@@ -27,7 +27,6 @@ exports[`KeyMetricsSetupApp error handling when saving the initial setup setting
                 class="googlesitekit-logo"
               >
                 <svg />
-                <svg />
                 <span
                   class="screen-reader-text"
                 >
@@ -566,7 +565,6 @@ exports[`KeyMetricsSetupApp error handling when saving the user input fails shou
                 aria-hidden="true"
                 class="googlesitekit-logo"
               >
-                <svg />
                 <svg />
                 <span
                   class="screen-reader-text"
@@ -1112,7 +1110,6 @@ exports[`KeyMetricsSetupApp initial setup flow should display the progress indic
                 class="googlesitekit-logo"
               >
                 <svg />
-                <svg />
                 <span
                   class="screen-reader-text"
                 >
@@ -1645,7 +1642,6 @@ exports[`KeyMetricsSetupApp should render correctly 1`] = `
                 class="googlesitekit-logo"
               >
                 <svg />
-                <svg />
                 <span
                   class="screen-reader-text"
                 >
@@ -2148,7 +2144,6 @@ exports[`KeyMetricsSetupApp should show the analytics setup success toast notice
                 aria-hidden="true"
                 class="googlesitekit-logo"
               >
-                <svg />
                 <svg />
                 <span
                   class="screen-reader-text"

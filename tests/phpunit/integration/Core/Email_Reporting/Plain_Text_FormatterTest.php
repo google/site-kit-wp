@@ -196,7 +196,7 @@ class Plain_Text_FormatterTest extends TestCase {
 		);
 
 		$footer = array(
-			'copy'            => 'You received this email because you signed up.',
+			'copy'            => 'You received this email because you signed up. If you do not want to receive these emails in the future you can <a class="link" href="https://example.com/unsubscribe" style="text-decoration:none;">unsubscribe</a>.',
 			'unsubscribe_url' => 'https://example.com/unsubscribe',
 		);
 
@@ -217,7 +217,9 @@ class Plain_Text_FormatterTest extends TestCase {
 
 		$this->assertStringContainsString( str_repeat( '-', 50 ), $result, 'Footer should contain separator line.' );
 		$this->assertStringContainsString( 'View dashboard: https://example.com/dashboard', $result, 'Footer should contain CTA link.' );
-		$this->assertStringContainsString( 'You received this email because you signed up.', $result, 'Footer should contain copy text.' );
+		$this->assertStringContainsString( 'you can unsubscribe (https://example.com/unsubscribe).', $result, 'Footer copy link should be rendered as "unsubscribe (URL)" in plain text.' );
+		$this->assertStringNotContainsString( '<a', $result, 'Footer copy should not contain raw HTML tags.' );
+		$this->assertStringNotContainsString( '</a>', $result, 'Footer copy should not contain raw HTML tags.' );
 		$this->assertStringContainsString( $expected_footer_block, $result, 'Footer utility links should appear as a separate-line list preceded by a blank separator line.' );
 	}
 
@@ -271,6 +273,35 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( 'Compared to previous 7 days', $result, 'Metrics section should contain change context.' );
 	}
 
+	public function test_format_metrics_section_omits_change_context_when_no_metric_has_a_comparison() {
+		$section = array(
+			'title'            => 'How many people are finding my site?',
+			'section_template' => 'section-metrics',
+			'section_parts'    => array(
+				'total_visitors' => array(
+					'data' => array(
+						'label'          => 'Total visitors',
+						'value'          => '2',
+						'change'         => null,
+						'change_context' => 'Compared to previous 30 days',
+					),
+				),
+				'new_visitors'   => array(
+					'data' => array(
+						'label'  => 'New visitors',
+						'value'  => '1',
+						'change' => null,
+					),
+				),
+			),
+		);
+
+		$result = Plain_Text_Formatter::format_section( $section );
+
+		$this->assertStringContainsString( 'Total visitors: 2', $result, 'Metrics section should still contain the metric row without a comparison value.' );
+		$this->assertStringNotContainsString( 'Compared to previous 30 days', $result, 'Expected the change context line to be omitted when no metric has a comparison value.' );
+	}
+
 	public function test_format_section_dispatches_to_page_metrics_section() {
 		$section = array(
 			'title'            => 'How are people finding me?',
@@ -293,6 +324,28 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( 'Traffic channels by visitor count', $result, 'Page metrics section should contain part label.' );
 		$this->assertStringContainsString( 'Organic Search: 500 (+10.5%)', $result, 'Page metrics section should contain first row.' );
 		$this->assertStringContainsString( 'Direct: 300 (-2.3%)', $result, 'Page metrics section should contain second row.' );
+	}
+
+	public function test_format_page_metrics_section_omits_change_context_when_no_row_has_a_comparison() {
+		$section = array(
+			'title'            => 'How are people finding me?',
+			'section_template' => 'section-page-metrics',
+			'section_parts'    => array(
+				'traffic_channels' => array(
+					'data' => array(
+						'change_context'   => 'Compared to previous 7 days',
+						'dimension_values' => array( 'Organic Search', 'Direct' ),
+						'values'           => array( '500', '300' ),
+						'changes'          => array( null, null ),
+					),
+				),
+			),
+		);
+
+		$result = Plain_Text_Formatter::format_section( $section );
+
+		$this->assertStringContainsString( 'Organic Search: 500', $result, 'Page metrics section should still contain rows without a comparison value.' );
+		$this->assertStringNotContainsString( 'Compared to previous 7 days', $result, 'Expected the change context line to be omitted when no row has a comparison value.' );
 	}
 
 	public function test_format_section_returns_empty_for_empty_section_parts() {
@@ -340,7 +393,7 @@ class Plain_Text_FormatterTest extends TestCase {
 				'url'   => 'https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard',
 			),
 			'footer'                 => array(
-				'copy'            => 'You received this email because your site admin invited you to use Site Kit email reports feature',
+				'copy'            => 'You received this email because you signed up. If you do not want to receive these emails in the future you can <a class="link" href="https://example.com/unsubscribe" style="text-decoration:none;">unsubscribe</a>.',
 				'unsubscribe_url' => 'https://example.com/unsubscribe',
 			),
 		);
@@ -368,7 +421,9 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( 'You can easily unsubscribe or change the reports frequency', $result, 'Simple email should contain second body paragraph.' );
 		$this->assertStringContainsString( 'Learn more: https://sitekit.withgoogle.com/support/?doc=email-reporting', $result, 'Simple email should contain Learn more link.' );
 		$this->assertStringContainsString( 'Get your report: https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard', $result, 'Simple email should contain CTA link.' );
-		$this->assertStringContainsString( 'You received this email because your site admin invited you', $result, 'Simple email should contain footer copy.' );
+		$this->assertStringContainsString( 'you can unsubscribe (https://example.com/unsubscribe).', $result, 'Footer copy link should be rendered as "unsubscribe (URL)" in plain text.' );
+		$this->assertStringNotContainsString( '<a', $result, 'Footer copy should not contain raw HTML tags.' );
+		$this->assertStringNotContainsString( '</a>', $result, 'Footer copy should not contain raw HTML tags.' );
 		$this->assertStringContainsString( $expected_footer_block, $result, 'Footer utility links should appear as a separate-line list preceded by a blank separator line.' );
 	}
 

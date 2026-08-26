@@ -45,7 +45,7 @@ type Registry = ReturnType< typeof createTestRegistry >;
  * A style passed as an array and a prop on a `@react-pdf` primitive never reach
  * the rendered DOM, so an assertion on either one reads the JSON tree.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param element The PDF element to render.
  * @return The rendered tree, as a JSON string.
@@ -59,14 +59,20 @@ export function renderJSON( element: ReactElement ) {
  * survey trigger needs, and mocks the trigger endpoint.
  *
  * @since 1.184.0
+ * @since 1.186.0 Added the `dismissedItems` parameter.
  *
- * @param  registry The test registry the component under test renders with.
+ * @param  registry       The test registry the component under test renders with.
+ * @param  dismissedItems The slugs already in WordPress user meta. They pick one of the three PDF export surveys.
  * @return {void}
  */
-export function setupSurveyTriggerTest( registry: Registry ) {
+export function setupSurveyTriggerTest(
+	registry: Registry,
+	dismissedItems: string[] = []
+) {
 	provideSiteInfo( registry );
 	provideUserAuthentication( registry );
 	registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+	registry.dispatch( CORE_USER ).receiveGetDismissedItems( dismissedItems );
 
 	fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
 }
@@ -88,17 +94,52 @@ export function setPDFExportStatus( registry: Registry, status: PDFStatus ) {
 
 /**
  * Waits for the survey trigger endpoint to receive a request for the given
- * trigger ID.
+ * trigger ID and time to live.
  *
  * @since 1.184.0
+ * @since 1.186.0 Added the `ttl` parameter.
  *
- * @param triggerID The survey trigger ID the request body holds, such as `'pdf_export_success'`.
+ * @param triggerID The survey trigger ID the request body holds, such as `'view_pdf_export_downloaded'`.
+ * @param ttl       The seconds the survey service waits before it offers the same survey again.
  * @return A promise that resolves once the request lands, and rejects on timeout.
  */
-export function expectSurveyTriggerFetch( triggerID: string ) {
+export function expectSurveyTriggerFetch( triggerID: string, ttl: number ) {
 	return waitFor( () =>
 		expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
-			body: { data: { triggerID } },
+			body: { data: { triggerID, ttl } },
 		} )
 	);
+}
+
+/**
+ * Collects every text string in a `react-test-renderer` tree, so a test can
+ * assert on rendered copy without walking the tree itself.
+ *
+ * @since n.e.x.t
+ *
+ * @param node A tree's root, a child node, or a leaf, as returned by
+ *             `TestRenderer.create( element ).toJSON()`.
+ * @return The collected text strings, in render order.
+ */
+export function findTextStrings(
+	node:
+		| string
+		| number
+		| TestRenderer.ReactTestRendererJSON
+		| null
+		| undefined
+): string[] {
+	if ( node === null || node === undefined ) {
+		return [];
+	}
+	if ( typeof node === 'string' ) {
+		return [ node ];
+	}
+	if ( typeof node === 'number' ) {
+		return [ String( node ) ];
+	}
+	if ( ! Array.isArray( node.children ) ) {
+		return [];
+	}
+	return node.children.flatMap( ( child ) => findTextStrings( child ) );
 }

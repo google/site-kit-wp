@@ -1270,7 +1270,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		await waitForRegistry();
 
 		// No secondary ecommerce tiles should appear in lead generation widget.
-		expect( queryByText( 'Total Sales' ) ).not.toBeInTheDocument();
+		expect( queryByText( 'Total sales' ) ).not.toBeInTheDocument();
 		expect(
 			queryByText( 'Products added to cart' )
 		).not.toBeInTheDocument();
@@ -1480,14 +1480,17 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		} );
 	}
 
-	it( 'does not render breakdown tabs in aggregated mode (no form values)', async () => {
+	it( 'stays in aggregated mode with no tabs and no deactivated plugin notice when no form values exist', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [],
+		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 		// beforeEach seeds an empty breakdown discovery report (no form values).
 		seedReadyReports();
 
-		const { queryByRole, waitForRegistry } = render(
+		const { queryByRole, queryByText, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
@@ -1495,6 +1498,9 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 
 		// An empty value set must not render a lone "Other sources" tab.
 		expect( queryByRole( 'tab' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Form plugin no longer found' )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'renders form tabs with resolved titles and a Form #id fallback', async () => {
@@ -1714,6 +1720,175 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		expect(
 			queryByRole( 'tab', { name: 'Other form completions' } )
 		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders the deactivated plugin notice on a form tab whose plugin is not active', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [ 'contact-form-7' ],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedBreakdown( {
+			formIDs: [ '5' ],
+			formProviders: { 5: 'wpforms' },
+		} );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: { 5: { title: 'Contact' } },
+			status: 200,
+		} );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
+
+		const { getByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Form plugin no longer found' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'renders no deactivated plugin notice when the form tab plugin is still active', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [ 'wpforms' ],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedBreakdown( {
+			formIDs: [ '5' ],
+			formProviders: { 5: 'wpforms' },
+		} );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: { 5: { title: 'Contact' } },
+			status: 200,
+		} );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
+
+		const { queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			queryByText( 'Form plugin no longer found' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders no deactivated plugin notice when the form tab has no plugin slug', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedBreakdown( { formIDs: [ '5' ] } );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: { 5: { title: 'Contact' } },
+			status: 200,
+		} );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
+
+		const { queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			queryByText( 'Form plugin no longer found' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'shows the deactivated plugin notice on the form tab whose plugin is not active and hides it after a click on the tab whose plugin is active', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [ 'ninja-forms' ],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedBreakdown( {
+			formIDs: [ '5', '12' ],
+			formProviders: { 5: 'wpforms', 12: 'ninja-forms' },
+		} );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: { 5: { title: 'Contact' }, 12: { title: 'Newsletter' } },
+			status: 200,
+		} );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '12' } );
+
+		const { getByRole, getByText, queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Form plugin no longer found' )
+		).toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'tab', { name: /Newsletter/ } ) );
+
+		await waitFor( () => {
+			expect(
+				queryByText( 'Form plugin no longer found' )
+			).not.toBeInTheDocument();
+		} );
+	} );
+
+	it( 'hides the deactivated plugin notice after a click on the Other form completions tab', async () => {
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedBreakdown( {
+			formIDs: [ '5' ],
+			formProviders: { 5: 'wpforms' },
+		} );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: { 5: { title: 'Contact' } },
+			status: 200,
+		} );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
+		const otherTabDates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( { compare: true } );
+		provideAnalytics4MockReport(
+			registry,
+			buildLeadEventsReportOptions( otherTabDates, [
+				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+			] )
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( otherTabDates )
+		);
+
+		const { getByRole, getByText, queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Form plugin no longer found' )
+		).toBeInTheDocument();
+
+		fireEvent.click(
+			getByRole( 'tab', { name: 'Other form completions' } )
+		);
+
+		await waitFor( () => {
+			expect(
+				queryByText( 'Form plugin no longer found' )
+			).not.toBeInTheDocument();
+		} );
 	} );
 
 	it( 'keeps the same widget element across re-renders', async () => {

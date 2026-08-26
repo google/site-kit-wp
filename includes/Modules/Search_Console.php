@@ -37,15 +37,12 @@ use Google\Site_Kit\Core\Util\Google_URL_Matcher_Trait;
 use Google\Site_Kit\Core\Util\Google_URL_Normalizer;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Modules\Search_Console\Settings;
-use Google\Site_Kit\Modules\Search_Console\Datapoints\SearchAnalyticsBatch;
-use Google\Site_Kit\Modules\Search_Console\Datapoints\SearchAnalytics;
+use Google\Site_Kit\Modules\Search_Console\Datapoints\Batch_Search_Analytics;
+use Google\Site_Kit\Modules\Search_Console\Datapoints\Get_Search_Analytics;
 use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole as Google_Service_SearchConsole;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SitesListResponse as Google_Service_SearchConsole_SitesListResponse;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\WmxSite as Google_Service_SearchConsole_WmxSite;
-use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SearchAnalyticsQueryRequest as Google_Service_SearchConsole_SearchAnalyticsQueryRequest;
-use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\ApiDimensionFilter as Google_Service_SearchConsole_ApiDimensionFilter;
-use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\ApiDimensionFilterGroup as Google_Service_SearchConsole_ApiDimensionFilterGroup;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\ResponseInterface;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
@@ -186,35 +183,39 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 	protected function get_datapoint_definitions() {
 		return array(
 			'GET:matched-sites'          => array( 'service' => 'searchconsole' ),
-			'GET:searchanalytics'        => new SearchAnalytics(
+			'GET:searchanalytics'        => $this->create_search_analytics_datapoint(),
+			'POST:searchanalytics-batch' => new Batch_Search_Analytics(
 				array(
-					'service'        => 'searchconsole',
-					'shareable'      => true,
-					'prepare_args'   => function ( array $request_data ) {
-						return $this->prepare_search_analytics_request_args( $request_data );
-					},
-					'create_request' => function ( array $args ) {
-						return $this->create_search_analytics_data_request( $args );
-					},
-				)
-			),
-			'POST:searchanalytics-batch' => new SearchAnalyticsBatch(
-				array(
-					'service'        => 'searchconsole',
-					'shareable'      => true,
-					'get_service'    => function () {
+					'service'   => function () {
 						return $this->get_searchconsole_service();
 					},
-					'prepare_args'   => function ( array $request_data ) {
-						return $this->prepare_search_analytics_request_args( $request_data );
-					},
-					'create_request' => function ( array $args ) {
-						return $this->create_search_analytics_data_request( $args );
-					},
+					'shareable' => true,
+					'settings'  => $this->get_settings(),
+					'context'   => $this->context,
 				)
 			),
 			'POST:site'                  => array( 'service' => 'searchconsole' ),
 			'GET:sites'                  => array( 'service' => 'searchconsole' ),
+		);
+	}
+
+	/**
+	 * Creates the search analytics datapoint.
+	 *
+	 * @since 1.186.0
+	 *
+	 * @return Get_Search_Analytics Search analytics datapoint instance.
+	 */
+	private function create_search_analytics_datapoint() {
+		return new Get_Search_Analytics(
+			array(
+				'service'   => function () {
+					return $this->get_searchconsole_service();
+				},
+				'shareable' => true,
+				'settings'  => $this->get_settings(),
+				'context'   => $this->context,
+			)
 		);
 	}
 
@@ -349,47 +350,6 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 	}
 
 	/**
-	 * Prepares Search Console analytics request arguments from request data.
-	 *
-	 * @since 1.170.0
-	 *
-	 * @param array $data_request Request data parameters.
-	 * @return array Parsed request arguments.
-	 */
-	protected function prepare_search_analytics_request_args( array $data_request ) {
-		$start_date = isset( $data_request['startDate'] ) ? $data_request['startDate'] : '';
-		$end_date   = isset( $data_request['endDate'] ) ? $data_request['endDate'] : '';
-
-		if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
-			list ( $start_date, $end_date ) = Date::parse_date_range( 'last-28-days', 1, 1 );
-		}
-
-		$parsed_request = array(
-			'start_date' => $start_date,
-			'end_date'   => $end_date,
-		);
-
-		if ( ! empty( $data_request['url'] ) ) {
-			$parsed_request['page'] = ( new Google_URL_Normalizer() )->normalize_url( $data_request['url'] );
-		}
-
-		if ( isset( $data_request['rowLimit'] ) ) {
-			$parsed_request['row_limit'] = $data_request['rowLimit'];
-		}
-
-		if ( isset( $data_request['limit'] ) ) {
-			$parsed_request['row_limit'] = $data_request['limit'];
-		}
-
-		$dimensions = $this->parse_string_list( isset( $data_request['dimensions'] ) ? $data_request['dimensions'] : array() );
-		if ( is_array( $dimensions ) && ! empty( $dimensions ) ) {
-			$parsed_request['dimensions'] = $dimensions;
-		}
-
-		return $parsed_request;
-	}
-
-	/**
 	 * Map Site model objects to associative arrays used for API responses.
 	 *
 	 * @param array $sites Site objects.
@@ -406,86 +366,6 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 			},
 			$sites
 		);
-	}
-
-	/**
-	 * Creates a new Search Console analytics request for the current site and given arguments.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param array $args {
-	 *     Optional. Additional arguments.
-	 *
-	 *     @type array  $dimensions List of request dimensions. Default empty array.
-	 *     @type string $start_date Start date in 'Y-m-d' format. Default empty string.
-	 *     @type string $end_date   End date in 'Y-m-d' format. Default empty string.
-	 *     @type string $page       Specific page URL to filter by. Default empty string.
-	 *     @type int    $row_limit  Limit of rows to return. Default 1000.
-	 * }
-	 * @return RequestInterface Search Console analytics request instance.
-	 */
-	protected function create_search_analytics_data_request( array $args = array() ) {
-		$args = wp_parse_args(
-			$args,
-			array(
-				'dimensions' => array(),
-				'start_date' => '',
-				'end_date'   => '',
-				'page'       => '',
-				'row_limit'  => 1000,
-			)
-		);
-
-		$property_id = $this->get_property_id();
-
-		$request = new Google_Service_SearchConsole_SearchAnalyticsQueryRequest();
-		if ( ! empty( $args['dimensions'] ) ) {
-			$request->setDimensions( (array) $args['dimensions'] );
-		}
-		if ( ! empty( $args['start_date'] ) ) {
-			$request->setStartDate( $args['start_date'] );
-		}
-		if ( ! empty( $args['end_date'] ) ) {
-			$request->setEndDate( $args['end_date'] );
-		}
-
-		$request->setDataState( 'all' );
-
-		$filters = array();
-
-		// If domain property, limit data to URLs that are part of the current site.
-		if ( 0 === strpos( $property_id, 'sc-domain:' ) ) {
-			$scope_site_filter = new Google_Service_SearchConsole_ApiDimensionFilter();
-			$scope_site_filter->setDimension( 'page' );
-			$scope_site_filter->setOperator( 'contains' );
-			$scope_site_filter->setExpression( esc_url_raw( $this->context->get_reference_site_url() ) );
-			$filters[] = $scope_site_filter;
-		}
-
-		// If specific URL requested, limit data to that URL.
-		if ( ! empty( $args['page'] ) ) {
-			$single_url_filter = new Google_Service_SearchConsole_ApiDimensionFilter();
-			$single_url_filter->setDimension( 'page' );
-			$single_url_filter->setOperator( 'equals' );
-			$single_url_filter->setExpression( rawurldecode( esc_url_raw( $args['page'] ) ) );
-			$filters[] = $single_url_filter;
-		}
-
-		// If there are relevant filters, add them to the request.
-		if ( ! empty( $filters ) ) {
-			$filter_group = new Google_Service_SearchConsole_ApiDimensionFilterGroup();
-			$filter_group->setGroupType( 'and' );
-			$filter_group->setFilters( $filters );
-			$request->setDimensionFilterGroups( array( $filter_group ) );
-		}
-
-		if ( ! empty( $args['row_limit'] ) ) {
-			$request->setRowLimit( $args['row_limit'] );
-		}
-
-		return $this->get_searchconsole_service()
-			->searchanalytics
-			->query( $property_id, $request );
 	}
 
 	/**
@@ -640,14 +520,20 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 	 * @return boolean|WP_Error
 	 */
 	public function check_service_entity_access() {
-		$data_request = array(
-			'start_date' => gmdate( 'Y-m-d', Date::now() ),
-			'end_date'   => gmdate( 'Y-m-d', Date::now() ),
-			'row_limit'  => 1,
+		$data_request = new Data_Request(
+			'GET',
+			'modules',
+			self::MODULE_SLUG,
+			'searchanalytics',
+			array(
+				'startDate' => gmdate( 'Y-m-d', Date::now() ),
+				'endDate'   => gmdate( 'Y-m-d', Date::now() ),
+				'limit'     => 1,
+			)
 		);
 
 		try {
-			$this->create_search_analytics_data_request( $data_request );
+			$this->create_search_analytics_datapoint()->create_request( $data_request );
 		} catch ( Exception $e ) {
 			if ( $e->getCode() === 403 ) {
 				return false;

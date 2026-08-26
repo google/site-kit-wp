@@ -44,6 +44,7 @@ import {
 } from '@/js/googlesitekit/widgets/default-contexts';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
+import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -54,9 +55,11 @@ import {
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
+import { PDF_EXPORT_DOWNLOADED_ITEM_SLUG } from './constants';
 import { registerPDFFonts } from './pdf-fonts-react';
 import { SECTION_ICONS } from './pdf-icons';
-import { PDF_MEASURE_PAGE_HEIGHT, PDF_PAGE_BOTTOM_PADDING } from './pdf-theme';
+import { PDF_PAGE_BOTTOM_PADDING } from './pdf-scale';
+import { PDF_MEASURE_PAGE_HEIGHT } from './pdf-theme';
 import { triggerDownload } from './pdf-utils';
 import PDFExportOrchestrator from './PDFExportOrchestrator';
 import { PDFHeaderSection, PDFReportArea } from './types';
@@ -94,7 +97,7 @@ const MOCKED_MEASURED_HEIGHT = 500;
  * Builds a `pdf()` implementation whose `toBlob()` fires the document's
  * `onRender` callback with the given layout, overriding the mock's fixture.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param layout The layout to pass to `onRender`.
  * @return The `pdf()` implementation.
@@ -131,6 +134,13 @@ describe( 'PDFExportOrchestrator', () => {
 		provideModules( registry );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-10' );
 		registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
+		// A finished export saves `pdf-export-downloaded` to WordPress user
+		// meta, and every test needs the saved slugs in the store plus a
+		// reply for that request.
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		fetchMock.post( dismissItemEndpoint, {
+			body: [ PDF_EXPORT_DOWNLOADED_ITEM_SLUG ],
+		} );
 
 		global.URL.createObjectURL = jest.fn( () => 'blob:mock-url' );
 		global.URL.revokeObjectURL = jest.fn();
@@ -228,7 +238,7 @@ describe( 'PDFExportOrchestrator', () => {
 	 * Renders the orchestrator under a dashboard view context.
 	 *
 	 * @since 1.181.0
-	 * @since n.e.x.t Added the `viewContext` parameter.
+	 * @since 1.186.0 Added the `viewContext` parameter.
 	 *
 	 * @param {string} viewContext The dashboard view context to render under.
 	 * @return {Object} The render result for the orchestrator.
@@ -982,6 +992,104 @@ describe( 'PDFExportOrchestrator', () => {
 			'pdf_generation_complete',
 			CONTEXT_MAIN_DASHBOARD_TRAFFIC
 		);
+	} );
+
+	/**
+	 * Registers one PDF widget in the Traffic context and selects that widget.
+	 *
+	 * The orchestrator then has one report to export.
+	 *
+	 * @since 1.186.0
+	 *
+	 * @param {jest.Mock} getData The mock behind the widget's `pdf.getData`.
+	 * @return {void}
+	 */
+	function selectOneTrafficWidget( getData: jest.Mock ) {
+		registerPDFWidget( 'trafficArea', 'trafficWidget', getData );
+		registry.dispatch( CORE_PDF ).setSelection( {
+			contextSlugs: [ CONTEXT_MAIN_DASHBOARD_TRAFFIC ],
+			widgetSlugs: [ 'trafficWidget' ],
+		} );
+	}
+
+	it( "should save 'pdf-export-downloaded' to WordPress user meta when the download starts", async () => {
+		selectOneTrafficWidget(
+			jest.fn( () => Promise.resolve( { data: { totalUsers: 100 } } ) )
+		);
+
+		renderOrchestrator();
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+				body: {
+					data: {
+						slug: PDF_EXPORT_DOWNLOADED_ITEM_SLUG,
+						expiration: 0,
+					},
+				},
+			} )
+		);
+	} );
+
+	it( "should save nothing when the user already has 'pdf-export-downloaded'", async () => {
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [ PDF_EXPORT_DOWNLOADED_ITEM_SLUG ] );
+		selectOneTrafficWidget(
+			jest.fn( () => Promise.resolve( { data: { totalUsers: 100 } } ) )
+		);
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'success' );
+		} );
+
+		expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
+	} );
+
+	it( "should save no 'pdf-export-downloaded' when the export fails", async () => {
+		selectOneTrafficWidget(
+			jest.fn( () => Promise.reject( new Error( 'report failed' ) ) )
+		);
+
+		renderOrchestrator();
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'error' );
+		} );
+
+		expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
+	} );
+
+	it( "should save no 'pdf-export-downloaded' when the user stops the export", async () => {
+		let resolveData: ( value: unknown ) => void;
+		const getData: jest.Mock = jest.fn(
+			() =>
+				new Promise( ( resolve ) => {
+					resolveData = resolve;
+				} )
+		);
+		selectOneTrafficWidget( getData );
+
+		renderOrchestrator();
+
+		await waitFor( () => expect( getData ).toHaveBeenCalled() );
+
+		act( () => {
+			registry.dispatch( CORE_PDF ).requestCancel();
+		} );
+
+		// The export waits inside `getData`. Resolving `getData` lets the
+		// export reach its next `throwIfAborted` check, which throws and
+		// ends the export.
+		resolveData!( { data: null } );
+
+		await waitFor( () => {
+			expect( registry.select( CORE_PDF ).getStatus() ).toBe( 'idle' );
+		} );
+
+		expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
 	} );
 
 	it( 'fires pdf_generation_error with "building" label when the PDF build fails', async () => {

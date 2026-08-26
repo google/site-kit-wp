@@ -86,7 +86,7 @@ class Email_Template_Formatter {
 	 * Builds sections from raw payload grouped by module.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Removed $user parameter, locale switching is now handled by the Email_Log_Processor.
+	 * @since 1.186.0 Removed $user parameter, locale switching is now handled by the Email_Log_Processor.
 	 *
 	 * @param array   $raw_payload Raw payload.
 	 * @param WP_Post $email_log   Email log post.
@@ -219,10 +219,21 @@ class Email_Template_Formatter {
 	/**
 	 * Parses a change value into float.
 	 *
+	 * Handles both the canonical period-decimal percentage strings the
+	 * section builder emits (e.g. `6.52%`) and locale-formatted ones that
+	 * may still arrive from previously stored section data under a
+	 * decimal-comma locale (e.g. `6,52%` for `es_CO`/`de_DE`). The decimal
+	 * separator is identified structurally — the last `.` or `,` followed
+	 * by exactly two digits, since trend percentages are always formatted
+	 * with two decimal places — rather than assumed from the active
+	 * locale, which would misread an already-canonical value under a
+	 * decimal-comma locale.
+	 *
 	 * @since 1.170.0
+	 * @since 1.186.0 Hardened decimal-separator detection to support decimal-comma locales.
 	 *
 	 * @param mixed $change Change value.
-	 * @return float|null Parsed change.
+	 * @return float|null Parsed change, or null when missing or unparseable.
 	 */
 	private function parse_change_value( $change ) {
 		if ( null === $change || '' === $change ) {
@@ -230,7 +241,12 @@ class Email_Template_Formatter {
 		}
 
 		if ( is_string( $change ) ) {
-			$change = str_replace( '%', '', $change );
+			$change = trim( str_replace( '%', '', $change ) );
+
+			if ( preg_match( '/^([+-]?[\d.,]*)[.,](\d{2})$/', $change, $matches ) ) {
+				$integer_part = str_replace( array( '.', ',' ), '', $matches[1] );
+				$change       = $integer_part . '.' . $matches[2];
+			}
 		}
 
 		if ( ! is_numeric( $change ) ) {
@@ -352,6 +368,7 @@ class Email_Template_Formatter {
 	 * Builds template data for the subscription confirmation email.
 	 *
 	 * @since 1.174.0
+	 * @since 1.186.0 Wrapped the unsubscribe link within the localized footer copy.
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @return array Template data.
@@ -388,7 +405,12 @@ class Email_Template_Formatter {
 				'url'   => $dashboard_url,
 			),
 			'footer'                 => array(
-				'copy'            => __( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can unsubscribe', 'google-site-kit' ),
+				'copy'            => sprintf(
+					/* translators: 1: Unsubscribe link URL, 2: Unsubscribe link inline style CSS. */
+					__( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can <a class="link" href="%1$s" style="%2$s">unsubscribe</a>.', 'google-site-kit' ),
+					$email_settings_url,
+					'text-decoration:none;'
+				),
 				'unsubscribe_url' => $email_settings_url,
 			),
 			'graphic'                => Content_Map::get_graphic_config( 'subscription-confirmation' ),
@@ -400,6 +422,7 @@ class Email_Template_Formatter {
 	 * Builds template data for rendering.
 	 *
 	 * @since 1.170.0
+	 * @since 1.186.0 Wrapped the unsubscribe link within the localized footer copy.
 	 *
 	 * @param string  $frequency  Frequency slug.
 	 * @param array   $date_range Date range.
@@ -427,7 +450,12 @@ class Email_Template_Formatter {
 				'url'   => $dashboard_url,
 			),
 			'footer'                 => array(
-				'copy'            => __( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can unsubscribe', 'google-site-kit' ), // The space and unsubscribe link are handled in the template.
+				'copy'            => sprintf(
+					/* translators: 1: Unsubscribe link URL, 2: Unsubscribe link inline style CSS. */
+					__( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can <a class="link" href="%1$s" style="%2$s">unsubscribe</a>.', 'google-site-kit' ),
+					$email_settings_url,
+					'text-decoration:none;'
+				),
 				'unsubscribe_url' => $email_settings_url,
 			),
 		);

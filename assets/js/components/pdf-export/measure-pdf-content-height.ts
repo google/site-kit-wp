@@ -37,7 +37,7 @@ const SHAPE_ERROR =
  * page from a bad value: a clean export failure the user can retry, not a
  * broken PDF.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param layout The value passed to the `Document` `onRender` callback.
  * @return The content height in points.
