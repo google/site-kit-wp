@@ -155,6 +155,19 @@ describe( 'classifyContactLink', () => {
 		expect( classify( href ) ).toBeNull();
 	} );
 
+	it.each( [
+		'https://constructor/',
+		'https://__proto__/',
+		'https://www.constructor/x',
+	] )(
+		'returns null, not an inherited property, for the prototype-key host %s',
+		( href ) => {
+			// The parser lower-cases the host, so `toString` and friends can
+			// never reach the index — but `constructor` and `__proto__` can.
+			expect( classify( href ) ).toBeNull();
+		}
+	);
+
 	it( 'returns null for a malformed href rather than throwing', () => {
 		const anchor = global.document.createElement( 'a' );
 		// An anchor with no href attribute reports an empty string, which the
