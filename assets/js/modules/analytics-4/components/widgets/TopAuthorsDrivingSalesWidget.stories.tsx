@@ -1,0 +1,329 @@
+/**
+ * TopAuthorsDrivingSalesWidget component stories.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import { ComponentType } from 'react';
+
+/**
+ * Internal dependencies
+ */
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
+import {
+	getAnalytics4MockResponse,
+	provideAnalytics4MockReport,
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
+import { provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
+import TopAuthorsDrivingSalesWidget from './TopAuthorsDrivingSalesWidget';
+
+const requiredCustomDimensions =
+	KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES ]
+		.requiredCustomDimensions;
+
+const propertyID = '12345';
+
+const reportOptions = {
+	startDate: '2020-08-11',
+	endDate: '2020-09-07',
+	dimensions: [ 'customEvent:googlesitekit_post_author', 'eventName' ],
+	dimensionFilters: {
+		eventName: {
+			filterType: 'inListFilter',
+			value: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+		},
+		'customEvent:googlesitekit_post_author': {
+			filterType: 'emptyFilter',
+			notExpression: true,
+		},
+	},
+	metrics: [ { name: 'eventCount' } ],
+	orderby: [
+		{
+			metric: { metricName: 'eventCount' },
+			desc: true,
+		},
+	],
+	limit: 6,
+	keepEmptyRows: false,
+	reportID: 'analytics-4_goal-driver-reports_top-authors',
+};
+
+const WidgetWithComponentProps = withWidgetComponentProps(
+	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES
+)( TopAuthorsDrivingSalesWidget );
+
+interface TopAuthorsDrivingSalesWidgetStoryArgs {
+	setupRegistry: (
+		registry: Parameters< typeof provideModules >[ 0 ]
+	) => void;
+}
+
+function Template( {
+	setupRegistry,
+	...args
+}: TopAuthorsDrivingSalesWidgetStoryArgs ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<WidgetWithComponentProps { ...args } />
+		</WithRegistrySetup>
+	);
+}
+
+export const Ready = Template.bind( {} );
+Ready.storyName = 'Ready';
+Ready.args = {
+	setupRegistry: ( registry: Parameters< typeof provideModules >[ 0 ] ) => {
+		provideAnalytics4MockReport( registry, reportOptions );
+	},
+};
+Ready.scenario = {};
+
+export const Loading = Template.bind( {} );
+Loading.storyName = 'Loading';
+Loading.args = {
+	setupRegistry: ( {
+		dispatch,
+	}: Parameters< typeof provideModules >[ 0 ] ) => {
+		dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
+			reportOptions,
+		] );
+	},
+};
+
+export const ZeroData = Template.bind( {} );
+ZeroData.storyName = 'Zero Data';
+ZeroData.args = {
+	setupRegistry: ( {
+		dispatch,
+	}: Parameters< typeof provideModules >[ 0 ] ) => {
+		const report = getAnalytics4MockResponse( reportOptions );
+		const zeroReport =
+			replaceValuesInAnalytics4ReportWithZeroData( report );
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
+			options: reportOptions,
+		} );
+	},
+};
+
+export const Error = Template.bind( {} );
+Error.storyName = 'Error';
+Error.args = {
+	setupRegistry: ( {
+		dispatch,
+	}: Parameters< typeof provideModules >[ 0 ] ) => {
+		const errorObject = {
+			code: 400,
+			message: 'Test error message. ',
+			data: {
+				status: 400,
+				reason: 'badRequest',
+			},
+		};
+
+		dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			errorObject,
+			'getReport',
+			[ reportOptions ]
+		);
+
+		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
+			reportOptions,
+		] );
+	},
+};
+
+export const InsufficientPermissions = Template.bind( {} );
+InsufficientPermissions.storyName = 'Insufficient Permissions';
+InsufficientPermissions.args = {
+	setupRegistry: ( {
+		dispatch,
+	}: Parameters< typeof provideModules >[ 0 ] ) => {
+		const errorObject = {
+			code: 403,
+			message: 'Test error message. ',
+			data: {
+				status: 403,
+				reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+			},
+		};
+
+		dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			errorObject,
+			'getReport',
+			[ reportOptions ]
+		);
+
+		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
+			reportOptions,
+		] );
+	},
+};
+
+export const GatheringData = Template.bind( {} );
+GatheringData.storyName = 'Gathering Data';
+GatheringData.args = {
+	setupRegistry: ( {
+		dispatch,
+	}: Parameters< typeof provideModules >[ 0 ] ) => {
+		dispatch( MODULES_ANALYTICS_4 ).receiveIsCustomDimensionGatheringData( {
+			customDimension: requiredCustomDimensions[ 0 ],
+			gatheringData: true,
+		} );
+	},
+};
+// Since the "Gathering Data" state is the same for all KMW tiles that require
+// custom dimensions, this is the sole scenario and should not be added to any
+// other generic `MetricTile___` or KMW component.
+GatheringData.scenario = {};
+
+export const ErrorMissingCustomDimensions = Template.bind( {} );
+ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
+ErrorMissingCustomDimensions.args = {
+	setupRegistry: ( {
+		dispatch,
+	}: Parameters< typeof provideModules >[ 0 ] ) => {
+		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID,
+			availableCustomDimensions: [],
+		} );
+	},
+};
+// Since the "Error Missing Custom Dimensions" state is the same for all KMW tiles
+// that require custom dimensions, this is the sole scenario and should not be
+// added to any other generic `MetricTile___` or KMW component.
+ErrorMissingCustomDimensions.scenario = {};
+
+export const ErrorCustomDimensionsInsufficientPermissions = Template.bind( {} );
+ErrorCustomDimensionsInsufficientPermissions.storyName =
+	'Error - Custom dimensions creation - Insufficient Permissions';
+ErrorCustomDimensionsInsufficientPermissions.args = {
+	setupRegistry: ( registry: Parameters< typeof provideModules >[ 0 ] ) => {
+		const error = {
+			code: 'test-error-code',
+			message: 'Test error message',
+			data: {
+				reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+			},
+		};
+
+		provideCustomDimensionError( registry, {
+			customDimension: requiredCustomDimensions[ 0 ],
+			error,
+		} );
+	},
+};
+// Since the "Error Custom Dimensions Insufficient Permissions" state is the same for
+// all KMW tiles that require custom dimensions, this is the sole scenario and should
+// not be added to any other generic `MetricTile___` or KMW component.
+ErrorCustomDimensionsInsufficientPermissions.scenario = {};
+
+export const ErrorCustomDimensionsGeneric = Template.bind( {} );
+ErrorCustomDimensionsGeneric.storyName =
+	'Error - Custom dimensions creation - Generic';
+ErrorCustomDimensionsGeneric.args = {
+	setupRegistry: ( registry: Parameters< typeof provideModules >[ 0 ] ) => {
+		const error = {
+			code: 'test-error-code',
+			message: 'Test error message',
+			data: {
+				reason: 'test-error-reason',
+			},
+		};
+
+		provideCustomDimensionError( registry, {
+			customDimension: requiredCustomDimensions[ 0 ],
+			error,
+		} );
+	},
+};
+// Since the "Error Custom Dimensions Generic" state is the same for all KMW tiles
+// that require custom dimensions, this is the sole scenario and should not be added
+// to any other generic `MetricTile___` or KMW component.
+ErrorCustomDimensionsGeneric.scenario = {};
+
+export default {
+	title: 'Key Metrics/TopAuthorsDrivingSalesWidget',
+	component: TopAuthorsDrivingSalesWidget,
+	decorators: [
+		(
+			Story: ComponentType,
+			{ args }: { args: TopAuthorsDrivingSalesWidgetStoryArgs }
+		) => {
+			function setupRegistry(
+				registry: Parameters< typeof provideModules >[ 0 ]
+			) {
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+					availableCustomDimensions: requiredCustomDimensions,
+				} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
+					{
+						createTime: '2014-10-02T15:01:23Z',
+					},
+					{ propertyID }
+				);
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsCustomDimensionGatheringData( {
+						customDimension: requiredCustomDimensions[ 0 ],
+						gatheringData: false,
+					} );
+
+				// Call story-specific setup.
+				args.setupRegistry( registry );
+			}
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
+};

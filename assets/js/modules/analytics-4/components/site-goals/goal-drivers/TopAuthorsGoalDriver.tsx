@@ -42,27 +42,18 @@ import {
 	TOP_AUTHORS_REQUIRED_CUSTOM_DIMENSIONS,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	GoalDriverComponentProps,
-	GoalDriverRow,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import {
-	getDimensionFiltersForEvents,
-	normalizePrimaryEvents,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
+	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
+	GOAL_DRIVER_ROW_MAPPERS,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+import { GoalDriverComponentProps } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import {
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import useCustomDimensionsData from '@/js/modules/analytics-4/hooks/useCustomDimensionsData';
-import { numFmt } from '@/js/util';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 import TopAuthorsZeroState from './TopAuthorsZeroState';
-
-interface ReportRow {
-	dimensionValues?: Array< { value?: string } >;
-	metricValues?: Array< { value?: string } >;
-}
 
 const TopAuthorsGoalDriver: FC< GoalDriverComponentProps > = ( {
 	title = '',
@@ -76,56 +67,18 @@ const TopAuthorsGoalDriver: FC< GoalDriverComponentProps > = ( {
 		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
 		[]
 	);
-	const eventNames = useMemo(
-		() => normalizePrimaryEvents( primaryEvent ),
-		[ primaryEvent ]
-	);
-	const dimensionFilters = useMemo(
-		() => getDimensionFiltersForEvents( eventNames, breakdownFilter ),
-		[ eventNames, breakdownFilter ]
-	);
-	const candidateReportOptions = useMemo( () => {
-		if ( ! dates || ! eventNames.length ) {
-			return undefined;
-		}
-
-		return {
-			...dates,
-			dimensions: [
-				'customEvent:googlesitekit_post_author',
-				'eventName',
-			],
-			dimensionFilters: {
-				...( dimensionFilters || {} ),
-				'customEvent:googlesitekit_post_author': {
-					filterType: 'emptyFilter',
-					notExpression: true,
-				},
-			},
-			metrics: [ { name: 'eventCount' } ],
-			orderby: [
+	const candidateReportOptions = useMemo(
+		() =>
+			GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[ GOAL_DRIVER_IDS.TOP_AUTHORS ](
 				{
-					metric: { metricName: 'eventCount' },
-					desc: true,
-				},
-			],
-			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-authors_${ goalType }`,
-		};
-	}, [ dates, dimensionFilters, eventNames, goalType ] );
-	const totalReportOptions = useMemo( () => {
-		if ( ! dates || ! eventNames.length ) {
-			return undefined;
-		}
-
-		return {
-			...dates,
-			dimensionFilters,
-			metrics: [ { name: 'eventCount' } ],
-			reportID: `analytics-4_site-goals_top-authors-total_${ goalType }`,
-		};
-	}, [ dates, dimensionFilters, eventNames, goalType ] );
+					dates,
+					primaryEvent,
+					breakdownFilter,
+					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+				}
+			),
+		[ dates, primaryEvent, breakdownFilter ]
+	);
 	const {
 		hasCustomDimensions,
 		customDimensionsCreationErrors,
@@ -143,13 +96,6 @@ const TopAuthorsGoalDriver: FC< GoalDriverComponentProps > = ( {
 	const canLoadReports =
 		hasCustomDimensions === true && isGatheringData !== true;
 	const reportOptions = canLoadReports ? candidateReportOptions : undefined;
-	const enabledTotalReportOptions = canLoadReports
-		? totalReportOptions
-		: undefined;
-	const allReportOptions = [
-		enabledTotalReportOptions,
-		reportOptions,
-	].filter( Boolean );
 	const report = useSelect(
 		( select: Select ) =>
 			reportOptions
@@ -157,28 +103,28 @@ const TopAuthorsGoalDriver: FC< GoalDriverComponentProps > = ( {
 				: undefined,
 		[ reportOptions ]
 	);
-	const totalReport = useSelect(
-		( select: Select ) =>
-			enabledTotalReportOptions
-				? select( MODULES_ANALYTICS_4 ).getReport(
-						enabledTotalReportOptions
-				  )
-				: undefined,
-		[ enabledTotalReportOptions ]
-	);
 	const reportError = useSelect(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getFirstReportError(
-				...allReportOptions
-			),
-		[ enabledTotalReportOptions, reportOptions ]
+			reportOptions
+				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+						'getReport',
+						[ reportOptions ]
+				  )
+				: undefined,
+		[ reportOptions ]
 	);
 	const reportLoading = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).areReportsLoading(
-				...allReportOptions
-			),
-		[ enabledTotalReportOptions, reportOptions ]
+		( select: Select ) => {
+			if ( ! reportOptions ) {
+				return false;
+			}
+
+			return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ reportOptions ]
+			);
+		},
+		[ reportOptions ]
 	);
 	const {
 		clearSelectorError,
@@ -255,27 +201,9 @@ const TopAuthorsGoalDriver: FC< GoalDriverComponentProps > = ( {
 		scheduleSyncAvailableCustomDimensions,
 	] );
 
-	const sourceRows: ReportRow[] = report?.rows || [];
-	const totalCount = parseFloat(
-		String( totalReport?.rows?.[ 0 ]?.metricValues?.[ 0 ]?.value ?? 0 )
-	);
-	const mappedRows: GoalDriverRow[] = sourceRows
-		.slice( 0, GOAL_DRIVER_ROW_LIMIT_EXPANDED )
-		.map( ( row ) => {
-			const author = row.dimensionValues?.[ 0 ]?.value || '';
-			const eventCount = parseFloat(
-				String( row.metricValues?.[ 0 ]?.value ?? 0 )
-			);
-
-			return {
-				label: author || __( '(not set)', 'google-site-kit' ),
-				value: numFmt( totalCount > 0 ? eventCount / totalCount : 0, {
-					style: 'percent',
-					signDisplay: 'never',
-					maximumFractionDigits: 1,
-				} ),
-			};
-		} );
+	const sourceRows = report?.rows || [];
+	const mappedRows =
+		GOAL_DRIVER_ROW_MAPPERS[ GOAL_DRIVER_IDS.TOP_AUTHORS ]( sourceRows );
 	const hasMissingCustomDimensions = hasCustomDimensions === false;
 	const rows = mappedRows;
 	const loading =

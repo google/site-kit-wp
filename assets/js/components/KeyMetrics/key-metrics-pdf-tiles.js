@@ -39,6 +39,11 @@ import {
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
 	KM_ANALYTICS_RETURNING_VISITORS,
+	KM_ANALYTICS_SALES_BY_COUNTRIES,
+	KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
+	KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
+	KM_ANALYTICS_SALES_RATE,
+	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
@@ -48,18 +53,32 @@ import {
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
 	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOTAL_SALES,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getTopEarningContentReportOptions } from '@/js/modules/adsense/components/widgets/TopEarningContentWidget';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import {
+	GOAL_DRIVER_IDS,
+	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import {
+	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
+	GOAL_DRIVER_ROW_MAPPERS,
+	buildEngagementReportOptions,
+	buildPrimaryEventReportOptions,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import {
 	getEngagedTrafficSourceReportOptions,
 	getEngagedTrafficSourceSubtext,
@@ -1832,6 +1851,437 @@ export const KEY_METRICS_PDF_TILES = {
 								numFmt( row.metricValues?.[ 0 ]?.value ),
 						}
 					),
+				};
+			}
+		),
+	},
+	[ KM_ANALYTICS_TOTAL_SALES ]: {
+		TileComponent: PDFNumericMetricTile,
+		getTileData: createKeyMetricTileDataLoader(
+			async ( dates, registry ) => {
+				// `getPrimaryEcommerceEvent` derives from `getDetectedEvents`
+				// but has no resolver of its own, so resolve the detected
+				// events first and read the derived value once they're in.
+				await registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getDetectedEvents();
+				const primaryEvent = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPrimaryEcommerceEvent();
+				const options = buildPrimaryEventReportOptions(
+					dates,
+					primaryEvent
+				);
+
+				// No primary ecommerce event means no data, so fetch nothing
+				// and let the empty reports drop the tile.
+				if ( ! options ) {
+					return [];
+				}
+
+				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
+			},
+			( [ report ] ) => {
+				const { currentPrimaryCount, previousPrimaryCount } =
+					processReports( report || {}, {} );
+
+				// No rows means the report has no data, so drop the tile.
+				if ( ! report?.rows?.length ) {
+					return null;
+				}
+
+				return {
+					value: numFmt( currentPrimaryCount, {
+						style: 'decimal',
+					} ),
+					...getPDFTileChange(
+						previousPrimaryCount,
+						currentPrimaryCount
+					),
+				};
+			}
+		),
+	},
+	[ KM_ANALYTICS_SALES_RATE ]: {
+		TileComponent: PDFNumericMetricTile,
+		getTileData: createKeyMetricTileDataLoader(
+			async ( dates, registry ) => {
+				// `getPrimaryEcommerceEvent` derives from `getDetectedEvents`
+				// but has no resolver of its own, so resolve the detected
+				// events first and read the derived value once they're in.
+				await registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getDetectedEvents();
+				const primaryEvent = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPrimaryEcommerceEvent();
+				const primaryEventOptions = buildPrimaryEventReportOptions(
+					dates,
+					primaryEvent
+				);
+
+				// No primary ecommerce event means no data, so fetch nothing
+				// and let the empty reports drop the tile.
+				if ( ! primaryEventOptions ) {
+					return [];
+				}
+
+				return [
+					{
+						moduleStore: MODULES_ANALYTICS_4,
+						options: primaryEventOptions,
+					},
+					{
+						moduleStore: MODULES_ANALYTICS_4,
+						options: buildEngagementReportOptions( dates ),
+					},
+				];
+			},
+			( [ primaryEventReport, engagementReport ] ) => {
+				const { currentRate, previousRate, currentSessions } =
+					processReports(
+						primaryEventReport || {},
+						engagementReport || {}
+					);
+
+				// No rows means the report has no data, so drop the tile.
+				if ( ! primaryEventReport?.rows?.length ) {
+					return null;
+				}
+
+				return {
+					value: numFmt( currentRate, TILE_PERCENT_FORMAT ),
+					subtext: sprintf(
+						/* translators: %s: formatted number of total sessions */
+						__( 'of %s total sessions', 'google-site-kit' ),
+						numFmt( currentSessions, { style: 'decimal' } )
+					),
+					// The metric is a percentage, so the badge shows the
+					// absolute point change, matching the dashboard tile.
+					...getPDFTileChange( previousRate, currentRate, {
+						isAbsolute: true,
+					} ),
+				};
+			}
+		),
+	},
+	[ KM_ANALYTICS_SALES_ENGAGEMENT_RATE ]: {
+		TileComponent: PDFNumericMetricTile,
+		getTileData: createKeyMetricTileDataLoader(
+			async ( dates, registry ) => {
+				// `getPrimaryEcommerceEvent` derives from `getDetectedEvents`
+				// but has no resolver of its own, so resolve the detected
+				// events first and read the derived value once they're in.
+				await registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getDetectedEvents();
+				const primaryEvent = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPrimaryEcommerceEvent();
+
+				// No primary ecommerce event means no data, so fetch nothing
+				// and let the empty reports drop the tile.
+				if ( ! primaryEvent ) {
+					return [];
+				}
+
+				return [
+					{
+						moduleStore: MODULES_ANALYTICS_4,
+						options: buildEngagementReportOptions( dates ),
+					},
+				];
+			},
+			( [ engagementReport ] ) => {
+				const {
+					currentEngagementRate,
+					previousEngagementRate,
+					currentSessions,
+				} = processReports( {}, engagementReport || {} );
+
+				// No totals means the report has no data, so drop the tile.
+				if ( ! engagementReport?.totals?.length ) {
+					return null;
+				}
+
+				return {
+					value: numFmt( currentEngagementRate, TILE_PERCENT_FORMAT ),
+					subtext: sprintf(
+						/* translators: %s: formatted number of total sessions */
+						__( 'of %s total sessions', 'google-site-kit' ),
+						numFmt( currentSessions, { style: 'decimal' } )
+					),
+					// The metric is a percentage, so the badge shows the
+					// absolute point change, matching the dashboard tile.
+					...getPDFTileChange(
+						previousEngagementRate,
+						currentEngagementRate,
+						{ isAbsolute: true }
+					),
+				};
+			}
+		),
+	},
+	[ KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE ]: {
+		TileComponent: PDFMetricTileTable,
+		getTileData: createKeyMetricTileDataLoader(
+			async ( dates, registry ) => {
+				// `getPrimaryEcommerceEvent` derives from `getDetectedEvents`
+				// but has no resolver of its own, so resolve the detected
+				// events first and read the derived value once they're in.
+				await registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getDetectedEvents();
+				const primaryEvent = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPrimaryEcommerceEvent();
+				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
+					GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE
+				]( {
+					dates: pdfTableDates( dates ),
+					primaryEvent,
+					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+				} );
+
+				if ( ! options ) {
+					return [];
+				}
+
+				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
+			},
+			( [ report ] ) => {
+				const rows = GOAL_DRIVER_ROW_MAPPERS[
+					GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE
+				]( report?.rows || [] );
+
+				if ( ! rows.length ) {
+					return null;
+				}
+
+				return {
+					rows: rows.map( ( row ) => ( {
+						primary: row.label,
+						metric: row.value,
+					} ) ),
+					limit: 3,
+				};
+			}
+		),
+	},
+	[ KM_ANALYTICS_SALES_BY_VISITOR_TYPE ]: {
+		TileComponent: PDFMetricTileTable,
+		getTileData: createKeyMetricTileDataLoader(
+			async ( dates, registry ) => {
+				// `getPrimaryEcommerceEvent` derives from `getDetectedEvents`
+				// but has no resolver of its own, so resolve the detected
+				// events first and read the derived value once they're in.
+				await registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getDetectedEvents();
+				const primaryEvent = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPrimaryEcommerceEvent();
+				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
+					GOAL_DRIVER_IDS.VISITOR_TYPE
+				]( {
+					dates: pdfTableDates( dates ),
+					primaryEvent,
+					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+				} );
+
+				if ( ! options ) {
+					return [];
+				}
+
+				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
+			},
+			( [ report ] ) => {
+				const rows = GOAL_DRIVER_ROW_MAPPERS[
+					GOAL_DRIVER_IDS.VISITOR_TYPE
+				]( report?.rows || [] );
+
+				if ( ! rows.length ) {
+					return null;
+				}
+
+				return {
+					rows: rows.map( ( row ) => ( {
+						primary: row.label,
+						metric: row.value,
+					} ) ),
+					limit: 3,
+				};
+			}
+		),
+	},
+	[ KM_ANALYTICS_SALES_BY_COUNTRIES ]: {
+		TileComponent: PDFMetricTileTable,
+		getTileData: createKeyMetricTileDataLoader(
+			async ( dates, registry ) => {
+				// `getPrimaryEcommerceEvent` derives from `getDetectedEvents`
+				// but has no resolver of its own, so resolve the detected
+				// events first and read the derived value once they're in.
+				await registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getDetectedEvents();
+				const primaryEvent = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPrimaryEcommerceEvent();
+				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
+					GOAL_DRIVER_IDS.COUNTRIES
+				]( {
+					dates: pdfTableDates( dates ),
+					primaryEvent,
+					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+				} );
+
+				if ( ! options ) {
+					return [];
+				}
+
+				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
+			},
+			( [ report ] ) => {
+				const rows = GOAL_DRIVER_ROW_MAPPERS[
+					GOAL_DRIVER_IDS.COUNTRIES
+				]( report?.rows || [] );
+
+				if ( ! rows.length ) {
+					return null;
+				}
+
+				return {
+					rows: rows.map( ( row ) => ( {
+						primary: row.label,
+						metric: row.value,
+					} ) ),
+					limit: 3,
+				};
+			}
+		),
+	},
+	[ KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES ]: {
+		TileComponent: PDFMetricTileTable,
+		getTileData: createKeyMetricTileDataLoader(
+			async ( dates, registry ) => {
+				// `getPrimaryEcommerceEvent` derives from `getDetectedEvents`
+				// but has no resolver of its own, so resolve the detected
+				// events first and read the derived value once they're in.
+				await registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getDetectedEvents();
+				const primaryEvent = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPrimaryEcommerceEvent();
+				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
+					GOAL_DRIVER_IDS.TOP_AUTHORS
+				]( {
+					dates: pdfTableDates( dates ),
+					primaryEvent,
+					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+				} );
+
+				if ( ! options ) {
+					return [];
+				}
+
+				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
+			},
+			( [ report ] ) => {
+				const rows = GOAL_DRIVER_ROW_MAPPERS[
+					GOAL_DRIVER_IDS.TOP_AUTHORS
+				]( report?.rows || [] );
+
+				if ( ! rows.length ) {
+					return null;
+				}
+
+				return {
+					rows: rows.map( ( row ) => ( {
+						primary: row.label,
+						metric: row.value,
+					} ) ),
+					limit: 3,
+				};
+			}
+		),
+	},
+	[ KM_ANALYTICS_TOP_PAGES_DRIVING_SALES ]: {
+		TileComponent: PDFMetricTileTable,
+		getTileData: createKeyMetricTileDataLoader(
+			async ( dates, registry ) => {
+				// `getPrimaryEcommerceEvent` derives from `getDetectedEvents`
+				// but has no resolver of its own, so resolve the detected
+				// events first and read the derived value once they're in.
+				await registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getDetectedEvents();
+				const primaryEvent = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPrimaryEcommerceEvent();
+				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
+					GOAL_DRIVER_IDS.TOP_PAGES
+				]( {
+					dates: pdfTableDates( dates ),
+					primaryEvent,
+					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+				} );
+
+				if ( ! options ) {
+					return [];
+				}
+
+				// The page titles come from a second report keyed off the
+				// ranked report's pages, so resolve that report to read its
+				// page paths before requesting them.
+				const report = await registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getReport( options );
+				const pagePaths = getPagePaths( report );
+
+				const requests = [
+					{ moduleStore: MODULES_ANALYTICS_4, options },
+				];
+
+				if ( pagePaths.length > 0 ) {
+					requests.push( {
+						moduleStore: MODULES_ANALYTICS_4,
+						options: getPageTitlesReportOptions(
+							pdfTableDates( dates ),
+							pagePaths
+						),
+					} );
+				}
+
+				return requests;
+			},
+			( [ report, titlesReport ], { registry, dates, viewOnly } ) => {
+				const { rows = [] } = report || {};
+
+				// No ranked rows means the report has no data.
+				if ( rows.length === 0 ) {
+					return null;
+				}
+
+				// Match each page path to its title, mirroring the dashboard
+				// tile which shows the page title rather than the raw path.
+				const titles = getPageTitleMap(
+					getPagePaths( report ),
+					titlesReport
+				);
+
+				return {
+					rows: mapPageRows(
+						rows,
+						{ registry, dates: pdfTableDates( dates ), viewOnly },
+						{
+							primary: ( row, pagePath ) =>
+								decodeAmpersand( titles[ pagePath ] ),
+							metric: ( row ) =>
+								numFmt( row.metricValues?.[ 0 ]?.value ),
+						}
+					),
+					limit: 3,
 				};
 			}
 		),

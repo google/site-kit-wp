@@ -125,6 +125,7 @@ function smokeRegistry() {
 		getAccountID: jest.fn( () => 'pub-1234567890' ),
 		getReferenceDate: jest.fn( () => '2025-02-04' ),
 		getServiceReportURL: jest.fn( () => 'https://example.com/report' ),
+		getPrimaryEcommerceEvent: jest.fn( () => 'purchase' ),
 	};
 
 	return {

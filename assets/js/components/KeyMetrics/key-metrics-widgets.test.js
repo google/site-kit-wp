@@ -20,15 +20,71 @@
  * Internal dependencies
  */
 import {
+	CORE_USER,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_RETURNING_VISITORS,
+	KM_ANALYTICS_SALES_BY_COUNTRIES,
+	KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
+	KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
+	KM_ANALYTICS_SALES_RATE,
+	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
 	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
+	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOTAL_SALES,
 } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import { numFmt } from '@/js/util';
 import { KEY_METRICS_PDF_TILES } from './key-metrics-pdf-tiles';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
+
+/**
+ * Builds a fake `select` for exercising a Key Metric tile's display gates
+ * without a full registry, mirroring the real selectors' "some events
+ * detected" / "every dimension available" combining logic.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}   options                             Options.
+ * @param {string[]} [options.detectedEvents]            The Analytics 4 detected conversion events.
+ * @param {boolean}  [options.isKeyMetricActive]         Whether the tile is already an active Key Metric.
+ * @param {string[]} [options.availableCustomDimensions] The Analytics 4 available custom dimensions.
+ * @return {Function} A fake `select( store )` function.
+ */
+function makeSelect( {
+	detectedEvents = [],
+	isKeyMetricActive = false,
+	availableCustomDimensions = [],
+} = {} ) {
+	return ( store ) => {
+		if ( store === MODULES_ANALYTICS_4 ) {
+			return {
+				hasConversionReportingEvents: ( events ) =>
+					( Array.isArray( events ) ? events : [ events ] ).some(
+						( event ) => detectedEvents.includes( event )
+					),
+				hasCustomDimensions: ( dimensions ) =>
+					( Array.isArray( dimensions )
+						? dimensions
+						: [ dimensions ]
+					).every( ( dimension ) =>
+						availableCustomDimensions.includes( dimension )
+					),
+			};
+		}
+
+		if ( store === CORE_USER ) {
+			return { isKeyMetricActive: () => isKeyMetricActive };
+		}
+
+		throw new Error( `Unexpected store selected in test: ${ store }` );
+	};
+}
 
 const DATES = {
 	startDate: '2025-01-08',
@@ -531,6 +587,105 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 
 			expect( data ).not.toBeNull();
 			expect( data.value ).toBe( 'Organic Search' );
+		} );
+	} );
+} );
+
+describe( 'Selling products Key Metric tiles', () => {
+	const SELLING_PRODUCTS_SLUGS = [
+		KM_ANALYTICS_TOTAL_SALES,
+		KM_ANALYTICS_SALES_RATE,
+		KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
+		KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
+		KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
+		KM_ANALYTICS_SALES_BY_COUNTRIES,
+		KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
+		KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
+	];
+
+	it.each( SELLING_PRODUCTS_SLUGS )(
+		'should offer %s when purchase is detected',
+		( slug ) => {
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+			const select = makeSelect( {
+				detectedEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+			} );
+
+			expect( widget.displayInSelectionPanel( { select, slug } ) ).toBe(
+				true
+			);
+			expect( widget.displayInList( { select, slug } ) ).toBe( true );
+		}
+	);
+
+	it.each( SELLING_PRODUCTS_SLUGS )(
+		'should not offer %s when purchase has not been detected',
+		( slug ) => {
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+			const select = makeSelect( {
+				detectedEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+			} );
+
+			expect( widget.displayInSelectionPanel( { select, slug } ) ).toBe(
+				false
+			);
+			expect( widget.displayInList( { select, slug } ) ).toBe( false );
+		}
+	);
+
+	describe( 'Top authors driving sales', () => {
+		const slug = KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES;
+
+		it( 'should additionally require the post author custom dimension on a view-only dashboard', () => {
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+
+			expect(
+				widget.displayInWidgetArea( {
+					select: makeSelect( {
+						detectedEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+						availableCustomDimensions: [],
+					} ),
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( false );
+
+			expect(
+				widget.displayInWidgetArea( {
+					select: makeSelect( {
+						detectedEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+						availableCustomDimensions: [
+							'googlesitekit_post_author',
+						],
+					} ),
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( true );
+		} );
+
+		it( 'should not be offered on a view-only dashboard when the post author custom dimension is unavailable', () => {
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+			const select = makeSelect( {
+				detectedEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+				availableCustomDimensions: [],
+			} );
+
+			expect(
+				widget.displayInSelectionPanel( {
+					select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( false );
+
+			expect(
+				widget.displayInList( {
+					select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( false );
 		} );
 	} );
 } );
