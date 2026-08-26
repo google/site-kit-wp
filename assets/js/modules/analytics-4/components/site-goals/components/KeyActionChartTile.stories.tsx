@@ -109,7 +109,6 @@ Ready.args = {
 	},
 };
 Ready.scenario = {
-	// Backstop waits for the chart's SVG before it captures the tile.
 	readySelector: '[id^="googlesitekit-chart-"] svg',
 	delay: 400,
 };

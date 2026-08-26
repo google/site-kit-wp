@@ -31,6 +31,7 @@ import {
 	Report,
 	ReportOptions,
 } from '@/js/modules/analytics-4/datastore/types';
+import { getPreviousDate } from '@/js/util';
 import { freezeFetch, render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -99,7 +100,7 @@ function buildChartReportOptions( inputs: ChartInputs = {} ) {
 }
 
 /**
- * Builds one report row per count, starting at 2020-08-11.
+ * Builds one report row per count, starting on `dates.startDate`.
  *
  * @since n.e.x.t
  *
@@ -108,7 +109,14 @@ function buildChartReportOptions( inputs: ChartInputs = {} ) {
  */
 function buildDailyReportRows( counts: string[] ) {
 	return counts.map( ( value, index ) => ( {
-		dimensionValues: [ { value: `202008${ 11 + index }` } ],
+		dimensionValues: [
+			{
+				value: getPreviousDate( dates.startDate, -index ).replace(
+					/-/g,
+					''
+				),
+			},
+		],
 		metricValues: [ { value } ],
 	} ) );
 }
