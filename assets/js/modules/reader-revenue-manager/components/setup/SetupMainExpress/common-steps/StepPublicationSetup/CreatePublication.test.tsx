@@ -83,6 +83,10 @@ describe( 'CreatePublication', () => {
 				snippetMode: 'post_types',
 			} );
 
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.finishResolution( 'getSettings', [] );
+
 		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION }`;
 	} );
 
@@ -101,11 +105,12 @@ describe( 'CreatePublication', () => {
 				registry,
 			} );
 
-			const selectValues = container.querySelectorAll< HTMLInputElement >(
-				'input[name="enhanced-select"]'
-			);
 			const selectLabels = container.querySelectorAll(
 				'.mdc-select__selected-text'
+			);
+
+			const selectValues = container.querySelectorAll< HTMLInputElement >(
+				'input[name="enhanced-select"]'
 			);
 
 			expect( selectValues[ 0 ] ).toHaveValue( languageCode );
@@ -152,7 +157,7 @@ describe( 'CreatePublication', () => {
 		expect( submitButton ).toBeEnabled();
 	} );
 
-	it( 'should disable submission if submission is already in progress', async () => {
+	it( 'should disable submission when submission is in progress', async () => {
 		fetchMock.postOnce( createPublicationEndpoint, {
 			body: publications[ 0 ],
 			status: 200,
@@ -175,14 +180,8 @@ describe( 'CreatePublication', () => {
 		fireEvent.click( submitButton );
 
 		await waitFor( () => {
-			expect(
-				registry
-					.select( MODULES_READER_REVENUE_MANAGER )
-					.isDoingSubmitChanges()
-			).toBe( true );
+			expect( submitButton ).toBeDisabled();
 		} );
-
-		expect( submitButton ).toBeDisabled();
 	} );
 
 	it( 'should navigate to the next step if submission is successful', async () => {
@@ -191,7 +190,7 @@ describe( 'CreatePublication', () => {
 			status: 200,
 		} );
 
-		fetchMock.postOnce( settingsEndpoint, { body: {}, status: 200 } );
+		fetchMock.postOnce( settingsEndpoint, {} );
 
 		const { getByRole } = render( <CreatePublication />, {
 			registry,
@@ -215,7 +214,11 @@ describe( 'CreatePublication', () => {
 
 	it( 'should display an error notice if creating the publication fails', async () => {
 		fetchMock.postOnce( createPublicationEndpoint, {
-			body: {},
+			body: {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
 			status: 500,
 		} );
 
@@ -231,7 +234,7 @@ describe( 'CreatePublication', () => {
 
 		await waitFor( () => {
 			expect( getByRole( 'status' ) ).toHaveTextContent(
-				/Creating your publication failed/
+				/Internal server error/
 			);
 		} );
 
@@ -250,7 +253,11 @@ describe( 'CreatePublication', () => {
 		} );
 
 		fetchMock.postOnce( settingsEndpoint, {
-			body: {},
+			body: {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
 			status: 500,
 		} );
 

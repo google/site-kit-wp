@@ -123,15 +123,15 @@ WithoutPublicationsWithError.args = {
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetPublications( [] );
 
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.setErrorForAction( {}, 'createPublication', [
-				{
-					displayName: 'My Site Name',
-					languageCode: 'en',
-					regionCode: 'US',
-				},
-			] );
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setErrorForAction(
+			{
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
+			'createPublication',
+			[]
+		);
 	},
 };
 WithoutPublicationsWithError.scenario = {};

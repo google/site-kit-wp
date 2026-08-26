@@ -37,6 +37,7 @@ import { __ } from '@wordpress/i18n';
 import { Checkbox, SpinnerButton, TextField } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import DocumentationLink from '@/js/components/DocumentationLink';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -47,6 +48,7 @@ import PublicationSetupHeadline from '@/js/modules/reader-revenue-manager/compon
 import PublicationSetupLanguageSelect from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup/PublicationSetupLanguageSelect';
 import PublicationSetupRegionSelect from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup/PublicationSetupRegionSelect';
 import { useStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	CREATE_PUBLICATION_FORM,
 	EXPRESS_SETUP_CTAS,
@@ -148,23 +150,6 @@ const CreatePublication: FC = () => {
 		[]
 	);
 
-	const createPublicationError: object | undefined = useSelect(
-		( select: Select ) => {
-			const { getErrorForAction } = select(
-				MODULES_READER_REVENUE_MANAGER
-			);
-
-			return getErrorForAction( 'createPublication', [
-				{
-					displayName,
-					languageCode,
-					regionCode,
-				},
-			] );
-		},
-		[ displayName, languageCode, regionCode ]
-	);
-
 	const [ , setStep ] = useStep();
 
 	const submit = useCallback( async () => {
@@ -235,6 +220,11 @@ const CreatePublication: FC = () => {
 				<PublicationSetupHeadline>
 					{ __( "Let's get started!", 'google-site-kit' ) }
 				</PublicationSetupHeadline>
+
+				<StoreErrorNotices
+					moduleSlug={ MODULE_SLUG_READER_REVENUE_MANAGER }
+					storeName={ MODULES_READER_REVENUE_MANAGER }
+				/>
 
 				<P
 					className="googlesitekit-rrm-publication-setup__description"
