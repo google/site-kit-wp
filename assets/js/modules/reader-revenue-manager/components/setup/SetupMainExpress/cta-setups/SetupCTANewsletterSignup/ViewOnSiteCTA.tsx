@@ -31,13 +31,18 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
+import { type Select, useSelect } from 'googlesitekit-data';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import ExternalIcon from '@/svg/icons/external.svg';
 import useHasPreExistingCTAs from './useHasPreExistingCTAs';
-import useViewOnSiteURL from './useViewOnSiteURL';
 
 const ViewOnSiteCTA: FC = () => {
 	const hasPreExistingCTAs = useHasPreExistingCTAs();
-	const viewOnSiteURL = useViewOnSiteURL();
+	const viewOnSiteURL = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getViewOnSiteURL(),
+		[]
+	);
 
 	const onClick = useCallback( () => {
 		global.open( viewOnSiteURL, '_blank' );
