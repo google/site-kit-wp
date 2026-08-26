@@ -52,24 +52,32 @@ export const BBPRESS_PAGINATION_SELECTOR =
  * @return {number} Destination page number; `1` when nothing yields one.
  */
 function getPageNumber( anchor: HTMLAnchorElement ): number {
-	const url = new URL( anchor.href );
+	try {
+		const url = new URL( anchor.href );
 
-	for ( const param of [ 'page', 'paged' ] ) {
-		const pageNumber = parseInt( url.searchParams.get( param ) || '', 10 );
+		for ( const param of [ 'page', 'paged' ] ) {
+			const pageNumber = parseInt(
+				url.searchParams.get( param ) || '',
+				10
+			);
 
-		if ( pageNumber > 0 ) {
-			return pageNumber;
+			if ( pageNumber > 0 ) {
+				return pageNumber;
+			}
 		}
-	}
 
-	const lastSegment = url.pathname.split( '/' ).filter( Boolean ).pop() || '';
+		const lastSegment =
+			url.pathname.split( '/' ).filter( Boolean ).pop() || '';
 
-	if ( /^\d+$/.test( lastSegment ) ) {
-		const pageNumber = parseInt( lastSegment, 10 );
+		if ( /^\d+$/.test( lastSegment ) ) {
+			const pageNumber = parseInt( lastSegment, 10 );
 
-		if ( pageNumber > 0 ) {
-			return pageNumber;
+			if ( pageNumber > 0 ) {
+				return pageNumber;
+			}
 		}
+	} catch {
+		// Not a parsable address; the anchor's text is the remaining source.
 	}
 
 	const textPageNumber = parseInt( anchor.textContent?.trim() || '', 10 );

@@ -305,6 +305,27 @@ describe( 'initializePagination', () => {
 		);
 	} );
 
+	it( 'falls back to the anchor text for a link with no href, without logging', () => {
+		// Mock console.error so a regression here surfaces as a failed
+		// assertion rather than an unexpected log.
+		const consoleErrorSpy = jest
+			.spyOn( console, 'error' )
+			.mockImplementation( () => {} );
+
+		const anchor = render( '<a class="post-page-numbers">3</a>' );
+		initialize();
+
+		( anchor as HTMLAnchorElement ).click();
+
+		expect( gtagEventMock ).toHaveBeenCalledWith(
+			'pagination_click',
+			expect.objectContaining( { page_number: 3 } )
+		);
+		expect( consoleErrorSpy ).not.toHaveBeenCalled();
+
+		consoleErrorSpy.mockRestore();
+	} );
+
 	it( 'registers exactly one document click listener', () => {
 		const added = initialize();
 
