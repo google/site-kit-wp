@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import getKeyActionChartReportOptions from '@/js/modules/analytics-4/components/site-goals/components/getKeyActionChartReportOptions';
 import { SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_IDS,
@@ -100,6 +101,27 @@ function buildVisitorEngagementEventReportOptions(
 		},
 		reportID: `analytics-4_site-goals_visitor-engagement_${ eventName }`,
 	};
+}
+
+/**
+ * Builds the chart tile's report options for one ecommerce event.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} eventName         The ecommerce event the story detects.
+ * @param {Object} [breakdownFilter] The provider tab's filter, empty for no tab.
+ * @return {Object} The options `provideAnalytics4MockReport` takes.
+ */
+function buildKeyActionChartReportOptions(
+	eventName: string,
+	breakdownFilter: Record< string, unknown > = {}
+) {
+	return getKeyActionChartReportOptions( {
+		dates,
+		eventNames: [ eventName ],
+		goalType: GOAL_TYPES.ECOMMERCE,
+		breakdownFilter,
+	} );
 }
 
 function maybeEmptyRows< T >( empty: boolean, rows: T[] ) {
@@ -203,6 +225,26 @@ function commonSetup( registry: WPDataRegistry ) {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ discoveryOptions ] );
+
+	// Receive the chart tile's report for both ecommerce events, once with no tab
+	// filter and once per provider tab, so the tile has a chart to draw. The
+	// `ZeroData` story replaces it with an empty report.
+	[
+		ENUM_CONVERSION_EVENTS.PURCHASE,
+		ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+	].forEach( ( eventName ) => {
+		[
+			{},
+			...PROVIDER_VALUES.map( ( provider ) => ( {
+				[ PROVIDER_DIMENSION ]: provider,
+			} ) ),
+		].forEach( ( breakdownFilter ) => {
+			provideAnalytics4MockReport(
+				registry,
+				buildKeyActionChartReportOptions( eventName, breakdownFilter )
+			);
+		} );
+	} );
 }
 
 function seedGoalDriverReports(
@@ -601,6 +643,9 @@ function seedGoalDriverReports(
 
 const PROVIDER_DIMENSION = 'customEvent:googlesitekit_event_provider';
 
+/** The provider slugs the tabbed breakdown stories show as tabs. */
+const PROVIDER_VALUES = [ 'woocommerce', 'easy-digital-downloads' ];
+
 // A metrics-only compare report whose totals carry one row per date range.
 function buildTotals( count: number ) {
 	return {
@@ -623,7 +668,7 @@ function buildTotals( count: number ) {
 function seedTabbedBreakdown(
 	registry: WPDataRegistry,
 	{
-		providerValues = [ 'woocommerce', 'easy-digital-downloads' ],
+		providerValues = PROVIDER_VALUES,
 		availabilityDate = 20200101,
 		unattributedCount = 0,
 	}: {
@@ -812,7 +857,10 @@ Ready.args = {
 		seedGoalDriverReports( registry, [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 	},
 };
-Ready.scenario = {};
+Ready.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400,
+};
 
 export const GatheringBreakdownData = Template.bind( {} ) as Story;
 GatheringBreakdownData.storyName = 'Gathering Breakdown Data';
@@ -861,7 +909,10 @@ TabbedBreakdownDeactivatedPlugin.args = {
 		seedTabbedBreakdown( registry );
 	},
 };
-TabbedBreakdownDeactivatedPlugin.scenario = {};
+TabbedBreakdownDeactivatedPlugin.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400,
+};
 
 export const TabbedBreakdownPartialData = Template.bind( {} ) as Story;
 TabbedBreakdownPartialData.storyName = 'Tabbed Breakdown (Partial Data)';
@@ -885,7 +936,10 @@ TabbedBreakdownOtherSources.args = {
 		seedTabbedBreakdown( registry, { unattributedCount: 12 } );
 	},
 };
-TabbedBreakdownOtherSources.scenario = {};
+TabbedBreakdownOtherSources.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400,
+};
 
 export const ReadyAddToCart = Template.bind( {} ) as Story;
 ReadyAddToCart.storyName = 'Ready (Add to Cart)';
@@ -979,6 +1033,16 @@ ZeroData.args = {
 			.receiveGetReport( zeroSessionsReport, {
 				options: engagementReportOptions,
 			} );
+
+		// An empty chart report makes the tile show its zero data message, so
+		// the story shows no data in every tile.
+		const chartReportOptions = buildKeyActionChartReportOptions(
+			ENUM_CONVERSION_EVENTS.PURCHASE
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( { rows: [] }, { options: chartReportOptions } );
+
 		seedGoalDriverReports( registry, [ ENUM_CONVERSION_EVENTS.PURCHASE ], {
 			empty: true,
 		} );

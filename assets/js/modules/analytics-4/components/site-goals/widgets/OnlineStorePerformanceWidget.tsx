@@ -110,6 +110,42 @@ const EVENT_TOTAL_LABELS = {
 	add_to_cart: __( 'Products added to cart', 'google-site-kit' ),
 };
 
+/**
+ * Builds the chart tile's title from the primary event and the date range.
+ *
+ * The title opens with the same words `EVENT_TOTAL_LABELS` holds for that
+ * event, so the chart tile and the total events tile name the Key action the
+ * same way. An event added to `EVENT_TOTAL_LABELS` needs a branch here too,
+ * or its chart tile falls back to the sales title.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} primaryEvent  The Key action's event, a key of `EVENT_TOTAL_LABELS`.
+ * @param {number} dateRangeDays The number of days the selected date range covers.
+ * @return {string} The chart tile's title.
+ */
+function getChartTitle(
+	primaryEvent: keyof typeof EVENT_TOTAL_LABELS,
+	dateRangeDays: number
+) {
+	if ( primaryEvent === 'add_to_cart' ) {
+		return sprintf(
+			/* translators: %d: number of days in the selected date range, e.g. 28. */
+			__(
+				'Products added to cart in the last %d days',
+				'google-site-kit'
+			),
+			dateRangeDays
+		);
+	}
+
+	return sprintf(
+		/* translators: %d: number of days in the selected date range, e.g. 28. */
+		__( 'Total sales in the last %d days', 'google-site-kit' ),
+		dateRangeDays
+	);
+}
+
 function getWidgetReportOptions(
 	dates: DateRange,
 	primaryEvent: keyof typeof EVENT_TOTAL_LABELS | undefined,
@@ -298,9 +334,16 @@ const OnlineStorePerformanceWidget = forwardRef<
 			[]
 		) as DateRange;
 
-		// The "Other sources" metric mirrors the Key action's primary event, so detect
-		// unattributed events for that event only.
-		const detectionEventNames = useMemo(
+		const dateRangeDays = useSelect(
+			( select: Select ) =>
+				select( CORE_USER ).getDateRangeNumberOfDays(),
+			[]
+		) as number;
+
+		// The chart tile and the "Other sources" metric both count the Key
+		// action's own event, so `useSiteGoalsBreakdown` detects unattributed
+		// events for that event and no other.
+		const keyActionEventNames = useMemo(
 			() => ( primaryEvent ? [ primaryEvent ] : [] ),
 			[ primaryEvent ]
 		);
@@ -321,7 +364,7 @@ const OnlineStorePerformanceWidget = forwardRef<
 			// Discovery is scoped to the known ecommerce events. The allowlist
 			// then restricts the tabs to supported ecommerce plugins.
 			eventNames: CONVERSION_REPORTING_ECOMMERCE_EVENTS,
-			detectionEventNames,
+			detectionEventNames: keyActionEventNames,
 			supportedValues: SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDERS,
 		} );
 
@@ -520,6 +563,10 @@ const OnlineStorePerformanceWidget = forwardRef<
 								__( '“%s” events', 'google-site-kit' ),
 								primaryEvent
 							) }
+							chartTitle={ getChartTitle(
+								primaryEvent,
+								dateRangeDays
+							) }
 							currentRate={ currentRate }
 							previousRate={ previousRate }
 							currentSessions={ currentSessions }
@@ -529,6 +576,10 @@ const OnlineStorePerformanceWidget = forwardRef<
 							otherSourcesPreviousCount={
 								otherSourcesPreviousCount
 							}
+							dates={ dates }
+							eventNames={ keyActionEventNames }
+							goalType={ GOAL_TYPES.ECOMMERCE }
+							breakdownFilter={ breakdownFilter }
 						/>
 					</TilesGroup>
 				) }
