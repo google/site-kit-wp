@@ -61,6 +61,18 @@ export const SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDERS = Object.keys(
 	SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDER_LABELS
 );
 
+export const SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS: Record<
+	string,
+	string
+> = {
+	'contact-form-7': 'Contact Form 7',
+	'ninja-forms': 'Ninja Forms',
+	wpforms: 'WPForms',
+	mailchimp: 'Mailchimp for WordPress',
+	'popup-maker': 'Popup Maker',
+	'optin-monster': 'OptinMonster',
+};
+
 export const SITE_GOALS_BREAKDOWN_NOTIFICATION = 'site_goals_breakdown';
 
 export const BREAKDOWN_ORIGIN_WIDGET = 'widget';

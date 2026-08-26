@@ -224,6 +224,7 @@ export function provideSiteInfo(
 		isMultisite: false,
 		hasActiveLeadEventProviders: undefined,
 		hasActiveEcommerceEventProviders: undefined,
+		activeConversionEventProviders: undefined,
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {

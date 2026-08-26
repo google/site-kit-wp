@@ -19,6 +19,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User\Audience_Settings as User_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings as Module_Audience_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
 
 /**
  * Builds Analytics 4 report option payloads for email reporting.
@@ -36,6 +37,14 @@ class Report_Options extends Base_Report_Options {
 	 * @var array
 	 */
 	private $custom_dimension_availability = array();
+
+	/**
+	 * Conversion event names Analytics has detected on the site.
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	private $detected_events = array();
 
 	/**
 	 * Whether audience segmentation is enabled.
@@ -89,6 +98,51 @@ class Report_Options extends Base_Report_Options {
 	 */
 	public function set_custom_dimension_availability( $availability ) {
 		$this->custom_dimension_availability = $availability;
+	}
+
+	/**
+	 * Sets the conversion event names Analytics has detected.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $detected_events Detected event names, such as `purchase` or `submit_lead_form`.
+	 */
+	public function set_detected_events( array $detected_events ) {
+		$this->detected_events = $detected_events;
+	}
+
+	/**
+	 * Whether Analytics has detected any ecommerce event.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True when the detected events hold an ecommerce event, false otherwise.
+	 */
+	public function has_ecommerce_events() {
+		return ! empty( array_intersect( Conversion_Reporting_Events_Sync::ECOMMERCE_EVENT_NAMES, $this->detected_events ) );
+	}
+
+	/**
+	 * Whether Analytics has detected any lead generation event.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True when the detected events hold a lead event, false otherwise.
+	 */
+	public function has_lead_events() {
+		return ! empty( $this->get_detected_lead_events() );
+	}
+
+	/**
+	 * Gets the lead generation events among the detected events.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Detected lead event names, in the order
+	 *               `Conversion_Reporting_Events_Sync::LEAD_EVENT_NAMES` lists them.
+	 */
+	private function get_detected_lead_events() {
+		return array_values( array_intersect( Conversion_Reporting_Events_Sync::LEAD_EVENT_NAMES, $this->detected_events ) );
 	}
 
 	/**
@@ -358,6 +412,122 @@ class Report_Options extends Base_Report_Options {
 			),
 			true
 		);
+	}
+
+	/**
+	 * Gets report options for the online store key action count.
+	 *
+	 * The options count `purchase` when the detected events hold it, and `add_to_cart` otherwise.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $custom_dimension Optional. Custom dimension slug to split the count by, such as
+	 *                                 `googlesitekit_event_provider`. Default empty, which returns one
+	 *                                 row for the whole site.
+	 * @return array Report request options array.
+	 */
+	public function get_online_store_primary_options( $custom_dimension = '' ) {
+		$primary_store_event = in_array( 'purchase', $this->detected_events, true ) ? 'purchase' : 'add_to_cart';
+
+		return $this->build_event_count_options( $primary_store_event, $custom_dimension );
+	}
+
+	/**
+	 * Gets report options for the lead generation key action count.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $custom_dimension Optional. Custom dimension slug to split the count by, such as
+	 *                                 `googlesitekit_form_id`. Default empty, which returns one row per
+	 *                                 detected lead event.
+	 * @return array Report request options array.
+	 */
+	public function get_lead_primary_options( $custom_dimension = '' ) {
+		return $this->build_event_count_options(
+			array(
+				'filterType' => 'inListFilter',
+				'value'      => $this->get_detected_lead_events(),
+			),
+			$custom_dimension
+		);
+	}
+
+	/**
+	 * Gets report options for the engagement rate and the session count.
+	 *
+	 * The key action rate divides the key action count by the session count.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $custom_dimension Optional. Custom dimension slug to split the rows by, such as
+	 *                                 `googlesitekit_event_provider`. Default empty, which returns one
+	 *                                 row for the whole site.
+	 * @return array Report request options array.
+	 */
+	public function get_engagement_options( $custom_dimension = '' ) {
+		$options = array(
+			'metrics' => array(
+				array( 'name' => 'engagementRate' ),
+				array( 'name' => 'sessions' ),
+			),
+		);
+
+		$options = $this->with_breakdown_dimension( $options, $custom_dimension );
+
+		return $this->with_current_range( $options, true );
+	}
+
+	/**
+	 * Adds a breakdown dimension to report options, and keeps the rows that hold no data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array  $options          Report request options array.
+	 * @param string $custom_dimension Custom dimension slug to split the rows by, such as
+	 *                                 `googlesitekit_form_id`. The method adds the `customEvent:`
+	 *                                 prefix. Empty returns the options unchanged.
+	 * @return array Report request options array.
+	 */
+	private function with_breakdown_dimension( $options, $custom_dimension ) {
+		if ( ! $custom_dimension ) {
+			return $options;
+		}
+
+		$options['dimensions'][]  = array( 'name' => Analytics_4::CUSTOM_EVENT_PREFIX . $custom_dimension );
+		$options['keepEmptyRows'] = true;
+
+		return $options;
+	}
+
+	/**
+	 * Builds report options that count the events an `eventName` filter selects.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string|array $event_filter     Value for the `eventName` dimension filter. One event name,
+	 *                                       such as `purchase`, or a filter array, such as
+	 *                                       `array( 'filterType' => 'inListFilter', 'value' => array( 'contact' ) )`.
+	 * @param string       $custom_dimension Optional. Custom dimension slug to split the count by, such
+	 *                                       as `googlesitekit_form_id`. Default empty, which returns one
+	 *                                       row per event name the filter selects.
+	 * @return array Report request options array.
+	 */
+	private function build_event_count_options( $event_filter, $custom_dimension = '' ) {
+		$options = array(
+			'metrics'          => array(
+				array( 'name' => 'eventCount' ),
+			),
+			'dimensions'       => array(
+				array( 'name' => 'eventName' ),
+			),
+			'dimensionFilters' => array(
+				'eventName' => $event_filter,
+			),
+		);
+
+		$options = $this->with_breakdown_dimension( $options, $custom_dimension );
+
+		return $this->with_current_range( $options, true );
 	}
 
 	/**

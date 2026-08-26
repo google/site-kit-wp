@@ -1,4 +1,6 @@
 /**
+ * Content events provider.
+ *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,18 +16,25 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { initializeVimeo } from './content-events/vimeo';
+
 /** The Content Events configuration published by PHP on the frontend. */
 export interface ContentEventsConfig {
 	/** ID of the queried post, or `0` when there isn't one. */
 	postID: number;
 	/** Whether the current request is for a single post. */
 	isSinglePost: boolean;
+	/** Whether the content rendered a Vimeo embed. */
+	hasVimeoEmbed: boolean;
 }
 
 /**
  * Gets the Content Events configuration.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @return {ContentEventsConfig} Content events configuration object.
  */
@@ -33,6 +42,9 @@ export function getContentEventsConfig(): ContentEventsConfig {
 	return {
 		postID: 0,
 		isSinglePost: false,
+		hasVimeoEmbed: false,
 		...( global._googlesitekit?.contentEvents || {} ),
 	};
 }
+
+initializeVimeo( getContentEventsConfig() );

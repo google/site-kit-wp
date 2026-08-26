@@ -18,5 +18,5 @@ export type AdvancedTrackingEvent = {
 	action: string;
 	on: string;
 	selector: string;
-	metadata?: Record< string, unknown >;
+	metadata?: Record< string, unknown > | null;
 };
