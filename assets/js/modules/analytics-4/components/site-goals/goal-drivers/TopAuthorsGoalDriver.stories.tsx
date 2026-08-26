@@ -34,7 +34,7 @@ import {
 	provideUserCapabilities,
 } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { GOAL_DRIVER_ROW_LIMIT_EXPANDED, GOAL_TYPES } from './constants';
+import { GOAL_DRIVER_ROW_LIMIT_EXPANDED } from './constants';
 import TopAuthorsGoalDriver from './TopAuthorsGoalDriver';
 import { GoalDriverComponentProps } from './types';
 
@@ -105,8 +105,7 @@ function setupAnalytics4(
 }
 
 function getTopAuthorsReportOptions(
-	registry: Parameters< typeof provideModules >[ 0 ],
-	goalType = GOAL_TYPES.ECOMMERCE
+	registry: Parameters< typeof provideModules >[ 0 ]
 ) {
 	const dates = registry.select( CORE_USER ).getDateRangeDates();
 	const dimensionFilters = {
@@ -139,13 +138,7 @@ function getTopAuthorsReportOptions(
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-authors_${ goalType }`,
-		},
-		totalReportOptions: {
-			...dates,
-			dimensionFilters,
-			metrics: [ { name: 'eventCount' } ],
-			reportID: `analytics-4_site-goals_top-authors-total_${ goalType }`,
+			reportID: 'analytics-4_goal-driver-reports_top-authors',
 		},
 	};
 }
@@ -154,15 +147,12 @@ function seedTopAuthorsReports(
 	registry: Parameters< typeof provideModules >[ 0 ],
 	{ loading = false } = {}
 ) {
-	const { authorsReportOptions, totalReportOptions } =
-		getTopAuthorsReportOptions( registry );
+	const { authorsReportOptions } = getTopAuthorsReportOptions( registry );
 
 	if ( loading ) {
-		[ authorsReportOptions, totalReportOptions ].forEach( ( options ) => {
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.startResolution( 'getReport', [ options ] );
-		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ authorsReportOptions ] );
 
 		return;
 	}
@@ -198,16 +188,6 @@ function seedTopAuthorsReports(
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ authorsReportOptions ] );
-
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-		{
-			rows: [ { metricValues: [ { value: '1000' } ] } ],
-		},
-		{ options: totalReportOptions }
-	);
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.finishResolution( 'getReport', [ totalReportOptions ] );
 }
 
 function Template( props: TopAuthorsGoalDriverStoryProps ) {

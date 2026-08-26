@@ -184,12 +184,10 @@ function seedGoalDriverReports(
 	registry: WPDataRegistry,
 	eventNames: string[],
 	{
-		goalType = GOAL_TYPES.LEAD,
 		empty = false,
 		loading = false,
 		breakdownFilter = {},
 	}: {
-		goalType?: string;
 		empty?: boolean;
 		loading?: boolean;
 		breakdownFilter?: Record< string, unknown >;
@@ -216,14 +214,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_top-traffic-channels_${ goalType }`,
-	};
-
-	const topTrafficTotalOptions = {
-		...goalDriverDates,
-		dimensionFilters,
-		metrics: [ { name: 'eventCount' } ],
-		reportID: `analytics-4_site-goals_top-traffic-channels-total_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_top-traffic-channels',
 	};
 
 	const topTrafficRateOptions = {
@@ -234,7 +225,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_top-traffic-channels-rate_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_top-traffic-channels-rate',
 	};
 
 	const topPagesOptions = {
@@ -245,7 +236,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_top-pages_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_top-pages',
 	};
 
 	const pagePaths = [ '/test-post-1/', '/test-post-2/', '/test-post-3/' ];
@@ -269,7 +260,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_visitor-type_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_visitor-type',
 	};
 
 	const citiesOptions = {
@@ -286,7 +277,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_cities_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_cities',
 	};
 
 	const countriesOptions = {
@@ -303,7 +294,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_countries_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_countries',
 	};
 
 	const deviceTypeOptions = {
@@ -314,13 +305,12 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_device-type_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_device-type',
 	};
 
 	if ( loading ) {
 		[
 			topTrafficChannelsOptions,
-			topTrafficTotalOptions,
 			topTrafficRateOptions,
 			topPagesOptions,
 			pageTitlesOptions,
@@ -374,7 +364,6 @@ function seedGoalDriverReports(
 					metricValues: [ { value: '16' } ],
 				},
 		  ];
-	const totalEventCount = hasMultipleEvents ? '100' : '93';
 
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 		{
@@ -385,18 +374,6 @@ function seedGoalDriverReports(
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ topTrafficChannelsOptions ] );
-
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-		{
-			rows: empty
-				? []
-				: [ { metricValues: [ { value: totalEventCount } ] } ],
-		},
-		{ options: topTrafficTotalOptions }
-	);
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.finishResolution( 'getReport', [ topTrafficTotalOptions ] );
 
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 		{

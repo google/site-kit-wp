@@ -225,6 +225,24 @@ function pdfTableDates( dates ) {
 }
 
 /**
+ * Resolves the primary ecommerce event for a Selling products PDF tile.
+ *
+ * `getPrimaryEcommerceEvent` derives from `getDetectedEvents` but has no
+ * resolver of its own, so this resolves the detected events first and reads
+ * the derived value once they're in.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry WordPress data registry.
+ * @return {Promise<string|undefined>} The primary ecommerce event name, or `undefined` if none is detected.
+ */
+async function resolvePrimaryEcommerceEvent( registry ) {
+	await registry.resolveSelect( MODULES_ANALYTICS_4 ).getDetectedEvents();
+
+	return registry.select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent();
+}
+
+/**
  * Maps ranked report rows to `PDFMetricTileTable` rows for a page-based tile:
  * resolves each row's page path to its Analytics report link (matching the
  * dashboard row's own link) and delegates the primary label and metric
@@ -1859,15 +1877,9 @@ export const KEY_METRICS_PDF_TILES = {
 		TileComponent: PDFNumericMetricTile,
 		getTileData: createKeyMetricTileDataLoader(
 			async ( dates, registry ) => {
-				// `getPrimaryEcommerceEvent` derives from `getDetectedEvents`
-				// but has no resolver of its own, so resolve the detected
-				// events first and read the derived value once they're in.
-				await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getDetectedEvents();
-				const primaryEvent = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getPrimaryEcommerceEvent();
+				const primaryEvent = await resolvePrimaryEcommerceEvent(
+					registry
+				);
 				const options = buildPrimaryEventReportOptions(
 					dates,
 					primaryEvent
@@ -1906,15 +1918,9 @@ export const KEY_METRICS_PDF_TILES = {
 		TileComponent: PDFNumericMetricTile,
 		getTileData: createKeyMetricTileDataLoader(
 			async ( dates, registry ) => {
-				// `getPrimaryEcommerceEvent` derives from `getDetectedEvents`
-				// but has no resolver of its own, so resolve the detected
-				// events first and read the derived value once they're in.
-				await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getDetectedEvents();
-				const primaryEvent = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getPrimaryEcommerceEvent();
+				const primaryEvent = await resolvePrimaryEcommerceEvent(
+					registry
+				);
 				const primaryEventOptions = buildPrimaryEventReportOptions(
 					dates,
 					primaryEvent
@@ -1969,15 +1975,9 @@ export const KEY_METRICS_PDF_TILES = {
 		TileComponent: PDFNumericMetricTile,
 		getTileData: createKeyMetricTileDataLoader(
 			async ( dates, registry ) => {
-				// `getPrimaryEcommerceEvent` derives from `getDetectedEvents`
-				// but has no resolver of its own, so resolve the detected
-				// events first and read the derived value once they're in.
-				await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getDetectedEvents();
-				const primaryEvent = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getPrimaryEcommerceEvent();
+				const primaryEvent = await resolvePrimaryEcommerceEvent(
+					registry
+				);
 
 				// No primary ecommerce event means no data, so fetch nothing
 				// and let the empty reports drop the tile.
@@ -2026,15 +2026,9 @@ export const KEY_METRICS_PDF_TILES = {
 		TileComponent: PDFMetricTileTable,
 		getTileData: createKeyMetricTileDataLoader(
 			async ( dates, registry ) => {
-				// `getPrimaryEcommerceEvent` derives from `getDetectedEvents`
-				// but has no resolver of its own, so resolve the detected
-				// events first and read the derived value once they're in.
-				await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getDetectedEvents();
-				const primaryEvent = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getPrimaryEcommerceEvent();
+				const primaryEvent = await resolvePrimaryEcommerceEvent(
+					registry
+				);
 				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
 					GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE
 				]( {
@@ -2072,15 +2066,9 @@ export const KEY_METRICS_PDF_TILES = {
 		TileComponent: PDFMetricTileTable,
 		getTileData: createKeyMetricTileDataLoader(
 			async ( dates, registry ) => {
-				// `getPrimaryEcommerceEvent` derives from `getDetectedEvents`
-				// but has no resolver of its own, so resolve the detected
-				// events first and read the derived value once they're in.
-				await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getDetectedEvents();
-				const primaryEvent = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getPrimaryEcommerceEvent();
+				const primaryEvent = await resolvePrimaryEcommerceEvent(
+					registry
+				);
 				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
 					GOAL_DRIVER_IDS.VISITOR_TYPE
 				]( {
@@ -2118,15 +2106,9 @@ export const KEY_METRICS_PDF_TILES = {
 		TileComponent: PDFMetricTileTable,
 		getTileData: createKeyMetricTileDataLoader(
 			async ( dates, registry ) => {
-				// `getPrimaryEcommerceEvent` derives from `getDetectedEvents`
-				// but has no resolver of its own, so resolve the detected
-				// events first and read the derived value once they're in.
-				await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getDetectedEvents();
-				const primaryEvent = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getPrimaryEcommerceEvent();
+				const primaryEvent = await resolvePrimaryEcommerceEvent(
+					registry
+				);
 				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
 					GOAL_DRIVER_IDS.COUNTRIES
 				]( {
@@ -2164,15 +2146,9 @@ export const KEY_METRICS_PDF_TILES = {
 		TileComponent: PDFMetricTileTable,
 		getTileData: createKeyMetricTileDataLoader(
 			async ( dates, registry ) => {
-				// `getPrimaryEcommerceEvent` derives from `getDetectedEvents`
-				// but has no resolver of its own, so resolve the detected
-				// events first and read the derived value once they're in.
-				await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getDetectedEvents();
-				const primaryEvent = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getPrimaryEcommerceEvent();
+				const primaryEvent = await resolvePrimaryEcommerceEvent(
+					registry
+				);
 				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
 					GOAL_DRIVER_IDS.TOP_AUTHORS
 				]( {
@@ -2210,15 +2186,9 @@ export const KEY_METRICS_PDF_TILES = {
 		TileComponent: PDFMetricTileTable,
 		getTileData: createKeyMetricTileDataLoader(
 			async ( dates, registry ) => {
-				// `getPrimaryEcommerceEvent` derives from `getDetectedEvents`
-				// but has no resolver of its own, so resolve the detected
-				// events first and read the derived value once they're in.
-				await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getDetectedEvents();
-				const primaryEvent = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getPrimaryEcommerceEvent();
+				const primaryEvent = await resolvePrimaryEcommerceEvent(
+					registry
+				);
 				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
 					GOAL_DRIVER_IDS.TOP_PAGES
 				]( {
