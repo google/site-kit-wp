@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+/** The `link_type` values this event reports. */
 export type ContactLinkType =
 	| 'phone'
 	| 'email'
@@ -27,6 +28,7 @@ export type ContactLinkType =
 	| 'signal'
 	| 'line';
 
+/** One contact link kind: how to recognize it, and who counts as a recipient. */
 export interface ContactLinkMatcher {
 	type: ContactLinkType;
 	schemes?: string[];
@@ -218,8 +220,16 @@ export const CONTACT_LINK_MATCHERS: ContactLinkMatcher[] = [
 
 // Both indexes are built from the one table above in a single pass, so a click
 // costs two hash lookups rather than a scan.
-const matchersByScheme: Record< string, ContactLinkMatcher > = {};
-const matchersByHost: Record< string, ContactLinkMatcher > = {};
+//
+// Prototype-less, because the host key comes straight from the address bar: the
+// parser lower-cases it, which rules out `toString` and friends, but leaves
+// `constructor` and `__proto__` intact. A plain object would hand those back as
+// inherited values, and a lookup that returned a truthy non-matcher would make
+// this function report `undefined` instead of `null`.
+const matchersByScheme: Record< string, ContactLinkMatcher > =
+	Object.create( null );
+const matchersByHost: Record< string, ContactLinkMatcher > =
+	Object.create( null );
 
 CONTACT_LINK_MATCHERS.forEach( ( matcher ) => {
 	matcher.schemes?.forEach( ( scheme ) => {
