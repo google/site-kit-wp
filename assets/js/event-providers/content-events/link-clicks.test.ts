@@ -19,7 +19,22 @@
 /**
  * Internal dependencies
  */
+import classifyContactLink from './classify-contact-link';
 import { initializeLinkClicks } from './link-clicks';
+
+// Real behaviour everywhere, wrapped so the tests can also see whether the
+// listener resolved an anchor at all.
+jest.mock( './classify-contact-link', () => {
+	const actual = jest.requireActual( './classify-contact-link' );
+
+	return {
+		__esModule: true,
+		...actual,
+		default: jest.fn( actual.default ),
+	};
+} );
+
+const classifySpy = classifyContactLink as jest.Mock;
 
 type SiteKitGlobal = typeof global._googlesitekit;
 
@@ -81,6 +96,7 @@ describe( 'initializeLinkClicks', () => {
 	}
 
 	beforeEach( () => {
+		classifySpy.mockClear();
 		gtagEventMock = jest.fn();
 		global._googlesitekit = { gtagEvent: gtagEventMock };
 		global.document.body.innerHTML = '';
@@ -97,7 +113,7 @@ describe( 'initializeLinkClicks', () => {
 		delete ( global as { _googlesitekit?: SiteKitGlobal } )._googlesitekit;
 	} );
 
-	it( 'emits one event carrying link_type and the transport, and nothing identifying', () => {
+	it( 'should emit one event carrying link_type and the transport, and nothing identifying', () => {
 		const anchor = render(
 			'<a href="https://wa.me/15551234567">Message us</a>'
 		);
@@ -119,7 +135,7 @@ describe( 'initializeLinkClicks', () => {
 		} );
 	} );
 
-	it( 'resolves a click on a child element up to the anchor', () => {
+	it( 'should resolve a click on a child element up to the anchor', () => {
 		render(
 			'<a href="tel:+15551234567"><svg class="icon"></svg><span class="label">Call</span></a>'
 		);
@@ -138,7 +154,7 @@ describe( 'initializeLinkClicks', () => {
 		} );
 	} );
 
-	it( 'resolves a click on an image inside the anchor', () => {
+	it( 'should resolve a click on an image inside the anchor', () => {
 		render(
 			'<a href="mailto:hello@example.com"><img alt="Email us" /></a>'
 		);
@@ -156,7 +172,7 @@ describe( 'initializeLinkClicks', () => {
 		} );
 	} );
 
-	it( 'never carries the prefilled subject, body or message text', () => {
+	it( 'should never carry the prefilled subject, body or message text', () => {
 		render(
 			'<a href="https://wa.me/15551234567?text=Secret%20message">Message</a>'
 		);
@@ -173,7 +189,7 @@ describe( 'initializeLinkClicks', () => {
 		).not.toContain( 'Secret' );
 	} );
 
-	it( 'classifies an anchor appended after initialization', () => {
+	it( 'should classify an anchor appended after initialization', () => {
 		initialize();
 
 		const anchor = render( '<a href="https://m.me/acme">Chat</a>' );
@@ -192,7 +208,7 @@ describe( 'initializeLinkClicks', () => {
 		[ 'sms:+15551234567', 'sms', false ],
 		[ 'whatsapp://send?phone=15551234567', 'whatsapp', false ],
 	] )(
-		'sets the beacon transport only for web links — %s',
+		'should set the beacon transport only for web links — %s',
 		( href, linkType, expectsBeacon ) => {
 			const anchor = render( `<a href="${ href }">Contact</a>` );
 			initialize();
@@ -217,7 +233,7 @@ describe( 'initializeLinkClicks', () => {
 			'a group invite',
 			'<a href="https://chat.whatsapp.com/ABCDEF">Join</a>',
 		],
-	] )( 'emits nothing for %s', ( _label, markup ) => {
+	] )( 'should emit nothing for %s', ( _label, markup ) => {
 		const element = render( markup );
 		initialize();
 
@@ -232,7 +248,7 @@ describe( 'initializeLinkClicks', () => {
 	} );
 
 	it.each( [ 'nofollow', 'sponsored', 'ugc' ] )(
-		'emits exactly one event for a contact link carrying rel="%s"',
+		'should emit exactly one event for a contact link carrying rel="%s"',
 		( rel ) => {
 			const anchor = render(
 				`<a href="https://wa.me/15551234567" rel="${ rel }">Message us</a>`
@@ -249,7 +265,34 @@ describe( 'initializeLinkClicks', () => {
 		}
 	);
 
-	it( 'registers exactly one document click listener', () => {
+	// `closest( 'a[href]' )`, not `closest( 'a' )`: an anchor with no address is
+	// not a link, and #13291 handles whatever this leaves unclassified — so it
+	// must never be resolved in the first place.
+	it( 'should not resolve an anchor that has no href', () => {
+		const anchor = render( '<a class="no-href">Nowhere</a>' );
+		initialize();
+
+		anchor.dispatchEvent(
+			new global.MouseEvent( 'click', {
+				bubbles: true,
+				cancelable: true,
+			} )
+		);
+
+		expect( classifySpy ).not.toHaveBeenCalled();
+		expect( gtagEventMock ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should resolve an anchor that has an href', () => {
+		const anchor = render( '<a href="https://example.com/">Read</a>' );
+		initialize();
+
+		( anchor as HTMLAnchorElement ).click();
+
+		expect( classifySpy ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	it( 'should register exactly one document click listener', () => {
 		const added = initialize();
 
 		expect( added ).toHaveLength( 1 );
@@ -257,7 +300,7 @@ describe( 'initializeLinkClicks', () => {
 		expect( typeof added[ 0 ][ 1 ] ).toBe( 'function' );
 	} );
 
-	it( 'keeps emitting after a click whose handling throws', () => {
+	it( 'should keep emitting after a click whose handling throws', () => {
 		// Mock console.error since this test intentionally triggers it.
 		const consoleErrorSpy = jest
 			.spyOn( console, 'error' )
