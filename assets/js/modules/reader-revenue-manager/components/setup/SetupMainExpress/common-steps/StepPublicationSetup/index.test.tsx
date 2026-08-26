@@ -64,6 +64,10 @@ describe( 'StepPublicationSetup', () => {
 				postTypes: [ 'post' ],
 				snippetMode: 'post_types',
 			} );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.finishResolution( 'getSettings', [] );
 	} );
 
 	it( 'should render as a progress bar if publications are loading', () => {
