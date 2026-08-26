@@ -62,7 +62,7 @@ function registryReturning( report ) {
  * Builds a registry whose `fetchGetReport` resolves with the given reports in
  * order, so a tile that requests more than one report gets each in turn.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object[]} reports The report responses to resolve, in fetch order.
  * @return {Object} A mock registry.
@@ -78,7 +78,7 @@ function registryReturningReports( reports ) {
 /**
  * Loads one tile's data against a single report fixture.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {string} slug   The key metric slug.
  * @param {Object} report The report response the tile fetches.
@@ -95,7 +95,7 @@ function loadTile( slug, report ) {
 /**
  * Loads one tile's data against several report fixtures, in fetch order.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {string}   slug    The key metric slug.
  * @param {Object[]} reports The report responses the tile fetches, in order.
@@ -114,7 +114,7 @@ function loadTileWithReports( slug, reports ) {
  * fetch: `resolveSelect().getReport` returns `resolvedReport` for that first
  * read, and `fetchGetReport` returns `fetchReports` in order for the rest.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object}   resolvedReport The report the tile reads up front.
  * @param {Object[]} fetchReports   The report responses the tile then fetches.
@@ -136,7 +136,7 @@ function registryWithResolvedReport( resolvedReport, fetchReports ) {
 /**
  * Loads a tile that reads a report before deciding what to fetch.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {string}   slug           The key metric slug.
  * @param {Object}   resolvedReport The report the tile reads up front.

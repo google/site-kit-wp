@@ -200,6 +200,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				hasActiveLeadEventProviders,
 				hasActiveEcommerceEventProviders,
 				hasMultipleActiveEcommerceEventProviders,
+				activeConversionEventProviders,
 			} = payload.siteInfo;
 
 			state.siteInfo = {
@@ -241,6 +242,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				hasActiveLeadEventProviders,
 				hasActiveEcommerceEventProviders,
 				hasMultipleActiveEcommerceEventProviders,
+				activeConversionEventProviders,
 			};
 			break;
 
@@ -338,6 +340,7 @@ export const resolvers = {
 			hasActiveLeadEventProviders,
 			hasActiveEcommerceEventProviders,
 			hasMultipleActiveEcommerceEventProviders,
+			activeConversionEventProviders,
 		} = baseData;
 
 		const {
@@ -386,6 +389,7 @@ export const resolvers = {
 			hasActiveLeadEventProviders,
 			hasActiveEcommerceEventProviders,
 			hasMultipleActiveEcommerceEventProviders,
+			activeConversionEventProviders,
 		} );
 	},
 };
@@ -1010,7 +1014,7 @@ export const selectors = {
 	 *  - WooCommerce is active but account-creation in WooCommerce is
 	 *    disabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} `true` if WooCommerce registration is open; `false` if not. Returns `undefined` if not yet loaded.
@@ -1024,7 +1028,7 @@ export const selectors = {
 	 * "Anyone can register" setting or WooCommerce's own account-creation
 	 * setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return {boolean|undefined} `true` if registration is open via either path; `false` if neither is open. Returns `undefined` if not yet loaded.
 	 */
@@ -1087,6 +1091,18 @@ export const selectors = {
 	 */
 	hasMultipleActiveEcommerceEventProviders: getSiteInfoProperty(
 		'hasMultipleActiveEcommerceEventProviders'
+	),
+
+	/**
+	 * Gets the slug of every active conversion event provider plugin.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array.<string>|undefined)} One slug for each active provider, such as `woocommerce`. Returns `undefined` if not yet loaded.
+	 */
+	getActiveConversionEventProviders: getSiteInfoProperty(
+		'activeConversionEventProviders'
 	),
 
 	/**

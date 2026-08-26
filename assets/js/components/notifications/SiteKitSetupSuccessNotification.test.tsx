@@ -126,27 +126,34 @@ describe( 'SiteKitSetupSuccessNotification', () => {
 	} );
 
 	describe( 'checkRequirements', () => {
-		it( 'is active when the `notification` query arg is set to `authentication_success` and the `slug` query arg is not set', () => {
+		it( 'is active when the `notification` query arg is set to `authentication_success` and the `slug` query arg is not set', async () => {
 			global.location.href =
 				'http://example.com/wp-admin/admin.php?notification=authentication_success';
 
-			const isActive = notification.checkRequirements();
+			const isActive = await notification.checkRequirements();
 			expect( isActive ).toBe( true );
 		} );
 
-		it( 'is not active when the `notification` query arg is not set to `authentication_success`', () => {
+		it( 'is not active when the `notification` query arg is not set to `authentication_success`', async () => {
 			global.location.href =
 				'http://example.com/wp-admin/admin.php?notification=some_other_notification';
 
-			const isActive = notification.checkRequirements();
+			const isActive = await notification.checkRequirements();
 			expect( isActive ).toBe( false );
 		} );
 
-		it( 'is not active when the `slug` query arg is set', () => {
+		it( 'is not active when the `notification` query arg is not set', async () => {
+			global.location.href = 'http://example.com/wp-admin/admin.php';
+
+			const isActive = await notification.checkRequirements();
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active when the `slug` query arg is set', async () => {
 			global.location.href =
 				'http://example.com/wp-admin/admin.php?notification=authentication_success&slug=some_other_slug';
 
-			const isActive = notification.checkRequirements();
+			const isActive = await notification.checkRequirements();
 			expect( isActive ).toBe( false );
 		} );
 	} );

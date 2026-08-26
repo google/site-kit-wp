@@ -48,7 +48,7 @@ import { numFmt } from '@/js/util';
 /**
  * Builds the report options for the Popular Keywords widget.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object} dates The date range dates, e.g. `startDate` and `endDate`.
  * @return {Object} The Search Console report options.
@@ -60,6 +60,39 @@ export function getPopularKeywordsReportOptions( dates ) {
 		limit: 100,
 		reportID: 'search-console_popular-keywords-widget_widget_reportOptions',
 	};
+}
+
+/**
+ * Builds the Search Console URL a popular-keyword row links to: the search
+ * analytics report for an exact match on that keyword. Returns `null` on a
+ * view-only export/dashboard, where the row renders no link.
+ *
+ * The exclamation mark at the beginning of the query specifies that the term
+ * should be treated as an exact match on the SC search results page.
+ *
+ * @since 1.186.0
+ *
+ * @param {Object}   params                     Link parameters.
+ * @param {Function} params.getServiceReportURL The Search Console store's `getServiceReportURL` selector.
+ * @param {Object}   params.dates               The date range dates, e.g. `startDate` and `endDate`.
+ * @param {string}   params.keyword             The keyword to filter to.
+ * @param {boolean}  params.viewOnly            Whether the dashboard/export is view-only.
+ * @return {string|null|undefined} The report URL; `null` when unlinked, or `undefined` before the service URL loads.
+ */
+export function getPopularKeywordReportURL( {
+	getServiceReportURL,
+	dates,
+	keyword,
+	viewOnly,
+} ) {
+	if ( viewOnly ) {
+		return null;
+	}
+
+	return getServiceReportURL( {
+		...generateDateRangeArgs( dates ),
+		query: `!${ keyword }`,
+	} );
 }
 
 export default function PopularKeywordsWidget( { Widget } ) {
@@ -93,24 +126,19 @@ export default function PopularKeywordsWidget( { Widget } ) {
 			)
 	);
 
-	const keywordsDateRangeArgs = generateDateRangeArgs( dates );
-
 	const columns = [
 		{
 			field: 'keys.0',
 			Component( { fieldValue } ) {
-				const searchAnalyticsURL = useSelect( ( select ) => {
-					return ! viewOnlyDashboard
-						? select( MODULES_SEARCH_CONSOLE ).getServiceReportURL(
-								{
-									...keywordsDateRangeArgs,
-									// The exclamation mark at the beginning of the query specifies that the term
-									// should be treated as an exact match on the SC search results page.
-									query: `!${ fieldValue }`,
-								}
-						  )
-						: null;
-				} );
+				const searchAnalyticsURL = useSelect( ( select ) =>
+					getPopularKeywordReportURL( {
+						getServiceReportURL: select( MODULES_SEARCH_CONSOLE )
+							.getServiceReportURL,
+						dates,
+						keyword: fieldValue,
+						viewOnly: viewOnlyDashboard,
+					} )
+				);
 
 				if ( viewOnlyDashboard ) {
 					return <MetricTileTablePlainText content={ fieldValue } />;

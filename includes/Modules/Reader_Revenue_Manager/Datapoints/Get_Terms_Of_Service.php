@@ -19,7 +19,7 @@ use WP_Error;
 /**
  * Class for the Terms of Service retrieval datapoint.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class Get_Terms_Of_Service extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return callable Closure that retrieves the Terms of Service.
@@ -64,7 +64,7 @@ class Get_Terms_Of_Service extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param mixed        $response WordPress HTTP API response.
 	 * @param Data_Request $data     Data request object.

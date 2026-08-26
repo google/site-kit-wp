@@ -179,7 +179,7 @@ class Cron_Health_CheckTest extends TestCase {
 		$this->assertSame( Email_Log::STATUS_FAILED, get_post_status( $post_id ), 'mark_batch_cron_error should set failed status.' );
 		$this->assertSame( Email_Log_Batch_Query::MAX_ATTEMPTS, (int) get_post_meta( $post_id, Email_Log::META_SEND_ATTEMPTS, true ), 'mark_batch_cron_error should set max attempts.' );
 
-		$latest_error = $this->query->get_latest_batch_error();
+		$latest_error = $this->query->get_latest_batch_error( get_current_user_id() );
 		$this->assertIsString( $latest_error, 'Latest batch error should be persisted as JSON string.' );
 		$this->assertStringContainsString( 'cron_scheduler_error', $latest_error, 'Latest batch error should include cron scheduler category.' );
 	}

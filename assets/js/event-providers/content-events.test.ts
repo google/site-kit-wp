@@ -18,6 +18,13 @@
 
 type SiteKitGlobal = typeof global._googlesitekit;
 
+const mockInitializeVimeo = jest.fn();
+
+jest.mock( './content-events/vimeo', () => ( {
+	__esModule: true,
+	initializeVimeo: ( ...args: unknown[] ) => mockInitializeVimeo( ...args ),
+} ) );
+
 function deleteSiteKitGlobal() {
 	delete ( global as { _googlesitekit?: SiteKitGlobal } )._googlesitekit;
 }
@@ -31,6 +38,8 @@ describe( 'content-events', () => {
 		gtagEventMock = jest.fn();
 		deleteSiteKitGlobal();
 		jest.resetModules();
+		mockInitializeVimeo.mockReset();
+		mockInitializeVimeo.mockResolvedValue( undefined );
 	} );
 
 	afterEach( () => {
@@ -45,6 +54,7 @@ describe( 'content-events', () => {
 		expect( getContentEventsConfig() ).toEqual( {
 			postID: 0,
 			isSinglePost: false,
+			hasVimeoEmbed: false,
 		} );
 		expect( addEventListenerSpy ).not.toHaveBeenCalled();
 		expect( gtagEventMock ).not.toHaveBeenCalled();
@@ -60,6 +70,7 @@ describe( 'content-events', () => {
 		expect( getContentEventsConfig() ).toEqual( {
 			postID: 0,
 			isSinglePost: false,
+			hasVimeoEmbed: false,
 		} );
 		expect( addEventListenerSpy ).not.toHaveBeenCalled();
 		expect( gtagEventMock ).not.toHaveBeenCalled();
@@ -70,6 +81,7 @@ describe( 'content-events', () => {
 			contentEvents: {
 				postID: 42,
 				isSinglePost: true,
+				hasVimeoEmbed: true,
 			},
 			gtagEvent: gtagEventMock,
 		};
@@ -79,8 +91,29 @@ describe( 'content-events', () => {
 		expect( getContentEventsConfig() ).toEqual( {
 			postID: 42,
 			isSinglePost: true,
+			hasVimeoEmbed: true,
 		} );
 		expect( addEventListenerSpy ).not.toHaveBeenCalled();
 		expect( gtagEventMock ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should invoke the Vimeo initializer with the resolved config on import', async () => {
+		global._googlesitekit = {
+			contentEvents: {
+				postID: 42,
+				isSinglePost: true,
+				hasVimeoEmbed: true,
+			},
+		};
+
+		await import( './content-events' );
+		// Flush the microtask queue so the fire-and-forget call resolves.
+		await Promise.resolve();
+
+		expect( mockInitializeVimeo ).toHaveBeenCalledWith( {
+			postID: 42,
+			isSinglePost: true,
+			hasVimeoEmbed: true,
+		} );
 	} );
 } );

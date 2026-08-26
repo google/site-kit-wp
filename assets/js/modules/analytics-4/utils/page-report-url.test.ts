@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { getAllPagesReportURL } from './page-report-url';
+import { getAllPagesReportURL, getPageReportURL } from './page-report-url';
 
 describe( 'getAllPagesReportURL', () => {
 	const DATES = { startDate: '2025-01-01', endDate: '2025-01-28' };
@@ -53,5 +53,47 @@ describe( 'getAllPagesReportURL', () => {
 		);
 
 		expect( url ).toBeUndefined();
+	} );
+} );
+
+describe( 'getPageReportURL', () => {
+	const DATES = { startDate: '2025-01-01', endDate: '2025-01-28' };
+
+	it( 'reads the all-pages report URL filtered to the page path', () => {
+		const getServiceReportURL = jest.fn(
+			() => 'https://analytics.example.com/report'
+		);
+
+		const url = getPageReportURL( {
+			analytics: { getServiceReportURL },
+			pagePath: '/pricing',
+			dates: DATES,
+			viewOnly: false,
+		} );
+
+		expect( url ).toBe( 'https://analytics.example.com/report' );
+		expect( getServiceReportURL ).toHaveBeenCalledWith(
+			'all-pages-and-screens',
+			{
+				filters: { unifiedPagePathScreen: '/pricing' },
+				dates: DATES,
+			}
+		);
+	} );
+
+	it( 'returns null without reading the URL on a view-only export', () => {
+		const getServiceReportURL = jest.fn(
+			() => 'https://analytics.example.com/report'
+		);
+
+		const url = getPageReportURL( {
+			analytics: { getServiceReportURL },
+			pagePath: '/pricing',
+			dates: DATES,
+			viewOnly: true,
+		} );
+
+		expect( url ).toBeNull();
+		expect( getServiceReportURL ).not.toHaveBeenCalled();
 	} );
 } );

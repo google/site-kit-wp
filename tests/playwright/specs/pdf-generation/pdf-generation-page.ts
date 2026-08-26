@@ -56,6 +56,30 @@ export class PDFGenerationPage {
 	}
 
 	/**
+	 * Gets the header button that opens the features menu on mobile and tablet.
+	 *
+	 * @since 1.186.0
+	 *
+	 * @return The features menu trigger button.
+	 */
+	get featuresMenuButton() {
+		return this.page.getByRole( 'button', { name: 'Features' } );
+	}
+
+	/**
+	 * Gets the features menu item that opens the export panel.
+	 *
+	 * @since 1.186.0
+	 *
+	 * @return The download PDF report menu item.
+	 */
+	get downloadPDFReportMenuItem() {
+		return this.page.getByRole( 'menuitem', {
+			name: 'Download PDF report',
+		} );
+	}
+
+	/**
 	 * Gets the panel's "Download report" button.
 	 *
 	 * @since 1.184.0
@@ -139,7 +163,20 @@ export class PDFGenerationPage {
 	 * @return {Promise<void>} Resolves once the panel is visible.
 	 */
 	async openPanel() {
-		await this.openPanelButton.click();
+		// On mobile and tablet the entry point lives in the features menu
+		// rather than a dedicated header icon.
+		await this.featuresMenuButton
+			.or( this.openPanelButton )
+			.first()
+			.waitFor();
+
+		if ( await this.featuresMenuButton.isVisible() ) {
+			await this.featuresMenuButton.click();
+			await this.downloadPDFReportMenuItem.click();
+		} else {
+			await this.openPanelButton.click();
+		}
+
 		await expect( this.panel ).toBeVisible();
 	}
 
@@ -174,7 +211,7 @@ export class PDFGenerationPage {
 	 * top earning pages). This keeps the parent section but leaves only the given
 	 * widget checked, so the export renders that widget on its own.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param  sectionSlug The parent section (dashboard context) slug to keep.
 	 * @param  widgetSlug  The widget slug to leave selected within that section.
@@ -289,7 +326,7 @@ export class PDFGenerationPage {
 	/**
 	 * Reads the downloaded PDF report into a string, one character per byte.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Download} download The completed download from `download()`.
 	 * @return {Promise<string>} The report's contents, byte for byte.
