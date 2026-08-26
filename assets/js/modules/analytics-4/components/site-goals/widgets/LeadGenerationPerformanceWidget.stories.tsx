@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import getKeyActionChartReportOptions from '@/js/modules/analytics-4/components/site-goals/components/getKeyActionChartReportOptions';
 import { SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_IDS,
@@ -86,6 +87,27 @@ function buildLeadEventsReportOptions(
 		reportID:
 			'analytics-4_lead-generation-performance-widget_widget_leadEventsReportOptions',
 	};
+}
+
+/**
+ * Builds the chart tile's report options for one set of lead events.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array}  leadEvents        The lead events the story detects.
+ * @param {Object} [breakdownFilter] The form tab's filter, empty for no tab.
+ * @return {Object} The options `provideAnalytics4MockReport` takes.
+ */
+function buildKeyActionChartReportOptions(
+	leadEvents: string[],
+	breakdownFilter: Record< string, unknown > = {}
+) {
+	return getKeyActionChartReportOptions( {
+		dates,
+		eventNames: leadEvents,
+		goalType: GOAL_TYPES.LEAD,
+		breakdownFilter,
+	} );
 }
 
 const engagementReportOptions = {
@@ -178,6 +200,28 @@ function commonSetup( registry: WPDataRegistry ) {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ discoveryOptions ] );
+
+	// Receive the chart tile's report for both sets of lead events these stories
+	// pass to `setDetectedEvents`, once with no tab filter and once per form
+	// tab, so the tile has a chart to draw. The `ZeroData` story replaces it
+	// with an empty report.
+	[
+		[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+		[
+			ENUM_CONVERSION_EVENTS.CONTACT,
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		],
+	].forEach( ( leadEvents ) => {
+		[
+			{},
+			...FORM_IDS.map( ( formID ) => ( { [ FORM_DIMENSION ]: formID } ) ),
+		].forEach( ( breakdownFilter ) => {
+			provideAnalytics4MockReport(
+				registry,
+				buildKeyActionChartReportOptions( leadEvents, breakdownFilter )
+			);
+		} );
+	} );
 }
 
 function seedGoalDriverReports(
@@ -571,6 +615,9 @@ function seedGoalDriverReports(
 
 const FORM_DIMENSION = 'customEvent:googlesitekit_form_id';
 
+/** The form IDs the tabbed breakdown stories show as tabs. */
+const FORM_IDS = [ '5', '12' ];
+
 // A metrics-only compare report whose totals carry one row per date range.
 function buildTotals( count: number ) {
 	return {
@@ -600,8 +647,6 @@ function seedTabbedBreakdown(
 		unattributedCount?: number;
 	} = {}
 ) {
-	const formIDs = [ '5', '12' ];
-
 	// Discovery with form IDs (overrides the empty report from commonSetup,
 	// switching the widget into tabbed mode).
 	const discoveryOptions = {
@@ -620,7 +665,7 @@ function seedTabbedBreakdown(
 	};
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 		{
-			rows: formIDs.map( ( value, index ) => ( {
+			rows: FORM_IDS.map( ( value, index ) => ( {
 				dimensionValues: [ { value } ],
 				metricValues: [ { value: String( 100 - index ) } ],
 			} ) ),
@@ -637,7 +682,7 @@ function seedTabbedBreakdown(
 			5: { title: 'Contact' },
 			12: { title: 'Newsletter signup' },
 		},
-		{ formIDs }
+		{ formIDs: FORM_IDS }
 	);
 
 	// Pages each form appears on: form 5 on two pages (the "as an example"
@@ -648,7 +693,7 @@ function seedTabbedBreakdown(
 		dimensionFilters: {
 			[ FORM_DIMENSION ]: {
 				filterType: 'inListFilter',
-				value: formIDs,
+				value: FORM_IDS,
 			},
 		},
 		metrics: [ { name: 'eventCount' } ],
@@ -693,7 +738,7 @@ function seedTabbedBreakdown(
 		dimensionFilters: {
 			[ FORM_DIMENSION ]: {
 				filterType: 'inListFilter',
-				value: formIDs,
+				value: FORM_IDS,
 			},
 		},
 		metrics: [ { name: 'eventCount' } ],
@@ -766,7 +811,7 @@ function seedTabbedBreakdown(
 					? {
 							[ FORM_DIMENSION ]: {
 								filterType: 'inListFilter',
-								value: formIDs,
+								value: FORM_IDS,
 							},
 					  }
 					: {} ),
@@ -808,7 +853,7 @@ function seedTabbedBreakdown(
 	);
 
 	// Section reports for every form tab, so each is clickable.
-	formIDs.forEach( ( formID ) => {
+	FORM_IDS.forEach( ( formID ) => {
 		const breakdownFilter = { [ FORM_DIMENSION ]: formID };
 
 		provideAnalytics4MockReport(
@@ -863,7 +908,10 @@ Ready.args = {
 		] );
 	},
 };
-Ready.scenario = {};
+Ready.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400,
+};
 
 export const GatheringBreakdownData = Template.bind( {} ) as Story;
 GatheringBreakdownData.storyName = 'Gathering Breakdown Data';
@@ -914,7 +962,10 @@ TabbedBreakdownDeactivatedPlugin.args = {
 		seedTabbedBreakdown( registry );
 	},
 };
-TabbedBreakdownDeactivatedPlugin.scenario = {};
+TabbedBreakdownDeactivatedPlugin.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400,
+};
 
 export const TabbedBreakdownPartialData = Template.bind( {} ) as Story;
 TabbedBreakdownPartialData.storyName = 'Tabbed Breakdown (Partial Data)';
@@ -1025,6 +1076,18 @@ ZeroData.args = {
 			.receiveGetReport( zeroSessionsReport, {
 				options: engagementReportOptions,
 			} );
+
+		// An empty chart report makes the tile show its zero data message, so
+		// the story shows no data in every tile.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{ rows: [] },
+			{
+				options: buildKeyActionChartReportOptions( [
+					ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+				] ),
+			}
+		);
+
 		seedGoalDriverReports(
 			registry,
 			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],

@@ -33,6 +33,7 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import getKeyActionChartReportOptions from '@/js/modules/analytics-4/components/site-goals/components/getKeyActionChartReportOptions';
 import {
 	BREAKDOWN_ORIGIN_FORM_KEY,
 	BREAKDOWN_ORIGIN_WIDGET,
@@ -107,6 +108,30 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			...( breakdownFilter ? { dimensionFilters: breakdownFilter } : {} ),
 			reportID: 'analytics-4_site-goals_engagementReportOptions',
 		};
+	}
+
+	/**
+	 * Receives the chart tile's report for one set of lead events.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Array}  leadEvents        The lead events the test detects.
+	 * @param {Object} [breakdownFilter] The form tab's filter, empty for no tab.
+	 * @return {void}
+	 */
+	function receiveKeyActionChartReport(
+		leadEvents: string[],
+		breakdownFilter: Record< string, unknown > = {}
+	) {
+		provideAnalytics4MockReport(
+			registry,
+			getKeyActionChartReportOptions( {
+				dates: registry.select( CORE_USER ).getDateRangeDates(),
+				eventNames: leadEvents,
+				goalType: GOAL_TYPES.LEAD,
+				breakdownFilter,
+			} )
+		);
 	}
 
 	// A metrics-only compare report whose totals carry one row per date range.
@@ -737,6 +762,21 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		// Default to aggregated mode (no breakdown form values yet); tabbed tests
 		// re-seed with form IDs.
 		seedBreakdown();
+
+		// Receive the chart tile's report for every set of lead events these tests
+		// pass to `setDetectedEvents`, so no test leaves the tile in its
+		// loading placeholder.
+		[
+			[ ENUM_CONVERSION_EVENTS.CONTACT ],
+			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+			[ ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM ],
+			[
+				ENUM_CONVERSION_EVENTS.CONTACT,
+				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+			],
+		].forEach( ( leadEvents ) =>
+			receiveKeyActionChartReport( leadEvents )
+		);
 	} );
 
 	it( 'renders WidgetNull when no lead events are detected', async () => {
@@ -834,15 +874,25 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		);
 		await waitForRegistry();
 
+		const keyActionRow = container.querySelector(
+			'.googlesitekit-site-goals-primary-action'
+		);
+
+		expect( keyActionRow ).toBeInTheDocument();
+		// The row holds Form completion rate, Total form completions, and
+		// Total form completions in the last 28 days.
 		expect(
-			container.querySelector(
-				'.googlesitekit-site-goals-primary-action'
-			)
-		).toBeInTheDocument();
+			keyActionRow?.querySelectorAll( '.googlesitekit-site-goals-tile' )
+		).toHaveLength( 3 );
+		// The widget holds the Key action row's three tiles and the Engagement
+		// rate tile.
 		expect(
 			container.querySelectorAll( '.googlesitekit-site-goals-tile' )
-		).toHaveLength( 3 ); // Form completion rate + Total form completions + Engagement rate
+		).toHaveLength( 4 );
 		expect( getByText( 'Form completion rate' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Total form completions in the last 28 days' )
+		).toBeInTheDocument();
 		expect( getByText( 'Total form completions' ) ).toBeInTheDocument();
 		expect( getByText( '“generate_lead” events' ) ).toBeInTheDocument();
 		expect( getByText( 'Engagement rate' ) ).toBeInTheDocument();
@@ -862,6 +912,40 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 				'.googlesitekit-site-goals-goal-drivers-section__tile:not(.googlesitekit-site-goals-goal-drivers-section__tile--empty)'
 			)
 		).toHaveLength( 3 );
+	} );
+
+	it( 'shows 90 days in the chart tile title when the date range is the last 90 days', async () => {
+		registry.dispatch( CORE_USER ).setDateRange( 'last-90-days' );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+
+		provideAnalytics4MockReport(
+			registry,
+			buildLeadEventsReportOptions( dates, [
+				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+			] )
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		receiveKeyActionChartReport( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const { getByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Total form completions in the last 90 days' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'renders a collapsible widget', async () => {
@@ -1478,6 +1562,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ], {
 			breakdownFilter,
 		} );
+		receiveKeyActionChartReport(
+			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+			breakdownFilter
+		);
 	}
 
 	it( 'stays in aggregated mode with no tabs and no deactivated plugin notice when no form values exist', async () => {
@@ -1684,9 +1772,13 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		await waitFor( () => {
 			expect( getByText( 'Key action' ) ).toBeInTheDocument();
 		} );
-		// Only the aggregate total renders — no rate tile, engagement or drivers.
+		// Only the aggregate total renders: no rate tile, no chart tile, no
+		// engagement section, and no drivers.
 		expect( getByText( 'Total form completions' ) ).toBeInTheDocument();
 		expect( queryByText( 'Form completion rate' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Total form completions in the last 28 days' )
+		).not.toBeInTheDocument();
 		expect(
 			queryByText( 'How are your visitors engaging?' )
 		).not.toBeInTheDocument();
