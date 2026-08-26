@@ -599,6 +599,12 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		// Test organization ID is exposed raw, but redacted in debug output.
 		$this->assertEquals(
+			'Reader Revenue Manager: Organization ID',
+			$debug_fields['reader_revenue_manager_organization_id']['label'],
+			'Organization ID field should have correct label'
+		);
+
+		$this->assertEquals(
 			'test-organization-id',
 			$debug_fields['reader_revenue_manager_organization_id']['value'],
 			'Organization ID should be exposed as the raw setting value'
@@ -611,6 +617,12 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 
 		// Test configured CTAs are exposed as a comma-separated list of their keys (names).
+		$this->assertEquals(
+			'Reader Revenue Manager: Configured CTAs',
+			$debug_fields['reader_revenue_manager_configured_ctas']['label'],
+			'Configured CTAs field should have correct label'
+		);
+
 		$this->assertEquals(
 			'lower_left_cta, higher_cta',
 			$debug_fields['reader_revenue_manager_configured_ctas']['value'],
@@ -703,6 +715,19 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			'reader_revenue_manager_content_policy_state',
 			$debug_fields,
 			'Content policy state debug field should be included.'
+		);
+
+		// Verify the express setup fields are omitted while the feature flag is off.
+		$this->assertArrayNotHasKey(
+			'reader_revenue_manager_organization_id',
+			$debug_fields,
+			'Organization ID debug field should be omitted when rrmExpressSetup is disabled.'
+		);
+
+		$this->assertArrayNotHasKey(
+			'reader_revenue_manager_configured_ctas',
+			$debug_fields,
+			'Configured CTAs debug field should be omitted when rrmExpressSetup is disabled.'
 		);
 
 		$this->assertEquals(
