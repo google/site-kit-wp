@@ -329,9 +329,9 @@ $site-goals-tile-connector-offset: 3.5px;
 		}
 
 		.googlesitekit-site-goals-tile__chart {
-			// `GoalTile` puts `googlesitekit-site-goals-tile__chart` on the same
+			// `GoalTile` adds `googlesitekit-site-goals-tile__chart` to the same
 			// element as `googlesitekit-site-goals-tile__body`, a flex row. The
-			// chart tile puts one element there, and `display: block` lets it
+			// chart tile renders one element there, and `display: block` lets it
 			// fill the width.
 			display: block;
 

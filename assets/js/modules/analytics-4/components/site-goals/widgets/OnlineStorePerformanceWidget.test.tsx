@@ -126,10 +126,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 	}
 
 	/**
-	 * Receives the chart tile's report for both ecommerce events, once with no
-	 * tab filter and once per provider tab.
+	 * Adds the chart tile's report for both ecommerce events, once with no tab
+	 * filter and once per provider tab.
 	 *
-	 * It receives all six, so no test leaves the tile in its loading
+	 * It adds all of them, so no test leaves the tile in its loading
 	 * placeholder.
 	 *
 	 * @since n.e.x.t

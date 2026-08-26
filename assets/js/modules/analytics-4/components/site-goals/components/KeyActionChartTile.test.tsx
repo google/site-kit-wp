@@ -31,7 +31,7 @@ import {
 	Report,
 	ReportOptions,
 } from '@/js/modules/analytics-4/datastore/types';
-import { render, waitFor } from '@tests/js/test-utils';
+import { freezeFetch, render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
@@ -71,6 +71,10 @@ const DEFAULT_INPUTS: Required< Omit< ChartInputs, 'breakdownFilter' > > = {
 	goalType: GOAL_TYPES.ECOMMERCE,
 };
 
+const REPORT_ENDPOINT = new RegExp(
+	'^/google-site-kit/v1/modules/analytics-4/data/report'
+);
+
 const WOOCOMMERCE_FILTER = {
 	'customEvent:googlesitekit_event_provider': 'woocommerce',
 };
@@ -79,7 +83,7 @@ const WOOCOMMERCE_FILTER = {
  * Builds the report options the tile asks for.
  *
  * The tile calls `getKeyActionChartReportOptions` too, so a test that
- * overrides an input still names the options the tile asks for.
+ * overrides an input still names the same options.
  *
  * @since n.e.x.t
  *
@@ -131,7 +135,7 @@ describe( 'KeyActionChartTile', () => {
 	} );
 
 	/**
-	 * Receives one report into the registry and marks its resolution finished.
+	 * Adds one report to the registry and marks its resolution finished.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -261,6 +265,23 @@ describe( 'KeyActionChartTile', () => {
 			expect( data.slice( 1 ) ).toEqual( points );
 		}
 	);
+
+	it( 'shows a loading placeholder, not the zero data message, on the first render', () => {
+		// This test adds no report, so the resolver runs and calls the
+		// endpoint. Freezing that call keeps the report unresolved.
+		freezeFetch( REPORT_ENDPOINT );
+
+		const { container } = renderChartTile();
+
+		expect(
+			container.querySelector( '.googlesitekit-site-goals-tile__loading' )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-tile__zero-state'
+			)
+		).not.toBeInTheDocument();
+	} );
 
 	it( 'shows a loading placeholder instead of the chart while the report loads', () => {
 		registry

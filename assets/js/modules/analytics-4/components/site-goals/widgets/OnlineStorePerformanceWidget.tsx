@@ -340,9 +340,10 @@ const OnlineStorePerformanceWidget = forwardRef<
 			[]
 		) as number;
 
-		// The chart tile and the "Other sources" metric both count the Key
-		// action's own event, so `useSiteGoalsBreakdown` detects unattributed
-		// events for that event and no other.
+		// We use `useMemo` here because `[ primaryEvent ]` would be a new array
+		// on every render. The chart tile and the "Other sources" metric both
+		// count the Key action's own event, and `useSiteGoalsBreakdown` lists
+		// this array as a dependency.
 		const keyActionEventNames = useMemo(
 			() => ( primaryEvent ? [ primaryEvent ] : [] ),
 			[ primaryEvent ]

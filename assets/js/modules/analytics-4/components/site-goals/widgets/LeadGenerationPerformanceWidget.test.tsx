@@ -111,7 +111,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 	}
 
 	/**
-	 * Receives the chart tile's report for one set of lead events.
+	 * Adds the chart tile's report for one set of lead events.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -763,7 +763,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		// re-seed with form IDs.
 		seedBreakdown();
 
-		// Receive the chart tile's report for every set of lead events these tests
+		// Add the chart tile's report for every set of lead events these tests
 		// pass to `setDetectedEvents`, so no test leaves the tile in its
 		// loading placeholder.
 		[

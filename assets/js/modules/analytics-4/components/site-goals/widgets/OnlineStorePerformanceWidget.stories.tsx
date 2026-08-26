@@ -226,7 +226,7 @@ function commonSetup( registry: WPDataRegistry ) {
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ discoveryOptions ] );
 
-	// Receive the chart tile's report for both ecommerce events, once with no tab
+	// Add the chart tile's report for both ecommerce events, once with no tab
 	// filter and once per provider tab, so the tile has a chart to draw. The
 	// `ZeroData` story replaces it with an empty report.
 	[

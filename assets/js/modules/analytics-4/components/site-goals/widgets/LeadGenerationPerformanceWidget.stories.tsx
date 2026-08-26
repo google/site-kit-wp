@@ -201,7 +201,7 @@ function commonSetup( registry: WPDataRegistry ) {
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ discoveryOptions ] );
 
-	// Receive the chart tile's report for both sets of lead events these stories
+	// Add the chart tile's report for both sets of lead events these stories
 	// pass to `setDetectedEvents`, once with no tab filter and once per form
 	// tab, so the tile has a chart to draw. The `ZeroData` story replaces it
 	// with an empty report.
