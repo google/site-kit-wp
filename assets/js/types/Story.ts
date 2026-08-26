@@ -32,4 +32,5 @@ export type Story< PropTypes = Record< string, unknown > > = {
 		[ key: string ]: unknown;
 	};
 	scenario?: Record< string, unknown >;
+	parameters?: Record< string, unknown >;
 };

@@ -20,3 +20,4 @@ export { default as StepPublicationSetup } from './StepPublicationSetup';
 export { default as StepTermsOfService } from './StepTermsOfService';
 export { default as StepPublicationPolicies } from './StepPublicationPolicies';
 export { default as StepSetupComplete } from './StepSetupComplete';
+export { default as StepSetupCompleteDetail } from './StepSetupCompleteDetail';
