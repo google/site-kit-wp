@@ -160,7 +160,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getSiteGoalsSettings', () => {
-			it( 'should not fetch the settings while Analytics is not connected', async () => {
+			it( 'should not fetch the settings when Analytics is not connected', async () => {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_ANALYTICS_4,
@@ -169,7 +169,6 @@ describe( 'modules/analytics-4 site goals settings', () => {
 					},
 				] );
 
-				// Calling the selector is what starts the resolver.
 				registry.select( MODULES_ANALYTICS_4 ).getSiteGoalsSettings();
 
 				await untilResolved(

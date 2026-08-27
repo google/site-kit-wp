@@ -723,8 +723,9 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 				connected: true,
 			},
 		] );
-		// The widget queries no breakdown report until the breakdown dimensions
-		// exist on the property, so these tests start from the created state.
+		// The widget won't request a breakdown report until the breakdown 
+		// dimensions exist on the property, so these tests start from the
+		// "created" state.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
 		} );

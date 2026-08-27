@@ -78,9 +78,9 @@ export function useSiteGoalsBreakdown(
 
 	// Analytics answers 400 for a dimension the property does not have, and
 	// Site Kit only creates this one once the user asks for the breakdown. Every
-	// report below waits for it to appear in the synced dimensions — the same
-	// signal `BreakdownNoticeArea` uses to swap its CTA for the breakdown, so
-	// the two never disagree about which state the widget is in.
+	// report below waits for it to appear in the synced dimensions. This is
+	// the same condition `BreakdownNoticeArea` uses to swap its CTA for
+	// the breakdown, so the two widgets should stay in-sync.
 	const hasBreakdownDimension = useInViewSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
