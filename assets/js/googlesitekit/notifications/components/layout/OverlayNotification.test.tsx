@@ -23,6 +23,7 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import {
 	BREAKPOINT_DESKTOP,
 	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
 import { createTestRegistry, render } from '@tests/js/test-utils';
@@ -124,5 +125,105 @@ describe( 'OverlayNotification', () => {
 		expect(
 			container.querySelector( '.googlesitekit-overlay-card--anchored' )
 		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders the centered card once the breakpoint changes and the anchor element is removed', () => {
+		const { container, rerender } = renderOverlayNotification( {
+			anchorID: '.test-anchor',
+		} );
+
+		expect(
+			container.querySelector( '.googlesitekit-overlay-card--anchored' )
+		).toBeInTheDocument();
+
+		anchor.remove();
+		( useBreakpoint as jest.Mock ).mockReturnValue( BREAKPOINT_TABLET );
+
+		rerender(
+			<OverlayNotification
+				notificationID="test-notification"
+				title="Test title"
+				anchorID=".test-anchor"
+			/>
+		);
+
+		expect(
+			container.querySelector( '.googlesitekit-popper-root' )
+		).not.toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-overlay-card--anchored' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 're-anchors to the element when the breakpoint widens and the anchor is present again', () => {
+		anchor.remove();
+		( useBreakpoint as jest.Mock ).mockReturnValue( BREAKPOINT_TABLET );
+
+		const { container, rerender } = renderOverlayNotification( {
+			anchorID: '.test-anchor',
+		} );
+
+		expect(
+			container.querySelector( '.googlesitekit-overlay-card--anchored' )
+		).not.toBeInTheDocument();
+
+		document.body.appendChild( anchor );
+		( useBreakpoint as jest.Mock ).mockReturnValue( BREAKPOINT_DESKTOP );
+
+		rerender(
+			<OverlayNotification
+				notificationID="test-notification"
+				title="Test title"
+				anchorID=".test-anchor"
+			/>
+		);
+
+		expect(
+			container.querySelector( '.googlesitekit-popper-root' )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-overlay-card--anchored' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'renders the centered card across breakpoint changes when no anchorID is given', () => {
+		const { container, rerender } = renderOverlayNotification();
+
+		( useBreakpoint as jest.Mock ).mockReturnValue( BREAKPOINT_TABLET );
+
+		rerender(
+			<OverlayNotification
+				notificationID="test-notification"
+				title="Test title"
+			/>
+		);
+
+		expect(
+			container.querySelector( '.googlesitekit-popper-root' )
+		).not.toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-overlay-card--anchored' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'anchors to the fallback selector when the first candidate is absent', () => {
+		anchor.remove();
+
+		const fallback = document.createElement( 'button' );
+		fallback.className = 'test-fallback-anchor';
+		document.body.appendChild( fallback );
+
+		const { container } = renderOverlayNotification( {
+			anchorID: '.test-anchor, .test-fallback-anchor',
+		} );
+
+		expect(
+			container.querySelector( '.googlesitekit-popper-root' )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-overlay-card--anchored' )
+		).toBeInTheDocument();
+
+		fallback.remove();
 	} );
 } );
