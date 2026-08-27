@@ -19,25 +19,21 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import { ElementType, FC } from 'react';
 
 /**
  * WordPress dependencies
  */
-import { usePrevious } from '@wordpress/compose';
-import { useCallback, useEffect } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
-import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
-import { FEATURES_MENU_BUTTON_CLASS } from '@/js/components/FeaturesMenu/constants';
+import { useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import OverlayNotification from '@/js/googlesitekit/notifications/components/layout/OverlayNotification';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import EmailReportingOverlayGraphicDesktop from '@/svg/graphics/email-reporting-overlay-desktop.svg';
 import EmailReportingOverlayGraphicMobile from '@/svg/graphics/email-reporting-overlay-mobile.svg';
 import {
@@ -48,26 +44,24 @@ import {
 export const SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION =
 	'email_reports_setup_overlay_notification';
 
-// Dismissed-item slug used as a persistent "user clicked the Set up
+// Dismissed-item slug used as a persistent "user clicked the Try it
 // button on the overlay CTA" flag. Distinct from the notification's
-// own dismissed-item slug (set by both "Set up" via dismissOnClick
-// and "Maybe later" via the dismissButton), this slug is set ONLY
-// when the user clicks "Set up", and is read by PUESurveyTriggers to
+// own dismissed-item slug (set by both "Try it" via dismissOnClick
+// and "Got it" via the dismissButton), this slug is set ONLY when the
+// user clicks "Try it", and is read by PUESurveyTriggers to
 // distinguish users who engaged with the setup flow from users who
-// dismissed the overlay without ever clicking "Set up".
+// dismissed the overlay without ever clicking "Try it".
 export const SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION_SETUP_CTA = `${ SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION }_setup_cta`;
 
-export default function SetUpEmailReportingOverlayNotification( {
-	id,
-	Notification,
-} ) {
-	const isSelectionPanelOpen = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY )
-	);
-	const previousIsSelectionPanelOpen = usePrevious( isSelectionPanelOpen );
+interface SetUpEmailReportingOverlayNotificationProps {
+	id: string;
+	Notification: ElementType;
+}
 
+const SetUpEmailReportingOverlayNotification: FC<
+	SetUpEmailReportingOverlayNotificationProps
+> = ( { id, Notification } ) => {
 	const { setValue } = useDispatch( CORE_UI );
-	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 	const { dismissItem } = useDispatch( CORE_USER );
 
 	const onSetupCallback = useCallback( () => {
@@ -77,53 +71,12 @@ export default function SetUpEmailReportingOverlayNotification( {
 		setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
 	}, [ dismissItem, setValue ] );
 
-	const tooltipSettings = {
-		// On mobile and tablet the email reports button collapses into the
-		// features menu, so the tooltip anchors to whichever trigger exists.
-		target: `.${ MANAGE_EMAIL_REPORTS_BUTTON_CLASS }, .${ FEATURES_MENU_BUTTON_CLASS }`,
-		placement: 'bottom-end',
-		tooltipSlug: SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
-		title: __(
-			'You can always manage your email reports subscription here',
-			'google-site-kit'
-		),
-		dismissLabel: __( 'Got it', 'google-site-kit' ),
-		isCenteredOnMobile: false,
-	};
-
-	const showTooltip = useShowTooltip( tooltipSettings );
-
-	const handleDismiss = useCallback( () => {
-		showTooltip();
-	}, [ showTooltip ] );
-
-	const isUserSubscribed = useSelect( ( select ) =>
-		select( CORE_USER ).isEmailReportingSubscribed()
-	);
-
-	useEffect( () => {
-		if ( previousIsSelectionPanelOpen && ! isSelectionPanelOpen ) {
-			dismissNotification( id );
-
-			if ( ! isUserSubscribed ) {
-				setTimeout( () => {
-					showTooltip();
-				}, 310 ); // Wait until after the panel close animation.
-			}
-		}
-	}, [
-		previousIsSelectionPanelOpen,
-		isSelectionPanelOpen,
-		dismissNotification,
-		id,
-		isUserSubscribed,
-		showTooltip,
-	] );
-
 	return (
 		<Notification>
 			<OverlayNotification
 				notificationID={ id }
+				className="googlesitekit-email-reporting-introduction-overlay"
+				anchorID={ `.${ MANAGE_EMAIL_REPORTS_BUTTON_CLASS }` }
 				title={ __(
 					'Get site insights in your inbox',
 					'google-site-kit'
@@ -135,21 +88,17 @@ export default function SetUpEmailReportingOverlayNotification( {
 				GraphicDesktop={ EmailReportingOverlayGraphicDesktop }
 				GraphicMobile={ EmailReportingOverlayGraphicMobile }
 				ctaButton={ {
-					label: __( 'Set up', 'google-site-kit' ),
+					label: __( 'Try it', 'google-site-kit' ),
 					onClick: onSetupCallback,
 					dismissOnClick: true,
 				} }
 				dismissButton={ {
-					label: __( 'Maybe later', 'google-site-kit' ),
-					onClick: handleDismiss,
+					label: __( 'Got it', 'google-site-kit' ),
 				} }
 				newBadge
 			/>
 		</Notification>
 	);
-}
-
-SetUpEmailReportingOverlayNotification.propTypes = {
-	id: PropTypes.string.isRequired,
-	Notification: PropTypes.elementType.isRequired,
 };
+
+export default SetUpEmailReportingOverlayNotification;

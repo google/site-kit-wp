@@ -1,7 +1,7 @@
 /**
- * Email Reporting constants
+ * Email reporting introduction overlay notification styles.
  *
- * Site Kit by Google, Copyright 2025 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,9 @@
  * limitations under the License.
  */
 
-export const USER_SETTINGS_SELECTION_PANEL_OPENED_KEY =
-	'emailReportingUserSettingsSelectionPanelOpened';
-
-/**
- * Class name on the header button that opens the email reports panel.
- *
- * The setup overlay anchors to this button, so the class is shared rather than
- * repeated as a selector string.
- *
- * @since 1.186.0
- */
-export const MANAGE_EMAIL_REPORTS_BUTTON_CLASS =
-	'googlesitekit-manage-email-reports__button';
+// The card renders the desktop graphic first; the design places it below the
+// actions. On small screens the mobile graphic is already rendered last, so it
+// needs no reordering.
+.googlesitekit-email-reporting-introduction-overlay .googlesitekit-overlay-card__graphic {
+	order: 1;
+}
