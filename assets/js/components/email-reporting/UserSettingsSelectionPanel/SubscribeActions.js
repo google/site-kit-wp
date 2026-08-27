@@ -116,7 +116,7 @@ export default function SubscribeActions( {
 					}
 					// The "Subscribe" button saves the subscription itself,
 					// so only the "Update Settings" button is disabled when
-					// the settings have not changed.
+					// the email reporting settings have not changed.
 					disabled={
 						isSavingSettings ||
 						( isSubscribed && ! haveEmailReportingSettingsChanged )

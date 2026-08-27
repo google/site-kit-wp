@@ -52,9 +52,8 @@ describe( 'SubscribeActions', () => {
 			enabled: true,
 		} );
 
-		// `receiveGetEmailReportingSettings` writes the same values to both
-		// `settings` and `savedSettings`. A test that never calls
-		// `selectFrequency` therefore starts with the settings unchanged.
+		// A test that never calls `selectFrequency` starts with the email
+		// reporting settings unchanged.
 		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
 			subscribed: isSubscribed,
 			frequency: savedFrequency,
@@ -132,9 +131,10 @@ describe( 'SubscribeActions', () => {
 		).toBeDisabled();
 	} );
 
-	it( 'enables the "Subscribe" button while the selected frequency matches the saved frequency', () => {
+	it( 'keeps the "Subscribe" button enabled when the user is not subscribed, even while the selected frequency matches the saved frequency', () => {
 		const { getByRole } = renderSubscribeActions( {
 			isSubscribed: false,
+			savedFrequency: 'weekly',
 		} );
 
 		expect( getByRole( 'button', { name: 'Subscribe' } ) ).toBeEnabled();

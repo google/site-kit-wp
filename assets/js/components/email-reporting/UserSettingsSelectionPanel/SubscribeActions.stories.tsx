@@ -64,9 +64,8 @@ function Template( {
 
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
-			{ /* The button row is only styled inside `UserSettingsSelectionPanel`,
-			so this wrapper repeats that panel's class. The `maxWidth` below is
-			the side sheet's width on a desktop screen. */ }
+			{ /* The button row only gets its styles inside `UserSettingsSelectionPanel`,
+			so this wrapper repeats that panel's class and width. */ }
 			<div
 				className="googlesitekit-user-settings-selection-panel"
 				style={ { maxWidth: '530px' } }
