@@ -16,7 +16,7 @@
 
 ## **Objective**
 
-This epic adds a second tab, **Typical Traffic**, to the `analyticsTrafficOverview` widget on the main dashboard: thirteen months of the site's own daily traffic in one chart, a section naming the factors that moved traffic in the selected period, and a feedback prompt — together with the server-side datapoint that gathers and derives everything the tab draws.
+This epic adds a second tab, **Typical Traffic**, to the `analyticsTrafficOverview` widget on the main dashboard: thirteen months of the site's own daily traffic in one chart and a section naming the factors that moved traffic in the selected period — together with the server-side datapoint that gathers and derives everything the tab draws.
 
 ## **Background**
 
@@ -30,11 +30,10 @@ Neither is a report the browser should be issuing. Thirteen months of daily rows
 
 ## **Overview**
 
-We will add a second tab to the existing `analyticsTrafficOverview` widget, behind a new `typicalTraffic` feature flag. The tab renders three sections:
+We will add a second tab to the existing `analyticsTrafficOverview` widget, behind a new `typicalTraffic` feature flag. The tab renders two sections:
 
-1. **Is this helpful?** — a thumbs prompt at the top of the tab, above the chart.  
-2. **Typical traffic chart** — daily visitors across the trailing thirteen months, ending where the selected date range ends. It is the site's own shape over a year, not the 28 or 90 days the header selector offers.  
-3. **Key factors** — what moved traffic in the selected period, one section per dimension, ordered by how much of the site's movement each dimension accounts for.
+1. **Typical traffic chart** — daily visitors across the trailing thirteen months, ending where the selected date range ends. It is the site's own shape over a year, not the 28 or 90 days the header selector offers.
+2. **Key factors** — what moved traffic in the selected period, one section per dimension, ordered by how much of the site's movement each dimension accounts for.
 
 Behind it, four new pieces:
 
@@ -57,15 +56,14 @@ Behind it, four new pieces:
 
 Almost nothing on the front end is new. The tab is one more descriptor in the widget shell that already holds its tabs as a list; the chart, the loading placeholders, the change badges and the error state are the ones the rest of the dashboard uses. The server-side half has a working precedent in Email Reporting, which already runs GA4 and Search Console reports to compose a payload rather than to answer a single report request.
 
-Seven reuses carry weight in the design, because it depends on a particular property of each:
+Six reuses carry weight in the design, because it depends on a particular property of each:
 
 * **`Module::get_data()` and `Module::set_data()` dispatch a datapoint in-process.** That is how the data datapoint runs its reports: no HTTP hop and no REST round trip, using the module's own service client — see [Report gathering](#report-gathering).  
 * **`Module::get_oauth_client_for_datapoint()` resolves the client per datapoint**, including for a nested in-process dispatch, which is what carries the datapoint into the view-only dashboard — see [Dashboard sharing](#dashboard-sharing).  
 * **`GET:batch-report` on `Analytics_4` runs up to five report requests per GA4 call.** The reports the response needs therefore cost two round trips rather than seven, chunked the way `Email_Reporting_Data_Requests::collect_batch_reports()` chunks them.  
 * **`POST:searchanalytics-batch` on `Search_Console`** answers the query rows the same way, which is what the [contextual-data filter](#cross-module-contextual-data) hands back, and it answers them on a shared request too.  
 * **The API layer caches `GET` responses in browser storage, keyed on the datapoint and an MD5 of its query parameters.** That is what holds the response, under the two dates it depends on, with no cache of the slice's own.  
-* **`Custom_Dimensions_Data_Available`** answers server-side whether `googlesitekit_post_date` and `googlesitekit_post_categories` are gathering data, which decides whether those two reports are run at all — see [Response assembly](#response-assembly).  
-* **`ThumbsSurveyTrigger` renders the "Tell us more" link only when `downvoteFormURL` is set**, which is what lets the tab's feedback prompt carry no follow-up URL without a change to that component — see [Is this helpful?](#is-this-helpful).
+* **`Custom_Dimensions_Data_Available`** answers server-side whether `googlesitekit_post_date` and `googlesitekit_post_categories` are gathering data, which decides whether those two reports are run at all — see [Response assembly](#response-assembly).
 
 The new infrastructure is the gathering and the transport in front of it: one `Analytics_4` datapoint, the filter Search Console answers, the [wire format](#wire-format) both languages read, and the `benchmarking` datastore slice behind them. The external dependencies are the GA4 Data API and the Search Console API, reached the way they always are.
 
@@ -125,12 +123,6 @@ The response decodes into the fields the sections render:
 Both the response's shape and its field names are the plugin's own: camelCase, flat, and unrelated to anything the reports return. What crosses the wire is the positional [wire format](#wire-format); the table above is what the slice's decoder produces from it, and it is the shape every section component is written against.
 
 Every section component takes rows and numbers as props and touches no store, which is what makes each of them renderable from a fixture in Storybook and testable without a registry. The fixture is one decoded object per state rather than a set of report responses per section.
-
-### **Is this helpful?** {#is-this-helpful}
-
-`TrafficFeedbackPrompt`, rendered at the top of the tab, above the chart, with this widget's tracking event category and label. It renders the "Is this section helpful?" label, a `ThumbsSurveyTrigger` and the thank-you popper, and nothing else — there is no "Tell us more" link and no follow-up form URL, since `downvoteFormURL` is left unset.
-
-This prompt is the tab's post-launch quality signal. The vote leaves the plugin as `triggerSurvey( 'vote:<voteID>:<direction>' )` and the service stores that trigger against the user, which is what lets it survey the users who voted down — the follow-up is a survey the service serves back into the dashboard, not a link out of the plugin. The tab passes a vote ID of its own, so its votes aggregate separately and the follow-up reaches only the people this tab disappointed.
 
 ### **Typical traffic chart** {#typical-traffic-chart}
 
@@ -261,14 +253,35 @@ Four rules the assembly holds to:
 
 * **GA4 returns no row for a day with no traffic**, so the series is keyed by date and the gaps are filled with zeros before anything is computed. A missing day must not shorten the window or shift every later row's position, which in a format whose [date axis is implicit](#wire-format) it otherwise would.  
 * **A dimension's two windows are paired by value, not by row index.** A value present in one window and absent from the other has no counterpart row, so the pairing is a lookup keyed on the dimension value and a missing counterpart is a previous value of zero.  
-* **Each dimension is ranked by the absolute change in its `{ current, previous }` pair and capped** before it is encoded. The rows the response carries are the rows the tab renders, so the cap bounds both what a reader sees and what browser storage holds — an [open question](#how-many-rows-does-each-dimension-carry?).  
-* **The dimension order is the sum of its rows' absolute changes**, expressed as a share of the site's own movement between the two windows. A dimension whose values all moved a little ranks below one where a single value moved a lot, which is the ordering a reader wants: the section that explains the most goes first.
+* **Each dimension's rows are scored, filtered, ranked and capped** before they are encoded — see [Key factor scoring](#key-factor-scoring) for the score and the filters. The rows the response carries are the rows the tab renders, so the cap bounds both what a reader sees and what browser storage holds — an [open question](#how-many-rows-does-each-dimension-carry?).  
+* **The dimension order is the sum of its surviving rows' scores**, descending. A dimension whose values all moved a little ranks below one where a single value moved a lot and explains the site's own trend, which is the ordering a reader wants: the section that explains the most goes first. This is also the ordering the Traffic Insights design forwards to the generative endpoint as `ranked_dimensions`, expressed in the service's own dimension codes via the mapping the two epics share.
 
 The comparison window is the preceding window of the same length, computed off the two request parameters. The tab sends dates rather than the date-range slug, so the cache key changes when the reference date rolls over instead of holding yesterday's answer under today's range.
 
 The assembly has to be deterministic — stable ordering, stable rounding, stable row caps — because that is what makes it testable against fixtures, and because two runs over unchanged figures that serialize differently are two cache entries.
 
 Assembly lives in `includes/Modules/Analytics_4/Benchmarking/` — `Report_Options` for the windows and dimensions, a response builder over the report rows, and the [wire format](#wire-format)'s encoder — as classes with no dependency on the REST layer, so PHPUnit can drive them from fixed report fixtures.
+
+### **Key factor scoring** {#key-factor-scoring}
+
+One formula scores every row in every dimension, so a query, a channel and a device are ranked on the same scale. For a row with `current` and `previous` visitor (or click) counts, against the selected period's site-wide `visitors.current` and `visitors.previous`:
+
+1. **`delta`** `= current - previous`.  
+2. **`trafficImpactPct`** `= delta / MAX( visitors.previous, visitors.current ) * 100` — the row's own change as a percentage of the larger of the two site-wide totals, so a rapidly growing site doesn't inflate a row that only kept pace with it.  
+3. **`selfChangePct`** `= delta / previous * 100`, or `100` when `previous` is `0` and `current` is greater than `0` — how much the row itself moved, independent of the site.  
+4. **`siteGrowthRate`** `= ( visitors.current - visitors.previous ) / visitors.previous` for the period as a whole.  
+5. **`excessImpactPct`** `= ( delta - previous * siteGrowthRate ) / MAX( visitors.previous, visitors.current ) * 100` — how far the row's own movement departs from what the site's overall growth rate alone would have predicted for it, as a percentage of the site-wide total.  
+6. **`score`** `= ( 0.6 * ABS( trafficImpactPct ) + 0.4 * ABS( excessImpactPct ) ) * weight * boost`.
+
+`weight` is fixed per dimension — `CONTENT` 1.5, `SEARCH_QUERIES` 1.4, `REFERRERS` 1.3, `CATEGORIES` 1.2, `CHANNELS` 1.1, `DEVICES` 1.0, `VISITOR_MIX` 1.0 — so a specific driver outweighs a broad one of equal raw impact, on the reasoning that `DEVICES` and `VISITOR_MIX` usually only mirror a channel or referrer shift counted elsewhere. `boost` is `1.25` when the row's own direction agrees with the site's overall direction and `1.0` otherwise; the site's direction is `UP` when its period-over-period change is at least `3%`, `DOWN` at `-3%` or below, and `STABLE` between them, and a row's own direction follows the same sign convention on its `delta`.
+
+A row is dropped — scored but never ranked, capped or summed into its dimension's total — when any of these hold:
+
+* **The significance floor.** `ABS( delta ) < 5` or `ABS( trafficImpactPct ) < 0.40`. Below this a row is noise on any site's traffic.  
+* **The counter-trend filter.** The row's direction opposes the site's overall direction, and it clears neither `ABS( trafficImpactPct ) >= 1.0` nor ( `ABS( selfChangePct ) >= 10` and `ABS( delta ) >= 25` ). A site growing overall can still have individual values that fell; this is what keeps a handful of visitors moving the wrong way out of an ordering built to explain the site's own trend.  
+* **The macro-divergence filter, on `DEVICES` and `VISITOR_MIX` rows only.** `ABS( selfChangePct - totalPctChange ) < 5`, where `totalPctChange` is the site's own period-over-period percentage change. A device or segment that only tracks the site's overall change explains nothing beyond it.
+
+Within a dimension, its surviving rows are ranked by `score`, descending, and capped per [the row-cap open question](#how-many-rows-does-each-dimension-carry?). Across dimensions, `dimensions` orders on the sum of each dimension's surviving row scores, descending — an empty dimension, every one of whose rows was dropped, carries no entry.
 
 ### **Wire format** {#wire-format}
 
@@ -317,7 +330,7 @@ There is no separate gathering-data state. A property gathering data cannot be 1
 
 ### **Architecture requirements**
 
-New front-end code joins the existing widget directory: `assets/js/modules/analytics-4/components/traffic-overview/` gains a panel under `tabs/`, its chart under `charts/`, the factor catalog and its renderers under `factors/`, one hook, `TrafficFeedbackPrompt`, and the format's field indices in `constants.ts` — where nothing outside that file holds a literal index. Components are TypeScript function components, one component per file, with co-located tests and Storybook stories.
+New front-end code joins the existing widget directory: `assets/js/modules/analytics-4/components/traffic-overview/` gains a panel under `tabs/`, its chart under `charts/`, the factor catalog and its renderers under `factors/`, one hook, and the format's field indices in `constants.ts` — where nothing outside that file holds a literal index. Components are TypeScript function components, one component per file, with co-located tests and Storybook stories.
 
 New PHP lives in two places: `includes/Modules/Analytics_4/Datapoints/` for the datapoint, and `includes/Modules/Analytics_4/Benchmarking/` for the report options, the response builder and the wire format's encoder — with `includes/Modules/Search_Console/Benchmarking/` for the callback that answers the [contextual-data filter](#cross-module-contextual-data), the same per-module layout `Email_Reporting/` already uses on both modules.
 
@@ -325,7 +338,7 @@ Three existing files change outside this feature, and they are the ones to call 
 
 ### **REST infrastructure**
 
-One new datapoint, no new route. `GET:benchmarking-data` is dispatched by the `READABLE` branch of the module datapoint route like any other read, and implements `Permission_Aware_Datapoint` for its own permission check. The GA4 and Search Console reports behind it are dispatched in-process rather than over REST, so the report routes are involved only in the dashboard's other widgets. `triggerSurvey` carries the feedback votes as it already does.
+One new datapoint, no new route. `GET:benchmarking-data` is dispatched by the `READABLE` branch of the module datapoint route like any other read, and implements `Permission_Aware_Datapoint` for its own permission check. The GA4 and Search Console reports behind it are dispatched in-process rather than over REST, so the report routes are involved only in the dashboard's other widgets.
 
 **Opening the tab is one request.** Everything after it, for the hour the response is held, is answered from browser storage without reaching the server.
 
@@ -365,11 +378,11 @@ The one discovery question the tab does raise is answered by not answering it: a
 
 ### **Internal Measurement: GA4 Events**
 
-The epic adds no tracking events of its own. `FeedbackPrompt` takes an event category and label from its caller and emits the thumbs events it already emits — those are props the promoted component needs rather than a measurement plan of this epic's.
+The epic adds no tracking events.
 
 ### **Internal Measurement: Feature Metrics**
 
-None. Nothing in the tab records an outcome, and the feedback signal the thumbs prompt carries is the service's rather than a plugin metric.
+None. Nothing in the tab records an outcome.
 
 ## **Alternatives considered**
 
@@ -428,10 +441,6 @@ The tab is main-dashboard only. A per-URL version is a different analysis rather
 ### **Low-traffic handling**
 
 Low-traffic sites need rolling averages, more cautious language and de-emphasized short-term change. The chart's thirteen-month window already does part of that by putting a week's noise next to a year's shape, but the factor sections still report a change on rows whose absolute numbers are small enough for the change to be meaningless. What that should do — suppress the badge, widen the cap, or say something different — is a follow-up, and it overlaps with [the smoothing question](#is-the-thirteen-month-series-plotted-daily-or-smoothed?).
-
-### **Richer feedback than thumbs up / down**
-
-Letting users say *why* a section was not relevant — wrong data, out of date, not useful — is a stretch goal beyond the thumbs signal. The service's survey to downvoters is the hook for it; a structured in-product form is future work.
 
 ## **Dependencies**
 
@@ -528,10 +537,9 @@ Three constraints worth naming:
 | 8 | Add the Typical Traffic tab to the widget shell with its history gate | 11 |  |
 | 9 | Typical Traffic: the thirteen-month traffic chart | 15 |  |
 | 10 | Typical Traffic: key factors section | 15 |  |
-| 11 | Add the "Is this helpful?" prompt to the Typical Traffic tab | 3 |  |
-| 12 | Loading and error states for the Typical Traffic tab | 11 |  |
+| 11 | Loading and error states for the Typical Traffic tab | 11 |  |
 
-**TOTAL: 132 STORY POINTS across 12 issues**
+**TOTAL: 129 STORY POINTS across 11 issues**
 
 **The wire format is the first thing to land after the flag and the contract everything else is built against.** The encoder, the decoder and the [shared fixture](#wire-format) are a small, self-contained issue with no dependency on a report, a datapoint or a component, and once it exists the server-side half writes against the encoder while the panel and its sections read a decoded fixture. Agreeing the layout early is what lets the two halves proceed in parallel, and the [panel data flow](#panel-data-flow) table is the version to agree.
 

@@ -32,13 +32,14 @@ The second is a natural-language reading of the comparison, in the site owner's 
 
 ## **Overview**
 
-We will add five things to the widget, behind a new `trafficInsights` feature flag:
+We will add six things to the widget, behind a new `trafficInsights` feature flag:
 
 1. **A generated insight on both tabs.** A compact teaser at the top of Traffic Overview ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=740-40731&m=dev)), and the full three-part insight at the top of Typical Traffic ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-10450&m=dev)). One generation serves both.  
 2. **An expected-baseline band on the Typical Traffic chart**, drawn across the selected date range inside the thirteen-month window, from a model computed in PHP over the site's own daily history.  
 3. **A 28-day forecast** continuing past the end of the period as a dashed line under a band that widens with distance, with a one-line projection beneath the chart.  
 4. **Content markers on the Traffic Overview chart**: a dot on the traffic line for each day something was published, with a tooltip naming the posts.  
-5. **Insight-driven ordering of the key factors**, so the section that explains the most goes first according to the model rather than according to arithmetic alone.
+5. **Insight-driven ordering of the key factors**, so the section that explains the most goes first according to the model rather than according to arithmetic alone.  
+6. **A feedback prompt beneath the full insight on Typical Traffic** ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-10477&m=dev)), asking whether the narration above it was helpful.
 
 Behind them, six new pieces:
 
@@ -63,7 +64,7 @@ Behind them, six new pieces:
 
 The front end is additive to a widget that already exists: two more sections, two more chart columns and a set of overlays, in a card whose tabs, states and data flow are in place. The server-side gathering and the datapoint that does it are in place too; this epic extends both rather than introducing them.
 
-Ten reuses carry weight in the design, because it depends on a particular property of each:
+Eleven reuses carry weight in the design, because it depends on a particular property of each:
 
 * **`Google_Proxy::request()`** already injects `site_id`/`site_secret` and the bearer header, which keeps the submit method thin. **It is `wp_remote_post()` only, and it puts the credentials in the request body**, so the operation read cannot use it as it stands — see [Google\_Proxy additions](#google_proxy-additions).  
 * **`Module::set_data()` dispatches through the same `execute_data_request()` path `get_data()` does**, so `get_oauth_client_for_datapoint()` resolves the owner's client for a write on a shared request exactly as it does for a read. That is what carries the submit into the view-only dashboard.  
@@ -74,7 +75,8 @@ Ten reuses carry weight in the design, because it depends on a particular proper
 * **`getItem` and `setItem` from `googlesitekit/api/cache` are the API cache's own storage, callable directly.** `modules/ads`'s `isWooCommerceRedirectModalDismissed()` resolver already reads one from inside a store. That is what the insight's cache entry is built from.  
 * **A control is where a `setTimeout` belongs in a datastore**, the way `scheduleSyncAvailableCustomDimensions()` on `modules/analytics-4` already schedules a deferred fetch. That is what the [wait between reads](#waiting-for-the-generation) is built out of.  
 * **`GoogleChart` passes Google Charts interval roles through untouched and renders `children` inside its own positioned wrapper.** The first is what draws the expected-range bands, the second is what the forecast's overlays and the marker tooltip hang off. Its `getChartOptions()` reinstating Google's own tooltip is the one behavior the charts work around — see [Chart construction](#chart-construction).  
-* **`Custom_Dimensions_Data_Available`** answers server-side whether `googlesitekit_post_date` is gathering data, which decides whether the content markers are derived at all.
+* **`Custom_Dimensions_Data_Available`** answers server-side whether `googlesitekit_post_date` is gathering data, which decides whether the content markers are derived at all.  
+* **`ThumbsSurveyTrigger` renders the "Tell us more" link only when `downvoteFormURL` is set**, which is what lets the feedback prompt beneath the insight carry no follow-up URL without a change to that component — see [Is this helpful?](#is-this-helpful).
 
 The new infrastructure is the generative transport and the model in front of it: two `Google_Proxy` methods, two `Analytics_4` datapoints over a shared base, the baseline model, the payload builder, and the slice's insight resolver. The external dependencies the plugin has not talked to before are the service's `/v1/ai/benchmarking` endpoint and its `/v1/ai/operations/:operation_id` companion; the GA4 Data API and the Search Console API are reached the way they always are.
 
@@ -157,6 +159,12 @@ The icon and emphasis treatment come from a lookup in `constants.ts` keyed by th
 
 The component has two absent states and they look different on purpose. While the generation is being waited on it renders `PreviewBlock` placeholders at its strings' heights, because an insight *is* coming and the block reserving its space is what stops the panel reflowing under the reader when it arrives. Once the insight is known not to be coming it returns `null`: no block, and no placeholder standing in for one.
 
+### **Is this helpful?** {#is-this-helpful}
+
+`InsightFeedbackPrompt` renders beneath the full insight block on Typical Traffic, with this widget's tracking event category and label. It renders the "Is this section helpful?" label, a `ThumbsSurveyTrigger` and the thank-you popper, and nothing else — there is no "Tell us more" link and no follow-up form URL, since `downvoteFormURL` is left unset.
+
+**It renders only in the [Narrated](#insight-states) state**, beside the text it is asking about — there is nothing to rate while the insight is generating, and nothing left to rate once it is known not to be coming. This is the epic's post-launch quality signal for the narration itself: the vote leaves the plugin as `triggerSurvey( 'vote:<voteID>:<direction>' )` and the service stores that trigger against the user, which is what lets it survey the users who voted down — the follow-up is a survey the service serves back into the dashboard, not a link out of the plugin. The widget passes a vote ID of its own, so its votes aggregate separately and the follow-up reaches only the people the insight disappointed.
+
 ### **Content markers on the Traffic Overview chart**
 
 The Overview chart gains a third column: that day's own visitor value on a day something was published, and `null` on every other day. Its series is drawn with `lineWidth: 0` and a point size, which puts a dot on the traffic line at the value the line already has there.
@@ -208,7 +216,9 @@ The component renders nothing when `lookahead` is absent. That is the same condi
 
 The key factors section already walks a set of dimension codes in an order the response supplies, off a catalog in `traffic-overview/factors/registry.ts` that holds each code's copy, its `contextualData` key and its renderer. This epic changes where the order comes from and adds one entry to the catalog.
 
-What the insight carries is `topDimensions`: up to three `DimensionType` codes — `TRAFFIC_CHANNELS`, `AUDIENCE_SEGMENTS`, `PAGES`, `SEARCH_QUERIES`, `DEVICES`, `CATEGORIES`, `REFERRING_SITES`, `HISTORICAL_BASELINE` — ordered from highest impact down, chosen by the model from the ranked impacts the service computes over the payload. **Those are the service's codes and not the catalog's**, so a map from `DimensionType` to catalog code lives beside the catalog: one entry per code, and an unrecognized `DimensionType` maps to nothing and is dropped, costing one section rather than the section list.
+What the insight carries is `topDimensions`: up to three `DimensionType` codes — `TRAFFIC_CHANNELS`, `AUDIENCE_SEGMENTS`, `PAGES`, `SEARCH_QUERIES`, `DEVICES`, `CATEGORIES`, `REFERRING_SITES`, `HISTORICAL_BASELINE` — ordered from highest impact down, chosen by the model from `ranked_dimensions`, the plugin's own ordering forwarded in the [payload](#payload-assembly). **Those are the service's codes and not the catalog's**, so a map from `DimensionType` to catalog code lives beside the catalog: one entry per code, and an unrecognized `DimensionType` maps to nothing and is dropped, costing one section rather than the section list.
+
+**The service's job is judgment, not arithmetic.** The plugin's own [Response assembly](./typical-traffic-design-doc.md#response-assembly) ranks the dimensions once; the service reasons from that ranking rather than deriving one of its own, and decides only which of the plugin's top-ranked dimensions actually explains the period well enough to lead the narration with.
 
 Three resolution rules, on top of the two the lookup already applies:
 
@@ -362,14 +372,15 @@ No PHP request in this design is long. The submit returns as soon as the service
 
 The interval, the deadline and whether the interval widens are an [open question](#what-is-the-cadence-and-deadline-for-waiting?) — a function of how long the service's generation actually takes, which the plugin can measure only against the live endpoint.
 
-#### *Payload assembly*
+#### *Payload assembly* {#payload-assembly}
 
-The request payload is `end_date`, `days_in_period`, a `visitors` array of `{ current, previous }` pairs — index 0 the active period this year, index 1 the same period a year ago, index 2 two years ago — a `contextual_data` object with seven optional keys, and the optional `baseline` object. Every field is derived in PHP by the data datapoint, from the reports it has just run, and encoded into the string the browser hands back to [`POST:benchmarking-insight`](#insight-datapoints) unread:
+The request payload is `end_date`, `days_in_period`, a `visitors` array of `{ current, previous }` pairs — index 0 the active period this year, index 1 the same period a year ago, index 2 two years ago — `ranked_dimensions`, a `contextual_data` object with seven optional keys, and the optional `baseline` object. Every field is derived in PHP by the data datapoint, from the reports it has just run, and encoded into the string the browser hands back to [`POST:benchmarking-insight`](#insight-datapoints) unread:
 
 | Payload field | Derived from |
 | :---- | :---- |
 | `end_date`, `days_in_period` | the `startDate` and `endDate` request parameters |
 | `visitors` | the daily series for this year's two windows and last year's, and a new two-years-back totals report |
+| `ranked_dimensions` | the dimension order already derived for the [key factors section](./typical-traffic-design-doc.md#response-assembly), translated into the service's `DimensionType` codes through the [dimension code mapping](#dimension-code-mapping) |
 | `baseline` | `Expected_Baseline`'s [period-scale output](#what-the-service-is-told) |
 | `recent_content_momentum` | the `pagePath` report filtered on `customEvent:googlesitekit_post_date` |
 | `traffic_channel_surges` | the `sessionDefaultChannelGrouping` report |
@@ -379,11 +390,11 @@ The request payload is `end_date`, `days_in_period`, a `visitors` array of `{ cu
 | `device_shifts` | the `deviceCategory` report |
 | `referrers` | the `sessionSource` report |
 
-**Seven of the ten are rows the datapoint already derives**, ranked and capped, for the key factors section; the payload takes them and renames them to the service's keys. Only three are new work: the two-years-back `visitors` entry, which needs its own totals report and takes the report count from seven to eight — still two batched calls; the `baseline` object; and the encoding.
+**Seven of the rows are ones the datapoint already derives**, ranked and capped, for the key factors section; the payload takes them and renames them to the service's keys. `ranked_dimensions` is the same derivation's ordering, not a new one — it is the `dimensions` field the data response already carries, re-expressed in the service's own codes. Only three fields are new work: the two-years-back `visitors` entry, which needs its own totals report and takes the report count from seven to eight — still two batched calls; the `baseline` object; and the encoding.
 
 The prior-year windows are both windows shifted back 364 days per year, the same offset the [baseline](#expected-baseline) uses to keep weekdays aligned. The first two `visitors` entries are summed out of the daily series, which now spans `days_in_period + 392` days at every range the selector offers; only the two-years-back entry falls outside that span.
 
-Every dimension except `recent_content_momentum` and `category_resonance` carries a `{ current, previous }` pair rather than a single figure, because the service computes the impact ranking itself: it derives each item's change against itself, its share of the site's total movement, and the ordering the model must respect, so that the model never does arithmetic. **A dimension sent without its previous-period figure is a dimension the narration cannot rank.** The plugin sends no pre-computed trend or ranking of its own; the request has no field for one.
+Every dimension except `recent_content_momentum` and `category_resonance` carries a `{ current, previous }` pair rather than a single figure — the model's narration names actual numbers, and a pair is what lets it say the site's Organic Search visitors rose from one figure to another rather than only that they rose. **The ordering travels separately.** `ranked_dimensions` carries the plugin's own impact ranking — the same one [Response assembly](./typical-traffic-design-doc.md#response-assembly) computes for the key factors section — so the model never does arithmetic, and never reasons from an ordering a reader would not also see on Typical Traffic. A dimension with no place in `ranked_dimensions` is a dimension the narration cannot weigh against the others.
 
 Which keys are present constrains which scenario can come back: `SEARCH_QUERY_SHIFTS`, `TRAFFIC_CHANNEL_SURGES`, `CATEGORY_RESONANCE`, `REFERRING_SITE_SHIFTS` and `RECENT_CONTENT_MOMENTUM` are each conditional on their own key being sent, so a site missing the custom dimensions is steered toward the baseline and steady-state scenarios rather than getting a worse version of the same insight.
 
@@ -484,7 +495,7 @@ What the Reporting state says in place of the insight, and whether a 429 says so
 
 ### **Architecture requirements**
 
-New front-end code joins the existing widget directory: `assets/js/modules/analytics-4/components/traffic-overview/` gains `GeneratedInsight` and `LookaheadSummary` under `components/`, `ChartLegend` and the tooltip card under `charts/`, the `DimensionType` map and the `HISTORICAL_BASELINE` entry under `factors/`, one hook, and the new field indices in `constants.ts`. Components are TypeScript function components, one component per file, with co-located tests and Storybook stories.
+New front-end code joins the existing widget directory: `assets/js/modules/analytics-4/components/traffic-overview/` gains `GeneratedInsight`, `LookaheadSummary` and `InsightFeedbackPrompt` under `components/`, `ChartLegend` and the tooltip card under `charts/`, the `DimensionType` map and the `HISTORICAL_BASELINE` entry under `factors/`, one hook, and the new field indices in `constants.ts`. Components are TypeScript function components, one component per file, with co-located tests and Storybook stories.
 
 New PHP lives in two places: `includes/Modules/Analytics_4/Datapoints/` for the two insight datapoints and the abstract base they share, and `includes/Modules/Analytics_4/Benchmarking/` for `Expected_Baseline`, the payload builder and the wire format's new members. The two transport methods and the `GET` capability the second needs are added to `includes/Core/Authentication/Google_Proxy.php`.
 
@@ -539,11 +550,11 @@ The one thing that does need saying in the product is that the text is AI-genera
 
 ### **Internal Measurement: GA4 Events**
 
-The epic adds no tracking events. The thumbs prompt already on the Typical Traffic tab emits the events it emits, unchanged, and whether a 429 is tracked as an error is part of [the rate-limit question](#what-does-the-widget-show-when-the-rate-limit-is-hit?) rather than a measurement plan of this epic's.
+The epic adds no tracking events of its own. The feedback prompt beneath the insight emits the thumbs events `ThumbsSurveyTrigger` already emits, unchanged, and whether a 429 is tracked as an error is part of [the rate-limit question](#what-does-the-widget-show-when-the-rate-limit-is-hit?) rather than a measurement plan of this epic's.
 
 ### **Internal Measurement: Feature Metrics**
 
-None. Nothing persists the outcome or the timings of a benchmarking request, which is the same reason there are no debug fields.
+None. Nothing persists the outcome or the timings of a benchmarking request, which is the same reason there are no debug fields, and the feedback vote is the service's telemetry rather than a plugin metric.
 
 ## **Alternatives considered**
 
@@ -641,7 +652,7 @@ Low-traffic sites need more cautious language and de-emphasized short-term chang
 
 ### **Richer feedback than thumbs up / down**
 
-Letting users say *why* an insight was not relevant — wrong data, out of date, not useful — is a stretch goal beyond the thumbs signal already on the Typical Traffic tab. The service's survey to downvoters is the hook for it; a structured in-product form is future work.
+Letting users say *why* an insight was not relevant — wrong data, out of date, not useful — is a stretch goal beyond the thumbs signal. The service's survey to downvoters is the hook for it; a structured in-product form is future work.
 
 ## **Dependencies** {#dependencies}
 
@@ -753,14 +764,15 @@ The character limits the service works to — 250, 210 and 400 — are counted o
 | 9 | Extend the `benchmarking` slice with the insight resolver, its wait loop and its own cache entry | 19 |  |
 | 10 | Traffic Overview: generated insight teaser | 11 |  |
 | 11 | Typical Traffic: generated insight block | 11 |  |
-| 12 | Traffic Overview: content markers on the traffic chart | 15 |  |
-| 13 | Typical Traffic: expected baseline band on the chart | 15 |  |
-| 14 | Typical Traffic: look-ahead forecast and its projection line | 15 |  |
-| 15 | Insight-driven factor ordering and the historical-baseline factor | 11 |  |
-| 16 | Generating, unavailable-insight and error states | 11 |  |
-| 17 | Add support links for the insight and the expected baseline | 7 |  |
+| 12 | Add the "Is this helpful?" prompt beneath the insight | 3 |  |
+| 13 | Traffic Overview: content markers on the traffic chart | 15 |  |
+| 14 | Typical Traffic: expected baseline band on the chart | 15 |  |
+| 15 | Typical Traffic: look-ahead forecast and its projection line | 15 |  |
+| 16 | Insight-driven factor ordering and the historical-baseline factor | 11 |  |
+| 17 | Generating, unavailable-insight and error states | 11 |  |
+| 18 | Add support links for the insight and the expected baseline | 7 |  |
 
-**TOTAL: 203 STORY POINTS across 17 issues**
+**TOTAL: 206 STORY POINTS across 18 issues**
 
 **The proxy work is separated from the datapoints deliberately.** `Google_Proxy` first, because the `GET` capability is a change to a Core class every proxy call in the plugin passes through and deserves reviewing as one rather than inside a feature issue; then the two datapoints over it, which is where the payload validation, the `WP_Error` statuses and the permission check each branch of the route needs live. Neither touches a report, so both are testable against a mocked proxy alone.
 
@@ -928,7 +940,7 @@ The members the [format](#wire-format-additions) gains, beside the ones it alrea
 | new | the resolved locale, as a string-table reference |
 | new | the encoded payload, as one opaque string |
 
-The payload is the same positional layout restricted to the string table, the baseline, the period totals and the contextual dimensions, plus `end_date`, `days_in_period` and the resolved locale, JSON-encoded and then base64url-encoded, optionally deflated first with a one-character prefix saying which.
+The payload is the same positional layout restricted to the string table, the baseline, the period totals, the contextual dimensions and the dimension order, plus `end_date`, `days_in_period` and the resolved locale, JSON-encoded and then base64url-encoded, optionally deflated first with a one-character prefix saying which.
 
 ### **Chart data tables and options** {#chart-data-tables-and-options}
 
@@ -968,6 +980,7 @@ The service contract, for reference while implementing the derivation. Every `co
 | `end_date` | `string` (YYYY-MM-DD) | Yes |
 | `days_in_period` | `integer` | Yes |
 | `visitors` | `Array<MetricPair<int>>` — index 0 this year, 1 last year, 2 two years ago | Yes |
+| `ranked_dimensions` | `Array<DimensionType>`, the plugin's own ordering, highest impact first | No |
 | `async` | `boolean`; when true the service returns an operation instead of generating in the request | No |
 | `baseline.period_months` | `integer`, must be positive | No |
 | `baseline.expected_range_min`, `baseline.expected_range_max` | `integer`, period totals | No |
@@ -995,13 +1008,13 @@ The service contract, for reference while implementing the derivation. Every `co
 
 `GET /v1/ai/operations/:operation_id` takes `site_id` and `site_secret` as **query parameters** and the bearer token as a header, and answers with the operation resource: `name`, `done`, `state`, `created_at`, `finished_at`, `response` carrying the generated fields on success, and `error` carrying a code and message on failure. It applies no rate limit, and it authorizes the caller as a registered user of the site rather than as the user who started the operation. An operation lives for one hour, refreshed when its worker finishes; past that a read is a `404`.
 
-`site_id` and `site_secret` are injected by `Google_Proxy::request()` and are not part of the payload the data datapoint assembles. `hl` travels as a query parameter on the submit, not in the body. The plugin sends no trend or ranking of its own: the service derives the ranked per-item impacts the model must respect from `visitors` and `contextual_data`, and none of that intermediate structure comes back in the response.
+`site_id` and `site_secret` are injected by `Google_Proxy::request()` and are not part of the payload the data datapoint assembles. `hl` travels as a query parameter on the submit, not in the body. The plugin sends its own ranking: `ranked_dimensions` carries the ordering the datapoint already computed for the key factors section, translated into the service's `DimensionType` codes, and the service reasons from it rather than re-deriving one from `visitors` and `contextual_data`.
 
 Failure responses to distinguish: `400` for a missing or invalid field, including a `baseline` with a non-positive `period_months`; `403` for an unverifiable token or a user not registered against the site; `404` for an operation that does not exist or has expired; `429` when the rate limit is exhausted, with no `Retry-After` header; and `500` for a parse or output-validation failure on the submit itself. **A failure inside an asynchronous generation is not a status on any response** — it marks the operation `FAILED`, which the operation read reports and the datapoint turns into a `WP_Error`.
 
-### **Dimension code mapping**
+### **Dimension code mapping** {#dimension-code-mapping}
 
-The service's `DimensionType` codes against the factor catalog's own, which is what [insight-driven ordering](#insight-driven-factor-ordering) resolves through:
+The service's `DimensionType` codes against the factor catalog's own. The payload builder reads it left to right, translating the `dimensions` field's catalog codes into `ranked_dimensions`; [insight-driven ordering](#insight-driven-factor-ordering) reads it right to left, resolving `topDimensions` back onto the catalog:
 
 | `DimensionType` | Catalog code |
 | :---- | :---- |
