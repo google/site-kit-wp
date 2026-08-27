@@ -48,17 +48,22 @@ describe( 'initializePagination', () => {
 	 * @param {string} markup Markup to render.
 	 * @return {Element} The rendered markup's first element.
 	 */
-	function render( markup: string ): Element {
+	function render< T extends Element = Element >( markup: string ): T {
 		global.document.body.innerHTML = markup;
 
-		return global.document.body.firstElementChild as Element;
+		return global.document.body.firstElementChild as T;
 	}
 
-	// Every anchor here carries a real href, which jsdom would try to navigate
-	// to and log "Not implemented: navigation" for. Swallowing the default keeps
-	// the clicks themselves realistic.
+	/**
+	 * Stops jsdom from trying to follow the anchors these tests click.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} event The click to swallow.
+	 * @return {void}
+	 */
 	function preventNavigation( event: Event ) {
-		return event.preventDefault();
+		event.preventDefault();
 	}
 
 	let registeredListeners: Array< [ string, EventListener ] > = [];
@@ -117,12 +122,12 @@ describe( 'initializePagination', () => {
 	} );
 
 	it( 'emits one event with only the expected payload for a post pagination link', () => {
-		const anchor = render(
+		const anchor = render< HTMLAnchorElement >(
 			'<a class="post-page-numbers" href="https://example.com/my-post/3/">3</a>'
 		);
 		initialize();
 
-		( anchor as HTMLAnchorElement ).click();
+		anchor.click();
 
 		expect( gtagEventMock ).toHaveBeenCalledTimes( 1 );
 		expect( gtagEventMock ).toHaveBeenCalledWith( 'pagination_click', {
@@ -211,6 +216,27 @@ describe( 'initializePagination', () => {
 		} );
 	} );
 
+	it( 'should emit nothing for the bbPress current-page marker', () => {
+		// On the topic, so the only reason this is not tracked is that bbPress
+		// renders the current page as a span rather than a link.
+		global.document.body.classList.add( 'single-topic' );
+		render(
+			'<div class="bbp-pagination-links"><span class="page-numbers current">1</span></div>'
+		);
+		initialize();
+
+		global.document
+			.querySelector( '.bbp-pagination-links span.current' )
+			?.dispatchEvent(
+				new global.MouseEvent( 'click', {
+					bubbles: true,
+					cancelable: true,
+				} )
+			);
+
+		expect( gtagEventMock ).not.toHaveBeenCalled();
+	} );
+
 	it( 'emits nothing for a bbPress pagination link that is not on a topic', () => {
 		// bbPress renders this same container for a forum's topic list and for
 		// its search results, neither of which is a thread being read.
@@ -227,12 +253,12 @@ describe( 'initializePagination', () => {
 	} );
 
 	it( 'emits nothing for the same anchor outside the bbPress pagination container', () => {
-		const anchor = render(
+		const anchor = render< HTMLAnchorElement >(
 			'<a class="page-numbers" href="https://example.com/my-topic/page/2/">2</a>'
 		);
 		initialize();
 
-		( anchor as HTMLAnchorElement ).click();
+		anchor.click();
 
 		expect( gtagEventMock ).not.toHaveBeenCalled();
 	} );
@@ -240,10 +266,10 @@ describe( 'initializePagination', () => {
 	it( 'tracks an anchor appended after initialization', () => {
 		initialize();
 
-		const anchor = render(
+		const anchor = render< HTMLAnchorElement >(
 			'<a class="post-page-numbers" href="https://example.com/my-post/5/">5</a>'
 		);
-		( anchor as HTMLAnchorElement ).click();
+		anchor.click();
 
 		expect( gtagEventMock ).toHaveBeenCalledWith(
 			'pagination_click',
@@ -292,12 +318,12 @@ describe( 'initializePagination', () => {
 			1,
 		],
 	] )( 'reads page_number from %s', ( _label, href, text, expected ) => {
-		const anchor = render(
+		const anchor = render< HTMLAnchorElement >(
 			`<a class="post-page-numbers" href="${ href }">${ text }</a>`
 		);
 		initialize();
 
-		( anchor as HTMLAnchorElement ).click();
+		anchor.click();
 
 		expect( gtagEventMock ).toHaveBeenCalledWith(
 			'pagination_click',
@@ -312,10 +338,12 @@ describe( 'initializePagination', () => {
 			.spyOn( console, 'error' )
 			.mockImplementation( () => {} );
 
-		const anchor = render( '<a class="post-page-numbers">3</a>' );
+		const anchor = render< HTMLAnchorElement >(
+			'<a class="post-page-numbers">3</a>'
+		);
 		initialize();
 
-		( anchor as HTMLAnchorElement ).click();
+		anchor.click();
 
 		expect( gtagEventMock ).toHaveBeenCalledWith(
 			'pagination_click',
@@ -356,7 +384,10 @@ describe( 'initializePagination', () => {
 		} );
 
 		first.click();
-		expect( consoleErrorSpy ).toHaveBeenCalled();
+		expect( consoleErrorSpy ).toHaveBeenCalledWith(
+			'Site Kit: failed to track this pagination click.',
+			expect.any( Error )
+		);
 
 		second.click();
 

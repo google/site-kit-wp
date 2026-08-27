@@ -94,9 +94,8 @@ function getPageNumber( anchor: HTMLAnchorElement ): number {
 /**
  * Initializes pagination click tracking.
  *
- * Registered unconditionally as a single delegated listener on `document`, with
- * no container or page-type gate, so pagination rendered after load is covered
- * too.
+ * One delegated listener on `document`, registered whatever the page is, so
+ * pagination that renders after load is tracked too.
  *
  * @since n.e.x.t
  *
