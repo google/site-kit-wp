@@ -723,7 +723,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 				connected: true,
 			},
 		] );
-		// The widget won't request a breakdown report until the breakdown 
+		// The widget won't request a breakdown report until the breakdown
 		// dimensions exist on the property, so these tests start from the
 		// "created" state.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
