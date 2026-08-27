@@ -166,35 +166,4 @@ class Report_Data_ProcessorTest extends TestCase {
 			'sum_metric_by_group() should return an empty array when the rows it receives are not an array.'
 		);
 	}
-
-	public function test_compute_trend__returns_the_percentage_change_between_the_two_values() {
-		$this->assertSame(
-			16.0,
-			$this->processor->compute_trend( 116, 100 ),
-			'compute_trend() should return 16.0 for a rise from 100 to 116.'
-		);
-		$this->assertSame(
-			-20.0,
-			$this->processor->compute_trend( 80, 100 ),
-			'compute_trend() should return -20.0 for a fall from 100 to 80.'
-		);
-	}
-
-	public function test_compute_trend__returns_null_when_the_previous_value_is_zero() {
-		$this->assertNull(
-			$this->processor->compute_trend( 116, 0 ),
-			'compute_trend() should return null when the previous value is zero, because a change from zero has no percentage.'
-		);
-	}
-
-	public function test_compute_trend__returns_null_when_either_value_is_not_a_number() {
-		$this->assertNull(
-			$this->processor->compute_trend( null, 100 ),
-			'compute_trend() should return null when the current value is not a number.'
-		);
-		$this->assertNull(
-			$this->processor->compute_trend( 116, 'none' ),
-			'compute_trend() should return null when the previous value is not a number.'
-		);
-	}
 }

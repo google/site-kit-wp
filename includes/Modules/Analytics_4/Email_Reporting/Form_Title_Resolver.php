@@ -60,8 +60,8 @@ class Form_Title_Resolver {
 		foreach ( $form_ids as $form_id ) {
 			$title = $metadata[ $form_id ]['title'] ?? null;
 
-			// A form titled `0` keeps its own title. `Get_Form_Metadata` returns `null` for
-			// a form with no title, so an empty check would replace `0` with `Form #0`.
+			// An empty check would replace a form titled `0` with `Form #0`, so this
+			// reads `null` instead.
 			if ( null !== $title ) {
 				$titles[ $form_id ] = $title;
 				continue;
@@ -80,10 +80,9 @@ class Form_Title_Resolver {
 	/**
 	 * Reads the stored metadata of each form through the form metadata datapoint.
 	 *
-	 * This calls the datapoint directly rather than through its REST route, so
-	 * `permission_callback()` never runs. The email report builds on a cron event, which
-	 * has no request user to check, and the datapoint reads a form post title and nothing
-	 * else.
+	 * The email builds on a cron event with no request user, so this calls the datapoint
+	 * directly and `permission_callback()` never runs. The datapoint reads a form post
+	 * title and nothing else.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -100,10 +99,6 @@ class Form_Title_Resolver {
 				array( 'formIDs' => $form_ids )
 			)
 		);
-
-		if ( is_wp_error( $request ) ) {
-			return array();
-		}
 
 		return $request();
 	}

@@ -74,8 +74,8 @@ class Report_Request_Assembler {
 	/**
 	 * Every payload key a Site Goals report sits under.
 	 *
-	 * Each Site Goals section reads more than one of these reports, so `Report_Data_Builder`
-	 * skips every key in this list rather than build one section per report.
+	 * A Site Goals section reads more than one of these reports, so no key here gets a
+	 * section of its own.
 	 *
 	 * @since n.e.x.t
 	 * @var array

@@ -199,7 +199,7 @@ class Site_Goals_Section_Builder {
 	 * @since n.e.x.t
 	 *
 	 * @param array $module_payload Module payload keyed by request key.
-	 * @return array Section payload, or an empty array when the payload holds no lead report.
+	 * @return array Section payload, or an empty array when the report holds no row.
 	 */
 	private function build_lead_generation_section( array $module_payload ) {
 		$is_split_by_form = ! empty( $module_payload[ Report_Request_Assembler::SITE_GOALS_LEAD_PRIMARY_BY_FORM_KEY ] );
@@ -208,7 +208,11 @@ class Site_Goals_Section_Builder {
 			? $this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_LEAD_PRIMARY_BY_FORM_KEY )
 			: $this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_LEAD_PRIMARY_KEY );
 
-		if ( empty( $primary_report ) ) {
+		$primary_rows = $this->report_processor->extract_report_rows( $primary_report );
+
+		// A report that holds no row gets no section, the same as in
+		// build_online_store_section().
+		if ( empty( $primary_rows ) ) {
 			return array();
 		}
 
@@ -220,11 +224,7 @@ class Site_Goals_Section_Builder {
 			? Analytics_4::CUSTOM_EVENT_PREFIX . Analytics_4::CUSTOM_DIMENSION_FORM_ID
 			: '';
 
-		$counts = $this->data_processor->sum_metric_by_group(
-			$this->report_processor->extract_report_rows( $primary_report ),
-			$group_dimension,
-			'eventCount'
-		);
+		$counts = $this->data_processor->sum_metric_by_group( $primary_rows, $group_dimension, 'eventCount' );
 
 		return $this->build_section(
 			array(
@@ -287,9 +287,8 @@ class Site_Goals_Section_Builder {
 
 		return array(
 			'section_key'      => $section_input['section_key'],
-			// The email never shows this title. `Email_Report_Section_Builder` fills an
-			// empty title with the section key, and `Email_Template_Formatter` labels the
-			// section from the first tile instead.
+			// The email never shows this title, because `Email_Template_Formatter` labels
+			// the section from its first tile.
 			'title'            => '',
 			'labels'           => $labels,
 			'event_names'      => array(),
@@ -364,7 +363,7 @@ class Site_Goals_Section_Builder {
 			// `Sections_Map::has_non_zero_value()` reads this value back through
 			// `is_numeric()`, so the rate keeps a dot and never the locale's separator.
 			'value' => round( $current_rate * 100, 1 ) . '%',
-			'trend' => $this->data_processor->compute_trend( $current_rate, $previous_rate ),
+			'trend' => $this->report_processor->compute_trend( $current_rate, $previous_rate ),
 		);
 	}
 
@@ -383,7 +382,7 @@ class Site_Goals_Section_Builder {
 		return array(
 			'label' => $label,
 			'value' => number_format_i18n( $current_count ),
-			'trend' => $this->data_processor->compute_trend( $current_count, $counts['date_range_1'] ?? 0.0 ),
+			'trend' => $this->report_processor->compute_trend( $current_count, $counts['date_range_1'] ?? 0.0 ),
 		);
 	}
 
@@ -435,8 +434,8 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Collects every group's tiles into the flat lists a section part carries.
 	 *
-	 * `Email_Report_Section_Builder` leaves out a section whose `values` list holds nothing.
-	 * `Email_Template_Formatter` reads the first label and the first value out of these lists.
+	 * The email labels the section from the first tile, and shows no section when the
+	 * lists hold nothing.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -507,8 +506,8 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Orders group names by their key action count in the current period, biggest first.
 	 *
-	 * The reports ask GA4 for no order, so this method sets it. Two groups with the same
-	 * count are ordered by name, so every run shows the same order.
+	 * Two groups with the same count are ordered by name, so every run shows the same
+	 * order.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -574,9 +573,7 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Reads the key action the online store report counted.
 	 *
-	 * Every row of this report carries the same event name, because the request asks for
-	 * one event. A row can still arrive with no name, so this returns the first name it
-	 * finds.
+	 * A row can arrive with no name, so this returns the first name it finds.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -623,8 +620,6 @@ class Site_Goals_Section_Builder {
 	 * @return array The report, or an empty array when the payload holds no report there.
 	 */
 	private function read_report( array $module_payload, $request_key ) {
-		$report = $module_payload[ $request_key ] ?? array();
-
-		return is_array( $report ) ? $report : array();
+		return $module_payload[ $request_key ] ?? array();
 	}
 }

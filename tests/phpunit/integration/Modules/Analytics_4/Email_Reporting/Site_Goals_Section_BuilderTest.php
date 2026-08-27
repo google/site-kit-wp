@@ -40,7 +40,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 	 */
 	private function build_report( array $dimension_names, array $metric_names, array $rows ) {
 		$wrap_value = static function ( $value ) {
-			return array( 'value' => $value );
+			return is_array( $value ) ? $value : array( 'value' => $value );
 		};
 
 		return array(
@@ -136,10 +136,8 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 	}
 
 	/**
-	 * Creates a form post the datapoint can read a title from.
-	 *
-	 * `Get_Form_Metadata` reads a title only from a published post whose type is in
-	 * `FORM_POST_TYPES`. `wpforms` is one of those types.
+	 * Creates a published `wpforms` post, which is what `Get_Form_Metadata` reads a title
+	 * from.
 	 *
 	 * @param string $title Title the email shows for this form's group.
 	 * @return int ID the report names as the form ID.
@@ -150,6 +148,40 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 				'post_title' => $title,
 				'post_type'  => 'wpforms',
 			)
+		);
+	}
+
+	/**
+	 * Builds the payload of an online store report split by event provider.
+	 *
+	 * WooCommerce and Easy Digital Downloads each get a group of their own, and the
+	 * "(not set)" row goes into the "Other sources" group.
+	 *
+	 * @return array Module payload holding the key action report and the engagement report.
+	 */
+	private function build_online_store_by_provider_payload() {
+		$provider_dimension = 'customEvent:googlesitekit_event_provider';
+
+		return array(
+			'site_goals_online_store_primary_by_provider' => $this->build_report(
+				array( 'eventName', $provider_dimension, 'dateRange' ),
+				array( 'eventCount' ),
+				array(
+					array( array( 'purchase', 'easy-digital-downloads', 'date_range_0' ), array( '21' ) ),
+					array( array( 'purchase', 'easy-digital-downloads', 'date_range_1' ), array( '20' ) ),
+					array( array( 'purchase', 'woocommerce', 'date_range_0' ), array( '116' ) ),
+					array( array( 'purchase', 'woocommerce', 'date_range_1' ), array( '100' ) ),
+					array( array( 'purchase', '(not set)', 'date_range_0' ), array( '7' ) ),
+					array( array( 'purchase', '(not set)', 'date_range_1' ), array( '4' ) ),
+				)
+			),
+			'site_goals_engagement_by_provider'           => $this->build_engagement_report_by_dimension(
+				$provider_dimension,
+				array(
+					'woocommerce'            => array( '2000', '2600' ),
+					'easy-digital-downloads' => array( '875', '1000' ),
+				)
+			),
 		);
 	}
 
@@ -226,31 +258,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 	}
 
 	public function test_build_sections__gives_the_online_store_one_group_for_each_plugin_and_no_prompt() {
-		$provider_dimension = 'customEvent:googlesitekit_event_provider';
-
-		$sections = $this->builder->build_sections(
-			array(
-				'site_goals_online_store_primary_by_provider' => $this->build_report(
-					array( 'eventName', $provider_dimension, 'dateRange' ),
-					array( 'eventCount' ),
-					array(
-						array( array( 'purchase', 'easy-digital-downloads', 'date_range_0' ), array( '21' ) ),
-						array( array( 'purchase', 'easy-digital-downloads', 'date_range_1' ), array( '20' ) ),
-						array( array( 'purchase', 'woocommerce', 'date_range_0' ), array( '116' ) ),
-						array( array( 'purchase', 'woocommerce', 'date_range_1' ), array( '100' ) ),
-						array( array( 'purchase', '(not set)', 'date_range_0' ), array( '7' ) ),
-						array( array( 'purchase', '(not set)', 'date_range_1' ), array( '4' ) ),
-					)
-				),
-				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
-					$provider_dimension,
-					array(
-						'woocommerce'            => array( '2000', '2600' ),
-						'easy-digital-downloads' => array( '875', '1000' ),
-					)
-				),
-			)
-		);
+		$sections = $this->builder->build_sections( $this->build_online_store_by_provider_payload() );
 
 		$this->assertSame(
 			array(
@@ -546,33 +554,28 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 		);
 	}
 
-	public function test_build_sections__lists_every_tile_in_flat_lists_beside_the_groups() {
-		$sections = $this->builder->build_sections(
-			array(
-				'site_goals_online_store_primary' => $this->build_primary_report( 'purchase', '116', '100' ),
-				'site_goals_engagement'           => $this->build_engagement_report( '2000', '2600' ),
-			)
-		);
+	public function test_build_sections__lists_the_tiles_of_every_group_in_flat_lists_beside_the_groups() {
+		$sections = $this->builder->build_sections( $this->build_online_store_by_provider_payload() );
 
 		$this->assertSame(
-			array( 'Sales rate', 'Total sales' ),
+			array( 'Sales rate', 'Total sales', 'Sales rate', 'Total sales', 'Total sales' ),
 			$sections[0]['labels'],
-			'build_sections() should list every tile label, because Email_Report_Section_Builder reads the section labels out of this list rather than the groups.'
+			'build_sections() should list the tile labels of every group.'
 		);
 		$this->assertSame(
-			array( '5.8%', '116' ),
+			array( '5.8%', '116', '2.4%', '21', '7' ),
 			$sections[0]['values'],
-			'build_sections() should list every tile value, because Email_Report_Section_Builder leaves out a section whose values list holds nothing.'
+			'build_sections() should list the tile values of every group.'
 		);
 		$this->assertSame(
-			array( 50.8, 16.0 ),
+			array( 50.8, 16.0, 20.0, 5.0, 75.0 ),
 			$sections[0]['trends'],
-			'build_sections() should list every tile trend beside its value.'
+			'build_sections() should list the tile trends of every group, each one beside its value.'
 		);
 		$this->assertSame(
-			array( 'TYPE_STANDARD', 'TYPE_STANDARD' ),
+			array( 'TYPE_STANDARD', 'TYPE_STANDARD', 'TYPE_STANDARD', 'TYPE_STANDARD', 'TYPE_STANDARD' ),
 			$sections[0]['value_types'],
-			'build_sections() should mark each value as already formatted, so nothing reformats "5.8%" and "116".'
+			'build_sections() should mark every value as already formatted, so nothing reformats "5.8%" and "116".'
 		);
 	}
 
@@ -622,6 +625,30 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 		);
 	}
 
+	public function test_build_sections__labels_the_online_store_tiles_from_the_first_row_that_names_an_event() {
+		$sections = $this->builder->build_sections(
+			array(
+				'site_goals_online_store_primary' => $this->build_report(
+					array( 'eventName', 'dateRange' ),
+					array( 'eventCount' ),
+					array(
+						array( array( '', 'date_range_0' ), array( '5' ) ),
+						array( array( 'purchase', 'date_range_0' ), array( '116' ) ),
+						array( array( 'purchase', 'date_range_1' ), array( '100' ) ),
+					)
+				),
+				'site_goals_engagement'           => $this->build_engagement_report( '2000', '2600' ),
+			)
+		);
+
+		$this->assertCount( 1, $sections, 'build_sections() should build the online store section when a later row names the event, even though the first row names none.' );
+		$this->assertSame(
+			array( 'Sales rate', 'Total sales' ),
+			array_column( $sections[0]['groups'][0]['metrics'], 'label' ),
+			'build_sections() should label the online store tiles from the first row that names an event.'
+		);
+	}
+
 	public function test_build_sections__builds_no_online_store_section_when_the_report_names_no_event() {
 		$sections = $this->builder->build_sections(
 			array(
@@ -637,7 +664,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 		$this->assertSame(
 			array(),
 			$sections,
-			'build_sections() should build no online store section when the report names no event, because both tile labels depend on that event.'
+			'build_sections() should build no online store section when the report names no event.'
 		);
 	}
 
@@ -676,7 +703,42 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 		);
 	}
 
-	public function test_build_sections__shows_zero_form_completions_when_the_report_holds_no_row() {
+	public function test_build_sections__counts_a_row_whose_form_dimension_holds_no_value_in_other_sources() {
+		$form_dimension     = 'customEvent:googlesitekit_form_id';
+		$newsletter_form_id = $this->create_form( 'Newsletter signup form' );
+
+		$sections = $this->builder->build_sections(
+			array(
+				'site_goals_lead_primary_by_form' => $this->build_report(
+					array( 'eventName', $form_dimension, 'dateRange' ),
+					array( 'eventCount' ),
+					array(
+						array( array( 'contact', (string) $newsletter_form_id, 'date_range_0' ), array( '116' ) ),
+						array( array( 'contact', (string) $newsletter_form_id, 'date_range_1' ), array( '100' ) ),
+						array( array( 'contact', array(), 'date_range_0' ), array( '9' ) ),
+						array( array( 'contact', array(), 'date_range_1' ), array( '4' ) ),
+					)
+				),
+				'site_goals_engagement_by_form'   => $this->build_engagement_report_by_dimension(
+					$form_dimension,
+					array( $newsletter_form_id => array( '2000', '2600' ) )
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( 'Newsletter signup form', 'Other sources' ),
+			array_column( $sections[0]['groups'], 'label' ),
+			'build_sections() should show no form group for a row whose form dimension holds no value, rather than a group labelled "Form #".'
+		);
+		$this->assertSame(
+			'9',
+			$sections[0]['groups'][1]['metrics'][0]['value'],
+			'build_sections() should count the completions of a row whose form dimension holds no value in the "Other sources" total.'
+		);
+	}
+
+	public function test_build_sections__builds_no_lead_generation_section_when_the_report_holds_no_row() {
 		$sections = $this->builder->build_sections(
 			array(
 				'site_goals_lead_primary' => $this->build_report(
@@ -689,20 +751,9 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 		);
 
 		$this->assertSame(
-			array(
-				array(
-					'label' => 'Form completion rate',
-					'value' => '0%',
-					'trend' => null,
-				),
-				array(
-					'label' => 'Total form completions',
-					'value' => '0',
-					'trend' => null,
-				),
-			),
-			$sections[0]['groups'][0]['metrics'],
-			'build_sections() should read a lead report with no row as zero form completions.'
+			array(),
+			$sections,
+			'build_sections() should build no lead generation section when the report holds no row.'
 		);
 	}
 }

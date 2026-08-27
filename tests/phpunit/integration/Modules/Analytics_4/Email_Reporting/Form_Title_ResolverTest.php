@@ -31,10 +31,8 @@ class Form_Title_ResolverTest extends TestCase {
 	}
 
 	/**
-	 * Creates a form post the datapoint can read a title from.
-	 *
-	 * `Get_Form_Metadata` reads a title only from a published post whose type is in
-	 * `FORM_POST_TYPES`. `wpforms` is one of those types.
+	 * Creates a published `wpforms` post, which is the shape `Get_Form_Metadata` reads a
+	 * title from.
 	 *
 	 * @param string $title Title the email shows for this form's group.
 	 * @return int ID the report names as the form ID.

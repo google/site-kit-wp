@@ -163,31 +163,6 @@ class Report_Data_Processor {
 	}
 
 	/**
-	 * Computes the percentage change from the previous value to the current one.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param mixed $current  Current period value.
-	 * @param mixed $previous Previous period value.
-	 * @return float|null Percentage change, such as `7.2` for a rise from `100` to `107.2`. Null when
-	 *                    either value is not a number. Null too when the previous value is zero,
-	 *                    because a change from zero has no percentage.
-	 */
-	public function compute_trend( $current, $previous ) {
-		if ( ! is_numeric( $current ) || ! is_numeric( $previous ) ) {
-			return null;
-		}
-
-		$previous_value = (float) $previous;
-
-		if ( 0.0 === $previous_value ) {
-			return null;
-		}
-
-		return ( (float) $current - $previous_value ) / $previous_value * 100;
-	}
-
-	/**
 	 * Applies per-dimension aggregates to values and trends when available.
 	 *
 	 * @since 1.170.0
