@@ -174,11 +174,11 @@ class Conversion_TrackingTest extends TestCase {
 
 	public function data_register() {
 		$exception_no_classname     = 'A conversion event provider class name is required to instantiate a provider: test-provider';
-		$exception_not_extends_base = sprintf( "The '%s' class must extend the base conversion event provider class: %s", __CLASS__, Conversion_Events_Provider::class );
+		$exception_not_extends_base = sprintf( 'The %s class must extend the base conversion event provider class: %s', __CLASS__, Conversion_Events_Provider::class );
 
 		return array(
 			'no class name'                     => array( array( 'test-provider' => '' ), $exception_no_classname ),
-			'non-existent class name'           => array( array( 'foo-bar' => '\\Foo\\Bar' ), "The '\\Foo\\Bar' class does not exist" ),
+			'non-existent class name'           => array( array( 'foo-bar' => '\\Foo\\Bar' ), 'The \\Foo\\Bar class does not exist' ),
 			'existing class not-extending base' => array( array( 'test-provider' => __CLASS__ ), $exception_not_extends_base ),
 		);
 	}

@@ -227,8 +227,8 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 				throw new LogicException(
 					sprintf(
 						/* translators: %s: provider slug */
-						__( 'A conversion event provider class name is required to instantiate a provider: %s', 'google-site-kit' ),
-						$provider_slug
+						esc_html__( 'A conversion event provider class name is required to instantiate a provider: %s', 'google-site-kit' ),
+						esc_html( $provider_slug )
 					)
 				);
 			}
@@ -237,8 +237,8 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 				throw new LogicException(
 					sprintf(
 						/* translators: %s: provider classname */
-						__( "The '%s' class does not exist", 'google-site-kit' ),
-						$provider_class
+						esc_html__( 'The %s class does not exist', 'google-site-kit' ),
+						esc_html( $provider_class )
 					)
 				);
 			}
@@ -247,8 +247,8 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 				throw new LogicException(
 					sprintf(
 						/* translators: 1: provider classname 2: Conversion_Events_Provider classname */
-						__( "The '%1\$s' class must extend the base conversion event provider class: %2\$s", 'google-site-kit' ),
-						$provider_class,
+						esc_html__( 'The %1$s class must extend the base conversion event provider class: %2$s', 'google-site-kit' ),
+						esc_html( $provider_class ),
 						Conversion_Events_Provider::class
 					)
 				);
