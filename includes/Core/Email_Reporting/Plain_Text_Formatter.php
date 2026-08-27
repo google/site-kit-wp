@@ -361,7 +361,16 @@ class Plain_Text_Formatter {
 
 		// Get change context from first part.
 		$first_part = reset( $section_parts );
-		if ( ! empty( $first_part['data']['change_context'] ) ) {
+
+		// The change context is only meaningful when at least one metric has a comparison value.
+		$has_any_change = ! empty(
+			array_filter(
+				$section_parts,
+				static fn( $part_config ) => isset( $part_config['data']['change'] )
+			)
+		);
+
+		if ( $has_any_change && ! empty( $first_part['data']['change_context'] ) ) {
 			$output .= $first_part['data']['change_context'] . "\n\n";
 		}
 
@@ -406,8 +415,10 @@ class Plain_Text_Formatter {
 			$output .= $part_label . "\n";
 			$output .= str_repeat( '-', mb_strlen( $part_label ) ) . "\n";
 
-			// Change context.
-			if ( ! empty( $data['change_context'] ) ) {
+			// Change context is only meaningful when at least one row has a comparison value.
+			$has_any_change = ! empty( array_filter( $data['changes'] ?? array(), static fn( $change ) => null !== $change ) );
+
+			if ( $has_any_change && ! empty( $data['change_context'] ) ) {
 				$output .= $data['change_context'] . "\n";
 			}
 

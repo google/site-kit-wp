@@ -149,25 +149,30 @@ const ModulePopularPagesWidgetGA4PDF = lazyWithPreload( () =>
 
 export function registerWidgets( widgets ) {
 	// Register Analytics 4 Widgets.
-	widgets.registerWidget(
-		'analyticsAllTrafficGA4',
-		{
-			Component: DashboardAllTrafficWidgetGA4,
-			width: widgets.WIDGET_WIDTHS.FULL,
-			priority: 1,
-			wrapWidget: false,
-			modules: [ MODULE_SLUG_ANALYTICS_4 ],
-			pdf: {
-				Component: DashboardAllTrafficWidgetGA4PDF,
-				getData: getAllTrafficPDFData,
-				label: __( 'Site traffic over time', 'google-site-kit' ),
+
+	// Only register the ("old") All Traffic widget when the new, "Traffic"
+	// widget feature is disabled.
+	if ( ! isFeatureEnabled( 'trafficOverview' ) ) {
+		widgets.registerWidget(
+			'analyticsAllTrafficGA4',
+			{
+				Component: DashboardAllTrafficWidgetGA4,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+				pdf: {
+					Component: DashboardAllTrafficWidgetGA4PDF,
+					getData: getAllTrafficPDFData,
+					label: __( 'Site traffic over time', 'google-site-kit' ),
+				},
 			},
-		},
-		[
-			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-		]
-	);
+			[
+				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+				AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+			]
+		);
+	}
 
 	if ( isFeatureEnabled( 'setupFlowRefresh' ) ) {
 		widgets.registerWidget(

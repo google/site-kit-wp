@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
@@ -211,9 +212,11 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'sync-publication-onboarding-state',
 				'terms-of-service',
 				'user-settings',
+				'ctas',
+				'create-cta',
 			),
 			$this->reader_revenue_manager->get_datapoints(),
-			'Reader Revenue Manager module should include the user settings datapoints when the express setup flag is enabled.'
+			'Reader Revenue Manager module should include the express setup datapoints when the express setup flag is enabled.'
 		);
 	}
 
@@ -554,18 +557,25 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	}
 
 	public function test_get_debug_fields() {
+		$this->enable_feature( 'rrmExpressSetup' );
+
 		$this->reader_revenue_manager->get_settings()->register();
 
 		// Set up product IDs in different formats for testing extraction and redaction.
 		$this->reader_revenue_manager->get_settings()->set(
 			array(
-				'publicationID' => 'test-publication-id',
-				'productIDs'    => array(
+				'publicationID'  => 'test-publication-id',
+				'productIDs'     => array(
 					'test-publication-id:product1',  // Combined format.
 					'standalone-product',           // Standalone format.
 					'test-publication-id:product2',  // Another combined format.
 				),
-				'productID'     => 'test-publication-id:main-product',  // Main product in combined format.
+				'productID'      => 'test-publication-id:main-product',  // Main product in combined format.
+				'organizationID' => 'test-organization-id',
+				'configuredCTAs' => array(
+					'lower_left_cta' => 'lower_left',
+					'higher_cta'     => 'higher',
+				),
 			)
 		);
 
@@ -573,6 +583,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'reader_revenue_manager_publication_id',
+				'reader_revenue_manager_organization_id',
+				'reader_revenue_manager_configured_ctas',
 				'reader_revenue_manager_publication_onboarding_state',
 				'reader_revenue_manager_snippet_mode',
 				'reader_revenue_manager_post_types',
@@ -586,6 +598,44 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 
 		$debug_fields = $this->reader_revenue_manager->get_debug_fields();
+
+		// Test organization ID is exposed raw, but redacted in debug output.
+		$this->assertEquals(
+			'Reader Revenue Manager: Organization ID',
+			$debug_fields['reader_revenue_manager_organization_id']['label'],
+			'Organization ID field should have correct label'
+		);
+
+		$this->assertEquals(
+			'test-organization-id',
+			$debug_fields['reader_revenue_manager_organization_id']['value'],
+			'Organization ID should be exposed as the raw setting value'
+		);
+
+		$this->assertEquals(
+			Debug_Data::redact_debug_value( 'test-organization-id' ),
+			$debug_fields['reader_revenue_manager_organization_id']['debug'],
+			'Organization ID should be redacted in debug output'
+		);
+
+		// Test configured CTAs are exposed as a comma-separated list of their keys (names).
+		$this->assertEquals(
+			'Reader Revenue Manager: Configured CTAs',
+			$debug_fields['reader_revenue_manager_configured_ctas']['label'],
+			'Configured CTAs field should have correct label'
+		);
+
+		$this->assertEquals(
+			'lower_left_cta, higher_cta',
+			$debug_fields['reader_revenue_manager_configured_ctas']['value'],
+			'Configured CTAs should list the configured CTA names'
+		);
+
+		$this->assertEquals(
+			'lower_left_cta, higher_cta',
+			$debug_fields['reader_revenue_manager_configured_ctas']['debug'],
+			'Configured CTAs debug output should match the value'
+		);
 
 		// Test product IDs extraction - should only show the product ID part.
 		$this->assertEquals(
@@ -638,6 +688,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'reader_revenue_manager_publication_id',
+				'reader_revenue_manager_organization_id',
+				'reader_revenue_manager_configured_ctas',
 				'reader_revenue_manager_publication_onboarding_state',
 				'reader_revenue_manager_snippet_mode',
 				'reader_revenue_manager_product_id',
@@ -665,6 +717,19 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			'reader_revenue_manager_content_policy_state',
 			$debug_fields,
 			'Content policy state debug field should be included.'
+		);
+
+		// Verify the express setup fields are omitted while the feature flag is off.
+		$this->assertArrayNotHasKey(
+			'reader_revenue_manager_organization_id',
+			$debug_fields,
+			'Organization ID debug field should be omitted when rrmExpressSetup is disabled.'
+		);
+
+		$this->assertArrayNotHasKey(
+			'reader_revenue_manager_configured_ctas',
+			$debug_fields,
+			'Configured CTAs debug field should be omitted when rrmExpressSetup is disabled.'
 		);
 
 		$this->assertEquals(
