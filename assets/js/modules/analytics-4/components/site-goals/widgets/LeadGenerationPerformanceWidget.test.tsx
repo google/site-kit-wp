@@ -763,9 +763,8 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		// re-seed with form IDs.
 		seedBreakdown();
 
-		// Add the chart tile's report for every set of lead events these tests
-		// pass to `setDetectedEvents`, so no test leaves the tile in its
-		// loading placeholder.
+		// Add the chart tile's report for all four sets of lead events, so no
+		// test leaves the tile in its loading placeholder.
 		[
 			[ ENUM_CONVERSION_EVENTS.CONTACT ],
 			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],

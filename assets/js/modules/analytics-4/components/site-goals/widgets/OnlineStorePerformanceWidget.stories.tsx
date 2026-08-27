@@ -227,8 +227,7 @@ function commonSetup( registry: WPDataRegistry ) {
 		.finishResolution( 'getReport', [ discoveryOptions ] );
 
 	// Add the chart tile's report for both ecommerce events, once with no tab
-	// filter and once per provider tab, so the tile has a chart to draw. The
-	// `ZeroData` story replaces it with an empty report.
+	// filter and once per provider tab.
 	[
 		ENUM_CONVERSION_EVENTS.PURCHASE,
 		ENUM_CONVERSION_EVENTS.ADD_TO_CART,
@@ -1034,8 +1033,7 @@ ZeroData.args = {
 				options: engagementReportOptions,
 			} );
 
-		// An empty chart report makes the tile show its zero data message, so
-		// the story shows no data in every tile.
+		// An empty chart report makes the tile show its zero data message.
 		const chartReportOptions = buildKeyActionChartReportOptions(
 			ENUM_CONVERSION_EVENTS.PURCHASE
 		);

@@ -43,10 +43,10 @@ import getKeyActionChartReportOptions, {
 import GoalTile from './GoalTile';
 import ZeroDataMessage from './ZeroDataMessage';
 
-/** The area under the line, from `$c-blue-b-50` in `_variables-mui3.scss`. */
+/** The area under the line, from the `$c-blue-b-50` Sass variable. */
 const CHART_AREA_COLOR = '#dce8ff';
 
-/** The line, from `$c-blue-b-300` in `_variables-mui3.scss`. */
+/** The line, from the `$c-blue-b-300` Sass variable. */
 const CHART_LINE_COLOR = '#7f9cd4';
 
 const CHART_HEIGHT = 48;
@@ -55,9 +55,8 @@ const CHART_HEIGHT = 48;
 const CHART_TOP_PADDING = 4;
 
 /**
- * Google Charts needs a header row to type each column. A label shows only in
- * the legend and the tooltip. `CHART_OPTIONS` turns both off, so these labels
- * never reach the screen and never need translating.
+ * `CHART_OPTIONS` hides the legend and the tooltip, so nothing shows these
+ * labels. They need no translation.
  */
 const CHART_COLUMNS = [
 	{ type: 'date', label: 'Day' },
@@ -81,10 +80,8 @@ const CHART_OPTIONS = {
 	height: CHART_HEIGHT,
 	legend: { position: 'none' },
 	series: {
-		// Google Charts draws each series in a single color. The design gives
-		// the area and the line two different blues, so the first series fills
-		// the area with no line, and the second draws the line on top with no
-		// fill.
+		// Google Charts gives each series one color, so the area under the
+		// line and the line over it are two series.
 		0: {
 			areaOpacity: 1,
 			color: CHART_AREA_COLOR,
@@ -154,7 +151,10 @@ const KeyActionChartTile: FC< KeyActionChartTileProps > = ( {
 
 	const hasEvents = dataPoints.some( ( { count } ) => count > 0 );
 
-	/** `CHART_OPTIONS` draws two series, so each day repeats its count. */
+	/**
+	 * `CHART_OPTIONS` draws the area and the line as two series, so every row
+	 * holds its count twice.
+	 */
 	const chartData = [
 		CHART_COLUMNS,
 		...dataPoints.map( ( { date, count } ) => [ date, count, count ] ),

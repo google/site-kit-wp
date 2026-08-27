@@ -51,9 +51,8 @@ type ChartInputs = Partial< Omit< KeyActionChartReportArgs, 'dates' > >;
 
 const mockGoogleChart = jest.fn();
 
-// The Google Charts script never loads under Jest, so the real `GoogleChart`
-// renders its loading placeholder and draws nothing a test can read. This stub
-// records the props instead, so a test can read the chart type and the rows.
+// Google Charts draws nothing under Jest, so this stub records the props a
+// test reads.
 jest.mock( '@/js/components/GoogleChart', () => {
 	return function GoogleChartStub( props: Record< string, unknown > ) {
 		mockGoogleChart( props );
@@ -82,9 +81,6 @@ const WOOCOMMERCE_FILTER = {
 
 /**
  * Builds the report options the tile asks for.
- *
- * The tile calls `getKeyActionChartReportOptions` too, so a test that
- * overrides an input still names the same options.
  *
  * @since n.e.x.t
  *
@@ -161,7 +157,7 @@ describe( 'KeyActionChartTile', () => {
 	}
 
 	/**
-	 * Renders `KeyActionChartTile` with the default title and inputs.
+	 * Renders the `KeyActionChartTile` component with the default title and inputs.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -181,7 +177,7 @@ describe( 'KeyActionChartTile', () => {
 	}
 
 	/**
-	 * Waits for the chart to draw, then reads the props of its last render.
+	 * Waits for the tile to render `GoogleChartStub`, then reads what it passed.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -209,8 +205,7 @@ describe( 'KeyActionChartTile', () => {
 		const { chartType, data } = await getLastChartProps();
 
 		expect( chartType ).toBe( 'AreaChart' );
-		// Google Charts reads the first row as the header that types each
-		// column, and draws nothing without it.
+		// The first row is the header that gives each column its type.
 		expect( data[ 0 ] ).toEqual( [
 			{ type: 'date', label: 'Day' },
 			{ type: 'number', label: 'Events' },
@@ -268,15 +263,14 @@ describe( 'KeyActionChartTile', () => {
 
 			const { data } = await getLastChartProps();
 
-			// Each day repeats its count, because the first series fills the
-			// area and the second draws the line over it.
+			// Every row holds its count twice, once for the area and once for
+			// the line.
 			expect( data.slice( 1 ) ).toEqual( points );
 		}
 	);
 
 	it( 'shows a loading placeholder, not the zero data message, on the first render', () => {
-		// This test adds no report, so the resolver runs and calls the
-		// endpoint. Freezing that call keeps the report unresolved.
+		// The frozen fetch leaves the report unresolved.
 		freezeFetch( REPORT_ENDPOINT );
 
 		const { container } = renderChartTile();

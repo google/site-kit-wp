@@ -350,11 +350,9 @@ const LeadGenerationPerformanceWidget = forwardRef<
 			[]
 		);
 
-		// We use `useMemo` here instead of a plain `|| []`, because
-		// `getDetectedLeadEvents` returns `undefined` until the events load. A
-		// new empty array on every render would make `useSiteGoalsBreakdown`
-		// and `KeyActionChartTile` run their report selectors again for the
-		// same events.
+		// `useSiteGoalsBreakdown` and `KeyActionChartTile` both hold
+		// `keyActionEventNames` in a dependency array, so it has to stay the
+		// same array between renders.
 		const keyActionEventNames: string[] = useMemo(
 			() => detectedLeadEvents || [],
 			[ detectedLeadEvents ]

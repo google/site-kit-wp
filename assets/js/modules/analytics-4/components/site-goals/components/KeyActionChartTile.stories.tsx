@@ -117,10 +117,9 @@ export const Loading = Template.bind( {} ) as Story< KeyActionChartTileProps >;
 Loading.storyName = 'Loading';
 Loading.args = {
 	...defaultArgs,
-	// The preview block takes its color from the pulse animation, and a visual
-	// regression run turns every animation off, so the block has no color in
-	// the captured image. `googlesitekit-vrt-animation-paused` holds the pulse
-	// at its first color instead, so the image shows the loading state.
+	// Without this, a visual regression image shows the loading block with no
+	// color. When true, `Template` wraps the story in the
+	// `googlesitekit-vrt-animation-paused` class, which pauses the pulse.
 	pauseAnimation: true,
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		registry

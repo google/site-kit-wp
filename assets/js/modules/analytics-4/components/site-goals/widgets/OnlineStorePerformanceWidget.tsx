@@ -113,10 +113,8 @@ const EVENT_TOTAL_LABELS = {
 /**
  * Builds the chart tile's title from the primary event and the date range.
  *
- * The title opens with the same words `EVENT_TOTAL_LABELS` holds for that
- * event, so the chart tile and the total events tile name the Key action the
- * same way. An event added to `EVENT_TOTAL_LABELS` needs a branch here too,
- * or its chart tile falls back to the sales title.
+ * An event added to `EVENT_TOTAL_LABELS` needs a branch here too, or its chart
+ * tile falls back to the sales title.
  *
  * @since n.e.x.t
  *
@@ -340,10 +338,9 @@ const OnlineStorePerformanceWidget = forwardRef<
 			[]
 		) as number;
 
-		// We use `useMemo` here because `[ primaryEvent ]` would be a new array
-		// on every render. The chart tile and the "Other sources" metric both
-		// count the Key action's own event, and `useSiteGoalsBreakdown` lists
-		// this array as a dependency.
+		// `useSiteGoalsBreakdown` and `KeyActionChartTile` both hold
+		// `keyActionEventNames` in a dependency array, so it has to stay the
+		// same array between renders.
 		const keyActionEventNames = useMemo(
 			() => ( primaryEvent ? [ primaryEvent ] : [] ),
 			[ primaryEvent ]

@@ -46,9 +46,8 @@ interface KeyActionTilesProps
 		'dates' | 'eventNames' | 'goalType' | 'breakdownFilter'
 	> {
 	/**
-	 * Whether the "Other sources" tab is active. That tab shows the total tile
-	 * alone, because unattributed events have no per-source sessions to measure
-	 * a rate against.
+	 * Whether the "Other sources" tab is active, which shows the total tile
+	 * alone.
 	 */
 	isOtherSourcesTab: boolean;
 	/** The URL the rate tile's info tooltip links to. */

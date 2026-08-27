@@ -26,10 +26,9 @@ import KeyActionTiles from './KeyActionTiles';
 
 const mockKeyActionChartTile = jest.fn();
 
-// `KeyActionChartTile.test.tsx` covers the chart tile's own report, so this
-// stub records the props `KeyActionTiles` passes it. It renders the title
-// under `googlesitekit-site-goals-tile__title`, which `GoalTile` adds to
-// every tile title, so a test can read all three titles in render order.
+// The chart tile is stubbed, because its own test file covers the report. The
+// stub copies the real tile's title markup, so a test can read all three
+// titles in order.
 jest.mock( './KeyActionChartTile', () => {
 	return function KeyActionChartTileStub( props: KeyActionChartTileProps ) {
 		mockKeyActionChartTile( props );
@@ -109,8 +108,8 @@ describe( 'KeyActionTiles', () => {
 
 		// No rate tile (no per-source sessions to rate against).
 		expect( queryByText( 'Sales Rate' ) ).not.toBeInTheDocument();
-		// The chart tile doesn't appear either, because the Other sources tab
-		// has no filter for a daily count of unattributed events.
+		// The chart tile doesn't appear either, because unattributed events
+		// have no per-source filter to count them by day.
 		expect(
 			queryByText( 'Total sales in the last 28 days' )
 		).not.toBeInTheDocument();

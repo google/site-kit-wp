@@ -201,10 +201,8 @@ function commonSetup( registry: WPDataRegistry ) {
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ discoveryOptions ] );
 
-	// Add the chart tile's report for both sets of lead events these stories
-	// pass to `setDetectedEvents`, once with no tab filter and once per form
-	// tab, so the tile has a chart to draw. The `ZeroData` story replaces it
-	// with an empty report.
+	// Add the chart tile's report for both sets of lead events, once with no
+	// tab filter and once per form tab.
 	[
 		[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
 		[
@@ -1077,8 +1075,7 @@ ZeroData.args = {
 				options: engagementReportOptions,
 			} );
 
-		// An empty chart report makes the tile show its zero data message, so
-		// the story shows no data in every tile.
+		// An empty chart report makes the tile show its zero data message.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{ rows: [] },
 			{

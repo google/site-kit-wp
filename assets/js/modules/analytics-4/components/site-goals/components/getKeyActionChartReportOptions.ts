@@ -24,13 +24,13 @@ import { getDimensionFiltersForEvents } from '@/js/modules/analytics-4/component
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 
 export interface KeyActionChartReportArgs {
-	/** The selected date range. The report returns one row for each day in it. */
+	/** The selected date range. The report counts the events in it by day. */
 	dates: Pick< ReportOptions, 'startDate' | 'endDate' >;
 	/** The Key action's event names, counted together. */
 	eventNames: string[];
 	/** The widget's goal. The report ID ends with it. */
 	goalType: GoalType;
-	/** The selected breakdown tab's filter. Absent on the aggregated view. */
+	/** The selected breakdown tab's filter. */
 	breakdownFilter?: Record< string, unknown >;
 }
 
@@ -43,7 +43,7 @@ export interface KeyActionChartReportArgs {
  * @param {Object} args                   The report inputs.
  * @param {Object} args.dates             The selected date range.
  * @param {Array}  args.eventNames        The Key action's event names, counted together.
- * @param {string} args.goalType          The widget's goal, which the report ID names.
+ * @param {string} args.goalType          The widget's goal. The report ID ends with it.
  * @param {Object} [args.breakdownFilter] The selected breakdown tab's filter.
  * @return {Object} The report options `getReport` takes.
  */

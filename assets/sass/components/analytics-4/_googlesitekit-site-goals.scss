@@ -269,8 +269,6 @@ $site-goals-tile-connector-offset: 3.5px;
 			}
 		}
 
-		// The design leaves 4px under the chart tile's title, and 6px under a
-		// title in a tile that shows a number.
 		&.googlesitekit-site-goals-tile--chart
 			.googlesitekit-site-goals-tile__header {
 			margin-bottom: 4px;
@@ -329,14 +327,8 @@ $site-goals-tile-connector-offset: 3.5px;
 		}
 
 		.googlesitekit-site-goals-tile__chart {
-			// `GoalTile` adds `googlesitekit-site-goals-tile__chart` to the same
-			// element as `googlesitekit-site-goals-tile__body`, a flex row. The
-			// chart tile renders one element there, and `display: block` lets it
-			// fill the width.
 			display: block;
 
-			// The design rounds the corners where the chart line's segments
-			// meet, and Google Charts has no option for that.
 			svg path {
 				stroke-linejoin: round;
 			}
