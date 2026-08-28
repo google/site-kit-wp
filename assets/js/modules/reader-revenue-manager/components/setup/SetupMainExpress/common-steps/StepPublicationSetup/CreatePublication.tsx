@@ -45,9 +45,9 @@ import useFormValue from '@/js/hooks/useFormValue';
 import {
 	ExpressSetupStepDetails,
 	ExpressSetupStepHeadline,
+	ExpressSetupStepLanguageSelect,
+	ExpressSetupStepRegionSelect,
 } from '@/js/modules/reader-revenue-manager/components/common';
-import PublicationSetupLanguageSelect from '@/js/modules/reader-revenue-manager/components/common/ExpressSetupLanguageSelect';
-import PublicationSetupRegionSelect from '@/js/modules/reader-revenue-manager/components/common/ExpressSetupRegionSelect';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	CREATE_PUBLICATION_FORM,
@@ -250,13 +250,13 @@ const CreatePublication: FC< CreatePublicationProps > = ( {
 						value={ displayName || '' }
 						outlined
 					/>
-					<PublicationSetupLanguageSelect
+					<ExpressSetupStepLanguageSelect
 						className="googlesitekit-rrm-express-setup-step__field"
 						id={ CREATE_PUBLICATION_FORM.LANGUAGE_CODE }
 						onChange={ setLanguageCode }
 						value={ languageCode }
 					/>
-					<PublicationSetupRegionSelect
+					<ExpressSetupStepRegionSelect
 						className="googlesitekit-rrm-express-setup-step__field"
 						id={ CREATE_PUBLICATION_FORM.REGION_CODE }
 						onChange={ setRegionCode }

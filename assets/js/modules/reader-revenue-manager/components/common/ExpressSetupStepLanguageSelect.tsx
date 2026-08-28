@@ -68,7 +68,7 @@ export function getOptions() {
 	);
 }
 
-const PublicationSetupLanguageSelect: FC< ExpressSetupSelectProps > = ( {
+const ExpressSetupStepLanguageSelect: FC< ExpressSetupSelectProps > = ( {
 	id,
 	onChange,
 	...props
@@ -104,4 +104,4 @@ const PublicationSetupLanguageSelect: FC< ExpressSetupSelectProps > = ( {
 	);
 };
 
-export default PublicationSetupLanguageSelect;
+export default ExpressSetupStepLanguageSelect;

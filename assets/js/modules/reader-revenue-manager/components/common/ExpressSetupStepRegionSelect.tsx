@@ -35,7 +35,7 @@ import { ExpressSetupSelectProps } from '@/js/modules/reader-revenue-manager/com
 import { regionCodeFormat } from '@/js/util';
 import { allCountries } from '@/js/util/countries-timezones';
 
-const PublicationSetupRegionSelect: FC< ExpressSetupSelectProps > = ( {
+const ExpressSetupStepRegionSelect: FC< ExpressSetupSelectProps > = ( {
 	id,
 	onChange,
 	...props
@@ -69,4 +69,4 @@ const PublicationSetupRegionSelect: FC< ExpressSetupSelectProps > = ( {
 	);
 };
 
-export default PublicationSetupRegionSelect;
+export default ExpressSetupStepRegionSelect;
