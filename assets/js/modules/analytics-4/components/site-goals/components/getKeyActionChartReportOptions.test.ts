@@ -44,7 +44,7 @@ describe( 'getKeyActionChartReportOptions', () => {
 				},
 			},
 			orderby: [ { dimension: { dimensionName: 'date' } } ],
-			reportID: `analytics-4_site-goals_key-action-over-time_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID: 'analytics-4_site-goals_key-action-over-time_ecommerce',
 		} );
 	} );
 
@@ -87,8 +87,6 @@ describe( 'getKeyActionChartReportOptions', () => {
 				eventNames: [ 'submit_lead_form' ],
 				goalType: GOAL_TYPES.LEAD,
 			} ).reportID
-		).toBe(
-			`analytics-4_site-goals_key-action-over-time_${ GOAL_TYPES.LEAD }`
-		);
+		).toBe( 'analytics-4_site-goals_key-action-over-time_lead' );
 	} );
 } );

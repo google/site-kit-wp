@@ -75,9 +75,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 
 	const PROVIDER_DIMENSION = 'customEvent:googlesitekit_event_provider';
 
-	/** The provider slugs the tabbed breakdown tests show as tabs. */
-	const PROVIDER_VALUES = [ 'woocommerce', 'easy-digital-downloads' ];
-
 	function buildPrimaryEventReportOptions(
 		dates: Record< string, unknown >,
 		primaryEvent: string,
@@ -136,9 +133,9 @@ describe( 'OnlineStorePerformanceWidget', () => {
 	function receiveKeyActionChartReports() {
 		const breakdownFilters: Record< string, unknown >[] = [
 			{},
-			...PROVIDER_VALUES.map( ( provider ) => ( {
-				[ PROVIDER_DIMENSION ]: provider,
-			} ) ),
+			...[ 'woocommerce', 'easy-digital-downloads' ].map(
+				( provider ) => ( { [ PROVIDER_DIMENSION ]: provider } )
+			),
 		];
 
 		[
@@ -1791,7 +1788,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 		seedBreakdown( {
-			providerValues: PROVIDER_VALUES,
+			providerValues: [ 'woocommerce', 'easy-digital-downloads' ],
 		} );
 		// The first provider tab is active by default.
 		seedTabbedReports( { [ PROVIDER_DIMENSION ]: 'woocommerce' } );
@@ -1960,7 +1957,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 		seedBreakdown( {
-			providerValues: PROVIDER_VALUES,
+			providerValues: [ 'woocommerce', 'easy-digital-downloads' ],
 		} );
 		seedTabbedReports( { [ PROVIDER_DIMENSION ]: 'woocommerce' } );
 		seedTabbedReports( {

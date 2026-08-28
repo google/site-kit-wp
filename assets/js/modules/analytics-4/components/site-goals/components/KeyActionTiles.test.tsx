@@ -93,10 +93,12 @@ describe( 'KeyActionTiles', () => {
 
 		expect( mockKeyActionChartTile ).toHaveBeenCalledWith(
 			expect.objectContaining( {
-				dates: props.dates,
-				eventNames: props.eventNames,
-				goalType: props.goalType,
-				breakdownFilter: props.breakdownFilter,
+				dates: { startDate: '2020-08-11', endDate: '2020-09-07' },
+				eventNames: [ 'purchase' ],
+				goalType: 'ecommerce',
+				breakdownFilter: {
+					'customEvent:googlesitekit_event_provider': 'woocommerce',
+				},
 			} )
 		);
 	} );

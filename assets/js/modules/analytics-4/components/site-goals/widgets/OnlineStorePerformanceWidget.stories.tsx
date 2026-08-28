@@ -234,9 +234,9 @@ function commonSetup( registry: WPDataRegistry ) {
 	].forEach( ( eventName ) => {
 		[
 			{},
-			...PROVIDER_VALUES.map( ( provider ) => ( {
-				[ PROVIDER_DIMENSION ]: provider,
-			} ) ),
+			...[ 'woocommerce', 'easy-digital-downloads' ].map(
+				( provider ) => ( { [ PROVIDER_DIMENSION ]: provider } )
+			),
 		].forEach( ( breakdownFilter ) => {
 			provideAnalytics4MockReport(
 				registry,
@@ -642,9 +642,6 @@ function seedGoalDriverReports(
 
 const PROVIDER_DIMENSION = 'customEvent:googlesitekit_event_provider';
 
-/** The provider slugs the tabbed breakdown stories show as tabs. */
-const PROVIDER_VALUES = [ 'woocommerce', 'easy-digital-downloads' ];
-
 // A metrics-only compare report whose totals carry one row per date range.
 function buildTotals( count: number ) {
 	return {
@@ -667,7 +664,7 @@ function buildTotals( count: number ) {
 function seedTabbedBreakdown(
 	registry: WPDataRegistry,
 	{
-		providerValues = PROVIDER_VALUES,
+		providerValues = [ 'woocommerce', 'easy-digital-downloads' ],
 		availabilityDate = 20200101,
 		unattributedCount = 0,
 	}: {

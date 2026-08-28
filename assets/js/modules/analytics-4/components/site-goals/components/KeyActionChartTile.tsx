@@ -25,6 +25,7 @@ import { FC } from 'react';
  * WordPress dependencies
  */
 import { useMemo } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -55,13 +56,14 @@ const CHART_HEIGHT = 48;
 const CHART_TOP_PADDING = 4;
 
 /**
- * `CHART_OPTIONS` hides the legend and the tooltip, so nothing shows these
- * labels. They need no translation.
+ * The header row for `GoogleChart`. The first column is the date. The next two
+ * are counts, and both use the same label. The area and the line read the same
+ * numbers.
  */
 const CHART_COLUMNS = [
-	{ type: 'date', label: 'Day' },
-	{ type: 'number', label: 'Events' },
-	{ type: 'number', label: 'Events' },
+	{ type: 'date', label: __( 'Day', 'google-site-kit' ) },
+	{ type: 'number', label: __( 'Events', 'google-site-kit' ) },
+	{ type: 'number', label: __( 'Events', 'google-site-kit' ) },
 ];
 
 const CHART_OPTIONS = {
@@ -132,12 +134,16 @@ const KeyActionChartTile: FC< KeyActionChartTileProps > = ( {
 		[ reportOptions ]
 	) as Report | undefined;
 
-	const [ loading, error ] = useSelect(
-		( select: Select ) => [
+	const loading = useSelect(
+		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).areReportsLoading( reportOptions ),
+		[ report, reportOptions ]
+	);
+
+	const error = useSelect(
+		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getFirstReportError( reportOptions ),
-		],
-		[ reportOptions ]
+		[ report, reportOptions ]
 	);
 
 	const dataPoints = ( report?.rows ?? [] ).map(
@@ -151,10 +157,10 @@ const KeyActionChartTile: FC< KeyActionChartTileProps > = ( {
 
 	const hasEvents = dataPoints.some( ( { count } ) => count > 0 );
 
-	/**
-	 * `CHART_OPTIONS` draws the area and the line as two series, so every row
-	 * holds its count twice.
-	 */
+	// This is what `GoogleChart` reads as `data`. `CHART_COLUMNS` is the header
+	// row. Each day then gets one row: `[ date, count, count ]`. The count goes
+	// in twice, because the area and the line are two series. The area reads
+	// the first count. The line reads the second.
 	const chartData = [
 		CHART_COLUMNS,
 		...dataPoints.map( ( { date, count } ) => [ date, count, count ] ),

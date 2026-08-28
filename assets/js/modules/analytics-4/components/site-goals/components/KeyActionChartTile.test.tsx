@@ -75,10 +75,6 @@ const REPORT_ENDPOINT = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/report'
 );
 
-const WOOCOMMERCE_FILTER = {
-	'customEvent:googlesitekit_event_provider': 'woocommerce',
-};
-
 /**
  * Builds the report options the tile asks for.
  *
@@ -213,61 +209,62 @@ describe( 'KeyActionChartTile', () => {
 		] );
 	} );
 
-	const chartCases: Array< {
-		name: string;
-		inputs: ChartInputs;
-		counts: string[];
-		points: Array< [ Date, number, number ] >;
-	} > = [
-		{
-			name: 'one point for every day the report returns',
-			inputs: {},
-			counts: [ '4', '9', '0' ],
-			points: [
-				[ new Date( 2020, 7, 11 ), 4, 4 ],
-				[ new Date( 2020, 7, 12 ), 9, 9 ],
-				[ new Date( 2020, 7, 13 ), 0, 0 ],
-			],
-		},
-		{
-			name: 'the daily counts of a Key action with more than one event name',
-			inputs: {
-				eventNames: [ 'submit_lead_form', 'contact' ],
-				goalType: GOAL_TYPES.LEAD,
+	it( 'draws one point for every day the report returns', async () => {
+		receiveChartReport( buildChartReportOptions(), {
+			rows: buildDailyReportRows( [ '4', '9', '0' ] ),
+		} );
+
+		renderChartTile();
+
+		const { data } = await getLastChartProps();
+
+		expect( data.slice( 1 ) ).toEqual( [
+			[ new Date( 2020, 7, 11 ), 4, 4 ],
+			[ new Date( 2020, 7, 12 ), 9, 9 ],
+			[ new Date( 2020, 7, 13 ), 0, 0 ],
+		] );
+	} );
+
+	it( 'draws the daily counts of a Key action with more than one event name', async () => {
+		const inputs = {
+			eventNames: [ 'submit_lead_form', 'contact' ],
+			goalType: GOAL_TYPES.LEAD,
+		};
+
+		receiveChartReport( buildChartReportOptions( inputs ), {
+			rows: buildDailyReportRows( [ '6', '2' ] ),
+		} );
+
+		renderChartTile( inputs );
+
+		const { data } = await getLastChartProps();
+
+		expect( data.slice( 1 ) ).toEqual( [
+			[ new Date( 2020, 7, 11 ), 6, 6 ],
+			[ new Date( 2020, 7, 12 ), 2, 2 ],
+		] );
+	} );
+
+	it( "draws only the selected breakdown tab's counts", async () => {
+		const inputs = {
+			breakdownFilter: {
+				'customEvent:googlesitekit_event_provider': 'woocommerce',
 			},
-			counts: [ '6', '2' ],
-			points: [
-				[ new Date( 2020, 7, 11 ), 6, 6 ],
-				[ new Date( 2020, 7, 12 ), 2, 2 ],
-			],
-		},
-		{
-			name: "only the selected breakdown tab's counts",
-			inputs: { breakdownFilter: WOOCOMMERCE_FILTER },
-			counts: [ '7', '3' ],
-			points: [
-				[ new Date( 2020, 7, 11 ), 7, 7 ],
-				[ new Date( 2020, 7, 12 ), 3, 3 ],
-			],
-		},
-	];
+		};
 
-	it.each( chartCases )(
-		'draws $name',
-		async ( { inputs, counts, points } ) => {
-			receiveChartReport( buildChartReportOptions( inputs ), {
-				rows: buildDailyReportRows( counts ),
-			} );
+		receiveChartReport( buildChartReportOptions( inputs ), {
+			rows: buildDailyReportRows( [ '7', '3' ] ),
+		} );
 
-			renderChartTile( inputs );
+		renderChartTile( inputs );
 
-			const { data } = await getLastChartProps();
+		const { data } = await getLastChartProps();
 
-			// Every row holds its count twice, once for the area and once for
-			// the line.
-			expect( data.slice( 1 ) ).toEqual( points );
-		}
-	);
+		expect( data.slice( 1 ) ).toEqual( [
+			[ new Date( 2020, 7, 11 ), 7, 7 ],
+			[ new Date( 2020, 7, 12 ), 3, 3 ],
+		] );
+	} );
 
 	it( 'shows a loading placeholder, not the zero data message, on the first render', () => {
 		// The frozen fetch leaves the report unresolved.

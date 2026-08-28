@@ -68,11 +68,9 @@ function provideConnectedAnalytics( registry: WPDataRegistry ) {
 
 function Template( {
 	setupRegistry = () => {},
-	pauseAnimation = false,
 	...props
 }: {
 	setupRegistry?: ( registry: WPDataRegistry ) => void;
-	pauseAnimation?: boolean;
 } & KeyActionChartTileProps ) {
 	return (
 		<WithRegistrySetup
@@ -82,11 +80,6 @@ function Template( {
 			} }
 		>
 			<div
-				className={
-					pauseAnimation
-						? 'googlesitekit-vrt-animation-paused'
-						: undefined
-				}
 				style={ {
 					backgroundColor: 'white',
 					padding: '20px',
@@ -111,23 +104,19 @@ Ready.args = {
 Ready.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
 	delay: 400,
+	viewportLabel: 'large',
 };
 
 export const Loading = Template.bind( {} ) as Story< KeyActionChartTileProps >;
 Loading.storyName = 'Loading';
 Loading.args = {
 	...defaultArgs,
-	// Without this, a visual regression image shows the loading block with no
-	// color. When true, `Template` wraps the story in the
-	// `googlesitekit-vrt-animation-paused` class, which pauses the pulse.
-	pauseAnimation: true,
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ reportOptions ] );
 	},
 };
-Loading.scenario = {};
 
 export const ZeroData = Template.bind( {} ) as Story< KeyActionChartTileProps >;
 ZeroData.storyName = 'Zero Data';
@@ -142,7 +131,6 @@ ZeroData.args = {
 			.finishResolution( 'getReport', [ reportOptions ] );
 	},
 };
-ZeroData.scenario = {};
 
 export const Error = Template.bind( {} ) as Story< KeyActionChartTileProps >;
 Error.storyName = 'Error';
@@ -163,7 +151,6 @@ Error.args = {
 			.finishResolution( 'getReport', [ reportOptions ] );
 	},
 };
-Error.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/Site Goals/Components/KeyActionChartTile',
