@@ -44,7 +44,7 @@ const tileStyles = createPDFStyles( {
 		marginBottom: 1,
 	},
 	titleAboveSmallValue: {
-		marginBottom: 2.3,
+		marginBottom: 4.43,
 	},
 	aside: {
 		flexDirection: 'column',
@@ -56,7 +56,7 @@ const tileStyles = createPDFStyles( {
 	},
 	subtitle: {
 		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
-		marginTop: 4.6,
+		marginTop: 1.76,
 	},
 } );
 

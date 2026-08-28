@@ -86,7 +86,7 @@ describe( 'SiteGoalsTileConnectorPDF', () => {
 	it( 'sets the gap above and below the divider line', () => {
 		const column = renderConnectorColumnStyle();
 
-		expect( column.marginVertical ).toBe( scalePDFValue( 14 ) );
+		expect( column.marginVertical ).toBe( scalePDFValue( 12.4 ) );
 	} );
 
 	it( 'draws the dot and both line segments in one color', () => {
