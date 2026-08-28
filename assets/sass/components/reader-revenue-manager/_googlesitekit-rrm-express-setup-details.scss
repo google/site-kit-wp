@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager express setup publication step.
+ * Reader Revenue Manager express setup details component styles.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -16,18 +16,23 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
+.googlesitekit-rrm-express-setup-details {
+	display: grid;
+	gap: 10px;
+	grid-column: 1 / -1;
+	margin-block: 0;
+}
 
-export default function StepPublicationSetup() {
-	return (
-		<p>
-			{ __(
-				'RRM express setup placeholder: publication setup step.',
-				'google-site-kit'
-			) }
-		</p>
-	);
+.googlesitekit-rrm-express-setup-details__item {
+	display: grid;
+	gap: 4px;
+	padding-block-end: 8px;
+}
+
+.googlesitekit-rrm-express-setup-details__term {
+	color: $c-surfaces-on-surface-variant;
+}
+
+.googlesitekit-rrm-express-setup-details__description {
+	margin: 0;
 }

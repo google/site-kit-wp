@@ -60,6 +60,9 @@ describe( 'TopAuthorsGoalDriver', () => {
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAdvancedDataBreakdownsSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID: '12345',
@@ -124,6 +127,9 @@ describe( 'TopAuthorsGoalDriver', () => {
 			},
 		] );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAdvancedDataBreakdownsSettings( {} );
 		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
 			widgetSlugs: [],
 			isWidgetHidden: false,

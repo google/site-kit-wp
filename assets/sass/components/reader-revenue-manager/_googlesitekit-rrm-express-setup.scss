@@ -57,6 +57,7 @@
 	.googlesitekit-rrm-express-setup__content {
 		background-color: $c-surfaces-surface;
         min-height: calc( 100vh - 252px ); // 46px admin bar + 72px header + 50px stepper + 84px footer.
+		padding-inline: $grid-gap-phone;
 
         @media (min-width: $bp-wpAdminBarTablet) {
             min-height: calc( 100vh - 238px ); // 32px admin bar + 72px header + 50px stepper + 84px footer.
@@ -65,6 +66,7 @@
         @media (min-width: $bp-nonTablet) {
             grid-column: 2;
 			min-height: calc(100vh - 120px); // 32px admin bar + 88px header.
+			padding: $grid-gap-desktop calc( $grid-gap-desktop * 2 );
         }
 	}
 

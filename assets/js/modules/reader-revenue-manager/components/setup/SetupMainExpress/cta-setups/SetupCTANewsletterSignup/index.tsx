@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import type { FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -29,7 +29,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import useQueryArg from '@/js/hooks/useQueryArg';
 import {
 	StepPublicationPolicies,
 	StepPublicationSetup,
@@ -38,39 +37,36 @@ import {
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
 import ExpressSetupLayout from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupLayout';
 import ExpressSetupSteps from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupSteps';
+import { useStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import StepSignupForm from './StepSignupForm';
 
 const SetupCTANewsletterSignup: FC = () => {
-	const [ step, setStep ] = useQueryArg( 'step' );
+	const [ step, setStep ] = useStep();
 
-	const stepConfig: Record<
-		string,
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		{ Component: FC< any >; nextStep?: string }
-	> = {
-		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: {
-			Component: StepPublicationSetup,
-			nextStep: EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE,
-		},
-		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: {
-			Component: StepTermsOfService,
-			nextStep: EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES,
-		},
-		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: {
-			Component: StepPublicationPolicies,
-			nextStep: EXPRESS_SETUP_STEPS.SETUP_CTA,
-		},
-		[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: {
-			Component: StepSignupForm,
-			nextStep: EXPRESS_SETUP_STEPS.SETUP_COMPLETE,
-		},
-		[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: {
-			Component: StepSetupComplete,
-		},
+	const stepContent: Record< string, ReactNode > = {
+		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: (
+			<StepPublicationSetup
+				connectDescription={ __(
+					'To set up a newsletter sign-up form using Reader Revenue Manager, connect your publication or create a new one.',
+					'google-site-kit'
+				) }
+				onComplete={ ( hasAcceptedTerms: boolean ) =>
+					setStep(
+						hasAcceptedTerms
+							? EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES
+							: EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE
+					)
+				}
+			/>
+		),
+		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: <StepTermsOfService />,
+		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: (
+			<StepPublicationPolicies onSetStep={ () => {} } />
+		),
+		[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: <StepSignupForm />,
+		[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: <StepSetupComplete />,
 	};
-
-	const { Component, nextStep } = step ? stepConfig[ step ] ?? {} : {};
 
 	return (
 		<ExpressSetupLayout
@@ -86,9 +82,7 @@ const SetupCTANewsletterSignup: FC = () => {
 				/>
 			}
 		>
-			{ Component && (
-				<Component onSetStep={ setStep } nextStep={ nextStep } />
-			) }
+			{ step ? stepContent[ step ] : null }
 		</ExpressSetupLayout>
 	);
 };
