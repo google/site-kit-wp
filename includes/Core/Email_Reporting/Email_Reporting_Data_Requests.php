@@ -426,8 +426,13 @@ class Email_Reporting_Data_Requests {
 
 			// Admin not in shared roles; preserves the authenticated-admin-with-
 			// own-Google path: preflight with the recipient's own tokens and only
-			// include the module if they personally have access.
-			if ( user_can( $user, Permissions::MANAGE_OPTIONS ) ) {
+			// include the module if their Google Account has access
+			// to this property.
+			// This is why we use AUTHENTICATE (not MANAGE_OPTIONS):
+			// MANAGE_OPTIONS also requires completed site
+			// verification/setup. AUTHENTICATE is present as long as the
+			// user can access this property.
+			if ( user_can( $user, Permissions::AUTHENTICATE ) ) {
 				if ( $module instanceof Module_With_Service_Entity ) {
 					$access = $module->check_service_entity_access();
 
