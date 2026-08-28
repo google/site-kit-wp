@@ -80,7 +80,7 @@ const PublicationSetupLanguageSelect: FC<
 	const options = useMemo( () => getOptions(), [] );
 
 	const onEnhancedChange = useCallback(
-		( value, item ) => {
+		( _value, item ) => {
 			onChange( item.dataset.value );
 		},
 		[ onChange ]
