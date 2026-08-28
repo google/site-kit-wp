@@ -71,7 +71,7 @@ const ConnectPublication: FC = () => {
 	const { findMatchedPublication, selectPublication, submitChanges } =
 		useDispatch( MODULES_READER_REVENUE_MANAGER );
 
-	const [ cta ] = useQueryArg( 'cta', 'default' );
+	const [ cta ] = useQueryArg( 'cta' );
 
 	const canSubmitChanges = useSelect(
 		( select: Select ) =>
