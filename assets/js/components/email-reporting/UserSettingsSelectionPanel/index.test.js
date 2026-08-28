@@ -354,6 +354,30 @@ describe( 'UserSettingsSelectionPanel', () => {
 		expect( saveSpy.mock.calls[ 0 ] ).toHaveLength( 0 );
 	} );
 
+	it( 'enables the "Update Settings" button when the user clicks another frequency card', async () => {
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: true,
+			frequency: 'monthly',
+		} );
+
+		const { getByRole } = render( <UserSettingsSelectionPanel />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		expect(
+			getByRole( 'button', { name: 'Update Settings' } )
+		).toBeDisabled();
+
+		fireEvent.click( getByRole( 'radio', { name: 'Weekly' } ) );
+
+		await waitFor( () =>
+			expect(
+				getByRole( 'button', { name: 'Update Settings' } )
+			).toBeEnabled()
+		);
+	} );
+
 	it( 'closes the panel when clicking "Go to settings" in report error notice', async () => {
 		jest.useFakeTimers();
 
