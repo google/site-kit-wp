@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
 import Stepper from '@/js/components/Stepper';
 import Step from '@/js/components/Stepper/Step';
 import useFormValue from '@/js/hooks/useFormValue';
-import useQueryArg from '@/js/hooks/useQueryArg';
+import { useStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import {
 	EXPRESS_SETUP_STEPS,
 	READER_REVENUE_MANAGER_SETUP_FORM,
@@ -51,7 +51,7 @@ const ExpressSetupSteps: FC< ExpressSetupStepsProps > = ( {
 		SHOW_PUBLICATION_CREATE
 	);
 
-	const [ step ] = useQueryArg( 'step' );
+	const [ step ] = useStep();
 
 	const steps = {
 		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: showPublicationCreate
