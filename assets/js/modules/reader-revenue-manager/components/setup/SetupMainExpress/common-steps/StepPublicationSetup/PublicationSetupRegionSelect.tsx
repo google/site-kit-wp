@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager connect publication component.
+ * Reader Revenue Manager region select component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
