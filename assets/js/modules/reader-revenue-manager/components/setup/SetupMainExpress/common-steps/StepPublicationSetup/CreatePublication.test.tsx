@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager connect publication component tests.
+ * Reader Revenue Manager create publication component tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
