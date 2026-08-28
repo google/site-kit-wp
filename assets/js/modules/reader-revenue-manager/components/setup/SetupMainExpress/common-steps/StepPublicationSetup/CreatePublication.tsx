@@ -93,7 +93,7 @@ const CreatePublication: FC = () => {
 		submitChanges,
 	} = useDispatch( MODULES_READER_REVENUE_MANAGER );
 
-	const [ cta ] = useQueryArg( 'cta', 'default' );
+	const [ cta ] = useQueryArg( 'cta' );
 
 	const [ languageCode = defaultLanguageCode, setLanguageCode ] =
 		useFormValue< string >(
