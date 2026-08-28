@@ -19,10 +19,17 @@
 type SiteKitGlobal = typeof global._googlesitekit;
 
 const mockInitializeVimeo = jest.fn();
+const mockInitializePagination = jest.fn();
 
 jest.mock( './content-events/vimeo', () => ( {
 	__esModule: true,
 	initializeVimeo: ( ...args: unknown[] ) => mockInitializeVimeo( ...args ),
+} ) );
+
+jest.mock( './content-events/pagination', () => ( {
+	__esModule: true,
+	initializePagination: ( ...args: unknown[] ) =>
+		mockInitializePagination( ...args ),
 } ) );
 
 function deleteSiteKitGlobal() {
@@ -40,6 +47,7 @@ describe( 'content-events', () => {
 		jest.resetModules();
 		mockInitializeVimeo.mockReset();
 		mockInitializeVimeo.mockResolvedValue( undefined );
+		mockInitializePagination.mockReset();
 	} );
 
 	afterEach( () => {
@@ -115,5 +123,43 @@ describe( 'content-events', () => {
 			isSinglePost: true,
 			hasVimeoEmbed: true,
 		} );
+	} );
+
+	it( 'should invoke the pagination initializer with the resolved config on import', async () => {
+		global._googlesitekit = {
+			contentEvents: {
+				postID: 42,
+				isSinglePost: true,
+				hasVimeoEmbed: false,
+			},
+		};
+
+		await import( './content-events' );
+
+		expect( mockInitializePagination ).toHaveBeenCalledWith( {
+			postID: 42,
+			isSinglePost: true,
+			hasVimeoEmbed: false,
+		} );
+	} );
+
+	it( 'should not let a throw from the pagination initializer propagate out of the module', async () => {
+		// Mock console.error since this test intentionally triggers it.
+		const consoleErrorSpy = jest
+			.spyOn( console, 'error' )
+			.mockImplementation( () => {} );
+
+		mockInitializePagination.mockImplementation( () => {
+			throw new Error( 'boom' );
+		} );
+
+		await expect( import( './content-events' ) ).resolves.toBeDefined();
+
+		expect( consoleErrorSpy ).toHaveBeenCalledWith(
+			'Site Kit: failed to initialize pagination click tracking.',
+			expect.any( Error )
+		);
+
+		consoleErrorSpy.mockRestore();
 	} );
 } );

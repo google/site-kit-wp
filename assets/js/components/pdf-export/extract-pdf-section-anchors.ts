@@ -63,7 +63,7 @@ function walk(
  * itself is guarded by `measurePDFContentHeight`, which runs on the same
  * layout first.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param layout The value passed to the `Document` `onRender` callback.
  * @return The section anchors in document order.

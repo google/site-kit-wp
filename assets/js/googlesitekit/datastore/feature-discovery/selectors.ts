@@ -47,7 +47,7 @@ export const selectors = {
 	/**
 	 * Gets every registered feature, in registration order.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Array.<Object>} Registered features.
@@ -59,7 +59,7 @@ export const selectors = {
 	/**
 	 * Gets a single registered feature by its slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Feature's slug.
@@ -74,7 +74,7 @@ export const selectors = {
 	/**
 	 * Gets the goal categories, in their fixed, curated order.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return {Array.<Object>} Categories, each with its `slug` and `title`.
 	 */
@@ -121,7 +121,7 @@ export const selectors = {
 	 *
 	 * Always `true` for a feature with no `prerequisiteModules`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Feature's slug.
@@ -166,7 +166,7 @@ export const selectors = {
 	 * Uses the setup descriptor's `isEnabled` check where it provides one, and
 	 * otherwise whether the module the feature sets up is connected.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Feature's slug.
@@ -211,7 +211,7 @@ export const selectors = {
 	 * A feature is available while it is not set up, its prerequisite modules
 	 * are connected, and its own `checkRequirements()` passes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return {Array.<Object>} Available features, in registration order.
 	 */
@@ -251,7 +251,7 @@ export const selectors = {
 	 *
 	 * Features are listed under their primary goal category only.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} state    Data store's state.
 	 * @param {string} category Goal category slug.

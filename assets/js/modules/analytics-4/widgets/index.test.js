@@ -26,14 +26,22 @@ import {
 	registerWidgets as registerDefaultWidgets,
 } from '@/js/googlesitekit/widgets';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
-import { AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
+import {
+	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+	AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY,
+	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+} from '@/js/googlesitekit/widgets/default-areas';
 import { AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationBackNotice';
 import getLeadGenerationPerformancePDFData from '@/js/modules/analytics-4/components/site-goals/widgets/getLeadGenerationPerformancePDFData';
 import getOnlineStorePerformancePDFData from '@/js/modules/analytics-4/components/site-goals/widgets/getOnlineStorePerformancePDFData';
 import LeadGenerationPerformanceWidgetPDF from '@/js/modules/analytics-4/components/site-goals/widgets/LeadGenerationPerformanceWidgetPDF';
 import OnlineStorePerformanceWidgetPDF from '@/js/modules/analytics-4/components/site-goals/widgets/OnlineStorePerformanceWidgetPDF';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	provideModules,
+} from '../../../../../tests/js/utils';
 import { registerWidgets } from './index';
 
 describe( 'Analytics 4 widget registrations', () => {
@@ -42,14 +50,83 @@ describe( 'Analytics 4 widget registrations', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		enabledFeatures.add( 'siteGoals' );
+		// The Site Goals settings resolver checks the module is connected
+		// before fetching, so the modules list has to be in place.
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
 		widgets = createWidgets( registry );
 		registerDefaultWidgets( widgets );
 	} );
 
 	afterEach( () => {
-		enabledFeatures.delete( 'siteGoals' );
 		enabledFeatures.delete( 'setupFlowRefresh' );
+		enabledFeatures.delete( 'trafficOverview' );
+	} );
+
+	describe( 'All Traffic widget', () => {
+		const ALL_TRAFFIC_WIDGET_SLUG = 'analyticsAllTrafficGA4';
+		const TRAFFIC_AREAS = [
+			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+		];
+
+		function getTrafficAreaSlugs( areaSlug ) {
+			return registry
+				.select( CORE_WIDGETS )
+				.getWidgets( areaSlug )
+				.map( ( widget ) => widget.slug );
+		}
+
+		it( 'should register the All Traffic widget when the "trafficOverview" feature flag is disabled', () => {
+			registerWidgets( widgets );
+
+			expect(
+				registry
+					.select( CORE_WIDGETS )
+					.getWidget( ALL_TRAFFIC_WIDGET_SLUG )
+			).not.toBeNull();
+
+			TRAFFIC_AREAS.forEach( ( areaSlug ) => {
+				expect( getTrafficAreaSlugs( areaSlug ) ).toContain(
+					ALL_TRAFFIC_WIDGET_SLUG
+				);
+			} );
+		} );
+
+		it( 'should not register the All Traffic widget when the "trafficOverview" feature flag is enabled', () => {
+			enabledFeatures.add( 'trafficOverview' );
+
+			registerWidgets( widgets );
+
+			expect(
+				registry
+					.select( CORE_WIDGETS )
+					.getWidget( ALL_TRAFFIC_WIDGET_SLUG )
+			).toBeNull();
+
+			TRAFFIC_AREAS.forEach( ( areaSlug ) => {
+				expect( getTrafficAreaSlugs( areaSlug ) ).not.toContain(
+					ALL_TRAFFIC_WIDGET_SLUG
+				);
+			} );
+		} );
+
+		it( 'should not register any widget offering the "Site traffic over time" PDF section when trafficOverview is enabled', () => {
+			enabledFeatures.add( 'trafficOverview' );
+
+			registerWidgets( widgets );
+
+			const pdfLabels = Object.values(
+				registry.stores[ CORE_WIDGETS ].store.getState().widgets
+			).map( ( widget ) => widget.pdf?.label );
+
+			expect( pdfLabels ).not.toContain( 'Site traffic over time' );
+		} );
 	} );
 
 	describe( 'Audience Segmentation back notice widget', () => {

@@ -175,25 +175,30 @@ const LeadGenerationPerformanceWidgetPDF = lazyWithPreload( () =>
 
 export function registerWidgets( widgets ) {
 	// Register Analytics 4 Widgets.
-	widgets.registerWidget(
-		'analyticsAllTrafficGA4',
-		{
-			Component: DashboardAllTrafficWidgetGA4,
-			width: widgets.WIDGET_WIDTHS.FULL,
-			priority: 1,
-			wrapWidget: false,
-			modules: [ MODULE_SLUG_ANALYTICS_4 ],
-			pdf: {
-				Component: DashboardAllTrafficWidgetGA4PDF,
-				getData: getAllTrafficPDFData,
-				label: __( 'Site traffic over time', 'google-site-kit' ),
+
+	// Only register the ("old") All Traffic widget when the new, "Traffic"
+	// widget feature is disabled.
+	if ( ! isFeatureEnabled( 'trafficOverview' ) ) {
+		widgets.registerWidget(
+			'analyticsAllTrafficGA4',
+			{
+				Component: DashboardAllTrafficWidgetGA4,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+				pdf: {
+					Component: DashboardAllTrafficWidgetGA4PDF,
+					getData: getAllTrafficPDFData,
+					label: __( 'Site traffic over time', 'google-site-kit' ),
+				},
 			},
-		},
-		[
-			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-		]
-	);
+			[
+				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+				AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+			]
+		);
+	}
 
 	if ( isFeatureEnabled( 'setupFlowRefresh' ) ) {
 		widgets.registerWidget(
@@ -870,54 +875,46 @@ export function registerWidgets( widgets ) {
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
 
-	/*
-	 * Site Goals widgets.
-	 *
-	 * Not registering these widgets when the feature flag is disabled will
-	 * ensure that the new Widget Area and Widget Context for Site Goals, including
-	 * the Navigation chip, will not be rendered when the feature is disabled.
-	 */
-	if ( isFeatureEnabled( 'siteGoals' ) ) {
-		widgets.registerWidget(
-			'analyticsOnlineStorePerformance',
-			{
-				Component: OnlineStorePerformanceWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 1,
-				wrapWidget: false,
-				modules: [ MODULE_SLUG_ANALYTICS_4 ],
-				isActive: ( select ) =>
-					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
-						GOAL_TYPES.ECOMMERCE
-					) === true,
-				pdf: {
-					Component: OnlineStorePerformanceWidgetPDF,
-					getData: getOnlineStorePerformancePDFData,
-					label: SITE_GOALS_ONLINE_STORE_WIDGET_TITLE,
-				},
+	// Site Goals widgets.
+	widgets.registerWidget(
+		'analyticsOnlineStorePerformance',
+		{
+			Component: OnlineStorePerformanceWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			isActive: ( select ) =>
+				select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+					GOAL_TYPES.ECOMMERCE
+				) === true,
+			pdf: {
+				Component: OnlineStorePerformanceWidgetPDF,
+				getData: getOnlineStorePerformancePDFData,
+				label: SITE_GOALS_ONLINE_STORE_WIDGET_TITLE,
 			},
-			[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
-		);
+		},
+		[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
+	);
 
-		widgets.registerWidget(
-			'analyticsLeadGenerationPerformance',
-			{
-				Component: LeadGenerationPerformanceWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 2,
-				wrapWidget: false,
-				modules: [ MODULE_SLUG_ANALYTICS_4 ],
-				isActive: ( select ) =>
-					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
-						GOAL_TYPES.LEAD
-					) === true,
-				pdf: {
-					Component: LeadGenerationPerformanceWidgetPDF,
-					getData: getLeadGenerationPerformancePDFData,
-					label: SITE_GOALS_LEAD_GENERATION_WIDGET_TITLE,
-				},
+	widgets.registerWidget(
+		'analyticsLeadGenerationPerformance',
+		{
+			Component: LeadGenerationPerformanceWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 2,
+			wrapWidget: false,
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			isActive: ( select ) =>
+				select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+					GOAL_TYPES.LEAD
+				) === true,
+			pdf: {
+				Component: LeadGenerationPerformanceWidgetPDF,
+				getData: getLeadGenerationPerformancePDFData,
+				label: SITE_GOALS_LEAD_GENERATION_WIDGET_TITLE,
 			},
-			[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
-		);
-	}
+		},
+		[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
+	);
 }

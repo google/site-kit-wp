@@ -44,7 +44,6 @@ import {
 	STRATEGY_DESKTOP,
 	STRATEGY_MOBILE,
 	UI_DATA_SOURCE,
-	UI_STRATEGY,
 } from '@/js/modules/pagespeed-insights/datastore/constants';
 import { trackEvent } from '@/js/util/tracking';
 import Content from './Content';
@@ -65,9 +64,9 @@ export default function DashboardPageSpeed() {
 	const referenceURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentReferenceURL()
 	);
-	const strategy =
-		useSelect( ( select ) => select( CORE_UI ).getValue( UI_STRATEGY ) ) ||
-		STRATEGY_MOBILE;
+	const strategy = useSelect( ( select ) =>
+		select( MODULES_PAGESPEED_INSIGHTS ).getActiveTab()
+	);
 	const selectedDataSrc = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( UI_DATA_SOURCE )
 	);
