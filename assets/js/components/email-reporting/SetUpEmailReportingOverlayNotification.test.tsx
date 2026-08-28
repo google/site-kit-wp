@@ -24,12 +24,12 @@ import { waitFor } from '@testing-library/react';
 /**
  * Internal dependencies
  */
-import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import Notifications from '@/js/components/notifications/Notifications';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import type { Registry } from '@/js/googlesitekit/data/types';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -40,7 +40,6 @@ import {
 } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
@@ -50,8 +49,11 @@ import {
 	provideUserAuthentication,
 	render,
 } from '@tests/js/test-utils';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from './constants';
-import SetUpEmailReportingOverlayNotification, {
+import {
+	MANAGE_EMAIL_REPORTS_BUTTON_CLASS,
+	USER_SETTINGS_SELECTION_PANEL_OPENED_KEY,
+} from './constants';
+import {
 	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
 	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION_SETUP_CTA,
 } from './SetUpEmailReportingOverlayNotification';
@@ -63,12 +65,6 @@ const fetchGetDismissedItems = new RegExp(
 	'^/google-site-kit/v1/core/user/data/dismissed-items'
 );
 
-const mockShowTooltip = jest.fn();
-
-jest.mock( '@/js/components/AdminScreenTooltip', () => ( {
-	useShowTooltip: jest.fn( () => mockShowTooltip ),
-} ) );
-
 jest.mock( '@/js/hooks/useActivateModuleCallback', () =>
 	jest.fn( () => jest.fn() )
 );
@@ -76,19 +72,31 @@ jest.mock( '@/js/hooks/useActivateModuleCallback', () =>
 describe( 'SetUpEmailReportingOverlayNotification', () => {
 	const notification =
 		DEFAULT_NOTIFICATIONS[ SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION ];
-	const NotificationComponent = withNotificationComponentProps(
-		SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION
-	)( SetUpEmailReportingOverlayNotification );
 
 	afterEach( () => {
 		fetchMock.reset();
-		mockShowTooltip.mockClear();
-		useShowTooltip.mockClear();
 	} );
 
 	describe( 'checkRequirements', () => {
+		/**
+		 * Creates a registry whose dismissal state has already arrived, which
+		 * the setup CTA requirement waits on before it reads the header queue.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @return {Object} Test registry.
+		 */
+		function createRegistry(): Registry {
+			const registry = createTestRegistry() as Registry;
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+			return registry;
+		}
+
 		it( 'returns false when user is already subscribed', async () => {
-			const registry = createTestRegistry();
+			const registry = createRegistry();
 			registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 				enabled: true,
 			} );
@@ -96,16 +104,19 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 				subscribed: true,
 			} );
 
-			const result = await notification.checkRequirements( {
-				select: registry.select,
-				resolveSelect: registry.resolveSelect,
-			} );
+			const result = await notification.checkRequirements(
+				{
+					select: registry.select,
+					resolveSelect: registry.resolveSelect,
+				},
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
 
 			expect( result ).toBe( false );
 		} );
 
 		it( 'returns true when user is not subscribed (authenticated users always have access)', async () => {
-			const registry = createTestRegistry();
+			const registry = createRegistry();
 			registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 				enabled: true,
 			} );
@@ -113,16 +124,19 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 				subscribed: false,
 			} );
 
-			const result = await notification.checkRequirements( {
-				select: registry.select,
-				resolveSelect: registry.resolveSelect,
-			} );
+			const result = await notification.checkRequirements(
+				{
+					select: registry.select,
+					resolveSelect: registry.resolveSelect,
+				},
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
 
 			expect( result ).toBe( true );
 		} );
 
 		it( 'returns false when email reporting is disabled at site level', async () => {
-			const registry = createTestRegistry();
+			const registry = createRegistry();
 			registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 				enabled: false,
 			} );
@@ -130,10 +144,13 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 				subscribed: false,
 			} );
 
-			const result = await notification.checkRequirements( {
-				select: registry.select,
-				resolveSelect: registry.resolveSelect,
-			} );
+			const result = await notification.checkRequirements(
+				{
+					select: registry.select,
+					resolveSelect: registry.resolveSelect,
+				},
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
 
 			expect( result ).toBe( false );
 		} );
@@ -153,8 +170,8 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			];
 
 			function setupViewableModules(
-				registry,
-				viewableModuleSlugs = []
+				registry: Registry,
+				viewableModuleSlugs: string[] = []
 			) {
 				registry
 					.dispatch( CORE_MODULES )
@@ -173,7 +190,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			}
 
 			it( 'returns true when view-only user can view Analytics', async () => {
-				const registry = createTestRegistry();
+				const registry = createRegistry();
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetEmailReportingSettings( {
@@ -198,7 +215,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			} );
 
 			it( 'returns true when view-only user can view Search Console', async () => {
-				const registry = createTestRegistry();
+				const registry = createRegistry();
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetEmailReportingSettings( {
@@ -223,7 +240,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			} );
 
 			it( 'returns false when view-only user cannot view Analytics or Search Console', async () => {
-				const registry = createTestRegistry();
+				const registry = createRegistry();
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetEmailReportingSettings( {
@@ -250,7 +267,27 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 	} );
 
 	describe( 'rendering', () => {
-		let registry;
+		let registry: ReturnType< typeof createTestRegistry >;
+		let anchor: HTMLButtonElement | null = null;
+
+		function addHeaderIcon() {
+			anchor = document.createElement( 'button' );
+			anchor.className = MANAGE_EMAIL_REPORTS_BUTTON_CLASS;
+			document.body.appendChild( anchor );
+		}
+
+		function renderNotifications() {
+			return render(
+				<Notifications
+					areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+				/>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+		}
 
 		beforeEach( () => {
 			registry = createTestRegistry();
@@ -272,11 +309,68 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 				);
 		} );
 
-		it( 'dispatches dismissItem for the setup-cta flag when the Set up button is clicked', async () => {
+		afterEach( () => {
+			anchor?.remove();
+			anchor = null;
+		} );
+
+		it( 'anchors the overlay to the header icon when it is present', async () => {
+			mockSurveyEndpoints();
+			addHeaderIcon();
+
+			const { waitForRegistry } = renderNotifications();
+
+			await waitForRegistry();
+
+			await waitFor( () =>
+				expect(
+					document.querySelector(
+						'.googlesitekit-overlay-card--anchored'
+					)
+				).toBeInTheDocument()
+			);
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-popper--overlay-notification'
+				)
+			).toBeInTheDocument();
+		} );
+
+		it( 'renders a centered card when the header icon is absent', async () => {
+			mockSurveyEndpoints();
+
+			const { getByText, waitForRegistry } = renderNotifications();
+
+			await waitForRegistry();
+
+			expect(
+				getByText( 'Get site insights in your inbox' )
+			).toBeInTheDocument();
+			expect(
+				document.querySelector(
+					'.googlesitekit-overlay-card--anchored'
+				)
+			).toBeNull();
+		} );
+
+		it( 'labels the buttons "Try it" and "Got it"', async () => {
+			mockSurveyEndpoints();
+
+			const { getByRole, waitForRegistry } = renderNotifications();
+
+			await waitForRegistry();
+
+			expect(
+				getByRole( 'button', { name: /try it/i } )
+			).toBeInTheDocument();
+			expect(
+				getByRole( 'button', { name: /got it/i } )
+			).toBeInTheDocument();
+		} );
+
+		it( 'opens the setup panel and flags the CTA when "Try it" is clicked', async () => {
 			fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
-			// Mock the dismiss-item endpoint for BOTH the setup-cta
-			// slug (our new flag) and the notification's own slug
-			// (fired by dismissOnClick: true on the CTA button).
 			fetchMock.post( fetchDismissItem, {
 				body: [
 					SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
@@ -285,22 +379,19 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			} );
 			mockSurveyEndpoints();
 
-			const { getByRole, waitForRegistry } = render(
-				<Notifications
-					areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
-					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
-				/>,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				}
-			);
+			const { getByRole, waitForRegistry } = renderNotifications();
 
 			await waitForRegistry();
 
 			act( () => {
-				fireEvent.click( getByRole( 'button', { name: /set up/i } ) );
+				fireEvent.click( getByRole( 'button', { name: /try it/i } ) );
 			} );
+
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY )
+			).toBe( true );
 
 			await waitFor( () =>
 				expect( fetchMock ).toHaveFetched(
@@ -317,104 +408,54 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			);
 		} );
 
-		it( 'shows the tooltip when the dismiss button is clicked', async () => {
+		it( 'dismisses the notification without a follow-up tooltip when "Got it" is clicked', async () => {
 			fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
 			fetchMock.postOnce( fetchDismissItem, {
 				body: [ SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION ],
 			} );
 			mockSurveyEndpoints();
 
-			const { getByRole, waitForRegistry } = render(
-				<Notifications
-					areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
-					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
-				/>,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				}
-			);
+			const { getByRole, waitForRegistry } = renderNotifications();
 
 			await waitForRegistry();
 
 			act( () => {
-				fireEvent.click(
-					getByRole( 'button', { name: /maybe later/i } )
-				);
+				fireEvent.click( getByRole( 'button', { name: /got it/i } ) );
 			} );
 
 			await waitFor( () =>
-				expect( fetchMock ).toHaveFetched( fetchDismissItem )
+				expect( fetchMock ).toHaveFetched(
+					fetchDismissItem,
+					expect.objectContaining( {
+						body: {
+							data: {
+								slug: SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
+								expiration: 0,
+							},
+						},
+					} )
+				)
 			);
 
-			await waitFor( () =>
-				expect( mockShowTooltip ).toHaveBeenCalledTimes( 1 )
-			);
+			expect(
+				registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+			).toBeUndefined();
 		} );
 
-		it( 'anchors the tooltip to the header button that opens the panel', () => {
-			render( <NotificationComponent />, {
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			} );
+		it( 'does not render once dismissed', async () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
+				] );
 
-			expect( useShowTooltip ).toHaveBeenCalledWith(
-				expect.objectContaining( {
-					target: '.googlesitekit-manage-email-reports__button, .googlesitekit-features-menu__button',
-					title: expect.stringMatching(
-						/manage your email reports subscription/i
-					),
-				} )
-			);
-		} );
+			const { queryByText, waitForRegistry } = renderNotifications();
 
-		it( 'anchors the tooltip on mobile', () => {
-			render( <NotificationComponent />, {
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			} );
+			await waitForRegistry();
 
-			expect( useShowTooltip ).toHaveBeenCalledWith(
-				expect.objectContaining( {
-					isCenteredOnMobile: false,
-				} )
-			);
-		} );
-
-		it( 'dismisses the notification and shows the tooltip when the selection panel is closed', async () => {
-			fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
-			fetchMock.postOnce( fetchDismissItem, {
-				body: [ SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION ],
-			} );
-			mockSurveyEndpoints();
-
-			render( <NotificationComponent />, {
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			} );
-
-			act( () => {
-				registry
-					.dispatch( CORE_UI )
-					.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-			} );
-
-			act( () => {
-				registry
-					.dispatch( CORE_UI )
-					.setValue(
-						USER_SETTINGS_SELECTION_PANEL_OPENED_KEY,
-						false
-					);
-			} );
-
-			await waitFor( () =>
-				expect( fetchMock ).toHaveFetched( fetchDismissItem )
-			);
-
-			await waitFor( () =>
-				expect( mockShowTooltip ).toHaveBeenCalledTimes( 1 )
-			);
+			expect(
+				queryByText( 'Get site insights in your inbox' )
+			).not.toBeInTheDocument();
 		} );
 	} );
 } );

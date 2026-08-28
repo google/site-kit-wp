@@ -1,5 +1,5 @@
 /**
- * InviteUserSkeletonList component.
+ * UserListSkeleton component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -26,19 +26,19 @@ import PropTypes from 'prop-types';
  */
 import PreviewBlock from '@/js/components/PreviewBlock';
 
-export default function InviteUserSkeletonList( { visibleItems = 3 } ) {
+export default function UserListSkeleton( { visibleItems = 3 } ) {
 	return (
-		<div className="googlesitekit-invite-user-list">
+		<div className="googlesitekit-user-list">
 			{ Array.from( { length: visibleItems } ).map( ( _, index ) => (
 				<div
 					key={ index }
-					className="googlesitekit-invite-user-row googlesitekit-invite-user-row--loading"
+					className="googlesitekit-user-row googlesitekit-user-row--loading"
 				>
-					<div className="googlesitekit-invite-user-row__info">
+					<div className="googlesitekit-user-row__info">
 						<PreviewBlock width="120px" height="16px" />
 						<PreviewBlock width="180px" height="12px" />
 					</div>
-					<div className="googlesitekit-invite-user-row__action">
+					<div className="googlesitekit-user-row__action">
 						<PreviewBlock
 							width="90px"
 							height="32px"
@@ -51,6 +51,6 @@ export default function InviteUserSkeletonList( { visibleItems = 3 } ) {
 	);
 }
 
-InviteUserSkeletonList.propTypes = {
+UserListSkeleton.propTypes = {
 	visibleItems: PropTypes.number,
 };

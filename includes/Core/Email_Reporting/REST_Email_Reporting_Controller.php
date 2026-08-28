@@ -184,7 +184,6 @@ class REST_Email_Reporting_Controller {
 					$paths,
 					array(
 						'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting',
-						'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-eligible-subscribers',
 						'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-errors',
 					)
 				);
@@ -321,7 +320,8 @@ class REST_Email_Reporting_Controller {
 									'page'     => (int) $request['page'],
 									'per_page' => $per_page,
 									'search'   => (string) $request['search'],
-								)
+								),
+								get_current_user_id()
 							);
 
 							$total       = (int) $results['total'];
