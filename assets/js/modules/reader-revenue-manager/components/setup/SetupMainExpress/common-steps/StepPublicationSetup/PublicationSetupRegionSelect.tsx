@@ -45,7 +45,7 @@ const PublicationSetupRegionSelect: FC<
 	PublicationSetupRegionSelectProps
 > = ( { id, onChange, ...props } ) => {
 	const onEnhancedChange = useCallback(
-		( value, item ) => {
+		( _value, item ) => {
 			onChange( item.dataset.value );
 		},
 		[ onChange ]
