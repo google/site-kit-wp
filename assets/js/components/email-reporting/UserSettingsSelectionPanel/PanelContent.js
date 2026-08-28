@@ -24,15 +24,18 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { Tab, TabBar } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import FrequencySelector from '@/js/components/email-reporting/FrequencySelector';
 import InviteOthersToSubscribe from '@/js/components/email-reporting/InviteOthersToSubscribe';
+import SubscribedUsers from '@/js/components/email-reporting/SubscribedUsers';
 import SubscribeActions from '@/js/components/email-reporting/UserSettingsSelectionPanel/SubscribeActions';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import PreviewBlock from '@/js/components/PreviewBlock';
@@ -40,12 +43,19 @@ import { SelectionPanelContent } from '@/js/components/SelectionPanel';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import {
+	CORE_USER,
+	PERMISSION_MANAGE_OPTIONS,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import Header from './Header';
 import Notices from './Notices';
 import SelectionPanelFooter from './SelectionPanelFooter';
+
+const TAB_INVITE = 0;
+const TAB_SUBSCRIBED_USERS = 1;
 
 export default function PanelContent( {
 	notice,
@@ -63,6 +73,25 @@ export default function PanelContent( {
 	const isEmailReportingEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isEmailReportingEnabled()
 	);
+	const hasManageOptionsCapability = useSelect( ( select ) =>
+		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
+	);
+	const isSelectionPanelOpen = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY )
+	);
+
+	const [ activeSubscriberTab, setActiveSubscriberTab ] =
+		useState( TAB_INVITE );
+
+	// Reset to the default tab when the panel opens so a stale "Subscribed
+	// users" selection from a prior visit doesn't persist across reopens,
+	// matching the reset-on-reopen pattern each tab already applies to its
+	// own state.
+	useEffect( () => {
+		if ( isSelectionPanelOpen ) {
+			setActiveSubscriberTab( TAB_INVITE );
+		}
+	}, [ isSelectionPanelOpen ] );
 
 	// The following selectors are used to determine if the data is still loading,
 	// as these are used in child components within the panel.
@@ -131,9 +160,43 @@ export default function PanelContent( {
 					isLoading={ isLoading }
 				/>
 
-				{ isEmailReportingEnabled && ! isViewOnly && (
-					<InviteOthersToSubscribe />
-				) }
+				{ isEmailReportingEnabled &&
+					! isViewOnly &&
+					hasManageOptionsCapability && (
+						<div className="googlesitekit-subscriber-management">
+							<TabBar
+								activeIndex={ activeSubscriberTab }
+								handleActiveIndexUpdate={
+									setActiveSubscriberTab
+								}
+								className="googlesitekit-tab-bar__subscriber-management googlesitekit-tab-bar--start-aligned-high-contrast"
+							>
+								<Tab focusOnActivate={ false }>
+									<span className="mdc-tab__text-label">
+										{ __(
+											'Invite others to subscribe',
+											'google-site-kit'
+										) }
+									</span>
+								</Tab>
+								<Tab focusOnActivate={ false }>
+									<span className="mdc-tab__text-label">
+										{ __(
+											'Subscribed users',
+											'google-site-kit'
+										) }
+									</span>
+								</Tab>
+							</TabBar>
+
+							{ activeSubscriberTab === TAB_INVITE && (
+								<InviteOthersToSubscribe />
+							) }
+							{ activeSubscriberTab === TAB_SUBSCRIBED_USERS && (
+								<SubscribedUsers />
+							) }
+						</div>
+					) }
 			</SelectionPanelContent>
 
 			{ isEmailReportingEnabled && (
