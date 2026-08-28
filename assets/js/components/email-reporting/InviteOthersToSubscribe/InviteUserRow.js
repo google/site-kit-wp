@@ -72,7 +72,7 @@ export default function InviteUserRow( {
 	function renderAction() {
 		if ( inviteResult?.status === 'success' || user.invited ) {
 			return (
-				<span className="googlesitekit-invite-user-row__success">
+				<span className="googlesitekit-user-row__success">
 					{ __( 'Invitation sent', 'google-site-kit' ) }
 					<TickIcon width="14" height="14" />
 				</span>
@@ -81,7 +81,7 @@ export default function InviteUserRow( {
 
 		if ( inviteResult?.status === 'error' ) {
 			return (
-				<span className="googlesitekit-invite-user-row__error">
+				<span className="googlesitekit-user-row__error">
 					{ createInterpolateElement(
 						__(
 							'Failed to send invite. <RetryLink>Retry</RetryLink>',
@@ -118,19 +118,17 @@ export default function InviteUserRow( {
 	}
 
 	return (
-		<div className="googlesitekit-invite-user-row">
-			<div className="googlesitekit-invite-user-row__info">
-				<div className="googlesitekit-invite-user-row__name">
+		<div className="googlesitekit-user-row">
+			<div className="googlesitekit-user-row__info">
+				<div className="googlesitekit-user-row__name">
 					{ name }
-					<span className="googlesitekit-invite-user-row__role">
+					<span className="googlesitekit-user-row__role">
 						({ role })
 					</span>
 				</div>
-				<div className="googlesitekit-invite-user-row__email">
-					{ email }
-				</div>
+				<div className="googlesitekit-user-row__email">{ email }</div>
 			</div>
-			<div className="googlesitekit-invite-user-row__action">
+			<div className="googlesitekit-user-row__action">
 				{ renderAction() }
 			</div>
 		</div>
