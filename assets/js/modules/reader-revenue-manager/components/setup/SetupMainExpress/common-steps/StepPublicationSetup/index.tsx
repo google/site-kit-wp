@@ -60,6 +60,15 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 			SHOW_PUBLICATION_CREATE
 		);
 
+	const getPublicationsError: object | undefined = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getErrorForSelector(
+				'getPublications',
+				[]
+			),
+		[]
+	);
+
 	const hasResolvedPublications: boolean = useSelect(
 		( select: Select ) =>
 			select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
@@ -78,10 +87,15 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 	const hasNoPublications = hasResolvedPublications && ! publications?.length;
 
 	useEffect( () => {
-		if ( hasNoPublications ) {
+		if ( hasNoPublications && ! getPublicationsError ) {
 			setShowPublicationCreate( true );
 		}
-	}, [ hasNoPublications, showPublicationCreate, setShowPublicationCreate ] );
+	}, [
+		getPublicationsError,
+		hasNoPublications,
+		showPublicationCreate,
+		setShowPublicationCreate,
+	] );
 
 	if ( ! hasResolvedPublications ) {
 		return <ProgressBar />;
@@ -98,7 +112,7 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 				/>
 			) }
 
-			{ hasPublications ? (
+			{ hasPublications || getPublicationsError ? (
 				<P size={ SIZE_SMALL } type={ TYPE_LABEL }>
 					<Link
 						className="googlesitekit-rrm-express-setup-step__cta-link"

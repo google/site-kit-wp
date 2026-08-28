@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { withQuery } from '@storybook/addon-queryparams';
 import { ElementType, ReactNode } from 'react';
 
 /**
@@ -58,18 +57,30 @@ Loading.args = {
 };
 Loading.scenario = {};
 
+export const Error = Template.bind( {} ) as Story;
+Error.storyName = 'Error';
+Error.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setErrorForSelector(
+			{
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
+			'getPublications',
+			[]
+		);
+
+		providePublications( registry, [] );
+	},
+};
+Error.scenario = {};
+
 export const WithPublications = Template.bind( {} ) as Story;
 WithPublications.storyName = 'With Publications';
 WithPublications.args = {
 	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetPublications( publications );
-	},
-};
-WithPublications.parameters = {
-	query: {
-		cta: undefined,
+		providePublications( registry, publications );
 	},
 };
 WithPublications.scenario = {};
@@ -78,9 +89,7 @@ export const WithPublicationsWithError = Template.bind( {} ) as Story;
 WithPublicationsWithError.storyName = 'With Publications with Error';
 WithPublicationsWithError.args = {
 	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetPublications( publications );
+		providePublications( registry, publications );
 
 		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setErrorForAction(
 			{
@@ -93,18 +102,12 @@ WithPublicationsWithError.args = {
 		);
 	},
 };
-WithPublicationsWithError.parameters = {
-	query: {
-		cta: undefined,
-	},
-};
 WithPublicationsWithError.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMainExpress/StepPublicationSetup',
 	component: StepPublicationSetup,
 	decorators: [
-		withQuery,
 		( ( StoryComponent, { args } ) => {
 			function setupRegistry( registry: Registry ) {
 				const moduleData = [
@@ -118,7 +121,6 @@ export default {
 				provideSiteInfo( registry );
 				provideModules( registry, moduleData );
 				provideModuleRegistrations( registry, moduleData );
-				providePublications( registry, publications );
 
 				// Seed the settings required to enable the submit button.
 				registry

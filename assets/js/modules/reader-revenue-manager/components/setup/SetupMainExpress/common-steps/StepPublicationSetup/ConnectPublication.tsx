@@ -40,9 +40,11 @@ import DocumentationLink from '@/js/components/DocumentationLink';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
-import ExpressSetupStepDetails from '@/js/modules/reader-revenue-manager/components/common/ExpressSetupStepDetails';
-import ExpressSetupStepHeadline from '@/js/modules/reader-revenue-manager/components/common/ExpressSetupStepHeadline';
-import PublicationSelect from '@/js/modules/reader-revenue-manager/components/common/PublicationSelect';
+import {
+	ExpressSetupStepDetails,
+	ExpressSetupStepHeadline,
+	PublicationSelect,
+} from '@/js/modules/reader-revenue-manager/components/common';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { type Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
@@ -135,7 +137,7 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 
 	useEffect( () => {
 		( async () => {
-			if ( ! publicationID ) {
+			if ( publications && ! publicationID ) {
 				const matchedPublication = await findMatchedPublication();
 
 				if ( matchedPublication ) {
@@ -143,7 +145,12 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 				}
 			}
 		} )();
-	}, [ findMatchedPublication, publicationID, selectPublication ] );
+	}, [
+		findMatchedPublication,
+		publicationID,
+		publications,
+		selectPublication,
+	] );
 
 	return (
 		<form
@@ -158,6 +165,7 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 				<StoreErrorNotices
 					moduleSlug={ MODULE_SLUG_READER_REVENUE_MANAGER }
 					storeName={ MODULES_READER_REVENUE_MANAGER }
+					hasButton
 				/>
 
 				<P

@@ -38,10 +38,6 @@ import StepPublicationSetup from '.';
 describe( 'StepPublicationSetup', () => {
 	let registry: Registry;
 
-	const publicationsEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
-	);
-
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
 
@@ -80,38 +76,6 @@ describe( 'StepPublicationSetup', () => {
 		);
 
 		expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
-	} );
-
-	it( 'should automatically switch to the create publication form if getting publications fails', async () => {
-		fetchMock.getOnce( publicationsEndpoint, {
-			body: {
-				code: 'internal_server_error',
-				message: 'Internal server error',
-				data: { status: 500 },
-			},
-			status: 500,
-		} );
-
-		const { getByText, queryByRole } = render(
-			<StepPublicationSetup onComplete={ () => {} } />,
-			{
-				registry,
-			}
-		);
-
-		await waitFor( () => {
-			expect(
-				getByText(
-					'RRM express setup placeholder: publication setup step.'
-				)
-			).toBeInTheDocument();
-		} );
-
-		expect(
-			queryByRole( 'heading', { name: 'Connect your publication' } )
-		).not.toBeInTheDocument();
-
-		expect( console ).toHaveErrored();
 	} );
 
 	it( 'should automatically switch to the create publication form if no publications exist', () => {

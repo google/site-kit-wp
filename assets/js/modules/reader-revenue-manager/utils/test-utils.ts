@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
@@ -29,12 +34,12 @@ import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publi
  * @since n.e.x.t
  * @private
  *
- * @param {Registry}      registry     Data registry.
- * @param {Publication[]} publications Publications list.
+ * @param {Registry|WPDataRegistry} registry     Data registry.
+ * @param {Publication[]}           publications Publications list.
  * @return {void}
  */
 export function providePublications(
-	registry: Registry,
+	registry: Registry | WPDataRegistry,
 	publications: Publication[]
 ) {
 	registry

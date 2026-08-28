@@ -43,6 +43,10 @@ const TEST_PUBLICATION_WITHOUT_ACCEPTED_TERMS = publications[ 2 ];
 describe( 'ConnectPublication', () => {
 	let registry: Registry;
 
+	const publicationsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publications'
+	);
+
 	const settingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
 	);
@@ -62,7 +66,6 @@ describe( 'ConnectPublication', () => {
 
 		provideModules( registry, moduleData );
 		provideModuleRegistrations( registry, moduleData );
-		providePublications( registry, publications );
 
 		// Seed the settings required to enable the submit button.
 		registry
@@ -75,6 +78,50 @@ describe( 'ConnectPublication', () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.finishResolution( 'getSettings', [] );
+	} );
+
+	it( 'should display a retry-able error if getting publications fails', async () => {
+		fetchMock
+			.getOnce( publicationsEndpoint, {
+				body: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+				status: 500,
+			} )
+			.getOnce( publicationsEndpoint, {
+				body: publications,
+				status: 200,
+			} );
+
+		const { container, getByRole, queryByRole } = render(
+			<ConnectPublication onComplete={ () => {} } />,
+			{
+				registry,
+			}
+		);
+
+		await waitFor( () => {
+			expect( getByRole( 'status' ) ).toHaveTextContent(
+				/Internal server error/
+			);
+		} );
+
+		expect(
+			container.querySelector( '.mdc-select__selected-text' )
+		).toBeEmptyDOMElement();
+
+		fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
+
+		await waitFor( () => {
+			expect(
+				container.querySelector( '.mdc-select__selected-text' )
+			).toHaveTextContent( TEST_DEFAULT_PUBLICATION.displayName );
+		} );
+
+		expect( queryByRole( 'status' ) ).not.toBeInTheDocument();
+		expect( console ).toHaveErrored();
 	} );
 
 	it( 'should disable submission if no publications exist', () => {
@@ -93,6 +140,7 @@ describe( 'ConnectPublication', () => {
 	} );
 
 	it( 'should disable submission when submission is in progress', async () => {
+		providePublications( registry, publications );
 		freezeFetch( settingsEndpoint );
 
 		const { getByRole } = render(
@@ -114,6 +162,8 @@ describe( 'ConnectPublication', () => {
 	} );
 
 	it( 'should select a default publication on load', async () => {
+		providePublications( registry, publications );
+
 		expect(
 			registry.select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 		).toBeUndefined();
@@ -144,11 +194,11 @@ describe( 'ConnectPublication', () => {
 	} );
 
 	it( 'should call the complete handler with true on success if terms have been accepted', async () => {
-		fetchMock.postOnce( settingsEndpoint, {} );
-
 		providePublications( registry, [
 			TEST_PUBLICATION_WITH_ACCEPTED_TERMS,
 		] );
+
+		fetchMock.postOnce( settingsEndpoint, {} );
 
 		const onComplete = jest.fn();
 
@@ -175,11 +225,11 @@ describe( 'ConnectPublication', () => {
 	} );
 
 	it( 'should call the complete handler with false if the terms have not been accepted', async () => {
-		fetchMock.postOnce( settingsEndpoint, {} );
-
 		providePublications( registry, [
 			TEST_PUBLICATION_WITHOUT_ACCEPTED_TERMS,
 		] );
+
+		fetchMock.postOnce( settingsEndpoint, {} );
 
 		const onComplete = jest.fn();
 
@@ -206,6 +256,8 @@ describe( 'ConnectPublication', () => {
 	} );
 
 	it( 'should display an error notice if the submission fails', async () => {
+		providePublications( registry, publications );
+
 		fetchMock.postOnce( settingsEndpoint, {
 			body: {
 				code: 'internal_server_error',
