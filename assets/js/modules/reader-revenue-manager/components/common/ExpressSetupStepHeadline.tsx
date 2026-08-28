@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager publication setup headline component.
+ * Reader Revenue Manager express setup headline component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -19,7 +19,8 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import classNames from 'classnames';
+import { FC, ReactNode } from 'react';
 
 /**
  * Internal dependencies
@@ -36,7 +37,15 @@ import {
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
 
-const PublicationSetupHeadline: FC = ( { children } ) => {
+interface ExpressSetupStepHeadlineProps {
+	children?: ReactNode;
+	className?: string;
+}
+
+const ExpressSetupStepHeadline: FC< ExpressSetupStepHeadlineProps > = ( {
+	children,
+	className,
+} ) => {
 	const breakpoint = useBreakpoint();
 
 	const size =
@@ -47,7 +56,10 @@ const PublicationSetupHeadline: FC = ( { children } ) => {
 	return (
 		<Typography
 			as="h1"
-			className="googlesitekit-rrm-publication-setup-headline"
+			className={ classNames(
+				'googlesitekit-rrm-express-setup-headline',
+				className
+			) }
 			size={ size }
 			type={ TYPE_HEADLINE }
 		>
@@ -56,4 +68,4 @@ const PublicationSetupHeadline: FC = ( { children } ) => {
 	);
 };
 
-export default PublicationSetupHeadline;
+export default ExpressSetupStepHeadline;

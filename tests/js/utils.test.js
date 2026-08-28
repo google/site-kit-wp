@@ -22,14 +22,11 @@ import { createRegistry } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { CORE_UI } from '../../assets/js/googlesitekit/datastore/ui/constants';
 import { CORE_WIDGETS } from '../../assets/js/googlesitekit/widgets/datastore/constants';
 import {
 	createTestRegistry,
 	createWaitForRegistry,
-	providePublications,
 	provideWidgetRegistrations,
 	subscribeUntil,
 } from './utils';
@@ -316,35 +313,6 @@ describe( 'test utilities', () => {
 					.select( CORE_WIDGETS )
 					.isWidgetRegistered( 'testWidget' )
 			).toBe( true );
-		} );
-	} );
-	describe( 'providePublications', () => {
-		let registry;
-
-		beforeEach( () => {
-			registry = createTestRegistry();
-		} );
-
-		it( 'should provide publications', () => {
-			expect(
-				registry
-					.select( MODULES_READER_REVENUE_MANAGER )
-					.getPublications()
-			).toBeUndefined();
-
-			providePublications( registry, publications );
-
-			expect(
-				registry
-					.select( MODULES_READER_REVENUE_MANAGER )
-					.hasFinishedResolution( 'getPublications' )
-			).toBe( true );
-
-			expect(
-				registry
-					.select( MODULES_READER_REVENUE_MANAGER )
-					.getPublications().length
-			).toBe( publications.length );
 		} );
 	} );
 } );

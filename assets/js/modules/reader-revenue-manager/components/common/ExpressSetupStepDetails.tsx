@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager publication setup details component.
+ * Reader Revenue Manager express setup details component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -32,7 +32,7 @@ import {
 	TYPE_BODY,
 } from '@/js/components/Typography/constants';
 
-interface PublicationSetupDetailsProps
+interface ExpressSetupStepDetailsProps
 	extends ComponentPropsWithoutRef< 'dl' > {
 	children: (
 		Item: FC< {
@@ -42,7 +42,7 @@ interface PublicationSetupDetailsProps
 	) => ReactNode;
 }
 
-const PublicationSetupDetails: FC< PublicationSetupDetailsProps > = ( {
+const ExpressSetupStepDetails: FC< ExpressSetupStepDetailsProps > = ( {
 	children,
 	className,
 	...props
@@ -50,16 +50,16 @@ const PublicationSetupDetails: FC< PublicationSetupDetailsProps > = ( {
 	return (
 		<dl
 			className={ classNames(
-				'googlesitekit-rrm-publication-setup-details',
+				'googlesitekit-rrm-express-setup-details',
 				className
 			) }
 			{ ...props }
 		>
 			{ children( ( { description, term } ) => (
-				<div className="googlesitekit-rrm-publication-setup-details__item">
+				<div className="googlesitekit-rrm-express-setup-details__item">
 					<Typography
 						as="dt"
-						className="googlesitekit-rrm-publication-setup-details__term"
+						className="googlesitekit-rrm-express-setup-details__term"
 						size={ SIZE_SMALL }
 						type={ TYPE_BODY }
 					>
@@ -67,7 +67,7 @@ const PublicationSetupDetails: FC< PublicationSetupDetailsProps > = ( {
 					</Typography>
 					<Typography
 						as="dd"
-						className="googlesitekit-rrm-publication-setup-details__description"
+						className="googlesitekit-rrm-express-setup-details__description"
 						size={ SIZE_MEDIUM }
 						type={ TYPE_BODY }
 					>
@@ -79,4 +79,4 @@ const PublicationSetupDetails: FC< PublicationSetupDetailsProps > = ( {
 	);
 };
 
-export default PublicationSetupDetails;
+export default ExpressSetupStepDetails;

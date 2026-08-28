@@ -22,20 +22,14 @@
 import { Registry } from '@/js/googlesitekit-data';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
-import {
-	EXPRESS_SETUP_CTAS,
-	EXPRESS_SETUP_STEPS,
-	MODULES_READER_REVENUE_MANAGER,
-	PUBLICATION_ONBOARDING_STATES,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { mockLocation } from '@tests/js/mock-browser-utils';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import {
 	createTestRegistry,
 	fireEvent,
 	freezeFetch,
 	provideModuleRegistrations,
 	provideModules,
-	providePublications,
 	provideSiteInfo,
 	render,
 	waitFor,
@@ -52,8 +46,6 @@ describe( 'ConnectPublication', () => {
 	const settingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
 	);
-
-	mockLocation();
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
@@ -72,10 +64,10 @@ describe( 'ConnectPublication', () => {
 		provideModuleRegistrations( registry, moduleData );
 		providePublications( registry, publications );
 
+		// Seed the settings required to enable the submit button.
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetSettings( {
-				configuredCTAs: {},
 				postTypes: [ 'post' ],
 				snippetMode: 'post_types',
 			} );
@@ -83,16 +75,17 @@ describe( 'ConnectPublication', () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.finishResolution( 'getSettings', [] );
-
-		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION }`;
 	} );
 
 	it( 'should disable submission if no publications exist', () => {
 		providePublications( registry, [] );
 
-		const { getByRole } = render( <ConnectPublication />, {
-			registry,
-		} );
+		const { getByRole } = render(
+			<ConnectPublication onComplete={ () => {} } />,
+			{
+				registry,
+			}
+		);
 
 		expect(
 			getByRole( 'button', { name: 'Connect existing publication' } )
@@ -102,9 +95,12 @@ describe( 'ConnectPublication', () => {
 	it( 'should disable submission when submission is in progress', async () => {
 		freezeFetch( settingsEndpoint );
 
-		const { getByRole } = render( <ConnectPublication />, {
-			registry,
-		} );
+		const { getByRole } = render(
+			<ConnectPublication onComplete={ () => {} } />,
+			{
+				registry,
+			}
+		);
 
 		const submitButton = getByRole( 'button', {
 			name: 'Connect existing publication',
@@ -122,9 +118,12 @@ describe( 'ConnectPublication', () => {
 			registry.select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 		).toBeUndefined();
 
-		const { container } = render( <ConnectPublication />, {
-			registry,
-		} );
+		const { container } = render(
+			<ConnectPublication onComplete={ () => {} } />,
+			{
+				registry,
+			}
+		);
 
 		await waitFor( () => {
 			const publicationID = registry
@@ -144,16 +143,21 @@ describe( 'ConnectPublication', () => {
 		} );
 	} );
 
-	it( 'should navigate to the publication policies step on success if terms have been accepted', async () => {
+	it( 'should call the complete handler with true on success if terms have been accepted', async () => {
 		fetchMock.postOnce( settingsEndpoint, {} );
 
 		providePublications( registry, [
 			TEST_PUBLICATION_WITH_ACCEPTED_TERMS,
 		] );
 
-		const { getByRole } = render( <ConnectPublication />, {
-			registry,
-		} );
+		const onComplete = jest.fn();
+
+		const { getByRole } = render(
+			<ConnectPublication onComplete={ onComplete } />,
+			{
+				registry,
+			}
+		);
 
 		const submitButton = getByRole( 'button', {
 			name: 'Connect existing publication',
@@ -164,24 +168,27 @@ describe( 'ConnectPublication', () => {
 		fireEvent.click( submitButton );
 
 		await waitFor( () => {
-			expect( global.location.href ).toContain(
-				`step=${ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES }`
-			);
+			expect( onComplete ).toHaveBeenCalledWith( true );
 		} );
 
 		expect( fetchMock ).toHaveFetched( settingsEndpoint );
 	} );
 
-	it( 'should navigate to the terms of service step if the terms have not been accepted', async () => {
+	it( 'should call the complete handler with false if the terms have not been accepted', async () => {
 		fetchMock.postOnce( settingsEndpoint, {} );
 
 		providePublications( registry, [
 			TEST_PUBLICATION_WITHOUT_ACCEPTED_TERMS,
 		] );
 
-		const { getByRole } = render( <ConnectPublication />, {
-			registry,
-		} );
+		const onComplete = jest.fn();
+
+		const { getByRole } = render(
+			<ConnectPublication onComplete={ onComplete } />,
+			{
+				registry,
+			}
+		);
 
 		const submitButton = getByRole( 'button', {
 			name: 'Connect existing publication',
@@ -192,9 +199,7 @@ describe( 'ConnectPublication', () => {
 		fireEvent.click( submitButton );
 
 		await waitFor( () => {
-			expect( global.location.href ).toContain(
-				`step=${ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE }`
-			);
+			expect( onComplete ).toHaveBeenCalledWith( false );
 		} );
 
 		expect( fetchMock ).toHaveFetched( settingsEndpoint );
@@ -210,9 +215,14 @@ describe( 'ConnectPublication', () => {
 			status: 500,
 		} );
 
-		const { getByRole } = render( <ConnectPublication />, {
-			registry,
-		} );
+		const onComplete = jest.fn();
+
+		const { getByRole } = render(
+			<ConnectPublication onComplete={ onComplete } />,
+			{
+				registry,
+			}
+		);
 
 		const submitButton = getByRole( 'button', {
 			name: 'Connect existing publication',
@@ -228,10 +238,7 @@ describe( 'ConnectPublication', () => {
 			);
 		} );
 
-		expect( global.location.href ).toContain(
-			`step=${ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION }`
-		);
-
+		expect( onComplete ).not.toHaveBeenCalled();
 		expect( console ).toHaveErrored();
 	} );
 
@@ -243,59 +250,29 @@ describe( 'ConnectPublication', () => {
 	] )(
 		'should display language code %s as %s and region code %s as %s',
 		async ( languageCode, language, regionCode, region ) => {
-			const publicationID = 'ABCDE';
-
 			providePublications( registry, [
 				{
+					...TEST_DEFAULT_PUBLICATION,
 					languageCode,
-					/* eslint-disable-next-line sitekit/acronym-case */
-					publicationId: publicationID,
-					onboardingState:
-						PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 					regionCode,
 				},
 			] );
 
-			const { container } = render( <ConnectPublication />, {
-				registry,
-			} );
+			const { container } = render(
+				<ConnectPublication onComplete={ () => {} } />,
+				{
+					registry,
+				}
+			);
 
 			await waitFor( () => {
 				const descriptions = container.querySelectorAll(
-					'.googlesitekit-rrm-publication-setup-details__item'
+					'.googlesitekit-rrm-express-setup-details__item'
 				);
 
 				expect( descriptions.length ).toBe( 2 );
 				expect( descriptions[ 0 ] ).toHaveTextContent( language );
 				expect( descriptions[ 1 ] ).toHaveTextContent( region );
-			} );
-		}
-	);
-
-	it.each( [
-		{
-			cta: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
-			description:
-				'To set up a newsletter sign-up form using Reader Revenue Manager, connect your publication or create a new one.',
-		},
-		{
-			cta: undefined,
-			description:
-				'To use Reader Revenue Manager, connect your publication or create a new one.',
-		},
-	] )(
-		'should renders the expected description when the CTA is $cta',
-		async ( { cta, description } ) => {
-			global.location.href = cta
-				? `http://example.com/?cta=${ cta }&step=${ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION }`
-				: `http://example.com/?step=${ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION }`;
-
-			const { getByText } = render( <ConnectPublication />, {
-				registry,
-			} );
-
-			await waitFor( () => {
-				expect( getByText( description ) ).toBeInTheDocument();
 			} );
 		}
 	);

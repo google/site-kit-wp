@@ -1,7 +1,7 @@
 /**
- * Reader Revenue Manager styles.
+ * ExpressSetupStepHeadline component stories.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,23 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-rrm-cta-preview";
-@import "googlesitekit-rrm-express-setup";
-@import "googlesitekit-rrm-express-setup-banner";
-@import "googlesitekit-rrm-express-setup-details";
-@import "googlesitekit-rrm-express-setup-step";
-@import "googlesitekit-rrm-newsletter-preview";
-@import "googlesitekit-rrm-setup-cta-banner";
-@import "googlesitekit-rrm-settings-module";
-@import "googlesitekit-rrm-setup-module";
+/**
+ * Internal dependencies
+ */
+import ExpressSetupStepHeadline from './ExpressSetupStepHeadline';
+
+function Template() {
+	return (
+		<ExpressSetupStepHeadline>
+			Connect your publication
+		</ExpressSetupStepHeadline>
+	);
+}
+
+export const Basic = Template.bind( {} );
+Basic.storyName = 'ExpressSetupStepHeadline';
+
+export default {
+	title: 'Modules/ReaderRevenueManager/Common/ExpressSetupStepHeadline',
+	component: ExpressSetupStepHeadline,
+};

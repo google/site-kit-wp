@@ -20,10 +20,14 @@
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
-	providePublications,
+	provideModuleRegistrations,
+	provideModules,
 	render,
 } from '@tests/js/test-utils';
 import SetupMainExpress from './index';
@@ -37,6 +41,27 @@ describe( 'SetupMainExpress', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
+
+		const moduleData = [
+			{
+				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+				active: true,
+				connected: false,
+			},
+		];
+
+		provideModules( registry, moduleData );
+		provideModuleRegistrations( registry, moduleData );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {} );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.finishResolution( 'getSettings', [] );
+
+		providePublications( registry, [] );
 	} );
 
 	it( 'renders the newsletter CTA component for newsletter-signup CTA', () => {
@@ -53,8 +78,6 @@ describe( 'SetupMainExpress', () => {
 	} );
 
 	it( 'renders the default express setup when no CTA is specified', () => {
-		providePublications( registry, [] );
-
 		global.location.href = 'http://example.com/?step=connect-publication';
 
 		const { getByText, queryByText, container } = render(
@@ -76,8 +99,6 @@ describe( 'SetupMainExpress', () => {
 	} );
 
 	it( 'renders the default express setup for an unknown CTA', () => {
-		providePublications( registry, [] );
-
 		global.location.href =
 			'http://example.com/?cta=unknown-cta&step=connect-publication';
 

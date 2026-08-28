@@ -19,13 +19,17 @@
 /**
  * External dependencies
  */
-import { FC, Fragment, useEffect } from 'react';
+import { FC, Fragment } from 'react';
 
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import {
+	createInterpolateElement,
+	useCallback,
+	useEffect,
+} from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -36,54 +40,45 @@ import DocumentationLink from '@/js/components/DocumentationLink';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
-import useQueryArg from '@/js/hooks/useQueryArg';
+import ExpressSetupStepDetails from '@/js/modules/reader-revenue-manager/components/common/ExpressSetupStepDetails';
+import ExpressSetupStepHeadline from '@/js/modules/reader-revenue-manager/components/common/ExpressSetupStepHeadline';
 import PublicationSelect from '@/js/modules/reader-revenue-manager/components/common/PublicationSelect';
-import PublicationSetupDetails from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup/PublicationSetupDetails';
-import PublicationSetupHeadline from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup/PublicationSetupHeadline';
-import { useStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import {
-	EXPRESS_SETUP_CTAS,
-	EXPRESS_SETUP_STEPS,
-	MODULES_READER_REVENUE_MANAGER,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { type Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { languageCodeFormat, regionCodeFormat } from '@/js/util/i18n';
 
-function getDescription( ctaType: string | undefined ) {
-	switch ( ctaType ) {
-		case EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP: {
-			return __(
-				'To set up a newsletter sign-up form using Reader Revenue Manager, connect your publication or create a new one. <a>Learn more</a>',
-				'google-site-kit'
-			);
-		}
-		default: {
-			return __(
-				'To use Reader Revenue Manager, connect your publication or create a new one. <a>Learn more</a>',
-				'google-site-kit'
-			);
-		}
-	}
+interface ConnectPublicationProps {
+	description?: string;
+	onComplete: ( hasAcceptedTerms: boolean ) => void;
 }
 
-const ConnectPublication: FC = () => {
+const ConnectPublication: FC< ConnectPublicationProps > = ( {
+	description,
+	onComplete,
+} ) => {
 	const { findMatchedPublication, selectPublication, submitChanges } =
 		useDispatch( MODULES_READER_REVENUE_MANAGER );
 
-	const [ cta ] = useQueryArg( 'cta' );
+	const defaultDescription = __(
+		'To use Reader Revenue Manager, connect your publication or create a new one.',
+		'google-site-kit'
+	);
+
+	const descriptionWithLink = createInterpolateElement(
+		sprintf(
+			/* translators: %s: Connect publication setup step description. */
+			__( '%s <a>Learn more</a>', 'google-site-kit' ),
+			description || defaultDescription
+		),
+		{
+			a: <DocumentationLink slug="rrm-publication" external />,
+		}
+	);
 
 	const canSubmitChanges = useSelect(
 		( select: Select ) =>
 			select( MODULES_READER_REVENUE_MANAGER ).canSubmitChanges(),
-		[]
-	);
-
-	const hasResolvedSettings = useSelect(
-		( select: Select ) =>
-			select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
-				'getSettings'
-			),
 		[]
 	);
 
@@ -99,37 +94,15 @@ const ConnectPublication: FC = () => {
 		[]
 	);
 
-	const publication: Publication | undefined = useSelect(
+	const publications: Publication[] | undefined = useSelect(
 		( select: Select ) =>
-			publicationID
-				? select( MODULES_READER_REVENUE_MANAGER ).getPublication( {
-						publicationID,
-				  } )
-				: undefined,
-		[ publicationID ]
+			select( MODULES_READER_REVENUE_MANAGER ).getPublications(),
+		[]
 	);
 
-	const [ , setStep ] = useStep();
-
-	const connectPublication = useCallback( async () => {
-		const { error } = await submitChanges();
-
-		if ( ! error ) {
-			const nextStep = publication?.rrmProduct?.tosAcceptance
-				?.userAccepted
-				? EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES
-				: EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE;
-
-			setStep( nextStep );
-		}
-	}, [ publication, setStep, submitChanges ] );
-
-	const onSubmit = useCallback(
-		( event ) => {
-			event.preventDefault();
-			connectPublication();
-		},
-		[ connectPublication ]
+	const publication = publications?.find(
+		// eslint-disable-next-line sitekit/acronym-case
+		( p ) => p.publicationId === publicationID
 	);
 
 	const languageCode = publication?.languageCode
@@ -140,32 +113,47 @@ const ConnectPublication: FC = () => {
 		? regionCodeFormat( publication.regionCode )
 		: __( 'Unknown', 'google-site-kit' );
 
+	const onSubmit = useCallback(
+		async ( event ) => {
+			event.preventDefault();
+
+			if ( ! publication ) {
+				return;
+			}
+
+			const { error } = await submitChanges();
+
+			if ( ! error ) {
+				const hasAcceptedTerms =
+					!! publication.rrmProduct?.tosAcceptance?.userAccepted;
+
+				onComplete( hasAcceptedTerms );
+			}
+		},
+		[ onComplete, publication, submitChanges ]
+	);
+
 	useEffect( () => {
-		if ( hasResolvedSettings && ! publicationID ) {
-			( async () => {
+		( async () => {
+			if ( ! publicationID ) {
 				const matchedPublication = await findMatchedPublication();
 
 				if ( matchedPublication ) {
 					selectPublication( matchedPublication );
 				}
-			} )();
-		}
-	}, [
-		findMatchedPublication,
-		hasResolvedSettings,
-		publicationID,
-		selectPublication,
-	] );
+			}
+		} )();
+	}, [ findMatchedPublication, publicationID, selectPublication ] );
 
 	return (
 		<form
-			className="googlesitekit-rrm-publication-setup__form"
+			className="googlesitekit-rrm-express-setup-step__form"
 			onSubmit={ onSubmit }
 		>
-			<div className="googlesitekit-rrm-publication-setup__form-content">
-				<PublicationSetupHeadline>
+			<div className="googlesitekit-rrm-express-setup-step__form-content">
+				<ExpressSetupStepHeadline className="googlesitekit-rrm-express-setup-step__headline">
 					{ __( 'Connect your publication', 'google-site-kit' ) }
-				</PublicationSetupHeadline>
+				</ExpressSetupStepHeadline>
 
 				<StoreErrorNotices
 					moduleSlug={ MODULE_SLUG_READER_REVENUE_MANAGER }
@@ -173,24 +161,17 @@ const ConnectPublication: FC = () => {
 				/>
 
 				<P
-					className="googlesitekit-rrm-publication-setup__description"
+					className="googlesitekit-rrm-express-setup-step__description"
 					size={ SIZE_MEDIUM }
 				>
-					{ createInterpolateElement( getDescription( cta ), {
-						a: (
-							<DocumentationLink
-								slug="rrm-publication"
-								external
-							/>
-						),
-					} ) }
+					{ descriptionWithLink }
 				</P>
 
-				<div className="googlesitekit-rrm-publication-setup__form-controls">
+				<div className="googlesitekit-rrm-express-setup-step__form-controls">
 					<PublicationSelect />
 
 					{ publication ? (
-						<PublicationSetupDetails>
+						<ExpressSetupStepDetails>
 							{ ( Item ) => (
 								<Fragment>
 									<Item
@@ -209,7 +190,7 @@ const ConnectPublication: FC = () => {
 									/>
 								</Fragment>
 							) }
-						</PublicationSetupDetails>
+						</ExpressSetupStepDetails>
 					) : null }
 				</div>
 			</div>

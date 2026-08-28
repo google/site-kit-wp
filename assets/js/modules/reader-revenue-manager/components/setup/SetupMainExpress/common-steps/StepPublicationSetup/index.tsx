@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager StepPublicationSetup component.
+ * Reader Revenue Manager publication setup component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -33,33 +33,34 @@ import { __ } from '@wordpress/i18n';
 import { ProgressBar } from 'googlesitekit-components';
 import { Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
-import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { SIZE_SMALL, TYPE_LABEL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import useFormValue from '@/js/hooks/useFormValue';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	SHOW_PUBLICATION_CREATE,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import PlusIcon from '@/svg/icons/plus.svg';
 import ConnectPublication from './ConnectPublication';
 
-const StepPublicationSetup: FC = () => {
+interface StepPublicationSetupProps {
+	connectDescription?: string;
+	onComplete: ( hasAcceptedTerms: boolean ) => void;
+}
+
+const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
+	connectDescription,
+	onComplete,
+} ) => {
 	const [ showPublicationCreate, setShowPublicationCreate ] =
 		useFormValue< boolean >(
 			READER_REVENUE_MANAGER_SETUP_FORM,
 			SHOW_PUBLICATION_CREATE
 		);
 
-	const getPublicationsError = useSelect(
-		( select: Select ) =>
-			select( MODULES_READER_REVENUE_MANAGER ).getErrorForSelector(
-				'getPublications'
-			) as { message?: string } | undefined,
-		[]
-	);
-
-	const hasResolvedPublications = useSelect(
+	const hasResolvedPublications: boolean = useSelect(
 		( select: Select ) =>
 			select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
 				'getPublications'
@@ -67,25 +68,14 @@ const StepPublicationSetup: FC = () => {
 		[]
 	);
 
-	const publications = useSelect(
+	const publications: Publication[] | undefined = useSelect(
 		( select: Select ) =>
-			select( MODULES_READER_REVENUE_MANAGER ).getPublications() as
-				| unknown[]
-				| undefined,
+			select( MODULES_READER_REVENUE_MANAGER ).getPublications(),
 		[]
 	);
 
-	const hasPublications =
-		hasResolvedPublications &&
-		! getPublicationsError &&
-		publications?.length;
-
-	const hasNoPublications =
-		hasResolvedPublications &&
-		! getPublicationsError &&
-		! publications?.length;
-
-	const isCreatingPublication = hasNoPublications || showPublicationCreate;
+	const hasPublications = hasResolvedPublications && publications?.length;
+	const hasNoPublications = hasResolvedPublications && ! publications?.length;
 
 	useEffect( () => {
 		if ( hasNoPublications ) {
@@ -97,51 +87,42 @@ const StepPublicationSetup: FC = () => {
 		return <ProgressBar />;
 	}
 
-	if ( getPublicationsError ) {
-		return (
-			<StoreErrorNotices
-				moduleSlug={ MODULE_SLUG_READER_REVENUE_MANAGER }
-				storeName={ MODULES_READER_REVENUE_MANAGER }
-				hasButton
-			/>
-		);
-	}
-
 	return (
-		<div className="googlesitekit-rrm-publication-setup">
-			{ isCreatingPublication ? (
+		<div className="googlesitekit-rrm-express-setup-step">
+			{ showPublicationCreate ? (
 				'RRM express setup placeholder: publication setup step.' // TODO: Implement <CreatePublication />.
 			) : (
-				<ConnectPublication />
+				<ConnectPublication
+					description={ connectDescription }
+					onComplete={ onComplete }
+				/>
 			) }
 
 			{ hasPublications ? (
-				<div className="googlesitekit-rrm-publication-setup__footer">
-					{ isCreatingPublication ? (
-						<Link
-							onClick={ () => setShowPublicationCreate( false ) }
-							type="button"
-						>
-							{ __(
-								'Use existing publication',
-								'google-site-kit'
-							) }
-						</Link>
-					) : (
-						<Link
-							leadingIcon={
+				<P size={ SIZE_SMALL } type={ TYPE_LABEL }>
+					<Link
+						className="googlesitekit-rrm-express-setup-step__cta-link"
+						leadingIcon={
+							showPublicationCreate ? undefined : (
 								<PlusIcon width={ 12 } height={ 12 } />
-							}
-							onClick={ () => setShowPublicationCreate( true ) }
-							type="button"
-						>
-							{ __(
-								'Create new publication',
-								'google-site-kit'
-							) }
-						</Link>
-					) }
-				</div>
+							)
+						}
+						onClick={ () =>
+							setShowPublicationCreate( ! showPublicationCreate )
+						}
+						type="button"
+					>
+						{ showPublicationCreate
+							? __(
+									'Use existing publication',
+									'google-site-kit'
+							  )
+							: __(
+									'Create new publication',
+									'google-site-kit'
+							  ) }
+					</Link>
+				</P>
 			) : null }
 		</div>
 	);

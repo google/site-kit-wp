@@ -20,11 +20,17 @@
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
-import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import {
+	EXPRESS_SETUP_STEPS,
+	MODULES_READER_REVENUE_MANAGER,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
-	providePublications,
+	provideModuleRegistrations,
+	provideModules,
 	render,
 } from '@tests/js/test-utils';
 import SetupCTANewsletterSignup from './index';
@@ -54,6 +60,27 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
+
+		const moduleData = [
+			{
+				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+				active: true,
+				connected: false,
+			},
+		];
+
+		provideModules( registry, moduleData );
+		provideModuleRegistrations( registry, moduleData );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {} );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.finishResolution( 'getSettings', [] );
+
+		providePublications( registry, [] );
 	} );
 
 	it( 'renders the newsletter CTA step title in the sidebar', () => {
@@ -76,8 +103,6 @@ describe( 'SetupCTANewsletterSignup', () => {
 	it.each( Object.entries( STEP_CONTENT ) )(
 		'renders the %s step content',
 		( step, content ) => {
-			providePublications( registry, [] );
-
 			global.location.href = `http://example.com/?step=${ step }`;
 
 			const { getByText, queryByText } = render(

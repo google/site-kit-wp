@@ -512,11 +512,11 @@ export function getLocale( _global = global ) {
 export function languageCodeFormat( languageCode, options = {} ) {
 	const { locale = getLocale() } = options;
 
-	const displayNames = new Intl.DisplayNames( [ locale ], {
-		type: 'language',
-	} );
-
 	try {
+		const displayNames = new Intl.DisplayNames( [ locale ], {
+			type: 'language',
+		} );
+
 		return displayNames.of( languageCode );
 	} catch {
 		return languageCode;

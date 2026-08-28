@@ -23,24 +23,17 @@ import { withQuery } from '@storybook/addon-queryparams';
 import { ElementType, ReactNode } from 'react';
 
 /**
- * WordPress dependencies
- */
-import { WPDataRegistry } from '@wordpress/data/build-types/registry';
-
-/**
  * Internal dependencies
  */
+import { Registry } from '@/js/googlesitekit-data';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
-import {
-	EXPRESS_SETUP_CTAS,
-	MODULES_READER_REVENUE_MANAGER,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { Story } from '@/js/types/Story';
 import {
 	provideModuleRegistrations,
 	provideModules,
-	providePublications,
 	provideSiteInfo,
 } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
@@ -51,7 +44,7 @@ type Decorator = {
 };
 
 function Template() {
-	return <StepPublicationSetup />;
+	return <StepPublicationSetup onComplete={ () => {} } />;
 }
 
 export const Loading = Template.bind( {} ) as Story;
@@ -64,27 +57,6 @@ Loading.args = {
 	},
 };
 Loading.scenario = {};
-
-export const Error = Template.bind( {} ) as Story;
-Error.storyName = 'Error';
-Error.args = {
-	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setErrorForSelector(
-			{
-				code: 'internal_server_error',
-				message: 'Internal server error',
-				data: { status: 500 },
-			},
-			'getPublications',
-			[]
-		);
-
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.finishResolution( 'getPublications', [] );
-	},
-};
-Error.scenario = {};
 
 export const WithPublications = Template.bind( {} ) as Story;
 WithPublications.storyName = 'With Publications';
@@ -128,30 +100,13 @@ WithPublicationsWithError.parameters = {
 };
 WithPublicationsWithError.scenario = {};
 
-export const WithPublicationsForNewsletterCTA = Template.bind( {} ) as Story;
-WithPublicationsForNewsletterCTA.storyName =
-	'With Publications for Newsletter CTA';
-WithPublicationsForNewsletterCTA.args = {
-	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetPublications( publications );
-	},
-};
-WithPublicationsForNewsletterCTA.parameters = {
-	query: {
-		cta: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
-	},
-};
-WithPublicationsForNewsletterCTA.scenario = {};
-
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMainExpress/StepPublicationSetup',
 	component: StepPublicationSetup,
 	decorators: [
 		withQuery,
 		( ( StoryComponent, { args } ) => {
-			function setupRegistry( registry: WPDataRegistry ) {
+			function setupRegistry( registry: Registry ) {
 				const moduleData = [
 					{
 						slug: MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -165,6 +120,7 @@ export default {
 				provideModuleRegistrations( registry, moduleData );
 				providePublications( registry, publications );
 
+				// Seed the settings required to enable the submit button.
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( {

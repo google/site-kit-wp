@@ -1,7 +1,7 @@
 /**
- * Reader Revenue Manager styles.
+ * Reader Revenue Manager express setup details component styles.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,23 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-rrm-cta-preview";
-@import "googlesitekit-rrm-express-setup";
-@import "googlesitekit-rrm-express-setup-banner";
-@import "googlesitekit-rrm-express-setup-details";
-@import "googlesitekit-rrm-express-setup-step";
-@import "googlesitekit-rrm-newsletter-preview";
-@import "googlesitekit-rrm-setup-cta-banner";
-@import "googlesitekit-rrm-settings-module";
-@import "googlesitekit-rrm-setup-module";
+.googlesitekit-rrm-express-setup-details {
+	display: grid;
+	gap: 10px;
+	grid-column: 1 / -1;
+	margin-block: 0;
+}
+
+.googlesitekit-rrm-express-setup-details__item {
+	display: grid;
+	gap: 4px;
+	padding-block-end: 8px;
+}
+
+.googlesitekit-rrm-express-setup-details__term {
+	color: $c-surfaces-on-surface-variant;
+}
+
+.googlesitekit-rrm-express-setup-details__description {
+	margin: 0;
+}

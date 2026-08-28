@@ -23,12 +23,12 @@ import { Registry } from '@/js/googlesitekit-data';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import {
 	createTestRegistry,
 	fireEvent,
 	provideModuleRegistrations,
 	provideModules,
-	providePublications,
 	provideSiteInfo,
 	render,
 	waitFor,
@@ -60,10 +60,7 @@ describe( 'StepPublicationSetup', () => {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {
-				postTypes: [ 'post' ],
-				snippetMode: 'post_types',
-			} );
+			.receiveGetSettings( {} );
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -75,14 +72,17 @@ describe( 'StepPublicationSetup', () => {
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.startResolution( 'getPublications', [] );
 
-		const { getByRole } = render( <StepPublicationSetup />, {
-			registry,
-		} );
+		const { getByRole } = render(
+			<StepPublicationSetup onComplete={ () => {} } />,
+			{
+				registry,
+			}
+		);
 
 		expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should render as an error notice if getting publications fails', async () => {
+	it( 'should automatically switch to the create publication form if getting publications fails', async () => {
 		fetchMock.getOnce( publicationsEndpoint, {
 			body: {
 				code: 'internal_server_error',
@@ -92,63 +92,12 @@ describe( 'StepPublicationSetup', () => {
 			status: 500,
 		} );
 
-		const { getByRole } = render( <StepPublicationSetup />, {
-			registry,
-		} );
-
-		await waitFor( () => {
-			expect( getByRole( 'status' ) ).toHaveTextContent(
-				/Internal server error/
-			);
-		} );
-
-		expect( fetchMock ).toHaveFetchedTimes( 1, publicationsEndpoint );
-		expect( console ).toHaveErrored();
-	} );
-
-	it( 'should render the connect form if a retry succeeds at getting publications', async () => {
-		fetchMock
-			.getOnce( publicationsEndpoint, {
-				body: {
-					code: 'internal_server_error',
-					message: 'Internal server error',
-					data: { status: 500 },
-				},
-				status: 500,
-			} )
-			.getOnce( publicationsEndpoint, {
-				body: publications,
-				status: 200,
-			} );
-
-		const { getByRole } = render( <StepPublicationSetup />, {
-			registry,
-		} );
-
-		await waitFor( () => {
-			expect( getByRole( 'status' ) ).toHaveTextContent(
-				/Internal server error/
-			);
-		} );
-
-		fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
-
-		await waitFor( () => {
-			expect(
-				getByRole( 'button', { name: 'Create new publication' } )
-			).toBeInTheDocument();
-		} );
-
-		expect( fetchMock ).toHaveFetchedTimes( 2, publicationsEndpoint );
-		expect( console ).toHaveErrored();
-	} );
-
-	it( 'should automatically switch to the create publication form if no publications exist', async () => {
-		providePublications( registry, [] );
-
-		const { getByText, queryByRole } = render( <StepPublicationSetup />, {
-			registry,
-		} );
+		const { getByText, queryByRole } = render(
+			<StepPublicationSetup onComplete={ () => {} } />,
+			{
+				registry,
+			}
+		);
 
 		await waitFor( () => {
 			expect(
@@ -161,30 +110,57 @@ describe( 'StepPublicationSetup', () => {
 		expect(
 			queryByRole( 'heading', { name: 'Connect your publication' } )
 		).not.toBeInTheDocument();
+
+		expect( console ).toHaveErrored();
 	} );
 
-	it( 'should not render the form switch button if no publications exist', async () => {
+	it( 'should automatically switch to the create publication form if no publications exist', () => {
 		providePublications( registry, [] );
 
-		const { getByText } = render( <StepPublicationSetup />, {
-			registry,
-		} );
+		const { getByText, queryByRole } = render(
+			<StepPublicationSetup onComplete={ () => {} } />,
+			{
+				registry,
+			}
+		);
 
-		await waitFor( () => {
-			expect(
-				getByText(
-					'RRM express setup placeholder: publication setup step.'
-				)
-			).toBeInTheDocument();
-		} );
+		expect(
+			getByText(
+				'RRM express setup placeholder: publication setup step.'
+			)
+		).toBeInTheDocument();
+
+		expect(
+			queryByRole( 'heading', { name: 'Connect your publication' } )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should not render the form switch button if no publications exist', () => {
+		providePublications( registry, [] );
+
+		const { getByText } = render(
+			<StepPublicationSetup onComplete={ () => {} } />,
+			{
+				registry,
+			}
+		);
+
+		expect(
+			getByText(
+				'RRM express setup placeholder: publication setup step.'
+			)
+		).toBeInTheDocument();
 	} );
 
 	it( 'should be possible to switch between forms if publications exist', async () => {
 		providePublications( registry, publications );
 
-		const { getByRole, getByText } = render( <StepPublicationSetup />, {
-			registry,
-		} );
+		const { getByRole, getByText } = render(
+			<StepPublicationSetup onComplete={ () => {} } />,
+			{
+				registry,
+			}
+		);
 
 		await waitFor( () => {
 			expect(
@@ -196,22 +172,18 @@ describe( 'StepPublicationSetup', () => {
 			getByRole( 'button', { name: 'Create new publication' } )
 		);
 
-		await waitFor( () => {
-			expect(
-				getByText(
-					'RRM express setup placeholder: publication setup step.'
-				)
-			).toBeInTheDocument();
-		} );
+		expect(
+			getByText(
+				'RRM express setup placeholder: publication setup step.'
+			)
+		).toBeInTheDocument();
 
 		fireEvent.click(
 			getByRole( 'button', { name: 'Use existing publication' } )
 		);
 
-		await waitFor( () => {
-			expect(
-				getByRole( 'heading', { name: 'Connect your publication' } )
-			).toBeInTheDocument();
-		} );
+		expect(
+			getByRole( 'heading', { name: 'Connect your publication' } )
+		).toBeInTheDocument();
 	} );
 } );

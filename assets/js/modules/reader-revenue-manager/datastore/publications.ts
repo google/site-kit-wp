@@ -565,7 +565,7 @@ const baseActions = {
 		);
 		const publications = publicationsResult as Publication[];
 
-		if ( publications.length === 0 ) {
+		if ( ! publications ) {
 			return null;
 		}
 
