@@ -569,6 +569,10 @@ const baseActions = {
 			return null;
 		}
 
+		if ( publications.length === 0 ) {
+			return null;
+		}
+
 		if ( publications.length === 1 ) {
 			return publications[ 0 ];
 		}
