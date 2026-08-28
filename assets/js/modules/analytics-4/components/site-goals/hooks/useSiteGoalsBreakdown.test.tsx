@@ -32,15 +32,18 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { SITE_GOALS_BREAKDOWN_OTHER_SOURCES_TAB_ID } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { getPreviousDate } from '@/js/util';
 import { createTestRegistry, renderHook } from '@tests/js/test-utils';
+import { provideModules } from '@tests/js/utils';
 import { useSiteGoalsBreakdown } from './useSiteGoalsBreakdown';
 
 describe( 'useSiteGoalsBreakdown', () => {
 	let registry: WPDataRegistry;
 
 	const FORM_DIMENSION = 'customEvent:googlesitekit_form_id';
+	const PROPERTY_ID = '12345';
 
 	// The fixed 90-day discovery window the tab structure is evaluated over.
 	function getDiscoveryDates() {
@@ -49,8 +52,8 @@ describe( 'useSiteGoalsBreakdown', () => {
 		return { startDate: getPreviousDate( endDate, 90 ), endDate };
 	}
 
-	function seedDiscoveryReport( values: string[] ) {
-		const options = {
+	function getDiscoveryReportOptions() {
+		return {
 			...getDiscoveryDates(),
 			dimensions: [ FORM_DIMENSION ],
 			dimensionFilters: {
@@ -64,6 +67,10 @@ describe( 'useSiteGoalsBreakdown', () => {
 			reportID:
 				'analytics-4_site-goals-breakdown_values_googlesitekit_form_id',
 		};
+	}
+
+	function seedDiscoveryReport( values: string[] ) {
+		const options = getDiscoveryReportOptions();
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
@@ -160,8 +167,44 @@ describe( 'useSiteGoalsBreakdown', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		provideModules( registry, [
+			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
+		] );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		// The breakdown dimension only exists on the property once the user asks
+		// for the breakdown, and the hook queries nothing until then, so every
+		// case below starts from the created state.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			propertyID: PROPERTY_ID,
+			availableCustomDimensions: [ 'googlesitekit_form_id' ],
+		} );
+	} );
+
+	it( 'requests no breakdown report until the breakdown dimension exists on the property', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setSettings( { availableCustomDimensions: [] } );
+
+		const { result, waitForRegistry } = renderHook(
+			() => useSiteGoalsBreakdown( GOAL_TYPES.LEAD ),
+			{ registry }
+		);
+
+		// Let the resolvers run: no report is seeded, so an ungated hook
+		// reaches the network here — where Analytics answers 400 for a
+		// dimension the property does not have yet.
+		await waitForRegistry();
+
+		expect(
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.hasStartedResolution( 'getReport', [
+					getDiscoveryReportOptions(),
+				] )
+		).toBe( false );
+		expect( result.current.breakdownValues ).toBeUndefined();
+		expect( result.current.hasBreakdownTabs ).toBe( false );
+		expect( result.current.hasOtherSources ).toBe( false );
 	} );
 
 	it( 'defaults the active tab to the first breakdown value', () => {
@@ -173,9 +216,22 @@ describe( 'useSiteGoalsBreakdown', () => {
 		);
 
 		expect( result.current.activeTabID ).toBe( '5' );
+		expect( result.current.isBreakdownValueTab ).toBe( true );
 		expect( result.current.breakdownFilter ).toEqual( {
 			[ FORM_DIMENSION ]: '5',
 		} );
+	} );
+
+	it( 'reports no breakdown tabs and no value tab when the discovery report finds no values', () => {
+		seedDiscoveryReport( [] );
+
+		const { result } = renderHook(
+			() => useSiteGoalsBreakdown( GOAL_TYPES.LEAD ),
+			{ registry }
+		);
+
+		expect( result.current.hasBreakdownTabs ).toBe( false );
+		expect( result.current.isBreakdownValueTab ).toBe( false );
 	} );
 
 	it( 'exposes the unattributed count and no section filter for the Other sources tab', () => {
@@ -201,6 +257,7 @@ describe( 'useSiteGoalsBreakdown', () => {
 		} );
 
 		expect( result.current.isOtherSourcesTab ).toBe( true );
+		expect( result.current.isBreakdownValueTab ).toBe( false );
 		// The Other sources tab drives its single metric from the count, so it
 		// produces no section filter.
 		expect( result.current.breakdownFilter ).toBeUndefined();

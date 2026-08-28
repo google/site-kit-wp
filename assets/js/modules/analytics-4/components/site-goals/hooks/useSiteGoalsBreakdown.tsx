@@ -39,6 +39,7 @@ export interface SiteGoalsBreakdown {
 	activeTabID: string;
 	setSelectedTab: ( tabID: string ) => void;
 	isOtherSourcesTab: boolean;
+	isBreakdownValueTab: boolean;
 	hasOtherSources: boolean;
 	otherSourcesCount: number;
 	otherSourcesPreviousCount: number;
@@ -55,6 +56,7 @@ export interface UseSiteGoalsBreakdownOptions {
  * Resolves the breakdown tab state for a Site Goals widget.
  *
  * @since 1.182.0
+ * @since n.e.x.t Held every breakdown report back until the breakdown custom dimension exists on the property.
  *
  * @param {string} goalType                      The goal type whose breakdown dimension to resolve.
  * @param {Object} [options]                     Discovery, detection and allowlist options.
@@ -74,12 +76,29 @@ export function useSiteGoalsBreakdown(
 	const breakdownDimension =
 		SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE[ goalType ];
 
+	// Analytics answers 400 for a dimension the property does not have, and
+	// Site Kit only creates this one once the user asks for the breakdown. Every
+	// report below waits for it to appear in the synced dimensions. This is
+	// the same condition `BreakdownNoticeArea` uses to swap its CTA for
+	// the breakdown, so the two widgets should stay in-sync.
+	const hasBreakdownDimension = useInViewSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+				breakdownDimension
+			) === true,
+		[ breakdownDimension ]
+	) as boolean | undefined;
+
 	// The tab structure (the values below and `hasUnattributedEvents`) is
 	// evaluated over a fixed 90-day discovery window in the datastore, so it is
 	// stable for the session — changing the dashboard date range never adds or
 	// removes tabs, only the metrics follow the selected range.
 	const breakdownValues = useInViewSelect(
 		( select: Select ) => {
+			if ( ! hasBreakdownDimension ) {
+				return undefined;
+			}
+
 			const values = select( MODULES_ANALYTICS_4 ).getBreakdownValues(
 				breakdownDimension,
 				eventNames
@@ -96,18 +115,30 @@ export function useSiteGoalsBreakdown(
 				supportedValues.includes( value )
 			);
 		},
-		[ breakdownDimension, eventNames, supportedValues ]
+		[
+			breakdownDimension,
+			eventNames,
+			supportedValues,
+			hasBreakdownDimension,
+		]
 	) as string[] | undefined;
 
 	const hasOtherSources =
 		( useInViewSelect(
 			( select: Select ) =>
-				select( MODULES_ANALYTICS_4 ).hasUnattributedEvents(
-					breakdownDimension,
-					detectionEventNames,
-					breakdownValues ?? []
-				),
-			[ breakdownDimension, detectionEventNames, breakdownValues ]
+				hasBreakdownDimension
+					? select( MODULES_ANALYTICS_4 ).hasUnattributedEvents(
+							breakdownDimension,
+							detectionEventNames,
+							breakdownValues ?? []
+					  )
+					: undefined,
+			[
+				breakdownDimension,
+				detectionEventNames,
+				breakdownValues,
+				hasBreakdownDimension,
+			]
 		) as boolean | undefined ) ?? false;
 
 	// The displayed Other sources count follows the selected date range; only
@@ -140,23 +171,20 @@ export function useSiteGoalsBreakdown(
 	const isOtherSourcesTab =
 		activeTabID === SITE_GOALS_BREAKDOWN_OTHER_SOURCES_TAB_ID;
 
+	const isBreakdownValueTab = hasBreakdownTabs && ! isOtherSourcesTab;
+
 	// Scopes every section report to the selected value tab. The "Other sources"
 	// tab has no server-side filter (its single metric comes from the
 	// unattributed counts above), so no filter is produced for it.
 	const breakdownFilter = useMemo( () => {
-		if ( ! hasBreakdownTabs || isOtherSourcesTab ) {
+		if ( ! isBreakdownValueTab ) {
 			return undefined;
 		}
 
 		return {
 			[ `customEvent:${ breakdownDimension }` ]: activeTabID,
 		};
-	}, [
-		hasBreakdownTabs,
-		isOtherSourcesTab,
-		activeTabID,
-		breakdownDimension,
-	] );
+	}, [ isBreakdownValueTab, activeTabID, breakdownDimension ] );
 
 	return {
 		breakdownDimension,
@@ -165,6 +193,7 @@ export function useSiteGoalsBreakdown(
 		activeTabID,
 		setSelectedTab,
 		isOtherSourcesTab,
+		isBreakdownValueTab,
 		hasOtherSources,
 		otherSourcesCount,
 		otherSourcesPreviousCount,

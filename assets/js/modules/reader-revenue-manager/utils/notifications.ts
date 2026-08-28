@@ -25,7 +25,7 @@ import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-mana
 /**
  * Checks whether a given CTA type has an abandoned setup.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Registry} registry Data registry.
  * @param {string}   ctaType  CTA type slug.

@@ -44,10 +44,12 @@ declare global {
 	var _googlesitekit:
 		| {
 				contentEvents?: ContentEventsConfig;
+				gtagUserData?: boolean;
 				gtagEvent?: (
 					name: string,
 					data?: Record< string, unknown >
 				) => void;
+				[ key: string ]: unknown;
 		  }
 		| undefined;
 
@@ -72,5 +74,34 @@ declare global {
 	// This is not fully typed yet. We will keep improving it as we migrate more files that use it.
 	var _googlesitekitBaseData: {
 		assetsURL: string;
+		enabledFeatures?: string[];
 	};
+
+	// This is not fully typed yet. We will keep improving it as we migrate more files that use it.
+	// eslint-disable-next-line camelcase
+	var gtag: Window[ 'gtag' ] | undefined;
+
+	var _googlesitekitConsentCategoryMap:
+		| Record< string, string[] >
+		| undefined;
+	var _googlesitekitConsents: Record< string, string > | undefined;
+
+	// Third-party WP Consent API globals.
+	// eslint-disable-next-line camelcase
+	var wp_consent_type: string | undefined;
+	// eslint-disable-next-line camelcase
+	var wp_fallback_consent_type: string | undefined;
+	// eslint-disable-next-line camelcase
+	var wp_has_consent: ( ( category: string ) => boolean ) | undefined;
+	// eslint-disable-next-line camelcase
+	var waitfor_consent_hook: boolean | undefined;
+
+	// Third-party WordPress plugin globals — no public type packages available.
+	/* eslint-disable @typescript-eslint/no-explicit-any */
+	var jQuery: any;
+	var mc4wp: any;
+	var Marionette: any;
+	var Backbone: any;
+	var PUM: any;
+	/* eslint-enable @typescript-eslint/no-explicit-any */
 }

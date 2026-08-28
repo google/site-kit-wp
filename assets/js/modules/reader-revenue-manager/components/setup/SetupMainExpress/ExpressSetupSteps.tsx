@@ -63,7 +63,7 @@ const ExpressSetupSteps: FC< ExpressSetupStepsProps > = ( {
 		),
 	};
 
-	const activeStep = Object.keys( steps ).indexOf( step );
+	const activeStep = step ? Object.keys( steps ).indexOf( step ) : -1;
 
 	return (
 		<Stepper activeStep={ activeStep } variant="rail">

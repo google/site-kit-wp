@@ -54,7 +54,9 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Admin_Post_List;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Contribute_With_Google_Block;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Create_CTA;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Create_Publication;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_CTAs;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publication;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publications;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publications_Legacy;
@@ -276,7 +278,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 * for the first time.
 	 *
 	 * @since 1.131.0
-	 * @since n.e.x.t Added webcontentpublisher service behind rrmExpressSetup.
+	 * @since 1.186.0 Added webcontentpublisher service behind rrmExpressSetup.
 	 *
 	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
@@ -444,6 +446,20 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				array(
 					'user_settings' => $this->user_settings,
 					'service'       => '',
+				)
+			);
+
+			$datapoints['GET:ctas'] = new Get_CTAs(
+				array(
+					'service'  => fn() => $this->get_service( 'webcontentpublisher' ),
+					'settings' => $settings,
+				)
+			);
+
+			$datapoints['POST:create-cta'] = new Create_CTA(
+				array(
+					'service'  => fn() => $this->get_service( 'webcontentpublisher' ),
+					'settings' => $settings,
 				)
 			);
 		}
@@ -840,6 +856,22 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				'label' => __( 'Reader Revenue Manager: Post types', 'google-site-kit' ),
 				'value' => implode( ', ', $settings['postTypes'] ),
 				'debug' => implode( ', ', $settings['postTypes'] ),
+			);
+		}
+
+		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
+			$debug_fields['reader_revenue_manager_organization_id'] = array(
+				'label' => __( 'Reader Revenue Manager: Organization ID', 'google-site-kit' ),
+				'value' => $settings['organizationID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['organizationID'] ),
+			);
+
+			$configured_ctas = implode( ', ', array_keys( (array) $settings['configuredCTAs'] ) );
+
+			$debug_fields['reader_revenue_manager_configured_ctas'] = array(
+				'label' => __( 'Reader Revenue Manager: Configured CTAs', 'google-site-kit' ),
+				'value' => $configured_ctas,
+				'debug' => $configured_ctas,
 			);
 		}
 

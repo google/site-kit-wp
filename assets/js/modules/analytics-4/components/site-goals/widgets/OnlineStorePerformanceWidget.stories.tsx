@@ -50,6 +50,7 @@ import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
 	provideModules,
+	provideSiteInfo,
 } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import OnlineStorePerformanceWidget from './OnlineStorePerformanceWidget';
@@ -846,6 +847,21 @@ TabbedBreakdown.args = {
 		seedTabbedBreakdown( registry );
 	},
 };
+
+export const TabbedBreakdownDeactivatedPlugin = Template.bind( {} ) as Story;
+TabbedBreakdownDeactivatedPlugin.storyName =
+	'Tabbed Breakdown (Deactivated Plugin)';
+TabbedBreakdownDeactivatedPlugin.args = {
+	selectedGoalDriverIDs: THREE_VISIBLE_GOAL_DRIVERS,
+	setupRegistry: ( registry ) => {
+		commonSetup( registry );
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [],
+		} );
+		seedTabbedBreakdown( registry );
+	},
+};
+TabbedBreakdownDeactivatedPlugin.scenario = {};
 
 export const TabbedBreakdownPartialData = Template.bind( {} ) as Story;
 TabbedBreakdownPartialData.storyName = 'Tabbed Breakdown (Partial Data)';

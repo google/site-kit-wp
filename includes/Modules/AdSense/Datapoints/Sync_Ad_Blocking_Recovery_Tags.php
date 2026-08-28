@@ -23,7 +23,7 @@ use WP_REST_Response;
 /**
  * Class for the sync ad blocking recovery tags datapoint.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ class Sync_Ad_Blocking_Recovery_Tags extends Datapoint implements Executable_Dat
 	/**
 	 * Module settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 * @var Module_Settings
 	 */
 	private $settings;
@@ -40,7 +40,7 @@ class Sync_Ad_Blocking_Recovery_Tags extends Datapoint implements Executable_Dat
 	/**
 	 * Ad Blocking Recovery Tag instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 * @var Ad_Blocking_Recovery_Tag
 	 */
 	private $ad_blocking_recovery_tag;
@@ -48,7 +48,7 @@ class Sync_Ad_Blocking_Recovery_Tags extends Datapoint implements Executable_Dat
 	/**
 	 * Callable to normalize account ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 * @var callable
 	 */
 	private $normalize_account_id;
@@ -56,7 +56,7 @@ class Sync_Ad_Blocking_Recovery_Tags extends Datapoint implements Executable_Dat
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -76,7 +76,7 @@ class Sync_Ad_Blocking_Recovery_Tags extends Datapoint implements Executable_Dat
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object on success, or WP_Error on failure.
@@ -94,7 +94,7 @@ class Sync_Ad_Blocking_Recovery_Tags extends Datapoint implements Executable_Dat
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param mixed        $response API response.
 	 * @param Data_Request $data     Data request object.

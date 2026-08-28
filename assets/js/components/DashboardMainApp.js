@@ -137,8 +137,6 @@ function getLastWidgetAnchor( {
 // complexity for this component.
 // eslint-disable-next-line complexity
 export default function DashboardMainApp() {
-	const siteGoalsEnabled = useFeature( 'siteGoals' );
-
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
 	const viewContext = useViewContext();
@@ -252,12 +250,10 @@ export default function DashboardMainApp() {
 	);
 
 	const isSiteGoalsActive = useSelect( ( select ) =>
-		siteGoalsEnabled
-			? select( CORE_WIDGETS ).isWidgetContextActive(
-					CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
-					widgetContextOptions
-			  )
-			: false
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
+			widgetContextOptions
+		)
 	);
 
 	const isContentActive = useSelect( ( select ) =>
@@ -446,16 +442,14 @@ export default function DashboardMainApp() {
 							lastWidgetAnchor === ANCHOR_ID_TRAFFIC,
 					} ) }
 				/>
-				{ siteGoalsEnabled && (
-					<WidgetContextRenderer
-						id={ ANCHOR_ID_SITE_GOALS }
-						slug={ CONTEXT_MAIN_DASHBOARD_SITE_GOALS }
-						className={ classnames( {
-							'googlesitekit-widget-context--last':
-								lastWidgetAnchor === ANCHOR_ID_SITE_GOALS,
-						} ) }
-					/>
-				) }
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_SITE_GOALS }
+					slug={ CONTEXT_MAIN_DASHBOARD_SITE_GOALS }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_SITE_GOALS,
+					} ) }
+				/>
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_CONTENT }
 					slug={ CONTEXT_MAIN_DASHBOARD_CONTENT }
@@ -503,7 +497,7 @@ export default function DashboardMainApp() {
 
 			{ configuredAudiences && <AudienceSelectionPanel /> }
 
-			{ siteGoalsEnabled && hasAnalyticsAccess && (
+			{ hasAnalyticsAccess && (
 				<Fragment>
 					<SiteGoalsSelectionPanel />
 					<SiteGoalsSurveyTriggers />

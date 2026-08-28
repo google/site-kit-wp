@@ -52,7 +52,7 @@ import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
  * the median views. The `report` filter depends on that median, so callers pass
  * it once known.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object} dates             The date range for the reports.
  * @param {number} [medianPageViews] The median page views the `report` filters against. Defaults to `0`.

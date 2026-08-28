@@ -29,7 +29,11 @@ import {
 	provideAnalytics4MockReport,
 	provideAnalyticsReportWithoutDateRangeData,
 } from '@/js/modules/analytics-4/utils/data-mock';
-import { DAY_IN_SECONDS, dateSub } from '@/js/util';
+import {
+	DAY_IN_SECONDS,
+	convertDateStringToUNIXTimestamp,
+	dateSub,
+} from '@/js/util';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import {
 	provideModuleRegistrations,
@@ -243,6 +247,15 @@ MainDashboardDataUnavailable.args = {
 				createTime,
 			};
 			const propertyID = property._id;
+
+			// `receiveGetSettings` writes directly to state, bypassing the
+			// `setPropertyCreateTime` action's string-to-UNIX-timestamp
+			// conversion, so convert it here to match what `report.js`'s
+			// gathering-data check expects.
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				propertyCreateTime:
+					convertDateStringToUNIXTimestamp( createTime ),
+			} );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )

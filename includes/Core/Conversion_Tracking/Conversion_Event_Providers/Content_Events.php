@@ -12,11 +12,12 @@ namespace Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers;
 
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
+use Google\Site_Kit\Core\Util\URL;
 
 /**
  * Class for handling generic content engagement events.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  * @access private
  * @ignore
  */
@@ -25,17 +26,39 @@ class Content_Events extends Conversion_Events_Provider {
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'content-events';
 
 	/**
-	 * Flag indicating whether content hooks have been bootstrapped.
+	 * Hosts an embedded iframe's `src` belongs to for a YouTube video.
 	 *
 	 * @since n.e.x.t
+	 */
+	const YOUTUBE_EMBED_HOSTS = array( 'youtube.com', 'www.youtube.com', 'm.youtube.com' );
+
+	/**
+	 * Host an embedded iframe's `src` belongs to for a Vimeo video.
+	 *
+	 * @since n.e.x.t
+	 */
+	const VIMEO_EMBED_HOST = 'player.vimeo.com';
+
+	/**
+	 * Flag indicating whether content hooks have been bootstrapped.
+	 *
+	 * @since 1.186.0
 	 * @var bool
 	 */
 	protected $bootstrapped = false;
 
 	/**
-	 * Gets the provider category.
+	 * Flag indicating whether the current request has rendered a Vimeo embed.
 	 *
 	 * @since n.e.x.t
+	 * @var bool
+	 */
+	protected $has_vimeo_embed = false;
+
+	/**
+	 * Gets the provider category.
+	 *
+	 * @since 1.186.0
 	 *
 	 * @return string Provider category.
 	 */
@@ -48,7 +71,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 *
 	 * Content events are always active and not conditional on any third-party plugin or feature flag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return bool Content Events are always enabled, so this is always `true`.
 	 */
@@ -62,7 +85,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 * Content engagement events are not conversion actions and should not be included
 	 * in conversion-event enumerations for Ads or ACR.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return array List of event names.
 	 */
@@ -71,9 +94,53 @@ class Content_Events extends Conversion_Events_Provider {
 	}
 
 	/**
-	 * Registers the script for the provider.
+	 * Gets the events this install can send, mapped to where each one can fire.
+	 *
+	 * Reports what the install makes possible, never what the current request did:
+	 * whether a post is paginated, embeds a Vimeo video or carries a `mailto:` link
+	 * is only knowable while a frontend page renders, and Site Health runs in
+	 * wp-admin. Nothing here reads the current request. Whether bbPress is active is
+	 * a site-wide fact, so `pagination_click` does report it.
+	 *
+	 * Keys are the event names as sent to GA and stay untranslated; the values are
+	 * translated for display.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @return array Map of event name to the pages or links it can fire on.
+	 */
+	public function get_eligible_events() {
+		return array(
+			'read_article'                                => __( 'single blog posts', 'google-site-kit' ),
+			'pagination_click'                            => class_exists( 'bbPress' )
+				? __( 'posts split into pages, bbPress topics', 'google-site-kit' )
+				: __( 'posts split into pages', 'google-site-kit' ),
+			'contact_link_click'                          => __( 'email, phone, SMS and messaging-app links', 'google-site-kit' ),
+			'outbound_link_click'                         => __( 'external links with rel="sponsored", rel="ugc" or rel="nofollow"', 'google-site-kit' ),
+			'video_start, video_progress, video_complete' => __( 'Vimeo embeds', 'google-site-kit' ),
+		);
+	}
+
+	/**
+	 * Gets the event names to show against this provider in Site Health.
+	 *
+	 * `get_event_names()` stays empty so these engagement events keep out of the Ads
+	 * conversion labels, Analytics conversion reporting and the conversion feature
+	 * metrics. That would leave this provider's Site Health row blank, so the row is
+	 * built from the eligible events instead.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Comma separated list of event names.
+	 */
+	public function get_debug_data() {
+		return implode( ', ', array_keys( $this->get_eligible_events() ) );
+	}
+
+	/**
+	 * Registers the script for the provider.
+	 *
+	 * @since 1.186.0
 	 *
 	 * @return Script Script instance.
 	 */
@@ -94,7 +161,7 @@ class Content_Events extends Conversion_Events_Provider {
 	/**
 	 * Registers any actions/hooks for this provider.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 */
 	public function register_hooks() {
 		$bootstrap = function () {
@@ -111,9 +178,28 @@ class Content_Events extends Conversion_Events_Provider {
 	/**
 	 * Registers content hooks once tag initialization occurs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 */
 	protected function register_content_hooks() {
+		add_filter( 'embed_oembed_html', array( $this, 'filter_embed_html' ) );
+
+		add_filter(
+			'render_block',
+			function ( $block_content, $block ) {
+				$block_name = $block['blockName'] ?? '';
+
+				// `core/embed` is the consolidated block name; WordPress 5.2's original
+				// oEmbed block split by provider, e.g. `core-embed/youtube`.
+				if ( 'core/embed' !== $block_name && 0 !== strpos( $block_name, 'core-embed/' ) ) {
+					return $block_content;
+				}
+
+				return $this->filter_embed_html( $block_content );
+			},
+			10,
+			2
+		);
+
 		add_action(
 			'wp_footer',
 			function () {
@@ -134,16 +220,80 @@ class Content_Events extends Conversion_Events_Provider {
 	}
 
 	/**
-	 * Gets the inline config data for content events.
+	 * Adds `enablejsapi=1` to a YouTube embed's iframe `src`, and records a Vimeo embed.
+	 *
+	 * Only ever touches the `src` of an iframe whose host is a YouTube embed host: every
+	 * other attribute, any wrapper markup around the iframe, and non-iframe embed markup
+	 * pass through unchanged. A Vimeo iframe is left alone too, since its player already
+	 * accepts the Vimeo Player SDK's messages without an opt-in parameter; only the
+	 * `has_vimeo_embed` flag is set, for `get_inline_config()` to publish.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @param string $html A single embed's HTML markup.
+	 * @return string The embed's HTML markup, with `enablejsapi=1` added when it is a YouTube iframe.
+	 */
+	public function filter_embed_html( $html ) {
+		if ( false === stripos( $html, '<iframe' ) ) {
+			return $html;
+		}
+
+		return preg_replace_callback(
+			'/<iframe\b[^>]*>/i',
+			array( $this, 'filter_embed_iframe_tag' ),
+			$html
+		);
+	}
+
+	/**
+	 * Filters a single `<iframe>` tag matched by `filter_embed_html()`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $matches Regex matches; `$matches[0]` is the full `<iframe …>` tag.
+	 * @return string The tag, with `enablejsapi=1` added to `src` when it is a YouTube embed.
+	 */
+	protected function filter_embed_iframe_tag( $matches ) {
+		$iframe_tag = $matches[0];
+
+		// Matches a quoted (single or double) or bare unquoted `src` value; the
+		// `??` below picks whichever one actually matched.
+		if ( ! preg_match( '/\ssrc=(?:"([^"]*)"|\'([^\']*)\'|([^\s"\'>]+))/i', $iframe_tag, $src_matches, PREG_UNMATCHED_AS_NULL ) ) {
+			return $iframe_tag;
+		}
+
+		$src_attribute = $src_matches[0];
+		$src           = $src_matches[1] ?? $src_matches[2] ?? $src_matches[3];
+		$src           = html_entity_decode( $src );
+		$host          = strtolower( (string) URL::parse( $src, PHP_URL_HOST ) );
+
+		if ( in_array( $host, self::YOUTUBE_EMBED_HOSTS, true ) ) {
+			$new_src = esc_url( add_query_arg( 'enablejsapi', 1, $src ) );
+
+			// Keeping the regex's leading space here stops the rewritten src
+			// from running into the previous attribute.
+			return str_replace( $src_attribute, " src=\"$new_src\"", $iframe_tag );
+		}
+
+		if ( self::VIMEO_EMBED_HOST === $host ) {
+			$this->has_vimeo_embed = true;
+		}
+
+		return $iframe_tag;
+	}
+
+	/**
+	 * Gets the inline config data for content events.
+	 *
+	 * @since 1.186.0
 	 *
 	 * @return array Inline config data.
 	 */
 	protected function get_inline_config() {
 		return array(
-			'postID'       => (int) get_queried_object_id(),
-			'isSinglePost' => is_singular( 'post' ),
+			'postID'        => (int) get_queried_object_id(),
+			'isSinglePost'  => is_singular( 'post' ),
+			'hasVimeoEmbed' => (bool) $this->has_vimeo_embed,
 		);
 	}
 }

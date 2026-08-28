@@ -54,7 +54,7 @@ const DEFAULT_USER_LIST_ARGS = {
  * Normalizes user list args to a whole page number and a string search term.
  *
  * @since 1.175.0
- * @since n.e.x.t Renamed from normalizeEligibleSubscribersArgs.
+ * @since 1.186.0 Renamed from normalizeEligibleSubscribersArgs.
  *
  * @param {Object} [args] Page and search args.
  * @return {Object} Object with a positive integer `page` and a string `search`.
@@ -79,7 +79,7 @@ function normalizeUserListArgs( args = {} ) {
  * Builds the cache key a user list result is stored under.
  *
  * @since 1.175.0
- * @since n.e.x.t Renamed from getEligibleSubscribersCacheKey.
+ * @since 1.186.0 Renamed from getEligibleSubscribersCacheKey.
  *
  * @param {Object} [args] Page and search args.
  * @return {string} Cache key for the normalized args.
@@ -365,7 +365,8 @@ const baseActions = {
 	 * Also resets the eligible subscribers cache on success, since unsubscribing
 	 * makes the user eligible to be invited again.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
+	 * @since n.e.x.t Resets the eligible subscribers cache on success.
 	 *
 	 * @param {number} userID Subscribed user ID.
 	 * @return {Object} Object with `response` and `error`.
@@ -458,7 +459,7 @@ const baseActions = {
 	/**
 	 * Marks an unsubscribe request as in progress for a user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {number} userID User ID.
 	 * @return {Object} Redux-style action.
@@ -473,7 +474,7 @@ const baseActions = {
 	/**
 	 * Marks a user's unsubscribe request as finished.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {number} userID User ID.
 	 * @return {Object} Redux-style action.
@@ -511,7 +512,8 @@ const baseActions = {
 	 * Also clears justUnsubscribedUsers, since a full refetch supersedes any
 	 * pending unsubscribe snapshots taken from the stale cache.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
+	 * @since n.e.x.t Clears the just-unsubscribed users snapshot.
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -603,7 +605,7 @@ export const baseReducer = createReducer( ( state, action ) => {
  * Returns the given users when they form an array, and an empty array otherwise.
  *
  * @since 1.175.0
- * @since n.e.x.t Renamed from sanitizeEligibleSubscribersUsers.
+ * @since 1.186.0 Renamed from sanitizeEligibleSubscribersUsers.
  *
  * @param {Array} users Users from a user list response.
  * @return {Array} The given users, or an empty array.
@@ -616,7 +618,7 @@ function sanitizeUserListUsers( users ) {
  * Returns the given total when it reads as a whole number of zero or more, and zero otherwise.
  *
  * @since 1.175.0
- * @since n.e.x.t Renamed from sanitizeEligibleSubscribersTotal.
+ * @since 1.186.0 Renamed from sanitizeEligibleSubscribersTotal.
  *
  * @param {number} total Total from a user list response.
  * @return {number} The given total, or zero.
@@ -629,7 +631,7 @@ function sanitizeUserListTotal( total ) {
  * Returns the given page count when it reads as a whole number of zero or more, and zero otherwise.
  *
  * @since 1.175.0
- * @since n.e.x.t Renamed from sanitizeEligibleSubscribersTotalPages.
+ * @since 1.186.0 Renamed from sanitizeEligibleSubscribersTotalPages.
  *
  * @param {number} totalPages Page count from a user list response.
  * @return {number} The given page count, or zero.
@@ -866,7 +868,7 @@ const baseSelectors = {
 	/**
 	 * Gets the subscribed users list and its total for the given page and search args.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} state                 Data store's state.
 	 * @param {Object} [subscribedUsersArgs] Page and search args.
@@ -980,7 +982,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether a user's unsubscribe request is still running.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} state  Data store's state.
 	 * @param {number} userID User ID.

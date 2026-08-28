@@ -184,7 +184,6 @@ class REST_Email_Reporting_Controller {
 					$paths,
 					array(
 						'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting',
-						'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-eligible-subscribers',
 						'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-errors',
 					)
 				);
@@ -388,7 +387,7 @@ class REST_Email_Reporting_Controller {
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function () {
 							$this->health_check->check_stale_tasks();
-							$errors = $this->email_log_batch_query->get_latest_batch_error();
+							$errors = $this->email_log_batch_query->get_latest_batch_error( get_current_user_id() );
 
 							return new WP_REST_Response( is_string( $errors ) ? json_decode( $errors, true ) : array() );
 						},
