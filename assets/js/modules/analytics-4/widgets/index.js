@@ -173,6 +173,25 @@ const LeadGenerationPerformanceWidgetPDF = lazyWithPreload( () =>
 	)
 );
 
+/**
+ * Builds the `isActive` condition for a Site Goals widget.
+ *
+ * `isActivePDFWidget` reads only `pdf.isActive` and never a widget's own
+ * `isActive`. The widget registration and its `pdf` block therefore set the
+ * same condition.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} goalType The widget's goal type, one of `GOAL_TYPES`.
+ * @return {Function} Condition that takes the registry `select` and returns whether the widget renders.
+ */
+function isSiteGoalsWidgetActive( goalType ) {
+	return ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+			goalType
+		) === true;
+}
+
 export function registerWidgets( widgets ) {
 	// Register Analytics 4 Widgets.
 
@@ -884,14 +903,12 @@ export function registerWidgets( widgets ) {
 			priority: 1,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
-			isActive: ( select ) =>
-				select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
-					GOAL_TYPES.ECOMMERCE
-				) === true,
+			isActive: isSiteGoalsWidgetActive( GOAL_TYPES.ECOMMERCE ),
 			pdf: {
 				Component: OnlineStorePerformanceWidgetPDF,
 				getData: getOnlineStorePerformancePDFData,
 				label: SITE_GOALS_ONLINE_STORE_WIDGET_TITLE,
+				isActive: isSiteGoalsWidgetActive( GOAL_TYPES.ECOMMERCE ),
 			},
 		},
 		[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
@@ -905,14 +922,12 @@ export function registerWidgets( widgets ) {
 			priority: 2,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
-			isActive: ( select ) =>
-				select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
-					GOAL_TYPES.LEAD
-				) === true,
+			isActive: isSiteGoalsWidgetActive( GOAL_TYPES.LEAD ),
 			pdf: {
 				Component: LeadGenerationPerformanceWidgetPDF,
 				getData: getLeadGenerationPerformancePDFData,
 				label: SITE_GOALS_LEAD_GENERATION_WIDGET_TITLE,
+				isActive: isSiteGoalsWidgetActive( GOAL_TYPES.LEAD ),
 			},
 		},
 		[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]

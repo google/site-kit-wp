@@ -147,9 +147,8 @@ export default async function getOnlineStorePerformancePDFData( {
 		aggregatedLabel: SITE_GOALS_ONLINE_STORE_WIDGET_TITLE,
 	} );
 
-	// With no group the Online store performance section has nothing to show.
-	// `data: null` keeps the section out of the PDF report rather than filling
-	// it with a placeholder.
+	// With no group the Online store performance section has nothing to show,
+	// so `data: null` keeps it out of the PDF report.
 	if ( groups.length === 0 ) {
 		return { data: null };
 	}

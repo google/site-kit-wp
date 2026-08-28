@@ -84,13 +84,17 @@ function getRequiredReportOptions(
  *
  * @since n.e.x.t
  *
- * @param {Object} registry The WordPress data registry the request runs against.
+ * @param {Object}      registry The WordPress data registry the request runs against.
+ * @param {AbortSignal} signal   Signal that cancels the PDF export. Defaults to a signal that never aborts.
  * @return {Promise<Object>} The four Online store performance reports.
  */
-function fetchOnlineStorePDFReports( registry: Registry ) {
+function fetchOnlineStorePDFReports(
+	registry: Registry,
+	signal: AbortSignal = new AbortController().signal
+) {
 	return fetchSiteGoalsPDFReports( {
 		registry,
-		signal: new AbortController().signal,
+		signal,
 		groupedReportOptions: getRequiredReportOptions(
 			getStoreGroupedReportOptions(
 				SITE_GOALS_PDF_TEST_DATES,
@@ -156,5 +160,45 @@ describe( 'fetchSiteGoalsPDFReports', () => {
 		);
 
 		expect( console ).toHaveErrored();
+	} );
+
+	it( 'returns no report when the user cancels the export', async () => {
+		const controller = new AbortController();
+		const deferredResolvers: Array< () => void > = [];
+
+		fetchMock.get(
+			analyticsReportEndpoint,
+			() =>
+				new Promise< { body: unknown; status: number } >(
+					( resolve ) => {
+						deferredResolvers.push( () =>
+							resolve( {
+								body: {
+									code: 'test_error',
+									message: 'Report request failed.',
+									data: { status: 500 },
+								},
+								status: 500,
+							} )
+						);
+					}
+				),
+			{ overwriteRoutes: true }
+		);
+
+		const pdfReportsRun = fetchOnlineStorePDFReports(
+			registry,
+			controller.signal
+		);
+
+		// Wait for all four report requests to dispatch before canceling.
+		while ( deferredResolvers.length < 4 ) {
+			await new Promise( ( advance ) => setTimeout( advance, 0 ) );
+		}
+
+		controller.abort();
+		deferredResolvers.forEach( ( resolve ) => resolve() );
+
+		await expect( pdfReportsRun ).resolves.toEqual( {} );
 	} );
 } );

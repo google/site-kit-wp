@@ -88,7 +88,7 @@ const RATE_TILE_BACKGROUND_BY_CHANGE_TYPE: Record< PDFChangeType, string > = {
  */
 function getChange( metric: SiteGoalsPDFMetric | undefined ) {
 	// A previous value of zero leaves nothing to compare against, so the tile
-	// shows no change badge. The dashboard's `Tile` does the same. We check for
+	// shows no change badge, the same as the dashboard's `Tile`. We check for
 	// zero here because `calculateChange` reads zero to zero as no change.
 	if ( ! metric || metric.previous === 0 ) {
 		return {};
@@ -125,9 +125,7 @@ function getRateTileBackgroundColor(
  * Builds the change props for one Site Goals PDF metric tile.
  *
  * `PDFMetricTile` renders its caption whenever `changeLabel` is set, and its
- * badge only when there is a change. So we pass `changeLabel` only alongside
- * a change, and the tile shows the badge and the caption together, or
- * neither.
+ * badge only when there is a change.
  *
  * @since n.e.x.t
  *

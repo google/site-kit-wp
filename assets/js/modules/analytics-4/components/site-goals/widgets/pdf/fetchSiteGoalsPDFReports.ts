@@ -51,7 +51,8 @@ export type SiteGoalsPDFReports = Pick<
  * parallel.
  *
  * Throws when any one of the four requests fails. The export catches that
- * error and leaves the widget's section out of the PDF report.
+ * error and leaves the widget's section out of the PDF report. A cancel is not
+ * a failure, so a cancelled export gets back no report and no error.
  *
  * @since n.e.x.t
  *
@@ -60,7 +61,7 @@ export type SiteGoalsPDFReports = Pick<
  * @param {AbortSignal} params.signal                  Signal that cancels the PDF export.
  * @param {Object}      params.groupedReportOptions    Site Goals PDF report options that carry the breakdown dimension.
  * @param {Object}      params.aggregatedReportOptions Site Goals PDF report options that carry no breakdown dimension.
- * @return {Promise<Object>} The four Analytics reports, under the property names `shapeSiteGoalsPDFData` reads.
+ * @return {Promise<Object>} The four Analytics reports, under the property names `shapeSiteGoalsPDFData` reads, or no report when the export is cancelled.
  */
 export default async function fetchSiteGoalsPDFReports( {
 	registry,
@@ -91,6 +92,13 @@ export default async function fetchSiteGoalsPDFReports( {
 	)?.error;
 
 	if ( reportError ) {
+		// A cancelled export rejects every in-flight request. Returning here
+		// keeps cancellation out of the failure path, and the loader's own
+		// `signal.aborted` check turns it into `{ data: null }`.
+		if ( signal.aborted ) {
+			return {};
+		}
+
 		throw new Error(
 			`Site Kit: Site Goals report unavailable. ${ reportError.message }`
 		);

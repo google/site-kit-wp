@@ -32,7 +32,7 @@ const styles = createPDFStyles( {
 	container: {
 		alignItems: 'center',
 		marginRight: 10,
-		marginVertical: 20.5,
+		marginVertical: 14,
 		width: 9,
 	},
 	line: {

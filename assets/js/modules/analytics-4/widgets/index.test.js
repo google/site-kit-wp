@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { isActivePDFWidget } from '@/js/components/pdf-export/pdf-widget-eligibility';
 import { enabledFeatures } from '@/js/features';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
@@ -298,6 +299,59 @@ describe( 'Analytics 4 widget registrations', () => {
 				// it renders the widget's section.
 				const loadedModule = await widget.pdf.Component.preload();
 				expect( loadedModule.default ).toBe( Component );
+			}
+		);
+
+		it.each( [
+			[
+				'only ecommerce active',
+				{ activeWidgets: [ 'ecommerce' ] },
+				[ 'purchase', 'contact' ],
+				[ 'analyticsOnlineStorePerformance' ],
+			],
+			[
+				'only lead active',
+				{ activeWidgets: [ 'lead' ] },
+				[ 'purchase', 'contact' ],
+				[ 'analyticsLeadGenerationPerformance' ],
+			],
+			[
+				'both active',
+				{ activeWidgets: [ 'ecommerce', 'lead' ] },
+				[ 'purchase', 'contact' ],
+				ALL_SITE_GOALS_WIDGETS,
+			],
+			[
+				'neither active',
+				{ activeWidgets: [] },
+				[ 'purchase', 'contact' ],
+				[],
+			],
+		] )(
+			'should include only the active Site Goals widgets in the PDF report when %s',
+			(
+				_,
+				siteGoalsSettings,
+				detectedEvents,
+				expectedPDFWidgetSlugs
+			) => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSiteGoalsSettings( siteGoalsSettings );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( { detectedEvents } );
+				registerWidgets( widgets );
+
+				const pdfWidgetSlugs = ALL_SITE_GOALS_WIDGETS.filter(
+					( slug ) =>
+						isActivePDFWidget(
+							registry.select( CORE_WIDGETS ).getWidget( slug ),
+							registry.select
+						)
+				);
+
+				expect( pdfWidgetSlugs ).toEqual( expectedPDFWidgetSlugs );
 			}
 		);
 	} );

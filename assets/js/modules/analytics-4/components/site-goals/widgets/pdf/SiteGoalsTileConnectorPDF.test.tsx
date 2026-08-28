@@ -50,6 +50,21 @@ function renderConnectorShapeStyles(): Record< string, unknown >[] {
 	} );
 }
 
+/**
+ * Renders the connector and reads the flattened style of the column it draws in.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Object} The style of the connector's own column.
+ */
+function renderConnectorColumnStyle(): Record< string, unknown > {
+	const tree = TestRenderer.create(
+		<SiteGoalsTileConnectorPDF />
+	).toJSON() as ReactTestRendererJSON;
+
+	return Object.assign( {}, ...[ tree.props.style ].flat() );
+}
+
 describe( 'SiteGoalsTileConnectorPDF', () => {
 	it( 'breaks the divider line with a round dot near its top', () => {
 		const [ lineAboveDot, dot ] = renderConnectorShapeStyles();
@@ -66,6 +81,12 @@ describe( 'SiteGoalsTileConnectorPDF', () => {
 
 		expect( lineBelowDot.width ).toBe( scalePDFValue( 2 ) );
 		expect( lineBelowDot.flex ).toBe( 1 );
+	} );
+
+	it( 'sets the gap above and below the divider line', () => {
+		const column = renderConnectorColumnStyle();
+
+		expect( column.marginVertical ).toBe( scalePDFValue( 14 ) );
 	} );
 
 	it( 'draws the dot and both line segments in one color', () => {

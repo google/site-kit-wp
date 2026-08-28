@@ -223,7 +223,7 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 		} );
 
 		// Every metric has a previous value of zero, so no tile shows a change
-		// badge. A tile with no badge shows no caption either.
+		// badge.
 		expect( text ).not.toContain( 'Vs. prev. 28 days' );
 	} );
 
@@ -239,9 +239,8 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 			comparisonLabel: 'Vs. prev. 28 days',
 		} );
 
-		// The group has only the total, so the one tile renders its value as
-		// `0`. A "0%" in the text can then only come from a change badge, and
-		// zero sales in both periods leave nothing to compare against.
+		// The group has only the total, so a `0%` in the text can only come
+		// from a change badge.
 		expect( text ).not.toContain( '0%' );
 		expect( text ).not.toContain( 'Vs. prev. 28 days' );
 	} );

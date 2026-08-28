@@ -74,8 +74,7 @@ const SiteGoalsSectionPDF: FC< SiteGoalsSectionPDFProps > = ( {
 	totalSubtitle,
 	dateRangeLength,
 } ) => {
-	// With no card the section would print its heading with nothing under it,
-	// so it renders nothing at all.
+	// A section with no card is a heading with nothing under it.
 	if ( groups.length === 0 ) {
 		return null;
 	}

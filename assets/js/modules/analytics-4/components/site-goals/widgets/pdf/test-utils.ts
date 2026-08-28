@@ -105,9 +105,7 @@ export function buildAggregatedTotalsRows(
  *
  * The report store removes `reportID` before the request goes out, so the mock
  * cannot tell the reports apart by name. It reads what each request asks for
- * instead. Only the discovery report carries the `emptyFilter` filter type.
- * Only the grouped reports carry the breakdown dimension. Only the engagement
- * reports ask for the engagement rate.
+ * instead.
  *
  * @since n.e.x.t
  *

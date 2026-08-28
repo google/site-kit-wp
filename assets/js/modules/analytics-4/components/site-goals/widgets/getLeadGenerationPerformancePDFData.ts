@@ -141,9 +141,8 @@ export default async function getLeadGenerationPerformancePDFData( {
 		aggregatedLabel: SITE_GOALS_LEAD_GENERATION_WIDGET_TITLE,
 	} );
 
-	// With no group the Lead generation performance section has nothing to show.
-	// `data: null` keeps the section out of the PDF report rather than filling
-	// it with a placeholder.
+	// With no group the Lead generation performance section has nothing to show,
+	// so `data: null` keeps it out of the PDF report.
 	if ( groups.length === 0 ) {
 		return { data: null };
 	}
