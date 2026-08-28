@@ -94,6 +94,50 @@ class Content_Events extends Conversion_Events_Provider {
 	}
 
 	/**
+	 * Gets the events this install can send, mapped to where each one can fire.
+	 *
+	 * Reports what the install makes possible, never what the current request did:
+	 * whether a post is paginated, embeds a Vimeo video or carries a `mailto:` link
+	 * is only knowable while a frontend page renders, and Site Health runs in
+	 * wp-admin. Nothing here reads the current request. Whether bbPress is active is
+	 * a site-wide fact, so `pagination_click` does report it.
+	 *
+	 * Keys are the event names as sent to GA and stay untranslated; the values are
+	 * translated for display.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Map of event name to the pages or links it can fire on.
+	 */
+	public function get_eligible_events() {
+		return array(
+			'read_article'                                => __( 'single blog posts', 'google-site-kit' ),
+			'pagination_click'                            => class_exists( 'bbPress' )
+				? __( 'posts split into pages, bbPress topics', 'google-site-kit' )
+				: __( 'posts split into pages', 'google-site-kit' ),
+			'contact_link_click'                          => __( 'email, phone, SMS and messaging-app links', 'google-site-kit' ),
+			'outbound_link_click'                         => __( 'external links with rel="sponsored", rel="ugc" or rel="nofollow"', 'google-site-kit' ),
+			'video_start, video_progress, video_complete' => __( 'Vimeo embeds', 'google-site-kit' ),
+		);
+	}
+
+	/**
+	 * Gets the event names to show against this provider in Site Health.
+	 *
+	 * `get_event_names()` stays empty so these engagement events keep out of the Ads
+	 * conversion labels, Analytics conversion reporting and the conversion feature
+	 * metrics. That would leave this provider's Site Health row blank, so the row is
+	 * built from the eligible events instead.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Comma separated list of event names.
+	 */
+	public function get_debug_data() {
+		return implode( ', ', array_keys( $this->get_eligible_events() ) );
+	}
+
+	/**
 	 * Registers the script for the provider.
 	 *
 	 * @since 1.186.0

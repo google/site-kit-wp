@@ -1,5 +1,5 @@
 /**
- * InviteSearchInput component.
+ * UserSearchInput component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -34,8 +34,8 @@ import { __ } from '@wordpress/i18n';
 import VisuallyHidden from '@/js/components/VisuallyHidden';
 import CloseIcon from '@/svg/icons/close.svg';
 
-export default function InviteSearchInput( { value = '', onChange } ) {
-	const instanceID = useInstanceId( InviteSearchInput, 'InviteSearchInput' );
+export default function UserSearchInput( { value = '', onChange } ) {
+	const instanceID = useInstanceId( UserSearchInput, 'UserSearchInput' );
 
 	const handleChange = useCallback(
 		( event ) => onChange( event.target.value ),
@@ -47,7 +47,7 @@ export default function InviteSearchInput( { value = '', onChange } ) {
 	}, [ onChange ] );
 
 	return (
-		<div className="googlesitekit-invite-search-input">
+		<div className="googlesitekit-user-search-input">
 			<VisuallyHidden>
 				<label htmlFor={ instanceID }>
 					{ __(
@@ -59,7 +59,7 @@ export default function InviteSearchInput( { value = '', onChange } ) {
 			<input
 				id={ instanceID }
 				type="text"
-				className="googlesitekit-invite-search-input__input"
+				className="googlesitekit-user-search-input__input"
 				placeholder={ __(
 					'Search user name, role, or email',
 					'google-site-kit'
@@ -69,7 +69,7 @@ export default function InviteSearchInput( { value = '', onChange } ) {
 			/>
 			{ value && (
 				<span
-					className="googlesitekit-invite-search-input__clear"
+					className="googlesitekit-user-search-input__clear"
 					onClick={ handleClear }
 					onKeyDown={ ( event ) => {
 						if ( event.key === 'Enter' || event.key === ' ' ) {
@@ -88,7 +88,7 @@ export default function InviteSearchInput( { value = '', onChange } ) {
 	);
 }
 
-InviteSearchInput.propTypes = {
+UserSearchInput.propTypes = {
 	value: PropTypes.string,
 	onChange: PropTypes.func.isRequired,
 };
