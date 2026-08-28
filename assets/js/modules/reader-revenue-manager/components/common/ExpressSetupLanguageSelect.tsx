@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { ComponentProps, FC } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -31,18 +31,12 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Option, Select } from 'googlesitekit-components';
+import { ExpressSetupSelectProps } from '@/js/modules/reader-revenue-manager/components/types';
 import { getLocale, languageCodeFormat, languageCodes } from '@/js/util';
 
 interface LanguageOption {
 	code: typeof languageCodes[ number ];
 	displayName: string;
-}
-
-type SelectProps = Omit< ComponentProps< typeof Select >, 'id' | 'onChange' >;
-
-interface PublicationSetupLanguageSelectProps extends SelectProps {
-	id: string;
-	onChange: ( value: string ) => void;
 }
 
 export function getOptions() {
@@ -74,9 +68,11 @@ export function getOptions() {
 	);
 }
 
-const PublicationSetupLanguageSelect: FC<
-	PublicationSetupLanguageSelectProps
-> = ( { id, onChange, ...props } ) => {
+const PublicationSetupLanguageSelect: FC< ExpressSetupSelectProps > = ( {
+	id,
+	onChange,
+	...props
+} ) => {
 	const options = useMemo( () => getOptions(), [] );
 
 	const onEnhancedChange = useCallback(

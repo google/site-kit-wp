@@ -25,9 +25,14 @@ import { ElementType, ReactNode } from 'react';
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_SETUP_FORM,
+	SHOW_PUBLICATION_CREATE,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { Story } from '@/js/types/Story';
 import {
@@ -104,20 +109,20 @@ WithPublicationsWithError.args = {
 };
 WithPublicationsWithError.scenario = {};
 
-export const WithoutPublications = Template.bind( {} ) as Story;
-WithoutPublications.storyName = 'Without Publications';
-WithoutPublications.args = {
+export const CreatePublication = Template.bind( {} ) as Story;
+CreatePublication.storyName = 'Create Publication';
+CreatePublication.args = {
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetPublications( [] );
 	},
 };
-WithoutPublications.scenario = {};
+CreatePublication.scenario = {};
 
-export const WithoutPublicationsWithError = Template.bind( {} ) as Story;
-WithoutPublicationsWithError.storyName = 'Without Publications with Error';
-WithoutPublicationsWithError.args = {
+export const CreatePublicationWithError = Template.bind( {} ) as Story;
+CreatePublicationWithError.storyName = 'Create Publication with Error';
+CreatePublicationWithError.args = {
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -134,24 +139,36 @@ WithoutPublicationsWithError.args = {
 		);
 	},
 };
-WithoutPublicationsWithError.scenario = {};
+CreatePublicationWithError.scenario = {};
 
-export const WithoutPublicationsWithoutSiteInfo = Template.bind( {} ) as Story;
-WithoutPublicationsWithoutSiteInfo.storyName =
-	'Without Publications without Site Info';
-WithoutPublicationsWithoutSiteInfo.args = {
+export const CreatePublicationWithPublications = Template.bind( {} ) as Story;
+CreatePublicationWithPublications.storyName =
+	'Create Publication with Publications';
+CreatePublicationWithPublications.args = {
 	setupRegistry: ( registry ) => {
-		provideSiteInfo( registry, {
-			siteName: undefined,
-			siteLocale: undefined,
-		} );
+		providePublications( registry, publications );
+
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+				[ SHOW_PUBLICATION_CREATE ]: true,
+			} );
+	},
+};
+CreatePublicationWithPublications.scenario = {};
+
+export const CreatePublicationWithSiteInfo = Template.bind( {} ) as Story;
+CreatePublicationWithSiteInfo.storyName = 'Create Publication with Site Info';
+CreatePublicationWithSiteInfo.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteInfo( registry, { siteLocale: 'en-US' } );
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetPublications( [] );
 	},
 };
-WithoutPublicationsWithoutSiteInfo.scenario = {};
+CreatePublicationWithSiteInfo.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMainExpress/StepPublicationSetup',
@@ -167,7 +184,6 @@ export default {
 					},
 				];
 
-				provideSiteInfo( registry, { siteLocale: 'en-US' } );
 				provideModules( registry, moduleData );
 				provideModuleRegistrations( registry, moduleData );
 

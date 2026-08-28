@@ -25,9 +25,6 @@ import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
 	CREATE_PUBLICATION_FORM,
-	EXPRESS_SETUP_CTAS,
-	EXPRESS_SETUP_STEPS,
-	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	SHOW_PUBLICATION_CREATE,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
@@ -39,7 +36,6 @@ import {
 	freezeFetch,
 	provideModuleRegistrations,
 	provideModules,
-	providePublications,
 	provideSiteInfo,
 	render,
 	waitFor,
@@ -73,21 +69,6 @@ describe( 'CreatePublication', () => {
 
 		provideModules( registry, moduleData );
 		provideModuleRegistrations( registry, moduleData );
-		providePublications( registry, publications );
-
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {
-				configuredCTAs: {},
-				postTypes: [ 'post' ],
-				snippetMode: 'post_types',
-			} );
-
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.finishResolution( 'getSettings', [] );
-
-		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION }`;
 	} );
 
 	it.each( [
@@ -101,9 +82,12 @@ describe( 'CreatePublication', () => {
 		( languageCode, language, regionCode, region, locale ) => {
 			provideSiteInfo( registry, { siteLocale: locale } );
 
-			const { container } = render( <CreatePublication />, {
-				registry,
-			} );
+			const { container } = render(
+				<CreatePublication onComplete={ () => {} } />,
+				{
+					registry,
+				}
+			);
 
 			const selectLabels = container.querySelectorAll(
 				'.mdc-select__selected-text'
@@ -126,9 +110,12 @@ describe( 'CreatePublication', () => {
 			siteName: undefined,
 		} );
 
-		const { getByRole } = render( <CreatePublication />, {
-			registry,
-		} );
+		const { getByRole } = render(
+			<CreatePublication onComplete={ () => {} } />,
+			{
+				registry,
+			}
+		);
 
 		const submitButton = getByRole( 'button', {
 			name: 'Create publication',
@@ -165,9 +152,12 @@ describe( 'CreatePublication', () => {
 
 		freezeFetch( settingsEndpoint );
 
-		const { getByRole } = render( <CreatePublication />, {
-			registry,
-		} );
+		const { getByRole } = render(
+			<CreatePublication onComplete={ () => {} } />,
+			{
+				registry,
+			}
+		);
 
 		const submitButton = getByRole( 'button', {
 			name: 'Create publication',
@@ -184,7 +174,7 @@ describe( 'CreatePublication', () => {
 		} );
 	} );
 
-	it( 'should navigate to the next step if submission is successful', async () => {
+	it( 'should call the complete handler if submission is successful', async () => {
 		fetchMock.postOnce( createPublicationEndpoint, {
 			body: publications[ 0 ],
 			status: 200,
@@ -192,9 +182,14 @@ describe( 'CreatePublication', () => {
 
 		fetchMock.postOnce( settingsEndpoint, {} );
 
-		const { getByRole } = render( <CreatePublication />, {
-			registry,
-		} );
+		const onComplete = jest.fn();
+
+		const { getByRole } = render(
+			<CreatePublication onComplete={ onComplete } />,
+			{
+				registry,
+			}
+		);
 
 		fireEvent.click( getByRole( 'checkbox' ) );
 
@@ -203,9 +198,7 @@ describe( 'CreatePublication', () => {
 		);
 
 		await waitFor( () => {
-			expect( global.location.href ).toContain(
-				`step=${ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE }`
-			);
+			expect( onComplete ).toHaveBeenCalledWith( false );
 		} );
 
 		expect( fetchMock ).toHaveFetched( createPublicationEndpoint );
@@ -222,9 +215,14 @@ describe( 'CreatePublication', () => {
 			status: 500,
 		} );
 
-		const { getByRole } = render( <CreatePublication />, {
-			registry,
-		} );
+		const onComplete = jest.fn();
+
+		const { getByRole } = render(
+			<CreatePublication onComplete={ onComplete } />,
+			{
+				registry,
+			}
+		);
 
 		fireEvent.click( getByRole( 'checkbox' ) );
 
@@ -238,10 +236,7 @@ describe( 'CreatePublication', () => {
 			);
 		} );
 
-		expect( global.location.href ).toContain(
-			`step=${ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION }`
-		);
-
+		expect( onComplete ).not.toHaveBeenCalled();
 		expect( fetchMock ).not.toHaveFetched( settingsEndpoint );
 		expect( console ).toHaveErrored();
 	} );
@@ -261,9 +256,14 @@ describe( 'CreatePublication', () => {
 			status: 500,
 		} );
 
-		const { getByRole } = render( <CreatePublication />, {
-			registry,
-		} );
+		const onComplete = jest.fn();
+
+		const { getByRole } = render(
+			<CreatePublication onComplete={ onComplete } />,
+			{
+				registry,
+			}
+		);
 
 		fireEvent.click( getByRole( 'checkbox' ) );
 
@@ -282,36 +282,7 @@ describe( 'CreatePublication', () => {
 			).toBe( false );
 		} );
 
-		expect( global.location.href ).toContain(
-			`step=${ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION }`
-		);
-
+		expect( onComplete ).not.toHaveBeenCalled();
 		expect( console ).toHaveErrored();
 	} );
-
-	it.each( [
-		{
-			cta: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
-			description:
-				/To set up a newsletter sign-up form using Reader Revenue Manager, you will need to create a publication/,
-		},
-		{
-			cta: undefined,
-			description:
-				/To use Reader Revenue Manager, you will need to create a publication/,
-		},
-	] )(
-		'renders the expected description when the CTA is $cta',
-		( { cta, description } ) => {
-			global.location.href = cta
-				? `http://example.com/?cta=${ cta }&step=${ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION }`
-				: `http://example.com/?step=${ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION }`;
-
-			const { getByText } = render( <CreatePublication />, {
-				registry,
-			} );
-
-			expect( getByText( description ) ).toBeInTheDocument();
-		}
-	);
 } );

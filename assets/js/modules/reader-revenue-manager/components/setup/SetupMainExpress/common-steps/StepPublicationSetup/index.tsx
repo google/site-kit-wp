@@ -48,11 +48,13 @@ import CreatePublication from './CreatePublication';
 
 interface StepPublicationSetupProps {
 	connectDescription?: string;
+	createDescription?: string;
 	onComplete: ( hasAcceptedTerms: boolean ) => void;
 }
 
 const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 	connectDescription,
+	createDescription,
 	onComplete,
 } ) => {
 	const [ showPublicationCreate, setShowPublicationCreate ] =
@@ -105,7 +107,10 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 	return (
 		<div className="googlesitekit-rrm-express-setup-step">
 			{ showPublicationCreate ? (
-				<CreatePublication />
+				<CreatePublication
+					description={ createDescription }
+					onComplete={ onComplete }
+				/>
 			) : (
 				<ConnectPublication
 					description={ connectDescription }

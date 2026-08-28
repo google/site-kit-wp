@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { ComponentProps, FC } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -31,19 +31,15 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Option, Select } from 'googlesitekit-components';
-import { allCountries } from '@/js/modules/analytics-4/utils/countries-timezones';
+import { ExpressSetupSelectProps } from '@/js/modules/reader-revenue-manager/components/types';
 import { regionCodeFormat } from '@/js/util';
+import { allCountries } from '@/js/util/countries-timezones';
 
-type SelectProps = Omit< ComponentProps< typeof Select >, 'id' | 'onChange' >;
-
-interface PublicationSetupRegionSelectProps extends SelectProps {
-	id: string;
-	onChange: ( value: string ) => void;
-}
-
-const PublicationSetupRegionSelect: FC<
-	PublicationSetupRegionSelectProps
-> = ( { id, onChange, ...props } ) => {
+const PublicationSetupRegionSelect: FC< ExpressSetupSelectProps > = ( {
+	id,
+	onChange,
+	...props
+} ) => {
 	const onEnhancedChange = useCallback(
 		( _value, item ) => {
 			onChange( item.dataset.value );

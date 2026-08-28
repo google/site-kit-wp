@@ -115,7 +115,7 @@ describe( 'StepPublicationSetup', () => {
 	it( 'should be possible to switch between forms if publications exist', async () => {
 		providePublications( registry, publications );
 
-		const { getByRole, getByText } = render(
+		const { getByRole } = render(
 			<StepPublicationSetup onComplete={ () => {} } />,
 			{
 				registry,
