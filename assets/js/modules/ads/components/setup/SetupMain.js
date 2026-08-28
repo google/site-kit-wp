@@ -219,6 +219,17 @@ export default function SetupMain( { finishSetup } ) {
 		setShowPaxAppQueryParam( PAX_SETUP_STEP.LAUNCH );
 	}, [ navigateTo, setShowPaxAppQueryParam, hasAdwordsScope, oAuthURL ] );
 
+	const closeDialog = useCallback( () => {
+		setOpenDialog( false );
+	}, [ setOpenDialog ] );
+
+	// Choosing Site Kit from the WooCommerce modal closes it and continues with
+	// the Ads account creation flow.
+	const onContinueWithSiteKit = useCallback( () => {
+		closeDialog();
+		createAccount();
+	}, [ closeDialog, createAccount ] );
+
 	const onLaunch = useCallback(
 		( app ) => {
 			trackEvent( `${ viewContext }_pax`, 'pax_launch' );
@@ -407,12 +418,13 @@ export default function SetupMain( { finishSetup } ) {
 			</div>
 			{ openDialog && (
 				<WooCommerceRedirectModal
+					// The modal cannot be dismissed when an Ads account is
+					// already connected via Google for WooCommerce; the user
+					// has to choose one of the two CTAs.
 					onClose={
-						isGoogleForWooCommerceAdsConnected
-							? null
-							: () => setOpenDialog( false )
+						isGoogleForWooCommerceAdsConnected ? null : closeDialog
 					}
-					onContinue={ createAccount }
+					onContinueWithSiteKit={ onContinueWithSiteKit }
 					dialogActive
 				/>
 			) }

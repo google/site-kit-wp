@@ -25,13 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import {
-	Fragment,
-	useCallback,
-	useEffect,
-	useMemo,
-	useState,
-} from '@wordpress/element';
+import { Fragment, useEffect, useMemo, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
@@ -52,22 +46,24 @@ import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import useViewContext from '@/js/hooks/useViewContext';
-import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
 import { trackEvent } from '@/js/util';
 import WooLogoIcon from '@/svg/graphics/woo-logo.svg';
 import ExternalIcon from '@/svg/icons/external.svg';
 
+const ACCOUNT_LINKED_NOTIFICATION_ID =
+	'account-linked-via-google-for-woocommerce';
+
 export default function WooCommerceRedirectModal( {
 	dialogActive,
-	onClose,
-	onDismiss = null,
-	onContinue = null,
-	onBeforeSetupCallback = null,
+	onClose = null,
+	onContinueWithSiteKit,
+	onUseGoogleForWooCommerce = null,
 } ) {
-	const [ isSaving, setIsSaving ] = useState( '' );
+	// Tracks which of the two CTAs is awaiting navigation, so only that button
+	// renders a spinner. One of `null`, `'primary'` or `'tertiary'`.
+	const [ isSaving, setIsSaving ] = useState( null );
 	const viewContext = useViewContext();
 
 	const adminURL = useSelect( ( select ) =>
@@ -79,45 +75,33 @@ export default function WooCommerceRedirectModal( {
 	const isGoogleForWooCommerceActive = useSelect( ( select ) =>
 		select( MODULES_ADS ).isGoogleForWooCommerceActivated()
 	);
+	const hasGoogleForWooCommerceAdsAccount = useSelect( ( select ) =>
+		select( MODULES_ADS ).hasGoogleForWooCommerceAdsAccount()
+	);
+	const isModalDismissed = useSelect( ( select ) =>
+		select( MODULES_ADS ).isWooCommerceRedirectModalDismissed()
+	);
+	const isAccountLinkedNotificationDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed( ACCOUNT_LINKED_NOTIFICATION_ID )
+	);
+
+	// An Ads account already reachable through the Google for WooCommerce
+	// extension changes both the copy and the behaviour of both CTAs.
+	const isGoogleForWooCommerceAdsConnected =
+		!! isWooCommerceActive &&
+		!! isGoogleForWooCommerceActive &&
+		!! hasGoogleForWooCommerceAdsAccount;
+
+	const trackEventCategory = `${ viewContext }_pax_wc-redirect`;
 	const trackEventLabel = isGoogleForWooCommerceActive ? 'gfw' : 'wc';
 
 	useEffect( () => {
 		if ( dialogActive ) {
-			trackEvent(
-				`${ viewContext }_pax_wc-redirect`,
-				'view_modal',
-				trackEventLabel
-			);
+			trackEvent( trackEventCategory, 'view_modal', trackEventLabel );
 		}
-	}, [ dialogActive, viewContext, trackEventLabel ] );
+	}, [ dialogActive, trackEventCategory, trackEventLabel ] );
 
-	const isGoogleForWooCommerceAdsConnected = useSelect( ( select ) => {
-		const hasGoogleForWooCommerceAdsAccount =
-			select( MODULES_ADS ).hasGoogleForWooCommerceAdsAccount();
-
-		if (
-			isWooCommerceActive &&
-			isGoogleForWooCommerceActive &&
-			hasGoogleForWooCommerceAdsAccount
-		) {
-			return true;
-		}
-
-		return false;
-	} );
-
-	const isModalDismissed = useSelect( ( select ) =>
-		select( MODULES_ADS ).isWooCommerceRedirectModalDismissed()
-	);
-
-	const isAccountLinkedViaGoogleForWoocommerceNoticeDismissed = useSelect(
-		( select ) =>
-			select( CORE_USER ).isItemDismissed(
-				'account-linked-via-google-for-woocommerce'
-			)
-	);
-
-	const googleForWooCommerceRedirectURI = useMemo( () => {
+	const googleForWooCommerceURL = useMemo( () => {
 		if ( ! adminURL || ! isWooCommerceActive ) {
 			return undefined;
 		}
@@ -137,69 +121,100 @@ export default function WooCommerceRedirectModal( {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const handleGoogleForWooCommerceRedirect = useCallback( async () => {
-		if ( ! isAccountLinkedViaGoogleForWoocommerceNoticeDismissed ) {
-			dismissNotification( 'account-linked-via-google-for-woocommerce' );
+	// Copy for the two states the modal can be in.
+	const content = isGoogleForWooCommerceAdsConnected
+		? {
+				title: __(
+					'Are you sure you want to create another Ads account for this site?',
+					'google-site-kit'
+				),
+				description: (
+					<Fragment>
+						{ __(
+							'Site Kit has detected an already existing Ads account connected to this site via the Google for WooCommerce extension.',
+							'google-site-kit'
+						) }
+						<br />
+						{ __(
+							'Continue Ads setup with Site Kit only if you do want to create another account.',
+							'google-site-kit'
+						) }
+					</Fragment>
+				),
+				siteKitCTALabel: __(
+					'Create another account',
+					'google-site-kit'
+				),
+				googleForWooCommerceCTALabel: __(
+					'View current Ads account',
+					'google-site-kit'
+				),
+		  }
+		: {
+				title: __( 'Using the WooCommerce plugin?', 'google-site-kit' ),
+				description: __(
+					'The Google for WooCommerce plugin can utilize your provided business information for advertising on Google and may be more suitable for your business.',
+					'google-site-kit'
+				),
+				siteKitCTALabel: __(
+					'Continue with Site Kit',
+					'google-site-kit'
+				),
+				googleForWooCommerceCTALabel: __(
+					'Use Google for WooCommerce',
+					'google-site-kit'
+				),
+		  };
+
+	// When an Ads account is already connected the CTA navigates imperatively,
+	// so it must not also be rendered as a link. Otherwise the CTA is a plain
+	// external link and the browser performs the navigation.
+	const googleForWooCommerceCTAProps = isGoogleForWooCommerceAdsConnected
+		? {}
+		: {
+				href: googleForWooCommerceURL,
+				target: '_blank',
+				trailingIcon: <ExternalIcon width={ 13 } height={ 13 } />,
+				tertiary: true,
+		  };
+
+	function handleClose() {
+		onClose?.();
+	}
+
+	function handleContinueWithSiteKit() {
+		trackEvent( trackEventCategory, 'choose_sk', trackEventLabel );
+
+		setIsSaving( 'tertiary' );
+
+		onContinueWithSiteKit();
+	}
+
+	async function handleUseGoogleForWooCommerce() {
+		if ( ! isAccountLinkedNotificationDismissed ) {
+			dismissNotification( ACCOUNT_LINKED_NOTIFICATION_ID );
 		}
 
-		await trackEvent(
-			`${ viewContext }_pax_wc-redirect`,
-			'choose_gfw',
-			trackEventLabel
-		);
+		await trackEvent( trackEventCategory, 'choose_gfw', trackEventLabel );
 
+		// The CTA is not a link in this state, so navigate imperatively.
 		if ( isGoogleForWooCommerceAdsConnected ) {
 			setIsSaving( 'primary' );
-			navigateTo( googleForWooCommerceRedirectURI );
-		}
-		onDismiss?.();
-		onClose?.();
-	}, [
-		isAccountLinkedViaGoogleForWoocommerceNoticeDismissed,
-		dismissNotification,
-		setIsSaving,
-		onDismiss,
-		onClose,
-		navigateTo,
-		googleForWooCommerceRedirectURI,
-		viewContext,
-		trackEventLabel,
-		isGoogleForWooCommerceAdsConnected,
-	] );
-
-	const onSetupCallback = useActivateModuleCallback( MODULE_SLUG_ADS );
-
-	const onContinueWithSiteKit = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_pax_wc-redirect`,
-			'choose_sk',
-			trackEventLabel
-		);
-
-		if ( ! onContinue ) {
-			setIsSaving( 'tertiary' );
-			onDismiss?.();
+			navigateTo( googleForWooCommerceURL );
 		}
 
-		if ( onContinue ) {
-			// Override default module activation with custom callback.
-			onClose();
-			onContinue();
-			return;
-		}
+		// Close before handing back to the caller: callers may dismiss a
+		// notification here, which unmounts them, and an unmounted caller can
+		// no longer act on the close callback.
+		handleClose();
+		onUseGoogleForWooCommerce?.();
+	}
 
-		onBeforeSetupCallback?.();
-		onSetupCallback();
-	}, [
-		setIsSaving,
-		onDismiss,
-		onClose,
-		onBeforeSetupCallback,
-		onSetupCallback,
-		onContinue,
-		viewContext,
-		trackEventLabel,
-	] );
+	// Without WooCommerce active there is no Google for WooCommerce
+	// destination, so the CTA only closes the modal.
+	const handleGoogleForWooCommerceCTAClick = isWooCommerceActive
+		? handleUseGoogleForWooCommerce
+		: handleClose;
 
 	if ( isModalDismissed && ! isSaving ) {
 		return null;
@@ -222,40 +237,14 @@ export default function WooCommerceRedirectModal( {
 			<div className="googlesitekit-dialog-woocommerce-redirect__svg-wrapper">
 				<WooLogoIcon width={ 110 } height={ 46 } />
 			</div>
-			<DialogTitle>
-				{ isGoogleForWooCommerceAdsConnected
-					? __(
-							'Are you sure you want to create another Ads account for this site?',
-							'google-site-kit'
-					  )
-					: __( 'Using the WooCommerce plugin?', 'google-site-kit' ) }
-			</DialogTitle>
+			<DialogTitle>{ content.title }</DialogTitle>
 			<DialogContent>
-				<P>
-					{ isGoogleForWooCommerceAdsConnected ? (
-						<Fragment>
-							{ __(
-								'Site Kit has detected an already existing Ads account connected to this site via the Google for WooCommerce extension.',
-								'google-site-kit'
-							) }
-							<br />
-							{ __(
-								'Continue Ads setup with Site Kit only if you do want to create another account.',
-								'google-site-kit'
-							) }
-						</Fragment>
-					) : (
-						__(
-							'The Google for WooCommerce plugin can utilize your provided business information for advertising on Google and may be more suitable for your business.',
-							'google-site-kit'
-						)
-					) }
-				</P>
+				<P>{ content.description }</P>
 			</DialogContent>
 			<DialogFooter>
 				<Button
 					className="mdc-dialog__cancel-button"
-					onClick={ onContinueWithSiteKit }
+					onClick={ handleContinueWithSiteKit }
 					icon={
 						isSaving === 'tertiary' ? (
 							<CircularProgress size={ 14 } />
@@ -264,48 +253,19 @@ export default function WooCommerceRedirectModal( {
 					disabled={ !! isSaving }
 					tertiary
 				>
-					{ isGoogleForWooCommerceAdsConnected
-						? __( 'Create another account', 'google-site-kit' )
-						: __( 'Continue with Site Kit', 'google-site-kit' ) }
+					{ content.siteKitCTALabel }
 				</Button>
 				<Button
-					trailingIcon={
-						isGoogleForWooCommerceAdsConnected ? undefined : (
-							<ExternalIcon width={ 13 } height={ 13 } />
-						)
-					}
+					{ ...googleForWooCommerceCTAProps }
+					onClick={ handleGoogleForWooCommerceCTAClick }
 					icon={
 						isSaving === 'primary' ? (
 							<CircularProgress size={ 14 } />
 						) : undefined
 					}
-					onClick={ () => {
-						if (
-							isGoogleForWooCommerceAdsConnected ||
-							isWooCommerceActive
-						) {
-							handleGoogleForWooCommerceRedirect();
-						} else {
-							onClose();
-						}
-					} }
-					href={
-						isGoogleForWooCommerceAdsConnected
-							? null
-							: googleForWooCommerceRedirectURI
-					}
-					target={
-						isGoogleForWooCommerceAdsConnected ? '_self' : '_blank'
-					}
 					disabled={ !! isSaving }
-					tertiary={ ! isGoogleForWooCommerceAdsConnected }
 				>
-					{ isGoogleForWooCommerceAdsConnected
-						? __( 'View current Ads account', 'google-site-kit' )
-						: __(
-								'Use Google for WooCommerce',
-								'google-site-kit'
-						  ) }
+					{ content.googleForWooCommerceCTALabel }
 				</Button>
 			</DialogFooter>
 		</Dialog>
@@ -314,8 +274,7 @@ export default function WooCommerceRedirectModal( {
 
 WooCommerceRedirectModal.propTypes = {
 	dialogActive: PropTypes.bool.isRequired,
-	onDismiss: PropTypes.func,
 	onClose: PropTypes.func,
-	onContinue: PropTypes.func,
-	onBeforeSetupCallback: PropTypes.func,
+	onContinueWithSiteKit: PropTypes.func.isRequired,
+	onUseGoogleForWooCommerce: PropTypes.func,
 };

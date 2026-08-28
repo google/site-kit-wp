@@ -19,16 +19,85 @@
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
+import { provideSiteInfo } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import WooCommerceRedirectModal from './WooCommerceRedirectModal';
 
 function Template() {
-	return <WooCommerceRedirectModal dialogActive />;
+	return (
+		<WooCommerceRedirectModal
+			onClose={ () => {} }
+			onContinueWithSiteKit={ () => {} }
+			dialogActive
+		/>
+	);
 }
 
-export const Default = Template.bind( null );
-Default.storyName = 'Default';
-Default.scenario = {};
+export const GoogleForWooCommerceInactive = Template.bind( {} );
+GoogleForWooCommerceInactive.storyName = 'GoogleForWooCommerceInactive';
+GoogleForWooCommerceInactive.args = {
+	plugins: {
+		[ PLUGINS.WOOCOMMERCE ]: {
+			active: true,
+		},
+		[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+			active: false,
+			adsConnected: false,
+		},
+	},
+};
+GoogleForWooCommerceInactive.scenario = {};
+
+export const GoogleForWooCommerceActive = Template.bind( {} );
+GoogleForWooCommerceActive.storyName = 'GoogleForWooCommerceActive';
+GoogleForWooCommerceActive.args = {
+	plugins: {
+		[ PLUGINS.WOOCOMMERCE ]: {
+			active: true,
+		},
+		[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+			active: true,
+			adsConnected: false,
+		},
+	},
+};
+GoogleForWooCommerceActive.scenario = {};
+
+export const AdsAccountConnected = Template.bind( {} );
+AdsAccountConnected.storyName = 'AdsAccountConnected';
+AdsAccountConnected.args = {
+	plugins: {
+		[ PLUGINS.WOOCOMMERCE ]: {
+			active: true,
+		},
+		[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+			active: true,
+			adsConnected: true,
+		},
+	},
+};
+AdsAccountConnected.scenario = {};
 
 export default {
 	title: 'Modules/Ads/WooCommerceRedirectModal',
+	component: WooCommerceRedirectModal,
+	decorators: [
+		( Story, { args } ) => {
+			function setupRegistry( registry ) {
+				provideSiteInfo( registry );
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+				registry.dispatch( MODULES_ADS ).receiveModuleData( {
+					plugins: args.plugins,
+				} );
+			}
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
 };
