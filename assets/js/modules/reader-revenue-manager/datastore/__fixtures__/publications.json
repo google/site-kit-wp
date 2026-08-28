@@ -137,6 +137,8 @@
 		"contentPolicyStatus": {
 			"contentPolicyState": "CONTENT_POLICY_STATE_OK",
 			"policyInfoLink": "https://publishercenter.google.com/reader-revenue-manager/settings/policy?publication=QRSTUVWX"
-		}
+		},
+		"publicationPrivacyPolicyUrl": "https://example.com/existing-privacy-policy",
+		"publicationTosUrl": "https://example.com/existing-terms-of-service"
 	}
 ]

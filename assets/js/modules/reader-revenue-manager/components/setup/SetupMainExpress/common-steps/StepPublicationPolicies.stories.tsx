@@ -24,69 +24,99 @@ import type { ElementType, ReactNode } from 'react';
 /**
  * Internal dependencies
  */
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { Registry } from '@/js/googlesitekit-data';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	PUBLICATION_POLICIES_FORM,
+	READER_REVENUE_MANAGER_SETUP_FORM,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { providePublication } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { Story } from '@/js/types/Story';
-import { createTestRegistry } from '@tests/js/utils';
+import { provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import StepPublicationPolicies from './StepPublicationPolicies';
 
-type Registry = ReturnType< typeof createTestRegistry >;
-
-const PUBLICATION_ID_KEY = 'publicationId';
-const PUBLICATION_TOS_URL_KEY = 'publicationTosUrl';
-const PUBLICATION_PRIVACY_POLICY_URL_KEY = 'publicationPrivacyPolicyUrl';
-
 type Decorator = {
-	(
-		Story: ElementType,
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@storybook/react` is not typed yet.
-		{ args }: { args: any }
-	): ReactNode;
+	( StoryComponent: ElementType, { args, parameters }: Story ): ReactNode;
 };
 
-function setupRegistry( registry: Registry, withExistingValues = false ) {
-	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetSettings( {
-		organizationID: 'organization-1',
-		publicationID: 'publication-1',
-	} );
-
-	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetPublication(
-		{
-			[ PUBLICATION_ID_KEY ]: 'publication-1',
-			[ PUBLICATION_TOS_URL_KEY ]: withExistingValues
-				? 'https://example.com/terms'
-				: '',
-			[ PUBLICATION_PRIVACY_POLICY_URL_KEY ]: withExistingValues
-				? 'https://example.com/privacy'
-				: '',
-		},
-		{
-			organizationID: 'organization-1',
-			publicationID: 'publication-1',
-		}
-	);
-
-	global._googlesitekitBaseData.wpPrivacyURL =
-		'https://example.com/wp-privacy-policy';
-}
-
 function Template() {
-	return <StepPublicationPolicies onSetStep={ () => {} } />;
+	return <StepPublicationPolicies onComplete={ () => {} } />;
 }
 
 export const Default = Template.bind( {} ) as Story;
 Default.storyName = 'Default';
-Default.args = {
-	withExistingValues: false,
-};
+Default.args = {};
 Default.scenario = {};
 
-export const ExistingValues = Template.bind( {} ) as Story;
-ExistingValues.storyName = 'Existing values';
-ExistingValues.args = {
-	withExistingValues: true,
+export const WithError = Template.bind( {} ) as Story;
+WithError.storyName = 'With Error';
+WithError.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setErrorForAction(
+			{
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
+			'updatePublication',
+			[]
+		);
+	},
 };
-ExistingValues.scenario = {};
+WithError.scenario = {};
+
+export const Loading = Template.bind( {} ) as Story;
+Loading.storyName = 'Loading';
+Loading.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.startResolution( 'getPublication', [] );
+	},
+};
+Loading.scenario = {};
+
+export const WithExistingValues = Template.bind( {} ) as Story;
+WithExistingValues.storyName = 'With Existing Values';
+WithExistingValues.args = {
+	setupRegistry( registry ) {
+		providePublication( registry, publications[ 3 ] );
+	},
+};
+WithExistingValues.scenario = {};
+
+export const WithInvalidValues = Template.bind( {} ) as Story;
+WithInvalidValues.storyName = 'With Invalid Values';
+WithInvalidValues.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+				[ PUBLICATION_POLICIES_FORM.TERMS_OF_SERVICE_URL ]: 'Invalid',
+				[ PUBLICATION_POLICIES_FORM.PRIVACY_POLICY_URL ]: 'Invalid',
+			} );
+	},
+};
+WithInvalidValues.scenario = {};
+
+export const WithPrivacyPolicyPage = Template.bind( {} ) as Story;
+WithPrivacyPolicyPage.storyName = 'With Privacy Policy Page';
+WithPrivacyPolicyPage.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteInfo( registry, {
+			wpPrivacyURL: 'https://example.com/wp-privacy-policy',
+		} );
+	},
+};
+WithPrivacyPolicyPage.parameters = {
+	query: {
+		cta: undefined,
+	},
+};
+WithPrivacyPolicyPage.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMainExpress/CommonSteps/StepPublicationPolicies',
@@ -96,10 +126,7 @@ export default {
 			return (
 				<WithRegistrySetup
 					func={ ( registry: Registry ) => {
-						setupRegistry(
-							registry,
-							Boolean( args.withExistingValues )
-						);
+						args?.setupRegistry?.( registry );
 					} }
 				>
 					<RenderStory />

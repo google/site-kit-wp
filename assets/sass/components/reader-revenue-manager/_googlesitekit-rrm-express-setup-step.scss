@@ -44,6 +44,18 @@
 	display: grid;
 	gap: $grid-gap-phone;
 	max-inline-size: 500px;
+
+	.mdc-text-field {
+		inline-size: 100%;
+	}
+}
+
+.googlesitekit-rrm-express-setup-step__form-controls--policies {
+	row-gap: 36px;
+}
+
+.googlesitekit-rrm-express-setup-step__label {
+	margin-block: 0 $grid-gap-phone;
 }
 
 .googlesitekit-rrm-express-setup-step__cta-link {

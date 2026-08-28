@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import type { FC } from 'react';
 
 /**
@@ -31,273 +30,258 @@ import {
 	useEffect,
 	useState,
 } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
-import { isURL } from '@wordpress/url';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { SpinnerButton, TextField } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
-import Link from '@/js/components/Link';
-import Notice from '@/js/components/Notice';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import DocumentationLink from '@/js/components/DocumentationLink';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { SIZE_MEDIUM, TYPE_LABEL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
+import ProgressBar from '@/js/googlesitekit/components-gm2/ProgressBar';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import { ExpressSetupStepHeadline } from '@/js/modules/reader-revenue-manager/components/common';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
-	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
+	PUBLICATION_POLICIES_FORM,
+	READER_REVENUE_MANAGER_SETUP_FORM,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-
-interface PublicationPolicyURLs {
-	[ key: string ]: string | undefined;
-}
-
-const PUBLICATION_TOS_URL_KEY = 'publicationTosUrl';
-const PUBLICATION_PRIVACY_POLICY_URL_KEY = 'publicationPrivacyPolicyUrl';
+import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 
 function isValidPolicyURL( value: string ) {
-	return isURL( value );
+	try {
+		return [ 'http:', 'https:' ].includes( new URL( value ).protocol );
+	} catch {
+		return false;
+	}
 }
 
 interface StepPublicationPoliciesProps {
-	onSetStep: ( step: string ) => void;
-	nextStep?: string;
+	description?: string;
+	onComplete: () => void;
 }
 
 const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
-	onSetStep,
-	nextStep = EXPRESS_SETUP_STEPS.SETUP_CTA,
+	description,
+	onComplete,
 } ) => {
-	const [ termsOfServiceURL, setTermsOfServiceURL ] = useState( '' );
-	const [ privacyPolicyURL, setPrivacyPolicyURL ] = useState(
-		global._googlesitekitBaseData.wpPrivacyURL || ''
-	);
-	const [ termsOfServiceTouched, setTermsOfServiceTouched ] =
-		useState( false );
-	const [ privacyPolicyTouched, setPrivacyPolicyTouched ] = useState( false );
-	const [ didAttemptSubmit, setDidAttemptSubmit ] = useState( false );
-	const [ showSubmissionFieldError, setShowSubmissionFieldError ] =
-		useState( false );
-	const [ submitError, setSubmitError ] = useState( '' );
 	const [ isSaving, setIsSaving ] = useState( false );
 
-	const documentationLinkURL = useSelect(
-		( select: Select ) =>
-			select( CORE_SITE ).getDocumentationLinkURL(
-				'rrm-publication-policies'
-			),
-		[]
+	const defaultDescription = __(
+		'To use Reader Revenue Manager, you will need to add links to your publication’s policies.',
+		'google-site-kit'
 	);
 
-	const publicationID = useSelect(
-		( select: Select ) =>
-			select( MODULES_READER_REVENUE_MANAGER ).getPublicationID(),
-		[]
-	);
-
-	const organizationID = useSelect(
-		( select: Select ) =>
-			select( MODULES_READER_REVENUE_MANAGER ).getOrganizationID(),
-		[]
-	);
-
-	const publication = useSelect(
-		( select: Select ) =>
-			select( MODULES_READER_REVENUE_MANAGER ).getPublication( {
-				organizationID,
-				publicationID,
-			} ) as PublicationPolicyURLs | undefined,
-		[ organizationID, publicationID ]
+	const descriptionWithLink = createInterpolateElement(
+		sprintf(
+			/* translators: %s: Connect publication setup step description. */
+			__( '%s <a>Learn more</a>', 'google-site-kit' ),
+			description || defaultDescription
+		),
+		{
+			a: <DocumentationLink slug="rrm-publication" external />,
+		}
 	);
 
 	const { updatePublication } = useDispatch( MODULES_READER_REVENUE_MANAGER );
 
-	useEffect( () => {
-		if ( ! publication ) {
-			return;
-		}
+	const defaultPrivacyPolicyURL = useSelect(
+		( select: Select ) => select( CORE_SITE ).getPrivacyPolicyURL(),
+		[]
+	);
 
-		if ( ! termsOfServiceTouched ) {
-			setTermsOfServiceURL(
-				publication[ PUBLICATION_TOS_URL_KEY ] || ''
-			);
-		}
+	const hasResolvedPublication: boolean = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
+				'getPublication',
+				[]
+			),
+		[]
+	);
 
-		if ( ! privacyPolicyTouched ) {
-			setPrivacyPolicyURL(
-				publication[ PUBLICATION_PRIVACY_POLICY_URL_KEY ] ||
-					global._googlesitekitBaseData.wpPrivacyURL ||
-					''
-			);
-		}
-	}, [ publication, privacyPolicyTouched, termsOfServiceTouched ] );
+	const publication: Publication | undefined = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getPublication(),
+		[]
+	);
 
-	const termsOfServiceValid = isValidPolicyURL( termsOfServiceURL );
-	const privacyPolicyValid = isValidPolicyURL( privacyPolicyURL );
+	const [ privacyPolicyURL = defaultPrivacyPolicyURL, setPrivacyPolicyURL ] =
+		useFormValue< string >(
+			READER_REVENUE_MANAGER_SETUP_FORM,
+			PUBLICATION_POLICIES_FORM.PRIVACY_POLICY_URL
+		);
 
-	const canSubmit = termsOfServiceValid && privacyPolicyValid;
+	const [ termsOfServiceURL, setTermsOfServiceURL ] = useFormValue< string >(
+		READER_REVENUE_MANAGER_SETUP_FORM,
+		PUBLICATION_POLICIES_FORM.TERMS_OF_SERVICE_URL
+	);
 
-	const showTermsError =
-		showSubmissionFieldError ||
-		( ( termsOfServiceTouched || didAttemptSubmit ) &&
-			! termsOfServiceValid );
+	const isTermsOfServiceURLValid =
+		termsOfServiceURL && isValidPolicyURL( termsOfServiceURL );
 
-	const showPrivacyError =
-		showSubmissionFieldError ||
-		( ( privacyPolicyTouched || didAttemptSubmit ) &&
-			! privacyPolicyValid );
+	const isPrivacyPolicyURLValid =
+		privacyPolicyURL && isValidPolicyURL( privacyPolicyURL );
 
-	const onChangeTermsOfServiceURL = useCallback( ( { currentTarget } ) => {
-		setTermsOfServiceURL( currentTarget.value );
-		setTermsOfServiceTouched( true );
-		setSubmitError( '' );
-		setShowSubmissionFieldError( false );
-	}, [] );
-
-	const onChangePrivacyPolicyURL = useCallback( ( { currentTarget } ) => {
-		setPrivacyPolicyURL( currentTarget.value );
-		setPrivacyPolicyTouched( true );
-		setSubmitError( '' );
-		setShowSubmissionFieldError( false );
-	}, [] );
+	const isDisabled =
+		isSaving || ! isPrivacyPolicyURLValid || ! isTermsOfServiceURLValid;
 
 	const onSubmit = useCallback(
 		async ( event ) => {
 			event.preventDefault();
-			setDidAttemptSubmit( true );
-			setSubmitError( '' );
 
-			if ( ! canSubmit ) {
+			if ( ! publication ) {
 				return;
 			}
 
 			setIsSaving( true );
 
 			const { error } = await updatePublication( {
-				organizationID,
-				publicationID,
+				/* eslint-disable sitekit/acronym-case */
 				data: {
-					[ PUBLICATION_TOS_URL_KEY ]: termsOfServiceURL,
-					[ PUBLICATION_PRIVACY_POLICY_URL_KEY ]: privacyPolicyURL,
+					publicationTosUrl: termsOfServiceURL,
+					publicationPrivacyPolicyUrl: privacyPolicyURL,
 				},
+				/* eslint-enable sitekit/acronym-case */
 			} );
 
-			setIsSaving( false );
-
 			if ( error ) {
-				setShowSubmissionFieldError( true );
-				setSubmitError(
-					error.message ||
-						__( 'An error occurred.', 'google-site-kit' )
-				);
+				setIsSaving( false );
 				return;
 			}
 
-			setShowSubmissionFieldError( false );
-			onSetStep( nextStep );
+			onComplete();
 		},
 		[
-			canSubmit,
-			nextStep,
-			onSetStep,
-			organizationID,
+			onComplete,
 			privacyPolicyURL,
-			publicationID,
+			publication,
 			termsOfServiceURL,
 			updatePublication,
 		]
 	);
 
+	useEffect( () => {
+		/* eslint-disable sitekit/acronym-case */
+		if ( publication ) {
+			if ( publication.publicationPrivacyPolicyUrl ) {
+				setPrivacyPolicyURL( publication.publicationPrivacyPolicyUrl );
+			}
+
+			if ( publication.publicationTosUrl ) {
+				setTermsOfServiceURL( publication.publicationTosUrl );
+			}
+		}
+		/* eslint-enable sitekit/acronym-case */
+	}, [ publication, setPrivacyPolicyURL, setTermsOfServiceURL ] );
+
+	if ( ! hasResolvedPublication ) {
+		return <ProgressBar />;
+	}
+
 	return (
-		<div className="googlesitekit-rrm-publication-policies">
-			<h2 className="googlesitekit-rrm-publication-policies__title">
-				{ __( 'Publication policies', 'google-site-kit' ) }
-			</h2>
-			<p className="googlesitekit-rrm-publication-policies__description">
-				{ createInterpolateElement(
-					__(
-						'To set up a newsletter using Reader Revenue Manager, you will need to add links to your publication’s policies. <a>Learn more</a>',
-						'google-site-kit'
-					),
-					{
-						a: (
-							<Link
-								href={ documentationLinkURL }
-								external
-								hideExternalIndicator
-							/>
-						),
-					}
-				) }
-			</p>
-
-			{ !! submitError && (
-				<Notice
-					className="googlesitekit-rrm-publication-policies__notice"
-					type={ NOTICE_TYPES.ERROR }
-					description={ submitError }
-				/>
-			) }
-
+		<div className="googlesitekit-rrm-express-setup-step">
 			<form
-				className="googlesitekit-rrm-publication-policies__form"
+				className="googlesitekit-rrm-express-setup-step__form"
 				onSubmit={ onSubmit }
 			>
-				<div className="googlesitekit-rrm-publication-policies__field">
-					<p className="googlesitekit-rrm-publication-policies__field-label">
-						{ __(
-							'Add your site’s term’s of service link:',
-							'google-site-kit'
-						) }
-					</p>
-					<TextField
-						label={ __( 'Terms of service', 'google-site-kit' ) }
-						className={ classnames( {
-							'mdc-text-field--error': showTermsError,
-						} ) }
-						helperText={
-							showTermsError
-								? __( 'An error occurred.', 'google-site-kit' )
-								: undefined
-						}
-						value={ termsOfServiceURL }
-						onChange={ onChangeTermsOfServiceURL }
-						outlined
-					/>
-				</div>
+				<div className="googlesitekit-rrm-express-setup-step__form-content">
+					<ExpressSetupStepHeadline className="googlesitekit-rrm-express-setup-step__headline">
+						{ __( 'Publication policies', 'google-site-kit' ) }
+					</ExpressSetupStepHeadline>
 
-				<div className="googlesitekit-rrm-publication-policies__field">
-					<p className="googlesitekit-rrm-publication-policies__field-label">
-						{ __(
-							'Add your site’s privacy policy link:',
-							'google-site-kit'
-						) }
-					</p>
-					<TextField
-						label={ __( 'Privacy policy', 'google-site-kit' ) }
-						className={ classnames( {
-							'mdc-text-field--error': showPrivacyError,
-						} ) }
-						helperText={
-							showPrivacyError
-								? __( 'An error occurred.', 'google-site-kit' )
-								: undefined
-						}
-						value={ privacyPolicyURL }
-						onChange={ onChangePrivacyPolicyURL }
-						outlined
+					<StoreErrorNotices
+						moduleSlug={ MODULE_SLUG_READER_REVENUE_MANAGER }
+						storeName={ MODULES_READER_REVENUE_MANAGER }
+						hasButton
 					/>
-				</div>
 
-				<div className="googlesitekit-rrm-publication-policies__actions">
-					{ /* @ts-expect-error `SpinnerButton` component is not yet typed. */ }
-					<SpinnerButton
-						disabled={ ! canSubmit || isSaving }
-						isSaving={ isSaving }
+					<P
+						className="googlesitekit-rrm-express-setup-step__description"
+						size={ SIZE_MEDIUM }
 					>
-						{ __( 'Submit policies', 'google-site-kit' ) }
-					</SpinnerButton>
+						{ descriptionWithLink }
+					</P>
+
+					<div className="googlesitekit-rrm-express-setup-step__form-controls googlesitekit-rrm-express-setup-step__form-controls--policies">
+						<div>
+							<P
+								className="googlesitekit-rrm-express-setup-step__label"
+								size={ SIZE_MEDIUM }
+								type={ TYPE_LABEL }
+							>
+								{ __(
+									'Add your site’s term’s of service link:',
+									'google-site-kit'
+								) }
+							</P>
+
+							<TextField
+								errorMessage={
+									termsOfServiceURL &&
+									! isTermsOfServiceURLValid
+										? __(
+												"Please enter a URL beginning with 'http://' or 'https://'.",
+												'google-site-kit'
+										  )
+										: undefined
+								}
+								label={ __(
+									'Terms of service',
+									'google-site-kit'
+								) }
+								onChange={ ( event ) =>
+									setTermsOfServiceURL( event.target.value )
+								}
+								value={ termsOfServiceURL }
+								outlined
+							/>
+						</div>
+
+						<div>
+							<P
+								className="googlesitekit-rrm-express-setup-step__label"
+								size={ SIZE_MEDIUM }
+								type={ TYPE_LABEL }
+							>
+								{ __(
+									'Add your site’s privacy policy link:',
+									'google-site-kit'
+								) }
+							</P>
+
+							<TextField
+								errorMessage={
+									privacyPolicyURL &&
+									! isPrivacyPolicyURLValid
+										? __(
+												"Please enter a URL beginning with 'http://' or 'https://'.",
+												'google-site-kit'
+										  )
+										: undefined
+								}
+								label={ __(
+									'Privacy policy',
+									'google-site-kit'
+								) }
+								onChange={ ( event ) =>
+									setPrivacyPolicyURL( event.target.value )
+								}
+								value={ privacyPolicyURL }
+								outlined
+							/>
+						</div>
+					</div>
 				</div>
+
+				{ /* @ts-expect-error `SpinnerButton` component is not yet typed. */ }
+				<SpinnerButton disabled={ isDisabled } isSaving={ isSaving }>
+					{ __( 'Submit policies', 'google-site-kit' ) }
+				</SpinnerButton>
 			</form>
 		</div>
 	);
