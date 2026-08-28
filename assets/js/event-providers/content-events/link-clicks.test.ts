@@ -21,6 +21,12 @@
  */
 import classifyContactLink from './classify-contact-link';
 import { initializeLinkClicks } from './link-clicks';
+import {
+	SiteKitGlobal,
+	createListenerRegistry,
+	preventNavigation,
+	render,
+} from './test-utils';
 
 // Real behaviour everywhere, wrapped so the tests can also see whether the
 // listener resolved an anchor at all.
@@ -36,63 +42,13 @@ jest.mock( './classify-contact-link', () => {
 
 const classifySpy = classifyContactLink as jest.Mock;
 
-type SiteKitGlobal = typeof global._googlesitekit;
-
 describe( 'initializeLinkClicks', () => {
 	let gtagEventMock: jest.Mock;
 
-	// Every anchor here carries a real href, which jsdom would try to navigate
-	// to and log "Not implemented: navigation" for.
-	function preventNavigation( event: Event ) {
-		return event.preventDefault();
-	}
+	const listeners = createListenerRegistry();
 
-	let registeredListeners: Array< [ string, EventListener ] > = [];
-
-	/**
-	 * Runs the initializer, recording the listeners it puts on `document`.
-	 *
-	 * `initializeLinkClicks()` has no teardown — in production it is called once
-	 * per page load — so without this every test would leave its listener behind
-	 * and a later click would be counted once per test that had already run.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return {Array} The `[ type, listener ]` pairs this call registered.
-	 */
-	function initialize(): Array< [ string, EventListener ] > {
-		const addEventListenerSpy = jest.spyOn(
-			global.document,
-			'addEventListener'
-		);
-
-		initializeLinkClicks();
-
-		const added: Array< [ string, EventListener ] > =
-			addEventListenerSpy.mock.calls.map( ( [ type, listener ] ) => [
-				type as string,
-				listener as EventListener,
-			] );
-
-		// Restoring clears the spy's recorded calls, so they are read out first.
-		addEventListenerSpy.mockRestore();
-		registeredListeners.push( ...added );
-
-		return added;
-	}
-
-	/**
-	 * Renders markup into the document body and returns the first element.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {string} markup Markup to render.
-	 * @return {Element} The rendered markup's first element.
-	 */
-	function render( markup: string ): Element {
-		global.document.body.innerHTML = markup;
-
-		return global.document.body.firstElementChild as Element;
+	function initialize() {
+		return listeners.record( initializeLinkClicks );
 	}
 
 	beforeEach( () => {
@@ -100,14 +56,14 @@ describe( 'initializeLinkClicks', () => {
 		gtagEventMock = jest.fn();
 		global._googlesitekit = { gtagEvent: gtagEventMock };
 		global.document.body.innerHTML = '';
-		registeredListeners = [];
+		listeners.reset();
+		// Every anchor here carries a real href, which jsdom would try to
+		// navigate to and log "Not implemented: navigation" for.
 		global.document.addEventListener( 'click', preventNavigation );
 	} );
 
 	afterEach( () => {
-		registeredListeners.forEach( ( [ type, listener ] ) =>
-			global.document.removeEventListener( type, listener )
-		);
+		listeners.removeAll();
 		global.document.removeEventListener( 'click', preventNavigation );
 		global.document.body.innerHTML = '';
 		delete ( global as { _googlesitekit?: SiteKitGlobal } )._googlesitekit;
@@ -300,6 +256,36 @@ describe( 'initializeLinkClicks', () => {
 		expect( typeof added[ 0 ][ 1 ] ).toBe( 'function' );
 	} );
 
+	it( 'should leave the click unprevented so the link still opens', () => {
+		// The shared preventNavigation listener runs before this one and would
+		// make defaultPrevented true, so it steps aside here and the probe below
+		// swallows the click instead.
+		global.document.removeEventListener( 'click', preventNavigation );
+
+		const anchor = render< HTMLAnchorElement >(
+			'<a href="tel:+15551234567">Call</a>'
+		);
+		initialize();
+
+		let preventedWhenProbed: boolean | undefined;
+
+		function probe( event: Event ) {
+			preventedWhenProbed = event.defaultPrevented;
+			event.preventDefault();
+		}
+
+		// Registered after the initializer, so it sees whatever the tracking
+		// listener did to the event.
+		global.document.addEventListener( 'click', probe );
+		anchor.click();
+		global.document.removeEventListener( 'click', probe );
+
+		expect( preventedWhenProbed ).toBe( false );
+		expect( gtagEventMock ).toHaveBeenCalledWith( 'contact_link_click', {
+			link_type: 'phone',
+		} );
+	} );
+
 	it( 'should keep emitting after a click whose handling throws', () => {
 		// Mock console.error since this test intentionally triggers it.
 		const consoleErrorSpy = jest
@@ -321,7 +307,10 @@ describe( 'initializeLinkClicks', () => {
 		} );
 
 		first.click();
-		expect( consoleErrorSpy ).toHaveBeenCalled();
+		expect( consoleErrorSpy ).toHaveBeenCalledWith(
+			'Site Kit: failed to track this link click.',
+			expect.any( Error )
+		);
 
 		second.click();
 

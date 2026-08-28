@@ -76,6 +76,7 @@ describe( 'classifyContactLink', () => {
 				'https://www.messenger.com/t/12345',
 				'fb-messenger://user-thread/12345',
 				'fb-messenger://user/12345',
+				'fb-messenger://USER-THREAD/12345',
 			],
 			[ 'https://m.me/', 'https://messenger.com/' ],
 		],
@@ -86,6 +87,7 @@ describe( 'classifyContactLink', () => {
 				'https://telegram.me/acme',
 				'https://www.t.me/acme',
 				'tg://resolve?domain=acme',
+				'tg://RESOLVE?domain=acme',
 				'https://WWW.T.me/Acme',
 			],
 			[
@@ -106,6 +108,7 @@ describe( 'classifyContactLink', () => {
 				'viber://chat?number=%2B15551234567',
 				'viber://add?number=%2B15551234567',
 				'viber://pa?chatURI=acme',
+				'VIBER://CHAT?number=%2B15551234567',
 			],
 			[ 'viber://forward?text=Hello' ],
 		],
@@ -173,9 +176,8 @@ describe( 'classifyContactLink', () => {
 
 	it( 'should return null for a malformed href rather than throwing', () => {
 		const anchor = global.document.createElement( 'a' );
-		// An anchor with no href attribute reports an empty string, which the
-		// URL parser rejects.
-		anchor.removeAttribute( 'href' );
+		// An unclosed IPv6 host, which the URL parser rejects.
+		anchor.setAttribute( 'href', 'http://[' );
 
 		expect( () => classifyContactLink( anchor ) ).not.toThrow();
 		expect( classifyContactLink( anchor ) ).toBeNull();

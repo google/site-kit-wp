@@ -28,8 +28,8 @@ import classifyContactLink from './classify-contact-link';
  * clicked anchor once, classifies it once, and emits at most one event, so a
  * contact link that also carries `rel="nofollow"` is never reported twice.
  *
- * Registered unconditionally, with no container or page-type gate, so a link
- * added after load — a floating chat button, for instance — is covered too.
+ * Registered on the document for every page, so a link added after load — a
+ * floating chat button, for instance — is covered too.
  *
  * @since n.e.x.t
  *

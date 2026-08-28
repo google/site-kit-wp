@@ -30,9 +30,13 @@ export type ContactLinkType =
 
 /** One contact link kind: how to recognize it, and who counts as a recipient. */
 export interface ContactLinkMatcher {
+	/** Value reported as the event's `link_type`. */
 	type: ContactLinkType;
+	/** URL schemes this kind is recognized by, each with its trailing colon. */
 	schemes?: string[];
+	/** Hosts this kind is recognized by, without a `www.` prefix. */
 	hosts?: string[];
+	/** Whether the link names someone to contact; omitted when every match does. */
 	hasRecipient?: ( url: URL ) => boolean;
 }
 
@@ -51,8 +55,8 @@ function getPathSegments( url: URL ): string[] {
 /**
  * Folds a path segment's case for comparison against a fixed keyword.
  *
- * The parser lowercases schemes and hosts for us but leaves the path as the
- * author wrote it, and every keyword compared below is a fixed marker rather
+ * Schemes and hosts are lower-cased before a matcher runs, but the path is left
+ * as the author wrote it, and every keyword compared below is a fixed marker rather
  * than a recipient — `share`, `joinchat`, `qr`. Comparing those case-sensitively
  * would let `t.me/Share/…` through as a contact, which is the share link this
  * event exists to keep out.
@@ -62,7 +66,7 @@ function getPathSegments( url: URL ): string[] {
  * @param {string} segment Path segment; may be undefined.
  * @return {string} The segment in lower case, or an empty string.
  */
-function marker( segment?: string ): string {
+function lowerCaseSegment( segment?: string ): string {
 	return ( segment || '' ).toLowerCase();
 }
 
@@ -106,7 +110,9 @@ export const CONTACT_LINK_MATCHERS: ContactLinkMatcher[] = [
 				// A bare number, or one of WhatsApp's short-link forms.
 				return (
 					/^\d+$/.test( first || '' ) ||
-					( [ 'message', 'qr' ].includes( marker( first ) ) &&
+					( [ 'message', 'qr' ].includes(
+						lowerCaseSegment( first )
+					) &&
 						!! second )
 				);
 			}
@@ -129,7 +135,7 @@ export const CONTACT_LINK_MATCHERS: ContactLinkMatcher[] = [
 			if ( 'messenger.com' === url.hostname ) {
 				const [ first, second ] = getPathSegments( url );
 
-				return 't' === marker( first ) && !! second;
+				return 't' === lowerCaseSegment( first ) && !! second;
 			}
 
 			// `fb-messenger://user-thread/<id>` and `fb-messenger://user/<id>`;
@@ -157,7 +163,7 @@ export const CONTACT_LINK_MATCHERS: ContactLinkMatcher[] = [
 				!! first &&
 				! first.startsWith( '+' ) &&
 				! [ 'share', 'joinchat', 'addstickers', 'proxy' ].includes(
-					marker( first )
+					lowerCaseSegment( first )
 				)
 			);
 		},
@@ -204,13 +210,13 @@ export const CONTACT_LINK_MATCHERS: ContactLinkMatcher[] = [
 					? [ url.hostname, ...getPathSegments( url ) ]
 					: getPathSegments( url );
 			const [ first, second, third, fourth ] =
-				'r' === marker( segments[ 0 ] )
+				'r' === lowerCaseSegment( segments[ 0 ] )
 					? segments.slice( 1 )
 					: segments;
 
 			return (
-				'ti' === marker( first ) &&
-				'p' === marker( second ) &&
+				'ti' === lowerCaseSegment( first ) &&
+				'p' === lowerCaseSegment( second ) &&
 				!! third &&
 				! fourth
 			);
@@ -221,11 +227,11 @@ export const CONTACT_LINK_MATCHERS: ContactLinkMatcher[] = [
 // Both indexes are built from the one table above in a single pass, so a click
 // costs two hash lookups rather than a scan.
 //
-// Prototype-less, because the host key comes straight from the address bar: the
-// parser lower-cases it, which rules out `toString` and friends, but leaves
-// `constructor` and `__proto__` intact. A plain object would hand those back as
+// Prototype-less, because the host key comes straight from the address bar: it is
+// lower-cased before the lookup, which rules out `toString` and friends, but
+// leaves `constructor` and `__proto__` intact. A plain object would hand those back as
 // inherited values, and a lookup that returned a truthy non-matcher would make
-// this function report `undefined` instead of `null`.
+// `classifyContactLink` report `undefined` instead of `null`.
 const matchersByScheme: Record< string, ContactLinkMatcher > =
 	Object.create( null );
 const matchersByHost: Record< string, ContactLinkMatcher > =
@@ -259,13 +265,15 @@ export default function classifyContactLink(
 		return null;
 	}
 
-	if ( 'http:' === url.protocol || 'https:' === url.protocol ) {
-		// Normalized here rather than only for the lookup below, so every host
-		// comparison a matcher's `hasRecipient` makes sees the bare host too.
-		url.hostname = url.hostname.replace( /^www\./, '' );
-	}
-
 	const isWebLink = 'http:' === url.protocol || 'https:' === url.protocol;
+
+	// Normalized on the URL rather than only for the lookup below, so a matcher's
+	// `hasRecipient` sees the same host. The parser lower-cases a web link's host
+	// but not an app scheme's, so `viber://CHAT` would otherwise match nothing.
+	url.hostname = isWebLink
+		? url.hostname.replace( /^www\./, '' )
+		: url.hostname.toLowerCase();
+
 	const matcher = isWebLink
 		? matchersByHost[ url.hostname ]
 		: matchersByScheme[ url.protocol ];
