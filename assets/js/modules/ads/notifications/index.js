@@ -51,7 +51,7 @@ import {
 	requireWooCommerceActivated,
 } from '@/js/modules/ads/data-requirements';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from '@/js/modules/ads/pax/constants';
-import { asyncRequire, asyncRequireAll } from '@/js/util/async';
+import { asyncRequireAll } from '@/js/util/async';
 
 export const ADS_NOTIFICATIONS = {
 	'setup-success-notification-ads': {
@@ -83,7 +83,7 @@ export const ADS_NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: asyncRequireAll(
-			asyncRequire( false, requireModuleConnected( MODULE_SLUG_ADS ) ),
+			requireModuleNotConnected( MODULE_SLUG_ADS ),
 			requireWooCommerceActivated(),
 			requireGoogleForWooCommerceActivated(),
 			requireGoogleForWooCommerceAdsAccount()
@@ -99,9 +99,6 @@ export const ADS_NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: asyncRequireAll(
-			// Both checks are strictly negative: an unresolved state must not
-			// satisfy them, so `requireModuleNotConnected()` is used rather
-			// than negating `requireModuleConnected()`.
 			requireModuleNotConnected( MODULE_SLUG_ADS ),
 			requireNoGoogleForWooCommerceAdsAccount()
 		),
