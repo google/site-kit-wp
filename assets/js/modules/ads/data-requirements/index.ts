@@ -40,8 +40,6 @@ type DataRequirement = ( registry: Registry ) => Promise< boolean >;
  */
 export function requireWooCommerceActivated(): DataRequirement {
 	return async ( { select, resolveSelect } ) => {
-		// The isWooCommerceActivated() selector relies on the resolution of the
-		// getModuleData() resolver.
 		await resolveSelect( MODULES_ADS ).getModuleData();
 
 		return true === select( MODULES_ADS ).isWooCommerceActivated();
@@ -60,8 +58,6 @@ export function requireWooCommerceActivated(): DataRequirement {
  */
 export function requireGoogleForWooCommerceActivated(): DataRequirement {
 	return async ( { select, resolveSelect } ) => {
-		// The isGoogleForWooCommerceActivated() selector relies on the
-		// resolution of the getModuleData() resolver.
 		await resolveSelect( MODULES_ADS ).getModuleData();
 
 		return true === select( MODULES_ADS ).isGoogleForWooCommerceActivated();
@@ -80,8 +76,6 @@ export function requireGoogleForWooCommerceActivated(): DataRequirement {
  */
 export function requireGoogleForWooCommerceAdsAccount(): DataRequirement {
 	return async ( { select, resolveSelect } ) => {
-		// The hasGoogleForWooCommerceAdsAccount() selector relies on the
-		// resolution of the getModuleData() resolver.
 		await resolveSelect( MODULES_ADS ).getModuleData();
 
 		return (
@@ -102,8 +96,6 @@ export function requireGoogleForWooCommerceAdsAccount(): DataRequirement {
  */
 export function requireNoGoogleForWooCommerceAdsAccount(): DataRequirement {
 	return async ( { select, resolveSelect } ) => {
-		// The hasGoogleForWooCommerceAdsAccount() selector relies on the
-		// resolution of the getModuleData() resolver.
 		await resolveSelect( MODULES_ADS ).getModuleData();
 
 		return (
