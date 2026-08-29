@@ -25,6 +25,7 @@ import invariant from 'invariant';
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
+import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
@@ -109,6 +110,7 @@ export function dispatchAPIError( error ) {
  * Makes a request to a WP REST API Site Kit endpoint.
  *
  * @since 1.5.0
+ * @since n.e.x.t Normalizes falsy errors returned by the API fetch implementation.
  * @private
  *
  * @param {string}  type                The data to access. One of 'core' or 'modules'.
@@ -184,6 +186,14 @@ export async function siteKitRequest(
 			// error handling and just re-throw the error.
 			throw error;
 		}
+
+		// A failed request can reject with a falsy value, e.g. when an error
+		// response has a body that parses to `false` or `0`. Substitute a
+		// generic error so that the error is always set and reported.
+		error = error || {
+			code: 'unknown_error',
+			message: __( 'An unknown error occurred.', 'google-site-kit' ),
+		};
 
 		if ( error?.data?.cacheTTL ) {
 			await setItem( cacheKey, error, {
