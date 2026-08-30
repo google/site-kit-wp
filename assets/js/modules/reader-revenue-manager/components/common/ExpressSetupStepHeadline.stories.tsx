@@ -1,4 +1,6 @@
 /**
+ * ExpressSetupStepHeadline component stories.
+ *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,22 +17,23 @@
  */
 
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
-import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+import { Story } from '@/js/types/Story';
+import ExpressSetupStepHeadline from './ExpressSetupStepHeadline';
 
-/**
- * Storybook story with custom properties, a story name, etc.
- *
- * This type is used in our stories throughout the plugin.
- */
-export type Story< PropTypes = Record< string, unknown > > = {
-	( props: PropTypes ): JSX.Element;
-	storyName?: string;
-	args?: {
-		setupRegistry?: ( registry: WPDataRegistry ) => void;
-		[ key: string ]: unknown;
-	};
-	parameters?: Record< string, unknown >;
-	scenario?: Record< string, unknown >;
+function Template() {
+	return (
+		<ExpressSetupStepHeadline>
+			Connect your publication
+		</ExpressSetupStepHeadline>
+	);
+}
+
+export const Basic = Template.bind( {} ) as Story;
+Basic.storyName = 'ExpressSetupStepHeadline';
+
+export default {
+	title: 'Modules/ReaderRevenueManager/Common/ExpressSetupStepHeadline',
+	component: ExpressSetupStepHeadline,
 };
