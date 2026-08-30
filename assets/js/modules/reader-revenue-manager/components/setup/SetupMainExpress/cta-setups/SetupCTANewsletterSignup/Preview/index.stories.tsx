@@ -25,7 +25,7 @@ import type { ComponentProps } from 'react';
  * Internal dependencies
  */
 import { Story } from '@/js/types/Story';
-import Preview from './Preview';
+import Preview from './index';
 
 type Props = ComponentProps< typeof Preview >;
 
@@ -44,6 +44,6 @@ Default.args = {
 Default.scenario = {};
 
 export default {
-	title: 'Modules/ReaderRevenueManager/Setup/SetupMainExpress/SetupCTANewsletter/Preview',
+	title: 'Modules/ReaderRevenueManager/Setup/SetupMainExpress/SetupCTANewsletterSignup/Preview',
 	component: Preview,
 };

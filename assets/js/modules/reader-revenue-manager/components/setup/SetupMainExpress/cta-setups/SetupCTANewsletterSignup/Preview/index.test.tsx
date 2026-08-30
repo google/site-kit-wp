@@ -20,9 +20,9 @@
  * Internal dependencies
  */
 import { fireEvent, render, screen } from '@tests/js/test-utils';
+import Preview from './index';
 import InlinePane from './InlinePane';
 import PopupPane from './PopupPane';
-import Preview from './Preview';
 
 describe( 'Preview', () => {
 	it( 'should render the popup heading and description by default', () => {
