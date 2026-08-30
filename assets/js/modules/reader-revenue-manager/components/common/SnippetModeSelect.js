@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -32,8 +32,6 @@ import { __ } from '@wordpress/i18n';
  */
 import { Option, Select } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import Link from '@/js/components/Link';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { SNIPPET_MODES } from '@/js/modules/reader-revenue-manager/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
@@ -42,17 +40,13 @@ export default function SnippetModeSelect( props ) {
 		isDisabled,
 		hasModuleAccess,
 		className,
+		helperText,
 		onChange = () => {},
 	} = props;
 
 	const snippetMode = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getSnippetMode()
 	);
-	const learnMoreURL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getDocumentationLinkURL(
-			'rrm-content-settings'
-		);
-	} );
 
 	const { setSnippetMode } = useDispatch( MODULES_READER_REVENUE_MANAGER );
 
@@ -91,25 +85,7 @@ export default function SnippetModeSelect( props ) {
 			value={ snippetMode }
 			onEnhancedChange={ onSnippetModeChange }
 			disabled={ isDisabled }
-			helperText={ createInterpolateElement(
-				__(
-					'Use the new settings in the block editor to customize where your CTAs appear. <a>Learn more</a>',
-					'google-site-kit'
-				),
-				{
-					a: (
-						<Link
-							aria-label={ __(
-								'Learn more about Reader Revenue Manager settings in the block editor',
-								'google-site-kit'
-							) }
-							href={ learnMoreURL }
-							external
-							hideExternalIndicator
-						/>
-					),
-				}
-			) }
+			helperText={ helperText }
 			enhanced
 			outlined
 		>
@@ -126,5 +102,6 @@ SnippetModeSelect.propTypes = {
 	isDisabled: PropTypes.bool,
 	hasModuleAccess: PropTypes.bool,
 	className: PropTypes.string,
+	helperText: PropTypes.node,
 	onChange: PropTypes.func,
 };
