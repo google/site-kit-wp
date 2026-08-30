@@ -24,15 +24,18 @@ import { initializePagination } from './pagination';
 
 type SiteKitGlobal = typeof global._googlesitekit;
 
-const POST_ID = 42;
-
 function baseConfig(
 	overrides: Partial< ContentEventsConfig > = {}
 ): ContentEventsConfig {
 	return {
-		postID: POST_ID,
+		postID: 42,
 		isSinglePost: true,
 		hasVimeoEmbed: false,
+		wordCount: 0,
+		estimatedReadTimeSeconds: 0,
+		isFinalPage: true,
+		readTimeThresholdPercent: 85,
+		minimumReadTimeSeconds: 5,
 		...overrides,
 	};
 }
@@ -133,7 +136,7 @@ describe( 'initializePagination', () => {
 		expect( gtagEventMock ).toHaveBeenCalledWith( 'pagination_click', {
 			pagination_type: 'post',
 			page_number: 3,
-			post_id: POST_ID,
+			post_id: 42,
 			transport_type: 'beacon',
 		} );
 	} );
@@ -211,7 +214,7 @@ describe( 'initializePagination', () => {
 		expect( gtagEventMock ).toHaveBeenCalledWith( 'pagination_click', {
 			pagination_type: 'bbpress',
 			page_number: 2,
-			post_id: POST_ID,
+			post_id: 42,
 			transport_type: 'beacon',
 		} );
 	} );

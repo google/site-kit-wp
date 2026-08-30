@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { initializePagination } from './content-events/pagination';
+import { initializeReadArticle } from './content-events/read-article';
 import { initializeVimeo } from './content-events/vimeo';
 
 /** The Content Events configuration published by PHP on the frontend. */
@@ -30,12 +31,23 @@ export interface ContentEventsConfig {
 	isSinglePost: boolean;
 	/** Whether the content rendered a Vimeo embed. */
 	hasVimeoEmbed: boolean;
+	/** Number of words in the post content this request rendered. */
+	wordCount: number;
+	/** Estimated reading time for the content this request rendered, in seconds. */
+	estimatedReadTimeSeconds: number;
+	/** Whether the request renders the post's last page. */
+	isFinalPage: boolean;
+	/** Percentage of the estimated reading time a visitor must stay. */
+	readTimeThresholdPercent: number;
+	/** Shortest time a visitor must stay, in seconds. */
+	minimumReadTimeSeconds: number;
 }
 
 /**
  * Gets the Content Events configuration.
  *
  * @since 1.186.0
+ * @since n.e.x.t Added the keys the `read_article` event needs.
  *
  * @return {ContentEventsConfig} Content events configuration object.
  */
@@ -44,20 +56,53 @@ export function getContentEventsConfig(): ContentEventsConfig {
 		postID: 0,
 		isSinglePost: false,
 		hasVimeoEmbed: false,
+		wordCount: 0,
+		estimatedReadTimeSeconds: 0,
+		isFinalPage: false,
+		// `ContentEventsConfig` requires both values, and `Content_Events.php`
+		// sends the real ones. Nothing reads the numbers below. Only a page
+		// cached before this release falls back to them, and that page has no
+		// `isFinalPage`, so `initializeReadArticle()` returns early.
+		readTimeThresholdPercent: 85,
+		minimumReadTimeSeconds: 5,
 		...( global._googlesitekit?.contentEvents || {} ),
 	};
 }
 
-initializeVimeo( getContentEventsConfig() );
-
-// A failure here is reported rather than thrown, so it can't take down whatever
-// this module registers after it.
-try {
-	initializePagination( getContentEventsConfig() );
-} catch ( error ) {
-	// eslint-disable-next-line no-console
-	console.error(
-		'Site Kit: failed to initialize pagination click tracking.',
-		error
-	);
+/**
+ * Runs one initializer, and reports a failure rather than throwing it.
+ *
+ * An uncaught throw stops every initializer after this one. It also reaches
+ * the page as an error.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} initialize Initializer to run.
+ * @param {string}   message    Message to log when the initializer throws.
+ * @return {void}
+ */
+function initializeSafely( initialize: () => void, message: string ): void {
+	try {
+		initialize();
+	} catch ( error ) {
+		// The frontend has no other place to report a failure.
+		// eslint-disable-next-line no-console
+		console.error( message, error );
+	}
 }
+
+const config = getContentEventsConfig();
+
+// `initializeVimeo()` is async, so a failure inside it rejects its own promise
+// rather than throwing here.
+initializeVimeo( config );
+
+initializeSafely(
+	() => initializePagination( config ),
+	'Site Kit: failed to initialize pagination click tracking.'
+);
+
+initializeSafely(
+	() => initializeReadArticle( config ),
+	'Site Kit: failed to initialize read article tracking.'
+);
