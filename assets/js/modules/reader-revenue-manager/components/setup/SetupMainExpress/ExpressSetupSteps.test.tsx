@@ -26,20 +26,8 @@ import {
 	SHOW_PUBLICATION_CREATE,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { mockLocation } from '@tests/js/mock-browser-utils';
-import { createTestRegistry, render } from '@tests/js/test-utils';
+import { act, createTestRegistry, render } from '@tests/js/test-utils';
 import ExpressSetupSteps from './ExpressSetupSteps';
-
-function renderExpressSetupSteps( ui = <ExpressSetupSteps /> ) {
-	const registry = createTestRegistry();
-
-	registry
-		.dispatch( CORE_FORMS )
-		.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
-			[ SHOW_PUBLICATION_CREATE ]: true,
-		} );
-
-	return render( ui, { registry } );
-}
 
 describe( 'ExpressSetupSteps', () => {
 	mockLocation();
@@ -47,7 +35,9 @@ describe( 'ExpressSetupSteps', () => {
 	it( 'renders the default steps without extra steps', () => {
 		global.location.href = 'http://example.com/';
 
-		const { getByText, queryByText, container } = renderExpressSetupSteps();
+		const { getByText, queryByText, container } = render(
+			<ExpressSetupSteps />
+		);
 
 		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
 		expect( getByText( 'Accept terms of service' ) ).toBeInTheDocument();
@@ -61,10 +51,32 @@ describe( 'ExpressSetupSteps', () => {
 		).toHaveLength( 4 );
 	} );
 
+	it( 'renders the dynamic label for the connect step', () => {
+		const registry = createTestRegistry();
+
+		const { getByText, queryByText } = render( <ExpressSetupSteps />, {
+			registry,
+		} );
+
+		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
+		expect( queryByText( 'Create publication' ) ).not.toBeInTheDocument();
+
+		act( () => {
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+					[ SHOW_PUBLICATION_CREATE ]: true,
+				} );
+		} );
+
+		expect( queryByText( 'Connect publication' ) ).not.toBeInTheDocument();
+		expect( getByText( 'Create publication' ) ).toBeInTheDocument();
+	} );
+
 	it( 'includes extra steps before setup complete', () => {
 		global.location.href = 'http://example.com/';
 
-		const { getByText, container } = renderExpressSetupSteps(
+		const { getByText, container } = render(
 			<ExpressSetupSteps
 				extraSteps={ {
 					[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: 'Set up a sign-up form',
@@ -88,7 +100,7 @@ describe( 'ExpressSetupSteps', () => {
 	it( 'marks the step matching the step query arg as active', () => {
 		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE }`;
 
-		const { container } = renderExpressSetupSteps();
+		const { container } = render( <ExpressSetupSteps /> );
 
 		const steps = container.querySelectorAll(
 			'.googlesitekit-stepper__step'
@@ -108,7 +120,7 @@ describe( 'ExpressSetupSteps', () => {
 	it( 'marks an extra step as active when it is included and selected', () => {
 		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.SETUP_CTA }`;
 
-		const { container } = renderExpressSetupSteps(
+		const { container } = render(
 			<ExpressSetupSteps
 				extraSteps={ {
 					[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: 'Set up a sign-up form',
@@ -124,31 +136,5 @@ describe( 'ExpressSetupSteps', () => {
 			'googlesitekit-stepper__step--active'
 		);
 		expect( steps[ 3 ] ).toHaveTextContent( 'Set up a sign-up form' );
-	} );
-
-	it( 'omits the Terms of Service step when setting up an existing publication', () => {
-		global.location.href = 'http://example.com/';
-		const registry = createTestRegistry();
-
-		registry
-			.dispatch( CORE_FORMS )
-			.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
-				[ SHOW_PUBLICATION_CREATE ]: false,
-			} );
-
-		const { getByText, queryByText, container } = render(
-			<ExpressSetupSteps />,
-			{ registry }
-		);
-
-		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
-		expect(
-			queryByText( 'Accept terms of service' )
-		).not.toBeInTheDocument();
-		expect( getByText( 'Add publication policies' ) ).toBeInTheDocument();
-		expect( getByText( 'Setup complete' ) ).toBeInTheDocument();
-		expect(
-			container.querySelectorAll( '.googlesitekit-stepper__step' )
-		).toHaveLength( 3 );
 	} );
 } );

@@ -19,21 +19,23 @@
 /**
  * Internal dependencies
  */
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { Registry } from '@/js/googlesitekit-data';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	EXPRESS_SETUP_STEPS,
-	READER_REVENUE_MANAGER_SETUP_FORM,
-	SHOW_PUBLICATION_CREATE,
+	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
-import { createTestRegistry, render } from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	provideModuleRegistrations,
+	provideModules,
+	render,
+} from '@tests/js/test-utils';
 import ExpressSetupDefault from './ExpressSetupDefault';
 
 jest.mock( './PoweredBy', () => () => null );
-jest.mock(
-	'@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepTermsOfService',
-	() => () => <p>RRM express setup placeholder: terms of service step.</p>
-);
 
 const STEP_CONTENT = {
 	[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]:
@@ -46,26 +48,42 @@ const STEP_CONTENT = {
 		'RRM express setup placeholder: setup complete step.',
 };
 
-function renderExpressSetupDefault( showPublicationCreate = true ) {
-	const registry = createTestRegistry();
-
-	registry
-		.dispatch( CORE_FORMS )
-		.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
-			[ SHOW_PUBLICATION_CREATE ]: showPublicationCreate,
-		} );
-
-	return render( <ExpressSetupDefault />, { registry } );
-}
-
 describe( 'ExpressSetupDefault', () => {
 	mockLocation();
+
+	let registry: Registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry() as Registry;
+
+		const moduleData = [
+			{
+				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+				active: true,
+				connected: false,
+			},
+		];
+
+		provideModules( registry, moduleData );
+		provideModuleRegistrations( registry, moduleData );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {} );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.finishResolution( 'getSettings', [] );
+
+		providePublications( registry, [] );
+	} );
 
 	it( 'renders the default steps without a setup CTA step', () => {
 		global.location.href = 'http://example.com/';
 
-		const { getByText, queryByText, container } =
-			renderExpressSetupDefault();
+		const { getByText, queryByText, container } = render(
+			<ExpressSetupDefault />
+		);
 
 		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
 		expect( getByText( 'Accept terms of service' ) ).toBeInTheDocument();
@@ -84,7 +102,10 @@ describe( 'ExpressSetupDefault', () => {
 		( step, content ) => {
 			global.location.href = `http://example.com/?step=${ step }`;
 
-			const { getByText, queryByText } = renderExpressSetupDefault();
+			const { getByText, queryByText } = render(
+				<ExpressSetupDefault />,
+				{ registry }
+			);
 
 			expect( getByText( content ) ).toBeInTheDocument();
 
@@ -101,24 +122,12 @@ describe( 'ExpressSetupDefault', () => {
 	it( 'renders no step content for an unknown step', () => {
 		global.location.href = 'http://example.com/?step=unknown-step';
 
-		const { getByText, queryByText } = renderExpressSetupDefault();
+		const { getByText, queryByText } = render( <ExpressSetupDefault /> );
 
 		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
 
 		Object.values( STEP_CONTENT ).forEach( ( content ) => {
 			expect( queryByText( content ) ).not.toBeInTheDocument();
 		} );
-	} );
-
-	it( 'does not render the Terms of Service step content when setting up an existing publication', () => {
-		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE }`;
-
-		const { queryByText } = renderExpressSetupDefault( false );
-
-		expect(
-			queryByText(
-				'RRM express setup placeholder: terms of service step.'
-			)
-		).not.toBeInTheDocument();
 	} );
 } );

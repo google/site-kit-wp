@@ -29,9 +29,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, useSelect } from 'googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import useQueryArg from '@/js/hooks/useQueryArg';
 import {
 	StepPublicationPolicies,
 	StepPublicationSetup,
@@ -40,37 +37,30 @@ import {
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
 import ExpressSetupLayout from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupLayout';
 import ExpressSetupSteps from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupSteps';
-import {
-	EXPRESS_SETUP_STEPS,
-	READER_REVENUE_MANAGER_SETUP_FORM,
-	SHOW_PUBLICATION_CREATE,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { useStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
+import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import StepSignupForm from './StepSignupForm';
 
-interface CoreFormsStore {
-	getValue( formName: string, key: string ): unknown;
-}
-
 const SetupCTANewsletterSignup: FC = () => {
-	const [ step ] = useQueryArg( 'step' );
-	const showPublicationCreate = useSelect(
-		( select: Select ) =>
-			( select( CORE_FORMS ) as unknown as CoreFormsStore ).getValue(
-				READER_REVENUE_MANAGER_SETUP_FORM,
-				SHOW_PUBLICATION_CREATE
-			),
-		[]
-	);
+	const [ step, setStep ] = useStep();
 
 	const stepContent: Record< string, ReactNode > = {
-		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: <StepPublicationSetup />,
-		...( showPublicationCreate === true
-			? {
-					[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: (
-						<StepTermsOfService />
-					),
-			  }
-			: {} ),
+		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: (
+			<StepPublicationSetup
+				connectDescription={ __(
+					'To set up a newsletter sign-up form using Reader Revenue Manager, connect your publication or create a new one.',
+					'google-site-kit'
+				) }
+				onComplete={ ( hasAcceptedTerms: boolean ) =>
+					setStep(
+						hasAcceptedTerms
+							? EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES
+							: EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE
+					)
+				}
+			/>
+		),
+		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: <StepTermsOfService />,
 		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: (
 			<StepPublicationPolicies />
 		),

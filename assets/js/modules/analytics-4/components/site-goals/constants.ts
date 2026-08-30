@@ -124,5 +124,5 @@ export const SITE_GOALS_PANEL_VOTE_IDS_BY_GOAL_TYPE = {
 };
 
 // Placeholder for the downvote "Tell us more" Google Form URL. Replace it once
-// the real URL is ready. Tracked in #12727.
+// the real URL is ready. Tracked in #13447. (Currently unused.)
 export const SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL = '#';

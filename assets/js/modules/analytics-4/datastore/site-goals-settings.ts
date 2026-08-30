@@ -38,6 +38,7 @@ import {
 	combineStores,
 	createValidatedAction,
 } from '@/js/googlesitekit/data/utils';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { GoalDriverSelectionState } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { VisitorEngagementSelectionState } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement/registry';
@@ -108,6 +109,7 @@ interface SiteGoalsRegistry {
 	};
 	resolveSelect: ( store: string ) => {
 		getSiteGoalsSettings: () => Promise< SiteGoalsSettings | undefined >;
+		isModuleConnected: ( slug: string ) => Promise< boolean | undefined >;
 	};
 }
 
@@ -308,6 +310,16 @@ const baseResolvers = {
 	*getSiteGoalsSettings(): Generator< unknown, void, unknown > {
 		const registry =
 			( yield commonActions.getRegistry() ) as SiteGoalsRegistry;
+
+		const isGA4Connected = ( yield commonActions.await(
+			registry
+				.resolveSelect( CORE_MODULES )
+				.isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
+		) ) as boolean | undefined;
+
+		if ( ! isGA4Connected ) {
+			return;
+		}
 
 		if (
 			registry.select( MODULES_ANALYTICS_4 ).getSiteGoalsSettings() ===
