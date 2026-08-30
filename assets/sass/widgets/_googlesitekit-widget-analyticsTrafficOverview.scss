@@ -1,0 +1,102 @@
+/**
+ * Analytics Traffic Overview widget stylesheet.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__tabs {
+		position: relative;
+
+		&::after {
+			border-bottom: 1px solid $c-utility-divider;
+			bottom: 0;
+			content: "";
+			display: block;
+			left: 0;
+			position: absolute;
+			width: 100%;
+			z-index: 0;
+		}
+
+		.mdc-tab-bar {
+			position: relative;
+			z-index: 1;
+		}
+
+		@each $size in map-keys($mdc-layout-grid-columns) {
+
+			@include mdc-layout-grid-media-query_($size) {
+				$margin: map-get($mdc-layout-grid-default-margin, $size);
+
+				.mdc-tab-scroller__scroll-content {
+					padding-left: $margin;
+					padding-left: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
+				}
+			}
+		}
+
+		.mdc-tab {
+			height: 54px;
+			padding: 0 28px;
+		}
+
+		.mdc-tab .mdc-tab__content {
+			height: 52px;
+		}
+
+		.mdc-tab .mdc-tab__text-label {
+			color: $c-surfaces-on-background-variant;
+			font-size: $fs-body-md;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-s;
+			line-height: 20px;
+		}
+
+		.mdc-tab--active .mdc-tab__text-label {
+			color: $c-content-primary;
+			font-weight: $fw-medium;
+			letter-spacing: 0;
+		}
+	}
+
+	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__panel {
+		display: flex;
+		flex-direction: column;
+		padding-top: 20px;
+
+		@each $size in map-keys($mdc-layout-grid-columns) {
+
+			@include mdc-layout-grid-media-query_($size) {
+				$margin: map-get($mdc-layout-grid-default-margin, $size);
+
+				padding-bottom: $margin;
+				padding-bottom: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
+				padding-left: $margin;
+				padding-left: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
+				padding-right: $margin;
+				padding-right: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
+			}
+		}
+
+		.googlesitekit-traffic-overview__chart {
+			margin-top: 48px;
+		}
+
+		.googlesitekit-traffic-overview__breakdown {
+			margin-top: 62px;
+		}
+	}
+}
