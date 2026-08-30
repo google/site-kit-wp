@@ -517,7 +517,7 @@ export function languageCodeFormat( languageCode, options = {} ) {
 			type: 'language',
 		} );
 
-		return displayNames.of( languageCode );
+		return displayNames.of( languageCode ) || languageCode;
 	} catch {
 		return languageCode;
 	}
@@ -536,12 +536,12 @@ export function languageCodeFormat( languageCode, options = {} ) {
 export function regionCodeFormat( regionCode, options = {} ) {
 	const { locale = getLocale() } = options;
 
-	const displayNames = new Intl.DisplayNames( [ locale ], {
-		type: 'region',
-	} );
-
 	try {
-		return displayNames.of( regionCode );
+		const displayNames = new Intl.DisplayNames( [ locale ], {
+			type: 'region',
+		} );
+
+		return displayNames.of( regionCode ) || regionCode;
 	} catch {
 		return regionCode;
 	}
