@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
 use Google\Site_Kit\Core\Util\URL;
+use IntlBreakIterator;
 
 /**
  * Class for handling generic content engagement events.
@@ -40,6 +41,46 @@ class Content_Events extends Conversion_Events_Provider {
 	const VIMEO_EMBED_HOST = 'player.vimeo.com';
 
 	/**
+	 * Words an average visitor reads in a minute.
+	 *
+	 * @since n.e.x.t
+	 */
+	const WORDS_PER_MINUTE = 238;
+
+	/**
+	 * Percentage of the estimated reading time a visitor must stay.
+	 *
+	 * @since n.e.x.t
+	 */
+	const READ_TIME_THRESHOLD_PERCENT = 85;
+
+	/**
+	 * Shortest time a visitor must stay, in seconds, whatever the article's length.
+	 *
+	 * @since n.e.x.t
+	 */
+	const MINIMUM_READ_TIME_SECONDS = 5;
+
+	/**
+	 * Characters an average visitor reads in a minute in a script written
+	 * without spaces between words.
+	 *
+	 * @since n.e.x.t
+	 */
+	const FALLBACK_CHARACTERS_PER_MINUTE = 500;
+
+	/**
+	 * Invisible marker appended to the end of a single post's content.
+	 *
+	 * `initializeReadArticle()` watches this element to see when the end of the
+	 * article reaches the screen. A span with no height never comes into view,
+	 * so this one is a pixel tall.
+	 *
+	 * @since n.e.x.t
+	 */
+	const END_OF_CONTENT_MARKER = '<span class="googlesitekit-end-of-content" aria-hidden="true" style="display:block;height:1px"></span>';
+
+	/**
 	 * Flag indicating whether content hooks have been bootstrapped.
 	 *
 	 * @since 1.186.0
@@ -54,6 +95,40 @@ class Content_Events extends Conversion_Events_Provider {
 	 * @var bool
 	 */
 	protected $has_vimeo_embed = false;
+
+	/**
+	 * Flag indicating whether the post content has already been measured.
+	 *
+	 * @since n.e.x.t
+	 * @var bool
+	 */
+	protected $content_measured = false;
+
+	/**
+	 * Number of words in the measured content, or `null` before it is measured.
+	 *
+	 * @since n.e.x.t
+	 * @var int|null
+	 */
+	protected $word_count = null;
+
+	/**
+	 * Estimated reading time of the measured content in seconds, or `null`
+	 * before it is measured.
+	 *
+	 * @since n.e.x.t
+	 * @var int|null
+	 */
+	protected $estimated_read_time_seconds = null;
+
+	/**
+	 * Flag indicating whether the request renders the post's last page, or
+	 * `null` before the content is measured.
+	 *
+	 * @since n.e.x.t
+	 * @var bool|null
+	 */
+	protected $is_final_page = null;
 
 	/**
 	 * Gets the provider category.
@@ -183,6 +258,11 @@ class Content_Events extends Conversion_Events_Provider {
 	protected function register_content_hooks() {
 		add_filter( 'embed_oembed_html', array( $this, 'filter_embed_html' ) );
 
+		// Other plugins append share buttons and related posts at the default
+		// priority. Priority 1 puts the marker directly after the author's
+		// content, before them.
+		add_filter( 'the_content', fn ( $content ) => $this->append_end_of_content_marker( $content ), 1 );
+
 		add_filter(
 			'render_block',
 			function ( $block_content, $block ) {
@@ -283,17 +363,221 @@ class Content_Events extends Conversion_Events_Provider {
 	}
 
 	/**
+	 * Measures a single post's content, and appends the end-of-content marker
+	 * to it.
+	 *
+	 * `the_content` runs many times in one request. A nested loop and an
+	 * automatic excerpt both run it, and neither renders the post the visitor is
+	 * reading. Both get their content back unchanged.
+	 *
+	 * Only the last page of a paginated post gets the marker, so a post sends at
+	 * most one `read_article` event per visit.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $content Post content.
+	 * @return string The content, with the marker appended on a single post's last page.
+	 */
+	protected function append_end_of_content_marker( $content ) {
+		if (
+			$this->content_measured
+			|| ! is_singular( 'post' )
+			|| is_feed()
+			|| is_embed()
+			|| doing_filter( 'get_the_excerpt' )
+			|| get_the_ID() !== get_queried_object_id()
+		) {
+			return $content;
+		}
+
+		$this->content_measured = true;
+
+		// `setup_postdata()` fills these three globals while the loop runs. A
+		// theme that renders the content outside the loop leaves them empty. An
+		// empty `$multipage` makes `$this->is_final_page` true.
+		global $page, $numpages, $multipage;
+
+		$this->is_final_page = ! $multipage || $page >= $numpages;
+
+		$measurements = $this->measure_content( $content );
+
+		$this->word_count                  = $measurements['word_count'];
+		$this->estimated_read_time_seconds = $measurements['estimated_read_time_seconds'];
+
+		if ( ! $this->is_final_page ) {
+			return $content;
+		}
+
+		return $content . self::END_OF_CONTENT_MARKER;
+	}
+
+	/**
+	 * Counts the words in a piece of content and estimates how long it takes to read.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $content Post content, before the other `the_content` filters run.
+	 * @return array Array with the `word_count` and `estimated_read_time_seconds` keys.
+	 */
+	protected function measure_content( $content ) {
+		$text = wp_strip_all_tags( strip_shortcodes( $content ) );
+
+		$word_count      = $this->count_words_with_intl( $text );
+		$character_count = 0;
+
+		if ( null === $word_count ) {
+			// Without the `intl` extension, a paragraph written with no spaces
+			// between words counts as one word, and the estimate comes out far
+			// too short. Counting its characters instead corrects that.
+			$word_count      = $this->count_words_by_spaces( $text );
+			$character_count = $this->count_characters_without_word_spacing( $text );
+		}
+
+		$estimated_read_time_seconds = (int) round(
+			(
+				$word_count / self::WORDS_PER_MINUTE
+				+ $character_count / self::FALLBACK_CHARACTERS_PER_MINUTE
+			) * MINUTE_IN_SECONDS
+		);
+
+		return array(
+			'word_count'                  => $word_count,
+			'estimated_read_time_seconds' => $estimated_read_time_seconds,
+		);
+	}
+
+	/**
+	 * Counts the words in a piece of text with the word splitter of
+	 * International Components for Unicode (ICU).
+	 *
+	 * ICU knows where a word ends in Chinese, Japanese, Thai, Khmer, Lao, and
+	 * Burmese, which are written without spaces between words. ICU reads the
+	 * same dictionaries for every locale, so the site language doesn't change
+	 * the count.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $text Text with the tags and shortcodes already removed.
+	 * @return int|null Word count, or `null` when ICU is missing.
+	 */
+	protected function count_words_with_intl( $text ) {
+		if ( ! class_exists( 'IntlBreakIterator' ) ) {
+			return null;
+		}
+
+		$iterator = IntlBreakIterator::createWordInstance( get_locale() );
+
+		$iterator->setText( $text );
+
+		return $this->count_word_parts( $iterator->getPartsIterator() );
+	}
+
+	/**
+	 * Counts the pieces of text that hold at least one letter or digit.
+	 *
+	 * A word splitter returns a space and a punctuation mark as pieces of their
+	 * own. Counting every piece would count those as words.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param iterable $parts Pieces of text a word splitter returned.
+	 * @return int Word count.
+	 */
+	protected function count_word_parts( $parts ) {
+		$word_count = 0;
+
+		foreach ( $parts as $part ) {
+			// A space, a punctuation mark, and an emoji hold no letter or digit.
+			if ( preg_match( '/[\p{L}\p{N}]/u', $part ) ) {
+				++$word_count;
+			}
+		}
+
+		return $word_count;
+	}
+
+	/**
+	 * Counts the words in a piece of text by splitting it on spaces.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $text Text with the tags and shortcodes already removed.
+	 * @return int Word count.
+	 */
+	protected function count_words_by_spaces( $text ) {
+		$parts = preg_split( '/\s+/u', trim( $text ), -1, PREG_SPLIT_NO_EMPTY );
+
+		// `preg_split()` returns `false` for text that isn't valid UTF-8, and a
+		// `foreach` over `false` raises a warning.
+		if ( false === $parts ) {
+			return 0;
+		}
+
+		return $this->count_word_parts( $parts );
+	}
+
+	/**
+	 * Counts the characters of the scripts that are written without spaces
+	 * between words.
+	 *
+	 * Unicode counts `、`, `。`, `「`, and `」` as Han script, so `\p{Han}` matches
+	 * them too. The class after the lookahead matches only a letter, a digit, or
+	 * a mark, which keeps that punctuation out of the count.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $text Text with the tags and shortcodes already removed.
+	 * @return int Character count.
+	 */
+	protected function count_characters_without_word_spacing( $text ) {
+		$character_count = preg_match_all( '/(?=[\p{Han}\p{Hiragana}\p{Katakana}\p{Thai}\p{Lao}\p{Khmer}\p{Myanmar}])[\p{L}\p{N}\p{M}]/u', $text );
+
+		return false === $character_count ? 0 : $character_count;
+	}
+
+	/**
 	 * Gets the inline config data for content events.
 	 *
 	 * @since 1.186.0
+	 * @since n.e.x.t Added the values the `read_article` event needs.
 	 *
 	 * @return array Inline config data.
 	 */
 	protected function get_inline_config() {
+		$post_id                     = get_queried_object_id();
+		$is_single_post              = is_singular( 'post' );
+		$word_count                  = 0;
+		$estimated_read_time_seconds = 0;
+		$is_final_page               = false;
+
+		if ( $this->content_measured ) {
+			$word_count                  = $this->word_count;
+			$estimated_read_time_seconds = $this->estimated_read_time_seconds;
+			$is_final_page               = $this->is_final_page;
+		} elseif ( $is_single_post ) {
+			// A page builder can render the post content without ever running
+			// `the_content`, so the queried post supplies the measurements
+			// instead.
+			$measurements = $this->measure_content( get_the_content( null, false, $post_id ) );
+
+			$word_count                  = $measurements['word_count'];
+			$estimated_read_time_seconds = $measurements['estimated_read_time_seconds'];
+
+			// `is_singular( 'post' )` is true here, so the queried post exists
+			// and `generate_postdata()` returns its pagination state.
+			$postdata      = generate_postdata( $post_id );
+			$is_final_page = ! $postdata['multipage'] || $postdata['page'] >= $postdata['numpages'];
+		}
+
 		return array(
-			'postID'        => (int) get_queried_object_id(),
-			'isSinglePost'  => is_singular( 'post' ),
-			'hasVimeoEmbed' => (bool) $this->has_vimeo_embed,
+			'postID'                   => (int) $post_id,
+			'isSinglePost'             => $is_single_post,
+			'hasVimeoEmbed'            => (bool) $this->has_vimeo_embed,
+			'wordCount'                => $word_count,
+			'estimatedReadTimeSeconds' => $estimated_read_time_seconds,
+			'isFinalPage'              => $is_final_page,
+			'readTimeThresholdPercent' => self::READ_TIME_THRESHOLD_PERCENT,
+			'minimumReadTimeSeconds'   => self::MINIMUM_READ_TIME_SECONDS,
 		);
 	}
 }
