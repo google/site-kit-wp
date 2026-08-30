@@ -16,61 +16,64 @@
  * limitations under the License.
  */
 
-.googlesitekit-rrm-express-setup {
-    border-top: 1px solid $c-utility-divider;
+.googlesitekit-plugin {
 
-    // Two-column layout: sidebar ~25% (max 280px), content fills the rest.
-    .googlesitekit-rrm-express-setup__layout {
-        @media (min-width: $bp-nonTablet) {
-            grid-template-columns: minmax(0, min(25%, 280px)) minmax(0, 1fr);
-        }
-    }
+	.googlesitekit-rrm-express-setup {
+		border-top: 1px solid $c-utility-divider;
 
-	.googlesitekit-rrm-express-setup__sidebar {
-		background-color: $c-surfaces-surface;
-
-        // On desktop, make the sidebar sticky and full height.
-		@media (min-width: $bp-nonTablet) {
-            align-self: start;
-			background-color: $c-surfaces-background;
-			grid-column: 1;
-			height: calc(100vh - 120px); // 32px admin bar + 88px header.
-            overflow: hidden;
-			position: sticky;
-			top: 120px; // 32px admin bar + 88px header.
+		// Two-column layout: sidebar ~25% (max 280px), content fills the rest.
+		.googlesitekit-rrm-express-setup__layout {
+			@media (min-width: $bp-nonTablet) {
+				grid-template-columns: minmax(0, min(25%, 280px)) minmax(0, 1fr);
+			}
 		}
-	}
 
-	.googlesitekit-rrm-express-setup__sidebar-inner {
-		padding: $grid-gap-phone;
+		.googlesitekit-rrm-express-setup__sidebar {
+			background-color: $c-surfaces-surface;
 
-        @media (min-width: $bp-nonTablet) {
-            display: flex;
-			flex-direction: column;
-			height: 100%;
-            justify-content: space-between;
-			padding: $grid-gap-desktop;
-        }
-	}
+			// On desktop, make the sidebar sticky and full height.
+			@media (min-width: $bp-nonTablet) {
+				align-self: start;
+				background-color: $c-surfaces-background;
+				grid-column: 1;
+				height: calc(100vh - 120px); // 32px admin bar + 88px header.
+				overflow: hidden;
+				position: sticky;
+				top: 120px; // 32px admin bar + 88px header.
+			}
+		}
 
-    // Make the content full height.
-	.googlesitekit-rrm-express-setup__content {
-		background-color: $c-surfaces-surface;
-        min-height: calc( 100vh - 252px ); // 46px admin bar + 72px header + 50px stepper + 84px footer.
-		padding-inline: $grid-gap-phone;
+		.googlesitekit-rrm-express-setup__sidebar-inner {
+			padding: $grid-gap-phone;
 
-        @media (min-width: $bp-wpAdminBarTablet) {
-            min-height: calc( 100vh - 238px ); // 32px admin bar + 72px header + 50px stepper + 84px footer.
-        }
+			@media (min-width: $bp-nonTablet) {
+				display: flex;
+				flex-direction: column;
+				height: 100%;
+				justify-content: space-between;
+				padding: $grid-gap-desktop;
+			}
+		}
 
-        @media (min-width: $bp-nonTablet) {
-            grid-column: 2;
-			min-height: calc(100vh - 120px); // 32px admin bar + 88px header.
-			padding: $grid-gap-desktop calc( $grid-gap-desktop * 2 );
-        }
-	}
+		// Make the content full height.
+		.googlesitekit-rrm-express-setup__content {
+			background-color: $c-surfaces-surface;
+			min-height: calc( 100vh - 252px ); // 46px admin bar + 72px header + 50px stepper + 84px footer.
+			padding-inline: $grid-gap-phone;
 
-	.googlesitekit-rrm-express-setup__footer {
-		background-color: $c-surfaces-surface;
+			@media (min-width: $bp-wpAdminBarTablet) {
+				min-height: calc( 100vh - 238px ); // 32px admin bar + 72px header + 50px stepper + 84px footer.
+			}
+
+			@media (min-width: $bp-nonTablet) {
+				grid-column: 2;
+				min-height: calc(100vh - 120px); // 32px admin bar + 88px header.
+				padding: $grid-gap-desktop ($grid-gap-desktop * 2);
+			}
+		}
+
+		.googlesitekit-rrm-express-setup__footer {
+			background-color: $c-surfaces-surface;
+		}
 	}
 }
