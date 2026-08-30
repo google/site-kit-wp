@@ -24,6 +24,7 @@ import { Fragment } from 'react';
 /**
  * Internal dependencies
  */
+import { Story } from '@/js/types/Story';
 import ExpressSetupStepDetails from './ExpressSetupStepDetails';
 
 function Template() {
@@ -39,7 +40,7 @@ function Template() {
 	);
 }
 
-export const Basic = Template.bind( {} );
+export const Basic = Template.bind( {} ) as Story;
 Basic.storyName = 'ExpressSetupStepDetails';
 
 export default {
