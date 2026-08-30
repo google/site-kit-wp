@@ -212,9 +212,18 @@ describe( 'TextField', () => {
 		).toHaveTextContent( '5 / 40' );
 	} );
 
-	it( 'does not show the character counter by default', () => {
+	it.each( [
+		{
+			caseName: 'without `showCharacterCounter`',
+			props: { maxLength: 40 },
+		},
+		{
+			caseName: 'without `maxLength`',
+			props: { showCharacterCounter: true },
+		},
+	] )( 'does not show the character counter $caseName', ( { props } ) => {
 		const { container } = render(
-			<TextField { ...defaultProps } maxLength={ 40 } value="Hello" />
+			<TextField { ...defaultProps } { ...props } value="Hello" />
 		);
 
 		expect(
