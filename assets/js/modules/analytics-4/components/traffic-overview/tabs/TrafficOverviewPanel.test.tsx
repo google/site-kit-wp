@@ -106,10 +106,8 @@ describe( 'TrafficOverviewPanel', () => {
 
 		await waitForRegistry();
 
-		// The panel's own job is the `useTrafficOverviewReports` call, so this
-		// test checks only that one report request goes out.
-		// `useTrafficOverviewReports.test.ts` checks that all five reports are
-		// asked for.
+		// This test checks only that one request goes out, because
+		// `useTrafficOverviewReports.test.ts` covers all five reports.
 		await waitFor( () =>
 			expect( fetchMock ).toHaveFetched( reportEndpoint )
 		);

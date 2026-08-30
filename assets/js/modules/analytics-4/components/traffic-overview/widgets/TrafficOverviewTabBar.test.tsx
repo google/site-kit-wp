@@ -31,7 +31,7 @@ describe( 'TrafficOverviewTabBar', () => {
 	];
 
 	/**
-	 * Renders the tab bar with a mock `onTabChange` and returns it alongside the render result.
+	 * Renders the tab bar with a mock `onTabChange`.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -133,9 +133,8 @@ describe( 'TrafficOverviewTabBar', () => {
 	it( 'leaves the selected tab unchanged when the user presses Enter with no tab focused', () => {
 		const { onTabChange } = renderTabBar();
 
-		// MDC reads the focused tab's index, which is `-1` when no tab holds
-		// focus, and asks the tab bar to select that index. No tab sits at
-		// `-1`, so the tab bar never calls `onTabChange`.
+		// With no tab focused, MDC asks the tab bar to select index `-1`. No
+		// tab sits at `-1`, so the tab bar never calls `onTabChange`.
 		fireEvent.keyDown( screen.getByRole( 'tablist' ), {
 			key: 'Enter',
 			keyCode: 13,

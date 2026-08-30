@@ -1,5 +1,5 @@
 /**
- * Traffic Overview useTrafficReport custom hook tests.
+ * Traffic Overview `useTrafficReport` hook tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -129,7 +129,7 @@ describe( 'useTrafficReport', () => {
 		expect( result.current.report ).toBeUndefined();
 	} );
 
-	it( 'requests no report while the card is out of view', async () => {
+	it( 'requests no report while the widget is out of view', async () => {
 		const { waitForRegistry } = renderHook(
 			() => useTrafficReport( graphReportOptions ),
 			{ registry, inView: false }

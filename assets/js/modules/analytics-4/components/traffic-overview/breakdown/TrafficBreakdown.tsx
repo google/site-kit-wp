@@ -1,5 +1,5 @@
 /**
- * Traffic Overview TrafficBreakdown component.
+ * Traffic Overview breakdown.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *

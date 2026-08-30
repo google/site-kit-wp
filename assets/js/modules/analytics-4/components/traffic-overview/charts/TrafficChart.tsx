@@ -1,5 +1,5 @@
 /**
- * Traffic Overview TrafficChart component.
+ * Traffic Overview chart.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *

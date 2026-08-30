@@ -28,21 +28,21 @@ import { Tab, TabBar } from 'googlesitekit-components';
 import ScrollableTabs from '@/js/components/ScrollableTabs';
 
 export interface TrafficOverviewTab {
-	/** Identifies the tab, and becomes the tab element's DOM `id`. */
+	/** The tab's identifier, which becomes the tab element's DOM `id`. */
 	id: string;
 	/** The text the tab shows. */
 	label: string;
 }
 
 interface TrafficOverviewTabBarProps {
-	/** The tabs the tab bar renders, in the order of the array. */
+	/** The tabs the tab bar renders, in the order given. */
 	tabs: TrafficOverviewTab[];
 	/**
 	 * The `id` of the selected tab. The tab bar selects the first tab when no
 	 * tab has this `id`.
 	 */
 	activeTabID: string;
-	/** Called with the `id` of the tab the user selects. */
+	/** The tab bar calls this handler with the `id` of the tab the user selects. */
 	onTabChange: ( tabID: string ) => void;
 }
 

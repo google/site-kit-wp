@@ -48,7 +48,7 @@ interface TrafficOverviewTabDescriptor extends TrafficOverviewTab {
 	PanelComponent: ComponentType;
 }
 
-/** The tabs the widget shows, in the order it shows them. */
+/** The tabs the widget shows, in the order given. */
 const TABS: TrafficOverviewTabDescriptor[] = [
 	{
 		id: TRAFFIC_OVERVIEW_TAB_ID,
@@ -58,9 +58,9 @@ const TABS: TrafficOverviewTabDescriptor[] = [
 ];
 
 const TrafficOverviewWidget: FC< WidgetComponentProps > = ( { Widget } ) => {
-	// `getWidgetComponentProps` is plain JavaScript, so TypeScript infers a
-	// component that takes no props. That helper already scopes `Widget` to
-	// the widget's slug, so the cast omits `widgetSlug`.
+	// `getWidgetComponentProps` lives in a JavaScript file, so TypeScript reads
+	// `Widget` as a component that takes no props. The cast leaves `widgetSlug`
+	// out, because `getWidgetComponentProps` already sets it.
 	const WidgetComponent = Widget as FC< Omit< WidgetProps, 'widgetSlug' > >;
 
 	const [ activeTabID, setActiveTabID ] = useState( TRAFFIC_OVERVIEW_TAB_ID );

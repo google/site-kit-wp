@@ -77,8 +77,8 @@ describe( 'TrafficOverviewSourceLink', () => {
 			.getAttribute( 'href' ) as string;
 
 		// `getServiceReportURL` encodes the report parameters into the Analytics
-		// URL, and `getAccountChooserURL` encodes that URL again into its
-		// `continue` parameter, so this helper decodes the `href` twice.
+		// URL. `getAccountChooserURL` then encodes that URL into its `continue`
+		// parameter, so the `href` needs decoding twice.
 		return decodeURIComponent( decodeURIComponent( href ) );
 	}
 

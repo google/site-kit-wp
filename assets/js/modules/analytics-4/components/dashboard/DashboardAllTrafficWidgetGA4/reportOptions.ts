@@ -37,9 +37,9 @@ export const TOTAL_USERS_METRIC: ReportOptions[ 'metrics' ] = [
 ];
 
 export interface BreakdownReportDescriptor {
-	/** GA4 dimension the breakdown report groups its `totalUsers` metric by, such as `country`. */
+	/** The GA4 dimension that groups the breakdown report's `totalUsers` metric, such as `country`. */
 	dimensionName: string;
-	/** Label saying which part of the plugin asked for the breakdown report. */
+	/** A label that says which part of the plugin asked for the breakdown report. */
 	reportID: string;
 }
 

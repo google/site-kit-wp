@@ -1,5 +1,5 @@
 /**
- * Traffic Overview useTrafficReport custom hook.
+ * Traffic Overview `useTrafficReport` hook.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -38,31 +38,32 @@ import {
 
 export interface TrafficReport {
 	/**
-	 * The GA4 report. It reads `undefined` in three cases:
+	 * The GA4 report. It reads `undefined` when:
 	 *
 	 * - The request has not finished.
-	 * - The Traffic Overview card is out of view.
+	 * - The Traffic Overview widget is out of view.
 	 * - A view-only user's role cannot view Analytics.
 	 */
 	report?: Report;
 	/**
 	 * The arguments this hook passes to the `getReport` selector.
-	 * `useTrafficOverviewReports` reads this report's loading state and its
-	 * error with the same arguments.
+	 * `useTrafficOverviewReports` reads the report's loading state and its
+	 * error under the same arguments.
 	 */
 	args: ReportOptions;
 }
 
 /**
- * Resolves one of the Traffic Overview card's GA4 reports.
+ * Resolves one of the Traffic Overview widget's GA4 reports.
  *
- * The report covers the selected date range, counts total users, and filters on
- * the entity URL when the site has a current entity. On a view-only dashboard,
- * the hook sends no request when the user's role cannot view Analytics.
+ * The hook adds the selected date range and the total users metric to the
+ * options it receives. On an entity dashboard it also adds the entity URL. On a
+ * view-only dashboard it sends no request until the user's role can view
+ * Analytics.
  *
  * @since n.e.x.t
  *
- * @param {Object} reportOptions The options for one report. The hook adds the date range, the total users metric, and the entity URL.
+ * @param {Object} reportOptions The options for one report.
  * @return {Object} The report, and the arguments passed to the `getReport` selector.
  */
 export function useTrafficReport(
@@ -109,8 +110,8 @@ export function useTrafficReport(
 	}, [ startDate, endDate, entityURL, reportOptions ] );
 
 	// On a view-only dashboard, `canViewSharedAnalytics4` reads `undefined`
-	// until the module list and the user's capabilities load. Neither
-	// `undefined` nor `false` sends a request.
+	// until the user's capabilities load. Neither `undefined` nor `false`
+	// sends a request.
 	const report = useInViewSelect< Report | undefined >(
 		( select: Select ) =>
 			canViewSharedAnalytics4

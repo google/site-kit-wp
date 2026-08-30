@@ -28,11 +28,11 @@ import {
 
 export interface TrafficBreakdownColumnDescriptor
 	extends BreakdownReportDescriptor {
-	/** Key that finds this column's report in the `breakdownReports` map, such as `channels`. */
+	/** The key for this column's report in the `breakdownReports` map, such as `channels`. */
 	id: string;
 }
 
-/** The breakdown columns the Traffic Overview panel shows, in the order it shows them. */
+/** The breakdown columns the Traffic Overview panel shows, in the order given. */
 export const TRAFFIC_BREAKDOWN_COLUMNS: TrafficBreakdownColumnDescriptor[] = [
 	{
 		id: 'channels',

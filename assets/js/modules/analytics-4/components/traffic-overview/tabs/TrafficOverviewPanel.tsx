@@ -31,9 +31,9 @@ import { TRAFFIC_OVERVIEW_TAB_ID } from '@/js/modules/analytics-4/components/tra
 import { useTrafficOverviewReports } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrafficOverviewReports';
 
 const TrafficOverviewPanel: FC = () => {
-	// `useTrafficOverviewReports` starts the panel's five reports. Nothing reads
-	// the result yet, because `TotalVisitors`, `TrafficChart`, and
-	// `TrafficBreakdown` render nothing.
+	// Nothing reads the result yet, because `TotalVisitors`, `TrafficChart`,
+	// and `TrafficBreakdown` render nothing. The call still sends the panel's
+	// five report requests.
 	useTrafficOverviewReports();
 
 	return (

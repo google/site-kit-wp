@@ -1,5 +1,5 @@
 /**
- * Traffic Overview useTrafficOverviewReports custom hook tests.
+ * Traffic Overview `useTrafficOverviewReports` hook tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -50,8 +50,8 @@ describe( 'useTrafficOverviewReports', () => {
 	];
 
 	/**
-	 * Builds the five argument sets the hook is expected to pass to `getReport`,
-	 * in the order totals, graph, channels, locations, and devices.
+	 * Builds the five argument sets the hook passes to `getReport`, in the order
+	 * totals, graph, channels, locations, and devices.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -177,10 +177,9 @@ describe( 'useTrafficOverviewReports', () => {
 
 		await waitForRegistry();
 
-		// The `MODULES_ANALYTICS_4` store already holds a report for each of
-		// the five argument sets, so its `getReport` resolver returns without
-		// a request. A request for any other arguments reaches `fetchMock`,
-		// and the `not.toHaveFetched` check then fails.
+		// The store already holds a report for each of the five argument sets,
+		// so the `getReport` resolver sends no request for them. A request for
+		// any other arguments reaches `fetchMock`, and the check below fails.
 		expect( getResolvedArgs( expectedArgs ) ).toEqual( expectedArgs );
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );

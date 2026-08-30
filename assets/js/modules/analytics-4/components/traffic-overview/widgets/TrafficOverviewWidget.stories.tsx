@@ -142,11 +142,10 @@ MainDashboard.args = {
 MainDashboard.scenario = {};
 
 /**
- * A current entity URL changes only the report requests and the address of the
- * widget's footer link to Analytics. `useTrafficOverviewReports.test.ts` checks
- * the report requests. `TrafficOverviewSourceLink.test.tsx` checks the link
- * address. `EntityDashboard` therefore sets no `scenario` and runs no visual
- * check.
+ * This story sets no `scenario`, so it runs no visual check. A current entity
+ * URL changes only the report requests and the footer link's address, and
+ * `useTrafficOverviewReports.test.ts` and `TrafficOverviewSourceLink.test.tsx`
+ * already cover both.
  */
 export const EntityDashboard = Template.bind( {} ) as Story;
 EntityDashboard.storyName = 'Entity Dashboard';

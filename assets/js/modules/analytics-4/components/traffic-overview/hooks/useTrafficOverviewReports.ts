@@ -1,5 +1,5 @@
 /**
- * Traffic Overview useTrafficOverviewReports custom hook.
+ * Traffic Overview `useTrafficOverviewReports` hook.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -36,16 +36,14 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { useTrafficReport } from './useTrafficReport';
 
-/** The breakdown columns, in the order `TRAFFIC_BREAKDOWN_COLUMNS` lists them. */
 const [ CHANNELS_COLUMN, LOCATIONS_COLUMN, DEVICES_COLUMN ] =
 	TRAFFIC_BREAKDOWN_COLUMNS;
 
 /**
- * The report options for the graph report and the three breakdown reports.
+ * The options for the graph report and the three breakdown reports.
  *
- * These options are the same on every render. `useTrafficReport` lists the
- * options it receives in its `useMemo` dependencies, so building them once here
- * keeps each report's args object the same from one render to the next.
+ * They sit here, not inside the hook, so every render passes the same object.
+ * `useTrafficReport` rebuilds the args when the options change.
  */
 const GRAPH_REPORT_OPTIONS = getGraphReportOptions();
 const CHANNELS_REPORT_OPTIONS = getBreakdownReportOptions( CHANNELS_COLUMN );
@@ -62,19 +60,19 @@ export interface TrafficOverviewReports {
 	/** `true` when all five reports have finished resolving. */
 	loaded: boolean;
 	/**
-	 * The first error among the five reports. The hook checks them in the order
-	 * totals, graph, channels, locations, and devices. It reads `undefined` when
-	 * no report has an error.
+	 * The first error among the five reports, checked in the order totals,
+	 * graph, channels, locations, and devices. It reads `undefined` when no
+	 * report has an error.
 	 */
 	error?: Record< string, unknown >;
 }
 
 /**
- * Resolves the five GA4 reports behind the Traffic Overview panel.
+ * Resolves the five GA4 reports the Traffic Overview panel needs.
  *
  * @since n.e.x.t
  *
- * @return {Object} The five reports, whether they have all finished, and the first error in the order totals, graph, channels, locations, and devices.
+ * @return {Object} The five reports, whether they have all finished, and the first error among them.
  */
 export function useTrafficOverviewReports(): TrafficOverviewReports {
 	const { compareStartDate, compareEndDate } = useSelect(

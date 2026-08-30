@@ -36,7 +36,7 @@ const VIEW_ANALYTICS_CAPABILITY = `${ PERMISSION_READ_SHARED_MODULE_DATA }::["${
  *
  * @since n.e.x.t
  *
- * @param {Object} registry The test registry the code under test reads from.
+ * @param {Object} registry The registry to set the capability on.
  * @return {void}
  */
 export function allowAnalyticsAccess( registry: WPDataRegistry ) {
@@ -46,11 +46,11 @@ export function allowAnalyticsAccess( registry: WPDataRegistry ) {
 }
 
 /**
- * Takes the capability to read Analytics data away from a view-only user's role.
+ * Denies a view-only user's role the capability to read Analytics data.
  *
  * @since n.e.x.t
  *
- * @param {Object} registry The test registry the code under test reads from.
+ * @param {Object} registry The registry to set the capability on.
  * @return {void}
  */
 export function denyAnalyticsAccess( registry: WPDataRegistry ) {

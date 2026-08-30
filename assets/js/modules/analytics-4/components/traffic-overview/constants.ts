@@ -17,11 +17,8 @@
  */
 
 /**
- * The DOM `id` of the Traffic Overview tab.
- *
- * `TrafficOverviewWidget` gives the tab this `id`, `TrafficOverviewTabBar` sets
- * it on the tab element, and `TrafficOverviewPanel` points its
- * `aria-labelledby` at it.
+ * The DOM `id` of the Traffic Overview tab. The panel points its
+ * `aria-labelledby` at this `id`, so the tab names the panel.
  */
 export const TRAFFIC_OVERVIEW_TAB_ID = 'googlesitekit-traffic-overview-tab';
 

@@ -62,7 +62,7 @@ describe( 'TrafficOverviewWidget', () => {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object}  [options]        Optional. Render options.
-	 * @param {boolean} [options.inView] Optional. Whether the card starts in view.
+	 * @param {boolean} [options.inView] Optional. Whether the widget starts in view.
 	 * @return {Object} The render result.
 	 */
 	function renderWidget( { inView = true } = {} ) {
@@ -91,7 +91,7 @@ describe( 'TrafficOverviewWidget', () => {
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 	} );
 
-	it( 'renders the card with no header', async () => {
+	it( 'renders the widget with no header', async () => {
 		const { container, waitForRegistry } = renderWidget();
 
 		await waitForRegistry();
@@ -106,7 +106,7 @@ describe( 'TrafficOverviewWidget', () => {
 		).toBeNull();
 	} );
 
-	it( 'renders one tab labeled "Traffic Overview" at the top of the card body', async () => {
+	it( 'renders one tab labeled "Traffic Overview" at the top of the widget body', async () => {
 		const { container, waitForRegistry } = renderWidget();
 
 		await waitForRegistry();
@@ -131,7 +131,7 @@ describe( 'TrafficOverviewWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'renders a card footer with the text "Source: Analytics" and a link to Analytics', async () => {
+	it( 'renders a widget footer with the text "Source: Analytics" and a link to Analytics', async () => {
 		const { container, waitForRegistry } = renderWidget();
 
 		await waitForRegistry();
@@ -164,7 +164,7 @@ describe( 'TrafficOverviewWidget', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'sends no report request while the card is out of view, and all five after it comes into view', async () => {
+	it( 'sends no report request while the widget is out of view, and all five after it comes into view', async () => {
 		const { setInView, waitForRegistry } = renderWidget( {
 			inView: false,
 		} );
@@ -175,10 +175,8 @@ describe( 'TrafficOverviewWidget', () => {
 
 		act( () => setInView!( true ) );
 
-		// `useTrafficOverviewReports` asks for five reports, and the `getReport`
-		// resolver sends one request each. The five requests do not all start on
-		// the render that brings the card into view, so this check waits for the
-		// count to reach five.
+		// The five requests do not all start on the render that brings the
+		// widget into view, so this check waits for the count to reach five.
 		await waitFor( () =>
 			expect( fetchMock ).toHaveFetchedTimes( 5, reportEndpoint )
 		);
