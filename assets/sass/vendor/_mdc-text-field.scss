@@ -21,8 +21,20 @@
 			width: auto !important;
 		}
 
+		+ .mdc-text-field-helper-line {
+			width: 250px;
+
+			&:has(.mdc-text-field-character-counter) {
+				padding-right: 0;
+			}
+		}
+
 		@media (min-width: $bp-tablet) {
 			width: 350px;
+
+			+ .mdc-text-field-helper-line {
+				width: 350px;
+			}
 		}
 	}
 

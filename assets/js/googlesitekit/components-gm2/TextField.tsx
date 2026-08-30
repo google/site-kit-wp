@@ -20,6 +20,7 @@
  * External dependencies
  */
 import MaterialTextField, {
+	CharacterCounter,
 	HelperText,
 	Input,
 } from '@material/react-text-field';
@@ -80,6 +81,8 @@ export interface TextFieldProps {
 	size?: number;
 	/** The largest number of characters the input accepts. */
 	maxLength?: number;
+	/** Whether the field shows a character counter. Pair it with `maxLength`. */
+	showCharacterCounter?: boolean;
 	/** The input's `tabindex` attribute, which sets its place in the keyboard order. */
 	tabIndex?: number;
 	/** Whether the input is disabled, so nobody can focus it or type in it. */
@@ -107,6 +110,7 @@ const TextField: FC< TextFieldProps > = ( {
 	value,
 	size,
 	maxLength,
+	showCharacterCounter,
 	tabIndex,
 	disabled,
 	onChange,
@@ -161,6 +165,9 @@ const TextField: FC< TextFieldProps > = ( {
 					)
 				}
 				helperText={ helperTextToShow }
+				characterCounter={
+					showCharacterCounter ? <CharacterCounter /> : undefined
+				}
 			>
 				<Input
 					id={ inputID }
