@@ -21,7 +21,7 @@
 			width: auto !important;
 		}
 
-		+ .mdc-text-field-helper-line {
+		&:not(.mdc-text-field--textarea) + .mdc-text-field-helper-line {
 			width: 250px;
 
 			&:has(.mdc-text-field-character-counter) {
@@ -32,7 +32,7 @@
 		@media (min-width: $bp-tablet) {
 			width: 350px;
 
-			+ .mdc-text-field-helper-line {
+			&:not(.mdc-text-field--textarea) + .mdc-text-field-helper-line {
 				width: 350px;
 			}
 		}
