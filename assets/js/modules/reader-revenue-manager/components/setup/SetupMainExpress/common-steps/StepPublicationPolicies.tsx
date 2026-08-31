@@ -215,7 +215,7 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 								type={ TYPE_LABEL }
 							>
 								{ __(
-									'Add your site’s term’s of service link:',
+									'Add your site’s terms of service link:',
 									'google-site-kit'
 								) }
 							</P>
