@@ -115,15 +115,6 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					width: 659,
 					height: 577,
 				},
-				{
-					src: splashScreenScreenshotURL,
-					alt: __(
-						'WordPress login page showing Sign in with Google integration.',
-						'google-site-kit'
-					),
-					width: 659,
-					height: 577,
-				},
 			],
 		},
 		successNotice: {

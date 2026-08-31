@@ -113,7 +113,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					__( 'Set up features', 'google-site-kit' ),
 				],
 				setupComplete: __(
-					"You're all set! Reader Revenue Manager setup is complete.",
+					'You’re all set! Reader Revenue Manager setup is complete.',
 					'google-site-kit'
 				),
 			},

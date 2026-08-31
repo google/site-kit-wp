@@ -130,7 +130,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					),
 				],
 				setupComplete: __(
-					"You're done! Other users can view the Site Kit dashboard in view-only mode.",
+					'You’re done! Other users can view the Site Kit dashboard in view-only mode.',
 					'google-site-kit'
 				),
 			},
@@ -245,7 +245,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					),
 				],
 				setupComplete: __(
-					"You're done! you will receive a confirmation email and the report will be sent automatically per your frequency selection",
+					'You’re done! You will receive a confirmation email and the report will be sent automatically per your frequency selection',
 					'google-site-kit'
 				),
 			},
@@ -330,7 +330,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					__( 'Download your report', 'google-site-kit' ),
 				],
 				setupComplete: __(
-					"You're done! the PDF will be automatically downloaded",
+					'You’re done! The PDF will be automatically downloaded',
 					'google-site-kit'
 				),
 			},

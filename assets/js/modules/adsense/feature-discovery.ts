@@ -104,7 +104,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					),
 				],
 				setupComplete: __(
-					"You're ready to generate revenue with AdSense!",
+					'You’re ready to generate revenue with AdSense!',
 					'google-site-kit'
 				),
 			},
@@ -113,15 +113,6 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					src: splashScreenScreenshotURL,
 					alt: __(
 						'Top earning pages widget showing top pages and earnings data.',
-						'google-site-kit'
-					),
-					width: 659,
-					height: 577,
-				},
-				{
-					src: splashScreenScreenshotURL,
-					alt: __(
-						'AdSense performance widget showing key metrics and trends.',
 						'google-site-kit'
 					),
 					width: 659,

@@ -120,42 +120,6 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					width: 659,
 					height: 577,
 				},
-				{
-					src: splashScreenScreenshotURL,
-					alt: __(
-						'Analytics 4 Site Goals widget showing progress for configured goals.',
-						'google-site-kit'
-					),
-					width: 659,
-					height: 577,
-				},
-				{
-					src: splashScreenScreenshotURL,
-					alt: __(
-						'Analytics 4 Top Content widget showing top pages and engagement data.',
-						'google-site-kit'
-					),
-					width: 659,
-					height: 577,
-				},
-				{
-					src: splashScreenScreenshotURL,
-					alt: __(
-						'Analytics 4 Traffic widget showing traffic trends and channels.',
-						'google-site-kit'
-					),
-					width: 659,
-					height: 577,
-				},
-				{
-					src: splashScreenScreenshotURL,
-					alt: __(
-						'Analytics 4 Visitor Groups widget showing audience segment performance.',
-						'google-site-kit'
-					),
-					width: 659,
-					height: 577,
-				},
 			],
 		},
 		successNotice: {
@@ -219,13 +183,6 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						term: __( 'Save time:', 'google-site-kit' ),
 						description: __(
 							'Skip navigating through complex external Analytics menus.',
-							'google-site-kit'
-						),
-					},
-					{
-						term: __( 'Team alignment:', 'google-site-kit' ),
-						description: __(
-							'Keep everyone focused on core goals with a simplified performance view.',
 							'google-site-kit'
 						),
 					},
