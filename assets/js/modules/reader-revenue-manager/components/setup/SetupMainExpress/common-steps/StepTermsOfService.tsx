@@ -133,7 +133,7 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 	);
 
 	const onSubmit = useCallback(
-		async ( event ) => {
+		async ( event: FormEvent ) => {
 			event.preventDefault();
 
 			if ( ! publication || ! termsOfService ) {
