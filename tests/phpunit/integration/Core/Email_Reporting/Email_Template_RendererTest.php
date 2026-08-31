@@ -324,6 +324,196 @@ class Email_Template_RendererTest extends TestCase {
 		$this->assertStringContainsString( 'View dashboard', $anchor_matches[1], 'Expected the label inside the HTML anchor branch.' );
 	}
 
+	public function test_render__shows_each_site_goals_group_with_its_name_and_values() {
+		$sections = array(
+			'site_goals_online_store' => $this->get_site_goals_section(
+				'How is my online store performing?',
+				'online-store',
+				array(
+					'change_context' => 'Compared to previous 7 days',
+					'groups'         => array(
+						array(
+							'label'   => 'WooCommerce',
+							'metrics' => array(
+								array(
+									'label' => 'Sales rate',
+									'value' => '3.8%',
+									'trend' => 7.2,
+								),
+								array(
+									'label' => 'Total sales',
+									'value' => '116',
+									'trend' => -4.6,
+								),
+							),
+						),
+						array(
+							'label'   => 'Other sources',
+							'metrics' => array(
+								array(
+									'label' => 'Total sales',
+									'value' => '214',
+									'trend' => 6.8,
+								),
+							),
+						),
+					),
+					'prompt'         => array(),
+				)
+			),
+		);
+
+		$html_output = $this->render_site_goals_report( $sections );
+
+		$this->assertStringContainsString( 'WooCommerce', $html_output, 'The card should name each plugin above its own group of metrics.' );
+		$this->assertStringContainsString( 'Other sources', $html_output, 'The card should show an Other sources group for the results that name no plugin.' );
+		$this->assertStringContainsString( '3.8%', $html_output, 'The card should show the sales rate of the WooCommerce group.' );
+		$this->assertStringContainsString( '116', $html_output, 'The card should show the total sales of the WooCommerce group.' );
+		$this->assertStringContainsString( '214', $html_output, 'The card should show the total sales of the Other sources group.' );
+		$this->assertStringContainsString( '+7.2%', $html_output, 'The card should show the trend badge of the sales rate row.' );
+		$this->assertStringContainsString( '-4.6%', $html_output, 'The card should show the trend badge of the total sales row.' );
+		$this->assertSame( 1, substr_count( $html_output, 'Sales rate' ), 'The Other sources group should show its total alone, with no rate row.' );
+		$this->assertSame( 2, substr_count( $html_output, 'class="badge-positive"' ), 'The card should mark each value that went up with a positive badge.' );
+		$this->assertSame( 1, substr_count( $html_output, 'class="badge-negative"' ), 'The card should mark the one value that went down with a negative badge.' );
+	}
+
+	public function test_render__shows_the_enable_data_breakdown_prompt_when_the_site_goals_values_are_not_split_by_plugin() {
+		$sections = array(
+			'site_goals_online_store' => $this->get_site_goals_section(
+				'How is my online store performing?',
+				'online-store',
+				array(
+					'change_context' => 'Compared to previous 7 days',
+					'groups'         => array(
+						array(
+							'label'   => '',
+							'metrics' => array(
+								array(
+									'label' => 'Sales rate',
+									'value' => '3.8%',
+									'trend' => 7.2,
+								),
+							),
+						),
+					),
+					'prompt'         => array(
+						'text'      => 'Your events data may be grouped together across plugins. To see separate results by plugin, %s.',
+						'link_text' => 'enable data breakdown',
+					),
+				)
+			),
+		);
+
+		$html_output = $this->render_site_goals_report( $sections );
+
+		$this->assertStringContainsString(
+			'Your events data may be grouped together across plugins. To see separate results by plugin, <a class="link" href="https://example.com/dashboard"',
+			$html_output,
+			'The card should show the prompt sentence with the dashboard link inside it.'
+		);
+		$this->assertStringContainsString( '>enable data breakdown</a>.', $html_output, 'The card should close the link before the period that ends the prompt sentence.' );
+		$this->assertStringNotContainsString( '<td class="text-primary" colspan="2"', $html_output, 'The card should show no group title when the group carries no name.' );
+	}
+
+	public function test_render__shows_each_site_goals_section_as_its_own_card() {
+		$store_data = array(
+			'change_context' => 'Compared to previous 7 days',
+			'groups'         => array(
+				array(
+					'label'   => '',
+					'metrics' => array(
+						array(
+							'label' => 'Total sales',
+							'value' => '116',
+							'trend' => 7.2,
+						),
+					),
+				),
+			),
+			'prompt'         => array(),
+		);
+		$lead_data  = array(
+			'change_context' => 'Compared to previous 7 days',
+			'groups'         => array(
+				array(
+					'label'   => '',
+					'metrics' => array(
+						array(
+							'label' => 'Total form completions',
+							'value' => '85',
+							'trend' => 0.6,
+						),
+					),
+				),
+			),
+			'prompt'         => array(),
+		);
+
+		$sections = array(
+			'site_goals_online_store'    => $this->get_site_goals_section( 'How is my online store performing?', 'online-store', $store_data ),
+			'site_goals_lead_generation' => $this->get_site_goals_section( 'Are people reaching out to my business?', 'lead-generation', $lead_data ),
+		);
+
+		$html_output = $this->render_site_goals_report( $sections );
+
+		$this->assertStringContainsString( 'How is my online store performing?', $html_output, 'The online store card should show its title.' );
+		$this->assertStringContainsString( 'Are people reaching out to my business?', $html_output, 'The lead generation card should show its title.' );
+		$this->assertStringContainsString(
+			'https://sitekit-static.withgoogle.com/2026-08-31-icon-online-store.png',
+			$html_output,
+			'The online store card should show the online store icon.'
+		);
+		$this->assertStringContainsString(
+			'https://sitekit-static.withgoogle.com/2026-08-31-icon-lead-generation.png',
+			$html_output,
+			'The lead generation card should show the lead generation icon.'
+		);
+		$this->assertSame( 2, substr_count( $html_output, 'View more in dashboard' ), 'Each of the two cards should end with its own dashboard link.' );
+	}
+
+	/**
+	 * Gets one Site Goals section, holding a single part that carries the given data.
+	 *
+	 * @param string $title Title the card shows.
+	 * @param string $icon  Icon slug the card builds its image URL from.
+	 * @param array  $data  Section part data, holding `change_context`, `groups`, and `prompt`.
+	 * @return array Section configuration the email report template reads.
+	 */
+	private function get_site_goals_section( $title, $icon, array $data ) {
+		return array(
+			'title'            => $title,
+			'icon'             => $icon,
+			'section_template' => 'section-site-goals',
+			'dashboard_url'    => 'https://example.com/dashboard',
+			'section_parts'    => array(
+				'site_goals' => array( 'data' => $data ),
+			),
+		);
+	}
+
+	/**
+	 * Renders an email report holding the given Site Goals sections.
+	 *
+	 * `Sections_Map` builds no Site Goals section yet, so this map returns the sections it was given.
+	 *
+	 * @param array $sections Site Goals sections to render.
+	 * @return string Rendered HTML of the email report.
+	 */
+	private function render_site_goals_report( array $sections ) {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		$sections_map = new class( $context, $sections, new Golinks( $context ) ) extends Sections_Map {
+
+			public function get_sections() {
+				return $this->payload;
+			}
+		};
+
+		$renderer = new Email_Template_Renderer( $sections_map );
+
+		return $renderer->render( 'email-report', $this->get_minimal_template_data() );
+	}
+
 	/**
 	 * Gets minimal template data for rendering the email-report template.
 	 *
