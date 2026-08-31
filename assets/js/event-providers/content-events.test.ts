@@ -133,7 +133,7 @@ describe( 'content-events', () => {
 		expect( gtagEventMock ).not.toHaveBeenCalled();
 	} );
 
-	it( 'returns the defaults for the keys a config from an older release omits', async () => {
+	it( 'returns the defaults for the keys a configuration from an older release omits', async () => {
 		// A page cached before the read article change carries these three keys
 		// and nothing else.
 		global._googlesitekit = {
@@ -216,7 +216,7 @@ describe( 'content-events', () => {
 		} );
 	} );
 
-	it( 'should invoke the read article initializer with the resolved config on import', async () => {
+	it( 'invokes the read article initializer with the resolved configuration on import', async () => {
 		global._googlesitekit = {
 			contentEvents: {
 				postID: 42,
@@ -264,7 +264,7 @@ describe( 'content-events', () => {
 		consoleErrorSpy.mockRestore();
 	} );
 
-	it( 'should not let a throw from the read article initializer propagate out of the module', async () => {
+	it( 'logs the error instead of crashing when the read article initializer throws', async () => {
 		const consoleErrorSpy = jest
 			.spyOn( console, 'error' )
 			.mockImplementation( () => {} );

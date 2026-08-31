@@ -393,8 +393,7 @@ class Content_Events extends Conversion_Events_Provider {
 		$this->content_measured = true;
 
 		// `setup_postdata()` fills these three globals while the loop runs. A
-		// theme that renders the content outside the loop leaves them empty. An
-		// empty `$multipage` makes `$this->is_final_page` true.
+		// theme that renders the content outside the loop leaves them empty.
 		global $page, $numpages, $multipage;
 
 		$this->is_final_page = ! $multipage || $page >= $numpages;
