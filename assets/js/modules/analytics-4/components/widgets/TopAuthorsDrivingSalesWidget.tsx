@@ -36,15 +36,21 @@ import {
 import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
 import {
 	GOAL_DRIVER_IDS,
+	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	TOP_AUTHORS_REQUIRED_CUSTOM_DIMENSIONS,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
 	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
-	GOAL_DRIVER_ROW_MAPPERS,
+	buildGoalDriverTotalReportOptions,
+	getGoalDriverTotalCount,
+	makeShareOfExplicitTotalMapper,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import withCustomDimensions from '@/js/modules/analytics-4/utils/withCustomDimensions';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
@@ -78,6 +84,12 @@ const columns = [
 /**
  * Gets the report options for the Top Authors Driving Sales widget.
  *
+ * This tile is purchase-specific ("Top authors driving sales"), so the
+ * primary event is always `purchase` rather than
+ * `getPrimaryEcommerceEvent()`'s detected fallback to `add_to_cart` -
+ * otherwise the tile would silently start showing add-to-cart data under a
+ * "sales" label.
+ *
  * @since n.e.x.t
  *
  * @param {Function} select Data store 'select' function.
@@ -86,8 +98,28 @@ const columns = [
 function getTopAuthorsDrivingSalesReportOptions( select: Select ) {
 	return GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[ GOAL_DRIVER_IDS.TOP_AUTHORS ]( {
 		dates: select( CORE_USER ).getDateRangeDates(),
-		primaryEvent: select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
+		primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+	} );
+}
+
+/**
+ * Gets the site-wide total report options for the Top Authors Driving Sales widget.
+ *
+ * The percentage shown is each author's share of every matching event
+ * site-wide, not just the ranked authors above - see
+ * `buildGoalDriverTotalReportOptions`.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select Data store 'select' function.
+ * @return {Object|undefined} The report options.
+ */
+function getTopAuthorsDrivingSalesTotalReportOptions( select: Select ) {
+	return buildGoalDriverTotalReportOptions( {
+		dates: select( CORE_USER ).getDateRangeDates(),
+		primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
+		reportIDSuffix: 'top-authors',
 	} );
 }
 
@@ -96,6 +128,10 @@ const TopAuthorsDrivingSalesWidget: FC<
 > = ( { Widget } ) => {
 	const reportOptions = useSelect(
 		getTopAuthorsDrivingSalesReportOptions,
+		[]
+	);
+	const totalReportOptions = useSelect(
+		getTopAuthorsDrivingSalesTotalReportOptions,
 		[]
 	);
 
@@ -107,43 +143,51 @@ const TopAuthorsDrivingSalesWidget: FC<
 		[ reportOptions ]
 	);
 
+	const totalReport = useInViewSelect(
+		( select: Select ) =>
+			totalReportOptions
+				? select( MODULES_ANALYTICS_4 ).getReport( totalReportOptions )
+				: undefined,
+		[ totalReportOptions ]
+	);
+
 	const error = useSelect(
 		( select: Select ) =>
-			reportOptions
-				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-						'getReport',
-						[ reportOptions ]
+			reportOptions && totalReportOptions
+				? select( MODULES_ANALYTICS_4 ).getFirstReportError(
+						reportOptions,
+						totalReportOptions
 				  )
 				: undefined,
-		[ reportOptions ]
+		[ reportOptions, totalReportOptions ]
 	);
 
 	const loading = useSelect(
 		( select: Select ) => {
-			if ( ! reportOptions ) {
+			if ( ! reportOptions || ! totalReportOptions ) {
 				return true;
 			}
 
-			return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ reportOptions ]
+			return select( MODULES_ANALYTICS_4 ).areReportsLoading(
+				reportOptions,
+				totalReportOptions
 			);
 		},
-		[ reportOptions ]
+		[ reportOptions, totalReportOptions ]
 	);
 
-	const rows = GOAL_DRIVER_ROW_MAPPERS[ GOAL_DRIVER_IDS.TOP_AUTHORS ](
-		report?.rows || []
-	);
+	const rows = makeShareOfExplicitTotalMapper(
+		getGoalDriverTotalCount( totalReport )
+	)( report?.rows || [] );
 
 	return (
 		<MetricTileTable
 			Widget={ Widget }
 			widgetSlug={ KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES }
 			loading={ loading }
-			rows={ rows as unknown as Record< string, unknown >[] }
+			rows={ rows }
 			columns={ columns }
-			limit={ 3 }
+			limit={ GOAL_DRIVER_ROW_LIMIT_COLLAPSED }
 			ZeroState={ ZeroDataMessage }
 			error={ error }
 			moduleSlug="analytics-4"

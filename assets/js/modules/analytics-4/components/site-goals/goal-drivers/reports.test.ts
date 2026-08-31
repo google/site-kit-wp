@@ -22,7 +22,10 @@ import {
 	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
 	GOAL_DRIVER_ROW_MAPPERS,
 	buildEngagementReportOptions,
+	buildGoalDriverTotalReportOptions,
 	buildPrimaryEventReportOptions,
+	getGoalDriverTotalCount,
+	makeShareOfExplicitTotalMapper,
 } from './reports';
 
 function makeRow( dimensionValue: string, ...metricValues: string[] ) {
@@ -114,6 +117,32 @@ describe( 'Site Goals Goal Drivers reports', () => {
 				someDimension: 'someValue',
 			} );
 		} );
+
+		it.each( [
+			[ GOAL_DRIVER_IDS.CITIES, 6 ],
+			[ GOAL_DRIVER_IDS.TOP_AUTHORS, 6 ],
+			[ GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE, 6 ],
+			[ GOAL_DRIVER_IDS.TOP_PAGES, 6 ],
+		] )(
+			'should append the given context to the %s reportID, and omit it otherwise',
+			( driverID, limit ) => {
+				const withoutContext = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
+					driverID
+				]( { dates, primaryEvent: 'purchase', limit } );
+				const withContext = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
+					driverID
+				]( {
+					dates,
+					primaryEvent: 'purchase',
+					limit,
+					context: 'ecommerce',
+				} );
+
+				expect( withContext?.reportID ).toBe(
+					`${ withoutContext?.reportID }_ecommerce`
+				);
+			}
+		);
 
 		it( 'should filter the top authors report to rows with the author dimension set', () => {
 			const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
@@ -299,6 +328,110 @@ describe( 'Site Goals Goal Drivers reports', () => {
 			expect( options.dimensionFilters ).toEqual( {
 				someDimension: 'someValue',
 			} );
+		} );
+	} );
+
+	describe( 'buildGoalDriverTotalReportOptions', () => {
+		it( 'should return undefined without a primary event', () => {
+			expect(
+				buildGoalDriverTotalReportOptions( {
+					dates,
+					reportIDSuffix: 'top-authors',
+				} )
+			).toBeUndefined();
+		} );
+
+		it( 'should request eventCount with no dimension breakdown or row limit', () => {
+			const options = buildGoalDriverTotalReportOptions( {
+				dates,
+				primaryEvent: 'purchase',
+				reportIDSuffix: 'top-authors',
+			} );
+
+			expect( options?.metrics ).toEqual( [ { name: 'eventCount' } ] );
+			expect( options ).not.toHaveProperty( 'dimensions' );
+			expect( options ).not.toHaveProperty( 'limit' );
+		} );
+
+		it( 'should filter to the primary event, matching the ranked report', () => {
+			const options = buildGoalDriverTotalReportOptions( {
+				dates,
+				primaryEvent: 'purchase',
+				reportIDSuffix: 'top-authors',
+			} );
+
+			expect( options?.dimensionFilters ).toMatchObject( {
+				eventName: {
+					filterType: 'inListFilter',
+					value: [ 'purchase' ],
+				},
+			} );
+		} );
+
+		it( 'should append the given context to the reportID, and omit it otherwise', () => {
+			const withoutContext = buildGoalDriverTotalReportOptions( {
+				dates,
+				primaryEvent: 'purchase',
+				reportIDSuffix: 'top-authors',
+			} );
+			const withContext = buildGoalDriverTotalReportOptions( {
+				dates,
+				primaryEvent: 'purchase',
+				reportIDSuffix: 'top-authors',
+				context: 'ecommerce',
+			} );
+
+			expect( withContext?.reportID ).toBe(
+				`${ withoutContext?.reportID }_ecommerce`
+			);
+		} );
+	} );
+
+	describe( 'getGoalDriverTotalCount', () => {
+		it( 'should read the total report row into a plain count', () => {
+			expect(
+				getGoalDriverTotalCount( {
+					rows: [ { metricValues: [ { value: '1000' } ] } ],
+				} )
+			).toBe( 1000 );
+		} );
+
+		it( 'should return 0 when the report has no rows yet', () => {
+			expect( getGoalDriverTotalCount( { rows: [] } ) ).toBe( 0 );
+			expect( getGoalDriverTotalCount( undefined ) ).toBe( 0 );
+		} );
+	} );
+
+	describe( 'makeShareOfExplicitTotalMapper', () => {
+		it( "should divide each row by the given total, not the rows' own sum", () => {
+			// The rows shown (top 3) sum to less than the true site-wide
+			// total passed in, exactly the "top authors" / "top traffic
+			// channels" case this mapper exists for.
+			const rows = [
+				makeRow( 'AuthorName1', '305' ),
+				makeRow( 'AuthorName2', '247' ),
+				makeRow( 'AuthorName3', '162' ),
+			];
+
+			expect( makeShareOfExplicitTotalMapper( 1000 )( rows ) ).toEqual( [
+				{ label: 'AuthorName1', value: '30.5%' },
+				{ label: 'AuthorName2', value: '24.7%' },
+				{ label: 'AuthorName3', value: '16.2%' },
+			] );
+		} );
+
+		it( 'should return a 0% value rather than dividing by zero when the total is zero', () => {
+			expect(
+				makeShareOfExplicitTotalMapper( 0 )( [
+					makeRow( 'Paris', '0' ),
+				] )
+			).toEqual( [ { label: 'Paris', value: '0%' } ] );
+		} );
+
+		it( 'should label empty dimension values as "(not set)" by default', () => {
+			expect(
+				makeShareOfExplicitTotalMapper( 100 )( [ makeRow( '', '50' ) ] )
+			).toEqual( [ { label: '(not set)', value: '50%' } ] );
 		} );
 	} );
 } );

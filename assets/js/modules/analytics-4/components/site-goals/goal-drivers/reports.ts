@@ -43,6 +43,7 @@ export interface BuildGoalDriverReportOptionsArgs {
 	primaryEvent?: string | string[];
 	breakdownFilter?: Record< string, unknown >;
 	limit: number;
+	context?: string;
 }
 
 export type GoalDriverReportOptionsBuilder = (
@@ -51,32 +52,66 @@ export type GoalDriverReportOptionsBuilder = (
 
 export type GoalDriverRowMapper = ( rows: ReportRow[] ) => GoalDriverRow[];
 
-function parseMetricValue( row: ReportRow, index = 0 ): number {
+/**
+ * Reads a report row's metric value as a number.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} row   The report row.
+ * @param {number} index The metric's index in `row.metricValues`. Defaults to the first metric.
+ * @return {number} The parsed metric value, or `0` if missing.
+ */
+export function parseMetricValue( row: ReportRow, index = 0 ): number {
 	return parseFloat( String( row.metricValues?.[ index ]?.value ?? 0 ) );
 }
 
 /**
- * Maps rows to each row's share of the total as a percentage.
+ * Builds a reportID, appending a context suffix when one is given.
  *
- * The total is summed from the rows passed in rather than fetched separately,
- * so every surface rendering a given driver must request the same row limit -
- * a smaller limit on one surface would understate the total there and skew
- * its percentages relative to the other.
+ * The base reportID identifies the kind of report; the context identifies who's
+ * asking for it (an ecommerce goal driver, a lead goal driver, a Key Metric
+ * tile, …). Both the ecommerce and lead-generation goal drivers, plus their
+ * equivalent Key Metric tiles, request the same shape of report through this
+ * shared module, so without a context suffix their requests would all log
+ * under one indistinguishable label.
  *
  * @since n.e.x.t
  *
- * @param {Object[]} rows     Report rows, each expected to carry an `eventCount` in `metricValues[0]`.
- * @param {Function} getLabel Maps a row to its display label.
+ * @param {string} baseReportID The reportID identifying the kind of report.
+ * @param {string} [context]    Identifies the caller. Omitted when not given.
+ * @return {string} The reportID, with the context suffix appended when given.
+ */
+function withContextSuffix( baseReportID: string, context?: string ): string {
+	return context ? `${ baseReportID }_${ context }` : baseReportID;
+}
+
+/**
+ * Maps rows to each row's share of a total as a percentage.
+ *
+ * Most drivers don't fetch a total separately - the rows they're given are the
+ * whole answer, so their total is summed from those same rows, and every
+ * surface rendering the driver must therefore request the same row limit, or
+ * a smaller limit on one surface would understate the total there and skew its
+ * percentages relative to the other. `topAuthors` and `topTrafficChannels` are
+ * the exception: rather than a share of the ranked, limited rows shown, their
+ * percentage is a share of every event site-wide, so the caller fetches that
+ * true total separately and passes it in as `explicitTotal`.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object[]} rows            Report rows, each expected to carry an `eventCount` in `metricValues[0]`.
+ * @param {Function} getLabel        Maps a row to its display label.
+ * @param {number}   [explicitTotal] The total to divide by, when it isn't the sum of `rows`.
  * @return {Object[]} The rows mapped to `{ label, value }`, `value` formatted as a percentage of the total.
  */
 function mapRowsToShareOfTotal(
 	rows: ReportRow[],
-	getLabel: ( row: ReportRow ) => string
+	getLabel: ( row: ReportRow ) => string,
+	explicitTotal?: number
 ): GoalDriverRow[] {
-	const total = rows.reduce(
-		( sum, row ) => sum + parseMetricValue( row ),
-		0
-	);
+	const total =
+		explicitTotal ??
+		rows.reduce( ( sum, row ) => sum + parseMetricValue( row ), 0 );
 
 	return rows.map( ( row ) => ( {
 		label: getLabel( row ),
@@ -109,7 +144,7 @@ function buildSingleDimensionReportOptionsBuilder(
 	reportIDSuffix: string,
 	{ excludeNotSet = false }: { excludeNotSet?: boolean } = {}
 ): GoalDriverReportOptionsBuilder {
-	return ( { dates, primaryEvent, breakdownFilter, limit } ) => {
+	return ( { dates, primaryEvent, breakdownFilter, limit, context } ) => {
 		const eventNames = normalizePrimaryEvents( primaryEvent );
 
 		if ( ! dates || ! eventNames.length ) {
@@ -146,7 +181,10 @@ function buildSingleDimensionReportOptionsBuilder(
 			],
 			limit,
 			keepEmptyRows: false,
-			reportID: `analytics-4_goal-driver-reports_${ reportIDSuffix }`,
+			reportID: withContextSuffix(
+				`analytics-4_goal-driver-reports_${ reportIDSuffix }`,
+				context
+			),
 		};
 
 		return options;
@@ -178,6 +216,109 @@ function makeShareOfTotalMapper( {
 		} );
 }
 
+/**
+ * Builds a row mapper that divides by an explicitly given total rather than
+ * the sum of the rows it's mapping.
+ *
+ * `topAuthors` and `topTrafficChannels` use this: their percentage is each
+ * row's share of every event site-wide, not just the ranked rows shown, so the
+ * caller fetches that total separately (see `buildGoalDriverTotalReportOptions`)
+ * and passes the resolved count in here.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number}   totalCount           The total to divide each row's `eventCount` by.
+ * @param {Object}   [options]            Options.
+ * @param {Function} [options.getLabel]   Maps the row's raw (non-empty) dimension value to its display label. Defaults to the raw value.
+ * @param {string}   [options.emptyLabel] Label used when the dimension value is empty. Defaults to "(not set)".
+ * @return {Function} The row mapper.
+ */
+export function makeShareOfExplicitTotalMapper(
+	totalCount: number,
+	{
+		getLabel = ( value: string ) => value,
+		emptyLabel = __( '(not set)', 'google-site-kit' ),
+	}: {
+		getLabel?: ( dimensionValue: string ) => string;
+		emptyLabel?: string;
+	} = {}
+): GoalDriverRowMapper {
+	return ( rows ) =>
+		mapRowsToShareOfTotal(
+			rows,
+			( row ) => {
+				const dimensionValue = row.dimensionValues?.[ 0 ]?.value || '';
+
+				return dimensionValue ? getLabel( dimensionValue ) : emptyLabel;
+			},
+			totalCount
+		);
+}
+
+/**
+ * Builds the Analytics 4 report options for a driver's site-wide total.
+ *
+ * `topAuthors` and `topTrafficChannels` divide by every matching event
+ * site-wide, not just the ranked rows they show, so this requests that total
+ * with no dimension breakdown and no row limit - pair it with
+ * `makeShareOfExplicitTotalMapper`.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}          args                   Builder args.
+ * @param {Object}          [args.dates]           The date range.
+ * @param {string|string[]} [args.primaryEvent]    The primary conversion event name(s).
+ * @param {Object}          [args.breakdownFilter] Optional dimension filter scoping the report to a breakdown tab.
+ * @param {string}          [args.context]         Identifies the caller, appended to the reportID.
+ * @param {string}          args.reportIDSuffix    Which driver's total this is (`top-authors` or `top-traffic-channels`).
+ * @return {Object|undefined} The Analytics 4 `getReport` options, or `undefined` when there is no primary event.
+ */
+export function buildGoalDriverTotalReportOptions( {
+	dates,
+	primaryEvent,
+	breakdownFilter,
+	context,
+	reportIDSuffix,
+}: Omit< BuildGoalDriverReportOptionsArgs, 'limit' > & {
+	reportIDSuffix: string;
+} ): ReportOptions | undefined {
+	const eventNames = normalizePrimaryEvents( primaryEvent );
+
+	if ( ! dates || ! eventNames.length ) {
+		return undefined;
+	}
+
+	return {
+		...dates,
+		dimensionFilters: getDimensionFiltersForEvents(
+			eventNames,
+			breakdownFilter
+		),
+		metrics: [ { name: 'eventCount' } ],
+		reportID: withContextSuffix(
+			`analytics-4_goal-driver-reports_${ reportIDSuffix }-total`,
+			context
+		),
+	};
+}
+
+/**
+ * Reads a site-wide total report's single row into a plain count.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}      [totalReport]      The report `buildGoalDriverTotalReportOptions` requested.
+ * @param {ReportRow[]} [totalReport.rows] The report's rows.
+ * @return {number} The total event count, or `0` if the report has no data yet.
+ */
+export function getGoalDriverTotalCount( totalReport?: {
+	rows?: ReportRow[];
+} ): number {
+	const [ totalRow ] = totalReport?.rows || [];
+
+	return totalRow ? parseMetricValue( totalRow ) : 0;
+}
+
 const VISITOR_TYPE_LABELS: Record< string, string > = {
 	new: __( 'New visitors', 'google-site-kit' ),
 	returning: __( 'Returning visitors', 'google-site-kit' ),
@@ -206,6 +347,7 @@ export const GOAL_DRIVER_REPORT_OPTIONS_BUILDERS: Record<
 		primaryEvent,
 		breakdownFilter,
 		limit,
+		context,
 	} ) => {
 		const eventNames = normalizePrimaryEvents( primaryEvent );
 
@@ -229,8 +371,10 @@ export const GOAL_DRIVER_REPORT_OPTIONS_BUILDERS: Record<
 			],
 			limit,
 			keepEmptyRows: false,
-			reportID:
+			reportID: withContextSuffix(
 				'analytics-4_goal-driver-reports_top-traffic-channels-rate',
+				context
+			),
 		};
 	},
 	[ GOAL_DRIVER_IDS.TOP_PAGES ]: ( {
@@ -238,6 +382,7 @@ export const GOAL_DRIVER_REPORT_OPTIONS_BUILDERS: Record<
 		primaryEvent,
 		breakdownFilter,
 		limit,
+		context,
 	} ) => {
 		const eventNames = normalizePrimaryEvents( primaryEvent );
 
@@ -261,7 +406,10 @@ export const GOAL_DRIVER_REPORT_OPTIONS_BUILDERS: Record<
 			],
 			limit,
 			keepEmptyRows: false,
-			reportID: 'analytics-4_goal-driver-reports_top-pages',
+			reportID: withContextSuffix(
+				'analytics-4_goal-driver-reports_top-pages',
+				context
+			),
 		};
 	},
 	[ GOAL_DRIVER_IDS.TOP_AUTHORS ]: ( {
@@ -269,6 +417,7 @@ export const GOAL_DRIVER_REPORT_OPTIONS_BUILDERS: Record<
 		primaryEvent,
 		breakdownFilter,
 		limit,
+		context,
 	} ) => {
 		const eventNames = normalizePrimaryEvents( primaryEvent );
 
@@ -306,7 +455,10 @@ export const GOAL_DRIVER_REPORT_OPTIONS_BUILDERS: Record<
 			],
 			limit,
 			keepEmptyRows: false,
-			reportID: 'analytics-4_goal-driver-reports_top-authors',
+			reportID: withContextSuffix(
+				'analytics-4_goal-driver-reports_top-authors',
+				context
+			),
 		};
 
 		return options;

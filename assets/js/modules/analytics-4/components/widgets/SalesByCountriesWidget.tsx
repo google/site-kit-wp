@@ -36,6 +36,7 @@ import {
 import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
 import {
 	GOAL_DRIVER_IDS,
+	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
@@ -43,7 +44,10 @@ import {
 	GOAL_DRIVER_ROW_MAPPERS,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
@@ -81,17 +85,15 @@ const SalesByCountriesWidget: FC< SalesByCountriesWidgetProps > = ( {
 		[]
 	);
 
-	const primaryEvent = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
-		[]
-	);
-
+	// This tile is purchase-specific ("Sales by countries"), so the primary
+	// event is always `purchase` rather than `getPrimaryEcommerceEvent()`'s
+	// detected fallback to `add_to_cart` - otherwise the tile would silently
+	// start showing add-to-cart data under a "sales" label.
 	const reportOptions = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
 		GOAL_DRIVER_IDS.COUNTRIES
 	]( {
 		dates,
-		primaryEvent,
+		primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	} );
 
@@ -137,9 +139,9 @@ const SalesByCountriesWidget: FC< SalesByCountriesWidgetProps > = ( {
 			Widget={ Widget }
 			widgetSlug={ KM_ANALYTICS_SALES_BY_COUNTRIES }
 			loading={ loading }
-			rows={ rows as unknown as Record< string, unknown >[] }
+			rows={ rows }
 			columns={ columns }
-			limit={ 3 }
+			limit={ GOAL_DRIVER_ROW_LIMIT_COLLAPSED }
 			ZeroState={ ZeroDataMessage }
 			error={ error }
 			moduleSlug="analytics-4"

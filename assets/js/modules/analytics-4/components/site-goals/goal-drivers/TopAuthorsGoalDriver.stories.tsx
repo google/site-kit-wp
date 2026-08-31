@@ -138,7 +138,14 @@ function getTopAuthorsReportOptions(
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: 'analytics-4_goal-driver-reports_top-authors',
+			reportID: 'analytics-4_goal-driver-reports_top-authors_ecommerce',
+		},
+		totalReportOptions: {
+			...dates,
+			dimensionFilters,
+			metrics: [ { name: 'eventCount' } ],
+			reportID:
+				'analytics-4_goal-driver-reports_top-authors-total_ecommerce',
 		},
 	};
 }
@@ -147,12 +154,16 @@ function seedTopAuthorsReports(
 	registry: Parameters< typeof provideModules >[ 0 ],
 	{ loading = false } = {}
 ) {
-	const { authorsReportOptions } = getTopAuthorsReportOptions( registry );
+	const { authorsReportOptions, totalReportOptions } =
+		getTopAuthorsReportOptions( registry );
 
 	if ( loading ) {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ authorsReportOptions ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ totalReportOptions ] );
 
 		return;
 	}
@@ -188,6 +199,24 @@ function seedTopAuthorsReports(
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ authorsReportOptions ] );
+
+	// A site-wide total of 1,000 - larger than the sum of the ranked rows
+	// above (714) - so the rendered percentages (30.5% / 24.7% / 16.2%)
+	// only match if the tile divides by this total rather than by the
+	// visible rows.
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: [
+				{
+					metricValues: [ { value: '1000' } ],
+				},
+			],
+		},
+		{ options: totalReportOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ totalReportOptions ] );
 }
 
 function Template( props: TopAuthorsGoalDriverStoryProps ) {

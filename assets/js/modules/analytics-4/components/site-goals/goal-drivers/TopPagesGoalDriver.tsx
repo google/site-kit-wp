@@ -70,8 +70,9 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( {
 				primaryEvent,
 				breakdownFilter,
 				limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+				context: goalType,
 			} ),
-		[ dates, primaryEvent, breakdownFilter ]
+		[ dates, primaryEvent, breakdownFilter, goalType ]
 	);
 	const report = useSelect(
 		( select: Select ) =>

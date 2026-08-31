@@ -78,6 +78,22 @@ const reportOptions = {
 	reportID: 'analytics-4_goal-driver-reports_top-authors',
 };
 
+// The percentage shown is each author's share of every matching event
+// site-wide, not just the ranked authors above - see
+// `buildGoalDriverTotalReportOptions`.
+const totalReportOptions = {
+	startDate: '2020-08-11',
+	endDate: '2020-09-07',
+	dimensionFilters: {
+		eventName: {
+			filterType: 'inListFilter',
+			value: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+		},
+	},
+	metrics: [ { name: 'eventCount' } ],
+	reportID: 'analytics-4_goal-driver-reports_top-authors-total',
+};
+
 const WidgetWithComponentProps = withWidgetComponentProps(
 	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES
 )( TopAuthorsDrivingSalesWidget );
@@ -104,6 +120,16 @@ Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: ( registry: Parameters< typeof provideModules >[ 0 ] ) => {
 		provideAnalytics4MockReport( registry, reportOptions );
+		// A site-wide total of 1,000 - larger than the sum of the ranked
+		// rows the mock report above generates - so the rendered
+		// percentages only match if the tile divides by this total rather
+		// than by the visible rows.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport(
+				{ rows: [ { metricValues: [ { value: '1000' } ] } ] },
+				{ options: totalReportOptions }
+			);
 	},
 };
 Ready.scenario = {};
@@ -116,6 +142,9 @@ Loading.args = {
 	}: Parameters< typeof provideModules >[ 0 ] ) => {
 		dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
 			reportOptions,
+		] );
+		dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
+			totalReportOptions,
 		] );
 	},
 };
@@ -133,6 +162,10 @@ ZeroData.args = {
 		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
 			options: reportOptions,
 		} );
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{ rows: [] },
+			{ options: totalReportOptions }
+		);
 	},
 };
 
@@ -160,6 +193,10 @@ Error.args = {
 		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
 			reportOptions,
 		] );
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{ rows: [] },
+			{ options: totalReportOptions }
+		);
 	},
 };
 
@@ -187,6 +224,10 @@ InsufficientPermissions.args = {
 		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
 			reportOptions,
 		] );
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{ rows: [] },
+			{ options: totalReportOptions }
+		);
 	},
 };
 

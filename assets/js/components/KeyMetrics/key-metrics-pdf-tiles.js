@@ -70,13 +70,17 @@ import { getTopEarningContentReportOptions } from '@/js/modules/adsense/componen
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import {
 	GOAL_DRIVER_IDS,
+	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
 	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
 	GOAL_DRIVER_ROW_MAPPERS,
 	buildEngagementReportOptions,
+	buildGoalDriverTotalReportOptions,
 	buildPrimaryEventReportOptions,
+	getGoalDriverTotalCount,
+	makeShareOfExplicitTotalMapper,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import {
@@ -151,7 +155,10 @@ import {
 	getVisitsPerVisitorReportOptions,
 	getVisitsPerVisitorSubtext,
 } from '@/js/modules/analytics-4/components/widgets/VisitsPerVisitorWidget';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import {
 	decodeAmpersand,
 	splitCategories,
@@ -1876,13 +1883,15 @@ export const KEY_METRICS_PDF_TILES = {
 	[ KM_ANALYTICS_TOTAL_SALES ]: {
 		TileComponent: PDFNumericMetricTile,
 		getTileData: createKeyMetricTileDataLoader(
-			async ( dates, registry ) => {
-				const primaryEvent = await resolvePrimaryEcommerceEvent(
-					registry
-				);
+			( dates ) => {
+				// This tile is purchase-specific ("Total sales"), so the
+				// primary event is always `purchase` rather than
+				// `getPrimaryEcommerceEvent()`'s detected fallback to
+				// `add_to_cart` - otherwise the tile would silently start
+				// showing add-to-cart counts under a "sales" label.
 				const options = buildPrimaryEventReportOptions(
 					dates,
-					primaryEvent
+					ENUM_CONVERSION_EVENTS.PURCHASE
 				);
 
 				// No primary ecommerce event means no data, so fetch nothing
@@ -1917,13 +1926,15 @@ export const KEY_METRICS_PDF_TILES = {
 	[ KM_ANALYTICS_SALES_RATE ]: {
 		TileComponent: PDFNumericMetricTile,
 		getTileData: createKeyMetricTileDataLoader(
-			async ( dates, registry ) => {
-				const primaryEvent = await resolvePrimaryEcommerceEvent(
-					registry
-				);
+			( dates ) => {
+				// This tile is purchase-specific ("Sales rate"), so the
+				// primary event is always `purchase` rather than
+				// `getPrimaryEcommerceEvent()`'s detected fallback to
+				// `add_to_cart` - otherwise the tile would silently start
+				// showing add-to-cart data under a "sales" label.
 				const primaryEventOptions = buildPrimaryEventReportOptions(
 					dates,
-					primaryEvent
+					ENUM_CONVERSION_EVENTS.PURCHASE
 				);
 
 				// No primary ecommerce event means no data, so fetch nothing
@@ -2025,15 +2036,18 @@ export const KEY_METRICS_PDF_TILES = {
 	[ KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE ]: {
 		TileComponent: PDFMetricTileTable,
 		getTileData: createKeyMetricTileDataLoader(
-			async ( dates, registry ) => {
-				const primaryEvent = await resolvePrimaryEcommerceEvent(
-					registry
-				);
+			( dates ) => {
+				// This tile is purchase-specific ("Top traffic channels
+				// driving sales"), so the primary event is always `purchase`
+				// rather than `getPrimaryEcommerceEvent()`'s detected
+				// fallback to `add_to_cart` - otherwise the tile would
+				// silently start showing add-to-cart data under a "sales"
+				// label.
 				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
 					GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE
 				]( {
 					dates: pdfTableDates( dates ),
-					primaryEvent,
+					primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
 					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 				} );
 
@@ -2057,7 +2071,7 @@ export const KEY_METRICS_PDF_TILES = {
 						primary: row.label,
 						metric: row.value,
 					} ) ),
-					limit: 3,
+					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 				};
 			}
 		),
@@ -2065,15 +2079,17 @@ export const KEY_METRICS_PDF_TILES = {
 	[ KM_ANALYTICS_SALES_BY_VISITOR_TYPE ]: {
 		TileComponent: PDFMetricTileTable,
 		getTileData: createKeyMetricTileDataLoader(
-			async ( dates, registry ) => {
-				const primaryEvent = await resolvePrimaryEcommerceEvent(
-					registry
-				);
+			( dates ) => {
+				// This tile is purchase-specific ("Sales by visitor type"),
+				// so the primary event is always `purchase` rather than
+				// `getPrimaryEcommerceEvent()`'s detected fallback to
+				// `add_to_cart` - otherwise the tile would silently start
+				// showing add-to-cart data under a "sales" label.
 				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
 					GOAL_DRIVER_IDS.VISITOR_TYPE
 				]( {
 					dates: pdfTableDates( dates ),
-					primaryEvent,
+					primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
 					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 				} );
 
@@ -2097,7 +2113,7 @@ export const KEY_METRICS_PDF_TILES = {
 						primary: row.label,
 						metric: row.value,
 					} ) ),
-					limit: 3,
+					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 				};
 			}
 		),
@@ -2105,15 +2121,17 @@ export const KEY_METRICS_PDF_TILES = {
 	[ KM_ANALYTICS_SALES_BY_COUNTRIES ]: {
 		TileComponent: PDFMetricTileTable,
 		getTileData: createKeyMetricTileDataLoader(
-			async ( dates, registry ) => {
-				const primaryEvent = await resolvePrimaryEcommerceEvent(
-					registry
-				);
+			( dates ) => {
+				// This tile is purchase-specific ("Sales by countries"), so
+				// the primary event is always `purchase` rather than
+				// `getPrimaryEcommerceEvent()`'s detected fallback to
+				// `add_to_cart` - otherwise the tile would silently start
+				// showing add-to-cart data under a "sales" label.
 				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
 					GOAL_DRIVER_IDS.COUNTRIES
 				]( {
 					dates: pdfTableDates( dates ),
-					primaryEvent,
+					primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
 					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 				} );
 
@@ -2137,7 +2155,7 @@ export const KEY_METRICS_PDF_TILES = {
 						primary: row.label,
 						metric: row.value,
 					} ) ),
-					limit: 3,
+					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 				};
 			}
 		),
@@ -2145,10 +2163,17 @@ export const KEY_METRICS_PDF_TILES = {
 	[ KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES ]: {
 		TileComponent: PDFMetricTileTable,
 		getTileData: createKeyMetricTileDataLoader(
-			async ( dates, registry ) => {
-				const primaryEvent = await resolvePrimaryEcommerceEvent(
-					registry
-				);
+			( dates ) => {
+				// This tile is purchase-specific ("Top authors driving
+				// sales"), so the primary event is always `purchase` rather
+				// than `getPrimaryEcommerceEvent()`'s detected fallback to
+				// `add_to_cart` - otherwise the tile would silently start
+				// showing add-to-cart data under a "sales" label.
+				//
+				// The percentage shown is each author's share of every
+				// matching event site-wide, not just the ranked authors
+				// above - see `buildGoalDriverTotalReportOptions`.
+				const primaryEvent = ENUM_CONVERSION_EVENTS.PURCHASE;
 				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
 					GOAL_DRIVER_IDS.TOP_AUTHORS
 				]( {
@@ -2156,28 +2181,41 @@ export const KEY_METRICS_PDF_TILES = {
 					primaryEvent,
 					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 				} );
+				const totalOptions = buildGoalDriverTotalReportOptions( {
+					dates: pdfTableDates( dates ),
+					primaryEvent,
+					reportIDSuffix: 'top-authors',
+				} );
 
-				if ( ! options ) {
+				if ( ! options || ! totalOptions ) {
 					return [];
 				}
 
-				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
+				return [
+					{ moduleStore: MODULES_ANALYTICS_4, options },
+					{
+						moduleStore: MODULES_ANALYTICS_4,
+						options: totalOptions,
+					},
+				];
 			},
-			( [ report ] ) => {
-				const rows = GOAL_DRIVER_ROW_MAPPERS[
-					GOAL_DRIVER_IDS.TOP_AUTHORS
-				]( report?.rows || [] );
+			( [ report, totalReport ] ) => {
+				const rows = report?.rows || [];
 
 				if ( ! rows.length ) {
 					return null;
 				}
 
+				const mappedRows = makeShareOfExplicitTotalMapper(
+					getGoalDriverTotalCount( totalReport )
+				)( rows );
+
 				return {
-					rows: rows.map( ( row ) => ( {
+					rows: mappedRows.map( ( row ) => ( {
 						primary: row.label,
 						metric: row.value,
 					} ) ),
-					limit: 3,
+					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 				};
 			}
 		),
@@ -2186,9 +2224,12 @@ export const KEY_METRICS_PDF_TILES = {
 		TileComponent: PDFMetricTileTable,
 		getTileData: createKeyMetricTileDataLoader(
 			async ( dates, registry ) => {
-				const primaryEvent = await resolvePrimaryEcommerceEvent(
-					registry
-				);
+				// This tile is purchase-specific ("Top pages driving
+				// sales"), so the primary event is always `purchase` rather
+				// than `getPrimaryEcommerceEvent()`'s detected fallback to
+				// `add_to_cart` - otherwise the tile would silently start
+				// showing add-to-cart data under a "sales" label.
+				const primaryEvent = ENUM_CONVERSION_EVENTS.PURCHASE;
 				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
 					GOAL_DRIVER_IDS.TOP_PAGES
 				]( {
@@ -2251,7 +2292,7 @@ export const KEY_METRICS_PDF_TILES = {
 								numFmt( row.metricValues?.[ 0 ]?.value ),
 						}
 					),
-					limit: 3,
+					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 				};
 			}
 		),

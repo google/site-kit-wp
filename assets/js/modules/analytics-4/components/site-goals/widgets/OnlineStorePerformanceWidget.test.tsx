@@ -154,7 +154,16 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: 'analytics-4_goal-driver-reports_top-traffic-channels',
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels_ecommerce',
+		};
+
+		const topTrafficTotalOptions = {
+			...dates,
+			dimensionFilters,
+			metrics: [ { name: 'eventCount' } ],
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels-total_ecommerce',
 		};
 
 		const topTrafficRateOptions = {
@@ -171,7 +180,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
 			reportID:
-				'analytics-4_goal-driver-reports_top-traffic-channels-rate',
+				'analytics-4_goal-driver-reports_top-traffic-channels-rate_ecommerce',
 		};
 
 		const topPagesOptions = {
@@ -187,7 +196,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: 'analytics-4_goal-driver-reports_top-pages',
+			reportID: 'analytics-4_goal-driver-reports_top-pages_ecommerce',
 		};
 
 		const pagePaths = [ '/test-post-1/', '/test-post-2/', '/test-post-3/' ];
@@ -219,7 +228,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: 'analytics-4_goal-driver-reports_visitor-type',
+			reportID: 'analytics-4_goal-driver-reports_visitor-type_ecommerce',
 		};
 
 		const citiesOptions = {
@@ -241,7 +250,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: 'analytics-4_goal-driver-reports_cities',
+			reportID: 'analytics-4_goal-driver-reports_cities_ecommerce',
 		};
 
 		const countriesOptions = {
@@ -263,7 +272,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: 'analytics-4_goal-driver-reports_countries',
+			reportID: 'analytics-4_goal-driver-reports_countries_ecommerce',
 		};
 
 		const deviceTypeOptions = {
@@ -279,12 +288,13 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: 'analytics-4_goal-driver-reports_device-type',
+			reportID: 'analytics-4_goal-driver-reports_device-type_ecommerce',
 		};
 
 		if ( loading ) {
 			[
 				topTrafficChannelsOptions,
+				topTrafficTotalOptions,
 				topTrafficRateOptions,
 				topPagesOptions,
 				pageTitlesOptions,
@@ -329,6 +339,16 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ topTrafficChannelsOptions ] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: empty ? [] : [ { metricValues: [ { value: '100' } ] } ],
+			},
+			{ options: topTrafficTotalOptions }
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ topTrafficTotalOptions ] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
@@ -1123,7 +1143,8 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: 'analytics-4_goal-driver-reports_top-traffic-channels',
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels_ecommerce',
 		};
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
