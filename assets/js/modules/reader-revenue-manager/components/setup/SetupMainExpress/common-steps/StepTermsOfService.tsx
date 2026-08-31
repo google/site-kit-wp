@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { ChangeEvent, FC } from 'react';
+import { ChangeEvent, FC, FormEvent } from 'react';
 
 /**
  * WordPress dependencies
@@ -141,7 +141,7 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 	);
 
 	const onSubmit = useCallback(
-		async ( event ) => {
+		async ( event: FormEvent ) => {
 			event.preventDefault();
 
 			if ( ! publication || ! termsOfService ) {
