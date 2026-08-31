@@ -116,10 +116,11 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 			PUBLICATION_POLICIES_FORM.PRIVACY_POLICY_URL
 		);
 
-	const [ termsOfServiceURL, setTermsOfServiceURL ] = useFormValue< string >(
-		READER_REVENUE_MANAGER_SETUP_FORM,
-		PUBLICATION_POLICIES_FORM.TERMS_OF_SERVICE_URL
-	);
+	const [ termsOfServiceURL = '', setTermsOfServiceURL ] =
+		useFormValue< string >(
+			READER_REVENUE_MANAGER_SETUP_FORM,
+			PUBLICATION_POLICIES_FORM.TERMS_OF_SERVICE_URL
+		);
 
 	const isTermsOfServiceURLValid =
 		termsOfServiceURL && isValidPolicyURL( termsOfServiceURL );
