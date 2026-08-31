@@ -41,8 +41,7 @@ jest.mock( './PoweredBy', () => () => null );
 const STEP_CONTENT = {
 	[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]:
 		'RRM express setup placeholder: publication setup step.',
-	[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]:
-		'RRM express setup placeholder: terms of service step.',
+	[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: /Terms of service/,
 	[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]:
 		'RRM express setup placeholder: publication policies step.',
 	[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]:
