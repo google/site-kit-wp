@@ -54,7 +54,7 @@ export default function ChangeMetricsLink() {
 	const renderChangeMetricLink =
 		Array.isArray( keyMetrics ) && keyMetrics?.length > 0;
 
-	useChangeMetricsFeatureTourEffect( { renderChangeMetricLink } );
+	useChangeMetricsFeatureTourEffect();
 
 	if ( ! renderChangeMetricLink ) {
 		return null;

@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager express setup publication step.
+ * Reader Revenue Manager express setup constants.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -16,18 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-export default function StepPublicationSetup() {
-	return (
-		<p>
-			{ __(
-				'RRM express setup placeholder: publication setup step.',
-				'google-site-kit'
-			) }
-		</p>
-	);
-}
+export const EXPRESS_SETUP_STEP_UI_KEY = 'express-setup-step';

@@ -29,3 +29,11 @@ export const USER_SETTINGS_SELECTION_PANEL_OPENED_KEY =
  */
 export const MANAGE_EMAIL_REPORTS_BUTTON_CLASS =
 	'googlesitekit-manage-email-reports__button';
+
+/**
+ * Minimum user count before a list shows its search input.
+ *
+ * Shared by the invite and subscribed-users tabs so the two lists switch to
+ * search mode at the same size.
+ */
+export const SEARCH_THRESHOLD = 6;
