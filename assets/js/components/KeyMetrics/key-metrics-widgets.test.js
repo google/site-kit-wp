@@ -21,18 +21,26 @@
  */
 import {
 	CORE_USER,
+	KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
+	KM_ANALYTICS_FORM_COMPLETION_RATE,
+	KM_ANALYTICS_LEADS_BY_COUNTRIES,
+	KM_ANALYTICS_LEADS_BY_DEVICE_TYPE,
+	KM_ANALYTICS_LEADS_BY_VISITOR_TYPE,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_SALES_BY_COUNTRIES,
 	KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
 	KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
 	KM_ANALYTICS_SALES_RATE,
+	KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
+	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOTAL_FORM_COMPLETIONS,
 	KM_ANALYTICS_TOTAL_SALES,
 } from '@/js/googlesitekit/datastore/user/constants';
 import {
@@ -668,6 +676,105 @@ describe( 'Selling products Key Metric tiles', () => {
 			const widget = KEY_METRICS_WIDGETS[ slug ];
 			const select = makeSelect( {
 				detectedEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+				availableCustomDimensions: [],
+			} );
+
+			expect(
+				widget.displayInSelectionPanel( {
+					select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( false );
+
+			expect(
+				widget.displayInList( {
+					select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( false );
+		} );
+	} );
+} );
+
+describe( 'Generating leads Key Metric tiles', () => {
+	const GENERATING_LEADS_SLUGS = [
+		KM_ANALYTICS_TOTAL_FORM_COMPLETIONS,
+		KM_ANALYTICS_FORM_COMPLETION_RATE,
+		KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
+		KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE,
+		KM_ANALYTICS_LEADS_BY_VISITOR_TYPE,
+		KM_ANALYTICS_LEADS_BY_COUNTRIES,
+		KM_ANALYTICS_LEADS_BY_DEVICE_TYPE,
+		KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS,
+	];
+
+	it.each( GENERATING_LEADS_SLUGS )(
+		'should offer %s when any lead event is detected',
+		( slug ) => {
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+			const select = makeSelect( {
+				detectedEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+			} );
+
+			expect( widget.displayInSelectionPanel( { select, slug } ) ).toBe(
+				true
+			);
+			expect( widget.displayInList( { select, slug } ) ).toBe( true );
+		}
+	);
+
+	it.each( GENERATING_LEADS_SLUGS )(
+		'should not offer %s when no lead event has been detected',
+		( slug ) => {
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+			const select = makeSelect( {
+				detectedEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+			} );
+
+			expect( widget.displayInSelectionPanel( { select, slug } ) ).toBe(
+				false
+			);
+			expect( widget.displayInList( { select, slug } ) ).toBe( false );
+		}
+	);
+
+	describe( 'Top authors driving leads', () => {
+		const slug = KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS;
+
+		it( 'should additionally require the post author custom dimension on a view-only dashboard', () => {
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+
+			expect(
+				widget.displayInWidgetArea( {
+					select: makeSelect( {
+						detectedEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+						availableCustomDimensions: [],
+					} ),
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( false );
+
+			expect(
+				widget.displayInWidgetArea( {
+					select: makeSelect( {
+						detectedEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
+						availableCustomDimensions: [
+							'googlesitekit_post_author',
+						],
+					} ),
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( true );
+		} );
+
+		it( 'should not be offered on a view-only dashboard when the post author custom dimension is unavailable', () => {
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+			const select = makeSelect( {
+				detectedEvents: [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
 				availableCustomDimensions: [],
 			} );
 

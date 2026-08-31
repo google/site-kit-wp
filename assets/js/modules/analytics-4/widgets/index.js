@@ -29,6 +29,11 @@ import { isFeatureEnabled } from '@/js/features';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+	KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
+	KM_ANALYTICS_FORM_COMPLETION_RATE,
+	KM_ANALYTICS_LEADS_BY_COUNTRIES,
+	KM_ANALYTICS_LEADS_BY_DEVICE_TYPE,
+	KM_ANALYTICS_LEADS_BY_VISITOR_TYPE,
 	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	KM_ANALYTICS_NEW_VISITORS,
@@ -41,6 +46,7 @@ import {
 	KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
 	KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
 	KM_ANALYTICS_SALES_RATE,
+	KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_CITIES,
@@ -54,11 +60,13 @@ import {
 	KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOTAL_FORM_COMPLETIONS,
 	KM_ANALYTICS_TOTAL_SALES,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
@@ -98,6 +106,11 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/widgets';
 import {
 	EngagedTrafficSourceWidget,
+	FormCompletionEngagementRateWidget,
+	FormCompletionRateWidget,
+	LeadsByCountriesWidget,
+	LeadsByDeviceTypeWidget,
+	LeadsByVisitorTypeWidget,
 	LeastEngagingPagesWidget,
 	MostEngagingPagesWidget,
 	NewVisitorsWidget,
@@ -110,6 +123,7 @@ import {
 	SalesByVisitorTypeWidget,
 	SalesEngagementRateWidget,
 	SalesRateWidget,
+	TopAuthorsDrivingLeadsWidget,
 	TopAuthorsDrivingSalesWidget,
 	TopCategoriesWidget,
 	TopCitiesDrivingAddToCartWidget,
@@ -123,11 +137,13 @@ import {
 	TopPagesDrivingSalesWidget,
 	TopRecentTrendingPagesWidget,
 	TopReturningVisitorPages,
+	TopTrafficChannelsDrivingFormCompletionRateWidget,
 	TopTrafficChannelsDrivingSalesRateWidget,
 	TopTrafficSourceDrivingAddToCartWidget,
 	TopTrafficSourceDrivingLeadsWidget,
 	TopTrafficSourceDrivingPurchasesWidget,
 	TopTrafficSourceWidget,
+	TotalFormCompletionsWidget,
 	TotalSalesWidget,
 	VisitLengthWidget,
 	VisitsPerVisitorWidget,
@@ -865,6 +881,38 @@ export function registerWidgets( widgets ) {
 		{
 			slug: KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
 			Component: TopPagesDrivingSalesWidget,
+		},
+		{
+			slug: KM_ANALYTICS_TOTAL_FORM_COMPLETIONS,
+			Component: TotalFormCompletionsWidget,
+		},
+		{
+			slug: KM_ANALYTICS_FORM_COMPLETION_RATE,
+			Component: FormCompletionRateWidget,
+		},
+		{
+			slug: KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
+			Component: FormCompletionEngagementRateWidget,
+		},
+		{
+			slug: KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE,
+			Component: TopTrafficChannelsDrivingFormCompletionRateWidget,
+		},
+		{
+			slug: KM_ANALYTICS_LEADS_BY_VISITOR_TYPE,
+			Component: LeadsByVisitorTypeWidget,
+		},
+		{
+			slug: KM_ANALYTICS_LEADS_BY_COUNTRIES,
+			Component: LeadsByCountriesWidget,
+		},
+		{
+			slug: KM_ANALYTICS_LEADS_BY_DEVICE_TYPE,
+			Component: LeadsByDeviceTypeWidget,
+		},
+		{
+			slug: KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS,
+			Component: TopAuthorsDrivingLeadsWidget,
 		},
 	].forEach( ( { slug, Component } ) => {
 		widgets.registerWidget(
