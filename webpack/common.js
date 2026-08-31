@@ -254,6 +254,13 @@ const svgRule = {
 			],
 		},
 		{
+			resourceQuery: /path/,
+			type: 'asset/resource',
+			generator: {
+				filename: 'images/[name]-[contenthash][ext]',
+			},
+		},
+		{
 			use: [
 				{
 					loader: '@svgr/webpack',
