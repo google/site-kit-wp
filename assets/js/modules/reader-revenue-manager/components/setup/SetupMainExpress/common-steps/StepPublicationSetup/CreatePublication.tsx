@@ -38,7 +38,12 @@ import { Checkbox, SpinnerButton, TextField } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import DocumentationLink from '@/js/components/DocumentationLink';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
-import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import Typography from '@/js/components/Typography';
+import {
+	SIZE_MEDIUM,
+	SIZE_SMALL,
+	TYPE_BODY,
+} from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useFormValue from '@/js/hooks/useFormValue';
@@ -272,10 +277,16 @@ const CreatePublication: FC< CreatePublicationProps > = ( {
 					}
 					value="1"
 				>
-					{ __(
-						'By checking this box, you certify that your publication is principally and permanently located in the country you selected',
-						'google-site-kit'
-					) }
+					<Typography
+						className=""
+						size={ SIZE_SMALL }
+						type={ TYPE_BODY }
+					>
+						{ __(
+							'By checking this box, you certify that your publication is principally and permanently located in the country you selected',
+							'google-site-kit'
+						) }
+					</Typography>
 				</Checkbox>
 			</div>
 			{ /* @ts-expect-error - The `SpinnerButton` component is not typed yet. */ }
