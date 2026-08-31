@@ -24,6 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { isFeatureEnabled } from '@/js/features';
 import {
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
@@ -280,86 +281,91 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		},
 	} );
 
-	registerFeature( 'pdf-report', {
-		title: __( 'Export Site Kit to PDF report', 'google-site-kit' ),
-		shortDescription: __(
-			'Generate a PDF featuring the current metrics from your dashboard. The report reflects the same date range selected in your dashboard, excluding data from the current day to ensure accuracy.',
-			'google-site-kit'
-		),
-		detail: {
-			description: {
-				whatIs: __(
-					'In just a couple of clicks, you can export a snapshot of the Site Kit dashboard, selecting what you wish to be included, into a PDF document. By generating PDF reports, you can easily share, print or review how you site is performing, similar to how it appears on the Site Kit dashboard.',
-					'google-site-kit'
-				),
-				whyUseHeading: __( 'Why use PDF reports?', 'google-site-kit' ),
-				whyUseList: [
-					{
-						term: __( 'Easy download:', 'google-site-kit' ),
-						description: __(
-							'Save a clean, instant snapshot of your entire Site Kit dashboard with a single click.',
+	if ( isFeatureEnabled( 'pdfGeneration' ) ) {
+		registerFeature( 'pdf-report', {
+			title: __( 'Export Site Kit to PDF report', 'google-site-kit' ),
+			shortDescription: __(
+				'Generate a PDF featuring the current metrics from your dashboard. The report reflects the same date range selected in your dashboard, excluding data from the current day to ensure accuracy.',
+				'google-site-kit'
+			),
+			detail: {
+				description: {
+					whatIs: __(
+						'In just a couple of clicks, you can export a snapshot of the Site Kit dashboard, selecting what you wish to be included, into a PDF document. By generating PDF reports, you can easily share, print or review how you site is performing, similar to how it appears on the Site Kit dashboard.',
+						'google-site-kit'
+					),
+					whyUseHeading: __(
+						'Why use PDF reports?',
+						'google-site-kit'
+					),
+					whyUseList: [
+						{
+							term: __( 'Easy download:', 'google-site-kit' ),
+							description: __(
+								'Save a clean, instant snapshot of your entire Site Kit dashboard with a single click.',
+								'google-site-kit'
+							),
+						},
+						{
+							term: __( 'Offline review:', 'google-site-kit' ),
+							description: __(
+								'Access and analyze your site’s performance data anywhere without needing an internet connection.',
+								'google-site-kit'
+							),
+						},
+						{
+							term: __( 'Simple sharing:', 'google-site-kit' ),
+							description: __(
+								'Print or email the generated PDF directly to clients, stakeholders, or team members.',
+								'google-site-kit'
+							),
+						},
+					],
+				},
+				requirements: {
+					serviceRequirements: __(
+						'There are no service requirements for PDF reports.',
+						'google-site-kit'
+					),
+					setupList: [
+						__(
+							'Open the PDF report export panel and select your preferred Google services to be included',
 							'google-site-kit'
 						),
+						__( 'Download your report', 'google-site-kit' ),
+					],
+					setupComplete: __(
+						'You’re done! The PDF will be automatically downloaded',
+						'google-site-kit'
+					),
+				},
+				screenshots: [
+					{
+						src: pdfReportFullScreenshotURL,
+						alt: __(
+							'PDF report screenshot showing the full report with all selected metrics.',
+							'google-site-kit'
+						),
+						width: 1488,
+						height: 608,
 					},
 					{
-						term: __( 'Offline review:', 'google-site-kit' ),
-						description: __(
-							'Access and analyze your site’s performance data anywhere without needing an internet connection.',
+						src: pdfReportPanelScreenshotURL,
+						alt: __(
+							'PDF report screenshot showing the export panel with selected metrics.',
 							'google-site-kit'
 						),
-					},
-					{
-						term: __( 'Simple sharing:', 'google-site-kit' ),
-						description: __(
-							'Print or email the generated PDF directly to clients, stakeholders, or team members.',
-							'google-site-kit'
-						),
+						width: 1488,
+						height: 608,
 					},
 				],
 			},
-			requirements: {
-				serviceRequirements: __(
-					'There are no service requirements for PDF reports.',
-					'google-site-kit'
-				),
-				setupList: [
-					__(
-						'Open the PDF report export panel and select your preferred Google services to be included',
-						'google-site-kit'
-					),
-					__( 'Download your report', 'google-site-kit' ),
-				],
-				setupComplete: __(
-					'You’re done! The PDF will be automatically downloaded',
-					'google-site-kit'
-				),
+			effort: FEATURE_EFFORTS.LOW,
+			goalCategories: [ FEATURE_CATEGORIES.PRODUCTIVITY ],
+			addedInVersion: '1.184.0',
+			setup: {
+				type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
 			},
-			screenshots: [
-				{
-					src: pdfReportFullScreenshotURL,
-					alt: __(
-						'PDF report screenshot showing the full report with all selected metrics.',
-						'google-site-kit'
-					),
-					width: 1488,
-					height: 608,
-				},
-				{
-					src: pdfReportPanelScreenshotURL,
-					alt: __(
-						'PDF report screenshot showing the export panel with selected metrics.',
-						'google-site-kit'
-					),
-					width: 1488,
-					height: 608,
-				},
-			],
-		},
-		effort: FEATURE_EFFORTS.LOW,
-		goalCategories: [ FEATURE_CATEGORIES.PRODUCTIVITY ],
-		addedInVersion: '1.184.0',
-		setup: {
-			type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
-		},
-	} );
+		} );
+	}
 }
