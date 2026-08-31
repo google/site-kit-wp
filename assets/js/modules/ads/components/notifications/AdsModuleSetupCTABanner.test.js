@@ -21,6 +21,7 @@
  */
 import { getItem } from '@/js/googlesitekit/api/cache';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
@@ -32,6 +33,7 @@ import {
 	PLUGINS,
 } from '@/js/modules/ads/datastore/constants';
 import { ADS_NOTIFICATIONS } from '@/js/modules/ads/notifications';
+import { MINUTE_IN_SECONDS } from '@/js/util';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import { dismissPromptEndpoint } from '@tests/js/mock-dismiss-prompt-endpoints';
 import {
@@ -216,6 +218,11 @@ describe( 'AdsModuleSetupCTABanner', () => {
 				}
 			);
 
+			const setCacheItemSpy = jest.spyOn(
+				registry.dispatch( CORE_SITE ),
+				'setCacheItem'
+			);
+
 			const { getByText, getByRole, waitForRegistry } = render(
 				<AdsModuleSetupCTABannerComponent />,
 				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
@@ -238,6 +245,11 @@ describe( 'AdsModuleSetupCTABanner', () => {
 				( await getItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY ) )
 					.cacheHit
 			).toBe( true );
+			expect( setCacheItemSpy ).toHaveBeenCalledWith(
+				ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
+				true,
+				{ ttl: 5 * MINUTE_IN_SECONDS }
+			);
 			expect(
 				registry
 					.select( CORE_MODULES )
