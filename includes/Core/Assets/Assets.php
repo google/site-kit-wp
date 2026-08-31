@@ -631,7 +631,6 @@ final class Assets {
 					'dependencies' => array(
 						'googlesitekit-data',
 						'googlesitekit-i18n',
-						'googlesitekit-components',
 					),
 				)
 			),

@@ -25,6 +25,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import {
+	CORE_FEATURE_DISCOVERY,
 	actions,
 	registerStore,
 	selectors,
@@ -67,7 +68,7 @@ export function createFeatureDiscovery( registry: WPDataRegistry ) {
 		 * @return {Object} Feature registration action result.
 		 */
 		registerFeature: ( slug: string, settings: FeatureSettings ) => {
-			return dispatch( 'core/feature-discovery' ).registerFeature(
+			return dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
 				slug,
 				settings
 			);

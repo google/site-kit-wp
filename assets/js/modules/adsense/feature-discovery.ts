@@ -149,4 +149,107 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			moduleSlug: MODULE_SLUG_ADSENSE,
 		},
 	} );
+
+	registerFeature( 'ad-blocker-detection', {
+		title: __( 'Recover revenue lost to ad blockers', 'google-site-kit' ),
+		shortDescription: __(
+			'Display a message to visitors using an ad blocker, giving them the option to allow ads on your site. Site Kit will place an ad blocking recovery tag on your site.',
+			'google-site-kit'
+		),
+		detail: {
+			description: {
+				whatIs: __(
+					'Ad blocking recovery is a feature provided by AdSense that allows publishers to display a message to their site visitors who are using an ad blocker, encouraging them to disable it for their site which can result in revenue being recovered. This is accomplished by enabling an ad blocker recovery message on your website. Site Kit integrates this directly with AdSense to predefine the wording in the message that appears to users of ad blockers.',
+					'google-site-kit'
+				),
+				whyUseHeading: __(
+					'Why use ad blocking recovery?',
+					'google-site-kit'
+				),
+				whyUseList: [
+					{
+						term: __( 'Reclaims lost revenue:', 'google-site-kit' ),
+						description: __(
+							'Prompts ad-blocking visitors to whitelist your site or allow ads to recover earnings. ',
+							'google-site-kit'
+						),
+					},
+					{
+						term: __( 'Zero custom coding:', 'google-site-kit' ),
+						description: __(
+							"Deploys easily via WordPress without altering your site's codebase.",
+							'google-site-kit'
+						),
+					},
+					{
+						term: __( 'Flexible enforcement:', 'google-site-kit' ),
+						description: __(
+							'Customize your recovery messaging and rules directly inside AdSense.',
+							'google-site-kit'
+						),
+					},
+					{
+						term: __( 'Seamless integration:', 'google-site-kit' ),
+						description: __(
+							'Works smoothly alongside your existing privacy and consent tools.',
+							'google-site-kit'
+						),
+					},
+					{
+						term: __( 'Error protection:', 'google-site-kit' ),
+						description: __(
+							'Includes fallback code to ensure messages appear even if ad blockers try to hide the prompt.',
+							'google-site-kit'
+						),
+					},
+				],
+			},
+			requirements: {
+				serviceRequirements: __(
+					'There are no service requirements for Ad blocking recovery.',
+					'google-site-kit'
+				),
+				setupList: [
+					__( 'Enable ad blocking recovery.', 'google-site-kit' ),
+					__(
+						'Create your ad blocking recovery message.',
+						'google-site-kit'
+					),
+				],
+				setupComplete: __(
+					'You are saving lost revenue! Ad blocking recovery is set up for your site.',
+					'google-site-kit'
+				),
+			},
+			screenshots: [
+				{
+					src: splashScreenScreenshotURL,
+					alt: __(
+						'Analytics 4 Key Metrics widget showing selected key metrics and trends.',
+						'google-site-kit'
+					),
+					width: 1488,
+					height: 608,
+				},
+			],
+		},
+		successNotice: {
+			title: __(
+				'Success! The ad blocking recovery message has been enabled',
+				'google-site-kit'
+			),
+			description: __(
+				"Make sure to also create the message in AdSense, otherwise this feature won't work.",
+				'google-site-kit'
+			),
+			dismissLabel: __( 'Got it', 'google-site-kit' ),
+		},
+		effort: FEATURE_EFFORTS.MEDIUM,
+		goalCategories: [ FEATURE_CATEGORIES.MONETIZATION ],
+		prerequisiteModules: [ 'adsense' ],
+		addedInVersion: '1.49.0',
+		setup: {
+			type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+		},
+	} );
 }

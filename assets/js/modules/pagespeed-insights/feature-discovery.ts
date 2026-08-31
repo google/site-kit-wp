@@ -123,7 +123,6 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				'Success! PageSpeed Insights is set up',
 				'google-site-kit'
 			),
-			description: __( '', 'google-site-kit' ),
 			cta: {
 				label: __( 'Show me', 'google-site-kit' ),
 			},

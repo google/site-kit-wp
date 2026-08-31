@@ -262,7 +262,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			effort: FEATURE_EFFORTS.MEDIUM,
 			goalCategories: [ FEATURE_CATEGORIES.ENGAGEMENT ],
-			prerequisiteModules: [ MODULE_SLUG_READER_REVENUE_MANAGER ],
+
 			addedInVersion: '1.96.0',
 			setup: {
 				type: FEATURE_SETUP_TYPES.SETUP_FLOW,

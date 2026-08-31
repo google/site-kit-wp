@@ -51,6 +51,8 @@ export const reducer = store.reducer;
 export const resolvers = store.resolvers;
 export const selectors = store.selectors;
 
+export { CORE_FEATURE_DISCOVERY };
+
 export function registerStore( registry: WPDataRegistry ) {
 	registry.registerStore( CORE_FEATURE_DISCOVERY, store );
 }
