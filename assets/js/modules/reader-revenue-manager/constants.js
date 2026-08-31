@@ -21,10 +21,22 @@
  */
 import { __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+
 export const SNIPPET_MODES = {
 	post_types: __( 'Specific content types', 'google-site-kit' ),
 	per_post: __( 'Specified pages', 'google-site-kit' ),
 	sitewide: __( 'Site wide', 'google-site-kit' ),
+};
+
+export const CTA_TYPE_LABELS = {
+	[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: __(
+		'Newsletter sign-up form',
+		'google-site-kit'
+	),
 };
 
 export const RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG =
