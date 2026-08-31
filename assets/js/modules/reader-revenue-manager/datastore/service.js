@@ -29,6 +29,8 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 
+const CONTENT_ACCESS_PATH = 'reader-revenue-manager/content-access';
+
 const selectors = {
 	/**
 	 * Returns a link to the Reader Revenue Manager platform.
@@ -106,6 +108,27 @@ const selectors = {
 					app_redirect: 'rrm',
 				},
 			} )
+	),
+
+	/**
+	 * Returns the edit link URL for a CTA.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} ctaID The CTA ID.
+	 * @return {string} CTA edit link URL.
+	 */
+	getCTAEditLinkURL: createRegistrySelector(
+		( select ) => ( state, ctaID ) => {
+			const publicationID = select(
+				MODULES_READER_REVENUE_MANAGER
+			).getPublicationID();
+
+			return select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
+				path: `${ CONTENT_ACCESS_PATH }/ctas/newsletter/${ ctaID }`,
+				query: { publication: publicationID },
+			} );
+		}
 	),
 };
 
