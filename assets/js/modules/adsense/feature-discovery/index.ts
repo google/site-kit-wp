@@ -123,7 +123,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		successNotice: {
 			title: __( 'Success! AdSense is set up', 'google-site-kit' ),
 			description: __(
-				'You are now monetizing your website with relevant ads.',
+				'You are now monetizing your website with relevant ads',
 				'google-site-kit'
 			),
 			cta: {

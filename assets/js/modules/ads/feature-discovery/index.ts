@@ -122,7 +122,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		successNotice: {
 			title: __( 'Success! Ads is set up', 'google-site-kit' ),
 			description: __(
-				'You can now track conversions for your Ads campaigns.',
+				'You can now track conversions for your Ads campaigns',
 				'google-site-kit'
 			),
 			cta: {

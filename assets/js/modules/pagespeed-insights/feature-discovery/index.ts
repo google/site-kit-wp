@@ -50,7 +50,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			'google-site-kit'
 		),
 		shortDescription: __(
-			'PageSpeed Insights (PSI) reports on the user experience of a page on both mobile and desktop devices, and provides suggestions on how that page may be improved.',
+			'PageSpeed Insights (PSI) reports on the user experience of a page on both mobile and desktop devices, and provides suggestions on how that page may be improved',
 			'google-site-kit'
 		),
 		detail: {

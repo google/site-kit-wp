@@ -252,7 +252,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					'google-site-kit'
 				),
 				description: __(
-					'You can always update your sign-up form settings in Publisher center.',
+					'You can always update your sign-up form settings in Publisher center',
 					'google-site-kit'
 				),
 				cta: {

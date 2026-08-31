@@ -154,7 +154,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			'google-site-kit'
 		),
 		shortDescription: __(
-			'Key metrics allows each user to pin their most important goals to the top of the Site Kit dashboard for a customized view that can be changed at any time.',
+			'Key metrics allows each user to pin their most important goals to the top of the Site Kit dashboard for a customized view that can be changed at any time',
 			'google-site-kit'
 		),
 		detail: {
@@ -249,7 +249,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	registerFeature( 'enhanced-measurement', {
 		title: __( 'Enhance your site tracking', 'google-site-kit' ),
 		shortDescription: __(
-			'Better understand what visitors do on your site with detailed tracking.',
+			'Better understand what visitors do on your site with detailed tracking',
 			'google-site-kit'
 		),
 		detail: {
@@ -348,7 +348,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	registerFeature( 'visitor-groups', {
 		title: __( 'Learn about your visitor groups', 'google-site-kit' ),
 		shortDescription: __(
-			'Segment your visitors into categories that help you understand site behaviour for demographcs of subsets of visitors that you define.',
+			'Segment your visitors into categories that help you understand site behaviour for demographcs of subsets of visitors that you define',
 			'google-site-kit'
 		),
 		detail: {

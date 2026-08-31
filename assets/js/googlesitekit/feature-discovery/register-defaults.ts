@@ -261,7 +261,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				'google-site-kit'
 			),
 			description: __(
-				'Email subscription settings can always be edited from the Site Kit header.',
+				'Email subscription settings can always be edited from the Site Kit header',
 				'google-site-kit'
 			),
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
