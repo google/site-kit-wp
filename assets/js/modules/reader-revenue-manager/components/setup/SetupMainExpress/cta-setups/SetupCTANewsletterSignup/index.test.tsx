@@ -92,12 +92,11 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		expect( getByText( 'Set up a sign-up form' ) ).toBeInTheDocument();
 		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
-		expect( getByText( 'Accept terms of service' ) ).toBeInTheDocument();
 		expect( getByText( 'Add publication policies' ) ).toBeInTheDocument();
 		expect( getByText( 'Setup complete' ) ).toBeInTheDocument();
 		expect(
 			container.querySelectorAll( '.googlesitekit-stepper__step' )
-		).toHaveLength( 5 );
+		).toHaveLength( 4 );
 	} );
 
 	it.each( Object.entries( STEP_CONTENT ) )(

@@ -82,11 +82,11 @@ describe( 'ExpressSetupDefault', () => {
 		global.location.href = 'http://example.com/';
 
 		const { getByText, queryByText, container } = render(
-			<ExpressSetupDefault />
+			<ExpressSetupDefault />,
+			{ registry }
 		);
 
 		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
-		expect( getByText( 'Accept terms of service' ) ).toBeInTheDocument();
 		expect( getByText( 'Add publication policies' ) ).toBeInTheDocument();
 		expect( getByText( 'Setup complete' ) ).toBeInTheDocument();
 		expect(
@@ -94,7 +94,7 @@ describe( 'ExpressSetupDefault', () => {
 		).not.toBeInTheDocument();
 		expect(
 			container.querySelectorAll( '.googlesitekit-stepper__step' )
-		).toHaveLength( 4 );
+		).toHaveLength( 3 );
 	} );
 
 	it.each( Object.entries( STEP_CONTENT ) )(
