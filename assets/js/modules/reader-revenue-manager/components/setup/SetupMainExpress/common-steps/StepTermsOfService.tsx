@@ -135,6 +135,7 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 
 	const hasResolvedTermsOfService: boolean = useSelect(
 		( select: Select ) =>
+			! tosURL ||
 			select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
 				'getTermsOfService',
 				[ { tosURL } ]
