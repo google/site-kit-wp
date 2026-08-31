@@ -87,7 +87,8 @@ class Form_Title_Resolver {
 	 * @since n.e.x.t
 	 *
 	 * @param array $form_ids Form IDs the report grouped its rows by.
-	 * @return array Map of form ID to metadata, holding a `title` for each.
+	 * @return array Map of form ID to metadata, holding a `title` for each, or an empty
+	 *               array when the datapoint returns an error.
 	 */
 	private function read_metadata( array $form_ids ) {
 		$request = $this->form_metadata->create_request(
@@ -100,6 +101,9 @@ class Form_Title_Resolver {
 			)
 		);
 
-		return $request();
+		$metadata = $request();
+
+		// `get_titles()` reads the return value as an array.
+		return is_wp_error( $metadata ) ? array() : $metadata;
 	}
 }

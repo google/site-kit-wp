@@ -10,8 +10,10 @@
 
 namespace Google\Site_Kit\Tests\Modules\Analytics_4\Email_Reporting;
 
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Form_Metadata;
 use Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Form_Title_Resolver;
 use Google\Site_Kit\Tests\TestCase;
+use WP_Error;
 
 /**
  * @group Email_Reporting
@@ -94,6 +96,23 @@ class Form_Title_ResolverTest extends TestCase {
 			array(),
 			$this->resolver->get_titles( array() ),
 			'get_titles() should return an empty array when it receives no form ID.'
+		);
+	}
+
+	public function test_get_titles__falls_back_to_the_form_id_when_the_datapoint_returns_an_error() {
+		$form_metadata = $this->createMock( Get_Form_Metadata::class );
+		$form_metadata->method( 'create_request' )->willReturn(
+			function () {
+				return new WP_Error( 'form_metadata_failed', 'The form metadata datapoint failed.' );
+			}
+		);
+
+		$resolver = new Form_Title_Resolver( $form_metadata );
+
+		$this->assertSame(
+			array( 12 => 'Form #12' ),
+			$resolver->get_titles( array( 12 ) ),
+			'get_titles() should fall back to "Form #12" when the datapoint returns an error.'
 		);
 	}
 }

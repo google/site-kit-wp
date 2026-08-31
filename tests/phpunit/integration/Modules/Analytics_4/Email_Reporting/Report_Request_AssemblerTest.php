@@ -249,7 +249,7 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 		$this->assertEqualSets(
 			$site_goals_keys,
 			array_merge( $site_wide_keys, $breakdown_keys ),
-			'build_requests() should register every Site Goals payload key, and no other.'
+			'build_requests() should register every Site Goals payload key, and no other keys.'
 		);
 	}
 
