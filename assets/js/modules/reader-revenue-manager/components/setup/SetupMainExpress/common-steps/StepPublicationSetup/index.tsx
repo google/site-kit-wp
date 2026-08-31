@@ -86,15 +86,20 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 	const hasPublications = hasResolvedPublications && publications?.length;
 	const hasNoPublications = hasResolvedPublications && ! publications?.length;
 
+	// Show the publication create form if no publications exist.
 	useEffect( () => {
-		if ( hasNoPublications && ! getPublicationsError ) {
+		if (
+			! showPublicationCreate &&
+			! getPublicationsError &&
+			hasNoPublications
+		) {
 			setShowPublicationCreate( true );
 		}
 	}, [
 		getPublicationsError,
 		hasNoPublications,
-		showPublicationCreate,
 		setShowPublicationCreate,
+		showPublicationCreate,
 	] );
 
 	if ( ! hasResolvedPublications ) {

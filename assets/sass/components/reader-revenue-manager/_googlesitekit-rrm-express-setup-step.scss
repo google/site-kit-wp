@@ -16,48 +16,50 @@
  * limitations under the License.
  */
 
-.googlesitekit-rrm-express-setup-step {
-	display: grid;
-	gap: 36px;
-	justify-items: start;
-}
+.googlesitekit-plugin {
 
-.googlesitekit-rrm-express-setup-step__form {
-	display: grid;
-	gap: inherit;
-	inline-size: 100%;
-	justify-items: start;
-}
+	.googlesitekit-rrm-express-setup-step {
+		display: grid;
+		gap: 36px;
+		justify-items: start;
+	}
 
-.googlesitekit-rrm-express-setup-step__form-content {
-	display: grid;
-	gap: $grid-gap-desktop;
-	inline-size: 100%;
-}
+	.googlesitekit-rrm-express-setup-step__form {
+		display: grid;
+		gap: inherit;
+		inline-size: 100%;
+		justify-items: start;
+	}
 
-.googlesitekit-rrm-express-setup-step__description,
-.googlesitekit-rrm-express-setup-step__headline {
-	margin-block: 0;
-}
-
-.googlesitekit-rrm-express-setup-step__form-controls {
-	display: grid;
-	gap: $grid-gap-phone;
-	max-inline-size: 500px;
-
-	.mdc-text-field {
+	.googlesitekit-rrm-express-setup-step__form-content {
+		display: grid;
+		gap: $grid-gap-desktop;
 		inline-size: 100%;
 	}
-}
+	.googlesitekit-rrm-express-setup-step__description,
+	.googlesitekit-rrm-express-setup-step__headline {
+		margin-block: 0;
+	}
 
-.googlesitekit-rrm-express-setup-step__form-controls--policies {
-	row-gap: 36px;
-}
+	.googlesitekit-rrm-express-setup-step__form-controls {
+		display: grid;
+		gap: $grid-gap-phone;
+		max-inline-size: 500px;
 
-.googlesitekit-rrm-express-setup-step__label {
-	margin-block: 0 $grid-gap-phone;
-}
+		.mdc-text-field {
+			inline-size: 100%;
+		}
+	}
 
-.googlesitekit-rrm-express-setup-step__cta-link {
-	letter-spacing: inherit; /* TODO: Apply to .googlesitekit-cta-link. */
+	.googlesitekit-rrm-express-setup-step__form-controls--policies {
+		row-gap: 36px;
+	}
+
+	.googlesitekit-rrm-express-setup-step__label {
+		margin-block: 0 $grid-gap-phone;
+	}
+
+	.googlesitekit-rrm-express-setup-step__cta-link {
+		letter-spacing: inherit; /* TODO: Apply to .googlesitekit-cta-link. */
+	}
 }
