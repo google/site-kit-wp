@@ -135,16 +135,19 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 		[ onComplete, publication, submitChanges ]
 	);
 
+	// Automatically pre-select a publication.
 	useEffect( () => {
-		( async () => {
-			if ( publications && ! publicationID ) {
-				const matchedPublication = await findMatchedPublication();
+		async function autoSelectPublication() {
+			const matchedPublication = await findMatchedPublication();
 
-				if ( matchedPublication ) {
-					selectPublication( matchedPublication );
-				}
+			if ( matchedPublication ) {
+				selectPublication( matchedPublication );
 			}
-		} )();
+		}
+
+		if ( publications && ! publicationID ) {
+			autoSelectPublication();
+		}
 	}, [
 		findMatchedPublication,
 		publicationID,
