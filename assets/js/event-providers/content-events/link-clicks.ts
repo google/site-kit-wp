@@ -20,6 +20,31 @@
  * Internal dependencies
  */
 import classifyContactLink from './classify-contact-link';
+import classifyOutboundLink from './classify-outbound-link';
+
+/** The transport a link event is sent with, spread into its payload. */
+interface TransportProperties {
+	/** Set only when the click navigates away from the page. */
+	// eslint-disable-next-line camelcase
+	transport_type?: 'beacon';
+}
+
+/**
+ * Gets the transport properties a link's event is sent with.
+ *
+ * A web link navigates away, so its event has to survive the page unloading. An
+ * app-scheme link hands off to another application and leaves the page in place.
+ *
+ * @since n.e.x.t
+ *
+ * @param {URL} url Parsed link address.
+ * @return {Object} Transport properties to spread into the event payload.
+ */
+function getTransportProperties( url: URL ): TransportProperties {
+	return 'http:' === url.protocol || 'https:' === url.protocol
+		? { transport_type: 'beacon' }
+		: {};
+}
 
 /**
  * Initializes link click tracking.
@@ -52,25 +77,38 @@ export function initializeLinkClicks(): void {
 				return;
 			}
 
-			const linkType = classifyContactLink( anchor );
+			let url: URL;
+
+			// Both classifiers read this same address, and a link the parser
+			// rejects is not tracked at all.
+			try {
+				url = new URL( anchor.href );
+			} catch {
+				return;
+			}
+
+			const linkType = classifyContactLink( url );
 
 			// An `else` rather than an early return: the recipient sits in the
 			// address itself, so a classified anchor must never reach a handler
 			// that reports the URL — not even when emitting its own event
 			// throws and the `catch` below resumes past this point.
 			if ( linkType ) {
-				const isWebLink =
-					'http:' === anchor.protocol || 'https:' === anchor.protocol;
-
 				global._googlesitekit?.gtagEvent?.( 'contact_link_click', {
 					link_type: linkType,
-					// A web link navigates away, so its event has to survive the
-					// page unloading. An app-scheme link hands off to another
-					// application and leaves the page in place.
-					...( isWebLink ? { transport_type: 'beacon' } : {} ),
+					...getTransportProperties( url ),
 				} );
 			} else {
-				// `outbound_link_click` (#13291) handles the anchor here.
+				const linkRel = classifyOutboundLink( anchor, url );
+
+				if ( linkRel ) {
+					global._googlesitekit?.gtagEvent?.( 'outbound_link_click', {
+						link_rel: linkRel,
+						link_url: url.href,
+						link_domain: url.hostname,
+						...getTransportProperties( url ),
+					} );
+				}
 			}
 		} catch ( error ) {
 			// eslint-disable-next-line no-console
