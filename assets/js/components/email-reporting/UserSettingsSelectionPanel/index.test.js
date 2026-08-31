@@ -28,7 +28,10 @@ import {
 } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	PERMISSION_MANAGE_OPTIONS,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
@@ -43,11 +46,23 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 
-// This suite tests panel behavior; mock the invite list to avoid async datastore
-// updates from child-level fetching that are covered in InviteOthersToSubscribe tests.
+// This suite tests panel behavior; stub the invite and subscribed-users tabs
+// to avoid async datastore updates from child-level fetching that are
+// covered in their own test suites. Each stub renders an identifiable marker
+// so the tab-switching tests can tell them apart.
 jest.mock(
 	'@/js/components/email-reporting/InviteOthersToSubscribe',
-	() => () => null
+	() =>
+		function () {
+			return <div data-testid="invite-others-to-subscribe-tab" />;
+		}
+);
+jest.mock(
+	'@/js/components/email-reporting/SubscribedUsers',
+	() =>
+		function () {
+			return <div data-testid="subscribed-users-tab" />;
+		}
 );
 
 describe( 'UserSettingsSelectionPanel', () => {
@@ -136,6 +151,103 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		expect(
 			queryByText( /you can always deactivate this feature in/i )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders both subscriber management tabs for admins, defaulting to the invite tab', () => {
+		const { getByRole, getByTestID, queryByTestID } = render(
+			<UserSettingsSelectionPanel />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		expect(
+			getByRole( 'tab', { name: 'Invite others to subscribe' } )
+		).toBeInTheDocument();
+		expect(
+			getByRole( 'tab', { name: 'Subscribed users' } )
+		).toBeInTheDocument();
+
+		expect(
+			getByTestID( 'invite-others-to-subscribe-tab' )
+		).toBeInTheDocument();
+		expect(
+			queryByTestID( 'subscribed-users-tab' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'switches to the Subscribed users tab content when clicked', () => {
+		const { getByRole, getByTestID, queryByTestID } = render(
+			<UserSettingsSelectionPanel />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		fireEvent.click( getByRole( 'tab', { name: 'Subscribed users' } ) );
+
+		expect( getByTestID( 'subscribed-users-tab' ) ).toBeInTheDocument();
+		expect(
+			queryByTestID( 'invite-others-to-subscribe-tab' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'resets to the invite tab when the panel closes and reopens', () => {
+		const { getByRole, getByTestID } = render(
+			<UserSettingsSelectionPanel />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		fireEvent.click( getByRole( 'tab', { name: 'Subscribed users' } ) );
+		expect( getByTestID( 'subscribed-users-tab' ) ).toBeInTheDocument();
+
+		act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
+		} );
+
+		act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+		} );
+
+		expect(
+			getByTestID( 'invite-others-to-subscribe-tab' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'renders neither subscriber management tab for view-only users', () => {
+		provideUserCapabilities( registry, {
+			[ PERMISSION_MANAGE_OPTIONS ]: false,
+		} );
+
+		const { queryByRole, queryByTestID } = render(
+			<UserSettingsSelectionPanel />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+
+		expect(
+			queryByRole( 'tab', { name: 'Invite others to subscribe' } )
+		).not.toBeInTheDocument();
+		expect(
+			queryByRole( 'tab', { name: 'Subscribed users' } )
+		).not.toBeInTheDocument();
+		expect(
+			queryByTestID( 'invite-others-to-subscribe-tab' )
+		).not.toBeInTheDocument();
+		expect(
+			queryByTestID( 'subscribed-users-tab' )
 		).not.toBeInTheDocument();
 	} );
 
@@ -352,6 +464,30 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		await waitFor( () => expect( saveSpy ).toHaveBeenCalledTimes( 1 ) );
 		expect( saveSpy.mock.calls[ 0 ] ).toHaveLength( 0 );
+	} );
+
+	it( 'enables the "Update Settings" button when the user clicks another frequency card', async () => {
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: true,
+			frequency: 'monthly',
+		} );
+
+		const { getByRole } = render( <UserSettingsSelectionPanel />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		expect(
+			getByRole( 'button', { name: 'Update Settings' } )
+		).toBeDisabled();
+
+		fireEvent.click( getByRole( 'radio', { name: 'Weekly' } ) );
+
+		await waitFor( () =>
+			expect(
+				getByRole( 'button', { name: 'Update Settings' } )
+			).toBeEnabled()
+		);
 	} );
 
 	it( 'closes the panel when clicking "Go to settings" in report error notice', async () => {

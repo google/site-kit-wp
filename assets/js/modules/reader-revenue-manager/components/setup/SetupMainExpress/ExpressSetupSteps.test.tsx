@@ -19,9 +19,14 @@
 /**
  * Internal dependencies
  */
-import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import {
+	EXPRESS_SETUP_STEPS,
+	READER_REVENUE_MANAGER_SETUP_FORM,
+	SHOW_PUBLICATION_CREATE,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { mockLocation } from '@tests/js/mock-browser-utils';
-import { render } from '@tests/js/test-utils';
+import { act, createTestRegistry, render } from '@tests/js/test-utils';
 import ExpressSetupSteps from './ExpressSetupSteps';
 
 describe( 'ExpressSetupSteps', () => {
@@ -44,6 +49,28 @@ describe( 'ExpressSetupSteps', () => {
 		expect(
 			container.querySelectorAll( '.googlesitekit-stepper__step' )
 		).toHaveLength( 4 );
+	} );
+
+	it( 'renders the dynamic label for the connect step', () => {
+		const registry = createTestRegistry();
+
+		const { getByText, queryByText } = render( <ExpressSetupSteps />, {
+			registry,
+		} );
+
+		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
+		expect( queryByText( 'Create publication' ) ).not.toBeInTheDocument();
+
+		act( () => {
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+					[ SHOW_PUBLICATION_CREATE ]: true,
+				} );
+		} );
+
+		expect( queryByText( 'Connect publication' ) ).not.toBeInTheDocument();
+		expect( getByText( 'Create publication' ) ).toBeInTheDocument();
 	} );
 
 	it( 'includes extra steps before setup complete', () => {

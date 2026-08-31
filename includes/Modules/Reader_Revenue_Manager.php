@@ -860,6 +860,22 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			);
 		}
 
+		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
+			$debug_fields['reader_revenue_manager_organization_id'] = array(
+				'label' => __( 'Reader Revenue Manager: Organization ID', 'google-site-kit' ),
+				'value' => $settings['organizationID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['organizationID'] ),
+			);
+
+			$configured_ctas = implode( ', ', array_keys( (array) $settings['configuredCTAs'] ) );
+
+			$debug_fields['reader_revenue_manager_configured_ctas'] = array(
+				'label' => __( 'Reader Revenue Manager: Configured CTAs', 'google-site-kit' ),
+				'value' => $configured_ctas,
+				'debug' => $configured_ctas,
+			);
+		}
+
 		$content_policy_state = $settings['contentPolicyState'] ?? '';
 
 		$debug_fields['reader_revenue_manager_content_policy_state'] = array(

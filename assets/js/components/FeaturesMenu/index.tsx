@@ -37,7 +37,6 @@ import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import DashboardSharingDialog from '@/js/components/dashboard-sharing/DashboardSharingDialog';
 import { SETTINGS_DIALOG } from '@/js/components/dashboard-sharing/DashboardSharingSettings/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
-import { SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION } from '@/js/components/email-reporting/SetUpEmailReportingOverlayNotification';
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
@@ -90,15 +89,6 @@ const FeaturesMenu: FC = () => {
 		[ viewOnlyDashboard ]
 	);
 
-	const isSetupTooltipVisible = useSelect( ( select: Select ) => {
-		const tooltip = select( CORE_UI ).getValue( 'admin-screen-tooltip' );
-
-		return (
-			!! tooltip?.isTooltipVisible &&
-			tooltip?.tooltipSlug === SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION
-		);
-	}, [] );
-
 	const hasMultipleAdmins = useSelect(
 		( select: Select ) => select( CORE_SITE ).hasMultipleAdmins(),
 		[]
@@ -119,15 +109,8 @@ const FeaturesMenu: FC = () => {
 	}, [] );
 
 	const openEmailReportsPanel = useCallback( () => {
-		// The setup tooltip anchors to the menu button and renders above the
-		// panel, so leaving it up would float it over the sheet pointing at a
-		// covered icon.
-		if ( isSetupTooltipVisible ) {
-			setValue( 'admin-screen-tooltip', undefined );
-		}
-
 		setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-	}, [ isSetupTooltipVisible, setValue ] );
+	}, [ setValue ] );
 
 	const openSharingSettings = useCallback( () => {
 		trackEvent(

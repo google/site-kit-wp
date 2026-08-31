@@ -354,6 +354,37 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertEquals( 'analytics-4', $payload->get_error_data()['module_slug'], 'Categorized error should carry the first denied module slug.' );
 	}
 
+	public function test_get_user_payload__unverified_admin_with_denied_access_returns_permissions_error() {
+		$owner_id           = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$secondary_admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+
+		// A secondary admin who only connects their own Google account (rather than
+		// running Site Kit's full setup wizard) never completes site verification.
+		$this->authenticate_and_grant_required_scopes_for_user( $secondary_admin_id, false );
+
+		$modules = $this->create_modules_with_fake_service_entity_access(
+			array(
+				Analytics_4::MODULE_SLUG    => false,
+				Search_Console::MODULE_SLUG => false,
+			),
+			$owner_id
+		);
+
+		$data_requests = $this->create_data_requests_with_modules( $modules );
+		$payload       = $data_requests->get_user_payload(
+			$secondary_admin_id,
+			$this->date_range,
+			array(
+				Analytics_4::MODULE_SLUG    => array( 'total_visitors' => array( 'value' => 10 ) ),
+				Search_Console::MODULE_SLUG => array( 'total_impressions' => array( 'value' => 10 ) ),
+			)
+		);
+
+		$this->assertWPError( $payload, 'An unverified secondary admin denied access should still get a categorized error instead of an empty payload.' );
+		$this->assertEquals( 'permissions_error', $payload->get_error_data()['category_id'], 'Site verification should not be required to detect denied service-entity access.' );
+		$this->assertEquals( 'analytics-4', $payload->get_error_data()['module_slug'], 'Categorized error should carry the first denied module slug.' );
+	}
+
 	public function test_get_user_payload__service_entity_access_check_error_returns_empty_array() {
 		$owner_id           = self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$secondary_admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
@@ -807,7 +838,7 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		};
 	}
 
-	private function authenticate_and_grant_required_scopes_for_user( $user_id ) {
+	private function authenticate_and_grant_required_scopes_for_user( $user_id, $verified = true ) {
 		$previous_user = get_current_user_id();
 		wp_set_current_user( $user_id );
 		$this->user_options->switch_user( $user_id );
@@ -825,7 +856,9 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 			}
 		}
 
-		$this->authentication->verification()->set( true );
+		if ( $verified ) {
+			$this->authentication->verification()->set( true );
+		}
 
 		$scopes = array_values( array_unique( $scopes ) );
 		$oauth_client->set_token( array( 'access_token' => 'valid-auth-token' ) );
