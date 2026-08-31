@@ -128,6 +128,17 @@
 			}
 		}
 
+		.googlesitekit-rrm-settings-edit__ctas {
+			display: flex;
+			flex-direction: column;
+			gap: $grid-gap-desktop;
+			margin-bottom: $grid-gap-phone;
+		}
+
+		.googlesitekit-rrm-settings-edit__cta p {
+			margin: 0 0 4px;
+		}
+
 		.googlesitekit-rrm-settings-edit__post-types {
 			margin-top: $grid-gap-phone;
 
