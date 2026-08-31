@@ -102,7 +102,7 @@ describe( 'StepPublicationSetup', () => {
 	it( 'should not render the form switch button if no publications exist', () => {
 		providePublications( registry, [] );
 
-		const { getByText } = render(
+		const { queryByRole } = render(
 			<StepPublicationSetup onComplete={ () => {} } />,
 			{
 				registry,
@@ -110,10 +110,12 @@ describe( 'StepPublicationSetup', () => {
 		);
 
 		expect(
-			getByText(
-				'RRM express setup placeholder: publication setup step.'
-			)
-		).toBeInTheDocument();
+			queryByRole( 'button', { name: 'Create new publication' } )
+		).not.toBeInTheDocument();
+
+		expect(
+			queryByRole( 'button', { name: 'Use existing publication' } )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should be possible to switch between forms if publications exist', async () => {

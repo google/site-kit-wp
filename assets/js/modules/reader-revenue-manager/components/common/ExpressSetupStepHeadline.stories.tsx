@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { Story } from '@/js/types/Story';
 import ExpressSetupStepHeadline from './ExpressSetupStepHeadline';
 
 function Template() {
@@ -29,7 +30,7 @@ function Template() {
 	);
 }
 
-export const Basic = Template.bind( {} );
+export const Basic = Template.bind( {} ) as Story;
 Basic.storyName = 'ExpressSetupStepHeadline';
 
 export default {
