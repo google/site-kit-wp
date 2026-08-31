@@ -27,6 +27,7 @@ import { ChangeEvent, FC, FormEvent } from 'react';
 import {
 	createInterpolateElement,
 	useCallback,
+	useEffect,
 	useState,
 } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
@@ -70,6 +71,7 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 	description,
 	onComplete,
 } ) => {
+	const [ isLoading, setIsLoading ] = useState( true );
 	const [ isSaving, setIsSaving ] = useState( false );
 
 	const defaultDescription = __(
@@ -179,6 +181,16 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 		]
 	);
 
+	useEffect( () => {
+		if ( hasResolvedPublication && hasResolvedTermsOfService ) {
+			setIsLoading( false );
+		}
+	}, [ hasResolvedPublication, hasResolvedTermsOfService ] );
+
+	if ( isLoading ) {
+		return <ProgressBar />;
+	}
+
 	return (
 		<div className="googlesitekit-rrm-express-setup-step">
 			<form
@@ -204,22 +216,19 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 					</P>
 
 					<div className="googlesitekit-rrm-express-setup-step__form-controls googlesitekit-rrm-express-setup-step__form-controls--terms-of-service">
-						{ hasResolvedPublication &&
-						hasResolvedTermsOfService ? (
+						{ termsOfService ? (
 							<Typography
 								as="div"
 								className="googlesitekit-rrm-express-setup-terms-of-service"
 								dangerouslySetInnerHTML={ sanitizeHTML(
-									termsOfService || ''
+									termsOfService
 								) }
 								size={ SIZE_MEDIUM }
 								type={ TYPE_BODY }
 							>
 								{ null }
 							</Typography>
-						) : (
-							<ProgressBar />
-						) }
+						) : null }
 
 						<ExpressSetupStepPublicationTypeRadio
 							name={ TERMS_OF_SERVICE_FORM.PUBLICATION_TYPE }

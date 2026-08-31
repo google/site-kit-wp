@@ -69,7 +69,7 @@ describe( 'StepTermsOfService', () => {
 	);
 
 	const termsOfServiceEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/reader-revenue-manager/data/terms-of-service'
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/terms-of-service(?:\\?|$)'
 	);
 
 	beforeEach( () => {
@@ -89,7 +89,7 @@ describe( 'StepTermsOfService', () => {
 		providePublication( registry, TEST_PUBLICATION );
 	} );
 
-	it( 'should disable submission until the terms of service are loaded', () => {
+	it( 'should render as a progress bar if the terms of service are loading', () => {
 		freezeFetch( termsOfServiceEndpoint );
 
 		const { getByRole } = render(
@@ -97,11 +97,10 @@ describe( 'StepTermsOfService', () => {
 			{ registry }
 		);
 
-		expect( getByRole( 'button', { name: 'I agree' } ) ).toBeDisabled();
 		expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should display a retry-able error if getting the terms of service fails', async () => {
+	it( 'should disable submission and display a retry-able error if getting the terms of service fails', async () => {
 		fetchMock
 			.getOnce( termsOfServiceEndpoint, {
 				body: {
@@ -127,19 +126,23 @@ describe( 'StepTermsOfService', () => {
 			);
 		} );
 
+		const submitButton = getByRole( 'button', { name: 'I agree' } );
+
 		expect( console ).toHaveErrored();
+		expect( submitButton ).toBeDisabled();
 
 		fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
 
 		await waitFor( () => {
-			expect( queryByRole( 'status' ) ).not.toBeInTheDocument();
+			expect(
+				getByText(
+					/To use Reader Revenue Manager, you must accept these Reader Revenue Manager Terms of Service/
+				)
+			).toBeInTheDocument();
 		} );
 
-		expect(
-			getByText(
-				/To use Reader Revenue Manager, you must accept these Reader Revenue Manager Terms of Service/
-			)
-		).toBeInTheDocument();
+		expect( queryByRole( 'status' ) ).not.toBeInTheDocument();
+		expect( submitButton ).toBeEnabled();
 	} );
 
 	it( 'should disable submission when submission is in progress', async () => {
