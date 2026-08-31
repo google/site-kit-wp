@@ -92,13 +92,6 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						),
 					},
 					{
-						term: __( 'Team alignment:', 'google-site-kit' ),
-						description: __(
-							'Keep everyone focused on core goals with a simplified performance view.',
-							'google-site-kit'
-						),
-					},
-					{
 						term: __( 'Protect settings:', 'google-site-kit' ),
 						description: __(
 							'Keep your connected Google service configurations safe from unauthorized changes.',

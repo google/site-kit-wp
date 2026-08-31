@@ -131,13 +131,13 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		},
 		effort: FEATURE_EFFORTS.HIGH,
 		goalCategories: [
-			FEATURE_CATEGORIES.MONETIZATION,
-			FEATURE_CATEGORIES.ENGAGEMENT,
+			FEATURE_CATEGORIES.AUDIENCE,
+			FEATURE_CATEGORIES.TRAFFIC,
 		],
 		addedInVersion: '1.66.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.SETUP_FLOW,
-			ctaLabel: __( 'Set up Reader Revenur Manager', 'google-site-kit' ),
+			ctaLabel: __( 'Set up Reader Revenue Manager', 'google-site-kit' ),
 			moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
 		},
 		checkRequirements: ( select ) => {

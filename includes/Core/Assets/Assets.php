@@ -681,7 +681,10 @@ final class Assets {
 				'googlesitekit-features',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-features.js',
-					'dependencies' => $this->get_asset_dependencies( 'dashboard-sharing' ),
+					'dependencies' => array_merge(
+						$this->get_asset_dependencies( 'dashboard-sharing' ),
+						array( 'googlesitekit-feature-discovery' )
+					),
 				)
 			),
 			new Script(

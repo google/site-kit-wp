@@ -88,7 +88,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			requirements: {
 				serviceRequirements: __(
-					'A "gathering data" message will be displayed to users with newly created Analytics properties. All Anallytics data is subject to processing delays, which typically take 2 to 6 hours to process new traffic information.',
+					'A "gathering data" message will be displayed to users with newly created Analytics properties. All Analytics data is subject to processing delays, which typically take 2 to 6 hours to process new traffic information.',
 					'google-site-kit'
 				),
 				setupList: [
@@ -169,6 +169,13 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						term: __( 'Pin metrics:', 'google-site-kit' ),
 						description: __(
 							'Attach your most critical GA4 metrics directly to your main WordPress dashboard.',
+							'google-site-kit'
+						),
+					},
+					{
+						term: __( 'Team alignment:', 'google-site-kit' ),
+						description: __(
+							'Keep everyone focused on core goals with a simplified performance view.',
 							'google-site-kit'
 						),
 					},

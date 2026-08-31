@@ -48,7 +48,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	registerFeature( 'ads', {
 		title: __( 'Increase your visibility in Search', 'google-site-kit' ),
 		shortDescription: __(
-			"Appear in search results when people look for keywords related to what you offer. Ads helps you connect with people at the moment they're actively interested in your services or products.",
+			'Appear in search results when people look for keywords related to what you offer. Ads helps you connect with people at the moment they’re actively interested in your services or products.',
 			'google-site-kit'
 		),
 		detail: {
@@ -135,7 +135,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		addedInVersion: '1.118.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.SETUP_FLOW,
-			ctaLabel: __( 'Set up Ad', 'google-site-kit' ),
+			ctaLabel: __( 'Set up Ads', 'google-site-kit' ),
 			moduleSlug: MODULE_SLUG_ADS,
 		},
 		badges: [ FEATURE_BADGES.PAID_SERVICE ],

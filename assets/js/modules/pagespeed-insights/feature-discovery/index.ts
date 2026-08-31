@@ -56,7 +56,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		detail: {
 			description: {
 				whatIs: __(
-					"PageSpeed Insights acts as a performance coach, analyzing your site's load times and responsiveness for both mobile and desktop users. It gives you a clear performance score and, more importantly, provides a checklist of specific, actionable steps you can take to make your site faster, smoother, and more reliable for your readers. A fast website is essential for keeping visitors engaged and improving your search rankings.",
+					'PageSpeed Insights acts as a performance coach, analyzing your site’s load times and responsiveness for both mobile and desktop users. It gives you a clear performance score and, more importantly, provides a checklist of specific, actionable steps you can take to make your site faster, smoother, and more reliable for your readers. A fast website is essential for keeping visitors engaged and improving your search rankings.',
 					'google-site-kit'
 				),
 				whyUseHeading: __(
@@ -102,7 +102,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					),
 				],
 				setupComplete: __(
-					"PageSpeed Insights is set up! You can now see your site's load times and responsiveness for both mobile and desktop users.",
+					'PageSpeed Insights is set up! You can now see your site’s load times and responsiveness for both mobile and desktop users.',
 					'google-site-kit'
 				),
 			},
