@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { ChangeEvent, FC } from 'react';
+import { ChangeEvent, FC, FormEvent } from 'react';
 
 /**
  * WordPress dependencies
