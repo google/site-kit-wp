@@ -57,48 +57,49 @@ interface RealUserMetricRow {
 	description: string;
 }
 
+const allRealUserMetricRows: RealUserMetricRow[] = [
+	{
+		key: 'largestContentfulPaint',
+		title: _x(
+			'Largest Contentful Paint',
+			'core web vitals name',
+			'google-site-kit'
+		),
+		description: __(
+			'Time it takes for the page to load',
+			'google-site-kit'
+		),
+	},
+	{
+		key: 'cumulativeLayoutShift',
+		title: _x(
+			'Cumulative Layout Shift',
+			'core web vitals name',
+			'google-site-kit'
+		),
+		description: __(
+			'How stable the elements on the page are',
+			'google-site-kit'
+		),
+	},
+	{
+		key: 'interactionToNextPaint',
+		title: _x(
+			'Interaction to Next Paint',
+			'core web vitals name',
+			'google-site-kit'
+		),
+		description: __(
+			'How quickly your page responds when people interact with it',
+			'google-site-kit'
+		),
+	},
+];
+
 export default function SpeedMetricSections( {
 	mobile,
 	desktop,
 }: SpeedMetricSectionsProps ) {
-	const allRealUserMetricRows: RealUserMetricRow[] = [
-		{
-			key: 'largestContentfulPaint',
-			title: _x(
-				'Largest Contentful Paint',
-				'core web vitals name',
-				'google-site-kit'
-			),
-			description: __(
-				'Time it takes for the page to load',
-				'google-site-kit'
-			),
-		},
-		{
-			key: 'cumulativeLayoutShift',
-			title: _x(
-				'Cumulative Layout Shift',
-				'core web vitals name',
-				'google-site-kit'
-			),
-			description: __(
-				'How stable the elements on the page are',
-				'google-site-kit'
-			),
-		},
-		{
-			key: 'interactionToNextPaint',
-			title: _x(
-				'Interaction to Next Paint',
-				'core web vitals name',
-				'google-site-kit'
-			),
-			description: __(
-				'How quickly your page responds when people interact with it',
-				'google-site-kit'
-			),
-		},
-	];
 	const realUserMetricRows = allRealUserMetricRows.filter(
 		( { key } ) => mobile?.field?.[ key ] || desktop?.field?.[ key ]
 	);
