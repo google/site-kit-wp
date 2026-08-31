@@ -32,6 +32,7 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	render,
+	waitFor,
 } from '@tests/js/test-utils';
 import SetupCTANewsletterSignup from './index';
 
@@ -102,7 +103,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 	it.each( Object.entries( STEP_CONTENT ) )(
 		'renders the %s step content',
-		( step, content ) => {
+		async ( step, content ) => {
 			global.location.href = `http://example.com/?step=${ step }`;
 
 			const { getByText, queryByText } = render(
@@ -110,7 +111,9 @@ describe( 'SetupCTANewsletterSignup', () => {
 				{ registry }
 			);
 
-			expect( getByText( content ) ).toBeInTheDocument();
+			await waitFor( () => {
+				expect( getByText( content ) ).toBeInTheDocument();
+			} );
 
 			Object.entries( STEP_CONTENT )
 				.filter( ( [ otherStep ] ) => otherStep !== step )

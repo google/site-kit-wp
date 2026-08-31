@@ -17,184 +17,183 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock';
-
-/**
  * Internal dependencies
  */
+import { Registry } from '@/js/googlesitekit-data';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
-	EXPRESS_SETUP_STEPS,
+	publications,
+	termsOfService,
+} from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
+import {
 	MODULES_READER_REVENUE_MANAGER,
+	PUBLICATION_TYPES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { mockLocation } from '@tests/js/mock-browser-utils';
+import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
+import { providePublication } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import {
 	createTestRegistry,
 	fireEvent,
+	freezeFetch,
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
 	render,
-	screen,
 	waitFor,
 } from '@tests/js/test-utils';
-import { provideSiteInfo } from '@tests/js/utils';
 import StepTermsOfService from './StepTermsOfService';
 
-/* eslint-disable sitekit/acronym-case -- Publication API fixtures use normalized API field names. */
+const TEST_PUBLICATION: Publication = publications[ 3 ];
 
-const organizationID = 'organization-1';
-const publicationID = 'publication-1';
-const tosURL = 'https://example.com/terms';
-const termsOfService = '<h1>RRM Terms</h1><p>These are the terms.</p>';
+function provideTermsOfService( registry: Registry ) {
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.receiveGetTermsOfService( termsOfService, {
+			// eslint-disable-next-line sitekit/acronym-case
+			tosURL: TEST_PUBLICATION.rrmProduct?.productTosUrl,
+		} );
 
-const termsOfServiceEndpoint = new RegExp(
-	'^/google-site-kit/v1/modules/reader-revenue-manager/data/terms-of-service'
-);
-const publicationEndpoint = new RegExp(
-	'^/google-site-kit/v1/modules/reader-revenue-manager/data/publication(?:\\?|$)'
-);
-
-function setupRegistry( { withTermsOfService = true } = {} ) {
-	const registry = createTestRegistry();
-
-	provideSiteInfo( registry );
-
-	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetSettings( {
-		organizationID,
-		publicationID,
-	} );
-	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetPublication(
-		{
-			publicationId: publicationID,
-			organizationId: organizationID,
-			onboardingState: 'ONBOARDING_ACTION_REQUIRED',
-			rrmProduct: {
-				productTosUrl: tosURL,
-			},
-		},
-		{ organizationID, publicationID }
-	);
-
-	if ( withTermsOfService ) {
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetTermsOfService( termsOfService, { tosURL } );
-	}
-
-	return registry;
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.finishResolution( 'getTermsOfService', [
+			// eslint-disable-next-line sitekit/acronym-case
+			{ tosURL: TEST_PUBLICATION.rrmProduct?.productTosUrl },
+		] );
 }
 
 describe( 'StepTermsOfService', () => {
-	mockLocation();
+	let registry: Registry;
 
-	it( 'renders the Terms of Service step content', () => {
-		const registry = setupRegistry();
+	const publicationEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/publication(?:\\?|$)'
+	);
 
-		render( <StepTermsOfService />, { registry } );
+	const termsOfServiceEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/terms-of-service'
+	);
 
-		expect(
-			screen.getByRole( 'heading', { name: 'Terms of service' } )
-		).toBeInTheDocument();
-		expect(
-			screen.getByText(
-				'To create a publication, you need to accept the Reader Revenue Manager Terms of Service.'
-			)
-		).toBeInTheDocument();
-		expect(
-			screen.getByText( 'Learn more' ).closest( 'a' )
-		).toHaveAttribute(
-			'href',
-			'https://sitekit.withgoogle.com/support/?doc=rrm-publication-tos'
-		);
-		expect( screen.getByText( 'RRM Terms' ) ).toBeInTheDocument();
-		expect(
-			screen.getByText( 'These are the terms.' )
-		).toBeInTheDocument();
-		expect(
-			screen.getByRole( 'radio', { name: 'For profit' } )
-		).toBeChecked();
-		expect(
-			screen.getByRole( 'radio', { name: 'Non-profit' } )
-		).not.toBeChecked();
-		expect(
-			screen.getByRole( 'checkbox', {
-				name: 'Yes, send me customized help, performance suggestions and product updates for Reader Revenue Manager',
-			} )
-		).not.toBeChecked();
-		expect(
-			screen.getByRole( 'button', { name: 'I agree' } )
-		).toBeInTheDocument();
-	} );
+	beforeEach( () => {
+		registry = createTestRegistry() as Registry;
 
-	it( 'renders the progress bar while Terms of Service content is loading', () => {
-		const registry = setupRegistry( { withTermsOfService: false } );
-
-		fetchMock.getOnce( termsOfServiceEndpoint, new Promise( () => {} ) );
-
-		render( <StepTermsOfService />, { registry } );
-
-		expect( screen.getByRole( 'progressbar' ) ).toBeInTheDocument();
-	} );
-
-	it( 'renders an error when Terms of Service content fails to load', async () => {
-		const registry = setupRegistry( { withTermsOfService: false } );
-
-		fetchMock.getOnce( termsOfServiceEndpoint, {
-			body: {
-				code: 'terms_of_service_request_failed',
-				message: 'The Terms of Service could not be retrieved.',
+		const moduleData = [
+			{
+				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+				active: true,
+				connected: false,
 			},
-			status: 500,
-		} );
+		];
 
-		render( <StepTermsOfService />, { registry } );
+		provideModules( registry, moduleData );
+		provideModuleRegistrations( registry, moduleData );
+		provideSiteInfo( registry );
+		providePublication( registry, TEST_PUBLICATION );
+	} );
+
+	it( 'should disable submission until the terms of service are loaded', () => {
+		freezeFetch( termsOfServiceEndpoint );
+
+		const { getByRole } = render(
+			<StepTermsOfService onComplete={ () => {} } />,
+			{ registry }
+		);
+
+		expect( getByRole( 'button', { name: 'I agree' } ) ).toBeDisabled();
+		expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should display a retry-able error if getting the terms of service fails', async () => {
+		fetchMock
+			.getOnce( termsOfServiceEndpoint, {
+				body: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+				status: 500,
+			} )
+			.getOnce( termsOfServiceEndpoint, {
+				body: JSON.stringify( termsOfService ),
+				status: 200,
+			} );
+
+		const { getByRole, getByText, queryByRole } = render(
+			<StepTermsOfService onComplete={ () => {} } />,
+			{ registry }
+		);
 
 		await waitFor( () => {
-			expect(
-				screen.getByText(
-					'The Terms of Service could not be retrieved. (Please try again.)'
-				)
-			).toBeInTheDocument();
+			expect( getByRole( 'status' ) ).toHaveTextContent(
+				/Internal server error/
+			);
 		} );
+
 		expect( console ).toHaveErrored();
+
+		fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
+
+		await waitFor( () => {
+			expect( queryByRole( 'status' ) ).not.toBeInTheDocument();
+		} );
+
+		expect(
+			getByText(
+				/To use Reader Revenue Manager, you must accept these Reader Revenue Manager Terms of Service/
+			)
+		).toBeInTheDocument();
 	} );
 
-	it( 'submits acceptance and navigates to the publication policies step', async () => {
-		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE }`;
-		const registry = setupRegistry();
+	it( 'should disable submission when submission is in progress', async () => {
+		provideTermsOfService( registry );
+		freezeFetch( publicationEndpoint );
+
+		const { getByRole } = render(
+			<StepTermsOfService onComplete={ () => {} } />,
+			{ registry }
+		);
+
+		const submitButton = getByRole( 'button', { name: 'I agree' } );
+
+		fireEvent.click( submitButton );
+
+		await waitFor( () => {
+			expect( submitButton ).toBeDisabled();
+		} );
+	} );
+
+	it( 'should update the publication on submission', async () => {
+		provideTermsOfService( registry );
 
 		fetchMock.postOnce( publicationEndpoint, {
-			body: {
-				publicationId: publicationID,
-				rrmProduct: {
-					tosAcceptance: {
-						userAccepted: true,
-					},
-				},
-			},
+			body: TEST_PUBLICATION,
 			status: 200,
 		} );
 
-		render( <StepTermsOfService />, { registry } );
+		const { getByRole } = render(
+			<StepTermsOfService onComplete={ () => {} } />,
+			{
+				registry,
+			}
+		);
 
-		fireEvent.click( screen.getByRole( 'radio', { name: 'Non-profit' } ) );
+		fireEvent.click( getByRole( 'radio', { name: 'Non-profit' } ) );
+
 		fireEvent.click(
-			screen.getByRole( 'checkbox', {
+			getByRole( 'checkbox', {
 				name: 'Yes, send me customized help, performance suggestions and product updates for Reader Revenue Manager',
 			} )
 		);
-		fireEvent.click( screen.getByRole( 'button', { name: 'I agree' } ) );
+
+		fireEvent.click( getByRole( 'button', { name: 'I agree' } ) );
 
 		await waitFor( () => {
-			expect( fetchMock ).toHaveFetched( publicationEndpoint );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 
 		expect( fetchMock ).toHaveFetched( publicationEndpoint, {
 			body: {
 				data: {
-					organizationID,
-					publicationID,
 					data: {
-						publicationType: 'NON_PROFIT',
+						publicationType: PUBLICATION_TYPES.NON_PROFIT,
 						rrmProduct: {
 							tosAcceptance: {
 								emailOptIn: true,
@@ -205,48 +204,60 @@ describe( 'StepTermsOfService', () => {
 				},
 			},
 		} );
-		expect( global.location.href ).toContain(
-			`step=${ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES }`
-		);
 	} );
 
-	it( 'renders a submission error and keeps user selections intact', async () => {
-		const registry = setupRegistry();
+	it( 'should display an error notice if submission fails', async () => {
+		provideTermsOfService( registry );
 
 		fetchMock.postOnce( publicationEndpoint, {
 			body: {
-				code: 'publication_update_failed',
-				message: 'The publication could not be updated.',
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
 			},
 			status: 500,
 		} );
 
-		render( <StepTermsOfService />, { registry } );
+		const onComplete = jest.fn();
 
-		fireEvent.click( screen.getByRole( 'radio', { name: 'Non-profit' } ) );
-		fireEvent.click(
-			screen.getByRole( 'checkbox', {
-				name: 'Yes, send me customized help, performance suggestions and product updates for Reader Revenue Manager',
-			} )
+		const { getByRole } = render(
+			<StepTermsOfService onComplete={ onComplete } />,
+			{ registry }
 		);
-		fireEvent.click( screen.getByRole( 'button', { name: 'I agree' } ) );
+
+		fireEvent.click( getByRole( 'button', { name: 'I agree' } ) );
 
 		await waitFor( () => {
-			expect(
-				screen.getByText(
-					'The publication could not be updated. (Please try again.)'
-				)
-			).toBeInTheDocument();
+			expect( getByRole( 'status' ) ).toHaveTextContent(
+				/Internal server error/
+			);
 		} );
-		expect( console ).toHaveErrored();
 
-		expect(
-			screen.getByRole( 'radio', { name: 'Non-profit' } )
-		).toBeChecked();
-		expect(
-			screen.getByRole( 'checkbox', {
-				name: 'Yes, send me customized help, performance suggestions and product updates for Reader Revenue Manager',
-			} )
-		).toBeChecked();
+		expect( getByRole( 'button', { name: 'I agree' } ) ).toBeEnabled();
+
+		expect( onComplete ).not.toHaveBeenCalled();
+		expect( console ).toHaveErrored();
+	} );
+
+	it( 'should call the complete handler if submission is successful', async () => {
+		provideTermsOfService( registry );
+
+		fetchMock.postOnce( publicationEndpoint, {
+			body: TEST_PUBLICATION,
+			status: 200,
+		} );
+
+		const onComplete = jest.fn();
+
+		const { getByRole } = render(
+			<StepTermsOfService onComplete={ onComplete } />,
+			{ registry }
+		);
+
+		fireEvent.click( getByRole( 'button', { name: 'I agree' } ) );
+
+		await waitFor( () => {
+			expect( onComplete ).toHaveBeenCalled();
+		} );
 	} );
 } );

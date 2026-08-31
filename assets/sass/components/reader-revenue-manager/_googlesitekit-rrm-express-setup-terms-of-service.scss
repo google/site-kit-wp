@@ -1,7 +1,7 @@
 /**
- * RRM Datastore Fixtures.
+ * Reader Revenue Manager express setup terms of service styles.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+.googlesitekit-plugin {
 
-export { default as publications } from './publications.json';
-export { default as termsOfService } from './terms-of-service';
+	.googlesitekit-rrm-express-setup-terms-of-service {
+		background: $c-surfaces-background;
+		border-radius: 4px;
+		display: grid;
+		gap: 1lh;
+		max-block-size: 338px;
+		overflow-y: auto;
+		padding: $grid-gap-desktop;
+
+		* {
+			margin-block: 0;
+			min-inline-size: 0;
+		}
+
+		ul {
+			list-style: disc;
+			margin-inline-start: 2em;
+		}
+
+		ol {
+
+			ol,
+			ul {
+				margin-block: 10px;
+			}
+		}
+	}
+}

@@ -76,10 +76,20 @@ export const EXPRESS_SETUP_CTAS = {
 	NEWSLETTER_SIGNUP: 'newsletter-signup',
 };
 
-export const EXPRESS_SETUP_STEPS = {
-	CONNECT_PUBLICATION: 'connect-publication',
-	TERMS_OF_SERVICE: 'terms-of-service',
-	PUBLICATION_POLICIES: 'publication-policies',
-	SETUP_CTA: 'setup-cta',
-	SETUP_COMPLETE: 'setup-complete',
-};
+export const enum EXPRESS_SETUP_STEPS {
+	CONNECT_PUBLICATION = 'connect-publication',
+	TERMS_OF_SERVICE = 'terms-of-service',
+	PUBLICATION_POLICIES = 'publication-policies',
+	SETUP_CTA = 'setup-cta',
+	SETUP_COMPLETE = 'setup-complete',
+}
+
+export const enum TERMS_OF_SERVICE_FORM {
+	PUBLICATION_TYPE = 'publicationType',
+	EMAIL_OPT_IN = 'emailOptIn',
+}
+
+export const enum PUBLICATION_TYPES {
+	FOR_PROFIT = 'FOR_PROFIT',
+	NON_PROFIT = 'NON_PROFIT',
+}

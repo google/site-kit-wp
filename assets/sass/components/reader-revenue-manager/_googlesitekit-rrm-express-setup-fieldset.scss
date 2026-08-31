@@ -1,7 +1,7 @@
 /**
- * RRM Datastore Fixtures.
+ * Reader Revenue Manager express setup step styles.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,5 +16,24 @@
  * limitations under the License.
  */
 
-export { default as publications } from './publications.json';
-export { default as termsOfService } from './terms-of-service';
+.googlesitekit-plugin {
+
+	.googlesitekit-rrm-express-setup-fieldset {
+		display: grid;
+		gap: 4px;
+		padding-block: 6px;
+	}
+
+	.googlesitekit-rrm-express-setup-fieldset__legend {
+		display: contents;
+		margin: 0;
+		padding: 0;
+		position: static;
+	}
+
+	.googlesitekit-rrm-express-setup-fieldset__options {
+		column-gap: 36px;
+		display: flex;
+		flex-wrap: wrap;
+	}
+}

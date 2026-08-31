@@ -60,7 +60,17 @@ const SetupCTANewsletterSignup: FC = () => {
 				}
 			/>
 		),
-		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: <StepTermsOfService />,
+		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: (
+			<StepTermsOfService
+				description={ __(
+					'To set up a newsletter sign-up form using Reader Revenue Manager, you will need to accept the Reader Revenue Manager Terms of Service.',
+					'google-site-kit'
+				) }
+				onComplete={ () =>
+					setStep( EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES )
+				}
+			/>
+		),
 		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: (
 			<StepPublicationPolicies />
 		),

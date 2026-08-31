@@ -19,318 +19,240 @@
 /**
  * External dependencies
  */
-import type { ChangeEvent } from 'react';
+import { ChangeEvent, FC } from 'react';
 
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import {
+	createInterpolateElement,
+	useCallback,
+	useState,
+} from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { ProgressBar, SpinnerButton } from 'googlesitekit-components';
+import { Checkbox, SpinnerButton } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
-import ErrorNotice, { ErrorNoticeProps } from '@/js/components/ErrorNotice';
-import Link from '@/js/components/Link';
-import Checkbox from '@/js/googlesitekit/components-gm2/Checkbox';
-import Radio from '@/js/googlesitekit/components-gm2/Radio';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import useQueryArg from '@/js/hooks/useQueryArg';
+import DocumentationLink from '@/js/components/DocumentationLink';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import Typography from '@/js/components/Typography';
 import {
-	EXPRESS_SETUP_STEPS,
+	SIZE_MEDIUM,
+	SIZE_SMALL,
+	TYPE_BODY,
+} from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
+import ProgressBar from '@/js/googlesitekit/components-gm2/ProgressBar';
+import useFormValue from '@/js/hooks/useFormValue';
+import {
+	ExpressSetupStepHeadline,
+	ExpressSetupStepPublicationTypeRadio,
+} from '@/js/modules/reader-revenue-manager/components/common';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import {
 	MODULES_READER_REVENUE_MANAGER,
+	PUBLICATION_TYPES,
+	READER_REVENUE_MANAGER_SETUP_FORM,
+	TERMS_OF_SERVICE_FORM,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { sanitizeHTML } from '@/js/util';
 
-const PUBLICATION_TYPE_FOR_PROFIT = 'FOR_PROFIT';
-const PUBLICATION_TYPE_NON_PROFIT = 'NON_PROFIT';
-
-interface Publication {
-	rrmProduct?: {
-		// eslint-disable-next-line sitekit/acronym-case -- `Url` is the normalized API field name.
-		productTosUrl?: string;
-	};
+interface StepTermsOfServiceProps {
+	description?: string;
+	onComplete: () => void;
 }
 
-interface UpdatePublicationParams {
-	organizationID?: string;
-	publicationID?: string;
-	data: {
-		publicationType: string;
-		rrmProduct: {
-			tosAcceptance: {
-				emailOptIn: boolean;
-				userAccepted: boolean;
-			};
-		};
-	};
-}
+const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
+	description,
+	onComplete,
+} ) => {
+	const [ isSaving, setIsSaving ] = useState( false );
 
-interface ReaderRevenueManagerStore {
-	getSettings():
-		| { organizationID?: string; publicationID?: string }
-		| undefined;
-	getPublication( params: {
-		organizationID?: string;
-		publicationID?: string;
-	} ): Publication | undefined;
-	getTermsOfService( params: { tosURL: string } ): string | undefined;
-	getErrorForSelector(
-		name: string,
-		args: Array< unknown >
-	): ErrorNoticeProps[ 'error' ];
-	isFetchingUpdatePublication( params: UpdatePublicationParams ): boolean;
-	getErrorForAction(
-		name: string,
-		args: Array< unknown >
-	): ErrorNoticeProps[ 'error' ];
-}
-interface ReaderRevenueManagerActions {
-	updatePublication(
-		params: UpdatePublicationParams
-	): Promise< { error?: ErrorNoticeProps[ 'error' ] } >;
-}
-
-function getReaderRevenueManagerStore( select: Select ) {
-	return select(
-		MODULES_READER_REVENUE_MANAGER
-	) as unknown as ReaderRevenueManagerStore;
-}
-
-export default function StepTermsOfService() {
-	const [ publicationType, setPublicationType ] = useState(
-		PUBLICATION_TYPE_FOR_PROFIT
+	const defaultDescription = __(
+		'To use Reader Revenue Manager, you will need to accept the Reader Revenue Manager Terms of Service.',
+		'google-site-kit'
 	);
-	const [ emailOptIn, setEmailOptIn ] = useState( false );
-	const [ , setStep ] = useQueryArg( 'step' );
 
-	const settings = useSelect(
+	const descriptionWithLink = createInterpolateElement(
+		sprintf(
+			/* translators: %s: Terms of Service setup step description. */
+			__( '%s <a>Learn more</a>', 'google-site-kit' ),
+			description || defaultDescription
+		),
+		{
+			a: <DocumentationLink slug="rrm-publication-tos" external />,
+		}
+	);
+
+	const [
+		publicationType = PUBLICATION_TYPES.FOR_PROFIT,
+		setPublicationType,
+	] = useFormValue< string >(
+		READER_REVENUE_MANAGER_SETUP_FORM,
+		TERMS_OF_SERVICE_FORM.PUBLICATION_TYPE
+	);
+
+	const [ emailOptIn = false, setEmailOptIn ] = useFormValue< boolean >(
+		READER_REVENUE_MANAGER_SETUP_FORM,
+		TERMS_OF_SERVICE_FORM.EMAIL_OPT_IN
+	);
+
+	const { updatePublication } = useDispatch( MODULES_READER_REVENUE_MANAGER );
+
+	const publication: Publication | undefined = useSelect(
 		( select: Select ) =>
-			getReaderRevenueManagerStore( select ).getSettings(),
+			select( MODULES_READER_REVENUE_MANAGER ).getPublication(),
 		[]
 	);
-	const organizationID = settings?.organizationID;
-	const publicationID = settings?.publicationID;
-	const publication = useSelect(
-		( select: Select ) =>
-			getReaderRevenueManagerStore( select ).getPublication( {
-				organizationID,
-				publicationID,
-			} ),
-		[ organizationID, publicationID ]
-	);
-	// eslint-disable-next-line sitekit/acronym-case -- `Url` is the normalized API field name.
+
+	// eslint-disable-next-line sitekit/acronym-case
 	const tosURL = publication?.rrmProduct?.productTosUrl;
-	const termsOfService = useSelect(
+
+	const termsOfService: string | undefined = useSelect(
 		( select: Select ) =>
 			tosURL
-				? getReaderRevenueManagerStore( select ).getTermsOfService( {
+				? select( MODULES_READER_REVENUE_MANAGER ).getTermsOfService( {
 						tosURL,
 				  } )
 				: undefined,
 		[ tosURL ]
 	);
-	const tosError = useSelect(
+
+	const hasResolvedTermsOfService: boolean = useSelect(
 		( select: Select ) =>
-			tosURL
-				? getReaderRevenueManagerStore( select ).getErrorForSelector(
-						'getTermsOfService',
-						[ { tosURL } ]
-				  )
-				: undefined,
+			! tosURL ||
+			select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
+				'getTermsOfService',
+				[ { tosURL } ]
+			),
 		[ tosURL ]
 	);
-	const learnMoreURL = useSelect(
-		( select: Select ) =>
-			select( CORE_SITE ).getDocumentationLinkURL(
-				'rrm-publication-tos'
-			),
-		[]
-	);
-	const isDoingUpdatePublication = useSelect(
-		( select: Select ) =>
-			getReaderRevenueManagerStore( select ).isFetchingUpdatePublication(
-				{
-					organizationID,
-					publicationID,
-					data: {
-						publicationType,
-						rrmProduct: {
-							tosAcceptance: {
-								emailOptIn,
-								userAccepted: true,
-							},
+
+	const onSubmit = useCallback(
+		async ( event ) => {
+			event.preventDefault();
+
+			if ( ! publication || ! termsOfService ) {
+				return;
+			}
+
+			setIsSaving( true );
+
+			const { error } = await updatePublication( {
+				data: {
+					publicationType,
+					rrmProduct: {
+						tosAcceptance: {
+							emailOptIn,
+							userAccepted: true,
 						},
-					},
-				}
-			),
-		[ organizationID, publicationID, publicationType, emailOptIn ]
-	);
-	const updatePublicationError = useSelect(
-		( select: Select ) =>
-			getReaderRevenueManagerStore( select ).getErrorForAction(
-				'updatePublication',
-				[
-					{
-						organizationID,
-						publicationID,
-						data: {
-							publicationType,
-							rrmProduct: {
-								tosAcceptance: {
-									emailOptIn,
-									userAccepted: true,
-								},
-							},
-						},
-					},
-				]
-			),
-		[ organizationID, publicationID, publicationType, emailOptIn ]
-	);
-	const { updatePublication } = useDispatch(
-		MODULES_READER_REVENUE_MANAGER
-	) as unknown as ReaderRevenueManagerActions;
-
-	const handlePublicationTypeChange = useCallback(
-		( event: ChangeEvent< HTMLInputElement > ) => {
-			setPublicationType( event.target.value );
-		},
-		[]
-	);
-
-	const handleEmailOptInChange = useCallback(
-		( event: ChangeEvent< HTMLInputElement > ) => {
-			setEmailOptIn( event.target.checked );
-		},
-		[]
-	);
-
-	const handleSubmit = useCallback( async () => {
-		const { error } = await updatePublication( {
-			organizationID,
-			publicationID,
-			data: {
-				publicationType,
-				rrmProduct: {
-					tosAcceptance: {
-						emailOptIn,
-						userAccepted: true,
 					},
 				},
-			},
-		} );
+			} );
 
-		if ( ! error ) {
-			setStep( EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES );
-		}
-	}, [
-		emailOptIn,
-		organizationID,
-		publicationID,
-		publicationType,
-		setStep,
-		updatePublication,
-	] );
+			if ( error ) {
+				setIsSaving( false );
+				return;
+			}
 
-	if ( ! termsOfService && ! tosError ) {
-		return <ProgressBar />;
-	}
+			onComplete();
+		},
+		[
+			emailOptIn,
+			onComplete,
+			publication,
+			publicationType,
+			termsOfService,
+			updatePublication,
+		]
+	);
 
 	return (
-		<div className="googlesitekit-rrm-terms-of-service-step">
-			<h2>{ __( 'Terms of service', 'google-site-kit' ) }</h2>
-			<p className="googlesitekit-rrm-terms-of-service-step__description">
-				{ __(
-					'To create a publication, you need to accept the Reader Revenue Manager Terms of Service.',
-					'google-site-kit'
-				) }{ ' ' }
-				<Link href={ learnMoreURL } external hideExternalIndicator>
-					{ __( 'Learn more', 'google-site-kit' ) }
-				</Link>
-			</p>
+		<div className="googlesitekit-rrm-express-setup-step">
+			<form
+				className="googlesitekit-rrm-express-setup-step__form"
+				onSubmit={ onSubmit }
+			>
+				<div className="googlesitekit-rrm-express-setup-step__form-content">
+					<ExpressSetupStepHeadline className="googlesitekit-rrm-express-setup-step__headline">
+						{ __( 'Terms of service', 'google-site-kit' ) }
+					</ExpressSetupStepHeadline>
 
-			{ tosError && (
-				<ErrorNotice
-					className="googlesitekit-rrm-terms-of-service-step__error"
-					error={ tosError }
-					noPrefix
-				/>
-			) }
+					<StoreErrorNotices
+						moduleSlug={ MODULE_SLUG_READER_REVENUE_MANAGER }
+						storeName={ MODULES_READER_REVENUE_MANAGER }
+						hasButton
+					/>
 
-			{ termsOfService && (
-				<div
-					className="googlesitekit-rrm-terms-of-service-step__content"
-					dangerouslySetInnerHTML={ sanitizeHTML( termsOfService ) }
-				/>
-			) }
-
-			<div className="googlesitekit-rrm-terms-of-service-step__publication-status">
-				<h3>{ __( 'Publication status', 'google-site-kit' ) }</h3>
-				<p>
-					{ __(
-						"Reader Revenue Manager doesn't offer subscription or contribution features for non-profit publishers.",
-						'google-site-kit'
-					) }
-				</p>
-				<div className="googlesitekit-rrm-terms-of-service-step__publication-status-options">
-					<Radio
-						id="googlesitekit-rrm-publication-type-for-profit"
-						name="googlesitekit-rrm-publication-type"
-						value={ PUBLICATION_TYPE_FOR_PROFIT }
-						checked={
-							publicationType === PUBLICATION_TYPE_FOR_PROFIT
-						}
-						onChange={ handlePublicationTypeChange }
+					<P
+						className="googlesitekit-rrm-express-setup-step__description"
+						size={ SIZE_MEDIUM }
 					>
-						{ __( 'For profit', 'google-site-kit' ) }
-					</Radio>
-					<Radio
-						id="googlesitekit-rrm-publication-type-non-profit"
-						name="googlesitekit-rrm-publication-type"
-						value={ PUBLICATION_TYPE_NON_PROFIT }
-						checked={
-							publicationType === PUBLICATION_TYPE_NON_PROFIT
-						}
-						onChange={ handlePublicationTypeChange }
-					>
-						{ __( 'Non-profit', 'google-site-kit' ) }
-					</Radio>
+						{ descriptionWithLink }
+					</P>
+
+					<div className="googlesitekit-rrm-express-setup-step__form-controls googlesitekit-rrm-express-setup-step__form-controls--terms-of-service">
+						{ hasResolvedTermsOfService ? (
+							<Typography
+								as="div"
+								className="googlesitekit-rrm-express-setup-terms-of-service"
+								dangerouslySetInnerHTML={ sanitizeHTML(
+									termsOfService
+								) }
+								size={ SIZE_MEDIUM }
+								type={ TYPE_BODY }
+							>
+								{ null }
+							</Typography>
+						) : (
+							<ProgressBar />
+						) }
+
+						<ExpressSetupStepPublicationTypeRadio
+							name={ TERMS_OF_SERVICE_FORM.PUBLICATION_TYPE }
+							onChange={ setPublicationType }
+							value={ publicationType }
+						/>
+
+						<Checkbox
+							checked={ emailOptIn }
+							id={ TERMS_OF_SERVICE_FORM.EMAIL_OPT_IN }
+							name={ TERMS_OF_SERVICE_FORM.EMAIL_OPT_IN }
+							onChange={ (
+								event: ChangeEvent< HTMLInputElement >
+							) => setEmailOptIn( event.target.checked ) }
+							value="1"
+						>
+							<Typography
+								as="span"
+								className=""
+								size={ SIZE_SMALL }
+								type={ TYPE_BODY }
+							>
+								{ __(
+									'Yes, send me customized help, performance suggestions and product updates for Reader Revenue Manager',
+									'google-site-kit'
+								) }
+							</Typography>
+						</Checkbox>
+					</div>
 				</div>
-			</div>
 
-			<Checkbox
-				id="googlesitekit-rrm-email-opt-in"
-				name="googlesitekit-rrm-email-opt-in"
-				value="1"
-				checked={ emailOptIn }
-				onChange={ handleEmailOptInChange }
-			>
-				{ __(
-					'Yes, send me customized help, performance suggestions and product updates for Reader Revenue Manager',
-					'google-site-kit'
-				) }
-			</Checkbox>
-
-			{ updatePublicationError && (
-				<ErrorNotice
-					className="googlesitekit-rrm-terms-of-service-step__error"
-					error={ updatePublicationError }
-					noPrefix
-				/>
-			) }
-
-			{ /* @ts-expect-error `SpinnerButton` component type does not include children yet. */ }
-			<SpinnerButton
-				className="googlesitekit-rrm-terms-of-service-step__submit"
-				disabled={ ! termsOfService || isDoingUpdatePublication }
-				isSaving={ isDoingUpdatePublication }
-				onClick={ handleSubmit }
-			>
-				{ __( 'I agree', 'google-site-kit' ) }
-			</SpinnerButton>
+				{ /* @ts-expect-error `SpinnerButton` component is not yet typed. */ }
+				<SpinnerButton
+					disabled={ ! termsOfService || isSaving }
+					isSaving={ isSaving }
+					type="submit"
+				>
+					{ __( 'I agree', 'google-site-kit' ) }
+				</SpinnerButton>
+			</form>
 		</div>
 	);
-}
+};
+
+export default StepTermsOfService;
