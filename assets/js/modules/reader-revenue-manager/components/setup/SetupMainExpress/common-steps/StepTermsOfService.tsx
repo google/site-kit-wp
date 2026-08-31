@@ -122,9 +122,17 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 		[ tosURL ]
 	);
 
+	const hasResolvedPublication: boolean = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
+				'getPublication',
+				[]
+			),
+		[ tosURL ]
+	);
+
 	const hasResolvedTermsOfService: boolean = useSelect(
 		( select: Select ) =>
-			! tosURL ||
 			select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
 				'getTermsOfService',
 				[ { tosURL } ]
@@ -196,12 +204,13 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 					</P>
 
 					<div className="googlesitekit-rrm-express-setup-step__form-controls googlesitekit-rrm-express-setup-step__form-controls--terms-of-service">
-						{ hasResolvedTermsOfService ? (
+						{ hasResolvedPublication &&
+						hasResolvedTermsOfService ? (
 							<Typography
 								as="div"
 								className="googlesitekit-rrm-express-setup-terms-of-service"
 								dangerouslySetInnerHTML={ sanitizeHTML(
-									termsOfService
+									termsOfService || ''
 								) }
 								size={ SIZE_MEDIUM }
 								type={ TYPE_BODY }
