@@ -32,16 +32,13 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	render,
+	waitFor,
 } from '@tests/js/test-utils';
 import SetupCTANewsletterSignup from './index';
 
 jest.mock(
 	'@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/PoweredBy',
 	() => () => null
-);
-jest.mock(
-	'@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationPolicies',
-	() => () => <p>Publication policies</p>
 );
 
 const STEP_CONTENT = {
@@ -105,7 +102,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 	it.each( Object.entries( STEP_CONTENT ) )(
 		'renders the %s step content',
-		( step, content ) => {
+		async ( step, content ) => {
 			global.location.href = `http://example.com/?step=${ step }`;
 
 			const { getByText, queryByText } = render(
@@ -113,7 +110,9 @@ describe( 'SetupCTANewsletterSignup', () => {
 				{ registry }
 			);
 
-			expect( getByText( content ) ).toBeInTheDocument();
+			await waitFor( () => {
+				expect( getByText( content ) ).toBeInTheDocument();
+			} );
 
 			Object.entries( STEP_CONTENT )
 				.filter( ( [ otherStep ] ) => otherStep !== step )

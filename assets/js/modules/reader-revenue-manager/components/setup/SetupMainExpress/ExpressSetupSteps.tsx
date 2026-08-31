@@ -41,7 +41,6 @@ import {
 
 interface ExpressSetupStepsProps {
 	extraSteps?: Record< string, string >;
-	step?: string;
 }
 
 const ExpressSetupSteps: FC< ExpressSetupStepsProps > = ( {

@@ -75,7 +75,6 @@ const SetupCTANewsletterSignup: FC = () => {
 		<ExpressSetupLayout
 			sidebar={
 				<ExpressSetupSteps
-					step={ step }
 					extraSteps={ {
 						[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: __(
 							'Set up a sign-up form',
