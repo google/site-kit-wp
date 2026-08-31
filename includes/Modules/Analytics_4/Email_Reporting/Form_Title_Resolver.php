@@ -103,7 +103,6 @@ class Form_Title_Resolver {
 
 		$metadata = $request();
 
-		// `get_titles()` reads the return value as an array.
 		return is_wp_error( $metadata ) ? array() : $metadata;
 	}
 }
