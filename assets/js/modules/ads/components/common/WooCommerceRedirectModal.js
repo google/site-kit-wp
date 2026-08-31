@@ -57,9 +57,9 @@ const ACCOUNT_LINKED_NOTIFICATION_ID =
 
 export default function WooCommerceRedirectModal( {
 	dialogActive,
-	onClose = null,
+	onClose,
 	onContinueWithSiteKit,
-	onUseGoogleForWooCommerce = null,
+	onUseGoogleForWooCommerce,
 } ) {
 	// Tracks which of the two CTAs is awaiting navigation, so only that button
 	// renders a spinner. One of `null`, `'primary'` or `'tertiary'`.

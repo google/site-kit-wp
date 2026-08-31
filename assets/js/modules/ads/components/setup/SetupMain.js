@@ -422,7 +422,9 @@ export default function SetupMain( { finishSetup } ) {
 					// already connected via Google for WooCommerce; the user
 					// has to choose one of the two CTAs.
 					onClose={
-						isGoogleForWooCommerceAdsConnected ? null : closeDialog
+						isGoogleForWooCommerceAdsConnected
+							? undefined
+							: closeDialog
 					}
 					onContinueWithSiteKit={ onContinueWithSiteKit }
 					dialogActive
