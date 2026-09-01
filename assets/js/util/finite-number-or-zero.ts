@@ -1,5 +1,7 @@
 /**
- * Site Kit by Google, Copyright 2026 Google LLC
+ * Utility function `finiteNumberOrZero()`.
+ *
+ * Site Kit by Google, Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +16,19 @@
  * limitations under the License.
  */
 
-// Ambient declarations for untyped external modules. These ship no bundled
-// types and have no `@types/*` package installed, so `noImplicitAny` flags
-// every import. Declaring them keeps the modules usable (as `any`) until we
-// adopt proper types.
-declare module 'dompurify';
-declare module 'history';
-declare module 'md5';
-declare module 'react-router-dom';
+/**
+ * External dependencies
+ */
+import { isFinite } from 'lodash';
+
+/**
+ * Returns the passed value if it's a finite number, otherwise returns 0.
+ *
+ * @since 1.98.0
+ *
+ * @param {any} value The value to check.
+ * @return {number} The finite number `value`, or 0 if `value` is not a finite number.
+ */
+export function finiteNumberOrZero( value: unknown ): number {
+	return isFinite( value ) ? ( value as number ) : 0;
+}
