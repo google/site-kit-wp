@@ -49,7 +49,7 @@ import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
  * combines. Both this widget and the metric's PDF tile import this, so the
  * dashboard tile and the report request the same data.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object} dates The date range, including the compare dates.
  * @return {Object} The `totalUsers` and `trafficSource` `getReport` options.
@@ -88,7 +88,7 @@ export function getTopTrafficSourceReportOptions( dates ) {
  * Both this widget and the metric's PDF tile import this, so the dashboard tile
  * and the PDF tile show the same sub-text.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {number} rate The relative share of total traffic for the top source.
  * @return {string} The metric tile sub-text.

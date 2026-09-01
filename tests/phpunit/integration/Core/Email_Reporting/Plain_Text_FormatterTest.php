@@ -273,6 +273,35 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( 'Compared to previous 7 days', $result, 'Metrics section should contain change context.' );
 	}
 
+	public function test_format_metrics_section_omits_change_context_when_no_metric_has_a_comparison() {
+		$section = array(
+			'title'            => 'How many people are finding my site?',
+			'section_template' => 'section-metrics',
+			'section_parts'    => array(
+				'total_visitors' => array(
+					'data' => array(
+						'label'          => 'Total visitors',
+						'value'          => '2',
+						'change'         => null,
+						'change_context' => 'Compared to previous 30 days',
+					),
+				),
+				'new_visitors'   => array(
+					'data' => array(
+						'label'  => 'New visitors',
+						'value'  => '1',
+						'change' => null,
+					),
+				),
+			),
+		);
+
+		$result = Plain_Text_Formatter::format_section( $section );
+
+		$this->assertStringContainsString( 'Total visitors: 2', $result, 'Metrics section should still contain the metric row without a comparison value.' );
+		$this->assertStringNotContainsString( 'Compared to previous 30 days', $result, 'Expected the change context line to be omitted when no metric has a comparison value.' );
+	}
+
 	public function test_format_section_dispatches_to_page_metrics_section() {
 		$section = array(
 			'title'            => 'How are people finding me?',
@@ -295,6 +324,28 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( 'Traffic channels by visitor count', $result, 'Page metrics section should contain part label.' );
 		$this->assertStringContainsString( 'Organic Search: 500 (+10.5%)', $result, 'Page metrics section should contain first row.' );
 		$this->assertStringContainsString( 'Direct: 300 (-2.3%)', $result, 'Page metrics section should contain second row.' );
+	}
+
+	public function test_format_page_metrics_section_omits_change_context_when_no_row_has_a_comparison() {
+		$section = array(
+			'title'            => 'How are people finding me?',
+			'section_template' => 'section-page-metrics',
+			'section_parts'    => array(
+				'traffic_channels' => array(
+					'data' => array(
+						'change_context'   => 'Compared to previous 7 days',
+						'dimension_values' => array( 'Organic Search', 'Direct' ),
+						'values'           => array( '500', '300' ),
+						'changes'          => array( null, null ),
+					),
+				),
+			),
+		);
+
+		$result = Plain_Text_Formatter::format_section( $section );
+
+		$this->assertStringContainsString( 'Organic Search: 500', $result, 'Page metrics section should still contain rows without a comparison value.' );
+		$this->assertStringNotContainsString( 'Compared to previous 7 days', $result, 'Expected the change context line to be omitted when no row has a comparison value.' );
 	}
 
 	public function test_format_section_returns_empty_for_empty_section_parts() {

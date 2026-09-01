@@ -62,7 +62,7 @@ interface GetPDFDataResult {
  * Builds the same All pages and screens report link the dashboard widget shows
  * for each page. The PDF component renders each page title as this link.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object}   params           Link map parameters.
  * @param {Object}   params.registry  WordPress data registry.

@@ -128,7 +128,7 @@ function provideReports( {
  * The link comes from the same selector the loader uses, so a test checks the
  * page filter and date range, not the URL format.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Registry} registry Registry that holds the Analytics property.
  * @param {string}   pagePath Page path from a report row.

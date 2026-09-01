@@ -123,16 +123,14 @@ async function isPromiseResolved(
 
 type AsyncPredicate = ( ...args: unknown[] ) => boolean | Promise< boolean >;
 
-/* eslint-disable jsdoc/no-undefined-types */
 /**
  * Returns a function which can process N asynchronous requirements in sequence, stopping at the first to return false.
  *
  * @since 1.166.0
  *
  * @param {...Function} requirements Async requirement function checks.
- * @return {function(WPDataRegistry, ...Promise<boolean>[]): Promise<boolean>} Function which processes all requirements in sequence.
+ * @return {function(...*): Promise<boolean>} Function which processes all requirements in sequence.
  */
-/* eslint-enable jsdoc/no-undefined-types */
 export function asyncRequireAll( ...requirements: AsyncPredicate[] ) {
 	return async function ( ...args: unknown[] ): Promise< boolean > {
 		for ( const predicate of requirements ) {
@@ -152,7 +150,7 @@ export function asyncRequireAll( ...requirements: AsyncPredicate[] ) {
  * @since 1.166.0
  *
  * @param {...Function} requirements Async requirement function checks.
- * @return {function(): Promise<boolean>} Function which processes all requirements in sequence.
+ * @return {function(...*): Promise<boolean>} Function which processes all requirements in sequence.
  */
 export function asyncRequireAny( ...requirements: AsyncPredicate[] ) {
 	return async function ( ...args: unknown[] ): Promise< boolean > {
@@ -172,7 +170,7 @@ export function asyncRequireAny( ...requirements: AsyncPredicate[] ) {
  *
  * @param {*}        want Value to match against predicate return.
  * @param {Function} func Function to proxy and check return value of.
- * @return {function(): Promise<boolean>} Predicate function.
+ * @return {function(...*): Promise<boolean>} Predicate function.
  */
 export function asyncRequire< T >(
 	want: T,

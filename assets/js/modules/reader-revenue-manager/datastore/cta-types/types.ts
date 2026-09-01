@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager express setup publication step.
+ * Reader Revenue Manager CTA type definitions.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -16,18 +16,22 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
+export const CTA_TYPES = {
+	NEWSLETTER_SIGNUP: 'NEWSLETTER_SIGNUP',
+} as const;
 
-export default function StepPublicationSetup() {
-	return (
-		<p>
-			{ __(
-				'RRM express setup placeholder: publication setup step.',
-				'google-site-kit'
-			) }
-		</p>
-	);
+export type CallToActionType = typeof CTA_TYPES[ keyof typeof CTA_TYPES ];
+
+export interface CallToActionBase {
+	name?: string;
+	displayName?: string;
+	state?: string;
+	type: CallToActionType;
+}
+
+export interface CallToActionTypeHandler<
+	Type extends CallToActionType = CallToActionType
+> {
+	type: Type;
+	validateConfig: ( config: unknown ) => void;
 }

@@ -48,7 +48,7 @@ import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
  * Both this widget and the metric's PDF tile import this, so the dashboard tile
  * and the report request the same data.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object} dates The date range, including the compare dates.
  * @return {Object} The Analytics 4 `getReport` options.
@@ -70,7 +70,7 @@ export function getPagesPerVisitReportOptions( dates ) {
  * Both this widget and the metric's PDF tile import this, so the dashboard tile
  * and the PDF tile display the same sub-text.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {number} pageViews The total number of page views.
  * @return {string} The formatted sub-text.
