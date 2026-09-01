@@ -81,7 +81,7 @@ class Newsletter_Signup_CTA_Type_Handler implements CTA_Type_Handler_Interface {
 			}
 
 			if ( ! is_string( $config[ $field ] ) ) {
-				throw new Invalid_Param_Exception( "config.{$field}" );
+				throw new Invalid_Param_Exception( "config.{$field}" ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 			}
 
 			$newsletter_config->{$setter}( $config[ $field ] );
@@ -93,7 +93,7 @@ class Newsletter_Signup_CTA_Type_Handler implements CTA_Type_Handler_Interface {
 			}
 
 			if ( ! is_bool( $config[ $field ] ) ) {
-				throw new Invalid_Param_Exception( "config.{$field}" );
+				throw new Invalid_Param_Exception( "config.{$field}" ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 			}
 
 			$newsletter_config->{$setter}( $config[ $field ] );

@@ -121,7 +121,7 @@ class Email_Notices {
 		$notice_id = sanitize_key( $notice->get_id() );
 
 		if ( isset( $this->notices[ $notice_id ] ) ) {
-			throw new InvalidArgumentException( sprintf( 'A notice is already registered for ID "%s".', $notice_id ) );
+			throw new InvalidArgumentException( sprintf( 'A notice is already registered for ID "%s".', esc_html( $notice_id ) ) );
 		}
 
 		$this->notices[ $notice_id ] = $notice;
