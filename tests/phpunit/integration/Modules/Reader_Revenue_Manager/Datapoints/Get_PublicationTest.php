@@ -12,7 +12,7 @@ namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Datapoints;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
+use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publication;
 use Google\Site_Kit\Tests\TestCase;
@@ -46,22 +46,14 @@ class Get_PublicationTest extends TestCase {
 		$this->enable_feature( 'rrmExpressSetup' );
 
 		$this->module = new Reader_Revenue_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->module->get_settings()->register();
-		$this->module->get_settings()->merge(
-			array(
-				'organizationID' => 'organization-setting',
-				'publicationID'  => 'publication-setting',
-			)
-		);
 		$this->module->get_client()->withDefer( true );
 
 		$service         = new Webcontentpublisher( $this->module->get_client() );
 		$this->datapoint = new Get_Publication(
 			array(
-				'service'  => function () use ( $service ) {
+				'service' => function () use ( $service ) {
 					return $service;
 				},
-				'settings' => $this->module->get_settings(),
 			)
 		);
 	}
@@ -83,37 +75,25 @@ class Get_PublicationTest extends TestCase {
 		);
 	}
 
-	public function test_create_request__falls_back_to_settings() {
-		$request = $this->datapoint->create_request( $this->get_data_request( array() ) );
-
-		$this->assertSame(
-			'https://webcontentpublisher.googleapis.com/v1/organizations/organization-setting/publications/publication-setting',
-			(string) $request->getUri(),
-			'The request should fall back to the configured IDs.'
-		);
-	}
-
 	/**
-	 * @dataProvider data_missing_required_settings
+	 * @dataProvider data_missing_required_params
 	 *
-	 * @param string $setting The missing setting.
+	 * @param string $param The missing parameter.
 	 */
-	public function test_create_request__requires_fallback_settings( $setting ) {
-		$this->module->get_settings()->merge( array( $setting => '' ) );
+	public function test_create_request__requires_params( $param ) {
+		$data = array(
+			'organizationID' => 'organization-1',
+			'publicationID'  => 'publication-1',
+		);
+		unset( $data[ $param ] );
 
-		try {
-			$this->datapoint->create_request( $this->get_data_request( array() ) );
-			$this->fail( 'Expected Missing_Required_Setting_Exception to be thrown.' );
-		} catch ( Missing_Required_Setting_Exception $exception ) {
-			$this->assertSame( "Required setting is missing: {$setting}.", $exception->getMessage(), 'The exception should identify the missing setting.' );
+		$this->expectException( Missing_Required_Param_Exception::class );
+		$this->expectExceptionMessage( "Request parameter is empty: {$param}." );
 
-			$error = $exception->to_wp_error();
-			$this->assertSame( 'missing_required_setting', $error->get_error_code(), 'The exception should use the missing setting error code.' );
-			$this->assertSame( array( 'status' => 500 ), $error->get_error_data(), 'The exception should return an HTTP 500 error.' );
-		}
+		$this->datapoint->create_request( $this->get_data_request( $data ) );
 	}
 
-	public function data_missing_required_settings() {
+	public function data_missing_required_params() {
 		return array(
 			'organizationID' => array( 'organizationID' ),
 			'publicationID'  => array( 'publicationID' ),

@@ -126,6 +126,29 @@ export function validateOptionalPublicationParams(
 	);
 }
 
+/**
+ * Validates that both publication identifiers are present.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} params Publication parameters to validate.
+ * @return {void}
+ */
+export function validatePublicationParams(
+	params: Partial< PublicationParams > = {}
+): void {
+	const { organizationID, publicationID } = params;
+
+	invariant(
+		typeof organizationID === 'string' && organizationID.length > 0,
+		'organizationID is required and must be a non-empty string.'
+	);
+	invariant(
+		typeof publicationID === 'string' && publicationID.length > 0,
+		'publicationID is required and must be a non-empty string.'
+	);
+}
+
 type ReaderRevenueManagerRegistry = WPDataRegistry & {
 	resolveSelect: WPDataRegistry[ 'select' ];
 };
@@ -148,22 +171,25 @@ export function getSelectedPublicationID(
 }
 
 /**
- * Resolves module settings when no publication ID was passed and settings
+ * Resolves module settings when either identifier is missing and settings
  * are not already in the store.
  *
  * @since n.e.x.t
  *
- * @param {Object} registry               Data registry.
- * @param {Object} [params]               Optional publication parameters.
- * @param {string} [params.publicationID] Publication ID.
+ * @param {Object} registry                Data registry.
+ * @param {Object} [params]                Optional publication parameters.
+ * @param {string} [params.organizationID] Organization ID.
+ * @param {string} [params.publicationID]  Publication ID.
  * @return {Promise|undefined} Settings resolution, if needed.
  */
 export function maybeResolveSettings(
 	registry: ReaderRevenueManagerRegistry,
 	params: Partial< PublicationParams > = {}
 ): Promise< void > | undefined {
+	const { organizationID, publicationID } = params;
+
 	if (
-		params.publicationID ||
+		( organizationID && publicationID ) ||
 		registry.select( MODULES_READER_REVENUE_MANAGER ).getSettings() !==
 			undefined
 	) {
@@ -173,6 +199,57 @@ export function maybeResolveSettings(
 	return registry
 		.resolveSelect( MODULES_READER_REVENUE_MANAGER )
 		.getSettings();
+}
+
+/**
+ * Resolves organization and publication IDs from params, falling back to settings.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry Data registry.
+ * @param {Object} [params] Optional publication parameters.
+ * @return {Object|undefined} Resolved IDs, if both can be determined.
+ */
+export function getResolvedPublicationParams(
+	registry: ReaderRevenueManagerRegistry,
+	params: Partial< PublicationParams > = {}
+): PublicationParams | undefined {
+	if ( params.organizationID && params.publicationID ) {
+		return {
+			organizationID: params.organizationID,
+			publicationID: params.publicationID,
+		};
+	}
+
+	const settings =
+		registry.select( MODULES_READER_REVENUE_MANAGER ).getSettings() || {};
+
+	const organizationID = params.organizationID || settings.organizationID;
+	const publicationID = params.publicationID || settings.publicationID;
+
+	if ( ! organizationID || ! publicationID ) {
+		return undefined;
+	}
+
+	return { organizationID, publicationID };
+}
+
+/**
+ * Resolves settings when needed and returns explicit publication identifiers.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry Data registry.
+ * @param {Object} [params] Optional publication parameters.
+ * @return {Promise<Object|undefined>} Resolved IDs, if both can be determined.
+ */
+export async function resolvePublicationParams(
+	registry: ReaderRevenueManagerRegistry,
+	params: Partial< PublicationParams > = {}
+): Promise< PublicationParams | undefined > {
+	await maybeResolveSettings( registry, params );
+
+	return getResolvedPublicationParams( registry, params );
 }
 
 const fetchGetPublicationsStore = createFetchStore( {
@@ -292,10 +369,7 @@ const fetchPublicationStoreReducerCallback = createReducer(
 
 const fetchGetPublicationStore = createFetchStore( {
 	baseName: 'getPublication',
-	controlCallback: ( {
-		organizationID,
-		publicationID,
-	}: Partial< PublicationParams > = {} ) =>
+	controlCallback: ( { organizationID, publicationID }: PublicationParams ) =>
 		get(
 			'modules',
 			MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -311,7 +385,7 @@ const fetchGetPublicationStore = createFetchStore( {
 		organizationID,
 		publicationID,
 	} ),
-	validateParams: validateOptionalPublicationParams,
+	validateParams: validatePublicationParams,
 } );
 
 const fetchUpdatePublicationStore = createFetchStore( {
@@ -330,7 +404,7 @@ const fetchUpdatePublicationStore = createFetchStore( {
 	validateParams: ( params: Partial< UpdatePublicationParams > = {} ) => {
 		const { data } = params;
 
-		validateOptionalPublicationParams( params );
+		validatePublicationParams( params );
 
 		invariant(
 			isPlainObject( data ) &&
@@ -469,8 +543,8 @@ const baseActions = {
 	 * @since 1.186.0
 	 *
 	 * @param {Object} params                  Publication update parameters.
-	 * @param {string} [params.publicationID]  Publication ID. Defaults to the configured setting on the server.
-	 * @param {string} [params.organizationID] Organization ID. Defaults to the configured setting on the server.
+	 * @param {string} [params.publicationID]  Publication ID. Defaults to the saved module setting.
+	 * @param {string} [params.organizationID] Organization ID. Defaults to the saved module setting.
 	 * @param {Object} params.data             Publication fields to update.
 	 * @return {Object} Object with `response` and `error`.
 	 */
@@ -493,9 +567,23 @@ const baseActions = {
 		function* (
 			params: UpdatePublicationParams
 		): Generator< unknown, unknown, unknown > {
+			const registry =
+				( yield commonActions.getRegistry() ) as ReaderRevenueManagerRegistry;
+
+			const resolved = ( yield commonActions.await(
+				resolvePublicationParams( registry, params )
+			) ) as PublicationParams | undefined;
+
+			if ( ! resolved ) {
+				return {};
+			}
+
 			// @ts-expect-error createFetchStore is not properly typed yet.
 			return yield fetchUpdatePublicationStore.actions.fetchUpdatePublication(
-				params
+				{
+					...params,
+					...resolved,
+				}
 			);
 		}
 	),
@@ -707,35 +795,24 @@ const baseResolvers = {
 		const registryResult = yield commonActions.getRegistry();
 		const registry = registryResult as ReaderRevenueManagerRegistry;
 
-		// Conditionally resolve settings so that the fetch reducer has
-		// the publication ID to key the list by.
-		const settingsResolution = maybeResolveSettings( registry, params );
+		const resolved = ( yield commonActions.await(
+			resolvePublicationParams( registry, params )
+		) ) as PublicationParams | undefined;
 
-		if ( settingsResolution ) {
-			yield commonActions.await( settingsResolution );
+		if ( ! resolved ) {
+			return;
 		}
 
 		const publication = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
-			.getPublication( params );
+			.getPublication( resolved );
 
 		if ( publication !== undefined ) {
 			return;
 		}
 
-		const publicationID =
-			params.publicationID ||
-			registry
-				.select( MODULES_READER_REVENUE_MANAGER )
-				.getPublicationID();
-
-		// No publication to look up; skip the fetch rather than looping on `undefined`.
-		if ( ! publicationID ) {
-			return;
-		}
-
 		// @ts-expect-error createFetchStore is not properly typed yet.
-		yield fetchGetPublicationStore.actions.fetchGetPublication( params );
+		yield fetchGetPublicationStore.actions.fetchGetPublication( resolved );
 	},
 };
 
@@ -759,8 +836,8 @@ const baseSelectors = {
 	 *
 	 * @param {Object} state                   Data store's state.
 	 * @param {Object} params                  Publication parameters.
-	 * @param {string} [params.organizationID] Organization ID. Defaults to the configured setting on the server.
-	 * @param {string} [params.publicationID]  Publication ID. Defaults to the configured setting on the server.
+	 * @param {string} [params.organizationID] Organization ID. Defaults to the saved module setting.
+	 * @param {string} [params.publicationID]  Publication ID. Defaults to the saved module setting.
 	 * @return {(Object|undefined)} Publication resource; `undefined` if not loaded.
 	 */
 	getPublication(

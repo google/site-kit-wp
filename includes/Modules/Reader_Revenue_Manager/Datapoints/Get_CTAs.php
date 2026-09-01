@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints;
 use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
+use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 
 /**
  * Class for the CTAs retrieval datapoint.
@@ -23,27 +23,7 @@ use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
  * @ignore
  */
 class Get_CTAs extends Datapoint implements Executable_Datapoint {
-
-	/**
-	 * Reader Revenue Manager settings.
-	 *
-	 * @since n.e.x.t
-	 * @var \Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings
-	 */
-	private $settings;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $definition Definition fields.
-	 */
-	public function __construct( array $definition ) {
-		parent::__construct( $definition );
-
-		$this->settings = $definition['settings'];
-	}
+	use Required_Publication_Params;
 
 	/**
 	 * Creates a request object.
@@ -52,26 +32,15 @@ class Get_CTAs extends Datapoint implements Executable_Datapoint {
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
-	 * @throws Missing_Required_Setting_Exception Thrown if a fallback setting is missing.
+	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing or empty.
 	 */
 	public function create_request( Data_Request $data_request ) {
-		$settings = $this->settings->get();
-
-		$organization_id = $data_request['organizationID'] ?? $settings['organizationID'];
-		$publication_id  = $data_request['publicationID'] ?? $settings['publicationID'];
-
-		if ( empty( $organization_id ) ) {
-			throw new Missing_Required_Setting_Exception( 'organizationID' );
-		}
-
-		if ( empty( $publication_id ) ) {
-			throw new Missing_Required_Setting_Exception( 'publicationID' );
-		}
+		$params = $this->get_required_publication_params( $data_request );
 
 		$parent = sprintf(
 			'organizations/%s/publications/%s',
-			$organization_id,
-			$publication_id
+			$params['organization_id'],
+			$params['publication_id']
 		);
 
 		return $this->get_service()->organizations_publications_ctas->listOrganizationsPublicationsCtas( $parent );
