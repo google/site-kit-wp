@@ -69,11 +69,7 @@ const ExpressSetupLayout: FC< ExpressSetupLayoutProps > = ( {
 					mdSize={ 8 }
 					lgSize={ 9 }
 				>
-					<Grid>
-						<Row>
-							<Cell size={ 12 }>{ children }</Cell>
-						</Row>
-					</Grid>
+					{ children }
 				</Cell>
 				{ showPoweredBy && isMobileOrTablet && (
 					<Cell

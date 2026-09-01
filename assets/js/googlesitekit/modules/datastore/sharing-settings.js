@@ -204,6 +204,9 @@ const baseActions = {
 			yield commonActions.await(
 				registry.dispatch( CORE_SITE ).resetEligibleSubscribers()
 			);
+			yield commonActions.await(
+				registry.dispatch( CORE_SITE ).resetSubscribedUsers()
+			);
 		}
 
 		yield {
@@ -236,6 +239,9 @@ const baseActions = {
 			const registry = yield commonActions.getRegistry();
 			yield commonActions.await(
 				registry.dispatch( CORE_SITE ).resetEligibleSubscribers()
+			);
+			yield commonActions.await(
+				registry.dispatch( CORE_SITE ).resetSubscribedUsers()
 			);
 		}
 
