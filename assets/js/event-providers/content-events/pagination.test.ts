@@ -309,7 +309,7 @@ describe( 'initializePagination', () => {
 			5,
 		],
 		[
-			'the anchor text when the href carries no number',
+			'the anchor text when the href has no number',
 			'https://example.com/my-post/',
 			'1',
 			1,

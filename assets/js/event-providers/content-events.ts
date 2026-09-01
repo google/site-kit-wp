@@ -61,6 +61,9 @@ export function getContentEventsConfig(): ContentEventsConfig {
 		isLastPageOfMultiPagePost: false,
 		// These two defaults are here only because `ContentEventsConfig`
 		// requires them. `Content_Events.php` always sends the real values.
+		// Only a page cached before this release falls back to these numbers.
+		// That page has no `isLastPageOfMultiPagePost` either, so
+		// `initializeReadArticle()` returns before it reads them.
 		readTimeThresholdPercent: 85,
 		minimumReadTimeSeconds: 5,
 		...( global._googlesitekit?.contentEvents || {} ),
@@ -70,9 +73,10 @@ export function getContentEventsConfig(): ContentEventsConfig {
 /**
  * Runs one initializer, and reports a failure rather than throwing it.
  *
- * No initializer throws on its own. We still catch, because the initializers
- * run on any WordPress frontend where another plugin can replace a browser API
- * they call. One throw stops every initializer that follows.
+ * The initializers run one after another, so a throw from the first stops the
+ * rest. Neither one throws today. We still catch, because they run on the
+ * public frontend of any WordPress site, where another plugin can replace a
+ * browser global they call, such as `IntersectionObserver` or `performance`.
  *
  * @since n.e.x.t
  *

@@ -173,7 +173,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 * Gets the events this install can send, mapped to where each one can fire.
 	 *
 	 * Reports what the install makes possible, never what the current request did:
-	 * whether a post is paginated, embeds a Vimeo video or carries a `mailto:` link
+	 * whether a post is paginated, embeds a Vimeo video or has a `mailto:` link
 	 * is only knowable while a frontend page renders, and Site Health runs in
 	 * wp-admin. Nothing here reads the current request. Whether bbPress is active is
 	 * a site-wide fact, so `pagination_click` does report it.

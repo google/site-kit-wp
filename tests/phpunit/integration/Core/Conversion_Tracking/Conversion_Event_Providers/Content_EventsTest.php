@@ -535,7 +535,7 @@ class Content_EventsTest extends TestCase {
 		);
 	}
 
-	public function test_eligible_events_and_debug_data__carry_no_site_or_user_identifiers() {
+	public function test_eligible_events_and_debug_data__have_no_site_or_user_identifiers() {
 		$user_id = $this->factory()->user->create(
 			array(
 				'display_name' => 'Debug Data Author',
@@ -568,7 +568,7 @@ class Content_EventsTest extends TestCase {
 				'post ID'     => (string) $post_id,
 			) as $label => $identifier
 		) {
-			$this->assertStringNotContainsString( $identifier, $reported, "Reported content events should not carry the $label." );
+			$this->assertStringNotContainsString( $identifier, $reported, "Reported content events should not include the $label." );
 		}
 	}
 
