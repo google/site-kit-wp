@@ -32,8 +32,7 @@ import { useTrafficOverviewReports } from '@/js/modules/analytics-4/components/t
 
 const TrafficOverviewPanel: FC = () => {
 	// Nothing reads the result yet, because `TotalVisitors`, `TrafficChart`,
-	// and `TrafficBreakdown` render nothing. The call still sends the panel's
-	// five report requests.
+	// and `TrafficBreakdown` are placeholders.
 	useTrafficOverviewReports();
 
 	return (

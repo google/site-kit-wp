@@ -52,7 +52,7 @@ describe( 'TrafficOverviewTabBar', () => {
 		return { ...result, onTabChange };
 	}
 
-	it( 'renders the tabs in order, showing each label and setting each tab id', () => {
+	it( 'renders the tabs in order, showing each label with the correct tab ID set', () => {
 		renderTabBar();
 
 		const renderedTabs = screen.getAllByRole( 'tab' );
@@ -73,7 +73,7 @@ describe( 'TrafficOverviewTabBar', () => {
 		).toHaveTextContent( 'Typical traffic' );
 	} );
 
-	it( 'marks the first tab as selected when the active tab id matches no tab', () => {
+	it( 'marks the first tab as selected when the active tab id does not match any tab', () => {
 		renderTabBar( 'no-such-tab' );
 
 		expect(
@@ -92,7 +92,7 @@ describe( 'TrafficOverviewTabBar', () => {
 		expect( onTabChange ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'calls onTabChange with the id of the next tab when the user presses the right arrow key and then Enter', () => {
+	it( 'calls onTabChange with the id of the tab the user presses the Enter key on', () => {
 		const { onTabChange } = renderTabBar();
 
 		const [ firstTab ] = screen.getAllByRole( 'tab' );

@@ -133,7 +133,7 @@ describe( 'TrafficOverviewSourceLink', () => {
 		expect( href ).toContain( '/about/' );
 	} );
 
-	it( 'requests no Analytics settings for a view-only user', async () => {
+	it( 'does not request Analytics settings for a view-only user', async () => {
 		fetchMock.get( settingsEndpoint, { body: {}, status: 200 } );
 
 		renderSourceLink( VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY );

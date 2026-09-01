@@ -63,7 +63,7 @@ describe( 'TrafficOverviewPanel', () => {
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 	} );
 
-	it( 'marks the panel as a tab panel and names it after the "Traffic Overview" tab', async () => {
+	it( 'marks the panel as a tab panel and names it using the content in the "Traffic Overview" tab', async () => {
 		const { container, waitForRegistry } = renderPanel();
 
 		await waitForRegistry();
@@ -106,8 +106,6 @@ describe( 'TrafficOverviewPanel', () => {
 
 		await waitForRegistry();
 
-		// This test checks only that one request goes out, because
-		// `useTrafficOverviewReports.test.ts` covers all five reports.
 		await waitFor( () =>
 			expect( fetchMock ).toHaveFetched( reportEndpoint )
 		);

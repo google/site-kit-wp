@@ -164,7 +164,7 @@ describe( 'TrafficOverviewWidget', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'sends no report request while the widget is out of view, and all five after it comes into view', async () => {
+	it( 'does not sends a report request when the widget is out of view', async () => {
 		const { setInView, waitForRegistry } = renderWidget( {
 			inView: false,
 		} );

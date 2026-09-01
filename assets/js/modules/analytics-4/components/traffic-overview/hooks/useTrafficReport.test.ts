@@ -115,7 +115,7 @@ describe( 'useTrafficReport', () => {
 		expect( fetchMock ).toHaveFetchedTimes( 1, reportEndpoint );
 	} );
 
-	it( 'requests no report for a view-only user whose role cannot view Analytics', async () => {
+	it( 'does not request a report for a view-only user whose role cannot view Analytics', async () => {
 		denyAnalyticsAccess( registry );
 
 		const { result, waitForRegistry } = renderHook(
@@ -129,7 +129,7 @@ describe( 'useTrafficReport', () => {
 		expect( result.current.report ).toBeUndefined();
 	} );
 
-	it( 'requests no report while the widget is out of view', async () => {
+	it( 'does not request a report when the widget is out of view', async () => {
 		const { waitForRegistry } = renderHook(
 			() => useTrafficReport( graphReportOptions ),
 			{ registry, inView: false }

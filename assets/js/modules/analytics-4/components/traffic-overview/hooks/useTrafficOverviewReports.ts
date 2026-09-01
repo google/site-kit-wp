@@ -60,9 +60,16 @@ export interface TrafficOverviewReports {
 	/** `true` when all five reports have finished resolving. */
 	loaded: boolean;
 	/**
-	 * The first error among the five reports, checked in the order totals,
-	 * graph, channels, locations, and devices. It reads `undefined` when no
-	 * report has an error.
+	 * The first error among the five reports. If multiple errors exist, the
+	 * first in this order is used in the error output shown to users:
+	 *
+	 * 1. totals
+	 * 2. graph
+	 * 3. channels
+	 * 4. locations
+	 * 5. devices
+	 *
+	 * Should be set to `undefined` when no report has an error.
 	 */
 	error?: Record< string, unknown >;
 }

@@ -153,7 +153,7 @@ describe( 'useTrafficOverviewReports', () => {
 		] );
 	} );
 
-	it( 'sends five report requests and no more', async () => {
+	it( 'sends exactly five report requests', async () => {
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 
 		const { waitForRegistry } = renderHook(
@@ -179,12 +179,13 @@ describe( 'useTrafficOverviewReports', () => {
 
 		// The store already holds a report for each of the five argument sets,
 		// so the `getReport` resolver sends no request for them. A request for
-		// any other arguments reaches `fetchMock`, and the check below fails.
+		// any other arguments reaches `fetchMock`, so the report endpoint
+		// is never fetched.
 		expect( getResolvedArgs( expectedArgs ) ).toEqual( expectedArgs );
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
-	it( 'adds the entity URL to all five reports when the site has a current entity', async () => {
+	it( 'adds the entity URL to all five reports when the page has an entity URL set', async () => {
 		provideSiteInfo( registry, {
 			currentEntityURL: 'https://example.com/about/',
 		} );
@@ -232,7 +233,7 @@ describe( 'useTrafficOverviewReports', () => {
 		expect( fetchMock ).toHaveFetchedTimes( 5, reportEndpoint );
 	} );
 
-	it( 'leaves loaded false while any of the five reports is still loading', async () => {
+	it( 'leaves `loaded` set to `false` while any of the five reports is still loading', async () => {
 		freezeFetch( reportEndpoint );
 
 		provideReports( getExpectedArgs().slice( 0, 4 ) );
@@ -247,7 +248,7 @@ describe( 'useTrafficOverviewReports', () => {
 		expect( result.current.loaded ).toBe( false );
 	} );
 
-	it( 'sets loaded to true and leaves error undefined after all five reports have finished', async () => {
+	it( 'sets `loaded` to `true` and leaves `error` undefined after all five reports have finished', async () => {
 		provideReports( getExpectedArgs() );
 
 		const { result, waitForRegistry } = renderHook(
