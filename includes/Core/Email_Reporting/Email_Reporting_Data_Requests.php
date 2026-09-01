@@ -198,8 +198,6 @@ class Email_Reporting_Data_Requests {
 
 			$payload = $this->collect_payloads( $available_modules, $date_range, $shared_payloads );
 
-			// Without this return, `Email_Log_Processor` reports the empty payload as
-			// `email_report_no_data`, and the admin gets the generic error email.
 			if ( empty( $payload ) && ! empty( $denied_module_slugs ) ) {
 				return $this->categorize_error(
 					new WP_Error(
