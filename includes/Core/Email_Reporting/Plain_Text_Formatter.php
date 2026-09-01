@@ -455,10 +455,10 @@ class Plain_Text_Formatter {
 		$output        = self::format_section_heading( $section['title'] );
 		$section_parts = $section['section_parts'];
 
-		// Every part has the same change context and prompt, because both belong to the whole card.
+		// The card gives every section part the same values, so we read the first one.
 		$first_part = reset( $section_parts );
 
-		// The change context only means something when at least one metric has a trend.
+		// The "Compared to" line shows only when a metric has a change.
 		$all_metrics = array();
 
 		foreach ( $section_parts as $part_config ) {

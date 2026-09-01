@@ -20,12 +20,12 @@ $section_icon  = $section['icon'];
 $dashboard_url = $section['dashboard_url'];
 $section_parts = $section['section_parts'];
 
-// Every part has the same change context and prompt, because both belong to the whole card.
+// The card gives every section part the same values, so we read the first one.
 $first_part = reset( $section_parts );
 $subtitle   = $first_part['data']['change_context'] ?? '';
 $prompt     = $first_part['data']['prompt'] ?? array();
 
-// The change context and the badge column only mean something when at least one metric has a trend.
+// The "Compared to" line and the change badges show only when a metric has a change.
 $all_metrics = array();
 
 foreach ( $section_parts as $part_config ) {

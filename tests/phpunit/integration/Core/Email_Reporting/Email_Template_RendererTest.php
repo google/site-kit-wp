@@ -370,8 +370,8 @@ class Email_Template_RendererTest extends TestCase {
 		$this->assertStringContainsString( '3.8%', $html_output, 'The card should show the sales rate of the WooCommerce group.' );
 		$this->assertStringContainsString( '116', $html_output, 'The card should show the total sales of the WooCommerce group.' );
 		$this->assertStringContainsString( '214', $html_output, 'The card should show the total sales of the "Other sources" group.' );
-		$this->assertStringContainsString( '+7.2%', $html_output, 'The card should show the trend badge of the sales rate row.' );
-		$this->assertStringContainsString( '-4.6%', $html_output, 'The card should show the trend badge of the total sales row.' );
+		$this->assertStringContainsString( '+7.2%', $html_output, 'The card should show the change badge of the sales rate row.' );
+		$this->assertStringContainsString( '-4.6%', $html_output, 'The card should show the change badge of the total sales row.' );
 		$this->assertSame( 1, substr_count( $html_output, 'Sales rate' ), 'The "Other sources" group should show its total alone, with no rate row.' );
 		$this->assertSame( 2, substr_count( $html_output, 'class="badge-positive"' ), 'The card should mark each value that went up with a positive badge.' );
 		$this->assertSame( 1, substr_count( $html_output, 'class="badge-negative"' ), 'The card should mark the one value that went down with a negative badge.' );
@@ -503,18 +503,18 @@ class Email_Template_RendererTest extends TestCase {
 		$html_output = $this->render_site_goals_report( $sections );
 
 		$this->assertStringContainsString( 'Total sales', $html_output, 'The card should still show every metric row.' );
-		$this->assertStringNotContainsString( 'Compared to previous 7 days', $html_output, 'The card should hide the change context when no metric has a comparison value.' );
-		$this->assertStringNotContainsString( 'class="badge-positive"', $html_output, 'The card should show no positive badge when no metric has a comparison value.' );
-		$this->assertStringNotContainsString( 'class="badge-negative"', $html_output, 'The card should show no negative badge when no metric has a comparison value.' );
+		$this->assertStringNotContainsString( 'Compared to previous 7 days', $html_output, 'The card should hide the "Compared to" line when no metric has a change.' );
+		$this->assertStringNotContainsString( 'class="badge-positive"', $html_output, 'The card should show no positive badge when no metric has a change.' );
+		$this->assertStringNotContainsString( 'class="badge-negative"', $html_output, 'The card should show no negative badge when no metric has a change.' );
 	}
 
 	/**
 	 * Builds one Site Goals section from the given part data.
 	 *
 	 * @param string $title Title the card shows.
-	 * @param string $icon  Icon slug the card builds its image URL from.
+	 * @param string $icon  Icon slug for the card image.
 	 * @param array  $data  Section part data, with `change_context`, `groups`, and `prompt`.
-	 * @return array Section configuration the email report template reads.
+	 * @return array Section configuration for the email report template.
 	 */
 	private function get_site_goals_section( $title, $icon, array $data ) {
 		return array(
@@ -531,7 +531,7 @@ class Email_Template_RendererTest extends TestCase {
 	/**
 	 * Renders an email report with the given Site Goals sections.
 	 *
-	 * `Sections_Map` builds no Site Goals section yet, so this subclass returns the sections it was given.
+	 * `Sections_Map` builds no Site Goals section yet, so this test class returns the sections we pass in.
 	 *
 	 * @param array $sections Site Goals sections to render.
 	 * @return string Rendered HTML of the email report.
