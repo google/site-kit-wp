@@ -36,7 +36,7 @@ export interface ContentEventsConfig {
 	/** Estimated reading time for the content this request rendered, in seconds. */
 	estimatedReadTimeSeconds: number;
 	/** Whether the request renders the post's last page. */
-	isFinalPage: boolean;
+	isLastPageOfMultiPagePost: boolean;
 	/** Percentage of the estimated reading time a visitor must stay. */
 	readTimeThresholdPercent: number;
 	/** Shortest time a visitor must stay, in seconds. */
@@ -81,11 +81,10 @@ export function getContentEventsConfig(): ContentEventsConfig {
  * @param {string}   message    Message to log when the initializer throws.
  * @return {void}
  */
-function initializeSafely( initialize: () => void, message: string ): void {
+function initializeSafely( initialize: () => void, message?: string ): void {
 	try {
 		initialize();
 	} catch ( error ) {
-		// The frontend has no other place to report a failure.
 		// eslint-disable-next-line no-console
 		console.error( message, error );
 	}

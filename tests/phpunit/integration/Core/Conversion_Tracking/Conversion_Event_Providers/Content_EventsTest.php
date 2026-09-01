@@ -672,7 +672,7 @@ class Content_EventsTest extends TestCase {
 	}
 
 	/**
-	 * Skips the running test when PHP has no `intl` extension, which carries the
+	 * Skips the running test when PHP has no `intl` extension, which provides the
 	 * International Components for Unicode (ICU) word splitter.
 	 */
 	private function skip_without_intl() {
@@ -690,7 +690,7 @@ class Content_EventsTest extends TestCase {
 		$this->assertStringContainsString(
 			'<span class="googlesitekit-end-of-content" aria-hidden="true" style="display:block;height:1px"></span>',
 			$rendered,
-			'The rendered content should hold the marker span exactly as the constant writes it.'
+			'The rendered content should have the marker span.'
 		);
 		$this->assertSame(
 			1,
@@ -715,13 +715,13 @@ class Content_EventsTest extends TestCase {
 		$this->assertStringContainsString(
 			'googlesitekit-end-of-content',
 			$rendered,
-			'The rendered content should carry the marker.'
+			'The rendered content should include the marker HTML.'
 		);
 
 		$this->assertLessThan(
 			strpos( $rendered, 'share-buttons' ),
 			strpos( $rendered, 'googlesitekit-end-of-content' ),
-			'The marker should sit before the markup another plugin appends at priority 10.'
+			"The marker should be placed before the markup added by another, lower-priority plugin's filter."
 		);
 	}
 
@@ -752,7 +752,7 @@ class Content_EventsTest extends TestCase {
 		$this->assertStringNotContainsString(
 			'googlesitekit-end-of-content',
 			$rendered,
-			'A post rendered by a nested loop should not get the marker.'
+			'A post rendered by a nested loop should not render the marker.'
 		);
 	}
 
@@ -762,7 +762,7 @@ class Content_EventsTest extends TestCase {
 
 		$excerpt = get_the_excerpt( $post_id );
 
-		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $excerpt, 'An excerpt should not carry the marker.' );
+		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $excerpt, 'An excerpt should not render the marker.' );
 
 		$rendered = $this->apply_the_content();
 
@@ -781,7 +781,7 @@ class Content_EventsTest extends TestCase {
 		$excerpt  = get_the_excerpt( $post_id );
 
 		$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered, 'The real content should get the marker.' );
-		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $excerpt, 'An excerpt taken afterwards should not carry the marker.' );
+		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $excerpt, 'An excerpt taken afterwards should not render the marker.' );
 	}
 
 	/**
@@ -894,9 +894,9 @@ class Content_EventsTest extends TestCase {
 		$rendered = $this->apply_the_content();
 
 		if ( $expects_marker ) {
-			$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered, "Page $page should get the marker, because it is the post's last page." );
+			$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered, "Page $page should output the marker, because it is the post's last page." );
 		} else {
-			$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $rendered, "Page $page should not get the marker, because it is not the post's last page." );
+			$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $rendered, "Page $page should not output the marker, because it is not the post's last page." );
 		}
 	}
 
@@ -913,7 +913,7 @@ class Content_EventsTest extends TestCase {
 			"<!-- wp:paragraph -->\n<p>The quick <strong>brown</strong> fox.</p>\n<!-- /wp:paragraph -->\n[gallery ids=\"1,2,3\"]"
 		);
 
-		$this->assertSame( 4, $config['wordCount'], 'The word count should cover the text alone, with the markup, the block delimiters, and the shortcode removed.' );
+		$this->assertSame( 4, $config['wordCount'], 'The word count should count the text alone, with the markup, the block delimiters, the shortcode, etc. removed.' );
 	}
 
 	public function test_measure_content__counts_only_the_requested_page_of_a_paginated_post() {
@@ -930,7 +930,7 @@ class Content_EventsTest extends TestCase {
 
 		$config = $this->get_published_config();
 
-		$this->assertSame( 2, $config['wordCount'], "The word count should cover the requested page's text alone." );
+		$this->assertSame( 2, $config['wordCount'], "The word count should count the requested page's text alone." );
 	}
 
 	/**
@@ -957,7 +957,7 @@ class Content_EventsTest extends TestCase {
 
 		$config = $this->measure_as_post_content( 'ฉันชอบเขียนโปรแกรมคอมพิวเตอร์' );
 
-		// The exact count depends on the ICU version a server carries, because
+		// The exact count depends on the ICU version a server has, because
 		// ICU splits Thai with its own dictionary.
 		$this->assertGreaterThan( 1, $config['wordCount'], 'A Thai sentence should count as more than the one word a space split returns.' );
 	}
@@ -1023,7 +1023,7 @@ class Content_EventsTest extends TestCase {
 
 		$config = $this->measure_as_post_content( $text );
 
-		$this->assertSame( $expected_word_count, $config['wordCount'], 'Digits should count as words, and punctuation and emoji should not.' );
+		$this->assertSame( $expected_word_count, $config['wordCount'], 'Digits should count as words; punctuation and emoji should not.' );
 	}
 
 	public function data_digits_punctuation_and_emoji() {
@@ -1069,7 +1069,7 @@ class Content_EventsTest extends TestCase {
 
 		$config = $this->measure_content_alone( "The quick brown fox \xB1\x80 jumps over the lazy dog" );
 
-		$this->assertSame( 9, $config['wordCount'], 'The ICU count should skip the invalid part and count the rest of the text.' );
+		$this->assertSame( 9, $config['wordCount'], 'The ICU count should skip invalid content and count the rest of the text.' );
 	}
 
 	public function test_inline_config__carries_the_reading_time_values() {
@@ -1112,7 +1112,7 @@ class Content_EventsTest extends TestCase {
 		$config = $this->get_published_config();
 
 		$this->assertSame( 238, $config['wordCount'], 'The word count should come from the queried post.' );
-		$this->assertSame( 60, $config['estimatedReadTimeSeconds'], 'The estimate should come from the queried post.' );
+		$this->assertSame( 60, $config['estimatedReadTimeSeconds'], 'The "time-to-read" estimate should come from the queried post.' );
 		$this->assertTrue( $config['isFinalPage'], 'A post that is not split into pages should report itself as the last page.' );
 	}
 

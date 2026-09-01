@@ -84,7 +84,7 @@ describe( 'initializeReadArticle', () => {
 	}
 
 	/**
-	 * Renders a post whose content carries no marker, the way a page builder
+	 * Renders a post whose content has no marker, the way a page builder
 	 * does.
 	 *
 	 * @since n.e.x.t
@@ -282,7 +282,7 @@ describe( 'initializeReadArticle', () => {
 		expect( gtagEventMock ).not.toHaveBeenCalled();
 	} );
 
-	it( 'watches the marker rather than the scroll position when the page carries one', () => {
+	it( 'watches the marker rather than the scroll position when the page has one', () => {
 		initializeReadArticle( baseConfig() );
 
 		expect( intersectionObserver.observers ).toHaveLength( 1 );
@@ -313,7 +313,7 @@ describe( 'initializeReadArticle', () => {
 		} );
 	} );
 
-	it( 'sends the event when the waiting time is reached and the marker is then seen', () => {
+	it( 'sends the event when the waiting time is reached and the marker is scrolled into view', () => {
 		initializeReadArticle( baseConfig() );
 
 		jest.advanceTimersByTime( REQUIRED_WAIT_MS );
@@ -357,7 +357,7 @@ describe( 'initializeReadArticle', () => {
 		expect( intersectionObserver.observers ).toHaveLength( 1 );
 	} );
 
-	it( 'stops watching the marker when it has been on screen', () => {
+	it( 'stops watching the marker once it has been viewed', () => {
 		initializeReadArticle( baseConfig() );
 
 		expect( intersectionObserver.observers ).toHaveLength( 1 );
@@ -395,7 +395,7 @@ describe( 'initializeReadArticle', () => {
 		expect( gtagEventMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'falls back to the scroll depth when the page carries no marker', () => {
+	it( 'falls back to the scroll position when the page has no marker', () => {
 		renderPostWithoutMarker();
 		initializeReadArticle( baseConfig() );
 
@@ -652,7 +652,7 @@ describe( 'initializeReadArticle', () => {
 		expect( gtagEventMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'sends nothing more when the marker is seen again after the event has been sent', () => {
+	it( 'does not send another "read_article" event once the "read_article" event has been sent', () => {
 		initializeReadArticle( baseConfig() );
 
 		intersectionObserver.simulate( { isIntersecting: true } );
@@ -668,7 +668,7 @@ describe( 'initializeReadArticle', () => {
 		expect( gtagEventMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'removes the observer, the timer, and the listeners when the event has been sent', () => {
+	it( 'removes the observer, the timer, and the listeners when the "read_article" event has been sent', () => {
 		initializeReadArticle( baseConfig() );
 
 		intersectionObserver.simulate( { isIntersecting: true } );
@@ -695,7 +695,7 @@ describe( 'initializeReadArticle', () => {
 		);
 	} );
 
-	it( 'reports the failure and removes the observer, the timer, and the listeners when sending the event throws', () => {
+	it( 'reports the failure and removes the observer, the timer, and the listeners when sending the "read_article" event encounters an error', () => {
 		const consoleErrorSpy = jest
 			.spyOn( console, 'error' )
 			.mockImplementation( () => {} );
