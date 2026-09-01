@@ -333,8 +333,8 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->authenticate_and_grant_required_scopes_for_user( $secondary_admin_id );
 		$modules = $this->create_modules_with_fake_service_entity_access(
 			array(
-				Analytics_4::MODULE_SLUG    => false,
-				Search_Console::MODULE_SLUG => false,
+				'analytics-4'    => false,
+				'search-console' => false,
 			),
 			$owner_id
 		);
@@ -344,14 +344,14 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 			$secondary_admin_id,
 			$this->date_range,
 			array(
-				Analytics_4::MODULE_SLUG    => array( 'total_visitors' => array( 'value' => 10 ) ),
-				Search_Console::MODULE_SLUG => array( 'total_impressions' => array( 'value' => 10 ) ),
+				'analytics-4'    => array( 'total_visitors' => array( 'value' => 10 ) ),
+				'search-console' => array( 'total_impressions' => array( 'value' => 10 ) ),
 			)
 		);
 
 		$this->assertWPError( $payload, 'Secondary admin denied access to every connected module should get a categorized error instead of a fatal error.' );
 		$this->assertEquals( 'permissions_error', $payload->get_error_data()['category_id'], 'Denied service-entity access should be categorized as a permissions error.' );
-		$this->assertEquals( 'analytics-4', $payload->get_error_data()['module_slug'], 'Categorized error should carry the first denied module slug.' );
+		$this->assertEquals( 'analytics-4', $payload->get_error_data()['module_slug'], 'Categorized error should name the first denied module slug.' );
 	}
 
 	public function test_get_user_payload__unverified_admin_with_denied_access_returns_permissions_error() {
@@ -364,8 +364,8 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 
 		$modules = $this->create_modules_with_fake_service_entity_access(
 			array(
-				Analytics_4::MODULE_SLUG    => false,
-				Search_Console::MODULE_SLUG => false,
+				'analytics-4'    => false,
+				'search-console' => false,
 			),
 			$owner_id
 		);
@@ -375,14 +375,14 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 			$secondary_admin_id,
 			$this->date_range,
 			array(
-				Analytics_4::MODULE_SLUG    => array( 'total_visitors' => array( 'value' => 10 ) ),
-				Search_Console::MODULE_SLUG => array( 'total_impressions' => array( 'value' => 10 ) ),
+				'analytics-4'    => array( 'total_visitors' => array( 'value' => 10 ) ),
+				'search-console' => array( 'total_impressions' => array( 'value' => 10 ) ),
 			)
 		);
 
 		$this->assertWPError( $payload, 'An unverified secondary admin denied access should still get a categorized error instead of an empty payload.' );
 		$this->assertEquals( 'permissions_error', $payload->get_error_data()['category_id'], 'Site verification should not be required to detect denied service-entity access.' );
-		$this->assertEquals( 'analytics-4', $payload->get_error_data()['module_slug'], 'Categorized error should carry the first denied module slug.' );
+		$this->assertEquals( 'analytics-4', $payload->get_error_data()['module_slug'], 'Categorized error should name the first denied module slug.' );
 	}
 
 	public function test_get_user_payload__returns_the_permissions_error_when_pagespeed_insights_is_also_connected() {
@@ -390,13 +390,12 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$secondary_admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$this->authenticate_and_grant_required_scopes_for_user( $secondary_admin_id );
 
-		// The access check never denies PageSpeed Insights, because it has no service
-		// entity. PageSpeed Insights also adds no section, so it must not hide the
-		// denied Analytics and Search Console.
+		// PageSpeed Insights adds no section to the report, so it must not hide the
+		// permissions error for Analytics and Search Console.
 		$modules = $this->create_modules_with_fake_service_entity_access(
 			array(
-				Analytics_4::MODULE_SLUG    => false,
-				Search_Console::MODULE_SLUG => false,
+				'analytics-4'    => false,
+				'search-console' => false,
 			),
 			$owner_id,
 			array( 'pagespeed-insights' )
@@ -407,14 +406,14 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 			$secondary_admin_id,
 			$this->date_range,
 			array(
-				Analytics_4::MODULE_SLUG    => array( 'total_visitors' => array( 'value' => 10 ) ),
-				Search_Console::MODULE_SLUG => array( 'total_impressions' => array( 'value' => 10 ) ),
+				'analytics-4'    => array( 'total_visitors' => array( 'value' => 10 ) ),
+				'search-console' => array( 'total_impressions' => array( 'value' => 10 ) ),
 			)
 		);
 
-		$this->assertWPError( $payload, 'get_user_payload() should return a WP_Error when the recipient can read no report module.' );
+		$this->assertWPError( $payload, 'get_user_payload() should return a WP_Error when the recipient cannot read either report module.' );
 		$this->assertEquals( 'permissions_error', $payload->get_error_data()['category_id'], 'get_user_payload() should categorize denied access as a permissions error.' );
-		$this->assertEquals( 'analytics-4', $payload->get_error_data()['module_slug'], 'get_user_payload() should name analytics-4, the first module the recipient cannot read.' );
+		$this->assertEquals( 'analytics-4', $payload->get_error_data()['module_slug'], 'get_user_payload() should name `analytics-4`, the first module the recipient cannot read.' );
 	}
 
 	public function test_get_user_payload__returns_an_empty_array_when_only_adsense_is_denied() {
@@ -424,9 +423,9 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 
 		$modules = $this->create_modules_with_fake_service_entity_access(
 			array(
-				Analytics_4::MODULE_SLUG    => true,
-				Search_Console::MODULE_SLUG => true,
-				'adsense'                   => false,
+				'analytics-4'    => true,
+				'search-console' => true,
+				'adsense'        => false,
 			),
 			$owner_id
 		);
@@ -436,12 +435,12 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 			$secondary_admin_id,
 			$this->date_range,
 			array(
-				Analytics_4::MODULE_SLUG    => array(),
-				Search_Console::MODULE_SLUG => array(),
+				'analytics-4'    => array(),
+				'search-console' => array(),
 			)
 		);
 
-		$this->assertSame( array(), $payload, 'get_user_payload() should return an empty array when only AdSense is denied, because it adds no section to the report.' );
+		$this->assertSame( array(), $payload, 'get_user_payload() should return an empty array when only AdSense is denied, because AdSense adds no section to the report.' );
 	}
 
 	public function test_get_user_payload__returns_the_permissions_error_when_search_console_is_denied_and_analytics_has_no_data() {
@@ -451,8 +450,8 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 
 		$modules = $this->create_modules_with_fake_service_entity_access(
 			array(
-				Analytics_4::MODULE_SLUG    => true,
-				Search_Console::MODULE_SLUG => false,
+				'analytics-4'    => true,
+				'search-console' => false,
 			),
 			$owner_id
 		);
@@ -462,12 +461,12 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 			$secondary_admin_id,
 			$this->date_range,
 			array(
-				Analytics_4::MODULE_SLUG => array(),
+				'analytics-4' => array(),
 			)
 		);
 
 		$this->assertWPError( $payload, 'get_user_payload() should return a WP_Error when Analytics returns no data and Search Console is denied.' );
-		$this->assertEquals( 'search-console', $payload->get_error_data()['module_slug'], 'get_user_payload() should name search-console, the module the recipient cannot read.' );
+		$this->assertEquals( 'search-console', $payload->get_error_data()['module_slug'], 'get_user_payload() should name `search-console`, the module the recipient cannot read.' );
 	}
 
 	public function test_get_user_payload__service_entity_access_check_error_returns_empty_array() {
@@ -714,7 +713,7 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 	}
 
 	/**
-	 * Creates a fake module with no service entity, so every admin keeps it.
+	 * Creates a fake module with no service entity, so no access check runs on it.
 	 *
 	 * @param string $slug     Module slug.
 	 * @param int    $owner_id Module owner user ID.
@@ -742,6 +741,14 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		};
 	}
 
+	/**
+	 * Creates a Modules instance holding fake modules and activates them.
+	 *
+	 * @param array $access_map                   Service entity access, keyed by module slug.
+	 * @param int   $owner_id                     Module owner user ID.
+	 * @param array $slugs_without_service_entity Optional. Slugs to create with no service entity. Default empty.
+	 * @return Modules Modules instance.
+	 */
 	private function create_modules_with_fake_service_entity_access( array $access_map, $owner_id, array $slugs_without_service_entity = array() ) {
 		$modules_instance = new Modules(
 			$this->context,

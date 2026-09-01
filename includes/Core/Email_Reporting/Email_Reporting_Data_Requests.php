@@ -52,13 +52,13 @@ class Email_Reporting_Data_Requests {
 	);
 
 	/**
-	 * Slugs of the modules `collect_payloads()` reads.
+	 * Slugs of the modules that add a section to the email report.
 	 *
-	 * An admin can also connect PageSpeed Insights and AdSense, and neither adds a
-	 * section to the email report.
+	 * An admin can connect PageSpeed Insights and AdSense as well. Neither adds
+	 * a section.
 	 *
 	 * @since n.e.x.t
-	 * @var array
+	 * @var string[]
 	 */
 	const PAYLOAD_MODULE_SLUGS = array(
 		Search_Console::MODULE_SLUG,
@@ -190,17 +190,17 @@ class Email_Reporting_Data_Requests {
 				$shareable_modules = array_intersect_key( $shareable_modules, array_flip( $allowed_module_slugs ) );
 			}
 
-			// The notice names the first denied module, so AdSense must never reach that list.
+			// Remove the modules the report never shows, so the permissions error
+			// cannot name AdSense.
 			$shareable_modules = array_intersect_key( $shareable_modules, array_flip( self::PAYLOAD_MODULE_SLUGS ) );
 
 			list( $available_modules, $denied_module_slugs ) = $this->filter_modules_for_user( $shareable_modules, $user );
 
 			$payload = $this->collect_payloads( $available_modules, $date_range, $shared_payloads );
 
+			// Without this return, `Email_Log_Processor` reports the empty payload as
+			// `email_report_no_data`, and the admin gets the generic error email.
 			if ( empty( $payload ) && ! empty( $denied_module_slugs ) ) {
-				// A `WP_Error` from `collect_payloads()` is never empty, so it returns unchanged.
-				// `Email_Log_Processor` turns an empty payload into `email_report_no_data`,
-				// and the admin then sees a server error notice, not a permissions one.
 				return $this->categorize_error(
 					new WP_Error(
 						'email_reporting_module_access_denied',
