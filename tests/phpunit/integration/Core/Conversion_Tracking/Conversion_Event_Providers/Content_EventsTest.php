@@ -19,7 +19,7 @@ use Google\Site_Kit\Tests\TestCase;
 class Content_EventsTest extends TestCase {
 
 	/**
-	 * Post type the `a custom post type single` data set registers.
+	 * Post type the `a single custom post type entry` data set registers.
 	 */
 	const TEST_POST_TYPE = 'sitekit_test_cpt';
 
@@ -145,8 +145,8 @@ class Content_EventsTest extends TestCase {
 
 		$config = $this->get_published_config();
 
-		$this->assertSame( $post_id, $config['postID'], 'Inline config on single post should include the post ID.' );
-		$this->assertTrue( $config['isSinglePost'], 'Inline config on single post should have isSinglePost true.' );
+		$this->assertSame( $post_id, $config['postID'], 'The published configuration should report the post ID on a single post.' );
+		$this->assertTrue( $config['isSinglePost'], '`isSinglePost` should be true on a single post.' );
 	}
 
 	public function test_inline_config__home_page() {
@@ -163,8 +163,8 @@ class Content_EventsTest extends TestCase {
 
 		$config = $this->get_published_config();
 
-		$this->assertSame( 0, $config['postID'], 'Inline config on home page should have postID 0.' );
-		$this->assertFalse( $config['isSinglePost'], 'Inline config on home page should have isSinglePost false.' );
+		$this->assertSame( 0, $config['postID'], '`postID` should be 0 on the home page.' );
+		$this->assertFalse( $config['isSinglePost'], '`isSinglePost` should be false on the home page.' );
 	}
 
 	/**
@@ -323,7 +323,7 @@ class Content_EventsTest extends TestCase {
 
 		$config = $this->get_published_config();
 
-		$this->assertTrue( $config['hasVimeoEmbed'], 'hasVimeoEmbed should be true after a Vimeo embed was seen.' );
+		$this->assertTrue( $config['hasVimeoEmbed'], '`hasVimeoEmbed` should be true after a Vimeo embed rendered.' );
 	}
 
 	public function test_filter_embed_html__no_vimeo_embed_reports_false() {
@@ -334,7 +334,7 @@ class Content_EventsTest extends TestCase {
 
 		$config = $this->get_published_config();
 
-		$this->assertFalse( $config['hasVimeoEmbed'], 'hasVimeoEmbed should be false when no Vimeo iframe was seen.' );
+		$this->assertFalse( $config['hasVimeoEmbed'], '`hasVimeoEmbed` should be false when no Vimeo iframe rendered.' );
 	}
 
 	public function test_filter_embed_html__core_embed_block_rewrites_youtube_iframe() {
@@ -688,7 +688,7 @@ class Content_EventsTest extends TestCase {
 		$rendered = $this->apply_the_content();
 
 		$this->assertStringContainsString(
-			'<span class="googlesitekit-end-of-content" aria-hidden="true" style="display:block;height:1px"></span>',
+			'<span class="googlesitekit-end-of-content" aria-hidden="true" style="display:block;height:1px;margin-bottom:-1px"></span>',
 			$rendered,
 			'The rendered content should have the marker span.'
 		);
@@ -769,7 +769,7 @@ class Content_EventsTest extends TestCase {
 		$this->assertStringContainsString(
 			'googlesitekit-end-of-content',
 			$rendered,
-			'An excerpt taken first should not stop the real content from getting the marker.'
+			'An excerpt taken first should not stop the real content from rendering the marker.'
 		);
 	}
 
@@ -780,14 +780,14 @@ class Content_EventsTest extends TestCase {
 		$rendered = $this->apply_the_content();
 		$excerpt  = get_the_excerpt( $post_id );
 
-		$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered, 'The real content should get the marker.' );
-		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $excerpt, 'An excerpt taken afterwards should not render the marker.' );
+		$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered, 'The real content should render the marker.' );
+		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $excerpt, 'An excerpt taken after the content has rendered should not render the marker.' );
 	}
 
 	/**
 	 * @dataProvider data_requests_without_a_marker
 	 */
-	public function test_append_end_of_content_marker__appends_no_marker_outside_a_single_post( $go_to_request ) {
+	public function test_append_end_of_content_marker__appends_no_marker_outside_a_single_post( $go_to_request, $request_label ) {
 		$go_to_request( $this );
 
 		$this->bootstrap_content_hooks();
@@ -797,13 +797,13 @@ class Content_EventsTest extends TestCase {
 		$this->assertStringNotContainsString(
 			'googlesitekit-end-of-content',
 			$rendered,
-			'Only a single blog post should get the marker.'
+			"Only a single blog post should render the marker, so $request_label should not."
 		);
 	}
 
 	public function data_requests_without_a_marker() {
 		return array(
-			'a feed of the post'          => array(
+			'a feed of the post'              => array(
 				function ( $test ) {
 					$post_id = $test->factory()->post->create( array( 'post_content' => 'Some post content.' ) );
 
@@ -811,8 +811,9 @@ class Content_EventsTest extends TestCase {
 
 					$test->assertTrue( is_feed(), 'Adding `feed=rss2` to the post permalink should give a feed request.' );
 				},
+				'a feed of the post',
 			),
-			'the oEmbed page of the post' => array(
+			'the oEmbed page of the post'     => array(
 				function ( $test ) {
 					$post_id = $test->factory()->post->create( array( 'post_content' => 'Some post content.' ) );
 
@@ -820,8 +821,9 @@ class Content_EventsTest extends TestCase {
 
 					$test->assertTrue( is_embed(), 'The oEmbed URL of a post should give an embed request.' );
 				},
+				'the oEmbed page of the post',
 			),
-			'a page'                      => array(
+			'a page'                          => array(
 				function ( $test ) {
 					$page_id = $test->factory()->post->create(
 						array(
@@ -832,8 +834,9 @@ class Content_EventsTest extends TestCase {
 
 					$test->go_to( get_permalink( $page_id ) );
 				},
+				'a page',
 			),
-			'a custom post type single'   => array(
+			'a single custom post type entry' => array(
 				function ( $test ) {
 					register_post_type( self::TEST_POST_TYPE, array( 'public' => true ) );
 
@@ -846,8 +849,9 @@ class Content_EventsTest extends TestCase {
 
 					$test->go_to( get_permalink( $custom_post_id ) );
 				},
+				'a single custom post type entry',
 			),
-			'a category archive'          => array(
+			'a category archive'              => array(
 				function ( $test ) {
 					$category_id = $test->factory()->category->create();
 					$test->factory()->post->create(
@@ -859,8 +863,9 @@ class Content_EventsTest extends TestCase {
 
 					$test->go_to( get_category_link( $category_id ) );
 				},
+				'a category archive',
 			),
-			'a search results page'       => array(
+			'a search results page'           => array(
 				function ( $test ) {
 					$test->factory()->post->create(
 						array(
@@ -873,13 +878,15 @@ class Content_EventsTest extends TestCase {
 
 					$test->assertTrue( is_search(), 'A request for `/?s=distinctive` should give a search results request.' );
 				},
+				'a search results page',
 			),
-			'the home page'               => array(
+			'the home page'                   => array(
 				function ( $test ) {
 					$test->factory()->post->create( array( 'post_content' => 'Some post content.' ) );
 
 					$test->go_to( home_url( '/' ) );
 				},
+				'the home page',
 			),
 		);
 	}
@@ -1072,24 +1079,24 @@ class Content_EventsTest extends TestCase {
 		$this->assertSame( 9, $config['wordCount'], 'The ICU count should skip invalid content and count the rest of the text.' );
 	}
 
-	public function test_inline_config__carries_the_reading_time_values() {
+	public function test_inline_config__reports_the_reading_time_values() {
 		$this->go_to_new_post( trim( str_repeat( 'word ', 238 ) ) );
 		$this->bootstrap_content_hooks();
 		$this->apply_the_content();
 
 		$config = $this->get_published_config();
 
-		$this->assertSame( 238, $config['wordCount'], 'The configuration should carry the word count.' );
-		$this->assertSame( 60, $config['estimatedReadTimeSeconds'], 'The configuration should carry the estimated reading time.' );
-		$this->assertSame( 85, $config['readTimeThresholdPercent'], 'The configuration should carry the percentage of the estimate a visitor must stay.' );
-		$this->assertSame( 5, $config['minimumReadTimeSeconds'], 'The configuration should carry the shortest waiting time.' );
-		$this->assertTrue( $config['isFinalPage'], 'A post that is not split into pages should report itself as the last page.' );
+		$this->assertSame( 238, $config['wordCount'], 'The configuration should report the word count.' );
+		$this->assertSame( 60, $config['estimatedReadTimeSeconds'], 'The configuration should report the estimated reading time.' );
+		$this->assertSame( 85, $config['readTimeThresholdPercent'], 'The configuration should report the percentage of the estimate a visitor must stay.' );
+		$this->assertSame( 5, $config['minimumReadTimeSeconds'], 'The configuration should report the shortest waiting time.' );
+		$this->assertTrue( $config['isLastPageOfMultiPagePost'], 'A post that is not split into pages should report itself as the last page.' );
 	}
 
 	/**
 	 * @dataProvider data_paginated_post_pages
 	 */
-	public function test_inline_config__reports_the_final_page_of_a_paginated_post( $page, $is_final_page ) {
+	public function test_inline_config__reports_the_last_page_of_a_paginated_post( $page, $is_last_page ) {
 		$this->go_to_page_of_paginated_post( $page );
 		$this->bootstrap_content_hooks();
 		$this->apply_the_content();
@@ -1097,9 +1104,9 @@ class Content_EventsTest extends TestCase {
 		$config = $this->get_published_config();
 
 		$this->assertSame(
-			$is_final_page,
-			$config['isFinalPage'],
-			"`isFinalPage` should say whether page $page is the last of the post's 3 pages."
+			$is_last_page,
+			$config['isLastPageOfMultiPagePost'],
+			"`isLastPageOfMultiPagePost` should say whether page $page is the last of the post's 3 pages."
 		);
 	}
 
@@ -1113,24 +1120,24 @@ class Content_EventsTest extends TestCase {
 
 		$this->assertSame( 238, $config['wordCount'], 'The word count should come from the queried post.' );
 		$this->assertSame( 60, $config['estimatedReadTimeSeconds'], 'The "time-to-read" estimate should come from the queried post.' );
-		$this->assertTrue( $config['isFinalPage'], 'A post that is not split into pages should report itself as the last page.' );
+		$this->assertTrue( $config['isLastPageOfMultiPagePost'], 'A post that is not split into pages should report itself as the last page.' );
 	}
 
 	/**
 	 * @dataProvider data_paginated_post_pages
 	 */
-	public function test_inline_config__falls_back_to_the_queried_page_of_a_paginated_post( $page, $is_final_page ) {
+	public function test_inline_config__falls_back_to_the_queried_page_of_a_paginated_post( $page, $is_last_page ) {
 		$this->go_to_page_of_paginated_post( $page );
 		$this->bootstrap_content_hooks();
 
 		$config = $this->get_published_config();
 
 		$this->assertSame(
-			$is_final_page,
-			$config['isFinalPage'],
-			"`isFinalPage` should say whether page $page is the last of the post's 3 pages, even when `the_content` never runs."
+			$is_last_page,
+			$config['isLastPageOfMultiPagePost'],
+			"`isLastPageOfMultiPagePost` should say whether page $page is the last of the post's 3 pages, even when `the_content` never runs."
 		);
-		$this->assertSame( 3, $config['wordCount'], "The word count should cover page $page's text alone." );
+		$this->assertSame( 3, $config['wordCount'], "The word count should count page $page's text alone." );
 	}
 
 	public function test_inline_config__reports_no_reading_time_outside_a_single_post() {
@@ -1144,7 +1151,7 @@ class Content_EventsTest extends TestCase {
 
 		$this->assertSame( 0, $config['wordCount'], 'The home page should report no word count.' );
 		$this->assertSame( 0, $config['estimatedReadTimeSeconds'], 'The home page should report no reading time.' );
-		$this->assertFalse( $config['isFinalPage'], 'The home page should not report a last page, because it is not a single post.' );
+		$this->assertFalse( $config['isLastPageOfMultiPagePost'], 'The home page should not report a last page, because it is not a single post.' );
 	}
 
 	/**

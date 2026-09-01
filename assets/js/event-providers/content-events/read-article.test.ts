@@ -56,7 +56,7 @@ function baseConfig(
 		hasVimeoEmbed: false,
 		wordCount: 476,
 		estimatedReadTimeSeconds: 120,
-		isFinalPage: true,
+		isLastPageOfMultiPagePost: true,
 		readTimeThresholdPercent: 85,
 		minimumReadTimeSeconds: 5,
 		...overrides,
@@ -69,10 +69,12 @@ describe( 'initializeReadArticle', () => {
 	let documentListenerSpy: jest.SpyInstance;
 	let windowRemovalSpy: jest.SpyInstance;
 	let documentRemovalSpy: jest.SpyInstance;
-	let hasFocus: boolean;
+	/** Whether the document has the focus, which the `hasFocus` spy returns. */
+	let mockHasFocusValue: boolean;
 
 	/**
-	 * Renders a post whose content ends with the marker PHP appends.
+	 * Renders a post whose content ends with the end-of-content marker
+	 * PHP appends.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -80,7 +82,7 @@ describe( 'initializeReadArticle', () => {
 	 */
 	function renderPostWithMarker(): void {
 		global.document.body.innerHTML =
-			'<article>Post content.<span class="googlesitekit-end-of-content" aria-hidden="true" style="display:block;height:1px"></span></article>';
+			'<article>Post content.<span class="googlesitekit-end-of-content" aria-hidden="true" style="display:block;height:1px;margin-bottom:-1px"></span></article>';
 	}
 
 	/**
@@ -96,31 +98,32 @@ describe( 'initializeReadArticle', () => {
 	}
 
 	/**
-	 * Sets what the page reports for its scroll position.
+	 * Sets how far the page has scrolled, without firing the `scroll` event.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {number} depth Share of the page scrolled past. The fixture's top
-	 *                       is `0.2` and its bottom is `1`.
+	 * @param {number} scrollRatio How much of the page the visitor has seen.
+	 *                             `0.2` is the top and `1` is the bottom.
 	 * @return {void}
 	 */
-	function placePageAt( depth: number ): void {
+	function placePageAt( scrollRatio: number ): void {
 		Object.defineProperty( global, 'scrollY', {
 			configurable: true,
-			value: depth * SCROLL_HEIGHT - VIEWPORT_HEIGHT,
+			value: scrollRatio * SCROLL_HEIGHT - VIEWPORT_HEIGHT,
 		} );
 	}
 
 	/**
-	 * Moves the page to a depth and fires the `scroll` event.
+	 * Sets how far the page has scrolled, then fires the `scroll` event.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {number} depth Share of the page scrolled past.
+	 * @param {number} scrollRatio How much of the page the visitor has seen.
+	 *                             `0.2` is the top and `1` is the bottom.
 	 * @return {void}
 	 */
-	function scrollPageTo( depth: number ): void {
-		placePageAt( depth );
+	function scrollPageTo( scrollRatio: number ): void {
+		placePageAt( scrollRatio );
 		global.dispatchEvent( new Event( 'scroll' ) );
 	}
 
@@ -184,7 +187,7 @@ describe( 'initializeReadArticle', () => {
 	 * @return {void}
 	 */
 	function blurWindow(): void {
-		hasFocus = false;
+		mockHasFocusValue = false;
 		global.dispatchEvent( new Event( 'blur' ) );
 	}
 
@@ -196,7 +199,7 @@ describe( 'initializeReadArticle', () => {
 	 * @return {void}
 	 */
 	function focusWindow(): void {
-		hasFocus = true;
+		mockHasFocusValue = true;
 		global.dispatchEvent( new Event( 'focus' ) );
 	}
 
@@ -224,9 +227,9 @@ describe( 'initializeReadArticle', () => {
 		placePageAt( 0.2 );
 
 		markPageVisible();
-		hasFocus = true;
+		mockHasFocusValue = true;
 		jest.spyOn( global.document, 'hasFocus' ).mockImplementation(
-			() => hasFocus
+			() => mockHasFocusValue
 		);
 
 		windowListenerSpy = jest.spyOn( global, 'addEventListener' );
@@ -270,7 +273,9 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'registers no observer, listener, or timer when the post is not on its last page', () => {
-		initializeReadArticle( baseConfig( { isFinalPage: false } ) );
+		initializeReadArticle(
+			baseConfig( { isLastPageOfMultiPagePost: false } )
+		);
 
 		expect( intersectionObserver.observers ).toHaveLength( 0 );
 		expect( windowListenerSpy ).not.toHaveBeenCalled();
@@ -282,7 +287,7 @@ describe( 'initializeReadArticle', () => {
 		expect( gtagEventMock ).not.toHaveBeenCalled();
 	} );
 
-	it( 'watches the marker rather than the scroll position when the page has one', () => {
+	it( 'watches the end-of-content marker rather than the scroll position when the page has one', () => {
 		initializeReadArticle( baseConfig() );
 
 		expect( intersectionObserver.observers ).toHaveLength( 1 );
@@ -296,7 +301,7 @@ describe( 'initializeReadArticle', () => {
 		);
 	} );
 
-	it( 'sends the event when the marker is seen and the waiting time is then reached', () => {
+	it( 'sends the event when the end-of-content marker is scrolled into view and the waiting time is then reached', () => {
 		initializeReadArticle( baseConfig() );
 
 		intersectionObserver.simulate( { isIntersecting: true } );
@@ -313,7 +318,7 @@ describe( 'initializeReadArticle', () => {
 		} );
 	} );
 
-	it( 'sends the event when the waiting time is reached and the marker is scrolled into view', () => {
+	it( 'sends the event when the waiting time is reached and the end-of-content marker is scrolled into view', () => {
 		initializeReadArticle( baseConfig() );
 
 		jest.advanceTimersByTime( REQUIRED_WAIT_MS );
@@ -347,7 +352,7 @@ describe( 'initializeReadArticle', () => {
 		expect( gtagEventMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'sends nothing when the marker has never been on screen', () => {
+	it( 'sends nothing when the end-of-content marker has never been scrolled into view', () => {
 		initializeReadArticle( baseConfig() );
 
 		intersectionObserver.simulate( { isIntersecting: false } );
@@ -357,7 +362,7 @@ describe( 'initializeReadArticle', () => {
 		expect( intersectionObserver.observers ).toHaveLength( 1 );
 	} );
 
-	it( 'stops watching the marker once it has been viewed', () => {
+	it( 'stops watching the end-of-content marker once it has been viewed', () => {
 		initializeReadArticle( baseConfig() );
 
 		expect( intersectionObserver.observers ).toHaveLength( 1 );
@@ -365,6 +370,22 @@ describe( 'initializeReadArticle', () => {
 		intersectionObserver.simulate( { isIntersecting: true } );
 
 		expect( intersectionObserver.observers ).toHaveLength( 0 );
+	} );
+
+	it( 'does not watch the end-of-content marker again when the visitor scrolls back up', () => {
+		initializeReadArticle( baseConfig() );
+		intersectionObserver.simulate( { isIntersecting: true } );
+
+		expect( intersectionObserver.observers ).toHaveLength( 0 );
+
+		// The visitor scrolls back up, so the marker leaves the screen again.
+		intersectionObserver.simulate( { isIntersecting: false } );
+
+		expect( intersectionObserver.observers ).toHaveLength( 0 );
+
+		jest.advanceTimersByTime( REQUIRED_WAIT_MS );
+
+		expect( gtagEventMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	it( 'waits 5100 ms for an estimate of 6 seconds', () => {
@@ -395,7 +416,7 @@ describe( 'initializeReadArticle', () => {
 		expect( gtagEventMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'falls back to the scroll position when the page has no marker', () => {
+	it( 'falls back to the scroll position when the page has no end-of-content marker', () => {
 		renderPostWithoutMarker();
 		initializeReadArticle( baseConfig() );
 
@@ -424,9 +445,9 @@ describe( 'initializeReadArticle', () => {
 		} );
 	} );
 
-	it( 'falls back to the scroll depth when the browser has no `IntersectionObserver`', () => {
-		// The page carries the marker, but a browser with no
-		// `IntersectionObserver` can't watch it.
+	it( 'falls back to the scroll position when the browser has no `IntersectionObserver`', () => {
+		// The end-of-content marker stays on the page, so the missing
+		// `IntersectionObserver` is the only reason to fall back to scrolling.
 		delete ( global as { IntersectionObserver?: unknown } )
 			.IntersectionObserver;
 
@@ -601,7 +622,7 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'starts no waiting time when the window is in the background on load', () => {
-		hasFocus = false;
+		mockHasFocusValue = false;
 
 		initializeReadArticle( baseConfig() );
 
@@ -635,7 +656,7 @@ describe( 'initializeReadArticle', () => {
 		expect( gtagEventMock ).not.toHaveBeenCalled();
 	} );
 
-	it( 'sends nothing more when the visitor scrolls again after the event has been sent', () => {
+	it( 'does not send another "read_article" event when the visitor scrolls to the end again', () => {
 		renderPostWithoutMarker();
 		placePageAt( 1 );
 

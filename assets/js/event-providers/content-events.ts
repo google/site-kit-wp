@@ -58,11 +58,9 @@ export function getContentEventsConfig(): ContentEventsConfig {
 		hasVimeoEmbed: false,
 		wordCount: 0,
 		estimatedReadTimeSeconds: 0,
-		isFinalPage: false,
-		// `ContentEventsConfig` requires both values, and `Content_Events.php`
-		// sends the real ones. Nothing reads the numbers below. Only a page
-		// cached before this release falls back to them, and that page has no
-		// `isFinalPage`, so `initializeReadArticle()` returns early.
+		isLastPageOfMultiPagePost: false,
+		// These two defaults are here only because `ContentEventsConfig`
+		// requires them. `Content_Events.php` always sends the real values.
 		readTimeThresholdPercent: 85,
 		minimumReadTimeSeconds: 5,
 		...( global._googlesitekit?.contentEvents || {} ),
@@ -72,13 +70,14 @@ export function getContentEventsConfig(): ContentEventsConfig {
 /**
  * Runs one initializer, and reports a failure rather than throwing it.
  *
- * An uncaught throw stops every initializer after this one. It also reaches
- * the page as an error.
+ * No initializer throws on its own. We still catch, because the initializers
+ * run on any WordPress frontend where another plugin can replace a browser API
+ * they call. One throw stops every initializer that follows.
  *
  * @since n.e.x.t
  *
  * @param {Function} initialize Initializer to run.
- * @param {string}   message    Message to log when the initializer throws.
+ * @param {string}   [message]  Optional. Message to log before the error.
  * @return {void}
  */
 function initializeSafely( initialize: () => void, message?: string ): void {
@@ -86,7 +85,7 @@ function initializeSafely( initialize: () => void, message?: string ): void {
 		initialize();
 	} catch ( error ) {
 		// eslint-disable-next-line no-console
-		console.error( message, error );
+		console.error( ...( message ? [ message, error ] : [ error ] ) );
 	}
 }
 

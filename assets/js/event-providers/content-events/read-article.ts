@@ -38,7 +38,7 @@ export function initializeReadArticle( config: ContentEventsConfig ): void {
 	const {
 		postID,
 		isSinglePost,
-		isFinalPage,
+		isLastPageOfMultiPagePost,
 		wordCount,
 		estimatedReadTimeSeconds,
 		readTimeThresholdPercent,
@@ -47,7 +47,7 @@ export function initializeReadArticle( config: ContentEventsConfig ): void {
 
 	// We send the event only from the last page of a single blog post, so one
 	// visit sends at most one event.
-	if ( ! isSinglePost || ! isFinalPage ) {
+	if ( ! isSinglePost || ! isLastPageOfMultiPagePost ) {
 		return;
 	}
 
@@ -69,8 +69,8 @@ export function initializeReadArticle( config: ContentEventsConfig ): void {
 	/**
 	 * The moment the timer last started, from `performance.now()`.
 	 *
-	 * That clock only moves forwards, so changing the device clock can't add
-	 * time the visitor never spent reading.
+	 * That clock only moves forwards, so changing the device clock adds no
+	 * reading time.
 	 */
 	let waitStartedAt = 0;
 
@@ -101,8 +101,7 @@ export function initializeReadArticle( config: ContentEventsConfig ): void {
 				estimated_read_time_seconds: estimatedReadTimeSeconds,
 			} );
 		} catch ( error ) {
-			// The catch keeps `cleanUp()` running when `gtagEvent()` throws. The
-			// frontend has no other place to report a failure.
+			// The catch keeps `cleanUp()` running when `gtagEvent()` throws.
 			// eslint-disable-next-line no-console
 			console.error(
 				'Site Kit: failed to send the read article event.',
@@ -132,11 +131,11 @@ export function initializeReadArticle( config: ContentEventsConfig ): void {
 	// Counts the end of the article as reached at 90% of the page. The last 10%
 	// leaves room for whatever the theme renders below the article text.
 	function handleScroll(): void {
-		const scrolledShare =
+		const scrollRatio =
 			( global.scrollY + global.innerHeight ) /
 			global.document.documentElement.scrollHeight;
 
-		if ( scrolledShare >= 0.9 ) {
+		if ( scrollRatio >= 0.9 ) {
 			markEndReached();
 		}
 	}
@@ -187,22 +186,24 @@ export function initializeReadArticle( config: ContentEventsConfig ): void {
 	}
 
 	/** The invisible marker PHP appends to the end of the post content. */
-	const endOfContent = global.document.querySelector(
+	const endOfContentMarker = global.document.querySelector(
 		'.googlesitekit-end-of-content'
 	);
 
-	if ( endOfContent && typeof global.IntersectionObserver === 'function' ) {
+	if (
+		endOfContentMarker &&
+		typeof global.IntersectionObserver === 'function'
+	) {
 		observer = new global.IntersectionObserver( ( entries ) => {
 			if ( entries.some( ( entry ) => entry.isIntersecting ) ) {
 				markEndReached();
 			}
 		} );
 
-		observer.observe( endOfContent );
+		observer.observe( endOfContentMarker );
 	} else {
-		// A page builder can render the post content without running
-		// `the_content`, so the page carries no marker. An old browser has no
-		// `IntersectionObserver` to watch the marker either.
+		// Either a page builder rendered the content without `the_content`, or
+		// the browser has no `IntersectionObserver`.
 		global.addEventListener( 'scroll', handleScroll, { passive: true } );
 
 		handleScroll();

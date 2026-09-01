@@ -63,7 +63,7 @@ function baseConfig(
 		hasVimeoEmbed: true,
 		wordCount: 0,
 		estimatedReadTimeSeconds: 0,
-		isFinalPage: true,
+		isLastPageOfMultiPagePost: true,
 		readTimeThresholdPercent: 85,
 		minimumReadTimeSeconds: 5,
 		...overrides,

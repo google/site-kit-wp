@@ -32,7 +32,7 @@ class Content_Events_Without_Intl extends Content_Events {
 	 * @since n.e.x.t
 	 *
 	 * @param string $text Text with the tags and shortcodes already removed.
-	 * @return null Always null, which tells the provider that ICU is missing.
+	 * @return null Always `null`, so the provider counts words without ICU.
 	 */
 	protected function count_words_with_intl( $text ) {
 		return null;

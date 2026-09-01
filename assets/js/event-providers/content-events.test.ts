@@ -73,7 +73,7 @@ describe( 'content-events', () => {
 			hasVimeoEmbed: false,
 			wordCount: 0,
 			estimatedReadTimeSeconds: 0,
-			isFinalPage: false,
+			isLastPageOfMultiPagePost: false,
 			readTimeThresholdPercent: 85,
 			minimumReadTimeSeconds: 5,
 		} );
@@ -94,7 +94,7 @@ describe( 'content-events', () => {
 			hasVimeoEmbed: false,
 			wordCount: 0,
 			estimatedReadTimeSeconds: 0,
-			isFinalPage: false,
+			isLastPageOfMultiPagePost: false,
 			readTimeThresholdPercent: 85,
 			minimumReadTimeSeconds: 5,
 		} );
@@ -110,7 +110,7 @@ describe( 'content-events', () => {
 				hasVimeoEmbed: true,
 				wordCount: 476,
 				estimatedReadTimeSeconds: 120,
-				isFinalPage: true,
+				isLastPageOfMultiPagePost: true,
 				readTimeThresholdPercent: 70,
 				minimumReadTimeSeconds: 9,
 			},
@@ -125,7 +125,7 @@ describe( 'content-events', () => {
 			hasVimeoEmbed: true,
 			wordCount: 476,
 			estimatedReadTimeSeconds: 120,
-			isFinalPage: true,
+			isLastPageOfMultiPagePost: true,
 			readTimeThresholdPercent: 70,
 			minimumReadTimeSeconds: 9,
 		} );
@@ -134,8 +134,8 @@ describe( 'content-events', () => {
 	} );
 
 	it( 'returns the defaults for the keys a configuration from an older release omits', async () => {
-		// A page cached before the read article change carries these three keys
-		// and nothing else.
+		// A page cached by an older release has these three keys and nothing
+		// else.
 		global._googlesitekit = {
 			contentEvents: {
 				postID: 42,
@@ -152,7 +152,7 @@ describe( 'content-events', () => {
 			hasVimeoEmbed: true,
 			wordCount: 0,
 			estimatedReadTimeSeconds: 0,
-			isFinalPage: false,
+			isLastPageOfMultiPagePost: false,
 			readTimeThresholdPercent: 85,
 			minimumReadTimeSeconds: 5,
 		} );
@@ -166,7 +166,7 @@ describe( 'content-events', () => {
 				hasVimeoEmbed: true,
 				wordCount: 476,
 				estimatedReadTimeSeconds: 120,
-				isFinalPage: true,
+				isLastPageOfMultiPagePost: true,
 				readTimeThresholdPercent: 70,
 				minimumReadTimeSeconds: 9,
 			},
@@ -182,7 +182,7 @@ describe( 'content-events', () => {
 			hasVimeoEmbed: true,
 			wordCount: 476,
 			estimatedReadTimeSeconds: 120,
-			isFinalPage: true,
+			isLastPageOfMultiPagePost: true,
 			readTimeThresholdPercent: 70,
 			minimumReadTimeSeconds: 9,
 		} );
@@ -196,7 +196,7 @@ describe( 'content-events', () => {
 				hasVimeoEmbed: true,
 				wordCount: 476,
 				estimatedReadTimeSeconds: 120,
-				isFinalPage: true,
+				isLastPageOfMultiPagePost: true,
 				readTimeThresholdPercent: 70,
 				minimumReadTimeSeconds: 9,
 			},
@@ -210,7 +210,7 @@ describe( 'content-events', () => {
 			hasVimeoEmbed: true,
 			wordCount: 476,
 			estimatedReadTimeSeconds: 120,
-			isFinalPage: true,
+			isLastPageOfMultiPagePost: true,
 			readTimeThresholdPercent: 70,
 			minimumReadTimeSeconds: 9,
 		} );
@@ -224,7 +224,7 @@ describe( 'content-events', () => {
 				hasVimeoEmbed: true,
 				wordCount: 476,
 				estimatedReadTimeSeconds: 120,
-				isFinalPage: true,
+				isLastPageOfMultiPagePost: true,
 				readTimeThresholdPercent: 70,
 				minimumReadTimeSeconds: 9,
 			},
@@ -238,7 +238,7 @@ describe( 'content-events', () => {
 			hasVimeoEmbed: true,
 			wordCount: 476,
 			estimatedReadTimeSeconds: 120,
-			isFinalPage: true,
+			isLastPageOfMultiPagePost: true,
 			readTimeThresholdPercent: 70,
 			minimumReadTimeSeconds: 9,
 		} );

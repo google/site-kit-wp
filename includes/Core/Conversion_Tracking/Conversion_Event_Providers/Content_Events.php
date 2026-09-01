@@ -72,13 +72,14 @@ class Content_Events extends Conversion_Events_Provider {
 	/**
 	 * Invisible marker appended to the end of a single post's content.
 	 *
-	 * `initializeReadArticle()` watches this element to see when the end of the
+	 * `initializeReadArticle()` watches the marker to see when the end of the
 	 * article reaches the screen. A span with no height never comes into view,
-	 * so this one is a pixel tall.
+	 * so the marker is `1px` tall. The `-1px` margin keeps that pixel out of the
+	 * layout.
 	 *
 	 * @since n.e.x.t
 	 */
-	const END_OF_CONTENT_MARKER = '<span class="googlesitekit-end-of-content" aria-hidden="true" style="display:block;height:1px"></span>';
+	const END_OF_CONTENT_MARKER = '<span class="googlesitekit-end-of-content" aria-hidden="true" style="display:block;height:1px;margin-bottom:-1px"></span>';
 
 	/**
 	 * Flag indicating whether content hooks have been bootstrapped.
@@ -128,7 +129,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 * @since n.e.x.t
 	 * @var bool|null
 	 */
-	protected $is_final_page = null;
+	protected $is_last_page_of_multi_page_post = null;
 
 	/**
 	 * Gets the provider category.
@@ -396,14 +397,14 @@ class Content_Events extends Conversion_Events_Provider {
 		// theme that renders the content outside the loop leaves them empty.
 		global $page, $numpages, $multipage;
 
-		$this->is_final_page = ! $multipage || $page >= $numpages;
+		$this->is_last_page_of_multi_page_post = ! $multipage || $page >= $numpages;
 
 		$measurements = $this->measure_content( $content );
 
 		$this->word_count                  = $measurements['word_count'];
 		$this->estimated_read_time_seconds = $measurements['estimated_read_time_seconds'];
 
-		if ( ! $this->is_final_page ) {
+		if ( ! $this->is_last_page_of_multi_page_post ) {
 			return $content;
 		}
 
@@ -543,16 +544,16 @@ class Content_Events extends Conversion_Events_Provider {
 	 * @return array Inline config data.
 	 */
 	protected function get_inline_config() {
-		$post_id                     = get_queried_object_id();
-		$is_single_post              = is_singular( 'post' );
-		$word_count                  = 0;
-		$estimated_read_time_seconds = 0;
-		$is_final_page               = false;
+		$post_id                         = get_queried_object_id();
+		$is_single_post                  = is_singular( 'post' );
+		$word_count                      = 0;
+		$estimated_read_time_seconds     = 0;
+		$is_last_page_of_multi_page_post = false;
 
 		if ( $this->content_measured ) {
-			$word_count                  = $this->word_count;
-			$estimated_read_time_seconds = $this->estimated_read_time_seconds;
-			$is_final_page               = $this->is_final_page;
+			$word_count                      = $this->word_count;
+			$estimated_read_time_seconds     = $this->estimated_read_time_seconds;
+			$is_last_page_of_multi_page_post = $this->is_last_page_of_multi_page_post;
 		} elseif ( $is_single_post ) {
 			// A page builder can render the post content without ever running
 			// `the_content`, so the queried post supplies the measurements
@@ -564,19 +565,19 @@ class Content_Events extends Conversion_Events_Provider {
 
 			// `is_singular( 'post' )` is true here, so the queried post exists
 			// and `generate_postdata()` returns its pagination state.
-			$postdata      = generate_postdata( $post_id );
-			$is_final_page = ! $postdata['multipage'] || $postdata['page'] >= $postdata['numpages'];
+			$postdata                        = generate_postdata( $post_id );
+			$is_last_page_of_multi_page_post = ! $postdata['multipage'] || $postdata['page'] >= $postdata['numpages'];
 		}
 
 		return array(
-			'postID'                   => (int) $post_id,
-			'isSinglePost'             => $is_single_post,
-			'hasVimeoEmbed'            => (bool) $this->has_vimeo_embed,
-			'wordCount'                => $word_count,
-			'estimatedReadTimeSeconds' => $estimated_read_time_seconds,
-			'isFinalPage'              => $is_final_page,
-			'readTimeThresholdPercent' => self::READ_TIME_THRESHOLD_PERCENT,
-			'minimumReadTimeSeconds'   => self::MINIMUM_READ_TIME_SECONDS,
+			'postID'                    => (int) $post_id,
+			'isSinglePost'              => $is_single_post,
+			'hasVimeoEmbed'             => (bool) $this->has_vimeo_embed,
+			'wordCount'                 => $word_count,
+			'estimatedReadTimeSeconds'  => $estimated_read_time_seconds,
+			'isLastPageOfMultiPagePost' => $is_last_page_of_multi_page_post,
+			'readTimeThresholdPercent'  => self::READ_TIME_THRESHOLD_PERCENT,
+			'minimumReadTimeSeconds'    => self::MINIMUM_READ_TIME_SECONDS,
 		);
 	}
 }
