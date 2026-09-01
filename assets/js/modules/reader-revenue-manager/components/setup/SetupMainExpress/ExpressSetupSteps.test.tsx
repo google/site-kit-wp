@@ -19,12 +19,15 @@
 /**
  * Internal dependencies
  */
+import { Registry } from '@/js/googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	EXPRESS_SETUP_STEPS,
+	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	SHOW_PUBLICATION_CREATE,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import { act, createTestRegistry, render } from '@tests/js/test-utils';
 import ExpressSetupSteps from './ExpressSetupSteps';
@@ -32,11 +35,28 @@ import ExpressSetupSteps from './ExpressSetupSteps';
 describe( 'ExpressSetupSteps', () => {
 	mockLocation();
 
+	let registry: Registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry() as Registry;
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {} );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.finishResolution( 'getSettings', [] );
+
+		providePublications( registry, [] );
+	} );
+
 	it( 'renders the default steps without extra steps', () => {
 		global.location.href = 'http://example.com/';
 
 		const { getByText, queryByText, container } = render(
-			<ExpressSetupSteps />
+			<ExpressSetupSteps />,
+			{ registry }
 		);
 
 		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
@@ -52,8 +72,6 @@ describe( 'ExpressSetupSteps', () => {
 	} );
 
 	it( 'renders the dynamic label for the connect step', () => {
-		const registry = createTestRegistry();
-
 		const { getByText, queryByText } = render( <ExpressSetupSteps />, {
 			registry,
 		} );
@@ -82,7 +100,8 @@ describe( 'ExpressSetupSteps', () => {
 					[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: 'Set up a sign-up form',
 					'custom-step': 'Custom step',
 				} }
-			/>
+			/>,
+			{ registry }
 		);
 
 		const steps = container.querySelectorAll(
@@ -100,7 +119,7 @@ describe( 'ExpressSetupSteps', () => {
 	it( 'marks the step matching the step query arg as active', () => {
 		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE }`;
 
-		const { container } = render( <ExpressSetupSteps /> );
+		const { container } = render( <ExpressSetupSteps />, { registry } );
 
 		const steps = container.querySelectorAll(
 			'.googlesitekit-stepper__step'
@@ -125,7 +144,8 @@ describe( 'ExpressSetupSteps', () => {
 				extraSteps={ {
 					[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: 'Set up a sign-up form',
 				} }
-			/>
+			/>,
+			{ registry }
 		);
 
 		const steps = container.querySelectorAll(
