@@ -9,7 +9,7 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  *
- * @var array    $section            Section configuration holding `title`, `icon`, `dashboard_url`, and `section_parts`.
+ * @var array    $section            Section configuration including `title`, `icon`, `dashboard_url`, and `section_parts`.
  * @var callable $render_part        Function to render a template part by name.
  * @var callable $render_shared_part Function to render a shared part by name.
  * @var callable $get_asset_url      Function to get asset URLs.
@@ -20,10 +20,26 @@ $section_icon  = $section['icon'];
 $dashboard_url = $section['dashboard_url'];
 $section_parts = $section['section_parts'];
 
-// The change context and the prompt belong to the section, so every part carries the same values. We read them from the first part.
+// Every part has the same change context and prompt, because both belong to the whole card.
 $first_part = reset( $section_parts );
 $subtitle   = $first_part['data']['change_context'] ?? '';
 $prompt     = $first_part['data']['prompt'] ?? array();
+
+// The change context and the badge column only mean something when at least one metric has a trend.
+$all_metrics = array();
+
+foreach ( $section_parts as $part_config ) {
+	foreach ( $part_config['data']['groups'] as $group ) {
+		$all_metrics = array_merge( $all_metrics, $group['metrics'] );
+	}
+}
+
+$has_any_change = ! empty(
+	array_filter(
+		$all_metrics,
+		static fn( $metric ) => isset( $metric['trend'] )
+	)
+);
 ?>
 <table role="presentation" width="100%" style="margin-bottom:24px;">
 	<tr>
@@ -39,6 +55,7 @@ $prompt     = $first_part['data']['prompt'] ?? array();
 			);
 			?>
 
+			<?php if ( $has_any_change ) : ?>
 			<table role="presentation" width="100%" style="margin-bottom:12px;">
 				<tr>
 					<td>&nbsp;</td>
@@ -48,11 +65,10 @@ $prompt     = $first_part['data']['prompt'] ?? array();
 					</td>
 				</tr>
 			</table>
+			<?php endif; ?>
 			<?php
 			foreach ( $section_parts as $part_config ) {
-				$groups = $part_config['data']['groups'] ?? array();
-
-				foreach ( $groups as $group ) {
+				foreach ( $part_config['data']['groups'] as $group ) {
 					$group_label     = $group['label'];
 					$group_metrics   = $group['metrics'];
 					$last_metric_key = array_key_last( $group_metrics );
@@ -80,17 +96,19 @@ $prompt     = $first_part['data']['prompt'] ?? array();
 							<?php echo esc_html( $metric['value'] ); ?>
 						</div>
 					</td>
+						<?php if ( $has_any_change ) : ?>
 					<td class="border"
 						style="text-align: right; vertical-align: middle; border-bottom: <?php echo esc_attr( $border_style ); ?>; padding: 12px 0;">
-						<?php
+							<?php
 							$render_shared_part(
 								'change-badge',
 								array(
 									'value' => $metric['trend'],
 								)
 							);
-						?>
+							?>
 					</td>
+					<?php endif; ?>
 				</tr>
 						<?php
 					}

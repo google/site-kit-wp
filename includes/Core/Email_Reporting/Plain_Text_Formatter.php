@@ -455,17 +455,31 @@ class Plain_Text_Formatter {
 		$output        = self::format_section_heading( $section['title'] );
 		$section_parts = $section['section_parts'];
 
-		// The change context and the prompt belong to the section, so every part carries the same values. We read them from the first part.
+		// Every part has the same change context and prompt, because both belong to the whole card.
 		$first_part = reset( $section_parts );
 
-		if ( ! empty( $first_part['data']['change_context'] ) ) {
+		// The change context only means something when at least one metric has a trend.
+		$all_metrics = array();
+
+		foreach ( $section_parts as $part_config ) {
+			foreach ( $part_config['data']['groups'] as $group ) {
+				$all_metrics = array_merge( $all_metrics, $group['metrics'] );
+			}
+		}
+
+		$has_any_change = ! empty(
+			array_filter(
+				$all_metrics,
+				static fn( $metric ) => isset( $metric['trend'] )
+			)
+		);
+
+		if ( $has_any_change && ! empty( $first_part['data']['change_context'] ) ) {
 			$output .= $first_part['data']['change_context'] . "\n\n";
 		}
 
 		foreach ( $section_parts as $part_config ) {
-			$groups = $part_config['data']['groups'] ?? array();
-
-			foreach ( $groups as $group ) {
+			foreach ( $part_config['data']['groups'] as $group ) {
 				if ( '' !== $group['label'] ) {
 					$output .= $group['label'] . "\n";
 					$output .= str_repeat( '-', mb_strlen( $group['label'] ) ) . "\n";

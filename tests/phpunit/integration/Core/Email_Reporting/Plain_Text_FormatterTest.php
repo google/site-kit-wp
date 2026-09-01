@@ -397,9 +397,9 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( "WooCommerce\n-----------", $result, 'Site Goals section should put the name of the plugin above its group, underlined.' );
 		$this->assertStringContainsString( 'Sales rate: 3.8% (+7.2%)', $result, 'Site Goals section should show the sales rate of the WooCommerce group.' );
 		$this->assertStringContainsString( 'Total sales: 116 (-4.6%)', $result, 'Site Goals section should show the total sales of the WooCommerce group.' );
-		$this->assertStringContainsString( 'Total sales: 214 (+6.8%)', $result, 'Site Goals section should show the total sales of the Other sources group.' );
-		$this->assertSame( 1, substr_count( $result, 'Sales rate' ), 'Site Goals section should show the Other sources total alone, with no rate row.' );
-		$this->assertStringEndsWith( "Total sales: 214 (+6.8%)\n\n", $result, 'Site Goals section should add nothing after the groups when it carries no prompt.' );
+		$this->assertStringContainsString( 'Total sales: 214 (+6.8%)', $result, 'Site Goals section should show the total sales of the "Other sources" group.' );
+		$this->assertSame( 1, substr_count( $result, 'Sales rate' ), 'Site Goals section should show the "Other sources" total alone, with no rate row.' );
+		$this->assertStringEndsWith( "Total sales: 214 (+6.8%)\n\n", $result, 'Site Goals section should add nothing after the groups when it has no prompt.' );
 	}
 
 	public function test_format_section__ends_the_site_goals_text_with_the_enable_data_breakdown_prompt() {
@@ -440,7 +440,46 @@ class Plain_Text_FormatterTest extends TestCase {
 			$result,
 			'Site Goals section should end with the prompt, and put the dashboard URL after its link text.'
 		);
-		$this->assertStringNotContainsString( '----', $result, 'Site Goals section should show no group heading when the group carries no name.' );
+		$this->assertStringNotContainsString( '----', $result, 'Site Goals section should show no group heading when the group has no name.' );
+	}
+
+	public function test_format_section__omits_the_site_goals_change_context_when_no_metric_has_a_comparison() {
+		$section = array(
+			'title'            => 'How is my online store performing?',
+			'section_template' => 'section-site-goals',
+			'dashboard_url'    => 'https://example.com/dashboard',
+			'section_parts'    => array(
+				'site_goals_online_store' => array(
+					'data' => array(
+						'change_context' => 'Compared to previous 7 days',
+						'groups'         => array(
+							array(
+								'label'   => 'WooCommerce',
+								'metrics' => array(
+									array(
+										'label' => 'Sales rate',
+										'value' => '3.8%',
+										'trend' => null,
+									),
+									array(
+										'label' => 'Total sales',
+										'value' => '116',
+										'trend' => null,
+									),
+								),
+							),
+						),
+						'prompt'         => array(),
+					),
+				),
+			),
+		);
+
+		$result = Plain_Text_Formatter::format_section( $section );
+
+		$this->assertStringContainsString( "Sales rate: 3.8%\n", $result, 'Site Goals section should end the sales rate row after its value when the row has no comparison value.' );
+		$this->assertStringContainsString( "Total sales: 116\n", $result, 'Site Goals section should end the total sales row after its value when the row has no comparison value.' );
+		$this->assertStringNotContainsString( 'Compared to previous 7 days', $result, 'Site Goals section should omit the change context when no metric has a comparison value.' );
 	}
 
 	public function test_format_section_returns_empty_for_empty_section_parts() {
