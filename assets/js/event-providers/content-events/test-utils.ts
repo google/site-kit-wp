@@ -85,8 +85,7 @@ export function createListenerRegistry() {
 					listener as EventListener,
 				] );
 
-			// Restoring clears the spy's recorded calls, so they are read out
-			// first.
+			// Restoring first would wipe `mock.calls`.
 			addEventListenerSpy.mockRestore();
 			registered.push( ...added );
 
@@ -94,7 +93,7 @@ export function createListenerRegistry() {
 		},
 
 		/**
-		 * Forgets every recorded listener without removing it.
+		 * Empties the registry, leaving the listeners attached to `document`.
 		 *
 		 * @since n.e.x.t
 		 *

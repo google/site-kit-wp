@@ -28,8 +28,8 @@ import {
 	render,
 } from './test-utils';
 
-// Real behaviour everywhere, wrapped so the tests can also see whether the
-// listener resolved an anchor at all.
+// Wraps the real `classifyContactLink` in a spy: the tests still get its real
+// return values, and can also assert whether the listener called it at all.
 jest.mock( './classify-contact-link', () => {
 	const actual = jest.requireActual( './classify-contact-link' );
 
@@ -57,7 +57,7 @@ describe( 'initializeLinkClicks', () => {
 		global._googlesitekit = { gtagEvent: gtagEventMock };
 		global.document.body.innerHTML = '';
 		listeners.reset();
-		// Every anchor here carries a real href, which jsdom would try to
+		// Every anchor here has a real href, which jsdom would try to
 		// navigate to and log "Not implemented: navigation" for.
 		global.document.addEventListener( 'click', preventNavigation );
 	} );
@@ -69,7 +69,7 @@ describe( 'initializeLinkClicks', () => {
 		delete ( global as { _googlesitekit?: SiteKitGlobal } )._googlesitekit;
 	} );
 
-	it( 'should emit one event carrying link_type and the transport, and nothing identifying', () => {
+	it( 'should emit one event with "link_type" and the transport, and nothing identifying', () => {
 		const anchor = render(
 			'<a href="https://wa.me/15551234567">Message us</a>'
 		);
@@ -128,7 +128,7 @@ describe( 'initializeLinkClicks', () => {
 		} );
 	} );
 
-	it( 'should never carry the prefilled subject, body or message text', () => {
+	it( 'should never carry the prefilled subject, body, or message text', () => {
 		render(
 			'<a href="https://wa.me/15551234567?text=Secret%20message">Message</a>'
 		);
@@ -145,7 +145,7 @@ describe( 'initializeLinkClicks', () => {
 		).not.toContain( 'Secret' );
 	} );
 
-	it( 'should classify an anchor appended after initialization', () => {
+	it( 'should classify an anchor added to the page after the initial page load', () => {
 		initialize();
 
 		const anchor = render( '<a href="https://m.me/acme">Chat</a>' );
@@ -164,7 +164,7 @@ describe( 'initializeLinkClicks', () => {
 		[ 'sms:+15551234567', 'sms', false ],
 		[ 'whatsapp://send?phone=15551234567', 'whatsapp', false ],
 	] )(
-		'should set the beacon transport only for web links — %s',
+		'should set the beacon transport type only for web links — %s',
 		( href, linkType, expectsBeacon ) => {
 			const anchor = render( `<a href="${ href }">Contact</a>` );
 			initialize();
@@ -204,7 +204,7 @@ describe( 'initializeLinkClicks', () => {
 	} );
 
 	it.each( [ 'nofollow', 'sponsored', 'ugc' ] )(
-		'should emit exactly one event for a contact link carrying rel="%s"',
+		'should emit exactly one event for a contact link with rel="%s"',
 		( rel ) => {
 			const anchor = render(
 				`<a href="https://wa.me/15551234567" rel="${ rel }">Message us</a>`
@@ -248,7 +248,7 @@ describe( 'initializeLinkClicks', () => {
 		expect( classifySpy ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'should register exactly one document click listener', () => {
+	it( 'should register one document click listener', () => {
 		const added = initialize();
 
 		expect( added ).toHaveLength( 1 );
@@ -256,7 +256,7 @@ describe( 'initializeLinkClicks', () => {
 		expect( typeof added[ 0 ][ 1 ] ).toBe( 'function' );
 	} );
 
-	it( 'should leave the click unprevented so the link still opens', () => {
+	it( 'should ensure clicking the link still opens the URL', () => {
 		// The shared preventNavigation listener runs before this one and would
 		// make defaultPrevented true, so it steps aside here and the probe below
 		// swallows the click instead.
@@ -286,7 +286,7 @@ describe( 'initializeLinkClicks', () => {
 		} );
 	} );
 
-	it( 'should keep emitting after a click whose handling throws', () => {
+	it( "should keep tracking later clicks when one click's handling throws", () => {
 		// Mock console.error since this test intentionally triggers it.
 		const consoleErrorSpy = jest
 			.spyOn( console, 'error' )

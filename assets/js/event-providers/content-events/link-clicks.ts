@@ -24,12 +24,12 @@ import classifyContactLink from './classify-contact-link';
 /**
  * Initializes link click tracking.
  *
- * The single delegated listener every link event shares: it resolves the
- * clicked anchor once, classifies it once, and emits at most one event, so a
- * contact link that also carries `rel="nofollow"` is never reported twice.
+ * Adds one click listener to the document. It finds the clicked anchor,
+ * classifies it, and emits at most one event, so a contact link that also has
+ * `rel="nofollow"` is not counted twice.
  *
- * Registered on the document for every page, so a link added after load — a
- * floating chat button, for instance — is covered too.
+ * Listening on the document also covers links added after the page loads, such
+ * as a floating chat button.
  *
  * @since n.e.x.t
  *
@@ -37,8 +37,7 @@ import classifyContactLink from './classify-contact-link';
  */
 export function initializeLinkClicks(): void {
 	global.document.addEventListener( 'click', ( event: Event ) => {
-		// An error while handling one click must not leave the listener in a
-		// state that stops it handling the next one.
+		// One failed click must not stop the listener handling later ones.
 		try {
 			if ( ! ( event.target instanceof Element ) ) {
 				return;
@@ -54,19 +53,17 @@ export function initializeLinkClicks(): void {
 
 			const linkType = classifyContactLink( anchor );
 
-			// An `else` rather than an early return: the recipient sits in the
-			// address itself, so a classified anchor must never reach a handler
-			// that reports the URL — not even when emitting its own event
-			// throws and the `catch` below resumes past this point.
+			// Contact links stop here. Their URL holds someone's phone number
+			// or email address, so they must never reach the outbound handler.
 			if ( linkType ) {
 				const isWebLink =
 					'http:' === anchor.protocol || 'https:' === anchor.protocol;
 
 				global._googlesitekit?.gtagEvent?.( 'contact_link_click', {
 					link_type: linkType,
-					// A web link navigates away, so its event has to survive the
-					// page unloading. An app-scheme link hands off to another
-					// application and leaves the page in place.
+					// Clicking a web link leaves the page, which would cancel
+					// the event mid-send. `beacon` gets it out anyway. `tel:`
+					// and the other app schemes stay on the page.
 					...( isWebLink ? { transport_type: 'beacon' } : {} ),
 				} );
 			} else {
