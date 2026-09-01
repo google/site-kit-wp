@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 /**
  * WordPress dependencies
@@ -33,9 +33,23 @@ import { Select } from '@/js/googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { EXPRESS_SETUP_STEP_UI_KEY } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
-import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	EXPRESS_SETUP_STEPS,
+	MODULES_READER_REVENUE_MANAGER,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { type Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 
 type Step = typeof EXPRESS_SETUP_STEPS[ keyof typeof EXPRESS_SETUP_STEPS ];
+
+// The steps whose completion is derived from the connected publication, in the
+// order they must be completed. `SETUP_CTA` is deliberately absent: the express
+// setup allows setting up multiple CTAs of the same type, so it never counts as
+// complete and can only ever be resolved to as a fallback.
+const PREREQUISITE_STEPS: Step[] = [
+	EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION,
+	EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE,
+	EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES,
+];
 
 /**
  * Returns the current express setup step and a setter.
@@ -44,6 +58,12 @@ type Step = typeof EXPRESS_SETUP_STEPS[ keyof typeof EXPRESS_SETUP_STEPS ];
  * hook provides a utility for using the UI datastore to manage the current
  * step while syncing it with the query arg.
  *
+ * On mount, the step is resolved against the connected publication so that the
+ * flow starts at, and cannot be advanced past, the first incomplete step. The
+ * resolution lives here rather than in a separate hook so that it applies
+ * wherever the current step is read, and is idempotent so that calling this
+ * hook from more than one component is harmless.
+ *
  * @since n.e.x.t
  *
  * @return {Array} Value and setter tuple.
@@ -51,6 +71,7 @@ type Step = typeof EXPRESS_SETUP_STEPS[ keyof typeof EXPRESS_SETUP_STEPS ];
 export function useStep(): [ Step | undefined, ( newValue: Step ) => void ] {
 	const { setValue } = useDispatch( CORE_UI );
 	const [ queryArg, setQueryArg ] = useQueryArg< Step >( 'step' );
+	const [ cta ] = useQueryArg< string >( 'cta' );
 
 	const step: Step | undefined = useSelect(
 		( select: Select ) =>
@@ -65,6 +86,80 @@ export function useStep(): [ Step | undefined, ( newValue: Step ) => void ] {
 		},
 		[ setQueryArg, setValue ]
 	);
+
+	const publicationID: string | undefined = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getPublicationID(),
+		[]
+	);
+
+	const publication: Publication | undefined = useSelect(
+		( select: Select ) =>
+			publicationID
+				? select( MODULES_READER_REVENUE_MANAGER ).getPublication()
+				: undefined,
+		[ publicationID ]
+	);
+
+	useEffect( () => {
+		// Bail while the settings are still resolving, and while a connected
+		// publication is still being looked up or cannot be found. An empty
+		// publication ID is a resolved "nothing connected" and falls through.
+		if ( publicationID === undefined ) {
+			return;
+		}
+
+		if ( publicationID && publication === undefined ) {
+			return;
+		}
+
+		const isComplete: Record< Step, boolean > = {
+			[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: !! publicationID,
+			[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]:
+				!! publication?.rrmProduct?.tosAcceptance?.userAccepted,
+			[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]:
+				/* eslint-disable-next-line sitekit/acronym-case -- `Url` is the identifier used by the API. */
+				!! publication?.publicationTosUrl &&
+				/* eslint-disable-next-line sitekit/acronym-case -- `Url` is the identifier used by the API. */
+				!! publication?.publicationPrivacyPolicyUrl,
+		};
+
+		const firstIncompleteStep = PREREQUISITE_STEPS.find(
+			( prerequisiteStep ) => ! isComplete[ prerequisiteStep ]
+		);
+
+		// Entering the flow: start at the first incomplete step, falling back
+		// to the CTA setup when one was requested, otherwise to the end.
+		if ( ! step ) {
+			setStep(
+				firstIncompleteStep ??
+					( cta
+						? EXPRESS_SETUP_STEPS.SETUP_CTA
+						: EXPRESS_SETUP_STEPS.SETUP_COMPLETE )
+			);
+
+			return;
+		}
+
+		// Resuming the flow: only redirect back to an earlier step that is
+		// genuinely incomplete, so a resolved fallback never pulls the user
+		// backwards out of a step they have reached legitimately.
+		if ( ! firstIncompleteStep ) {
+			return;
+		}
+
+		const flowSteps: Step[] = [
+			...PREREQUISITE_STEPS,
+			...( cta ? [ EXPRESS_SETUP_STEPS.SETUP_CTA ] : [] ),
+			EXPRESS_SETUP_STEPS.SETUP_COMPLETE,
+		];
+
+		if (
+			flowSteps.indexOf( firstIncompleteStep ) < flowSteps.indexOf( step )
+		) {
+			setStep( firstIncompleteStep );
+		}
+	}, [ cta, publication, publicationID, setStep, step ] );
 
 	return [ step, setStep ];
 }
