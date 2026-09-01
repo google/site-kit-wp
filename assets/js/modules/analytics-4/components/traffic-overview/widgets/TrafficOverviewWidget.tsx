@@ -86,4 +86,4 @@ const TrafficOverviewWidget: FC< WidgetComponentProps > = ( { Widget } ) => {
 
 export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
 	TrafficOverviewWidget
-);
+) as FC< WidgetComponentProps >;
