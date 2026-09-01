@@ -149,6 +149,7 @@ class Plain_Text_Formatter {
 	 * Formats a section based on its template type.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Added the Site Goals sections.
 	 *
 	 * @param array $section Section configuration including title, section_template, section_parts.
 	 * @return string Formatted section text.
@@ -165,6 +166,8 @@ class Plain_Text_Formatter {
 				return self::format_metrics_section( $section );
 			case 'section-page-metrics':
 				return self::format_page_metrics_section( $section );
+			case 'section-site-goals':
+				return self::format_site_goals_section( $section );
 			default:
 				return '';
 		}
@@ -435,6 +438,67 @@ class Plain_Text_Formatter {
 			}
 
 			$output .= "\n";
+		}
+
+		return $output;
+	}
+
+	/**
+	 * Formats the Site Goals section, which groups its metrics by plugin or by form.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $section Section configuration.
+	 * @return string Formatted section text.
+	 */
+	protected static function format_site_goals_section( $section ) {
+		$output        = self::format_section_heading( $section['title'] );
+		$section_parts = $section['section_parts'];
+
+		// The card gives every section part the same values, so we read the first one.
+		$first_part = reset( $section_parts );
+
+		// The "Compared to" line shows only when a metric has a change.
+		$all_metrics = array();
+
+		foreach ( $section_parts as $part_config ) {
+			foreach ( $part_config['data']['groups'] as $group ) {
+				$all_metrics = array_merge( $all_metrics, $group['metrics'] );
+			}
+		}
+
+		$has_any_change = ! empty(
+			array_filter(
+				$all_metrics,
+				static fn( $metric ) => isset( $metric['trend'] )
+			)
+		);
+
+		if ( $has_any_change && ! empty( $first_part['data']['change_context'] ) ) {
+			$output .= $first_part['data']['change_context'] . "\n\n";
+		}
+
+		foreach ( $section_parts as $part_config ) {
+			foreach ( $part_config['data']['groups'] as $group ) {
+				if ( '' !== $group['label'] ) {
+					$output .= $group['label'] . "\n";
+					$output .= str_repeat( '-', mb_strlen( $group['label'] ) ) . "\n";
+				}
+
+				foreach ( $group['metrics'] as $metric ) {
+					$output .= self::format_metric( $metric['label'], $metric['value'], $metric['trend'] ) . "\n";
+				}
+
+				$output .= "\n";
+			}
+		}
+
+		$prompt = $first_part['data']['prompt'] ?? array();
+
+		if ( ! empty( $prompt ) ) {
+			$prompt_link = sprintf( '%s (%s)', $prompt['link_text'], $section['dashboard_url'] );
+
+			$output .= sprintf( $prompt['text'], $prompt_link ) . "\n\n";
 		}
 
 		return $output;
