@@ -282,6 +282,17 @@ describe( 'useStep', () => {
 			);
 		} );
 
+		it( 'should redirect back from an unrecognised step', () => {
+			global.location.href = 'http://example.com/?step=some-unknown-step';
+			provideConnectedPublication( publicationWithoutTerms );
+
+			const { result } = renderUseStep();
+
+			expect( result.current[ 0 ] ).toBe(
+				EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE
+			);
+		} );
+
 		it( 'should not pull the user back to the CTA setup step from setup complete', () => {
 			global.location.href = `http://example.com/?cta=newsletter-signup&step=${ EXPRESS_SETUP_STEPS.SETUP_COMPLETE }`;
 			provideConnectedPublication( publicationWithPolicies );

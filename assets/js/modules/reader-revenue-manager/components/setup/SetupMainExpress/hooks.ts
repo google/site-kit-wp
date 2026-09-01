@@ -148,14 +148,14 @@ export function useStep(): [ Step | undefined, ( newValue: Step ) => void ] {
 			return;
 		}
 
-		const flowSteps: Step[] = [
-			...PREREQUISITE_STEPS,
-			...( cta ? [ EXPRESS_SETUP_STEPS.SETUP_CTA ] : [] ),
-			EXPRESS_SETUP_STEPS.SETUP_COMPLETE,
-		];
-
+		// Any step that is not a prerequisite sits after all of them, so an
+		// incomplete prerequisite always wins. This also covers step values
+		// that are not part of the flow at all, such as a stale bookmark or a
+		// custom step supplied through `extraSteps`.
 		if (
-			flowSteps.indexOf( firstIncompleteStep ) < flowSteps.indexOf( step )
+			! PREREQUISITE_STEPS.includes( step ) ||
+			PREREQUISITE_STEPS.indexOf( firstIncompleteStep ) <
+				PREREQUISITE_STEPS.indexOf( step )
 		) {
 			setStep( firstIncompleteStep );
 		}
