@@ -56,23 +56,6 @@ describe( 'TrafficOverviewWidget', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
-	/**
-	 * Renders the widget with the props a registered widget receives.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object}  [options]        Optional. Render options.
-	 * @param {boolean} [options.inView] Optional. Whether the widget starts in view.
-	 * @return {Object} The render result.
-	 */
-	function renderWidget( { inView = true } = {} ) {
-		return render( <TrafficOverviewWidget { ...widgetComponentProps } />, {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			inView,
-		} );
-	}
-
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
@@ -92,7 +75,13 @@ describe( 'TrafficOverviewWidget', () => {
 	} );
 
 	it( 'renders the widget with no header', async () => {
-		const { container, waitForRegistry } = renderWidget();
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -107,7 +96,13 @@ describe( 'TrafficOverviewWidget', () => {
 	} );
 
 	it( 'renders one tab labeled "Traffic Overview" at the top of the widget body', async () => {
-		const { container, waitForRegistry } = renderWidget();
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -122,7 +117,13 @@ describe( 'TrafficOverviewWidget', () => {
 	} );
 
 	it( 'names the tab panel after the "Traffic Overview" tab', async () => {
-		const { waitForRegistry } = renderWidget();
+		const { waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -132,7 +133,13 @@ describe( 'TrafficOverviewWidget', () => {
 	} );
 
 	it( 'renders a widget footer with the text "Source: Analytics" and a link to Analytics', async () => {
-		const { container, waitForRegistry } = renderWidget();
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -157,7 +164,13 @@ describe( 'TrafficOverviewWidget', () => {
 			},
 		] );
 
-		const { container, waitForRegistry } = renderWidget();
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -165,13 +178,31 @@ describe( 'TrafficOverviewWidget', () => {
 	} );
 
 	it( 'does not sends a report request when the widget is out of view', async () => {
-		const { setInView, waitForRegistry } = renderWidget( {
-			inView: false,
-		} );
+		const { waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				inView: false,
+			}
+		);
 
 		await waitForRegistry();
 
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
+	} );
+
+	it( 'sends the five report requests when the widget scrolls into view', async () => {
+		const { setInView, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				inView: false,
+			}
+		);
+
+		await waitForRegistry();
 
 		act( () => setInView!( true ) );
 

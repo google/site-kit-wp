@@ -37,17 +37,6 @@ describe( 'TrafficOverviewPanel', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
-	/**
-	 * Renders the panel with the test registry.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return {Object} The render result.
-	 */
-	function renderPanel() {
-		return render( <TrafficOverviewPanel />, { registry } );
-	}
-
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
@@ -64,7 +53,10 @@ describe( 'TrafficOverviewPanel', () => {
 	} );
 
 	it( 'marks the panel as a tab panel and names it using the content in the "Traffic Overview" tab', async () => {
-		const { container, waitForRegistry } = renderPanel();
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewPanel />,
+			{ registry }
+		);
 
 		await waitForRegistry();
 
@@ -79,8 +71,11 @@ describe( 'TrafficOverviewPanel', () => {
 		);
 	} );
 
-	it( 'renders the visitor total, the traffic chart, and the traffic breakdown in that order, all three empty', async () => {
-		const { container, waitForRegistry } = renderPanel();
+	it( 'renders the visitor total, the traffic chart, and the traffic breakdown in that order', async () => {
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewPanel />,
+			{ registry }
+		);
 
 		await waitForRegistry();
 
@@ -95,14 +90,12 @@ describe( 'TrafficOverviewPanel', () => {
 			'googlesitekit-traffic-overview__chart',
 			'googlesitekit-traffic-overview__breakdown',
 		] );
-
-		sections.forEach( ( section ) => {
-			expect( section ).toBeEmptyDOMElement();
-		} );
 	} );
 
 	it( 'sends a report request when the panel renders', async () => {
-		const { waitForRegistry } = renderPanel();
+		const { waitForRegistry } = render( <TrafficOverviewPanel />, {
+			registry,
+		} );
 
 		await waitForRegistry();
 

@@ -25,17 +25,22 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
-	allowAnalyticsAccess,
-	denyAnalyticsAccess,
-} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+	CORE_USER,
+	PERMISSION_READ_SHARED_MODULE_DATA,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { createTestRegistry, renderHook } from '@tests/js/test-utils';
-import { freezeFetch, provideModules, provideSiteInfo } from '@tests/js/utils';
+import {
+	freezeFetch,
+	provideModules,
+	provideSiteInfo,
+	provideUserCapabilities,
+} from '@tests/js/utils';
 import { useTrafficOverviewReports } from './useTrafficOverviewReports';
 
 describe( 'useTrafficOverviewReports', () => {
@@ -205,7 +210,12 @@ describe( 'useTrafficOverviewReports', () => {
 	} );
 
 	it( 'requests no report and leaves loaded false for a view-only user whose role cannot view Analytics', async () => {
-		denyAnalyticsAccess( registry );
+		provideUserCapabilities( registry, {
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				MODULE_SLUG_ANALYTICS_4
+			) ]: false,
+		} );
 
 		const { result, waitForRegistry } = renderHook(
 			() => useTrafficOverviewReports(),
@@ -219,7 +229,12 @@ describe( 'useTrafficOverviewReports', () => {
 	} );
 
 	it( 'sends all five report requests for a view-only user whose role can view Analytics', async () => {
-		allowAnalyticsAccess( registry );
+		provideUserCapabilities( registry, {
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				MODULE_SLUG_ANALYTICS_4
+			) ]: true,
+		} );
 
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 

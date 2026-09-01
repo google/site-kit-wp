@@ -39,21 +39,13 @@ import { useTrafficReport } from './useTrafficReport';
 const [ CHANNELS_COLUMN, LOCATIONS_COLUMN, DEVICES_COLUMN ] =
 	TRAFFIC_BREAKDOWN_COLUMNS;
 
-/**
- * The options for the graph report and the three breakdown reports.
- *
- * They sit here, not inside the hook, so every render passes the same object.
- * `useTrafficReport` rebuilds the args when the options change.
- */
-const GRAPH_REPORT_OPTIONS = getGraphReportOptions();
-const CHANNELS_REPORT_OPTIONS = getBreakdownReportOptions( CHANNELS_COLUMN );
-const LOCATIONS_REPORT_OPTIONS = getBreakdownReportOptions( LOCATIONS_COLUMN );
-const DEVICES_REPORT_OPTIONS = getBreakdownReportOptions( DEVICES_COLUMN );
-
 export interface TrafficOverviewReports {
-	/** Total visitors over the selected range, against the range before it. */
+	/**
+	 * The report of total visitors over the selected range, against the range
+	 * before it.
+	 */
 	totalsReport?: Report;
-	/** Visitors per day over the selected range. */
+	/** The report of visitors per day over the selected range. */
 	graphReport?: Report;
 	/** One report per breakdown column, keyed by the column's `id`. */
 	breakdownReports: Record< string, Report | undefined >;
@@ -93,11 +85,26 @@ export function useTrafficOverviewReports(): TrafficOverviewReports {
 		[ compareStartDate, compareEndDate ]
 	);
 
+	const [
+		graphReportOptions,
+		channelsReportOptions,
+		locationsReportOptions,
+		devicesReportOptions,
+	] = useMemo(
+		() => [
+			getGraphReportOptions(),
+			getBreakdownReportOptions( CHANNELS_COLUMN ),
+			getBreakdownReportOptions( LOCATIONS_COLUMN ),
+			getBreakdownReportOptions( DEVICES_COLUMN ),
+		],
+		[]
+	);
+
 	const totals = useTrafficReport( totalsReportOptions );
-	const graph = useTrafficReport( GRAPH_REPORT_OPTIONS );
-	const channels = useTrafficReport( CHANNELS_REPORT_OPTIONS );
-	const locations = useTrafficReport( LOCATIONS_REPORT_OPTIONS );
-	const devices = useTrafficReport( DEVICES_REPORT_OPTIONS );
+	const graph = useTrafficReport( graphReportOptions );
+	const channels = useTrafficReport( channelsReportOptions );
+	const locations = useTrafficReport( locationsReportOptions );
+	const devices = useTrafficReport( devicesReportOptions );
 
 	const allArgs = [
 		totals.args,

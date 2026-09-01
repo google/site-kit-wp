@@ -48,21 +48,6 @@ describe( 'TrafficOverviewSourceLink', () => {
 	);
 
 	/**
-	 * Renders the source link.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {string} [viewContext] Optional. The dashboard the link renders on.
-	 * @return {Object} The render result.
-	 */
-	function renderSourceLink( viewContext = VIEW_CONTEXT_MAIN_DASHBOARD ) {
-		return render( <TrafficOverviewSourceLink />, {
-			registry,
-			viewContext,
-		} );
-	}
-
-	/**
 	 * Reads the rendered link's address and decodes it.
 	 *
 	 * @since n.e.x.t
@@ -101,7 +86,10 @@ describe( 'TrafficOverviewSourceLink', () => {
 	it( 'links to the Analytics traffic acquisition report for the selected range and the range before it', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1234567890' );
 
-		const { waitForRegistry } = renderSourceLink();
+		const { waitForRegistry } = render( <TrafficOverviewSourceLink />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
 
 		await waitForRegistry();
 
@@ -116,14 +104,17 @@ describe( 'TrafficOverviewSourceLink', () => {
 		expect( href ).toContain( '_u.date11=20250108' );
 	} );
 
-	it( 'filters the link to the entity page path when the site has a current entity', async () => {
+	it( 'filters the Analytics link to the entity page path when the page has an entity URL set', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1234567890' );
 
 		provideSiteInfo( registry, {
 			currentEntityURL: 'https://example.com/about/',
 		} );
 
-		const { waitForRegistry } = renderSourceLink();
+		const { waitForRegistry } = render( <TrafficOverviewSourceLink />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
 
 		await waitForRegistry();
 
@@ -136,7 +127,10 @@ describe( 'TrafficOverviewSourceLink', () => {
 	it( 'does not request Analytics settings for a view-only user', async () => {
 		fetchMock.get( settingsEndpoint, { body: {}, status: 200 } );
 
-		renderSourceLink( VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY );
+		render( <TrafficOverviewSourceLink />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		} );
 
 		await act( async () => {
 			await new Promise( ( resolve ) => setTimeout( resolve ) );
