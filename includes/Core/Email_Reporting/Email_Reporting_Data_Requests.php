@@ -52,6 +52,20 @@ class Email_Reporting_Data_Requests {
 	);
 
 	/**
+	 * Slugs of the modules `collect_payloads()` reads.
+	 *
+	 * An admin can also connect PageSpeed Insights and AdSense, and neither adds a
+	 * section to the email report.
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	const PAYLOAD_MODULE_SLUGS = array(
+		Search_Console::MODULE_SLUG,
+		Analytics_4::MODULE_SLUG,
+	);
+
+	/**
 	 * Modules instance.
 	 *
 	 * @since 1.168.0
@@ -176,24 +190,28 @@ class Email_Reporting_Data_Requests {
 				$shareable_modules = array_intersect_key( $shareable_modules, array_flip( $allowed_module_slugs ) );
 			}
 
+			// The notice names the first denied module, so AdSense must never reach that list.
+			$shareable_modules = array_intersect_key( $shareable_modules, array_flip( self::PAYLOAD_MODULE_SLUGS ) );
+
 			list( $available_modules, $denied_module_slugs ) = $this->filter_modules_for_user( $shareable_modules, $user );
 
-			if ( empty( $available_modules ) ) {
-				if ( ! empty( $denied_module_slugs ) ) {
-					return $this->categorize_error(
-						new WP_Error(
-							'email_reporting_module_access_denied',
-							__( 'The recipient does not have access to the connected service.', 'google-site-kit' ),
-							array( 'status' => 403 )
-						),
-						$denied_module_slugs[0]
-					);
-				}
+			$payload = $this->collect_payloads( $available_modules, $date_range, $shared_payloads );
 
-				return array();
+			if ( empty( $payload ) && ! empty( $denied_module_slugs ) ) {
+				// A `WP_Error` from `collect_payloads()` is never empty, so it returns unchanged.
+				// `Email_Log_Processor` turns an empty payload into `email_report_no_data`,
+				// and the admin then sees a server error notice, not a permissions one.
+				return $this->categorize_error(
+					new WP_Error(
+						'email_reporting_module_access_denied',
+						__( 'The recipient does not have access to the connected service.', 'google-site-kit' ),
+						array( 'status' => 403 )
+					),
+					$denied_module_slugs[0]
+				);
 			}
 
-			return $this->collect_payloads( $available_modules, $date_range, $shared_payloads );
+			return $payload;
 		} finally {
 			if ( is_callable( $restore_user_options ) ) {
 				$restore_user_options();
