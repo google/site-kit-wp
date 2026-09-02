@@ -699,9 +699,12 @@ describe( 'OnlineStorePerformanceWidget', () => {
 				connected: true,
 			},
 		] );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetSettings( { availableCustomDimensions: [] } );
+		// The widget won't request a breakdown report until the breakdown
+		// dimensions exist on the property, so these tests start from the
+		// "created" state.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
+		} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -1007,8 +1010,11 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		provideSiteInfo( registry, {
 			hasMultipleActiveEcommerceEventProviders: true,
 		} );
-		// Aggregated state: intro modal dismissed, breakdown dimensions not yet
-		// created (availableCustomDimensions seeded as [] in beforeEach).
+		// Aggregated state: intro modal dismissed and the breakdown dimensions
+		// not yet created, so the notice offers the breakdown instead.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setSettings( { availableCustomDimensions: [] } );
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [ SITE_GOALS_INTRO_MODAL_BANNER ] );

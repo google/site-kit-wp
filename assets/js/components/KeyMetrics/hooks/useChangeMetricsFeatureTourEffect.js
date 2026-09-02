@@ -26,58 +26,34 @@ import { useEffect } from '@wordpress/element';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import sharedKeyMetrics from '@/js/feature-tours/shared-key-metrics';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { useFeature } from '@/js/hooks/useFeature';
 import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 
 /**
- * Triggers on demand tour for shared key metrics if all conditions are met.
+ * Dismisses the shared key metrics tour while the initial welcome modal is up.
+ *
+ * The tour itself is queued as a notification; this only keeps it from waiting
+ * behind the welcome modal for a user who will never need it.
  *
  * @since 1.113.0
- *
- * @param {Object}  options                        Options object.
- * @param {boolean} options.renderChangeMetricLink If metric link meets the conditions to render.
+ * @since n.e.x.t Removed the on-demand tour trigger, which the notification queue now owns.
  */
-export function useChangeMetricsFeatureTourEffect( {
-	renderChangeMetricLink,
-} ) {
-	const keyMetricsSetupCompletedBy = useSelect( ( select ) =>
-		select( CORE_SITE ).getKeyMetricsSetupCompletedBy()
-	);
-	const currentUserID = useSelect( ( select ) =>
-		select( CORE_USER ).getID()
-	);
-	const { triggerOnDemandTour, dismissTour } = useDispatch( CORE_USER );
+export function useChangeMetricsFeatureTourEffect() {
+	const { dismissTour } = useDispatch( CORE_USER );
 
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const isTourDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isTourDismissed( sharedKeyMetrics.slug )
 	);
 
-	const isUserEligibleForTour =
-		Number.isInteger( keyMetricsSetupCompletedBy ) &&
-		Number.isInteger( currentUserID ) &&
-		keyMetricsSetupCompletedBy > 0 &&
-		currentUserID !== keyMetricsSetupCompletedBy;
-
 	useEffect( () => {
-		if ( setupFlowRefreshEnabled && isInitialWelcomeModalActive() ) {
-			if ( isTourDismissed === false ) {
-				dismissTour( sharedKeyMetrics.slug );
-			}
+		if ( ! setupFlowRefreshEnabled || ! isInitialWelcomeModalActive() ) {
 			return;
 		}
 
-		if ( renderChangeMetricLink && isUserEligibleForTour ) {
-			triggerOnDemandTour( sharedKeyMetrics );
+		if ( isTourDismissed === false ) {
+			dismissTour( sharedKeyMetrics.slug );
 		}
-	}, [
-		renderChangeMetricLink,
-		isUserEligibleForTour,
-		triggerOnDemandTour,
-		dismissTour,
-		isTourDismissed,
-		setupFlowRefreshEnabled,
-	] );
+	}, [ dismissTour, isTourDismissed, setupFlowRefreshEnabled ] );
 }

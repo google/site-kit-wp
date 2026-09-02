@@ -52,6 +52,20 @@ class Email_Reporting_Data_Requests {
 	);
 
 	/**
+	 * Slugs of the modules that add a section to the email report.
+	 *
+	 * An admin can connect PageSpeed Insights and AdSense as well. Neither adds
+	 * a section.
+	 *
+	 * @since n.e.x.t
+	 * @var string[]
+	 */
+	const PAYLOAD_MODULE_SLUGS = array(
+		Search_Console::MODULE_SLUG,
+		Analytics_4::MODULE_SLUG,
+	);
+
+	/**
 	 * Modules instance.
 	 *
 	 * @since 1.168.0
@@ -176,24 +190,26 @@ class Email_Reporting_Data_Requests {
 				$shareable_modules = array_intersect_key( $shareable_modules, array_flip( $allowed_module_slugs ) );
 			}
 
+			// Remove the modules the report never shows, so the permissions error
+			// cannot name AdSense.
+			$shareable_modules = array_intersect_key( $shareable_modules, array_flip( self::PAYLOAD_MODULE_SLUGS ) );
+
 			list( $available_modules, $denied_module_slugs ) = $this->filter_modules_for_user( $shareable_modules, $user );
 
-			if ( empty( $available_modules ) ) {
-				if ( ! empty( $denied_module_slugs ) ) {
-					return $this->categorize_error(
-						new WP_Error(
-							'email_reporting_module_access_denied',
-							__( 'The recipient does not have access to the connected service.', 'google-site-kit' ),
-							array( 'status' => 403 )
-						),
-						$denied_module_slugs[0]
-					);
-				}
+			$payload = $this->collect_payloads( $available_modules, $date_range, $shared_payloads );
 
-				return array();
+			if ( empty( $payload ) && ! empty( $denied_module_slugs ) ) {
+				return $this->categorize_error(
+					new WP_Error(
+						'email_reporting_module_access_denied',
+						__( 'The recipient does not have access to the connected service.', 'google-site-kit' ),
+						array( 'status' => 403 )
+					),
+					$denied_module_slugs[0]
+				);
 			}
 
-			return $this->collect_payloads( $available_modules, $date_range, $shared_payloads );
+			return $payload;
 		} finally {
 			if ( is_callable( $restore_user_options ) ) {
 				$restore_user_options();
@@ -426,8 +442,13 @@ class Email_Reporting_Data_Requests {
 
 			// Admin not in shared roles; preserves the authenticated-admin-with-
 			// own-Google path: preflight with the recipient's own tokens and only
-			// include the module if they personally have access.
-			if ( user_can( $user, Permissions::MANAGE_OPTIONS ) ) {
+			// include the module if their Google Account has access
+			// to this property.
+			// This is why we use AUTHENTICATE (not MANAGE_OPTIONS):
+			// MANAGE_OPTIONS also requires completed site
+			// verification/setup. AUTHENTICATE is present as long as the
+			// user can access this property.
+			if ( user_can( $user, Permissions::AUTHENTICATE ) ) {
 				if ( $module instanceof Module_With_Service_Entity ) {
 					$access = $module->check_service_entity_access();
 

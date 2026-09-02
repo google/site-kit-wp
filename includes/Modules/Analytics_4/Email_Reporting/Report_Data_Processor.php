@@ -123,6 +123,46 @@ class Report_Data_Processor {
 	}
 
 	/**
+	 * Sums one metric for each group and each date range.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array  $rows            Report rows, as `Email_Report_Payload_Processor::extract_report_rows()`
+	 *                                returns them.
+	 * @param string $group_dimension Dimension whose value names the group, such as
+	 *                                `customEvent:googlesitekit_event_provider`. An empty string
+	 *                                puts every row in one group. That group's name is an
+	 *                                empty string.
+	 * @param string $metric_name     Metric to sum, such as `eventCount`.
+	 * @return array Summed metric, by group name and date range key, such as
+	 *               `array( 'woocommerce' => array( 'date_range_0' => 116.0, 'date_range_1' => 121.0 ) )`.
+	 */
+	public function sum_metric_by_group( $rows, $group_dimension, $metric_name ) {
+		$totals = array();
+
+		if ( ! is_array( $rows ) ) {
+			return $totals;
+		}
+
+		foreach ( $rows as $row ) {
+			$metric_value = $row['metrics'][ $metric_name ] ?? null;
+			if ( ! is_numeric( $metric_value ) ) {
+				continue;
+			}
+
+			$group_name = '' === $group_dimension
+				? ''
+				: ( $row['dimensions'][ $group_dimension ] ?? '' );
+
+			$date_range_key = $row['dimensions']['dateRange'] ?? 'date_range_0';
+
+			$totals[ $group_name ][ $date_range_key ] = ( $totals[ $group_name ][ $date_range_key ] ?? 0.0 ) + (float) $metric_value;
+		}
+
+		return $totals;
+	}
+
+	/**
 	 * Applies per-dimension aggregates to values and trends when available.
 	 *
 	 * @since 1.170.0

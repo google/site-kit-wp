@@ -27,31 +27,27 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import { renderHook } from '@tests/js/test-utils';
-import {
-	createTestRegistry,
-	provideSiteInfo,
-	provideUserInfo,
-} from '@tests/js/utils';
+import { createTestRegistry } from '@tests/js/utils';
 import { useChangeMetricsFeatureTourEffect } from './useChangeMetricsFeatureTourEffect';
 
 jest.mock( '@/js/feature-tours/shared-key-metrics', () => ( {
 	slug: 'mocked-tour',
 } ) );
 
+const DASHBOARD_URL =
+	'https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard';
+const WELCOME_MODAL_URL = `${ DASHBOARD_URL }&notification=initial_setup_success`;
+
 describe( 'useChangeMetricsFeatureTourEffect', () => {
 	mockLocation();
 
 	let registry: WPDataRegistry;
-	let triggerOnDemandTourSpy: jest.SpyInstance;
 	let dismissTourSpy: jest.SpyInstance;
 
 	beforeEach( () => {
+		global.location.href = DASHBOARD_URL;
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
-		triggerOnDemandTourSpy = jest.spyOn(
-			registry.dispatch( CORE_USER ),
-			'triggerOnDemandTour'
-		);
 		dismissTourSpy = jest.spyOn(
 			registry.dispatch( CORE_USER ),
 			'dismissTour'
@@ -59,105 +55,47 @@ describe( 'useChangeMetricsFeatureTourEffect', () => {
 		dismissTourSpy.mockImplementation( () => {} );
 	} );
 
-	it( 'should trigger Key Metrics feature tour when conditions are met', () => {
-		provideUserInfo( registry, {
-			id: 2,
+	it( 'should dismiss the tour when the welcome modal is present', () => {
+		global.location.href = WELCOME_MODAL_URL;
+
+		renderHook( () => useChangeMetricsFeatureTourEffect(), {
+			registry,
+			features: [ 'setupFlowRefresh' ],
 		} );
-		provideSiteInfo( registry, {
-			keyMetricsSetupCompletedBy: 1,
-		} );
 
-		renderHook(
-			() =>
-				useChangeMetricsFeatureTourEffect( {
-					renderChangeMetricLink: true,
-				} ),
-			{
-				registry,
-			}
-		);
-
-		expect( triggerOnDemandTourSpy ).toHaveBeenCalledWith( {
-			slug: 'mocked-tour',
-		} );
-	} );
-
-	it.each( [
-		[ 1, 2, false ],
-		[ 2, 1, false ],
-		[ 1, 1, false ],
-		[ 1, 1, true ],
-	] )(
-		'should not trigger Key Metrics feature tour when current user is %s, key metrics were set up by %s and renderChangeMetricLink is %s',
-		( userID, keyMetricsSetupCompletedBy, renderChangeMetricLink ) => {
-			provideUserInfo( registry, {
-				id: userID,
-			} );
-			provideSiteInfo( registry, {
-				keyMetricsSetupCompletedBy,
-			} );
-
-			renderHook(
-				() =>
-					useChangeMetricsFeatureTourEffect( {
-						renderChangeMetricLink,
-					} ),
-				{
-					registry,
-				}
-			);
-
-			expect( triggerOnDemandTourSpy ).not.toHaveBeenCalled();
-		}
-	);
-
-	it( 'should not trigger Key Metrics feature tour when welcome modal is present', () => {
-		provideUserInfo( registry, {
-			id: 2,
-		} );
-		provideSiteInfo( registry, {
-			keyMetricsSetupCompletedBy: 1,
-		} );
-		global.location.href =
-			'https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&notification=initial_setup_success';
-
-		renderHook(
-			() =>
-				useChangeMetricsFeatureTourEffect( {
-					renderChangeMetricLink: true,
-				} ),
-			{
-				registry,
-				features: [ 'setupFlowRefresh' ],
-			}
-		);
-
-		expect( triggerOnDemandTourSpy ).not.toHaveBeenCalled();
 		expect( dismissTourSpy ).toHaveBeenCalledWith( 'mocked-tour' );
 	} );
 
-	it( 'should not call dismissTour when welcome modal is present and tour is already dismissed', () => {
+	it( 'should not dismiss the tour when the welcome modal is present and the tour is already dismissed', () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedTours( [ 'mocked-tour' ] );
-		provideUserInfo( registry, {
-			id: 2,
-		} );
-		provideSiteInfo( registry, {
-			keyMetricsSetupCompletedBy: 1,
-		} );
-		global.location.href =
-			'https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&notification=initial_setup_success';
+		global.location.href = WELCOME_MODAL_URL;
 
-		renderHook(
-			() =>
-				useChangeMetricsFeatureTourEffect( {
-					renderChangeMetricLink: true,
-				} ),
-			{ registry, features: [ 'setupFlowRefresh' ] }
-		);
+		renderHook( () => useChangeMetricsFeatureTourEffect(), {
+			registry,
+			features: [ 'setupFlowRefresh' ],
+		} );
 
-		expect( triggerOnDemandTourSpy ).not.toHaveBeenCalled();
+		expect( dismissTourSpy ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should not dismiss the tour when the welcome modal is not present', () => {
+		renderHook( () => useChangeMetricsFeatureTourEffect(), {
+			registry,
+			features: [ 'setupFlowRefresh' ],
+		} );
+
+		expect( dismissTourSpy ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should not dismiss the tour when setupFlowRefresh is disabled', () => {
+		global.location.href = WELCOME_MODAL_URL;
+
+		renderHook( () => useChangeMetricsFeatureTourEffect(), {
+			registry,
+		} );
+
 		expect( dismissTourSpy ).not.toHaveBeenCalled();
 	} );
 } );
