@@ -32,6 +32,7 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { getItem, setItem } from '@/js/googlesitekit/api/cache';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
@@ -231,6 +232,8 @@ function resolveBreakdownNoticeState(
 
 interface ComputeNoticeStateArgs {
 	isViewOnly: boolean;
+	canManageOptions: boolean | undefined;
+	isConversionTrackingEnabled: boolean | undefined;
 	hasBreakdownDimensions: boolean | undefined;
 	isIntroModalDismissed: boolean | undefined;
 	isNoticeDismissed: boolean | undefined;
@@ -254,6 +257,8 @@ function computeNoticeState(
 ): BreakdownNoticeState {
 	const {
 		isViewOnly,
+		canManageOptions,
+		isConversionTrackingEnabled,
 		hasBreakdownDimensions,
 		isIntroModalDismissed,
 		isNoticeDismissed,
@@ -267,6 +272,13 @@ function computeNoticeState(
 		isIntroModalDismissed === undefined ||
 		isNoticeDismissed === undefined
 	) {
+		return null;
+	}
+
+	// The description says whether the CTA also switches conversion tracking on,
+	// so waiting avoids showing the wrong wording first. Only someone allowed to
+	// read the setting ever gets a value, so nobody else is held back.
+	if ( canManageOptions && isConversionTrackingEnabled === undefined ) {
 		return null;
 	}
 
@@ -548,6 +560,18 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 	}, [ origin, showBreakdownTooltip, setSiteGoalsBreakdownTooltipPending ] );
 
 	const isViewOnly = useViewOnly();
+	const canManageOptions = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ),
+		[]
+	);
+	const isConversionTrackingEnabled = useSelect(
+		( select: Select ) =>
+			canManageOptions
+				? select( CORE_SITE ).isConversionTrackingEnabled()
+				: undefined,
+		[ canManageOptions ]
+	);
 
 	const creationError = useSelect( ( select: Select ) => {
 		for ( const customDimension of ALL_CUSTOM_DIMENSIONS ) {
@@ -633,6 +657,8 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 
 	const noticeState = computeNoticeState( {
 		isViewOnly,
+		canManageOptions,
+		isConversionTrackingEnabled,
 		hasBreakdownDimensions,
 		isIntroModalDismissed,
 		isNoticeDismissed,
