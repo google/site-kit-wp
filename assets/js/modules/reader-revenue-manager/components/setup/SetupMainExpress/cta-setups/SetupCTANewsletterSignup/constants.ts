@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager newsletter signup form step.
+ * Reader Revenue Manager newsletter signup CTA constants.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -16,25 +16,18 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import { FC } from 'react';
+export const NEWSLETTER_SIGNUP_FORM = {
+	DISPLAY_NAME: 'displayName',
+	CTA_TITLE: 'ctaTitle',
+	CTA_BODY: 'ctaBody',
+	NAME_REQUIRED: 'nameRequired',
+	CONSENT_ENABLED: 'consentEnabled',
+	CONSENT_TEXT: 'consentText',
+} as const;
 
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-const StepSignupForm: FC = () => {
-	return (
-		<p>
-			{ __(
-				'RRM express setup placeholder: newsletter CTA setup step.',
-				'google-site-kit'
-			) }
-		</p>
-	);
-};
-
-export default StepSignupForm;
+export const NEWSLETTER_SIGNUP_LIMITS = {
+	DISPLAY_NAME: 40,
+	CTA_TITLE: 90,
+	CTA_BODY: 140,
+	CONSENT_TEXT: 90,
+} as const;

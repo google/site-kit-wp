@@ -48,7 +48,124 @@
 		max-inline-size: 500px;
 	}
 
+	.googlesitekit-rrm-express-setup-step__form-input {
+		display: inherit;
+
+		.mdc-text-field {
+			width: 100%;
+		}
+
+		.mdc-text-field-helper-line {
+			padding: 0;
+			width: 100%;
+		}
+	}
+
+	.googlesitekit-rrm-express-setup-step__section {
+		border-block-end: 1px solid $c-utility-divider;
+		padding-block: $grid-gap-phone;
+
+		&:last-child {
+			border-block-end: 0;
+		}
+	}
+
+	.googlesitekit-rrm-express-setup-step__section-title {
+		margin: 0 0 20px 0;
+	}
+
 	.googlesitekit-rrm-express-setup-step__cta-link {
 		letter-spacing: inherit; /* TODO: Apply to .googlesitekit-cta-link. */
+	}
+
+	.googlesitekit-rrm-express-setup-step--cta-setup {
+
+		.googlesitekit-rrm-express-setup-step__form-controls {
+			max-inline-size: $width-tablet + px;
+		}
+
+		.googlesitekit-rrm-express-setup-step__cta-setup-columns {
+			display: grid;
+			gap: 36px;
+
+			.googlesitekit-rrm-express-setup-step__cta-setup-fields-primary {
+
+				.googlesitekit-rrm-express-setup-step__section:last-child {
+					border-block-end: 1px solid $c-utility-divider;
+				}
+			}
+		}
+
+		// Establishes a primary fields > preview > secondary fields
+		// layout on tablet.
+		@media (min-width: $bp-tablet) and (max-width: $bp-desktop) {
+
+			.googlesitekit-rrm-express-setup-step__cta-setup-columns {
+				gap: $grid-gap-phone 10px;
+				grid-template-columns: minmax(0, 1fr) min(320px, 40%);
+
+				.googlesitekit-rrm-express-setup-step__cta-setup-fields {
+					display: contents;
+				}
+
+				.googlesitekit-rrm-express-setup-step__cta-setup-fields-primary {
+					grid-column: 1;
+					grid-row: 1;
+				}
+
+				> .googlesitekit-rrm-cta-preview {
+					grid-column: 2;
+					grid-row: 1;
+				}
+
+				.googlesitekit-rrm-express-setup-step__cta-setup-fields-secondary {
+					grid-column: 1 / -1;
+					grid-row: 2;
+				}
+			}
+		}
+
+		@media (min-width: $bp-nonTablet) {
+
+			.googlesitekit-rrm-express-setup-step__cta-setup-columns {
+				align-items: start;
+				gap: $grid-gap-desktop 48px;
+				grid-template-columns: minmax(0, $width-tablet + px) min(320px, 40%);
+			}
+		}
+	}
+
+	.googlesitekit-rrm-express-setup-step__section--ctas-placement {
+
+		.googlesitekit-rrm-express-setup-step__section-title {
+			margin: 0 0 $grid-gap-desktop 0;
+		}
+
+		.googlesitekit-rrm-express-setup-step__form-controls {
+			gap: $grid-gap-desktop;
+			max-inline-size: 100%;
+		}
+
+		.googlesitekit-rrm-express-setup-step__post-types {
+			display: grid;
+			gap: 14px;
+			margin-block-end: $grid-gap-phone;
+		}
+
+		.googlesitekit-rrm-express-setup-step__post-types-title {
+			margin-block: 0;
+		}
+	}
+
+	.googlesitekit-rrm-express-setup-step__section--cta-settings {
+
+		.googlesitekit-rrm-express-setup-step__section-title {
+			margin: 0 0 $grid-gap-phone 0;
+		}
+
+		.googlesitekit-rrm-express-setup-step__note {
+			color: $c-surfaces-on-surface-variant;
+			margin-block: 8px 0;
+		}
 	}
 }

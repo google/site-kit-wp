@@ -68,13 +68,9 @@ describe( 'SetupMainExpress', () => {
 		global.location.href =
 			'http://example.com/?cta=newsletter-signup&step=setup-cta';
 
-		const { getByText } = render( <SetupMainExpress /> );
+		const { getByText } = render( <SetupMainExpress />, { registry } );
 
-		expect(
-			getByText(
-				'RRM express setup placeholder: newsletter CTA setup step.'
-			)
-		).toBeInTheDocument();
+		expect( getByText( 'Set up your sign-up form' ) ).toBeInTheDocument();
 	} );
 
 	it( 'renders the default express setup when no CTA is specified', () => {

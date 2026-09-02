@@ -47,8 +47,7 @@ const STEP_CONTENT = {
 		'RRM express setup placeholder: terms of service step.',
 	[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]:
 		'RRM express setup placeholder: publication policies step.',
-	[ EXPRESS_SETUP_STEPS.SETUP_CTA ]:
-		'RRM express setup placeholder: newsletter CTA setup step.',
+	[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: 'Set up your sign-up form',
 	[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]:
 		'RRM express setup placeholder: setup complete step.',
 };

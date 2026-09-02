@@ -27,10 +27,12 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import ErrorNotice from '@/js/components/ErrorNotice';
+import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import Typography from '@/js/components/Typography';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	PolicyViolationSettingsNotice,
@@ -55,6 +57,10 @@ export default function SettingsForm( { hasModuleAccess } ) {
 
 	const snippetMode = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getSnippetMode()
+	);
+
+	const blockEditorSettingsLearnMoreURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'rrm-content-settings' )
 	);
 
 	const missingProductID = useSelect( ( select ) => {
@@ -196,7 +202,28 @@ export default function SettingsForm( { hasModuleAccess } ) {
 					{ __( 'CTA Placement', 'google-site-kit' ) }
 				</Typography>
 				<div className="googlesitekit-rrm-settings-edit__snippet-mode">
-					<SnippetModeSelect hasModuleAccess={ hasModuleAccess } />
+					<SnippetModeSelect
+						hasModuleAccess={ hasModuleAccess }
+						helperText={ createInterpolateElement(
+							__(
+								'Use the new settings in the block editor to customize where your CTAs appear. <a>Learn more</a>',
+								'google-site-kit'
+							),
+							{
+								a: (
+									<Link
+										aria-label={ __(
+											'Learn more about Reader Revenue Manager settings in the block editor',
+											'google-site-kit'
+										) }
+										href={ blockEditorSettingsLearnMoreURL }
+										external
+										hideExternalIndicator
+									/>
+								),
+							}
+						) }
+					/>
 				</div>
 				{ snippetMode === 'post_types' && (
 					<div className="googlesitekit-rrm-settings-edit__post-types">
