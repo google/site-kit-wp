@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, useSelect } from 'googlesitekit-data';
 import Typography from '@/js/components/Typography';
-import { SIZE_SMALL, TYPE_LABEL } from '@/js/components/Typography/constants';
+import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
 import {
 	PostTypesSelect,
 	SnippetModeSelect,
@@ -67,7 +67,7 @@ const CTAsPlacementFormSection: FC = () => {
 							as="h3"
 							className="googlesitekit-rrm-express-setup-step__post-types-title"
 							size={ SIZE_SMALL }
-							type={ TYPE_LABEL }
+							type={ TYPE_BODY }
 						>
 							{ __(
 								'Select the content types where you want your CTAs to appear:',
