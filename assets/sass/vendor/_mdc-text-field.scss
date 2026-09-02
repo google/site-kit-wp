@@ -73,6 +73,12 @@
 		padding: 8px 12px 12px;
 	}
 
+	// Remove unnecessary bottom margin from textarea input
+	// when character counter is present.
+	.mdc-text-field--textarea .mdc-text-field-character-counter + .mdc-text-field__input {
+		margin-bottom: 0;
+	}
+
 	.mdc-text-field--textarea:not(.mdc-text-field--disabled) .mdc-text-field__input:focus { // :not comes from MDC
 		border-color: $c-input;
 	}
@@ -80,5 +86,15 @@
 	// Remove right padding from helper line when character counter is present.
 	.mdc-text-field + .mdc-text-field-helper-line:has(.mdc-text-field-character-counter) {
 		padding-right: 0;
+	}
+
+	// Reposition character counter for textarea inputs.
+	.mdc-text-field--textarea:has(.mdc-text-field-character-counter) {
+		margin-bottom: 28px;
+	}
+
+	.mdc-text-field--textarea .mdc-text-field-character-counter {
+		bottom: -20px;
+		right: 0;
 	}
 }

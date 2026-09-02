@@ -82,17 +82,14 @@ const StepSignupForm: FC = () => {
 		( !! consentEnabled && ! ( consentText || '' ).trim() );
 
 	return (
-		<div className="googlesitekit-rrm-express-setup-step">
+		<div className="googlesitekit-rrm-express-setup-step googlesitekit-rrm-express-setup-step--cta-setup">
 			<form
 				className="googlesitekit-rrm-express-setup-step__form"
 				onSubmit={ onSubmit }
 			>
 				<div className="googlesitekit-rrm-express-setup-step__form-content">
 					<ExpressSetupStepHeadline className="googlesitekit-rrm-express-setup-step__headline">
-						{ __(
-							'Set up your readers newsletter sign-up form',
-							'google-site-kit'
-						) }
+						{ __( 'Set up your sign-up form', 'google-site-kit' ) }
 					</ExpressSetupStepHeadline>
 
 					<StoreErrorNotices
