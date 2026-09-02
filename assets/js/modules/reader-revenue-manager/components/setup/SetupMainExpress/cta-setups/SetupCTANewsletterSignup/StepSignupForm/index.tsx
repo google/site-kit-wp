@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC, FormEvent } from 'react';
+import { FC, FormEvent, useMemo, useState } from 'react';
 
 /**
  * WordPress dependencies
@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { SpinnerButton } from 'googlesitekit-components';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import DocumentationLink from '@/js/components/DocumentationLink';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
@@ -40,19 +41,41 @@ import { ExpressSetupStepHeadline } from '@/js/modules/reader-revenue-manager/co
 import { NEWSLETTER_SIGNUP_FORM } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/constants';
 import Preview from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/Preview';
 import CTAsPlacementFormSection from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/CTAsPlacementFormSection';
+import { useStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	EXPRESS_SETUP_CTA_FORMS,
+	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { CTA_TYPES } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
 import CTASettings from './CTASettings';
 import FormText from './FormText';
 import GeneralDetails from './GeneralDetails';
 
 const StepSignupForm: FC = () => {
+	const [ , setStep ] = useStep();
+	const [ isPublishing, setIsPublishing ] = useState( false );
+
+	const { createCTA, submitChanges } = useDispatch(
+		MODULES_READER_REVENUE_MANAGER
+	);
+
 	const [ displayName ] = useFormValue< string >(
 		EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP,
 		NEWSLETTER_SIGNUP_FORM.DISPLAY_NAME
+	);
+	const [ ctaTitle ] = useFormValue< string >(
+		EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP,
+		NEWSLETTER_SIGNUP_FORM.CTA_TITLE
+	);
+	const [ ctaBody ] = useFormValue< string >(
+		EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP,
+		NEWSLETTER_SIGNUP_FORM.CTA_BODY
+	);
+	const [ nameRequired ] = useFormValue< boolean >(
+		EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP,
+		NEWSLETTER_SIGNUP_FORM.NAME_REQUIRED
 	);
 	const [ consentEnabled ] = useFormValue< boolean >(
 		EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP,
@@ -63,9 +86,79 @@ const StepSignupForm: FC = () => {
 		NEWSLETTER_SIGNUP_FORM.CONSENT_TEXT
 	);
 
-	const onSubmit = useCallback( ( event: FormEvent< HTMLFormElement > ) => {
-		event.preventDefault();
-	}, [] );
+	const createCTAParams = useMemo( () => {
+		const trimmedTitle = ( ctaTitle || '' ).trim();
+		const trimmedBody = ( ctaBody || '' ).trim();
+		const trimmedConsentText = ( consentText || '' ).trim();
+
+		const config = {
+			...( trimmedTitle && { title: trimmedTitle } ),
+			...( trimmedBody && { customMessage: trimmedBody } ),
+			nameRequired: !! nameRequired,
+			...( consentEnabled &&
+				trimmedConsentText && {
+					customConsentText: trimmedConsentText,
+				} ),
+		};
+
+		return {
+			data: {
+				displayName: ( displayName || '' ).trim(),
+				type: CTA_TYPES.NEWSLETTER_SIGNUP,
+				config,
+			},
+		};
+	}, [
+		consentEnabled,
+		consentText,
+		ctaBody,
+		ctaTitle,
+		displayName,
+		nameRequired,
+	] );
+
+	const isDoingSubmitChanges = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).isDoingSubmitChanges(),
+		[]
+	);
+
+	const isFetchingCreateCTA = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).isFetchingCreateCTA(
+				createCTAParams
+			),
+		[ createCTAParams ]
+	);
+
+	const publishChanges = useCallback( async () => {
+		setIsPublishing( true );
+
+		const { error: submitError } = await submitChanges();
+
+		if ( submitError ) {
+			setIsPublishing( false );
+			return;
+		}
+
+		const { error: createError } = await createCTA( createCTAParams );
+
+		if ( createError ) {
+			setIsPublishing( false );
+			return;
+		}
+
+		setIsPublishing( false );
+		setStep( EXPRESS_SETUP_STEPS.SETUP_COMPLETE );
+	}, [ createCTA, createCTAParams, setStep, submitChanges ] );
+
+	const onSubmit = useCallback(
+		async ( event: FormEvent< HTMLFormElement > ) => {
+			event.preventDefault();
+			await publishChanges();
+		},
+		[ publishChanges ]
+	);
 
 	const description = createInterpolateElement(
 		__(
@@ -77,9 +170,13 @@ const StepSignupForm: FC = () => {
 		}
 	);
 
+	const isSaving =
+		isPublishing || isDoingSubmitChanges || isFetchingCreateCTA;
+
 	const isPublishDisabled =
 		! ( displayName || '' ).trim() ||
-		( !! consentEnabled && ! ( consentText || '' ).trim() );
+		( !! consentEnabled && ! ( consentText || '' ).trim() ) ||
+		isSaving;
 
 	return (
 		<div className="googlesitekit-rrm-express-setup-step googlesitekit-rrm-express-setup-step--cta-setup googlesitekit-rrm-newsletter-signup-setup">
@@ -121,7 +218,11 @@ const StepSignupForm: FC = () => {
 					</div>
 				</div>
 				{ /* @ts-expect-error - The `SpinnerButton` component is not typed yet. */ }
-				<SpinnerButton disabled={ isPublishDisabled } type="submit">
+				<SpinnerButton
+					disabled={ isPublishDisabled }
+					isSaving={ isSaving }
+					type="submit"
+				>
 					{ __( 'Publish to your site', 'google-site-kit' ) }
 				</SpinnerButton>
 			</form>
