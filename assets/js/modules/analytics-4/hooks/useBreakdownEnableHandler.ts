@@ -50,6 +50,7 @@ import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { useConversionTrackingSetting } from '@/js/modules/analytics-4/hooks/useConversionTrackingSetting';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 
 // Every Site Kit custom dimension is created, not just the Site Goals-specific
@@ -74,6 +75,7 @@ export function useBreakdownEnableHandler(
 		( select: Select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ),
 		[]
 	);
+	const { isConversionTrackingEnabled } = useConversionTrackingSetting();
 	const redirectURL = useSelect(
 		( select: Select ) =>
 			select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
@@ -110,6 +112,11 @@ export function useBreakdownEnableHandler(
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
 	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
+	const {
+		resetConversionTrackingSettings,
+		saveConversionTrackingSettings,
+		setConversionTrackingEnabled,
+	} = useDispatch( CORE_SITE );
 
 	const onEnable = useCallback( async () => {
 		// Record where creation was triggered and the enabled scope, so the
@@ -122,6 +129,23 @@ export function useBreakdownEnableHandler(
 			[ BREAKDOWN_SCOPE_FORM_KEY ]: scope,
 			[ BREAKDOWN_DISMISSED_FORM_KEY ]: false,
 		};
+
+		// The new dimensions are useless unless Site Kit tracks the events
+		// itself, so conversion tracking goes on before anything else. The
+		// OAuth path below returns early and would otherwise skip it.
+		if ( isConversionTrackingEnabled === false ) {
+			setConversionTrackingEnabled( true );
+
+			const { error } = ( await saveConversionTrackingSettings() ) ?? {};
+
+			if ( error ) {
+				resetConversionTrackingSettings();
+
+				// No redirect follows a failed save, so report the attempt as
+				// settled and let the caller drop its busy state.
+				return true;
+			}
+		}
 
 		if ( ! hasAnalytics4EditScope ) {
 			setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
@@ -173,9 +197,13 @@ export function useBreakdownEnableHandler(
 		createCustomDimensions,
 		scope,
 		hasAnalytics4EditScope,
+		isConversionTrackingEnabled,
 		origin,
 		redirectURL,
 		registry,
+		resetConversionTrackingSettings,
+		saveConversionTrackingSettings,
+		setConversionTrackingEnabled,
 		setPermissionScopeError,
 		setValues,
 	] );
