@@ -28,6 +28,18 @@ class CTA {
 	const CRON_SYNCHRONIZE_PUBLICATION_CTAS = 'googlesitekit_cron_synchronize_publication_ctas';
 
 	/**
+	 * Map of WCP CTA type enums to Site Kit express-setup CTA slugs.
+	 *
+	 * Values must match `EXPRESS_SETUP_CTAS` in the JS datastore.
+	 *
+	 * @since n.e.x.t
+	 * @var array<string, string>
+	 */
+	const CTA_TYPE_SLUGS = array(
+		WCP_CTA::TYPE_NEWSLETTER_SIGNUP => 'newsletter-signup',
+	);
+
+	/**
 	 * Reader Revenue Manager settings.
 	 *
 	 * @since n.e.x.t
@@ -64,11 +76,11 @@ class CTA {
 
 			$cta_id = $this->get_cta_id( $cta );
 
-			if ( empty( $cta_id ) || empty( $cta->getType() ) ) {
+			if ( empty( $cta_id ) || ! isset( self::CTA_TYPE_SLUGS[ $cta->getType() ] ) ) {
 				continue;
 			}
 
-			$configured_ctas[ $cta_id ] = $cta->getType();
+			$configured_ctas[ $cta_id ] = self::CTA_TYPE_SLUGS[ $cta->getType() ];
 		}
 
 		$this->settings->merge( array( 'configuredCTAs' => $configured_ctas ) );

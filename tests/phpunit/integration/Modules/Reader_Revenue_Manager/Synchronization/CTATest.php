@@ -49,7 +49,7 @@ class CTATest extends TestCase {
 		$this->settings->set(
 			array(
 				'configuredCTAs' => array(
-					'old-cta' => 'NEWSLETTER_SIGNUP',
+					'old-cta' => 'newsletter-signup',
 				),
 			)
 		);
@@ -70,6 +70,7 @@ class CTATest extends TestCase {
 			array(
 				$this->create_cta( 'organizations/1/publications/1/ctas/9d2418415-ab3a', 'NEWSLETTER_SIGNUP' ),
 				$this->create_cta( 'organizations/1/publications/1/ctas/8j8152411-cd4b', 'NEWSLETTER_SIGNUP' ),
+				$this->create_cta( 'organizations/1/publications/1/ctas/unknown-type', 'UNKNOWN_TYPE' ),
 				$this->create_cta( '', 'NEWSLETTER_SIGNUP' ),
 				$this->create_cta( 'organizations/1/publications/1/ctas/', 'NEWSLETTER_SIGNUP' ),
 				$this->create_cta( 'organizations/1/publications/1/ctas/7f1042311-ef5c', '' ),
@@ -79,11 +80,11 @@ class CTATest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'9d2418415-ab3a' => 'NEWSLETTER_SIGNUP',
-				'8j8152411-cd4b' => 'NEWSLETTER_SIGNUP',
+				'9d2418415-ab3a' => 'newsletter-signup',
+				'8j8152411-cd4b' => 'newsletter-signup',
 			),
 			$this->settings->get()['configuredCTAs'],
-			'Configured CTAs should contain only valid ID-to-type entries.'
+			'Configured CTAs should contain only valid ID-to-slug entries.'
 		);
 	}
 

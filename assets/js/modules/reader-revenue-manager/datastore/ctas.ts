@@ -39,7 +39,10 @@ import {
 	createValidatedAction,
 } from '@/js/googlesitekit/data/utils';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { MODULES_READER_REVENUE_MANAGER } from './constants';
+import {
+	EXPRESS_SETUP_CTAS,
+	MODULES_READER_REVENUE_MANAGER,
+} from './constants';
 import {
 	type CTA,
 	type CreateCTAData,
@@ -98,9 +101,15 @@ function syncConfiguredCTAs( state: CTAsState, ctas: CTA[] ): void {
 	const configuredCTAs = ctas.reduce< Record< string, string > >(
 		( accumulator, cta ) => {
 			const ctaID = getCTAID( cta.name );
+			const ctaTypeSlug =
+				cta.type in EXPRESS_SETUP_CTAS
+					? EXPRESS_SETUP_CTAS[
+							cta.type as keyof typeof EXPRESS_SETUP_CTAS
+					  ]
+					: undefined;
 
-			if ( ctaID && cta.type ) {
-				accumulator[ ctaID ] = cta.type;
+			if ( ctaID && ctaTypeSlug ) {
+				accumulator[ ctaID ] = ctaTypeSlug;
 			}
 
 			return accumulator;

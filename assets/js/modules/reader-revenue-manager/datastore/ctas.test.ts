@@ -31,7 +31,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { enabledFeatures } from '@/js/features';
 import { createTestRegistry, untilResolved } from '@tests/js/utils';
-import { MODULES_READER_REVENUE_MANAGER } from './constants';
+import {
+	EXPRESS_SETUP_CTAS,
+	MODULES_READER_REVENUE_MANAGER,
+} from './constants';
 
 describe( 'modules/reader-revenue-manager CTAs', () => {
 	let registry: WPDataRegistry;
@@ -349,7 +352,7 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getSettings().configuredCTAs
 				).toEqual( {
-					'9d2418415-ab3a': cta.type,
+					'9d2418415-ab3a': EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
 				} );
 				expect(
 					registry
@@ -364,7 +367,9 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( {
 						...params,
-						configuredCTAs: { existing: 'NEWSLETTER_SIGNUP' },
+						configuredCTAs: {
+							existing: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+						},
 					} );
 
 				registry
@@ -375,7 +380,32 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 					registry
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getSettings().configuredCTAs
-				).toEqual( { existing: 'NEWSLETTER_SIGNUP' } );
+				).toEqual( {
+					existing: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+				} );
+			} );
+
+			it( 'should skip CTAs with unsupported types when synchronizing configured CTAs', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetCTAs( {
+						ctas: [
+							cta,
+							{
+								name: 'organizations/ABCD1234/publications/ABCD_123-4/ctas/unknown-type',
+								type: 'UNKNOWN_TYPE',
+							},
+						],
+						params,
+					} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSettings().configuredCTAs
+				).toEqual( {
+					'9d2418415-ab3a': EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+				} );
 			} );
 
 			it( 'should fetch the CTAs when called with no params', async () => {

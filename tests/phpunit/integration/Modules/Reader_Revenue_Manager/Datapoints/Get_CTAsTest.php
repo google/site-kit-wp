@@ -135,10 +135,10 @@ class Get_CTAsTest extends TestCase {
 		);
 		$this->assertSame(
 			array(
-				'9d2418415-ab3a' => 'NEWSLETTER_SIGNUP',
+				'9d2418415-ab3a' => 'newsletter-signup',
 			),
 			$this->module->get_settings()->get()['configuredCTAs'],
-			'The CTA response should be synchronized with module settings using CTA IDs.'
+			'The CTA response should be synchronized with module settings using CTA IDs and express-setup slugs.'
 		);
 	}
 
