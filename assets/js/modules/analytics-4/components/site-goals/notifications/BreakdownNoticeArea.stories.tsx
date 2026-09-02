@@ -30,6 +30,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	BREAKDOWN_ORIGIN_FORM_KEY,
@@ -69,6 +70,10 @@ function baseSetup(
 ) {
 	provideSiteInfo( registry );
 	provideUserAuthentication( registry );
+	// The notice waits on this setting, and its wording depends on it.
+	registry
+		.dispatch( CORE_SITE )
+		.receiveGetConversionTrackingSettings( { enabled: true } );
 	provideUserCapabilities( registry );
 	provideModules( registry, [
 		{ slug: 'analytics-4', active: true, connected: true },
@@ -85,6 +90,13 @@ function baseSetup(
 		propertyID: '12345',
 		availableCustomDimensions,
 	} );
+}
+
+function noConversionTrackingSetup( registry: WPDataRegistry ) {
+	baseSetup( registry, [] );
+	registry
+		.dispatch( CORE_SITE )
+		.receiveGetConversionTrackingSettings( { enabled: false } );
 }
 
 function Template( {
@@ -231,6 +243,40 @@ CombinedSuccess.args = {
 			} );
 	},
 };
+
+export const NewWithoutConversionTracking = Template.bind(
+	{}
+) as Story< BreakdownNoticeAreaStoryProps >;
+NewWithoutConversionTracking.storyName =
+	'New without conversion tracking (Lead generation)';
+NewWithoutConversionTracking.args = {
+	goalTypes: [ GOAL_TYPES.LEAD ],
+	setupRegistry: noConversionTrackingSetup,
+};
+NewWithoutConversionTracking.scenario = {};
+
+export const NewWithoutConversionTrackingEcommerce = Template.bind(
+	{}
+) as Story< BreakdownNoticeAreaStoryProps >;
+NewWithoutConversionTrackingEcommerce.storyName =
+	'New without conversion tracking (Online store)';
+NewWithoutConversionTrackingEcommerce.args = {
+	goalTypes: [ GOAL_TYPES.ECOMMERCE ],
+	setupRegistry: noConversionTrackingSetup,
+};
+NewWithoutConversionTrackingEcommerce.scenario = {};
+
+export const CombinedNewWithoutConversionTracking = Template.bind(
+	{}
+) as Story< BreakdownNoticeAreaStoryProps >;
+CombinedNewWithoutConversionTracking.storyName =
+	'New without conversion tracking (Side Panel)';
+CombinedNewWithoutConversionTracking.args = {
+	origin: BREAKDOWN_ORIGIN_PANEL,
+	goalTypes: [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ],
+	setupRegistry: noConversionTrackingSetup,
+};
+CombinedNewWithoutConversionTracking.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/Site Goals/Notifications/BreakdownNoticeArea',
