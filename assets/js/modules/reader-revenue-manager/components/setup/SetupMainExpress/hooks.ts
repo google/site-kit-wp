@@ -33,9 +33,7 @@ import { Select } from '@/js/googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { EXPRESS_SETUP_STEP_UI_KEY } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
-import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
-
-type Step = typeof EXPRESS_SETUP_STEPS[ keyof typeof EXPRESS_SETUP_STEPS ];
+import type { EXPRESS_SETUP_STEPS as Step } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
 /**
  * Returns the current express setup step and a setter.

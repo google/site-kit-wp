@@ -52,6 +52,18 @@ type CustomRenderResult = RenderResult & {
 	history: ReturnType< typeof createMemoryHistory >;
 	waitForRegistry: () => ReturnType< typeof createWaitForRegistry >;
 	setInView: Dispatch< SetStateAction< boolean > > | undefined;
+	// eslint-disable-next-line sitekit/acronym-case
+	findAllByTestID: RenderResult[ 'findAllByTestId' ];
+	// eslint-disable-next-line sitekit/acronym-case
+	findByTestID: RenderResult[ 'findByTestId' ];
+	// eslint-disable-next-line sitekit/acronym-case
+	getAllByTestID: RenderResult[ 'getAllByTestId' ];
+	// eslint-disable-next-line sitekit/acronym-case
+	getByTestID: RenderResult[ 'getByTestId' ];
+	// eslint-disable-next-line sitekit/acronym-case
+	queryAllByTestID: RenderResult[ 'queryAllByTestId' ];
+	// eslint-disable-next-line sitekit/acronym-case
+	queryByTestID: RenderResult[ 'queryByTestId' ];
 };
 
 /**
