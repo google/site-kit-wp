@@ -33,9 +33,9 @@ import {
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import dashboardSharingScreenshotURL from '@/svg/graphics/dashboard-sharing.svg?path';
+import emailReportingScreenshotURL from '@/svg/graphics/email-reporting.svg?path';
 import pdfReportFullScreenshotURL from '@/svg/graphics/pdf-report-full.svg?path';
 import pdfReportPanelScreenshotURL from '@/svg/graphics/pdf-report-panel.svg?path';
-import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
 
 /**
  * Registers default features from core Site Kit and modules.
@@ -245,7 +245,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			screenshots: [
 				{
-					src: splashScreenScreenshotURL,
+					src: emailReportingScreenshotURL,
 					alt: __(
 						'Analytics 4 Key Metrics widget showing selected key metrics and trends.',
 						'google-site-kit'
