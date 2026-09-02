@@ -81,7 +81,7 @@ describe( 'StepPublicationSetup', () => {
 	it( 'should automatically switch to the create publication form if no publications exist', () => {
 		providePublications( registry, [] );
 
-		const { getByText, queryByRole } = render(
+		const { getByRole, queryByRole } = render(
 			<StepPublicationSetup onComplete={ () => {} } />,
 			{
 				registry,
@@ -89,9 +89,7 @@ describe( 'StepPublicationSetup', () => {
 		);
 
 		expect(
-			getByText(
-				'RRM express setup placeholder: publication setup step.'
-			)
+			getByRole( 'heading', { name: "Let's get started!" } )
 		).toBeInTheDocument();
 
 		expect(
@@ -121,7 +119,7 @@ describe( 'StepPublicationSetup', () => {
 	it( 'should be possible to switch between forms if publications exist', async () => {
 		providePublications( registry, publications );
 
-		const { getByRole, getByText } = render(
+		const { getByRole } = render(
 			<StepPublicationSetup onComplete={ () => {} } />,
 			{
 				registry,
@@ -139,9 +137,7 @@ describe( 'StepPublicationSetup', () => {
 		);
 
 		expect(
-			getByText(
-				'RRM express setup placeholder: publication setup step.'
-			)
+			getByRole( 'heading', { name: "Let's get started!" } )
 		).toBeInTheDocument();
 
 		fireEvent.click(
