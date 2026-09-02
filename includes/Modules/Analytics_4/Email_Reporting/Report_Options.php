@@ -41,7 +41,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Conversion event names Analytics has detected on the site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 * @var array
 	 */
 	private $detected_events = array();
@@ -103,7 +103,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Sets the conversion event names Analytics has detected.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array $detected_events Detected event names, such as `purchase` or `submit_lead_form`.
 	 */
@@ -114,7 +114,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Whether Analytics has detected any ecommerce event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @return bool True when the detected events hold an ecommerce event, false otherwise.
 	 */
@@ -125,7 +125,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Whether Analytics has detected any lead generation event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @return bool True when the detected events hold a lead event, false otherwise.
 	 */
@@ -136,7 +136,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets the lead generation events among the detected events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @return array Detected lead event names, in the order
 	 *               `Conversion_Reporting_Events_Sync::LEAD_EVENT_NAMES` lists them.
@@ -419,7 +419,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * The options count `purchase` when the detected events hold it, and `add_to_cart` otherwise.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param string $custom_dimension Optional. Custom dimension slug to split the count by, such as
 	 *                                 `googlesitekit_event_provider`. Default empty, which returns one
@@ -435,7 +435,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options for the lead generation key action count.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param string $custom_dimension Optional. Custom dimension slug to split the count by, such as
 	 *                                 `googlesitekit_form_id`. Default empty, which returns one row per
@@ -457,7 +457,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * The key action rate divides the key action count by the session count.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param string $custom_dimension Optional. Custom dimension slug to split the rows by, such as
 	 *                                 `googlesitekit_event_provider`. Default empty, which returns one
@@ -480,7 +480,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Adds a breakdown dimension to report options, and keeps the rows that hold no data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array  $options          Report request options array.
 	 * @param string $custom_dimension Custom dimension slug to split the rows by, such as
@@ -502,7 +502,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Builds report options that count the events an `eventName` filter selects.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param string|array $event_filter     Value for the `eventName` dimension filter. One event name,
 	 *                                       such as `purchase`, or a filter array, such as

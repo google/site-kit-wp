@@ -17,7 +17,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\NewsletterCo
 /**
  * Configures newsletter sign-up CTA models.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  * @access private
  * @ignore
  */
@@ -42,7 +42,7 @@ class Newsletter_Signup_CTA_Type_Handler implements CTA_Type_Handler_Interface {
 	/**
 	 * Gets the CTA type handled by this instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @return string CTA type.
 	 */
@@ -53,7 +53,7 @@ class Newsletter_Signup_CTA_Type_Handler implements CTA_Type_Handler_Interface {
 	/**
 	 * Validates and applies newsletter configuration to a CTA model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param Cta   $cta    CTA model.
 	 * @param array $config Newsletter configuration.

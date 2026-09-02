@@ -18,7 +18,7 @@ use Google\Site_Kit\Modules\Analytics_4;
 /**
  * Builds the Site Goals section payloads for the Analytics 4 email report.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  * @access private
  * @ignore
  */
@@ -27,21 +27,21 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Section key of the online store payload.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 */
 	const ONLINE_STORE_SECTION_KEY = 'site_goals_online_store';
 
 	/**
 	 * Section key of the lead generation payload.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 */
 	const LEAD_GENERATION_SECTION_KEY = 'site_goals_lead_generation';
 
 	/**
 	 * The value GA4 reports for a custom dimension an event did not set.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 */
 	const UNSET_DIMENSION_VALUE = '(not set)';
 
@@ -49,7 +49,7 @@ class Site_Goals_Section_Builder {
 	 * The value GA4 reports when a report holds more dimension values than it counts one
 	 * by one. This single row adds up every value it stopped naming.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 */
 	const OTHER_DIMENSION_VALUE = '(other)';
 
@@ -57,7 +57,7 @@ class Site_Goals_Section_Builder {
 	 * Group labels of a section that does not split its results. It holds one group,
 	 * whose name and label are both empty.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 * @var array
 	 */
 	const AGGREGATED_GROUP_LABELS = array( '' => '' );
@@ -68,7 +68,7 @@ class Site_Goals_Section_Builder {
 	 * A slug this list leaves out gets no group of its own, so its counts go into the
 	 * "Other sources" group.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 * @var array
 	 */
 	const ECOMMERCE_PROVIDER_LABELS = array(
@@ -79,7 +79,7 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Report processor instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 * @var Email_Report_Payload_Processor
 	 */
 	private $report_processor;
@@ -87,7 +87,7 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Analytics data processor instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 * @var Report_Data_Processor
 	 */
 	private $data_processor;
@@ -95,7 +95,7 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Form title resolver instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 * @var Form_Title_Resolver
 	 */
 	private $form_title_resolver;
@@ -103,7 +103,7 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param Email_Report_Payload_Processor|null $report_processor    Optional. Report processor instance.
 	 * @param Report_Data_Processor|null          $data_processor      Optional. Analytics data processor.
@@ -122,7 +122,7 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Builds the online store and the lead generation section payloads.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param mixed $module_payload Module payload keyed by request key.
 	 * @return array Section payloads, at most one for the online store and one for lead generation.
@@ -145,7 +145,7 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Builds the online store section payload from the key action report and the engagement report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array $module_payload Module payload keyed by request key.
 	 * @return array Section payload, or an empty array when the report names no event.
@@ -196,7 +196,7 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Builds the lead generation section payload from the key action report and the engagement report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array $module_payload Module payload keyed by request key.
 	 * @return array Section payload, or an empty array when the report holds no row.
@@ -249,7 +249,7 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Builds one section payload from the counts each group holds.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array $section_input {
 	 *     What the section is built from.
@@ -307,7 +307,7 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Builds one group, holding the rate tile and the total tile.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param string $label         Label of the group, such as a plugin name or a form title.
 	 * @param array  $counts        Key action counts of this group, by date range key.
@@ -331,7 +331,7 @@ class Site_Goals_Section_Builder {
 	 *
 	 * The group holds the total alone, with no rate.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array  $counts      Key action counts of this group, by date range key.
 	 * @param string $total_label Label of the total tile.
@@ -347,7 +347,7 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Builds the rate tile, which divides the key action count by the session count.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array  $counts   Key action counts, by date range key.
 	 * @param array  $sessions Session counts, by date range key.
@@ -370,7 +370,7 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Builds the total tile, which counts the key actions of the period.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array  $counts Key action counts, by date range key.
 	 * @param string $label  Label of the tile.
@@ -389,7 +389,7 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Divides a key action count by a session count.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param float $count    Key action count.
 	 * @param float $sessions Session count.
@@ -409,7 +409,7 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Adds up the counts of every group name the section shows no group for.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array $counts      Key action counts, by group name and date range key.
 	 * @param array $group_names Group names the section shows a group for.
@@ -437,7 +437,7 @@ class Site_Goals_Section_Builder {
 	 * The email labels the section from the first tile, and shows no section when the
 	 * lists hold nothing.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array $groups Groups the section holds.
 	 * @return array The labels, the values and the trends, in that order.
@@ -461,7 +461,7 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Names each ecommerce plugin whose results get a group of their own.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array $counts Key action counts, by provider slug and date range key.
 	 * @return array Map of provider slug to plugin name, biggest count first.
@@ -487,7 +487,7 @@ class Site_Goals_Section_Builder {
 	 * A row that names no form gets no group of its own, so its counts go into the
 	 * "Other sources" group.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array $counts Key action counts, by form ID and date range key.
 	 * @return array Map of form ID to its title, biggest count first.
@@ -509,7 +509,7 @@ class Site_Goals_Section_Builder {
 	 * Two groups with the same count are ordered by name, so every run shows the same
 	 * order.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array $group_names Group names to order.
 	 * @param array $counts      Key action counts, by group name and date range key.
@@ -536,7 +536,7 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Gets the tile labels for the event the online store report counted.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param string $primary_event Event name the report counted, `purchase` or `add_to_cart`.
 	 * @return array Tile labels, holding `rate` and `total`.
@@ -558,7 +558,7 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Builds the prompt that asks the reader to turn the data breakdown on.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param string $text Whole sentence, holding one `%s` where the link goes.
 	 * @return array Prompt holding the `text` and the `link_text` that fills its `%s`.
@@ -575,7 +575,7 @@ class Site_Goals_Section_Builder {
 	 *
 	 * A row can arrive with no name, so this returns the first name it finds.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array $rows Report rows.
 	 * @return string Event name, `purchase` or `add_to_cart`, or an empty string when no row names an event.
@@ -595,7 +595,7 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Sums the session count of each group in the engagement report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array  $engagement_report Engagement report.
 	 * @param string $group_dimension   Dimension whose value names the group. An empty string
@@ -613,7 +613,7 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Reads one report out of the module payload.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array  $module_payload Module payload keyed by request key.
 	 * @param string $request_key    Payload key the report sits under.

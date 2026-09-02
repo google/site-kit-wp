@@ -25,49 +25,49 @@ class Report_Request_Assembler {
 	/**
 	 * Payload key of the report that counts online store key actions across the whole site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 */
 	const SITE_GOALS_ONLINE_STORE_PRIMARY_KEY = 'site_goals_online_store_primary';
 
 	/**
 	 * Payload key of the report that counts online store key actions, one row per event provider.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 */
 	const SITE_GOALS_ONLINE_STORE_PRIMARY_BY_PROVIDER_KEY = 'site_goals_online_store_primary_by_provider';
 
 	/**
 	 * Payload key of the report that counts lead generation key actions across the whole site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 */
 	const SITE_GOALS_LEAD_PRIMARY_KEY = 'site_goals_lead_primary';
 
 	/**
 	 * Payload key of the report that counts lead generation key actions, one row per form.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 */
 	const SITE_GOALS_LEAD_PRIMARY_BY_FORM_KEY = 'site_goals_lead_primary_by_form';
 
 	/**
 	 * Payload key of the report that holds the engagement rate and the session count of the whole site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 */
 	const SITE_GOALS_ENGAGEMENT_KEY = 'site_goals_engagement';
 
 	/**
 	 * Payload key of the report that holds the engagement rate and the session count, one row per event provider.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 */
 	const SITE_GOALS_ENGAGEMENT_BY_PROVIDER_KEY = 'site_goals_engagement_by_provider';
 
 	/**
 	 * Payload key of the report that holds the engagement rate and the session count, one row per form.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 */
 	const SITE_GOALS_ENGAGEMENT_BY_FORM_KEY = 'site_goals_engagement_by_form';
 
@@ -77,7 +77,7 @@ class Report_Request_Assembler {
 	 * A Site Goals section reads more than one of these reports, so no key here gets a
 	 * section of its own.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 * @var array
 	 */
 	const SITE_GOALS_REQUEST_KEYS = array(
@@ -113,7 +113,7 @@ class Report_Request_Assembler {
 	 * Builds Analytics 4 batch report requests.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Added the Site Goals report requests, and fixed the author and
+	 * @since 1.187.0 Added the Site Goals report requests, and fixed the author and
 	 *                category dimension keys, which never matched the availability map.
 	 *
 	 * @param array $custom_titles Optional. Custom titles keyed by request key.
@@ -156,7 +156,7 @@ class Report_Request_Assembler {
 	 * breakdown dimension write the same `site_goals_engagement` key, so the batch asks
 	 * for that report once.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @return array Report requests keyed by payload key.
 	 */
