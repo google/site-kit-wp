@@ -76,6 +76,10 @@ export const EXPRESS_SETUP_CTAS = {
 	NEWSLETTER_SIGNUP: 'newsletter-signup',
 };
 
+export const EXPRESS_SETUP_CTA_FORMS = {
+	NEWSLETTER_SIGNUP: 'expressSetupCtaForm-newsletter-signup',
+};
+
 export const EXPRESS_SETUP_STEPS = {
 	CONNECT_PUBLICATION: 'connect-publication',
 	TERMS_OF_SERVICE: 'terms-of-service',
