@@ -31,6 +31,9 @@ concurrency:
   group: visual-regression-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 env:
   GCS_ROOT_PATH: vrt
   CAN_UPLOAD_VRT_REPORTS: ${{ github.event_name != 'pull_request' || ( ! contains( github.head_ref, 'dependabot/' ) && github.event.pull_request.head.repo.fork == false ) }}
@@ -41,6 +44,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: github.event.pull_request.draft == false && github.event.action != 'closed'
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
       - name: Setup Node.js (.nvmrc)
