@@ -52,7 +52,7 @@ const CTAsPlacementFormSection: FC = () => {
 			className="googlesitekit-rrm-express-setup-step__section--ctas-placement"
 		>
 			<div className="googlesitekit-rrm-express-setup-step__form-controls">
-				<div className="googlesitekit-rrm-express-setup-step__form-input">
+				<div className="googlesitekit-rrm-express-setup-step__form-input googlesitekit-rrm-express-setup-step__snippet-mode">
 					<SnippetModeSelect
 						helperText={ __(
 							'Use the new settings in the block editor to customize where your CTAs appear',

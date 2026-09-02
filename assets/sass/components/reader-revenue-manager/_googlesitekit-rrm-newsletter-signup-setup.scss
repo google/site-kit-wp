@@ -18,8 +18,67 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-rrm-newsletter-signup-setup__checkboxes {
-		display: grid;
-		gap: 4px;
+	.googlesitekit-rrm-express-setup-step--cta-setup.googlesitekit-rrm-newsletter-signup-setup {
+
+		.googlesitekit-rrm-newsletter-signup-setup__checkboxes {
+			display: grid;
+			gap: 4px;
+		}
+
+
+		// Establishes an adaptive height for the form text fields on tablet.
+		@media (min-width: $bp-tablet) and (max-width: $bp-desktop) {
+
+			.googlesitekit-rrm-express-setup-step__cta-setup-fields-primary {
+				display: flex;
+				flex-direction: column;
+				min-height: 0;
+			}
+		
+			.googlesitekit-rrm-newsletter-signup-setup__form-text {
+				display: flex;
+				flex: 1 1 auto;
+				flex-direction: column;
+				min-height: 0;
+
+				.googlesitekit-rrm-express-setup-step__form-controls {
+					display: flex;
+					flex: 1 1 auto;
+					flex-direction: column;
+					min-height: 0;
+				}
+
+				.googlesitekit-rrm-express-setup-step__form-input {
+					display: flex;
+					flex-direction: column;
+
+					&:first-child {
+						flex: 1 1 0;
+					}
+
+					&:last-child {
+						flex: 2 1 0;
+					}
+				}
+
+				.mdc-text-field:not(.mdc-text-field--textarea) {
+					height: 100%;
+					min-height: 76px;
+				}
+
+				.mdc-text-field--textarea {
+					display: flex;
+					flex: 1 1 auto;
+					flex-direction: column;
+					min-height: 100px;
+
+					.mdc-text-field__input {
+						flex: 1 1 auto;
+						min-height: 60px;
+						resize: none;
+					}
+				}
+			}
+		}
 	}
 }

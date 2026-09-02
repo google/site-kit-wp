@@ -78,6 +78,63 @@
 		letter-spacing: inherit; /* TODO: Apply to .googlesitekit-cta-link. */
 	}
 
+	.googlesitekit-rrm-express-setup-step--cta-setup {
+
+		.googlesitekit-rrm-express-setup-step__form-controls {
+			max-inline-size: $width-tablet + px;
+		}
+
+		.googlesitekit-rrm-express-setup-step__cta-setup-columns {
+			display: grid;
+			gap: 36px;
+
+			.googlesitekit-rrm-express-setup-step__cta-setup-fields-primary {
+
+				.googlesitekit-rrm-express-setup-step__section:last-child {
+					border-block-end: 1px solid $c-utility-divider;
+				}
+			}
+		}
+
+		// Establishes a primary fields > preview > secondary fields
+		// layout on tablet.
+		@media (min-width: $bp-tablet) and (max-width: $bp-desktop) {
+
+			.googlesitekit-rrm-express-setup-step__cta-setup-columns {
+				gap: $grid-gap-phone 10px;
+				grid-template-columns: minmax(0, 1fr) min(320px, 40%);
+
+				.googlesitekit-rrm-express-setup-step__cta-setup-fields {
+					display: contents;
+				}
+
+				.googlesitekit-rrm-express-setup-step__cta-setup-fields-primary {
+					grid-column: 1;
+					grid-row: 1;
+				}
+
+				> .googlesitekit-rrm-cta-preview {
+					grid-column: 2;
+					grid-row: 1;
+				}
+
+				.googlesitekit-rrm-express-setup-step__cta-setup-fields-secondary {
+					grid-column: 1 / -1;
+					grid-row: 2;
+				}
+			}
+		}
+
+		@media (min-width: $bp-nonTablet) {
+
+			.googlesitekit-rrm-express-setup-step__cta-setup-columns {
+				align-items: start;
+				gap: $grid-gap-desktop 48px;
+				grid-template-columns: minmax(0, $width-tablet + px) min(320px, 40%);
+			}
+		}
+	}
+
 	.googlesitekit-rrm-express-setup-step__section--ctas-placement {
 
 		.googlesitekit-rrm-express-setup-step__section-title {
@@ -86,6 +143,7 @@
 
 		.googlesitekit-rrm-express-setup-step__form-controls {
 			gap: $grid-gap-desktop;
+			max-inline-size: 100%;
 		}
 
 		.googlesitekit-rrm-express-setup-step__post-types {

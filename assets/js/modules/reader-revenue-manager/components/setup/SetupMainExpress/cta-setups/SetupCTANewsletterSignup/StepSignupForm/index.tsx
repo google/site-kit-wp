@@ -82,7 +82,7 @@ const StepSignupForm: FC = () => {
 		( !! consentEnabled && ! ( consentText || '' ).trim() );
 
 	return (
-		<div className="googlesitekit-rrm-express-setup-step googlesitekit-rrm-express-setup-step--cta-setup">
+		<div className="googlesitekit-rrm-express-setup-step googlesitekit-rrm-express-setup-step--cta-setup googlesitekit-rrm-newsletter-signup-setup">
 			<form
 				className="googlesitekit-rrm-express-setup-step__form"
 				onSubmit={ onSubmit }
@@ -105,12 +105,16 @@ const StepSignupForm: FC = () => {
 						{ description }
 					</P>
 
-					<div className="googlesitekit-rrm-express-setup-step__columns">
-						<div className="googlesitekit-rrm-express-setup-step__fields">
-							<GeneralDetails />
-							<FormText />
-							<CTAsPlacementFormSection />
-							<CTASettings />
+					<div className="googlesitekit-rrm-express-setup-step__cta-setup-columns">
+						<div className="googlesitekit-rrm-express-setup-step__cta-setup-fields">
+							<div className="googlesitekit-rrm-express-setup-step__cta-setup-fields-primary">
+								<GeneralDetails />
+								<FormText />
+							</div>
+							<div className="googlesitekit-rrm-express-setup-step__cta-setup-fields-secondary">
+								<CTAsPlacementFormSection />
+								<CTASettings />
+							</div>
 						</div>
 
 						<Preview />

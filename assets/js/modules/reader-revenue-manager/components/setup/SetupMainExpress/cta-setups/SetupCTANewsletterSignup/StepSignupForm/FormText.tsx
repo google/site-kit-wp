@@ -64,6 +64,7 @@ const FormText: FC = () => {
 
 	return (
 		<FormSection
+			className="googlesitekit-rrm-newsletter-signup-setup__form-text"
 			title={ __( 'Newsletter sign-up form text', 'google-site-kit' ) }
 		>
 			<div className="googlesitekit-rrm-express-setup-step__form-controls">
