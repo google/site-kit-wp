@@ -14,6 +14,7 @@ use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\CTA as CTA_Synchronization;
 
 /**
  * Class for the CTAs retrieval datapoint.
@@ -33,6 +34,14 @@ class Get_CTAs extends Datapoint implements Executable_Datapoint {
 	private $settings;
 
 	/**
+	 * CTA synchronization instance.
+	 *
+	 * @since n.e.x.t
+	 * @var CTA_Synchronization
+	 */
+	private $synchronization;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -42,7 +51,8 @@ class Get_CTAs extends Datapoint implements Executable_Datapoint {
 	public function __construct( array $definition ) {
 		parent::__construct( $definition );
 
-		$this->settings = $definition['settings'];
+		$this->settings        = $definition['settings'];
+		$this->synchronization = new CTA_Synchronization( $this->settings );
 	}
 
 	/**
@@ -87,6 +97,10 @@ class Get_CTAs extends Datapoint implements Executable_Datapoint {
 	 * @return array CTA resources.
 	 */
 	public function parse_response( $response, Data_Request $data ) {
-		return array_values( (array) $response->getCtas() );
+		$ctas = array_values( (array) $response->getCtas() );
+
+		$this->synchronization->synchronize( $ctas );
+
+		return $ctas;
 	}
 }
