@@ -22,6 +22,7 @@ use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\ListPublicationsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
+use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Publication as WCP_Publication;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
@@ -202,31 +203,70 @@ class CronTest extends TestCase {
 	}
 
 	public function test_synchronize__passes_request_data_from_callback() {
-		$callback_invoked = false;
-		$this->cron       = new Cron(
+		$this->enable_feature( 'rrmExpressSetup' );
+		$this->module->get_settings()->register();
+		$this->module->get_settings()->merge(
+			array(
+				'organizationID' => 'organization-setting',
+				'publicationID'  => 'publication-setting',
+			)
+		);
+
+		$this->cron = new Cron(
 			$this->module,
 			$this->user_options,
 			self::CRON_HOOK,
-			'publications',
-			function () use ( &$callback_invoked ) {
-				$callback_invoked = true;
+			'publication',
+			array( $this, 'get_publication_request_data' )
+		);
 
-				return array(
-					'organizationID' => 'organization-1',
-					'publicationID'  => 'publication-1',
+		$request_uri = null;
+
+		FakeHttp::fake_google_http_handler(
+			$this->module->get_client(),
+			function ( Request $request ) use ( &$request_uri ) {
+				$request_uri = (string) $request->getUri();
+
+				$publication = new WCP_Publication();
+				$publication->setOrganizationId( 'organization-1' );
+				$publication->setPublicationId( 'publication-1' );
+				$publication->setOnboardingState( 'ONBOARDING_COMPLETE' );
+
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						wp_json_encode( $publication )
+					)
 				);
 			}
 		);
 
-		$this->fake_publications_response();
 		$this->cron->register();
 		do_action( self::CRON_HOOK );
 
-		$this->assertTrue( $callback_invoked, 'The data callback should be invoked when the cron runs.' );
-		$this->assertSame(
-			'ONBOARDING_COMPLETE',
-			$this->module->get_settings()->get()['publicationOnboardingState'],
-			'The datapoint should still be fetched when a data callback is provided.'
+		$this->assertNotNull( $request_uri, 'The cron should fire a publication request.' );
+		$this->assertStringContainsString(
+			'/v1/organizations/organization-1/publications/publication-1',
+			$request_uri,
+			'The cron request should use data from the instance-method callback.'
+		);
+		$this->assertStringNotContainsString(
+			'organization-setting',
+			$request_uri,
+			'The cron request should not fall back to the saved settings when the callback is callable.'
+		);
+	}
+
+	/**
+	 * Returns request data used by the cron callback test.
+	 *
+	 * @return array Datapoint request data.
+	 */
+	public function get_publication_request_data() {
+		return array(
+			'organizationID' => 'organization-1',
+			'publicationID'  => 'publication-1',
 		);
 	}
 
