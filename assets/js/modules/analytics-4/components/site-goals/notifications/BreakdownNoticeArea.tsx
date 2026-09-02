@@ -32,7 +32,6 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { getItem, setItem } from '@/js/googlesitekit/api/cache';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
@@ -69,6 +68,7 @@ import {
 	ALL_CUSTOM_DIMENSIONS,
 	useBreakdownEnableHandler,
 } from '@/js/modules/analytics-4/hooks/useBreakdownEnableHandler';
+import { useConversionTrackingSetting } from '@/js/modules/analytics-4/hooks/useConversionTrackingSetting';
 import { DAY_IN_SECONDS, trackEvent, trackEventOnce } from '@/js/util';
 import { isInsufficientPermissionsError } from '@/js/util/errors';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
@@ -560,18 +560,8 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 	}, [ origin, showBreakdownTooltip, setSiteGoalsBreakdownTooltipPending ] );
 
 	const isViewOnly = useViewOnly();
-	const canManageOptions = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ),
-		[]
-	);
-	const isConversionTrackingEnabled = useSelect(
-		( select: Select ) =>
-			canManageOptions
-				? select( CORE_SITE ).isConversionTrackingEnabled()
-				: undefined,
-		[ canManageOptions ]
-	);
+	const { canManageOptions, isConversionTrackingEnabled } =
+		useConversionTrackingSetting();
 
 	const creationError = useSelect( ( select: Select ) => {
 		for ( const customDimension of ALL_CUSTOM_DIMENSIONS ) {

@@ -33,13 +33,10 @@ import { __ } from '@wordpress/i18n';
 import { Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import {
-	CORE_USER,
-	PERMISSION_MANAGE_OPTIONS,
-} from '@/js/googlesitekit/datastore/user/constants';
 import { BREAKDOWN_SCOPE_BOTH } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { BreakdownScope } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { useConversionTrackingSetting } from '@/js/modules/analytics-4/hooks/useConversionTrackingSetting';
 
 export interface BreakdownNoticeCopy {
 	title: string;
@@ -129,18 +126,7 @@ export function useSiteGoalsBreakdownNoticeCopy(
 		[]
 	);
 
-	const canManageOptions = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ),
-		[]
-	);
-	const isConversionTrackingEnabled = useSelect(
-		( select: Select ) =>
-			canManageOptions
-				? select( CORE_SITE ).isConversionTrackingEnabled()
-				: undefined,
-		[ canManageOptions ]
-	);
+	const { isConversionTrackingEnabled } = useConversionTrackingSetting();
 
 	const ctaLabel = __( 'Get breakdown', 'google-site-kit' );
 	// Only disclosed to someone who would actually have the setting switched on

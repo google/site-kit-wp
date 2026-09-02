@@ -35,10 +35,7 @@ import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import {
-	CORE_USER,
-	PERMISSION_MANAGE_OPTIONS,
-} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
 import {
 	BREAKDOWN_DISMISSED_FORM_KEY,
@@ -53,6 +50,7 @@ import {
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { useConversionTrackingSetting } from '@/js/modules/analytics-4/hooks/useConversionTrackingSetting';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 
 // Every Site Kit custom dimension is created, not just the Site Goals-specific
@@ -77,20 +75,7 @@ export function useBreakdownEnableHandler(
 		( select: Select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ),
 		[]
 	);
-	const canManageOptions = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ),
-		[]
-	);
-	// The REST route behind this setting requires `MANAGE_OPTIONS`, so asking
-	// for it without the capability only logs a 403.
-	const isConversionTrackingEnabled = useSelect(
-		( select: Select ) =>
-			canManageOptions
-				? select( CORE_SITE ).isConversionTrackingEnabled()
-				: undefined,
-		[ canManageOptions ]
-	);
+	const { isConversionTrackingEnabled } = useConversionTrackingSetting();
 	const redirectURL = useSelect(
 		( select: Select ) =>
 			select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
