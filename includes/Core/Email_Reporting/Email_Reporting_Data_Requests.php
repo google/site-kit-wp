@@ -57,7 +57,7 @@ class Email_Reporting_Data_Requests {
 	 * An admin can connect PageSpeed Insights and AdSense as well. Neither adds
 	 * a section.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 * @var string[]
 	 */
 	const PAYLOAD_MODULE_SLUGS = array(
@@ -146,7 +146,7 @@ class Email_Reporting_Data_Requests {
 	 *
 	 * @since 1.168.0
 	 * @since 1.172.0 Adds optional shared payloads to reuse per-module data.
-	 * @since n.e.x.t Returns a categorized permissions_error when the payload is empty
+	 * @since 1.187.0 Returns a categorized permissions_error when the payload is empty
 	 *                because the recipient's own service-entity access check failed.
 	 *
 	 * @param int   $user_id              User ID.
@@ -347,7 +347,7 @@ class Email_Reporting_Data_Requests {
 	 * Collects Analytics 4 payloads keyed by section-part identifiers.
 	 *
 	 * @since 1.168.0
-	 * @since n.e.x.t Added the detected events and every custom dimension's availability to the report options.
+	 * @since 1.187.0 Added the detected events and every custom dimension's availability to the report options.
 	 *
 	 * @param object $module     Module instance.
 	 * @param array  $date_range Date range payload.
@@ -409,7 +409,7 @@ class Email_Reporting_Data_Requests {
 	 * Filters modules to those accessible to the provided user.
 	 *
 	 * @since 1.168.0
-	 * @since n.e.x.t Also returns the slugs of modules dropped because the recipient's
+	 * @since 1.187.0 Also returns the slugs of modules dropped because the recipient's
 	 *                own service-entity access check explicitly denied access.
 	 *
 	 * @param array   $modules Active modules.
