@@ -44,7 +44,7 @@ export const BBPRESS_PAGINATION_SELECTOR =
  * because the markup varies with permalink structure and with what rendered it:
  * `wp_link_pages()` emits `?page=N` without pretty permalinks and a trailing
  * `/N/` segment with them, bbPress emits `?paged=N` or `/page/N/`, and the
- * numbered link back to the first page carries no number in its href at all.
+ * numbered link back to the first page has no number in its href at all.
  *
  * @since n.e.x.t
  *
@@ -86,7 +86,7 @@ function getPageNumber( anchor: HTMLAnchorElement ): number {
 		return textPageNumber;
 	}
 
-	// A pagination link whose address carries no page number points at the first
+	// A pagination link whose address has no page number points at the first
 	// page — this is the "Previous page" link on page 2, for instance.
 	return 1;
 }

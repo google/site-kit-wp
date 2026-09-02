@@ -61,6 +61,11 @@ function baseConfig(
 		postID: 1,
 		isSinglePost: true,
 		hasVimeoEmbed: true,
+		wordCount: 0,
+		estimatedReadTimeSeconds: 0,
+		isLastPageOfMultiPagePost: true,
+		readTimeThresholdPercent: 85,
+		minimumReadTimeSeconds: 5,
 		...overrides,
 	};
 }

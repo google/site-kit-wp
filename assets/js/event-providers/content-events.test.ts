@@ -20,6 +20,7 @@ type SiteKitGlobal = typeof global._googlesitekit;
 
 const mockInitializeVimeo = jest.fn();
 const mockInitializePagination = jest.fn();
+const mockInitializeReadArticle = jest.fn();
 
 jest.mock( './content-events/vimeo', () => ( {
 	__esModule: true,
@@ -30,6 +31,12 @@ jest.mock( './content-events/pagination', () => ( {
 	__esModule: true,
 	initializePagination: ( ...args: unknown[] ) =>
 		mockInitializePagination( ...args ),
+} ) );
+
+jest.mock( './content-events/read-article', () => ( {
+	__esModule: true,
+	initializeReadArticle: ( ...args: unknown[] ) =>
+		mockInitializeReadArticle( ...args ),
 } ) );
 
 function deleteSiteKitGlobal() {
@@ -48,6 +55,7 @@ describe( 'content-events', () => {
 		mockInitializeVimeo.mockReset();
 		mockInitializeVimeo.mockResolvedValue( undefined );
 		mockInitializePagination.mockReset();
+		mockInitializeReadArticle.mockReset();
 	} );
 
 	afterEach( () => {
@@ -63,6 +71,11 @@ describe( 'content-events', () => {
 			postID: 0,
 			isSinglePost: false,
 			hasVimeoEmbed: false,
+			wordCount: 0,
+			estimatedReadTimeSeconds: 0,
+			isLastPageOfMultiPagePost: false,
+			readTimeThresholdPercent: 85,
+			minimumReadTimeSeconds: 5,
 		} );
 		expect( addEventListenerSpy ).not.toHaveBeenCalled();
 		expect( gtagEventMock ).not.toHaveBeenCalled();
@@ -79,6 +92,11 @@ describe( 'content-events', () => {
 			postID: 0,
 			isSinglePost: false,
 			hasVimeoEmbed: false,
+			wordCount: 0,
+			estimatedReadTimeSeconds: 0,
+			isLastPageOfMultiPagePost: false,
+			readTimeThresholdPercent: 85,
+			minimumReadTimeSeconds: 5,
 		} );
 		expect( addEventListenerSpy ).not.toHaveBeenCalled();
 		expect( gtagEventMock ).not.toHaveBeenCalled();
@@ -90,6 +108,11 @@ describe( 'content-events', () => {
 				postID: 42,
 				isSinglePost: true,
 				hasVimeoEmbed: true,
+				wordCount: 476,
+				estimatedReadTimeSeconds: 120,
+				isLastPageOfMultiPagePost: true,
+				readTimeThresholdPercent: 70,
+				minimumReadTimeSeconds: 9,
 			},
 			gtagEvent: gtagEventMock,
 		};
@@ -100,9 +123,39 @@ describe( 'content-events', () => {
 			postID: 42,
 			isSinglePost: true,
 			hasVimeoEmbed: true,
+			wordCount: 476,
+			estimatedReadTimeSeconds: 120,
+			isLastPageOfMultiPagePost: true,
+			readTimeThresholdPercent: 70,
+			minimumReadTimeSeconds: 9,
 		} );
 		expect( addEventListenerSpy ).not.toHaveBeenCalled();
 		expect( gtagEventMock ).not.toHaveBeenCalled();
+	} );
+
+	it( 'returns the defaults for the keys a configuration from an older release omits', async () => {
+		// A page cached by an older release has these three keys and nothing
+		// else.
+		global._googlesitekit = {
+			contentEvents: {
+				postID: 42,
+				isSinglePost: true,
+				hasVimeoEmbed: true,
+			},
+		};
+
+		const { getContentEventsConfig } = await import( './content-events' );
+
+		expect( getContentEventsConfig() ).toEqual( {
+			postID: 42,
+			isSinglePost: true,
+			hasVimeoEmbed: true,
+			wordCount: 0,
+			estimatedReadTimeSeconds: 0,
+			isLastPageOfMultiPagePost: false,
+			readTimeThresholdPercent: 85,
+			minimumReadTimeSeconds: 5,
+		} );
 	} );
 
 	it( 'should invoke the Vimeo initializer with the resolved config on import', async () => {
@@ -111,6 +164,11 @@ describe( 'content-events', () => {
 				postID: 42,
 				isSinglePost: true,
 				hasVimeoEmbed: true,
+				wordCount: 476,
+				estimatedReadTimeSeconds: 120,
+				isLastPageOfMultiPagePost: true,
+				readTimeThresholdPercent: 70,
+				minimumReadTimeSeconds: 9,
 			},
 		};
 
@@ -122,6 +180,11 @@ describe( 'content-events', () => {
 			postID: 42,
 			isSinglePost: true,
 			hasVimeoEmbed: true,
+			wordCount: 476,
+			estimatedReadTimeSeconds: 120,
+			isLastPageOfMultiPagePost: true,
+			readTimeThresholdPercent: 70,
+			minimumReadTimeSeconds: 9,
 		} );
 	} );
 
@@ -130,7 +193,12 @@ describe( 'content-events', () => {
 			contentEvents: {
 				postID: 42,
 				isSinglePost: true,
-				hasVimeoEmbed: false,
+				hasVimeoEmbed: true,
+				wordCount: 476,
+				estimatedReadTimeSeconds: 120,
+				isLastPageOfMultiPagePost: true,
+				readTimeThresholdPercent: 70,
+				minimumReadTimeSeconds: 9,
 			},
 		};
 
@@ -139,7 +207,40 @@ describe( 'content-events', () => {
 		expect( mockInitializePagination ).toHaveBeenCalledWith( {
 			postID: 42,
 			isSinglePost: true,
-			hasVimeoEmbed: false,
+			hasVimeoEmbed: true,
+			wordCount: 476,
+			estimatedReadTimeSeconds: 120,
+			isLastPageOfMultiPagePost: true,
+			readTimeThresholdPercent: 70,
+			minimumReadTimeSeconds: 9,
+		} );
+	} );
+
+	it( 'invokes the read article initializer with the resolved configuration on import', async () => {
+		global._googlesitekit = {
+			contentEvents: {
+				postID: 42,
+				isSinglePost: true,
+				hasVimeoEmbed: true,
+				wordCount: 476,
+				estimatedReadTimeSeconds: 120,
+				isLastPageOfMultiPagePost: true,
+				readTimeThresholdPercent: 70,
+				minimumReadTimeSeconds: 9,
+			},
+		};
+
+		await import( './content-events' );
+
+		expect( mockInitializeReadArticle ).toHaveBeenCalledWith( {
+			postID: 42,
+			isSinglePost: true,
+			hasVimeoEmbed: true,
+			wordCount: 476,
+			estimatedReadTimeSeconds: 120,
+			isLastPageOfMultiPagePost: true,
+			readTimeThresholdPercent: 70,
+			minimumReadTimeSeconds: 9,
 		} );
 	} );
 
@@ -159,6 +260,43 @@ describe( 'content-events', () => {
 			'Site Kit: failed to initialize pagination click tracking.',
 			expect.any( Error )
 		);
+
+		consoleErrorSpy.mockRestore();
+	} );
+
+	it( 'logs the error instead of crashing when the read article initializer throws', async () => {
+		const consoleErrorSpy = jest
+			.spyOn( console, 'error' )
+			.mockImplementation( () => {} );
+
+		mockInitializeReadArticle.mockImplementation( () => {
+			throw new Error( 'boom' );
+		} );
+
+		await expect( import( './content-events' ) ).resolves.toBeDefined();
+
+		expect( consoleErrorSpy ).toHaveBeenCalledWith(
+			'Site Kit: failed to initialize read article tracking.',
+			expect.any( Error )
+		);
+
+		consoleErrorSpy.mockRestore();
+	} );
+
+	it( 'should still initialize read article tracking when the pagination initializer throws', async () => {
+		// `initializeSafely()` reports the throw, and the spy keeps that report
+		// out of the test output.
+		const consoleErrorSpy = jest
+			.spyOn( console, 'error' )
+			.mockImplementation( () => {} );
+
+		mockInitializePagination.mockImplementation( () => {
+			throw new Error( 'boom' );
+		} );
+
+		await import( './content-events' );
+
+		expect( mockInitializeReadArticle ).toHaveBeenCalledTimes( 1 );
 
 		consoleErrorSpy.mockRestore();
 	} );
