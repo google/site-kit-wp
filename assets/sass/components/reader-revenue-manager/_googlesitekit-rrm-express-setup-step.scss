@@ -98,4 +98,16 @@
 			margin-block: 0;
 		}
 	}
+
+	.googlesitekit-rrm-express-setup-step__section--cta-settings {
+
+		.googlesitekit-rrm-express-setup-step__section-title {
+			margin: 0 0 $grid-gap-phone 0;
+		}
+
+		.googlesitekit-rrm-express-setup-step__note {
+			color: $c-surfaces-on-surface-variant;
+			margin-block: 8px 0;
+		}
+	}
 }
