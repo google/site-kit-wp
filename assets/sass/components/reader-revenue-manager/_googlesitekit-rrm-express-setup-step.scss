@@ -48,6 +48,19 @@
 		max-inline-size: 500px;
 	}
 
+	.googlesitekit-rrm-express-setup-step__section {
+		border-block-end: 1px solid $c-utility-divider;
+		padding-block: $grid-gap-phone;
+
+		&:last-child {
+			border-block-end: 0;
+		}
+	}
+
+	.googlesitekit-rrm-express-setup-step__section-title {
+		margin: 0 0 20px 0;
+	}
+
 	.googlesitekit-rrm-express-setup-step__cta-link {
 		letter-spacing: inherit; /* TODO: Apply to .googlesitekit-cta-link. */
 	}
