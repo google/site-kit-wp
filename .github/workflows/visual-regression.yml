@@ -91,12 +91,15 @@ jobs:
 
       - name: Save report URL
         if: always() && env.CAN_UPLOAD_VRT_REPORTS == 'true'
+        env:
+          RUN_OUTCOME: ${{ steps.run-backstopjs.outcome }}
+          REPORT_URL: ${{ steps.upload-to-gcs.outputs.public-url }}
         run: |
           mkdir -p /tmp/artifact-url
-          if [ "${{ steps.run-backstopjs.outcome }}" == "success" ]; then
-            echo "- ✅ [VRT Report](${{ steps.upload-to-gcs.outputs.public-url }}/html_report/index.html)" > /tmp/artifact-url/url.md
+          if [ "${RUN_OUTCOME}" == "success" ]; then
+            echo "- ✅ [VRT Report](${REPORT_URL}/html_report/index.html)" > /tmp/artifact-url/url.md
           else
-            echo "- ❌ [VRT Report](${{ steps.upload-to-gcs.outputs.public-url }}/html_report/index.html)" > /tmp/artifact-url/url.md
+            echo "- ❌ [VRT Report](${REPORT_URL}/html_report/index.html)" > /tmp/artifact-url/url.md
           fi
 
       - name: Upload report URL
