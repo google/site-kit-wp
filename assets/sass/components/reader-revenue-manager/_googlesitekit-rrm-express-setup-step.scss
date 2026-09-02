@@ -48,6 +48,19 @@
 		max-inline-size: 500px;
 	}
 
+	.googlesitekit-rrm-express-setup-step__form-input {
+		display: inherit;
+
+		.mdc-text-field {
+			width: 100%;
+		}
+
+		.mdc-text-field-helper-line {
+			padding: 0;
+			width: 100%;
+		}
+	}
+
 	.googlesitekit-rrm-express-setup-step__section {
 		border-block-end: 1px solid $c-utility-divider;
 		padding-block: $grid-gap-phone;
@@ -63,5 +76,26 @@
 
 	.googlesitekit-rrm-express-setup-step__cta-link {
 		letter-spacing: inherit; /* TODO: Apply to .googlesitekit-cta-link. */
+	}
+
+	.googlesitekit-rrm-express-setup-step__section--ctas-placement {
+
+		.googlesitekit-rrm-express-setup-step__section-title {
+			margin: 0 0 $grid-gap-desktop 0;
+		}
+
+		.googlesitekit-rrm-express-setup-step__form-controls {
+			gap: $grid-gap-desktop;
+		}
+
+		.googlesitekit-rrm-express-setup-step__post-types {
+			display: grid;
+			gap: 14px;
+			margin-block-end: $grid-gap-phone;
+		}
+
+		.googlesitekit-rrm-express-setup-step__post-types-title {
+			margin-block: 0;
+		}
 	}
 }
