@@ -24,6 +24,7 @@ import { waitFor } from '@testing-library/react';
 /**
  * Internal dependencies
  */
+import { FEATURES_MENU_BUTTON_CLASS } from '@/js/components/FeaturesMenu/constants';
 import Notifications from '@/js/components/notifications/Notifications';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -269,11 +270,18 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 	describe( 'rendering', () => {
 		let registry: ReturnType< typeof createTestRegistry >;
 		let anchor: HTMLButtonElement | null = null;
+		let featuresMenuButton: HTMLButtonElement | null = null;
 
 		function addHeaderIcon() {
 			anchor = document.createElement( 'button' );
 			anchor.className = MANAGE_EMAIL_REPORTS_BUTTON_CLASS;
 			document.body.appendChild( anchor );
+		}
+
+		function addFeaturesMenuButton() {
+			featuresMenuButton = document.createElement( 'button' );
+			featuresMenuButton.className = FEATURES_MENU_BUTTON_CLASS;
+			document.body.appendChild( featuresMenuButton );
 		}
 
 		function renderNotifications() {
@@ -312,6 +320,8 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 		afterEach( () => {
 			anchor?.remove();
 			anchor = null;
+			featuresMenuButton?.remove();
+			featuresMenuButton = null;
 		} );
 
 		it( 'anchors the overlay to the header icon when it is present', async () => {
@@ -352,6 +362,29 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 					'.googlesitekit-overlay-card--anchored'
 				)
 			).toBeNull();
+		} );
+
+		it( 'anchors the overlay to the features menu button when the header icon is absent', async () => {
+			mockSurveyEndpoints();
+			addFeaturesMenuButton();
+
+			const { waitForRegistry } = renderNotifications();
+
+			await waitForRegistry();
+
+			await waitFor( () =>
+				expect(
+					document.querySelector(
+						'.googlesitekit-overlay-card--anchored'
+					)
+				).toBeInTheDocument()
+			);
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-popper--overlay-notification'
+				)
+			).toBeInTheDocument();
 		} );
 
 		it( 'labels the buttons "Try it" and "Got it"', async () => {

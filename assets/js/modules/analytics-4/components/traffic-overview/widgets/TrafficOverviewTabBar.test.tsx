@@ -52,7 +52,7 @@ describe( 'TrafficOverviewTabBar', () => {
 		return { ...result, onTabChange };
 	}
 
-	it( 'renders the tabs in order, showing each label and setting each tab id', () => {
+	it( 'renders the tabs in order, showing each label with the correct tab ID set', () => {
 		renderTabBar();
 
 		const renderedTabs = screen.getAllByRole( 'tab' );
@@ -73,7 +73,7 @@ describe( 'TrafficOverviewTabBar', () => {
 		).toHaveTextContent( 'Typical traffic' );
 	} );
 
-	it( 'marks the first tab as selected when the active tab id matches no tab', () => {
+	it( 'marks the first tab as selected when the active tab id does not match any tab', () => {
 		renderTabBar( 'no-such-tab' );
 
 		expect(
@@ -92,42 +92,24 @@ describe( 'TrafficOverviewTabBar', () => {
 		expect( onTabChange ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'calls onTabChange with the id of the next tab when the user presses the right arrow key and then Enter', () => {
+	it( 'calls onTabChange with the next or previous tab id when the user presses an arrow key and then Enter', () => {
 		const { onTabChange } = renderTabBar();
 
 		const [ firstTab ] = screen.getAllByRole( 'tab' );
 		firstTab.focus();
 
-		fireEvent.keyDown( screen.getByRole( 'tablist' ), {
-			key: 'ArrowRight',
-			keyCode: 39,
-		} );
-		fireEvent.keyDown( screen.getByRole( 'tablist' ), {
-			key: 'Enter',
-			keyCode: 13,
-		} );
+		const tabList = screen.getByRole( 'tablist' );
 
-		expect( onTabChange ).toHaveBeenCalledWith( 'typical-traffic' );
-		expect( onTabChange ).toHaveBeenCalledTimes( 1 );
-	} );
+		fireEvent.keyDown( tabList, { key: 'ArrowRight', keyCode: 39 } );
+		fireEvent.keyDown( tabList, { key: 'Enter', keyCode: 13 } );
 
-	it( 'calls onTabChange with the id of the previous tab when the user presses the left arrow key and then Enter', () => {
-		const { onTabChange } = renderTabBar( 'typical-traffic' );
+		expect( onTabChange ).toHaveBeenLastCalledWith( 'typical-traffic' );
 
-		const [ , secondTab ] = screen.getAllByRole( 'tab' );
-		secondTab.focus();
+		fireEvent.keyDown( tabList, { key: 'ArrowLeft', keyCode: 37 } );
+		fireEvent.keyDown( tabList, { key: 'Enter', keyCode: 13 } );
 
-		fireEvent.keyDown( screen.getByRole( 'tablist' ), {
-			key: 'ArrowLeft',
-			keyCode: 37,
-		} );
-		fireEvent.keyDown( screen.getByRole( 'tablist' ), {
-			key: 'Enter',
-			keyCode: 13,
-		} );
-
-		expect( onTabChange ).toHaveBeenCalledWith( 'traffic-overview' );
-		expect( onTabChange ).toHaveBeenCalledTimes( 1 );
+		expect( onTabChange ).toHaveBeenLastCalledWith( 'traffic-overview' );
+		expect( onTabChange ).toHaveBeenCalledTimes( 2 );
 	} );
 
 	it( 'leaves the selected tab unchanged when the user presses Enter with no tab focused', () => {

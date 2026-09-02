@@ -689,8 +689,7 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		);
 		expect(
 			mockTrackEvent.mock.calls.filter(
-				( [ , event ]: string[] ) =>
-					event === 'pdf_generation_sidebar_view'
+				( [ , event ] ) => event === 'pdf_generation_sidebar_view'
 			)
 		).toHaveLength( 1 );
 	} );

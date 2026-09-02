@@ -25,14 +25,19 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
-	allowAnalyticsAccess,
-	denyAnalyticsAccess,
-} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+	CORE_USER,
+	PERMISSION_READ_SHARED_MODULE_DATA,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { createTestRegistry, renderHook } from '@tests/js/test-utils';
-import { freezeFetch, provideModules, provideSiteInfo } from '@tests/js/utils';
+import {
+	freezeFetch,
+	provideModules,
+	provideSiteInfo,
+	provideUserCapabilities,
+} from '@tests/js/utils';
 import { useTrafficReport } from './useTrafficReport';
 
 describe( 'useTrafficReport', () => {
@@ -83,7 +88,7 @@ describe( 'useTrafficReport', () => {
 		} );
 	} );
 
-	it( 'adds the entity URL to the report args when the site has a current entity', async () => {
+	it( 'adds the entity URL to the report args when the page has an entity URL set', async () => {
 		freezeFetch( reportEndpoint );
 
 		provideSiteInfo( registry, {
@@ -103,7 +108,12 @@ describe( 'useTrafficReport', () => {
 	it( 'requests the report for a view-only user whose role can view Analytics', async () => {
 		freezeFetch( reportEndpoint );
 
-		allowAnalyticsAccess( registry );
+		provideUserCapabilities( registry, {
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				MODULE_SLUG_ANALYTICS_4
+			) ]: true,
+		} );
 
 		const { waitForRegistry } = renderHook(
 			() => useTrafficReport( graphReportOptions ),
@@ -115,8 +125,13 @@ describe( 'useTrafficReport', () => {
 		expect( fetchMock ).toHaveFetchedTimes( 1, reportEndpoint );
 	} );
 
-	it( 'requests no report for a view-only user whose role cannot view Analytics', async () => {
-		denyAnalyticsAccess( registry );
+	it( 'does not request a report for a view-only user whose role cannot view Analytics', async () => {
+		provideUserCapabilities( registry, {
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				MODULE_SLUG_ANALYTICS_4
+			) ]: false,
+		} );
 
 		const { result, waitForRegistry } = renderHook(
 			() => useTrafficReport( graphReportOptions ),
@@ -129,7 +144,7 @@ describe( 'useTrafficReport', () => {
 		expect( result.current.report ).toBeUndefined();
 	} );
 
-	it( 'requests no report while the widget is out of view', async () => {
+	it( 'does not request a report when the widget is out of view', async () => {
 		const { waitForRegistry } = renderHook(
 			() => useTrafficReport( graphReportOptions ),
 			{ registry, inView: false }

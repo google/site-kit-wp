@@ -42,7 +42,6 @@
 				$margin: map-get($mdc-layout-grid-default-margin, $size);
 
 				.mdc-tab-scroller__scroll-content {
-					padding-left: $margin;
 					padding-left: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
 				}
 			}
@@ -82,11 +81,8 @@
 			@include mdc-layout-grid-media-query_($size) {
 				$margin: map-get($mdc-layout-grid-default-margin, $size);
 
-				padding-bottom: $margin;
 				padding-bottom: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
-				padding-left: $margin;
 				padding-left: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
-				padding-right: $margin;
 				padding-right: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
 			}
 		}

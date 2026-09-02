@@ -40,17 +40,6 @@ describe( 'TrafficOverviewPanel', () => {
 	);
 
 	/**
-	 * Renders the panel with the test registry.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return {Object} The render result.
-	 */
-	function renderPanel() {
-		return render( <TrafficOverviewPanel />, { registry } );
-	}
-
-	/**
 	 * Puts a totals report in the store under the arguments the panel requests.
 	 *
 	 * @since n.e.x.t
@@ -102,8 +91,11 @@ describe( 'TrafficOverviewPanel', () => {
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 	} );
 
-	it( 'marks the panel as a tab panel and names it after the "Traffic Overview" tab', async () => {
-		const { container, waitForRegistry } = renderPanel();
+	it( 'marks the panel as a tab panel and names it using the content in the "Traffic Overview" tab', async () => {
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewPanel />,
+			{ registry }
+		);
 
 		await waitForRegistry();
 
@@ -119,7 +111,10 @@ describe( 'TrafficOverviewPanel', () => {
 	} );
 
 	it( 'renders the visitor total, the traffic chart, and the traffic breakdown in that order', async () => {
-		const { container, waitForRegistry } = renderPanel();
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewPanel />,
+			{ registry }
+		);
 
 		await waitForRegistry();
 
@@ -143,7 +138,10 @@ describe( 'TrafficOverviewPanel', () => {
 	it( 'builds the visitor total and its badge from the totals report', async () => {
 		provideTotalsReport( 1200, 1000 );
 
-		const { getByText, waitForRegistry } = renderPanel();
+		const { getByText, waitForRegistry } = render(
+			<TrafficOverviewPanel />,
+			{ registry }
+		);
 
 		await waitForRegistry();
 
@@ -159,7 +157,10 @@ describe( 'TrafficOverviewPanel', () => {
 		// only come from the request that carries the URL.
 		provideTotalsReport( 500, 400, entityURL );
 
-		const { getByText, waitForRegistry } = renderPanel();
+		const { getByText, waitForRegistry } = render(
+			<TrafficOverviewPanel />,
+			{ registry }
+		);
 
 		await waitForRegistry();
 
@@ -168,12 +169,12 @@ describe( 'TrafficOverviewPanel', () => {
 	} );
 
 	it( 'sends a report request when the panel renders', async () => {
-		const { waitForRegistry } = renderPanel();
+		const { waitForRegistry } = render( <TrafficOverviewPanel />, {
+			registry,
+		} );
 
 		await waitForRegistry();
 
-		// This test checks only that one request goes out, because
-		// `useTrafficOverviewReports.test.ts` covers all five reports.
 		await waitFor( () =>
 			expect( fetchMock ).toHaveFetched( reportEndpoint )
 		);

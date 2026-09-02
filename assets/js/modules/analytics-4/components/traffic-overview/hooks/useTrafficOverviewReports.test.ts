@@ -25,17 +25,22 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
-	allowAnalyticsAccess,
-	denyAnalyticsAccess,
-} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+	CORE_USER,
+	PERMISSION_READ_SHARED_MODULE_DATA,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { createTestRegistry, renderHook } from '@tests/js/test-utils';
-import { freezeFetch, provideModules, provideSiteInfo } from '@tests/js/utils';
+import {
+	freezeFetch,
+	provideModules,
+	provideSiteInfo,
+	provideUserCapabilities,
+} from '@tests/js/utils';
 import { useTrafficOverviewReports } from './useTrafficOverviewReports';
 
 describe( 'useTrafficOverviewReports', () => {
@@ -153,7 +158,7 @@ describe( 'useTrafficOverviewReports', () => {
 		] );
 	} );
 
-	it( 'sends five report requests and no more', async () => {
+	it( 'sends exactly five report requests', async () => {
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 
 		const { waitForRegistry } = renderHook(
@@ -179,12 +184,13 @@ describe( 'useTrafficOverviewReports', () => {
 
 		// The store already holds a report for each of the five argument sets,
 		// so the `getReport` resolver sends no request for them. A request for
-		// any other arguments reaches `fetchMock`, and the check below fails.
+		// any other arguments reaches `fetchMock`, so the report endpoint
+		// is never fetched.
 		expect( getResolvedArgs( expectedArgs ) ).toEqual( expectedArgs );
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
-	it( 'adds the entity URL to all five reports when the site has a current entity', async () => {
+	it( 'adds the entity URL to all five reports when the page has an entity URL set', async () => {
 		provideSiteInfo( registry, {
 			currentEntityURL: 'https://example.com/about/',
 		} );
@@ -204,7 +210,12 @@ describe( 'useTrafficOverviewReports', () => {
 	} );
 
 	it( 'requests no report and leaves loaded false for a view-only user whose role cannot view Analytics', async () => {
-		denyAnalyticsAccess( registry );
+		provideUserCapabilities( registry, {
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				MODULE_SLUG_ANALYTICS_4
+			) ]: false,
+		} );
 
 		const { result, waitForRegistry } = renderHook(
 			() => useTrafficOverviewReports(),
@@ -218,7 +229,12 @@ describe( 'useTrafficOverviewReports', () => {
 	} );
 
 	it( 'sends all five report requests for a view-only user whose role can view Analytics', async () => {
-		allowAnalyticsAccess( registry );
+		provideUserCapabilities( registry, {
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				MODULE_SLUG_ANALYTICS_4
+			) ]: true,
+		} );
 
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 
@@ -232,7 +248,7 @@ describe( 'useTrafficOverviewReports', () => {
 		expect( fetchMock ).toHaveFetchedTimes( 5, reportEndpoint );
 	} );
 
-	it( 'leaves loaded false while any of the five reports is still loading', async () => {
+	it( 'leaves `loaded` set to `false` while any of the five reports is still loading', async () => {
 		freezeFetch( reportEndpoint );
 
 		provideReports( getExpectedArgs().slice( 0, 4 ) );
@@ -247,7 +263,7 @@ describe( 'useTrafficOverviewReports', () => {
 		expect( result.current.loaded ).toBe( false );
 	} );
 
-	it( 'sets loaded to true and leaves error undefined after all five reports have finished', async () => {
+	it( 'sets `loaded` to `true` and leaves `error` undefined after all five reports have finished', async () => {
 		provideReports( getExpectedArgs() );
 
 		const { result, waitForRegistry } = renderHook(
