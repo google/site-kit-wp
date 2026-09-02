@@ -25,7 +25,9 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/reportOptions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { createTestRegistry, render, waitFor } from '@tests/js/test-utils';
 import { provideModules, provideSiteInfo } from '@tests/js/utils';
 import TrafficOverviewPanel from './TrafficOverviewPanel';
@@ -46,6 +48,43 @@ describe( 'TrafficOverviewPanel', () => {
 	 */
 	function renderPanel() {
 		return render( <TrafficOverviewPanel />, { registry } );
+	}
+
+	/**
+	 * Puts a totals report in the store under the arguments the panel requests.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {number} currentValue  Visitors over the selected range.
+	 * @param {number} previousValue Visitors over the range before it.
+	 * @param {string} [url]         Optional. The entity URL the report covers.
+	 * @return {void}
+	 */
+	function provideTotalsReport(
+		currentValue: number,
+		previousValue: number,
+		url?: string
+	) {
+		const { startDate, endDate, compareStartDate, compareEndDate } =
+			registry.select( CORE_USER ).getDateRangeDates( { compare: true } );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				totals: [
+					{ metricValues: [ { value: String( currentValue ) } ] },
+					{ metricValues: [ { value: String( previousValue ) } ] },
+				],
+			},
+			{
+				options: getTotalsReportArgs( {
+					startDate,
+					endDate,
+					compareStartDate,
+					compareEndDate,
+					...( url ? { url } : {} ),
+				} ),
+			}
+		);
 	}
 
 	beforeEach( () => {
@@ -79,7 +118,7 @@ describe( 'TrafficOverviewPanel', () => {
 		);
 	} );
 
-	it( 'renders the visitor total, the traffic chart, and the traffic breakdown in that order, all three empty', async () => {
+	it( 'renders the visitor total, the traffic chart, and the traffic breakdown in that order', async () => {
 		const { container, waitForRegistry } = renderPanel();
 
 		await waitForRegistry();
@@ -96,9 +135,36 @@ describe( 'TrafficOverviewPanel', () => {
 			'googlesitekit-traffic-overview__breakdown',
 		] );
 
-		sections.forEach( ( section ) => {
-			expect( section ).toBeEmptyDOMElement();
-		} );
+		// The chart and the breakdown land in later issues.
+		expect( sections[ 1 ] ).toBeEmptyDOMElement();
+		expect( sections[ 2 ] ).toBeEmptyDOMElement();
+	} );
+
+	it( 'builds the visitor total and its badge from the totals report', async () => {
+		provideTotalsReport( 1200, 1000 );
+
+		const { getByText, waitForRegistry } = renderPanel();
+
+		await waitForRegistry();
+
+		expect( getByText( '1.2K' ) ).toBeInTheDocument();
+		expect( getByText( '+20%' ) ).toBeInTheDocument();
+	} );
+
+	it( 'builds the visitor total and its badge from the entity-scoped totals report', async () => {
+		const entityURL = 'https://example.com/about/';
+
+		provideSiteInfo( registry, { currentEntityURL: entityURL } );
+		// Only the entity-scoped report is in the store, so these values can
+		// only come from the request that carries the URL.
+		provideTotalsReport( 500, 400, entityURL );
+
+		const { getByText, waitForRegistry } = renderPanel();
+
+		await waitForRegistry();
+
+		expect( getByText( '500' ) ).toBeInTheDocument();
+		expect( getByText( '+25%' ) ).toBeInTheDocument();
 	} );
 
 	it( 'sends a report request when the panel renders', async () => {
