@@ -35,7 +35,10 @@ import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	PERMISSION_MANAGE_OPTIONS,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
 import {
 	BREAKDOWN_DISMISSED_FORM_KEY,
@@ -74,6 +77,20 @@ export function useBreakdownEnableHandler(
 		( select: Select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ),
 		[]
 	);
+	const canManageOptions = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ),
+		[]
+	);
+	// The REST route behind this setting requires `MANAGE_OPTIONS`, so asking
+	// for it without the capability only logs a 403.
+	const isConversionTrackingEnabled = useSelect(
+		( select: Select ) =>
+			canManageOptions
+				? select( CORE_SITE ).isConversionTrackingEnabled()
+				: undefined,
+		[ canManageOptions ]
+	);
 	const redirectURL = useSelect(
 		( select: Select ) =>
 			select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
@@ -110,6 +127,11 @@ export function useBreakdownEnableHandler(
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
 	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
+	const {
+		resetConversionTrackingSettings,
+		saveConversionTrackingSettings,
+		setConversionTrackingEnabled,
+	} = useDispatch( CORE_SITE );
 
 	const onEnable = useCallback( async () => {
 		// Record where creation was triggered and the enabled scope, so the
@@ -122,6 +144,23 @@ export function useBreakdownEnableHandler(
 			[ BREAKDOWN_SCOPE_FORM_KEY ]: scope,
 			[ BREAKDOWN_DISMISSED_FORM_KEY ]: false,
 		};
+
+		// The new dimensions are useless unless Site Kit tracks the events
+		// itself, so conversion tracking goes on before anything else. The
+		// OAuth path below returns early and would otherwise skip it.
+		if ( isConversionTrackingEnabled === false ) {
+			setConversionTrackingEnabled( true );
+
+			const { error } = ( await saveConversionTrackingSettings() ) ?? {};
+
+			if ( error ) {
+				resetConversionTrackingSettings();
+
+				// No redirect follows a failed save, so report the attempt as
+				// settled and let the caller drop its busy state.
+				return true;
+			}
+		}
 
 		if ( ! hasAnalytics4EditScope ) {
 			setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
@@ -173,9 +212,13 @@ export function useBreakdownEnableHandler(
 		createCustomDimensions,
 		scope,
 		hasAnalytics4EditScope,
+		isConversionTrackingEnabled,
 		origin,
 		redirectURL,
 		registry,
+		resetConversionTrackingSettings,
+		saveConversionTrackingSettings,
+		setConversionTrackingEnabled,
 		setPermissionScopeError,
 		setValues,
 	] );
