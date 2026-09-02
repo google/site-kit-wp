@@ -31,9 +31,9 @@ import { TRAFFIC_OVERVIEW_TAB_ID } from '@/js/modules/analytics-4/components/tra
 import { useTrafficOverviewReports } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrafficOverviewReports';
 
 const TrafficOverviewPanel: FC = () => {
-	// Nothing reads the result yet, because `TotalVisitors`, `TrafficChart`,
-	// and `TrafficBreakdown` are placeholders.
-	useTrafficOverviewReports();
+	// `TrafficChart` and `TrafficBreakdown` are still placeholders, so only the
+	// totals report is read here. The call sends all five report requests.
+	const { totalsReport } = useTrafficOverviewReports();
 
 	return (
 		<div
@@ -41,7 +41,7 @@ const TrafficOverviewPanel: FC = () => {
 			role="tabpanel"
 			aria-labelledby={ TRAFFIC_OVERVIEW_TAB_ID }
 		>
-			<TotalVisitors />
+			<TotalVisitors report={ totalsReport } />
 			<TrafficChart />
 			<TrafficBreakdown />
 		</div>
