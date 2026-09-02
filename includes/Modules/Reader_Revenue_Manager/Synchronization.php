@@ -120,7 +120,7 @@ class Synchronization {
 	 *
 	 * @return array Datapoint request data.
 	 */
-	private function get_datapoint_data() {
+	public function get_datapoint_data() {
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 
 		return array_filter(
