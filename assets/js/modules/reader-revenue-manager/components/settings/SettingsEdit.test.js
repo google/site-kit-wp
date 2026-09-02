@@ -240,7 +240,7 @@ describe( 'SettingsEdit', () => {
 	describe( 'with configured CTAs', () => {
 		const configuredCTAs = { 'cta-1': 'newsletter-signup' };
 
-		it( 'should render each configured CTA with a link to its edit screen when the feature flag is enabled', async () => {
+		it( 'should render each configured CTA with a link to its edit screen when the `rrmExpressSetup` feature flag is enabled', async () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.receiveGetSettings( { ...settings, configuredCTAs } );

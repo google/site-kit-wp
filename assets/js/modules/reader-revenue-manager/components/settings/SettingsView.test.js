@@ -187,7 +187,7 @@ describe( 'SettingsView', () => {
 			},
 		};
 
-		it( 'should display the configured CTAs when the feature flag is enabled', async () => {
+		it( 'should display the configured CTAs when the `rrmExpressSetup` feature flag is enabled', async () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.receiveGetSettings( settings );

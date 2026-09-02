@@ -220,10 +220,10 @@ export default function SettingsForm( { hasModuleAccess } ) {
 					>
 						{ __( 'CTAs', 'google-site-kit' ) }
 					</Typography>
-					<div className="googlesitekit-rrm-settings-edit__ctas">
+					<ul className="googlesitekit-rrm-settings-edit__ctas">
 						{ configuredCTAs.map(
 							( { ctaID, label, editLinkURL } ) => (
-								<div
+								<li
 									key={ ctaID }
 									className="googlesitekit-rrm-settings-edit__cta"
 								>
@@ -240,10 +240,10 @@ export default function SettingsForm( { hasModuleAccess } ) {
 											'google-site-kit'
 										) }
 									</Link>
-								</div>
+								</li>
 							)
 						) }
-					</div>
+					</ul>
 				</div>
 			) }
 			<div className="googlesitekit-settings-module__fields-group">
