@@ -77,9 +77,13 @@ export const LEAD_TOTAL_LABEL = __(
  * @since n.e.x.t
  *
  * @param {Array<string>} detectedLeadEvents The lead events the Key action total counts.
- * @return {string} The caption under the Key action total, such as "“contact” events" or "2 event types".
+ * @return {string} The caption under the Key action total, such as "“contact” events", "2 event types", or "No event types".
  */
 export function getLeadEventsSubtitle( detectedLeadEvents: string[] ): string {
+	if ( detectedLeadEvents.length === 0 ) {
+		return __( 'No event types', 'google-site-kit' );
+	}
+
 	if ( detectedLeadEvents.length === 1 ) {
 		return sprintf(
 			/* translators: %s: GA4 event name, e.g. "contact". */
@@ -88,9 +92,9 @@ export function getLeadEventsSubtitle( detectedLeadEvents: string[] ): string {
 		);
 	}
 
-	// The code above returns when there is one event, so English never reaches
-	// the singular here. We still pass the real count, because some languages
-	// have more than two plural forms and `_n` picks between them by count.
+	// Only two or more events reach here, so English never sees the singular.
+	// We still pass the real count, because some languages have more than two
+	// plural forms and `_n` picks between them by count.
 	return sprintf(
 		/* translators: %d: number of detected event types, e.g. 2. */
 		_n(

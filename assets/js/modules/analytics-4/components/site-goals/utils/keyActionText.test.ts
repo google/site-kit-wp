@@ -34,7 +34,7 @@ describe( 'getLeadEventsSubtitle', () => {
 		);
 	} );
 
-	it( 'shows zero event types when no lead event is detected', () => {
-		expect( getLeadEventsSubtitle( [] ) ).toBe( '0 event types' );
+	it( 'shows “No event types” when no lead event is detected', () => {
+		expect( getLeadEventsSubtitle( [] ) ).toBe( 'No event types' );
 	} );
 } );
