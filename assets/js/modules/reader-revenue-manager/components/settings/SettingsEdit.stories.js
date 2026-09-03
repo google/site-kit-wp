@@ -225,6 +225,16 @@ WithConfiguredCTAs.args = {
 	configuredCTAs: {
 		'cta-1': 'newsletter-signup',
 	},
+	setupRegistry: ( registry ) => {
+		setupPublicationsWithProduct( registry, 0, 'product-b' );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-b' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
+	},
 };
 WithConfiguredCTAs.parameters = {
 	features: [ 'rrmExpressSetup' ],
