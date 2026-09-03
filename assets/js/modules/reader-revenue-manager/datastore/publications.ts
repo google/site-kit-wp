@@ -57,6 +57,8 @@ import { type ReaderRevenueManagerSettings } from './types';
 export interface Publication {
 	/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
 	publicationId: string;
+	publicationPrivacyPolicyUrl?: string;
+	publicationTosUrl?: string;
 	organizationId?: string;
 	/* eslint-enable sitekit/acronym-case */
 	onboardingState: string;
