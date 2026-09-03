@@ -50,3 +50,27 @@ export function providePublications(
 		.dispatch( MODULES_READER_REVENUE_MANAGER )
 		.finishResolution( 'getPublications', [] );
 }
+
+export function providePublication(
+	registry: Registry | WPDataRegistry,
+	publication: Publication
+) {
+	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetSettings( {
+		/* eslint-disable sitekit/acronym-case */
+		organizationID: publication.organizationId,
+		publicationID: publication.publicationId,
+		/* eslint-enable sitekit/acronym-case */
+	} );
+
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.finishResolution( 'getSettings', [] );
+
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.receiveGetPublication( publication );
+
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.finishResolution( 'getPublication', [] );
+}

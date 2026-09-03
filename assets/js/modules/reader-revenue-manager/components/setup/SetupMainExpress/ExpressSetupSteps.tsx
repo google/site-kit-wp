@@ -53,14 +53,21 @@ const ExpressSetupSteps: FC< ExpressSetupStepsProps > = ( {
 
 	const [ step ] = useStep();
 
+	const showTermsOfServiceStep =
+		showPublicationCreate || step === EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE;
+
 	const steps = {
 		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: showPublicationCreate
 			? __( 'Create publication', 'google-site-kit' )
 			: __( 'Connect publication', 'google-site-kit' ),
-		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: __(
-			'Accept terms of service',
-			'google-site-kit'
-		),
+		...( showTermsOfServiceStep
+			? {
+					[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: __(
+						'Accept terms of service',
+						'google-site-kit'
+					),
+			  }
+			: {} ),
 		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: __(
 			'Add publication policies',
 			'google-site-kit'

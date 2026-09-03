@@ -51,6 +51,10 @@ const SetupCTANewsletterSignup: FC = () => {
 					'To set up a newsletter sign-up form using Reader Revenue Manager, connect your publication or create a new one.',
 					'google-site-kit'
 				) }
+				createDescription={ __(
+					'To set up a newsletter sign-up form using Reader Revenue Manager, you will need to create a publication.',
+					'google-site-kit'
+				) }
 				onComplete={ ( hasAcceptedTerms: boolean ) =>
 					setStep(
 						hasAcceptedTerms
@@ -60,7 +64,13 @@ const SetupCTANewsletterSignup: FC = () => {
 				}
 			/>
 		),
-		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: <StepTermsOfService />,
+		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: (
+			<StepTermsOfService
+				onComplete={ () =>
+					setStep( EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES )
+				}
+			/>
+		),
 		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: (
 			<StepPublicationPolicies />
 		),

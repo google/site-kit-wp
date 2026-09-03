@@ -46,6 +46,27 @@
 		display: grid;
 		gap: $grid-gap-phone;
 		max-inline-size: 500px;
+
+		.mdc-text-field {
+			inline-size: auto;
+		}
+	}
+
+	.googlesitekit-rrm-express-setup-step__form-controls--create {
+		row-gap: 20px;
+
+		@media ( min-width: $bp-tablet ) {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	.googlesitekit-rrm-express-setup-step__field--full-width {
+		grid-column: 1 / -1;
+	}
+
+	.googlesitekit-rrm-express-setup-step__form-controls--terms-of-service{
+		gap: 20px;
+		max-inline-size: none;
 	}
 
 	.googlesitekit-rrm-express-setup-step__cta-link {

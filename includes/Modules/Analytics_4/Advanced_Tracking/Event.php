@@ -92,7 +92,7 @@ final class Event implements \JsonSerializable {
 		);
 		foreach ( $config as $key => $value ) {
 			if ( ! in_array( $key, $valid_keys, true ) ) {
-				throw new Exception( 'Invalid configuration parameter: ' . $key );
+				throw new Exception( 'Invalid configuration parameter: ' . esc_html( $key ) );
 			}
 		}
 		if ( ! array_key_exists( 'metadata', $config ) ) {
@@ -103,7 +103,7 @@ final class Event implements \JsonSerializable {
 		}
 		foreach ( $valid_keys as $key ) {
 			if ( ! array_key_exists( $key, $config ) ) {
-				throw new Exception( 'Missed configuration parameter: ' . $key );
+				throw new Exception( 'Missed configuration parameter: ' . esc_html( $key ) );
 			}
 		}
 		return $config;

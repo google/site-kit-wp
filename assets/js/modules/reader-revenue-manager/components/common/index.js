@@ -18,6 +18,9 @@
 
 export { default as ExpressSetupStepDetails } from './ExpressSetupStepDetails';
 export { default as ExpressSetupStepHeadline } from './ExpressSetupStepHeadline';
+export { default as ExpressSetupStepLanguageSelect } from './ExpressSetupStepLanguageSelect';
+export { default as ExpressSetupStepPublicationTypeRadio } from './ExpressSetupStepPublicationTypeRadio';
+export { default as ExpressSetupStepRegionSelect } from './ExpressSetupStepRegionSelect';
 export { default as PolicyViolationSettingsNotice } from './PolicyViolationSettingsNotice';
 export { default as PublicationOnboardingStateNotice } from './PublicationOnboardingStateNotice';
 export { default as PublicationCreate } from './PublicationCreate';

@@ -85,11 +85,7 @@ describe( 'SetupMainExpress', () => {
 			{ registry }
 		);
 
-		expect(
-			getByText(
-				'RRM express setup placeholder: publication setup step.'
-			)
-		).toBeInTheDocument();
+		expect( getByText( /Let's get started/ ) ).toBeInTheDocument();
 		expect(
 			queryByText( 'Set up a sign-up form' )
 		).not.toBeInTheDocument();
@@ -106,11 +102,7 @@ describe( 'SetupMainExpress', () => {
 			registry,
 		} );
 
-		expect(
-			getByText(
-				'RRM express setup placeholder: publication setup step.'
-			)
-		).toBeInTheDocument();
+		expect( getByText( /Let's get started/ ) ).toBeInTheDocument();
 		expect(
 			queryByText( 'Set up a sign-up form' )
 		).not.toBeInTheDocument();

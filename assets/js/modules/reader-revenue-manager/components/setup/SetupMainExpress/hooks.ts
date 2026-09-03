@@ -40,7 +40,7 @@ import {
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { type Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 
-type Step = typeof EXPRESS_SETUP_STEPS[ keyof typeof EXPRESS_SETUP_STEPS ];
+type Step = EXPRESS_SETUP_STEPS;
 
 // The steps whose completion is derived from the connected publication, in the
 // order they must be completed. `SETUP_CTA` is deliberately absent: the express
