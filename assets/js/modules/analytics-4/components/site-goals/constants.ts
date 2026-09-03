@@ -17,39 +17,10 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import { ENUM_CONVERSION_EVENTS } from '@/js/modules/analytics-4/datastore/constants';
 import { GOAL_DRIVER_IDS, GOAL_TYPES } from './goal-drivers/constants';
-
-/**
- * The Online store performance widget's title.
- *
- * The dashboard and the PDF report both show this title.
- *
- * @since n.e.x.t
- */
-export const SITE_GOALS_ONLINE_STORE_WIDGET_TITLE = __(
-	'Online store performance',
-	'google-site-kit'
-);
-
-/**
- * The Lead generation performance widget's title.
- *
- * The dashboard and the PDF report both show this title.
- *
- * @since n.e.x.t
- */
-export const SITE_GOALS_LEAD_GENERATION_WIDGET_TITLE = __(
-	'Lead generation performance',
-	'google-site-kit'
-);
 
 export const SITE_GOALS_SELECTION_PANEL_OPENED_KEY =
 	'googlesitekit-site-goals-selection-panel-opened';

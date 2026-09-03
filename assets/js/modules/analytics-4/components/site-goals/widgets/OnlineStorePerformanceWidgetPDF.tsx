@@ -22,14 +22,17 @@
 import { FC } from 'react';
 
 /**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
-import { SITE_GOALS_ONLINE_STORE_WIDGET_TITLE } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	ECOMMERCE_RATE_LABELS,
 	ECOMMERCE_TOTAL_LABELS,
-	getEventNameSubtitle,
 } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { OnlineStorePerformancePDFData } from './getOnlineStorePerformancePDFData';
 import SiteGoalsSectionPDF from './pdf/SiteGoalsSectionPDF';
@@ -49,11 +52,15 @@ const OnlineStorePerformanceWidgetPDF: FC< PDFWidgetComponentProps > = ( {
 
 	return (
 		<SiteGoalsSectionPDF
-			heading={ SITE_GOALS_ONLINE_STORE_WIDGET_TITLE }
+			heading={ __( 'Online store performance', 'google-site-kit' ) }
 			groups={ groups }
 			rateLabel={ ECOMMERCE_RATE_LABELS[ primaryEvent ] }
 			totalLabel={ ECOMMERCE_TOTAL_LABELS[ primaryEvent ] }
-			totalSubtitle={ getEventNameSubtitle( primaryEvent ) }
+			totalSubtitle={ sprintf(
+				/* translators: %s: GA4 event name, e.g. "purchase". */
+				__( '“%s” events', 'google-site-kit' ),
+				primaryEvent
+			) }
 			dateRangeLength={ dateRangeLength }
 		/>
 	);

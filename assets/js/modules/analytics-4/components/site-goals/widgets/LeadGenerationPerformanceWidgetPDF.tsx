@@ -22,10 +22,14 @@
 import { FC } from 'react';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
-import { SITE_GOALS_LEAD_GENERATION_WIDGET_TITLE } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	LEAD_RATE_LABEL,
 	LEAD_TOTAL_LABEL,
@@ -49,7 +53,7 @@ const LeadGenerationPerformanceWidgetPDF: FC< PDFWidgetComponentProps > = ( {
 
 	return (
 		<SiteGoalsSectionPDF
-			heading={ SITE_GOALS_LEAD_GENERATION_WIDGET_TITLE }
+			heading={ __( 'Lead generation performance', 'google-site-kit' ) }
 			groups={ groups }
 			rateLabel={ LEAD_RATE_LABEL }
 			totalLabel={ LEAD_TOTAL_LABEL }

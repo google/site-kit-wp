@@ -56,7 +56,6 @@ import {
 	BREAKDOWN_ORIGIN_WIDGET,
 	SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS,
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
-	SITE_GOALS_LEAD_GENERATION_WIDGET_TITLE,
 	SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
@@ -557,7 +556,12 @@ const LeadGenerationPerformanceWidget = forwardRef<
 				Header={ WidgetHeaderTitle }
 				headerContents={
 					<Fragment>
-						<span>{ SITE_GOALS_LEAD_GENERATION_WIDGET_TITLE }</span>
+						<span>
+							{ __(
+								'Lead generation performance',
+								'google-site-kit'
+							) }
+						</span>
 						<GatheringBreakdownDataBadge
 							goalType={ GOAL_TYPES.LEAD }
 							variant="widget"

@@ -68,23 +68,6 @@ export const LEAD_TOTAL_LABEL = __(
 );
 
 /**
- * Builds the caption that names the GA4 event behind a Site Goals Key action
- * total.
- *
- * @since n.e.x.t
- *
- * @param {string} eventName The GA4 event the Key action total counts.
- * @return {string} The caption under the Key action total, such as "“purchase” events".
- */
-export function getEventNameSubtitle( eventName: string ): string {
-	return sprintf(
-		/* translators: %s: GA4 event name, e.g. "purchase". */
-		__( '“%s” events', 'google-site-kit' ),
-		eventName
-	);
-}
-
-/**
  * Builds the caption that names the GA4 events behind the Site Goals lead
  * generation Key action total.
  *
@@ -98,7 +81,11 @@ export function getEventNameSubtitle( eventName: string ): string {
  */
 export function getLeadEventsSubtitle( detectedLeadEvents: string[] ): string {
 	if ( detectedLeadEvents.length === 1 ) {
-		return getEventNameSubtitle( detectedLeadEvents[ 0 ] );
+		return sprintf(
+			/* translators: %s: GA4 event name, e.g. "contact". */
+			__( '“%s” events', 'google-site-kit' ),
+			detectedLeadEvents[ 0 ]
+		);
 	}
 
 	// The code above returns when there is one event, so English never reaches

@@ -19,30 +19,22 @@
 /**
  * Internal dependencies
  */
-import { getEventNameSubtitle, getLeadEventsSubtitle } from './keyActionText';
-
-describe( 'getEventNameSubtitle', () => {
-	it( 'names the event behind the Key action total', () => {
-		expect( getEventNameSubtitle( 'purchase' ) ).toBe(
-			'“purchase” events'
-		);
-	} );
-} );
+import { getLeadEventsSubtitle } from './keyActionText';
 
 describe( 'getLeadEventsSubtitle', () => {
-	it( 'names the event when one lead event is detected', () => {
+	it( 'quotes the event name when one lead event is detected', () => {
 		expect( getLeadEventsSubtitle( [ 'contact' ] ) ).toBe(
 			'“contact” events'
 		);
 	} );
 
-	it( 'counts the event types when several lead events are detected', () => {
+	it( 'lists the number of events instead of naming them when several lead events are detected', () => {
 		expect( getLeadEventsSubtitle( [ 'contact', 'generate_lead' ] ) ).toBe(
 			'2 event types'
 		);
 	} );
 
-	it( 'counts zero event types when no lead event is detected', () => {
+	it( 'shows zero event types when no lead event is detected', () => {
 		expect( getLeadEventsSubtitle( [] ) ).toBe( '0 event types' );
 	} );
 } );

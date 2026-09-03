@@ -30,7 +30,7 @@ import {
 	useMemo,
 	useState,
 } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -56,7 +56,6 @@ import {
 	SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDER_LABELS,
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
-	SITE_GOALS_ONLINE_STORE_WIDGET_TITLE,
 	SITE_GOALS_VOTE_ID_WIDGET_ONLINE_STORE,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
@@ -76,7 +75,6 @@ import {
 	ECOMMERCE_RATE_LABELS,
 	ECOMMERCE_TOTAL_LABELS,
 	EcommerceKeyActionEvent,
-	getEventNameSubtitle,
 } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import {
@@ -447,7 +445,12 @@ const OnlineStorePerformanceWidget = forwardRef<
 				Header={ WidgetHeaderTitle }
 				headerContents={
 					<Fragment>
-						<span>{ SITE_GOALS_ONLINE_STORE_WIDGET_TITLE }</span>
+						<span>
+							{ __(
+								'Online store performance',
+								'google-site-kit'
+							) }
+						</span>
 						<GatheringBreakdownDataBadge
 							goalType={ GOAL_TYPES.ECOMMERCE }
 							variant="widget"
@@ -507,7 +510,9 @@ const OnlineStorePerformanceWidget = forwardRef<
 							totalTitle={
 								ECOMMERCE_TOTAL_LABELS[ primaryEvent ]
 							}
-							totalSubtitle={ getEventNameSubtitle(
+							totalSubtitle={ sprintf(
+								/* translators: %s: GA4 event name, e.g. "purchase". */
+								__( '“%s” events', 'google-site-kit' ),
 								primaryEvent
 							) }
 							currentRate={ currentRate }

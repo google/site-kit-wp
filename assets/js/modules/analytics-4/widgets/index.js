@@ -83,10 +83,6 @@ import {
 import getAllTrafficPDFData from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/getPDFData';
 import { ModulePopularPagesWidgetGA4 } from '@/js/modules/analytics-4/components/module';
 import getModulePopularPagesPDFData from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/getPDFData';
-import {
-	SITE_GOALS_LEAD_GENERATION_WIDGET_TITLE,
-	SITE_GOALS_ONLINE_STORE_WIDGET_TITLE,
-} from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
 	LeadGenerationPerformanceWidget,
@@ -178,9 +174,10 @@ const LeadGenerationPerformanceWidgetPDF = lazyWithPreload( () =>
 /**
  * Builds the `isActive` condition for a Site Goals widget.
  *
- * `isActivePDFWidget` reads only `pdf.isActive` and never a widget's own
- * `isActive`. The widget registration and its `pdf` block therefore set the
- * same condition.
+ * A widget's own `isActive` decides whether the dashboard renders it, and the
+ * `isActive` inside its `pdf` block decides whether the PDF export offers its
+ * section. Nothing reads one from the other, so both are given this same
+ * condition to keep the export in step with the dashboard.
  *
  * @since n.e.x.t
  *
@@ -926,7 +923,7 @@ export function registerWidgets( widgets ) {
 			pdf: {
 				Component: OnlineStorePerformanceWidgetPDF,
 				getData: getOnlineStorePerformancePDFData,
-				label: SITE_GOALS_ONLINE_STORE_WIDGET_TITLE,
+				label: __( 'Online store performance', 'google-site-kit' ),
 				isActive: isSiteGoalsWidgetActive( GOAL_TYPES.ECOMMERCE ),
 			},
 		},
@@ -945,7 +942,7 @@ export function registerWidgets( widgets ) {
 			pdf: {
 				Component: LeadGenerationPerformanceWidgetPDF,
 				getData: getLeadGenerationPerformancePDFData,
-				label: SITE_GOALS_LEAD_GENERATION_WIDGET_TITLE,
+				label: __( 'Lead generation performance', 'google-site-kit' ),
 				isActive: isSiteGoalsWidgetActive( GOAL_TYPES.LEAD ),
 			},
 		},
