@@ -19,7 +19,9 @@
 /**
  * Internal dependencies
  */
+import { Registry } from '@/js/googlesitekit/data/types';
 import { createTestRegistry } from '@tests/js/utils';
+import { ONLINE_STORE_PDF_REPORT_FIXTURES } from './__fixtures__';
 import fetchSiteGoalsPDFReports from './fetchSiteGoalsPDFReports';
 import {
 	SiteGoalsPDFReportOptions,
@@ -27,57 +29,22 @@ import {
 	getStoreGroupedReportOptions,
 } from './reportOptions';
 import {
-	Registry,
 	SITE_GOALS_PDF_TEST_DATES,
 	analyticsReportEndpoint,
-	buildAggregatedTotalsRows,
-	buildBreakdownReportRows,
 	provideSiteGoalsPDFReports,
 } from './test-utils';
 
-const SITE_GOALS_PDF_REPORT_FIXTURES = {
-	groupedEventsReport: {
-		rows: buildBreakdownReportRows( 'woocommerce', [ '85' ], [ '76' ] ),
-	},
-	groupedEngagementReport: {
-		rows: buildBreakdownReportRows(
-			'woocommerce',
-			[ '0.36', '3400' ],
-			[ '0.39', '3800' ]
-		),
-	},
-	aggregatedEventsReport: {
-		totals: buildAggregatedTotalsRows( [ '112' ], [ '105' ] ),
-	},
-	aggregatedEngagementReport: {
-		totals: buildAggregatedTotalsRows(
-			[ '0.42', '5600' ],
-			[ '0.4', '5250' ]
-		),
-	},
-};
+// The builders return `null` only when no event is detected, and these always
+// pass one, so the cast holds for every test here.
+const GROUPED_REPORT_OPTIONS = getStoreGroupedReportOptions(
+	SITE_GOALS_PDF_TEST_DATES,
+	'purchase'
+) as SiteGoalsPDFReportOptions;
 
-/**
- * Returns the report options a builder produced, or throws when it produced
- * none.
- *
- * The builder returns `null` only when no event is detected. Every test here
- * passes an event, so a `null` means the test is wrong.
- *
- * @since n.e.x.t
- *
- * @param {(Object|null)} reportOptions The Site Goals PDF report options, or `null` when no event is detected.
- * @return {Object} The events report options and the engagement report options.
- */
-function getRequiredReportOptions(
-	reportOptions: SiteGoalsPDFReportOptions | null
-): SiteGoalsPDFReportOptions {
-	if ( ! reportOptions ) {
-		throw new Error( 'Expected Site Goals PDF report options, got null.' );
-	}
-
-	return reportOptions;
-}
+const AGGREGATED_REPORT_OPTIONS = getStoreAggregatedReportOptions(
+	SITE_GOALS_PDF_TEST_DATES,
+	'purchase'
+) as SiteGoalsPDFReportOptions;
 
 /**
  * Requests the four Online store performance reports.
@@ -95,18 +62,8 @@ function fetchOnlineStorePDFReports(
 	return fetchSiteGoalsPDFReports( {
 		registry,
 		signal,
-		groupedReportOptions: getRequiredReportOptions(
-			getStoreGroupedReportOptions(
-				SITE_GOALS_PDF_TEST_DATES,
-				'purchase'
-			)
-		),
-		aggregatedReportOptions: getRequiredReportOptions(
-			getStoreAggregatedReportOptions(
-				SITE_GOALS_PDF_TEST_DATES,
-				'purchase'
-			)
-		),
+		groupedReportOptions: GROUPED_REPORT_OPTIONS,
+		aggregatedReportOptions: AGGREGATED_REPORT_OPTIONS,
 	} );
 }
 
@@ -118,7 +75,7 @@ describe( 'fetchSiteGoalsPDFReports', () => {
 	} );
 
 	it( 'requests four reports, the grouped pair and the aggregated pair', async () => {
-		provideSiteGoalsPDFReports( SITE_GOALS_PDF_REPORT_FIXTURES );
+		provideSiteGoalsPDFReports( ONLINE_STORE_PDF_REPORT_FIXTURES );
 
 		await fetchOnlineStorePDFReports( registry );
 
@@ -126,22 +83,22 @@ describe( 'fetchSiteGoalsPDFReports', () => {
 	} );
 
 	it( 'returns each report under the property name shapeSiteGoalsPDFData reads', async () => {
-		provideSiteGoalsPDFReports( SITE_GOALS_PDF_REPORT_FIXTURES );
+		provideSiteGoalsPDFReports( ONLINE_STORE_PDF_REPORT_FIXTURES );
 
 		const reports = await fetchOnlineStorePDFReports( registry );
 
 		expect( reports ).toEqual( {
-			eventsReport: SITE_GOALS_PDF_REPORT_FIXTURES.groupedEventsReport,
+			eventsReport: ONLINE_STORE_PDF_REPORT_FIXTURES.groupedEventsReport,
 			engagementReport:
-				SITE_GOALS_PDF_REPORT_FIXTURES.groupedEngagementReport,
+				ONLINE_STORE_PDF_REPORT_FIXTURES.groupedEngagementReport,
 			aggregatedEventsReport:
-				SITE_GOALS_PDF_REPORT_FIXTURES.aggregatedEventsReport,
+				ONLINE_STORE_PDF_REPORT_FIXTURES.aggregatedEventsReport,
 			aggregatedEngagementReport:
-				SITE_GOALS_PDF_REPORT_FIXTURES.aggregatedEngagementReport,
+				ONLINE_STORE_PDF_REPORT_FIXTURES.aggregatedEngagementReport,
 		} );
 	} );
 
-	it( 'throws when one report fails, so the export leaves the Site Goals section out', async () => {
+	it( 'throws when one report fails, so the export omits the Site Goals section', async () => {
 		fetchMock.get(
 			analyticsReportEndpoint,
 			{

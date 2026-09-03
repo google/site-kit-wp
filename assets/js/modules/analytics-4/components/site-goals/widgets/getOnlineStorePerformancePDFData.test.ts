@@ -19,71 +19,17 @@
 /**
  * Internal dependencies
  */
+import { Registry } from '@/js/googlesitekit/data/types';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { createTestRegistry } from '@tests/js/utils';
 import getOnlineStorePerformancePDFData from './getOnlineStorePerformancePDFData';
+import { ONLINE_STORE_PDF_REPORT_FIXTURES } from './pdf/__fixtures__';
 import {
-	Registry,
 	analyticsReportEndpoint,
-	buildAggregatedTotalsRows,
-	buildBreakdownReportRows,
 	provideDetectedEvents,
 	provideSiteGoalsPDFReports,
 	runSiteGoalsPDFLoader,
 } from './pdf/test-utils';
-
-/**
- * The ecommerce providers found over the 90-day discovery window, including one
- * the Online store performance widget does not support.
- */
-const DISCOVERY_REPORT: Report = {
-	rows: [ 'woocommerce', 'easy-digital-downloads', 'shopify' ].map(
-		( value ) => ( {
-			dimensionValues: [ { value } ],
-			metricValues: [ { value: '45' } ],
-		} )
-	),
-};
-
-const SITE_GOALS_PDF_REPORT_FIXTURES = {
-	discoveryReport: DISCOVERY_REPORT,
-	groupedEventsReport: {
-		rows: [
-			...buildBreakdownReportRows( 'woocommerce', [ '85' ], [ '76' ] ),
-			...buildBreakdownReportRows(
-				'easy-digital-downloads',
-				[ '20' ],
-				[ '25' ]
-			),
-			...buildBreakdownReportRows( 'shopify', [ '9' ], [ '6' ] ),
-			...buildBreakdownReportRows( '(not set)', [ '7' ], [ '4' ] ),
-		],
-	},
-	groupedEngagementReport: {
-		rows: [
-			...buildBreakdownReportRows(
-				'woocommerce',
-				[ '0.36', '3400' ],
-				[ '0.39', '3800' ]
-			),
-			...buildBreakdownReportRows(
-				'easy-digital-downloads',
-				[ '0.5', '500' ],
-				[ '0.25', '500' ]
-			),
-		],
-	},
-	aggregatedEventsReport: {
-		totals: buildAggregatedTotalsRows( [ '112' ], [ '105' ] ),
-	},
-	aggregatedEngagementReport: {
-		totals: buildAggregatedTotalsRows(
-			[ '0.42', '5600' ],
-			[ '0.4', '5250' ]
-		),
-	},
-};
 
 describe( 'getOnlineStorePerformancePDFData', () => {
 	let registry: Registry;
@@ -94,9 +40,9 @@ describe( 'getOnlineStorePerformancePDFData', () => {
 		registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
 	} );
 
-	it( 'builds one group per supported ecommerce plugin, named after the plugin', async () => {
+	it( 'builds one group per supported ecommerce plugin, named after the ecommerce plugin in question', async () => {
 		provideDetectedEvents( registry, [ 'purchase' ] );
-		provideSiteGoalsPDFReports( SITE_GOALS_PDF_REPORT_FIXTURES );
+		provideSiteGoalsPDFReports( ONLINE_STORE_PDF_REPORT_FIXTURES );
 
 		const { data } = await runSiteGoalsPDFLoader(
 			getOnlineStorePerformancePDFData,
@@ -127,7 +73,7 @@ describe( 'getOnlineStorePerformancePDFData', () => {
 
 	it( 'counts a sale from an unsupported plugin under "Other sources"', async () => {
 		provideDetectedEvents( registry, [ 'purchase' ] );
-		provideSiteGoalsPDFReports( SITE_GOALS_PDF_REPORT_FIXTURES );
+		provideSiteGoalsPDFReports( ONLINE_STORE_PDF_REPORT_FIXTURES );
 
 		const { data } = await runSiteGoalsPDFLoader(
 			getOnlineStorePerformancePDFData,
@@ -146,7 +92,7 @@ describe( 'getOnlineStorePerformancePDFData', () => {
 	it( 'falls back to a single group for the whole site when no plugin is found', async () => {
 		provideDetectedEvents( registry, [ 'purchase' ] );
 		provideSiteGoalsPDFReports( {
-			...SITE_GOALS_PDF_REPORT_FIXTURES,
+			...ONLINE_STORE_PDF_REPORT_FIXTURES,
 			discoveryReport: { rows: [] },
 		} );
 
@@ -170,7 +116,7 @@ describe( 'getOnlineStorePerformancePDFData', () => {
 	it( 'returns no data when every Analytics report is empty', async () => {
 		provideDetectedEvents( registry, [ 'purchase' ] );
 		provideSiteGoalsPDFReports( {
-			...SITE_GOALS_PDF_REPORT_FIXTURES,
+			...ONLINE_STORE_PDF_REPORT_FIXTURES,
 			discoveryReport: { rows: [] },
 			aggregatedEventsReport: {},
 			aggregatedEngagementReport: {},
@@ -202,7 +148,7 @@ describe( 'getOnlineStorePerformancePDFData', () => {
 
 	it( 'returns no data and requests no report when the signal is already aborted', async () => {
 		provideDetectedEvents( registry, [ 'purchase' ] );
-		provideSiteGoalsPDFReports( SITE_GOALS_PDF_REPORT_FIXTURES );
+		provideSiteGoalsPDFReports( ONLINE_STORE_PDF_REPORT_FIXTURES );
 
 		expect(
 			await runSiteGoalsPDFLoader(

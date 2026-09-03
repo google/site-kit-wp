@@ -24,61 +24,36 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
-import { findTextStrings } from '@/js/components/pdf-export/test-utils';
+import { renderPDFText } from '@/js/components/pdf-export/test-utils';
 import { EcommerceKeyActionEvent } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
-import { OnlineStorePerformancePDFData } from './getOnlineStorePerformancePDFData';
 import OnlineStorePerformanceWidgetPDF from './OnlineStorePerformanceWidgetPDF';
-
-const ONLINE_STORE_GROUPS = [
-	{
-		id: 'woocommerce',
-		label: 'WooCommerce',
-		total: { current: 85, previous: 76 },
-		rate: { current: 0.025, previous: 0.02 },
-		engagementRate: { current: 0.36, previous: 0.39 },
-		sessions: { current: 3400, previous: 3800 },
-	},
-];
+import { ONLINE_STORE_PDF_GROUPS } from './pdf/__fixtures__';
 
 /**
  * Renders the Online store performance PDF section and reads the text it holds.
  *
  * @since n.e.x.t
  *
- * @param {Object} data The loaded Online store performance section data, or `null` when its loader returned none.
- * @return {Array<string>} The text strings the Online store performance section renders, in order.
+ * @param {string} primaryEvent The ecommerce event the Key action tiles count.
+ * @return {string} The text the Online store performance section renders, joined in render order.
  */
 function renderOnlineStoreSectionText(
-	data: OnlineStorePerformancePDFData[ 'data' ]
-) {
-	const tree = TestRenderer.create(
-		<OnlineStorePerformanceWidgetPDF data={ data } />
-	).toJSON();
-
-	if ( ! tree || Array.isArray( tree ) ) {
-		return [];
-	}
-
-	return findTextStrings( tree );
-}
-
-/**
- * Builds the Online store performance section data for one ecommerce event.
- *
- * @since n.e.x.t
- *
- * @param {string} primaryEvent The ecommerce event the Key action tiles count.
- * @return {Object} The Online store performance section data.
- */
-function buildOnlineStoreSectionData( primaryEvent: EcommerceKeyActionEvent ) {
-	return { groups: ONLINE_STORE_GROUPS, dateRangeLength: 28, primaryEvent };
+	primaryEvent: EcommerceKeyActionEvent
+): string {
+	return renderPDFText(
+		<OnlineStorePerformanceWidgetPDF
+			data={ {
+				groups: ONLINE_STORE_PDF_GROUPS,
+				dateRangeLength: 28,
+				primaryEvent,
+			} }
+		/>
+	).join( ' ' );
 }
 
 describe( 'OnlineStorePerformanceWidgetPDF', () => {
-	it( 'names the sales tiles when the primary event is "purchase"', () => {
-		const text = renderOnlineStoreSectionText(
-			buildOnlineStoreSectionData( 'purchase' )
-		).join( ' ' );
+	it( 'titles the tiles "Sales rate" and "Total sales" when the primary event is "purchase"', () => {
+		const text = renderOnlineStoreSectionText( 'purchase' );
 
 		expect( text ).toContain( 'Online store performance' );
 		expect( text ).toContain( 'WooCommerce' );
@@ -87,10 +62,8 @@ describe( 'OnlineStorePerformanceWidgetPDF', () => {
 		expect( text ).toContain( '“purchase” events' );
 	} );
 
-	it( 'names the cart tiles when the primary event is "add_to_cart"', () => {
-		const text = renderOnlineStoreSectionText(
-			buildOnlineStoreSectionData( 'add_to_cart' )
-		).join( ' ' );
+	it( 'titles the tiles "Add to cart rate" and "Products added to cart" when the primary event is "add_to_cart"', () => {
+		const text = renderOnlineStoreSectionText( 'add_to_cart' );
 
 		expect( text ).toContain( 'Add to cart rate' );
 		expect( text ).toContain( 'Products added to cart' );

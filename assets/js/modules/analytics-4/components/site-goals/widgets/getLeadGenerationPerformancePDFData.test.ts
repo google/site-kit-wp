@@ -19,14 +19,13 @@
 /**
  * Internal dependencies
  */
+import { Registry } from '@/js/googlesitekit/data/types';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createTestRegistry } from '@tests/js/utils';
 import getLeadGenerationPerformancePDFData from './getLeadGenerationPerformancePDFData';
+import { LEAD_GENERATION_PDF_REPORT_FIXTURES } from './pdf/__fixtures__';
 import {
-	Registry,
 	analyticsReportEndpoint,
-	buildAggregatedTotalsRows,
-	buildBreakdownReportRows,
 	provideDetectedEvents,
 	provideSiteGoalsPDFReports,
 	runSiteGoalsPDFLoader,
@@ -36,45 +35,6 @@ import {
 const formMetadataEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/form-metadata'
 );
-
-const SITE_GOALS_PDF_REPORT_FIXTURES = {
-	discoveryReport: {
-		rows: [ '12', '34' ].map( ( value ) => ( {
-			dimensionValues: [ { value } ],
-			metricValues: [ { value: '52' } ],
-		} ) ),
-	},
-	groupedEventsReport: {
-		rows: [
-			...buildBreakdownReportRows( '12', [ '40' ], [ '30' ] ),
-			...buildBreakdownReportRows( '34', [ '12' ], [ '9' ] ),
-			...buildBreakdownReportRows( '(not set)', [ '5' ], [ '2' ] ),
-		],
-	},
-	groupedEngagementReport: {
-		rows: [
-			...buildBreakdownReportRows(
-				'12',
-				[ '0.4', '200' ],
-				[ '0.3', '150' ]
-			),
-			...buildBreakdownReportRows(
-				'34',
-				[ '0.6', '100' ],
-				[ '0.5', '90' ]
-			),
-		],
-	},
-	aggregatedEventsReport: {
-		totals: buildAggregatedTotalsRows( [ '57' ], [ '41' ] ),
-	},
-	aggregatedEngagementReport: {
-		totals: buildAggregatedTotalsRows(
-			[ '0.45', '900' ],
-			[ '0.42', '850' ]
-		),
-	},
-};
 
 describe( 'getLeadGenerationPerformancePDFData', () => {
 	let registry: Registry;
@@ -92,7 +52,7 @@ describe( 'getLeadGenerationPerformancePDFData', () => {
 
 	it( 'builds one group per form, named by the form title', async () => {
 		provideDetectedEvents( registry, [ 'contact' ] );
-		provideSiteGoalsPDFReports( SITE_GOALS_PDF_REPORT_FIXTURES );
+		provideSiteGoalsPDFReports( LEAD_GENERATION_PDF_REPORT_FIXTURES );
 
 		const { data } = await runSiteGoalsPDFLoader(
 			getLeadGenerationPerformancePDFData,
@@ -124,7 +84,7 @@ describe( 'getLeadGenerationPerformancePDFData', () => {
 
 	it( 'counts a completion with no form ID under "Other sources"', async () => {
 		provideDetectedEvents( registry, [ 'contact' ] );
-		provideSiteGoalsPDFReports( SITE_GOALS_PDF_REPORT_FIXTURES );
+		provideSiteGoalsPDFReports( LEAD_GENERATION_PDF_REPORT_FIXTURES );
 
 		const { data } = await runSiteGoalsPDFLoader(
 			getLeadGenerationPerformancePDFData,
@@ -141,7 +101,7 @@ describe( 'getLeadGenerationPerformancePDFData', () => {
 	it( 'falls back to a single group for the whole site when no form is found', async () => {
 		provideDetectedEvents( registry, [ 'contact', 'generate_lead' ] );
 		provideSiteGoalsPDFReports( {
-			...SITE_GOALS_PDF_REPORT_FIXTURES,
+			...LEAD_GENERATION_PDF_REPORT_FIXTURES,
 			discoveryReport: { rows: [] },
 		} );
 
@@ -168,7 +128,7 @@ describe( 'getLeadGenerationPerformancePDFData', () => {
 	it( 'returns no data when every Analytics report is empty', async () => {
 		provideDetectedEvents( registry, [ 'contact' ] );
 		provideSiteGoalsPDFReports( {
-			...SITE_GOALS_PDF_REPORT_FIXTURES,
+			...LEAD_GENERATION_PDF_REPORT_FIXTURES,
 			discoveryReport: { rows: [] },
 			aggregatedEventsReport: {},
 			aggregatedEngagementReport: {},
@@ -200,7 +160,7 @@ describe( 'getLeadGenerationPerformancePDFData', () => {
 
 	it( 'returns no data and requests no report when the signal is already aborted', async () => {
 		provideDetectedEvents( registry, [ 'contact' ] );
-		provideSiteGoalsPDFReports( SITE_GOALS_PDF_REPORT_FIXTURES );
+		provideSiteGoalsPDFReports( LEAD_GENERATION_PDF_REPORT_FIXTURES );
 
 		expect(
 			await runSiteGoalsPDFLoader(

@@ -20,15 +20,14 @@
  * External dependencies
  */
 import { ComponentProps } from 'react';
-import TestRenderer from 'react-test-renderer';
 
 /**
  * Internal dependencies
  */
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import {
-	findTextStrings,
 	renderJSON,
+	renderPDFText,
 } from '@/js/components/pdf-export/test-utils';
 import { PERCENT_FORMAT } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { numFmt } from '@/js/util';
@@ -46,27 +45,7 @@ import SiteGoalsBreakdownGroupPDF from './SiteGoalsBreakdownGroupPDF';
 function renderBreakdownGroupText(
 	props: ComponentProps< typeof SiteGoalsBreakdownGroupPDF >
 ): string[] {
-	const tree = TestRenderer.create(
-		<SiteGoalsBreakdownGroupPDF { ...props } />
-	).toJSON();
-	if ( ! tree || Array.isArray( tree ) ) {
-		throw new Error( 'Unexpected render output.' );
-	}
-	return findTextStrings( tree );
-}
-
-/**
- * Renders the Site Goals breakdown group and returns its tree as a JSON string.
- *
- * @since n.e.x.t
- *
- * @param {Object} props The props to render the Site Goals breakdown group with.
- * @return {string} The rendered tree, as a JSON string.
- */
-function renderBreakdownGroupJSON(
-	props: ComponentProps< typeof SiteGoalsBreakdownGroupPDF >
-): string {
-	return renderJSON( <SiteGoalsBreakdownGroupPDF { ...props } /> );
+	return renderPDFText( <SiteGoalsBreakdownGroupPDF { ...props } /> );
 }
 
 describe( 'SiteGoalsBreakdownGroupPDF', () => {
@@ -148,59 +127,63 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 	} );
 
 	it( 'gives the rate tile a green background when the rate rises and a red one when it falls', () => {
-		const risingRateJSON = renderBreakdownGroupJSON( {
-			group: FULL_GROUP,
-			rateLabel: 'Sales rate',
-			totalLabel: 'Total sales',
-		} );
-		const fallingRateJSON = renderBreakdownGroupJSON( {
-			group: {
-				...FULL_GROUP,
-				rate: { current: 0.4, previous: 0.5 },
-			},
-			rateLabel: 'Sales rate',
-			totalLabel: 'Total sales',
-		} );
+		const risingRateJSON = renderJSON(
+			<SiteGoalsBreakdownGroupPDF
+				group={ FULL_GROUP }
+				rateLabel="Sales rate"
+				totalLabel="Total sales"
+			/>
+		);
+		const fallingRateJSON = renderJSON(
+			<SiteGoalsBreakdownGroupPDF
+				group={ {
+					...FULL_GROUP,
+					rate: { current: 0.4, previous: 0.5 },
+				} }
+				rateLabel="Sales rate"
+				totalLabel="Total sales"
+			/>
+		);
 
 		expect( risingRateJSON ).toContain( PDF_COLORS.GREEN_G_10 );
 		expect( fallingRateJSON ).toContain( PDF_COLORS.RED_R_10 );
 	} );
 
 	it( 'gives the rate tile a neutral background when the rate does not change', () => {
-		const noChangeRateJSON = renderBreakdownGroupJSON( {
-			group: {
-				...FULL_GROUP,
-				rate: { current: 0.5, previous: 0.5 },
-			},
-			rateLabel: 'Sales rate',
-			totalLabel: 'Total sales',
-		} );
+		const noChangeRateJSON = renderJSON(
+			<SiteGoalsBreakdownGroupPDF
+				group={ {
+					...FULL_GROUP,
+					rate: { current: 0.5, previous: 0.5 },
+				} }
+				rateLabel="Sales rate"
+				totalLabel="Total sales"
+			/>
+		);
 
 		expect( noChangeRateJSON ).toContain( PDF_COLORS.NEUTRAL_N_10 );
 	} );
 
 	it( 'gives the rate tile a green background when the rate rises from zero', () => {
-		const zeroPreviousRateJSON = renderBreakdownGroupJSON( {
-			group: {
-				...FULL_GROUP,
-				rate: { current: 0.5, previous: 0 },
-			},
-			rateLabel: 'Sales rate',
-			totalLabel: 'Total sales',
-		} );
+		const zeroPreviousRateJSON = renderJSON(
+			<SiteGoalsBreakdownGroupPDF
+				group={ { ...FULL_GROUP, rate: { current: 0.5, previous: 0 } } }
+				rateLabel="Sales rate"
+				totalLabel="Total sales"
+			/>
+		);
 
 		expect( zeroPreviousRateJSON ).toContain( PDF_COLORS.GREEN_G_10 );
 	} );
 
 	it( 'gives the rate tile no background color when the rate is zero in both periods', () => {
-		const zeroRateJSON = renderBreakdownGroupJSON( {
-			group: {
-				...FULL_GROUP,
-				rate: { current: 0, previous: 0 },
-			},
-			rateLabel: 'Sales rate',
-			totalLabel: 'Total sales',
-		} );
+		const zeroRateJSON = renderJSON(
+			<SiteGoalsBreakdownGroupPDF
+				group={ { ...FULL_GROUP, rate: { current: 0, previous: 0 } } }
+				rateLabel="Sales rate"
+				totalLabel="Total sales"
+			/>
+		);
 
 		expect( zeroRateJSON ).not.toContain( PDF_COLORS.GREEN_G_10 );
 		expect( zeroRateJSON ).not.toContain( PDF_COLORS.RED_R_10 );

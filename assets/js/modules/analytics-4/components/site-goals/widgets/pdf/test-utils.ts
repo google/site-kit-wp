@@ -19,12 +19,10 @@
 /**
  * Internal dependencies
  */
+import { Registry } from '@/js/googlesitekit/data/types';
 import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
-
-/** The WordPress data registry a Site Goals PDF loader test runs against. */
-export type Registry = GetPDFDataParams[ 'registry' ];
 
 /** Matches the Analytics report endpoint. */
 export const analyticsReportEndpoint = new RegExp(

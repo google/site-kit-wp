@@ -24,7 +24,7 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
-import { findTextStrings } from '@/js/components/pdf-export/test-utils';
+import { renderPDFText } from '@/js/components/pdf-export/test-utils';
 import {
 	AGGREGATED_GROUP_ID,
 	SiteGoalsPDFGroup,
@@ -55,15 +55,15 @@ function buildSiteGoalsPDFGroup(
 }
 
 /**
- * Renders the Site Goals PDF section and returns its tree.
+ * Builds the Site Goals PDF section for a set of breakdown groups.
  *
  * @since n.e.x.t
  *
  * @param {Array<Object>} groups The breakdown groups the Site Goals PDF section renders.
- * @return {(Object|null)} The rendered tree, or `null` when the Site Goals PDF section renders nothing.
+ * @return {Object} The Site Goals PDF section element.
  */
-function renderSiteGoalsSection( groups: SiteGoalsPDFGroup[] ) {
-	return TestRenderer.create(
+function buildSiteGoalsSection( groups: SiteGoalsPDFGroup[] ) {
+	return (
 		<SiteGoalsSectionPDF
 			heading="Online store performance"
 			groups={ groups }
@@ -72,36 +72,20 @@ function renderSiteGoalsSection( groups: SiteGoalsPDFGroup[] ) {
 			totalSubtitle="“purchase” events"
 			dateRangeLength={ 28 }
 		/>
-	).toJSON();
-}
-
-/**
- * Renders the Site Goals PDF section and reads the text it holds.
- *
- * @since n.e.x.t
- *
- * @param {Array<Object>} groups The breakdown groups the Site Goals PDF section renders.
- * @return {Array<string>} The text strings the Site Goals PDF section renders, in order.
- */
-function renderSiteGoalsSectionText( groups: SiteGoalsPDFGroup[] ): string[] {
-	const tree = renderSiteGoalsSection( groups );
-
-	if ( ! tree || Array.isArray( tree ) ) {
-		return [];
-	}
-
-	return findTextStrings( tree );
+	);
 }
 
 describe( 'SiteGoalsSectionPDF', () => {
 	it( 'shows the Site Goals section heading above one card per breakdown group', () => {
-		const text = renderSiteGoalsSectionText( [
-			buildSiteGoalsPDFGroup( 'woocommerce', 'WooCommerce' ),
-			buildSiteGoalsPDFGroup(
-				'easy-digital-downloads',
-				'Easy Digital Downloads'
-			),
-		] ).join( ' ' );
+		const text = renderPDFText(
+			buildSiteGoalsSection( [
+				buildSiteGoalsPDFGroup( 'woocommerce', 'WooCommerce' ),
+				buildSiteGoalsPDFGroup(
+					'easy-digital-downloads',
+					'Easy Digital Downloads'
+				),
+			] )
+		).join( ' ' );
 
 		expect( text ).toContain( 'Online store performance' );
 		expect( text ).toContain( 'WooCommerce' );
@@ -110,20 +94,24 @@ describe( 'SiteGoalsSectionPDF', () => {
 	} );
 
 	it( "builds the comparison caption from the number of days in the PDF report's date range", () => {
-		const text = renderSiteGoalsSectionText( [
-			buildSiteGoalsPDFGroup( 'woocommerce', 'WooCommerce' ),
-		] );
+		const text = renderPDFText(
+			buildSiteGoalsSection( [
+				buildSiteGoalsPDFGroup( 'woocommerce', 'WooCommerce' ),
+			] )
+		);
 
 		expect( text ).toContain( 'Vs. prev. 28 days' );
 	} );
 
 	it( 'shows no group heading for the single group that covers the whole site', () => {
-		const text = renderSiteGoalsSectionText( [
-			buildSiteGoalsPDFGroup(
-				AGGREGATED_GROUP_ID,
-				'Online store performance'
-			),
-		] );
+		const text = renderPDFText(
+			buildSiteGoalsSection( [
+				buildSiteGoalsPDFGroup(
+					AGGREGATED_GROUP_ID,
+					'Online store performance'
+				),
+			] )
+		);
 
 		// The heading appears once, from the section. The group adds no
 		// heading of its own.
@@ -134,6 +122,8 @@ describe( 'SiteGoalsSectionPDF', () => {
 	} );
 
 	it( 'renders nothing when there is no breakdown group', () => {
-		expect( renderSiteGoalsSection( [] ) ).toBeNull();
+		expect(
+			TestRenderer.create( buildSiteGoalsSection( [] ) ).toJSON()
+		).toBeNull();
 	} );
 } );

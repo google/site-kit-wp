@@ -24,60 +24,33 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
-import { findTextStrings } from '@/js/components/pdf-export/test-utils';
-import { LeadGenerationPerformancePDFData } from './getLeadGenerationPerformancePDFData';
+import { renderPDFText } from '@/js/components/pdf-export/test-utils';
 import LeadGenerationPerformanceWidgetPDF from './LeadGenerationPerformanceWidgetPDF';
-
-const LEAD_GENERATION_GROUPS = [
-	{
-		id: '12',
-		label: '“Contact” form',
-		total: { current: 40, previous: 30 },
-		rate: { current: 0.2, previous: 0.2 },
-		engagementRate: { current: 0.4, previous: 0.3 },
-		sessions: { current: 200, previous: 150 },
-	},
-];
+import { LEAD_GENERATION_PDF_GROUPS } from './pdf/__fixtures__';
 
 /**
  * Renders the Lead generation performance PDF section and reads the text it holds.
  *
  * @since n.e.x.t
  *
- * @param {Object} data The loaded Lead generation performance section data, or `null` when its loader returned none.
- * @return {Array<string>} The text strings the Lead generation performance section renders, in order.
- */
-function renderLeadGenerationSectionText(
-	data: LeadGenerationPerformancePDFData[ 'data' ]
-) {
-	const tree = TestRenderer.create(
-		<LeadGenerationPerformanceWidgetPDF data={ data } />
-	).toJSON();
-
-	if ( ! tree || Array.isArray( tree ) ) {
-		return [];
-	}
-
-	return findTextStrings( tree );
-}
-
-/**
- * Builds the Lead generation performance section data for a set of lead events.
- *
- * @since n.e.x.t
- *
  * @param {Array<string>} leadEvents The lead events the Key action tiles count.
- * @return {Object} The Lead generation performance section data.
+ * @return {string} The text the Lead generation performance section renders, joined in render order.
  */
-function buildLeadGenerationSectionData( leadEvents: string[] ) {
-	return { groups: LEAD_GENERATION_GROUPS, dateRangeLength: 28, leadEvents };
+function renderLeadGenerationSectionText( leadEvents: string[] ): string {
+	return renderPDFText(
+		<LeadGenerationPerformanceWidgetPDF
+			data={ {
+				groups: LEAD_GENERATION_PDF_GROUPS,
+				dateRangeLength: 28,
+				leadEvents,
+			} }
+		/>
+	).join( ' ' );
 }
 
 describe( 'LeadGenerationPerformanceWidgetPDF', () => {
-	it( 'names the form tiles and the one lead event behind the Key action total', () => {
-		const text = renderLeadGenerationSectionText(
-			buildLeadGenerationSectionData( [ 'contact' ] )
-		).join( ' ' );
+	it( 'titles the tiles "Form completion rate" and "Total form completions", and quotes the single detected lead event', () => {
+		const text = renderLeadGenerationSectionText( [ 'contact' ] );
 
 		expect( text ).toContain( 'Lead generation performance' );
 		expect( text ).toContain( '“Contact” form' );
@@ -87,9 +60,10 @@ describe( 'LeadGenerationPerformanceWidgetPDF', () => {
 	} );
 
 	it( 'counts the event types behind the Key action total when several lead events are detected', () => {
-		const text = renderLeadGenerationSectionText(
-			buildLeadGenerationSectionData( [ 'contact', 'generate_lead' ] )
-		).join( ' ' );
+		const text = renderLeadGenerationSectionText( [
+			'contact',
+			'generate_lead',
+		] );
 
 		expect( text ).toContain( '2 event types' );
 	} );
