@@ -1,3 +1,27 @@
+<script>
+	// Seed `_googlesitekitBaseData.enabledFeatures` *before* the Storybook
+	// bundle evaluates, so module-scope `isFeatureEnabled()` calls (eg. in a
+	// datastore's `base.js`, evaluated once when the module is first
+	// imported) see the flags a story needs. Toggling feature flags at
+	// runtime (eg. from a decorator) is too late for that kind of check, so
+	// `storybook/utils/reloadForFeatures.js` forces a full reload of this
+	// iframe whenever a story needs a different set of flags than the ones
+	// already baked into the current page load. Keep the storage key here in
+	// sync with `STORAGE_KEY` in that file.
+	( function () {
+		var STORAGE_KEY = 'googlesitekit-storybook-features';
+		var features = [];
+
+		try {
+			var raw = window.sessionStorage.getItem( STORAGE_KEY );
+			features = raw ? JSON.parse( raw ) : [];
+		} catch ( error ) {
+			features = [];
+		}
+
+		window._googlesitekitBaseData = { enabledFeatures: features };
+	} )();
+</script>
 <link
 	rel="stylesheet"
 	id="googlesitekit-fonts-css"
