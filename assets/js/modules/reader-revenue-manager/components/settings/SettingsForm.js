@@ -234,12 +234,18 @@ export default function SettingsForm( { hasModuleAccess } ) {
 									>
 										{ label }
 									</Typography>
-									<Link href={ editLinkURL } external>
-										{ __(
-											'Manage settings',
-											'google-site-kit'
-										) }
-									</Link>
+									<Typography
+										as="span"
+										size="small"
+										type="body"
+									>
+										<Link href={ editLinkURL } external>
+											{ __(
+												'Manage settings',
+												'google-site-kit'
+											) }
+										</Link>
+									</Typography>
 								</li>
 							)
 						) }
