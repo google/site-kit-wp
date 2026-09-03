@@ -174,10 +174,15 @@ const LeadGenerationPerformanceWidgetPDF = lazyWithPreload( () =>
 /**
  * Builds the `isActive` condition for a Site Goals widget.
  *
- * A widget's own `isActive` decides whether the dashboard renders it, and the
- * `isActive` inside its `pdf` block decides whether the PDF export offers its
- * section. Nothing reads one from the other, so both are given this same
- * condition to keep the export in step with the dashboard.
+ * The dashboard and the PDF export decide visibility separately: the dashboard
+ * reads a widget's own `isActive`, while `isActivePDFWidget()` reads only the
+ * `isActive` inside that widget's `pdf` block. Setting one alone would let the
+ * export offer a section for a widget the dashboard is not showing, so both are
+ * given the condition this returns.
+ *
+ * The condition compares against `true` because `isSiteGoalsWidgetRenderable()`
+ * returns `undefined` until the Site Goals settings and the detected events
+ * have loaded.
  *
  * @since n.e.x.t
  *
