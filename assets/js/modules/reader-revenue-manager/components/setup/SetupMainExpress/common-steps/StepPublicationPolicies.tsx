@@ -250,7 +250,7 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 								type={ TYPE_LABEL }
 							>
 								{ __(
-									'Add your site’s privacy policy link:',
+									'Add your site’s privacy policy URL:',
 									'google-site-kit'
 								) }
 							</P>
