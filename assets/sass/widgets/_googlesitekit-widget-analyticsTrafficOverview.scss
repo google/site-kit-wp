@@ -92,7 +92,74 @@
 		}
 
 		.googlesitekit-traffic-overview__breakdown {
+			display: grid;
+			gap: 24px;
+
+			// Stacked through tablet; three columns from desktop up.
+			grid-template-columns: 1fr;
 			margin-top: 62px;
+
+			@media (min-width: $bp-desktop) {
+				gap: 0;
+
+				// Equal fractions, so a column with no rows keeps its width.
+				grid-template-columns: repeat(3, 1fr);
+			}
+		}
+
+		.googlesitekit-traffic-overview__breakdown-column {
+
+			@media (min-width: $bp-desktop) {
+				padding: 0 24px;
+
+				&:first-child {
+					padding-left: 0;
+				}
+
+				&:last-child {
+					padding-right: 0;
+				}
+
+				&:not(:first-child) {
+					border-left: 1px solid $c-utility-divider;
+				}
+			}
+		}
+
+		// The typography classes carry the font; only colour and spacing here.
+		.googlesitekit-traffic-overview__breakdown-column-heading {
+			color: $c-surfaces-on-surface;
+			margin: 0 0 14px;
+
+			// A long channel or country name wraps instead of being cut off.
+			overflow-wrap: anywhere;
+		}
+
+		.googlesitekit-traffic-overview__breakdown-row {
+			align-items: baseline;
+			display: flex;
+			gap: 12px;
+			justify-content: space-between;
+		}
+
+		.googlesitekit-traffic-overview__breakdown-row
+			+ .googlesitekit-traffic-overview__breakdown-row {
+			margin-top: 5px;
+		}
+
+		.googlesitekit-traffic-overview__breakdown-row-label {
+			color: $c-surfaces-on-surface;
+
+			// A long value wraps rather than pushing the share out of the row.
+			overflow-wrap: anywhere;
+		}
+
+		.googlesitekit-traffic-overview__breakdown-row-percentage {
+			color: $c-surfaces-on-surface;
+
+			// The share stays on one line however long the label gets.
+			flex-shrink: 0;
+			white-space: nowrap;
 		}
 	}
 }

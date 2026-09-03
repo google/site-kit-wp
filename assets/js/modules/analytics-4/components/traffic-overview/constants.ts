@@ -24,3 +24,10 @@ export const TRAFFIC_OVERVIEW_TAB_ID = 'googlesitekit-traffic-overview-tab';
 
 /** The slug the Traffic Overview widget registers under. */
 export const TRAFFIC_OVERVIEW_WIDGET_SLUG = 'analyticsTrafficOverview';
+
+/**
+ * The most rows a breakdown column shows, counting the trailing "Others" row.
+ * It matches the donut chart's `maxSlices`, so the same values stay at the top
+ * of a dimension as before.
+ */
+export const TRAFFIC_BREAKDOWN_MAX_ROWS = 5;
