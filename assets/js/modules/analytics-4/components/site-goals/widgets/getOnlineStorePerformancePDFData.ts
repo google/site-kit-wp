@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -25,7 +30,6 @@ import {
 	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE,
 	SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDERS,
 	SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDER_LABELS,
-	SITE_GOALS_ONLINE_STORE_WIDGET_TITLE,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { EcommerceKeyActionEvent } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
@@ -45,7 +49,7 @@ import {
 
 /** The data the Online store performance PDF section renders. */
 export interface OnlineStorePerformancePDFData {
-	/** The loaded groups, or `null` when the PDF report leaves the Online store performance section out. */
+	/** The PDF data including loaded groups, or `null` when the PDF report omits the Online store performance section. */
 	data: {
 		/** The breakdown groups, in the order the Online store performance PDF section renders them. */
 		groups: SiteGoalsPDFGroup[];
@@ -70,7 +74,7 @@ export interface OnlineStorePerformancePDFData {
  * @param {Object}      params.registry WordPress data registry.
  * @param {Object}      params.dates    The PDF report's date range, with the current day excluded.
  * @param {AbortSignal} params.signal   Signal that cancels the PDF export.
- * @return {Promise<Object>} The loaded groups, or `{ data: null }` when the PDF report leaves the Online store performance section out.
+ * @return {Promise<Object>} The loaded groups, or `{ data: null }` when the PDF report omits the Online store performance section.
  */
 export default async function getOnlineStorePerformancePDFData( {
 	registry,
@@ -137,14 +141,14 @@ export default async function getOnlineStorePerformancePDFData( {
 
 	const groups = shapeSiteGoalsPDFData( {
 		...reports,
-		// The dashboard gives a tab only to a supported ecommerce plugin. The
-		// "Other sources" group holds every other value the provider dimension
-		// carries, on the dashboard and in the PDF report.
+		// The dashboard only renders a tab for a known, supported ecommerce
+		// plugin. The "Other sources" group renders every other value the
+		// provider dimension has, on the dashboard and in the PDF report.
 		breakdownValues: breakdownValues.filter( ( value ) =>
 			SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDERS.includes( value )
 		),
 		labels: SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDER_LABELS,
-		aggregatedLabel: SITE_GOALS_ONLINE_STORE_WIDGET_TITLE,
+		aggregatedLabel: __( 'Online store performance', 'google-site-kit' ),
 	} );
 
 	// With no group the Online store performance section has nothing to show,

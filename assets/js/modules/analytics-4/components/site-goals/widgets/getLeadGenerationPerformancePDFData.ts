@@ -17,14 +17,16 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
-import {
-	SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE,
-	SITE_GOALS_LEAD_GENERATION_WIDGET_TITLE,
-} from '@/js/modules/analytics-4/components/site-goals/constants';
+import { SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import fetchSiteGoalsPDFReports from './pdf/fetchSiteGoalsPDFReports';
@@ -39,13 +41,13 @@ import {
 
 /** The data the Lead generation performance PDF section renders. */
 export interface LeadGenerationPerformancePDFData {
-	/** The loaded groups, or `null` when the PDF report leaves the Lead generation performance section out. */
+	/** The PDF data including loaded groups, or `null` when the PDF report omits the Lead generation performance section. */
 	data: {
 		/** The breakdown groups, in the order the Lead generation performance PDF section renders them. */
 		groups: SiteGoalsPDFGroup[];
 		/** The number of days in the PDF report's date range, for the "Vs. prev. 28 days" caption. */
 		dateRangeLength: number;
-		/** The lead events the Key action tiles count. */
+		/** The lead events the Key action tiles use. */
 		leadEvents: string[];
 	} | null;
 }
@@ -63,7 +65,7 @@ export interface LeadGenerationPerformancePDFData {
  * @param {Object}      params.registry WordPress data registry.
  * @param {Object}      params.dates    The PDF report's date range, with the current day excluded.
  * @param {AbortSignal} params.signal   Signal that cancels the PDF export.
- * @return {Promise<Object>} The loaded groups, or `{ data: null }` when the PDF report leaves the Lead generation performance section out.
+ * @return {Promise<Object>} The loaded groups, or `{ data: null }` when the PDF report omits the Lead generation performance section.
  */
 export default async function getLeadGenerationPerformancePDFData( {
 	registry,
@@ -138,7 +140,7 @@ export default async function getLeadGenerationPerformancePDFData( {
 		...reports,
 		breakdownValues,
 		labels: formTitles,
-		aggregatedLabel: SITE_GOALS_LEAD_GENERATION_WIDGET_TITLE,
+		aggregatedLabel: __( 'Lead generation performance', 'google-site-kit' ),
 	} );
 
 	// With no group the Lead generation performance section has nothing to show,

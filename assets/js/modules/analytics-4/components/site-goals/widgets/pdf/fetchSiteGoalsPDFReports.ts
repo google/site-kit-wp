@@ -29,14 +29,15 @@ import { ShapeSiteGoalsPDFDataArgs } from './shapeSiteGoalsPDFData';
 interface FetchAnalyticsReportResult {
 	/** The Analytics report, or `undefined` when the request failed. */
 	response?: Report;
-	/** The error the request returned, or `undefined` when the request worked. */
+	/** The error the request returned, or `undefined` when the request succeeded. */
 	error?: { message: string };
 }
 
 /**
- * The four Analytics reports one Site Goals PDF section reads: the Key action
- * events and the engagement metrics, each grouped by the breakdown dimension
- * and again for the whole site.
+ * The four Analytics reports one Site Goals PDF section reads. The Key action
+ * events and the engagement metrics are each requested twice: once grouped by
+ * the breakdown dimension, so the section can render a card per group, and
+ * once with no dimension, for the section's whole-site fallback card.
  */
 export type SiteGoalsPDFReports = Pick<
 	ShapeSiteGoalsPDFDataArgs,
@@ -47,12 +48,13 @@ export type SiteGoalsPDFReports = Pick<
 >;
 
 /**
- * Requests the four Analytics reports one Site Goals PDF section reads, in
- * parallel.
+ * Requests, in parallel, the four Analytics reports one Site Goals PDF section
+ * reads.
  *
  * Throws when any one of the four requests fails. The export catches that
- * error and leaves the widget's section out of the PDF report. A cancel is not
- * a failure, so a cancelled export gets back no report and no error.
+ * error and omits the widget's section from the PDF report. A cancel is not
+ * a failure, so a cancelled export receives no report and no error (eg. an
+ * empty object).
  *
  * @since n.e.x.t
  *
