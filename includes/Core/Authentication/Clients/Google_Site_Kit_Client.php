@@ -285,7 +285,7 @@ class Google_Site_Kit_Client extends Google_Client {
 	 * @throws Google_OAuth_Exception Thrown with the given $error as message.
 	 */
 	protected function handleAuthTokenErrorResponse( $error, array $data ) {
-		throw new Google_OAuth_Exception( $error );
+		throw new Google_OAuth_Exception( $error ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 	}
 
 	/**

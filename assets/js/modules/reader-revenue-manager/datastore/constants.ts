@@ -88,3 +88,10 @@ export const enum PUBLICATION_POLICIES_FORM {
 	TERMS_OF_SERVICE_URL = 'publicationTosUrl',
 	PRIVACY_POLICY_URL = 'publicationPrivacyPolicyUrl',
 }
+
+export const enum CREATE_PUBLICATION_FORM {
+	CERTIFY_REGION = 'certify',
+	DISPLAY_NAME = 'name',
+	LANGUAGE_CODE = 'languageCode',
+	REGION_CODE = 'regionCode',
+}
