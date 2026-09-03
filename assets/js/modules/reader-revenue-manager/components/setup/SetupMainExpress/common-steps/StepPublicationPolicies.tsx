@@ -79,7 +79,7 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 
 	const descriptionWithLink = createInterpolateElement(
 		sprintf(
-			/* translators: %s: Connect publication setup step description. */
+			/* translators: %s: Publication policies setup step description. */
 			__( '%s <a>Learn more</a>', 'google-site-kit' ),
 			description || defaultDescription
 		),
