@@ -84,7 +84,7 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 			description || defaultDescription
 		),
 		{
-			a: <DocumentationLink slug="rrm-publication" external />,
+			a: <DocumentationLink slug="rrm-publication-policies" external />,
 		}
 	);
 
