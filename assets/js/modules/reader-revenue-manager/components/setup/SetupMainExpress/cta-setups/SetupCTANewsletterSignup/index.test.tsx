@@ -42,9 +42,12 @@ jest.mock(
 );
 
 const STEP_CONTENT = {
-	[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: /Let's get started!/,
-	[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: /Terms of service/,
-	[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: 'Publication policies',
+	[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]:
+		'To set up a newsletter sign-up form using Reader Revenue Manager, you will need to create a publication.',
+	[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]:
+		'To create a publication, you need to accept the Reader Revenue Manager Terms of Service.',
+	[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]:
+		'To set up a newsletter using Reader Revenue Manager, you will need to add links to your publication’s policies.',
 	[ EXPRESS_SETUP_STEPS.SETUP_CTA ]:
 		'RRM express setup placeholder: newsletter CTA setup step.',
 	[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]:

@@ -39,9 +39,12 @@ import ExpressSetupDefault from './ExpressSetupDefault';
 jest.mock( './PoweredBy', () => () => null );
 
 const STEP_CONTENT = {
-	[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: /Let's get started!/,
-	[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: /Terms of service/,
-	[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: 'Publication policies',
+	[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]:
+		'To use Reader Revenue Manager, you will need to create a publication.',
+	[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]:
+		'To create a publication, you need to accept the Reader Revenue Manager Terms of Service.',
+	[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]:
+		'To use Reader Revenue Manager, you will need to add links to your publication’s policies.',
 	[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]:
 		'RRM express setup placeholder: setup complete step.',
 };
