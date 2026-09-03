@@ -69,7 +69,10 @@ export interface Publication {
 	languageCode?: string;
 	regionCode?: string;
 	rrmProduct?: {
+		// eslint-disable-next-line sitekit/acronym-case -- `Url` is the normalized API field name.
+		productTosUrl?: string;
 		tosAcceptance?: {
+			emailOptIn?: boolean;
 			userAccepted: boolean;
 		};
 	};
@@ -92,7 +95,7 @@ export interface PublicationParams {
 	publicationID: string;
 }
 
-interface UpdatePublicationParams extends Partial< PublicationParams > {
+export interface UpdatePublicationParams extends Partial< PublicationParams > {
 	data: Record< string, unknown >;
 }
 

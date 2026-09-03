@@ -32,6 +32,7 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	render,
+	waitFor,
 } from '@tests/js/test-utils';
 import SetupCTANewsletterSignup from './index';
 
@@ -42,8 +43,7 @@ jest.mock(
 
 const STEP_CONTENT = {
 	[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: /Let's get started!/,
-	[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]:
-		'RRM express setup placeholder: terms of service step.',
+	[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: /Terms of service/,
 	[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]:
 		'RRM express setup placeholder: publication policies step.',
 	[ EXPRESS_SETUP_STEPS.SETUP_CTA ]:
@@ -91,17 +91,16 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		expect( getByText( 'Set up a sign-up form' ) ).toBeInTheDocument();
 		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
-		expect( getByText( 'Accept terms of service' ) ).toBeInTheDocument();
 		expect( getByText( 'Add publication policies' ) ).toBeInTheDocument();
 		expect( getByText( 'Setup complete' ) ).toBeInTheDocument();
 		expect(
 			container.querySelectorAll( '.googlesitekit-stepper__step' )
-		).toHaveLength( 5 );
+		).toHaveLength( 4 );
 	} );
 
 	it.each( Object.entries( STEP_CONTENT ) )(
 		'renders the %s step content',
-		( step, content ) => {
+		async ( step, content ) => {
 			global.location.href = `http://example.com/?step=${ step }`;
 
 			const { getByText, queryByText } = render(
@@ -109,7 +108,9 @@ describe( 'SetupCTANewsletterSignup', () => {
 				{ registry }
 			);
 
-			expect( getByText( content ) ).toBeInTheDocument();
+			await waitFor( () => {
+				expect( getByText( content ) ).toBeInTheDocument();
+			} );
 
 			Object.entries( STEP_CONTENT )
 				.filter( ( [ otherStep ] ) => otherStep !== step )

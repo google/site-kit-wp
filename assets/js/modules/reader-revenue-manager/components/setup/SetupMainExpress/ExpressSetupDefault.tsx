@@ -50,7 +50,13 @@ const ExpressSetupDefault: FC = () => {
 				}
 			/>
 		),
-		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: <StepTermsOfService />,
+		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: (
+			<StepTermsOfService
+				onComplete={ () =>
+					setStep( EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES )
+				}
+			/>
+		),
 		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: (
 			<StepPublicationPolicies />
 		),

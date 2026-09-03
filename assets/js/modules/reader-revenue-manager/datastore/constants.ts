@@ -84,6 +84,16 @@ export const enum EXPRESS_SETUP_STEPS {
 	SETUP_COMPLETE = 'setup-complete',
 }
 
+export const enum TERMS_OF_SERVICE_FORM {
+	PUBLICATION_TYPE = 'publicationType',
+	EMAIL_OPT_IN = 'emailOptIn',
+}
+
+export const enum PUBLICATION_TYPES {
+	FOR_PROFIT = 'FOR_PROFIT',
+	NON_PROFIT = 'NON_PROFIT',
+}
+
 export const enum CREATE_PUBLICATION_FORM {
 	CERTIFY_REGION = 'certify',
 	DISPLAY_NAME = 'name',
