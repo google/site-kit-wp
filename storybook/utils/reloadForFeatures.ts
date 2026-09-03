@@ -22,7 +22,14 @@
 // before the bundle (re-)evaluates.
 const STORAGE_KEY = 'googlesitekit-storybook-features';
 
-function getActiveFeatures() {
+/**
+ * Gets the feature flags currently baked into this page load.
+ *
+ * @since n.e.x.t
+ *
+ * @return {string[]} Feature flags read from session storage.
+ */
+function getActiveFeatures(): string[] {
 	try {
 		const raw = window.sessionStorage.getItem( STORAGE_KEY );
 		return raw ? JSON.parse( raw ) : [];
@@ -31,7 +38,17 @@ function getActiveFeatures() {
 	}
 }
 
-function featureSetsMatch( a, b ) {
+/**
+ * Checks whether two feature flag lists contain the same set of flags,
+ * ignoring order.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string[]} a First list of feature flags.
+ * @param {string[]} b Second list of feature flags.
+ * @return {boolean} True if both lists contain the same flags.
+ */
+function featureSetsMatch( a: string[], b: string[] ): boolean {
 	if ( a.length !== b.length ) {
 		return false;
 	}
@@ -63,7 +80,7 @@ function featureSetsMatch( a, b ) {
  *                    rendering the story (and its other decorators) in this
  *                    case, since the page is about to navigate away.
  */
-export function reloadForFeatures( features = [] ) {
+export function reloadForFeatures( features: string[] = [] ): boolean {
 	if ( featureSetsMatch( getActiveFeatures(), features ) ) {
 		return false;
 	}
