@@ -23,7 +23,7 @@ import classifyContactLink from './classify-contact-link';
 import { initializeLinkClicks } from './link-clicks';
 import {
 	SiteKitGlobal,
-	createListenerRegistry,
+	createListenerTracker,
 	preventNavigation,
 	render,
 } from './test-utils';
@@ -45,7 +45,7 @@ const classifySpy = classifyContactLink as jest.Mock;
 describe( 'initializeLinkClicks', () => {
 	let gtagEventMock: jest.Mock;
 
-	const listeners = createListenerRegistry();
+	const listeners = createListenerTracker();
 
 	function initialize() {
 		return listeners.record( initializeLinkClicks );
@@ -128,7 +128,7 @@ describe( 'initializeLinkClicks', () => {
 		} );
 	} );
 
-	it( 'should never carry the prefilled subject, body, or message text', () => {
+	it( 'should never have a prefilled subject, body, or message text', () => {
 		render(
 			'<a href="https://wa.me/15551234567?text=Secret%20message">Message</a>'
 		);

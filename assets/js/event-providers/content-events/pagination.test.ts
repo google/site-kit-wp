@@ -23,7 +23,7 @@ import { ContentEventsConfig } from '@/js/event-providers/content-events';
 import { initializePagination } from './pagination';
 import {
 	SiteKitGlobal,
-	createListenerRegistry,
+	createListenerTracker,
 	preventNavigation,
 	render,
 } from './test-utils';
@@ -44,7 +44,7 @@ function baseConfig(
 describe( 'initializePagination', () => {
 	let gtagEventMock: jest.Mock;
 
-	const listeners = createListenerRegistry();
+	const listeners = createListenerTracker();
 
 	function initialize( config: ContentEventsConfig = baseConfig() ) {
 		return listeners.record( () => initializePagination( config ) );

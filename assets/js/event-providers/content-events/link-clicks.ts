@@ -53,8 +53,9 @@ export function initializeLinkClicks(): void {
 
 			const linkType = classifyContactLink( anchor );
 
-			// Contact links stop here. Their URL holds someone's phone number
-			// or email address, so they must never reach the outbound handler.
+			// A contact link's URL holds a real phone number or email address.
+			// Only `link_type` is sent below, and the anchor never reaches the
+			// outbound handler, which would send the whole URL to Analytics.
 			if ( linkType ) {
 				const isWebLink =
 					'http:' === anchor.protocol || 'https:' === anchor.protocol;
