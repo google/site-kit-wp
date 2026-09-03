@@ -130,7 +130,7 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 				'getPublication',
 				[]
 			),
-		[ tosURL ]
+		[]
 	);
 
 	const hasResolvedTermsOfService: boolean = useSelect(
