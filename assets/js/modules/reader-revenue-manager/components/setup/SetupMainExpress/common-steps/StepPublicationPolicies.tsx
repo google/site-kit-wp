@@ -79,7 +79,7 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 
 	const descriptionWithLink = createInterpolateElement(
 		sprintf(
-			/* translators: %s: Connect publication setup step description. */
+			/* translators: %s: Publication policies setup step description. */
 			__( '%s <a>Learn more</a>', 'google-site-kit' ),
 			description || defaultDescription
 		),
@@ -216,7 +216,7 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 								type={ TYPE_LABEL }
 							>
 								{ __(
-									'Add your site’s terms of service link:',
+									'Add your site’s terms of service URL:',
 									'google-site-kit'
 								) }
 							</P>
@@ -250,7 +250,7 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 								type={ TYPE_LABEL }
 							>
 								{ __(
-									'Add your site’s privacy policy link:',
+									'Add your site’s privacy policy URL:',
 									'google-site-kit'
 								) }
 							</P>
