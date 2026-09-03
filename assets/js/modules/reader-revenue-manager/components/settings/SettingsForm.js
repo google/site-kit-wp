@@ -61,11 +61,11 @@ export default function SettingsForm( { hasModuleAccess } ) {
 			return [];
 		}
 
-		const { getCTAEditLinkURL, getSettings } = select(
+		const { getCTAEditLinkURL, getConfiguredCTAs } = select(
 			MODULES_READER_REVENUE_MANAGER
 		);
 
-		const ctas = getConfiguredCTAList( getSettings()?.configuredCTAs );
+		const ctas = getConfiguredCTAList( getConfiguredCTAs() );
 
 		return ctas.map( ( cta ) => ( {
 			...cta,

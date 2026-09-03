@@ -33,6 +33,7 @@ import * as tracking from '@/js/util/tracking';
 import {
 	act,
 	createTestRegistry,
+	createTestRegistryWithFeatures,
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
@@ -67,9 +68,7 @@ describe( 'SettingsEdit', () => {
 		productIDs: [ 'product-1', 'product-2' ],
 	};
 
-	beforeEach( () => {
-		registry = createTestRegistry();
-
+	function setupRegistry() {
 		provideSiteInfo( registry, {
 			postTypes: [
 				{ slug: 'post', label: 'Posts' },
@@ -90,6 +89,11 @@ describe( 'SettingsEdit', () => {
 			.receiveGetSettings( settings );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+	}
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+		setupRegistry();
 	} );
 
 	afterEach( () => {
@@ -238,6 +242,12 @@ describe( 'SettingsEdit', () => {
 	} );
 
 	describe( 'with configured CTAs', () => {
+		beforeEach( () => {
+			registry = createTestRegistryWithFeatures( [ 'rrmExpressSetup' ] );
+
+			setupRegistry();
+		} );
+
 		const configuredCTAs = { 'cta-1': 'newsletter-signup' };
 
 		it( 'should render each configured CTA with a link to its edit screen when the `rrmExpressSetup` feature flag is enabled', async () => {
