@@ -25,9 +25,9 @@ import { ORDERED_MAIN_DASHBOARD_CONTEXTS } from './constants';
 
 describe( 'ORDERED_MAIN_DASHBOARD_CONTEXTS', () => {
 	it( 'lists the sections in the order the dashboard navigation shows them', () => {
-		// The dashboard navigation renders one chip per entry of `contexts`,
-		// in the order they are declared, so that order is the one the PDF
-		// report follows.
+		// `contexts` maps each dashboard navigation anchor to its widget
+		// context slug, in the order the navigation renders the chips, so
+		// its values are the order the PDF report has to follow.
 		expect( ORDERED_MAIN_DASHBOARD_CONTEXTS ).toEqual(
 			Object.values( contexts[ DASHBOARD_TYPE_MAIN ] )
 		);
