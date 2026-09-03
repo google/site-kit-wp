@@ -71,6 +71,11 @@
 		grid-column: 1 / -1;
 	}
 
+	.googlesitekit-rrm-express-setup-step__form-controls--terms-of-service{
+		gap: 20px;
+		max-inline-size: none;
+	}
+
 	.googlesitekit-rrm-express-setup-step__cta-link {
 		letter-spacing: inherit; /* TODO: Apply to .googlesitekit-cta-link. */
 	}

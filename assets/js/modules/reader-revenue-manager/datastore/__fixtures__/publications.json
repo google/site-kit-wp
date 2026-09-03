@@ -130,6 +130,7 @@
 		],
 		"onboardingState": "ONBOARDING_COMPLETE",
 		"rrmProduct": {
+			"productTosUrl": "https://example.com/terms",
 			"tosAcceptance": {
 				"userAccepted": true
 			}
