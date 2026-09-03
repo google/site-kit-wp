@@ -37,6 +37,7 @@ import getLeadGenerationPerformancePDFData from '@/js/modules/analytics-4/compon
 import getOnlineStorePerformancePDFData from '@/js/modules/analytics-4/components/site-goals/widgets/getOnlineStorePerformancePDFData';
 import LeadGenerationPerformanceWidgetPDF from '@/js/modules/analytics-4/components/site-goals/widgets/LeadGenerationPerformanceWidgetPDF';
 import OnlineStorePerformanceWidgetPDF from '@/js/modules/analytics-4/components/site-goals/widgets/OnlineStorePerformanceWidgetPDF';
+import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
@@ -69,19 +70,28 @@ describe( 'Analytics 4 widget registrations', () => {
 		enabledFeatures.delete( 'trafficOverview' );
 	} );
 
+	const TRAFFIC_AREAS = [
+		AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+		AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+	];
+
+	/**
+	 * Lists the slugs of the widgets registered in one widget area.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} areaSlug Widget area slug.
+	 * @return {Array.<string>} Widget slugs, in the order the area renders them.
+	 */
+	function getWidgetSlugsInArea( areaSlug ) {
+		return registry
+			.select( CORE_WIDGETS )
+			.getWidgets( areaSlug )
+			.map( ( widget ) => widget.slug );
+	}
+
 	describe( 'All Traffic widget', () => {
 		const ALL_TRAFFIC_WIDGET_SLUG = 'analyticsAllTrafficGA4';
-		const TRAFFIC_AREAS = [
-			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-		];
-
-		function getTrafficAreaSlugs( areaSlug ) {
-			return registry
-				.select( CORE_WIDGETS )
-				.getWidgets( areaSlug )
-				.map( ( widget ) => widget.slug );
-		}
 
 		it( 'should register the All Traffic widget when the "trafficOverview" feature flag is disabled', () => {
 			registerWidgets( widgets );
@@ -93,7 +103,7 @@ describe( 'Analytics 4 widget registrations', () => {
 			).not.toBeNull();
 
 			TRAFFIC_AREAS.forEach( ( areaSlug ) => {
-				expect( getTrafficAreaSlugs( areaSlug ) ).toContain(
+				expect( getWidgetSlugsInArea( areaSlug ) ).toContain(
 					ALL_TRAFFIC_WIDGET_SLUG
 				);
 			} );
@@ -111,7 +121,7 @@ describe( 'Analytics 4 widget registrations', () => {
 			).toBeNull();
 
 			TRAFFIC_AREAS.forEach( ( areaSlug ) => {
-				expect( getTrafficAreaSlugs( areaSlug ) ).not.toContain(
+				expect( getWidgetSlugsInArea( areaSlug ) ).not.toContain(
 					ALL_TRAFFIC_WIDGET_SLUG
 				);
 			} );
@@ -127,6 +137,55 @@ describe( 'Analytics 4 widget registrations', () => {
 			).map( ( widget ) => widget.pdf?.label );
 
 			expect( pdfLabels ).not.toContain( 'Site traffic over time' );
+		} );
+	} );
+
+	describe( 'Traffic Overview widget', () => {
+		it( 'should not register the Traffic Overview widget when the "trafficOverview" feature flag is disabled', () => {
+			registerWidgets( widgets );
+
+			expect(
+				registry
+					.select( CORE_WIDGETS )
+					.getWidget( TRAFFIC_OVERVIEW_WIDGET_SLUG )
+			).toBeNull();
+		} );
+
+		it( 'should register the Traffic Overview widget as the first widget in both traffic areas when the "trafficOverview" feature flag is enabled', () => {
+			enabledFeatures.add( 'trafficOverview' );
+
+			registerWidgets( widgets );
+
+			const widget = registry
+				.select( CORE_WIDGETS )
+				.getWidget( TRAFFIC_OVERVIEW_WIDGET_SLUG );
+
+			expect( widget.priority ).toEqual( 1 );
+			expect( widget.width ).toEqual( 'full' );
+			expect( widget.modules ).toEqual( [ 'analytics-4' ] );
+
+			const firstSlugs = TRAFFIC_AREAS.map(
+				( areaSlug ) => getWidgetSlugsInArea( areaSlug )[ 0 ]
+			);
+
+			expect( firstSlugs ).toEqual( [
+				'analyticsTrafficOverview',
+				'analyticsTrafficOverview',
+			] );
+		} );
+
+		it( 'should keep the Traffic Overview widget out of the PDF report when the "trafficOverview" feature flag is enabled', () => {
+			enabledFeatures.add( 'trafficOverview' );
+
+			registerWidgets( widgets );
+
+			const widget = registry
+				.select( CORE_WIDGETS )
+				.getWidget( TRAFFIC_OVERVIEW_WIDGET_SLUG );
+
+			expect( isActivePDFWidget( widget, registry.select ) ).toBe(
+				false
+			);
 		} );
 	} );
 

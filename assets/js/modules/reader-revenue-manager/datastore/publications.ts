@@ -54,7 +54,7 @@ import {
 } from './constants';
 import { type ReaderRevenueManagerSettings } from './types';
 
-interface Publication {
+export interface Publication {
 	/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
 	publicationId: string;
 	organizationId?: string;
@@ -65,6 +65,16 @@ interface Publication {
 	contentPolicyStatus?: {
 		contentPolicyState: string;
 		policyInfoLink?: string;
+	};
+	languageCode?: string;
+	regionCode?: string;
+	rrmProduct?: {
+		// eslint-disable-next-line sitekit/acronym-case -- `Url` is the normalized API field name.
+		productTosUrl?: string;
+		tosAcceptance?: {
+			emailOptIn?: boolean;
+			userAccepted: boolean;
+		};
 	};
 }
 
@@ -85,7 +95,7 @@ export interface PublicationParams {
 	publicationID: string;
 }
 
-interface UpdatePublicationParams extends Partial< PublicationParams > {
+export interface UpdatePublicationParams extends Partial< PublicationParams > {
 	data: Record< string, unknown >;
 }
 
@@ -122,6 +132,52 @@ export function validateOptionalPublicationParams(
 type ReaderRevenueManagerRegistry = WPDataRegistry & {
 	resolveSelect: WPDataRegistry[ 'select' ];
 };
+
+/**
+ * Syncs connected publication fields into settings and savedSettings.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} state       Module state.
+ * @param {Object} publication Publication to sync from.
+ * @return {void}
+ */
+function syncConnectedPublicationSettings(
+	state: ReaderRevenueManagerState,
+	publication: Publication
+): void {
+	if (
+		! state.settings?.publicationID ||
+		// eslint-disable-next-line sitekit/acronym-case
+		publication.publicationId !== state.settings.publicationID
+	) {
+		return;
+	}
+
+	const newSettings: ReaderRevenueManagerSettings = {
+		publicationOnboardingState: publication.onboardingState,
+		productIDs: getProductIDs( publication.products! ),
+		paymentOption: getPaymentOption( publication.paymentOptions! ),
+	};
+
+	if ( publication.contentPolicyStatus ) {
+		newSettings.contentPolicyState =
+			publication.contentPolicyStatus.contentPolicyState;
+		newSettings.policyInfoLink =
+			publication.contentPolicyStatus.policyInfoLink || '';
+	}
+
+	if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
+		// eslint-disable-next-line sitekit/acronym-case
+		newSettings.organizationID = publication.organizationId || '';
+	}
+
+	Object.assign( state.settings, newSettings );
+
+	if ( state.savedSettings ) {
+		Object.assign( state.savedSettings, newSettings );
+	}
+}
 
 /**
  * Resolves the publication ID for a request, falling back to the saved setting.
@@ -182,36 +238,14 @@ const fetchGetPublicationsStore = createFetchStore( {
 		( state: ReaderRevenueManagerState, publications: Publication[] ) => {
 			state.publications = publications;
 
-			if ( state.settings?.publicationID ) {
-				const publication = publications?.find(
-					// eslint-disable-next-line sitekit/acronym-case
-					( { publicationId: id } ) =>
-						id === state.settings.publicationID
-				);
+			const publication = publications?.find(
+				// eslint-disable-next-line sitekit/acronym-case
+				( { publicationId: id } ) =>
+					id === state.settings?.publicationID
+			);
 
-				if ( publication ) {
-					const newSettings: ReaderRevenueManagerSettings = {
-						publicationOnboardingState: publication.onboardingState,
-						productIDs: getProductIDs( publication.products! ),
-						paymentOption: getPaymentOption(
-							publication.paymentOptions!
-						),
-					};
-
-					if ( publication.contentPolicyStatus ) {
-						newSettings.contentPolicyState =
-							publication.contentPolicyStatus.contentPolicyState;
-						newSettings.policyInfoLink =
-							publication.contentPolicyStatus.policyInfoLink ||
-							'';
-					}
-
-					Object.assign( state.settings, newSettings );
-
-					if ( state.savedSettings ) {
-						Object.assign( state.savedSettings, newSettings );
-					}
-				}
+			if ( publication ) {
+				syncConnectedPublicationSettings( state, publication );
 			}
 		}
 	),
@@ -280,6 +314,8 @@ const fetchPublicationStoreReducerCallback = createReducer(
 		} else {
 			state.publications[ publicationIndex ] = publication;
 		}
+
+		syncConnectedPublicationSettings( state, publication );
 	}
 );
 
@@ -557,6 +593,10 @@ const baseActions = {
 				.getPublications()
 		);
 		const publications = publicationsResult as Publication[];
+
+		if ( ! publications ) {
+			return null;
+		}
 
 		if ( publications.length === 0 ) {
 			return null;

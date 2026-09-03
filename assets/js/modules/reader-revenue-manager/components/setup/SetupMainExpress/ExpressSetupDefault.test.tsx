@@ -19,18 +19,28 @@
 /**
  * Internal dependencies
  */
-import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { Registry } from '@/js/googlesitekit-data';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import {
+	EXPRESS_SETUP_STEPS,
+	MODULES_READER_REVENUE_MANAGER,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
-import { render } from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	provideModuleRegistrations,
+	provideModules,
+	render,
+	waitFor,
+} from '@tests/js/test-utils';
 import ExpressSetupDefault from './ExpressSetupDefault';
 
 jest.mock( './PoweredBy', () => () => null );
 
 const STEP_CONTENT = {
-	[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]:
-		'RRM express setup placeholder: publication setup step.',
-	[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]:
-		'RRM express setup placeholder: terms of service step.',
+	[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: /Let's get started!/,
+	[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: /Terms of service/,
 	[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]:
 		'RRM express setup placeholder: publication policies step.',
 	[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]:
@@ -40,15 +50,42 @@ const STEP_CONTENT = {
 describe( 'ExpressSetupDefault', () => {
 	mockLocation();
 
+	let registry: Registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry() as Registry;
+
+		const moduleData = [
+			{
+				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+				active: true,
+				connected: false,
+			},
+		];
+
+		provideModules( registry, moduleData );
+		provideModuleRegistrations( registry, moduleData );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {} );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.finishResolution( 'getSettings', [] );
+
+		providePublications( registry, [] );
+	} );
+
 	it( 'renders the default steps without a setup CTA step', () => {
 		global.location.href = 'http://example.com/';
 
 		const { getByText, queryByText, container } = render(
-			<ExpressSetupDefault />
+			<ExpressSetupDefault />,
+			{ registry }
 		);
 
 		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
-		expect( getByText( 'Accept terms of service' ) ).toBeInTheDocument();
 		expect( getByText( 'Add publication policies' ) ).toBeInTheDocument();
 		expect( getByText( 'Setup complete' ) ).toBeInTheDocument();
 		expect(
@@ -56,19 +93,22 @@ describe( 'ExpressSetupDefault', () => {
 		).not.toBeInTheDocument();
 		expect(
 			container.querySelectorAll( '.googlesitekit-stepper__step' )
-		).toHaveLength( 4 );
+		).toHaveLength( 3 );
 	} );
 
 	it.each( Object.entries( STEP_CONTENT ) )(
 		'renders the %s step content',
-		( step, content ) => {
+		async ( step, content ) => {
 			global.location.href = `http://example.com/?step=${ step }`;
 
 			const { getByText, queryByText } = render(
-				<ExpressSetupDefault />
+				<ExpressSetupDefault />,
+				{ registry }
 			);
 
-			expect( getByText( content ) ).toBeInTheDocument();
+			await waitFor( () => {
+				expect( getByText( content ) ).toBeInTheDocument();
+			} );
 
 			Object.entries( STEP_CONTENT )
 				.filter( ( [ otherStep ] ) => otherStep !== step )

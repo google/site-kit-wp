@@ -1,6 +1,9 @@
 [
 	{
 		"publicationId": "ABCDEFGH",
+		"organizationId": "ORGANIZATION-1",
+		"languageCode": "en",
+		"regionCode": "GB",
 		"publicationPredicates": {
 			"businessPredicates": {
 				"supportsSiteKit": true,
@@ -21,6 +24,11 @@
 			}
 		],
 		"onboardingState": "ONBOARDING_STATE_UNSPECIFIED",
+		"rrmProduct": {
+			"tosAcceptance": {
+				"userAccepted": true
+			}
+		},
 		"contentPolicyStatus": {
 			"contentPolicyState": "CONTENT_POLICY_STATE_OK",
 			"policyInfoLink": "https://publishercenter.google.com/reader-revenue-manager/settings/policy?publication=ABCDEFGH"
@@ -28,6 +36,9 @@
 	},
 	{
 		"publicationId": "PQRSTUV",
+		"organizationId": "ORGANIZATION-2",
+		"languageCode": "es",
+		"regionCode": "ES",
 		"publicationPredicates": {
 			"businessPredicates": {
 				"supportsSiteKit": true,
@@ -48,6 +59,11 @@
 			}
 		],
 		"onboardingState": "PENDING_VERIFICATION",
+		"rrmProduct": {
+			"tosAcceptance": {
+				"userAccepted": true
+			}
+		},
 		"contentPolicyStatus": {
 			"contentPolicyState": "CONTENT_POLICY_STATE_OK",
 			"policyInfoLink": "https://publishercenter.google.com/reader-revenue-manager/settings/policy?publication=PQRSTUV"
@@ -55,6 +71,9 @@
 	},
 	{
 		"publicationId": "IJKLMNOP",
+		"organizationId": "ORGANIZATION-3",
+		"languageCode": "es",
+		"regionCode": "MX",
 		"publicationPredicates": {
 			"businessPredicates": {
 				"supportsSiteKit": true,
@@ -75,6 +94,11 @@
 			}
 		],
 		"onboardingState": "ONBOARDING_ACTION_REQUIRED",
+		"rrmProduct": {
+			"tosAcceptance": {
+				"userAccepted": false
+			}
+		},
 		"contentPolicyStatus": {
 			"contentPolicyState": "CONTENT_POLICY_STATE_OK",
 			"policyInfoLink": "https://publishercenter.google.com/reader-revenue-manager/settings/policy?publication=IJKLMNOP"
@@ -82,6 +106,9 @@
 	},
 	{
 		"publicationId": "QRSTUVWX",
+		"organizationId": "ORGANIZATION-4",
+		"languageCode": "en",
+		"regionCode": "US",
 		"publicationPredicates": {
 			"businessPredicates": {
 				"supportsSiteKit": false,
@@ -102,6 +129,12 @@
 			}
 		],
 		"onboardingState": "ONBOARDING_COMPLETE",
+		"rrmProduct": {
+			"productTosUrl": "https://example.com/terms",
+			"tosAcceptance": {
+				"userAccepted": true
+			}
+		},
 		"contentPolicyStatus": {
 			"contentPolicyState": "CONTENT_POLICY_STATE_OK",
 			"policyInfoLink": "https://publishercenter.google.com/reader-revenue-manager/settings/policy?publication=QRSTUVWX"

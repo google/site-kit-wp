@@ -32,13 +32,17 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { get, set } from 'googlesitekit-api';
 import { commonActions, createReducer } from 'googlesitekit-data';
+import { isFeatureEnabled } from '@/js/features';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import {
 	combineStores,
 	createValidatedAction,
 } from '@/js/googlesitekit/data/utils';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { MODULES_READER_REVENUE_MANAGER } from './constants';
+import {
+	EXPRESS_SETUP_CTAS,
+	MODULES_READER_REVENUE_MANAGER,
+} from './constants';
 import {
 	type CTA,
 	type CreateCTAData,
@@ -61,11 +65,66 @@ type CreateCTAParams = Partial< PublicationParams > & {
 interface CTAsState {
 	ctas: Record< string, CTA[] | undefined >;
 	settings?: ReaderRevenueManagerSettings;
+	savedSettings?: ReaderRevenueManagerSettings;
 }
 
 type Registry = WPDataRegistry & {
 	resolveSelect: WPDataRegistry[ 'select' ];
 };
+
+/**
+ * Gets the CTA ID from a WCP CTA resource name.
+ *
+ * @since n.e.x.t
+ *
+ * @param  name Optional CTA resource name.
+ * @return {string|undefined} CTA ID, or undefined if none can be determined.
+ */
+function getCTAID( name?: string ): string | undefined {
+	if ( ! name ) {
+		return undefined;
+	}
+
+	return name.split( '/' ).pop() || undefined;
+}
+
+/**
+ * Syncs configured CTAs into settings and savedSettings.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} state Module state.
+ * @param {Array}  ctas  CTAs to sync from.
+ * @return {void}
+ */
+function syncConfiguredCTAs( state: CTAsState, ctas: CTA[] ): void {
+	const configuredCTAs = ctas.reduce< Record< string, string > >(
+		( accumulator, cta ) => {
+			const ctaID = getCTAID( cta.name );
+			const ctaTypeSlug =
+				cta.type in EXPRESS_SETUP_CTAS
+					? EXPRESS_SETUP_CTAS[
+							cta.type as keyof typeof EXPRESS_SETUP_CTAS
+					  ]
+					: undefined;
+
+			if ( ctaID && ctaTypeSlug ) {
+				accumulator[ ctaID ] = ctaTypeSlug;
+			}
+
+			return accumulator;
+		},
+		{}
+	);
+
+	if ( state.settings ) {
+		state.settings.configuredCTAs = configuredCTAs;
+	}
+
+	if ( state.savedSettings ) {
+		state.savedSettings.configuredCTAs = configuredCTAs;
+	}
+}
 
 /**
  * Validates the CTA creation parameters.
@@ -135,6 +194,11 @@ const fetchGetCTAsStore = createFetchStore( {
 			}
 
 			state.ctas[ selectedPublicationID ] = ctas;
+
+			// Update settings states with configured CTAs.
+			if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
+				syncConfiguredCTAs( state, ctas );
+			}
 		}
 	),
 	argsToParams: ( params: GetCTAsParams = {} ) => params,
