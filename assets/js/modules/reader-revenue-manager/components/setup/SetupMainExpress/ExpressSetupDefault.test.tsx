@@ -123,7 +123,9 @@ describe( 'ExpressSetupDefault', () => {
 	it( 'renders no step content for an unknown step', () => {
 		global.location.href = 'http://example.com/?step=unknown-step';
 
-		const { getByText, queryByText } = render( <ExpressSetupDefault /> );
+		const { getByText, queryByText } = render( <ExpressSetupDefault />, {
+			registry,
+		} );
 
 		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
 

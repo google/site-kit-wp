@@ -76,6 +76,10 @@ export interface Publication {
 			userAccepted: boolean;
 		};
 	};
+	/* eslint-disable sitekit/acronym-case -- `Url` is the identifier used by the API. */
+	publicationTosUrl?: string;
+	publicationPrivacyPolicyUrl?: string;
+	/* eslint-enable sitekit/acronym-case */
 }
 
 interface ReaderRevenueManagerState {
