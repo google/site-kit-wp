@@ -75,7 +75,7 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 	const [ isSaving, setIsSaving ] = useState( false );
 
 	const defaultDescription = __(
-		'To use Reader Revenue Manager, you will need to accept the Reader Revenue Manager Terms of Service.',
+		'To create a publication, you need to accept the Reader Revenue Manager Terms of Service.',
 		'google-site-kit'
 	);
 
