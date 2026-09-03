@@ -111,7 +111,7 @@ class Email_Report_Section_Builder {
 	 *
 	 * @since 1.167.0
 	 * @since 1.186.0 Removed $user_locale parameter, locale switching is now handled by the Email_Log_Processor.
-	 * @since n.e.x.t Added the `groups` and the `prompt` to each section.
+	 * @since 1.187.0 Added the `groups` and the `prompt` to each section.
 	 *
 	 * @param string   $module_slug Module slug (e.g. analytics-4).
 	 * @param array    $raw_sections_payloads Raw reports payloads.
