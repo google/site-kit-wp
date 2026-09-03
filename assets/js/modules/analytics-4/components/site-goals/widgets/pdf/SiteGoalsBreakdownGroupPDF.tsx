@@ -61,7 +61,7 @@ const styles = createPDFStyles( {
 		minWidth: 0,
 	},
 	tileContent: {
-		paddingVertical: 20.5,
+		paddingVertical: 20,
 	},
 	primaryTile: {
 		paddingHorizontal: 18,
@@ -221,12 +221,7 @@ const SiteGoalsBreakdownGroupPDF: FC< SiteGoalsBreakdownGroupPDFProps > = ( {
 						>
 							<PDFMetricTile
 								title={ rateLabel }
-								value={
-									numFmt(
-										rate.current,
-										PERCENT_FORMAT
-									) as string
-								}
+								value={ numFmt( rate.current, PERCENT_FORMAT ) }
 								valueSize="small"
 								subtitle={ sessionsSubtitle }
 								{ ...getTileChangeProps(
@@ -242,7 +237,7 @@ const SiteGoalsBreakdownGroupPDF: FC< SiteGoalsBreakdownGroupPDFProps > = ( {
 					<View style={ [ styles.tile, styles.tileContent ] }>
 						<PDFMetricTile
 							title={ totalLabel }
-							value={ numFmt( total.current ) as string }
+							value={ numFmt( total.current ) }
 							valueSize="small"
 							subtitle={ totalSubtitle }
 							{ ...getTileChangeProps( total, comparisonLabel ) }
@@ -258,12 +253,10 @@ const SiteGoalsBreakdownGroupPDF: FC< SiteGoalsBreakdownGroupPDFProps > = ( {
 									'Engagement rate',
 									'google-site-kit'
 								) }
-								value={
-									numFmt(
-										engagementRate.current,
-										PERCENT_FORMAT
-									) as string
-								}
+								value={ numFmt(
+									engagementRate.current,
+									PERCENT_FORMAT
+								) }
 								valueSize="small"
 								subtitle={ sessionsSubtitle }
 								{ ...getTileChangeProps(

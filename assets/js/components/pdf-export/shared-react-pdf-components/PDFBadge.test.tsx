@@ -65,7 +65,7 @@ describe( 'PDFBadge', () => {
 			color: '#684500',
 		} );
 
-		expect( badgeJSON ).toContain( `"borderRadius":${ 4 * PDF_SCALE }` );
+		expect( badgeJSON ).toContain( `"borderRadius":${ 100 * PDF_SCALE }` );
 		expect( badgeJSON ).toContain( `"paddingVertical":${ 4 * PDF_SCALE }` );
 		expect( badgeJSON ).toContain(
 			`"paddingHorizontal":${ 8 * PDF_SCALE }`
@@ -90,6 +90,6 @@ describe( 'PDFBadge', () => {
 		expect( badgeJSON ).toContain(
 			`"paddingHorizontal":${ 10 * PDF_SCALE }`
 		);
-		expect( badgeJSON ).toContain( `"borderRadius":${ 4 * PDF_SCALE }` );
+		expect( badgeJSON ).toContain( `"borderRadius":${ 100 * PDF_SCALE }` );
 	} );
 } );

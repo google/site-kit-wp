@@ -17,57 +17,21 @@
  */
 
 /**
- * External dependencies
- */
-import TestRenderer, { ReactTestRendererJSON } from 'react-test-renderer';
-
-/**
  * Internal dependencies
  */
 import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import {
+	renderPDFChildStyles,
+	renderPDFStyle,
+} from '@/js/components/pdf-export/test-utils';
 import SiteGoalsTileConnectorPDF from './SiteGoalsTileConnectorPDF';
-
-/**
- * Renders the connector and reads the flattened style of each shape it draws.
- *
- * A shape takes its style as one object or as an array of them, so each style is
- * flattened into a single object before the assertions read it.
- *
- * @since n.e.x.t
- *
- * @return {Array<Object>} The style of every shape the connector draws, top to bottom.
- */
-function renderConnectorShapeStyles(): Record< string, unknown >[] {
-	const tree = TestRenderer.create(
-		<SiteGoalsTileConnectorPDF />
-	).toJSON() as ReactTestRendererJSON;
-
-	return ( tree.children ?? [] ).map( ( child ) => {
-		const style = ( child as ReactTestRendererJSON ).props.style;
-
-		return Object.assign( {}, ...[ style ].flat() );
-	} );
-}
-
-/**
- * Renders the connector and reads the flattened style of the column it draws in.
- *
- * @since n.e.x.t
- *
- * @return {Object} The style of the connector's own column.
- */
-function renderConnectorColumnStyle(): Record< string, unknown > {
-	const tree = TestRenderer.create(
-		<SiteGoalsTileConnectorPDF />
-	).toJSON() as ReactTestRendererJSON;
-
-	return Object.assign( {}, ...[ tree.props.style ].flat() );
-}
 
 describe( 'SiteGoalsTileConnectorPDF', () => {
 	it( 'breaks the divider line with a round dot near its top', () => {
-		const [ lineAboveDot, dot ] = renderConnectorShapeStyles();
+		const [ lineAboveDot, dot ] = renderPDFChildStyles(
+			<SiteGoalsTileConnectorPDF />
+		);
 
 		expect( lineAboveDot.width ).toBe( scalePDFValue( 2 ) );
 		expect( lineAboveDot.height ).toBe( scalePDFValue( 12 ) );
@@ -77,23 +41,27 @@ describe( 'SiteGoalsTileConnectorPDF', () => {
 	} );
 
 	it( 'runs the line below the dot to the end of the column', () => {
-		const lineBelowDot = renderConnectorShapeStyles()[ 2 ];
+		const lineBelowDot = renderPDFChildStyles(
+			<SiteGoalsTileConnectorPDF />
+		)[ 2 ];
 
 		expect( lineBelowDot.width ).toBe( scalePDFValue( 2 ) );
 		expect( lineBelowDot.flex ).toBe( 1 );
 	} );
 
 	it( 'sets the gap above and below the divider line', () => {
-		const column = renderConnectorColumnStyle();
+		const column = renderPDFStyle( <SiteGoalsTileConnectorPDF /> );
 
-		expect( column.marginVertical ).toBe( scalePDFValue( 12.4 ) );
+		expect( column.marginVertical ).toBe( scalePDFValue( 12 ) );
 	} );
 
 	it( 'draws the dot and both line segments in one color', () => {
-		renderConnectorShapeStyles().forEach( ( shape ) => {
-			expect( shape.backgroundColor ).toBe(
-				PDF_COLORS.SURFACES_SURFACE_1
-			);
-		} );
+		renderPDFChildStyles( <SiteGoalsTileConnectorPDF /> ).forEach(
+			( shape ) => {
+				expect( shape.backgroundColor ).toBe(
+					PDF_COLORS.SURFACES_SURFACE_1
+				);
+			}
+		);
 	} );
 } );
