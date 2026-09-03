@@ -1,5 +1,7 @@
 /**
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Feature Discovery API types.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +19,22 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import FeatureDiscovery from 'googlesitekit-feature-discovery';
-import Modules from 'googlesitekit-modules';
-import Notifications from 'googlesitekit-notifications';
-import {
-	registerFeatures,
-	registerModule,
-	registerNotifications,
-	registerStore,
-} from './modules/sign-in-with-google';
+import type { FeatureSettings } from '@/js/googlesitekit/datastore/feature-discovery/types';
 
-registerModule( Modules );
-registerStore( Data );
-registerNotifications( Notifications );
-registerFeatures( FeatureDiscovery );
+/**
+ * Feature Discovery API instance type.
+ *
+ * @since n.e.x.t
+ */
+export interface FeatureDiscoveryAPI {
+	/**
+	 * Registers a feature in the catalog.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string}          slug     Feature's slug.
+	 * @param {FeatureSettings} settings Feature's settings.
+	 * @return {void}
+	 */
+	registerFeature( slug: string, settings: FeatureSettings ): void;
+}

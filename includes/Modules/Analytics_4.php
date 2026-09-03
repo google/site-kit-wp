@@ -1589,6 +1589,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 						'googlesitekit-vendor',
 						'googlesitekit-api',
 						'googlesitekit-data',
+						'googlesitekit-feature-discovery',
 						'googlesitekit-modules',
 						'googlesitekit-notifications',
 						'googlesitekit-datastore-site',
