@@ -25,6 +25,7 @@ import { createElement } from '@wordpress/element';
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
+import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
 	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
@@ -41,7 +42,8 @@ import {
 } from '@tests/js/test-utils';
 import { useStep } from './hooks';
 
-const PUBLICATION_ID = 'ABCDEFGH';
+// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+const PUBLICATION_ID = publications[ 0 ].publicationId;
 
 const settingsEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
@@ -51,34 +53,23 @@ const publicationEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/reader-revenue-manager/data/publication'
 );
 
-function createPublication( overrides: Partial< Publication > = {} ) {
-	return {
-		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-		publicationId: PUBLICATION_ID,
-		onboardingState: 'ONBOARDING_COMPLETE',
-		...overrides,
-	} as Publication;
-}
-
-const publicationWithoutTerms = createPublication( {
-	rrmProduct: { tosAcceptance: { userAccepted: false } },
-} );
-
-const publicationWithTerms = createPublication( {
-	rrmProduct: { tosAcceptance: { userAccepted: true } },
-} );
+// `publications[ 2 ]` has not accepted the terms of service; `publications[ 0 ]`
+// has, and is the base for the policy-URL states below, neither of which any
+// fixture publication has set.
+const publicationWithoutTerms = publications[ 2 ] as Publication;
+const publicationWithTerms = publications[ 0 ] as Publication;
 
 /* eslint-disable sitekit/acronym-case -- `Url` is the identifier used by the API. */
-const publicationWithOnePolicy = createPublication( {
-	rrmProduct: { tosAcceptance: { userAccepted: true } },
+const publicationWithOnePolicy = {
+	...publicationWithTerms,
 	publicationTosUrl: 'https://example.com/terms',
-} );
+} as Publication;
 
-const publicationWithPolicies = createPublication( {
-	rrmProduct: { tosAcceptance: { userAccepted: true } },
+const publicationWithPolicies = {
+	...publicationWithTerms,
 	publicationTosUrl: 'https://example.com/terms',
 	publicationPrivacyPolicyUrl: 'https://example.com/privacy',
-} );
+} as Publication;
 /* eslint-enable sitekit/acronym-case */
 
 function TestComponent() {
@@ -223,6 +214,17 @@ describe( 'useStep', () => {
 			const { result } = renderUseStep();
 
 			expect( result.current[ 0 ] ).toBe( EXPRESS_SETUP_STEPS.SETUP_CTA );
+		} );
+
+		it( 'should resolve to the setup complete step when the CTA requested is not a recognised one', () => {
+			global.location.href = 'http://example.com/?cta=not-a-real-cta';
+			provideConnectedPublication( publicationWithPolicies );
+
+			const { result } = renderUseStep();
+
+			expect( result.current[ 0 ] ).toBe(
+				EXPRESS_SETUP_STEPS.SETUP_COMPLETE
+			);
 		} );
 
 		it( 'should ignore the CTA argument while an earlier step is incomplete', () => {

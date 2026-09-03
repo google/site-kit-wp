@@ -34,6 +34,7 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { EXPRESS_SETUP_STEP_UI_KEY } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import {
+	EXPRESS_SETUP_CTAS,
 	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
@@ -122,6 +123,11 @@ export function useStep(): [ Step | undefined, ( newValue: Step ) => void ] {
 				!! publication?.publicationTosUrl &&
 				/* eslint-disable-next-line sitekit/acronym-case -- `Url` is the identifier used by the API. */
 				!! publication?.publicationPrivacyPolicyUrl,
+			// Not tracked here: `SETUP_CTA` never counts as complete (see the
+			// comment on `PREREQUISITE_STEPS`), and `SETUP_COMPLETE` is the end
+			// of the flow, not a step with its own completion state.
+			[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: false,
+			[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: false,
 		};
 
 		const firstIncompleteStep = PREREQUISITE_STEPS.find(
@@ -129,11 +135,16 @@ export function useStep(): [ Step | undefined, ( newValue: Step ) => void ] {
 		);
 
 		// Entering the flow: start at the first incomplete step, falling back
-		// to the CTA setup when one was requested, otherwise to the end.
+		// to the CTA setup when a recognised one was requested, otherwise to
+		// the end.
 		if ( ! step ) {
+			const isValidCTA = (
+				Object.values( EXPRESS_SETUP_CTAS ) as string[]
+			 ).includes( cta ?? '' );
+
 			setStep(
 				firstIncompleteStep ??
-					( cta
+					( isValidCTA
 						? EXPRESS_SETUP_STEPS.SETUP_CTA
 						: EXPRESS_SETUP_STEPS.SETUP_COMPLETE )
 			);
