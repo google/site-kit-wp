@@ -35,7 +35,7 @@ describe( 'SubscribeActions', () => {
 	/**
 	 * Renders `SubscribeActions` with the email reporting settings a test needs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param {Object}  [options]                  Optional. What the test renders with.
 	 * @param {boolean} [options.isSubscribed]     Optional. Whether the user is subscribed to email reports. Defaults to `false`.
@@ -76,7 +76,7 @@ describe( 'SubscribeActions', () => {
 	 *
 	 * `SubscribeActions` renders no frequency card, so a test has none to click.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param {string} frequency The frequency to pick, one of `EMAIL_REPORT_FREQUENCIES`.
 	 * @return {void}

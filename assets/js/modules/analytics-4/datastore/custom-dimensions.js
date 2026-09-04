@@ -167,7 +167,7 @@ const baseActions = {
 	 * @since 1.113.0
 	 * @since 1.181.0 Added the Site Goals custom dimensions when the `siteGoals` feature flag is on and advanced data breakdowns is enabled.
 	 * @since 1.182.0 Created the missing custom dimensions on the selected property, and added the Site Goals dimensions only when advanced data breakdowns is enabled for that property.
-	 * @since n.e.x.t Removed the `siteGoals` feature flag check.
+	 * @since 1.187.0 Removed the `siteGoals` feature flag check.
 	 *
 	 * @param {Array<string>} customDimensions Optional additional custom dimensions to create.
 	 * @return {Object} Object whose `error` property holds the available-dimensions sync error when the required dimensions already existed and that sync failed; otherwise an empty object.

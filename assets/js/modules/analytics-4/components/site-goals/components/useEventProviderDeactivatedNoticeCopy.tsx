@@ -46,7 +46,7 @@ export interface EventProviderDeactivatedNoticeCopy {
 /**
  * Gets the deactivated plugin notice copy for a goal type.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {GoalType} goalType The goal type of the widget that shows the notice.
  * @return {EventProviderDeactivatedNoticeCopy} The `title` and `description`.

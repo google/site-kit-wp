@@ -44,7 +44,7 @@ type Step = typeof EXPRESS_SETUP_STEPS[ keyof typeof EXPRESS_SETUP_STEPS ];
  * hook provides a utility for using the UI datastore to manage the current
  * step while syncing it with the query arg.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {Array} Value and setter tuple.
  */

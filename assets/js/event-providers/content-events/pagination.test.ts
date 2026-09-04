@@ -43,7 +43,7 @@ describe( 'initializePagination', () => {
 	/**
 	 * Renders markup into the document body and returns the first element.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param {string} markup Markup to render.
 	 * @return {Element} The rendered markup's first element.
@@ -57,7 +57,7 @@ describe( 'initializePagination', () => {
 	/**
 	 * Stops jsdom from trying to follow the anchors these tests click.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param {Object} event The click to swallow.
 	 * @return {void}
@@ -75,7 +75,7 @@ describe( 'initializePagination', () => {
 	 * per page load — so without this every test would leave its listener behind
 	 * and a later click would be counted once per test that had already run.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param {ContentEventsConfig} config Content events configuration.
 	 * @return {Array} The `[ type, listener ]` pairs this call registered.

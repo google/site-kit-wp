@@ -202,7 +202,7 @@ export function requireCanActivateModule( slug ) {
 /**
  * Returns a function that checks if the current user has the given capability.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {string} capability Capability to check.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the current user has the given capability or not.
@@ -218,7 +218,7 @@ export function requireCapability( capability ) {
 /**
  * Returns a function that checks if the current user has any unsatisfied scopes.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the current user has any unsatisfied scopes or not.
  */
@@ -233,7 +233,7 @@ export function requireUnsatisfiedScopes() {
 /**
  * Returns a function that checks if the current user has exactly the given number of unsatisfied scopes.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {number} count Number of unsatisfied scopes to match.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the current user has exactly the given number of unsatisfied scopes or not.
@@ -249,7 +249,7 @@ export function requireUnsatisfiedScopesCount( count ) {
 /**
  * Returns a function that checks if there is an authentication error.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {function(WPDataRegistry): boolean} Whether there is an authentication error or not.
  */
@@ -260,7 +260,7 @@ export function requireAuthError() {
 /**
  * Returns a function that checks if the current user has access to the feature tour.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the current user has access to the feature tour or not.
  */
@@ -282,7 +282,7 @@ export function requireAccessToFeatureTour() {
 /**
  * Returns a function that checks if the data gathering complete variant of the welcome modal is active.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the data gathering complete modal is active or not.
  */
@@ -301,7 +301,7 @@ export function requireDataGatheringCompleteModalActive() {
 /**
  * Returns a function that checks if the current user is subscribed to email reporting.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the current user is subscribed to email reporting or not.
  */
@@ -316,7 +316,7 @@ export function requireEmailReportingSubscribed() {
 /**
  * Returns a function that checks if there is a setup error.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether there is a setup error or not.
  */
@@ -336,7 +336,7 @@ export function requireSetupError() {
  * Consent mode is only considered disabled once its settings have loaded, so an
  * unknown state does not satisfy this requirement.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether consent mode is disabled or not.
  */
@@ -353,7 +353,7 @@ export function requireConsentModeDisabled() {
 /**
  * Returns a function that checks if Ads is connected.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether Ads is connected or not.
  */
@@ -365,7 +365,7 @@ export function requireAdsConnected() {
 /**
  * Returns a function that checks if plugin auto-updates can be changed on the site.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether plugin auto-updates can be changed or not.
  */
@@ -384,7 +384,7 @@ export function requireCanChangePluginAutoUpdates() {
 /**
  * Returns a function that checks if auto-updates are enabled for Site Kit.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether auto-updates are enabled for Site Kit or not.
  */
@@ -401,7 +401,7 @@ export function requireSiteKitAutoUpdatesEnabled() {
 /**
  * Returns a function that checks if any Google Tag Gateway module is connected.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {function(WPDataRegistry): boolean} Whether any Google Tag Gateway module is connected or not.
  */
@@ -413,7 +413,7 @@ export function requireAnyGoogleTagGatewayModuleConnected() {
 /**
  * Returns a function that checks if Google Tag Gateway is enabled.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether Google Tag Gateway is enabled or not.
  */
@@ -433,7 +433,7 @@ export function requireGoogleTagGatewayEnabled() {
  * The health status is tri-state: it is `null` until the server requirement
  * status has been fetched, which does not satisfy this requirement.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the Google Tag Gateway service is healthy or not.
  */
@@ -453,7 +453,7 @@ export function requireGTGHealthy() {
  * The script access status is tri-state: it is `null` until the server
  * requirement status has been fetched, which does not satisfy this requirement.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the Google Tag Gateway proxy script is accessible or not.
  */
@@ -473,7 +473,7 @@ export function requireGTGScriptAccessEnabled() {
  * Email reporting is only considered disabled once the site settings report it
  * as such, so an unknown state satisfies this requirement.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether email reporting is not disabled at site level or not.
  */
@@ -490,7 +490,7 @@ export function requireSiteEmailReportingNotDisabled() {
 /**
  * Returns a function that checks if the current view context is a view-only context.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {function(WPDataRegistry, string): boolean} Whether the current view context is a view-only context or not.
  */
@@ -502,7 +502,7 @@ export function requireViewOnlyContext() {
 /**
  * Returns a function that checks if the given module is viewable by the current user.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {string} slug Module slug to test.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the given module is viewable by the current user or not.
@@ -525,7 +525,7 @@ export function requireModuleViewable( slug ) {
 /**
  * Returns a function that checks if the given module is in the recovering state.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {string} slug Module slug to test.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the given module is recoverable or not.
@@ -543,7 +543,7 @@ export function requireModuleRecoverable( slug ) {
 /**
  * Returns a function that checks if there is at least one module in the recovering state.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether there is at least one recoverable module or not.
  */
@@ -560,7 +560,7 @@ export function requireHasRecoverableModules() {
 /**
  * Returns a function that checks if the given module's datastore has zero data.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {string} datastoreSlug Datastore slug to test.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the given datastore has zero data or not.
@@ -583,7 +583,7 @@ export function requireModuleZeroData( datastoreSlug ) {
  * When no `value` is given, the requirement is satisfied if the query argument
  * is present with a truthy value.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {string} name    Query argument name.
  * @param {string} [value] Optional. Query argument value to match.

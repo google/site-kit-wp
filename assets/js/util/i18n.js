@@ -502,7 +502,7 @@ export function getLocale( _global = global ) {
 /**
  * Formats a language code for display.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {string} languageCode     Language code to format.
  * @param {Object} [options]        Formatting options.
@@ -526,7 +526,7 @@ export function languageCodeFormat( languageCode, options = {} ) {
 /**
  * Formats a region code for display.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {string} regionCode       Region code to format.
  * @param {Object} [options]        Formatting options.
