@@ -33,6 +33,10 @@ import {
 	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
 } from '@/js/googlesitekit/widgets/default-areas';
 import { AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationBackNotice';
+import getLeadGenerationPerformancePDFData from '@/js/modules/analytics-4/components/site-goals/widgets/getLeadGenerationPerformancePDFData';
+import getOnlineStorePerformancePDFData from '@/js/modules/analytics-4/components/site-goals/widgets/getOnlineStorePerformancePDFData';
+import LeadGenerationPerformanceWidgetPDF from '@/js/modules/analytics-4/components/site-goals/widgets/LeadGenerationPerformanceWidgetPDF';
+import OnlineStorePerformanceWidgetPDF from '@/js/modules/analytics-4/components/site-goals/widgets/OnlineStorePerformanceWidgetPDF';
 import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -295,7 +299,7 @@ describe( 'Analytics 4 widget registrations', () => {
 				[ 'analyticsLeadGenerationPerformance' ],
 			],
 		] )(
-			'should gate widgets correctly when %s',
+			'should show only the active Site Goals widgets when %s',
 			(
 				_,
 				siteGoalsSettings,
@@ -322,6 +326,91 @@ describe( 'Analytics 4 widget registrations', () => {
 				expectedAbsent.forEach( ( slug ) => {
 					expect( slugs ).not.toContain( slug );
 				} );
+			}
+		);
+
+		it.each( [
+			[
+				'analyticsOnlineStorePerformance',
+				'Online store performance',
+				getOnlineStorePerformancePDFData,
+				OnlineStorePerformanceWidgetPDF,
+			],
+			[
+				'analyticsLeadGenerationPerformance',
+				'Lead generation performance',
+				getLeadGenerationPerformancePDFData,
+				LeadGenerationPerformanceWidgetPDF,
+			],
+		] )(
+			'should register the PDF label, loader, and component for %s',
+			async ( slug, label, getData, Component ) => {
+				registerWidgets( widgets );
+
+				const widget = registry
+					.select( CORE_WIDGETS )
+					.getWidget( slug );
+
+				expect( widget.pdf.label ).toBe( label );
+				expect( widget.pdf.getData ).toBe( getData );
+				// The `@react-pdf/renderer` package does not wait for a
+				// lazy component, so the PDF export calls `preload` before
+				// it renders the widget's section.
+				const loadedModule = await widget.pdf.Component.preload();
+				expect( loadedModule.default ).toBe( Component );
+			}
+		);
+
+		it.each( [
+			[
+				'only ecommerce active',
+				{ activeWidgets: [ 'ecommerce' ] },
+				[ 'purchase', 'contact' ],
+				[ 'analyticsOnlineStorePerformance' ],
+			],
+			[
+				'only lead active',
+				{ activeWidgets: [ 'lead' ] },
+				[ 'purchase', 'contact' ],
+				[ 'analyticsLeadGenerationPerformance' ],
+			],
+			[
+				'both active',
+				{ activeWidgets: [ 'ecommerce', 'lead' ] },
+				[ 'purchase', 'contact' ],
+				ALL_SITE_GOALS_WIDGETS,
+			],
+			[
+				'neither active',
+				{ activeWidgets: [] },
+				[ 'purchase', 'contact' ],
+				[],
+			],
+		] )(
+			'should include only the active Site Goals widgets in the PDF report when %s',
+			(
+				_,
+				siteGoalsSettings,
+				detectedEvents,
+				expectedPDFWidgetSlugs
+			) => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSiteGoalsSettings( siteGoalsSettings );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( { detectedEvents } );
+				registerWidgets( widgets );
+
+				const pdfWidgetSlugs = ALL_SITE_GOALS_WIDGETS.filter(
+					( slug ) =>
+						isActivePDFWidget(
+							registry.select( CORE_WIDGETS ).getWidget( slug ),
+							registry.select
+						)
+				);
+
+				expect( pdfWidgetSlugs ).toEqual( expectedPDFWidgetSlugs );
 			}
 		);
 	} );
