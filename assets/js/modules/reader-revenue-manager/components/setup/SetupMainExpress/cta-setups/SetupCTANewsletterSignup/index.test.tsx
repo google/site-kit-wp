@@ -82,27 +82,8 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 	let registry: Registry;
 
-	function setupRegistry( {
-		ctas = [ NEWSLETTER_CTA ],
-		snippetMode = 'sitewide',
-		postTypes = [] as string[],
-	} = {} ) {
+	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
-		provideSiteInfo( registry );
-		provideUserInfo( registry );
-
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {
-				organizationID: ORGANIZATION_ID,
-				publicationID: PUBLICATION_ID,
-				snippetMode,
-				postTypes,
-			} );
-
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetCTAs( { ctas, params: {} } );
 
 		const moduleData = [
 			{
@@ -117,15 +98,13 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {} );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.finishResolution( 'getSettings', [] );
 
 		providePublications( registry, [] );
-	}
-
-	beforeEach( () => {
-		setupRegistry();
-
-		global.location.href = 'http://example.com/';
 	} );
 
 	it( 'renders the newsletter CTA step title in the sidebar', () => {
@@ -183,6 +162,35 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 	describe( 'setup complete step', () => {
 		let originalHref: string;
+
+		function setupRegistry( {
+			ctas = [ NEWSLETTER_CTA ],
+			snippetMode = 'sitewide',
+			postTypes = [] as string[],
+		} = {} ) {
+			registry = createTestRegistry() as Registry;
+			provideSiteInfo( registry );
+			provideUserInfo( registry );
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					organizationID: ORGANIZATION_ID,
+					publicationID: PUBLICATION_ID,
+					snippetMode,
+					postTypes,
+				} );
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetCTAs( { ctas, params: {} } );
+		}
+
+		beforeEach( () => {
+			setupRegistry();
+
+			global.location.href = 'http://example.com/';
+		} );
 
 		beforeEach( () => {
 			originalHref = global.location.href;

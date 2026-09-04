@@ -24,9 +24,9 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
                 class="googlesitekit-stepper__step-progress"
               >
                 <span
-                  aria-label="Step 1 of 5 (completed)."
+                  aria-label="Step 1 of 4 (completed)."
                   class="googlesitekit-stepper__step-number"
-                  title="Step 1 of 5 (completed)."
+                  title="Step 1 of 4 (completed)."
                 >
                   <svg />
                 </span>
@@ -51,36 +51,9 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
                 class="googlesitekit-stepper__step-progress"
               >
                 <span
-                  aria-label="Step 2 of 5 (completed)."
+                  aria-label="Step 2 of 4 (completed)."
                   class="googlesitekit-stepper__step-number"
-                  title="Step 2 of 5 (completed)."
-                >
-                  <svg />
-                </span>
-                <div
-                  class="googlesitekit-stepper__step-progress-line"
-                />
-              </div>
-              <div
-                class="googlesitekit-stepper__step-info"
-              >
-                <div
-                  class="googlesitekit-typography googlesitekit-stepper__step-title googlesitekit-typography--body googlesitekit-typography--medium"
-                >
-                  Accept terms of service
-                </div>
-              </div>
-            </li>
-            <li
-              class="googlesitekit-stepper__step googlesitekit-stepper__step--completed"
-            >
-              <div
-                class="googlesitekit-stepper__step-progress"
-              >
-                <span
-                  aria-label="Step 3 of 5 (completed)."
-                  class="googlesitekit-stepper__step-number"
-                  title="Step 3 of 5 (completed)."
+                  title="Step 2 of 4 (completed)."
                 >
                   <svg />
                 </span>
@@ -105,9 +78,9 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
                 class="googlesitekit-stepper__step-progress"
               >
                 <span
-                  aria-label="Step 4 of 5 (completed)."
+                  aria-label="Step 3 of 4 (completed)."
                   class="googlesitekit-stepper__step-number"
-                  title="Step 4 of 5 (completed)."
+                  title="Step 3 of 4 (completed)."
                 >
                   <svg />
                 </span>
@@ -132,9 +105,9 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
                 class="googlesitekit-stepper__step-progress"
               >
                 <span
-                  aria-label="Step 5 of 5 (active)."
+                  aria-label="Step 4 of 4 (active)."
                   class="googlesitekit-stepper__step-number"
-                  title="Step 5 of 5 (active)."
+                  title="Step 4 of 4 (active)."
                 />
               </div>
               <div
@@ -154,173 +127,161 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
         class="googlesitekit-rrm-express-setup__content mdc-layout-grid__cell mdc-layout-grid__cell--span-9-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
       >
         <div
-          class="mdc-layout-grid"
+          class="googlesitekit-rrm-express-setup-complete"
         >
           <div
-            class="mdc-layout-grid__inner"
+            class="googlesitekit-rrm-express-setup-complete__content"
           >
             <div
-              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+              class="googlesitekit-rrm-express-setup-complete__header"
             >
+              <svg />
+              <h2
+                class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__title googlesitekit-typography--headline googlesitekit-typography--medium"
+              >
+                Your newsletter signup form is ready!
+              </h2>
+            </div>
+            <div
+              class="googlesitekit-rrm-express-setup-complete__details"
+            >
+              <h3
+                class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__details-title googlesitekit-typography--label googlesitekit-typography--large"
+              >
+                What to know about your new CTA:
+              </h3>
               <div
-                class="googlesitekit-rrm-express-setup-complete"
+                class="googlesitekit-rrm-express-setup-complete__detail-list"
               >
                 <div
-                  class="googlesitekit-rrm-express-setup-complete__content"
+                  class="googlesitekit-rrm-express-setup-complete__detail"
                 >
-                  <div
-                    class="googlesitekit-rrm-express-setup-complete__header"
+                  <h4
+                    class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
                   >
-                    <svg />
-                    <h2
-                      class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__title googlesitekit-typography--headline googlesitekit-typography--medium"
-                    >
-                      Your newsletter signup form is ready!
-                    </h2>
-                  </div>
-                  <div
-                    class="googlesitekit-rrm-express-setup-complete__details"
+                    Display order
+                  </h4>
+                  <p
+                    class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
                   >
-                    <h3
-                      class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__details-title googlesitekit-typography--label googlesitekit-typography--large"
+                    Because you already have other CTAs active, this new form will be displayed last. You can reorder your CTAs at any time in the 
+                    <a
+                      aria-label="Publisher center (opens in a new tab)"
+                      class="googlesitekit-cta-link"
+                      href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fpublishercenter.google.com%2Freader-revenue-manager%2Fcontent-access%2Foverview%3Fpublication%3DABCD_123-4%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
+                      rel="noopener noreferrer"
+                      target="_blank"
                     >
-                      What to know about your new CTA:
-                    </h3>
-                    <div
-                      class="googlesitekit-rrm-express-setup-complete__detail-list"
-                    >
-                      <div
-                        class="googlesitekit-rrm-express-setup-complete__detail"
+                      <span
+                        class="googlesitekit-cta-link__contents"
                       >
-                        <h4
-                          class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
-                        >
-                          Display order
-                        </h4>
-                        <p
-                          class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
-                        >
-                          Because you already have other CTAs active, this new form will be displayed last. You can reorder your CTAs at any time in the 
-                          <a
-                            aria-label="Publisher center (opens in a new tab)"
-                            class="googlesitekit-cta-link"
-                            href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fpublishercenter.google.com%2Freader-revenue-manager%2Fcontent-access%2Foverview%3Fpublication%3DABCD_123-4%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
-                            rel="noopener noreferrer"
-                            target="_blank"
-                          >
-                            <span
-                              class="googlesitekit-cta-link__contents"
-                            >
-                              Publisher center
-                            </span>
-                            <span
-                              class="googlesitekit-icon-wrapper"
-                              style="margin-left: 5px;"
-                            >
-                              <svg />
-                            </span>
-                          </a>
-                        </p>
-                      </div>
-                      <div
-                        class="googlesitekit-rrm-express-setup-complete__detail"
+                        Publisher center
+                      </span>
+                      <span
+                        class="googlesitekit-icon-wrapper"
+                        style="margin-left: 5px;"
                       >
-                        <h4
-                          class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
-                        >
-                          Placement settings
-                        </h4>
-                        <p
-                          class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
-                        >
-                          To change where the form appears on your site, go to Site Kit settings.
-                        </p>
-                      </div>
-                      <div
-                        class="googlesitekit-rrm-express-setup-complete__detail"
-                      >
-                        <h4
-                          class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
-                        >
-                          Content
-                        </h4>
-                        <p
-                          class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
-                        >
-                          You can edit the content of the CTA any time in 
-                          <a
-                            aria-label="Publisher center (opens in a new tab)"
-                            class="googlesitekit-cta-link"
-                            href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fpublishercenter.google.com%2Freader-revenue-manager%2Fcontent-access%2Fctas%2Fnewsletter%2F5%3Fpublication%3DABCD_123-4%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
-                            rel="noopener noreferrer"
-                            target="_blank"
-                          >
-                            <span
-                              class="googlesitekit-cta-link__contents"
-                            >
-                              Publisher center
-                            </span>
-                            <span
-                              class="googlesitekit-icon-wrapper"
-                              style="margin-left: 5px;"
-                            >
-                              <svg />
-                            </span>
-                          </a>
-                        </p>
-                      </div>
-                      <div
-                        class="googlesitekit-rrm-express-setup-complete__detail"
-                      >
-                        <h4
-                          class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
-                        >
-                          Don't see it on your site?
-                        </h4>
-                        <p
-                          class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
-                        >
-                          If you're still having trouble, 
-                          <a
-                            aria-label="contact support (opens in a new tab)"
-                            class="googlesitekit-cta-link"
-                            href="https://wordpress.org/support/plugin/google-site-kit/"
-                            rel="noopener noreferrer"
-                            target="_blank"
-                          >
-                            <span
-                              class="googlesitekit-cta-link__contents"
-                            >
-                              contact support
-                            </span>
-                            <span
-                              class="googlesitekit-icon-wrapper"
-                              style="margin-left: 5px;"
-                            >
-                              <svg />
-                            </span>
-                          </a>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                        <svg />
+                      </span>
+                    </a>
+                  </p>
                 </div>
                 <div
-                  class="googlesitekit-rrm-express-setup-complete__actions"
+                  class="googlesitekit-rrm-express-setup-complete__detail"
                 >
-                  <button
-                    class="mdc-button mdc-button--raised"
-                    target="_self"
+                  <h4
+                    class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
                   >
-                    <span
-                      class="mdc-button__label"
+                    Placement settings
+                  </h4>
+                  <p
+                    class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
+                  >
+                    To change where the form appears on your site, go to Site Kit settings.
+                  </p>
+                </div>
+                <div
+                  class="googlesitekit-rrm-express-setup-complete__detail"
+                >
+                  <h4
+                    class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
+                  >
+                    Content
+                  </h4>
+                  <p
+                    class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
+                  >
+                    You can edit the content of the CTA any time in 
+                    <a
+                      aria-label="Publisher center (opens in a new tab)"
+                      class="googlesitekit-cta-link"
+                      href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fpublishercenter.google.com%2Freader-revenue-manager%2Fcontent-access%2Fctas%2Fnewsletter%2F5%3Fpublication%3DABCD_123-4%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
+                      rel="noopener noreferrer"
+                      target="_blank"
                     >
-                      Return to Dashboard
-                    </span>
-                  </button>
+                      <span
+                        class="googlesitekit-cta-link__contents"
+                      >
+                        Publisher center
+                      </span>
+                      <span
+                        class="googlesitekit-icon-wrapper"
+                        style="margin-left: 5px;"
+                      >
+                        <svg />
+                      </span>
+                    </a>
+                  </p>
+                </div>
+                <div
+                  class="googlesitekit-rrm-express-setup-complete__detail"
+                >
+                  <h4
+                    class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
+                  >
+                    Don't see it on your site?
+                  </h4>
+                  <p
+                    class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
+                  >
+                    If you're still having trouble, 
+                    <a
+                      aria-label="contact support (opens in a new tab)"
+                      class="googlesitekit-cta-link"
+                      href="https://wordpress.org/support/plugin/google-site-kit/"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      <span
+                        class="googlesitekit-cta-link__contents"
+                      >
+                        contact support
+                      </span>
+                      <span
+                        class="googlesitekit-icon-wrapper"
+                        style="margin-left: 5px;"
+                      >
+                        <svg />
+                      </span>
+                    </a>
+                  </p>
                 </div>
               </div>
             </div>
+          </div>
+          <div
+            class="googlesitekit-rrm-express-setup-complete__actions"
+          >
+            <button
+              class="mdc-button mdc-button--raised"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Return to Dashboard
+              </span>
+            </button>
           </div>
         </div>
       </div>
@@ -353,9 +314,9 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly without 
                 class="googlesitekit-stepper__step-progress"
               >
                 <span
-                  aria-label="Step 1 of 5 (completed)."
+                  aria-label="Step 1 of 4 (completed)."
                   class="googlesitekit-stepper__step-number"
-                  title="Step 1 of 5 (completed)."
+                  title="Step 1 of 4 (completed)."
                 >
                   <svg />
                 </span>
@@ -380,36 +341,9 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly without 
                 class="googlesitekit-stepper__step-progress"
               >
                 <span
-                  aria-label="Step 2 of 5 (completed)."
+                  aria-label="Step 2 of 4 (completed)."
                   class="googlesitekit-stepper__step-number"
-                  title="Step 2 of 5 (completed)."
-                >
-                  <svg />
-                </span>
-                <div
-                  class="googlesitekit-stepper__step-progress-line"
-                />
-              </div>
-              <div
-                class="googlesitekit-stepper__step-info"
-              >
-                <div
-                  class="googlesitekit-typography googlesitekit-stepper__step-title googlesitekit-typography--body googlesitekit-typography--medium"
-                >
-                  Accept terms of service
-                </div>
-              </div>
-            </li>
-            <li
-              class="googlesitekit-stepper__step googlesitekit-stepper__step--completed"
-            >
-              <div
-                class="googlesitekit-stepper__step-progress"
-              >
-                <span
-                  aria-label="Step 3 of 5 (completed)."
-                  class="googlesitekit-stepper__step-number"
-                  title="Step 3 of 5 (completed)."
+                  title="Step 2 of 4 (completed)."
                 >
                   <svg />
                 </span>
@@ -434,9 +368,9 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly without 
                 class="googlesitekit-stepper__step-progress"
               >
                 <span
-                  aria-label="Step 4 of 5 (completed)."
+                  aria-label="Step 3 of 4 (completed)."
                   class="googlesitekit-stepper__step-number"
-                  title="Step 4 of 5 (completed)."
+                  title="Step 3 of 4 (completed)."
                 >
                   <svg />
                 </span>
@@ -461,9 +395,9 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly without 
                 class="googlesitekit-stepper__step-progress"
               >
                 <span
-                  aria-label="Step 5 of 5 (active)."
+                  aria-label="Step 4 of 4 (active)."
                   class="googlesitekit-stepper__step-number"
-                  title="Step 5 of 5 (active)."
+                  title="Step 4 of 4 (active)."
                 />
               </div>
               <div
@@ -483,151 +417,139 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly without 
         class="googlesitekit-rrm-express-setup__content mdc-layout-grid__cell mdc-layout-grid__cell--span-9-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
       >
         <div
-          class="mdc-layout-grid"
+          class="googlesitekit-rrm-express-setup-complete"
         >
           <div
-            class="mdc-layout-grid__inner"
+            class="googlesitekit-rrm-express-setup-complete__content"
           >
             <div
-              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+              class="googlesitekit-rrm-express-setup-complete__header"
             >
+              <svg />
+              <h2
+                class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__title googlesitekit-typography--headline googlesitekit-typography--medium"
+              >
+                Your newsletter signup form is ready!
+              </h2>
+            </div>
+            <div
+              class="googlesitekit-rrm-express-setup-complete__details"
+            >
+              <h3
+                class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__details-title googlesitekit-typography--label googlesitekit-typography--large"
+              >
+                What to know about your new CTA:
+              </h3>
               <div
-                class="googlesitekit-rrm-express-setup-complete"
+                class="googlesitekit-rrm-express-setup-complete__detail-list"
               >
                 <div
-                  class="googlesitekit-rrm-express-setup-complete__content"
+                  class="googlesitekit-rrm-express-setup-complete__detail"
                 >
-                  <div
-                    class="googlesitekit-rrm-express-setup-complete__header"
+                  <h4
+                    class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
                   >
-                    <svg />
-                    <h2
-                      class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__title googlesitekit-typography--headline googlesitekit-typography--medium"
-                    >
-                      Your newsletter signup form is ready!
-                    </h2>
-                  </div>
-                  <div
-                    class="googlesitekit-rrm-express-setup-complete__details"
+                    Placement settings
+                  </h4>
+                  <p
+                    class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
                   >
-                    <h3
-                      class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__details-title googlesitekit-typography--label googlesitekit-typography--large"
-                    >
-                      What to know about your new CTA:
-                    </h3>
-                    <div
-                      class="googlesitekit-rrm-express-setup-complete__detail-list"
-                    >
-                      <div
-                        class="googlesitekit-rrm-express-setup-complete__detail"
-                      >
-                        <h4
-                          class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
-                        >
-                          Placement settings
-                        </h4>
-                        <p
-                          class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
-                        >
-                          To change where the form appears on your site, go to Site Kit settings.
-                        </p>
-                      </div>
-                      <div
-                        class="googlesitekit-rrm-express-setup-complete__detail"
-                      >
-                        <h4
-                          class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
-                        >
-                          Content
-                        </h4>
-                        <p
-                          class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
-                        >
-                          You can edit the content of the CTA any time in 
-                          <a
-                            aria-label="Publisher center (opens in a new tab)"
-                            class="googlesitekit-cta-link"
-                            href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fpublishercenter.google.com%2Freader-revenue-manager%2Fcontent-access%2Fctas%2Fnewsletter%2F5%3Fpublication%3DABCD_123-4%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
-                            rel="noopener noreferrer"
-                            target="_blank"
-                          >
-                            <span
-                              class="googlesitekit-cta-link__contents"
-                            >
-                              Publisher center
-                            </span>
-                            <span
-                              class="googlesitekit-icon-wrapper"
-                              style="margin-left: 5px;"
-                            >
-                              <svg />
-                            </span>
-                          </a>
-                        </p>
-                      </div>
-                      <div
-                        class="googlesitekit-rrm-express-setup-complete__detail"
-                      >
-                        <h4
-                          class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
-                        >
-                          Don't see it on your site?
-                        </h4>
-                        <p
-                          class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
-                        >
-                          If you're still having trouble, 
-                          <a
-                            aria-label="contact support (opens in a new tab)"
-                            class="googlesitekit-cta-link"
-                            href="https://wordpress.org/support/plugin/google-site-kit/"
-                            rel="noopener noreferrer"
-                            target="_blank"
-                          >
-                            <span
-                              class="googlesitekit-cta-link__contents"
-                            >
-                              contact support
-                            </span>
-                            <span
-                              class="googlesitekit-icon-wrapper"
-                              style="margin-left: 5px;"
-                            >
-                              <svg />
-                            </span>
-                          </a>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                    To change where the form appears on your site, go to Site Kit settings.
+                  </p>
                 </div>
                 <div
-                  class="googlesitekit-rrm-express-setup-complete__actions"
+                  class="googlesitekit-rrm-express-setup-complete__detail"
                 >
-                  <button
-                    class="mdc-button mdc-button--raised"
-                    target="_self"
+                  <h4
+                    class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
                   >
-                    <span
-                      class="mdc-button__label"
-                    >
-                      Return to Dashboard
-                    </span>
-                  </button>
-                  <button
-                    class="mdc-button googlesitekit-rrm-express-setup-complete__view-on-site-cta mdc-button--tertiary"
-                    target="_self"
+                    Content
+                  </h4>
+                  <p
+                    class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
                   >
-                    <span
-                      class="mdc-button__label"
+                    You can edit the content of the CTA any time in 
+                    <a
+                      aria-label="Publisher center (opens in a new tab)"
+                      class="googlesitekit-cta-link"
+                      href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fpublishercenter.google.com%2Freader-revenue-manager%2Fcontent-access%2Fctas%2Fnewsletter%2F5%3Fpublication%3DABCD_123-4%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
+                      rel="noopener noreferrer"
+                      target="_blank"
                     >
-                      View on your site
-                    </span>
-                    <svg />
-                  </button>
+                      <span
+                        class="googlesitekit-cta-link__contents"
+                      >
+                        Publisher center
+                      </span>
+                      <span
+                        class="googlesitekit-icon-wrapper"
+                        style="margin-left: 5px;"
+                      >
+                        <svg />
+                      </span>
+                    </a>
+                  </p>
+                </div>
+                <div
+                  class="googlesitekit-rrm-express-setup-complete__detail"
+                >
+                  <h4
+                    class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
+                  >
+                    Don't see it on your site?
+                  </h4>
+                  <p
+                    class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
+                  >
+                    If you're still having trouble, 
+                    <a
+                      aria-label="contact support (opens in a new tab)"
+                      class="googlesitekit-cta-link"
+                      href="https://wordpress.org/support/plugin/google-site-kit/"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      <span
+                        class="googlesitekit-cta-link__contents"
+                      >
+                        contact support
+                      </span>
+                      <span
+                        class="googlesitekit-icon-wrapper"
+                        style="margin-left: 5px;"
+                      >
+                        <svg />
+                      </span>
+                    </a>
+                  </p>
                 </div>
               </div>
             </div>
+          </div>
+          <div
+            class="googlesitekit-rrm-express-setup-complete__actions"
+          >
+            <button
+              class="mdc-button mdc-button--raised"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                Return to Dashboard
+              </span>
+            </button>
+            <button
+              class="mdc-button googlesitekit-rrm-express-setup-complete__view-on-site-cta mdc-button--tertiary"
+              target="_self"
+            >
+              <span
+                class="mdc-button__label"
+              >
+                View on your site
+              </span>
+              <svg />
+            </button>
           </div>
         </div>
       </div>
