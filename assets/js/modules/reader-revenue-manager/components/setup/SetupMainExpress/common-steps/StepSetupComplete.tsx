@@ -36,6 +36,7 @@ import Typography from '@/js/components/Typography';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
+import { ExpressSetupStepHeadline } from '@/js/modules/reader-revenue-manager/components/common';
 import SuccessIcon from '@/svg/graphics/rrm-express-setup-success.svg';
 
 interface StepSetupCompleteProps {
@@ -78,19 +79,14 @@ const StepSetupComplete: FC< StepSetupCompleteProps > = ( {
 						width={ 36 }
 						height={ 36 }
 					/>
-					<Typography
-						as="h2"
-						type="headline"
-						size="medium"
-						className="googlesitekit-rrm-express-setup-complete__title"
-					>
+					<ExpressSetupStepHeadline className="googlesitekit-rrm-express-setup-step__headline">
 						{ title }
-					</Typography>
+					</ExpressSetupStepHeadline>
 				</div>
 				{ showCTADetails && (
 					<div className="googlesitekit-rrm-express-setup-complete__details">
 						<Typography
-							as="h3"
+							as="h2"
 							type="label"
 							size="large"
 							className="googlesitekit-rrm-express-setup-complete__details-title"

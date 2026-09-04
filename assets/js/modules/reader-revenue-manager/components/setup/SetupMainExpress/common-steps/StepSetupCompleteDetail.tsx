@@ -37,7 +37,7 @@ const StepSetupCompleteDetail: FC< StepSetupCompleteDetailProps > = ( {
 	return (
 		<div className="googlesitekit-rrm-express-setup-complete__detail">
 			<Typography
-				as="h4"
+				as="h3"
 				type="label"
 				size="medium"
 				className="googlesitekit-rrm-express-setup-complete__detail-title"

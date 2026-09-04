@@ -136,31 +136,31 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
               class="googlesitekit-rrm-express-setup-complete__header"
             >
               <svg />
-              <h2
-                class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__title googlesitekit-typography--headline googlesitekit-typography--medium"
+              <h1
+                class="googlesitekit-typography googlesitekit-rrm-express-setup-headline googlesitekit-rrm-express-setup-step__headline googlesitekit-typography--headline googlesitekit-typography--medium"
               >
                 Your newsletter signup form is ready!
-              </h2>
+              </h1>
             </div>
             <div
               class="googlesitekit-rrm-express-setup-complete__details"
             >
-              <h3
+              <h2
                 class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__details-title googlesitekit-typography--label googlesitekit-typography--large"
               >
                 What to know about your new CTA:
-              </h3>
+              </h2>
               <div
                 class="googlesitekit-rrm-express-setup-complete__detail-list"
               >
                 <div
                   class="googlesitekit-rrm-express-setup-complete__detail"
                 >
-                  <h4
+                  <h3
                     class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
                   >
                     Display order
-                  </h4>
+                  </h3>
                   <p
                     class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
                   >
@@ -189,11 +189,11 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
                 <div
                   class="googlesitekit-rrm-express-setup-complete__detail"
                 >
-                  <h4
+                  <h3
                     class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
                   >
                     Placement settings
-                  </h4>
+                  </h3>
                   <p
                     class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
                   >
@@ -203,11 +203,11 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
                 <div
                   class="googlesitekit-rrm-express-setup-complete__detail"
                 >
-                  <h4
+                  <h3
                     class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
                   >
                     Content
-                  </h4>
+                  </h3>
                   <p
                     class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
                   >
@@ -236,11 +236,11 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
                 <div
                   class="googlesitekit-rrm-express-setup-complete__detail"
                 >
-                  <h4
+                  <h3
                     class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
                   >
                     Don't see it on your site?
-                  </h4>
+                  </h3>
                   <p
                     class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
                   >
@@ -426,31 +426,31 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly without 
               class="googlesitekit-rrm-express-setup-complete__header"
             >
               <svg />
-              <h2
-                class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__title googlesitekit-typography--headline googlesitekit-typography--medium"
+              <h1
+                class="googlesitekit-typography googlesitekit-rrm-express-setup-headline googlesitekit-rrm-express-setup-step__headline googlesitekit-typography--headline googlesitekit-typography--medium"
               >
                 Your newsletter signup form is ready!
-              </h2>
+              </h1>
             </div>
             <div
               class="googlesitekit-rrm-express-setup-complete__details"
             >
-              <h3
+              <h2
                 class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__details-title googlesitekit-typography--label googlesitekit-typography--large"
               >
                 What to know about your new CTA:
-              </h3>
+              </h2>
               <div
                 class="googlesitekit-rrm-express-setup-complete__detail-list"
               >
                 <div
                   class="googlesitekit-rrm-express-setup-complete__detail"
                 >
-                  <h4
+                  <h3
                     class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
                   >
                     Placement settings
-                  </h4>
+                  </h3>
                   <p
                     class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
                   >
@@ -460,11 +460,11 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly without 
                 <div
                   class="googlesitekit-rrm-express-setup-complete__detail"
                 >
-                  <h4
+                  <h3
                     class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
                   >
                     Content
-                  </h4>
+                  </h3>
                   <p
                     class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
                   >
@@ -493,11 +493,11 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly without 
                 <div
                   class="googlesitekit-rrm-express-setup-complete__detail"
                 >
-                  <h4
+                  <h3
                     class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-title googlesitekit-typography--label googlesitekit-typography--medium"
                   >
                     Don't see it on your site?
-                  </h4>
+                  </h3>
                   <p
                     class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
                   >

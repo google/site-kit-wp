@@ -31,12 +31,14 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
 	EXPRESS_SETUP_CTAS,
 	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { CTA_TYPES } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
+import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { Story } from '@/js/types/Story';
 import {
 	provideModuleRegistrations,
@@ -75,6 +77,7 @@ function setupBaseRegistry( registry: WPDataRegistry ) {
 	provideModuleRegistrations( registry );
 	provideSiteInfo( registry );
 	provideUserInfo( registry );
+	providePublications( registry, publications );
 
 	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetSettings( {
 		organizationID: ORGANIZATION_ID,
