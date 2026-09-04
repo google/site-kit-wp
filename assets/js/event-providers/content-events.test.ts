@@ -171,7 +171,7 @@ describe( 'content-events', () => {
 		consoleErrorSpy.mockRestore();
 	} );
 
-	it( 'should invoke the link clicks initializer on import', async () => {
+	it( 'should invoke the link clicks initializer on import (eg. as a side-effect)', async () => {
 		await import( './content-events' );
 
 		expect( mockInitializeLinkClicks ).toHaveBeenCalledTimes( 1 );

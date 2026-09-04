@@ -49,12 +49,12 @@ function getTransportProperties( url: URL ): TransportProperties {
 /**
  * Initializes link click tracking.
  *
- * The single delegated listener every link event shares: it resolves the
- * clicked anchor once, classifies it once, and emits at most one event, so a
- * contact link that also carries `rel="nofollow"` is never reported twice.
+ * Adds one click listener to the document. It finds the clicked anchor,
+ * classifies it, and emits at most one event, so a contact link that also has
+ * `rel="nofollow"` is not counted twice.
  *
- * Registered on the document for every page, so a link added after load — a
- * floating chat button, for instance — is covered too.
+ * Listening on the document also covers links added after the page loads, such
+ * as a floating chat button.
  *
  * @since n.e.x.t
  *
@@ -62,8 +62,7 @@ function getTransportProperties( url: URL ): TransportProperties {
  */
 export function initializeLinkClicks(): void {
 	global.document.addEventListener( 'click', ( event: Event ) => {
-		// An error while handling one click must not leave the listener in a
-		// state that stops it handling the next one.
+		// One failed click must not stop the listener handling later ones.
 		try {
 			if ( ! ( event.target instanceof Element ) ) {
 				return;
@@ -89,10 +88,9 @@ export function initializeLinkClicks(): void {
 
 			const linkType = classifyContactLink( url );
 
-			// An `else` rather than an early return: the recipient sits in the
-			// address itself, so a classified anchor must never reach a handler
-			// that reports the URL — not even when emitting its own event
-			// throws and the `catch` below resumes past this point.
+			// A contact link's URL holds a real phone number or email address.
+			// Only `link_type` is sent below, and the anchor never reaches the
+			// outbound handler, which would send the whole URL to Analytics.
 			if ( linkType ) {
 				global._googlesitekit?.gtagEvent?.( 'contact_link_click', {
 					link_type: linkType,

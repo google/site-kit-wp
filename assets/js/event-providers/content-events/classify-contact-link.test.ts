@@ -32,119 +32,100 @@ import classifyContactLink, {
  * @param {string} href Link address to classify.
  * @return {string|null} The resolved `link_type`, or `null`.
  */
-function classify( href: string ): ContactLinkType | null {
+function classifyHref( href: string ): ContactLinkType | null {
 	return classifyContactLink( new URL( href ) );
 }
 
 describe( 'classifyContactLink', () => {
-	describe.each( [
-		[ 'phone', [ 'tel:+15551234567', 'TEL:+15551234567' ], [] as string[] ],
-		[
-			'email',
-			[ 'mailto:hello@example.com', 'MAILTO:hello@example.com' ],
-			[] as string[],
-		],
-		[ 'sms', [ 'sms:+15551234567', 'smsto:+15551234567' ], [] as string[] ],
-		[
-			'whatsapp',
-			[
-				'https://wa.me/15551234567',
-				'https://wa.me/message/ABC123',
-				'https://wa.me/qr/ABC123',
-				'https://wa.me/QR/ABC123',
-				'https://www.wa.me/15551234567',
-				'https://api.whatsapp.com/send?phone=15551234567',
-				'https://web.whatsapp.com/send?phone=15551234567',
-				'whatsapp://send?phone=15551234567',
-			],
-			[
-				'https://wa.me/?text=Hello',
-				'https://wa.me/notanumber',
-				'https://wa.me/',
-				'https://api.whatsapp.com/send?text=Hello',
-				'https://chat.whatsapp.com/ABCDEF123456',
-			],
-		],
-		[
-			'messenger',
-			[
-				'https://m.me/acme',
-				'https://messenger.com/t/12345',
-				'https://www.messenger.com/t/12345',
-				'fb-messenger://user-thread/12345',
-				'fb-messenger://user/12345',
-				'fb-messenger://USER-THREAD/12345',
-			],
-			[ 'https://m.me/', 'https://messenger.com/' ],
-		],
-		[
-			'telegram',
-			[
-				'https://t.me/acme',
-				'https://telegram.me/acme',
-				'https://www.t.me/acme',
-				'tg://resolve?domain=acme',
-				'tg://RESOLVE?domain=acme',
-				'https://WWW.T.me/Acme',
-			],
-			[
-				'https://t.me/share/url?url=https%3A%2F%2Fexample.com',
-				'https://t.me/joinchat/ABCDEF',
-				'https://t.me/JoinChat/ABCDEF',
-				'https://t.me/Share/url?url=https%3A%2F%2Fexample.com',
-				'https://t.me/+ABCDEF',
-				'https://t.me/addstickers/example',
-				'https://t.me/proxy?server=example.com',
-				'https://t.me/',
-				'tg://resolve',
-			],
-		],
-		[
-			'viber',
-			[
-				'viber://chat?number=%2B15551234567',
-				'viber://add?number=%2B15551234567',
-				'viber://pa?chatURI=acme',
-				'VIBER://CHAT?number=%2B15551234567',
-			],
-			[ 'viber://forward?text=Hello' ],
-		],
-		[
-			'signal',
-			[
-				'https://signal.me/#p/+15551234567',
-				'https://www.signal.me/#p/+15551234567',
-				'sgnl://signal.me/#p/+15551234567',
-			],
-			[ 'https://signal.me/', 'https://signal.group/#ABCDEF' ],
-		],
-		[
-			'line',
-			[
-				'https://line.me/R/ti/p/@acme',
-				'https://line.me/ti/p/@acme',
-				'https://www.line.me/R/ti/p/@acme',
-				'https://line.me/r/ti/p/@acme',
-				'https://page.line.me/acme',
-				'line://ti/p/@acme',
-			],
-			[
-				'https://line.me/R/msg/text/?Hello',
-				'https://social-plugins.line.me/lineit/share?url=https%3A%2F%2Fexample.com',
-				'https://page.line.me/',
-			],
-		],
-	] )( '%s', ( linkType, classified, unclassified ) => {
-		it.each( classified )( 'should classify %s', ( href ) => {
-			expect( classify( href ) ).toBe( linkType );
-		} );
+	// One case per address: what it is, and the `link_type` it must report.
+	// `null` means the address sits on a contact host but names nobody to
+	// contact, so this event must let it through to #13291 instead.
+	const CLASSIFICATION_CASES: Array< [ string, ContactLinkType | null ] > = [
+		// Phone, email and SMS are recognized by scheme alone.
+		[ 'tel:+15551234567', 'phone' ],
+		[ 'TEL:+15551234567', 'phone' ],
+		[ 'mailto:hello@example.com', 'email' ],
+		[ 'MAILTO:hello@example.com', 'email' ],
+		[ 'sms:+15551234567', 'sms' ],
+		[ 'smsto:+15551234567', 'sms' ],
 
-		if ( unclassified.length ) {
-			it.each( unclassified )( 'should not classify %s', ( href ) => {
-				expect( classify( href ) ).toBeNull();
-			} );
+		// WhatsApp.
+		[ 'https://wa.me/15551234567', 'whatsapp' ],
+		[ 'https://wa.me/message/ABC123', 'whatsapp' ],
+		[ 'https://wa.me/qr/ABC123', 'whatsapp' ],
+		[ 'https://wa.me/QR/ABC123', 'whatsapp' ],
+		[ 'https://www.wa.me/15551234567', 'whatsapp' ],
+		[ 'https://api.whatsapp.com/send?phone=15551234567', 'whatsapp' ],
+		[ 'https://web.whatsapp.com/send?phone=15551234567', 'whatsapp' ],
+		[ 'whatsapp://send?phone=15551234567', 'whatsapp' ],
+		[ 'https://wa.me/?text=Hello', null ], // Share link.
+		[ 'https://api.whatsapp.com/send?text=Hello', null ], // Share link.
+		[ 'https://wa.me/notanumber', null ], // Not a phone number.
+		[ 'https://wa.me/', null ], // No recipient.
+		[ 'https://chat.whatsapp.com/ABCDEF123456', null ], // Group invite.
+
+		// Messenger.
+		[ 'https://m.me/acme', 'messenger' ],
+		[ 'https://messenger.com/t/12345', 'messenger' ],
+		[ 'https://www.messenger.com/t/12345', 'messenger' ],
+		[ 'fb-messenger://user-thread/12345', 'messenger' ],
+		[ 'fb-messenger://user/12345', 'messenger' ],
+		[ 'fb-messenger://USER-THREAD/12345', 'messenger' ],
+		[ 'https://m.me/', null ], // No recipient.
+		[ 'https://messenger.com/', null ], // No recipient.
+
+		// Telegram.
+		[ 'https://t.me/acme', 'telegram' ],
+		[ 'https://telegram.me/acme', 'telegram' ],
+		[ 'https://www.t.me/acme', 'telegram' ],
+		[ 'https://WWW.T.me/Acme', 'telegram' ],
+		[ 'tg://resolve?domain=acme', 'telegram' ],
+		[ 'tg://RESOLVE?domain=acme', 'telegram' ],
+		[ 'https://t.me/share/url?url=https%3A%2F%2Fexample.com', null ], // Share link.
+		[ 'https://t.me/Share/url?url=https%3A%2F%2Fexample.com', null ], // Share link.
+		[ 'https://t.me/joinchat/ABCDEF', null ], // Group invite.
+		[ 'https://t.me/JoinChat/ABCDEF', null ], // Group invite.
+		[ 'https://t.me/+ABCDEF', null ], // Group invite.
+		[ 'https://t.me/addstickers/example', null ], // Sticker pack.
+		[ 'https://t.me/proxy?server=example.com', null ], // Proxy.
+		[ 'https://t.me/', null ], // No recipient.
+		[ 'tg://resolve', null ], // No recipient.
+
+		// Viber.
+		[ 'viber://chat?number=%2B15551234567', 'viber' ],
+		[ 'viber://add?number=%2B15551234567', 'viber' ],
+		[ 'viber://pa?chatURI=acme', 'viber' ],
+		[ 'VIBER://CHAT?number=%2B15551234567', 'viber' ],
+		[ 'viber://forward?text=Hello', null ], // Share link.
+
+		// Signal.
+		[ 'https://signal.me/#p/+15551234567', 'signal' ],
+		[ 'https://www.signal.me/#p/+15551234567', 'signal' ],
+		[ 'sgnl://signal.me/#p/+15551234567', 'signal' ],
+		[ 'https://signal.me/', null ], // No recipient.
+		[ 'https://signal.group/#ABCDEF', null ], // Group invite.
+
+		// LINE.
+		[ 'https://line.me/R/ti/p/@acme', 'line' ],
+		[ 'https://line.me/r/ti/p/@acme', 'line' ],
+		[ 'https://line.me/ti/p/@acme', 'line' ],
+		[ 'https://www.line.me/R/ti/p/@acme', 'line' ],
+		[ 'https://page.line.me/acme', 'line' ],
+		[ 'line://ti/p/@acme', 'line' ],
+		[ 'https://line.me/R/msg/text/?Hello', null ], // Prefilled message.
+		[
+			'https://social-plugins.line.me/lineit/share?url=https%3A%2F%2Fexample.com',
+			null,
+		], // Share widget.
+		[ 'https://page.line.me/', null ], // No recipient.
+	];
+
+	it.each( CLASSIFICATION_CASES )(
+		'should classify %s as %s',
+		( href, expected ) => {
+			expect( classifyHref( href ) ).toBe( expected );
 		}
-	} );
+	);
 
 	it.each( [
 		'https://evil.com/?r=wa.me',
@@ -154,7 +135,7 @@ describe( 'classifyContactLink', () => {
 	] )(
 		'should match hosts exactly, so %s classifies as nothing',
 		( href ) => {
-			expect( classify( href ) ).toBeNull();
+			expect( classifyHref( href ) ).toBeNull();
 		}
 	);
 
@@ -167,7 +148,7 @@ describe( 'classifyContactLink', () => {
 		( href ) => {
 			// The parser lower-cases the host, so `toString` and friends can
 			// never reach the index — but `constructor` and `__proto__` can.
-			expect( classify( href ) ).toBeNull();
+			expect( classifyHref( href ) ).toBeNull();
 		}
 	);
 
@@ -194,9 +175,9 @@ describe( 'classifyContactLink', () => {
 		];
 
 		it( 'should list every documented type once, in order', () => {
-			expect( CONTACT_LINK_MATCHERS.map( ( m ) => m.type ) ).toEqual(
-				DOCUMENTED_TYPES
-			);
+			expect(
+				CONTACT_LINK_MATCHERS.map( ( matcher ) => matcher.type )
+			).toEqual( DOCUMENTED_TYPES );
 		} );
 
 		it( 'should claim no host for more than one type', () => {

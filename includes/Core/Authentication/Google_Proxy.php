@@ -134,10 +134,10 @@ class Google_Proxy {
 	 */
 	public function setup_url( array $query_params = array() ) {
 		if ( empty( $query_params['code'] ) ) {
-			throw new Exception( __( 'Missing code parameter for setup URL.', 'google-site-kit' ) );
+			throw new Exception( __( 'Missing code parameter for setup URL.', 'google-site-kit' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 		}
 		if ( empty( $query_params['site_id'] ) && empty( $query_params['site_code'] ) ) {
-			throw new Exception( __( 'Missing site_id or site_code parameter for setup URL.', 'google-site-kit' ) );
+			throw new Exception( __( 'Missing site_id or site_code parameter for setup URL.', 'google-site-kit' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 		}
 
 		if ( Feature_Flags::enabled( 'setupFlowRefreshPhase4' ) ) {

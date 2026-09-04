@@ -24,13 +24,13 @@ import classifyOutboundLink from './classify-outbound-link';
 import { initializeLinkClicks } from './link-clicks';
 import {
 	SiteKitGlobal,
-	createListenerRegistry,
+	createListenerTracker,
 	preventNavigation,
 	render,
 } from './test-utils';
 
-// Real behaviour everywhere, wrapped so the tests can also see whether the
-// listener resolved an anchor at all, and what it handed each classifier.
+// Wraps both real classifiers in spies: the tests still get their real return
+// values, and can also assert whether the listener called each one at all.
 jest.mock( './classify-contact-link', () => {
 	const actual = jest.requireActual( './classify-contact-link' );
 
@@ -57,7 +57,7 @@ const classifyOutboundSpy = classifyOutboundLink as jest.Mock;
 describe( 'initializeLinkClicks', () => {
 	let gtagEventMock: jest.Mock;
 
-	const listeners = createListenerRegistry();
+	const listeners = createListenerTracker();
 
 	function initialize() {
 		return listeners.record( initializeLinkClicks );
@@ -70,7 +70,7 @@ describe( 'initializeLinkClicks', () => {
 		global._googlesitekit = { gtagEvent: gtagEventMock };
 		global.document.body.innerHTML = '';
 		listeners.reset();
-		// Every anchor here carries a real href, which jsdom would try to
+		// Every anchor here has a real href, which jsdom would try to
 		// navigate to and log "Not implemented: navigation" for.
 		global.document.addEventListener( 'click', preventNavigation );
 	} );
@@ -82,7 +82,7 @@ describe( 'initializeLinkClicks', () => {
 		delete ( global as { _googlesitekit?: SiteKitGlobal } )._googlesitekit;
 	} );
 
-	it( 'should emit one event carrying link_type and the transport, and nothing identifying', () => {
+	it( 'should emit one event with "link_type" and the transport, and nothing identifying', () => {
 		const anchor = render(
 			'<a href="https://wa.me/15551234567">Message us</a>'
 		);
@@ -141,7 +141,7 @@ describe( 'initializeLinkClicks', () => {
 		} );
 	} );
 
-	it( 'should never carry the prefilled subject, body or message text', () => {
+	it( 'should never have a prefilled subject, body, or message text', () => {
 		render(
 			'<a href="https://wa.me/15551234567?text=Secret%20message">Message</a>'
 		);
@@ -158,7 +158,7 @@ describe( 'initializeLinkClicks', () => {
 		).not.toContain( 'Secret' );
 	} );
 
-	it( 'should classify an anchor appended after initialization', () => {
+	it( 'should classify an anchor added to the page after the initial page load', () => {
 		initialize();
 
 		const anchor = render( '<a href="https://m.me/acme">Chat</a>' );
@@ -177,7 +177,7 @@ describe( 'initializeLinkClicks', () => {
 		[ 'sms:+15551234567', 'sms', false ],
 		[ 'whatsapp://send?phone=15551234567', 'whatsapp', false ],
 	] )(
-		'should set the beacon transport only for web links — %s',
+		'should set the beacon transport type only for web links — %s',
 		( href, linkType, expectsBeacon ) => {
 			const anchor = render( `<a href="${ href }">Contact</a>` );
 			initialize();
@@ -249,7 +249,7 @@ describe( 'initializeLinkClicks', () => {
 	} );
 
 	it.each( [ 'nofollow', 'sponsored', 'ugc' ] )(
-		'should emit exactly one event for a contact link carrying rel="%s"',
+		'should emit exactly one event for a contact link with rel="%s"',
 		( rel ) => {
 			const anchor = render(
 				`<a href="https://wa.me/15551234567" rel="${ rel }">Message us</a>`
@@ -304,7 +304,7 @@ describe( 'initializeLinkClicks', () => {
 		expect( classifyContactSpy ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'should register exactly one document click listener', () => {
+	it( 'should register one document click listener', () => {
 		const added = initialize();
 
 		expect( added ).toHaveLength( 1 );
@@ -326,7 +326,7 @@ describe( 'initializeLinkClicks', () => {
 			{ link_rel: 'sponsored' },
 		],
 	] )(
-		'should leave a click on %s unprevented so the link still opens',
+		'should ensure clicking %s still opens the URL',
 		( _label, markup, eventName, payload ) => {
 			// The shared preventNavigation listener runs before this one and
 			// would make defaultPrevented true, so it steps aside here and the
@@ -357,7 +357,7 @@ describe( 'initializeLinkClicks', () => {
 		}
 	);
 
-	it( 'should keep emitting after a click whose handling throws', () => {
+	it( "should keep tracking later clicks when one click's handling throws", () => {
 		render(
 			'<a href="tel:+15551234567">Call</a>' +
 				'<a href="mailto:hello@example.com">Email</a>'

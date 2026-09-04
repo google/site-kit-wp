@@ -24,6 +24,7 @@ import { waitFor } from '@testing-library/react';
 /**
  * Internal dependencies
  */
+import { FEATURES_MENU_BUTTON_CLASS } from '@/js/components/FeaturesMenu/constants';
 import Notifications from '@/js/components/notifications/Notifications';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -78,8 +79,25 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 	} );
 
 	describe( 'checkRequirements', () => {
-		it( 'returns false when user is already subscribed', async () => {
+		/**
+		 * Creates a registry whose dismissal state has already arrived, which
+		 * the setup CTA requirement waits on before it reads the header queue.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @return {Object} Test registry.
+		 */
+		function createRegistry(): Registry {
 			const registry = createTestRegistry() as Registry;
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+			return registry;
+		}
+
+		it( 'returns false when user is already subscribed', async () => {
+			const registry = createRegistry();
 			registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 				enabled: true,
 			} );
@@ -87,16 +105,19 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 				subscribed: true,
 			} );
 
-			const result = await notification.checkRequirements( {
-				select: registry.select,
-				resolveSelect: registry.resolveSelect,
-			} );
+			const result = await notification.checkRequirements(
+				{
+					select: registry.select,
+					resolveSelect: registry.resolveSelect,
+				},
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
 
 			expect( result ).toBe( false );
 		} );
 
 		it( 'returns true when user is not subscribed (authenticated users always have access)', async () => {
-			const registry = createTestRegistry() as Registry;
+			const registry = createRegistry();
 			registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 				enabled: true,
 			} );
@@ -104,16 +125,19 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 				subscribed: false,
 			} );
 
-			const result = await notification.checkRequirements( {
-				select: registry.select,
-				resolveSelect: registry.resolveSelect,
-			} );
+			const result = await notification.checkRequirements(
+				{
+					select: registry.select,
+					resolveSelect: registry.resolveSelect,
+				},
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
 
 			expect( result ).toBe( true );
 		} );
 
 		it( 'returns false when email reporting is disabled at site level', async () => {
-			const registry = createTestRegistry() as Registry;
+			const registry = createRegistry();
 			registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 				enabled: false,
 			} );
@@ -121,10 +145,13 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 				subscribed: false,
 			} );
 
-			const result = await notification.checkRequirements( {
-				select: registry.select,
-				resolveSelect: registry.resolveSelect,
-			} );
+			const result = await notification.checkRequirements(
+				{
+					select: registry.select,
+					resolveSelect: registry.resolveSelect,
+				},
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
 
 			expect( result ).toBe( false );
 		} );
@@ -164,7 +191,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			}
 
 			it( 'returns true when view-only user can view Analytics', async () => {
-				const registry = createTestRegistry() as Registry;
+				const registry = createRegistry();
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetEmailReportingSettings( {
@@ -189,7 +216,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			} );
 
 			it( 'returns true when view-only user can view Search Console', async () => {
-				const registry = createTestRegistry() as Registry;
+				const registry = createRegistry();
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetEmailReportingSettings( {
@@ -214,7 +241,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			} );
 
 			it( 'returns false when view-only user cannot view Analytics or Search Console', async () => {
-				const registry = createTestRegistry() as Registry;
+				const registry = createRegistry();
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetEmailReportingSettings( {
@@ -243,11 +270,18 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 	describe( 'rendering', () => {
 		let registry: ReturnType< typeof createTestRegistry >;
 		let anchor: HTMLButtonElement | null = null;
+		let featuresMenuButton: HTMLButtonElement | null = null;
 
 		function addHeaderIcon() {
 			anchor = document.createElement( 'button' );
 			anchor.className = MANAGE_EMAIL_REPORTS_BUTTON_CLASS;
 			document.body.appendChild( anchor );
+		}
+
+		function addFeaturesMenuButton() {
+			featuresMenuButton = document.createElement( 'button' );
+			featuresMenuButton.className = FEATURES_MENU_BUTTON_CLASS;
+			document.body.appendChild( featuresMenuButton );
 		}
 
 		function renderNotifications() {
@@ -286,6 +320,8 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 		afterEach( () => {
 			anchor?.remove();
 			anchor = null;
+			featuresMenuButton?.remove();
+			featuresMenuButton = null;
 		} );
 
 		it( 'anchors the overlay to the header icon when it is present', async () => {
@@ -326,6 +362,29 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 					'.googlesitekit-overlay-card--anchored'
 				)
 			).toBeNull();
+		} );
+
+		it( 'anchors the overlay to the features menu button when the header icon is absent', async () => {
+			mockSurveyEndpoints();
+			addFeaturesMenuButton();
+
+			const { waitForRegistry } = renderNotifications();
+
+			await waitForRegistry();
+
+			await waitFor( () =>
+				expect(
+					document.querySelector(
+						'.googlesitekit-overlay-card--anchored'
+					)
+				).toBeInTheDocument()
+			);
+
+			expect(
+				document.querySelector(
+					'.googlesitekit-popper--overlay-notification'
+				)
+			).toBeInTheDocument();
 		} );
 
 		it( 'labels the buttons "Try it" and "Got it"', async () => {

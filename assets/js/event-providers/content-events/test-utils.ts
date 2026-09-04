@@ -47,28 +47,28 @@ export function preventNavigation( event: Event ): void {
 }
 
 /**
- * Tracks the listeners an initializer puts on `document`, so a test can take
- * them off again.
+ * Tracks the listeners a content event initializer adds to `document`, so a
+ * test can remove them again.
  *
- * The content events initializers have no teardown — in production each is
- * called once per page load — so without this every test would leave its
- * listener behind and a later click would be counted once per test that had
- * already run.
+ * The content event initializers have no teardown — in production each runs
+ * once per page load — so without this every test would leave its listener
+ * behind and a later click would be counted once per test that had already
+ * run.
  *
  * @since n.e.x.t
  *
- * @return {Object} A registry with `record`, `reset` and `removeAll`.
+ * @return {Object} A tracker with `record`, `reset` and `removeAll`.
  */
-export function createListenerRegistry() {
+export function createListenerTracker() {
 	let registered: RegisteredListener[] = [];
 
 	return {
 		/**
-		 * Runs an initializer, recording the listeners it registers.
+		 * Runs a content event initializer, recording the listeners it registers.
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Function} initializer Initializer to run.
+		 * @param {Function} initializer Content event initializer to run.
 		 * @return {Array} The `[ type, listener ]` pairs this call registered.
 		 */
 		record( initializer: () => void ): RegisteredListener[] {
@@ -85,8 +85,7 @@ export function createListenerRegistry() {
 					listener as EventListener,
 				] );
 
-			// Restoring clears the spy's recorded calls, so they are read out
-			// first.
+			// Restoring first would wipe `mock.calls`.
 			addEventListenerSpy.mockRestore();
 			registered.push( ...added );
 
@@ -94,7 +93,7 @@ export function createListenerRegistry() {
 		},
 
 		/**
-		 * Forgets every recorded listener without removing it.
+		 * Forgets every recorded listener, leaving them attached to `document`.
 		 *
 		 * @since n.e.x.t
 		 *

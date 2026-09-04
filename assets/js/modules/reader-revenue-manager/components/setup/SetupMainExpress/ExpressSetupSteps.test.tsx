@@ -19,9 +19,14 @@
 /**
  * Internal dependencies
  */
-import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import {
+	EXPRESS_SETUP_STEPS,
+	READER_REVENUE_MANAGER_SETUP_FORM,
+	SHOW_PUBLICATION_CREATE,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { mockLocation } from '@tests/js/mock-browser-utils';
-import { render } from '@tests/js/test-utils';
+import { act, createTestRegistry, render } from '@tests/js/test-utils';
 import ExpressSetupSteps from './ExpressSetupSteps';
 
 describe( 'ExpressSetupSteps', () => {
@@ -35,7 +40,6 @@ describe( 'ExpressSetupSteps', () => {
 		);
 
 		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
-		expect( getByText( 'Accept terms of service' ) ).toBeInTheDocument();
 		expect( getByText( 'Add publication policies' ) ).toBeInTheDocument();
 		expect( getByText( 'Setup complete' ) ).toBeInTheDocument();
 		expect(
@@ -43,7 +47,33 @@ describe( 'ExpressSetupSteps', () => {
 		).not.toBeInTheDocument();
 		expect(
 			container.querySelectorAll( '.googlesitekit-stepper__step' )
-		).toHaveLength( 4 );
+		).toHaveLength( 3 );
+	} );
+
+	it( 'renders the correct steps when creating a new publication', () => {
+		const registry = createTestRegistry();
+
+		const { getByText, queryByText } = render( <ExpressSetupSteps />, {
+			registry,
+		} );
+
+		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
+		expect( queryByText( 'Create publication' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Accept terms of service' )
+		).not.toBeInTheDocument();
+
+		act( () => {
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+					[ SHOW_PUBLICATION_CREATE ]: true,
+				} );
+		} );
+
+		expect( queryByText( 'Connect publication' ) ).not.toBeInTheDocument();
+		expect( getByText( 'Create publication' ) ).toBeInTheDocument();
+		expect( getByText( 'Accept terms of service' ) ).toBeInTheDocument();
 	} );
 
 	it( 'includes extra steps before setup complete', () => {
@@ -64,14 +94,14 @@ describe( 'ExpressSetupSteps', () => {
 
 		expect( getByText( 'Set up a sign-up form' ) ).toBeInTheDocument();
 		expect( getByText( 'Custom step' ) ).toBeInTheDocument();
-		expect( steps ).toHaveLength( 6 );
-		expect( steps[ 3 ] ).toHaveTextContent( 'Set up a sign-up form' );
-		expect( steps[ 4 ] ).toHaveTextContent( 'Custom step' );
-		expect( steps[ 5 ] ).toHaveTextContent( 'Setup complete' );
+		expect( steps ).toHaveLength( 5 );
+		expect( steps[ 2 ] ).toHaveTextContent( 'Set up a sign-up form' );
+		expect( steps[ 3 ] ).toHaveTextContent( 'Custom step' );
+		expect( steps[ 4 ] ).toHaveTextContent( 'Setup complete' );
 	} );
 
 	it( 'marks the step matching the step query arg as active', () => {
-		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE }`;
+		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES }`;
 
 		const { container } = render( <ExpressSetupSteps /> );
 
@@ -105,9 +135,9 @@ describe( 'ExpressSetupSteps', () => {
 			'.googlesitekit-stepper__step'
 		);
 
-		expect( steps[ 3 ] ).toHaveClass(
+		expect( steps[ 2 ] ).toHaveClass(
 			'googlesitekit-stepper__step--active'
 		);
-		expect( steps[ 3 ] ).toHaveTextContent( 'Set up a sign-up form' );
+		expect( steps[ 2 ] ).toHaveTextContent( 'Set up a sign-up form' );
 	} );
 } );
