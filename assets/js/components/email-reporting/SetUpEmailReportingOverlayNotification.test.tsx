@@ -83,7 +83,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 		 * Creates a registry whose dismissal state has already arrived, which
 		 * the setup CTA requirement waits on before it reads the header queue.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.187.0
 		 *
 		 * @return {Object} Test registry.
 		 */

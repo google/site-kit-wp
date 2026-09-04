@@ -74,7 +74,7 @@ interface RowPair {
 /**
  * Reads a numeric metric off a report row.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param row   Report row.
  * @param index Metric index.
@@ -87,7 +87,7 @@ function getMetric( row: ReportRow | undefined, index: number ): number {
 /**
  * Builds a metric from a row pair.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param rows  Current and previous rows.
  * @param index Metric index.
@@ -106,7 +106,7 @@ function toMetric( rows: RowPair, index: number ): SiteGoalsPDFMetric {
  * Mirrors the dashboard's `processReports`, which reports a zero rate rather
  * than a gap when a group has no sessions.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param total    Event count metric.
  * @param sessions Sessions metric.
@@ -129,7 +129,7 @@ function toRate(
  * With a breakdown dimension the report returns one row per value per date
  * range, with the date range at `dimensionValues[ 1 ]`.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param report Grouped report.
  * @return Map of dimension value to its row pair.
@@ -166,7 +166,7 @@ function groupRowsByValue(
  * The aggregated reports carry no breakdown dimension, so their values come
  * from the totals, where the date range is the only dimension.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param report Aggregated report.
  * @return Current and previous totals rows.
@@ -187,7 +187,7 @@ function getTotalsPair( report: Report | undefined ): RowPair {
 /**
  * Sums the event counts of the given row pairs.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param entries Row pairs to fold together.
  * @return Summed event counts for both date ranges.
@@ -206,7 +206,7 @@ function sumTotals( entries: RowPair[] ): SiteGoalsPDFMetric {
 /**
  * Builds one full group from its event and engagement rows.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param id             Group ID.
  * @param label          Group heading.
@@ -265,7 +265,7 @@ export interface ShapeSiteGoalsPDFDataArgs {
  * dimension value is not a supported breakdown value carry no attribution, so
  * they fold into a trailing "Other sources" group with the total only.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param args                            Reports, breakdown values and labels.
  * @param args.eventsReport               Grouped event report.

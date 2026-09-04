@@ -56,7 +56,7 @@ export interface UseSiteGoalsBreakdownOptions {
  * Resolves the breakdown tab state for a Site Goals widget.
  *
  * @since 1.182.0
- * @since n.e.x.t Held every breakdown report back until the breakdown custom dimension exists on the property.
+ * @since 1.187.0 Held every breakdown report back until the breakdown custom dimension exists on the property.
  *
  * @param {string} goalType                      The goal type whose breakdown dimension to resolve.
  * @param {Object} [options]                     Discovery, detection and allowlist options.

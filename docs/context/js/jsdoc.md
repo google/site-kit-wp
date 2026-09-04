@@ -53,13 +53,13 @@ function myFunction( paramName, optionalParam = defaultValue ) {
 
 #### \@since Tag
 
-**Always required** - Documents when the feature was introduced. Use the `n.e.x.t` placeholder label for unreleased code; it is automatically replaced with the actual version number when a release is cut. (The custom `jsdoc-requires-since` ESLint rule accepts only a valid semver value or the `n.e.x.t` label.)
+**Always required** - Documents when the feature was introduced. Use the `1.187.0` placeholder label for unreleased code; it is automatically replaced with the actual version number when a release is cut. (The custom `jsdoc-requires-since` ESLint rule accepts only a valid semver value or the `1.187.0` label.)
 
 ```javascript
 /**
  * Returns a callback to activate a module.
  *
- * \@since n.e.x.t
+ * \@since 1.187.0
  *
  * \@param {string} moduleSlug Module slug.
  * \@return {Function|null} Callback to activate module.
@@ -211,7 +211,7 @@ export function createFetchStore( {
 
 ### Version Tracking
 
-1. **Always include \@since** for new functions and significant changes using the `n.e.x.t` placeholder label
+1. **Always include \@since** for new functions and significant changes using the `1.187.0` placeholder label
 2. **Document breaking changes** in function descriptions
 
 ### Consistency Rules
