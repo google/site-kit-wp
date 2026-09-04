@@ -25,7 +25,6 @@ import { FC } from 'react';
  * WordPress dependencies
  */
 import { useEffect, useMemo } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -40,20 +39,11 @@ import {
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	GoalDriverComponentProps,
-	GoalDriverRow,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import {
-	getDimensionFiltersForEvents,
-	normalizePrimaryEvents,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
+	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
+	GOAL_DRIVER_ROW_MAPPERS,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+import { GoalDriverComponentProps } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { numFmt } from '@/js/util';
-
-interface ReportRow {
-	dimensionValues?: Array< { value?: string } >;
-	metricValues?: Array< { value?: string } >;
-}
 
 const TopTrafficChannelsRateGoalDriver: FC< GoalDriverComponentProps > = ( {
 	title = '',
@@ -70,34 +60,19 @@ const TopTrafficChannelsRateGoalDriver: FC< GoalDriverComponentProps > = ( {
 		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
 		[]
 	);
-	const reportOptions = useMemo( () => {
-		const eventNames = normalizePrimaryEvents( primaryEvent );
-
-		if ( ! dates || ! eventNames.length ) {
-			return undefined;
-		}
-
-		const dimensionFilters = getDimensionFiltersForEvents(
-			eventNames,
-			breakdownFilter
-		);
-
-		return {
-			...dates,
-			dimensions: [ 'sessionDefaultChannelGroup' ],
-			dimensionFilters,
-			metrics: [ { name: 'eventCount' }, { name: 'sessions' } ],
-			orderby: [
-				{
-					metric: { metricName: 'eventCount' },
-					desc: true,
-				},
-			],
-			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-traffic-channels-rate_${ goalType }`,
-		};
-	}, [ dates, goalType, primaryEvent, breakdownFilter ] );
+	const reportOptions = useMemo(
+		() =>
+			GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE
+			]( {
+				dates,
+				primaryEvent,
+				breakdownFilter,
+				limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+				context: goalType,
+			} ),
+		[ dates, primaryEvent, breakdownFilter, goalType ]
+	);
 
 	const report = useSelect(
 		( select: Select ) =>
@@ -130,26 +105,11 @@ const TopTrafficChannelsRateGoalDriver: FC< GoalDriverComponentProps > = ( {
 		[ reportOptions ]
 	);
 
-	const sourceRows: ReportRow[] = report?.rows || [];
-	const mappedRows: GoalDriverRow[] = sourceRows.map( ( row: ReportRow ) => {
-		const channel = row.dimensionValues?.[ 0 ]?.value || '-';
-		const eventCount = parseFloat(
-			String( row.metricValues?.[ 0 ]?.value ?? 0 )
+	const sourceRows = report?.rows || [];
+	const mappedRows =
+		GOAL_DRIVER_ROW_MAPPERS[ GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE ](
+			sourceRows
 		);
-		const sessions = parseFloat(
-			String( row.metricValues?.[ 1 ]?.value ?? 0 )
-		);
-		const rate = sessions > 0 ? eventCount / sessions : 0;
-
-		return {
-			label: channel || __( '(not set)', 'google-site-kit' ),
-			value: numFmt( rate, {
-				style: 'percent',
-				signDisplay: 'never',
-				maximumFractionDigits: 1,
-			} ),
-		};
-	} );
 
 	const rows = providedRows || mappedRows;
 	const loading = providedLoading ?? reportLoading;

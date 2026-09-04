@@ -23,9 +23,17 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_SALES_BY_COUNTRIES,
+	KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
+	KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
+	KM_ANALYTICS_SALES_RATE,
+	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
+	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOTAL_SALES,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
@@ -488,6 +496,27 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				expect( shouldIncludeConversionTailoredMetrics ).toEqual( [
 					ENUM_CONVERSION_EVENTS.CONTACT,
 				] );
+			} );
+		} );
+
+		describe( 'getKeyMetricsConversionEventWidgets', () => {
+			it( 'includes the Selling products Key Metric tiles under purchase', () => {
+				const { purchase } = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getKeyMetricsConversionEventWidgets();
+
+				expect( purchase ).toEqual(
+					expect.arrayContaining( [
+						KM_ANALYTICS_TOTAL_SALES,
+						KM_ANALYTICS_SALES_RATE,
+						KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
+						KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
+						KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
+						KM_ANALYTICS_SALES_BY_COUNTRIES,
+						KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
+						KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
+					] )
+				);
 			} );
 		} );
 

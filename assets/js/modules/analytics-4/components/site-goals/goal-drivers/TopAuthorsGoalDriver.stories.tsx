@@ -34,7 +34,7 @@ import {
 	provideUserCapabilities,
 } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { GOAL_DRIVER_ROW_LIMIT_EXPANDED, GOAL_TYPES } from './constants';
+import { GOAL_DRIVER_ROW_LIMIT_EXPANDED } from './constants';
 import TopAuthorsGoalDriver from './TopAuthorsGoalDriver';
 import { GoalDriverComponentProps } from './types';
 
@@ -105,8 +105,7 @@ function setupAnalytics4(
 }
 
 function getTopAuthorsReportOptions(
-	registry: Parameters< typeof provideModules >[ 0 ],
-	goalType = GOAL_TYPES.ECOMMERCE
+	registry: Parameters< typeof provideModules >[ 0 ]
 ) {
 	const dates = registry.select( CORE_USER ).getDateRangeDates();
 	const dimensionFilters = {
@@ -139,13 +138,14 @@ function getTopAuthorsReportOptions(
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-authors_${ goalType }`,
+			reportID: 'analytics-4_goal-driver-reports_top-authors_ecommerce',
 		},
 		totalReportOptions: {
 			...dates,
 			dimensionFilters,
 			metrics: [ { name: 'eventCount' } ],
-			reportID: `analytics-4_site-goals_top-authors-total_${ goalType }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-authors-total_ecommerce',
 		},
 	};
 }
@@ -158,11 +158,12 @@ function seedTopAuthorsReports(
 		getTopAuthorsReportOptions( registry );
 
 	if ( loading ) {
-		[ authorsReportOptions, totalReportOptions ].forEach( ( options ) => {
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.startResolution( 'getReport', [ options ] );
-		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ authorsReportOptions ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ totalReportOptions ] );
 
 		return;
 	}
@@ -199,9 +200,17 @@ function seedTopAuthorsReports(
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ authorsReportOptions ] );
 
+	// A site-wide total of 1,000 - larger than the sum of the ranked rows
+	// above (714) - so the rendered percentages (30.5% / 24.7% / 16.2%)
+	// only match if the tile divides by this total rather than by the
+	// visible rows.
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 		{
-			rows: [ { metricValues: [ { value: '1000' } ] } ],
+			rows: [
+				{
+					metricValues: [ { value: '1000' } ],
+				},
+			],
 		},
 		{ options: totalReportOptions }
 	);

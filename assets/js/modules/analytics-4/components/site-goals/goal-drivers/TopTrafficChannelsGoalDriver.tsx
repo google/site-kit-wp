@@ -25,7 +25,6 @@ import { FC } from 'react';
  * WordPress dependencies
  */
 import { useEffect, useMemo } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -40,20 +39,15 @@ import {
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	GoalDriverComponentProps,
-	GoalDriverRow,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import {
-	getDimensionFiltersForEvents,
-	normalizePrimaryEvents,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
+	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
+	buildGoalDriverTotalReportOptions,
+	getGoalDriverTotalCount,
+	makeShareOfExplicitTotalMapper,
+	parseMetricValue,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+import { GoalDriverComponentProps } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { numFmt } from '@/js/util';
-
-interface ReportRow {
-	dimensionValues?: Array< { value?: string } >;
-	metricValues?: Array< { value?: string } >;
-}
+import { ReportRow } from '@/js/modules/analytics-4/datastore/types';
 
 const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
 	title = '',
@@ -70,47 +64,33 @@ const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
 		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
 		[]
 	);
-	const eventNames = useMemo(
-		() => normalizePrimaryEvents( primaryEvent ),
-		[ primaryEvent ]
+	const reportOptions = useMemo(
+		() =>
+			GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS
+			]( {
+				dates,
+				primaryEvent,
+				breakdownFilter,
+				limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+				context: goalType,
+			} ),
+		[ dates, primaryEvent, breakdownFilter, goalType ]
 	);
-	const dimensionFilters = useMemo(
-		() => getDimensionFiltersForEvents( eventNames, breakdownFilter ),
-		[ eventNames, breakdownFilter ]
+	// The percentage shown is each channel's share of every matching event
+	// site-wide, not just the ranked channels above - see
+	// `buildGoalDriverTotalReportOptions`.
+	const totalReportOptions = useMemo(
+		() =>
+			buildGoalDriverTotalReportOptions( {
+				dates,
+				primaryEvent,
+				breakdownFilter,
+				context: goalType,
+				reportIDSuffix: 'top-traffic-channels',
+			} ),
+		[ dates, primaryEvent, breakdownFilter, goalType ]
 	);
-	const reportOptions = useMemo( () => {
-		if ( ! dates || ! eventNames.length ) {
-			return undefined;
-		}
-
-		return {
-			...dates,
-			dimensions: [ 'sessionDefaultChannelGroup' ],
-			dimensionFilters,
-			metrics: [ { name: 'eventCount' } ],
-			orderby: [
-				{
-					metric: { metricName: 'eventCount' },
-					desc: true,
-				},
-			],
-			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-traffic-channels_${ goalType }`,
-		};
-	}, [ dates, dimensionFilters, eventNames, goalType ] );
-	const totalReportOptions = useMemo( () => {
-		if ( ! dates || ! eventNames.length ) {
-			return undefined;
-		}
-
-		return {
-			...dates,
-			dimensionFilters,
-			metrics: [ { name: 'eventCount' } ],
-			reportID: `analytics-4_site-goals_top-traffic-channels-total_${ goalType }`,
-		};
-	}, [ dates, dimensionFilters, eventNames, goalType ] );
 
 	const report = useSelect(
 		( select: Select ) =>
@@ -147,32 +127,18 @@ const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
 		[ reportOptions, totalReportOptions ]
 	);
 
-	const sourceRows: ReportRow[] = report?.rows || [];
+	const sourceRows = report?.rows || [];
+	// Falls back to summing the visible rows only if the total report hasn't
+	// resolved any usable count yet (e.g. still loading), so the tile shows a
+	// reasonable percentage rather than 0% while the true total is in flight.
 	const totalCount =
-		parseFloat(
-			String( totalReport?.rows?.[ 0 ]?.metricValues?.[ 0 ]?.value ?? 0 )
-		) ||
-		sourceRows.reduce( ( total: number, row: ReportRow ) => {
-			return (
-				total +
-				parseFloat( String( row.metricValues?.[ 0 ]?.value ?? 0 ) )
-			);
-		}, 0 );
-	const mappedRows: GoalDriverRow[] = sourceRows.map( ( row: ReportRow ) => {
-		const channel = row.dimensionValues?.[ 0 ]?.value || '-';
-		const eventCount = parseFloat(
-			String( row.metricValues?.[ 0 ]?.value ?? 0 )
+		getGoalDriverTotalCount( totalReport ) ||
+		sourceRows.reduce(
+			( sum: number, row: ReportRow ) => sum + parseMetricValue( row ),
+			0
 		);
-
-		return {
-			label: channel || __( '(not set)', 'google-site-kit' ),
-			value: numFmt( totalCount > 0 ? eventCount / totalCount : 0, {
-				style: 'percent',
-				signDisplay: 'never',
-				maximumFractionDigits: 1,
-			} ),
-		};
-	} );
+	const mappedRows =
+		makeShareOfExplicitTotalMapper( totalCount )( sourceRows );
 
 	const rows = providedRows || mappedRows;
 	const loading = providedLoading ?? reportLoading;

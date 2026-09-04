@@ -160,14 +160,16 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-traffic-channels_${ GOAL_TYPES.LEAD }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels_lead',
 		};
 
 		const topTrafficTotalOptions = {
 			...dates,
 			dimensionFilters,
 			metrics: [ { name: 'eventCount' } ],
-			reportID: `analytics-4_site-goals_top-traffic-channels-total_${ GOAL_TYPES.LEAD }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels-total_lead',
 		};
 
 		const topTrafficRateOptions = {
@@ -183,7 +185,8 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-traffic-channels-rate_${ GOAL_TYPES.LEAD }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels-rate_lead',
 		};
 
 		const topPagesOptions = {
@@ -199,7 +202,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-pages_${ GOAL_TYPES.LEAD }`,
+			reportID: 'analytics-4_goal-driver-reports_top-pages_lead',
 		};
 
 		const pagePaths = [ '/test-post-1/', '/test-post-2/', '/test-post-3/' ];
@@ -231,7 +234,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_visitor-type_${ GOAL_TYPES.LEAD }`,
+			reportID: 'analytics-4_goal-driver-reports_visitor-type_lead',
 		};
 
 		const citiesOptions = {
@@ -253,7 +256,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_cities_${ GOAL_TYPES.LEAD }`,
+			reportID: 'analytics-4_goal-driver-reports_cities_lead',
 		};
 
 		const countriesOptions = {
@@ -275,7 +278,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_countries_${ GOAL_TYPES.LEAD }`,
+			reportID: 'analytics-4_goal-driver-reports_countries_lead',
 		};
 
 		if ( loading ) {
@@ -1178,7 +1181,8 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-traffic-channels_${ GOAL_TYPES.LEAD }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels_lead',
 		};
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(

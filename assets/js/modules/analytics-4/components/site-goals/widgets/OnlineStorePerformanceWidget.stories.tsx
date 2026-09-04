@@ -209,12 +209,10 @@ function seedGoalDriverReports(
 	registry: WPDataRegistry,
 	eventNames: string[],
 	{
-		goalType = GOAL_TYPES.ECOMMERCE,
 		empty = false,
 		loading = false,
 		breakdownFilter = {},
 	}: {
-		goalType?: string;
 		empty?: boolean;
 		loading?: boolean;
 		breakdownFilter?: Record< string, unknown >;
@@ -241,14 +239,16 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_top-traffic-channels_${ goalType }`,
+		reportID:
+			'analytics-4_goal-driver-reports_top-traffic-channels_ecommerce',
 	};
 
 	const topTrafficTotalOptions = {
 		...goalDriverDates,
 		dimensionFilters,
 		metrics: [ { name: 'eventCount' } ],
-		reportID: `analytics-4_site-goals_top-traffic-channels-total_${ goalType }`,
+		reportID:
+			'analytics-4_goal-driver-reports_top-traffic-channels-total_ecommerce',
 	};
 
 	const topTrafficRateOptions = {
@@ -259,7 +259,8 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_top-traffic-channels-rate_${ goalType }`,
+		reportID:
+			'analytics-4_goal-driver-reports_top-traffic-channels-rate_ecommerce',
 	};
 
 	const topPagesOptions = {
@@ -270,7 +271,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_top-pages_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_top-pages_ecommerce',
 	};
 
 	const pagePaths = [ '/test-post-1/', '/test-post-2/', '/test-post-3/' ];
@@ -294,7 +295,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_visitor-type_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_visitor-type_ecommerce',
 	};
 
 	const citiesOptions = {
@@ -311,7 +312,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_cities_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_cities_ecommerce',
 	};
 
 	const countriesOptions = {
@@ -328,7 +329,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_countries_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_countries_ecommerce',
 	};
 
 	const deviceTypeOptions = {
@@ -339,7 +340,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_device-type_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_device-type_ecommerce',
 	};
 
 	if ( loading ) {
@@ -401,7 +402,6 @@ function seedGoalDriverReports(
 					metricValues: [ { value: '6' } ],
 				},
 		  ];
-	const totalEventCount = isAddToCart ? '90' : '108';
 	const pageEventCounts = isAddToCart
 		? [ '47', '31', '18' ]
 		: [ '30', '25', '20' ];
@@ -440,9 +440,7 @@ function seedGoalDriverReports(
 
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 		{
-			rows: empty
-				? []
-				: [ { metricValues: [ { value: totalEventCount } ] } ],
+			rows: empty ? [] : [ { metricValues: [ { value: '100' } ] } ],
 		},
 		{ options: topTrafficTotalOptions }
 	);

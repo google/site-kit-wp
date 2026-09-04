@@ -40,21 +40,12 @@ import {
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	GoalDriverComponentProps,
-	GoalDriverRow,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import {
-	getDimensionFiltersForEvents,
-	normalizePrimaryEvents,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
+	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
+	GOAL_DRIVER_ROW_MAPPERS,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+import { GoalDriverComponentProps } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
-import { numFmt } from '@/js/util';
-
-interface ReportRow {
-	dimensionValues?: Array< { value?: string } >;
-	metricValues?: Array< { value?: string } >;
-}
 
 const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( {
 	title = '',
@@ -72,32 +63,17 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( {
 		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
 		[]
 	);
-	const reportOptions = useMemo( () => {
-		const eventNames = normalizePrimaryEvents( primaryEvent );
-
-		if ( ! dates || ! eventNames.length ) {
-			return undefined;
-		}
-
-		return {
-			...dates,
-			dimensions: [ 'pagePath', 'eventName' ],
-			dimensionFilters: getDimensionFiltersForEvents(
-				eventNames,
-				breakdownFilter
-			),
-			metrics: [ { name: 'eventCount' } ],
-			orderby: [
-				{
-					metric: { metricName: 'eventCount' },
-					desc: true,
-				},
-			],
-			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-pages_${ goalType }`,
-		};
-	}, [ dates, primaryEvent, goalType, breakdownFilter ] );
+	const reportOptions = useMemo(
+		() =>
+			GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[ GOAL_DRIVER_IDS.TOP_PAGES ]( {
+				dates,
+				primaryEvent,
+				breakdownFilter,
+				limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+				context: goalType,
+			} ),
+		[ dates, primaryEvent, breakdownFilter, goalType ]
+	);
 	const report = useSelect(
 		( select: Select ) =>
 			reportOptions
@@ -145,29 +121,24 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( {
 		},
 		[ report, reportOptions, titles ]
 	);
-	const sourceRows: ReportRow[] = report?.rows || [];
-	const mappedRows: GoalDriverRow[] = sourceRows
-		.slice( 0, GOAL_DRIVER_ROW_LIMIT_EXPANDED )
-		.map( ( row ) => {
-			const pagePath = row.dimensionValues?.[ 0 ]?.value || '';
-			const rawPageTitle = titles?.[ pagePath ];
-			const pageTitle = rawPageTitle
-				? decodeAmpersand( rawPageTitle ).trim()
-				: undefined;
-			const eventCount = parseFloat(
-				String( row.metricValues?.[ 0 ]?.value ?? 0 )
-			);
+	const sourceRows = report?.rows || [];
+	const mappedRows = GOAL_DRIVER_ROW_MAPPERS[ GOAL_DRIVER_IDS.TOP_PAGES ](
+		sourceRows
+	).map( ( row ) => {
+		const rawPageTitle = titles?.[ row.pagePath || '' ];
+		const pageTitle = rawPageTitle
+			? decodeAmpersand( rawPageTitle ).trim()
+			: undefined;
 
-			return {
-				label:
-					! pageTitle ||
-					pageTitle === __( '(unknown)', 'google-site-kit' )
-						? pagePath
-						: pageTitle,
-				value: numFmt( eventCount ),
-				pagePath,
-			};
-		} );
+		return {
+			...row,
+			label:
+				! pageTitle ||
+				pageTitle === __( '(unknown)', 'google-site-kit' )
+					? row.label
+					: pageTitle,
+		};
+	} );
 	const rows = providedRows || mappedRows;
 	const loading = providedLoading ?? reportLoading;
 	const error = providedError ?? reportError;
