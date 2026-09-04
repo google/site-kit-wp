@@ -266,7 +266,7 @@
 	 * Returns the price of a product formatted with decimal places if necessary.
 	 *
 	 * @since 1.158.0
-	 * @since n.e.x.t Reads the store's decimal places from the page data.
+	 * @since 1.187.0 Reads the store's decimal places from the page data.
 	 *
 	 * @param {number} price The price in minor units, such as 4999 for 49.99.
 	 * @return {number} The price of the product with decimals.
